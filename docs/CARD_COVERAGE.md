@@ -2,7 +2,7 @@
 
 Snapshot checked **2026-10-24**. The official gallery contains **1,408 printing records** grouped into **1,103 distinct full-name identities**. After excluding **12 auxiliary token/tracker identities** and **12 banned identities**, **1,079 identities are legal in Standard/1v1 Constructed**. The separate 2v2 list leaves **1,078**.
 
-**This client does not yet implement every legal card.** It currently maps **103 main-deck cards, 4 preset legends, 4 battlefields, and 6 rune resource types** (117 legal identities). **962 legal identities remain unimplemented and are not playable.** Importing this snapshot does not register cards with the engine. Full inventory coverage is not full rules support.
+**This client does not yet implement every legal card.** It currently maps **152 main-deck cards, 4 preset legends, 4 battlefields, and 6 rune resource types** (166 legal identities). **913 legal identities remain unimplemented and are not playable.** Importing this snapshot does not register cards with the engine. Full inventory coverage is not full rules support.
 
 ## Scope and authority
 
@@ -28,11 +28,11 @@ Numbered positions include token slots where the publisher numbers them within a
 | Kind | Standard legal | Implemented mapping | Not implemented |
 | --- | ---: | ---: | ---: |
 | Battlefield | 69 | 4 | 65 |
-| Gear | 127 | 6 | 121 |
+| Gear | 127 | 20 | 107 |
 | Legend | 58 | 4 | 54 |
 | Rune | 6 | 6 | 0 |
-| Spell | 269 | 45 | 224 |
-| Unit | 550 | 52 | 498 |
+| Spell | 269 | 52 | 217 |
+| Unit | 550 | 80 | 470 |
 
 Implemented mapping means the existing engine/preset/field/resource implementation, not a claim that every interaction has been formally proven. See `docs/RULES.md` for engine limits. Every unimplemented identity has `implementation.status: not_implemented` and `playable_in_client: false`. Printed keywords are recorded per card and counted under `unimplemented_by_observed_keyword` as discovery hints only; shared keywords do not imply shared effect semantics or completed implementation. Each unimplemented card still requires its specific effect, targets, timing, costs, continuous/replacement effects, and interaction tests to be reviewed and implemented.
 
@@ -229,5 +229,54 @@ Source pages are archived as deterministic gzip files under `assets/data/catalog
 | 100 | Scrapyard Champion | `ogn-020-298` |
 | 101 | Trifarian Gloryseeker | `ogn-217-298` |
 | 102 | Vanguard Captain | `ogn-218-298` |
+| 103 | Eager Drakehound | `sfd-006-221` |
+| 104 | Garen, Rugged | `ogs-007-024` |
+| 105 | Laurent Bladekeeper | `sfd-096-221` |
+| 106 | Master Yi, Honed | `ogs-009-024` |
+| 107 | Mutated Mouser | `unl-036-219` |
+| 108 | Pakaa Cub | `ogn-135-298` |
+| 109 | Shen, Kinkou | `ogn-241-298` |
+| 110 | Stalwart Poro | `ogn-052-298` |
+| 111 | Staunch Survivor | `rad-088-167` |
+| 112 | Sunlit Guardian | `ogn-054-298` |
+| 113 | Towering Combatant | `unl-099-219` |
+| 114 | Vanguard Attendant | `ogs-016-024` |
+| 115 | Wrath of the Freljord | `rad-077-167` |
+| 116 | Zephyr Sage | `ogs-005-024` |
+| 117 | B.F. Sword | `sfd-161-221` |
+| 118 | Doran's Blade | `sfd-095-221` |
+| 119 | Sterak's Gage | `sfd-056-221` |
+| 120 | Cloth Armor | `sfd-064-221` |
+| 121 | Doran's Shield | `sfd-033-221` |
+| 122 | Hexdrinker | `sfd-102-221` |
+| 123 | Serrated Dirk | `sfd-009-221` |
+| 124 | Nazuman Ntofo | `rad-071-167` |
+| 125 | Seal of Focus | `ogn-081-298` |
+| 126 | Seal of Insight | `ogn-120-298` |
+| 127 | Seal of Rage | `ogn-040-298` |
+| 128 | Seal of Strength | `ogn-163-298` |
+| 129 | Seal of Unity | `ogn-245-298` |
+| 130 | Energy Conduit | `ogn-098-298` |
+| 131 | Battering Ram | `sfd-012-221` |
+| 132 | Consult the Past | `ogn-083-298` |
+| 133 | Downstage Dramatics | `unl-061-219` |
+| 134 | Dredge Up | `ven-049-166` |
+| 135 | Feral Strength | `sfd-034-221` |
+| 136 | Frigid Touch | `sfd-066-221` |
+| 137 | Bonds of Strength | `sfd-151-221` |
+| 138 | Iterative Design | `ven-051-166` |
+| 139 | Cloud Drake | `ven-048-166` |
+| 140 | Evershade Stalker | `unl-123-219` |
+| 141 | Field Musicians | `ven-026-166` |
+| 142 | Whiteflame Protector | `ogn-082-298` |
+| 143 | War Scout | `rad-008-167` |
+| 144 | Riptide Rex | `ogn-092-298` |
+| 145 | Riptide Mage | `rad-058-167` |
+| 146 | Blastcone Fae | `ogn-097-298` |
+| 147 | Faithful Manufactor | `ogn-211-298` |
+| 148 | Frisky Hunter | `unl-033-219` |
+| 149 | Honest Broker | `sfd-155-221` |
+| 150 | Hunting Dog | `rad-119-167` |
+| 151 | Trove Golem | `sfd-174-221` |
 
 Card names, rules, and images are Riot Games intellectual property. This noncommercial, unofficial project includes source references for verification and does not claim Riot affiliation.

@@ -7,7 +7,8 @@ use crate::battlefields::{BATTLEFIELDS, BattlefieldAbility};
 use crate::cards::{Domain, cards, presets};
 use crate::deck::CustomDeck;
 use crate::game::{
-    Action, ChainAbility, Decision, Difficulty, FlowSource, Game, Phase, Target, TriggeredAbility,
+    Action, ChainAbility, Decision, Difficulty, FlowSource, Game, InstructedPlayKind, Phase,
+    Target, TriggeredAbility,
 };
 use crate::legends::{LegendAbility, LegendKind, LegendTrigger};
 use crate::payment::{PaymentQuote, PowerPayment};
@@ -302,8 +303,8 @@ impl Session {
                 "lane":unit.lane, "ready":unit.ready, "might":game.unit_might(unit), "damage":unit.damage,
                 "buff":unit.buff, "temporary_buff":unit.temporary_buff, "stunned":unit.stunned,
                 "protected":unit.protected, "banish_on_death":unit.banish_on_death,
-                "empowered":game.unit_empowered(unit.id),"movement_locked":game.movement_locked(owner,unit.id),
-                "keywords":{"assault":keywords.assault,"tank":keywords.tank,"backline":keywords.backline,
+                "empowered":game.unit_empowered(unit.id),"hidden_play_origin":game.hidden_play_origin(unit.id),"movement_locked":game.movement_locked(owner,unit.id),
+                "keywords":{"assault":keywords.assault,"shield":keywords.shield,"tank":keywords.tank,"backline":keywords.backline,
                     "deflect":keywords.deflect,"ganking":keywords.ganking,"ambush":keywords.ambush,
                     "accelerate":keywords.accelerate.map(|cost|json!({"energy":cost.energy,"power":cost.power,"domain":cost.domain.name()}))},
                 "damage_priority":game.damage_priority(unit)
@@ -354,6 +355,7 @@ impl Session {
             "mulligans_used":game.mulligans_used,"players":players,"battlefields":game.battlefields,
             "battlefield_owner":game.battlefield_owner,"scored_this_turn":game.player_scored_this_turn,
             "chain":chain,"decision":game.decision.as_ref().map(|d|decision_to_json(game,d,viewer)),
+            "pending_card_plays":game.pending_cards().iter().map(|card|json!({"id":card.id,"player":card.player,"card_id":card.card_id,"kind":instructed_kind(card.kind)})).collect::<Vec<_>>(),
             "pending_token_plays":game.pending_tokens().iter().map(|token|json!({
                 "id":token.id,"player":token.player,"card_id":token.card_id,"might":token.might,"gear":token.gear,
                 "destination":match token.location {
@@ -460,7 +462,12 @@ impl Session {
                     difficulty: match optional_string(object, "difficulty")?.unwrap_or("tactical") {
                         "easy" => Difficulty::Easy,
                         "tactical" => Difficulty::Tactical,
-                        _ => return Err(ApiError::invalid("difficulty must be easy or tactical.")),
+                        "strategic" => Difficulty::Strategic,
+                        _ => {
+                            return Err(ApiError::invalid(
+                                "difficulty must be easy, tactical, or strategic.",
+                            ));
+                        }
                     },
                     first_player: optional_unsigned(object, "first_player")?
                         .map(to_usize)
@@ -720,6 +727,16 @@ pub fn action_to_json(action: &Action) -> Value {
             targets,
         } => {
             json!({"type":"play_from_trash_targets","trash_index":trash_index,"lane":lane,"targets":ts(targets)})
+        }
+        Action::FinalizePendingPlay {
+            lane,
+            targets,
+            repeat_targets,
+            repeat,
+            accelerate,
+            bonus,
+        } => {
+            json!({"type":"finalize_pending_play","lane":lane,"targets":ts(targets),"repeat_targets":ts(repeat_targets),"repeat":repeat,"accelerate":accelerate,"bonus":bonus})
         }
         Action::PlayFromTrashOptions {
             trash_index,
@@ -1152,6 +1169,24 @@ pub fn parse_action(value: &Value) -> Result<Action, ApiError> {
                 targets: targets(o, "targets")?,
             }
         }
+        "finalize_pending_play" => {
+            fields!(
+                "lane",
+                "targets",
+                "repeat_targets",
+                "repeat",
+                "accelerate",
+                "bonus"
+            );
+            Action::FinalizePendingPlay {
+                lane: lane(o)?,
+                targets: targets(o, "targets")?,
+                repeat_targets: targets(o, "repeat_targets")?,
+                repeat: flag(o, "repeat")?,
+                accelerate: flag(o, "accelerate")?,
+                bonus: flag(o, "bonus")?,
+            }
+        }
         "play_from_trash_options" => {
             fields!(
                 "trash_index",
@@ -1287,9 +1322,30 @@ fn legend_trigger(trigger: LegendTrigger) -> Value {
     }
 }
 
+fn instructed_kind(kind: InstructedPlayKind) -> &'static str {
+    match kind {
+        InstructedPlayKind::Fizz => "fizz",
+        InstructedPlayKind::LastRites => "last_rites",
+        InstructedPlayKind::Matriarch => "matriarch",
+    }
+}
+
 fn decision_to_json(game: &Game, decision: &Decision, viewer: usize) -> Value {
     let player = decision.player();
     let mut out = match decision {
+        Decision::TrashTarget {
+            source_card_id,
+            gear_id,
+            ..
+        } => json!({"type":"trash_target","source_card_id":source_card_id,"gear_id":gear_id}),
+        Decision::PendingPlay {
+            pending_id,
+            card_id,
+            kind,
+            ..
+        } => {
+            json!({"type":"pending_play","pending_id":pending_id,"card_id":card_id,"kind":instructed_kind(*kind)})
+        }
         Decision::BattlefieldOrder { lanes, combat, .. } => {
             json!({"type":"battlefield_order","lanes":lanes,"combat":combat})
         }
@@ -1333,7 +1389,9 @@ fn decision_to_json(game: &Game, decision: &Decision, viewer: usize) -> Value {
             ..
         } => json!({"type":"revive_play","trash_index":trash_index,"card_id":card_id}),
         Decision::SwapUnit { unit_id, .. } => json!({"type":"swap_unit","unit_id":unit_id}),
-        Decision::EmpowerHere { lane, .. } => json!({"type":"empower_here","lane":lane}),
+        Decision::EmpowerHere {
+            lane, source_id, ..
+        } => json!({"type":"empower_here","lane":lane,"source_id":source_id}),
         Decision::Legend { trigger, .. } => {
             json!({"type":"legend","trigger":legend_trigger(*trigger)})
         }
@@ -1373,6 +1431,13 @@ fn decision_to_json(game: &Game, decision: &Decision, viewer: usize) -> Value {
 
 fn ability_to_json(ability: &ChainAbility) -> Value {
     match ability {
+        ChainAbility::PlayChosen {
+            trash_index,
+            card_id,
+            kind,
+        } => {
+            json!({"type":"play_chosen","trash_index":if *trash_index==usize::MAX {None} else {Some(*trash_index)},"card_id":card_id,"kind":instructed_kind(*kind)})
+        }
         ChainAbility::Disempower { player, object_id } => {
             json!({"type":"disempower","player":player,"object_id":object_id})
         }
@@ -1393,7 +1458,10 @@ fn ability_to_json(ability: &ChainAbility) -> Value {
             player,
             object_id,
             lane,
-        } => json!({"type":"empower_object","player":player,"object_id":object_id,"lane":lane}),
+            source_id,
+        } => {
+            json!({"type":"empower_object","player":player,"object_id":object_id,"lane":lane,"source_id":source_id})
+        }
         ChainAbility::Equip { gear_id, target } => {
             json!({"type":"equip","gear_id":gear_id,"target":target_to_json(target)})
         }
@@ -1445,7 +1513,9 @@ fn ability_to_json(ability: &ChainAbility) -> Value {
             TriggeredAbility::SwapChoice { unit_id } => {
                 json!({"type":"swap_choice","unit_id":unit_id})
             }
-            TriggeredAbility::EmpowerHere { lane } => json!({"type":"empower_here","lane":lane}),
+            TriggeredAbility::EmpowerHere { lane, source_id } => {
+                json!({"type":"empower_here","lane":lane,"source_id":source_id})
+            }
         },
     }
 }
@@ -2007,6 +2077,67 @@ mod tests {
         assert_eq!(view["pending_token_plays"], json!([]));
         assert_eq!(view["players"][0]["units"].as_array().unwrap().len(), 4);
         assert!(view["decision"].is_null());
+    }
+
+    #[test]
+    fn pending_real_card_and_shield_observations_are_public_and_round_trip() {
+        let mut session = playing();
+        let player = &mut session.game.players[0];
+        player.hand = vec![36];
+        player.discard = vec![7];
+        player.units.clear();
+        player.runes = [6; 6];
+        player.exhausted_runes = [0; 6];
+        player.energy = 36;
+        submit(
+            &mut session,
+            Action::PlayCardWithTargets {
+                hand_index: 0,
+                lane: None,
+                targets: vec![],
+            },
+        );
+        submit(&mut session, Action::Choose { accept: true });
+        assert_eq!(
+            session.observe(1).unwrap()["decision"]["type"],
+            "trash_target"
+        );
+        submit(&mut session, Action::SelectCards { indices: vec![0] });
+        assert_eq!(
+            session.observe(1).unwrap()["chain"][0]["ability"]["type"],
+            "play_chosen"
+        );
+        pass_twice(&mut session);
+        let own = session.observe(0).unwrap();
+        let other = session.observe(1).unwrap();
+        assert_eq!(own["pending_card_plays"], other["pending_card_plays"]);
+        assert_eq!(own["pending_card_plays"][0]["card_id"], 7);
+        assert_eq!(own["pending_card_plays"][0]["kind"], "fizz");
+        assert_eq!(own["players"][0]["discard"], json!([]));
+        let id = session.game.players[0].units[0].id;
+        let action = Action::FinalizePendingPlay {
+            lane: None,
+            targets: vec![Target::Unit {
+                player: 0,
+                unit_id: id,
+            }],
+            repeat_targets: vec![],
+            repeat: false,
+            accelerate: false,
+            bonus: false,
+        };
+        let encoded = action_to_json(&action);
+        assert_eq!(parse_action(&encoded).unwrap(), action);
+        submit(&mut session, action);
+        assert_eq!(session.observe(1).unwrap()["pending_card_plays"], json!([]));
+        let mut shield = unit(900, None, 0);
+        shield.token = false;
+        shield.card_id = 107;
+        session.game.players[0].units.push(shield);
+        assert_eq!(
+            session.observe(1).unwrap()["players"][0]["units"][1]["keywords"]["shield"],
+            2
+        );
     }
 
     #[test]

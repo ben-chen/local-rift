@@ -5,9 +5,13 @@
 //! losing a unit does not put its equipment in the trash. Attached equipment's
 //! rules text is inactive; its might bonus and effect text apply to the unit.
 
-use crate::cards::{CardId, CardKind, Domain};
-use crate::game::{Action, ChainAbility, Game, Phase, Target, TriggeredAbility, domain_index};
-use crate::rules::{self, EquipmentAbility};
+#[cfg(test)]
+use crate::cards::Domain;
+use crate::cards::{CardId, CardKind};
+use crate::game::{
+    Action, ChainAbility, Game, Phase, Target, TriggeredAbility, UnitKeywords, domain_index,
+};
+use crate::rules::{self, StaticAbility};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct GearState {
@@ -148,6 +152,9 @@ impl Game {
         }
         let rule = rules::equipment(gear.card_id).unwrap();
         let state = &self.players[player];
+        if state.energy < rule.equip_energy {
+            return Err(format!("Equip needs {} energy.", rule.equip_energy));
+        }
         let available = self.available_power(player, Some(rule.equip_domain));
         if available < rule.equip_power {
             return Err(format!(
@@ -205,6 +212,8 @@ impl Game {
         {
             return Err("Choose different cards that are still in your trash.".into());
         }
+        // Pay energy first so the same rune may be exhausted and then recycled.
+        self.pay_energy(player, rule.equip_energy);
         self.spend_power(player, Some(rule.equip_domain), rule.equip_power)?;
         if !distinct.is_empty() {
             self.recycle_cards(player, &distinct);
@@ -251,18 +260,16 @@ impl Game {
                     gear.id == gear_id
                         && gear.ready
                         && gear.attached_to.is_none()
-                        && (gear.is_gold() || gear.card_id == 42)
+                        && (gear.is_gold() || rules::resource_gear(gear.card_id).is_some())
                 })
             })
     }
 
     /// Resource abilities resolve immediately and cannot be reacted to. These
-    /// add floating power; they never create or channel an extra rune.
+    /// add floating resources; they never create or channel an extra rune.
     pub(crate) fn gear_activate(&mut self, player: usize, gear_id: u32) -> Result<(), String> {
         if !self.gear_can_activate(player, gear_id) {
-            return Err(
-                "Choose a ready Seal of Discord or Gold token while you have priority.".into(),
-            );
+            return Err("Choose a ready resource gear while you have priority.".into());
         }
         let index = self.players[player]
             .gear
@@ -270,6 +277,7 @@ impl Game {
             .position(|gear| gear.id == gear_id)
             .unwrap();
         let is_gold = self.players[player].gear[index].is_gold();
+        let card_id = self.players[player].gear[index].card_id;
         self.players[player].gear[index].ready = false;
         if is_gold {
             self.gear_destroy(player, gear_id);
@@ -279,15 +287,83 @@ impl Game {
                 self.players[player].name
             ));
         } else {
-            let chaos = domain_index(Domain::Chaos);
-            self.players[player].power_pool[chaos] =
-                self.players[player].power_pool[chaos].saturating_add(1);
+            let ability = rules::resource_gear(card_id).expect("validated resource gear");
+            self.players[player].energy_pool = self.players[player]
+                .energy_pool
+                .saturating_add(ability.energy);
+            self.players[player].energy =
+                self.players[player].energy.saturating_add(ability.energy);
+            if let Some(domain) = ability.domain {
+                let slot = domain_index(domain);
+                self.players[player].power_pool[slot] =
+                    self.players[player].power_pool[slot].saturating_add(ability.power);
+            } else {
+                self.players[player].any_power =
+                    self.players[player].any_power.saturating_add(ability.power);
+            }
             self.push_log(format!(
-                "{} exhausts Seal of Discord to add one Chaos power.",
-                self.players[player].name
+                "{} exhausts {} to add {} energy and {} {}power.",
+                self.players[player].name,
+                self.catalog[card_id].name,
+                ability.energy,
+                ability.power,
+                ability
+                    .domain
+                    .map_or(String::new(), |domain| format!("{} ", domain.name()))
             ));
         }
         Ok(())
+    }
+
+    /// Power available from legal immediate resource abilities. Energy-only
+    /// gear cannot pay Deflect or any other power requirement.
+    pub(crate) fn gear_available_power(&self, player: usize) -> u8 {
+        self.players.get(player).map_or(0, |state| {
+            state
+                .gear
+                .iter()
+                .filter(|gear| gear.ready && gear.attached_to.is_none())
+                .map(|gear| {
+                    if gear.is_gold() {
+                        1
+                    } else {
+                        rules::resource_gear(gear.card_id).map_or(0, |ability| ability.power)
+                    }
+                })
+                .fold(0_u8, u8::saturating_add)
+        })
+    }
+
+    /// Only attached equipment contributes its effect-panel keywords. The
+    /// equipment's own rules panel (including Quick-Draw) remains inactive.
+    pub fn gear_keywords(&self, unit_id: u32) -> UnitKeywords {
+        let mut keywords = UnitKeywords::default();
+        for rule in self
+            .players
+            .iter()
+            .flat_map(|state| &state.gear)
+            .filter(|gear| !gear.token && gear.attached_to == Some(unit_id))
+            .filter_map(|gear| rules::equipment(gear.card_id))
+        {
+            for ability in rule.grants {
+                match *ability {
+                    StaticAbility::Assault(amount) => {
+                        keywords.assault = keywords.assault.saturating_add(amount)
+                    }
+                    StaticAbility::Shield(amount) => {
+                        keywords.shield = keywords.shield.saturating_add(amount)
+                    }
+                    StaticAbility::Deflect(amount) => {
+                        keywords.deflect = keywords.deflect.saturating_add(amount)
+                    }
+                    StaticAbility::Tank => keywords.tank = true,
+                    StaticAbility::Backline => keywords.backline = true,
+                    StaticAbility::Ganking => keywords.ganking = true,
+                    _ => {}
+                }
+            }
+        }
+        keywords
     }
 
     pub fn gear_might_bonus(&self, unit_id: u32) -> u8 {
@@ -300,15 +376,7 @@ impl Game {
     }
 
     pub fn gear_grants_ganking(&self, unit_id: u32) -> bool {
-        self.players
-            .iter()
-            .flat_map(|player| &player.gear)
-            .any(|gear| {
-                gear.attached_to == Some(unit_id)
-                    && !gear.token
-                    && rules::equipment(gear.card_id)
-                        .is_some_and(|rule| rule.ability == EquipmentAbility::Ganking)
-            })
+        self.gear_keywords(unit_id).ganking
     }
 
     /// One replacement applies to a death. Prefer an attached Guardian Angel
@@ -837,6 +905,7 @@ mod tests {
         let other = unit(&mut game, 0, Some(0));
         let rites = gear(&mut game, 0, 38);
         game.gear_resolve_equip(0, rites, target);
+        game.players[0].discard = vec![25];
         game.gear_conquer_hold(0, id(other));
         assert!(game.decision.is_none());
         game.gear_conquer_hold(0, id(target));
@@ -844,9 +913,10 @@ mod tests {
         resolve_chain(&mut game);
         assert_eq!(
             game.decision,
-            Some(Decision::LastRites {
+            Some(Decision::TrashTarget {
                 player: 0,
-                gear_id: rites
+                source_card_id: 38,
+                gear_id: Some(rites)
             })
         );
     }
@@ -914,10 +984,22 @@ mod tests {
         let energy = game.players[0].energy;
         game.gear_conquer_hold(0, id(target));
         resolve_chain(&mut game);
-        game.apply(Action::PlayFromTrash {
-            trash_index: 0,
+        game.apply(Action::SelectCards { indices: vec![0] })
+            .unwrap();
+        assert_eq!(game.players[0].discard, vec![25]);
+        resolve_chain(&mut game);
+        assert!(matches!(
+            game.decision,
+            Some(Decision::PendingPlay { card_id: 25, .. })
+        ));
+        assert!(game.players[0].discard.is_empty());
+        game.apply(Action::FinalizePendingPlay {
             lane: None,
-            target: None,
+            targets: vec![],
+            repeat_targets: vec![],
+            repeat: false,
+            accelerate: false,
+            bonus: false,
         })
         .unwrap();
         assert!(game.players[0].discard.is_empty());
@@ -936,5 +1018,141 @@ mod tests {
         assert!(!game.players[0].gear[0].ready);
         game.apply(Action::EndTurn).unwrap();
         assert!(game.players[0].gear[0].ready);
+    }
+
+    #[test]
+    fn every_colored_seal_adds_its_own_power_without_runes_or_priority_change() {
+        for (card, domain) in [
+            (42, Domain::Chaos),
+            (125, Domain::Calm),
+            (126, Domain::Mind),
+            (127, Domain::Fury),
+            (128, Domain::Body),
+            (129, Domain::Order),
+        ] {
+            let mut game = game();
+            give_power(&mut game, 0, Domain::Mind, 0);
+            let seal = gear(&mut game, 0, card);
+            assert_eq!(game.gear_available_power(0), 1);
+            game.apply(Action::ActivateGear { gear_id: seal }).unwrap();
+            assert_eq!(game.priority(), 0);
+            assert!(game.chain.is_empty());
+            assert_eq!(game.players[0].energy, 0);
+            assert_eq!(game.players[0].total_runes(), 0);
+            let mut expected = [0; 6];
+            expected[domain_index(domain)] = 1;
+            assert_eq!(game.players[0].power_pool, expected);
+            assert_eq!(game.gear_available_power(0), 0);
+            let before = game.players.clone();
+            assert!(game.apply(Action::ActivateGear { gear_id: seal }).is_err());
+            assert_eq!(game.players, before);
+        }
+    }
+
+    #[test]
+    fn conduit_adds_floating_energy_during_payment_and_is_never_counted_as_power() {
+        let mut game = game();
+        give_power(&mut game, 0, Domain::Mind, 0);
+        let conduit = gear(&mut game, 0, 130);
+        assert_eq!(game.gear_available_power(0), 0);
+        let decision = Decision::CounterTax {
+            player: 0,
+            chain_id: 9000,
+            cost: 1,
+        };
+        game.decision = Some(decision.clone());
+        game.apply(Action::ActivateGear { gear_id: conduit })
+            .unwrap();
+        assert_eq!(game.decision, Some(decision));
+        assert_eq!(game.players[0].energy_pool, 1);
+        assert_eq!(game.players[0].energy, 1);
+        assert_eq!(game.players[0].total_runes(), 0);
+        assert_eq!(game.players[0].power_pool, [0; 6]);
+        assert_eq!(game.players[0].any_power, 0);
+        game.pay_energy(0, 1);
+        assert_eq!(game.players[0].energy_pool, 0);
+        assert_eq!(game.players[0].energy, 0);
+    }
+
+    #[test]
+    fn new_resource_gears_cannot_bypass_discard_choices() {
+        for card in 125..=130 {
+            let mut game = game();
+            let resource = gear(&mut game, 0, card);
+            game.decision = Some(Decision::Discard {
+                player: 0,
+                count: 1,
+                draw_after: 1,
+            });
+            let before = game.players.clone();
+            assert!(!game.gear_can_activate(0, resource));
+            assert!(
+                game.apply(Action::ActivateGear { gear_id: resource })
+                    .is_err()
+            );
+            assert_eq!(game.players, before);
+        }
+    }
+
+    #[test]
+    fn ntofo_equip_spends_energy_only_and_grants_shield_after_resolution() {
+        let mut game = game();
+        let target = unit(&mut game, 0, None);
+        let ntofo = gear(&mut game, 0, 124);
+        give_power(&mut game, 0, Domain::Mind, 0);
+        game.players[0].power_pool[domain_index(Domain::Order)] = 1;
+        let before = game.players.clone();
+        assert!(
+            game.apply(Action::Equip {
+                gear_id: ntofo,
+                target
+            })
+            .is_err()
+        );
+        assert_eq!(game.players, before);
+        game.players[0].energy_pool = 1;
+        game.players[0].energy = 1;
+        game.apply(Action::Equip {
+            gear_id: ntofo,
+            target,
+        })
+        .unwrap();
+        assert_eq!(game.players[0].energy, 0);
+        assert_eq!(game.players[0].power_pool[domain_index(Domain::Order)], 1);
+        assert_eq!(game.gear_keywords(id(target)).shield, 0);
+        resolve_chain(&mut game);
+        assert_eq!(game.gear_keywords(id(target)).shield, 2);
+        assert_eq!(game.gear_might_bonus(id(target)), 0);
+    }
+
+    #[test]
+    fn equipment_keyword_grants_stack_and_disappear_on_detachment() {
+        let mut game = game();
+        let target = unit(&mut game, 0, None);
+        game.players[0].units[0].card_id = 104; // Garen: Assault2 + Shield2.
+        for (offset, card_id) in [3, 120, 121, 122, 122, 123, 124].into_iter().enumerate() {
+            game.players[0].gear.push(GearState {
+                id: 1000 + offset as u32,
+                card_id,
+                attached_to: None,
+                ready: true,
+                temporary: false,
+                token: false,
+            });
+        }
+        assert_eq!(game.gear_keywords(id(target)), UnitKeywords::default());
+        for item in &mut game.players[0].gear {
+            item.attached_to = Some(id(target));
+        }
+        let keywords = game.unit_keywords(&game.players[0].units[0]);
+        assert_eq!(keywords.assault, 4);
+        assert_eq!(keywords.shield, 6);
+        assert_eq!(keywords.deflect, 2);
+        assert!(keywords.tank && keywords.ganking);
+        assert!(!keywords.ambush);
+        assert_eq!(game.gear_might_bonus(id(target)), 5); // Boots2 + Shield1 + Hexdrinkers2.
+        game.gear_unit_left_board(0, id(target));
+        assert_eq!(game.gear_keywords(id(target)), UnitKeywords::default());
+        assert_eq!(game.unit_keywords(&game.players[0].units[0]).shield, 2);
     }
 }

@@ -433,7 +433,7 @@ fn response_window_advice(game: &Game, beginner: bool) -> Option<Vec<&'static st
         }
         return Some(match decision {
             Decision::OptionalPlay { .. } => vec![
-                "Decide whether to use this trash-play trigger before it joins the chain. After accepting, choose a legal card and pay its costs when it resolves.",
+                "Accept or decline this trash-play trigger. If accepted, choose its trash target before the ability joins the chain; finalize the card after it resolves.",
                 "Check the trash and your available resources before accepting. Declining here keeps the ability off the chain.",
             ],
             Decision::TokenPlacement { .. } => vec![
@@ -510,6 +510,24 @@ fn response_window_advice(game: &Game, beginner: bool) -> Option<Vec<&'static st
             Decision::LastRites { .. } => vec![
                 "Last Rites lets you play a unit from your trash. Its normal costs still matter; choose an affordable unit or decline.",
                 "A recovered unit can reinforce your next point. Compare that plan with saving the resources for a response.",
+            ],
+            Decision::TrashTarget { .. } => vec![
+                "Choose the card in your trash that this ability will play. The ability enters the chain with that target, so opponents can respond first.",
+                "Check the chosen card's targets and costs now. You will finalize its own choices after the parent ability finishes resolving.",
+            ],
+            Decision::PendingPlay { kind, .. } => vec![
+                match kind {
+                    local_rift::game::InstructedPlayKind::Fizz => {
+                        "Finalize the chosen spell: base energy is waived, but power and additional costs still apply. It recycles after resolving."
+                    }
+                    local_rift::game::InstructedPlayKind::LastRites => {
+                        "Finalize the chosen unit, paying its costs. Choose its destination and any optional costs now, after Last Rites has resolved."
+                    }
+                    local_rift::game::InstructedPlayKind::Matriarch => {
+                        "Play the chosen unit at base. Its base cost is waived; optional costs such as Accelerate are chosen and paid now."
+                    }
+                },
+                "This card has left the trash and is pending. Add resources if needed; finish its choices and payment before ordinary priority resumes.",
             ],
             Decision::ReplaySpell { .. } => vec![
                 "Fizz offers a spell from your trash with energy cost 3 or less. Ignore its energy cost, pay its power, then recycle the played spell.",
@@ -1108,6 +1126,29 @@ mod tests {
                 },
                 Decision::LastRites { player, gear_id: 1 },
                 Decision::ReplaySpell { player },
+                Decision::TrashTarget {
+                    player,
+                    source_card_id: 36,
+                    gear_id: None,
+                },
+                Decision::PendingPlay {
+                    player,
+                    pending_id: 1,
+                    card_id: 133,
+                    kind: local_rift::game::InstructedPlayKind::Fizz,
+                },
+                Decision::PendingPlay {
+                    player,
+                    pending_id: 2,
+                    card_id: 110,
+                    kind: local_rift::game::InstructedPlayKind::LastRites,
+                },
+                Decision::PendingPlay {
+                    player,
+                    pending_id: 3,
+                    card_id: 96,
+                    kind: local_rift::game::InstructedPlayKind::Matriarch,
+                },
                 Decision::GrantFlow { player },
                 Decision::Battlefield { player, lane: 0 },
                 Decision::ReviveUnit { player },
@@ -1120,6 +1161,7 @@ mod tests {
                 Decision::EmpowerHere {
                     player,
                     lane: Some(0),
+                    source_id: None,
                 },
                 Decision::Discard {
                     player,

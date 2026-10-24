@@ -59,6 +59,12 @@ fn all_cards(game: &Game, owner: usize) -> BTreeMap<usize, usize> {
             .chain(p.champion)
             .chain(p.units.iter().filter(|u| !u.token).map(|u| u.card_id))
             .chain(p.gear.iter().filter(|g| !g.token).map(|g| g.card_id))
+            .chain(
+                game.pending_cards()
+                    .iter()
+                    .filter(|card| card.player == owner)
+                    .map(|card| card.card_id),
+            )
             .chain(p.hidden.iter().map(|h| h.card_id))
             .chain(
                 game.chain
@@ -179,7 +185,7 @@ fn all_printed_domains_must_fit_and_a_shared_single_domain_is_not_enough() {
 #[test]
 fn only_actual_champion_tags_qualify_not_yordle_or_ordinary_unit_tags() {
     assert_eq!(eligible_champions(0), vec![0]);
-    assert_eq!(eligible_champions(1), vec![22]);
+    assert_eq!(eligible_champions(1), vec![22, 106]);
     assert_eq!(eligible_champions(2), vec![33]);
     assert_eq!(eligible_champions(3), vec![49]);
     for wrong in [20, 36] {

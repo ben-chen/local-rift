@@ -13,6 +13,9 @@ use crate::legends::{LegendAbility, LegendState, LegendTrigger};
 use crate::rules::{self, Allegiance, CounterKind, OfficialEffect, StaticAbility};
 use std::collections::VecDeque;
 
+#[path = "strategic.rs"]
+mod strategic;
+
 pub const VICTORY_SCORE: u8 = 8;
 pub const BATTLEFIELDS: usize = 2;
 
@@ -20,6 +23,7 @@ pub const BATTLEFIELDS: usize = 2;
 pub enum Difficulty {
     Easy,
     Tactical,
+    Strategic,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -38,6 +42,14 @@ pub enum Target {
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Action {
+    FinalizePendingPlay {
+        lane: Option<usize>,
+        targets: Vec<Target>,
+        repeat_targets: Vec<Target>,
+        repeat: bool,
+        accelerate: bool,
+        bonus: bool,
+    },
     WithPowerPayment {
         action: Box<Action>,
         payment: crate::payment::PowerPayment,
@@ -178,6 +190,11 @@ pub enum Action {
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum ChainAbility {
+    PlayChosen {
+        trash_index: usize,
+        card_id: CardId,
+        kind: InstructedPlayKind,
+    },
     GrantFlowChosen {
         trash_index: usize,
         card_id: CardId,
@@ -197,6 +214,7 @@ pub enum ChainAbility {
         player: usize,
         object_id: Option<u32>,
         lane: Option<usize>,
+        source_id: Option<u32>,
     },
     Equip {
         gear_id: u32,
@@ -219,20 +237,43 @@ pub enum ChainAbility {
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum TriggeredAbility {
-    DestroyGear { gear_id: u32 },
+    DestroyGear {
+        gear_id: u32,
+    },
     Draw(u8),
-    Might { unit_id: u32, amount: i16 },
-    Stun { player: usize, unit_id: u32 },
+    Might {
+        unit_id: u32,
+        amount: i16,
+    },
+    Stun {
+        player: usize,
+        unit_id: u32,
+    },
     Gold,
-    Tokens { might: u8, count: u8 },
+    Tokens {
+        might: u8,
+        count: u8,
+    },
     Xp(u8),
     RevealHandXp,
     GrantFlow,
-    Loot { count: u8, draw: u8 },
-    BurnForMight { unit_id: u32 },
-    LastRites { gear_id: u32 },
-    SwapChoice { unit_id: u32 },
-    EmpowerHere { lane: Option<usize> },
+    Loot {
+        count: u8,
+        draw: u8,
+    },
+    BurnForMight {
+        unit_id: u32,
+    },
+    LastRites {
+        gear_id: u32,
+    },
+    SwapChoice {
+        unit_id: u32,
+    },
+    EmpowerHere {
+        lane: Option<usize>,
+        source_id: Option<u32>,
+    },
 }
 
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
@@ -290,6 +331,17 @@ pub struct Showdown {
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Decision {
+    TrashTarget {
+        player: usize,
+        source_card_id: CardId,
+        gear_id: Option<u32>,
+    },
+    PendingPlay {
+        player: usize,
+        pending_id: u32,
+        card_id: CardId,
+        kind: InstructedPlayKind,
+    },
     BattlefieldOrder {
         player: usize,
         lanes: Vec<usize>,
@@ -355,6 +407,7 @@ pub enum Decision {
     EmpowerHere {
         player: usize,
         lane: Option<usize>,
+        source_id: Option<u32>,
     },
     Legend {
         player: usize,
@@ -414,6 +467,26 @@ enum PendingTriggerEffect {
     },
     Choice(Decision),
     Token(PendingToken),
+    Card(PendingCard),
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum InstructedPlayKind {
+    Fizz,
+    LastRites,
+    Matriarch,
+}
+
+/// A real card moved to the chain by an instruction, awaiting finalization.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct PendingCard {
+    pub id: u32,
+    pub player: usize,
+    pub card_id: CardId,
+    pub kind: InstructedPlayKind,
+    origin_index: usize,
+    origin_flow: bool,
+    origin_targets: Vec<u32>,
 }
 
 /// Tokens created on the chain await finalization after their parent effect.
@@ -453,6 +526,8 @@ impl Decision {
     pub fn player(&self) -> usize {
         match self {
             Self::BattlefieldOrder { player, .. }
+            | Self::TrashTarget { player, .. }
+            | Self::PendingPlay { player, .. }
             | Self::OptionalPlay { player, .. }
             | Self::TokenPlacement { player, .. }
             | Self::ResolutionTargets { player, .. }
@@ -502,6 +577,7 @@ pub struct Unit {
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub struct UnitKeywords {
     pub assault: u8,
+    pub shield: u8,
     pub tank: bool,
     pub backline: bool,
     pub deflect: u8,
@@ -603,6 +679,8 @@ pub struct Game {
     pending_triggers: Vec<PendingTrigger>,
     trigger_batch: u64,
     pending_token: Option<PendingToken>,
+    pending_card: Option<PendingCard>,
+    hidden_play_origins: Vec<(u32, usize)>,
     /// A discard/draw instruction retains its resolving item until its choice
     /// finishes, so the spell cannot enter its own burnout shuffle.
     pending_loot: Option<u32>,
@@ -824,6 +902,8 @@ impl Game {
             pending_triggers: Vec::new(),
             trigger_batch: 0,
             pending_token: None,
+            pending_card: None,
+            hidden_play_origins: Vec::new(),
             pending_loot: None,
             pending_entries: Vec::new(),
             movement_locks: Vec::new(),
@@ -937,13 +1017,25 @@ impl Game {
     }
 
     fn effective_cost(&self, player: usize, card: &CardDef) -> u8 {
-        match card.name {
-            "Rhasa the Sunderer" => card
-                .cost
-                .saturating_sub(self.players[player].discard.len().min(255) as u8),
-            "Noxus Hopeful" if self.cards_played[player] > 0 => card.cost.saturating_sub(2),
-            _ => card.cost,
+        let mut cost = card.cost;
+        for ability in rules::static_abilities(card.id) {
+            match *ability {
+                StaticAbility::TrashEnergyDiscount => {
+                    cost = cost.saturating_sub(self.players[player].discard.len().min(255) as u8);
+                }
+                StaticAbility::LegionEnergyDiscount(amount) if self.cards_played[player] > 0 => {
+                    cost = cost.saturating_sub(amount);
+                }
+                StaticAbility::PerCardEnergyDiscount { amount, minimum } => {
+                    let discount = self.cards_played[player]
+                        .saturating_mul(amount as u16)
+                        .min(255) as u8;
+                    cost = cost.saturating_sub(discount).max(minimum.min(cost));
+                }
+                _ => {}
+            }
         }
+        cost
     }
 
     pub fn movement_locked(&self, player: usize, unit_id: u32) -> bool {
@@ -1044,6 +1136,9 @@ impl Game {
                     StaticAbility::Assault(value) => {
                         keywords.assault = keywords.assault.saturating_add(value)
                     }
+                    StaticAbility::Shield(value) => {
+                        keywords.shield = keywords.shield.saturating_add(value)
+                    }
                     StaticAbility::Deflect(value) => {
                         keywords.deflect = keywords.deflect.saturating_add(value)
                     }
@@ -1062,7 +1157,13 @@ impl Game {
             }
             keywords.accelerate = rules::accelerate_cost(unit.card_id);
         }
-        keywords.ganking |= self.gear_grants_ganking(unit.id);
+        let gear = self.gear_keywords(unit.id);
+        keywords.assault = keywords.assault.saturating_add(gear.assault);
+        keywords.shield = keywords.shield.saturating_add(gear.shield);
+        keywords.deflect = keywords.deflect.saturating_add(gear.deflect);
+        keywords.tank |= gear.tank;
+        keywords.backline |= gear.backline;
+        keywords.ganking |= gear.ganking;
         for (_, value) in self
             .legend
             .iter()
@@ -1106,10 +1207,23 @@ impl Game {
         } else {
             0
         };
+        let shield = if self.showdown.as_ref().is_some_and(|w| {
+            unit.lane == Some(w.lane)
+                && w.combat
+                && self.players[1 - w.attacker]
+                    .units
+                    .iter()
+                    .any(|u| u.id == unit.id)
+        }) {
+            self.unit_keywords(unit).shield as i16
+        } else {
+            0
+        };
         base as i16
             + unit.buff as i16
             + unit.temporary_buff
             + assault
+            + shield
             + if unit.card_id == 24 && self.empowered_units.contains(&unit.id) {
                 1
             } else {
@@ -1176,6 +1290,7 @@ impl Game {
                     | Action::ChooseResolutionGroup { .. }
                     | Action::ChooseBattlefield { .. }
                     | Action::PlaceToken { .. }
+                    | Action::FinalizePendingPlay { .. }
             )
             && !(self.resource_payment_pending()
                 && matches!(
@@ -1202,6 +1317,33 @@ impl Game {
                 | Action::ActivateLegend { .. }
         );
         match action {
+            Action::FinalizePendingPlay {
+                lane,
+                targets,
+                repeat_targets,
+                repeat,
+                accelerate,
+                bonus,
+            } => {
+                if !matches!(self.decision, Some(Decision::PendingPlay { .. })) {
+                    return Err("There is no pending card to finalize.".into());
+                }
+                self.play_from_trash_mode(
+                    usize::MAX,
+                    lane,
+                    targets,
+                    false,
+                    TrashOptions {
+                        play: PlayOptions {
+                            repeat,
+                            accelerate,
+                            bonus,
+                        },
+                        flow: None,
+                    },
+                    repeat_targets,
+                )?;
+            }
             Action::WithPowerPayment { .. } => unreachable!("payment wrapper handled above"),
             Action::PlayFromTrashOptions {
                 trash_index,
@@ -1551,6 +1693,7 @@ impl Game {
             self.decision,
             Some(
                 Decision::ReplaySpell { .. }
+                    | Decision::PendingPlay { .. }
                     | Decision::LastRites { .. }
                     | Decision::ReviveUnit { .. }
                     | Decision::RevivePlay { .. }
@@ -1874,6 +2017,15 @@ impl Game {
         let physical_spell = item.ability.is_none();
         if let Some(ability) = item.ability.clone() {
             match ability {
+                ChainAbility::PlayChosen {
+                    trash_index,
+                    card_id,
+                    kind,
+                } => {
+                    if self.players[item.player].discard.get(trash_index) == Some(&card_id) {
+                        self.queue_card_play(item.player, trash_index, kind);
+                    }
+                }
                 ChainAbility::GrantFlowChosen {
                     trash_index,
                     card_id,
@@ -1909,33 +2061,29 @@ impl Game {
                     card_id,
                 } => {
                     if self.players[item.player].discard.get(trash_index) == Some(&card_id) {
-                        if self.silenced[item.player] {
-                            self.push_log("Matriarch cannot play the chosen unit while card plays are prevented.".into());
-                        } else if rules::accelerate_cost(card_id).is_some() {
-                            self.enqueue_decision(Decision::RevivePlay {
-                                player: item.player,
-                                trash_index,
-                                card_id,
-                            });
-                        } else {
-                            self.remove_from_trash(item.player, trash_index);
-                            self.play_or_queue_targets(item.player, card_id, None, Vec::new());
-                            if let Some(ability) = self.legend_on_offhand_play(item.player) {
-                                self.queue_ability(
-                                    item.player,
-                                    card_id,
-                                    Vec::new(),
-                                    ChainAbility::Legend(ability),
-                                );
-                            }
-                        }
+                        self.queue_card_play(
+                            item.player,
+                            trash_index,
+                            InstructedPlayKind::Matriarch,
+                        );
                     }
                 }
                 ChainAbility::EmpowerObject {
                     player,
                     object_id,
                     lane,
+                    source_id,
                 } => {
+                    if source_id.is_some_and(|id| {
+                        self.unit_ref(Target::Unit {
+                            player: item.player,
+                            unit_id: id,
+                        })
+                        .is_none()
+                    }) {
+                        self.after_resolution();
+                        return Ok(());
+                    }
                     let valid = if let Some(id) = object_id {
                         let target = Target::Unit {
                             player,
@@ -1977,19 +2125,28 @@ impl Game {
                             unit_id,
                         })
                     });
-                    if !loot_finished && (item.card_id != 102 || source.is_some()) {
-                        let lane = if item.card_id == 102 {
+                    let here = rules::token_placement(item.card_id) == rules::TokenPlacement::Here;
+                    if !loot_finished && (!here || source.is_some()) {
+                        let lane = if here {
                             source.unwrap().lane
                         } else {
                             item.lane
                         };
-                        self.resolve_operation(
-                            item.player,
-                            item.card_id,
-                            lane,
-                            item.targets.clone(),
-                            entering,
-                        );
+                        let targets = if let Some(origin) =
+                            entering.and_then(|id| self.hidden_play_origin(id))
+                        {
+                            item.targets
+                                .iter()
+                                .copied()
+                                .filter(|&target| {
+                                    source.is_some()
+                                        && self.hidden_target_allowed(item.card_id, origin, target)
+                                })
+                                .collect()
+                        } else {
+                            item.targets.clone()
+                        };
+                        self.resolve_operation(item.player, item.card_id, lane, targets, entering);
                     }
                 }
                 ChainAbility::Triggered(ability) => {
@@ -2026,19 +2183,28 @@ impl Game {
             {
                 self.modify_might(target, 2, 0);
             }
-            if loot_finished {
-                self.players[item.player].discard.push(item.card_id);
-            } else {
-                self.resolve_play(item.player, item.card_id, item.lane, targets);
+            if !loot_finished {
+                self.push_log(format!(
+                    "{} resolves {}.",
+                    self.players[item.player].name, self.catalog[item.card_id].name
+                ));
+                self.resolve_operation(item.player, item.card_id, item.lane, targets, None);
+                if item.options.repeat {
+                    self.resolve_operation(
+                        item.player,
+                        item.card_id,
+                        item.lane,
+                        item.repeat_targets.clone(),
+                        None,
+                    );
+                }
             }
-            if item.options.repeat && item.card_id == 50 {
-                self.resolve_operation(
-                    item.player,
-                    item.card_id,
-                    item.lane,
-                    item.repeat_targets.clone(),
-                    None,
-                );
+            // A physical spell stays out of trash until every repeated
+            // instruction finishes, including draws that may cause burnout.
+            if matches!(rules::effect(item.card_id), OfficialEffect::ExtraTurn) {
+                self.players[item.player].banish.push(item.card_id);
+            } else {
+                self.players[item.player].discard.push(item.card_id);
             }
         }
         if physical_spell {
@@ -2163,6 +2329,21 @@ impl Game {
 
     fn choose(&mut self, accept: bool) -> Result<(), String> {
         let decision = self.decision.clone().ok_or("There is no pending choice.")?;
+        if matches!(decision, Decision::PendingPlay { .. }) {
+            if accept || !self.can_decline_trash_play() {
+                return Err("Finalize the pending card with legal choices and payment.".into());
+            }
+            let card = self
+                .pending_card
+                .take()
+                .ok_or("The pending card is missing.")?;
+            // CR358.5 undoes a play that cannot finalize, including its move
+            // out of the originating trash. No completed-play trigger occurs.
+            self.restore_failed_card(card);
+            self.decision = None;
+            self.after_resolution();
+            return Ok(());
+        }
         if let Decision::CounterTax { player, cost, .. } = decision
             && accept
             && self.players[player].energy < cost
@@ -2174,6 +2355,7 @@ impl Game {
         if matches!(
             decision,
             Decision::BattlefieldOrder { .. }
+                | Decision::TrashTarget { .. }
                 | Decision::TokenPlacement { .. }
                 | Decision::ResolutionTargets { .. }
                 | Decision::OrderTriggers { .. }
@@ -2240,15 +2422,16 @@ impl Game {
                 gear_id,
             } => {
                 if accept {
-                    self.queue_finalized_ability(
+                    self.decision = Some(Decision::TrashTarget {
                         player,
-                        card_id,
-                        Vec::new(),
-                        ChainAbility::OptionalPlay { gear_id },
-                    );
+                        source_card_id: card_id,
+                        gear_id,
+                    });
                 }
             }
             Decision::BattlefieldOrder { .. }
+            | Decision::TrashTarget { .. }
+            | Decision::PendingPlay { .. }
             | Decision::TokenPlacement { .. }
             | Decision::ResolutionTargets { .. }
             | Decision::OrderTriggers { .. }
@@ -2642,7 +2825,18 @@ impl Game {
         lane: Option<usize>,
         target: Target,
     ) -> bool {
-        if card_id == 58 {
+        if let Some(origin) = self.hidden_play_origin(source_id)
+            && (self
+                .unit_ref(Target::Unit {
+                    player,
+                    unit_id: source_id,
+                })
+                .is_none()
+                || !self.hidden_target_allowed(card_id, origin, target))
+        {
+            return false;
+        }
+        if rules::equipment(card_id).is_some_and(|gear| gear.quick_draw) {
             matches!(target,Target::Unit{player:owner,..} if owner==player)
                 && self.unit_ref(target).is_some()
         } else {
@@ -2659,12 +2853,7 @@ impl Game {
         source_id: u32,
         lane: Option<usize>,
     ) {
-        let possible_power = self.available_power(player, None)
-            + self.players[player]
-                .gear
-                .iter()
-                .filter(|g| g.ready && g.attached_to.is_none() && (g.token || g.card_id == 42))
-                .count() as u8;
+        let possible_power = self.available_power(player, None) + self.gear_available_power(player);
         let exists = self.players.iter().enumerate().any(|(owner, state)| {
             state.units.iter().any(|unit| {
                 let target = Target::Unit {
@@ -2707,7 +2896,7 @@ impl Game {
                 }
                 self.spend_deflect(player, false, &[target])?;
                 self.decision = None;
-                let ability = if card_id == 58 {
+                let ability = if rules::equipment(card_id).is_some_and(|gear| gear.quick_draw) {
                     ChainAbility::Equip {
                         gear_id: source_id,
                         target,
@@ -2744,7 +2933,22 @@ impl Game {
                     self.decision = None;
                 }
             }
-            Decision::EmpowerHere { player, lane } => {
+            Decision::EmpowerHere {
+                player,
+                lane,
+                source_id,
+            } => {
+                if source_id.is_some_and(|id| {
+                    self.unit_ref(Target::Unit {
+                        player,
+                        unit_id: id,
+                    })
+                    .is_none()
+                }) {
+                    self.decision = None;
+                    self.after_resolution();
+                    return Ok(());
+                }
                 let (owner, unit) = if let Some(target) = target {
                     match target {
                         Target::Unit {
@@ -2796,6 +3000,7 @@ impl Game {
                         player: owner,
                         object_id: unit,
                         lane,
+                        source_id,
                     },
                 );
             }
@@ -2883,6 +3088,10 @@ impl Game {
         lane: usize,
         targets: Vec<Target>,
     ) {
+        let source_id = self.next_unit_id;
+        if self.catalog[id].kind == CardKind::Unit {
+            self.hidden_play_origins.push((self.next_unit_id, lane));
+        }
         self.play_or_queue_targets(player, id, Some(lane), targets);
         if self.catalog[id].kind == CardKind::Spell {
             if let Some(item) = self
@@ -2900,6 +3109,7 @@ impl Game {
                 Decision::EmpowerHere {
                     player,
                     lane: Some(lane),
+                    source_id: Some(source_id),
                 },
             );
         }
@@ -2909,6 +3119,12 @@ impl Game {
             self.queue_ability(player, id, Vec::new(), ChainAbility::Legend(ability));
         }
         self.after_resolution();
+    }
+
+    pub fn hidden_play_origin(&self, unit_id: u32) -> Option<usize> {
+        self.hidden_play_origins
+            .iter()
+            .find_map(|&(id, lane)| (id == unit_id).then_some(lane))
     }
 
     pub(crate) fn deflect_cost(&self, actor: usize, targets: &[Target]) -> u8 {
@@ -3012,6 +3228,7 @@ impl Game {
             if item.player == player
                 && let Some(
                     ChainAbility::ReviveChosen { trash_index, .. }
+                    | ChainAbility::PlayChosen { trash_index, .. }
                     | ChainAbility::GrantFlowChosen { trash_index, .. },
                 ) = &mut item.ability
             {
@@ -3082,6 +3299,103 @@ impl Game {
                 }
             }))
             .collect()
+    }
+
+    pub fn pending_cards(&self) -> Vec<PendingCard> {
+        self.pending_card
+            .iter()
+            .cloned()
+            .chain(self.pending_triggers.iter().filter_map(|trigger| {
+                if let PendingTriggerEffect::Card(card) = &trigger.effect {
+                    Some(card.clone())
+                } else {
+                    None
+                }
+            }))
+            .collect()
+    }
+
+    fn queue_card_play(&mut self, player: usize, trash_index: usize, kind: InstructedPlayKind) {
+        // CR354.3: the instruction moves the selected physical card now, but
+        // no child choices, payments, or entry occur inside the parent effect.
+        if self.silenced[player] {
+            return;
+        }
+        let origin_flow = self.temporary_flow[player].contains(&trash_index);
+        let origin_targets = self
+            .chain
+            .iter()
+            .filter_map(|item| {
+                if item.player != player {
+                    return None;
+                }
+                let selected = match &item.ability {
+                    Some(
+                        ChainAbility::PlayChosen { trash_index, .. }
+                        | ChainAbility::ReviveChosen { trash_index, .. }
+                        | ChainAbility::GrantFlowChosen { trash_index, .. },
+                    ) => *trash_index,
+                    _ => return None,
+                };
+                (selected == trash_index).then_some(item.id)
+            })
+            .collect();
+        let card_id = self.remove_from_trash(player, trash_index);
+        self.trigger_batch += 1;
+        let id = self.next_chain_id;
+        self.next_chain_id += 1;
+        let card = PendingCard {
+            id,
+            player,
+            card_id,
+            kind,
+            origin_index: trash_index,
+            origin_flow,
+            origin_targets,
+        };
+        self.pending_triggers.push(PendingTrigger {
+            batch: self.trigger_batch,
+            option: TriggerOption {
+                id,
+                card_id,
+                label: "Pending instructed card play".into(),
+            },
+            player,
+            effect: PendingTriggerEffect::Card(card),
+        });
+        self.trigger_batch += 1;
+    }
+
+    fn restore_failed_card(&mut self, card: PendingCard) {
+        let index = card
+            .origin_index
+            .min(self.players[card.player].discard.len());
+        for item in &mut self.chain {
+            if item.player == card.player
+                && let Some(
+                    ChainAbility::PlayChosen { trash_index, .. }
+                    | ChainAbility::ReviveChosen { trash_index, .. }
+                    | ChainAbility::GrantFlowChosen { trash_index, .. },
+                ) = &mut item.ability
+            {
+                if card.origin_targets.contains(&item.id) {
+                    *trash_index = index;
+                } else if *trash_index != usize::MAX && *trash_index >= index {
+                    *trash_index += 1;
+                }
+            }
+        }
+        for selected in &mut self.temporary_flow[card.player] {
+            if *selected >= index {
+                *selected += 1;
+            }
+        }
+        if card.origin_flow {
+            self.temporary_flow[card.player].push(index);
+        }
+        self.players[card.player]
+            .discard
+            .insert(index, card.card_id);
     }
 
     fn queue_token_play(
@@ -3194,6 +3508,15 @@ impl Game {
         let trigger = self.pending_triggers.remove(index);
         self.trigger_batch += 1;
         match trigger.effect {
+            PendingTriggerEffect::Card(card) => {
+                self.decision = Some(Decision::PendingPlay {
+                    player: card.player,
+                    pending_id: card.id,
+                    card_id: card.card_id,
+                    kind: card.kind,
+                });
+                self.pending_card = Some(card);
+            }
             PendingTriggerEffect::Choice(choice) => self.enqueue_decision(choice),
             PendingTriggerEffect::Token(token) => {
                 if let Some(lane) = token.location {
@@ -3393,6 +3716,28 @@ impl Game {
         Some((unit.lane, if unit.lane.is_none() { player } else { 0 }))
     }
 
+    pub fn trash_target_valid(
+        &self,
+        player: usize,
+        source_card_id: CardId,
+        trash_index: usize,
+    ) -> bool {
+        let Some(&id) = self
+            .players
+            .get(player)
+            .and_then(|p| p.discard.get(trash_index))
+        else {
+            return false;
+        };
+        let card = self.catalog[id];
+        match source_card_id {
+            36 => card.kind == CardKind::Spell && card.cost <= 3,
+            38 => card.kind == CardKind::Unit,
+            45 => card.kind == CardKind::Unit && card.cost <= 3 && card.power_cost <= 1,
+            _ => false,
+        }
+    }
+
     fn select_cards(&mut self, indices: &[usize]) -> Result<(), String> {
         let decision = self
             .decision
@@ -3404,6 +3749,41 @@ impl Game {
             return Err("Choose different cards.".into());
         }
         match decision {
+            Decision::TrashTarget {
+                player,
+                source_card_id,
+                gear_id,
+            } => {
+                let available = (0..self.players[player].discard.len())
+                    .any(|i| self.trash_target_valid(player, source_card_id, i));
+                if (available && indices.len() != 1)
+                    || (!available && !indices.is_empty())
+                    || indices
+                        .first()
+                        .is_some_and(|&i| !self.trash_target_valid(player, source_card_id, i))
+                {
+                    return Err(
+                        "Choose one eligible card in your trash for the triggered ability.".into(),
+                    );
+                }
+                self.decision = None;
+                if let Some(&trash_index) = indices.first() {
+                    self.queue_finalized_ability(
+                        player,
+                        source_card_id,
+                        Vec::new(),
+                        ChainAbility::PlayChosen {
+                            trash_index,
+                            card_id: self.players[player].discard[trash_index],
+                            kind: if gear_id.is_some() {
+                                InstructedPlayKind::LastRites
+                            } else {
+                                InstructedPlayKind::Fizz
+                            },
+                        },
+                    );
+                }
+            }
             Decision::GrantFlow { player } => {
                 let available = self.players[player]
                     .discard
@@ -3509,7 +3889,129 @@ impl Game {
         Ok(())
     }
 
+    // Cancellation depends on existence of a legal explicit choice, never the
+    // heuristic preferred target (which may have unaffordable Deflect).
+    fn pending_play_actions(&self, limit: usize) -> Vec<Action> {
+        let Some(Decision::PendingPlay {
+            player, card_id, ..
+        }) = self.decision
+        else {
+            return Vec::new();
+        };
+        let card = self.catalog[card_id];
+        let (_, mut required) = rules::target_bounds(card_id);
+        if card.kind != CardKind::Spell {
+            required = 0;
+        }
+        if self.is_counter(card_id)
+            || matches!(rules::effect(card_id), OfficialEffect::TemporaryGear)
+        {
+            required = 1;
+        }
+        let mut actions = Vec::new();
+        for lane in [None, Some(0), Some(1)] {
+            let mut groups = vec![Vec::new()];
+            for _ in 0..required {
+                let mut next = Vec::new();
+                for group in groups {
+                    let choices: Vec<Target> = if self.is_counter(card_id) {
+                        self.chain
+                            .iter()
+                            .filter(|item| self.counter_target_valid(player, card_id, item.id))
+                            .map(|item| Target::Spell { chain_id: item.id })
+                            .collect()
+                    } else if matches!(rules::effect(card_id), OfficialEffect::TemporaryGear) {
+                        self.players
+                            .iter()
+                            .enumerate()
+                            .flat_map(|(player, state)| {
+                                state.gear.iter().map(move |gear| Target::Gear {
+                                    player,
+                                    gear_id: gear.id,
+                                })
+                            })
+                            .collect()
+                    } else {
+                        self.players
+                            .iter()
+                            .enumerate()
+                            .flat_map(|(player, state)| {
+                                state.units.iter().map(move |unit| Target::Unit {
+                                    player,
+                                    unit_id: unit.id,
+                                })
+                            })
+                            .filter(|&target| {
+                                self.valid_card_target(player, card_id, lane, target, &group)
+                            })
+                            .collect()
+                    };
+                    for target in choices {
+                        let mut chosen = group.clone();
+                        chosen.push(target);
+                        next.push(chosen);
+                    }
+                }
+                groups = next;
+            }
+            if let Ok(preferred) = self.prepare_targets(player, card_id, lane, &[])
+                && !groups.contains(&preferred)
+            {
+                groups.insert(0, preferred);
+            }
+            for targets in groups {
+                for options in [
+                    PlayOptions::default(),
+                    PlayOptions {
+                        accelerate: true,
+                        ..Default::default()
+                    },
+                    PlayOptions {
+                        repeat: true,
+                        ..Default::default()
+                    },
+                    PlayOptions {
+                        bonus: true,
+                        ..Default::default()
+                    },
+                ] {
+                    let action = Action::FinalizePendingPlay {
+                        lane,
+                        repeat_targets: if options.repeat {
+                            targets.clone()
+                        } else {
+                            Vec::new()
+                        },
+                        targets: targets.clone(),
+                        repeat: options.repeat,
+                        accelerate: options.accelerate,
+                        bonus: options.bonus,
+                    };
+                    if self.clone().apply(action.clone()).is_ok() {
+                        actions.push(action);
+                        if actions.len() >= limit {
+                            return actions;
+                        }
+                    }
+                }
+            }
+        }
+        actions
+    }
+
     pub fn can_decline_trash_play(&self) -> bool {
+        if matches!(self.decision, Some(Decision::PendingPlay { .. })) {
+            // Add-resource activations remain available during payment. Test
+            // the fully generated resources as well as the current pools.
+            let mut probe = self.clone();
+            let player = probe.priority();
+            let gear_ids: Vec<_> = probe.players[player].gear.iter().map(|g| g.id).collect();
+            for gear_id in gear_ids {
+                let _ = probe.apply(Action::ActivateGear { gear_id });
+            }
+            let _ = probe.apply(Action::ActivateLegend { target: None });
+            return probe.pending_play_actions(1).is_empty();
+        }
         if matches!(self.decision, Some(Decision::RevivePlay { .. })) {
             return false;
         }
@@ -3587,7 +4089,7 @@ impl Game {
                 source: FlowSource::Printed,
                 energy: cost.energy,
                 power: cost.any_power,
-                colored: false,
+                colored: cost.colored,
             });
         }
         choices
@@ -3631,12 +4133,41 @@ impl Game {
         let flow_source = options.flow;
         let options = options.play;
         let player = self.priority();
-        let id = *self.players[player]
-            .discard
-            .get(trash_index)
-            .ok_or("Choose a card in your trash.")?;
+        let pending = if matches!(self.decision, Some(Decision::PendingPlay { .. })) {
+            if trash_index != usize::MAX {
+                return Err("Finalize the already selected pending card.".into());
+            }
+            Some(
+                self.pending_card
+                    .clone()
+                    .ok_or("The pending card is missing.")?,
+            )
+        } else {
+            None
+        };
+        let id = if let Some(card) = &pending {
+            card.card_id
+        } else {
+            *self.players[player]
+                .discard
+                .get(trash_index)
+                .ok_or("Choose a card in your trash.")?
+        };
         let card = self.catalog[id];
-        let decision = self.decision.clone();
+        let decision = pending.as_ref().map_or_else(
+            || self.decision.clone(),
+            |card| {
+                Some(match card.kind {
+                    InstructedPlayKind::Fizz => Decision::ReplaySpell { player },
+                    InstructedPlayKind::LastRites => Decision::LastRites { player, gear_id: 0 },
+                    InstructedPlayKind::Matriarch => Decision::RevivePlay {
+                        player,
+                        trash_index,
+                        card_id: id,
+                    },
+                })
+            },
+        );
         let free_energy = matches!(decision, Some(Decision::ReplaySpell { .. }));
         let selecting_revive = matches!(decision, Some(Decision::ReviveUnit { .. }));
         let free_all = selecting_revive || matches!(decision, Some(Decision::RevivePlay { .. }));
@@ -3679,8 +4210,27 @@ impl Game {
             None if flow.is_some() => {}
             _ => return Err("This card cannot currently be played from the trash.".into()),
         }
+        if selecting_revive {
+            if !provided.is_empty() || !repeat_provided.is_empty() {
+                return Err("Choose only the trash unit now; its play choices occur after the trigger resolves.".into());
+            }
+            self.decision = None;
+            self.queue_finalized_ability(
+                player,
+                45,
+                Vec::new(),
+                ChainAbility::ReviveChosen {
+                    trash_index,
+                    card_id: id,
+                },
+            );
+            self.after_resolution();
+            return Ok(());
+        }
         let mut probe = self.clone();
-        probe.remove_from_trash(player, trash_index);
+        if pending.is_none() {
+            probe.remove_from_trash(player, trash_index);
+        }
         probe.decision = None;
         probe.pending_decisions.clear();
         let original_chain = probe.chain.clone();
@@ -3722,7 +4272,9 @@ impl Game {
             for choice in &flows {
                 let cost = (choice.energy, choice.power, choice.colored);
                 let mut probe = self.clone();
-                probe.remove_from_trash(player, trash_index);
+                if pending.is_none() {
+                    probe.remove_from_trash(player, trash_index);
+                }
                 if probe
                     .pay_trash_cost(player, id, cost, extra, &all_targets)
                     .is_ok()
@@ -3733,24 +4285,17 @@ impl Game {
             }
         }
         let mut cost_probe = self.clone();
-        cost_probe.remove_from_trash(player, trash_index);
+        if pending.is_none() {
+            cost_probe.remove_from_trash(player, trash_index);
+        }
         cost_probe.pay_trash_cost(player, id, base, extra, &all_targets)?;
         self.required_trash_play = false;
         self.decision = None;
-        if selecting_revive {
-            self.queue_finalized_ability(
-                player,
-                45,
-                Vec::new(),
-                ChainAbility::ReviveChosen {
-                    trash_index,
-                    card_id: id,
-                },
-            );
-            self.after_resolution();
-            return Ok(());
+        if pending.is_some() {
+            self.pending_card = None;
+        } else {
+            self.remove_from_trash(player, trash_index);
         }
-        self.remove_from_trash(player, trash_index);
         self.pay_trash_cost(player, id, base, extra, &all_targets)
             .expect("validated trash costs");
         let entering = self.next_unit_id;
@@ -3835,6 +4380,27 @@ impl Game {
         if let Some(decision) = &self.decision {
             let player = decision.player();
             let mut actions = match decision {
+                Decision::TrashTarget {
+                    player,
+                    source_card_id,
+                    ..
+                } => {
+                    let mut choices: Vec<_> = (0..self.players[*player].discard.len())
+                        .filter(|&i| self.trash_target_valid(*player, *source_card_id, i))
+                        .map(|i| Action::SelectCards { indices: vec![i] })
+                        .collect();
+                    if choices.is_empty() {
+                        choices.push(Action::SelectCards {
+                            indices: Vec::new(),
+                        });
+                    }
+                    choices
+                }
+                Decision::PendingPlay { .. } => {
+                    let mut choices = self.pending_play_actions(32);
+                    choices.push(Action::Choose { accept: false });
+                    choices
+                }
                 Decision::BattlefieldOrder { lanes, .. } => lanes
                     .iter()
                     .map(|&lane| Action::ChooseBattlefield { lane })
@@ -4108,7 +4674,7 @@ impl Game {
             .iter()
             .any(|&id| self.validate_play(id, None, None).is_ok())
         {
-            return "Play a card from your hand. New units arrive exhausted and ready next turn."
+            return "Play a card from your hand. Units normally enter exhausted unless their text says otherwise."
                 .into();
         }
         "End your turn when finished. Holding a battlefield at your next turn scores again.".into()
@@ -4116,13 +4682,10 @@ impl Game {
 
     pub fn unit_name(&self, unit: &Unit) -> String {
         if unit.token {
-            match unit.card_id {
-                34 => "Bird token",
-                48 => "Tentacle token",
-                54 => "Mech token",
-                _ => "Recruit token",
-            }
-            .into()
+            format!(
+                "{} token",
+                rules::token_spec(unit.card_id).map_or("Recruit", |spec| spec.name)
+            )
         } else {
             self.catalog[unit.card_id].name.to_string()
         }
@@ -4240,7 +4803,9 @@ impl Game {
         automatic: bool,
     ) -> Result<Vec<Target>, String> {
         // Targeted play triggers choose after the permanent is on the board.
-        if matches!(id, 23 | 27 | 58 | 99) {
+        if rules::on_play_requires_target(id)
+            || rules::equipment(id).is_some_and(|gear| gear.quick_draw)
+        {
             if !automatic && !provided.is_empty() {
                 return Err(
                     "Choose this permanent's triggered-ability target after it enters.".into(),
@@ -4656,7 +5221,7 @@ impl Game {
             self.players[player].units.last_mut().unwrap().lane = lane;
             let legion_active = !rules::static_abilities(id).contains(&StaticAbility::LegionOnPlay)
                 || self.cards_played[player] >= 2;
-            if legion_active && matches!(id, 23 | 27 | 99) {
+            if legion_active && rules::on_play_requires_target(id) {
                 self.request_on_play_target(player, id, entering, lane);
             } else if legion_active
                 && rules::effect(id) != OfficialEffect::None
@@ -4932,8 +5497,12 @@ impl Game {
                         player,
                         id,
                         might,
-                        if id == 102 { Some(lane) } else { None },
-                        false,
+                        match rules::token_placement(id) {
+                            rules::TokenPlacement::Default => None,
+                            rules::TokenPlacement::Base => Some(None),
+                            rules::TokenPlacement::Here => Some(lane),
+                        },
+                        rules::token_is_gear(id),
                     );
                 }
             }
@@ -4975,8 +5544,12 @@ impl Game {
             TriggeredAbility::SwapChoice { unit_id } => {
                 self.enqueue_decision(Decision::SwapUnit { player, unit_id })
             }
-            TriggeredAbility::EmpowerHere { lane } => {
-                self.enqueue_decision(Decision::EmpowerHere { player, lane })
+            TriggeredAbility::EmpowerHere { lane, source_id } => {
+                self.enqueue_decision(Decision::EmpowerHere {
+                    player,
+                    lane,
+                    source_id,
+                })
             }
             TriggeredAbility::RevealHandXp => {
                 self.players[player].xp = self.players[player].xp.saturating_add(1);
@@ -5062,7 +5635,7 @@ impl Game {
             id,
             card_id,
             lane: None,
-            ready: false,
+            ready: !token && rules::static_abilities(card_id).contains(&StaticAbility::EntersReady),
             damage: 0,
             buff,
             temporary_buff: 0,
@@ -5237,6 +5810,7 @@ impl Game {
                     if item.player == player
                         && let Some(
                             ChainAbility::ReviveChosen { trash_index, .. }
+                            | ChainAbility::PlayChosen { trash_index, .. }
                             | ChainAbility::GrantFlowChosen { trash_index, .. },
                         ) = &mut item.ability
                     {
@@ -5630,6 +6204,8 @@ impl Game {
                 68 => Some(TriggeredAbility::Draw(1)),
                 34 => Some(TriggeredAbility::Tokens { count: 1, might: 1 }),
                 54 => Some(TriggeredAbility::Tokens { count: 2, might: 3 }),
+                149 => Some(TriggeredAbility::Gold),
+                150 => Some(TriggeredAbility::Tokens { count: 1, might: 1 }),
                 15 => Some(TriggeredAbility::RevealHandXp),
                 _ => None,
             };
@@ -5753,6 +6329,14 @@ impl Game {
     }
 
     fn choose_ai_action(&self) -> Action {
+        if self.difficulty == Difficulty::Strategic {
+            self.choose_strategic_action()
+        } else {
+            self.choose_heuristic_action()
+        }
+    }
+
+    fn choose_heuristic_action(&self) -> Action {
         let player = self.priority();
         let enemy = 1 - player;
         if let Some(decision) = &self.decision {
@@ -5833,13 +6417,14 @@ impl Game {
             }
         }
         for (hand_index, &id) in self.players[player].hand.iter().enumerate() {
-            if rules::accelerate_cost(id).is_some() || matches!(id, 50 | 37 | 29) {
+            if rules::accelerate_cost(id).is_some() || rules::repeat_cost(id).is_some() || id == 29
+            {
                 let action = Action::PlayCardOptions {
                     hand_index,
                     lane: None,
                     targets: Vec::new(),
                     repeat_targets: Vec::new(),
-                    repeat: matches!(id, 50 | 37),
+                    repeat: rules::repeat_cost(id).is_some(),
                     accelerate: rules::accelerate_cost(id).is_some(),
                     bonus: id == 29,
                 };
@@ -5898,7 +6483,7 @@ impl Game {
                     let ours = self.lane_count(player, lane);
                     let theirs = self.lane_count(enemy, lane);
                     let can_win = theirs == 0 || friendly + base_power > opposing;
-                    if self.difficulty == Difficulty::Tactical && !can_win {
+                    if self.difficulty != Difficulty::Easy && !can_win {
                         return None;
                     }
                     let score = if theirs == 0 && ours == 0 {
@@ -5950,7 +6535,7 @@ impl Game {
 
     fn ai_card_score(&self, id: CardId) -> i32 {
         let card = self.catalog[id];
-        let tactical = self.difficulty == Difficulty::Tactical;
+        let tactical = self.difficulty != Difficulty::Easy;
         if self.is_counter(id) {
             return if self.chain.iter().any(|item| {
                 item.player != self.priority()
@@ -7289,6 +7874,7 @@ mod tests {
         game.decision = Some(Decision::EmpowerHere {
             player: 0,
             lane: Some(0),
+            source_id: None,
         });
         game.apply(Action::ChooseTarget {
             target: Some(Target::Unit {
@@ -8229,20 +8815,29 @@ mod tests {
         declined.apply(Action::Choose { accept: false }).unwrap();
         assert!(declined.chain.is_empty());
         g.apply(Action::Choose { accept: true }).unwrap();
+        assert!(matches!(g.decision, Some(Decision::TrashTarget { .. })));
+        g.apply(Action::SelectCards { indices: vec![0] }).unwrap();
         assert!(matches!(
             g.chain.last().unwrap().ability,
-            Some(ChainAbility::OptionalPlay { gear_id: None })
+            Some(ChainAbility::PlayChosen {
+                kind: InstructedPlayKind::Fizz,
+                card_id: 48,
+                ..
+            })
         ));
         assert!(g.decision.is_none());
         g.apply(Action::Pass).unwrap();
         g.apply(Action::Pass).unwrap();
-        assert!(matches!(g.decision, Some(Decision::ReplaySpell { .. })));
+        assert!(matches!(g.decision, Some(Decision::PendingPlay { .. })));
         assert!(!g.can_decline_trash_play());
         assert!(g.apply(Action::Choose { accept: false }).is_err());
-        g.apply(Action::PlayFromTrash {
-            trash_index: 0,
+        g.apply(Action::FinalizePendingPlay {
             lane: None,
-            target: None,
+            targets: vec![],
+            repeat_targets: vec![],
+            repeat: false,
+            accelerate: false,
+            bonus: false,
         })
         .unwrap();
         assert!(!g.required_trash_play);

@@ -35,6 +35,7 @@ enum Selection {
     Gear(u32),
     Legend,
     Trash(usize),
+    Pending(u32),
     Hidden(u32),
 }
 #[derive(Clone, Copy, PartialEq)]
@@ -49,8 +50,10 @@ enum Tray {
 struct TokenPreview {
     name: String,
     might: u8,
+    gear: bool,
     rules: String,
 }
+const GOLD_RULES: &str = "Exhaust and kill this Gold to add 1 Any power. This resource ability can be used when you have priority, including during a pending payment, and cannot be reacted to.";
 #[derive(Clone)]
 enum DragSource {
     Hand { index: usize, card_id: usize },
@@ -84,7 +87,7 @@ struct Preferences {
     coach: bool,
     advanced: bool,
     animation: bool,
-    tactical: bool,
+    difficulty: Difficulty,
     exact_payment: bool,
     use_custom: [bool; 2],
     wins: u32,
@@ -100,6 +103,9 @@ impl Preferences {
     }
     fn load() -> Self {
         let content = std::fs::read_to_string(Self::path()).unwrap_or_default();
+        Self::from_text(&content)
+    }
+    fn from_text(content: &str) -> Self {
         let value = |key: &str| {
             content
                 .lines()
@@ -109,7 +115,13 @@ impl Preferences {
             coach: value("coach") != Some("false"),
             advanced: value("advanced") == Some("true"),
             animation: value("animation") != Some("false"),
-            tactical: value("tactical") == Some("true"),
+            difficulty: match value("difficulty") {
+                Some("easy") => Difficulty::Easy,
+                Some("tactical") => Difficulty::Tactical,
+                Some("strategic") => Difficulty::Strategic,
+                _ if value("tactical") == Some("true") => Difficulty::Tactical,
+                _ => Difficulty::Easy,
+            },
             exact_payment: value("exact_payment") == Some("true"),
             use_custom: [
                 value("custom_you") == Some("true"),
@@ -119,26 +131,30 @@ impl Preferences {
             losses: value("losses").and_then(|v| v.parse().ok()).unwrap_or(0),
         }
     }
+    fn to_text(&self) -> String {
+        format!(
+            "coach={}\nadvanced={}\nanimation={}\ndifficulty={}\nexact_payment={}\ncustom_you={}\ncustom_ai={}\nwins={}\nlosses={}\n",
+            self.coach,
+            self.advanced,
+            self.animation,
+            match self.difficulty {
+                Difficulty::Easy => "easy",
+                Difficulty::Tactical => "tactical",
+                Difficulty::Strategic => "strategic",
+            },
+            self.exact_payment,
+            self.use_custom[0],
+            self.use_custom[1],
+            self.wins,
+            self.losses
+        )
+    }
     fn save(&self) {
         let p = Self::path();
         if let Some(parent) = p.parent() {
             let _ = std::fs::create_dir_all(parent);
         }
-        let _ = std::fs::write(
-            p,
-            format!(
-                "coach={}\nadvanced={}\nanimation={}\ntactical={}\nexact_payment={}\ncustom_you={}\ncustom_ai={}\nwins={}\nlosses={}\n",
-                self.coach,
-                self.advanced,
-                self.animation,
-                self.tactical,
-                self.exact_payment,
-                self.use_custom[0],
-                self.use_custom[1],
-                self.wins,
-                self.losses
-            ),
-        );
+        let _ = std::fs::write(p, self.to_text());
     }
 }
 struct App {
@@ -240,11 +256,7 @@ impl App {
                 }
             }),
             seed(),
-            if prefs.tactical {
-                Difficulty::Tactical
-            } else {
-                Difficulty::Easy
-            },
+            prefs.difficulty,
             true,
         )
         .expect("saved custom decks were validated on load");
@@ -328,11 +340,7 @@ impl App {
             [self.player_deck, self.opponent_deck],
             self.active_custom_decks(),
             seed(),
-            if self.prefs.tactical {
-                Difficulty::Tactical
-            } else {
-                Difficulty::Easy
-            },
+            self.prefs.difficulty,
             true,
         );
         let mut game = match candidate {
@@ -941,6 +949,7 @@ impl App {
                         self.hover_token_candidate = Some(TokenPreview {
                             name: unit_name.clone(),
                             might: self.game.unit_might(unit),
+                            gear: false,
                             rules: if local_rift::rules::token_spec(card_id)
                                 .is_some_and(|spec| spec.deflect)
                             {
@@ -1092,7 +1101,10 @@ impl App {
                             i + 1
                         ));
                     }
-                } else if matches!(self.selection, Some(Selection::Trash(_))) {
+                } else if matches!(
+                    self.selection,
+                    Some(Selection::Trash(_) | Selection::Pending(_))
+                ) {
                     self.destination = Some(i);
                     self.notify(format!(
                         "Destination: field {}. Choose targets, then Play.",
@@ -1474,6 +1486,29 @@ impl App {
             self.selection_panel();
             return;
         }
+        if let Decision::PendingPlay { pending_id, .. } = decision {
+            if self.selection != Some(Selection::Pending(pending_id)) {
+                self.selection = Some(Selection::Pending(pending_id));
+                self.options = PlayOptions::default();
+                self.flow_source = None;
+                self.targets.clear();
+                self.repeat_targets.clear();
+                self.editing_repeat = false;
+                self.destination = None;
+            }
+            self.selection_panel();
+            if self.game.can_decline_trash_play()
+                && self.ui.button(
+                    Rect::new(1178.0, 562.0, 212.0, 26.0),
+                    "Cannot play · return to trash",
+                    false,
+                    true,
+                )
+            {
+                self.action(Action::Choose { accept: false });
+            }
+            return;
+        }
         if let Decision::RevivePlay { trash_index, .. } = decision {
             if self.selection != Some(Selection::Trash(trash_index)) {
                 self.selection = Some(Selection::Trash(trash_index));
@@ -1603,8 +1638,9 @@ impl App {
             return;
         }
         let (title,body)=match &decision{
-            Decision::CombatDamage{..}|Decision::TokenPlacement{..}|Decision::BattlefieldOrder{..}|Decision::RevivePlay{..}=>unreachable!(),
-            Decision::OptionalPlay{card_id,..}=>("Use this triggered ability?",format!("{} offers a play from your trash. Accept to put the ability on the chain, or decline now. After accepting, choose a legal payable card when it resolves.",self.game.catalog[*card_id].name)),
+            Decision::CombatDamage{..}|Decision::TokenPlacement{..}|Decision::BattlefieldOrder{..}|Decision::RevivePlay{..}|Decision::PendingPlay{..}=>unreachable!(),
+            Decision::TrashTarget{..}=>("Choose a trash target","Choose an eligible card below before this ability enters the chain. Opponents may respond before the chosen card is played.".into()),
+            Decision::OptionalPlay{card_id,..}=>("Use this triggered ability?",format!("{} offers a play from your trash. Accept and choose the ability's target, or decline now. Choose the card's own targets and costs after the ability resolves.",self.game.catalog[*card_id].name)),
             Decision::ResolutionTargets{..}=>("Choose the location", "Responses separated your targets. Choose which legal group below this spell should affect.".into()),
             Decision::OrderTriggers{..}=>("Order your triggers", "Choose which ability to put on the chain next. The last ability placed will resolve first. Pending triggers cannot be countered yet.".into()),
             Decision::OnPlayTarget{card_id,..}=>("Choose its target",format!("{} has entered play. Choose a highlighted unit for its ability, on the board or in the Board tab.",self.game.catalog[*card_id].name)),
@@ -1613,7 +1649,7 @@ impl App {
             Decision::Battlefield{..}=>("Sunken Temple","You conquered with a Mighty unit. Pay 1 energy to draw a card?".into()),
             Decision::ReviveUnit{..}=>("Return to the fight","Choose a unit costing at most 3 energy and 1 power from your trash, or skip. The ability plays it at base when it resolves.".into()),
             Decision::SwapUnit{..}=>("Tideturner","Click another friendly unit at a different location to swap places, or skip. This movement does not exhaust either unit.".into()),
-            Decision::EmpowerHere{..}=>("Scrapheap's gift","Click a unit at Scrapheap's location to empower it, empower your legend, or skip.".into()),
+            Decision::EmpowerHere{..}=>("Empower here","Choose a unit at this location or your legend to empower for this turn, or skip.".into()),
             Decision::Predict{card_id,..}=>("Predict",format!("Top card: {}. Recycle it to the bottom, or keep it on top?",self.game.catalog[*card_id].name)),
             Decision::CounterTax{cost,..}=>("Keep your spell?",format!("Pay {cost} energy, or let Hard Bargain counter your spell.")),
             Decision::Legend{trigger,..}=>match trigger{LegendTrigger::IreliaChoose{..}=>("Blade Dancer", "Pay 1 power and exhaust your legend to ready the chosen unit? This ability can be responded to.".into()),LegendTrigger::IreliaConquer=>("Dance again?","Pay 1 energy to ready your legend after conquering?".into())},
@@ -1702,7 +1738,9 @@ impl App {
                 Rect::new(1178.0, 531.0, 212.0, 31.0),
                 if matches!(
                     decision,
-                    Decision::Sabotage { .. } | Decision::GrantFlow { .. }
+                    Decision::Sabotage { .. }
+                        | Decision::GrantFlow { .. }
+                        | Decision::TrashTarget { .. }
                 ) {
                     "Continue without a target"
                 } else {
@@ -1721,12 +1759,20 @@ impl App {
                         .discard
                         .iter()
                         .any(|id| self.game.catalog[*id].kind == CardKind::Spell),
+                    Decision::TrashTarget {
+                        player,
+                        source_card_id,
+                        ..
+                    } => !(0..self.game.players[player].discard.len())
+                        .any(|index| self.game.trash_target_valid(player, source_card_id, index)),
                     _ => true,
                 },
             ) {
                 if matches!(
                     decision,
-                    Decision::Sabotage { .. } | Decision::GrantFlow { .. }
+                    Decision::Sabotage { .. }
+                        | Decision::GrantFlow { .. }
+                        | Decision::TrashTarget { .. }
                 ) {
                     self.action(Action::SelectCards { indices: vec![] });
                 } else if matches!(decision, Decision::SwapUnit { .. }) {
@@ -1741,6 +1787,12 @@ impl App {
         match self.selection {
             Some(Selection::Hand(index)) => self.game.players[0].hand.get(index).copied(),
             Some(Selection::Trash(index)) => self.game.players[0].discard.get(index).copied(),
+            Some(Selection::Pending(id)) => self
+                .game
+                .pending_cards()
+                .iter()
+                .find(|card| card.id == id && card.player == 0)
+                .map(|card| card.card_id),
             Some(Selection::Champion) => self.game.players[0].champion,
             Some(Selection::Hidden(id)) => self.game.players[0]
                 .hidden
@@ -1819,12 +1871,16 @@ impl App {
     }
     fn targeting_selection(&self) -> bool {
         match self.selection {
-            Some(Selection::Hand(i)) => self.game.players[0]
-                .hand
-                .get(i)
-                .is_some_and(|id| self.game.catalog[*id].kind != CardKind::Unit && *id != 58),
+            Some(Selection::Hand(i)) => self.game.players[0].hand.get(i).is_some_and(|id| {
+                self.game.catalog[*id].kind != CardKind::Unit
+                    && !local_rift::rules::on_play_requires_target(*id)
+            }),
             Some(
-                Selection::Trash(_) | Selection::Hidden(_) | Selection::Gear(_) | Selection::Legend,
+                Selection::Trash(_)
+                | Selection::Pending(_)
+                | Selection::Hidden(_)
+                | Selection::Gear(_)
+                | Selection::Legend,
             ) => true,
             _ => false,
         }
@@ -1921,6 +1977,7 @@ impl App {
                     self.hover_token_candidate = Some(TokenPreview {
                         name: self.game.unit_name(unit),
                         might: self.game.unit_might(unit),
+                        gear: false,
                         rules: if local_rift::rules::token_spec(unit.card_id)
                             .is_some_and(|spec| spec.deflect)
                         {
@@ -2092,6 +2149,23 @@ impl App {
                     self.game.gear_name(gear),
                     self.selection == Some(Selection::Gear(gear.id)),
                 );
+                if gear.is_gold() {
+                    self.ui
+                        .rect(Rect::new(r.x + 2.0, r.y + 2.0, r.w - 4.0, 96.0), BG);
+                    self.ui
+                        .diamond(vec2(r.x + r.w / 2.0, r.y + 47.0), 26.0, GOLD);
+                    self.ui
+                        .rect(Rect::new(r.x + 3.0, r.y + 124.0, r.w - 6.0, 50.0), PANEL);
+                    self.ui
+                        .text("Gear token", r.x + 9.0, r.y + 140.0, 9.0, GOLD);
+                    self.ui.text(
+                        "Exhaust + kill: 1 Any power",
+                        r.x + 9.0,
+                        r.y + 161.0,
+                        8.5,
+                        MUTED,
+                    );
+                }
                 self.ui.text(
                     if gear.attached_to.is_some() {
                         "ATTACHED"
@@ -2119,9 +2193,21 @@ impl App {
                 }
                 if self.ui.hover(r) {
                     self.hover_candidate = Some(gear.card_id);
+                    if gear.is_gold() {
+                        self.hover_token_candidate = Some(TokenPreview {
+                            name: "Gold".into(),
+                            might: 0,
+                            gear: true,
+                            rules: GOLD_RULES.into(),
+                        });
+                    }
                 }
                 if self.ui.hover(r) && self.ui.secondary_pressed() {
-                    self.inspect = Some(gear.card_id);
+                    if gear.is_gold() {
+                        self.notify(GOLD_RULES);
+                    } else {
+                        self.inspect = Some(gear.card_id);
+                    }
                 }
             }
             self.tray_scroll(gears.len(), 4);
@@ -2340,6 +2426,70 @@ impl App {
             self.tray_scroll(options.len(), 6);
             return true;
         }
+        if let Decision::PendingPlay {
+            pending_id,
+            card_id,
+            ..
+        } = decision
+        {
+            self.ui
+                .text("Finalize the chosen card", 780.0, 671.0, 9.0, GOLD);
+            let r = self.tile(card_id, 0, self.game.catalog[card_id].name, true);
+            if self.ui.clicked(r) {
+                self.selection = Some(Selection::Pending(pending_id));
+            }
+            if self.ui.hover(r) {
+                self.hover_candidate = Some(card_id);
+                if self.ui.secondary_pressed() {
+                    self.inspect = Some(card_id);
+                }
+            }
+            return true;
+        }
+        if let Decision::TrashTarget {
+            player,
+            source_card_id,
+            ..
+        } = decision
+        {
+            let choices: Vec<_> = self.game.players[player]
+                .discard
+                .iter()
+                .copied()
+                .enumerate()
+                .filter(|(index, _)| self.game.trash_target_valid(player, source_card_id, *index))
+                .collect();
+            self.ui
+                .text("Choose the ability's trash target", 780.0, 671.0, 9.0, GOLD);
+            self.hand_scroll = self.hand_scroll.min(choices.len().saturating_sub(6));
+            for (slot, (index, card_id)) in
+                choices.iter().skip(self.hand_scroll).take(6).enumerate()
+            {
+                let r = self.tile(*card_id, slot, self.game.catalog[*card_id].name, false);
+                if self.ui.clicked(r) {
+                    self.action(Action::SelectCards {
+                        indices: vec![*index],
+                    });
+                }
+                if self.ui.hover(r) {
+                    self.hover_candidate = Some(*card_id);
+                    if self.ui.secondary_pressed() {
+                        self.inspect = Some(*card_id);
+                    }
+                }
+            }
+            if choices.is_empty() {
+                self.ui.title(
+                    "No eligible cards in your trash.",
+                    270.0,
+                    757.0,
+                    23.0,
+                    MUTED,
+                );
+            }
+            self.tray_scroll(choices.len(), 6);
+            return true;
+        }
         if matches!(
             decision,
             Decision::ReviveUnit { .. } | Decision::RevivePlay { .. }
@@ -2515,30 +2665,26 @@ impl App {
         self.ui
             .line(vec2(1178.0, 252.0), vec2(1390.0, 252.0), 1.0, LINE);
         self.ui.text("OPPONENT", 1178.0, 278.0, 10.0, MUTED);
-        if self.ui.button(
-            Rect::new(1178.0, 294.0, 101.0, 36.0),
-            "Relaxed",
-            !self.prefs.tactical,
-            true,
-        ) {
-            self.prefs.tactical = false;
-            self.prefs.save();
-        }
-        if self.ui.button(
-            Rect::new(1287.0, 294.0, 103.0, 36.0),
-            "Tactical",
-            self.prefs.tactical,
-            true,
-        ) {
-            self.prefs.tactical = true;
-            self.prefs.save();
+        for (index, difficulty) in [
+            Difficulty::Easy,
+            Difficulty::Tactical,
+            Difficulty::Strategic,
+        ]
+        .into_iter()
+        .enumerate()
+        {
+            if self.ui.button(
+                Rect::new(1178.0 + index as f32 * 73.0, 294.0, 66.0, 36.0),
+                difficulty_label(difficulty),
+                self.prefs.difficulty == difficulty,
+                true,
+            ) {
+                self.prefs.difficulty = difficulty;
+                self.prefs.save();
+            }
         }
         self.ui.wrapped(
-            if self.prefs.tactical {
-                "Plans trades and protects points. A little more room to grow."
-            } else {
-                "Simple, forgiving choices. Perfect for your first few matches."
-            },
+            difficulty_description(self.prefs.difficulty),
             1178.0,
             352.0,
             210.0,
@@ -3361,7 +3507,11 @@ impl App {
             self.ui
                 .title(&token.name, r.x + 18.0, r.y + 139.0, 23.0, TEXT);
             self.ui.bold(
-                &format!("{} CURRENT MIGHT · CREATED UNIT", token.might),
+                &if token.gear {
+                    "CREATED GEAR · RESOURCE ABILITY".into()
+                } else {
+                    format!("{} CURRENT MIGHT · CREATED UNIT", token.might)
+                },
                 r.x + 18.0,
                 r.y + 172.0,
                 11.0,
@@ -3907,11 +4057,7 @@ impl App {
             &format!(
                 "TURN {:02}  ·  {} AI",
                 self.game.turn,
-                if self.prefs.tactical {
-                    "TACTICAL"
-                } else {
-                    "RELAXED"
-                }
+                difficulty_label(self.game.difficulty).to_uppercase()
             ),
             1178.0,
             136.0,
@@ -4209,6 +4355,7 @@ impl App {
             }
             selection @ (Some(Selection::Hand(_))
             | Some(Selection::Trash(_))
+            | Some(Selection::Pending(_))
             | Some(Selection::Champion)) => {
                 let index = match selection {
                     Some(Selection::Hand(i)) | Some(Selection::Trash(i)) => i,
@@ -4216,7 +4363,17 @@ impl App {
                 };
                 let champion = self.selection == Some(Selection::Champion);
                 let from_trash = matches!(self.selection, Some(Selection::Trash(_)));
-                let card_id = if from_trash {
+                let pending = if let Some(Selection::Pending(id)) = self.selection {
+                    self.game
+                        .pending_cards()
+                        .into_iter()
+                        .find(|card| card.id == id && card.player == 0)
+                } else {
+                    None
+                };
+                let card_id = if let Some(pending) = &pending {
+                    Some(pending.card_id)
+                } else if from_trash {
                     self.game.players[0].discard.get(index).copied()
                 } else if champion {
                     self.game.players[0].champion
@@ -4249,9 +4406,17 @@ impl App {
                     let selecting_revive =
                         matches!(self.game.decision, Some(Decision::ReviveUnit { .. }));
                     let resolving_revive =
-                        matches!(self.game.decision, Some(Decision::RevivePlay { .. }));
+                        matches!(self.game.decision, Some(Decision::RevivePlay { .. }))
+                            || pending.as_ref().is_some_and(|card| {
+                                card.kind == local_rift::game::InstructedPlayKind::Matriarch
+                            });
                     let cost_text = if resolving_revive || selecting_revive {
                         "Base cost waived · extra costs still apply".into()
+                    } else if pending
+                        .as_ref()
+                        .is_some_and(|card| card.kind == local_rift::game::InstructedPlayKind::Fizz)
+                    {
+                        "Base energy waived · pay power and extras".into()
                     } else if let Some(flow) = selected_flow {
                         let power = if flow.power == 0 {
                             String::new()
@@ -4266,18 +4431,30 @@ impl App {
                     } else {
                         format!("{} ENERGY · {} POWER", card.cost, card.power_cost)
                     };
+                    let discounts = self.game.players[0]
+                        .units
+                        .iter()
+                        .filter(|unit| unit.card_id == 35 && !unit.token)
+                        .count()
+                        .min(255) as u8;
+                    let has_discounts = discounts > 0
+                        && (card_id == 29
+                            || local_rift::rules::repeat_cost(card_id).is_some()
+                            || local_rift::rules::accelerate_cost(card_id).is_some());
                     self.ui
                         .ellipsis(card.name, 1178.0, 359.0, 212.0, 16.0, TEXT);
                     self.ui
                         .text(&cost_text, 1178.0, 383.0, 9.0, rgb(card.domain.color()));
-                    self.ui.ellipsis(
-                        &card_brief(&self.game, card_id),
-                        1178.0,
-                        406.0,
-                        209.0,
-                        10.0,
-                        MUTED,
-                    );
+                    if !has_discounts || flows.len() < 2 {
+                        self.ui.ellipsis(
+                            &card_brief(&self.game, card_id),
+                            1178.0,
+                            406.0,
+                            209.0,
+                            10.0,
+                            MUTED,
+                        );
+                    }
                     self.ui.text(
                         "Hover the card to read its full text.",
                         1178.0,
@@ -4305,23 +4482,15 @@ impl App {
                             }
                         }
                     }
-                    let discounts = self.game.players[0]
-                        .units
-                        .iter()
-                        .filter(|unit| unit.card_id == 35 && !unit.token)
-                        .count()
-                        .min(255) as u8;
-                    if discounts > 0
-                        && (matches!(card_id, 29 | 37 | 50)
-                            || local_rift::rules::accelerate_cost(card_id).is_some())
-                    {
-                        let r = Rect::new(1178.0, 432.0, 212.0, 18.0);
+                    if has_discounts {
+                        let y = if flows.len() > 1 { 394.0 } else { 432.0 };
+                        let r = Rect::new(1178.0, y, 212.0, 18.0);
                         let power = self.game.optional_power_discount[0].min(discounts);
                         self.ui.border(r, LINE);
                         self.ui.text(
                             &format!("Discount: {power} power · {} energy  >", discounts - power),
                             1184.0,
-                            445.0,
+                            y + 13.0,
                             9.0,
                             TEAL,
                         );
@@ -4332,7 +4501,7 @@ impl App {
                         }
                     }
                     {
-                        if matches!(card_id, 37 | 50)
+                        if local_rift::rules::repeat_cost(card_id).is_some()
                             && self.ui.button(
                                 Rect::new(1178.0, 454.0, 102.0, 28.0),
                                 "Repeat",
@@ -4344,7 +4513,12 @@ impl App {
                             self.editing_repeat = false;
                         }
                         if self.options.repeat
-                            && matches!(card_id, 37 | 50)
+                            && local_rift::rules::repeat_cost(card_id).is_some()
+                            && (local_rift::rules::target_bounds(card_id).0 > 0
+                                || matches!(
+                                    local_rift::rules::effect(card_id),
+                                    local_rift::rules::OfficialEffect::Counter(_)
+                                ))
                             && self.ui.button(
                                 Rect::new(1288.0, 454.0, 102.0, 28.0),
                                 if self.editing_repeat {
@@ -4379,7 +4553,10 @@ impl App {
                         {
                             self.options.bonus = !self.options.bonus;
                         }
-                        if !from_trash && card.official_text.starts_with("[Hidden]") {
+                        if !from_trash
+                            && pending.is_none()
+                            && card.official_text.starts_with("[Hidden]")
+                        {
                             for lane in 0..2 {
                                 let valid = if champion {
                                     self.game.hidden_can_hide_champion(0, lane)
@@ -4405,9 +4582,10 @@ impl App {
                             }
                         }
                     }
-                    let affordable = (from_trash || self.game.can_afford(0, &card))
-                        && self.game.card_supported(card_id)
-                        && (flows.len() < 2 || self.flow_source.is_some());
+                    let affordable =
+                        (from_trash || pending.is_some() || self.game.can_afford(0, &card))
+                            && self.game.card_supported(card_id)
+                            && (flows.len() < 2 || self.flow_source.is_some());
                     let label = if selecting_revive {
                         "Choose this unit to revive"
                     } else if card.kind == CardKind::Unit {
@@ -4425,7 +4603,16 @@ impl App {
                         false,
                         affordable,
                     ) {
-                        let action = if from_trash {
+                        let action = if pending.is_some() {
+                            Action::FinalizePendingPlay {
+                                lane: self.destination,
+                                targets: self.targets.clone(),
+                                repeat_targets: self.repeat_targets.clone(),
+                                repeat: self.options.repeat,
+                                accelerate: self.options.accelerate,
+                                bonus: self.options.bonus,
+                            }
+                        } else if from_trash {
                             Action::PlayFromTrashOptions {
                                 trash_index: index,
                                 flow: self.flow_source,
@@ -4472,7 +4659,16 @@ impl App {
                     } else if card.kind == CardKind::Unit && !selecting_revive && !resolving_revive
                     {
                         for lane in 0..2 {
-                            let action = if champion {
+                            let action = if pending.is_some() {
+                                Action::FinalizePendingPlay {
+                                    lane: Some(lane),
+                                    targets: self.targets.clone(),
+                                    repeat_targets: self.repeat_targets.clone(),
+                                    repeat: self.options.repeat,
+                                    accelerate: self.options.accelerate,
+                                    bonus: self.options.bonus,
+                                }
+                            } else if champion {
                                 Action::PlayChampionOptions {
                                     lane: Some(lane),
                                     target: self.targets.first().copied(),
@@ -4595,7 +4791,11 @@ impl App {
                     self.ui
                         .ellipsis(self.game.gear_name(&gear), 1178.0, 359.0, 210.0, 16.0, TEXT);
                     self.ui.wrapped_lines(
-                        self.game.catalog[gear.card_id].official_text,
+                        if gear.is_gold() {
+                            GOLD_RULES
+                        } else {
+                            self.game.catalog[gear.card_id].official_text
+                        },
                         1178.0,
                         391.0,
                         210.0,
@@ -4612,9 +4812,13 @@ impl App {
                         ) {
                             self.action(Action::ActivateGear { gear_id: id });
                         }
-                    } else {
+                    } else if let Some(rule) = local_rift::rules::equipment(gear.card_id) {
                         self.ui.text(
-                            "Click a friendly unit, then attach.",
+                            if gear.attached_to.is_some() {
+                                "Already attached · Equip is inactive."
+                            } else {
+                                "Click a friendly unit, then attach."
+                            },
                             1178.0,
                             490.0,
                             9.0,
@@ -4622,16 +4826,16 @@ impl App {
                         );
                         if self.ui.button(
                             Rect::new(1178.0, 505.0, 212.0, 34.0),
-                            if gear.card_id == 38 {
+                            if rule.recycle_trash > 0 {
                                 "Attach · recycle selected 2"
                             } else {
                                 "Attach to chosen unit"
                             },
                             false,
-                            !self.targets.is_empty(),
+                            !self.targets.is_empty() && gear.attached_to.is_none(),
                         ) && let Some(target) = self.targets.first().copied()
                         {
-                            self.action(if gear.card_id == 38 {
+                            self.action(if rule.recycle_trash > 0 {
                                 Action::EquipWithTrash {
                                     gear_id: id,
                                     target,
@@ -4644,15 +4848,31 @@ impl App {
                                 }
                             });
                         }
-                        if gear.card_id == 38 {
+                        if rule.recycle_trash > 0 {
                             self.ui.text(
-                                "Choose 2 trash cards in the Trash tab.",
+                                &format!(
+                                    "Choose {} trash cards in the Trash tab.",
+                                    rule.recycle_trash
+                                ),
                                 1178.0,
                                 554.0,
                                 9.0,
                                 MUTED,
                             );
                         }
+                    } else {
+                        self.ui.wrapped(
+                            if (gear.is_gold() || matches!(local_rift::rules::effect(gear.card_id), local_rift::rules::OfficialEffect::PowerGear)) && !gear.ready {
+                                "Exhausted. Its resource ability needs ready gear."
+                            } else {
+                                "This gear has no Equip ability. Its printed text describes when its ability applies."
+                            },
+                            1178.0,
+                            490.0,
+                            210.0,
+                            11.0,
+                            MUTED,
+                        );
                     }
                 } else {
                     self.selection = None;
@@ -5167,11 +5387,6 @@ impl App {
                 "Gentle fireflies, floating details and paced AI turns.",
                 self.prefs.animation,
             ),
-            (
-                "Tactical opponent",
-                "A more deliberate AI. Takes effect when you start a new match.",
-                self.prefs.tactical,
-            ),
         ]
         .iter()
         .enumerate()
@@ -5187,14 +5402,46 @@ impl App {
             ) {
                 match i {
                     0 => self.prefs.coach = !self.prefs.coach,
-                    1 => self.prefs.animation = !self.prefs.animation,
-                    _ => self.prefs.tactical = !self.prefs.tactical,
+                    _ => self.prefs.animation = !self.prefs.animation,
                 };
                 self.prefs.save();
             }
             if i < 2 {
                 self.ui
                     .line(vec2(271.0, y + 85.0), vec2(1383.0, y + 85.0), 1.0, LINE);
+            }
+        }
+        self.ui.bold("AI opponent", 271.0, 379.0, 16.0, TEXT);
+        self.ui.text(
+            "Choose a level for your next match. Your current game keeps its level.",
+            271.0,
+            407.0,
+            12.0,
+            MUTED,
+        );
+        self.ui.text(
+            difficulty_description(self.prefs.difficulty),
+            271.0,
+            434.0,
+            11.0,
+            TEAL,
+        );
+        for (index, difficulty) in [
+            Difficulty::Easy,
+            Difficulty::Tactical,
+            Difficulty::Strategic,
+        ]
+        .into_iter()
+        .enumerate()
+        {
+            if self.ui.button(
+                Rect::new(1045.0 + index as f32 * 112.0, 363.0, 104.0, 40.0),
+                difficulty_label(difficulty),
+                self.prefs.difficulty == difficulty,
+                true,
+            ) {
+                self.prefs.difficulty = difficulty;
+                self.prefs.save();
             }
         }
         self.ui
@@ -5490,6 +5737,22 @@ fn card_brief(game: &Game, id: usize) -> String {
         }
     }
 }
+fn difficulty_label(difficulty: Difficulty) -> &'static str {
+    match difficulty {
+        Difficulty::Easy => "Relaxed",
+        Difficulty::Tactical => "Tactical",
+        Difficulty::Strategic => "Strategic",
+    }
+}
+
+fn difficulty_description(difficulty: Difficulty) -> &'static str {
+    match difficulty {
+        Difficulty::Easy => "Simple, forgiving choices. Perfect for your first few matches.",
+        Difficulty::Tactical => "Plans trades and protects points. A little more room to grow.",
+        Difficulty::Strategic => "Looks ahead through possible plays using public information.",
+    }
+}
+
 fn live_unit_description(game: &Game, owner: usize, unit_id: u32) -> Option<String> {
     let unit = game
         .players
@@ -5526,6 +5789,12 @@ fn live_unit_description(game: &Game, owner: usize, unit_id: u32) -> Option<Stri
             keywords.assault, keywords.assault
         ));
     }
+    if keywords.shield > 0 {
+        lines.push(format!(
+            "Shield {}: +{} might while defending in combat; already included above while this unit is defending.",
+            keywords.shield, keywords.shield
+        ));
+    }
     if keywords.tank {
         lines.push("Tank: must be assigned combat damage before units without Tank.".into());
     }
@@ -5553,6 +5822,70 @@ fn live_unit_description(game: &Game, owner: usize, unit_id: u32) -> Option<Stri
         ));
     }
     Some(lines.join("\n"))
+}
+
+#[cfg(test)]
+mod preference_tests {
+    use super::{Difficulty, Preferences};
+
+    #[test]
+    fn missing_or_invalid_preferences_have_safe_defaults() {
+        let empty = Preferences::from_text("");
+        assert!(empty.coach && empty.animation);
+        assert!(!empty.advanced && !empty.exact_payment);
+        assert_eq!(empty.difficulty, Difficulty::Easy);
+        let invalid = Preferences::from_text("wins=oops\nlosses=-1\nunknown=true\n");
+        assert_eq!((invalid.wins, invalid.losses), (0, 0));
+    }
+
+    #[test]
+    fn preferences_round_trip_without_losing_unrelated_settings() {
+        let original = Preferences::from_text(
+            "coach=false\nadvanced=true\nanimation=false\ntactical=true\nexact_payment=true\ncustom_you=true\ncustom_ai=false\nwins=17\nlosses=9\n",
+        );
+        let restored = Preferences::from_text(&original.to_text());
+        assert!(!restored.coach && restored.advanced && !restored.animation);
+        assert!(restored.exact_payment);
+        assert_eq!(restored.difficulty, Difficulty::Tactical);
+        assert_eq!(restored.use_custom, [true, false]);
+        assert_eq!((restored.wins, restored.losses), (17, 9));
+    }
+
+    #[test]
+    fn old_tactical_setting_migrates_and_new_setting_takes_precedence() {
+        assert_eq!(
+            Preferences::from_text("tactical=true\n").difficulty,
+            Difficulty::Tactical
+        );
+        assert_eq!(
+            Preferences::from_text("tactical=false\n").difficulty,
+            Difficulty::Easy
+        );
+        assert_eq!(
+            Preferences::from_text("tactical=true\ndifficulty=easy\n").difficulty,
+            Difficulty::Easy
+        );
+        assert_eq!(
+            Preferences::from_text("tactical=false\ndifficulty=strategic\n").difficulty,
+            Difficulty::Strategic
+        );
+    }
+
+    #[test]
+    fn every_difficulty_round_trips_with_an_explicit_name() {
+        for (key, difficulty) in [
+            ("easy", Difficulty::Easy),
+            ("tactical", Difficulty::Tactical),
+            ("strategic", Difficulty::Strategic),
+        ] {
+            let prefs = Preferences::from_text(&format!("difficulty={key}\n"));
+            assert_eq!(prefs.difficulty, difficulty);
+            let saved = prefs.to_text();
+            assert!(saved.contains(&format!("difficulty={key}\n")));
+            assert!(!saved.lines().any(|line| line.starts_with("tactical=")));
+            assert_eq!(Preferences::from_text(&saved).difficulty, difficulty);
+        }
+    }
 }
 
 #[cfg(test)]
@@ -5622,6 +5955,39 @@ mod live_preview_tests {
         assert!(text.contains("Deflect 1") && text.contains("Ganking"));
         assert!(text.contains("Accelerate, when played") && text.contains("Fury power"));
     }
+
+    #[test]
+    fn shield_preview_uses_current_defending_might_without_double_counting() {
+        let mut game = Game::new(0, 3, 7, Difficulty::Easy);
+        let mut poro = unit(100, 110);
+        poro.lane = Some(0);
+        game.players[0].units = vec![poro];
+        let neutral = live_unit_description(&game, 0, 100).unwrap();
+        assert!(neutral.contains("2 current might") && neutral.contains("Shield 1"));
+        game.showdown = Some(local_rift::game::Showdown {
+            lane: 0,
+            attacker: 1,
+            focus: 1,
+            passes: 0,
+            combat: false,
+        });
+        assert!(
+            live_unit_description(&game, 0, 100)
+                .unwrap()
+                .contains("2 current might")
+        );
+        game.showdown.as_mut().unwrap().combat = true;
+        let defending = live_unit_description(&game, 0, 100).unwrap();
+        assert!(
+            defending.contains("3 current might") && defending.contains("already included above")
+        );
+        game.showdown.as_mut().unwrap().attacker = 0;
+        assert!(
+            live_unit_description(&game, 0, 100)
+                .unwrap()
+                .contains("2 current might")
+        );
+    }
 }
 
 fn window_conf() -> Conf {
@@ -5660,7 +6026,7 @@ async fn main() {
         let gear_preview = args.iter().any(|arg| arg == "--gear-preview");
         app.player_deck = if gear_preview { 0 } else { 3 };
         app.opponent_deck = if gear_preview { 2 } else { 1 };
-        app.prefs.tactical = true;
+        app.prefs.difficulty = Difficulty::Tactical;
         let seeds: Vec<u64> = if gear_preview {
             (1..128).collect()
         } else {

@@ -48,7 +48,7 @@ fn append_only_cards_match_official_source_and_manifest() {
     let inventory: Value =
         serde_json::from_str(include_str!("../assets/data/full_catalog.json")).unwrap();
     let manifest: Value = serde_json::from_str(include_str!("../assets/data/decks.json")).unwrap();
-    assert_eq!(catalog.len(), 103);
+    assert!(catalog.len() >= 103);
     assert_eq!(catalog[80].official_id, "ogn-172-298");
     for (offset, official_id) in OFFICIAL_IDS.iter().enumerate() {
         let card = catalog[81 + offset];
@@ -96,7 +96,7 @@ fn append_only_cards_match_official_source_and_manifest() {
         );
         assert_ne!(rules::effect(card.id), OfficialEffect::Unsupported);
     }
-    assert_eq!(rules::effect(103), OfficialEffect::Unsupported);
+    assert_eq!(rules::effect(catalog.len()), OfficialEffect::Unsupported);
 }
 
 #[test]
@@ -114,7 +114,7 @@ fn custom_builder_exposes_only_compatible_new_cards_and_keeps_source_presets() {
         );
         assert!(preset.cards.iter().all(|(id, _)| *id <= 68));
         let eligible = eligible_cards(legend);
-        for card in &catalog[81..] {
+        for card in &catalog[81..103] {
             let compatible = card
                 .domains
                 .iter()
@@ -171,6 +171,12 @@ fn conservation(game: &Game, specs: &[CustomDeck; 2]) {
                     game.chain
                         .iter()
                         .filter(|c| c.player == owner && c.ability.is_none())
+                        .map(|c| c.card_id),
+                )
+                .chain(
+                    game.pending_cards()
+                        .iter()
+                        .filter(|c| c.player == owner)
                         .map(|c| c.card_id),
                 ),
         );

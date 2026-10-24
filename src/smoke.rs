@@ -13,6 +13,7 @@ use macroquad::prelude::*;
 thread_local! {
     static SAVED_DECK_SNAPSHOT: std::cell::RefCell<Option<Vec<u8>>> = const { std::cell::RefCell::new(None) };
     static COMBAT_SNAPSHOT: std::cell::RefCell<Option<String>> = const { std::cell::RefCell::new(None) };
+    static DIFFICULTY_SNAPSHOT: std::cell::RefCell<Option<String>> = const { std::cell::RefCell::new(None) };
 }
 
 fn click(app: &mut App, x: f32, y: f32) {
@@ -67,7 +68,7 @@ fn fixture_resources(app: &mut App, domain: Domain) {
     app.game.players[0].rune_deck.truncate(6);
 }
 
-fn click_unit(app: &mut App, selected: u32) {
+fn unit_rect(app: &mut App, selected: u32) -> Rect {
     let units = app
         .game
         .players
@@ -100,8 +101,11 @@ fn click_unit(app: &mut App, selected: u32) {
         &state,
     );
     let hit = hits.units.iter().find(|(id, _)| *id == selected).unwrap().1;
-    let center = (vec2(hit.x + hit.w / 2.0, hit.y + hit.h / 2.0) - app.ui.offset) / app.ui.scale;
-    click(app, center.x, center.y);
+    app.ui.logical(hit)
+}
+fn click_unit(app: &mut App, selected: u32) {
+    let r = unit_rect(app, selected);
+    click(app, r.x + r.w / 2.0, r.y + r.h / 2.0);
 }
 
 fn flow_fixture(app: &mut App, granted: bool) {
@@ -312,7 +316,7 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
             app.confirm_restart = false;
             app.prefs.coach = true;
             app.prefs.advanced = false;
-            app.prefs.tactical = false;
+            app.prefs.difficulty = Difficulty::Easy;
             app.prefs.exact_payment = false;
             app.prefs.use_custom = [false; 2];
             app.payment_draft = None;
@@ -2366,16 +2370,18 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
             finish_chain_until_choice(app);
             assert!(matches!(
                 app.game.decision,
-                Some(Decision::RevivePlay {
-                    trash_index: 0,
+                Some(Decision::PendingPlay {
                     card_id: 96,
+                    kind: local_rift::game::InstructedPlayKind::Matriarch,
                     ..
                 })
             ));
+            assert!(!app.game.players[0].discard.contains(&96));
+            assert_eq!(app.game.pending_cards().len(), 1);
         }
         202 => {
             assert!(
-                app.selection == Some(Selection::Trash(0)),
+                matches!(app.selection, Some(Selection::Pending(_))),
                 "chosen revival is selected automatically"
             );
             click(app, 1229.0, 468.0);
@@ -2475,15 +2481,480 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
                 10,
                 "new Legion target resolves through native choice"
             );
+        }
+        216 => {
+            app.screen = Screen::Practice;
+            app.in_match = false;
+            app.selection = None;
+            app.hover_card = None;
+            app.hover_rect = None;
+            app.hover_unit = None;
+            app.hover_token = None;
+            app.toast_until = 0.0;
+            app.prefs.use_custom = [false; 2];
+            app.prefs.difficulty = Difficulty::Easy;
+            app.player_deck = 3;
+            app.opponent_deck = 1;
+            app.fields = [
+                local_rift::battlefields::default_battlefield(3),
+                local_rift::battlefields::default_battlefield(1),
+            ];
+            app.starting_player = 0;
+            click(app, 1357.0, 312.0);
+        }
+        217 => {
+            assert_eq!(app.prefs.difficulty, Difficulty::Strategic);
+            assert_eq!(super::Preferences::load().difficulty, Difficulty::Strategic);
+            assert_eq!(
+                app.game.difficulty,
+                Difficulty::Easy,
+                "setup choice does not mutate the previous game"
+            );
+            if let Ok(path) = std::env::var("RIFT_SMOKE_DIFFICULTY_SCREENSHOT") {
+                app.draw();
+                get_screen_data().export_png(&path);
+            }
+            click(app, 1284.0, 312.0);
+        }
+        218 => {
+            assert_eq!(app.prefs.difficulty, Difficulty::Tactical);
+            click(app, 1211.0, 312.0);
+        }
+        219 => {
+            assert_eq!(app.prefs.difficulty, Difficulty::Easy);
+            click(app, 1357.0, 312.0);
+        }
+        220 => {
+            assert_eq!(app.prefs.difficulty, Difficulty::Strategic);
+            click(app, 1330.0, 46.0);
+        }
+        221 => {
+            assert_eq!(app.game.difficulty, Difficulty::Strategic);
+            assert_eq!(app.game.phase, Phase::Mulligan);
+            click(app, 1283.0, 514.0);
+        }
+        222 => {
+            assert_eq!(app.game.phase, Phase::Playing);
+            click(app, 100.0, 323.0);
+        }
+        223 => {
+            assert!(app.screen == Screen::Settings);
+            DIFFICULTY_SNAPSHOT
+                .with(|snapshot| *snapshot.borrow_mut() = Some(format!("{:?}", app.game)));
+            click(app, 1097.0, 383.0);
+        }
+        224 => {
+            assert_eq!(app.prefs.difficulty, Difficulty::Easy);
+            assert_eq!(super::Preferences::load().difficulty, Difficulty::Easy);
+            assert_eq!(app.game.difficulty, Difficulty::Strategic);
+            DIFFICULTY_SNAPSHOT.with(|snapshot| {
+                assert_eq!(
+                    snapshot.borrow().as_deref(),
+                    Some(format!("{:?}", app.game).as_str()),
+                    "changing next-match settings must preserve the entire active game"
+                )
+            });
+            click(app, 1209.0, 383.0);
+        }
+        225 => {
+            assert_eq!(app.prefs.difficulty, Difficulty::Tactical);
+            assert_eq!(app.game.difficulty, Difficulty::Strategic);
+            click(app, 1321.0, 383.0);
+        }
+        226 => {
+            assert_eq!(app.prefs.difficulty, Difficulty::Strategic);
+            assert_eq!(super::Preferences::load().difficulty, Difficulty::Strategic);
+            click(app, 1097.0, 383.0);
+        }
+        227 => {
+            assert_eq!(app.prefs.difficulty, Difficulty::Easy);
+            assert_eq!(app.game.difficulty, Difficulty::Strategic);
+            click(app, 100.0, 167.0);
+        }
+        228 => {
+            assert!(app.screen == Screen::Practice);
+            assert_eq!(app.game.difficulty, Difficulty::Strategic);
+            click(app, 1330.0, 46.0);
+        }
+        229 => {
+            assert!(app.confirm_restart);
+            click(app, 854.0, 501.0);
+        }
+        230 => {
+            assert!(!app.in_match && !app.confirm_restart);
+            click(app, 1330.0, 46.0);
+        }
+        231 => {
+            assert_eq!(app.game.difficulty, Difficulty::Easy);
+            assert_eq!(app.game.phase, Phase::Mulligan);
+        }
+        232 => {
+            expansion_fixture(app, 110);
+            app.game.players[0].units = vec![
+                public_unit(100, 110, Some(0)),
+                public_unit(101, 110, Some(0)),
+            ];
+            app.game.players[1].units = vec![public_unit(200, 69, Some(0))];
+            app.game.players[0].gear.push(GearState {
+                id: 800,
+                card_id: 121,
+                ready: true,
+                attached_to: Some(100),
+                temporary: false,
+                token: false,
+            });
+            app.game.battlefield_owner[0] = Some(0);
+            app.game.showdown = Some(local_rift::game::Showdown {
+                lane: 0,
+                attacker: 1,
+                focus: 0,
+                passes: 0,
+                combat: true,
+            });
+            let r = unit_rect(app, 100);
+            app.ui.input_override = Some((vec2(r.x + r.w / 2.0, r.y + 10.0), false, false));
+            app.hover_card = Some(110);
+            app.hover_unit = Some((0, 100));
+            app.hover_since = -1.0;
+        }
+        233 => {
+            let text = super::live_unit_description(&app.game, 0, 100).unwrap();
+            assert!(
+                text.contains("4 current might")
+                    && text.contains("Shield 1")
+                    && text.contains("Tank:")
+            );
+            let panel = app.hover_rect.expect("Shield hover appears");
+            app.ui.input_override = Some((vec2(panel.x + 40.0, panel.y + 240.0), false, false));
+            if let Ok(path) = std::env::var("RIFT_SMOKE_SHIELD_SCREENSHOT") {
+                app.draw();
+                get_screen_data().export_png(&path);
+            }
+            app.hover_card = None;
+            app.hover_rect = None;
+            app.hover_unit = None;
+            let r = unit_rect(app, 100);
+            app.ui.input_override = Some((vec2(r.x + r.w / 2.0, r.y + r.h - 28.0), false, false));
+        }
+        234 => {
+            assert_eq!(
+                app.hover_card,
+                Some(121),
+                "attached gear has its own readable hover"
+            );
+            assert_eq!(app.hover_unit, None);
+            let r = unit_rect(app, 100);
+            click(app, r.x + r.w / 2.0, r.y + r.h - 28.0);
+        }
+        235 => {
+            assert_eq!(
+                app.inspect,
+                Some(121),
+                "gear chip opens full equipment rules"
+            );
+            click(app, 960.0, 704.0);
+        }
+        236 => {
+            assert!(app.inspect.is_none());
+            expansion_fixture(app, 135);
+            app.game.players[0].units =
+                vec![public_unit(100, 110, None), public_unit(101, 110, None)];
+            click(app, 315.0, 760.0);
+        }
+        237 => {
+            click(app, 1229.0, 468.0);
+        }
+        238 => {
+            assert!(app.options.repeat, "new Repeat cards use generic metadata");
+            click_unit(app, 100);
+        }
+        239 => {
+            click(app, 1339.0, 468.0);
+        }
+        240 => {
+            assert!(app.editing_repeat);
+            click_unit(app, 101);
+        }
+        241 => {
+            assert_eq!(
+                app.targets,
+                vec![Target::Unit {
+                    player: 0,
+                    unit_id: 100
+                }]
+            );
+            assert_eq!(
+                app.repeat_targets,
+                vec![Target::Unit {
+                    player: 0,
+                    unit_id: 101
+                }]
+            );
+            click(app, 1285.0, 510.0);
+        }
+        242 => {
+            assert!(
+                app.game
+                    .chain
+                    .iter()
+                    .any(|item| item.card_id == 135 && item.options.repeat)
+            );
+            assert_eq!(app.game.players[0].energy, 8);
+            finish_chain_until_choice(app);
+            assert!(
+                app.game.players[0]
+                    .units
+                    .iter()
+                    .all(|unit| app.game.unit_might(unit) == 4)
+            );
+        }
+        243 => {
+            expansion_fixture(app, 133);
+            click(app, 315.0, 760.0);
+        }
+        244 => {
+            click(app, 1229.0, 468.0);
+        }
+        245 => {
+            assert!(app.options.repeat);
+            click(app, 1339.0, 468.0);
+        }
+        246 => {
+            assert!(
+                !app.editing_repeat,
+                "draw-only Repeat does not offer target editing"
+            );
+            click(app, 1285.0, 510.0);
+        }
+        247 => {
+            finish_chain_until_choice(app);
+            assert_eq!(app.game.players[0].hand.len(), 2);
+            assert_eq!(app.game.players[0].energy, 8);
+        }
+        248 => {
+            expansion_fixture(app, 124);
+            app.game.players[0].units = vec![public_unit(100, 69, None)];
+            app.game
+                .apply(Action::PlayCard {
+                    hand_index: 0,
+                    lane: None,
+                    target: None,
+                })
+                .unwrap();
+            app.selection = Some(Selection::Gear(app.game.players[0].gear[0].id));
+            app.tray = super::Tray::Loadout;
+            click_unit(app, 100);
+        }
+        249 => {
+            assert_eq!(
+                app.targets,
+                vec![Target::Unit {
+                    player: 0,
+                    unit_id: 100
+                }]
+            );
+            click(app, 1285.0, 522.0);
+        }
+        250 => {
+            assert_eq!(
+                app.game.players[0].energy, 10,
+                "play costs1 and Equip costs1 energy"
+            );
+            finish_chain_until_choice(app);
+            assert_eq!(app.game.players[0].gear[0].attached_to, Some(100));
+            assert_eq!(
+                app.game.unit_keywords(&app.game.players[0].units[0]).shield,
+                2
+            );
+        }
+        251 => {
+            expansion_fixture(app, 130);
+            app.game
+                .apply(Action::PlayCard {
+                    hand_index: 0,
+                    lane: None,
+                    target: None,
+                })
+                .unwrap();
+            app.selection = Some(Selection::Gear(app.game.players[0].gear[0].id));
+            app.tray = super::Tray::Loadout;
+            click(app, 1285.0, 513.0);
+        }
+        252 => {
+            assert_eq!(app.game.players[0].energy, 10);
+            assert_eq!(app.game.players[0].energy_pool, 1);
+            assert!(!app.game.players[0].gear[0].ready);
+            app.selection = Some(Selection::Gear(app.game.players[0].gear[0].id));
+            COMBAT_SNAPSHOT
+                .with(|snapshot| *snapshot.borrow_mut() = Some(format!("{:?}", app.game)));
+            click(app, 1285.0, 522.0);
+        }
+        253 => {
+            COMBAT_SNAPSHOT.with(|snapshot| {
+                assert_eq!(
+                    snapshot.borrow().as_deref(),
+                    Some(format!("{:?}", app.game).as_str()),
+                    "exhausted resource gear offers no attach action"
+                )
+            });
+            expansion_fixture(app, 135);
+            app.game.players[0].hand = vec![36];
+            app.game.players[0].discard = vec![69, 135];
+            app.game.players[0].power_pool[domain_index(Domain::Chaos)] = 1;
+            app.game.players[0].units =
+                vec![public_unit(100, 110, None), public_unit(101, 110, None)];
+            app.game
+                .apply(Action::PlayCard {
+                    hand_index: 0,
+                    lane: None,
+                    target: None,
+                })
+                .unwrap();
+            finish_chain_until_choice(app);
+            assert!(matches!(
+                app.game.decision,
+                Some(Decision::OptionalPlay { card_id: 36, .. })
+            ));
+            click(app, 1285.0, 506.0);
+        }
+        254 => {
+            assert!(matches!(
+                app.game.decision,
+                Some(Decision::TrashTarget {
+                    source_card_id: 36,
+                    ..
+                })
+            ));
+            click(app, 315.0, 760.0);
+        }
+        255 => {
+            assert!(app.game.chain.iter().any(|item| matches!(
+                item.ability,
+                Some(local_rift::game::ChainAbility::PlayChosen { card_id: 135, .. })
+            )));
+            assert!(app.game.players[0].discard.contains(&135));
+            finish_chain_until_choice(app);
+            assert!(matches!(
+                app.game.decision,
+                Some(Decision::PendingPlay {
+                    card_id: 135,
+                    kind: local_rift::game::InstructedPlayKind::Fizz,
+                    ..
+                })
+            ));
+            assert!(!app.game.players[0].discard.contains(&135));
+        }
+        256 => {
+            assert!(matches!(app.selection, Some(Selection::Pending(_))));
+            assert!(!app.game.can_decline_trash_play());
+            click(app, 1229.0, 468.0);
+        }
+        257 => {
+            click_unit(app, 100);
+        }
+        258 => {
+            click(app, 1339.0, 468.0);
+        }
+        259 => {
+            click_unit(app, 101);
+        }
+        260 => {
+            assert!(app.options.repeat && app.targets.len() == 1 && app.repeat_targets.len() == 1);
+            click(app, 1285.0, 510.0);
+        }
+        261 => {
+            assert!(app.game.pending_cards().is_empty());
+            assert!(
+                app.game
+                    .chain
+                    .iter()
+                    .any(|item| item.card_id == 135 && item.options.repeat && item.recycle_after)
+            );
+            assert_eq!(
+                app.game.players[0].energy, 7,
+                "Fizz pays3; chosen spell base waived, Repeat costs2"
+            );
+            finish_chain_until_choice(app);
+            assert_eq!(
+                app.game.unit_might(
+                    app.game.players[0]
+                        .units
+                        .iter()
+                        .find(|unit| unit.id == 100)
+                        .unwrap()
+                ),
+                4
+            );
+            assert_eq!(
+                app.game.unit_might(
+                    app.game.players[0]
+                        .units
+                        .iter()
+                        .find(|unit| unit.id == 101)
+                        .unwrap()
+                ),
+                4
+            );
+        }
+        262 => {
+            expansion_fixture(app, 130);
+            app.game.players[0].gear.push(GearState {
+                id: 900,
+                card_id: 18,
+                ready: true,
+                attached_to: None,
+                temporary: false,
+                token: true,
+            });
+            app.tray = super::Tray::Loadout;
+            app.ui.input_override = Some((vec2(615.0, 760.0), false, false));
+            app.hover_card = Some(18);
+            app.hover_token = Some(super::TokenPreview {
+                name: "Gold".into(),
+                might: 0,
+                gear: true,
+                rules: super::GOLD_RULES.into(),
+            });
+            app.hover_since = -1.0;
+        }
+        263 => {
+            let preview = app
+                .hover_token
+                .as_ref()
+                .expect("Gold has its own rules preview");
+            assert_eq!(preview.name, "Gold");
+            assert!(
+                preview.gear
+                    && preview.rules.contains("kill this Gold")
+                    && preview.rules.contains("1 Any power")
+            );
+            assert!(app.hover_rect.is_some());
+            app.ui.input_override = Some((vec2(615.0, 760.0), false, true));
+        }
+        264 => {
+            assert!(
+                app.inspect.is_none(),
+                "Gold never opens its source card's inspector"
+            );
+            app.hover_rect = None;
+            click(app, 615.0, 760.0);
+        }
+        265 => {
+            assert!(app.selection == Some(Selection::Gear(900)));
+            click(app, 1285.0, 513.0);
+        }
+        266 => {
+            assert!(app.game.players[0].gear.is_empty());
+            assert_eq!(app.game.players[0].any_power, 1);
             app.ui.input_override = None;
             app.ui.pointer_override = None;
             app.ui.wheel_override = None;
             println!(
-                "PASS: 216 native UI frames including new spell targeting, four Recruit placements, Loot, Accelerate/revival costs, live keywords, and Legion targets."
+                "PASS: 267 native UI frames including three saved AI levels, Shield and equipped gear, Repeat choices, resource and Gold gear, and pending trash plays."
             );
             return true;
         }
-        _ => panic!("UI smoke runner exceeded its 216-frame script"),
+        _ => panic!("UI smoke runner exceeded its 267-frame script"),
     }
     false
 }

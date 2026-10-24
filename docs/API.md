@@ -57,7 +57,7 @@ Every successful mutation increments the session revision by one. Reset also inc
 | `apply` | `revision`, `player`, exactly one of `action` or `action_id` | Apply one legal action and return public summary |
 | `step_ai` | `revision`, `player` | Ask the built-in AI to take one action for the seat with priority |
 
-Reset defaults match the initial settings. `decks` is a pair of preset IDs. `battlefields` is an optional pair of catalog battlefield IDs, one contributed by each player; omit it for preset defaults. A battlefield catalog ID is different from the in-match lane slot `0` or `1`. Invalid IDs are rejected. `difficulty` is `easy` or `tactical`. There is no automatic mulligan for either seat through this API.
+Reset defaults match the initial settings. `decks` is a pair of preset IDs. `battlefields` is an optional pair of catalog battlefield IDs, one contributed by each player; omit it for preset defaults. A battlefield catalog ID is different from the in-match lane slot `0` or `1`. Invalid IDs are rejected. `difficulty` is `easy`, `tactical`, or `strategic`. Strategic uses bounded public-information lookahead; it is not an expert-strength guarantee. There is no automatic mulligan for either seat through this API.
 
 A custom list can replace either seat through `custom_decks:[deck_or_null,deck_or_null]`. Omission uses presets for both seats. Each deck object contains `name`, `legend` (the supported legend ID), `chosen_champion`, `cards` (pairs of card ID and count), `runes` (six counts in catalog domain order), and `battlefield`. `catalog.cards` includes stable official printing IDs as well as current runtime IDs; each preset reports `eligible_cards` and `eligible_champions` for its legend. `local_rift::deck::CustomDeck::from_preset` creates an editable starting list, and its `to_json`/`from_json` use this same schema.
 
@@ -100,7 +100,7 @@ Targets have exactly one of these forms:
 | `recycle_rune` | `domain`, required `exhausted` | Recycle an explicitly ready (`false`) or exhausted (`true`) rune; no implicit energy generation |
 | `equip` | `gear_id`, `target` | Pay and attach gear to a friendly unit |
 | `equip_with_trash` | `gear_id`, `target`, `trash_indices` | Equip Last Rites with an explicit pair of trash cards to recycle |
-| `activate_gear` | `gear_id` | Activate Seal or Gold when legal |
+| `activate_gear` | `gear_id` | Activate a Seal, Energy Conduit, or Gold when legal |
 | `activate_legend` | optional `target` | Activate the selected legend's supported ability |
 | `empower_unit` | `unit_id`, optional `pay_power` | Activate Legion Marauder or Tail-Cloaked Matriarch's Empower ability |
 | `hide` | `hand_index`, `lane` | Pay to hide a Hidden card at a controlled battlefield |
@@ -112,17 +112,18 @@ Targets have exactly one of these forms:
 | `play_from_trash` | `trash_index`, optional `lane`, `target` | Resolve a replay decision using default targeting |
 | `play_from_trash_targets` | `trash_index`, optional `lane`, `targets` | Resolve a replay decision with exact targets |
 | `play_from_trash_options` | `trash_index`, optional `lane`, `targets`, `repeat_targets`, `repeat`, `accelerate`, `bonus`, `flow` | Play from trash with exact targets and supported optional costs, including Flow or a replay instruction |
+| `finalize_pending_play` | optional `lane`, `targets`, `repeat_targets`, `repeat`, `accelerate`, `bonus` | Finalize the already chosen public pending card; its identity cannot be changed |
 | `assign_damage` | `assignments` | Ordered pairs `[[enemy_unit_id, damage], ...]`; obey lethal-before-next and total damage constraints |
 | `choose_death_replacement` | `unit_id`, optional `gear_id` | Select a pending death replacement; `gear_id:null` selects Smite banishment |
 | `order_trigger` | `trigger_id` | Finalize one of the current player's pending triggers; last finalized resolves first |
 | `choose_battlefield` | `lane` | Choose which eligible staged battlefield opens next |
 | `choose_resolution_group` | `index` | Select a listed legal target group when a resolving spell requires that choice |
 | `set_optional_discount` | `power` | Set how many friendly Ezreal discounts reduce power; remaining discounts reduce energy |
-| `place_token` | optional `lane` | Finalize the next Tentacle from Up from the Deep or Recruit from Recruit the Vanguard at base or a battlefield you control |
+| `place_token` | optional `lane` | Finalize the next token whose effect allows a destination choice at base or a battlefield you control |
 
 For `play_from_trash_options`, `flow:"printed"` or `flow:"granted"` selects that exact available Flow instance. Omission or `null` uses an available payable instance. Explicit selection never falls back to another cost. A Flow choice cannot override an instructed Fizz/Last Rites replay and does not change the spell’s normal timing. Observed `flow_costs` lists trash indices with each instance’s source, energy, power, and whether power is colored. Quote and exact-payment commands preserve the selected instance.
 
-The engine remains the authority on timing, costs, destinations, targeting, optionality, and available cards. A syntactically correct action may be illegal in the current state. Use `validate` to try a candidate without consuming a revision. `play_card_targets`, `play_card_options`, `play_from_trash_targets`, and `play_from_trash_options` preserve exact target arrays, including empty selections where legal. `play_hidden` retains an automatic-target convenience when its list is empty; provide the full two-target pair to choose a hidden Switcheroo's targets yourself. Permanent abilities that choose after entry must receive an empty play target list and then answer the subsequent `on_play_target` decision.
+The engine remains the authority on timing, costs, destinations, targeting, optionality, and available cards. A syntactically correct action may be illegal in the current state. Use `validate` to try a candidate without consuming a revision. `play_card_targets`, `play_card_options`, `play_from_trash_targets`, `play_from_trash_options`, and `finalize_pending_play` preserve exact target arrays, including empty selections where legal. `play_hidden` retains an automatic-target convenience when its list is empty; provide the full two-target pair to choose a hidden Switcheroo's targets yourself. Permanent abilities that choose after entry must receive an empty play target list and then answer the subsequent `on_play_target` decision.
 
 Optional costs also apply to trash plays. Fizz ignores a replayed spell's base energy cost, while a chosen Repeat cost must still be paid. Flow pays its alternative base cost plus any chosen additional cost. Last Rites can play Kai'Sa with Accelerate when the combined cost is affordable. Each repeated spell supplies its own `repeat_targets`; it may target the same objects when legal.
 
@@ -160,7 +161,7 @@ Both seats expose the same public resource and equipment fields. A gear object's
 
 A unit's observed `might` is its current total, including equipment and currently applicable combat bonuses. Printed might remains in the catalog. Do not add an equipment bonus to the observed total again.
 
-Each unit also exposes `keywords`: numeric `assault` and `deflect`, Boolean `tank`, `backline`, `ganking`, and `ambush`, plus optional printed `accelerate:{energy,power,domain}`. These values account for token identity, current equipment, level requirements, and granted abilities. Assault is its keyword value even outside combat; apply no extra bonus to observed `might`. Accelerate describes a play option, not an action that readies a unit already on the board. `damage_priority` is `0` for Tank, `1` for ordinary units, and `2` for Backline, matching the engine's combat-assignment ordering.
+Each unit also exposes `keywords`: numeric `assault`, `shield`, and `deflect`, Boolean `tank`, `backline`, `ganking`, and `ambush`, plus optional printed `accelerate:{energy,power,domain}`. These values account for token identity, current equipment, level requirements, and granted abilities. Assault and Shield are their keyword values even outside combat; apply no extra bonus to observed `might`. Accelerate describes a play option, not an action that readies a unit already on the board. `damage_priority` is `0` for Tank, `1` for ordinary units, and `2` for Backline, matching the engine's combat-assignment ordering.
 
 For token units and Gold, `token:true` distinguishes the generated object from a physical deck card. Its `card_id` is an engine source/reference identity, so use the observed `name` and `might` for the token instead of assuming that catalog entry's printed card kind or stats describe it.
 
@@ -180,10 +181,11 @@ The viewer sees their own hand as card IDs. The opposing hand is `null` except w
 | `reveal_hand` | `opponent`, revealed `cards`; acknowledge with `choose` |
 | `grant_flow` | `select_cards` indexes an eligible spell in your trash; an empty selection is legal only when no eligible spell exists |
 | `optional_play` | `card_id`, optional `gear_id`; accept or decline Fizz/Last Rites before its optional play ability enters the chain |
-| `replay_spell`, `last_rites`, `revive_unit` | `play_from_trash`, `play_from_trash_targets`, or `play_from_trash_options` for eligible optional costs; `last_rites` also includes `gear_id`; decline only when `can_decline_trash_play` allows it |
-| `revive_play` | `trash_index`, `card_id`; Matriarch's selected unit is now being played. Submit `play_from_trash_options` for that fixed card, with optional `accelerate`; its base cost is waived but additional costs are paid now. It cannot be declined or changed to another card. |
+| `trash_target` | `source_card_id`, optional `gear_id`; choose exactly one eligible trash index with `select_cards`, before the ability becomes respondable |
+| `revive_unit` | Choose Matriarch’s eligible trash unit with `play_from_trash` and no additional choices; its ability then enters the chain |
+| `pending_play` | `pending_id`, `card_id`, `kind` (`fizz`, `last_rites`, or `matriarch`); use `finalize_pending_play` for this fixed card. Fizz waives base energy, Matriarch waives the base cost and fixes base as destination, and Last Rites pays the full cost. Additional costs still apply. `choose:false` returns it to trash only if `can_decline_trash_play` confirms it cannot be played. |
 | `swap_unit` | `unit_id`; select another unit with `choose_target`, or decline |
-| `empower_here` | `lane`; choose an eligible unit with `choose_target` |
+| `empower_here` | `lane`, optional `source_id`; choose an eligible unit with `choose_target`. Hidden play abilities retain their source for location/liveness checks. |
 | `on_play_target` | `card_id`, `source_id`, `lane`; select the unit/gear required by the finalized on-play ability |
 | `legend` | `trigger` describes Irelia's ready/refresh choice; `choose` |
 | `battlefield_order` | `lanes`, `combat`; the turn player chooses one listed lane using `choose_battlefield`; non-combat showdowns precede staged combats |
@@ -199,7 +201,7 @@ For each decision, `suggest` supplies legal convenience responses, while structu
 
 Token plays created by a resolving effect wait until that effect finishes. `pending_token_plays` exposes their public pending IDs, controller, source `card_id`, Might, and `gear` flag in finalization order. `destination:{mode:"choose"}` permits the normal base/controlled-field choice; `{mode:"fixed",lane:null}` fixes base and a numeric lane fixes a battlefield. Pending IDs identify chain objects, not selectable board units. Placement choices finalize one token at a time; earlier tokens can be on the board while later placements remain pending. These choices do not grant a response window between token plays.
 
-A `revive_chosen` chain ability identifies the previously selected trash card. Its `trash_index` becomes `null` if that card has left the trash before resolution. An `empower_object` ability exposes its selected `player`, `object_id`, and `lane`; `object_id:null` means that player's legend at base.
+A `play_chosen` or `revive_chosen` chain ability identifies the previously selected trash card. Its `trash_index` becomes `null` if that card has left the trash before resolution. An `empower_object` ability exposes its selected `player`, `object_id`, and `lane`; `object_id:null` means that player's legend at base.
 
 Fizz and Last Rites ask whether to accept their optional play instruction before placing that ability on the chain. Once an accepted instruction resolves, its trash selection is required if a legal payable card exists. `required_trash_play` identifies that stage; `can_decline_trash_play` reports whether declining is currently legal. A bot should not assume that `choose:false` remains available after accepting the earlier optional play.
 
@@ -238,3 +240,5 @@ session.apply_action(0, session.revision(), Action::EndTurn)?;
 `Session::observe` returns a JSON value intentionally matching the wire protocol. `Session::handle` accepts a parsed request; `process_line` parses one request. Neither lends out the authoritative game. `suggestions` and `apply_suggestion` implement the same revision-scoped convenience actions as JSONL. Direct `Game` access remains available in the engine library for trusted simulations and test fixtures, outside the filtered API boundary.
 
 Validation tests cover all action round trips, private-state invariance, malformed and stale requests, explicit multi-target/group/combat choices, deterministic replay, and completed matches for all 16 preset pairings. Run `cargo test --lib api::tests` and `cargo test --bin rift-api`.
+
+Instructed real-card plays also wait in Pending until their parent effect finishes. `pending_card_plays` exposes `{id,player,card_id,kind}` in finalization order. The physical card is then absent from trash and counted in this queue until its actual play finalizes. Fizz and Last Rites choose their public trash target before responses; opponents may remove that exact target before resolution. A card that left trash and returned is a new object and does not satisfy the old target. Finalization chooses the child card’s legal targets, destination, and optional costs, without an intervening response window.

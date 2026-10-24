@@ -9,6 +9,7 @@ struct Options {
     seeds: u64,
     first_seed: u64,
     max_steps: usize,
+    difficulty: Option<Difficulty>,
 }
 
 fn options() -> Result<Option<Options>, String> {
@@ -16,15 +17,16 @@ fn options() -> Result<Option<Options>, String> {
         seeds: 32,
         first_seed: 1,
         max_steps: 5000,
+        difficulty: None,
     };
     let mut args = std::env::args().skip(1);
     while let Some(arg) = args.next() {
         if arg == "--help" || arg == "-h" {
             println!(
-                "Usage: cargo run --bin simulate -- [--seeds 32] [--seed 1] [--max-steps 5000]"
+                "Usage: cargo run --bin simulate -- [--seeds 32] [--seed 1] [--max-steps 5000] [--difficulty easy|tactical|strategic]"
             );
             println!(
-                "Runs every deck pairing with both AI levels; exits unsuccessfully on an invariant failure, illegal AI action, or stalled match."
+                "Runs every deck pairing with all three AI levels; exits unsuccessfully on an invariant failure, illegal AI action, or stalled match."
             );
             return Ok(None);
         }
@@ -32,6 +34,14 @@ fn options() -> Result<Option<Options>, String> {
             .next()
             .ok_or_else(|| format!("Missing value for {arg}"))?;
         match arg.as_str() {
+            "--difficulty" => {
+                options.difficulty = Some(match value.as_str() {
+                    "easy" => Difficulty::Easy,
+                    "tactical" => Difficulty::Tactical,
+                    "strategic" => Difficulty::Strategic,
+                    _ => return Err("--difficulty must be easy, tactical, or strategic".into()),
+                });
+            }
             "--seeds" => {
                 options.seeds = value
                     .parse()
@@ -92,6 +102,11 @@ fn check_invariants(game: &Game) -> Result<(), String> {
             + player.hand.len()
             + player.discard.len()
             + player.banish.len()
+            + game
+                .pending_cards()
+                .iter()
+                .filter(|card| card.player == owner)
+                .count()
             + player.hidden.len()
             + usize::from(player.champion.is_some())
             + player.units.iter().filter(|unit| !unit.token).count()
@@ -174,7 +189,19 @@ fn run(options: Options) -> Result<(), String> {
     let mut max_steps = 0;
     let mut max_turns = 0;
     let mut total_steps = 0;
-    for difficulty in [Difficulty::Easy, Difficulty::Tactical] {
+    let difficulties: Vec<_> = [
+        Difficulty::Easy,
+        Difficulty::Tactical,
+        Difficulty::Strategic,
+    ]
+    .into_iter()
+    .filter(|difficulty| {
+        options
+            .difficulty
+            .is_none_or(|selected| selected == *difficulty)
+    })
+    .collect();
+    for &difficulty in &difficulties {
         let mut difficulty_games = 0;
         let mut difficulty_wins = [0usize; 2];
         for first in 0..count {
@@ -222,8 +249,9 @@ fn run(options: Options) -> Result<(), String> {
         );
     }
     println!(
-        "PASS: {games} complete matches across {} pairings and 2 AI levels, alternating starting player by seed",
-        count * count
+        "PASS: {games} complete matches across {} pairings and {} AI levels, alternating starting player by seed",
+        count * count,
+        difficulties.len()
     );
     println!(
         "Maximum: {max_steps} actions, {max_turns} turns; average {:.1} actions; elapsed {:.2}s",

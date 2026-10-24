@@ -66,7 +66,7 @@ def main():
     parser.add_argument("--custom-deck", type=Path, help="Your saved custom deck JSON file")
     parser.add_argument("--custom-opponent", type=Path, help="Opponent's saved custom deck JSON file")
     parser.add_argument("--first-player", type=int, choices=(0, 1), default=0)
-    parser.add_argument("--difficulty", choices=("easy", "tactical"), default="tactical")
+    parser.add_argument("--difficulty", choices=("easy", "tactical", "strategic"), default="tactical")
     parser.add_argument("--max-actions", type=int, default=10000)
     args = parser.parse_args()
     if not 0 <= args.seed < 2**64:

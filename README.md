@@ -61,11 +61,13 @@ Outputs are provided for x86-64 and ARM64 Linux, plus Apple Silicon macOS. Linux
 ## First match
 
 1. Choose a deck for yourself and another for the AI in **Practice** or **Deck library**. All four presets can be used on either side; the deck editor also saves a custom list for you and one for the AI.
-2. Choose the battlefields, who starts, and **Relaxed** or **Tactical** difficulty, then **Start practice**.
+2. Choose the battlefields, who starts, and **Relaxed**, **Tactical**, or **Strategic** difficulty, then **Start practice**.
 3. Select up to two opening cards to replace, then begin.
 4. Deploy units at base or a controlled battlefield. Move ready units, individually or as a group, to contest points.
 5. During a showdown or spell chain, use your legal responses or **Pass priority**. In an open turn, the same control becomes **End turn**.
 6. Hover over a card or unit to read its full text; right-click to pin the inspector. Mote can explain a current decision or offer another thought.
+
+Relaxed uses straightforward plays. Tactical weighs combat and resources. Strategic compares bounded sequences of possible plays and their public board outcomes. It samples unknown draws from the public legend domains; it cannot read the opponent’s hidden hand, deck list, facedown identities, or future deck order. Its short search assumes no further discretionary responses while resolving a candidate, so it remains a practice opponent rather than a tournament-strength benchmark.
 
 Both players use the same rune layout: upright runes are ready, sideways runes are exhausted, and the rune deck shows how many remain to be channeled. Use your rune controls to exhaust or recycle a chosen domain before a play, or let payment activate runes automatically. Enable **Power: choose sources** to choose exactly which generated power and runes pay for each action. Stored energy, colored power, flexible power, and spell-only power are shown separately. Battlefield panels explain their effects, and equipped gear is visible on its unit with hover access to the card text.
 
@@ -110,11 +112,11 @@ The client saves completed wins/losses and coach, advice level, animation, and d
 | Kennen / Tempest | Repeated actions, tokens, and resource loops | DSG AwesumRosum, Los Angeles thirteenth place, September 2026 |
 | Kai'Sa / Void Control | Spell resources, removal, and finishers | Sinzari, Vancouver fifteenth place, May 2026; historical list |
 
-The three Los Angeles lists are recent competitive examples as of **October 24, 2026**. Kai'Sa is an older competitive archetype included for variety. These are dated source lists, not an assertion about the newly released Radiance metagame. The full 40-card main lists are preserved. Their 69 distinct cards and 34 additional cards for custom decks have executable printed-effect mappings. All four legend powers, persistent equipment, Hidden, Flow, Repeat, Accelerate, and Empower are implemented. The engine exposes trigger order, on-play targets, death replacements, and rune activation as choices. Coverage and remaining interface limits are described in [RULES.md](docs/RULES.md); this is still an unofficial implementation under development.
+The three Los Angeles lists are recent competitive examples as of **October 24, 2026**. Kai'Sa is an older competitive archetype included for variety. These are dated source lists, not an assertion about the newly released Radiance metagame. The full 40-card main lists are preserved. Their 69 distinct cards and 83 additional cards for custom decks have executable printed-effect mappings. All four legend powers, persistent equipment, Hidden, Flow, Repeat, Accelerate, and Empower are implemented. The engine exposes trigger order, on-play targets, death replacements, and rune activation as choices. Coverage and remaining interface limits are described in [RULES.md](docs/RULES.md); this is still an unofficial implementation under development.
 
 Counts, card IDs, original rune splits, and source URLs are recorded in [`assets/data/decks.json`](assets/data/decks.json). The [official tournament sources](docs/SOURCES.md) explain provenance and historical legality.
 
-The [full card inventory](docs/CARD_COVERAGE.md) accounts for 1,079 legal Standard identities as of October 24, 2026. Current support maps 117 identities, including 103 main-deck cards, legends, battlefields, and runes; 962 remain unavailable. The reproducible importer preserves official printings, bans, and errata without registering unsupported cards as playable. It also flags contradictory source labels and refuses to map an unresolved type conflict into playable cards. The [independent rules audit](docs/RULES_AUDIT.md) records reproduced fixes and remaining interaction work.
+The [full card inventory](docs/CARD_COVERAGE.md) accounts for 1,079 legal Standard identities as of October 24, 2026. Current support maps 166 identities, including 152 main-deck cards, legends, battlefields, and runes; 913 remain unavailable. The reproducible importer preserves official printings, bans, and errata without registering unsupported cards as playable. It also flags contradictory source labels and refuses to map an unresolved type conflict into playable cards. The [independent rules audit](docs/RULES_AUDIT.md) records reproduced fixes and remaining interaction work.
 
 ## Automated opponents
 
@@ -159,10 +161,11 @@ cargo clippy --locked --all-targets -- -D warnings
 cargo run --locked --bin simulate
 ```
 
-The simulator runs **1,024 matches** by default: all 16 ordered deck pairings, both AI levels, and 32 seeds. Starting players alternate across seeds, so each pairing and AI level includes 16 games from each starting position. It checks card/rune conservation, energy accounting, unit validity, and winner consistency after every action, and fails on an illegal action or stalled game. Example options:
+The simulator runs **1,536 matches** by default: all 16 ordered deck pairings, all three AI levels, and 32 seeds. Starting players alternate across seeds, so each pairing and AI level includes 16 games from each starting position. It checks card/rune conservation, energy accounting, unit validity, and winner consistency after every action, and fails on an illegal action or stalled game. Example options:
 
 ```sh
 cargo run --bin simulate -- --seeds 128 --seed 1 --max-steps 5000
+cargo run --bin simulate -- --difficulty strategic --seeds 8
 ```
 
 Run the native UI smoke check on a graphical desktop, isolating its test preferences:
@@ -171,9 +174,9 @@ Run the native UI smoke check on a graphical desktop, isolating its test prefere
 XDG_DATA_HOME=/tmp/local-rift-ui-smoke-data ./run.sh --ui-smoke
 ```
 
-It clicks through setup, mulligan, deployment, board selection, group movement, priority, the inspector, advice/settings, restarting with a different deck, legend and gear resource abilities, the trash browser, empty-card choices, victory replay, on-play targets, separate Repeat targets, manual combat target order, journal navigation, and the second-player opening. It also exercises the saved deck editor, invalid-save preservation, custom lists for both seats, new-card deployment, printed/granted Flow selection, staged battlefield order, drag/drop and cancellation, multi-target staging, long-text scrolling, rune activation, attached gear previews, battlefield inspection, and opponent-trash browsing. The expanded checks include friendly and unrestricted two-unit targeting, four incremental Recruit placements after the parent spell finishes, discard/draw choices, Accelerate and revival payments, live keyword previews, target limits, and Legion triggers. The `--small` option exercises scaled coordinates. Apply the graphics-library workaround above if this host requires it.
+It clicks through setup, mulligan, deployment, board selection, group movement, priority, the inspector, advice/settings, restarting with a different deck, legend and gear resource abilities, the trash browser, empty-card choices, victory replay, on-play targets, separate Repeat targets, manual combat target order, journal navigation, and the second-player opening. It also exercises the saved deck editor, invalid-save preservation, custom lists for both seats, new-card deployment, printed/granted Flow selection, staged battlefield order, drag/drop and cancellation, multi-target staging, long-text scrolling, rune activation, attached gear previews, battlefield inspection, and opponent-trash browsing. The expanded checks include friendly and unrestricted two-unit targeting, four incremental Recruit placements after the parent spell finishes, discard/draw choices, Accelerate and revival payments, live keyword previews, target limits, and Legion triggers. The latest checks also cover three saved AI levels, Shield and equipped gear, the new Repeat cards, Energy Conduit and Gold, and targeted/pending trash plays. The `--small` option exercises scaled coordinates. Apply the graphics-library workaround above if this host requires it.
 
-Verified on October 24, 2026: **296 automated Rust tests, 11 importer tests, 4,096 preset games, 64 additional custom-deck games with per-action conservation checks, 32 external JSON bot games covering all 16 preset and expanded custom matchups, and 216-step native interaction checks at 1440×900 and 1152×720.** Formatting and Clippy with warnings denied pass. The Nix package builds and passes its tests and simulation check; its packaged client and bot API also run successfully on x86-64 Linux. The simulation covers both starting positions for all pairings and both AI levels.
+Verified on October 24, 2026: **349 automated Rust tests, 11 importer tests, 6,144 preset games, 80 additional custom-deck games with per-action conservation checks, 96 external JSON bot games covering all 16 preset and expanded custom matchups at all three AI levels, and 267-step native interaction checks at 1440×900 and 1152×720.** Formatting and Clippy with warnings denied pass. The Nix package builds and passes its tests and simulation check; its packaged client and bot API also run successfully on x86-64 Linux. The simulation covers both starting positions for all pairings and all three AI levels.
 
 These tests verify implemented behavior and application consistency; they do not certify official rules compliance.
 

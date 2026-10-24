@@ -448,26 +448,20 @@ fn matriarch_selects_first_then_optional_accelerate_is_paid_at_actual_play() {
         resolve_one(&mut game);
         assert!(matches!(
             game.decision,
-            Some(Decision::RevivePlay {
-                card_id: 96,
-                trash_index: 0,
-                ..
-            })
+            Some(Decision::PendingPlay { card_id: 96, .. })
         ));
         assert!(game.apply(Action::Choose { accept: false }).is_err());
         if accelerate {
             game.players[0].runes[domain_index(Domain::Fury)] = 1;
             game.players[0].energy = 1;
         }
-        game.apply(Action::PlayFromTrashOptions {
-            trash_index: 0,
+        game.apply(Action::FinalizePendingPlay {
             lane: None,
             targets: vec![],
             repeat_targets: vec![],
             repeat: false,
             accelerate,
             bonus: false,
-            flow: None,
         })
         .unwrap();
         assert_eq!(game.players[0].units[0].ready, accelerate);
@@ -504,15 +498,13 @@ fn ezreal_optional_discount_can_be_allocated_during_revived_unit_finalization() 
     game.apply(Action::SetOptionalDiscount { power: 1 })
         .unwrap();
     assert_eq!(game.decision, before);
-    game.apply(Action::PlayFromTrashOptions {
-        trash_index: 0,
+    game.apply(Action::FinalizePendingPlay {
         lane: None,
         targets: vec![],
         repeat_targets: vec![],
         repeat: false,
         accelerate: true,
         bonus: false,
-        flow: None,
     })
     .unwrap();
     assert!(game.players[0].units.last().unwrap().ready);

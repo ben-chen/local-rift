@@ -647,12 +647,27 @@ impl Ui {
         } else {
             TEXT
         };
-        let w = self.width(label, 13.0);
+        let mut size = 13.0_f32;
+        let mut w;
+        loop {
+            w = measure_text(
+                label,
+                Some(&self.bold),
+                (size * self.scale).round().max(1.0) as u16,
+                1.0,
+            )
+            .width
+                / self.scale;
+            if w <= r.w - 12.0 || size <= 10.0 {
+                break;
+            }
+            size -= 0.5;
+        }
         self.bold(
             label,
             r.x + (r.w - w) / 2.0,
-            r.y + r.h / 2.0 + 5.0,
-            13.0,
+            r.y + r.h / 2.0 + size * 0.38,
+            size,
             color,
         );
         enabled && self.clicked(r)

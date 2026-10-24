@@ -242,12 +242,22 @@ fn fizz_replayed_lunar_boon_recycles_only_after_its_draws_finish() {
     cast(&mut game, 36, vec![]).unwrap();
     assert!(matches!(game.decision, Some(Decision::OptionalPlay { .. })));
     game.apply(Action::Choose { accept: true }).unwrap();
+    assert!(matches!(game.decision, Some(Decision::TrashTarget { .. })));
+    game.apply(Action::SelectCards { indices: vec![0] })
+        .unwrap();
     resolve_one(&mut game);
-    assert!(matches!(game.decision, Some(Decision::ReplaySpell { .. })));
-    game.apply(Action::PlayFromTrashWithTargets {
-        trash_index: 0,
+    assert!(matches!(
+        game.decision,
+        Some(Decision::PendingPlay { card_id: 84, .. })
+    ));
+    assert!(game.players[0].discard.is_empty());
+    game.apply(Action::FinalizePendingPlay {
         lane: None,
         targets: vec![],
+        repeat_targets: vec![],
+        repeat: false,
+        accelerate: false,
+        bonus: false,
     })
     .unwrap();
     resolve_one(&mut game);

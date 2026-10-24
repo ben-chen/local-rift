@@ -93,7 +93,7 @@ pub enum OfficialEffect {
     /// before scoring, not immediately.
     TemporaryGear,
     Equipment,
-    /// Seal of Discord: persistent gear, exhaust to add Chaos power.
+    /// Persistent resource gear; exhaust to add the printed energy or power.
     PowerGear,
     /// Zhonya: persistent next-friendly-death replacement; kill this instead,
     /// recall the unit exhausted. See official text for Hidden.
@@ -306,6 +306,67 @@ pub fn effect(id: usize) -> OfficialEffect {
         },
         101 => BuffSelf,
         102 => Tokens { count: 2, might: 1 },
+        103..=116 | 131 | 149 | 150 => None,
+        117..=124 => Equipment,
+        125..=130 => PowerGear,
+        132 => Draw(2),
+        133 | 134 | 139 => Draw(1),
+        135 | 143 => ModifyMight {
+            amount: 2,
+            minimum: 0,
+            draw: 0,
+            alone_bonus: 0,
+        },
+        136 => ModifyMight {
+            amount: -2,
+            minimum: 0,
+            draw: 0,
+            alone_bonus: 0,
+        },
+        137 => ModifyMight {
+            amount: 1,
+            minimum: 0,
+            draw: 0,
+            alone_bonus: 0,
+        },
+        138 => Tokens { count: 1, might: 3 },
+        140 => Loot {
+            discard: 1,
+            draw: 1,
+        },
+        141 => ModifyMight {
+            amount: 3,
+            minimum: 0,
+            draw: 0,
+            alone_bonus: 0,
+        },
+        142 => ModifyMight {
+            amount: 8,
+            minimum: 0,
+            draw: 0,
+            alone_bonus: 0,
+        },
+        144 => Damage {
+            amount: 6,
+            targets: 1,
+            battlefield_only: true,
+            draw: 0,
+            banish_on_death: false,
+        },
+        145 => ModifyMight {
+            amount: -3,
+            minimum: 0,
+            draw: 0,
+            alone_bonus: 0,
+        },
+        146 => ModifyMight {
+            amount: -2,
+            minimum: 1,
+            draw: 0,
+            alone_bonus: 0,
+        },
+        147 | 148 => Tokens { count: 1, might: 1 },
+        151 => Tokens { count: 4, might: 0 },
         _ => Unsupported,
     }
 }
@@ -313,16 +374,16 @@ pub fn effect(id: usize) -> OfficialEffect {
 pub fn targeting(id: usize) -> Targeting {
     use Allegiance::*;
     let allegiance = match id {
-        4 | 32 => Enemy,
-        8 | 9 | 14 | 19 | 27 | 85 => Friendly,
+        4 | 32 | 144 | 145 => Enemy,
+        8 | 9 | 14 | 19 | 27 | 85 | 137 => Friendly,
         16 | 29 | 82 => Mixed,
         5 | 7 | 11 | 23 | 26 | 28 | 41 | 44 | 50 | 52 | 53 | 55 | 61 | 62 | 63 | 66 | 67 | 74
-        | 75 | 76 | 79 | 80 | 81 | 83 | 99 => Any,
+        | 75 | 76 | 79 | 80 | 81 | 83 | 99 | 135 | 136 | 141 | 142 | 143 | 146 => Any,
         _ => None,
     };
     Targeting {
         allegiance,
-        distinct: matches!(id, 5 | 9 | 16 | 44 | 50 | 61 | 82 | 83 | 85),
+        distinct: matches!(id, 5 | 9 | 16 | 44 | 50 | 61 | 82 | 83 | 85 | 137),
         same_location: matches!(id, 44 | 50),
     }
 }
@@ -331,7 +392,7 @@ pub fn targeting(id: usize) -> Targeting {
 /// Location/allegiance restrictions remain in `targeting` and engine validation.
 pub fn target_bounds(id: usize) -> (usize, usize) {
     use OfficialEffect::*;
-    if id == 85 {
+    if matches!(id, 85 | 137) {
         return (2, 2);
     }
     match effect(id) {
@@ -353,6 +414,11 @@ pub fn target_bounds(id: usize) -> (usize, usize) {
         | BuffAnother => (1, 1),
         _ => (0, 0),
     }
+}
+
+/// These permanents choose their play-trigger target after entering the board.
+pub fn on_play_requires_target(id: usize) -> bool {
+    matches!(id, 23 | 27 | 99 | 141..=146)
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -377,6 +443,7 @@ pub enum TriggerEffect {
     Loot { discard: u8, draw: u8 },
     BuffSelfForTurn(i8),
     GiveUnitMightForTurn(i8),
+    DealToUnit(u8),
     BuffSelf,
     ReadyAnother,
     BuffAnother,
@@ -536,6 +603,30 @@ pub fn triggers(id: usize) -> &'static [Trigger] {
             condition: Condition::Legion,
             effect: TriggerEffect::Tokens { count: 2, might: 1 },
         }],
+        139 => &[trigger!(Played, TriggerEffect::Draw(1))],
+        140 => &[trigger!(
+            Played,
+            TriggerEffect::Loot {
+                discard: 1,
+                draw: 1
+            }
+        )],
+        141 => &[trigger!(Played, TriggerEffect::GiveUnitMightForTurn(3))],
+        142 => &[trigger!(Played, TriggerEffect::GiveUnitMightForTurn(8))],
+        143 => &[trigger!(Played, TriggerEffect::GiveUnitMightForTurn(2))],
+        144 => &[trigger!(Played, TriggerEffect::DealToUnit(6))],
+        145 => &[trigger!(Played, TriggerEffect::GiveUnitMightForTurn(-3))],
+        146 => &[trigger!(Played, TriggerEffect::GiveUnitMightForTurn(-2))],
+        147 | 148 => &[trigger!(
+            Played,
+            TriggerEffect::Tokens { count: 1, might: 1 }
+        )],
+        149 => &[trigger!(Died, TriggerEffect::GoldExhausted)],
+        150 => &[trigger!(Died, TriggerEffect::BirdWithDeflect)],
+        151 => &[trigger!(
+            Played,
+            TriggerEffect::Tokens { count: 4, might: 0 }
+        )],
         _ => &[],
     }
 }
@@ -558,6 +649,7 @@ pub enum Mechanic {
     Hidden,
     Backline,
     Tank,
+    Shield,
     Stun,
     Gold,
     DeathTriggers,
@@ -671,6 +763,33 @@ pub fn requirements(id: usize) -> &'static [Mechanic] {
         98 => &[Accelerate, OptionalCosts, Assault, Deflect, Move],
         99..=101 => &[Legion],
         102 => &[Legion, Tokens],
+        103 | 106 | 114 => &[Move],
+        104 | 111 => &[Assault, Shield],
+        105 => &[Move],
+        107 | 109 | 112 | 113 => &[Shield, Tank],
+        108 => &[Hidden],
+        110 | 115 | 116 => &[Shield],
+        117 | 118 => &[Gear, Equip],
+        119 => &[Gear, Equip, Chain],
+        120 => &[Gear, Equip, Chain, Shield],
+        121 => &[Gear, Equip, Tank],
+        122 => &[Gear, Equip, Deflect],
+        123 => &[Gear, Equip, Assault],
+        124 => &[Gear, Equip, Shield],
+        125..=130 => &[Gear, ResourceAbilities],
+        131 => &[CostReduction],
+        132 => &[Hidden, Chain],
+        133 | 135 => &[Chain, OptionalCosts],
+        136 => &[Chain, OptionalCosts, NegativeMight],
+        137 => &[Chain, OptionalCosts, MultipleTargets],
+        134 => &[Flow],
+        138 => &[Flow, Tokens],
+        139..=142 | 144 => &[Chain],
+        143 => &[Chain, Accelerate, OptionalCosts],
+        145 => &[Chain, Accelerate, OptionalCosts, NegativeMight],
+        146 => &[Chain, Hidden, NegativeMight],
+        147 | 148 | 151 => &[Chain, Tokens],
+        149 | 150 => &[DeathTriggers, Tokens],
         _ => &[],
     }
 }
@@ -708,11 +827,13 @@ pub enum EquipmentAbility {
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct EquipmentRule {
     pub might: u8,
+    pub equip_energy: u8,
     pub equip_domain: Domain,
     pub equip_power: u8,
     pub recycle_trash: u8,
     pub quick_draw: bool,
     pub ability: EquipmentAbility,
+    pub grants: &'static [StaticAbility],
 }
 
 pub fn equipment(id: usize) -> Option<EquipmentRule> {
@@ -721,15 +842,64 @@ pub fn equipment(id: usize) -> Option<EquipmentRule> {
         10 => (1, Domain::Calm, 0, false, EquipmentAbility::GuardianAngel),
         38 => (2, Domain::Chaos, 2, false, EquipmentAbility::LastRites),
         58 => (2, Domain::Fury, 0, true, EquipmentAbility::None),
+        117 => (3, Domain::Order, 0, false, EquipmentAbility::None),
+        118 => (2, Domain::Body, 0, false, EquipmentAbility::None),
+        119 => (3, Domain::Calm, 0, true, EquipmentAbility::None),
+        120 => (0, Domain::Mind, 0, true, EquipmentAbility::None),
+        121 => (1, Domain::Calm, 0, false, EquipmentAbility::None),
+        122 => (1, Domain::Body, 0, false, EquipmentAbility::None),
+        123 => (0, Domain::Fury, 0, false, EquipmentAbility::None),
+        124 => (0, Domain::Order, 0, false, EquipmentAbility::None),
         _ => return None,
     };
     Some(EquipmentRule {
         might,
+        equip_energy: u8::from(id == 124),
         equip_domain,
-        equip_power: 1,
+        equip_power: u8::from(id != 124),
         recycle_trash,
         quick_draw,
         ability,
+        grants: match id {
+            3 => &[StaticAbility::Ganking],
+            120 | 124 => &[StaticAbility::Shield(2)],
+            121 => &[StaticAbility::Tank],
+            122 => &[StaticAbility::Deflect(1)],
+            123 => &[StaticAbility::Assault(2)],
+            _ => &[],
+        },
+    })
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct ResourceGear {
+    pub energy: u8,
+    pub power: u8,
+    pub domain: Option<Domain>,
+}
+
+/// Unattached printed gear abilities. Gold tokens are handled by token identity.
+pub fn resource_gear(id: usize) -> Option<ResourceGear> {
+    let domain = match id {
+        42 => Domain::Chaos,
+        125 => Domain::Calm,
+        126 => Domain::Mind,
+        127 => Domain::Fury,
+        128 => Domain::Body,
+        129 => Domain::Order,
+        130 => {
+            return Some(ResourceGear {
+                energy: 1,
+                power: 0,
+                domain: None,
+            });
+        }
+        _ => return None,
+    };
+    Some(ResourceGear {
+        energy: 0,
+        power: 1,
+        domain: Some(domain),
     })
 }
 
@@ -738,6 +908,12 @@ pub fn equipment(id: usize) -> Option<EquipmentRule> {
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum StaticAbility {
     Deflect(u8),
+    Shield(u8),
+    EntersReady,
+    PerCardEnergyDiscount {
+        amount: u8,
+        minimum: u8,
+    },
     Ganking,
     LegionOnPlay,
     UnchoosableByEnemies {
@@ -846,6 +1022,30 @@ pub fn static_abilities(id: usize) -> &'static [StaticAbility] {
             Ganking,
         ],
         99..=102 => &[LegionOnPlay],
+        103 | 114 => &[EntersReady],
+        104 | 111 => &[Assault(2), Shield(2)],
+        105 => &[Ganking],
+        106 => &[Ganking, EntersReady],
+        107 | 109 | 113 => &[Shield(2), Tank],
+        108 | 132 | 146 => &[Hidden],
+        110 | 116 => &[Shield(1)],
+        112 => &[Shield(1), Tank],
+        115 => &[EntersReady, Shield(3)],
+        119 | 120 => &[QuickDraw],
+        131 => &[PerCardEnergyDiscount {
+            amount: 1,
+            minimum: 1,
+        }],
+        143 => &[Accelerate {
+            energy: 1,
+            power: 1,
+            domain: Domain::Fury,
+        }],
+        145 => &[Accelerate {
+            energy: 1,
+            power: 1,
+            domain: Domain::Mind,
+        }],
         _ => &[],
     }
 }
@@ -894,6 +1094,8 @@ pub fn followups(id: usize) -> &'static [Followup] {
 pub struct FlowCost {
     pub energy: u8,
     pub any_power: u8,
+    /// False means generic power; true requires one of the card's domains.
+    pub colored: bool,
 }
 
 /// Printed Flow costs, excluding temporary Flow granted by Kennen's trigger.
@@ -903,18 +1105,32 @@ pub fn flow_cost(id: usize) -> Option<FlowCost> {
         19 => Some(FlowCost {
             energy: 2,
             any_power: 0,
+            colored: false,
         }),
         26 => Some(FlowCost {
             energy: 4,
             any_power: 0,
+            colored: false,
         }),
         39 => Some(FlowCost {
             energy: 2,
             any_power: 1,
+            colored: false,
         }),
         48 => Some(FlowCost {
             energy: 3,
             any_power: 0,
+            colored: false,
+        }),
+        134 => Some(FlowCost {
+            energy: 2,
+            any_power: 0,
+            colored: false,
+        }),
+        138 => Some(FlowCost {
+            energy: 2,
+            any_power: 1,
+            colored: true,
         }),
         _ => None,
     }
@@ -929,7 +1145,7 @@ pub struct RepeatCost {
 
 pub fn repeat_cost(id: usize) -> Option<RepeatCost> {
     match id {
-        37 => Some(RepeatCost {
+        37 | 133 | 135 | 136 | 137 => Some(RepeatCost {
             energy: 2,
             power: 0,
             domain: None,
@@ -944,6 +1160,25 @@ pub fn repeat_cost(id: usize) -> Option<RepeatCost> {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum TokenPlacement {
+    Default,
+    Base,
+    Here,
+}
+
+pub fn token_placement(id: usize) -> TokenPlacement {
+    match id {
+        48 | 87 | 138 => TokenPlacement::Default,
+        102 | 147 | 148 => TokenPlacement::Here,
+        _ => TokenPlacement::Base,
+    }
+}
+
+pub fn token_is_gear(id: usize) -> bool {
+    token_spec(id).is_some_and(|token| token.is_gear)
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct TokenSpec {
     pub name: &'static str,
     pub might: u8,
@@ -955,15 +1190,15 @@ pub struct TokenSpec {
 
 pub fn token_spec(id: usize) -> Option<TokenSpec> {
     match id {
-        13 => Some(TokenSpec {
+        13 | 149 | 151 => Some(TokenSpec {
             name: "Gold",
             might: 0,
-            count: 1,
+            count: if id == 151 { 4 } else { 1 },
             is_gear: true,
             deflect: false,
             tag: None,
         }),
-        34 => Some(TokenSpec {
+        34 | 148 | 150 => Some(TokenSpec {
             name: "Bird",
             might: 1,
             count: 1,
@@ -979,18 +1214,22 @@ pub fn token_spec(id: usize) -> Option<TokenSpec> {
             deflect: false,
             tag: Some("Bilgewater"),
         }),
-        54 => Some(TokenSpec {
+        54 | 138 => Some(TokenSpec {
             name: "Mech",
             might: 3,
-            count: 2,
+            count: if id == 138 { 1 } else { 2 },
             is_gear: false,
             deflect: false,
             tag: Some("Mech"),
         }),
-        87 | 102 => Some(TokenSpec {
+        87 | 102 | 147 => Some(TokenSpec {
             name: "Recruit",
             might: 1,
-            count: if id == 87 { 4 } else { 2 },
+            count: match id {
+                87 => 4,
+                102 => 2,
+                _ => 1,
+            },
             is_gear: false,
             deflect: false,
             tag: Some("Recruit"),
@@ -1028,7 +1267,7 @@ mod tests {
     #[test]
     fn all_catalog_entries_have_official_classification() {
         let cards = cards();
-        assert_eq!(cards.len(), 103);
+        assert_eq!(cards.len(), 152);
         for card in cards {
             assert_ne!(
                 effect(card.id),
@@ -1038,7 +1277,7 @@ mod tests {
             );
             assert_ne!(support_status(card.id), SupportStatus::UnknownCard);
         }
-        assert_eq!(effect(103), OfficialEffect::Unsupported);
+        assert_eq!(effect(152), OfficialEffect::Unsupported);
     }
 
     #[test]

@@ -38,6 +38,7 @@ jobs:
         run: |
           python3 examples/random_bot.py --binary target/release/rift-api --seed 42
           python3 examples/random_bot.py --binary target/release/rift-api --seed 43 --first-player 1
+          python3 examples/random_bot.py --binary target/release/rift-api --seed 44 --difficulty strategic
       - name: Exercise desktop controls at both window sizes
         env:
           LIBGL_ALWAYS_SOFTWARE: "1"
