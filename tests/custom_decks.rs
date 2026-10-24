@@ -120,7 +120,7 @@ fn all_presets_convert_and_every_colorless_field_is_legal_for_every_legend() {
             custom.runes.iter().map(|&n| usize::from(n)).sum::<usize>(),
             12
         );
-        for field in 0..4 {
+        for field in 0..local_rift::battlefields::BATTLEFIELDS.len() {
             custom.battlefield = field;
             custom.validate().unwrap();
         }
@@ -189,7 +189,7 @@ fn all_printed_domains_must_fit_and_a_shared_single_domain_is_not_enough() {
 
 #[test]
 fn only_actual_champion_tags_qualify_not_yordle_or_ordinary_unit_tags() {
-    assert_eq!(eligible_champions(0), vec![0]);
+    assert_eq!(eligible_champions(0), vec![0, 271]);
     assert_eq!(eligible_champions(1), vec![22, 106]);
     assert_eq!(eligible_champions(2), vec![33]);
     assert_eq!(eligible_champions(3), vec![49]);
@@ -298,7 +298,10 @@ fn malformed_deck_json_never_reaches_game_construction() {
         ("name", json!("x".repeat(101))),
         ("legend", json!(4)),
         ("chosen_champion", json!(-1)),
-        ("battlefield", json!(4)),
+        (
+            "battlefield",
+            json!(local_rift::battlefields::BATTLEFIELDS.len()),
+        ),
         ("cards", json!([[49]])),
         ("cards", json!([[49, 3, 1]])),
         ("cards", json!([[49, 256]])),

@@ -155,6 +155,17 @@ pub fn effect(id: usize) -> OfficialEffect {
         // These permanents have reviewed activated abilities in activated.rs,
         // not automatic effects when the card is played.
         230..=253 => None,
+        // C4 passives, delayed grants and conditional trigger effects execute
+        // in the canonical play/activation modules, not as invented on-play text.
+        254..=259 | 261 | 262 | 264..=271 => None,
+        263 => Draw(1),
+        260 => Damage {
+            amount: 2,
+            targets: 1,
+            battlefield_only: true,
+            draw: 0,
+            banish_on_death: false,
+        },
         0 | 2 | 13 | 17 | 18 | 20 | 22 | 24 | 25 | 30 | 31 | 34 | 43 | 45 | 46 | 47 | 49 | 54
         | 56 | 59 | 60 | 68 | 69 | 70 | 71 | 72 | 73 => None,
         1 => Counter(CounterKind::Abandon),
@@ -451,7 +462,7 @@ pub fn targeting(id: usize) -> Targeting {
         16 | 29 | 82 | 217 | 218 => Mixed,
         5 | 7 | 11 | 23 | 26 | 28 | 41 | 44 | 50 | 52 | 53 | 55 | 61 | 62 | 63 | 66 | 67 | 74
         | 75 | 76 | 79 | 80 | 81 | 83 | 99 | 135 | 136 | 141 | 142 | 143 | 146 | 216 | 219
-        | 221 | 222 | 223 | 226 | 227 | 229 => Any,
+        | 221 | 222 | 223 | 226 | 227 | 229 | 260 => Any,
         _ => None,
     };
     Targeting {
@@ -555,6 +566,8 @@ pub enum Condition {
     PlayedFromFacedown,
     /// Another card was already played this turn when this card was played.
     Legion,
+    DelayedPlayGrants,
+    BonusDamage,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -754,6 +767,8 @@ pub enum Mechanic {
     SpellTriggers,
     BanishOnDeath,
     Legion,
+    DelayedPlayGrants,
+    BonusDamage,
 }
 
 /// Additional systems that must work before the complete card can be advertised
@@ -761,6 +776,38 @@ pub enum Mechanic {
 pub fn requirements(id: usize) -> &'static [Mechanic] {
     use Mechanic::*;
     match id {
+        254 => &[Gear, Chain, ActivatedAbilities, Legion, DelayedPlayGrants],
+        255 => &[
+            Gear,
+            Chain,
+            ActivatedAbilities,
+            DelayedPlayGrants,
+            BonusDamage,
+        ],
+        256 => &[
+            Gear,
+            Chain,
+            ActivatedAbilities,
+            DelayedPlayGrants,
+            OptionalCosts,
+        ],
+        257 | 258 => &[Chain, DelayedPlayGrants, CostReduction],
+        259 | 260 => &[Chain, BonusDamage],
+        261 => &[
+            Chain,
+            OptionalCosts,
+            Stun,
+            ConquerHoldTriggers,
+            DelayedPlayGrants,
+        ],
+        262 => &[Chain, Hidden, Gold, Tokens, DelayedPlayGrants],
+        263 | 264 => &[Chain, DelayedPlayGrants],
+        265 => &[Chain, Accelerate, Assault, OptionalCosts],
+        266 => &[Chain, OptionalCosts],
+        267 => &[Chain, ActivatedAbilities, Empower, CostReduction],
+        268 => &[Gear, Chain, ActivatedAbilities, Empower, CostReduction],
+        269 => &[Chain, Flow, CostReduction],
+        270 | 271 => &[Chain, CostReduction],
         246 => &[Gear, Chain, ActivatedAbilities],
         247 => &[Gear, Chain, ActivatedAbilities, Move],
         248 => &[Chain, ActivatedAbilities],
@@ -1073,6 +1120,15 @@ pub enum StaticAbility {
 pub fn static_abilities(id: usize) -> &'static [StaticAbility] {
     use StaticAbility::*;
     match id {
+        262 => &[Hidden],
+        265 => &[
+            Accelerate {
+                energy: 1,
+                power: 1,
+                domain: Domain::Fury,
+            },
+            Assault(1),
+        ],
         232 | 243 | 252 => &[EntersExhausted],
         233 => &[EntersReady],
         // Caitlyn spells out the exact Backline assignment restriction.
@@ -1343,7 +1399,7 @@ pub fn token_spec(id: usize) -> Option<TokenSpec> {
             deflect: false,
             tag: Some("Shurima"),
         }),
-        13 | 149 | 151 | 160 | 161 | 162 | 163 | 201 | 202 | 219 => Some(TokenSpec {
+        13 | 149 | 151 | 160 | 161 | 162 | 163 | 201 | 202 | 219 | 262 => Some(TokenSpec {
             name: "Gold",
             might: 0,
             count: match id {
@@ -1425,7 +1481,7 @@ mod tests {
     #[test]
     fn all_catalog_entries_have_official_classification() {
         let cards = cards();
-        assert_eq!(cards.len(), 254);
+        assert_eq!(cards.len(), 272);
         for card in cards {
             assert_ne!(
                 effect(card.id),
@@ -1435,7 +1491,7 @@ mod tests {
             );
             assert_ne!(support_status(card.id), SupportStatus::UnknownCard);
         }
-        assert_eq!(effect(254), OfficialEffect::Unsupported);
+        assert_eq!(effect(272), OfficialEffect::Unsupported);
     }
 
     #[test]

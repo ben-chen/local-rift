@@ -4,7 +4,7 @@ use super::{App, Preferences, Screen};
 use crate::ui::GOLD;
 use crate::ui::*;
 use local_rift::{
-    battlefields::{BATTLEFIELDS, battlefield, default_battlefield},
+    battlefields::{battlefield, default_battlefield},
     deck::{CustomDeck, eligible_cards, eligible_champions},
     game::domain_index,
 };
@@ -429,15 +429,24 @@ impl App {
             false,
             true,
         ) {
-            editor.deck.battlefield = (editor.deck.battlefield + 1) % BATTLEFIELDS.len();
+            editor.input = None;
+            self.open_field_picker(super::FieldPickerTarget::Editor, editor.deck.battlefield);
         }
-        self.ui.wrapped(
+        self.ui.wrapped_lines(
             battlefield(editor.deck.battlefield).official_text,
             265.0,
             669.0,
             260.0,
             10.5,
             MUTED,
+            4,
+        );
+        self.ui.text(
+            "Choose the field to read its complete rules.",
+            265.0,
+            737.0,
+            9.0,
+            TEAL,
         );
         // Validation is repeated on save; this status may precede an edit in this
         // frame, so a stale enabled button still cannot persist an invalid list.
@@ -460,7 +469,7 @@ impl App {
             self.ui.text(
                 "Return to setup to save a different deck.",
                 265.0,
-                739.0,
+                812.0,
                 10.0,
                 GOLD,
             );

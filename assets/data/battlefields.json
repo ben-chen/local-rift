@@ -34,6 +34,69 @@
       "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/14a52a367fd41fd84745e050e62d1f281f733467-1038x744.png?accountingTag=RB",
       "errata_url": "https://riftbound.leagueoflegends.com/en-us/news/rules-and-releases/riftbound-origins-card-errata/",
       "corrected_text": "Spells and abilities deal 1 Bonus Damage to units here. (Each instance of damage the spell deals to a unit here is increased by 1.)"
+    },
+    {
+      "id": 4,
+      "name": "The Academy",
+      "source_id": "unl-216-219",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_html": "<p>When you hold here, give your next spell this turn [Repeat] equal to its base cost. (You may pay the additional cost to repeat the spell's effect.)</p>",
+      "official_text": "When you hold here, give your next spell this turn [Repeat] equal to its base cost. (You may pay the additional cost to repeat the spell's effect.)",
+      "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/82646c995f3d0b897ce97f7b68c35f5fd9384b8e-1039x744.png?accountingTag=RB"
+    },
+    {
+      "id": 5,
+      "name": "Firelights' Hideout",
+      "source_id": "rad-162-167",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_html": "<p>When you conquer here, the next unit you play this turn has [Accelerate]. (You may pay :rb_energy_1: and a Power of its Domain as an additional cost to have it enter ready.)</p>",
+      "official_text": "When you conquer here, the next unit you play this turn has [Accelerate]. (You may pay [1 Energy] and a Power of its Domain as an additional cost to have it enter ready.)",
+      "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/f8e2d555ff0dc250de38a1c8924a199dc121f036-1039x744.png?accountingTag=RB"
+    },
+    {
+      "id": 6,
+      "name": "Ornn's Forge",
+      "source_id": "sfd-213-221",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_html": "<p>While you control this battlefield, the first friendly non-token gear played each turn costs :rb_energy_1: less.</p>",
+      "official_text": "While you control this battlefield, the first friendly non-token gear played each turn costs [1 Energy] less.",
+      "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/e228948bc7a6d8ee858fbc0bed3d93a53f467097-1039x744.png?accountingTag=RB"
+    },
+    {
+      "id": 7,
+      "name": "Hunters' Circle",
+      "source_id": "rad-163-167",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_html": "<p>For each player, the first unit or gear they play here on their turn costs :rb_energy_1: less.</p>",
+      "official_text": "For each player, the first unit or gear they play here on their turn costs [1 Energy] less.",
+      "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/e7e25d90506d805f1996e7f751cb5b6baa8ec305-1039x744.png?accountingTag=RB"
+    },
+    {
+      "id": 8,
+      "name": "Piltovan Forge",
+      "source_id": "ven-161-166",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_html": "<p>While you control this battlefield, the first friendly gear activated ability played each turn costs :rb_energy_1: less.</p>",
+      "official_text": "While you control this battlefield, the first friendly gear activated ability played each turn costs [1 Energy] less.",
+      "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/0cc432b51e80d1734529ef323e601e62e202c2b1-1039x744.png?accountingTag=RB"
+    },
+    {
+      "id": 9,
+      "name": "Risen Altar",
+      "source_id": "ven-163-166",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_html": "<p>[Empower] costs of your units here cost :rb_energy_1: or :rb_rune_rainbow: less.</p>",
+      "official_text": "[Empower] costs of your units here cost [1 Energy] or [Any Power] less.",
+      "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/47402ed9d5eebb9e38176315bdaf1a556845eef7-1039x744.png?accountingTag=RB"
+    },
+    {
+      "id": 10,
+      "name": "Vaults of Helia",
+      "source_id": "unl-219-219",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_html": "<p>When you hold here, your non-token units cost :rb_energy_1: more to play this turn.</p>",
+      "official_text": "When you hold here, your non-token units cost [1 Energy] more to play this turn.",
+      "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/9fc7b9a8294665881eece0dacaf3fc70e39f19e4-1039x744.png?accountingTag=RB"
     }
   ]
 }

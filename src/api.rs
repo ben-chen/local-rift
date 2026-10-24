@@ -21,9 +21,12 @@ use serde_json::{Map, Value, json};
 use std::fmt;
 use std::panic::{AssertUnwindSafe, catch_unwind};
 
+mod play_choices;
+
 pub const PROTOCOL_VERSION: u32 = 1;
 pub const MAX_REQUEST_BYTES: usize = 1_048_576;
 const MAX_ACTION_ITEMS: usize = 1024;
+const MAX_ACTION_DEPTH: usize = 8;
 
 #[derive(Clone, Debug)]
 pub struct ResetOptions {
@@ -367,7 +370,9 @@ impl Session {
             "ability":item.ability.as_ref().map(ability_to_json),"targets":item.targets.iter().map(target_to_json).collect::<Vec<_>>(),
             "lane":item.lane,"from_hidden":item.from_hidden,"recycle_after":item.recycle_after,
             "banish_after":item.banish_after,"repeat":item.options.repeat,"accelerate":item.options.accelerate,
-            "bonus":item.options.bonus,"repeat_targets":item.repeat_targets.iter().map(target_to_json).collect::<Vec<_>>()
+            "bonus":item.options.bonus,"repeat_targets":item.repeat_targets.iter().map(target_to_json).collect::<Vec<_>>(),
+            "executions":item.executions.iter().map(play_choices::execution_to_json).collect::<Vec<_>>(),
+            "play_origin":item.play_origin.map(play_choices::origin_to_json),"bonus_damage":item.bonus_damage
         })).collect();
         Ok(
             json!({"protocol":PROTOCOL_VERSION,"revision":self.revision,"viewer":viewer,
@@ -375,6 +380,14 @@ impl Session {
             "first_player":game.first_player,"priority":game.priority(),"winner":game.winner,
             "mulligans_used":game.mulligans_used,"players":players,"battlefields":game.battlefields,
             "battlefield_owner":game.battlefield_owner,"scored_this_turn":game.player_scored_this_turn,
+            "play_grants":game.play_grants.iter().map(|grant|json!({"id":grant.id,"player":grant.player,
+                "source":chain_source_to_json(grant.source),"expires_turn":grant.expires_turn,
+                "kind":play_choices::grant_kind_to_json(grant.kind)})).collect::<Vec<_>>(),
+            "play_history":{"non_token_gears":game.play_history.non_token_gears,
+                "gear_activations":game.play_history.gear_activations,
+                "units_or_gears_here":game.play_history.units_or_gears_here},
+            "resolution_progress":game.resolution_progress().map(|progress|json!({"chain_id":progress.chain_id,
+                "execution":progress.execution,"executions":progress.executions})),
             "chain":chain,"decision":game.decision.as_ref().map(|d|decision_to_json(game,d,viewer)),
             "pending_card_plays":game.pending_cards().iter().map(|card|json!({"id":card.id,"player":card.player,"card_id":card.card_id,"kind":instructed_kind(card.kind)})).collect::<Vec<_>>(),
             "pending_token_plays":game.pending_tokens().iter().map(|token|json!({
@@ -437,7 +450,7 @@ impl Session {
                 keys(object, &["command", "id"])?;
                 Ok(
                     json!({"protocol":PROTOCOL_VERSION,"name":"Local Rift","summary":self.summary(),
-                    "commands":["info","catalog","validate_deck","reset","observe","suggest","quote_payment","validate","apply","mulligan","start","step_ai"],
+                    "commands":["info","catalog","validate_deck","reset","observe","suggest","quote_payment","play_choices","cost_plan","validate","apply","mulligan","start","step_ai"],
                     "suggestions_exhaustive":false,"max_request_bytes":MAX_REQUEST_BYTES}),
                 )
             }
@@ -546,7 +559,7 @@ impl Session {
                 self.step_ai(player(object)?, unsigned(object, "revision")?)?;
                 Ok(self.summary())
             }
-            "apply" | "validate" | "quote_payment" => {
+            "apply" | "validate" | "quote_payment" | "play_choices" | "cost_plan" => {
                 keys(
                     object,
                     &["command", "id", "revision", "player", "action", "action_id"],
@@ -575,7 +588,13 @@ impl Session {
                         })?
                         .action
                 };
-                if command == "quote_payment" {
+                if command == "play_choices" {
+                    self.play_choices(player, revision, action)
+                        .map(|view| play_choices::view_to_json(&view))
+                } else if command == "cost_plan" {
+                    self.cost_plan(player, revision, action)
+                        .map(|plan| play_choices::plan_to_json(&plan))
+                } else if command == "quote_payment" {
                     let quote = self.quote_payment(player, revision, action)?;
                     Ok(json!({"suggested":payment_to_json(&quote.suggested),
                         "available":payment_to_json(&quote.available),
@@ -745,19 +764,31 @@ pub fn target_to_json(target: &Target) -> Value {
 }
 
 pub fn action_to_json(action: &Action) -> Value {
+    action_json_at_depth(action, 0)
+}
+
+fn action_json_at_depth(action: &Action, depth: usize) -> Value {
+    if depth >= MAX_ACTION_DEPTH {
+        return json!({"type":"invalid_action_nesting"});
+    }
     let ts = |targets: &[Target]| targets.iter().map(target_to_json).collect::<Vec<_>>();
     let t = |target: &Option<Target>| target.as_ref().map(target_to_json);
     match action {
+        Action::WithPlayChoices { action, choices } => json!({"type":"with_play_choices",
+            "action":action_json_at_depth(action, depth + 1),"choices":play_choices::choices_to_json(choices)}),
+        Action::FinalizeTokenPlay { lane, accelerate } => {
+            json!({"type":"finalize_token_play","lane":lane,"accelerate":accelerate})
+        }
         Action::BeginPayment { action } => json!({"type":"begin_payment",
             "action":if matches!(**action, Action::BeginPayment {..} | Action::WithPowerPayment {..}) {
                 json!({"type":"invalid_nested_payment"})
-            } else { action_to_json(action) }}),
+            } else { action_json_at_depth(action, depth + 1) }}),
         Action::CompletePayment => json!({"type":"complete_payment"}),
         Action::RecycleRune { domain, exhausted } => {
             json!({"type":"recycle_rune", "domain":domain.name().to_lowercase(), "exhausted":exhausted})
         }
         Action::WithPowerPayment { action, payment } => json!({"type":"with_power_payment",
-            "action":if matches!(**action, Action::WithPowerPayment {..}) {json!({"type":"with_power_payment"})} else {action_to_json(action)},
+            "action":if matches!(**action, Action::WithPowerPayment {..}) {json!({"type":"with_power_payment"})} else {action_json_at_depth(action, depth + 1)},
             "payment":payment_to_json(payment)}),
         Action::PlaceToken { lane } => json!({"type":"place_token","lane":lane}),
         Action::ChooseBattlefield { lane } => json!({"type":"choose_battlefield","lane":lane}),
@@ -1146,10 +1177,33 @@ fn parse_payment(value: &Value) -> Result<PowerPayment, ApiError> {
 }
 
 pub fn parse_action(value: &Value) -> Result<Action, ApiError> {
+    parse_action_at_depth(value, 0)
+}
+
+fn parse_action_at_depth(value: &Value, depth: usize) -> Result<Action, ApiError> {
+    if depth >= MAX_ACTION_DEPTH {
+        return Err(ApiError::invalid(
+            "Action wrappers exceed the nesting limit.",
+        ));
+    }
     let o = object(value)?;
     let kind = string(o, "type")?;
     macro_rules! fields {($($name:literal),* $(,)?)=>{keys(o,&["type",$($name),*])?};}
     Ok(match kind {
+        "with_play_choices" => {
+            fields!("action", "choices");
+            Action::WithPlayChoices {
+                action: Box::new(parse_action_at_depth(required(o, "action")?, depth + 1)?),
+                choices: play_choices::parse_choices(required(o, "choices")?)?,
+            }
+        }
+        "finalize_token_play" => {
+            fields!("lane", "accelerate");
+            Action::FinalizeTokenPlay {
+                lane: lane(o)?,
+                accelerate: flag(o, "accelerate")?,
+            }
+        }
         "recycle_rune" => {
             fields!("domain", "exhausted");
             Action::RecycleRune {
@@ -1169,7 +1223,7 @@ pub fn parse_action(value: &Value) -> Result<Action, ApiError> {
                 return Err(ApiError::invalid("Payment choices cannot be nested."));
             }
             Action::WithPowerPayment {
-                action: Box::new(parse_action(inner)?),
+                action: Box::new(parse_action_at_depth(inner, depth + 1)?),
                 payment: parse_payment(
                     o.get("payment")
                         .ok_or_else(|| ApiError::invalid("Provide a payment choice."))?,
@@ -1499,7 +1553,7 @@ pub fn parse_action(value: &Value) -> Result<Action, ApiError> {
                 ));
             }
             Action::BeginPayment {
-                action: Box::new(parse_action(intent)?),
+                action: Box::new(parse_action_at_depth(intent, depth + 1)?),
             }
         }
         "complete_payment" => {
@@ -1579,13 +1633,22 @@ fn decision_to_json(game: &Game, decision: &Decision, viewer: usize) -> Value {
         Decision::TokenPlacement {
             card_id, remaining, ..
         } => json!({"type":"token_placement","card_id":card_id,"remaining":remaining}),
+        Decision::TokenPlay {
+            card_id,
+            remaining,
+            fixed_lane,
+            ..
+        } => json!({"type":"token_play",
+            "card_id":card_id,"remaining":remaining,"destination":match fixed_lane {
+                None=>json!({"mode":"choose"}), Some(lane)=>json!({"mode":"fixed","lane":lane})}}),
         Decision::ResolutionTargets {
             card_id,
             groups,
             repeated,
+            execution,
             ..
         } => {
-            json!({"type":"resolution_targets","card_id":card_id,"groups":groups.iter().map(|group|group.iter().map(target_to_json).collect::<Vec<_>>()).collect::<Vec<_>>(),"repeated":repeated})
+            json!({"type":"resolution_targets","card_id":card_id,"groups":groups.iter().map(|group|group.iter().map(target_to_json).collect::<Vec<_>>()).collect::<Vec<_>>(),"repeated":repeated,"execution":execution})
         }
         Decision::OrderTriggers { options, .. } => {
             json!({"type":"order_triggers","options":options.iter().map(|option|json!({"id":option.id,"card_id":option.card_id,"label":option.label})).collect::<Vec<_>>()})
@@ -1722,9 +1785,16 @@ fn ability_to_json(ability: &ChainAbility) -> Value {
             LegendAbility::ViktorRecruit => json!({"type":"viktor_recruit"}),
             LegendAbility::LuxDraw => json!({"type":"lux_draw"}),
         },
-        ChainAbility::Battlefield(ability) => json!({"type":match ability{
-        BattlefieldAbility::TempleDraw{..}=>"temple_draw",BattlefieldAbility::SeatDraw{..}=>"seat_draw",BattlefieldAbility::MinefieldBurn{..}=>"minefield_burn"
-    },"lane":ability.lane()}),
+        ChainAbility::Battlefield(ability) => match ability {
+            BattlefieldAbility::Grant { lane, kind } => json!({"type":"battlefield_grant",
+                "lane":lane,"kind":play_choices::grant_kind_to_json(*kind)}),
+            _ => json!({"type":match ability {
+                BattlefieldAbility::TempleDraw{..}=>"temple_draw",
+                BattlefieldAbility::SeatDraw{..}=>"seat_draw",
+                BattlefieldAbility::MinefieldBurn{..}=>"minefield_burn",
+                BattlefieldAbility::Grant{..}=>unreachable!(),
+            },"lane":ability.lane()}),
+        },
         ChainAbility::Triggered(ability) => match ability {
             TriggeredAbility::DestroyGear { gear_id } => {
                 json!({"type":"destroy_gear","gear_id":gear_id})

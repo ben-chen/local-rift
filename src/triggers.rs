@@ -296,6 +296,29 @@ impl Game {
         }
     }
     pub(super) fn emit_event(&mut self, event: EventSnapshot) {
+        if self.trigger_state.completed_cards[event.player] == 1
+            && !event.token
+            && matches!(
+                event.kind,
+                Occurrence::UnitPlayed | Occurrence::GearPlayed | Occurrence::SpellPlayed
+            )
+        {
+            let sources: Vec<_> = self.players[event.player]
+                .units
+                .iter()
+                .filter(|u| !u.token && u.card_id == 258 && u.lane.is_some())
+                .map(|u| u.id)
+                .collect();
+            for id in sources {
+                self.queue_ability(
+                    event.player,
+                    258,
+                    vec![],
+                    ChainAbility::CardEffect { entering: Some(id) },
+                );
+            }
+        }
+
         if event.kind == Occurrence::SpellPlayed
             && !event.token
             && let Some(card_id) = event.card_id
@@ -837,7 +860,15 @@ impl Game {
                 }
                 Effect::Damage(amount) => {
                     for &target in &targets {
-                        let amount = self.battlefield_damage(target, amount);
+                        let amount = self.damage_amount(
+                            crate::game::damage::DamageContext {
+                                player,
+                                bonus_damage: 0,
+                                dealer: crate::game::damage::DamageDealer::Ability,
+                            },
+                            target,
+                            amount,
+                        );
                         if let Some(unit) = self.unit_mut(target) {
                             unit.damage = unit.damage.saturating_add(amount);
                         }

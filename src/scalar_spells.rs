@@ -1,5 +1,6 @@
 //! Context-sensitive spell instructions. Values are evaluated on resolution;
 //! costs are evaluated separately during finalization.
+use super::damage::{DamageContext, DamageDealer};
 use super::{Game, Target};
 use crate::rules::{OfficialEffect, SpellDamage, SpellMight};
 
@@ -40,7 +41,7 @@ impl Game {
             }
             OfficialEffect::DamageAndGold { amount } => {
                 for &target in valid {
-                    self.spell_damage(target, amount);
+                    self.spell_damage(player, target, amount);
                 }
                 // A failed damage target does not stop the next instruction.
                 // The token waits until the parent spell completes.
@@ -49,7 +50,7 @@ impl Game {
             OfficialEffect::ContextualDamage(condition) => {
                 for &target in valid {
                     let amount = self.contextual_damage(player, target, condition);
-                    self.spell_damage(target, amount);
+                    self.spell_damage(player, target, amount);
                 }
             }
             OfficialEffect::ContextualMight(condition) => {
@@ -132,11 +133,13 @@ impl Game {
         }
     }
 
-    fn spell_damage(&mut self, target: Target, amount: u8) {
-        let damage = self.battlefield_damage(target, amount);
-        if let Some(unit) = self.unit_mut(target) {
-            unit.damage = unit.damage.saturating_add(damage);
-        }
+    fn spell_damage(&mut self, player: usize, target: Target, amount: u8) {
+        let context = self.current_damage_context().unwrap_or(DamageContext {
+            player,
+            bonus_damage: 0,
+            dealer: DamageDealer::Ability,
+        });
+        self.deal_damage(context, target, amount);
     }
 
     fn draw_count(&mut self, player: usize, count: usize) {

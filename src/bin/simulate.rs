@@ -128,10 +128,12 @@ fn check_invariants(game: &Game) -> Result<(), String> {
             if unit.lane.is_some_and(|lane| lane >= 2) {
                 return Err(format!("unit {} is in an unknown battlefield", unit.id));
             }
-            // Lethal units stay visible while their owner chooses an applicable
-            // death replacement. Cleanup resumes as soon as that choice ends.
+            // CR321 defers cleanup until a resolving physical spell finishes,
+            // including Predict and repeated instructions. Lethal units also
+            // remain visible during a cleanup's death-replacement choice.
             if unit.damage > 0
                 && unit.damage >= game.unit_might(unit)
+                && game.resolution_progress().is_none()
                 && !matches!(
                     game.decision,
                     Some(local_rift::game::Decision::DeathReplacement { .. })

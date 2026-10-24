@@ -14,6 +14,12 @@ use crate::legends::{LegendAbility, LegendState, LegendTrigger};
 use crate::rules::{self, Allegiance, CounterKind, OfficialEffect, StaticAbility};
 use std::collections::VecDeque;
 
+#[path = "damage.rs"]
+pub mod damage;
+#[path = "play.rs"]
+pub mod play;
+use play::*;
+
 #[path = "scalar_spells.rs"]
 mod scalar_spells;
 #[path = "strategic.rs"]
@@ -49,6 +55,14 @@ pub enum Target {
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Action {
+    WithPlayChoices {
+        action: Box<Action>,
+        choices: PlayChoices,
+    },
+    FinalizeTokenPlay {
+        lane: Option<usize>,
+        accelerate: bool,
+    },
     BeginPayment {
         action: Box<Action>,
     },
@@ -362,6 +376,9 @@ pub struct ChainItem {
     pub from_hidden: bool,
     pub options: PlayOptions,
     pub repeat_targets: Vec<Target>,
+    pub executions: Vec<ExecutionChoices>,
+    pub play_origin: Option<PlayOrigin>,
+    pub bonus_damage: u16,
 }
 
 /// Canonical definition source, independent of legacy main-card art references.
@@ -383,6 +400,12 @@ pub struct Showdown {
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Decision {
+    TokenPlay {
+        player: usize,
+        card_id: CardId,
+        remaining: u8,
+        fixed_lane: Option<Option<usize>>,
+    },
     Payment {
         player: usize,
     },
@@ -430,6 +453,7 @@ pub enum Decision {
         card_id: CardId,
         groups: Vec<Vec<Target>>,
         repeated: bool,
+        execution: usize,
     },
     OrderTriggers {
         player: usize,
@@ -593,7 +617,8 @@ pub enum CardSupport {
 impl Decision {
     pub fn player(&self) -> usize {
         match self {
-            Self::Payment { player }
+            Self::TokenPlay { player, .. }
+            | Self::Payment { player }
             | Self::ResourceConversion { player, .. }
             | Self::TriggerTargets { player, .. }
             | Self::BattlefieldOrder { player, .. }
@@ -717,6 +742,15 @@ struct PendingCombat {
 
 #[derive(Clone, Debug)]
 pub struct Game {
+    pub play_history: PlayHistory,
+    pub play_grants: Vec<PlayGrant>,
+    pub(crate) active_play: Option<ActivePlay>,
+    pub(crate) selected_cost_order: Vec<CostSelection>,
+    pub(crate) reserved_play_grants: Vec<(u32, Vec<PlayGrant>)>,
+    pub(crate) payment_play_grants: Vec<PlayGrant>,
+    resolution_frame: Option<ResolutionFrame>,
+    damage_context: Option<damage::DamageContext>,
+
     pub trigger_state: TriggerState,
     pub catalog: Vec<CardDef>,
     pub presets: Vec<DeckPreset>,
@@ -946,6 +980,9 @@ impl Game {
         });
         let legend = legend_ids.map(|id| LegendState::from_legend(id).expect("validated legend"));
         let mut game = Self {
+            play_history:PlayHistory::default(),
+            play_grants:Vec::new(),
+            active_play:None,selected_cost_order:Vec::new(),reserved_play_grants:Vec::new(),payment_play_grants:Vec::new(),resolution_frame:None,damage_context:None,
             catalog,
             presets,
             players,
@@ -1394,6 +1431,13 @@ impl Game {
     }
 
     pub fn can_afford(&self, player: usize, card: &CardDef) -> bool {
+        if let Some(a) = self
+            .active_play
+            .as_ref()
+            .filter(|a| a.player == player && a.card_id == card.id)
+        {
+            return a.costs.energy <= u32::from(self.payment_energy_available(player));
+        }
         self.payment_energy_available(player) >= self.effective_cost(player, card).into()
             && self.power_available(player, card.domains, card.kind == CardKind::Spell)
                 >= card.power_cost.into()
@@ -1402,6 +1446,16 @@ impl Game {
     /// All action validation happens before any mutation, so rejected actions
     /// never spend resources or consume cards.
     pub fn apply(&mut self, action: Action) -> Result<(), String> {
+        Self::validate_choice_nesting(&action)?;
+        if let Action::WithPlayChoices { action, choices } = action {
+            return self.apply_play_choices(*action, Some(choices));
+        }
+        if self.active_play.is_none()
+            && Self::is_card_play_action(&action)
+            && !matches!(self.decision, Some(Decision::ReviveUnit { .. }))
+        {
+            return self.apply_play_choices(action, None);
+        }
         if let Action::WithPowerPayment { action, payment } = action {
             return self.apply_power_payment(*action, payment);
         }
@@ -1438,6 +1492,7 @@ impl Game {
                     | Action::ChooseResolutionGroup { .. }
                     | Action::ChooseBattlefield { .. }
                     | Action::PlaceToken { .. }
+                    | Action::FinalizeTokenPlay { .. }
                     | Action::FinalizePendingPlay { .. }
             )
             && !(self.resource_payment_pending()
@@ -1462,6 +1517,7 @@ impl Game {
                 | Action::SetOptionalDiscount { .. }
                 | Action::ChooseResolutionGroup { .. }
                 | Action::PlaceToken { .. }
+                | Action::FinalizeTokenPlay { .. }
                 | Action::ActivateRune { .. }
                 | Action::RecycleRune { .. }
                 | Action::ActivateGear { .. }
@@ -1470,7 +1526,10 @@ impl Game {
                 | Action::ActivateLegend { .. }
         );
         match action {
-            Action::BeginPayment { .. } | Action::CompletePayment => unreachable!(),
+            Action::BeginPayment { .. }
+            | Action::CompletePayment
+            | Action::WithPlayChoices { .. } => unreachable!(),
+            Action::FinalizeTokenPlay { lane, .. } => self.place_token(lane)?,
             Action::ResolveConversion { amount } => self.resolve_conversion(amount)?,
             Action::ActivateAbilityWithCosts {
                 source,
@@ -1817,6 +1876,14 @@ impl Game {
         let target = targets.first().copied();
         let chosen_targets = targets.clone();
         self.cards_played[player] += 1;
+        if self.catalog[id].kind == CardKind::Gear {
+            self.play_history.non_token_gears[player] += 1;
+        }
+        if self.catalog[id].kind != CardKind::Spell
+            && let Some(lane) = lane
+        {
+            self.play_history.units_or_gears_here[player][lane] += 1;
+        }
         if self.catalog[id].kind == CardKind::Spell {
             if self.chain.is_empty() {
                 self.chain_initiator = Some(player);
@@ -1836,6 +1903,9 @@ impl Game {
                 from_hidden: false,
                 options: PlayOptions::default(),
                 repeat_targets: Vec::new(),
+                executions: Vec::new(),
+                play_origin: None,
+                bonus_damage: 0,
             });
             self.chain_passes = 0;
             self.priority_player = player;
@@ -1857,6 +1927,46 @@ impl Game {
             self.resolve_play(player, id, lane, targets);
         }
         if self.catalog[id].kind == CardKind::Spell {
+            if let Some(a) = self.active_play.clone() {
+                if let Some(item) = self
+                    .chain
+                    .iter_mut()
+                    .rev()
+                    .find(|i| i.ability.is_none() && i.player == player && i.card_id == id)
+                {
+                    item.executions = vec![ExecutionChoices {
+                        targets: item.targets.clone(),
+                        mode: None,
+                    }];
+                    item.executions
+                        .extend(a.choices.repeats.iter().map(|r| r.choices.clone()));
+                    item.repeat_targets = a
+                        .choices
+                        .repeats
+                        .first()
+                        .map_or_else(Vec::new, |r| r.choices.targets.clone());
+                    item.options = PlayOptions {
+                        repeat: !a.choices.repeats.is_empty(),
+                        accelerate: a.choices.accelerate,
+                        bonus: a.choices.bonus,
+                    };
+                    item.play_origin = Some(a.origin);
+                    item.bonus_damage = a
+                        .grants
+                        .iter()
+                        .filter_map(|g| {
+                            if let PlayGrantKind::BonusNextSpell(n) = g.kind {
+                                Some(u16::from(n))
+                            } else {
+                                None
+                            }
+                        })
+                        .sum();
+                }
+                for r in &a.choices.repeats {
+                    self.trigger_chosen(player, &r.choices.targets);
+                }
+            }
             self.trigger_chosen(player, &chosen_targets);
         }
     }
@@ -1878,6 +1988,7 @@ impl Game {
                     | Decision::CounterTax { .. }
                     | Decision::OnPlayTarget { .. }
                     | Decision::TriggerTargets { .. }
+                    | Decision::TokenPlay { .. }
             )
         )
     }
@@ -1916,6 +2027,26 @@ impl Game {
             self.stage_entry(lane, player);
         }
         self.emit_unit_event(Occurrence::UnitPlayed, player, unit_id);
+        let ready_buffs = self
+            .active_play
+            .as_ref()
+            .filter(|a| a.player == player)
+            .map_or(0, |a| {
+                a.grants
+                    .iter()
+                    .filter(|g| g.kind == PlayGrantKind::ReadyBuffNextUnit)
+                    .count()
+            });
+        for _ in 0..ready_buffs {
+            self.queue_ability(
+                player,
+                261,
+                vec![],
+                ChainAbility::CardEffect {
+                    entering: Some(unit_id),
+                },
+            );
+        }
         // Tokens are played units, although they are not played cards.
         let vexes = self.players[1 - player]
             .units
@@ -2112,6 +2243,7 @@ impl Game {
         let Some(Decision::ResolutionTargets {
             ref groups,
             repeated,
+            execution,
             ..
         }) = self.decision
         else {
@@ -2125,9 +2257,12 @@ impl Game {
             .chain
             .last_mut()
             .ok_or("The resolving spell is missing.")?;
-        if repeated {
+        if let Some(choices) = item.executions.get_mut(execution) {
+            choices.targets = targets.clone();
+        }
+        if execution == 1 {
             item.repeat_targets = targets;
-        } else {
+        } else if !repeated {
             item.targets = targets;
             item.target = item.targets.first().copied();
         }
@@ -2136,13 +2271,27 @@ impl Game {
     }
 
     fn place_token(&mut self, lane: Option<usize>) -> Result<(), String> {
-        let Some(Decision::TokenPlacement { player, .. }) = self.decision else {
+        let Some(Decision::TokenPlacement { player, .. } | Decision::TokenPlay { player, .. }) =
+            self.decision
+        else {
             return Err("No token placement is pending.".into());
         };
-        if lane.is_some_and(|lane| {
-            lane >= BATTLEFIELDS || self.battlefield_owner[lane] != Some(player)
-        }) {
-            return Err("Play the token at your base or a battlefield you control.".into());
+        let fixed = self.pending_token.as_ref().and_then(|t| t.location);
+        if fixed.is_some_and(|fixed| fixed != lane)
+            || (fixed.is_none()
+                && lane.is_some_and(|lane| {
+                    lane >= BATTLEFIELDS || self.battlefield_owner[lane] != Some(player)
+                }))
+        {
+            return Err("Choose a legal location for this token play.".into());
+        }
+        let id = self
+            .pending_token
+            .as_ref()
+            .ok_or("The pending token is missing.")?
+            .card_id;
+        if let Some(result) = self.pay_active_play(player, id) {
+            result?;
         }
         let token = self
             .pending_token
@@ -2155,6 +2304,10 @@ impl Game {
     }
 
     fn resolve_top_chain(&mut self) -> Result<(), String> {
+        if self.resolution_frame.is_some() || self.chain.last().is_some_and(|i| i.ability.is_none())
+        {
+            return self.resolve_spell_executions();
+        }
         let item = self.chain.last().expect("resolving chain");
         if let Some(ChainAbility::CardTrigger { rule_index, .. }) = &item.ability
             && let Some((discard, draw)) = Self::trigger_loot(item.card_id, *rule_index)
@@ -2198,6 +2351,7 @@ impl Game {
                         card_id: item.card_id,
                         groups,
                         repeated,
+                        execution: usize::from(repeated),
                     });
                     return Ok(());
                 }
@@ -2209,6 +2363,11 @@ impl Game {
             self.pending_loot = None;
         }
         let physical_spell = item.ability.is_none();
+        self.damage_context = Some(damage::DamageContext {
+            player: item.player,
+            bonus_damage: 0,
+            dealer: damage::DamageDealer::Ability,
+        });
         if let Some(ability) = item.ability.clone() {
             match ability {
                 ChainAbility::CardTrigger {
@@ -2289,6 +2448,7 @@ impl Game {
                         })
                         .is_none()
                     }) {
+                        self.damage_context = None;
                         self.after_resolution();
                         return Ok(());
                     }
@@ -2429,6 +2589,7 @@ impl Game {
                 self.players[item.player].discard.push(item.card_id);
             }
         }
+        self.damage_context = None;
         if physical_spell {
             self.after_spell_played(
                 item.player,
@@ -2455,6 +2616,15 @@ impl Game {
     }
 
     pub(crate) fn after_resolution(&mut self) {
+        if self.resolution_frame.is_some() {
+            if self.decision.is_none()
+                && !self.payment_blocks_cleanup()
+                && self.resource_frames.is_empty()
+            {
+                let _ = self.resolve_spell_executions();
+            }
+            return;
+        }
         if self.payment_blocks_cleanup() || !self.resource_frames.is_empty() {
             return;
         }
@@ -2595,6 +2765,7 @@ impl Game {
                 .ok_or("The pending card is missing.")?;
             // CR358.5 undoes a play that cannot finalize, including its move
             // out of the originating trash. No completed-play trigger occurs.
+            self.restore_reserved_grants(card.id);
             self.restore_failed_card(card);
             self.decision = None;
             self.after_resolution();
@@ -2613,6 +2784,7 @@ impl Game {
             Decision::BattlefieldOrder { .. }
                 | Decision::TrashTarget { .. }
                 | Decision::TokenPlacement { .. }
+                | Decision::TokenPlay { .. }
                 | Decision::ResolutionTargets { .. }
                 | Decision::OrderTriggers { .. }
                 | Decision::OnPlayTarget { .. }
@@ -2692,6 +2864,7 @@ impl Game {
             | Decision::TrashTarget { .. }
             | Decision::PendingPlay { .. }
             | Decision::TokenPlacement { .. }
+            | Decision::TokenPlay { .. }
             | Decision::ResolutionTargets { .. }
             | Decision::OrderTriggers { .. }
             | Decision::OnPlayTarget { .. }
@@ -2881,6 +3054,13 @@ impl Game {
         id: CardId,
         options: PlayOptions,
     ) -> Result<(u8, u8), String> {
+        if self
+            .active_play
+            .as_ref()
+            .is_some_and(|a| a.card_id == id && a.player == player)
+        {
+            return Ok((0, 0));
+        }
         if let Some(original) = self.payment_frozen_source() {
             return original.optional_cost(player, id, options);
         }
@@ -2969,6 +3149,7 @@ impl Game {
                 .iter_mut()
                 .rev()
                 .find(|i| i.player == player && i.card_id == id && i.ability.is_none())
+                && self.active_play.is_none()
             {
                 item.options = options;
                 item.repeat_targets = repeated.clone();
@@ -3022,13 +3203,8 @@ impl Game {
         } else {
             (2, 1, Domain::Chaos)
         };
-        if self.payment_energy_available(player) < energy
-            || self.available_power(player, Some(domain)) < power
-        {
-            return Err("Not enough energy and power to Empower this unit.".into());
-        }
-        self.pay_energy(player, energy);
-        self.spend_power(player, Some(domain), power)?;
+        let _ = (energy, power, domain);
+        self.pay_action_cost(&Action::EmpowerUnit { unit_id, pay_power })?;
         self.queue_ability(player, id, Vec::new(), ChainAbility::Empower { unit_id });
         Ok(())
     }
@@ -3095,6 +3271,10 @@ impl Game {
                 || !self.hidden_target_allowed(card_id, origin, target))
         {
             return false;
+        }
+        if card_id == 261 {
+            return matches!(target,Target::Unit{player:owner,..} if owner!=player)
+                && self.official_target_valid(player, 7, lane, target, 0);
         }
         if rules::equipment(card_id).is_some_and(|gear| gear.quick_draw) {
             matches!(target,Target::Unit{player:owner,..} if owner==player)
@@ -3340,11 +3520,12 @@ impl Game {
         }
         let targets = self.prepare_targets(player, id, None, targets)?;
         let tax = self.deflect_cost(player, &targets);
-        if self.power_available(
-            player,
-            &ALL_DOMAINS,
-            self.catalog[id].kind == CardKind::Spell,
-        ) < tax.into()
+        if self.active_play.is_none()
+            && self.power_available(
+                player,
+                &ALL_DOMAINS,
+                self.catalog[id].kind == CardKind::Spell,
+            ) < tax.into()
         {
             return Err("Not enough power to pay Deflect.".into());
         }
@@ -3437,6 +3618,9 @@ impl Game {
         id: CardId,
         targets: &[Target],
     ) -> Result<(), String> {
+        if let Some(result) = self.pay_active_play(player, id) {
+            return result;
+        }
         self.spend(player, id)?;
         self.spend_deflect(player, self.catalog[id].kind == CardKind::Spell, targets)
     }
@@ -3675,6 +3859,7 @@ impl Game {
         self.trigger_batch += 1;
         let id = self.next_chain_id;
         self.next_chain_id += 1;
+        self.reserve_play_grants(player, self.catalog[card_id].kind, id, false);
         let card = PendingCard {
             id,
             player,
@@ -3743,6 +3928,12 @@ impl Game {
         self.trigger_batch += 1;
         let id = self.next_chain_id;
         self.next_chain_id += 1;
+        self.reserve_play_grants(
+            player,
+            if gear { CardKind::Gear } else { CardKind::Unit },
+            id,
+            true,
+        );
         let token = PendingToken {
             id,
             player,
@@ -3765,6 +3956,10 @@ impl Game {
     }
 
     fn finish_token_play(&mut self, token: PendingToken, lane: Option<usize>) {
+        self.reserved_play_grants.retain(|(id, _)| *id != token.id);
+        if let Some(l) = lane {
+            self.play_history.units_or_gears_here[token.player][l] += 1;
+        }
         if token.gear {
             self.gear_gold(token.player, true);
         } else {
@@ -3853,8 +4048,40 @@ impl Game {
                 self.discard_unfinalizable_trigger();
             }
             PendingTriggerEffect::Token(token) => {
-                if let Some(lane) = token.location {
+                self.priority_player = token.player;
+                let remaining=1+self.pending_triggers.iter().filter(|p|matches!(&p.effect,PendingTriggerEffect::Token(t)if t.player==token.player&&t.card_id==token.card_id)).count()as u8;
+                self.pending_token = Some(token.clone());
+                let options = self
+                    .play_choices(&Action::PlaceToken {
+                        lane: token.location.flatten(),
+                    })
+                    .ok();
+                if options.as_ref().is_some_and(|o| o.accelerate.is_some()) {
+                    self.decision = Some(Decision::TokenPlay {
+                        player: token.player,
+                        card_id: token.card_id,
+                        remaining,
+                        fixed_lane: token.location,
+                    });
+                } else if let Some(lane) = token.location {
+                    self.pending_token = None;
+                    let grants = self
+                        .reserved_play_grants
+                        .iter()
+                        .find(|(k, _)| *k == token.id)
+                        .map_or_else(Vec::new, |(_, g)| g.clone());
+                    let prior = self.active_play.take();
+                    self.active_play = Some(ActivePlay {
+                        player: token.player,
+                        card_id: token.card_id,
+                        origin: PlayOrigin::Token,
+                        choices: PlayChoices::default(),
+                        costs: CostPlanView::default(),
+                        grants,
+                        paid: true,
+                    });
                     self.finish_token_play(token, lane);
+                    self.active_play = prior;
                 } else {
                     let remaining = 1 + self.pending_triggers.iter().filter(|pending| matches!(&pending.effect, PendingTriggerEffect::Token(other) if other.player == token.player && other.card_id == token.card_id)).count() as u8;
                     self.decision = Some(Decision::TokenPlacement {
@@ -3933,7 +4160,9 @@ impl Game {
                 | ChainAbility::CardEffect { .. }
                 | ChainAbility::Legend(LegendAbility::KennenEmpower | LegendAbility::LuxDraw)
                 | ChainAbility::Battlefield(
-                    BattlefieldAbility::SeatDraw { .. } | BattlefieldAbility::MinefieldBurn { .. }
+                    BattlefieldAbility::SeatDraw { .. }
+                        | BattlefieldAbility::MinefieldBurn { .. }
+                        | BattlefieldAbility::Grant { .. }
                 )
         );
         if !triggered {
@@ -3969,6 +4198,16 @@ impl Game {
         targets: Vec<Target>,
         ability: ChainAbility,
     ) {
+        if matches!(
+            ability,
+            ChainAbility::Equip { .. }
+                | ChainAbility::Activated {
+                    source: AbilitySource::Gear { .. },
+                    ..
+                }
+        ) {
+            self.play_history.gear_activations[player] += 1;
+        }
         if self.chain.is_empty() {
             self.chain_initiator = Some(player);
         }
@@ -3987,6 +4226,9 @@ impl Game {
             from_hidden: false,
             options: PlayOptions::default(),
             repeat_targets: Vec::new(),
+            executions: Vec::new(),
+            play_origin: None,
+            bonus_damage: 0,
         });
         self.chain_passes = 0;
         self.priority_player = player;
@@ -4426,6 +4668,9 @@ impl Game {
         extra: (u8, u8),
         targets: &[Target],
     ) -> Result<(), String> {
+        if let Some(result) = self.pay_active_play(player, id) {
+            return result;
+        }
         let card = self.catalog[id];
         let energy = self.discounted_energy(player, id, base.0.saturating_add(extra.0));
         if self.payment_energy_available(player) < energy.into() {
@@ -4614,7 +4859,9 @@ impl Game {
         cost_probe.pay_trash_cost(player, id, base, extra, &all_targets)?;
         self.required_trash_play = false;
         self.decision = None;
-        if pending.is_some() {
+        if let Some(ref pending) = pending {
+            self.reserved_play_grants
+                .retain(|(id, _)| *id != pending.id);
             self.pending_card = None;
         } else {
             self.remove_from_trash(player, trash_index);
@@ -4631,8 +4878,10 @@ impl Game {
             {
                 item.recycle_after = free_energy;
                 item.banish_after = flow.is_some();
-                item.options = options;
-                item.repeat_targets = repeated.clone();
+                if self.active_play.is_none() {
+                    item.options = options;
+                    item.repeat_targets = repeated.clone();
+                }
             }
             if options.repeat {
                 self.trigger_chosen(player, &repeated);
@@ -4664,7 +4913,16 @@ impl Game {
         }
     }
 
-    pub(crate) fn pay_energy(&mut self, player: usize, mut amount: u16) {
+    pub(crate) fn pay_energy(&mut self, player: usize, amount: u16) {
+        self.pay_energy_preferring(player, amount, &[]);
+    }
+
+    pub(crate) fn pay_energy_preferring(
+        &mut self,
+        player: usize,
+        mut amount: u16,
+        preferred: &[Domain],
+    ) {
         if self.payment_record_energy(player, amount) {
             return;
         }
@@ -4672,7 +4930,7 @@ impl Game {
         let stored = amount.min(state.energy_pool);
         state.energy_pool -= stored;
         amount -= stored;
-        for domain in 0..6 {
+        for domain in preferred.iter().copied().map(domain_index).chain(0..6) {
             let paid = u16::from(state.runes[domain] - state.exhausted_runes[domain]).min(amount);
             state.exhausted_runes[domain] += paid as u8;
             amount -= paid;
@@ -4750,6 +5008,28 @@ impl Game {
                     .iter()
                     .map(|&lane| Action::ChooseBattlefield { lane })
                     .collect(),
+                Decision::TokenPlay { fixed_lane, .. } => {
+                    let lanes = if let Some(lane) = fixed_lane {
+                        vec![*lane]
+                    } else {
+                        std::iter::once(None)
+                            .chain(
+                                (0..BATTLEFIELDS)
+                                    .filter(|&l| self.battlefield_owner[l] == Some(player))
+                                    .map(Some),
+                            )
+                            .collect()
+                    };
+                    lanes
+                        .into_iter()
+                        .flat_map(|lane| {
+                            [true, false].into_iter().map(move |accelerate| {
+                                Action::FinalizeTokenPlay { lane, accelerate }
+                            })
+                        })
+                        .filter(|a| self.clone().apply(a.clone()).is_ok())
+                        .collect()
+                }
                 Decision::TokenPlacement { player, .. } => {
                     std::iter::once(Action::PlaceToken { lane: None })
                         .chain(
@@ -4893,6 +5173,7 @@ impl Game {
                 target: None,
             });
         }
+        actions.extend(self.canonical_play_candidates(24));
         actions.extend(self.conversion_play_actions());
         actions.extend(self.gear_actions(self.priority()));
         actions.extend(self.ability_actions(self.priority()));
@@ -4921,6 +5202,7 @@ impl Game {
                 actions.push(action);
             }
         }
+        actions.retain(|action| self.clone().apply(action.clone()).is_ok());
         if self.in_window() {
             actions.push(Action::Pass);
             return actions;
@@ -5681,6 +5963,19 @@ impl Game {
                     *target_lane = lane;
                 }
             }
+            if id == 257 {
+                self.queue_ability(
+                    player,
+                    id,
+                    vec![],
+                    ChainAbility::CardEffect {
+                        entering: Some(entering),
+                    },
+                );
+            }
+            if id == 261 && self.active_play.as_ref().is_some_and(|a| a.choices.bonus) {
+                self.request_on_play_target(player, id, entering, lane);
+            }
             if id == 18 {
                 self.queue_trigger_choice(
                     player,
@@ -5710,6 +6005,59 @@ impl Game {
         targets: Vec<Target>,
         entering: Option<u32>,
     ) {
+        if id == 257 {
+            self.grant_play(
+                player,
+                ChainSource::Card { card_id: id },
+                PlayGrantKind::DiscountNextSpell {
+                    energy: 5,
+                    power: 0,
+                },
+            );
+            return;
+        }
+        if id == 258 {
+            self.grant_play(
+                player,
+                ChainSource::Card { card_id: id },
+                PlayGrantKind::DiscountNextCard {
+                    energy: 2,
+                    power: 2,
+                },
+            );
+            return;
+        }
+        if id == 261 {
+            if entering.is_none() {
+                self.grant_play(
+                    player,
+                    ChainSource::Card { card_id: id },
+                    PlayGrantKind::ReadyBuffNextUnit,
+                );
+            } else if let Some(&target) = targets.first() {
+                if matches!(target,Target::Unit{player:owner,..}if owner!=player)
+                    && self.official_target_valid(player, 7, None, target, 0)
+                    && let Some(unit) = self.unit_mut(target)
+                {
+                    unit.stunned = true;
+                }
+            } else if let Some(unit_id) = entering {
+                let target = Target::Unit { player, unit_id };
+                self.ready_unit_by(player, player, unit_id);
+                self.buff_unit_by(player, target);
+            }
+            return;
+        }
+        if id == 262 || id == 263 {
+            self.grant_play(
+                player,
+                ChainSource::Card { card_id: id },
+                PlayGrantKind::ReadyUnitsThisTurn,
+            );
+            if id == 262 {
+                self.queue_token_play(player, id, 0, Some(None), true);
+            }
+        }
         let mut valid: Vec<Target> = targets
             .iter()
             .enumerate()
@@ -5784,7 +6132,16 @@ impl Game {
                 ..
             } => {
                 for target in valid {
-                    let damage_amount = self.battlefield_damage(target, amount);
+                    let damage_amount = self.damage_amount(
+                        self.current_damage_context()
+                            .unwrap_or(damage::DamageContext {
+                                player,
+                                bonus_damage: 0,
+                                dealer: damage::DamageDealer::Ability,
+                            }),
+                        target,
+                        amount,
+                    );
                     if let Some(unit) = self.unit_mut(target) {
                         unit.damage = unit.damage.saturating_add(damage_amount);
                         unit.banish_on_death |= banish_on_death;
@@ -6053,7 +6410,9 @@ impl Game {
             id,
             card_id,
             lane: None,
-            ready: !token && rules::static_abilities(card_id).contains(&StaticAbility::EntersReady),
+            ready: (!token
+                && rules::static_abilities(card_id).contains(&StaticAbility::EntersReady))
+                || self.play_enters_ready(player, card_id, token),
             damage: 0,
             buff,
             temporary_buff: 0,
@@ -6078,6 +6437,7 @@ impl Game {
     }
 
     fn finish_ending(&mut self) {
+        self.play_grants.clear();
         // CR317.2: the ending triggers finish before the expiration cleanup.
         // Heal first, then end this-turn effects together, then clear pools.
         for state in &mut self.players {
@@ -6121,6 +6481,7 @@ impl Game {
         self.turns_taken[self.active] += 1;
         self.ai_steps_this_turn = 0;
         self.cards_played = [0; 2];
+        self.play_history = PlayHistory::default();
         self.trigger_state.begin_turn();
         self.pyke_triggered.clear();
         self.scored_this_turn = [false; 2];
@@ -6163,6 +6524,7 @@ impl Game {
                     {
                         self.score_battlefield(player, lane, true);
                         self.score_triggers(player, lane, true);
+                        self.battlefield_on_hold(player, lane);
                     }
                 }
             }
@@ -6782,6 +7144,14 @@ impl Game {
             self.queue_trigger_choice(player, 0, Decision::Legend { player, trigger });
         }
         for card in cards {
+            if card == 261 && holding {
+                self.queue_ability(
+                    player,
+                    card,
+                    vec![],
+                    ChainAbility::CardEffect { entering: None },
+                );
+            }
             let effect = match card {
                 49 if !holding => Some(TriggeredAbility::Draw(1)),
                 33 if !holding => Some(TriggeredAbility::GrantFlow),
@@ -6871,6 +7241,9 @@ impl Game {
         // Only the active player's hand is read. The opponent contributes its
         // public units and score, never its hand or deck order.
         let mut plays: Vec<(i32, Action)> = Vec::new();
+        for action in self.canonical_play_candidates(24) {
+            plays.push((self.canonical_action_score(&action), action));
+        }
         for action in self.conversion_play_actions() {
             if let Action::BeginPayment { action: intent } = &action
                 && let Action::PlayCard { hand_index, .. } = **intent
@@ -6993,7 +7366,11 @@ impl Game {
                 },
             ));
         }
-        if let Some((_, action)) = plays.into_iter().max_by_key(|(score, _)| *score) {
+        if let Some((_, action)) = plays
+            .into_iter()
+            .filter(|(_, action)| self.clone().apply(action.clone()).is_ok())
+            .max_by_key(|(score, _)| *score)
+        {
             return action;
         }
 

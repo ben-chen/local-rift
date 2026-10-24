@@ -4,6 +4,7 @@ fn main() {
     let root = PathBuf::from(env::var("CARGO_MANIFEST_DIR").unwrap());
     let mut entries = Vec::new();
     let mut legends = Vec::new();
+    let mut fields = Vec::new();
     if let Ok(files) = fs::read_dir(root.join("assets/art")) {
         for file in files.flatten() {
             let path = file.path();
@@ -21,6 +22,13 @@ fn main() {
                 .and_then(|s| s.parse::<usize>().ok())
             {
                 legends.push((id, path));
+            } else if let Some(id) = path
+                .file_stem()
+                .and_then(|s| s.to_str())
+                .and_then(|s| s.strip_prefix("battlefield_"))
+                .and_then(|s| s.parse::<usize>().ok())
+            {
+                fields.push((id, path));
             }
         }
     }
@@ -33,6 +41,12 @@ fn main() {
     legends.sort_by_key(|(id, _)| *id);
     source.push_str("pub static LEGEND_ART: &[(usize, &[u8])] = &[\n");
     for (id, path) in legends {
+        source.push_str(&format!("({id}, include_bytes!({:?})),\n", path));
+    }
+    source.push_str("];\n");
+    fields.sort_by_key(|(id, _)| *id);
+    source.push_str("pub static FIELD_ART: &[(usize, &[u8])] = &[\n");
+    for (id, path) in fields {
         source.push_str(&format!("({id}, include_bytes!({:?})),\n", path));
     }
     source.push_str("];\n");

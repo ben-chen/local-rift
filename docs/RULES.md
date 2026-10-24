@@ -1,6 +1,6 @@
 # Implemented rules and limitations
 
-**Local Rift is an unofficial, incomplete Riftbound client. This document describes its current behavior, not the complete tabletop game.** Full official card text appears in hover previews and pinned inspectors. All 254 bundled cards have executable printed-effect mappings. An official description in the catalog and a passing simulation are not proof of complete tabletop equivalence.
+**Local Rift is an unofficial, incomplete Riftbound client. This document describes its current behavior, not the complete tabletop game.** Full official card text appears in hover previews and pinned inspectors. All 272 bundled main-deck cards have executable printed-effect mappings. An official description in the catalog and a passing simulation are not proof of complete tabletop equivalence.
 
 For physical play, use Riot's [Rules Hub](https://playriftbound.com/en-us/rules-hub/), current errata, and printed card text. The core timing reference used here is the [October 9, 2026 Core Rules](https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/5c7946f7c3b8c6e0faff85ab6dadc6d2e721ea94.pdf). [SOURCES.md](SOURCES.md) records the card and deck sources.
 
@@ -10,7 +10,7 @@ Choose a preset or a saved custom deck for each player. Presets contain 40 cards
 
 Each player has a 12-card rune deck using the preset’s **published domain split**, preserved in the source manifest. Choose whether you or the AI starts. The second player channels an extra rune on their first turn.
 
-Each player brings one battlefield. The client offers four official choices drawn from the source presets; its two battlefield panels display the selected names and effect text. The default follows each player’s chosen deck. The deck editor can copy a preset, adjust supported cards, rune counts, chosen champion, and battlefield, and save a separate list for you or the AI. It validates the main deck, champion tag, full domain identity, three-copy and Signature limits, and exactly 12 runes. There is no sideboarding.
+Each player brings one battlefield. The client offers eleven official choices; its two battlefield panels display the selected names and effect text. The default follows each player’s chosen deck. The battlefield picker shows artwork and full rules before selection. The deck editor can copy a preset, adjust supported cards, rune counts, chosen champion, and battlefield, and save a separate list for you or the AI. It validates the main deck, champion tag, full domain identity, three-copy and Signature limits, and exactly 12 runes. There is no sideboarding.
 
 ## Turns and resources
 
@@ -30,10 +30,19 @@ Printed costs and all printed domains are retained. For a card with multiple dom
 | Master Yi | Seat of Power | On conquest, draw one card for each other battlefield you control. |
 | Kennen | Minefield | On conquest, put the top two cards of your main deck into trash. |
 | Kai'Sa | Void Gate | Each instance of damage a spell or ability deals to a unit here gains one bonus damage. Combat damage and damage dealt by units are unaffected. |
+| — | The Academy | Holding creates a next-spell Repeat option equal to that spell's base cost, lasting this turn. |
+| — | Firelights' Hideout | Conquering grants Accelerate to the next unit played this turn. The player may pay its additional cost to enter ready. |
+| — | Ornn's Forge | While controlled, reduces the first friendly non-token gear play each turn by one Energy. |
+| — | Hunters' Circle | For each player, reduces their first unit or gear played at this field on their own turn by one Energy. |
+| — | Piltovan Forge | While controlled, reduces the first friendly gear activated ability each turn by one Energy. |
+| — | Risen Altar | Reduces the controller's units' Empower costs here by a chosen one Energy or one Power. |
+| — | Vaults of Helia | Holding creates a one-Energy surcharge on the controller's non-token unit plays for the rest of the turn. |
 
 Conquest triggers use the chain only when the battlefield scores for that player. Reconquering a field already scored that turn does not repeat those triggers. The final-point replacement draw still counts as scoring and does trigger them. Sunken Temple's optional payment finalizes its draw ability; drawing waits for responses. Seat of Power counts other controlled fields when its ability resolves. Void Gate uses Riot's corrected wording, so a spell targeting several locations only gains damage against units at Void Gate.
 
-Only these four battlefield choices are implemented. The other tournament battlefield cards remain source-list references, including the historical banned Arena's Greatest; they are not selectable. The scenery is artistic presentation, not the printed card artwork.
+Hold and conquest grants are respondable abilities; their effects begin when those abilities resolve. First-play cost discounts use the relevant player's earlier finalized plays, including before that player acquired control. A zero-cost qualifying play still consumes the first position. Two copies of a Forge affect the same first play, while Hunters' Circle tracks each physical field separately. Piltovan also counts resource gear activations and Equip, but not a triggered Quick-Draw attachment. Its nested-payment behavior follows the current finalization and frozen-cost rules; this is a rule-derived interpretation rather than a located Piltovan-specific FAQ.
+
+Other tournament battlefields remain source-list references, including the historical banned Arena's Greatest; they are not selectable. The picker displays official field art and corrected readable text; the mat keeps each selected effect visible with a full-rules inspector.
 
 ## Legends
 
@@ -97,6 +106,16 @@ When a trash spell has both printed and temporarily granted Flow, you can select
 
 Supported play options include Repeat, Accelerate, Rampage's optional might payment, and eligible units' Empower abilities. Eligible trash plays also expose optional costs: Fizz can Repeat Hard Bargain, a Flow-granted Bellows Breath can Repeat, and Last Rites can Accelerate Kai'Sa. Matriarch chooses its eligible trash unit before responses, then offers Accelerate when that specific unit is actually played. Waiving a base cost does not waive additional costs. Optional costs must be selected and paid before the play is finalized. Up from the Deep and Recruit the Vanguard ask where to place each token separately, using your base or a battlefield you control. Vanguard Captain's tokens instead use its current location when the trigger resolves; a source that has left the board has no location. Empower persists on the object rather than expiring at turn end. Inspect the printed text and current unit state when choosing an option.
 
+Temporal Portal, The Academy, and Syndra can grant independent Repeat instances. Each has its own cost and target choices; choose their execution order before paying. Syndra's Chaos Power requirement stays distinct from another Repeat's domain requirement. The physical spell stays on the chain through every repeated effect and intervening mandatory choice, then completes one card play. A repeated look or discard-and-draw effect asks for each choice separately. Countering the spell prevents all its executions.
+
+Next-play grants attach when the applicable play begins, including when that card or token is queued as Pending. Declining an optional Repeat or Accelerate does not save that next-play grant for another card. A fixed payment retains the selected grant and discount through resource generation, and rollback restores them. Raging Firebrand grants a next-spell Energy discount. Astral Heron observes the first completed card play each turn while at a battlefield, then grants a next-card Energy and Power discount; an earlier countered card does not count as a completed play. **Turn effects** shows active grants, their source, and expiry.
+
+Sun Disc, Bushwhack, Confront, and Magma Wurm can make units enter ready. Entering ready is different from performing a Ready action on a unit already in play. Magma Wurm affects other units and does not ready its own first copy. Rek'Sai grants Accelerate to units played from outside the hand, including pending unit tokens. Nami's optional Calm payment creates a targeted Stun trigger after entry; her Hold effect instead creates a delayed unit-play trigger that actually Readies and Buffs that unit, with the corresponding observers and response window.
+
+Ravenborn Tome attaches Bonus Damage to the next spell even if that spell deals no damage. Annie supplies a live bonus to her controller's spells and abilities. Consuming Curse counts same-name cards currently in that player's trash for each damage packet; its own resolving physical card is still on the chain. These bonuses add to applicable Void Gate damage, but never turn a unit's combat or Fight damage into spell damage, and never create damage from a zero-damage instruction.
+
+Cost modifiers preserve their scope. Ezreal's discounts apply separately to optional-cost components before whole-play discounts. Applied Researchers, Stargazer, Vex, Irelia, and battlefield modifiers then follow their conditions, permitted order, and individual minima. Helm's surcharge is applied before discounts. A Power reduction can be allocated among eligible colored cost components; an Energy-or-Power discount requires one choice. A discounted optional cost still counts as paid at zero. **Review costs** shows these choices before resource payment.
+
 The expanded unit pool includes explicit Assault, Shield, Tank, Deflect, Ganking, Ambush, Accelerate, and Legion behavior. Shield adds its printed amount to Might while defending in combat; it does not change Tank/Backline damage priority. Equipment-granted keywords are included in the unit inspector and current Might. Ready-entry units enter ready, and Battering Ram’s energy discount counts cards played that turn while respecting its one-energy minimum. Legion play triggers capture whether another card was played that turn, then enter the ordinary response system. Discard-and-draw effects keep their resolving chain item in place until the discard choice and draws finish. Lunar Boon therefore cannot recycle itself into its own draw during burnout. Repeated draws also finish before the physical spell enters trash. Printed Flow can require a specific colored power: Iterative Design requires Mind, while a printed Any-power Flow cost accepts any domain. Wind Wall counters a spell of any cost, including its controller's spell, but cannot counter a triggered ability.
 
 ### Gear Empower and Disempower costs
@@ -123,11 +142,11 @@ The newest chain item resolves first after consecutive priority passes. Priority
 
 **Pass priority** and `Space` pass within a window. They only end your turn when no chain, showdown, or pending choice remains. A pending choice must be answered first. Implemented counters include countering, returning a spell to hand, and asking the spell's controller to pay additional energy. Predict offers its controller a keep-on-top or recycle-to-bottom choice; it does not itself draw a card, and looking at an empty deck does not cause burnout.
 
-Triggered abilities and turn-start steps pause for choices and response windows. When several triggers are pending, the active player finalizes their triggers first, followed by the other player. Each controller chooses the order of their own triggers; the last placed on the chain resolves first. On-play targeting and optional trigger payments happen during finalization, before the resulting ability can resolve.
+Triggered abilities and turn-start steps pause for choices and response windows. Pending event groups finalize in chronological order. Within one simultaneous trigger group, the active player finalizes their triggers first, followed by the other player. Each controller chooses the order of their own triggers; the last placed on the chain resolves first. On-play targeting and optional trigger payments happen during finalization, before the resulting ability can resolve.
 
 The expanded card pool has explicit observers for playing cards and tokens, readying, exhausting, buffing, moving, combat designations, drawing, death, holding, conquest, and gear activation. Chosen trigger targets are selected before the ability enters the chain, with Deflect paid then; implicit references such as “me” or “it” do not create an extra target choice. Optional Windsinger play triggers can be declined. “Here” and applicable Hidden restrictions are checked again on resolution. Attached equipment abilities use the bearer as their source. Surviving death observers are distinct from Deathknell abilities captured before their source leaves play; a first-time observer does not multiply across simultaneous deaths. These are explicit card mappings, not a parser that treats arbitrary printed text as implemented.
 
-The additional spells include readying and fights with Repeat, ordered damage and Gold creation, Sand Soldier creation, and modifiers or draws based on current public board state. Their condition checks and optional costs follow their printed instructions. Dynamic discounts are evaluated when paying; temporary Might modifiers expire at turn end. As with the older pool, these tests cover selected rule cases rather than proving all interactions.
+The additional spells include readying and fights with Repeat, ordered damage and Gold creation, Sand Soldier creation, and modifiers or draws based on current public board state. Their condition checks and optional costs follow their printed instructions. Dynamic costs are determined before payment and remain fixed through resource generation; temporary Might modifiers expire at turn end. As with the older pool, these tests cover selected rule cases rather than proving all interactions.
 
 ## Movement and combat
 
@@ -161,7 +180,7 @@ The deck library includes the real legends and authored strategy notes. All seve
 
 ## Remaining fidelity limits
 
-Seven supported legends, four battlefield choices, and 254 main-deck cards are available through the four supplied presets and custom deck editor. There is no sideboarding, tournament match structure, multiplayer mode, or full card-set coverage. The presets are dated tournament lists, not a ranking of the current metagame.
+Seven supported legends, eleven battlefield choices, and 272 main-deck cards are available through the four supplied presets and custom deck editor. There is no sideboarding, tournament match structure, multiplayer mode, or full card-set coverage. The presets are dated tournament lists, not a ranking of the current metagame.
 
 The desktop and bot API expose exact damage allocations and power-source payments. The default automatic payment remains available; energy can be prepared by exhausting chosen rune domains before a play. These controls share engine validation, but broader card and interaction coverage is still required.
 

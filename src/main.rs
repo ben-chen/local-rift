@@ -1,6 +1,7 @@
 mod ability_ui;
 mod companion;
 mod deck_editor;
+mod play_ui;
 use companion::{AdviceLevel, Companion, draw_mote};
 use deck_editor::DeckEditor;
 mod scene;
@@ -160,6 +161,19 @@ impl Preferences {
         let _ = std::fs::write(p, self.to_text());
     }
 }
+#[derive(Clone, Copy)]
+enum FieldPickerTarget {
+    Setup(usize),
+    Editor,
+}
+#[derive(Clone)]
+struct FieldPicker {
+    target: FieldPickerTarget,
+    selected: usize,
+    list_scroll: usize,
+    rules_scroll: usize,
+}
+
 struct App {
     ui: Ui,
     game: Game,
@@ -174,6 +188,7 @@ struct App {
     mulligan: HashSet<usize>,
     art: Vec<Option<Texture2D>>,
     legend_art: Vec<Option<Texture2D>>,
+    field_art: Vec<Option<Texture2D>>,
     legend_picker: Option<usize>,
     legend_hover: Option<usize>,
     deck_load_errors: Vec<String>,
@@ -204,6 +219,10 @@ struct App {
     gear_owner: usize,
     choices: Vec<usize>,
     options: PlayOptions,
+    play_draft: Option<play_ui::PlayDraft>,
+    cost_editor: Option<play_ui::CostEditor>,
+    show_play_effects: bool,
+    play_effects_scroll: usize,
     flow_source: Option<FlowSource>,
     fields: [usize; 2],
     starting_player: usize,
@@ -233,6 +252,7 @@ struct App {
     rune_menu_at: Vec2,
     field_hover: Option<usize>,
     field_inspect: Option<usize>,
+    field_picker: Option<FieldPicker>,
     equipment_inspect: Option<(usize, u32)>,
     equipment_scroll: usize,
     trigger_choice_key: Option<String>,
@@ -289,6 +309,14 @@ impl App {
                 *slot = Some(texture);
             }
         }
+        let mut field_art = vec![None; local_rift::battlefields::BATTLEFIELDS.len()];
+        for &(id, bytes) in FIELD_ART {
+            if let Some(slot) = field_art.get_mut(id) {
+                let texture = Texture2D::from_file_with_format(bytes, None);
+                texture.set_filter(FilterMode::Linear);
+                *slot = Some(texture);
+            }
+        }
         Self {
             ui: Ui::new(),
             game,
@@ -303,6 +331,7 @@ impl App {
             mulligan: HashSet::new(),
             art,
             legend_art,
+            field_art,
             legend_picker: None,
             legend_hover: None,
             deck_load_errors,
@@ -337,6 +366,10 @@ impl App {
             gear_owner: 0,
             choices: Vec::new(),
             options: PlayOptions::default(),
+            play_draft: None,
+            cost_editor: None,
+            show_play_effects: false,
+            play_effects_scroll: 0,
             flow_source: None,
             fields,
             starting_player: 0,
@@ -366,6 +399,7 @@ impl App {
             rune_menu_at: vec2(898.0, 395.0),
             field_hover: None,
             field_inspect: None,
+            field_picker: None,
             equipment_inspect: None,
             equipment_scroll: 0,
             trigger_choice_key: None,
@@ -397,6 +431,8 @@ impl App {
                 .expect("valid selected battlefield");
         }
         self.game = game;
+        self.play_draft = None;
+        self.cost_editor = None;
         self.drag = None;
         self.hover_card = None;
         self.payment_draft = None;
@@ -432,6 +468,10 @@ impl App {
         self.toast_until = get_time() + 4.5;
     }
     fn action(&mut self, a: Action) {
+        let a = self.canonical_action(a);
+        if self.maybe_review_cost(&a) {
+            return;
+        }
         if !self.suspended_payments.is_empty() && !self.resource_visit_action_allowed(&a) {
             self.notify("Resume or cancel your saved payment before taking another action.");
             return;
@@ -464,11 +504,7 @@ impl App {
         self.apply_action(a);
     }
     fn apply_action(&mut self, a: Action) {
-        let inner = if let Action::WithPowerPayment { action, .. } = &a {
-            action.as_ref()
-        } else {
-            &a
-        };
+        let inner = play_ui::core_action(&a);
         let finishing_plan = matches!(self.game.decision, Some(Decision::Payment { .. }))
             && matches!(inner, Action::CompletePayment | Action::Choose { .. });
         let cancelling_plan = finishing_plan && matches!(inner, Action::Choose { accept: false });
@@ -521,6 +557,7 @@ impl App {
                 self.damage_amounts = None;
                 self.damage_editor = None;
                 self.selection = None;
+                self.play_draft = None;
                 self.group.clear();
                 self.targets.clear();
                 self.repeat_targets.clear();
@@ -536,9 +573,25 @@ impl App {
     }
     fn update(&mut self) {
         self.ui.resize();
-        if self.legend_picker.is_some() || !self.deck_load_errors.is_empty() {
+        if self.show_play_effects {
+            if is_key_pressed(KeyCode::Escape) {
+                self.show_play_effects = false;
+            }
+            return;
+        }
+        if self.cost_editor.is_some() {
+            if is_key_pressed(KeyCode::Escape) {
+                self.cost_editor = None;
+            }
+            return;
+        }
+        if self.legend_picker.is_some()
+            || self.field_picker.is_some()
+            || !self.deck_load_errors.is_empty()
+        {
             if is_key_pressed(KeyCode::Escape) {
                 self.legend_picker = None;
+                self.field_picker = None;
             }
             return;
         }
@@ -694,6 +747,7 @@ impl App {
         }
     }
     fn draw(&mut self) {
+        self.sync_play_draft();
         let trigger_key = self
             .game
             .decision
@@ -724,7 +778,10 @@ impl App {
         {
             self.inspect = self.hover_card;
         }
-        self.ui.enabled = self.legend_picker.is_none()
+        self.ui.enabled = !self.show_play_effects
+            && self.cost_editor.is_none()
+            && self.field_picker.is_none()
+            && self.legend_picker.is_none()
             && self.deck_load_errors.is_empty()
             && self.inspect.is_none()
             && self.lesson.is_none()
@@ -779,6 +836,9 @@ impl App {
         self.payment_editor();
         self.legend_tooltip();
         self.draw_legend_picker();
+        self.draw_field_picker();
+        self.draw_cost_editor();
+        self.draw_play_effects();
         self.saved_deck_notice();
         self.ui.enabled = true;
     }
@@ -1033,6 +1093,17 @@ impl App {
                 self.reset();
             }
         }
+        if self.in_match
+            && self.ui.button(
+                Rect::new(1030.0, 34.0, 185.0, 32.0),
+                &format!("Turn effects · {}", self.game.play_grants.len()),
+                self.show_play_effects,
+                true,
+            )
+        {
+            self.show_play_effects = true;
+            self.play_effects_scroll = 0;
+        }
         let p = self.ui.physical(Rect::new(232.0, 105.0, 910.0, 536.0));
         let mut units = Vec::new();
         for player in 0..2 {
@@ -1132,7 +1203,7 @@ impl App {
                     token,
                     &unit_name,
                     state.selected == Some(*id) || self.group.contains(id),
-                    self.targets.contains(&Target::Unit {
+                    self.current_targets().contains(&Target::Unit {
                         player: owner,
                         unit_id: *id,
                     }) || self.ability_targets.contains(&Target::Unit {
@@ -1442,6 +1513,34 @@ impl App {
                 TEXT,
                 2,
             );
+            if let Some(progress) = self
+                .game
+                .resolution_progress()
+                .filter(|progress| progress.chain_id == item.id)
+            {
+                self.ui.text(
+                    &format!(
+                        "Resolving execution {} / {}",
+                        progress.execution + 1,
+                        progress.executions
+                    ),
+                    1178.0,
+                    300.0,
+                    9.0,
+                    TEAL,
+                );
+            } else if item.executions.len() > 1 {
+                self.ui.text(
+                    &format!(
+                        "{} executions · targets chosen separately",
+                        item.executions.len()
+                    ),
+                    1178.0,
+                    300.0,
+                    8.5,
+                    TEAL,
+                );
+            }
             if self.ui.hover(r) {
                 match self.game.chain_source(&item) {
                     local_rift::game::ChainSource::Card { card_id } => {
@@ -1484,11 +1583,7 @@ impl App {
                 self.selection.is_some() && self.game.priority() == 0,
             ) {
                 let target = Target::Spell { chain_id: item.id };
-                let targets = if self.editing_repeat {
-                    &mut self.repeat_targets
-                } else {
-                    &mut self.targets
-                };
+                let targets = self.current_targets_mut();
                 if targets.contains(&target) {
                     targets.clear();
                 } else {
@@ -1894,6 +1989,16 @@ impl App {
             }
             return;
         }
+        if let Decision::TokenPlay {
+            card_id,
+            remaining,
+            fixed_lane,
+            ..
+        } = decision
+        {
+            self.token_play_panel(card_id, remaining, fixed_lane);
+            return;
+        }
         if let Decision::TokenPlacement {
             card_id, remaining, ..
         } = decision
@@ -1993,7 +2098,7 @@ impl App {
             return;
         }
         let (title,body)=match &decision{
-            Decision::Payment{..}|Decision::ResourceConversion{..}|Decision::TriggerTargets{..}|Decision::CombatDamage{..}|Decision::TokenPlacement{..}|Decision::BattlefieldOrder{..}|Decision::RevivePlay{..}|Decision::PendingPlay{..}=>unreachable!(),
+            Decision::Payment{..}|Decision::ResourceConversion{..}|Decision::TriggerTargets{..}|Decision::CombatDamage{..}|Decision::TokenPlacement{..}|Decision::TokenPlay{..}|Decision::BattlefieldOrder{..}|Decision::RevivePlay{..}|Decision::PendingPlay{..}=>unreachable!(),
             Decision::TrashTarget{..}=>("Choose a trash target","Choose an eligible card below before this ability enters the chain. Opponents may respond before the chosen card is played.".into()),
             Decision::OptionalPlay{card_id,..}=>("Use this triggered ability?",format!("{} offers a play from your trash. Accept and choose the ability's target, or decline now. Choose the card's own targets and costs after the ability resolves.",self.game.catalog[*card_id].name)),
             Decision::ResolutionTargets{..}=>("Choose the location", "Responses separated your targets. Choose which legal group below this spell should affect.".into()),
@@ -2195,17 +2300,9 @@ impl App {
             }
             return;
         }
-        let chosen = if self.editing_repeat {
-            &self.repeat_targets
-        } else {
-            &self.targets
-        };
+        let chosen = self.current_targets();
         if let Some(index) = chosen.iter().position(|existing| *existing == target) {
-            if self.editing_repeat {
-                self.repeat_targets.remove(index);
-            } else {
-                self.targets.remove(index);
-            }
+            self.current_targets_mut().remove(index);
             return;
         }
         let maximum = self
@@ -2225,11 +2322,7 @@ impl App {
             self.notify("This unit does not meet the card's target requirements.");
             return;
         }
-        if self.editing_repeat {
-            self.repeat_targets.push(target);
-        } else {
-            self.targets.push(target);
-        }
+        self.current_targets_mut().push(target);
         self.toast_until = 0.0;
     }
     fn target_hint(&self, card_id: usize) -> String {
@@ -2244,11 +2337,7 @@ impl App {
         if maximum == 0 {
             return "No unit targets needed.".into();
         }
-        let count = if self.editing_repeat {
-            self.repeat_targets.len()
-        } else {
-            self.targets.len()
-        };
+        let count = self.current_targets().len();
         let restriction = match targeting(card_id).allegiance {
             Allegiance::Friendly => "friendly units",
             Allegiance::Enemy => "enemy units",
@@ -2336,7 +2425,7 @@ impl App {
                 &self.game.unit_name(unit),
                 self.selection == Some(Selection::Unit(unit.id))
                     || self.group.contains(&unit.id)
-                    || self.targets.contains(&Target::Unit {
+                    || self.current_targets().contains(&Target::Unit {
                         player: *owner,
                         unit_id: unit.id,
                     }),
@@ -3396,9 +3485,136 @@ impl App {
                 false,
                 true,
             ) {
-                self.fields[side] =
-                    (self.fields[side] + 1) % local_rift::battlefields::BATTLEFIELDS.len();
+                self.open_field_picker(FieldPickerTarget::Setup(side), self.fields[side]);
             }
+        }
+    }
+    fn open_field_picker(&mut self, target: FieldPickerTarget, selected: usize) {
+        self.field_picker = Some(FieldPicker {
+            target,
+            selected,
+            list_scroll: selected.saturating_sub(10),
+            rules_scroll: 0,
+        });
+        self.hover_card = None;
+        self.hover_rect = None;
+    }
+    fn draw_field_picker(&mut self) {
+        let Some(mut picker) = self.field_picker.clone() else {
+            return;
+        };
+        let fields = &local_rift::battlefields::BATTLEFIELDS;
+        self.ui.rect(
+            Rect::new(0.0, 0.0, 1440.0, 900.0),
+            Color::new(0.0, 0.02, 0.03, 0.88),
+        );
+        let r = Rect::new(320.0, 145.0, 800.0, 610.0);
+        self.ui.rect(r, PANEL);
+        self.ui.border(r, GOLD);
+        self.ui
+            .title("Choose a battlefield", 344.0, 188.0, 27.0, TEXT);
+        self.ui.text(
+            match picker.target {
+                FieldPickerTarget::Setup(0) => "Your battlefield",
+                FieldPickerTarget::Setup(_) => "Opponent's battlefield",
+                FieldPickerTarget::Editor => "Custom deck battlefield",
+            },
+            344.0,
+            215.0,
+            12.0,
+            GOLD,
+        );
+        self.ui.enabled = true;
+        let list = Rect::new(344.0, 236.0, 280.0, 406.0);
+        let max_scroll = fields.len().saturating_sub(11);
+        if list.contains(self.ui.mouse()) {
+            if self.ui.wheel() < 0.0 {
+                picker.list_scroll = (picker.list_scroll + 1).min(max_scroll);
+            }
+            if self.ui.wheel() > 0.0 {
+                picker.list_scroll = picker.list_scroll.saturating_sub(1);
+            }
+        }
+        picker.list_scroll = picker.list_scroll.min(max_scroll);
+        for (row, field) in fields.iter().skip(picker.list_scroll).take(11).enumerate() {
+            if self.ui.button(
+                Rect::new(344.0, 240.0 + row as f32 * 36.0, 280.0, 32.0),
+                field.name,
+                picker.selected == field.id,
+                true,
+            ) {
+                picker.selected = field.id;
+                picker.rules_scroll = 0;
+            }
+        }
+        let field = local_rift::battlefields::battlefield(picker.selected);
+        self.ui
+            .wrapped_lines(field.name, 648.0, 268.0, 440.0, 24.0, TEXT, 2);
+        self.ui.text("OFFICIAL RULES", 648.0, 326.0, 10.0, GOLD);
+        if let Some(texture) = self.field_art.get(field.id).and_then(Option::as_ref) {
+            let height = 150.0 * texture.height() / texture.width();
+            self.ui
+                .image(texture, Rect::new(648.0, 340.0, 150.0, height), None, WHITE);
+        }
+        let text_rect = Rect::new(814.0, 340.0, 274.0, 230.0);
+        let wheel = self.ui.wheel_override;
+        if !text_rect.contains(self.ui.mouse()) {
+            self.ui.wheel_override = Some(0.0);
+        }
+        let overflow = self.ui.scroll_text(
+            field.official_text,
+            text_rect,
+            14.0,
+            &mut picker.rules_scroll,
+        );
+        self.ui.wheel_override = wheel;
+        self.ui.wrapped(
+            "Both players can contest this location. Its printed effect applies during the match.",
+            648.0,
+            604.0,
+            430.0,
+            12.0,
+            MUTED,
+        );
+        if overflow > 0 {
+            self.ui.text(
+                "Scroll over the rules to read all text.",
+                648.0,
+                659.0,
+                10.0,
+                TEAL,
+            );
+        }
+        if max_scroll > 0 {
+            self.ui
+                .text("Scroll the list for more fields.", 344.0, 659.0, 10.0, TEAL);
+        }
+        let cancel = self.ui.button(
+            Rect::new(344.0, 698.0, 280.0, 34.0),
+            "Back · keep current field",
+            false,
+            true,
+        );
+        let apply = self.ui.button(
+            Rect::new(648.0, 698.0, 440.0, 34.0),
+            "Use this battlefield",
+            true,
+            true,
+        );
+        if cancel {
+            self.field_picker = None;
+        } else if apply {
+            match picker.target {
+                FieldPickerTarget::Setup(owner) => self.fields[owner] = picker.selected,
+                FieldPickerTarget::Editor => {
+                    if let Some(editor) = &mut self.deck_editor {
+                        editor.deck.battlefield = picker.selected;
+                    }
+                }
+            }
+            self.field_picker = None;
+        } else {
+            self.field_picker = Some(picker);
         }
     }
     fn draw_playmat(&mut self, hits: &scene::SceneHits) {
@@ -3480,7 +3696,7 @@ impl App {
                 13.0,
                 TEXT,
             );
-            self.ui.wrapped(
+            self.ui.wrapped_lines(
                 field
                     .official_text
                     .split(" (")
@@ -3491,6 +3707,7 @@ impl App {
                 r.w - 24.0,
                 12.0,
                 TEXT,
+                2,
             );
             self.ui.line(
                 vec2(r.x + 9.0, r.y + 62.0),
@@ -3981,7 +4198,8 @@ impl App {
                 } else {
                     None
                 };
-                let confirm = maximum > 1 || movement || self.options.repeat;
+                let confirm =
+                    maximum > 1 || movement || self.options.repeat || self.play_draft.is_some();
                 (
                     Action::PlayCardOptions {
                         hand_index: *index,
@@ -4352,6 +4570,11 @@ impl App {
         }
     }
     fn payment_action_name(&self, action: &Action) -> String {
+        if let Action::WithPlayChoices { action, .. } | Action::WithPowerPayment { action, .. } =
+            action
+        {
+            return self.payment_action_name(action);
+        }
         if matches!(action, Action::CompletePayment)
             && let Some(view) = self.game.payment_plan_view(0)
         {
@@ -5223,6 +5446,22 @@ impl App {
                     } else {
                         format!("{} ENERGY · {} POWER", card.cost, card.power_cost)
                     };
+                    let cost_text = self
+                        .play_draft
+                        .as_ref()
+                        .and_then(|_| self.selected_play_action())
+                        .and_then(|action| self.game.cost_plan(&self.canonical_action(action)).ok())
+                        .map(|plan| {
+                            format!(
+                                "TOTAL: {} energy · {} power",
+                                plan.energy,
+                                plan.power
+                                    .iter()
+                                    .map(|cost| u32::from(cost.amount))
+                                    .sum::<u32>()
+                            )
+                        })
+                        .unwrap_or(cost_text);
                     let discounts = self.game.players[0]
                         .units
                         .iter()
@@ -5292,7 +5531,7 @@ impl App {
                             });
                         }
                     }
-                    {
+                    if !self.play_choices_button() {
                         if local_rift::rules::repeat_cost(card_id).is_some()
                             && self.ui.button(
                                 Rect::new(1178.0, 454.0, 102.0, 28.0),
@@ -5411,7 +5650,9 @@ impl App {
                             bonus: self.options.bonus,
                         }
                     };
-                    let payable_now = self.game.clone().apply(action.clone()).is_ok()
+                    let action = self.canonical_action(action);
+                    let validation = self.game.clone().apply(action.clone());
+                    let payable_now = validation.is_ok()
                         && self.game.card_supported(card_id)
                         && (flows.len() < 2 || self.flow_source.is_some());
                     let begin_payment = !payable_now
@@ -5447,18 +5688,24 @@ impl App {
                         }
                     }
                     if !affordable {
-                        self.ui.text(
+                        self.ui.wrapped_lines(
                             if !self.game.card_supported(card_id) {
                                 "This card's effect is not implemented."
                             } else if flows.len() > 1 && self.flow_source.is_none() {
                                 "Choose which Flow cost to pay."
                             } else {
-                                "Need more energy or matching power."
+                                validation
+                                    .as_ref()
+                                    .err()
+                                    .map(String::as_str)
+                                    .unwrap_or("Complete the play choices first.")
                             },
                             1178.0,
-                            548.0,
+                            546.0,
+                            212.0,
                             9.0,
                             GOLD,
+                            2,
                         );
                     } else if card.kind == CardKind::Unit && !selecting_revive && !resolving_revive
                     {
@@ -5546,16 +5793,28 @@ impl App {
                         MUTED,
                         7,
                     );
+                    self.play_choices_button();
+                    let action = self.canonical_action(Action::PlayHidden {
+                        hidden_id: id,
+                        targets: self.targets.clone(),
+                    });
+                    let payable = self.game.clone().apply(action.clone()).is_ok();
+                    let begin = !payable && self.can_begin_payment(&action);
                     if self.ui.button(
                         Rect::new(1178.0, 516.0, 212.0, 38.0),
-                        "Reveal & play for free",
+                        if begin {
+                            "Reveal · begin payment"
+                        } else {
+                            "Reveal & play"
+                        },
                         false,
-                        self.game.hidden_can_play(0, id, &self.targets).is_ok(),
+                        payable || begin,
                     ) {
-                        self.action(Action::PlayHidden {
-                            hidden_id: id,
-                            targets: self.targets.clone(),
-                        });
+                        if begin {
+                            self.begin_ui_payment(action);
+                        } else {
+                            self.action(action);
+                        }
                     }
                 } else {
                     self.selection = None;
@@ -5751,6 +6010,9 @@ impl App {
         }
     }
     fn hand(&mut self) {
+        if self.draw_play_choices_tray() {
+            return;
+        }
         if self.game.phase != Phase::Mulligan {
             for (i, (label, tray)) in [
                 ("Hand", Tray::Hand),
@@ -5941,7 +6203,12 @@ impl App {
         if len == 0 {
             let payment_waiting = self.game.resource_payment_pending();
             self.ui.title(
-                if payment_waiting {
+                if matches!(
+                    self.game.decision,
+                    Some(Decision::TokenPlay { .. } | Decision::TokenPlacement { .. })
+                ) {
+                    "Your tokens are ready to enter."
+                } else if payment_waiting {
                     "A resource choice is waiting."
                 } else {
                     "An empty hand. A board full of possibility."
@@ -5952,7 +6219,9 @@ impl App {
                 MUTED,
             );
             self.ui.text(
-                if payment_waiting && self.game.priority()==0 {
+                if matches!(self.game.decision, Some(Decision::TokenPlay { .. } | Decision::TokenPlacement { .. })) {
+                    "Choose each token's location and any optional cost in the panel on the right."
+                } else if payment_waiting && self.game.priority()==0 {
                     "Use Board or Loadout for Add abilities, then finish the payment or conversion."
                 } else if payment_waiting {
                     "Your opponent is choosing resources. Play continues when the payment is finished."

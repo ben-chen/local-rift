@@ -1,9 +1,12 @@
-//! Four legal battlefield choices drawn from the included published presets.
+//! Eleven source-reviewed battlefield choices; preset defaults remain IDs 0–3.
 //!
 //! Text is from Riot's official Card Gallery snapshot (2026-10-24). Void Gate
 //! uses the corrected Origins erratum, not the older text still shown in art:
 //! https://riftbound.leagueoflegends.com/en-us/news/rules-and-releases/riftbound-origins-card-errata/
-use crate::game::{ChainAbility, Decision, Game, Phase, Target};
+use crate::activated::AbilitySource;
+use crate::cards::CardKind;
+use crate::game::play::{CostContext, CostModifier, CostScope, PlayGrantKind};
+use crate::game::{ChainAbility, ChainSource, Decision, Game, Phase, Target};
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct BattlefieldDef {
@@ -14,7 +17,7 @@ pub struct BattlefieldDef {
     pub source_url: &'static str,
 }
 
-pub const BATTLEFIELDS: [BattlefieldDef; 4] = [
+pub const BATTLEFIELDS: [BattlefieldDef; 11] = [
     BattlefieldDef {
         id: 0,
         name: "Sunken Temple",
@@ -43,6 +46,55 @@ pub const BATTLEFIELDS: [BattlefieldDef; 4] = [
         source_id: "ogn-296-298",
         source_url: "https://riftbound.leagueoflegends.com/en-us/news/rules-and-releases/riftbound-origins-card-errata/",
     },
+    BattlefieldDef {
+        id: 4,
+        name: "The Academy",
+        official_text: "When you hold here, give your next spell this turn [Repeat] equal to its base cost. (You may pay the additional cost to repeat the spell's effect.)",
+        source_id: "unl-216-219",
+        source_url: "https://playriftbound.com/en-us/card-gallery/",
+    },
+    BattlefieldDef {
+        id: 5,
+        name: "Firelights' Hideout",
+        official_text: "When you conquer here, the next unit you play this turn has [Accelerate]. (You may pay [1 Energy] and a Power of its Domain as an additional cost to have it enter ready.)",
+        source_id: "rad-162-167",
+        source_url: "https://playriftbound.com/en-us/card-gallery/",
+    },
+    BattlefieldDef {
+        id: 6,
+        name: "Ornn's Forge",
+        official_text: "While you control this battlefield, the first friendly non-token gear played each turn costs [1 Energy] less.",
+        source_id: "sfd-213-221",
+        source_url: "https://playriftbound.com/en-us/card-gallery/",
+    },
+    BattlefieldDef {
+        id: 7,
+        name: "Hunters' Circle",
+        official_text: "For each player, the first unit or gear they play here on their turn costs [1 Energy] less.",
+        source_id: "rad-163-167",
+        source_url: "https://playriftbound.com/en-us/card-gallery/",
+    },
+    BattlefieldDef {
+        id: 8,
+        name: "Piltovan Forge",
+        official_text: "While you control this battlefield, the first friendly gear activated ability played each turn costs [1 Energy] less.",
+        source_id: "ven-161-166",
+        source_url: "https://playriftbound.com/en-us/card-gallery/",
+    },
+    BattlefieldDef {
+        id: 9,
+        name: "Risen Altar",
+        official_text: "[Empower] costs of your units here cost [1 Energy] or [Any Power] less.",
+        source_id: "ven-163-166",
+        source_url: "https://playriftbound.com/en-us/card-gallery/",
+    },
+    BattlefieldDef {
+        id: 10,
+        name: "Vaults of Helia",
+        official_text: "When you hold here, your non-token units cost [1 Energy] more to play this turn.",
+        source_id: "unl-219-219",
+        source_url: "https://playriftbound.com/en-us/card-gallery/",
+    },
 ];
 
 pub fn battlefield(id: usize) -> &'static BattlefieldDef {
@@ -51,7 +103,7 @@ pub fn battlefield(id: usize) -> &'static BattlefieldDef {
 
 /// Irelia, Yi, Kennen, and Kai'Sa each default to a field from their source list.
 pub fn default_battlefield(deck: usize) -> usize {
-    deck.min(BATTLEFIELDS.len() - 1)
+    deck.min(3)
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -59,14 +111,16 @@ pub enum BattlefieldAbility {
     TempleDraw { lane: usize },
     SeatDraw { lane: usize },
     MinefieldBurn { lane: usize },
+    Grant { lane: usize, kind: PlayGrantKind },
 }
 
 impl BattlefieldAbility {
     pub fn lane(self) -> usize {
         match self {
-            Self::TempleDraw { lane } | Self::SeatDraw { lane } | Self::MinefieldBurn { lane } => {
-                lane
-            }
+            Self::TempleDraw { lane }
+            | Self::SeatDraw { lane }
+            | Self::MinefieldBurn { lane }
+            | Self::Grant { lane, .. } => lane,
         }
     }
 }
@@ -112,9 +166,99 @@ impl Game {
                 Vec::new(),
                 ChainAbility::Battlefield(BattlefieldAbility::MinefieldBurn { lane }),
             ),
-            3 => {}
+            5 => self.queue_battlefield_grant(player, lane, PlayGrantKind::AccelerateNextUnit),
+            3 | 4 | 6..=10 => {}
             _ => unreachable!("validated battlefield selection"),
         }
+    }
+
+    /// Holding scores before channel/draw; its ability must remain respondable.
+    pub(crate) fn battlefield_on_hold(&mut self, player: usize, lane: usize) {
+        if self.winner.is_some() {
+            return;
+        }
+        match self.battlefields[lane] {
+            4 => self.queue_battlefield_grant(player, lane, PlayGrantKind::RepeatNextSpell),
+            10 => {
+                self.queue_battlefield_grant(player, lane, PlayGrantKind::UnitSurchargeThisTurn(1))
+            }
+            _ => {}
+        }
+    }
+
+    fn queue_battlefield_grant(&mut self, player: usize, lane: usize, kind: PlayGrantKind) {
+        self.queue_ability(
+            player,
+            0,
+            Vec::new(),
+            ChainAbility::Battlefield(BattlefieldAbility::Grant { lane, kind }),
+        );
+    }
+
+    /// The core records completed finalization history, independently of whether
+    /// this battlefield was controlled then. A Pending payment keeps its frozen
+    /// cost even if another ability finalizes during its resource steps.
+    pub(crate) fn battlefield_cost_modifiers(&self, context: &CostContext) -> Vec<CostModifier> {
+        let mut modifiers = Vec::new();
+        for (lane, &id) in self.battlefields.iter().enumerate() {
+            let controlled = self.battlefield_owner[lane] == Some(context.player);
+            let applies = match id {
+                6 => {
+                    controlled
+                        && context.ability_source.is_none()
+                        && !context.gear_activation
+                        && context.card_kind == Some(CardKind::Gear)
+                        && !context.token
+                        && self.play_history.non_token_gears[context.player] == 0
+                }
+                7 => {
+                    context.player == self.active
+                        && context.ability_source.is_none()
+                        && !context.gear_activation
+                        && context.lane == Some(lane)
+                        && matches!(context.card_kind, Some(CardKind::Unit | CardKind::Gear))
+                        && self.play_history.units_or_gears_here[context.player][lane] == 0
+                }
+                8 => {
+                    controlled
+                        && context.gear_activation
+                        && self.play_history.gear_activations[context.player] == 0
+                }
+                9 => {
+                    controlled
+                        && context.empower
+                        && match context.ability_source {
+                            Some(AbilitySource::Unit { player, unit_id })
+                                if player == context.player =>
+                            {
+                                self.players[player]
+                                    .units
+                                    .iter()
+                                    .any(|unit| unit.id == unit_id && unit.lane == Some(lane))
+                            }
+                            _ => false,
+                        }
+                }
+                _ => false,
+            };
+            if applies {
+                modifiers.push(CostModifier {
+                    id: 6_000_000_000 + lane as u64 * 100,
+                    label: battlefield(id).name.into(),
+                    source: ChainSource::Battlefield {
+                        lane,
+                        battlefield_id: id,
+                    },
+                    energy: 1,
+                    power: u16::from(id == 9),
+                    minimum_energy: 0,
+                    choose_energy_or_power: id == 9,
+                    increase: false,
+                    scope: CostScope::Total,
+                });
+            }
+        }
+        modifiers
     }
 
     pub(crate) fn resolve_battlefield_choice(
@@ -169,6 +313,16 @@ impl Game {
                 self.draw(player, count);
             }
             BattlefieldAbility::MinefieldBurn { .. } => self.burn(player, 2),
+            BattlefieldAbility::Grant { lane, kind } => {
+                self.grant_play(
+                    player,
+                    ChainSource::Battlefield {
+                        lane,
+                        battlefield_id: self.battlefields[lane],
+                    },
+                    kind,
+                );
+            }
         }
     }
 
@@ -251,7 +405,7 @@ mod tests {
             assert!(!battlefield(deck).name.contains("Arena"));
             game.choose_battlefield(0, 3).unwrap();
             assert_eq!(game.battlefields[0], 3);
-            assert!(game.choose_battlefield(0, 4).is_err());
+            assert!(game.choose_battlefield(0, BATTLEFIELDS.len()).is_err());
             game.start_match().unwrap();
             assert!(game.choose_battlefield(0, 0).is_err());
         }

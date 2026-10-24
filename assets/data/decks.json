@@ -6697,6 +6697,443 @@
         "Empowered"
       ],
       "tags": []
+    },
+    {
+      "id": 254,
+      "name": "Sun Disc",
+      "official_id": "ogn-021-298",
+      "energy": 2,
+      "power": 1,
+      "might": 0,
+      "domains": [
+        "Fury"
+      ],
+      "kind": "Gear",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/146d7514f15e6674f471f3aa9c3fadf22c0b634b-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Exhaust]: [Legion] — The next unit you play this turn enters ready. (Get the effect if you've played another card this turn.)",
+      "official_text_html": "<p>:rb_exhaust:: [Legion] — The next unit you play this turn enters ready. (Get the effect if you've played another card this turn.)</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Legion"
+      ],
+      "tags": []
+    },
+    {
+      "id": 255,
+      "name": "Ravenborn Tome",
+      "official_id": "ogn-032-298",
+      "energy": 3,
+      "power": 0,
+      "might": 0,
+      "domains": [
+        "Fury"
+      ],
+      "kind": "Gear",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/81f968126026635e5b9a2fa1048fc979fcd13a1d-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Exhaust]: The next spell you play this turn deals 1 Bonus Damage. (Each instance of damage the spell deals is increased by 1.)",
+      "official_text_html": "<p>:rb_exhaust:: The next spell you play this turn deals 1 Bonus Damage. (Each instance of damage the spell deals is increased by 1.)</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": [],
+      "errata_source": "https://playriftbound.com/en-us/news/rules-and-releases/riftbound-origins-card-errata/"
+    },
+    {
+      "id": 256,
+      "name": "Temporal Portal",
+      "official_id": "sfd-078-221",
+      "energy": 3,
+      "power": 0,
+      "might": 0,
+      "domains": [
+        "Mind"
+      ],
+      "kind": "Gear",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/a6b8167486d552cc41d10cb9321bae4cef338fa7-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Any Power], [Exhaust]: Give the next spell you play this turn [Repeat] equal to its cost. (You may pay the additional cost to repeat the spell's effect.)",
+      "official_text_html": "<p>:rb_rune_rainbow:, :rb_exhaust:: Give the next spell you play this turn [Repeat] equal to its cost. (You may pay the additional cost to repeat the spell's effect.)</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Repeat"
+      ],
+      "tags": []
+    },
+    {
+      "id": 257,
+      "name": "Raging Firebrand",
+      "official_id": "ogn-031-298",
+      "energy": 6,
+      "power": 1,
+      "might": 4,
+      "domains": [
+        "Fury"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/9566fc064c098bd7f3540f3074dc6353c7ca5663-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "When you play me, the next spell you play this turn costs [5 Energy] less.",
+      "official_text_html": "<p>When you play me, the next spell you play this turn costs :rb_energy_5: less.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": [
+        "Dragon",
+        "Mount Targon"
+      ]
+    },
+    {
+      "id": 258,
+      "name": "Astral Heron",
+      "official_id": "ven-044-166",
+      "energy": 7,
+      "power": 0,
+      "might": 7,
+      "domains": [
+        "Calm"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/b1ce87efc9a1a7e2438c53e034a7f92caaa67ed6-744x1039.png?w=280&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "When you play your first card each turn, if I'm at a battlefield, the next card you play this turn costs [2 Energy][Any Power][Any Power] less.",
+      "official_text_html": "<p>When you play your first card each turn, if I'm at a battlefield, your next card costs :rb_energy_2::rb_rune_rainbow::rb_rune_rainbow: less.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": [
+        "Bird",
+        "Mount Targon"
+      ],
+      "errata_source": "https://playriftbound.com/en-us/news/announcements/vendetta-errata-updates/"
+    },
+    {
+      "id": 259,
+      "name": "Annie, Fiery",
+      "official_id": "ogs-001-024",
+      "energy": 5,
+      "power": 1,
+      "might": 4,
+      "domains": [
+        "Fury"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/532d75dc36a16eb5954253a77366fcceac7aec62-744x1039.png?w=280&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "Your spells and abilities deal 1 Bonus Damage. (Each instance of damage the spell deals is increased by 1.)",
+      "official_text_html": "<p>Your spells and abilities deal 1 Bonus Damage. (Each instance of damage the spell deals is increased by 1.)</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": [
+        "Annie",
+        "Noxus"
+      ]
+    },
+    {
+      "id": 260,
+      "name": "Consuming Curse",
+      "official_id": "ven-010-166",
+      "energy": 2,
+      "power": 0,
+      "might": 0,
+      "domains": [
+        "Fury"
+      ],
+      "kind": "Spell",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/4254a96c88275f09c2c41653d46702125bc24d9f-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Action] (Play on your turn or in showdowns.)\nDeal 2 to a unit at a battlefield. This deals 1 Bonus Damage for each card with this name in your trash.",
+      "official_text_html": "<p>[Action] (Play on your turn or in showdowns.)<br />Deal 2 to a unit at a battlefield. This deals 1 Bonus Damage for each card with this name in your trash.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Action"
+      ],
+      "tags": []
+    },
+    {
+      "id": 261,
+      "name": "Nami, Headstrong",
+      "official_id": "unl-052-219",
+      "energy": 3,
+      "power": 0,
+      "might": 3,
+      "domains": [
+        "Calm"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/c65521065700f308689608fc6c4fa8963f3264c0-744x1039.png?w=320&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "You may pay [Calm Power] as an additional cost to play me.\nWhen you play me, if you paid the additional cost, [Stun] an enemy unit. (It doesn't deal combat damage this turn.)\nWhen I hold, the next time you play a unit this turn, ready it and [Buff] it.",
+      "official_text_html": "<p>You may pay :rb_rune_calm: as an additional cost to play me.<br />When you play me, if you paid the additional cost, [Stun] an enemy unit. (It doesn't deal combat damage this turn.)<br />When I hold, the next time you play a unit this turn, ready it and [Buff] it.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Buff",
+        "Stun"
+      ],
+      "tags": [
+        "Mount Targon",
+        "Nami"
+      ]
+    },
+    {
+      "id": 262,
+      "name": "Bushwhack",
+      "official_id": "sfd-004-221",
+      "energy": 2,
+      "power": 1,
+      "might": 0,
+      "domains": [
+        "Fury"
+      ],
+      "kind": "Spell",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/f728959ad6d4ee6c507310000c3c9e02c0772a16-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Hidden] (Hide now for [Any Power] to react with later for [0 Energy].)\nFriendly units enter ready this turn. Play a Gold gear token exhausted.",
+      "official_text_html": "<p>[Hidden] (Hide now for :rb_rune_rainbow: to react with later for :rb_energy_0:.)<br />Friendly units enter ready this turn. Play a Gold gear token exhausted.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Hidden"
+      ],
+      "tags": []
+    },
+    {
+      "id": 263,
+      "name": "Confront",
+      "official_id": "ogn-129-298",
+      "energy": 2,
+      "power": 0,
+      "might": 0,
+      "domains": [
+        "Body"
+      ],
+      "kind": "Spell",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/691a38a7c344fdb5ee86e34d41321d99754286a7-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Action] (Play on your turn or in showdowns.)\nUnits you play this turn enter ready. Draw 1.",
+      "official_text_html": "<p>[Action] (Play on your turn or in showdowns.)<br />Units you play this turn enter ready. Draw 1.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Action"
+      ],
+      "tags": []
+    },
+    {
+      "id": 264,
+      "name": "Magma Wurm",
+      "official_id": "ogn-011-298",
+      "energy": 8,
+      "power": 1,
+      "might": 8,
+      "domains": [
+        "Fury"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/f6565b15f65f538804e6a56623c8aa2eedeffc22-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "Other friendly units enter ready.",
+      "official_text_html": "<p>Other friendly units enter ready.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": [
+        "Freljord"
+      ]
+    },
+    {
+      "id": 265,
+      "name": "Rek'Sai, Breacher",
+      "official_id": "sfd-029-221",
+      "energy": 3,
+      "power": 0,
+      "might": 3,
+      "domains": [
+        "Fury"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/999e2d25ea32da971e7b99b6e75558286c17949e-744x1039.png?w=280&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Accelerate] (You may pay [1 Energy][Fury Power] as an additional cost to have me enter ready.)\n[Assault] (+1 Might while I'm an attacker.)\nFriendly units played from anywhere other than a player's hand have [Accelerate].",
+      "official_text_html": "<p>[Accelerate] (You may pay :rb_energy_1::rb_rune_fury: as an additional cost to have me enter ready.)<br />[Assault] (+1 :rb_might: while I'm an attacker.)<br />Friendly units played from anywhere other than a player's hand have [Accelerate].</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Accelerate",
+        "Assault"
+      ],
+      "tags": [
+        "Rek'Sai",
+        "The Void"
+      ]
+    },
+    {
+      "id": 266,
+      "name": "Syndra, Transcendent",
+      "official_id": "unl-146-219",
+      "energy": 6,
+      "power": 1,
+      "might": 6,
+      "domains": [
+        "Chaos"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/a3695d011175801aaf6ec5a6557b65b8d6341e81-744x1039.png?w=320&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "While I'm in a showdown, your spells have [Repeat] [2 Energy][Chaos Power]. (You may pay the additional cost to repeat the spell's effect.)",
+      "official_text_html": "<p>While I'm in a showdown, your spells have [Repeat] :rb_energy_2::rb_rune_chaos:. (You may pay the additional cost to repeat the spell's effect.)</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Repeat"
+      ],
+      "tags": [
+        "Ionia",
+        "Syndra"
+      ]
+    },
+    {
+      "id": 267,
+      "name": "Applied Researchers",
+      "official_id": "ven-055-166",
+      "energy": 4,
+      "power": 0,
+      "might": 4,
+      "domains": [
+        "Mind"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/67a5f67bad4d4201b14760206a34c838d7a1e4dc-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Empower] [3 Energy] ([3 Energy]: Empower me. Use only if not Empowered.)\n[Empowered][>] Your spells cost [1 Energy][Any Power] less, to a minimum of [1 Energy].",
+      "official_text_html": "<p>[Empower] :rb_energy_3: (:rb_energy_3:: Empower me. Use only if not Empowered.)<br />[Empowered][&gt;] Your spells cost :rb_energy_1::rb_rune_rainbow: less, to a minimum of :rb_energy_1:.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Empower",
+        "Empowered"
+      ],
+      "tags": [
+        "Shurima"
+      ]
+    },
+    {
+      "id": 268,
+      "name": "Helm of Suppression",
+      "official_id": "ven-045-166",
+      "energy": 4,
+      "power": 1,
+      "might": 0,
+      "domains": [
+        "Calm"
+      ],
+      "kind": "Gear",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/ecfe67bbdc04f5c16a845ccc7a1b8d534195ca70-744x1039.png?w=280&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Empower] [4 Energy][Calm Power] ([4 Energy][Calm Power]: Empower this. Use only if not Empowered.)\nOpponents' spells cost [1 Energy] more. If this is [Empowered], they cost [1 Energy][Any Power] more instead.",
+      "official_text_html": "<p>[Empower] :rb_energy_4::rb_rune_calm: (:rb_energy_4::rb_rune_calm:: Empower this. Use only if not Empowered.)<br />Opponents' spells cost :rb_energy_1: more. If this is [Empowered], they cost :rb_energy_1::rb_rune_rainbow: more instead.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Empower",
+        "Empowered"
+      ],
+      "tags": []
+    },
+    {
+      "id": 269,
+      "name": "Stargazer",
+      "official_id": "ven-098-166",
+      "energy": 5,
+      "power": 0,
+      "might": 4,
+      "domains": [
+        "Chaos"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/72ef8764cb3909940f0ca4bd8b31cdceed241af0-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "Spells with [Flow] you play from your trash cost [2 Energy] less, to a minimum of [1 Energy].",
+      "official_text_html": "<p>Spells with [Flow] you play from your trash cost :rb_energy_2: less, to a minimum of :rb_energy_1:.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Flow"
+      ],
+      "tags": [
+        "Mount Targon"
+      ]
+    },
+    {
+      "id": 270,
+      "name": "Vex, Cheerless",
+      "official_id": "sfd-146-221",
+      "energy": 5,
+      "power": 1,
+      "might": 5,
+      "domains": [
+        "Chaos"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/e9025578c7b5845a1a9c9a83e045bcbe71a76e71-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "While I'm in combat, friendly spells cost [1 Energy][Any Power] less to a minimum of [1 Energy], and enemy spells cost [1 Energy][Any Power] more.",
+      "official_text_html": "<p>While I'm in combat, friendly spells cost :rb_energy_1::rb_rune_rainbow: less to a minimum of :rb_energy_1:, and enemy spells cost :rb_energy_1::rb_rune_rainbow: more.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": [
+        "Yordle",
+        "Vex",
+        "Shadow Isles"
+      ]
+    },
+    {
+      "id": 271,
+      "name": "Irelia, Graceful",
+      "official_id": "sfd-141-221",
+      "energy": 4,
+      "power": 1,
+      "might": 4,
+      "domains": [
+        "Chaos"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/03b9d73a7ef02447d7f4b67381a76616249061cc-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "Your spells that choose me cost [1 Energy] or [Any Power] less.",
+      "official_text_html": "<p>Your spells that choose me cost :rb_energy_1: or :rb_rune_rainbow: less.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": [
+        "Irelia",
+        "Ionia"
+      ]
     }
   ],
   "official_text_note": "Official card/legend rules text from the Riot Card Gallery, retrieved 2026-10-24 and corrected by cited errata. Resource icon tokens are expanded to readable bracketed names. Raw card and equipment HTML is preserved separately. Official text does not establish full implementation fidelity."

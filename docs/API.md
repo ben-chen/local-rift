@@ -40,7 +40,7 @@ These are consecutive requests, not a single JSON array. An optional `id` is ech
 {"ok":false,"revision":4,"error":{"code":"stale_revision","message":"Expected revision 4, received 3."}}
 ```
 
-Every successful mutation increments the session revision by one. Reset also increments it; it never reuses an old revision. All mutation commands require the current revision. `observe`, `info`, `catalog`, `validate_deck`, `suggest`, `quote_payment`, and successful `validate` leave it unchanged. Rejected requests leave both game state and revision unchanged. The facade validates on a cloned game and commits only on success, including when the core engine rejects an action after beginning its internal work.
+Every successful mutation increments the session revision by one. Reset also increments it; it never reuses an old revision. All mutation commands require the current revision. `observe`, `info`, `catalog`, `validate_deck`, `suggest`, `quote_payment`, `play_choices`, `cost_plan`, and successful `validate` leave it unchanged. Rejected requests leave both game state and revision unchanged. The facade validates on a cloned game and commits only on success, including when the core engine rejects an action after beginning its internal work.
 
 | Command | Fields besides `command` and optional `id` | Result |
 | --- | --- | --- |
@@ -53,6 +53,8 @@ Every successful mutation increments the session revision by one. Reset also inc
 | `start` | `revision` | Begin match; an unused mulligan means keep that hand |
 | `suggest` | `player` | `{exhaustive:false, actions:[{id, action}, ...]}`; empty when this seat cannot act |
 | `quote_payment` | `revision`, `player`, exactly one of `action` or `action_id` | Suggested and available power sources, exact cost obligations; no mutation |
+| `play_choices` | `revision`, `player`, exactly one of `action` or `action_id` | Available Repeat instances, Accelerate/bonus costs, original zone, and typed cost plan |
+| `cost_plan` | `revision`, `player`, exactly one of `action` or `action_id` | Cost components, modifiers, applied discount order, final Energy and typed Power obligations |
 | `validate` | `revision`, `player`, exactly one of `action` or `action_id` | `{legal:true}`, or an error; no mutation |
 | `apply` | `revision`, `player`, exactly one of `action` or `action_id` | Apply one legal action and return public summary |
 | `step_ai` | `revision`, `player` | Ask the built-in AI to take one action for the seat with priority |
@@ -128,8 +130,10 @@ Targets have exactly one of these forms:
 | `choose_resolution_group` | `index` | Select a listed legal target group when a resolving spell requires that choice |
 | `set_optional_discount` | `power` | Set how many friendly Ezreal discounts reduce power; remaining discounts reduce energy |
 | `place_token` | optional `lane` | Finalize the next token whose effect allows a destination choice at base or a battlefield you control |
+| `finalize_token_play` | optional `lane`, `accelerate` | Finalize a pending token, including an available Accelerate cost |
+| `with_play_choices` | `action`, `choices` | Select independent Repeat executions, optional costs, discount order, and Power-reduction allocation |
 
-Registered activations use a source object such as `{"type":"unit","player":0,"unit_id":12}` or `{"type":"gear","player":0,"gear_id":15}`. The source is distinct from the targets. `ability_index` is zero-based within that card's `catalog.cards[].activated_abilities`; for Renata Glasc, Mastermind, index `0` draws and index `1` scores. The catalog supplies each ability's label, timing, energy/power cost, power domain, exhaust cost, source battlefield requirement, target restrictions, whether it adds resources, recycling costs, source sacrifice, and conversion direction. Target restrictions distinguish units from gear and identify an “another” requirement. This registry currently covers cards 230–245; existing Equip, resource-gear, Empower, and legend actions retain their own interfaces.
+Registered activations use a source object such as `{"type":"unit","player":0,"unit_id":12}` or `{"type":"gear","player":0,"gear_id":15}`. The source is distinct from the targets. `ability_index` is zero-based within that card's `catalog.cards[].activated_abilities`; for Renata Glasc, Mastermind, index `0` draws and index `1` scores. The catalog supplies each ability's label, timing, energy/power cost, power domain, exhaust cost, source battlefield requirement, target restrictions, whether it adds resources, recycling costs, source sacrifice, and conversion direction. Target restrictions distinguish units from gear and identify an “another” requirement. Use the catalog to discover registered sources; existing Equip, resource-gear, Empower, and legend actions retain their own interfaces.
 
 ```json
 {"type":"activate_ability","source":{"type":"unit","player":0,"unit_id":12},"ability_index":1,"targets":[]}
@@ -150,11 +154,31 @@ For `play_from_trash_options`, `flow:"printed"` or `flow:"granted"` selects that
 
 The engine remains the authority on timing, costs, destinations, targeting, optionality, and available cards. A syntactically correct action may be illegal in the current state. Use `validate` to try a candidate without consuming a revision. `play_card_targets`, `play_card_options`, `play_from_trash_targets`, `play_from_trash_options`, and `finalize_pending_play` preserve exact target arrays, including empty selections where legal. `play_hidden` retains an automatic-target convenience when its list is empty; provide the full two-target pair to choose a hidden Switcheroo's targets yourself. Permanent abilities that choose after entry must receive an empty play target list and then answer the subsequent `on_play_target` decision.
 
-Optional costs also apply to trash plays. Fizz ignores a replayed spell's base energy cost, while a chosen Repeat cost must still be paid. Flow pays its alternative base cost plus any chosen additional cost. Last Rites can play Kai'Sa with Accelerate when the combined cost is affordable. Each repeated spell supplies its own `repeat_targets`; it may target the same objects when legal.
+Optional costs also apply to trash plays. Fizz ignores a replayed spell's base energy cost, while a chosen Repeat cost must still be paid. Flow pays its alternative base cost plus any chosen additional cost. Last Rites can play Kai'Sa with Accelerate when the combined cost is affordable. The legacy `repeat`/`repeat_targets` fields select one printed Repeat. Use the following canonical choices for independently granted or multiple Repeat instances.
 
 Resource actions may be available while a payment decision is pending. For example, generate power with a rune, Seal, Gold, or Kai'Sa, then complete a replay/payment choice using the new revision. The decision remains pending. Resource actions are not a way to bypass target, combat assignment, or card selection decisions. Energy discounts apply after an alternative base cost and any additional costs are combined; `flow_costs` describes each instance's base cost, while validation and payment quotes use the live discounted total.
 
 `set_optional_discount` changes the player's `optional_power_discount` preference without spending resources or passing priority. The next optional-cost cast uses that preference. It still counts as a successful API mutation and advances the revision.
+
+## Repeat instances and cost choices
+
+Ask `play_choices` for the intended action, with its initial targets already selected. It returns the card's `origin` (`hand`, `champion`, `trash`, `hidden` with `lane`, or `token`), a `repeats` list, optional `accelerate` and `bonus` descriptors, and `costs`. Each Repeat option has an opaque `id`, source, label, and its own Energy, Power, and domain requirements. Temporal Portal, Syndra, and printed Repeat can supply separate options. Discover IDs from the current position; do not construct or persist them across matches. Repeat-option, cost-component, and cost-modifier IDs are decimal strings on the wire, preserving all 64 bits in JavaScript clients. Requests also accept exact unsigned JSON integers for these IDs. Card, unit, lane, and grant IDs retain their existing numeric representation.
+
+Wrap the action in `with_play_choices`. Its `choices` accepts:
+
+- `repeats`: an ordered array of `{option_id, choices:{targets, mode}}`. Each option can be paid at most once. Targets are chosen separately for each execution; currently `mode` must be absent or `null`.
+- `accelerate` and `bonus`: optional booleans, defaulting to false. The descriptor's label identifies the relevant printed additional cost, including Nami's optional payment.
+- `cost_order`: an ordered array of `{modifier_id, use_power, power_allocations}`. `use_power` selects Power for a modifier that explicitly allows Energy or Power; otherwise it must be false. `power_allocations` contains `{component_id, amount}` entries to distribute that modifier's usable Power reduction across eligible components.
+
+Missing arrays are empty. Declining Repeat still consumes a next-spell grant when the spell's play begins. Do not combine canonical Repeat selections with the legacy `repeat:true` adapter. `begin_payment` can contain a `with_play_choices` action so the selected costs and grants remain fixed while resources are generated. `with_power_payment` around the chosen action selects the actual payment sources; this is separate from choosing which cost a discount reduces.
+
+`cost_plan` accepts selected card plays and supported Equip, Empower, or registered ability actions. It returns nominal `components`, applicable `modifiers`, the actual `applied_order`, and final `energy` and `power`. Each Power obligation retains its allowed domains and `spell_eligible` flag; totals alone cannot represent different colored costs. Modifier scope is either `total` or `component` with a `component_id`. Cost increases apply before discounts. Component discounts precede total discounts; explicit cross-stage reversal is rejected. Within a stage, the player may order reductions, including reductions with a local minimum. A minimum applies only to that discount, not as a permanent floor on the resulting cost. An omitted order uses a deterministic legal order.
+
+Explicit Power allocations must name distinct eligible components, fit their remaining cost, and allocate the entire usable reduction. A selected optional cost remains paid when discounts reduce it to zero. Invalid option IDs, duplicates, unsupported modes, and inconsistent allocations reject without changing the match. These queries require the acting seat and current revision; a preview is not a reservation of the position.
+
+One physical spell remains on the chain through every execution and any intervening discard, look, target-group, or other mandatory choice. `chain[].executions` is the canonical list; legacy fields describe only the initial and first repeated execution. `resolution_progress` reports `{chain_id, execution, executions}`, with a zero-based execution index while resolving. There is no response window between executions. The spell produces one completed-play event and moves to its final zone only after all its instructions finish. Private choices remain filtered for their owner throughout.
+
+Public `play_grants` identify each delayed effect's controller, source, expiry turn, and typed effect. `play_history` exposes finalized non-token gear plays, gear activations, and per-player/per-lane unit-or-gear plays. These are shared public facts, identical in both observations. They are distinct from completed-play counters and from a live cost quote.
 
 ## Choosing power sources
 
@@ -208,7 +232,7 @@ Attachment abilities identify their origin: `ability.type:"equip"` is the activa
 
 A unit's observed `might` is its current total, including equipment and currently applicable combat bonuses. Printed might remains in the catalog. Do not add an equipment bonus to the observed total again.
 
-Each unit also exposes `keywords`: numeric `assault`, `shield`, and `deflect`, Boolean `tank`, `backline`, `ganking`, and `ambush`, plus optional printed `accelerate:{energy,power,domain}`. These values account for token identity, current equipment, level requirements, and granted abilities. Assault and Shield are their keyword values even outside combat; apply no extra bonus to observed `might`. Accelerate describes a play option, not an action that readies a unit already on the board. `damage_priority` is `0` for Tank, `1` for ordinary units, and `2` for Backline, matching the engine's combat-assignment ordering.
+Each unit also exposes `keywords`: numeric `assault`, `shield`, and `deflect`, Boolean `tank`, `backline`, `ganking`, and `ambush`, plus optional printed `accelerate:{energy,power,domain}`. These values account for token identity, current equipment, level requirements, and granted abilities. Assault and Shield are their keyword values even outside combat; apply no extra bonus to observed `might`. Accelerate describes a play option, not an action that readies a unit already on the board. `damage_priority` reports the automatic assignment preference: `0` for Tank (including Tank plus Backline), `1` for ordinary units, and `2` for Backline alone. A unit with both Tank and Backline may legally occupy either priority group; this field does not restrict the controller to the automatic choice.
 
 For token units and Gold, `token:true` distinguishes the generated object from a physical deck card. Its `card_id` is an engine source/reference identity, so use the observed `name` and `might` for the token instead of assuming that catalog entry's printed card kind or stats describe it.
 
@@ -242,8 +266,9 @@ The viewer sees their own hand as card IDs. The opposing hand is `null` except w
 | `combat_damage` | `lane`, `total`; `assign_damage` |
 | `death_replacement` | `options:[{unit_id,gear_id}, ...]`; `choose_death_replacement` |
 | `order_triggers` | `options:[{id,card_id,label}, ...]`; `order_trigger` |
-| `resolution_targets` | `card_id`, `groups` of target objects, `repeated`; select the desired group by its index with `choose_resolution_group` |
+| `resolution_targets` | `card_id`, `groups` of target objects, zero-based `execution`, legacy `repeated`; select the desired group by its index with `choose_resolution_group` |
 | `token_placement` | `card_id`, `remaining`; use `place_token` separately for each remaining token |
+| `token_play` | `card_id`, `remaining`, `destination`; use `finalize_token_play`, optionally wrapped in `with_play_choices` and/or staged payment |
 
 For each decision, `suggest` supplies legal convenience responses, while structured actions allow alternate legal choices. Opposing observations omit private Predict and Top Three identities. Public replay/trigger/target decisions remain observable. Pending triggers are distinct from the public chain and cannot be targeted by counterspells until finalized.
 
@@ -252,6 +277,8 @@ Generic card triggers retain a public `context` with `source:{player,unit_id,gea
 The catalog and observed units expose `tags`, including token tags. Gear observations include their `empowered` status. Player observations distinguish `cards_played_this_turn` (finalized cards, including later-countered spells), `cards_completed_this_turn` (completed card plays), and `cards_drawn_this_turn`. Token plays do not increment either card-play counter.
 
 Token plays created by a resolving effect wait until that effect finishes. `pending_token_plays` exposes their public pending IDs, controller, source `card_id`, Might, and `gear` flag in finalization order. `destination:{mode:"choose"}` permits the normal base/controlled-field choice; `{mode:"fixed",lane:null}` fixes base and a numeric lane fixes a battlefield. Pending IDs identify chain objects, not selectable board units. Placement choices finalize one token at a time; earlier tokens can be on the board while later placements remain pending. These choices do not grant a response window between token plays.
+
+When a pending unit token can pay Accelerate, `token_play` exposes that additional choice before entry. Inspect `play_choices` for a `finalize_token_play` action to obtain its cost. Declining the optional cost still plays the required token. Gear tokens do not consume next-unit grants and do not acquire unit-only Accelerate.
 
 A `play_chosen` or `revive_chosen` chain ability identifies the previously selected trash card. Its `trash_index` becomes `null` if that card has left the trash before resolution. An `empower_object` ability exposes its selected `player`, `object_id`, and `lane`; `object_id:null` means that player's legend at base.
 

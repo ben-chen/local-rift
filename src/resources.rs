@@ -11,7 +11,9 @@ impl Game {
     fn resource_state_key(&self, player: usize) -> String {
         let p = &self.players[player];
         format!(
-            "{:?}|{:?}|{:?}|{}|{}|{:?}|{:?}|{:?}|{:?}|{:?}|{:?}",
+            "{:?}|{:?}|{:?}|{:?}|{:?}|{:?}|{:?}|{:?}|{:?}|{:?}|{:?}|{:?}|{:?}",
+            self.play_history,
+            self.play_grants,
             p.runes,
             p.exhausted_runes,
             p.power_pool,

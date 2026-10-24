@@ -158,17 +158,8 @@ impl Game {
         }
         let rule = rules::equipment(gear.card_id).unwrap();
         let state = &self.players[player];
-        if self.payment_energy_available(player) < rule.equip_energy.into() {
-            return Err(format!("Equip needs {} energy.", rule.equip_energy));
-        }
-        let available = self.available_power(player, Some(rule.equip_domain));
-        if available < rule.equip_power.into() {
-            return Err(format!(
-                "Equip needs {} {} power.",
-                rule.equip_power,
-                rule.equip_domain.name()
-            ));
-        }
+        self.clone()
+            .pay_action_cost(&Action::Equip { gear_id, target })?;
         if state.discard.len() < rule.recycle_trash as usize {
             return Err(format!(
                 "Equip also requires recycling {} cards from your trash.",
@@ -219,8 +210,7 @@ impl Game {
             return Err("Choose different cards that are still in your trash.".into());
         }
         // Pay energy first so the same rune may be exhausted and then recycled.
-        self.pay_energy(player, rule.equip_energy.into());
-        self.spend_power(player, Some(rule.equip_domain), rule.equip_power.into())?;
+        self.pay_action_cost(&Action::Equip { gear_id, target })?;
         if !distinct.is_empty() {
             self.recycle_cards(player, &distinct);
         }
@@ -320,6 +310,7 @@ impl Game {
                     .map_or(String::new(), |domain| format!("{} ", domain.name()))
             ));
         }
+        self.play_history.gear_activations[player] += 1;
         self.gear_ability_used(player);
         Ok(())
     }

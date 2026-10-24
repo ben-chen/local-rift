@@ -244,11 +244,15 @@ impl Game {
             .position(|card| card.id == hidden_id)
             .unwrap();
         let card_id = self.players[player].hidden[index].card_id;
-        self.spend_deflect(
-            player,
-            self.catalog[card_id].kind == CardKind::Spell,
-            &resolved,
-        )?;
+        if let Some(result) = self.pay_active_play(player, card_id) {
+            result?;
+        } else {
+            self.spend_deflect(
+                player,
+                self.catalog[card_id].kind == CardKind::Spell,
+                &resolved,
+            )?;
+        }
         let card = self.players[player].hidden.remove(index);
         self.push_log(format!(
             "{} reveals and plays {} from battlefield {}.",

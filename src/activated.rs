@@ -98,6 +98,8 @@ enum AbilityEffect {
     MoveTargetToBase,
     MightIfSourceEmpowered { base: i16, empowered: i16 },
     AddEnergyIfSourceEmpowered { base: u8, empowered: u8 },
+    PlayGrant(crate::play::PlayGrantKind),
+    SunDisc,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -119,6 +121,9 @@ pub struct ActivatedRule {
 }
 
 impl ActivatedRule {
+    pub(crate) fn is_empower(&self) -> bool {
+        matches!(self.effect, AbilityEffect::EmpowerSource)
+    }
     pub fn adds_resources(&self) -> bool {
         matches!(
             self.effect,
@@ -162,6 +167,66 @@ const fn exhaust(
 /// Stable zero-based ability indices belong to each explicit source printing.
 pub fn activated_rules(card_id: CardId) -> &'static [ActivatedRule] {
     match card_id {
+        254 => {
+            const {
+                &[exhaust(
+                    "Legion: next unit enters ready",
+                    AbilityTargets::NONE,
+                    AbilityEffect::SunDisc,
+                )]
+            }
+        }
+        255 => {
+            const {
+                &[exhaust(
+                    "Next spell gets Bonus Damage 1",
+                    AbilityTargets::NONE,
+                    AbilityEffect::PlayGrant(crate::play::PlayGrantKind::BonusNextSpell(1)),
+                )]
+            }
+        }
+        256 => {
+            const {
+                &[ActivatedRule {
+                    power: 1,
+                    ..exhaust(
+                        "Next spell gains Repeat at its printed cost",
+                        AbilityTargets::NONE,
+                        AbilityEffect::PlayGrant(crate::play::PlayGrantKind::RepeatNextSpell),
+                    )
+                }]
+            }
+        }
+        267 => {
+            const {
+                &[ActivatedRule {
+                    energy: 3,
+                    exhaust: false,
+                    only_if_not_empowered: true,
+                    ..exhaust(
+                        "Empower Applied Researchers",
+                        AbilityTargets::NONE,
+                        AbilityEffect::EmpowerSource,
+                    )
+                }]
+            }
+        }
+        268 => {
+            const {
+                &[ActivatedRule {
+                    energy: 4,
+                    power: 1,
+                    domain: Some(Domain::Calm),
+                    exhaust: false,
+                    only_if_not_empowered: true,
+                    ..exhaust(
+                        "Empower Helm of Suppression",
+                        AbilityTargets::NONE,
+                        AbilityEffect::EmpowerSource,
+                    )
+                }]
+            }
+        }
         230 | 233 => {
             const {
                 &[exhaust(
@@ -701,16 +766,15 @@ impl Game {
 
     fn pay_ability_costs(
         &mut self,
-        player: usize,
-        rule: &ActivatedRule,
+        source: AbilitySource,
+        ability_index: usize,
         targets: &[Target],
     ) -> Result<(), String> {
-        if self.payment_energy_available(player) < rule.energy.into() {
-            return Err(format!("This ability needs {} energy.", rule.energy));
-        }
-        self.pay_energy(player, rule.energy.into());
-        self.spend_power(player, rule.domain, rule.power.into())?;
-        self.spend_deflect(player, false, targets)
+        self.pay_action_cost(&Action::ActivateAbility {
+            source,
+            ability_index,
+            targets: targets.to_vec(),
+        })
     }
 
     pub fn validate_ability(
@@ -795,7 +859,8 @@ impl Game {
         }
         // One shared payment simulation covers overlapping colored and Deflect
         // obligations, including explicit source restrictions from the wrapper.
-        self.clone().pay_ability_costs(player, rule, targets)
+        self.clone()
+            .pay_ability_costs(source, ability_index, targets)
     }
 
     pub fn ability_actions(&self, player: usize) -> Vec<Action> {
@@ -885,7 +950,7 @@ impl Game {
         let player = source.player();
         let card_id = self.ability_source_state(source).unwrap().0;
         let rule = &activated_rules(card_id)[ability_index];
-        self.pay_ability_costs(player, rule, &targets)?;
+        self.pay_ability_costs(source, ability_index, &targets)?;
         self.recycle_cards(player, &trash_indices);
         if rule.disempower_source {
             let id = match source {
@@ -913,6 +978,9 @@ impl Game {
             self.gear_destroy(player, gear_id);
         }
         if rule.adds_resources() {
+            if matches!(source, AbilitySource::Gear { .. }) {
+                self.play_history.gear_activations[player] += 1;
+            }
             self.resolve_activated(source, card_id, ability_index, &targets);
         } else {
             self.queue_ability(
@@ -946,6 +1014,18 @@ impl Game {
             .filter(|&target| self.ability_target_valid(source, rule, target))
             .collect();
         match rule.effect {
+            AbilityEffect::SunDisc => {
+                if self.cards_played_this_turn(player) > 0 {
+                    self.grant_play(
+                        player,
+                        crate::game::ChainSource::Card { card_id },
+                        crate::play::PlayGrantKind::ReadyNextUnit,
+                    );
+                }
+            }
+            AbilityEffect::PlayGrant(kind) => {
+                self.grant_play(player, crate::game::ChainSource::Card { card_id }, kind);
+            }
             AbilityEffect::Might { amount, minimum } => {
                 for target in valid {
                     self.modify_might(target, amount, minimum);
@@ -968,7 +1048,15 @@ impl Game {
                 };
                 if let Some(amount) = amount {
                     for target in valid {
-                        let amount = self.battlefield_damage(target, amount);
+                        let amount = self.damage_amount(
+                            crate::game::damage::DamageContext {
+                                player,
+                                bonus_damage: 0,
+                                dealer: crate::game::damage::DamageDealer::Ability,
+                            },
+                            target,
+                            amount,
+                        );
                         if let Some(unit) = self.unit_mut(target) {
                             unit.damage = unit.damage.saturating_add(amount);
                         }
@@ -1268,6 +1356,8 @@ impl Game {
                     && (0..2).any(|lane| self.battlefield_owner[lane] != Some(player) && self.players[1 - player].units.iter().all(|u| u.lane != Some(lane)));
                 (relevant && !preserve_mover).then_some(55)
             }),
+            AbilityEffect::SunDisc => (self.cards_played_this_turn(player)>0 && self.players[player].hand.iter().any(|&id|self.catalog[id].kind==crate::cards::CardKind::Unit)).then_some(65),
+            AbilityEffect::PlayGrant(_) => self.players[player].hand.iter().any(|&id|self.catalog[id].kind==crate::cards::CardKind::Spell).then_some(60),
             AbilityEffect::AddEnergy(_) | AbilityEffect::AddEnergyIfSourceEmpowered { .. } => {
                 let mut probe = self.clone();
                 probe.activate_ability(source, index, Vec::new()).ok()?;

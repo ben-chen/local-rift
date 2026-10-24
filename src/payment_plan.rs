@@ -200,6 +200,7 @@ impl Game {
         // Normalize convenience target choices before resources change the board.
         let action = probe.normalize_payment_intent(action)?;
         let mut staged = self.clone();
+        staged.capture_payment_grants(&action);
         let pending_card = staged.detach_payment_card(&action)?;
         // The source has already left its zone when cost facts are determined.
         // Restore it only inside the disposable executor probe; cost queries use
@@ -232,6 +233,7 @@ impl Game {
     fn detach_payment_card(&mut self, action: &Action) -> Result<Option<PaymentCard>, String> {
         let player = self.priority();
         let (card_id, origin) = match action {
+            Action::WithPlayChoices { action, .. } => return self.detach_payment_card(action),
             Action::PlayCard { hand_index, .. }
             | Action::PlayCardWithTargets { hand_index, .. }
             | Action::PlayCardOptions { hand_index, .. } => {
@@ -306,6 +308,10 @@ impl Game {
     fn normalize_payment_intent(&self, action: Action) -> Result<Action, String> {
         let player = self.priority();
         match action {
+            Action::WithPlayChoices { action, choices } => Ok(Action::WithPlayChoices {
+                action: Box::new(self.normalize_payment_intent(*action)?),
+                choices,
+            }),
             Action::PlayCard {
                 hand_index,
                 lane,
@@ -455,9 +461,14 @@ impl Game {
 }
 
 fn payment_intent(action: &Action) -> bool {
+    if let Action::WithPlayChoices { action, .. } = action {
+        return payment_intent(action);
+    }
     matches!(
         action,
         Action::PlayCard { .. }
+            | Action::FinalizeTokenPlay { .. }
+            | Action::PlaceToken { .. }
             | Action::PlayCardWithTargets { .. }
             | Action::PlayCardOptions { .. }
             | Action::PlayChampion { .. }

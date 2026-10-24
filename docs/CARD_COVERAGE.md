@@ -2,7 +2,7 @@
 
 Snapshot checked **2026-10-24**. The official gallery contains **1,408 printing records** grouped into **1,103 distinct full-name identities**. After excluding **12 auxiliary token/tracker identities** and **12 banned identities**, **1,079 identities are legal in Standard/1v1 Constructed**. The separate 2v2 list leaves **1,078**.
 
-**This client does not yet implement every legal card.** It currently maps **254 main-deck cards, 7 independently registered legends, 4 battlefields, and 6 rune resource types** (271 legal identities). **808 legal identities remain unimplemented and are not playable.** Importing this snapshot does not register cards with the engine. Full inventory coverage is not full rules support.
+**This client does not yet implement every legal card.** It currently maps **272 main-deck cards, 7 independently registered legends, 11 battlefields, and 6 rune resource types** (296 legal identities). **783 legal identities remain unimplemented and are not playable.** Importing this snapshot does not register cards with the engine. Full inventory coverage is not full rules support.
 
 ## Scope and authority
 
@@ -27,12 +27,12 @@ Numbered positions include token slots where the publisher numbers them within a
 
 | Kind | Standard legal | Implemented mapping | Not implemented |
 | --- | ---: | ---: | ---: |
-| Battlefield | 69 | 4 | 65 |
-| Gear | 127 | 50 | 77 |
+| Battlefield | 69 | 11 | 58 |
+| Gear | 127 | 54 | 73 |
 | Legend | 58 | 7 | 51 |
 | Rune | 6 | 6 | 0 |
-| Spell | 269 | 66 | 203 |
-| Unit | 550 | 138 | 412 |
+| Spell | 269 | 69 | 200 |
+| Unit | 550 | 149 | 401 |
 
 Implemented mapping means the existing engine/preset/field/resource implementation, not a claim that every interaction has been formally proven. See `docs/RULES.md` for engine limits. Every unimplemented identity has `implementation.status: not_implemented` and `playable_in_client: false`. Printed keywords are recorded per card and counted under `unimplemented_by_observed_keyword` as discovery hints only; shared keywords do not imply shared effect semantics or completed implementation. Each unimplemented card still requires its specific effect, targets, timing, costs, continuous/replacement effects, and interaction tests to be reviewed and implemented.
 
@@ -380,6 +380,24 @@ Source pages are archived as deterministic gzip files under `assets/data/catalog
 | 251 | Hextech Disc | `ven-087-166` |
 | 252 | Platewyrm Egg | `ven-075-166` |
 | 253 | Tools of Empire | `ven-077-166` |
+| 254 | Sun Disc | `ogn-021-298` |
+| 255 | Ravenborn Tome | `ogn-032-298` |
+| 256 | Temporal Portal | `sfd-078-221` |
+| 257 | Raging Firebrand | `ogn-031-298` |
+| 258 | Astral Heron | `ven-044-166` |
+| 259 | Annie, Fiery | `ogs-001-024` |
+| 260 | Consuming Curse | `ven-010-166` |
+| 261 | Nami, Headstrong | `unl-052-219` |
+| 262 | Bushwhack | `sfd-004-221` |
+| 263 | Confront | `ogn-129-298` |
+| 264 | Magma Wurm | `ogn-011-298` |
+| 265 | Rek'Sai, Breacher | `sfd-029-221` |
+| 266 | Syndra, Transcendent | `unl-146-219` |
+| 267 | Applied Researchers | `ven-055-166` |
+| 268 | Helm of Suppression | `ven-045-166` |
+| 269 | Stargazer | `ven-098-166` |
+| 270 | Vex, Cheerless | `sfd-146-221` |
+| 271 | Irelia, Graceful | `sfd-141-221` |
 
 ## Implemented legend ID mapping
 

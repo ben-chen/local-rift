@@ -385,6 +385,7 @@ fn dragonsoul_can_pay_hard_bargain_when_current_energy_is_insufficient() {
     let chain_id = g.chain[0].id;
     g.apply(Action::Pass).unwrap();
     cast(&mut g, 37, vec![Target::Spell { chain_id }]);
+    let bargain_id = g.chain.last().unwrap().id;
     resolve(&mut g);
     assert!(matches!(
         g.decision,
@@ -400,11 +401,22 @@ fn dragonsoul_can_pay_hard_bargain_when_current_energy_is_insufficient() {
     assert_eq!(g.decision, decision);
     assert_eq!(g.players[0].energy, 2);
     assert!(!g.players[0].units[0].ready);
-    assert_eq!(g.chain.len(), 1);
+    assert_eq!(
+        g.chain
+            .iter()
+            .map(|item| (item.id, item.card_id))
+            .collect::<Vec<_>>(),
+        vec![(chain_id, 7), (bargain_id, 37)],
+        "the physical counterspell stays on the chain throughout its payment choice"
+    );
+    assert!(!g.players[1].discard.contains(&37));
     assert!(matches!(sage, AbilitySource::Unit { .. }));
     g.step_ai().unwrap();
     assert!(g.decision.is_none());
     assert_eq!(g.players[0].energy, 0);
+    assert_eq!(g.chain.len(), 1);
+    assert_eq!((g.chain[0].id, g.chain[0].card_id), (chain_id, 7));
+    assert!(g.players[1].discard.contains(&37));
     resolve(&mut g);
     assert_eq!(g.players[0].units[1].temporary_buff, 2);
     assert_eq!(

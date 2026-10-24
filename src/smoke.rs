@@ -11,6 +11,7 @@ use local_rift::{
 use macroquad::prelude::*;
 
 thread_local! {
+    static ADD_CHAIN_SNAPSHOT: std::cell::RefCell<Vec<u32>> = const { std::cell::RefCell::new(Vec::new()) };
     static SAVED_DECK_SNAPSHOT: std::cell::RefCell<Option<Vec<u8>>> = const { std::cell::RefCell::new(None) };
     static COMBAT_SNAPSHOT: std::cell::RefCell<Option<String>> = const { std::cell::RefCell::new(None) };
     static DIFFICULTY_SNAPSHOT: std::cell::RefCell<Option<String>> = const { std::cell::RefCell::new(None) };
@@ -273,6 +274,9 @@ fn expansion_fixture(app: &mut App, card_id: usize) {
     app.hover_object_candidate = None;
     app.toast_until = 0.0;
     app.payment_draft = None;
+    app.play_draft = None;
+    app.cost_editor = None;
+    app.show_play_effects = false;
     app.suspended_payments.clear();
     app.resource_drafts.clear();
     app.ability_costs.clear();
@@ -4030,6 +4034,9 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
                 app.selection,
                 Some(Selection::Ability(_, Some(0)))
             ));
+            ADD_CHAIN_SNAPSHOT.with(|ids| {
+                *ids.borrow_mut() = app.game.chain.iter().map(|item| item.id).collect()
+            });
             capture(app, "RIFT_SMOKE_DRAGONSOUL_SCREENSHOT");
             click(app, 1285.0, 510.0);
         }
@@ -4037,7 +4044,17 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
             assert_eq!(app.game.players[0].energy, 2);
             assert_eq!(app.game.players[0].energy_pool, 1);
             assert_eq!(app.game.priority(), 0);
-            assert_eq!(app.game.chain.len(), 1, "Add has no response item");
+            ADD_CHAIN_SNAPSHOT.with(|ids| {
+                assert_eq!(
+                    *ids.borrow(),
+                    app.game
+                        .chain
+                        .iter()
+                        .map(|item| item.id)
+                        .collect::<Vec<_>>(),
+                    "Add has no response item"
+                )
+            });
             assert!(matches!(
                 app.game.decision,
                 Some(Decision::CounterTax { cost: 2, .. })
@@ -5138,12 +5155,412 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
             app.ui.input_override = None;
             app.ui.pointer_override = None;
             app.ui.wheel_override = None;
+        }
+        527 => {
+            app.in_match = false;
+            app.screen = Screen::Practice;
+            app.hover_card = None;
+            app.hover_rect = None;
+            app.field_inspect = None;
+            app.fields = [0, 1];
+            click(app, 450.0, 876.0);
+        }
+        528 => {
+            assert!(app.field_picker.is_some());
+            click(app, 480.0, 616.0);
+        }
+        529 => {
+            assert_eq!(app.field_picker.as_ref().unwrap().selected, 10);
+            assert_eq!(app.fields, [0, 1], "preview does not change setup");
+            capture(app, "RIFT_SMOKE_C4_FIELDS_SCREENSHOT");
+            click(app, 480.0, 715.0);
+        }
+        530 => {
+            assert!(app.field_picker.is_none());
+            assert_eq!(app.fields, [0, 1], "cancel preserves setup");
+            click(app, 450.0, 876.0);
+        }
+        531 => {
+            click(app, 480.0, 400.0);
+        }
+        532 => {
+            assert_eq!(app.field_picker.as_ref().unwrap().selected, 4);
+            click(app, 870.0, 715.0);
+        }
+        533 => {
+            assert_eq!(app.fields, [4, 1]);
+            assert!(app.field_picker.is_none());
+            expansion_fixture(app, 260);
+            app.game.players[0].any_power = 4;
+            app.game.players[0].gear = vec![
+                GearState {
+                    id: 9901,
+                    card_id: 256,
+                    attached_to: None,
+                    ready: true,
+                    temporary: false,
+                    token: false,
+                },
+                GearState {
+                    id: 9902,
+                    card_id: 256,
+                    attached_to: None,
+                    ready: true,
+                    temporary: false,
+                    token: false,
+                },
+            ];
+            for id in [9901, 9902] {
+                app.game
+                    .apply(Action::ActivateAbility {
+                        source: local_rift::activated::AbilitySource::Gear {
+                            player: 0,
+                            gear_id: id,
+                        },
+                        ability_index: 0,
+                        targets: vec![],
+                    })
+                    .unwrap();
+                finish_chain_until_choice(app);
+                assert!(app.game.decision.is_none());
+            }
+            assert_eq!(app.game.play_grants.len(), 2);
+            app.game.players[1].units = vec![
+                public_unit(9911, 25, Some(0)),
+                public_unit(9912, 25, Some(0)),
+                public_unit(9913, 25, Some(1)),
+            ];
+            app.game.battlefield_owner = [Some(1), Some(1)];
+            save_state(app);
+            click(app, 315.0, 760.0);
+        }
+        534 => {
+            assert!(app.selection == Some(Selection::Hand(0)));
+            click_unit(app, 9911);
+        }
+        535 => {
+            assert_eq!(
+                app.targets,
+                vec![Target::Unit {
+                    player: 1,
+                    unit_id: 9911
+                }]
+            );
+            click(app, 1285.0, 468.0);
+        }
+        536 => {
+            assert!(app.play_draft.as_ref().unwrap().open);
+            click(app, 450.0, 739.0);
+        }
+        537 => {
+            assert_eq!(app.play_draft.as_ref().unwrap().choices.repeats.len(), 1);
+            click_unit(app, 9912);
+        }
+        538 => {
+            assert_eq!(
+                app.play_draft.as_ref().unwrap().choices.repeats[0]
+                    .choices
+                    .targets,
+                vec![Target::Unit {
+                    player: 1,
+                    unit_id: 9912
+                }]
+            );
+            click(app, 450.0, 789.0);
+        }
+        539 => {
+            assert_eq!(app.play_draft.as_ref().unwrap().choices.repeats.len(), 2);
+            click_unit(app, 9913);
+        }
+        540 => {
+            assert_eq!(
+                app.play_draft.as_ref().unwrap().choices.repeats[1]
+                    .choices
+                    .targets,
+                vec![Target::Unit {
+                    player: 1,
+                    unit_id: 9913
+                }]
+            );
+            assert_same_state(app);
+            capture(app, "RIFT_SMOKE_C4_REPEAT_SCREENSHOT");
+            click(app, 744.0, 731.0);
+        }
+        541 => {
+            assert_eq!(app.play_draft.as_ref().unwrap().execution, 0);
+            assert_eq!(
+                app.current_targets(),
+                &[Target::Unit {
+                    player: 1,
+                    unit_id: 9911
+                }]
+            );
+            click(app, 1280.0, 509.0);
+        }
+        542 => {
+            let spell = app
+                .game
+                .chain
+                .iter()
+                .find(|item| item.card_id == 260 && item.ability.is_none())
+                .unwrap();
+            assert_eq!(spell.executions.len(), 3);
+            for (index, id) in [9911, 9912, 9913].into_iter().enumerate() {
+                assert_eq!(
+                    spell.executions[index].targets,
+                    vec![Target::Unit {
+                        player: 1,
+                        unit_id: id
+                    }]
+                );
+            }
+            assert!(
+                app.game.play_grants.is_empty(),
+                "next-spell grants consumed by one play"
+            );
+            assert_eq!(
+                app.game.cards_played_this_turn(0),
+                1,
+                "Repeat is not an extra card play"
+            );
+            finish_chain_until_choice(app);
+            assert!(app.game.decision.is_none());
+            expansion_fixture(app, 81);
+            app.game.players[0].units = vec![public_unit(9921, 271, None)];
+            app.game.players[0].any_power = 2;
+            app.prefs.exact_payment = true;
+            save_state(app);
+            click(app, 315.0, 760.0);
+        }
+        543 => {
+            click_unit(app, 9921);
+        }
+        544 => {
+            assert!(app.play_draft.is_some());
+            click(app, 1280.0, 509.0);
+        }
+        545 => {
+            assert!(app.cost_editor.is_some());
+            assert_same_state(app);
+            capture(app, "RIFT_SMOKE_C4_COST_SCREENSHOT");
+            click(app, 410.0, 752.0);
+        }
+        546 => {
+            assert!(app.cost_editor.is_none());
+            assert_same_state(app);
+            click(app, 1280.0, 509.0);
+        }
+        547 => {
+            assert!(app.cost_editor.is_some());
+            click(app, 808.0, 332.0);
+        }
+        548 => {
+            assert_same_state(app);
+            click(app, 925.0, 752.0);
+        }
+        549 => {
+            assert!(app.cost_editor.is_none());
+            assert!(
+                app.payment_draft.is_none(),
+                "Power reduction eliminates the power payment"
+            );
+            assert_eq!(
+                app.game.players[0].energy, 10,
+                "chosen Power reduction retains the full two-energy cost"
+            );
+            assert_eq!(
+                app.game.players[0].any_power, 2,
+                "chosen reduction spends no generated Power"
+            );
+            assert_eq!(app.game.chain.last().unwrap().card_id, 81);
+            expansion_fixture(app, 87);
+            app.game.players[0].units = vec![public_unit(9931, 265, None)];
+            app.game.players[0].any_power = 4;
+            app.game
+                .apply(Action::PlayCard {
+                    hand_index: 0,
+                    lane: None,
+                    target: None,
+                })
+                .unwrap();
+            finish_chain_until_choice(app);
+            assert!(
+                matches!(
+                    app.game.decision,
+                    Some(Decision::TokenPlay {
+                        remaining: 4,
+                        fixed_lane: None,
+                        ..
+                    })
+                ),
+                "Expected token optional-cost choice, got {:?}",
+                app.game.decision
+            );
+            save_state(app);
+            click(app, 1284.0, 458.0);
+        }
+        550 => {
+            assert!(app.options.accelerate);
+            assert_same_state(app);
+            capture(app, "RIFT_SMOKE_C4_TOKEN_SCREENSHOT");
+            click(app, 1284.0, 492.0);
+        }
+        551 => {
+            assert_eq!(
+                app.game.players[0]
+                    .units
+                    .iter()
+                    .filter(|unit| unit.token && unit.ready)
+                    .count(),
+                1
+            );
+            assert!(matches!(
+                app.game.decision,
+                Some(Decision::TokenPlay { remaining: 3, .. })
+            ));
+            assert!(!app.options.accelerate);
+            click(app, 1284.0, 492.0);
+        }
+        552 => {
+            assert_eq!(
+                app.game.players[0]
+                    .units
+                    .iter()
+                    .filter(|unit| unit.token && !unit.ready)
+                    .count(),
+                1
+            );
+            click(app, 1284.0, 492.0);
+        }
+        553 => {
+            click(app, 1284.0, 492.0);
+        }
+        554 => {
+            assert!(app.game.decision.is_none());
+            assert_eq!(
+                app.game.players[0]
+                    .units
+                    .iter()
+                    .filter(|unit| unit.token)
+                    .count(),
+                4
+            );
+            assert_eq!(app.game.players[0].any_power, 3);
+            app.game.play_grants.push(local_rift::play::PlayGrant {
+                id: 9999,
+                player: 0,
+                source: local_rift::game::ChainSource::Card { card_id: 261 },
+                expires_turn: app.game.turn,
+                kind: local_rift::play::PlayGrantKind::ReadyBuffNextUnit,
+            });
+            click(app, 1110.0, 50.0);
+        }
+        555 => {
+            assert!(app.show_play_effects);
+            capture(app, "RIFT_SMOKE_C4_EFFECTS_SCREENSHOT");
+            click(app, 700.0, 720.0);
+        }
+        556 => {
+            assert!(!app.show_play_effects);
+            expansion_fixture(app, 50);
+            app.game.players[0].units =
+                vec![public_unit(9941, 267, None), public_unit(9942, 271, None)];
+            app.game.empowered_units.push(9941);
+            save_state(app);
+            click(app, 315.0, 760.0);
+        }
+        557 => {
+            click_unit(app, 9942);
+        }
+        558 => {
+            click(app, 1284.0, 468.0);
+        }
+        559 => {
+            assert!(app.play_draft.as_ref().unwrap().open);
+            click(app, 450.0, 739.0);
+        }
+        560 => {
+            assert_eq!(app.play_draft.as_ref().unwrap().execution, 1);
+            click(app, 793.0, 814.0);
+        }
+        561 => {
+            assert_eq!(
+                app.play_draft.as_ref().unwrap().choices.repeats[0]
+                    .choices
+                    .targets,
+                app.targets
+            );
+            click(app, 1044.0, 701.0);
+        }
+        562 => {
+            assert!(app.cost_editor.is_some());
+            let plan = app
+                .game
+                .cost_plan(&app.canonical_action(app.selected_play_action().unwrap()))
+                .unwrap();
+            assert_eq!(
+                plan.energy, 0,
+                "Researchers floor applies before later Irelia reduction"
+            );
+            click(app, 1065.0, 387.0);
+        }
+        563 => {
+            click(app, 940.0, 440.0);
+        }
+        564 => {
+            click(app, 1036.0, 422.0);
+        }
+        565 => {
+            click(app, 955.0, 680.0);
+        }
+        566 => {
+            capture(app, "RIFT_SMOKE_C4_ALLOCATION_SCREENSHOT");
+            click(app, 925.0, 752.0);
+        }
+        567 => {
+            assert!(app.cost_editor.is_none());
+            let draft = app.play_draft.as_ref().unwrap();
+            let plan = app
+                .game
+                .cost_plan(&app.canonical_action(app.selected_play_action().unwrap()))
+                .unwrap();
+            assert_eq!(
+                plan.energy, 1,
+                "Irelia first leaves Researchers minimum at one"
+            );
+            let modifier = plan
+                .modifiers
+                .iter()
+                .find(|modifier| {
+                    modifier.source == local_rift::game::ChainSource::Card { card_id: 267 }
+                })
+                .unwrap();
+            let selected = draft
+                .choices
+                .cost_order
+                .iter()
+                .find(|selected| selected.modifier_id == modifier.id)
+                .unwrap();
+            assert_eq!(selected.power_allocations.len(), 1);
+            assert_eq!(
+                selected.power_allocations[0].component_id, plan.components[1].id,
+                "Power reduction explicitly assigned to Repeat component"
+            );
+            assert_same_state(app);
+            click(app, 1284.0, 509.0);
+        }
+        568 => {
+            assert_eq!(app.game.players[0].energy, 11);
+            assert_eq!(app.game.chain.last().unwrap().executions.len(), 2);
+            app.ui.input_override = None;
+            app.ui.pointer_override = None;
+            app.ui.wheel_override = None;
             println!(
-                "PASS: 527 native UI frames including eight Empower-family cards, source state, targetless Empower, Disempower costs, cancellation, reaction Add and separate Bird placements."
+                "PASS: 569 native UI frames including eleven battlefield choices, independent Repeat targets, typed reductions and application order, explicit component allocation, atomic cancellation, token Accelerate and public turn effects."
             );
             return true;
         }
-        _ => panic!("UI smoke runner exceeded its 527-frame script"),
+        _ => panic!("UI smoke runner exceeded its 569-frame script"),
     }
     false
 }

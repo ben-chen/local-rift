@@ -17,6 +17,7 @@ pub(super) struct UiDraft {
     destination: Option<usize>,
     choices: Vec<usize>,
     options: PlayOptions,
+    play_draft: Option<play_ui::PlayDraft>,
     flow_source: Option<FlowSource>,
     tray: Tray,
     conversion_amount: u16,
@@ -45,6 +46,7 @@ impl App {
             destination: self.destination,
             choices: self.choices.clone(),
             options: self.options,
+            play_draft: self.play_draft.clone(),
             flow_source: self.flow_source,
             tray: self.tray,
             conversion_amount: self.conversion_amount,
@@ -62,6 +64,7 @@ impl App {
         self.destination = draft.destination;
         self.choices = draft.choices;
         self.options = draft.options;
+        self.play_draft = draft.play_draft;
         self.flow_source = draft.flow_source;
         self.tray = draft.tray;
         self.conversion_amount = draft.conversion_amount;
@@ -114,7 +117,9 @@ impl App {
     }
     pub(super) fn resource_visit_action_allowed(&self, action: &Action) -> bool {
         match action {
-            Action::WithPowerPayment { action, .. } => self.resource_visit_action_allowed(action),
+            Action::WithPowerPayment { action, .. } | Action::WithPlayChoices { action, .. } => {
+                self.resource_visit_action_allowed(action)
+            }
             Action::ActivateRune { .. }
             | Action::RecycleRune { .. }
             | Action::ActivateGear { .. } => true,
@@ -157,6 +162,10 @@ impl App {
                 .is_ok()
     }
     pub(super) fn begin_ui_payment(&mut self, action: Action) -> bool {
+        let action = self.canonical_action(action);
+        if self.maybe_review_cost(&action) {
+            return false;
+        }
         let original = self.ui_draft();
         match self.game.apply(Action::BeginPayment {
             action: Box::new(action),

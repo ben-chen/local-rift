@@ -37,12 +37,44 @@ class OfficialInventoryTests(unittest.TestCase):
     def test_exact_published_scope_and_runtime_gap(self):
         counts = self.snapshot["counts"]
         self.assertEqual((counts["gallery_printings"], counts["unique_gallery_identities"], counts["standard_legal_identities"]), (1408, 1103, 1079))
-        self.assertEqual(counts["implemented_main_cards"], 254)
+        self.assertEqual(counts["implemented_main_cards"], 272)
         self.assertEqual(counts["implemented_legends"], 7)
-        self.assertEqual(counts["unimplemented_legal_identities"], 808)
+        self.assertEqual(counts["implemented_battlefields"], 11)
+        self.assertEqual(counts["implemented_legal_identities"], 296)
+        self.assertEqual(counts["unimplemented_legal_identities"], 783)
         for card in self.snapshot["cards"]:
             if card["implementation"]["status"] == "not_implemented":
                 self.assertFalse(card["implementation"]["playable_in_client"])
+
+    def test_next_play_batch_maps_exact_source_ids_and_errata(self):
+        runtime = json.loads((catalog.ROOT / "assets/data/decks.json").read_text())["cards"]
+        ids = ["ogn-021-298", "ogn-032-298", "sfd-078-221", "ogn-031-298", "ven-044-166", "ogs-001-024", "ven-010-166", "unl-052-219", "sfd-004-221", "ogn-129-298", "ogn-011-298", "sfd-029-221", "unl-146-219", "ven-055-166", "ven-045-166", "ven-098-166", "sfd-146-221", "sfd-141-221"]
+        for index, official_id in enumerate(ids, 254):
+            identity = next(c for c in self.snapshot["cards"] if c["identity"] == official_id)
+            self.assertEqual(identity["implementation"]["runtime_id"], index)
+            self.assertTrue(identity["standard_legal"])
+            self.assertEqual(identity["conflicting_fields"], [])
+            self.assertEqual(runtime[index]["official_id"], official_id)
+        self.assertIn("the next card you play this turn costs", runtime[258]["official_text"])
+        self.assertNotIn("the next card you play this turn costs", runtime[258]["official_text_html"])
+        self.assertEqual(runtime[258]["errata_source"], catalog.SOURCES["vendetta_errata"])
+        self.assertEqual(runtime[255]["errata_source"], catalog.SOURCES["origins_errata"])
+
+    def test_battlefield_registry_preserves_sources_and_rejects_changed_facts(self):
+        fields = catalog.load_battlefield_manifest()
+        self.assertEqual([v["id"] for v in fields], list(range(11)))
+        for field in fields:
+            identity = next(c for c in self.snapshot["cards"] if c["identity"] == field["source_id"])
+            self.assertEqual(identity["implementation"]["runtime_id"], field["id"])
+            self.assertEqual(identity["implementation"]["status"], "implemented_battlefield")
+            self.assertEqual(identity["conflicting_fields"], [])
+        for key, value, expected in [("id", 10, "Battlefield registry IDs"), ("name", "Invented", "Battlefield source name"), ("source_id", "ogn-021-298", "maps a non-battlefield"), ("official_html", "Invented", "Battlefield source text"), ("official_text", "Invented", "Battlefield readable source"), ("image_url", "https://invalid.example", "Battlefield source artwork")]:
+            with self.subTest(key=key):
+                changed = copy.deepcopy(fields)
+                changed[4][key] = value
+                with patch.object(catalog, "load_battlefield_manifest", return_value=changed):
+                    with self.assertRaisesRegex(ValueError, expected):
+                        catalog.make_catalog(self.manifest, self.data)
 
     def test_activation_batch_preserves_raw_sources_and_explicit_corrections(self):
         runtime = json.loads((catalog.ROOT / "assets/data/decks.json").read_text())["cards"]
@@ -81,7 +113,7 @@ class OfficialInventoryTests(unittest.TestCase):
             ("domains", ["Calm", "Body"], "Legend domain mismatch"),
             ("champion", "Kennen", "Legend champion tag mismatch"),
             ("art_url", "https://example.invalid/art.png", "Legend source artwork mismatch"),
-            ("default_champion", 254, "Legend default champion is not a runtime card"),
+            ("default_champion", 999999, "Legend default champion is not a runtime card"),
             ("default_champion_official_id", "ogn-117-298", "Legend default champion ID mismatch"),
         ]
         for field, value, message in mutations:

@@ -94,6 +94,8 @@ impl Companion {
 fn fingerprint(game: &Game) -> u64 {
     let mut hash = DefaultHasher::new();
     game.turn.hash(&mut hash);
+    format!("{:?}", game.play_grants).hash(&mut hash);
+    format!("{:?}", game.play_history).hash(&mut hash);
     game.active.hash(&mut hash);
     game.priority().hash(&mut hash);
     game.in_window().hash(&mut hash);
@@ -115,6 +117,7 @@ fn fingerprint(game: &Game) -> u64 {
                 Target::Gear { player, gear_id } => (3_u8, *player, *gear_id).hash(&mut hash),
             }
         }
+        format!("{:?}", item.executions).hash(&mut hash);
         format!("{:?}", item.ability).hash(&mut hash);
         item.options.repeat.hash(&mut hash);
         item.options.accelerate.hash(&mut hash);
@@ -402,6 +405,27 @@ fn advice(game: &Game, level: AdviceLevel) -> Vec<&'static str> {
             "You have an affordable deployment. Compare its next-turn pressure with preserving runes for an immediate, useful effect."
         });
     }
+    if game.play_grants.iter().any(|grant| grant.player == 0) {
+        tips.push(if beginner {
+            "A next-play effect is waiting. Open Turn effects to see its source and expiry before choosing your next card."
+        } else {
+            "Next-play effects are committed when that play begins. Check which card benefits before spending a small play just to use spare resources."
+        });
+        if game.play_grants.iter().any(|grant| {
+            grant.player == 0 && grant.kind == local_rift::play::PlayGrantKind::RepeatNextSpell
+        }) {
+            tips.push(if beginner {
+                "Each Repeat is an optional extra cost. Choose its own targets in Play choices; paying twice does not play the spell twice."
+            } else {
+                "Several Repeat sources are independent. Compare each added execution's targets and cost, including any reduction shared across the total."
+            });
+        }
+        if game.play_grants.iter().any(|grant| {
+            grant.player == 0 && grant.kind == local_rift::play::PlayGrantKind::ReadyBuffNextUnit
+        }) {
+            tips.push("Nami's waiting effect readies and buffs after the unit is played, through a triggered ability. Entering ready happens earlier and is a different event.");
+        }
+    }
     let empower_gear: Vec<_> = human
         .gear
         .iter()
@@ -485,6 +509,10 @@ fn response_window_advice(game: &Game, beginner: bool) -> Option<Vec<&'static st
             Decision::OptionalPlay { .. } => vec![
                 "Accept or decline this trash-play trigger. If accepted, choose its trash target before the ability joins the chain; finalize the card after it resolves.",
                 "Check the trash and your available resources before accepting. Declining here keeps the ability off the chain.",
+            ],
+            Decision::TokenPlay { .. } => vec![
+                "This token can enter ready if you pay Accelerate. Choose its allowed location and optional cost before it enters play.",
+                "Ready entry can enable a later move. Compare the optional cost with the resources you need for responses and later plays.",
             ],
             Decision::TokenPlacement { .. } => vec![
                 "Place each unit token at your base or a battlefield you control. A unit at a field can help defend the next hold.",
@@ -871,6 +899,63 @@ mod tests {
     }
 
     #[test]
+    fn waiting_repeat_and_nami_advice_uses_only_public_grants() {
+        use local_rift::{
+            game::ChainSource,
+            play::{PlayGrant, PlayGrantKind},
+        };
+        let mut game = game();
+        game.start_match().unwrap();
+        game.play_grants = vec![
+            PlayGrant {
+                id: 1,
+                player: 0,
+                source: ChainSource::Card { card_id: 256 },
+                expires_turn: game.turn,
+                kind: PlayGrantKind::RepeatNextSpell,
+            },
+            PlayGrant {
+                id: 2,
+                player: 0,
+                source: ChainSource::Card { card_id: 261 },
+                expires_turn: game.turn,
+                kind: PlayGrantKind::ReadyBuffNextUnit,
+            },
+        ];
+        let beginner = advice(&game, AdviceLevel::Beginner);
+        assert!(
+            beginner
+                .iter()
+                .any(|tip| tip.contains("does not play the spell twice"))
+        );
+        assert!(
+            beginner
+                .iter()
+                .any(|tip| tip.contains("Entering ready happens earlier"))
+        );
+        let advanced = advice(&game, AdviceLevel::Advanced);
+        assert!(
+            advanced
+                .iter()
+                .any(|tip| tip.contains("Repeat sources are independent"))
+        );
+        for tip in beginner.iter().chain(&advanced) {
+            assert!(tip.chars().count() <= 180);
+        }
+        let before = fingerprint(&game);
+        game.players[1].hand.reverse();
+        game.players[1].deck.reverse();
+        assert_eq!(fingerprint(&game), before);
+        assert_eq!(advice(&game, AdviceLevel::Beginner), beginner);
+        game.play_grants.clear();
+        assert!(
+            !advice(&game, AdviceLevel::Beginner)
+                .iter()
+                .any(|tip| tip.contains("Nami's waiting effect"))
+        );
+    }
+
+    #[test]
     fn gear_empower_advice_distinguishes_targetless_effect_and_paid_cost() {
         let mut game = game();
         game.start_match().unwrap();
@@ -1075,6 +1160,9 @@ mod tests {
             from_hidden: false,
             options: Default::default(),
             repeat_targets: Vec::new(),
+            executions: vec![Default::default()],
+            play_origin: None,
+            bonus_damage: 0,
             lane: None,
         });
         mote.observe(&game);
@@ -1410,6 +1498,9 @@ mod tests {
             from_hidden: false,
             options: Default::default(),
             repeat_targets: Vec::new(),
+            executions: vec![Default::default()],
+            play_origin: None,
+            bonus_damage: 0,
             lane: None,
         });
         states.push(game.clone());

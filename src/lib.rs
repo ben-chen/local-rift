@@ -16,3 +16,5 @@ pub mod trigger_rules;
 pub mod payment_plan;
 
 mod resources;
+
+pub use game::play;

@@ -287,6 +287,7 @@ impl Game {
                 }
             }
         }
+        candidates.extend(self.canonical_play_candidates(32));
         let mut unique = Vec::new();
         for action in candidates {
             if !unique.contains(&action) && self.clone().apply(action.clone()).is_ok() {
@@ -297,6 +298,7 @@ impl Game {
         // meaningful choices even when many spell target combinations exist.
         unique.sort_by_key(|action| {
             std::cmp::Reverse(match action {
+                Action::WithPlayChoices { .. } => self.canonical_action_score(action),
                 Action::Move { .. } | Action::MoveGroup { .. } => 150,
                 Action::EndTurn | Action::Pass => 145,
                 Action::PlayCard { hand_index, .. }
@@ -541,7 +543,8 @@ mod tests {
         .unwrap();
         let action = game.choose_strategic_action();
         assert!(
-            matches!(action, Action::PlayCardOptions { repeat: true, .. }),
+            matches!(&action, Action::PlayCardOptions { repeat: true, .. })
+                || matches!(&action, Action::WithPlayChoices { choices, .. } if !choices.repeats.is_empty()),
             "{action:?}"
         );
         game.apply(action).unwrap();
