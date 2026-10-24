@@ -617,6 +617,10 @@ mod tests {
         let vex = unit(&mut game, 1, 20, Some(0));
         let hidden_id = hide(&mut game, 44);
         make_old(&mut game);
+        // The opponent's entering Vex is the contender and gets first focus.
+        // Pass that focus back to the Hidden card's controller.
+        assert_eq!(game.priority(), 1);
+        game.apply(Action::Pass).unwrap();
         let before = game.players.clone();
         assert!(
             game.apply(Action::PlayHidden {

@@ -73,6 +73,7 @@ fn every_runtime_card_maps_by_official_id_without_enabling_inventory_only_cards(
     for card in &runtime {
         let entry = mapped[&card.id];
         assert_eq!(entry["name"], card.name);
+        assert_eq!(entry["implementation"]["official_id"], card.official_id);
         assert_eq!(
             entry["implementation"]["official_id"],
             manifest["cards"][card.id]["official_id"]

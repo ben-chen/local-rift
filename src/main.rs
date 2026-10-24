@@ -1,11 +1,15 @@
 mod companion;
+mod deck_editor;
 use companion::{AdviceLevel, Companion, draw_mote};
+use deck_editor::DeckEditor;
 mod scene;
 mod smoke;
 mod ui;
 use local_rift::{
     cards::{CardKind, Domain},
-    game::{Action, Decision, Difficulty, Game, Phase, PlayOptions, Target, domain_index},
+    game::{
+        Action, Decision, Difficulty, FlowSource, Game, Phase, PlayOptions, Target, domain_index,
+    },
     payment::{POWER_DOMAINS, PaymentQuote, PowerPayment},
 };
 use macroquad::prelude::*;
@@ -19,6 +23,7 @@ include!(concat!(env!("OUT_DIR"), "/card_art.rs"));
 enum Screen {
     Practice,
     Decks,
+    DeckEditor,
     Guide,
     Settings,
 }
@@ -81,6 +86,7 @@ struct Preferences {
     animation: bool,
     tactical: bool,
     exact_payment: bool,
+    use_custom: [bool; 2],
     wins: u32,
     losses: u32,
 }
@@ -105,6 +111,10 @@ impl Preferences {
             animation: value("animation") != Some("false"),
             tactical: value("tactical") == Some("true"),
             exact_payment: value("exact_payment") == Some("true"),
+            use_custom: [
+                value("custom_you") == Some("true"),
+                value("custom_ai") == Some("true"),
+            ],
             wins: value("wins").and_then(|v| v.parse().ok()).unwrap_or(0),
             losses: value("losses").and_then(|v| v.parse().ok()).unwrap_or(0),
         }
@@ -117,12 +127,14 @@ impl Preferences {
         let _ = std::fs::write(
             p,
             format!(
-                "coach={}\nadvanced={}\nanimation={}\ntactical={}\nexact_payment={}\nwins={}\nlosses={}\n",
+                "coach={}\nadvanced={}\nanimation={}\ntactical={}\nexact_payment={}\ncustom_you={}\ncustom_ai={}\nwins={}\nlosses={}\n",
                 self.coach,
                 self.advanced,
                 self.animation,
                 self.tactical,
                 self.exact_payment,
+                self.use_custom[0],
+                self.use_custom[1],
                 self.wins,
                 self.losses
             ),
@@ -137,6 +149,8 @@ struct App {
     player_deck: usize,
     opponent_deck: usize,
     browse_deck: usize,
+    custom_decks: [Option<local_rift::deck::CustomDeck>; 2],
+    deck_editor: Option<DeckEditor>,
     selection: Option<Selection>,
     mulligan: HashSet<usize>,
     art: Vec<Option<Texture2D>>,
@@ -159,6 +173,7 @@ struct App {
     gear_owner: usize,
     choices: Vec<usize>,
     options: PlayOptions,
+    flow_source: Option<FlowSource>,
     fields: [usize; 2],
     starting_player: usize,
     show_journal: bool,
@@ -194,17 +209,43 @@ fn seed() -> u64 {
 }
 impl App {
     fn new() -> Self {
-        let prefs = Preferences::load();
-        let game = Game::new(
-            0,
-            1,
+        let mut prefs = Preferences::load();
+        let custom_decks = deck_editor::load_saved_decks();
+        for (owner, deck) in custom_decks.iter().enumerate() {
+            prefs.use_custom[owner] &= deck.is_some();
+        }
+        let selected: [usize; 2] = std::array::from_fn(|owner| {
+            if prefs.use_custom[owner] {
+                custom_decks[owner].as_ref().unwrap().legend
+            } else {
+                owner
+            }
+        });
+        let fields = std::array::from_fn(|owner| {
+            if prefs.use_custom[owner] {
+                custom_decks[owner].as_ref().unwrap().battlefield
+            } else {
+                local_rift::battlefields::default_battlefield(selected[owner])
+            }
+        });
+        let game = Game::new_with_custom(
+            selected,
+            std::array::from_fn(|owner| {
+                if prefs.use_custom[owner] {
+                    custom_decks[owner].clone()
+                } else {
+                    None
+                }
+            }),
             seed(),
             if prefs.tactical {
                 Difficulty::Tactical
             } else {
                 Difficulty::Easy
             },
-        );
+            true,
+        )
+        .expect("saved custom decks were validated on load");
         let mut art = vec![None; game.catalog.len()];
         for &(id, bytes) in CARD_ART {
             if id < art.len() {
@@ -218,9 +259,11 @@ impl App {
             game,
             screen: Screen::Practice,
             in_match: false,
-            player_deck: 0,
-            opponent_deck: 1,
-            browse_deck: 0,
+            player_deck: selected[0],
+            opponent_deck: selected[1],
+            browse_deck: selected[0],
+            custom_decks,
+            deck_editor: None,
             selection: None,
             mulligan: HashSet::new(),
             art,
@@ -247,7 +290,8 @@ impl App {
             gear_owner: 0,
             choices: Vec::new(),
             options: PlayOptions::default(),
-            fields: [0, 1],
+            flow_source: None,
+            fields,
             starting_player: 0,
             show_journal: false,
             journal_page: 0,
@@ -276,28 +320,35 @@ impl App {
         }
     }
     fn reset(&mut self) {
-        self.game = Game::new(
-            self.player_deck,
-            self.opponent_deck,
+        let candidate = Game::new_with_custom(
+            [self.player_deck, self.opponent_deck],
+            self.active_custom_decks(),
             seed(),
             if self.prefs.tactical {
                 Difficulty::Tactical
             } else {
                 Difficulty::Easy
             },
+            true,
         );
-        self.game
-            .choose_starting_player(if self.starting_player == 2 {
-                (seed() % 2) as usize
-            } else {
-                self.starting_player
-            })
-            .expect("valid starting player");
+        let mut game = match candidate {
+            Ok(game) => game,
+            Err(error) => {
+                self.notify(error);
+                return;
+            }
+        };
+        game.choose_starting_player(if self.starting_player == 2 {
+            (seed() % 2) as usize
+        } else {
+            self.starting_player
+        })
+        .expect("valid starting player");
         for player in 0..2 {
-            self.game
-                .choose_battlefield(player, self.fields[player])
+            game.choose_battlefield(player, self.fields[player])
                 .expect("valid selected battlefield");
         }
+        self.game = game;
         self.drag = None;
         self.hover_card = None;
         self.payment_draft = None;
@@ -311,6 +362,7 @@ impl App {
         self.group.clear();
         self.destination = None;
         self.options = PlayOptions::default();
+        self.flow_source = None;
         self.choices.clear();
         self.targets.clear();
         self.selection = None;
@@ -390,6 +442,7 @@ impl App {
                 self.destination = None;
                 self.choices.clear();
                 self.options = PlayOptions::default();
+                self.flow_source = None;
                 self.next_ai = get_time() + 0.7;
             }
             Err(e) => self.notify(e),
@@ -402,6 +455,10 @@ impl App {
             if is_key_pressed(KeyCode::Escape) {
                 self.payment_draft = None;
             }
+            return;
+        }
+        if self.screen == Screen::DeckEditor && self.inspect.is_none() {
+            self.update_deck_editor();
             return;
         }
         if self.damage_editor.is_some() && self.inspect.is_none() {
@@ -489,6 +546,7 @@ impl App {
                     self.targets.clear();
                     self.destination = None;
                     self.options = PlayOptions::default();
+                    self.flow_source = None;
                     self.repeat_targets.clear();
                     self.editing_repeat = false;
                 }
@@ -499,7 +557,9 @@ impl App {
             self.lesson = None;
             self.confirm_restart = false;
             self.show_journal = false;
-            self.screen = Screen::Practice;
+            if self.screen != Screen::DeckEditor {
+                self.screen = Screen::Practice;
+            }
         }
         if self.screen == Screen::Decks && self.ui.mouse().y > 430.0 && self.hover_card.is_none() {
             let wheel = mouse_wheel().1;
@@ -540,6 +600,7 @@ impl App {
         match self.screen {
             Screen::Practice => self.practice(),
             Screen::Decks => self.decks(),
+            Screen::DeckEditor => self.draw_deck_editor(),
             Screen::Guide => self.guide(),
             Screen::Settings => self.settings(),
         }
@@ -601,7 +662,8 @@ impl App {
         {
             let y = 145.0 + i as f32 * 52.0;
             let r = Rect::new(14.0, y, 185.0, 44.0);
-            let selected = self.screen == *screen;
+            let selected = self.screen == *screen
+                || (*screen == Screen::Decks && self.screen == Screen::DeckEditor);
             if selected {
                 u.rect(r, Color::new(0.075, 0.14, 0.15, 1.0));
                 u.rect(Rect::new(14.0, y + 9.0, 2.0, 26.0), TEAL);
@@ -1428,6 +1490,27 @@ impl App {
             self.selection_panel();
             return;
         }
+        if let Decision::BattlefieldOrder { lanes, combat, .. } = &decision {
+            self.ui
+                .title("Choose a battlefield", 1178.0, 366.0, 20.0, TEXT);
+            self.ui.wrapped_lines(if *combat {
+                "Several combats are waiting. As the turn player, choose which battlefield opens first. The other fields stay pending."
+            } else {
+                "Several uncontested fields are waiting. Choose which showdown opens first; these resolve before pending combats."
+            },1178.0,397.0,209.0,11.5,MUTED,4);
+            for (slot, lane) in lanes.iter().enumerate() {
+                let field = local_rift::battlefields::battlefield(self.game.battlefields[*lane]);
+                if self.ui.button(
+                    Rect::new(1178.0, 473.0 + slot as f32 * 42.0, 212.0, 34.0),
+                    &format!("{} · {}", lane + 1, field.name),
+                    false,
+                    true,
+                ) {
+                    self.action(Action::ChooseBattlefield { lane: *lane });
+                }
+            }
+            return;
+        }
         if let Decision::TokenPlacement { remaining, .. } = decision {
             self.ui.title("Place a Tentacle", 1178.0, 366.0, 21.0, TEXT);
             self.ui.wrapped(
@@ -1512,7 +1595,7 @@ impl App {
             return;
         }
         let (title,body)=match &decision{
-            Decision::CombatDamage{..}|Decision::TokenPlacement{..}=>unreachable!(),
+            Decision::CombatDamage{..}|Decision::TokenPlacement{..}|Decision::BattlefieldOrder{..}=>unreachable!(),
             Decision::OptionalPlay{card_id,..}=>("Use this triggered ability?",format!("{} offers a play from your trash. Accept to put the ability on the chain, or decline now. After accepting, choose a legal payable card when it resolves.",self.game.catalog[*card_id].name)),
             Decision::ResolutionTargets{..}=>("Choose the location", "Responses separated your targets. Choose which legal group below this spell should affect.".into()),
             Decision::OrderTriggers{..}=>("Order your triggers", "Choose which ability to put on the chain next. The last ability placed will resolve first. Pending triggers cannot be countered yet.".into()),
@@ -1994,6 +2077,10 @@ impl App {
                         }
                     } else {
                         self.selection = Some(Selection::Trash(index));
+                        self.flow_source = None;
+                        self.options = PlayOptions::default();
+                        self.repeat_targets.clear();
+                        self.destination = None;
                         self.targets.clear();
                     }
                 }
@@ -2205,6 +2292,10 @@ impl App {
                     | Decision::LastRites { .. }
                     | Decision::ReplaySpell { .. } => {
                         self.selection = Some(Selection::Trash(index));
+                        self.flow_source = None;
+                        self.options = PlayOptions::default();
+                        self.repeat_targets.clear();
+                        self.destination = None;
                         self.targets.clear();
                         self.destination = None;
                     }
@@ -2347,7 +2438,7 @@ impl App {
         self.ui
             .text("CHOOSE YOUR MATCHUP", 245.0, 674.0, 10.0, MUTED);
         self.ui.text(
-            "4 tournament presets · support shown per card",
+            "Tournament presets or your saved custom lists",
             1100.0,
             674.0,
             10.0,
@@ -2392,8 +2483,26 @@ impl App {
                 26.0,
                 TEXT,
             );
-            self.ui
-                .ellipsis(p.name, x + 218.0, 775.0, 330.0, 12.0, MUTED);
+            let deck_name = if self.prefs.use_custom[side] {
+                self.custom_decks[side]
+                    .as_ref()
+                    .map(|d| format!("CUSTOM · {}", d.name))
+                    .unwrap_or_else(|| p.name.to_owned())
+            } else {
+                p.name.to_owned()
+            };
+            self.ui.ellipsis(
+                &deck_name,
+                x + 218.0,
+                775.0,
+                330.0,
+                12.0,
+                if self.prefs.use_custom[side] {
+                    TEAL
+                } else {
+                    MUTED
+                },
+            );
             self.ui.border(r, LINE);
             if self.ui.button(
                 Rect::new(x + 218.0, 796.0, 168.0, 36.0),
@@ -2410,26 +2519,14 @@ impl App {
                 .button(Rect::new(x + 402.0, 796.0, 60.0, 36.0), "<", false, true)
             {
                 let i = (deck + self.game.presets.len() - 1) % self.game.presets.len();
-                if side == 0 {
-                    self.player_deck = i;
-                    self.fields[0] = local_rift::battlefields::default_battlefield(i);
-                } else {
-                    self.opponent_deck = i;
-                    self.fields[1] = local_rift::battlefields::default_battlefield(i);
-                }
+                self.select_preset(side, i);
             }
             if self
                 .ui
                 .button(Rect::new(x + 470.0, 796.0, 60.0, 36.0), ">", false, true)
             {
                 let i = (deck + 1) % self.game.presets.len();
-                if side == 0 {
-                    self.player_deck = i;
-                    self.fields[0] = local_rift::battlefields::default_battlefield(i);
-                } else {
-                    self.opponent_deck = i;
-                    self.fields[1] = local_rift::battlefields::default_battlefield(i);
-                }
+                self.select_preset(side, i);
             }
         }
         for side in 0..2 {
@@ -3965,15 +4062,45 @@ impl App {
                 };
                 if let Some(card_id) = card_id {
                     let card = self.game.catalog[card_id];
+                    let mut flows = if from_trash && self.game.decision.is_none() {
+                        self.game.flow_costs(0, index)
+                    } else {
+                        Vec::new()
+                    };
+                    flows.sort_by_key(|flow| match flow.source {
+                        FlowSource::Printed => 0,
+                        FlowSource::Granted => 1,
+                    });
+                    if self
+                        .flow_source
+                        .is_some_and(|source| !flows.iter().any(|flow| flow.source == source))
+                    {
+                        self.flow_source = None;
+                    }
+                    if flows.len() == 1 {
+                        self.flow_source = Some(flows[0].source);
+                    }
+                    let selected_flow = flows
+                        .iter()
+                        .find(|flow| Some(flow.source) == self.flow_source);
+                    let cost_text = if let Some(flow) = selected_flow {
+                        let power = if flow.power == 0 {
+                            String::new()
+                        } else if flow.colored {
+                            format!(" + {} matching power", flow.power)
+                        } else {
+                            format!(" + {} Any power", flow.power)
+                        };
+                        format!("Flow: {} energy{power}", flow.energy)
+                    } else if flows.len() > 1 {
+                        "Choose printed or granted Flow".into()
+                    } else {
+                        format!("{} ENERGY · {} POWER", card.cost, card.power_cost)
+                    };
                     self.ui
                         .ellipsis(card.name, 1178.0, 359.0, 212.0, 16.0, TEXT);
-                    self.ui.text(
-                        &format!("{} ENERGY · {} POWER", card.cost, card.power_cost),
-                        1178.0,
-                        383.0,
-                        9.0,
-                        rgb(card.domain.color()),
-                    );
+                    self.ui
+                        .text(&cost_text, 1178.0, 383.0, 9.0, rgb(card.domain.color()));
                     self.ui.ellipsis(
                         &card_brief(&self.game, card_id),
                         1178.0,
@@ -3989,6 +4116,26 @@ impl App {
                         9.0,
                         MUTED,
                     );
+                    if flows.len() > 1 {
+                        for (slot, source) in [FlowSource::Printed, FlowSource::Granted]
+                            .into_iter()
+                            .enumerate()
+                        {
+                            if self.ui.button(
+                                Rect::new(1178.0 + slot as f32 * 110.0, 430.0, 102.0, 20.0),
+                                if source == FlowSource::Printed {
+                                    "Printed Flow"
+                                } else {
+                                    "Granted Flow"
+                                },
+                                self.flow_source == Some(source),
+                                true,
+                            ) {
+                                self.flow_source = Some(source);
+                                self.toast_until = 0.0;
+                            }
+                        }
+                    }
                     let discounts = self.game.players[0]
                         .units
                         .iter()
@@ -4086,7 +4233,8 @@ impl App {
                         }
                     }
                     let affordable = (from_trash || self.game.can_afford(0, &card))
-                        && self.game.card_supported(card_id);
+                        && self.game.card_supported(card_id)
+                        && (flows.len() < 2 || self.flow_source.is_some());
                     let label = if card.kind == CardKind::Unit {
                         "Deploy to base"
                     } else {
@@ -4105,6 +4253,7 @@ impl App {
                         let action = if from_trash {
                             Action::PlayFromTrashOptions {
                                 trash_index: index,
+                                flow: self.flow_source,
                                 lane: self.destination,
                                 targets: self.targets.clone(),
                                 repeat_targets: self.repeat_targets.clone(),
@@ -4135,6 +4284,8 @@ impl App {
                         self.ui.text(
                             if !self.game.card_supported(card_id) {
                                 "This card's effect is not implemented."
+                            } else if flows.len() > 1 && self.flow_source.is_none() {
+                                "Choose which Flow cost to pay."
                             } else {
                                 "Need more energy or matching power."
                             },
@@ -4154,6 +4305,7 @@ impl App {
                             } else if from_trash {
                                 Action::PlayFromTrashOptions {
                                     trash_index: index,
+                                    flow: self.flow_source,
                                     lane: Some(lane),
                                     targets: self.targets.clone(),
                                     repeat_targets: self.repeat_targets.clone(),
@@ -4548,6 +4700,7 @@ impl App {
                     self.targets.clear();
                     self.destination = None;
                     self.options = PlayOptions::default();
+                    self.flow_source = None;
                     self.repeat_targets.clear();
                     self.editing_repeat = false;
                 }
@@ -4649,10 +4802,31 @@ impl App {
         ) {
             self.lesson = Some(self.browse_deck);
         }
-        self.ui.wrapped("40 cards including 1 chosen champion. Choose targets, optional costs, and trigger order as you play. These dated tournament lists include their original cards and rune splits.",265.0,640.0,316.0,11.0,MUTED);
+        if self.ui.button(
+            Rect::new(265.0, 642.0, 320.0, 30.0),
+            "Customize a copy of this list  >",
+            false,
+            true,
+        ) {
+            self.open_deck_editor(None);
+        }
+        for owner in 0..2 {
+            if self.ui.button(
+                Rect::new(265.0 + owner as f32 * 164.0, 682.0, 156.0, 28.0),
+                if owner == 0 {
+                    "Edit saved: You"
+                } else {
+                    "Edit saved: AI"
+                },
+                self.prefs.use_custom[owner],
+                self.custom_decks[owner].is_some(),
+            ) {
+                self.open_deck_editor(Some(owner));
+            }
+        }
         if self.ui.button(
             Rect::new(265.0, 728.0, 152.0, 40.0),
-            if self.player_deck == self.browse_deck {
+            if self.player_deck == self.browse_deck && !self.prefs.use_custom[0] {
                 "Your deck"
             } else {
                 "Play as this"
@@ -4660,12 +4834,11 @@ impl App {
             true,
             !self.in_match,
         ) {
-            self.player_deck = self.browse_deck;
-            self.fields[0] = local_rift::battlefields::default_battlefield(self.browse_deck);
+            self.select_preset(0, self.browse_deck);
         }
         if self.ui.button(
             Rect::new(429.0, 728.0, 156.0, 40.0),
-            if self.opponent_deck == self.browse_deck {
+            if self.opponent_deck == self.browse_deck && !self.prefs.use_custom[1] {
                 "Opponent"
             } else {
                 "Play against"
@@ -4673,8 +4846,7 @@ impl App {
             false,
             !self.in_match,
         ) {
-            self.opponent_deck = self.browse_deck;
-            self.fields[1] = local_rift::battlefields::default_battlefield(self.browse_deck);
+            self.select_preset(1, self.browse_deck);
         }
         if self.in_match {
             self.ui.text(
@@ -4788,7 +4960,7 @@ impl App {
             GOLD,
         );
         self.ui.wrapped("This is a working rules engine in development. Real tournament lists, printed stats and official rules text are included. Supported effects follow their actual text. This client is still in development; check docs/RULES.md and the current official rules for its remaining limits.",267.0,622.0,718.0,12.0,TEXT);
-        self.ui.wrapped("Spells use a last-in, first-out chain. Reactions can respond to pending spells. Action cards work in an open showdown. Both players must pass. Legends, equipment, Hidden and trash replay are supported. Choose combat damage and spell targets yourself. Some trigger, replacement and payment choices are automated; inspect cards for individual limits.",267.0,709.0,718.0,12.0,MUTED);
+        self.ui.wrapped("Spells use a last-in, first-out chain. Reactions can respond to pending spells. Action cards work in an open showdown. Both players must pass. Legends, equipment, Hidden and trash replay are supported. Choose combat damage and spell targets yourself. Choose trigger order, replacements and power sources when they matter; automatic payment remains available.",267.0,709.0,718.0,12.0,MUTED);
         self.ui.wrapped("Use this client to learn resources, sequencing and battlefield scoring. Learn exact card interactions from the official rules before competitive play.",267.0,800.0,718.0,11.0,TEAL);
         self.ui.rect(Rect::new(1034.0, 561.0, 376.0, 285.0), PANEL);
         self.ui
@@ -4860,7 +5032,7 @@ impl App {
         }
         self.ui
             .title("Built for a little practice.", 271.0, 529.0, 27.0, TEXT);
-        self.ui.wrapped("A native Rust client. Your game and all 69 card images work offline. Preferences and your win/loss record are saved on this device. Matches stay in memory while the app is open.",271.0,566.0,700.0,13.0,MUTED);
+        self.ui.wrapped(&format!("A native Rust client. Your game and {} bundled card images work offline. Preferences and your win/loss record are saved on this device. Matches stay in memory while the app is open.", self.game.catalog.len()),271.0,566.0,700.0,13.0,MUTED);
         self.ui.wrapped("Riftbound and its characters and card illustrations belong to Riot Games. This is an unofficial, unaffiliated fan practice project. Bundled tournament lists are dated snapshots; the live meta and legality may change.",271.0,674.0,700.0,12.0,MUTED);
         self.ui.text(
             "Card and tournament data checked 24 October 2026",

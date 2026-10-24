@@ -1,16 +1,16 @@
 # Implemented rules and limitations
 
-**Local Rift is an unofficial, incomplete Riftbound client. This document describes its current behavior, not the complete tabletop game.** Full official card text appears in hover previews and pinned inspectors. All 69 bundled cards have executable printed-effect mappings. An official description in the catalog and a passing simulation are not proof of complete tabletop equivalence.
+**Local Rift is an unofficial, incomplete Riftbound client. This document describes its current behavior, not the complete tabletop game.** Full official card text appears in hover previews and pinned inspectors. All 81 bundled cards have executable printed-effect mappings. An official description in the catalog and a passing simulation are not proof of complete tabletop equivalence.
 
 For physical play, use Riot's [Rules Hub](https://playriftbound.com/en-us/rules-hub/), current errata, and printed card text. The core timing reference used here is the [October 9, 2026 Core Rules](https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/5c7946f7c3b8c6e0faff85ab6dadc6d2e721ea94.pdf). [SOURCES.md](SOURCES.md) records the card and deck sources.
 
 ## Setup
 
-Choose any preset for each player. The main list contains 40 cards including a chosen champion. The champion begins in its separate playable zone; the other 39 cards are shuffled and four cards are drawn. You may replace up to two once. Replacements are drawn before the originals return to the bottom of the deck. The AI chooses its own replacements.
+Choose a preset or a saved custom deck for each player. Presets contain 40 cards including a chosen champion; custom constructed lists may contain more. The champion begins in its separate playable zone; the remaining cards are shuffled and four cards are drawn. You may replace up to two once. Replacements are drawn before the originals return to the bottom of the deck. The AI chooses its own replacements.
 
 Each player has a 12-card rune deck using the preset’s **published domain split**, preserved in the source manifest. Choose whether you or the AI starts. The second player channels an extra rune on their first turn.
 
-Each player brings one battlefield. The client offers four official choices drawn from the source presets; its two battlefield panels display the selected names and effect text. The default follows each player’s chosen deck. There is no sideboarding or deck editor.
+Each player brings one battlefield. The client offers four official choices drawn from the source presets; its two battlefield panels display the selected names and effect text. The default follows each player’s chosen deck. The deck editor can copy a preset, adjust supported cards, rune counts, chosen champion, and battlefield, and save a separate list for you or the AI. It validates the main deck, champion tag, full domain identity, three-copy and Signature limits, and exactly 12 runes. There is no sideboarding.
 
 ## Turns and resources
 
@@ -74,6 +74,8 @@ Hidden plays normally restrict their targets to that battlefield, including when
 
 The client supports Fizz's energy-waived spell replay, Last Rites unit plays from trash, Kennen's temporary Flow grant, and printed Flow conditions and costs. Fizz and Last Rites offer their optional play during trigger finalization; once accepted, a legal available play is required when the ability resolves. If no legal play remains, the choice can finish without playing a card. Trash plays enter the ordinary timing and response system. Matriarch and Kennen choose their trash cards before the revive or Flow-grant ability enters the chain; if that exact card leaves the trash before resolution, the ability cannot affect a replacement copy. Tornado Warrior similarly chooses its Empower target before opponents respond. Its delayed end-of-turn Disempower trigger uses the chain, with a response window before temporary effects expire. Kennen's legend triggers when an actual card is played from a zone other than hand; hiding a card alone does not empower it.
 
+When a trash spell has both printed and temporarily granted Flow, you can select either available cost. Normal timing and additional costs still apply; an explicit unaffordable choice is rejected without substituting the other cost. Kennen’s grant expires at the appropriate turn end.
+
 Supported play options include Repeat, Accelerate, Rampage's optional might payment, and eligible units' Empower abilities. Eligible trash plays also expose optional costs: Fizz can Repeat Hard Bargain, a Flow-granted Bellows Breath can Repeat, and Last Rites can Accelerate Kai'Sa. Waiving a base cost does not waive additional costs. Optional costs must be selected and paid before the play is finalized. Up from the Deep asks where to place each Tentacle separately, using your base or a battlefield you control. Empower persists on the object rather than expiring at turn end. Inspect the printed text and current unit state when choosing an option.
 
 ## Priority, chains, and showdowns
@@ -83,6 +85,8 @@ The turn owner and the player allowed to act are separate. The interface identif
 During an ordinary open turn, the turn owner can play legal cards and make standard moves. Moving into an uncontrolled battlefield opens a showdown, including when the battlefield is empty. Control and scoring wait for that window to finish.
 
 In an **open showdown**, the player with focus may play a legal Action or Reaction, or pass. Two consecutive passes close the showdown and advance to combat or control. Playing a spell creates a chain; the game is then in a **closed state**, where only legal Reactions can be added.
+
+If multiple battlefields become staged during a closed chain, they wait for the chain and pending finalizations to finish. Non-combat showdowns open before staged combats, and the turn player chooses among fields of the same class. The player who applied Contested is the contender and receives initial focus; the player who began the spell chain does not determine the attacker. Entering an ongoing non-combat showdown during a closed chain does not activate combat designations until that chain ends.
 
 The newest chain item resolves first after consecutive priority passes. Priority is reassessed between resolutions. A pass is not an irrevocable promise to stop responding: a new play or a resolved item can create another decision. When a chain completes during a showdown, focus returns according to that window's state.
 
@@ -122,10 +126,10 @@ The deck library includes the real legends and authored strategy notes. The four
 
 ## Remaining fidelity limits
 
-Only the four supplied presets and four selected battlefields are available. There is no deck builder, sideboarding, tournament match structure, multiplayer mode, or full card-set coverage. The presets are dated tournament lists, not a ranking of the current metagame.
+Four supported legends, four battlefield choices, and 81 main-deck cards are available through the four supplied presets and custom deck editor. There is no sideboarding, tournament match structure, multiplayer mode, or full card-set coverage. The presets are dated tournament lists, not a ranking of the current metagame.
 
 The desktop and bot API expose exact damage allocations and power-source payments. The default automatic payment remains available; energy can be prepared by exhausting chosen rune domains before a play. These controls share engine validation, but broader card and interaction coverage is still required.
 
 Further sequencing and interaction audits are still needed. Tests cover particular official examples and whole-match consistency; they do not establish that every interaction is identical to standard Riftbound. Consult the official reference when preparing for an interaction outside those checked cases.
 
-The [independent audit](RULES_AUDIT.md) tracks confirmed fixes and open cases, including selection among multiple Flow costs. The [full card inventory](CARD_COVERAGE.md) measures unimplemented cards separately from implemented mappings.
+The [independent audit](RULES_AUDIT.md) tracks confirmed fixes and open cases, including separate events within one resolving item. The [full card inventory](CARD_COVERAGE.md) measures unimplemented cards separately from implemented mappings.

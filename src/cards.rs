@@ -55,6 +55,8 @@ impl CardKind {
 #[derive(Clone, Copy, Debug)]
 pub struct CardDef {
     pub id: CardId,
+    /// Stable official printing identifier, independent of the runtime index.
+    pub official_id: &'static str,
     pub name: &'static str,
     pub cost: u8,
     pub power_cost: u8,
@@ -94,6 +96,7 @@ pub fn cards() -> Vec<CardDef> {
     vec![
         CardDef {
             id: 0,
+            official_id: "sfd-057-221",
             name: "Irelia, Fervent",
             cost: 5,
             power_cost: 0,
@@ -107,6 +110,7 @@ pub fn cards() -> Vec<CardDef> {
         },
         CardDef {
             id: 1,
+            official_id: "unl-131-219",
             name: "Abandon",
             cost: 2,
             power_cost: 0,
@@ -120,6 +124,7 @@ pub fn cards() -> Vec<CardDef> {
         },
         CardDef {
             id: 2,
+            official_id: "ven-038-166",
             name: "Akali, Silent",
             cost: 4,
             power_cost: 1,
@@ -133,6 +138,7 @@ pub fn cards() -> Vec<CardDef> {
         },
         CardDef {
             id: 3,
+            official_id: "sfd-133-221",
             name: "Boots of Swiftness",
             cost: 3,
             power_cost: 0,
@@ -146,6 +152,7 @@ pub fn cards() -> Vec<CardDef> {
         },
         CardDef {
             id: 4,
+            official_id: "ogn-043-298",
             name: "Charm",
             cost: 1,
             power_cost: 1,
@@ -159,6 +166,7 @@ pub fn cards() -> Vec<CardDef> {
         },
         CardDef {
             id: 5,
+            official_id: "sfd-196-221",
             name: "Defiant Dance",
             cost: 1,
             power_cost: 1,
@@ -172,6 +180,7 @@ pub fn cards() -> Vec<CardDef> {
         },
         CardDef {
             id: 6,
+            official_id: "ogn-045-298",
             name: "Defy",
             cost: 1,
             power_cost: 1,
@@ -185,6 +194,7 @@ pub fn cards() -> Vec<CardDef> {
         },
         CardDef {
             id: 7,
+            official_id: "ogn-058-298",
             name: "Discipline",
             cost: 2,
             power_cost: 0,
@@ -198,6 +208,7 @@ pub fn cards() -> Vec<CardDef> {
         },
         CardDef {
             id: 8,
+            official_id: "ogn-046-298",
             name: "En Garde",
             cost: 1,
             power_cost: 0,
@@ -211,6 +222,7 @@ pub fn cards() -> Vec<CardDef> {
         },
         CardDef {
             id: 9,
+            official_id: "ogs-011-024",
             name: "Flash",
             cost: 2,
             power_cost: 0,
@@ -224,6 +236,7 @@ pub fn cards() -> Vec<CardDef> {
         },
         CardDef {
             id: 10,
+            official_id: "sfd-051-221",
             name: "Guardian Angel",
             cost: 2,
             power_cost: 0,
@@ -237,6 +250,7 @@ pub fn cards() -> Vec<CardDef> {
         },
         CardDef {
             id: 11,
+            official_id: "ogn-169-298",
             name: "Gust",
             cost: 1,
             power_cost: 0,
@@ -250,6 +264,7 @@ pub fn cards() -> Vec<CardDef> {
         },
         CardDef {
             id: 12,
+            official_id: "sfd-045-221",
             name: "Not So Fast",
             cost: 2,
             power_cost: 1,
@@ -263,6 +278,7 @@ pub fn cards() -> Vec<CardDef> {
         },
         CardDef {
             id: 13,
+            official_id: "unl-145-219",
             name: "Pyke, Returned",
             cost: 3,
             power_cost: 0,
@@ -276,6 +292,7 @@ pub fn cards() -> Vec<CardDef> {
         },
         CardDef {
             id: 14,
+            official_id: "ogn-173-298",
             name: "Ride the Wind",
             cost: 2,
             power_cost: 1,
@@ -289,6 +306,7 @@ pub fn cards() -> Vec<CardDef> {
         },
         CardDef {
             id: 15,
+            official_id: "unl-053-219",
             name: "Scuttle Crab",
             cost: 2,
             power_cost: 0,
@@ -302,6 +320,7 @@ pub fn cards() -> Vec<CardDef> {
         },
         CardDef {
             id: 16,
+            official_id: "unl-128-219",
             name: "Star-Crossed",
             cost: 3,
             power_cost: 1,
@@ -315,6 +334,7 @@ pub fn cards() -> Vec<CardDef> {
         },
         CardDef {
             id: 17,
+            official_id: "sfd-048-221",
             name: "Stellacorn Herder",
             cost: 4,
             power_cost: 0,
@@ -328,6 +348,7 @@ pub fn cards() -> Vec<CardDef> {
         },
         CardDef {
             id: 18,
+            official_id: "ogn-199-298",
             name: "Tideturner",
             cost: 2,
             power_cost: 0,
@@ -341,6 +362,7 @@ pub fn cards() -> Vec<CardDef> {
         },
         CardDef {
             id: 19,
+            official_id: "ven-031-166",
             name: "Twilight Shroud",
             cost: 1,
             power_cost: 0,
@@ -354,6 +376,7 @@ pub fn cards() -> Vec<CardDef> {
         },
         CardDef {
             id: 20,
+            official_id: "unl-150-219",
             name: "Vex, Apathetic",
             cost: 4,
             power_cost: 0,
@@ -367,6 +390,7 @@ pub fn cards() -> Vec<CardDef> {
         },
         CardDef {
             id: 21,
+            official_id: "ogn-077-298",
             name: "Zhonya's Hourglass",
             cost: 2,
             power_cost: 0,
@@ -380,6 +404,7 @@ pub fn cards() -> Vec<CardDef> {
         },
         CardDef {
             id: 22,
+            official_id: "unl-113-219",
             name: "Master Yi, Tempered",
             cost: 4,
             power_cost: 0,
@@ -393,6 +418,7 @@ pub fn cards() -> Vec<CardDef> {
         },
         CardDef {
             id: 23,
+            official_id: "ogn-132-298",
             name: "First Mate",
             cost: 3,
             power_cost: 0,
@@ -406,6 +432,7 @@ pub fn cards() -> Vec<CardDef> {
         },
         CardDef {
             id: 24,
+            official_id: "ven-074-166",
             name: "Legion Marauder",
             cost: 2,
             power_cost: 0,
@@ -419,6 +446,7 @@ pub fn cards() -> Vec<CardDef> {
         },
         CardDef {
             id: 25,
+            official_id: "sfd-036-221",
             name: "Lonely Poro",
             cost: 2,
             power_cost: 0,
@@ -432,6 +460,7 @@ pub fn cards() -> Vec<CardDef> {
         },
         CardDef {
             id: 26,
+            official_id: "ven-081-166",
             name: "Onslaught",
             cost: 4,
             power_cost: 0,
@@ -445,6 +474,7 @@ pub fn cards() -> Vec<CardDef> {
         },
         CardDef {
             id: 27,
+            official_id: "ogn-136-298",
             name: "Pit Rookie",
             cost: 2,
             power_cost: 0,
@@ -458,6 +488,7 @@ pub fn cards() -> Vec<CardDef> {
         },
         CardDef {
             id: 28,
+            official_id: "sfd-097-221",
             name: "Punch First",
             cost: 1,
             power_cost: 2,
@@ -471,6 +502,7 @@ pub fn cards() -> Vec<CardDef> {
         },
         CardDef {
             id: 29,
+            official_id: "ven-083-166",
             name: "Rampage",
             cost: 3,
             power_cost: 0,
@@ -484,6 +516,7 @@ pub fn cards() -> Vec<CardDef> {
         },
         CardDef {
             id: 30,
+            official_id: "unl-120-219",
             name: "Rengar, Trophy Hunter",
             cost: 5,
             power_cost: 1,
@@ -497,6 +530,7 @@ pub fn cards() -> Vec<CardDef> {
         },
         CardDef {
             id: 31,
+            official_id: "sfd-105-221",
             name: "Ruin Runner",
             cost: 6,
             power_cost: 0,
@@ -510,6 +544,7 @@ pub fn cards() -> Vec<CardDef> {
         },
         CardDef {
             id: 32,
+            official_id: "ogn-156-298",
             name: "Sabotage",
             cost: 1,
             power_cost: 1,
@@ -523,6 +558,7 @@ pub fn cards() -> Vec<CardDef> {
         },
         CardDef {
             id: 33,
+            official_id: "ven-113-166",
             name: "Kennen, Storm of Shuriken",
             cost: 3,
             power_cost: 1,
@@ -536,6 +572,7 @@ pub fn cards() -> Vec<CardDef> {
         },
         CardDef {
             id: 34,
+            official_id: "unl-153-219",
             name: "Carrion Dredger",
             cost: 2,
             power_cost: 0,
@@ -549,6 +586,7 @@ pub fn cards() -> Vec<CardDef> {
         },
         CardDef {
             id: 35,
+            official_id: "sfd-149-221",
             name: "Ezreal, Prodigy",
             cost: 3,
             power_cost: 1,
@@ -562,6 +600,7 @@ pub fn cards() -> Vec<CardDef> {
         },
         CardDef {
             id: 36,
+            official_id: "sfd-140-221",
             name: "Fizz, Trickster",
             cost: 3,
             power_cost: 1,
@@ -575,6 +614,7 @@ pub fn cards() -> Vec<CardDef> {
         },
         CardDef {
             id: 37,
+            official_id: "sfd-136-221",
             name: "Hard Bargain",
             cost: 2,
             power_cost: 0,
@@ -588,6 +628,7 @@ pub fn cards() -> Vec<CardDef> {
         },
         CardDef {
             id: 38,
+            official_id: "sfd-150-221",
             name: "Last Rites",
             cost: 3,
             power_cost: 0,
@@ -601,6 +642,7 @@ pub fn cards() -> Vec<CardDef> {
         },
         CardDef {
             id: 39,
+            official_id: "ven-156-166",
             name: "Lightning Rush",
             cost: 1,
             power_cost: 0,
@@ -614,6 +656,7 @@ pub fn cards() -> Vec<CardDef> {
         },
         CardDef {
             id: 40,
+            official_id: "ogn-195-298",
             name: "Rhasa the Sunderer",
             cost: 10,
             power_cost: 1,
@@ -627,6 +670,7 @@ pub fn cards() -> Vec<CardDef> {
         },
         CardDef {
             id: 41,
+            official_id: "ogn-224-298",
             name: "Salvage",
             cost: 2,
             power_cost: 1,
@@ -640,6 +684,7 @@ pub fn cards() -> Vec<CardDef> {
         },
         CardDef {
             id: 42,
+            official_id: "ogn-204-298",
             name: "Seal of Discord",
             cost: 0,
             power_cost: 1,
@@ -653,6 +698,7 @@ pub fn cards() -> Vec<CardDef> {
         },
         CardDef {
             id: 43,
+            official_id: "ven-095-166",
             name: "Shadow Order Disciple",
             cost: 2,
             power_cost: 0,
@@ -666,6 +712,7 @@ pub fn cards() -> Vec<CardDef> {
         },
         CardDef {
             id: 44,
+            official_id: "sfd-145-221",
             name: "Switcheroo",
             cost: 2,
             power_cost: 2,
@@ -679,6 +726,7 @@ pub fn cards() -> Vec<CardDef> {
         },
         CardDef {
             id: 45,
+            official_id: "ven-104-166",
             name: "Tail-Cloaked Matriarch",
             cost: 4,
             power_cost: 0,
@@ -692,6 +740,7 @@ pub fn cards() -> Vec<CardDef> {
         },
         CardDef {
             id: 46,
+            official_id: "ven-099-166",
             name: "Tornado Warrior",
             cost: 3,
             power_cost: 0,
@@ -705,6 +754,7 @@ pub fn cards() -> Vec<CardDef> {
         },
         CardDef {
             id: 47,
+            official_id: "ogn-185-298",
             name: "Traveling Merchant",
             cost: 2,
             power_cost: 0,
@@ -718,6 +768,7 @@ pub fn cards() -> Vec<CardDef> {
         },
         CardDef {
             id: 48,
+            official_id: "ven-100-166",
             name: "Up from the Deep",
             cost: 3,
             power_cost: 0,
@@ -731,6 +782,7 @@ pub fn cards() -> Vec<CardDef> {
         },
         CardDef {
             id: 49,
+            official_id: "ogn-039-298",
             name: "Kai'Sa, Survivor",
             cost: 4,
             power_cost: 0,
@@ -744,6 +796,7 @@ pub fn cards() -> Vec<CardDef> {
         },
         CardDef {
             id: 50,
+            official_id: "sfd-080-221",
             name: "Bellows Breath",
             cost: 1,
             power_cost: 1,
@@ -757,6 +810,7 @@ pub fn cards() -> Vec<CardDef> {
         },
         CardDef {
             id: 51,
+            official_id: "ogn-026-298",
             name: "Brynhir Thundersong",
             cost: 6,
             power_cost: 0,
@@ -770,6 +824,7 @@ pub fn cards() -> Vec<CardDef> {
         },
         CardDef {
             id: 52,
+            official_id: "unl-063-219",
             name: "Eclipse",
             cost: 3,
             power_cost: 0,
@@ -783,6 +838,7 @@ pub fn cards() -> Vec<CardDef> {
         },
         CardDef {
             id: 53,
+            official_id: "ogn-029-298",
             name: "Falling Star",
             cost: 2,
             power_cost: 2,
@@ -796,6 +852,7 @@ pub fn cards() -> Vec<CardDef> {
         },
         CardDef {
             id: 54,
+            official_id: "sfd-021-221",
             name: "Ferrous Forerunner",
             cost: 6,
             power_cost: 1,
@@ -809,6 +866,7 @@ pub fn cards() -> Vec<CardDef> {
         },
         CardDef {
             id: 55,
+            official_id: "ogn-009-298",
             name: "Hextech Ray",
             cost: 1,
             power_cost: 1,
@@ -822,6 +880,7 @@ pub fn cards() -> Vec<CardDef> {
         },
         CardDef {
             id: 56,
+            official_id: "unl-002-219",
             name: "Inferna",
             cost: 2,
             power_cost: 0,
@@ -835,6 +894,7 @@ pub fn cards() -> Vec<CardDef> {
         },
         CardDef {
             id: 57,
+            official_id: "ogn-087-298",
             name: "Lecturing Yordle",
             cost: 3,
             power_cost: 0,
@@ -848,6 +908,7 @@ pub fn cards() -> Vec<CardDef> {
         },
         CardDef {
             id: 58,
+            official_id: "sfd-022-221",
             name: "Long Sword",
             cost: 2,
             power_cost: 1,
@@ -861,6 +922,7 @@ pub fn cards() -> Vec<CardDef> {
         },
         CardDef {
             id: 59,
+            official_id: "ogn-012-298",
             name: "Noxus Hopeful",
             cost: 4,
             power_cost: 0,
@@ -874,6 +936,7 @@ pub fn cards() -> Vec<CardDef> {
         },
         CardDef {
             id: 60,
+            official_id: "ogn-103-298",
             name: "Ravenbloom Student",
             cost: 2,
             power_cost: 0,
@@ -887,6 +950,7 @@ pub fn cards() -> Vec<CardDef> {
         },
         CardDef {
             id: 61,
+            official_id: "ogn-105-298",
             name: "Singularity",
             cost: 6,
             power_cost: 2,
@@ -900,6 +964,7 @@ pub fn cards() -> Vec<CardDef> {
         },
         CardDef {
             id: 62,
+            official_id: "unl-007-219",
             name: "Smite",
             cost: 2,
             power_cost: 1,
@@ -913,6 +978,7 @@ pub fn cards() -> Vec<CardDef> {
         },
         CardDef {
             id: 63,
+            official_id: "ogn-095-298",
             name: "Stupefy",
             cost: 1,
             power_cost: 0,
@@ -926,6 +992,7 @@ pub fn cards() -> Vec<CardDef> {
         },
         CardDef {
             id: 64,
+            official_id: "ogn-116-298",
             name: "Thousand-Tailed Watcher",
             cost: 7,
             power_cost: 1,
@@ -939,6 +1006,7 @@ pub fn cards() -> Vec<CardDef> {
         },
         CardDef {
             id: 65,
+            official_id: "ogn-122-298",
             name: "Time Warp",
             cost: 10,
             power_cost: 4,
@@ -952,6 +1020,7 @@ pub fn cards() -> Vec<CardDef> {
         },
         CardDef {
             id: 66,
+            official_id: "unl-070-219",
             name: "Turn to Dust",
             cost: 2,
             power_cost: 0,
@@ -965,6 +1034,7 @@ pub fn cards() -> Vec<CardDef> {
         },
         CardDef {
             id: 67,
+            official_id: "ogn-024-298",
             name: "Void Seeker",
             cost: 3,
             power_cost: 1,
@@ -978,6 +1048,7 @@ pub fn cards() -> Vec<CardDef> {
         },
         CardDef {
             id: 68,
+            official_id: "ogn-096-298",
             name: "Watchful Sentry",
             cost: 2,
             power_cost: 0,
@@ -988,6 +1059,174 @@ pub fn cards() -> Vec<CardDef> {
             official_text: "[Deathknell] — Draw 1. (When I die, get the effect.)",
             keywords: &["Deathknell"],
             art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/d84da2c62b1e218a0a74b227c49ce8a953918ebd-744x1039.png?w=360&q=80&fm=png",
+        },
+        CardDef {
+            id: 69,
+            official_id: "ogn-088-298",
+            name: "Mega-Mech",
+            cost: 7,
+            power_cost: 0,
+            might: 8,
+            domain: Domain::Mind,
+            domains: &[Domain::Mind],
+            kind: CardKind::Unit,
+            official_text: "",
+            keywords: &[],
+            art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/f71db7b62798a2a10a1ab0d293c26ac9dd163c6a-744x1039.png?w=360&q=80&fm=png",
+        },
+        CardDef {
+            id: 70,
+            official_id: "ogn-142-298",
+            name: "Mountain Drake",
+            cost: 9,
+            power_cost: 0,
+            might: 10,
+            domain: Domain::Body,
+            domains: &[Domain::Body],
+            kind: CardKind::Unit,
+            official_text: "",
+            keywords: &[],
+            art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/8a9c1d334b217e9bd0b23dfca2054de4d0b90ff1-744x1039.png?w=360&q=80&fm=png",
+        },
+        CardDef {
+            id: 71,
+            official_id: "ogn-049-298",
+            name: "Playful Phantom",
+            cost: 5,
+            power_cost: 0,
+            might: 5,
+            domain: Domain::Calm,
+            domains: &[Domain::Calm],
+            kind: CardKind::Unit,
+            official_text: "",
+            keywords: &[],
+            art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/3171ef8c7968b0dfe088725b9721b19d175bdb1e-744x1039.png?w=360&q=80&fm=png",
+        },
+        CardDef {
+            id: 72,
+            official_id: "ogn-175-298",
+            name: "Shipyard Skulker",
+            cost: 3,
+            power_cost: 0,
+            might: 3,
+            domain: Domain::Chaos,
+            domains: &[Domain::Chaos],
+            kind: CardKind::Unit,
+            official_text: "",
+            keywords: &[],
+            art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/000634f32b897638760b82e5365961f6d85bc0cb-744x1039.png?w=360&q=80&fm=png",
+        },
+        CardDef {
+            id: 73,
+            official_id: "ogn-219-298",
+            name: "Vanguard Sergeant",
+            cost: 4,
+            power_cost: 0,
+            might: 4,
+            domain: Domain::Order,
+            domains: &[Domain::Order],
+            kind: CardKind::Unit,
+            official_text: "",
+            keywords: &[],
+            art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/6bcff5c718cfcff1c2466bf5e1a2a1ea9a9cf09b-744x1039.png?w=360&q=80&fm=png",
+        },
+        CardDef {
+            id: 74,
+            official_id: "ogs-003-024",
+            name: "Incinerate",
+            cost: 2,
+            power_cost: 0,
+            might: 0,
+            domain: Domain::Fury,
+            domains: &[Domain::Fury],
+            kind: CardKind::Spell,
+            official_text: "[Action] (Play on your turn or in showdowns.)\nDeal 2 to a unit at a battlefield.",
+            keywords: &["Action"],
+            art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/46e4eaada1412f9b6c24751bdb3932c6a51e905f-744x1039.png?w=360&q=80&fm=png",
+        },
+        CardDef {
+            id: 75,
+            official_id: "ogn-085-298",
+            name: "Falling Comet",
+            cost: 5,
+            power_cost: 0,
+            might: 0,
+            domain: Domain::Mind,
+            domains: &[Domain::Mind],
+            kind: CardKind::Spell,
+            official_text: "[Action] (Play on your turn or in showdowns.)\nDeal 6 to a unit at a battlefield.",
+            keywords: &["Action"],
+            art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/eaaf300a07d5b2927fe9a601d70f2a01b512cc7e-744x1039.png?w=360&q=80&fm=png",
+        },
+        CardDef {
+            id: 76,
+            official_id: "ogn-154-298",
+            name: "Primal Strength",
+            cost: 4,
+            power_cost: 1,
+            might: 0,
+            domain: Domain::Body,
+            domains: &[Domain::Body],
+            kind: CardKind::Spell,
+            official_text: "[Action] (Play on your turn or in showdowns.)\nGive a unit +7 Might this turn.",
+            keywords: &["Action"],
+            art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/dfd910a9836cd36340d0ffdb5fe8cb92a1069963-744x1039.png?w=360&q=80&fm=png",
+        },
+        CardDef {
+            id: 77,
+            official_id: "ogn-114-298",
+            name: "Progress Day",
+            cost: 6,
+            power_cost: 1,
+            might: 0,
+            domain: Domain::Mind,
+            domains: &[Domain::Mind],
+            kind: CardKind::Spell,
+            official_text: "Draw 4.",
+            keywords: &[],
+            art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/b15f479a8f29e31b6e4c06cf2d7c8cb8630073ef-744x1039.png?w=320&q=80&fm=png",
+        },
+        CardDef {
+            id: 78,
+            official_id: "sfd-087-221",
+            name: "Premonition",
+            cost: 2,
+            power_cost: 3,
+            might: 0,
+            domain: Domain::Mind,
+            domains: &[Domain::Mind],
+            kind: CardKind::Spell,
+            official_text: "[Reaction] (Play any time, even before spells and abilities resolve.)\nDraw 3.",
+            keywords: &["Reaction"],
+            art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/20ad2f42bcf9a0402e2a0d5a21d55eacee9ecf35-744x1039.png?w=320&q=80&fm=png",
+        },
+        CardDef {
+            id: 79,
+            official_id: "unl-066-219",
+            name: "Moonlight Affliction",
+            cost: 7,
+            power_cost: 0,
+            might: 0,
+            domain: Domain::Mind,
+            domains: &[Domain::Mind],
+            kind: CardKind::Spell,
+            official_text: "[Reaction] (Play any time, even before spells and abilities resolve.)\nGive a unit -10 Might this turn.",
+            keywords: &["Reaction"],
+            art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/8f75280599fdb4d3b6191cf8e8443aadf33ad11e-744x1039.png?w=360&q=80&fm=png",
+        },
+        CardDef {
+            id: 80,
+            official_id: "ogn-172-298",
+            name: "Rebuke",
+            cost: 2,
+            power_cost: 2,
+            might: 0,
+            domain: Domain::Chaos,
+            domains: &[Domain::Chaos],
+            kind: CardKind::Spell,
+            official_text: "[Action] (Play on your turn or in showdowns.)\nReturn a unit at a battlefield to its owner's hand.",
+            keywords: &["Action"],
+            art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/c8e1ad72e9d562f9267c1512f29e9c04dc5cc15f-744x1039.png?w=360&q=80&fm=png",
         },
     ]
 }
@@ -1149,10 +1388,14 @@ mod tests {
     #[test]
     fn presets_are_complete_and_references_are_consistent() {
         let catalog = cards();
-        assert_eq!(catalog.len(), 69);
+        assert_eq!(catalog.len(), 81);
         for (index, card) in catalog.iter().enumerate() {
             assert_eq!(index, card.id);
-            assert!(!card.official_text.is_empty());
+            assert!(!card.official_id.is_empty());
+            assert!(
+                !card.official_text.is_empty() || matches!(card.id, 69..=73),
+                "Only explicitly reviewed vanilla units may have empty rules text."
+            );
             assert!(!card.official_text.contains(":rb_"));
             assert!(card.art_url.starts_with("https://cmsassets.rgpub.io/"));
         }

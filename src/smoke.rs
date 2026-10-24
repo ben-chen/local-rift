@@ -5,12 +5,13 @@
 use super::{AdviceLevel, App, Difficulty, Game, Phase, SceneState, SceneUnit, Screen, Selection};
 use local_rift::{
     cards::{CardKind, Domain},
-    game::{Action, Decision, Target, Unit, domain_index},
+    game::{Action, Decision, FlowSource, Target, Unit, domain_index},
     gear::GearState,
 };
 use macroquad::prelude::*;
 
 thread_local! {
+    static SAVED_DECK_SNAPSHOT: std::cell::RefCell<Option<Vec<u8>>> = const { std::cell::RefCell::new(None) };
     static COMBAT_SNAPSHOT: std::cell::RefCell<Option<String>> = const { std::cell::RefCell::new(None) };
 }
 
@@ -103,6 +104,113 @@ fn click_unit(app: &mut App, selected: u32) {
     click(app, center.x, center.y);
 }
 
+fn flow_fixture(app: &mut App, granted: bool) {
+    app.game = Game::new(2, 1, 42, Difficulty::Easy);
+    app.game.start_match().unwrap();
+    app.player_deck = 2;
+    app.opponent_deck = 1;
+    fixture_resources(app, Domain::Chaos);
+    hand_card(app, "Lightning Rush");
+    let id = app.game.players[0].hand.remove(0);
+    app.game.players[0].discard.push(id);
+    app.game.players[0].any_power = 1;
+    if granted {
+        app.game.decision = Some(Decision::GrantFlow { player: 0 });
+        app.game
+            .apply(Action::SelectCards { indices: vec![0] })
+            .unwrap();
+        for _ in 0..20 {
+            if app.game.chain.is_empty() {
+                break;
+            }
+            app.game.apply(Action::Pass).unwrap();
+        }
+    }
+    assert_eq!(app.game.flow_costs(0, 0).len(), if granted { 2 } else { 1 });
+    app.selection = None;
+    app.targets.clear();
+    app.repeat_targets.clear();
+    app.options = Default::default();
+    app.flow_source = None;
+    app.destination = None;
+    app.hover_card = None;
+    app.hover_rect = None;
+    app.toast_until = 0.0;
+    app.tray = super::Tray::Trash;
+    app.gear_owner = 0;
+    app.hand_scroll = 0;
+    app.prefs.exact_payment = true;
+}
+
+fn staged_battlefield_fixture(app: &mut App) {
+    app.game = Game::new(0, 1, 729, Difficulty::Tactical);
+    app.game.start_match().unwrap();
+    for player in &mut app.game.players {
+        player.hand.clear();
+        player.units.clear();
+        player.gear.clear();
+        player.hidden.clear();
+        player.exhausted_runes = [0; 6];
+        player.energy_pool = 0;
+        player.energy = 12;
+    }
+    app.game.players[0].runes = [0, 6, 0, 0, 6, 0];
+    app.game.players[1].runes = [0, 5, 0, 7, 0, 0];
+    app.game.players[0].hand = vec![7, 9];
+    app.game.players[1].hand = vec![30, 30];
+    app.game.players[0].units = (0..2)
+        .map(|lane| Unit {
+            id: 100 + lane as u32,
+            card_id: 18,
+            lane: Some(lane),
+            ready: true,
+            damage: 0,
+            buff: 0,
+            temporary_buff: 0,
+            token: false,
+            protected: false,
+            stunned: false,
+            banish_on_death: false,
+        })
+        .collect();
+    app.game.battlefield_owner = [Some(0), Some(0)];
+    app.game
+        .apply(Action::PlayCardWithTargets {
+            hand_index: 0,
+            lane: None,
+            targets: vec![Target::Unit {
+                player: 0,
+                unit_id: 100,
+            }],
+        })
+        .unwrap();
+    app.game.apply(Action::Choose { accept: false }).unwrap();
+    for lane in 0..2 {
+        app.game.apply(Action::Pass).unwrap();
+        app.game
+            .apply(Action::PlayCard {
+                hand_index: 0,
+                lane: Some(lane),
+                target: None,
+            })
+            .unwrap();
+    }
+    for _ in 0..30 {
+        if app.game.chain.is_empty() {
+            break;
+        }
+        app.game.apply(Action::Pass).unwrap();
+    }
+    app.player_deck = 0;
+    app.opponent_deck = 1;
+    app.selection = None;
+    app.targets.clear();
+    app.hover_card = None;
+    app.hover_rect = None;
+    app.tray = super::Tray::Hand;
+    app.prefs.exact_payment = false;
+}
+
 /// Returns true after all assertions pass. Use an isolated XDG_DATA_HOME because
 /// the settings controls intentionally exercise the normal persistence path.
 pub fn run_frame(app: &mut App, frame: u32) -> bool {
@@ -124,6 +232,7 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
             app.prefs.advanced = false;
             app.prefs.tactical = false;
             app.prefs.exact_payment = false;
+            app.prefs.use_custom = [false; 2];
             app.payment_draft = None;
             app.companion.set_level(AdviceLevel::Beginner);
             app.ui.resize();
@@ -1455,15 +1564,417 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
             assert_eq!(app.game.players[0].energy, 3);
             assert_eq!(app.game.players[0].power_pool[0], 2);
             assert!(matches!(app.selection, Some(Selection::Hand(0))));
+        }
+        130 => {
+            flow_fixture(app, true);
+            click(app, 315.0, 760.0);
+        }
+        131 => {
+            assert!(matches!(app.selection, Some(Selection::Trash(0))));
+            assert_eq!(
+                app.flow_source, None,
+                "two Flow costs require an explicit choice"
+            );
+            COMBAT_SNAPSHOT
+                .with(|snapshot| *snapshot.borrow_mut() = Some(format!("{:?}", app.game)));
+            click(app, 1285.0, 510.0);
+        }
+        132 => {
+            COMBAT_SNAPSHOT.with(|snapshot| {
+                assert_eq!(
+                    snapshot.borrow().as_ref().unwrap(),
+                    &format!("{:?}", app.game),
+                    "missing Flow choice cannot cast"
+                )
+            });
+            click(app, 1229.0, 440.0);
+        }
+        133 => {
+            assert_eq!(app.flow_source, Some(FlowSource::Printed));
+            if let Ok(path) = std::env::var("RIFT_SMOKE_FLOW_SCREENSHOT") {
+                app.ui.input_override = Some((vec2(-100.0, -100.0), false, false));
+                app.draw();
+                get_screen_data().export_png(&path);
+            }
+            click(app, 1285.0, 510.0);
+        }
+        134 => {
+            let draft = app
+                .payment_draft
+                .as_ref()
+                .expect("printed Flow has one power payment");
+            assert_eq!(draft.quote.suggested.total(), 1);
+            assert!(matches!(
+                draft.action,
+                Action::PlayFromTrashOptions {
+                    flow: Some(FlowSource::Printed),
+                    ..
+                }
+            ));
+            click(app, 480.0, 709.0);
+        }
+        135 => {
+            assert!(app.payment_draft.is_none());
+            assert_eq!(
+                app.flow_source,
+                Some(FlowSource::Printed),
+                "cancel preserves the chosen Flow instance"
+            );
+            COMBAT_SNAPSHOT.with(|snapshot| {
+                assert_eq!(
+                    snapshot.borrow().as_ref().unwrap(),
+                    &format!("{:?}", app.game),
+                    "Flow payment cancel preserves all game state"
+                )
+            });
+            click(app, 1285.0, 510.0);
+        }
+        136 => {
+            click(app, 936.0, 709.0);
+        }
+        137 => {
+            assert_eq!(
+                app.game.players[0].energy, 4,
+                "printed Lightning Rush Flow costs2 energy"
+            );
+            assert_eq!(
+                app.game.players[0].any_power, 0,
+                "printed Flow uses its Any power"
+            );
+            assert!(
+                app.game
+                    .chain
+                    .iter()
+                    .any(|item| item.card_id == 39 && item.banish_after)
+            );
+            flow_fixture(app, true);
+            click(app, 315.0, 760.0);
+        }
+        138 => {
+            click(app, 1339.0, 440.0);
+        }
+        139 => {
+            assert_eq!(app.flow_source, Some(FlowSource::Granted));
+            click(app, 1285.0, 510.0);
+        }
+        140 => {
+            assert!(
+                app.payment_draft.is_none(),
+                "granted Lightning Rush Flow has no power cost"
+            );
+            assert_eq!(
+                app.game.players[0].energy, 5,
+                "granted Flow uses the printed1 energy cost"
+            );
+            assert_eq!(
+                app.game.players[0].any_power, 1,
+                "granted Flow retains unused power"
+            );
+            assert!(
+                app.game
+                    .chain
+                    .iter()
+                    .any(|item| item.card_id == 39 && item.banish_after)
+            );
+            flow_fixture(app, false);
+            let before = format!("{:?}", app.game);
+            app.action(Action::PlayFromTrashOptions {
+                trash_index: 0,
+                flow: Some(FlowSource::Granted),
+                lane: None,
+                targets: vec![],
+                repeat_targets: vec![],
+                repeat: false,
+                accelerate: false,
+                bonus: false,
+            });
+            assert_eq!(
+                before,
+                format!("{:?}", app.game),
+                "unavailable Flow never silently falls back"
+            );
+            assert!(app.payment_draft.is_none());
+            staged_battlefield_fixture(app);
+            assert!(matches!(
+                app.game.decision,
+                Some(Decision::BattlefieldOrder {
+                    player: 0,
+                    combat: true,
+                    ..
+                })
+            ));
+            let before = format!("{:?}", app.game);
+            app.action(Action::ChooseBattlefield { lane: 2 });
+            assert_eq!(
+                before,
+                format!("{:?}", app.game),
+                "invalid field selection is atomic"
+            );
+            app.toast_until = 0.0;
+        }
+        141 => {
+            if let Ok(path) = std::env::var("RIFT_SMOKE_FIELDS_SCREENSHOT") {
+                app.ui.input_override = Some((vec2(-100.0, -100.0), false, false));
+                app.draw();
+                get_screen_data().export_png(&path);
+            }
+            click(app, 1285.0, 532.0);
+        }
+        142 => {
+            let window = app
+                .game
+                .showdown
+                .as_ref()
+                .expect("native choice opens selected field");
+            assert_eq!(window.lane, 1, "player chooses the non-default battlefield");
+            assert_eq!(window.attacker, 1);
+            assert_eq!(window.focus, 1, "actual contender gets focus");
+        }
+        143 => {
+            app.screen = Screen::Decks;
+            app.in_match = false;
+            app.browse_deck = 0;
+            app.custom_decks = [None, None];
+            app.prefs.use_custom = [false; 2];
+            app.hover_card = None;
+            app.hover_rect = None;
+            app.toast_until = 0.0;
+            click(app, 425.0, 657.0);
+        }
+        144 => {
+            assert!(app.screen == Screen::DeckEditor);
+            assert_eq!(app.deck_editor.as_ref().unwrap().deck.card_count(), 40);
+            click(app, 1323.0, 152.0);
+        }
+        145 => {
+            let editor = app.deck_editor.as_ref().unwrap();
+            assert!(editor.filter == super::deck_editor::DeckFilter::Additional);
+            let row = editor
+                .visible_cards()
+                .iter()
+                .position(|id| *id == 72)
+                .unwrap();
+            click(app, 1365.0, 236.0 + row as f32 * 63.0);
+        }
+        146 => {
+            let editor = app.deck_editor.as_ref().unwrap();
+            assert_eq!(editor.count(72), 1);
+            assert_eq!(
+                editor.deck.card_count(),
+                41,
+                "constructed minimum permits more than40"
+            );
+            let row = editor
+                .visible_cards()
+                .iter()
+                .position(|id| *id == 72)
+                .unwrap();
+            click(app, 1274.0, 236.0 + row as f32 * 63.0);
+        }
+        147 => {
+            let editor = app.deck_editor.as_ref().unwrap();
+            assert_eq!(editor.count(72), 0);
+            assert_eq!(editor.deck.card_count(), 40);
+            let row = editor
+                .visible_cards()
+                .iter()
+                .position(|id| *id == 72)
+                .unwrap();
+            click(app, 1365.0, 236.0 + row as f32 * 63.0);
+        }
+        148 => {
+            assert_eq!(app.deck_editor.as_ref().unwrap().count(72), 1);
+            SAVED_DECK_SNAPSHOT.with(|saved| {
+                *saved.borrow_mut() = std::fs::read(super::deck_editor::saved_path(0)).ok()
+            });
+            COMBAT_SNAPSHOT
+                .with(|snapshot| *snapshot.borrow_mut() = Some(format!("{:?}", app.game)));
+            click(app, 416.0, 504.0);
+        }
+        149 => {
+            let editor = app.deck_editor.as_ref().unwrap();
+            assert_eq!(editor.deck.runes.iter().sum::<u8>(), 11);
+            assert!(editor.deck.validate().is_err());
+            click(app, 328.0, 771.0);
+        }
+        150 => {
+            assert!(
+                app.custom_decks[0].is_none(),
+                "invalid deck cannot be saved by button"
+            );
+            let invalid = app.deck_editor.as_ref().unwrap().deck.clone();
+            assert!(
+                app.save_editor_deck(0, &invalid).is_err(),
+                "save also validates independently of disabled button"
+            );
+            SAVED_DECK_SNAPSHOT.with(|saved| {
+                assert_eq!(
+                    *saved.borrow(),
+                    std::fs::read(super::deck_editor::saved_path(0)).ok(),
+                    "invalid save preserves disk"
+                )
+            });
+            COMBAT_SNAPSHOT.with(|snapshot| {
+                assert_eq!(
+                    snapshot.borrow().as_deref(),
+                    Some(format!("{:?}", app.game).as_str()),
+                    "editing never mutates match"
+                )
+            });
+            click(app, 505.0, 504.0);
+        }
+        151 => {
+            assert!(app.deck_editor.as_ref().unwrap().deck.validate().is_ok());
+            if let Ok(path) = std::env::var("RIFT_SMOKE_EDITOR_SCREENSHOT") {
+                app.ui.input_override = Some((vec2(-100.0, -100.0), false, false));
+                app.draw();
+                get_screen_data().export_png(&path);
+            }
+            click(app, 328.0, 771.0);
+        }
+        152 => {
+            let saved = app.custom_decks[0].as_ref().expect("You slot saved");
+            assert_eq!(saved.card_count(), 41);
+            assert_eq!(saved.cards.iter().find(|(id, _)| *id == 72).unwrap().1, 1);
+            assert_eq!(
+                super::deck_editor::load_saved_decks()[0].as_ref(),
+                Some(saved)
+            );
+            assert!(app.prefs.use_custom[0]);
+            click(app, 462.0, 771.0);
+        }
+        153 => {
+            assert!(app.prefs.use_custom[1]);
+            assert_eq!(super::deck_editor::load_saved_decks(), app.custom_decks);
+            let row = app
+                .deck_editor
+                .as_ref()
+                .unwrap()
+                .visible_cards()
+                .iter()
+                .position(|id| *id == 72)
+                .unwrap();
+            click(app, 1365.0, 236.0 + row as f32 * 63.0);
+        }
+        154 => {
+            assert_eq!(app.deck_editor.as_ref().unwrap().count(72), 2);
+            assert_eq!(
+                app.custom_decks[0]
+                    .as_ref()
+                    .unwrap()
+                    .cards
+                    .iter()
+                    .find(|(id, _)| *id == 72)
+                    .unwrap()
+                    .1,
+                1
+            );
+            click(app, 395.0, 816.0);
+        }
+        155 => {
+            assert!(app.screen == Screen::Decks);
+            assert_eq!(
+                super::deck_editor::load_saved_decks(),
+                app.custom_decks,
+                "leaving unsaved draft preserves slots"
+            );
+            click(app, 342.0, 696.0);
+        }
+        156 => {
+            assert_eq!(
+                app.deck_editor.as_ref().unwrap().count(72),
+                1,
+                "reopen restores saved deck"
+            );
+            click(app, 395.0, 816.0);
+        }
+        157 => {
+            click(app, 341.0, 748.0);
+        }
+        158 => {
+            assert!(
+                !app.prefs.use_custom[0],
+                "selecting a preset deactivates custom deck"
+            );
+            assert!(
+                app.custom_decks[0].is_some(),
+                "preset selection preserves saved file"
+            );
+            click(app, 342.0, 696.0);
+        }
+        159 => {
+            click(app, 328.0, 771.0);
+        }
+        160 => {
+            assert!(app.prefs.use_custom[0]);
+            assert_eq!(
+                super::Preferences::load().use_custom,
+                [true, true],
+                "custom slot selection survives restart"
+            );
+            click(app, 395.0, 816.0);
+        }
+        161 => {
+            click(app, 425.0, 802.0);
+        }
+        162 => {
+            assert!(app.screen == Screen::Practice && !app.in_match);
+            app.starting_player = 0;
+            click(app, 1330.0, 46.0);
+        }
+        163 => {
+            assert_eq!(app.game.phase, Phase::Mulligan);
+            for owner in 0..2 {
+                assert_eq!(
+                    app.game.custom_deck(owner),
+                    app.custom_decks[owner].as_ref()
+                );
+                let player = &app.game.players[owner];
+                assert_eq!(
+                    player.hand.len() + player.deck.len() + usize::from(player.champion.is_some()),
+                    41
+                );
+                assert_eq!(
+                    player
+                        .hand
+                        .iter()
+                        .chain(&player.deck)
+                        .filter(|id| **id == 72)
+                        .count(),
+                    1,
+                    "new card is in actual playable deck"
+                );
+            }
+            click(app, 1283.0, 514.0);
+        }
+        164 => {
+            assert_eq!(app.game.phase, Phase::Playing);
+            fixture_resources(app, Domain::Chaos);
+            hand_card(app, "Shipyard Skulker");
+            click(app, 315.0, 760.0);
+        }
+        165 => {
+            assert!(app.selection == Some(Selection::Hand(0)));
+            click(app, 1285.0, 510.0);
+        }
+        166 => {
+            assert!(
+                app.game.players[0]
+                    .units
+                    .iter()
+                    .any(|unit| unit.card_id == 72),
+                "additional card actually deploys through native controls"
+            );
+            assert_eq!(app.game.catalog[72].name, "Shipyard Skulker");
             app.ui.input_override = None;
             app.ui.pointer_override = None;
             app.ui.wheel_override = None;
             println!(
-                "PASS: 130 native UI frames covering click/drag, full text, equipment, fields, runes, public trash, exact combat and power choices, ready/exhausted recycling, cancellation and invalid-action atomicity."
+                "PASS: 167 native UI frames including exact combat/resources, both Flow costs, staged battlefield order, and validated saved custom decks with a new card deployed."
             );
             return true;
         }
-        _ => panic!("UI smoke runner exceeded its 130-frame script"),
+        _ => panic!("UI smoke runner exceeded its 167-frame script"),
     }
     false
 }

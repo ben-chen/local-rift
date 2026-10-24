@@ -456,6 +456,14 @@ fn response_window_advice(game: &Game, beginner: bool) -> Option<Vec<&'static st
                 "Several effects can change this death. Choose which unit and replacement to use; the others may be checked again afterward.",
                 "Compare saving your key unit with keeping equipment for a later fight. A death replacement can change where a unit ends up.",
             ],
+            Decision::BattlefieldOrder { combat, .. } => vec![
+                if *combat {
+                    "Several combats are waiting. The turn player chooses which battlefield opens first; the others stay pending."
+                } else {
+                    "Resolve uncontested showdowns before combats. When several are waiting, the turn player chooses which battlefield opens first."
+                },
+                "Consider which field's score or triggers will affect the next fight. Choosing a field opens its normal response window.",
+            ],
             Decision::CombatDamage { .. } => vec![
                 if beginner {
                     "Choose how your combat damage reaches opposing units. Assign Tank first and Backline last; deal lethal before moving to another unit."
@@ -618,15 +626,20 @@ fn response_window_advice(game: &Game, beginner: bool) -> Option<Vec<&'static st
 }
 
 fn archetype_tip(game: &Game) -> &'static str {
-    let name = game.players[0].name.as_str();
-    if name.starts_with("Irelia") {
-        "Irelia can turn choosing a friendly unit into another ready. Plan a useful destination before paying for it, and keep energy for a conquest reset."
-    } else if name.starts_with("Master Yi") {
-        "Yi gives a lone defender +2 might. Adding another friendly unit can remove that bonus, so compare both totals before reinforcing a field."
-    } else if name.starts_with("Kennen") {
-        "Kennen empowers when you play from outside your hand. Spend that empowerment for Assault when the extra attacking might changes the point."
-    } else {
-        "Kai'Sa's legend adds flexible power for spells. Use it to preserve matching runes; it cannot pay for units or ability costs."
+    use local_rift::legends::LegendKind;
+    match game.legend[0].kind {
+        LegendKind::Irelia => {
+            "Irelia can turn choosing a friendly unit into another ready. Plan a useful destination before paying for it, and keep energy for a conquest reset."
+        }
+        LegendKind::MasterYi => {
+            "Yi gives a lone defender +2 might. Adding another friendly unit can remove that bonus, so compare both totals before reinforcing a field."
+        }
+        LegendKind::Kennen => {
+            "Kennen empowers when you play from outside your hand. Spend that empowerment for Assault when the extra attacking might changes the point."
+        }
+        LegendKind::KaiSa => {
+            "Kai'Sa's legend adds flexible power for spells. Use it to preserve matching runes; it cannot pay for units or ability costs."
+        }
     }
 }
 
@@ -758,6 +771,26 @@ mod tests {
 
     fn game() -> Game {
         Game::new(0, 1, 72, Difficulty::Easy)
+    }
+
+    #[test]
+    fn renamed_custom_decks_keep_their_legend_advice() {
+        use local_rift::deck::CustomDeck;
+        for legend in 0..4 {
+            let preset = Game::new(legend, 1, 42, Difficulty::Easy);
+            let expected = archetype_tip(&preset);
+            let mut deck = CustomDeck::from_preset(legend).unwrap();
+            deck.name = "My quiet experiment".into();
+            let custom =
+                Game::new_with_custom([legend, 1], [Some(deck), None], 42, Difficulty::Easy, true)
+                    .unwrap();
+            assert_eq!(archetype_tip(&custom), expected);
+            assert!(
+                !custom.players[0]
+                    .name
+                    .starts_with(["Irelia", "Master Yi", "Kennen", "Kai'Sa"][legend])
+            );
+        }
     }
 
     #[test]
@@ -1046,6 +1079,16 @@ mod tests {
             });
             states.push(game.clone());
             for decision in [
+                Decision::BattlefieldOrder {
+                    player,
+                    lanes: vec![0, 1],
+                    combat: false,
+                },
+                Decision::BattlefieldOrder {
+                    player,
+                    lanes: vec![0, 1],
+                    combat: true,
+                },
                 Decision::CombatDamage {
                     player,
                     lane: 0,

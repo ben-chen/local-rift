@@ -1,4 +1,4 @@
-//! Declarative official card behavior for the 69-card preset catalog.
+//! Declarative official card behavior for the reviewed runtime catalog.
 //!
 //! This module describes rules; it does not claim that the game engine executes
 //! every described operation. The engine must gate unsupported requirements.
@@ -121,7 +121,7 @@ pub fn effect(id: usize) -> OfficialEffect {
     use OfficialEffect::*;
     match id {
         0 | 2 | 13 | 17 | 18 | 20 | 22 | 24 | 25 | 30 | 31 | 34 | 43 | 45 | 46 | 47 | 49 | 54
-        | 56 | 59 | 60 | 68 => None,
+        | 56 | 59 | 60 | 68 | 69 | 70 | 71 | 72 | 73 => None,
         1 => Counter(CounterKind::Abandon),
         3 | 10 | 38 | 58 => Equipment,
         4 => MoveEnemy,
@@ -245,6 +245,38 @@ pub fn effect(id: usize) -> OfficialEffect {
             draw: 1,
             banish_on_death: false,
         },
+        74 => Damage {
+            amount: 2,
+            targets: 1,
+            battlefield_only: true,
+            draw: 0,
+            banish_on_death: false,
+        },
+        75 => Damage {
+            amount: 6,
+            targets: 1,
+            battlefield_only: true,
+            draw: 0,
+            banish_on_death: false,
+        },
+        76 => ModifyMight {
+            amount: 7,
+            minimum: 0,
+            draw: 0,
+            alone_bonus: 0,
+        },
+        77 => Draw(4),
+        78 => Draw(3),
+        79 => ModifyMight {
+            amount: -10,
+            minimum: 0,
+            draw: 0,
+            alone_bonus: 0,
+        },
+        80 => Bounce {
+            max_might: Option::None,
+            battlefield_only: true,
+        },
         _ => Unsupported,
     }
 }
@@ -255,7 +287,8 @@ pub fn targeting(id: usize) -> Targeting {
         4 | 32 => Enemy,
         8 | 9 | 14 | 19 | 27 => Friendly,
         16 | 29 => Mixed,
-        5 | 7 | 11 | 23 | 26 | 28 | 41 | 44 | 50 | 52 | 53 | 55 | 61 | 62 | 63 | 66 | 67 => Any,
+        5 | 7 | 11 | 23 | 26 | 28 | 41 | 44 | 50 | 52 | 53 | 55 | 61 | 62 | 63 | 66 | 67 | 74
+        | 75 | 76 | 79 | 80 => Any,
         _ => None,
     };
     Targeting {
@@ -534,6 +567,9 @@ pub fn requirements(id: usize) -> &'static [Mechanic] {
         65 => &[ExtraTurn],
         66 => &[Gear, Temporary],
         68 => &[DeathTriggers],
+        74 | 75 | 76 | 78 => &[Chain],
+        79 => &[Chain, NegativeMight],
+        80 => &[Chain, Bounce],
         _ => &[],
     }
 }
@@ -549,7 +585,7 @@ pub enum SupportStatus {
 }
 
 pub fn support_status(id: usize) -> SupportStatus {
-    if id >= 69 {
+    if matches!(effect(id), OfficialEffect::Unsupported) {
         return SupportStatus::UnknownCard;
     }
     let requirements = requirements(id);
@@ -807,7 +843,7 @@ mod tests {
     #[test]
     fn all_catalog_entries_have_official_classification() {
         let cards = cards();
-        assert_eq!(cards.len(), 69);
+        assert_eq!(cards.len(), 81);
         for card in cards {
             assert_ne!(
                 effect(card.id),
@@ -817,7 +853,7 @@ mod tests {
             );
             assert_ne!(support_status(card.id), SupportStatus::UnknownCard);
         }
-        assert_eq!(effect(69), OfficialEffect::Unsupported);
+        assert_eq!(effect(81), OfficialEffect::Unsupported);
     }
 
     #[test]

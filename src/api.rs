@@ -5,8 +5,9 @@
 //! candidates, not an exhaustive action space; submit any structured `Action`.
 use crate::battlefields::{BATTLEFIELDS, BattlefieldAbility};
 use crate::cards::{Domain, cards, presets};
+use crate::deck::CustomDeck;
 use crate::game::{
-    Action, ChainAbility, Decision, Difficulty, Game, Phase, Target, TriggeredAbility,
+    Action, ChainAbility, Decision, Difficulty, FlowSource, Game, Phase, Target, TriggeredAbility,
 };
 use crate::legends::{LegendAbility, LegendKind, LegendTrigger};
 use crate::payment::{PaymentQuote, PowerPayment};
@@ -25,6 +26,7 @@ pub struct ResetOptions {
     pub difficulty: Difficulty,
     pub first_player: usize,
     pub battlefields: Option<[usize; 2]>,
+    pub custom_decks: [Option<CustomDeck>; 2],
 }
 
 impl Default for ResetOptions {
@@ -35,6 +37,7 @@ impl Default for ResetOptions {
             difficulty: Difficulty::Tactical,
             first_player: 0,
             battlefields: None,
+            custom_decks: [None, None],
         }
     }
 }
@@ -309,7 +312,9 @@ impl Session {
                 "card_id":game.hidden_visible_card(viewer, owner, card.id)
             })).collect();
             let legend = &game.legend[owner];
-            json!({"player":owner, "name":state.name, "preset":game.selected_decks[owner],
+            json!({"player":owner, "name":state.name, "preset":if game.custom_deck(owner).is_none() {Some(game.selected_decks[owner])} else {None},
+                "legend_id":game.selected_decks[owner], "custom":game.custom_deck(owner).is_some(),
+                "custom_deck":if owner==viewer {game.custom_deck(owner).map(CustomDeck::to_json)} else {None},
                 "hand":hand, "hand_count":state.hand.len(), "deck_count":state.deck.len(),
                 "rune_deck_count":state.rune_deck.len(), "champion":state.champion,
                 "discard":state.discard, "banish":state.banish, "score":state.score,
@@ -318,7 +323,12 @@ impl Session {
                 "any_power":state.any_power, "xp":state.xp, "units":units, "gear":gear, "hidden":hidden,
                 "cards_played_this_turn":game.cards_played_this_turn(owner),"cannot_play_cards":game.cannot_play_cards(owner),
                 "optional_power_discount":game.optional_power_discount[owner],
-                "granted_flow_indices":game.granted_flow_indices(owner),"queued_extra_turns":game.queued_extra_turns(owner),
+                "granted_flow_indices":game.granted_flow_indices(owner),
+                "flow_costs":state.discard.iter().enumerate().map(|(index,_)| json!({"trash_index":index,
+                    "costs":game.flow_costs(owner,index).iter().map(|flow|json!({
+                        "source":match flow.source {FlowSource::Printed=>"printed",FlowSource::Granted=>"granted"},
+                        "energy":flow.energy,"power":flow.power,"colored":flow.colored})).collect::<Vec<_>>()
+                })).filter(|row|!row["costs"].as_array().unwrap().is_empty()).collect::<Vec<_>>(),"queued_extra_turns":game.queued_extra_turns(owner),
                 "submitted_combat_damage":game.submitted_combat_damage(owner),
                 "legend":{"kind":legend_name(legend.kind),"ready":legend.ready,
                     "empowered":legend.empowered,"spell_power":legend.spell_power,
@@ -386,13 +396,23 @@ impl Session {
                 keys(object, &["command", "id"])?;
                 Ok(
                     json!({"protocol":PROTOCOL_VERSION,"name":"Local Rift","summary":self.summary(),
-                    "commands":["info","catalog","reset","observe","suggest","quote_payment","validate","apply","mulligan","start","step_ai"],
+                    "commands":["info","catalog","validate_deck","reset","observe","suggest","quote_payment","validate","apply","mulligan","start","step_ai"],
                     "suggestions_exhaustive":false,"max_request_bytes":MAX_REQUEST_BYTES}),
                 )
             }
             "catalog" => {
                 keys(object, &["command", "id"])?;
                 Ok(catalog())
+            }
+            "validate_deck" => {
+                keys(object, &["command", "id", "deck"])?;
+                let deck = CustomDeck::from_json(
+                    object
+                        .get("deck")
+                        .ok_or_else(|| ApiError::invalid("Provide a deck."))?,
+                )
+                .map_err(ApiError::invalid)?;
+                Ok(json!({"legal":true,"card_count":deck.card_count(),"deck":deck.to_json()}))
             }
             "observe" => {
                 keys(object, &["command", "id", "player"])?;
@@ -417,6 +437,7 @@ impl Session {
                         "difficulty",
                         "first_player",
                         "battlefields",
+                        "custom_decks",
                     ],
                 )?;
                 let defaults = ResetOptions::default();
@@ -433,6 +454,29 @@ impl Session {
                         .transpose()?
                         .unwrap_or(0),
                     battlefields: optional_pair(object, "battlefields")?,
+                    custom_decks: match object.get("custom_decks") {
+                        None => [None, None],
+                        Some(value) => {
+                            let values = value
+                                .as_array()
+                                .filter(|values| values.len() == 2)
+                                .ok_or_else(|| {
+                                    ApiError::invalid(
+                                        "custom_decks must contain two decks or nulls.",
+                                    )
+                                })?;
+                            let parse = |value: &Value| {
+                                if value.is_null() {
+                                    Ok(None)
+                                } else {
+                                    CustomDeck::from_json(value)
+                                        .map(Some)
+                                        .map_err(ApiError::invalid)
+                                }
+                            };
+                            [parse(&values[0])?, parse(&values[1])?]
+                        }
+                    },
                 };
                 self.reset(unsigned(object, "revision")?, options)?;
                 Ok(self.summary())
@@ -522,12 +566,14 @@ fn make_game(options: ResetOptions) -> Result<Game, ApiError> {
             "Battlefield index is outside the catalog.",
         ));
     }
-    let mut game = Game::new_for_agents(
-        options.decks[0],
-        options.decks[1],
+    let mut game = Game::new_with_custom(
+        options.decks,
+        options.custom_decks,
         options.seed,
         options.difficulty,
-    );
+        false,
+    )
+    .map_err(ApiError::invalid)?;
     game.choose_starting_player(options.first_player)
         .map_err(ApiError::illegal)?;
     if let Some(fields) = options.battlefields {
@@ -566,11 +612,12 @@ fn legend_name(kind: LegendKind) -> &'static str {
 pub fn catalog() -> Value {
     json!({"as_of":crate::cards::DATA_AS_OF,
         "domains":["Fury","Calm","Mind","Body","Chaos","Order"],
-        "cards":cards().iter().map(|c|json!({"id":c.id,"name":c.name,"energy":c.cost,"power":c.power_cost,
+        "cards":cards().iter().map(|c|json!({"id":c.id,"official_id":c.official_id,"name":c.name,"energy":c.cost,"power":c.power_cost,
             "might":c.might,"domain":c.domain.name(),"domains":c.domains.iter().map(|d|d.name()).collect::<Vec<_>>(),
             "kind":c.kind.name(),"official_text":c.official_text,"keywords":c.keywords})).collect::<Vec<_>>(),
         "presets":presets().iter().enumerate().map(|(id,p)|json!({"id":id,"name":p.name,
             "legend_name":p.legend_name,"legend_text":p.legend_text,"chosen_champion":p.chosen_champion,
+            "eligible_cards":crate::deck::eligible_cards(id),"eligible_champions":crate::deck::eligible_champions(id),
             "domains":p.domains.map(|d|d.name()),"rune_counts":p.rune_counts,"cards":p.cards,
             "strategy":p.strategy,"learning_notes":p.learning_notes,"source_url":p.source_url})).collect::<Vec<_>>(),
         "battlefields":BATTLEFIELDS.iter().map(|b|json!({"id":b.id,"name":b.name,"official_text":b.official_text})).collect::<Vec<_>>()})
@@ -599,6 +646,7 @@ pub fn action_to_json(action: &Action) -> Value {
             "action":if matches!(**action, Action::WithPowerPayment {..}) {json!({"type":"with_power_payment"})} else {action_to_json(action)},
             "payment":payment_to_json(payment)}),
         Action::PlaceToken { lane } => json!({"type":"place_token","lane":lane}),
+        Action::ChooseBattlefield { lane } => json!({"type":"choose_battlefield","lane":lane}),
         Action::ChooseResolutionGroup { index } => {
             json!({"type":"choose_resolution_group","index":index})
         }
@@ -668,8 +716,9 @@ pub fn action_to_json(action: &Action) -> Value {
             repeat,
             accelerate,
             bonus,
+            flow,
         } => {
-            json!({"type":"play_from_trash_options","trash_index":trash_index,"lane":lane,"targets":ts(targets),"repeat_targets":ts(repeat_targets),"repeat":repeat,"accelerate":accelerate,"bonus":bonus})
+            json!({"type":"play_from_trash_options","trash_index":trash_index,"lane":lane,"targets":ts(targets),"repeat_targets":ts(repeat_targets),"repeat":repeat,"accelerate":accelerate,"bonus":bonus,"flow":flow.map(|source| match source {FlowSource::Printed=>"printed",FlowSource::Granted=>"granted"})})
         }
         Action::Hide { hand_index, lane } => {
             json!({"type":"hide","hand_index":hand_index,"lane":lane})
@@ -953,6 +1002,12 @@ pub fn parse_action(value: &Value) -> Result<Action, ApiError> {
             fields!("lane");
             Action::PlaceToken { lane: lane(o)? }
         }
+        "choose_battlefield" => {
+            fields!("lane");
+            Action::ChooseBattlefield {
+                lane: index(o, "lane")?,
+            }
+        }
         "choose_resolution_group" => {
             fields!("index");
             Action::ChooseResolutionGroup {
@@ -1092,7 +1147,8 @@ pub fn parse_action(value: &Value) -> Result<Action, ApiError> {
                 "repeat_targets",
                 "repeat",
                 "accelerate",
-                "bonus"
+                "bonus",
+                "flow"
             );
             Action::PlayFromTrashOptions {
                 trash_index: index(o, "trash_index")?,
@@ -1102,6 +1158,12 @@ pub fn parse_action(value: &Value) -> Result<Action, ApiError> {
                 repeat: flag(o, "repeat")?,
                 accelerate: flag(o, "accelerate")?,
                 bonus: flag(o, "bonus")?,
+                flow: match o.get("flow") {
+                    None | Some(Value::Null) => None,
+                    Some(Value::String(value)) if value == "printed" => Some(FlowSource::Printed),
+                    Some(Value::String(value)) if value == "granted" => Some(FlowSource::Granted),
+                    _ => return Err(ApiError::invalid("flow must be printed, granted, or null.")),
+                },
             }
         }
         "hide" => {
@@ -1215,6 +1277,9 @@ fn legend_trigger(trigger: LegendTrigger) -> Value {
 fn decision_to_json(game: &Game, decision: &Decision, viewer: usize) -> Value {
     let player = decision.player();
     let mut out = match decision {
+        Decision::BattlefieldOrder { lanes, combat, .. } => {
+            json!({"type":"battlefield_order","lanes":lanes,"combat":combat})
+        }
         Decision::OptionalPlay {
             card_id, gear_id, ..
         } => json!({"type":"optional_play","card_id":card_id,"gear_id":gear_id}),
@@ -1490,6 +1555,7 @@ mod tests {
                 targets: vec![unit],
             },
             Action::PlayFromTrashOptions {
+                flow: None,
                 trash_index: 2,
                 lane: Some(1),
                 targets: vec![unit],
@@ -1527,6 +1593,7 @@ mod tests {
             },
             Action::OrderTrigger { trigger_id: 8 },
             Action::ChooseResolutionGroup { index: 1 },
+            Action::ChooseBattlefield { lane: 1 },
             Action::PlaceToken { lane: Some(1) },
             Action::PlaceToken { lane: None },
             Action::SetOptionalDiscount { power: 2 },
@@ -1992,5 +2059,33 @@ mod tests {
                 assert_eq!(session.game.phase, Phase::Finished, "pair {own}/{opposing}");
             }
         }
+    }
+    #[test]
+    fn public_flow_instances_and_exact_quotes_match_the_selected_source() {
+        let mut session = playing();
+        session.game.players[0].discard = vec![39];
+        session.game.players[0].energy = 5;
+        session.game.players[0].energy_pool = 5;
+        session.game.players[0].runes = [0; 6];
+        session.game.players[0].exhausted_runes = [0; 6];
+        session.game.players[0].power_pool = [1, 0, 0, 0, 0, 0];
+        for viewer in 0..2 {
+            let observed = session.observe(viewer).unwrap();
+            assert_eq!(
+                observed["players"][0]["flow_costs"],
+                json!([{
+                "trash_index":0,"costs":[{"source":"printed","energy":2,"power":1,"colored":false}]}])
+            );
+        }
+        let request = json!({"command":"quote_payment","player":0,"revision":session.revision(),
+            "action":{"type":"play_from_trash_options","trash_index":0,"flow":"printed"}});
+        let before = session.observe(0).unwrap();
+        let quote = session.handle(request);
+        assert_eq!(quote["ok"], true, "{quote}");
+        assert_eq!(
+            quote["result"]["suggested"]["colored"],
+            json!([1, 0, 0, 0, 0, 0])
+        );
+        assert_eq!(session.observe(0).unwrap(), before);
     }
 }

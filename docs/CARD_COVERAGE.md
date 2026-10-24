@@ -2,7 +2,7 @@
 
 Snapshot checked **2026-10-24**. The official gallery contains **1,408 printing records** grouped into **1,103 distinct full-name identities**. After excluding **12 auxiliary token/tracker identities** and **12 banned identities**, **1,079 identities are legal in Standard/1v1 Constructed**. The separate 2v2 list leaves **1,078**.
 
-**This client does not yet implement every legal card.** It currently maps **69 main-deck cards, 4 preset legends, 4 battlefields, and 6 rune resource types** (83 legal identities). **996 legal identities remain unimplemented and are not playable.** Importing this snapshot does not register cards with the engine. Full inventory coverage is not full rules support.
+**This client does not yet implement every legal card.** It currently maps **81 main-deck cards, 4 preset legends, 4 battlefields, and 6 rune resource types** (95 legal identities). **984 legal identities remain unimplemented and are not playable.** Importing this snapshot does not register cards with the engine. Full inventory coverage is not full rules support.
 
 ## Scope and authority
 
@@ -29,8 +29,8 @@ Numbered positions include token slots where the publisher numbers them within a
 | Gear | 127 | 6 | 121 |
 | Legend | 58 | 4 | 54 |
 | Rune | 6 | 6 | 0 |
-| Spell | 269 | 31 | 238 |
-| Unit | 550 | 32 | 518 |
+| Spell | 269 | 38 | 231 |
+| Unit | 550 | 37 | 513 |
 
 Implemented mapping means the existing engine/preset/field/resource implementation, not a claim that every interaction has been formally proven. See `docs/RULES.md` for engine limits. Every unimplemented identity has `implementation.status: not_implemented` and `playable_in_client: false`. Printed keywords are recorded per card and counted under `unimplemented_by_observed_keyword` as discovery hints only; shared keywords do not imply shared effect semantics or completed implementation. Each unimplemented card still requires its specific effect, targets, timing, costs, continuous/replacement effects, and interaction tests to be reviewed and implemented.
 
@@ -165,5 +165,17 @@ Source pages are archived as deterministic gzip files under `assets/data/catalog
 | 66 | Turn to Dust | `unl-070-219` |
 | 67 | Void Seeker | `ogn-024-298` |
 | 68 | Watchful Sentry | `ogn-096-298` |
+| 69 | Mega-Mech | `ogn-088-298` |
+| 70 | Mountain Drake | `ogn-142-298` |
+| 71 | Playful Phantom | `ogn-049-298` |
+| 72 | Shipyard Skulker | `ogn-175-298` |
+| 73 | Vanguard Sergeant | `ogn-219-298` |
+| 74 | Incinerate | `ogs-003-024` |
+| 75 | Falling Comet | `ogn-085-298` |
+| 76 | Primal Strength | `ogn-154-298` |
+| 77 | Progress Day | `ogn-114-298` |
+| 78 | Premonition | `sfd-087-221` |
+| 79 | Moonlight Affliction | `unl-066-219` |
+| 80 | Rebuke | `ogn-172-298` |
 
 Card names, rules, and images are Riot Games intellectual property. This noncommercial, unofficial project includes source references for verification and does not claim Riot affiliation.

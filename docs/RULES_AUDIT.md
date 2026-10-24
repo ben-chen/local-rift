@@ -19,12 +19,17 @@ The audit started from commit `167ad7e` and continued against the shared working
 | RA-003 | Falling Star killed a friendly Pyke and an enemy unit in one cleanup. The dead Pyke incorrectly generated Gold. | Pyke must remain on the board after the simultaneous death event to see the enemy death. | 383.2.c.2 |
 | RA-004 | Kennen's conquest ability exposed its trash-card choice only after opponents had responded. | The spell is chosen during finalization. Flow is granted on resolution only if that same object remains in the trash. Removing another card adjusts the tracked index; recycling the chosen card invalidates it. | 355.5, 355.9.a, 355.10.a.1, 359.3.e.4 |
 | RA-005 | First Mate's play effect and an opposing Vex trigger were pending. Choosing Irelia for First Mate caused the newer Irelia trigger to finalize ahead of the older Vex trigger. | Pending groups preserve their age. The controller still orders simultaneous triggers, but newly generated groups cannot pass an older pending group. | 337.1, 337.1.b, 383.3.d |
+| RA-006 | With Discipline pending, the opponent Ambushed Rengar into both occupied fields. The engine selected field 0 automatically and assigned the chain initiator as attacker. Flash withdrawing a defender also left combat ahead of the staged non-combat showdown. | Each field remembers the original Contested applier. The turn player chooses among staged fields of the eligible class; non-combat showdowns precede combats. The chosen field grants initial focus and attacker status to its contender, and unchosen fields remain staged. | 190.3.a.1, 323.7–12, 345, 466.2.c.1 |
+| RA-007 | Rengar entered an ongoing non-combat showdown while Discipline was still on the chain. Combat designations became active immediately. | A staged combat promotes the ongoing showdown only when the chain and pending finalizations finish. The original contender remains attacker; focus follows the normal completed-chain transfer. | 323.13, 466.2.c.1.b |
+| RA-008 | Flash removed the last defending unit before a staged showdown opened, but the former defender retained control and its Hidden card. | An absent controller loses control in open-state cleanup before a staged showdown starts; its Hidden card moves to trash. Ongoing showdowns and combats continue preserving control until their resolution. | 323.5–6.a |
+| RA-009 | A cast Discipline, B cast Abandon at it, then A Defied their own Discipline. Abandon's target disappeared and Predict was incorrectly skipped. | Losing the counter target negates that counter instruction only. Abandon still executes its independent Predict instruction. | 359.3.e.1, 359.3.e.5 |
+| RA-010 | Moonlight Affliction reduced a 3-Might unit to an actual −7. Switcheroo with a 10-Might unit produced displayed values 3 and 0 instead of 10 and 0. | Swap calculates its increase and decrease from signed actual Might. Public references and combat still treat negative Might as zero; later buffs must overcome the remaining negative value. | 143.2.c.1, 434.1.b–d |
 
 The first four failures were observed before correction. The fifth ordering failure was also reproduced independently rather than inferred solely from inspection.
 
 ## Regression evidence
 
-[tests/rules_audit.rs](../tests/rules_audit.rs) contains seven public-API tests:
+[tests/rules_audit.rs](../tests/rules_audit.rs) contains nine public-API tests:
 
 1. First burnout completes the draw before cleanup victory.
 2. Tornado's scheduled Disempower waits for responses.
@@ -33,8 +38,23 @@ The first four failures were observed before correction. The fifth ordering fail
 5. A newer Irelia trigger follows an older pending Vex trigger.
 6. A Tornado effect created after this turn's ending window does not expire on the next turn instead.
 7. Burnout invalidates Kennen's chosen trash object even if an identical card later occupies the same index.
+8. Abandon still Predicts after its counter target disappears.
+9. Switcheroo exchanges actual negative Might correctly; a later +7 increase only erases a −7 deficit.
 
-All seven passed after the fixes. The library suite passed **156 tests**, and the library passed Clippy with warnings denied at the end of this batch. These checks establish the named examples, not universal rules equivalence. Full-match simulation, rendering, and API transport checks are maintained separately.
+The original seven passed after their fixes. The library suite passed **156 tests**, and the library passed Clippy with warnings denied at the end of that batch. The two later failures were separately reproduced before correction; all nine audit tests subsequently passed. These checks establish the named examples, not universal rules equivalence. Full-match simulation, rendering, and API transport checks are maintained separately.
+
+### Staged battlefield follow-up
+
+[tests/staged_battlefields.rs](../tests/staged_battlefields.rs) adds six public-action regressions, built from the original bundled Discipline, Rengar, and Flash rather than synthetic new card effects:
+
+1. A reacting Rengar's controller receives attacker status and initial focus.
+2. The turn player chooses either of two staged combats; rejecting an unavailable choice leaves the state unchanged, and the remaining combat opens afterward.
+3. A Flash-created non-combat showdown precedes another staged combat; absent control and its Hidden slot are cleared first.
+4. Entering during a closed chain only stages combat; it cannot prematurely activate combat designations in an ongoing showdown.
+5. Withdrawing a contender cancels its staged combat.
+6. The turn player also chooses among multiple non-combat showdowns, with the remaining one preserved.
+
+All six passed after the fixes, alongside the 156-test library suite, 17 expansion-card tests, ten earlier conformance tests, nine payment tests, and seven earlier audit tests. A Hidden-payment fixture was corrected to pass the actual contender's initial focus before testing the other player's Hidden card; the Hidden runtime was unchanged.
 
 ## Payment review
 
@@ -42,13 +62,15 @@ Read `src/payment.rs` and the hand-play, optional-cost, trash-play, Deflect, Hid
 
 This review also identified a narrower rune-choice gap: domain-only recycling always preferred exhausted runes. That gap was subsequently closed by `Action::RecycleRune { domain, exhausted }`, which can recycle a ready rune without implicitly exhausting it for energy, while retaining an exhausted rune of the same domain. The implementation and its successful/rejected-action regressions were independently reviewed. All **nine payment tests** and **ten earlier conformance tests** passed after this addition. Automatic payment remains a convenience, while explicit source selection and rune preparation provide the corresponding player choices.
 
+The previously confirmed multiple-Flow-cost selector gap is addressed by `FlowSource`/`FlowOption`. Independent inspection verified explicit printed-versus-granted selection, retained normal timing, refusal to override instructed Fizz/Last Rites plays with Flow, and restricted optional costs preceding flexible printed-Flow costs. All five tests in [tests/flow_costs.rs](../tests/flow_costs.rs) passed on independent rerun, including selected-cost quotes and exact payment, invalid-choice atomicity, expiration, and the lack of extra Reaction permission (829.1.b.2, 829.1.c.3). This is not a claim about unimplemented future non-resource Flow costs.
+
+The first twelve expanded cards were reviewed against their supplied official text, operation mappings, targeting, and regression tests. Their interactions prompted RA-010 above. Riot's [Vendetta FAQ](https://playriftbound.com/en-us/news/rules-and-releases/vendetta-rules-faq-and-clarifications/) also confirms that Swap calculates separate Might-increasing and Might-decreasing effects; the core rules specify the treatment of negative values.
+
 ## Open questions and next audit targets
 
-These items are **not resolved by the seven passing examples**:
+These items are **not resolved by the passing examples**:
 
-- **Multiple Flow costs:** rule 829.1.c.3 permits choosing between different Flow instances. The current trash-play path prefers Kennen's granted cost over a printed Flow cost and has no selector for the alternative. This is a confirmed choice gap, although the granted cost is cheaper or equal for the bundled overlapping cards.
 - **Separate events within one resolving item:** the new batching fix preserves older pending items during finalization. A broader audit must still distinguish triggers arising from separate instructions and pending permanent/token plays during the same resolution; a single cleanup is not itself proof that all those triggers were simultaneous.
-- **Several staged battlefields:** rules 323.11–323.12 give the turn player battlefield selection within the relevant stage. A follow-up trace found a bundled example: keep Discipline pending while the other player Ambushes Rengar into each of two enemy-controlled fields. After the chain resolves, the turn player must choose which staged combat starts; the current fallback takes field 0. That fallback also uses the chain initiator as attacker instead of the player who applied Contested (190.3.a.1, 345, 466.2.c.1). This trace still needs executable regressions and a fix.
 - **Expanded card pool:** new keywords, replacement interactions, granted abilities, zone changes, and cards not in the original presets require dedicated executable behavior and tests. Importing their official text is not implementation coverage.
 
 The audit read the original 69 card texts and the execution paths for targeting, pending triggers, death replacement, scoring, turn start/end, movement, combat, and resource payment. It did not exhaustively enumerate every pair or longer combination of those cards, and it did not audit the full currently legal card pool.

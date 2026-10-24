@@ -1,6 +1,7 @@
 pub mod api;
 pub mod battlefields;
 pub mod cards;
+pub mod deck;
 pub mod game;
 pub mod gear;
 pub mod hidden;

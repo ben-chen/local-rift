@@ -37,7 +37,7 @@ class Match:
         self.revision = 0
 
     def request(self, command, **fields):
-        if command in {"reset", "mulligan", "start", "apply", "validate", "step_ai"}:
+        if command in {"reset", "mulligan", "start", "apply", "validate", "quote_payment", "step_ai"}:
             fields["revision"] = self.revision
         request = {"command": command, **fields}
         self.process.stdin.write(json.dumps(request, separators=(",", ":")) + "\n")
@@ -63,6 +63,8 @@ def main():
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--deck", type=int, choices=range(4), default=0)
     parser.add_argument("--opponent", type=int, choices=range(4), default=3)
+    parser.add_argument("--custom-deck", type=Path, help="Your saved custom deck JSON file")
+    parser.add_argument("--custom-opponent", type=Path, help="Opponent's saved custom deck JSON file")
     parser.add_argument("--first-player", type=int, choices=(0, 1), default=0)
     parser.add_argument("--difficulty", choices=("easy", "tactical"), default="tactical")
     parser.add_argument("--max-actions", type=int, default=10000)
@@ -71,12 +73,19 @@ def main():
         parser.error("--seed must be an unsigned 64-bit integer")
     if args.max_actions <= 0:
         parser.error("--max-actions must be positive")
+    custom_decks = []
+    for path in (args.custom_deck, args.custom_opponent):
+        try:
+            custom_decks.append(json.loads(path.read_text(encoding="utf-8")) if path else None)
+        except (OSError, ValueError) as error:
+            parser.error(f"Cannot read custom deck {path}: {error}")
 
     rng = random.Random(args.seed)
     match = Match(args.binary)
     try:
         match.request("reset", seed=args.seed, decks=[args.deck, args.opponent],
-                      difficulty=args.difficulty, first_player=args.first_player)
+                      difficulty=args.difficulty, first_player=args.first_player,
+                      custom_decks=custom_decks)
         # Both players keep their opening hands. A policy can instead inspect its
         # own opening observation and replace up to two indices once.
         match.request("mulligan", player=0, indices=[])

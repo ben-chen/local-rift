@@ -15,6 +15,8 @@ The included standard-library Python bot plays seat 0 against the built-in AI:
 python3 examples/random_bot.py --binary target/release/rift-api --seed 42
 ```
 
+Use `--custom-deck path/to/custom-you.json` or `--custom-opponent path/to/custom-ai.json` to use a saved list from the native editor. Invalid lists fail validation before play.
+
 Replace `choose_action(view, suggestions, rng)` in that example with your policy. The function receives only its own filtered observation. Suggestions are useful starting candidates, **not an exhaustive list of legal actions**. A policy can construct and submit every action listed below, including different targets, optional costs, grouped movement, and custom combat assignments.
 
 ## Requests, responses, and revisions
@@ -38,13 +40,14 @@ These are consecutive requests, not a single JSON array. An optional `id` is ech
 {"ok":false,"revision":4,"error":{"code":"stale_revision","message":"Expected revision 4, received 3."}}
 ```
 
-Every successful mutation increments the session revision by one. Reset also increments it; it never reuses an old revision. All mutation commands require the current revision. `observe`, `info`, `catalog`, `suggest`, `quote_payment`, and successful `validate` leave it unchanged. Rejected requests leave both game state and revision unchanged. The facade validates on a cloned game and commits only on success, including when the core engine rejects an action after beginning its internal work.
+Every successful mutation increments the session revision by one. Reset also increments it; it never reuses an old revision. All mutation commands require the current revision. `observe`, `info`, `catalog`, `validate_deck`, `suggest`, `quote_payment`, and successful `validate` leave it unchanged. Rejected requests leave both game state and revision unchanged. The facade validates on a cloned game and commits only on success, including when the core engine rejects an action after beginning its internal work.
 
 | Command | Fields besides `command` and optional `id` | Result |
 | --- | --- | --- |
 | `info` | none | Protocol, commands, current public summary, request size limit |
 | `catalog` | none | Printed card data, published preset lists/rune splits, legend texts, battlefields |
-| `reset` | `revision`; optional `seed`, `decks`, `difficulty`, `first_player`, `battlefields` | New match in mulligan phase |
+| `validate_deck` | `deck` | Validate a constructed list without changing the session |
+| `reset` | `revision`; optional `seed`, `decks`, `custom_decks`, `difficulty`, `first_player`, `battlefields` | New match in mulligan phase |
 | `observe` | `player` | Observation filtered for that seat |
 | `mulligan` | `revision`, `player`, `indices` | Replace up to two distinct opening-hand positions, once per seat |
 | `start` | `revision` | Begin match; an unused mulligan means keep that hand |
@@ -55,6 +58,10 @@ Every successful mutation increments the session revision by one. Reset also inc
 | `step_ai` | `revision`, `player` | Ask the built-in AI to take one action for the seat with priority |
 
 Reset defaults match the initial settings. `decks` is a pair of preset IDs. `battlefields` is an optional pair of catalog battlefield IDs, one contributed by each player; omit it for preset defaults. A battlefield catalog ID is different from the in-match lane slot `0` or `1`. Invalid IDs are rejected. `difficulty` is `easy` or `tactical`. There is no automatic mulligan for either seat through this API.
+
+A custom list can replace either seat through `custom_decks:[deck_or_null,deck_or_null]`. Omission uses presets for both seats. Each deck object contains `name`, `legend` (the supported legend ID), `chosen_champion`, `cards` (pairs of card ID and count), `runes` (six counts in catalog domain order), and `battlefield`. `catalog.cards` includes stable official printing IDs as well as current runtime IDs; each preset reports `eligible_cards` and `eligible_champions` for its legend. `local_rift::deck::CustomDeck::from_preset` creates an editable starting list, and its `to_json`/`from_json` use this same schema.
+
+Deck validation requires at least 40 main-deck cards including the chosen champion, no more than three copies by full name, at most three Signature cards in total, matching champion tags, complete domain compatibility, exactly 12 legal runes, and an implemented legal battlefield. A `Unique` card is limited to one copy. Only implemented Standard-legal cards and legends can be selected. Zero-count rows should be omitted. Invalid decks are rejected before resetting the live match. Optional reset `battlefields` overrides the decks' selected fields. The API leaves both opening hands untouched for each agent's mulligan.
 
 Use observation `priority`, not `active`, to choose who acts. An opposing player can have priority while the active player owns the turn. Pending decisions can also transfer priority. `step_ai` works for either seat and processes one choice/action, not a whole turn.
 
@@ -104,13 +111,16 @@ Targets have exactly one of these forms:
 | `select_cards` | `indices` | Select exact indices for discard, Top Three, Sabotage, or a granted Flow choice from trash |
 | `play_from_trash` | `trash_index`, optional `lane`, `target` | Resolve a replay decision using default targeting |
 | `play_from_trash_targets` | `trash_index`, optional `lane`, `targets` | Resolve a replay decision with exact targets |
-| `play_from_trash_options` | `trash_index`, optional `lane`, `targets`, `repeat_targets`, `repeat`, `accelerate`, `bonus` | Play from trash with exact targets and supported optional costs, including Flow or a replay instruction |
+| `play_from_trash_options` | `trash_index`, optional `lane`, `targets`, `repeat_targets`, `repeat`, `accelerate`, `bonus`, `flow` | Play from trash with exact targets and supported optional costs, including Flow or a replay instruction |
 | `assign_damage` | `assignments` | Ordered pairs `[[enemy_unit_id, damage], ...]`; obey lethal-before-next and total damage constraints |
 | `choose_death_replacement` | `unit_id`, optional `gear_id` | Select a pending death replacement; `gear_id:null` selects Smite banishment |
 | `order_trigger` | `trigger_id` | Finalize one of the current player's pending triggers; last finalized resolves first |
+| `choose_battlefield` | `lane` | Choose which eligible staged battlefield opens next |
 | `choose_resolution_group` | `index` | Select a listed legal target group when a resolving spell requires that choice |
 | `set_optional_discount` | `power` | Set how many friendly Ezreal discounts reduce power; remaining discounts reduce energy |
 | `place_token` | optional `lane` | Place the next Up from the Deep Tentacle at base or a battlefield you control |
+
+For `play_from_trash_options`, `flow:"printed"` or `flow:"granted"` selects that exact available Flow instance. Omission or `null` uses an available payable instance. Explicit selection never falls back to another cost. A Flow choice cannot override an instructed Fizz/Last Rites replay and does not change the spell’s normal timing. Observed `flow_costs` lists trash indices with each instance’s source, energy, power, and whether power is colored. Quote and exact-payment commands preserve the selected instance.
 
 The engine remains the authority on timing, costs, destinations, targeting, optionality, and available cards. A syntactically correct action may be illegal in the current state. Use `validate` to try a candidate without consuming a revision. `play_card_targets`, `play_card_options`, `play_from_trash_targets`, and `play_from_trash_options` preserve exact target arrays, including empty selections where legal. `play_hidden` retains an automatic-target convenience when its list is empty; provide the full two-target pair to choose a hidden Switcheroo's targets yourself. Permanent abilities that choose after entry must receive an empty play target list and then answer the subsequent `on_play_target` decision.
 
@@ -152,6 +162,8 @@ A unit's observed `might` is its current total, including equipment and currentl
 
 For token units and Gold, `token:true` distinguishes the generated object from a physical deck card. Its `card_id` is an engine source/reference identity, so use the observed `name` and `might` for the token instead of assuming that catalog entry's printed card kind or stats describe it.
 
+A player object identifies its `legend_id`, `custom` flag, and `preset` (`null` for custom decks). `custom_deck` contains the saved list only for its owner; opposing observations always omit that list even when a hand reveal is active. The declared deck name and public legend/champion remain visible.
+
 The viewer sees their own hand as card IDs. The opposing hand is `null` except while an actual reveal effect permits it. Deck order and rune-deck order are omitted for both players. Hidden cards expose object ID, location, and hidden turn; `card_id` is `null` unless the viewer is allowed to see it. Granted Flow indices refer to the public trash and are visible to both viewers. Diagnostic game logs, prompts, random-generator state, and match seed are never exported in observations.
 
 `decision` is `null` or an object with `type` and `player`. Other fields describe the current choice:
@@ -171,6 +183,7 @@ The viewer sees their own hand as card IDs. The opposing hand is `null` except w
 | `empower_here` | `lane`; choose an eligible unit with `choose_target` |
 | `on_play_target` | `card_id`, `source_id`, `lane`; select the unit/gear required by the finalized on-play ability |
 | `legend` | `trigger` describes Irelia's ready/refresh choice; `choose` |
+| `battlefield_order` | `lanes`, `combat`; the turn player chooses one listed lane using `choose_battlefield`; non-combat showdowns precede staged combats |
 | `battlefield` | `lane`; `choose` whether to pay for the battlefield ability |
 | `burn_for_might` | `unit_id`; `choose` |
 | `combat_damage` | `lane`, `total`; `assign_damage` |

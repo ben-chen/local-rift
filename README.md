@@ -1,6 +1,6 @@
 # Local Rift · The Practice Grounds
 
-A native Rust client for exploring Riftbound against a simple AI. It includes a clear playmat over a quiet 3D backdrop, with art-faced unit cards and matching rune reserves, four tournament-derived presets, full card previews, and Mote, a small companion with Beginner and Advanced advice. A local Rust and JSON API supports custom automated opponents.
+A native Rust client for exploring Riftbound against a simple AI. It includes a clear playmat over a quiet 3D backdrop, with art-faced unit cards and matching rune reserves, four tournament-derived presets, a custom deck editor, full card previews, and Mote, a small companion with Beginner and Advanced advice. A local Rust and JSON API supports custom automated opponents.
 
 ![The Practice Grounds with card art and matching rune reserves](docs/preview.png)
 
@@ -60,7 +60,7 @@ Outputs are provided for x86-64 and ARM64 Linux, plus Apple Silicon macOS. Linux
 
 ## First match
 
-1. Choose a deck for yourself and another for the AI in **Practice** or **Deck library**. All four presets can be used on either side.
+1. Choose a deck for yourself and another for the AI in **Practice** or **Deck library**. All four presets can be used on either side; the deck editor also saves a custom list for you and one for the AI.
 2. Choose the battlefields, who starts, and **Relaxed** or **Tactical** difficulty, then **Start practice**.
 3. Select up to two opening cards to replace, then begin.
 4. Deploy units at base or a controlled battlefield. Move ready units, individually or as a group, to contest points.
@@ -99,7 +99,7 @@ An invalid drop or a cancelled drag spends no resources. Click controls remain a
 
 Choose Mote's **Beginner** or **Advanced** level in the sidebar, or turn advice off in Settings. Mote considers your hand, the public board, and information effects explicitly let you see; it does not peek at private opponent cards. Advice is optional and never interrupts an action.
 
-The client saves completed wins/losses and coach, advice level, animation, and difficulty preferences to `$XDG_DATA_HOME/local-rift/preferences.txt`, or `~/.local/share/local-rift/preferences.txt` when `XDG_DATA_HOME` is unset. **New match → Choose matchup** returns to setup and re-enables deck selection. There is no resumable match-save format.
+The client saves completed wins/losses and coach, advice level, animation, and difficulty preferences to `$XDG_DATA_HOME/local-rift/preferences.txt`, or `~/.local/share/local-rift/preferences.txt` when `XDG_DATA_HOME` is unset. **New match → Choose matchup** returns to setup and re-enables deck selection. Custom lists are stored beside those preferences as `custom-you.json` and `custom-ai.json`. The editor validates before saving, and saved lists can also be passed to the example bot. There is no resumable match-save format.
 
 ## Included presets
 
@@ -110,17 +110,17 @@ The client saves completed wins/losses and coach, advice level, animation, and d
 | Kennen / Tempest | Repeated actions, tokens, and resource loops | DSG AwesumRosum, Los Angeles thirteenth place, September 2026 |
 | Kai'Sa / Void Control | Spell resources, removal, and finishers | Sinzari, Vancouver fifteenth place, May 2026; historical list |
 
-The three Los Angeles lists are recent competitive examples as of **October 24, 2026**. Kai'Sa is an older competitive archetype included for variety. These are dated source lists, not an assertion about the newly released Radiance metagame. The full 40-card main lists are preserved, and all 69 included cards have executable printed-effect mappings. All four legend powers, persistent equipment, Hidden, Flow, Repeat, Accelerate, and Empower are implemented. The engine now exposes trigger order, on-play targets, death replacements, and rune activation as choices. Coverage and remaining interface limits are described in [RULES.md](docs/RULES.md); this is still an unofficial implementation under development.
+The three Los Angeles lists are recent competitive examples as of **October 24, 2026**. Kai'Sa is an older competitive archetype included for variety. These are dated source lists, not an assertion about the newly released Radiance metagame. The full 40-card main lists are preserved. Their 69 distinct cards and 12 additional cards for custom decks have executable printed-effect mappings. All four legend powers, persistent equipment, Hidden, Flow, Repeat, Accelerate, and Empower are implemented. The engine now exposes trigger order, on-play targets, death replacements, and rune activation as choices. Coverage and remaining interface limits are described in [RULES.md](docs/RULES.md); this is still an unofficial implementation under development.
 
 Counts, card IDs, original rune splits, and source URLs are recorded in [`assets/data/decks.json`](assets/data/decks.json). The [official tournament sources](docs/SOURCES.md) explain provenance and historical legality.
 
-The [full card inventory](docs/CARD_COVERAGE.md) accounts for 1,079 legal Standard identities as of October 24, 2026. Current support maps 83 identities, including the preset cards, legends, battlefields, and runes; 996 remain unavailable. The reproducible importer preserves official printings, bans, and errata without registering unsupported cards as playable. The [independent rules audit](docs/RULES_AUDIT.md) records reproduced fixes and remaining interaction work.
+The [full card inventory](docs/CARD_COVERAGE.md) accounts for 1,079 legal Standard identities as of October 24, 2026. Current support maps 95 identities, including the preset cards, legends, battlefields, and runes; 984 remain unavailable. The reproducible importer preserves official printings, bans, and errata without registering unsupported cards as playable. The [independent rules audit](docs/RULES_AUDIT.md) records reproduced fixes and remaining interaction work.
 
 ## Automated opponents
 
 Run `cargo run --locked --bin rift-api` or `nix run .#api` for a local JSONL process: send one JSON request per line on standard input and read one response per line from standard output. No server or API key is required. The Rust facade is `local_rift::api::Session`.
 
-The API supports seeded setup, both players' mulligans, private player observations, action validation, explicit targets and optional costs, exact power payments and quotes, group movement, combat assignments, and stepping the built-in AI. Every mutation checks a revision and commits only after validation. Suggested actions are a convenience subset; custom bots can submit structured actions directly. See [the protocol and example bot](docs/API.md).
+The API supports validated custom decks, seeded setup, both players' mulligans, private player observations, action validation, explicit targets and optional costs, exact power payments and quotes, group movement, combat assignments, and stepping the built-in AI. Every mutation checks a revision and commits only after validation. Suggested actions are a convenience subset; custom bots can submit structured actions directly. See [the protocol and example bot](docs/API.md).
 
 This process is a trusted match coordinator that can request either player's view. Keep opponent bots separated from that coordinator if hidden-information isolation matters.
 
@@ -132,6 +132,7 @@ The implementation uses **Rust + Macroquad**, with a pure Rust rules layer separ
 |---|---|
 | `src/main.rs` | Screens, input, selection, match flow, and preferences |
 | `src/game.rs` | Deterministic game state, legal actions, priority, effect execution, and AI |
+| `src/deck.rs` / `src/deck_editor.rs` | Constructed-deck validation, native editor, and separate saved lists |
 | `src/cards.rs` | Card facts, official text, and preset compositions |
 | `src/battlefields.rs` | Four official battlefield choices and their triggers or damage modifier |
 | `src/legends.rs` | Four legend powers, optional trigger costs, and combat bonuses |
@@ -170,12 +171,12 @@ Run the native UI smoke check on a graphical desktop, isolating its test prefere
 XDG_DATA_HOME=/tmp/local-rift-ui-smoke-data ./run.sh --ui-smoke
 ```
 
-It clicks through setup, mulligan, deployment, board selection, group movement, priority, the inspector, advice/settings, restarting with a different deck, legend and gear resource abilities, the trash browser, empty-card choices, victory replay, on-play targets, separate Repeat targets, manual combat target order, journal navigation, and the second-player opening. It also exercises drag/drop and cancellation, multi-target staging, long-text scrolling, rune activation, attached gear previews, battlefield inspection, and opponent-trash browsing. The `--small` option can also exercise scaled coordinates. Apply the graphics-library workaround above if this host requires it.
+It clicks through setup, mulligan, deployment, board selection, group movement, priority, the inspector, advice/settings, restarting with a different deck, legend and gear resource abilities, the trash browser, empty-card choices, victory replay, on-play targets, separate Repeat targets, manual combat target order, journal navigation, and the second-player opening. It also exercises the saved deck editor, invalid-save preservation, custom lists for both seats, new-card deployment, printed/granted Flow selection, staged battlefield order, drag/drop and cancellation, multi-target staging, long-text scrolling, rune activation, attached gear previews, battlefield inspection, and opponent-trash browsing. The `--small` option can also exercise scaled coordinates. Apply the graphics-library workaround above if this host requires it.
 
-Verified on October 24, 2026: **183 automated Rust tests, 4,096 simulated games, all 16 matchups through the JSON bot process, and 106-step native interaction checks at 1440×900 and 1152×720.** Formatting and Clippy with warnings denied pass. The Nix package builds and passes its tests and simulation check; its packaged client and bot API also run successfully on x86-64 Linux. The simulation covers both starting positions for all pairings and both AI levels.
+Verified on October 24, 2026: **256 automated Rust tests, 8 importer tests, 4,096 preset games, 32 additional custom-deck games with per-action conservation checks, all 16 preset matchups through the JSON bot process, and 167-step native interaction checks at 1440×900 and 1152×720.** Formatting and Clippy with warnings denied pass. The Nix package builds and passes its tests and simulation check; its packaged client and bot API also run successfully on x86-64 Linux. The simulation covers both starting positions for all pairings and both AI levels.
 
 These tests verify implemented behavior and application consistency; they do not certify official rules compliance.
 
 ## Artwork and attribution
 
-The 69 bundled card thumbnails come from Riot's official card gallery. Riftbound, its characters, card names, and artwork are Riot Games property. This personal offline prototype is unaffiliated with Riot Games. The tabletop scenery and Mote are drawn procedurally. The two battlefield panels show the selected official fields and their full effect text. See [SOURCES.md](docs/SOURCES.md) for attribution and exact source URLs.
+The 81 bundled card thumbnails come from Riot's official card gallery. Riftbound, its characters, card names, and artwork are Riot Games property. This personal offline prototype is unaffiliated with Riot Games. The tabletop scenery and Mote are drawn procedurally. The two battlefield panels show the selected official fields and their full effect text. See [SOURCES.md](docs/SOURCES.md) for attribution and exact source URLs.

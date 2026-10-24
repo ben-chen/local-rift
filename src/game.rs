@@ -6,6 +6,7 @@
 
 use crate::battlefields::{BattlefieldAbility, default_battlefield};
 use crate::cards::{CardDef, CardId, CardKind, DeckPreset, Domain, cards, presets};
+use crate::deck::CustomDeck;
 use crate::gear::GearState;
 use crate::hidden::HiddenCard;
 use crate::legends::{LegendAbility, LegendState, LegendTrigger};
@@ -49,12 +50,16 @@ pub enum Action {
         repeat: bool,
         accelerate: bool,
         bonus: bool,
+        flow: Option<FlowSource>,
     },
     PlaceToken {
         lane: Option<usize>,
     },
     ChooseResolutionGroup {
         index: usize,
+    },
+    ChooseBattlefield {
+        lane: usize,
     },
     SetOptionalDiscount {
         power: u8,
@@ -237,6 +242,26 @@ pub struct PlayOptions {
     pub bonus: bool,
 }
 
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum FlowSource {
+    Printed,
+    Granted,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct FlowOption {
+    pub source: FlowSource,
+    pub energy: u8,
+    pub power: u8,
+    pub colored: bool,
+}
+
+#[derive(Clone, Copy, Debug, Default)]
+struct TrashOptions {
+    play: PlayOptions,
+    flow: Option<FlowSource>,
+}
+
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct ChainItem {
     pub id: u32,
@@ -265,6 +290,11 @@ pub struct Showdown {
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Decision {
+    BattlefieldOrder {
+        player: usize,
+        lanes: Vec<usize>,
+        combat: bool,
+    },
     OptionalPlay {
         player: usize,
         card_id: CardId,
@@ -403,7 +433,8 @@ pub enum CardSupport {
 impl Decision {
     pub fn player(&self) -> usize {
         match self {
-            Self::OptionalPlay { player, .. }
+            Self::BattlefieldOrder { player, .. }
+            | Self::OptionalPlay { player, .. }
             | Self::TokenPlacement { player, .. }
             | Self::ResolutionTargets { player, .. }
             | Self::OrderTriggers { player, .. }
@@ -554,6 +585,8 @@ pub struct Game {
     silenced: [bool; 2],
     cards_played: [u16; 2],
     pub(crate) selected_decks: [usize; 2],
+    custom_decks: [Option<CustomDeck>; 2],
+    ai_mulligan: bool,
     rng: Rng,
     pub(crate) next_unit_id: u32,
     turns_taken: [u32; 2],
@@ -616,6 +649,7 @@ impl Game {
             .collect();
         game.mulligan_player(1, &choices)
             .expect("valid AI opening hand");
+        game.ai_mulligan = true;
         game
     }
 
@@ -626,31 +660,67 @@ impl Game {
         seed: u64,
         difficulty: Difficulty,
     ) -> Self {
+        let last = presets().len() - 1;
+        Self::new_with_custom(
+            [player_deck.min(last), ai_deck.min(last)],
+            [None, None],
+            seed,
+            difficulty,
+            false,
+        )
+        .expect("valid bundled presets")
+    }
+
+    /// A validated constructed deck may replace either seat's preset. Keeping
+    /// `ai_mulligan` false leaves both opening hands untouched for external bots.
+    pub fn new_with_custom(
+        preset_indices: [usize; 2],
+        custom_decks: [Option<CustomDeck>; 2],
+        seed: u64,
+        difficulty: Difficulty,
+        ai_mulligan: bool,
+    ) -> Result<Self, String> {
         let catalog = cards();
         let presets = presets();
-        assert!(!presets.is_empty(), "at least one deck preset is required");
-        let selected_decks = [
-            player_deck.min(presets.len() - 1),
-            ai_deck.min(presets.len() - 1),
-        ];
+        if preset_indices.iter().any(|&index| index >= presets.len()) {
+            return Err("Choose an available preset.".into());
+        }
+        for deck in custom_decks.iter().flatten() {
+            deck.validate()?;
+        }
+        let selected_decks = std::array::from_fn(|player| {
+            custom_decks[player]
+                .as_ref()
+                .map_or(preset_indices[player], |deck| deck.legend)
+        });
         let mut rng = Rng::new(seed);
-        let players = selected_decks.map(|index| {
-            let preset = &presets[index];
+        let players = std::array::from_fn(|player| {
+            let preset = &presets[selected_decks[player]];
+            let custom = custom_decks[player].as_ref();
+            let chosen_champion =
+                custom.map_or(preset.chosen_champion, |deck| deck.chosen_champion);
             let mut deck = Vec::new();
-            for &(id, count) in &preset.cards {
+            for &(id, count) in custom.map_or(&preset.cards, |deck| &deck.cards) {
                 assert!(id < catalog.len(), "preset references an unknown card");
                 deck.extend(std::iter::repeat_n(id, count as usize));
             }
-            // The 40-card list includes the chosen champion, which begins in
-            // its own public zone rather than in the 39-card main deck.
+            // The main-deck count includes the chosen champion, which begins
+            // in its own public zone.
             let champion = deck
                 .iter()
-                .position(|&id| id == preset.chosen_champion)
+                .position(|&id| id == chosen_champion)
                 .map(|index| deck.remove(index));
             rng.shuffle(&mut deck);
             let mut rune_deck = Vec::with_capacity(12);
-            for (domain, count) in preset.domains.into_iter().zip(preset.rune_counts) {
-                rune_deck.extend(std::iter::repeat_n(domain, count as usize));
+            if let Some(custom) = custom {
+                for (domain, count) in ALL_DOMAINS.into_iter().zip(custom.runes) {
+                    rune_deck.extend(std::iter::repeat_n(domain, usize::from(count)));
+                }
+            } else {
+                // Preserve the original preset shuffle ordering for seeded replays.
+                for (domain, count) in preset.domains.into_iter().zip(preset.rune_counts) {
+                    rune_deck.extend(std::iter::repeat_n(domain, count as usize));
+                }
             }
             rng.shuffle(&mut rune_deck);
             let mut hand = Vec::with_capacity(4);
@@ -660,7 +730,7 @@ impl Game {
                 }
             }
             PlayerState {
-                name: preset.champion.to_string(),
+                name: custom.map_or_else(|| preset.champion.to_string(), |deck| deck.name.clone()),
                 deck,
                 hand,
                 discard: Vec::new(),
@@ -681,7 +751,7 @@ impl Game {
             }
         });
         let legend = selected_decks.map(|i| LegendState::new(presets[i].chosen_champion));
-        Self {
+        let mut game = Self {
             catalog,
             presets,
             players,
@@ -704,7 +774,8 @@ impl Game {
             showdown: None,
             decision: None,
             legend,
-            battlefields: selected_decks.map(default_battlefield),
+            battlefields: std::array::from_fn(|player|custom_decks[player].as_ref()
+                .map_or_else(||default_battlefield(selected_decks[player]),|deck|deck.battlefield)),
             empowered_units: Vec::new(),
             buffed_units: Vec::new(),
             optional_power_discount: [0;2],
@@ -732,21 +803,43 @@ impl Game {
             silenced: [false; 2],
             cards_played: [0; 2],
             selected_decks,
+            custom_decks,
+            ai_mulligan,
             rng,
             next_unit_id: 1,
             turns_taken: [0; 2],
             ai_steps_this_turn: 0,
+        };
+        if ai_mulligan {
+            let choices: Vec<_> = game.players[1]
+                .hand
+                .iter()
+                .enumerate()
+                .filter(|(_, id)| game.catalog[**id].cost > 3)
+                .map(|(i, _)| i)
+                .take(2)
+                .collect();
+            game.mulligan_player(1, &choices)?;
         }
+        Ok(game)
+    }
+
+    pub fn custom_deck(&self, player: usize) -> Option<&CustomDeck> {
+        self.custom_decks.get(player).and_then(Option::as_ref)
     }
 
     pub fn rematch(&mut self, seed: u64) {
         let first_player = self.first_player;
-        *self = Self::new(
-            self.selected_decks[0],
-            self.selected_decks[1],
+        let battlefields = self.battlefields;
+        *self = Self::new_with_custom(
+            self.selected_decks,
+            self.custom_decks.clone(),
             seed,
             self.difficulty,
-        );
+            self.ai_mulligan,
+        )
+        .expect("previously validated decks");
+        self.battlefields = battlefields;
         self.choose_starting_player(first_player)
             .expect("previous starting player is valid");
     }
@@ -897,6 +990,12 @@ impl Game {
     }
 
     pub fn unit_might(&self, unit: &Unit) -> u8 {
+        self.actual_unit_might(unit).clamp(0, 255) as u8
+    }
+
+    // CR143.2.c.1: references treat negative Might as zero, but calculations
+    // of increases/decreases (including Swap) use the actual signed value.
+    fn actual_unit_might(&self, unit: &Unit) -> i16 {
         let base = if unit.token {
             0
         } else {
@@ -916,7 +1015,7 @@ impl Game {
         } else {
             0
         };
-        (base as i16
+        base as i16
             + unit.buff as i16
             + unit.temporary_buff
             + assault
@@ -926,8 +1025,7 @@ impl Game {
                 0
             }
             + self.gear_might_bonus(unit.id) as i16
-            + self.legend_might_bonus(unit) as i16)
-            .clamp(0, 255) as u8
+            + self.legend_might_bonus(unit) as i16
     }
 
     pub fn lane_might(&self, player: usize, lane: usize) -> u16 {
@@ -985,6 +1083,7 @@ impl Game {
                     | Action::ChooseDeathReplacement { .. }
                     | Action::OrderTrigger { .. }
                     | Action::ChooseResolutionGroup { .. }
+                    | Action::ChooseBattlefield { .. }
                     | Action::PlaceToken { .. }
             )
             && !(self.resource_payment_pending()
@@ -1020,20 +1119,25 @@ impl Game {
                 repeat,
                 accelerate,
                 bonus,
+                flow,
             } => self.play_from_trash_mode(
                 trash_index,
                 lane,
                 targets,
                 false,
-                PlayOptions {
-                    repeat,
-                    accelerate,
-                    bonus,
+                TrashOptions {
+                    play: PlayOptions {
+                        repeat,
+                        accelerate,
+                        bonus,
+                    },
+                    flow,
                 },
                 repeat_targets,
             )?,
             Action::PlaceToken { lane } => self.place_token(lane)?,
             Action::ChooseResolutionGroup { index } => self.choose_resolution_group(index)?,
+            Action::ChooseBattlefield { lane } => self.choose_battlefield_order(lane)?,
             Action::SetOptionalDiscount { power } => {
                 let count = self.players[player]
                     .units
@@ -1391,6 +1495,14 @@ impl Game {
     }
 
     fn on_unit_played(&mut self, player: usize, unit_id: u32) {
+        if let Some(lane) = self.players[player]
+            .units
+            .iter()
+            .find(|unit| unit.id == unit_id)
+            .and_then(|unit| unit.lane)
+        {
+            self.stage_entry(lane, player);
+        }
         // Tokens are played units, although they are not played cards.
         let vexes = self.players[1 - player]
             .units
@@ -1408,6 +1520,7 @@ impl Game {
     }
 
     fn open_showdown(&mut self, lane: usize, attacker: usize) {
+        self.pending_entries.retain(|&(field, _)| field != lane);
         self.showdown = Some(Showdown {
             lane,
             attacker,
@@ -1417,6 +1530,82 @@ impl Game {
         });
         self.priority_player = self.chain.last().map_or(attacker, |item| item.player);
         self.push_log(format!("Battlefield {} showdown opens. Action and Reaction cards are legal; both players must pass to continue.", lane + 1));
+    }
+
+    // Contested belongs to the first entering player, independently of the
+    // chain's initiator and the turn player (CR190.3.a.1, 345, 466.2.c.1).
+    fn stage_entry(&mut self, lane: usize, contender: usize) {
+        if self.battlefield_owner[lane] != Some(contender)
+            && !self
+                .showdown
+                .as_ref()
+                .is_some_and(|window| window.lane == lane)
+            && !self.pending_entries.iter().any(|&(field, _)| field == lane)
+        {
+            self.pending_entries.push((lane, contender));
+        }
+    }
+
+    fn reconcile_staged_battlefields(&mut self) {
+        for (lane, contender) in self.pending_entries.clone() {
+            if self.lane_count(contender, lane) == 0 {
+                self.pending_entries.retain(|&(field, _)| field != lane);
+                let other = 1 - contender;
+                if self.lane_count(other, lane) > 0 {
+                    self.stage_entry(lane, other);
+                }
+            }
+        }
+    }
+
+    fn open_staged_battlefield(&mut self) -> bool {
+        self.reconcile_staged_battlefields();
+        // A non-combat showdown is selected before any staged combat. Within
+        // either class the turn player chooses, not the Contested applier.
+        for combat in [false, true] {
+            let mut lanes: Vec<_> = self
+                .pending_entries
+                .iter()
+                .filter_map(|&(lane, _)| (self.contested(lane) == combat).then_some(lane))
+                .collect();
+            lanes.sort_unstable();
+            if lanes.len() > 1 {
+                self.decision = Some(Decision::BattlefieldOrder {
+                    player: self.active,
+                    lanes,
+                    combat,
+                });
+                return true;
+            }
+            if let Some(&lane) = lanes.first() {
+                let (_, contender) = self
+                    .pending_entries
+                    .iter()
+                    .find(|&&(field, _)| field == lane)
+                    .copied()
+                    .unwrap();
+                self.open_showdown(lane, contender);
+                return true;
+            }
+        }
+        false
+    }
+
+    fn choose_battlefield_order(&mut self, lane: usize) -> Result<(), String> {
+        let Some(Decision::BattlefieldOrder { lanes, combat, .. }) = &self.decision else {
+            return Err("There is no pending battlefield order choice.".into());
+        };
+        if !lanes.contains(&lane) || self.contested(lane) != *combat {
+            return Err("Choose one of the staged battlefields shown.".into());
+        }
+        let contender = self
+            .pending_entries
+            .iter()
+            .find_map(|&(field, player)| (field == lane).then_some(player))
+            .ok_or("That battlefield is no longer staged.")?;
+        self.decision = None;
+        self.open_showdown(lane, contender);
+        Ok(())
     }
 
     fn pass(&mut self) -> Result<(), String> {
@@ -1736,15 +1925,11 @@ impl Game {
         if self.winner.is_some() {
             return;
         }
-        if let Some(lane) = self.showdown.as_ref().map(|w| w.lane)
-            && self.contested(lane)
-        {
-            self.showdown.as_mut().unwrap().combat = true;
-        }
         self.remove_defeated();
         if matches!(self.decision, Some(Decision::DeathReplacement { .. })) {
             return;
         }
+        self.reconcile_staged_battlefields();
         if self.pending_combat_cleanup.is_some() {
             self.finish_combat_cleanup();
             return;
@@ -1771,7 +1956,28 @@ impl Game {
             self.priority_player = item.player;
             return;
         }
+        // CR323.5–6: staged fields do not retain an absent controller in an
+        // open state. Only an ongoing showdown/combat preserves that control.
+        for lane in 0..BATTLEFIELDS {
+            if !self
+                .showdown
+                .as_ref()
+                .is_some_and(|window| window.lane == lane)
+                && self.battlefield_owner[lane]
+                    .is_some_and(|owner| self.lane_count(owner, lane) == 0)
+            {
+                self.battlefield_owner[lane] = None;
+            }
+        }
+        self.cleanup_lost_hidden();
         let initiator = self.chain_initiator.take();
+        // CR323.13: a non-combat showdown becomes combat only in Showdown
+        // Open State, after the chain and pending finalizations finish.
+        if let Some(lane) = self.showdown.as_ref().map(|window| window.lane)
+            && self.contested(lane)
+        {
+            self.showdown.as_mut().unwrap().combat = true;
+        }
         if let Some(showdown) = &mut self.showdown {
             if let Some(player) = initiator {
                 showdown.focus = 1 - player;
@@ -1780,22 +1986,19 @@ impl Game {
             self.priority_player = showdown.focus;
         } else {
             self.priority_player = self.active;
-            while let Some((lane, attacker)) = self.pending_entries.first().copied() {
-                self.pending_entries.remove(0);
-                if self.lane_count(attacker, lane) > 0
-                    && (self.battlefield_owner[lane] != Some(attacker) || self.contested(lane))
+            // Reconcile externally restored board positions too; real plays
+            // record the Contested applier when each unit enters the field.
+            for lane in 0..BATTLEFIELDS {
+                if self.contested(lane)
+                    && !self.pending_entries.iter().any(|&(field, _)| field == lane)
                 {
-                    self.open_showdown(lane, attacker);
-                    return;
+                    let contender =
+                        self.battlefield_owner[lane].map_or(self.active, |owner| 1 - owner);
+                    self.stage_entry(lane, contender);
                 }
             }
-            // A legal Ambush or special deployment (for example Rengar) can
-            // introduce opposing units without using a standard move.
-            for lane in 0..BATTLEFIELDS {
-                if self.contested(lane) {
-                    self.open_showdown(lane, initiator.unwrap_or(self.active));
-                    return;
-                }
+            if self.open_staged_battlefield() {
+                return;
             }
             for lane in 0..BATTLEFIELDS {
                 self.refresh_control(lane);
@@ -1823,7 +2026,8 @@ impl Game {
         }
         if matches!(
             decision,
-            Decision::TokenPlacement { .. }
+            Decision::BattlefieldOrder { .. }
+                | Decision::TokenPlacement { .. }
                 | Decision::ResolutionTargets { .. }
                 | Decision::OrderTriggers { .. }
                 | Decision::OnPlayTarget { .. }
@@ -1896,7 +2100,8 @@ impl Game {
                     );
                 }
             }
-            Decision::TokenPlacement { .. }
+            Decision::BattlefieldOrder { .. }
+            | Decision::TokenPlacement { .. }
             | Decision::ResolutionTargets { .. }
             | Decision::OrderTriggers { .. }
             | Decision::OnPlayTarget { .. }
@@ -2012,9 +2217,14 @@ impl Game {
         };
         if !self.counter_target_valid(item.player, item.card_id, chain_id) {
             self.push_log(format!(
-                "{} has no legal target and does nothing.",
+                "{} has no legal counter target.",
                 self.catalog[item.card_id].name
             ));
+            // Abandon's Predict is independent of the counter instruction.
+            // Mistargeting only negates the impossible instruction (359.3.e.5).
+            if item.card_id == 1 {
+                self.predict(item.player);
+            }
             return;
         }
         match self.catalog[item.card_id].name {
@@ -2474,11 +2684,7 @@ impl Game {
         self.on_move(player, unit_id, b);
         self.on_move(player, other, a);
         for lane in [a, b].into_iter().flatten() {
-            if self.battlefield_owner[lane] != Some(player)
-                && !self.pending_entries.contains(&(lane, player))
-            {
-                self.pending_entries.push((lane, player));
-            }
+            self.stage_entry(lane, player);
         }
         for lane in [a, b].into_iter().flatten() {
             self.refresh_control(lane);
@@ -3112,7 +3318,7 @@ impl Game {
             lane,
             target.into_iter().collect(),
             true,
-            PlayOptions::default(),
+            TrashOptions::default(),
             Vec::new(),
         )
     }
@@ -3128,9 +3334,39 @@ impl Game {
             lane,
             provided,
             false,
-            PlayOptions::default(),
+            TrashOptions::default(),
             Vec::new(),
         )
+    }
+
+    /// The actual Flow instances on this trash object. Listing an instance does
+    /// not waive normal timing, targets, or any additional costs.
+    pub fn flow_costs(&self, player: usize, trash_index: usize) -> Vec<FlowOption> {
+        let Some(state) = self.players.get(player) else {
+            return Vec::new();
+        };
+        let Some(&id) = state.discard.get(trash_index) else {
+            return Vec::new();
+        };
+        let card = self.catalog[id];
+        let mut choices = Vec::new();
+        if self.temporary_flow[player].contains(&trash_index) {
+            choices.push(FlowOption {
+                source: FlowSource::Granted,
+                energy: card.cost,
+                power: card.power_cost,
+                colored: true,
+            });
+        }
+        if let Some(cost) = rules::flow_cost(id) {
+            choices.push(FlowOption {
+                source: FlowSource::Printed,
+                energy: cost.energy,
+                power: cost.any_power,
+                colored: false,
+            });
+        }
+        choices
     }
 
     fn pay_trash_cost(
@@ -3165,9 +3401,11 @@ impl Game {
         lane: Option<usize>,
         provided: Vec<Target>,
         automatic: bool,
-        options: PlayOptions,
+        options: TrashOptions,
         repeat_provided: Vec<Target>,
     ) -> Result<(), String> {
+        let flow_source = options.flow;
+        let options = options.play;
         let player = self.priority();
         let id = *self.players[player]
             .discard
@@ -3180,15 +3418,25 @@ impl Game {
         if free_all && lane.is_some() {
             return Err("Matriarch plays the unit at your base.".into());
         }
-        let flow = if decision.is_none() {
-            if self.temporary_flow[player].contains(&trash_index) {
-                Some((card.cost, card.power_cost, true))
+        let flows = self.flow_costs(player, trash_index);
+        if flow_source.is_some() && decision.is_some() {
+            return Err("Choose a Flow cost only when playing from trash using Flow.".into());
+        }
+        let chosen_flow = if decision.is_none() {
+            if let Some(source) = flow_source {
+                Some(
+                    *flows
+                        .iter()
+                        .find(|f| f.source == source)
+                        .ok_or("That Flow instance is not available on this trash card.")?,
+                )
             } else {
-                rules::flow_cost(id).map(|cost| (cost.energy, cost.any_power, false))
+                flows.first().copied()
             }
         } else {
             None
         };
+        let flow = chosen_flow.map(|f| (f.energy, f.power, f.colored));
         match decision {
             Some(Decision::LastRites { .. }) if card.kind == CardKind::Unit => {}
             Some(Decision::ReplaySpell { .. })
@@ -3224,7 +3472,7 @@ impl Game {
             Vec::new()
         };
         let extra = self.optional_cost(player, id, options)?;
-        let base = flow.unwrap_or((
+        let mut base = flow.unwrap_or((
             if free_energy || free_all {
                 0
             } else {
@@ -3235,6 +3483,22 @@ impl Game {
         ));
         let mut all_targets = targets.clone();
         all_targets.extend(&repeated);
+        // Convenience callers still get a legal available instance if the
+        // preferred granted cost is unpayable. An explicit choice never falls back.
+        if flow_source.is_none() && flow.is_some() {
+            for choice in &flows {
+                let cost = (choice.energy, choice.power, choice.colored);
+                let mut probe = self.clone();
+                probe.remove_from_trash(player, trash_index);
+                if probe
+                    .pay_trash_cost(player, id, cost, extra, &all_targets)
+                    .is_ok()
+                {
+                    base = cost;
+                    break;
+                }
+            }
+        }
         let mut cost_probe = self.clone();
         cost_probe.remove_from_trash(player, trash_index);
         cost_probe.pay_trash_cost(player, id, base, extra, &all_targets)?;
@@ -3339,6 +3603,10 @@ impl Game {
         if let Some(decision) = &self.decision {
             let player = decision.player();
             let mut actions = match decision {
+                Decision::BattlefieldOrder { lanes, .. } => lanes
+                    .iter()
+                    .map(|&lane| Action::ChooseBattlefield { lane })
+                    .collect(),
                 Decision::TokenPlacement { player, .. } => {
                     std::iter::once(Action::PlaceToken { lane: None })
                         .chain(
@@ -3808,6 +4076,9 @@ impl Game {
             _ => (0, 0),
         };
         if maximum == 0 {
+            if !automatic && !provided.is_empty() {
+                return Err("This card does not choose targets.".into());
+            }
             return Ok(Vec::new());
         }
         if provided.len() > maximum {
@@ -4073,11 +4344,8 @@ impl Game {
             self.ready_unit(player, unit_id);
         }
         self.on_move(player, unit_id, destination);
-        if let Some(lane) = destination
-            && self.battlefield_owner[lane] != Some(player)
-            && !self.pending_entries.contains(&(lane, player))
-        {
-            self.pending_entries.push((lane, player));
+        if let Some(lane) = destination {
+            self.stage_entry(lane, player);
         }
         if let Some(old) = old {
             self.refresh_control(old);
@@ -4357,8 +4625,8 @@ impl Game {
             }
             OfficialEffect::SwapMight => {
                 if valid.len() == 2 && self.target_lane(valid[0]) == self.target_lane(valid[1]) {
-                    let first = self.unit_might(self.unit_ref(valid[0]).unwrap()) as i16;
-                    let second = self.unit_might(self.unit_ref(valid[1]).unwrap()) as i16;
+                    let first = self.actual_unit_might(self.unit_ref(valid[0]).unwrap());
+                    let second = self.actual_unit_might(self.unit_ref(valid[1]).unwrap());
                     self.modify_might(valid[0], second - first, 0);
                     self.modify_might(valid[1], first - second, 0);
                 }
@@ -7658,6 +7926,7 @@ mod tests {
         };
         let card = g.catalog[50];
         g.apply(Action::PlayFromTrashOptions {
+            flow: None,
             trash_index: 0,
             lane: None,
             targets: vec![target],
@@ -7686,6 +7955,7 @@ mod tests {
         });
         let card = g.catalog[49];
         g.apply(Action::PlayFromTrashOptions {
+            flow: None,
             trash_index: 0,
             lane: None,
             targets: vec![],

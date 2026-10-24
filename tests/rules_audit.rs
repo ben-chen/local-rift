@@ -54,6 +54,109 @@ fn finish_chain(game: &mut Game) {
 }
 
 #[test]
+fn abandon_still_predicts_after_its_counter_target_leaves_the_chain() {
+    // CR359.3.e.1/e.5: an impossible counter instruction does not negate the
+    // independent Predict instruction that follows it.
+    let mut game = position();
+    game.players[0].units.push(unit(100, 59, None));
+    game.players[0].hand = vec![7, 6]; // Discipline, then Defy our own spell.
+    game.players[1].hand = vec![1]; // Abandon.
+    game.players[1].deck = vec![69, 70];
+    game.apply(Action::PlayCardWithTargets {
+        hand_index: 0,
+        lane: None,
+        targets: vec![Target::Unit {
+            player: 0,
+            unit_id: 100,
+        }],
+    })
+    .unwrap();
+    let original = game.chain.last().unwrap().id;
+    game.apply(Action::Pass).unwrap();
+    game.apply(Action::PlayCardWithTargets {
+        hand_index: 0,
+        lane: None,
+        targets: vec![Target::Spell { chain_id: original }],
+    })
+    .unwrap();
+    game.apply(Action::Pass).unwrap();
+    game.apply(Action::PlayCardWithTargets {
+        hand_index: 0,
+        lane: None,
+        targets: vec![Target::Spell { chain_id: original }],
+    })
+    .unwrap();
+    game.apply(Action::Pass).unwrap();
+    game.apply(Action::Pass).unwrap();
+    assert!(!game.chain.iter().any(|item| item.id == original));
+    game.apply(Action::Pass).unwrap();
+    game.apply(Action::Pass).unwrap();
+    assert_eq!(
+        game.decision,
+        Some(Decision::Predict {
+            player: 1,
+            card_id: 70
+        })
+    );
+    game.apply(Action::Choose { accept: true }).unwrap();
+    assert_eq!(game.players[1].deck, vec![70, 69]);
+}
+
+#[test]
+fn switcheroo_uses_actual_negative_might_when_computing_its_modifiers() {
+    // CR143.2.c.1 and434.1.b: calculating a Might change uses the actual
+    // negative value, even though references and combat treat it as zero.
+    let mut game = position();
+    game.players[0].units = vec![unit(100, 72, Some(0)), unit(101, 70, Some(0))];
+    game.battlefield_owner[0] = Some(0);
+    game.players[0].hand = vec![79, 44, 76];
+    game.apply(Action::PlayCardWithTargets {
+        hand_index: 0,
+        lane: None,
+        targets: vec![Target::Unit {
+            player: 0,
+            unit_id: 100,
+        }],
+    })
+    .unwrap();
+    finish_chain(&mut game);
+    assert_eq!(game.unit_might(&game.players[0].units[0]), 0); // Actual -7.
+    game.apply(Action::PlayCardWithTargets {
+        hand_index: 0,
+        lane: None,
+        targets: vec![
+            Target::Unit {
+                player: 0,
+                unit_id: 100,
+            },
+            Target::Unit {
+                player: 0,
+                unit_id: 101,
+            },
+        ],
+    })
+    .unwrap();
+    finish_chain(&mut game);
+    assert_eq!(game.unit_might(&game.players[0].units[0]), 10);
+    assert_eq!(game.unit_might(&game.players[0].units[1]), 0); // Actual -7 now.
+    game.apply(Action::PlayCardWithTargets {
+        hand_index: 0,
+        lane: None,
+        targets: vec![Target::Unit {
+            player: 0,
+            unit_id: 101,
+        }],
+    })
+    .unwrap();
+    finish_chain(&mut game);
+    assert_eq!(
+        game.unit_might(&game.players[0].units[1]),
+        0,
+        "+7 must only erase the -7 deficit"
+    );
+}
+
+#[test]
 fn first_burnout_finishes_the_draw_before_cleanup_awards_victory() {
     // CR432.2.d completes the original draw. Immediate victory is restricted
     // to subsequent repeated burnouts (432.3.c.1); otherwise use CR323.1.
