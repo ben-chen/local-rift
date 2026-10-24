@@ -291,6 +291,9 @@ impl App {
 
 pub(super) fn cost_label(rule: &ActivatedRule) -> String {
     let mut costs = Vec::new();
+    if rule.disempower_source {
+        costs.push("Disempower source".to_owned());
+    }
     if rule.energy > 0 {
         costs.push(format!("{} energy", rule.energy));
     }
@@ -324,6 +327,41 @@ pub(super) fn cost_label(rule: &ActivatedRule) -> String {
         costs.join(" · ")
     }
 }
+pub(super) fn source_state(game: &Game, source: AbilitySource) -> String {
+    let (id, ready, attached) = match source {
+        AbilitySource::Unit { player, unit_id } => {
+            let Some(unit) = game.players[player]
+                .units
+                .iter()
+                .find(|unit| unit.id == unit_id)
+            else {
+                return "Source left play".into();
+            };
+            (unit.id, unit.ready, false)
+        }
+        AbilitySource::Gear { player, gear_id } => {
+            let Some(gear) = game.players[player]
+                .gear
+                .iter()
+                .find(|gear| gear.id == gear_id)
+            else {
+                return "Source left play".into();
+            };
+            (gear.id, gear.ready, gear.attached_to.is_some())
+        }
+    };
+    format!(
+        "{} · {}{}",
+        if ready { "Ready" } else { "Exhausted" },
+        if game.unit_empowered(id) {
+            "Empowered"
+        } else {
+            "Not Empowered"
+        },
+        if attached { " · attached" } else { "" }
+    )
+}
+
 pub(super) fn timing_label(rule: &ActivatedRule) -> &'static str {
     match rule.timing {
         AbilityTiming::Main => "Your open Main Phase",
@@ -655,6 +693,14 @@ impl App {
         }
     }
     pub(super) fn ability_panel(&mut self, source: AbilitySource, index: Option<usize>) {
+        self.ui.ellipsis(
+            &source_state(&self.game, source),
+            1178.0,
+            343.0,
+            212.0,
+            9.0,
+            GOLD,
+        );
         let options = self.source_abilities(source);
         let Some((card_id, _)) = options.first().copied() else {
             self.selection = None;
@@ -682,7 +728,7 @@ impl App {
                 return;
             };
             self.ui
-                .ellipsis(rule.label, 1178.0, 387.0, 212.0, 12.0, GOLD);
+                .wrapped_lines(rule.label, 1178.0, 385.0, 212.0, 11.0, GOLD, 2);
             let deflect: u16 = self
                 .ability_targets
                 .iter()
@@ -703,8 +749,8 @@ impl App {
                 cost_label(rule)
             };
             self.ui
-                .wrapped_lines(&cost, 1178.0, 408.0, 212.0, 10.0, TEXT, 2);
-            self.ui.text(timing_label(rule), 1178.0, 439.0, 10.0, MUTED);
+                .wrapped_lines(&cost, 1178.0, 418.0, 212.0, 9.5, TEXT, 2);
+            self.ui.text(timing_label(rule), 1178.0, 449.0, 9.0, MUTED);
             let status = if source.player() != 0 {
                 "Opponent ability · read only".to_owned()
             } else if self.ability_costs.len() != rule.recycle_count as usize {
@@ -746,7 +792,11 @@ impl App {
                     )
                     .err()
                     .unwrap_or_else(|| {
-                        if rule.conversion_direction().is_some() {
+                        if rule.only_if_not_empowered {
+                            "Empowers this source on resolution. No target is chosen; opponents can respond.".into()
+                        } else if rule.disempower_source {
+                            "Disempower is paid before responses, together with the other costs.".into()
+                        } else if rule.conversion_direction().is_some() {
                             "Exhaust first; choose the conversion amount next. Zero is allowed."
                                 .into()
                         } else if rule.adds_resources() {
@@ -784,7 +834,7 @@ impl App {
                     })
             };
             self.ui
-                .wrapped_lines(&status, 1178.0, 461.0, 212.0, 10.0, TEAL, 2);
+                .wrapped_lines(&status, 1178.0, 468.0, 212.0, 9.5, TEAL, 2);
             let action = if rule.recycle_count > 0 {
                 Action::ActivateAbilityWithCosts {
                     source,
@@ -853,7 +903,7 @@ impl App {
                 let y = 401.0 + slot as f32 * 64.0;
                 if self
                     .ui
-                    .button(Rect::new(1178.0, y, 212.0, 32.0), rule.label, false, true)
+                    .ability_button(Rect::new(1178.0, y, 212.0, 32.0), rule.label)
                 {
                     self.selection = Some(Selection::Ability(source, Some(*index)));
                     self.ability_targets.clear();
@@ -867,7 +917,7 @@ impl App {
                     }
                 }
                 self.ui
-                    .ellipsis(&cost_label(rule), 1178.0, y + 48.0, 212.0, 10.0, MUTED);
+                    .wrapped_lines(&cost_label(rule), 1178.0, y + 45.0, 212.0, 9.5, MUTED, 2);
             }
             if self.ui.button(
                 Rect::new(1178.0, 534.0, 212.0, 27.0),
@@ -904,6 +954,34 @@ mod tests {
             assert_eq!(cost_label(&activated_rules(id)[0]), "exhaust source");
         }
     }
+    #[test]
+    fn empower_costs_remain_distinct_from_effects_and_timing() {
+        for id in [250, 251] {
+            assert_eq!(cost_label(&activated_rules(id)[0]), "exhaust source");
+            assert_eq!(
+                cost_label(&activated_rules(id)[1]),
+                "Disempower source · 1 energy · exhaust source"
+            );
+        }
+        assert_eq!(cost_label(&activated_rules(253)[0]), "2 energy");
+        assert_eq!(
+            cost_label(&activated_rules(252)[0]),
+            "1 energy · exhaust source"
+        );
+        assert_eq!(
+            timing_label(&activated_rules(252)[0]),
+            "Your open Main Phase"
+        );
+        assert_eq!(
+            timing_label(&activated_rules(252)[1]),
+            "Reaction · any priority window"
+        );
+        assert_eq!(
+            cost_label(&activated_rules(246)[0]),
+            "1 energy · 1 Calm power · exhaust source · kill source"
+        );
+    }
+
     #[test]
     fn separate_renata_costs_and_dragonsoul_timing_are_explicit() {
         let renata = activated_rules(239);

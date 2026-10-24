@@ -37,12 +37,31 @@ class OfficialInventoryTests(unittest.TestCase):
     def test_exact_published_scope_and_runtime_gap(self):
         counts = self.snapshot["counts"]
         self.assertEqual((counts["gallery_printings"], counts["unique_gallery_identities"], counts["standard_legal_identities"]), (1408, 1103, 1079))
-        self.assertEqual(counts["implemented_main_cards"], 246)
+        self.assertEqual(counts["implemented_main_cards"], 254)
         self.assertEqual(counts["implemented_legends"], 7)
-        self.assertEqual(counts["unimplemented_legal_identities"], 816)
+        self.assertEqual(counts["unimplemented_legal_identities"], 808)
         for card in self.snapshot["cards"]:
             if card["implementation"]["status"] == "not_implemented":
                 self.assertFalse(card["implementation"]["playable_in_client"])
+
+    def test_activation_batch_preserves_raw_sources_and_explicit_corrections(self):
+        runtime = json.loads((catalog.ROOT / "assets/data/decks.json").read_text())["cards"]
+        ids = ["sfd-046-221", "ogn-184-298", "rad-027-167", "unl-160-219", "ven-054-166", "ven-087-166", "ven-075-166", "ven-077-166"]
+        for index, official_id in enumerate(ids, 246):
+            identity = next(c for c in self.snapshot["cards"] if c["identity"] == official_id)
+            self.assertEqual(identity["implementation"]["runtime_id"], index)
+            self.assertTrue(identity["standard_legal"])
+            self.assertEqual(identity["conflicting_fields"], [])
+        syren = next(c for c in self.snapshot["cards"] if c["identity"] == ids[1])
+        self.assertEqual(runtime[247]["errata_source"], syren["errata"][0]["source_url"])
+        self.assertIn("its base", runtime[247]["official_text"])
+        self.assertIn("your base", runtime[247]["official_text_html"])
+        poro = next(p for p in self.snapshot["printings"] if p["official_id"] == ids[3])
+        self.assertIn("[1 Energy] Might Bird", poro["rules_text"])
+        self.assertEqual(runtime[249]["text_correction"]["raw_gallery_text"], poro["rules_text"])
+        self.assertEqual(runtime[249]["text_correction"]["core_rule"], "377.2.b")
+        self.assertIn("two 1 Might Bird", runtime[249]["official_text"])
+        self.assertEqual(runtime[249]["official_text_html"], poro["rules_html"])
 
     def test_independent_legend_registry_keeps_original_ids_and_adds_no_presets(self):
         legends = catalog.load_legend_manifest()
@@ -62,7 +81,7 @@ class OfficialInventoryTests(unittest.TestCase):
             ("domains", ["Calm", "Body"], "Legend domain mismatch"),
             ("champion", "Kennen", "Legend champion tag mismatch"),
             ("art_url", "https://example.invalid/art.png", "Legend source artwork mismatch"),
-            ("default_champion", 246, "Legend default champion is not a runtime card"),
+            ("default_champion", 254, "Legend default champion is not a runtime card"),
             ("default_champion_official_id", "ogn-117-298", "Legend default champion ID mismatch"),
         ]
         for field, value, message in mutations:

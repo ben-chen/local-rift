@@ -222,8 +222,8 @@ struct App {
     hover_token_candidate: Option<TokenPreview>,
     hover_token: Option<TokenPreview>,
     hover_card: Option<usize>,
-    hover_unit_candidate: Option<(usize, u32)>,
-    hover_unit: Option<(usize, u32)>,
+    hover_object_candidate: Option<(usize, u32)>,
+    hover_object: Option<(usize, u32)>,
     hover_since: f64,
     hover_rect: Option<Rect>,
     hover_scroll: usize,
@@ -355,8 +355,8 @@ impl App {
             hover_token_candidate: None,
             hover_token: None,
             hover_card: None,
-            hover_unit_candidate: None,
-            hover_unit: None,
+            hover_object_candidate: None,
+            hover_object: None,
             hover_since: 0.0,
             hover_rect: None,
             hover_scroll: 0,
@@ -715,7 +715,7 @@ impl App {
         self.field_hover = None;
         self.legend_hover = None;
         self.hover_candidate = None;
-        self.hover_unit_candidate = None;
+        self.hover_object_candidate = None;
         self.hover_token_candidate = None;
         self.drop_zones.clear();
         if self.hover_rect.is_some_and(|r| r.contains(self.ui.mouse()))
@@ -1204,7 +1204,7 @@ impl App {
                 }
                 if self.ui.hover(card_rect) {
                     self.hover_candidate = Some(card_id);
-                    self.hover_unit_candidate = Some((owner, *id));
+                    self.hover_object_candidate = Some((owner, *id));
                     if token {
                         self.hover_token_candidate = Some(TokenPreview {
                             name: unit_name.clone(),
@@ -1747,7 +1747,7 @@ impl App {
             }
             if self.ui.hover(card_face) {
                 self.hover_candidate = Some(unit.card_id);
-                self.hover_unit_candidate = Some((1, unit.id));
+                self.hover_object_candidate = Some((1, unit.id));
             }
             if self.ui.hover(card_face) && self.ui.secondary_pressed() {
                 self.inspect = Some(unit.card_id);
@@ -2386,7 +2386,7 @@ impl App {
             );
             if self.ui.hover(r) {
                 self.hover_candidate = Some(unit.card_id);
-                self.hover_unit_candidate = Some((*owner, unit.id));
+                self.hover_object_candidate = Some((*owner, unit.id));
                 if unit.token {
                     self.hover_token_candidate = Some(TokenPreview {
                         name: self.game.unit_name(unit),
@@ -2723,6 +2723,7 @@ impl App {
                 }
                 if self.ui.hover(r) {
                     self.hover_candidate = Some(gear.card_id);
+                    self.hover_object_candidate = Some((owner, gear.id));
                     if gear.is_gold() {
                         self.hover_token_candidate = Some(TokenPreview {
                             name: "Gold".into(),
@@ -2737,6 +2738,7 @@ impl App {
                         self.notify(GOLD_RULES);
                     } else {
                         self.inspect = Some(gear.card_id);
+                        self.hover_object = Some((owner, gear.id));
                     }
                 }
             }
@@ -3638,7 +3640,14 @@ impl App {
                 gear.card_id
             });
             self.hover_token_candidate = None;
-            self.hover_unit_candidate = None;
+            self.hover_object_candidate = Some((
+                owner,
+                if gears.len() > 1 && self.ui.hover(list) {
+                    gears[1].id
+                } else {
+                    gear.id
+                },
+            ));
         }
         if self.ui.clicked(chip) || (hovered && self.ui.secondary_pressed()) {
             if gears.len() > 1 && self.ui.hover(list) {
@@ -3648,6 +3657,7 @@ impl App {
                 self.hover_rect = None;
             } else {
                 self.inspect = Some(gear.card_id);
+                self.hover_object = Some((owner, gear.id));
             }
         }
         hovered
@@ -3720,6 +3730,7 @@ impl App {
                 true,
             ) {
                 self.inspect = Some(gear.card_id);
+                self.hover_object = Some((owner, gear.id));
                 self.equipment_inspect = None;
             }
         }
@@ -3793,17 +3804,21 @@ impl App {
         self.ui.rect(r, PANEL);
         let art = Rect::new(r.x + 2.0, r.y + 3.0, r.w - 4.0, r.h - 23.0);
         if !token && let Some(tex) = self.art.get(id).and_then(Option::as_ref) {
-            self.ui.image(
-                tex,
-                art,
-                Some(Rect::new(
-                    tex.width() * 0.08,
-                    tex.height() * 0.12,
-                    tex.width() * 0.84,
-                    tex.height() * 0.43,
-                )),
-                WHITE,
+            let bounds = Rect::new(
+                tex.width() * 0.08,
+                tex.height() * 0.12,
+                tex.width() * 0.84,
+                tex.height() * 0.43,
             );
+            // Fill the thumbnail proportionally, staying inside the artwork.
+            let scale = (bounds.w / art.w).min(bounds.h / art.h);
+            let crop = Rect::new(
+                bounds.x + (bounds.w - art.w * scale) / 2.0,
+                bounds.y + (bounds.h - art.h * scale) / 2.0,
+                art.w * scale,
+                art.h * scale,
+            );
+            self.ui.image(tex, art, Some(crop), WHITE);
         } else {
             self.ui.rect(art, Color::new(0.08, 0.20, 0.23, 1.0));
             self.ui
@@ -4167,11 +4182,11 @@ impl App {
         if !inside
             && (self.hover_candidate != self.hover_card
                 || self.hover_token_candidate != self.hover_token
-                || self.hover_unit_candidate != self.hover_unit)
+                || self.hover_object_candidate != self.hover_object)
         {
             self.hover_card = self.hover_candidate;
             self.hover_token = self.hover_token_candidate.clone();
-            self.hover_unit = self.hover_unit_candidate;
+            self.hover_object = self.hover_object_candidate;
             self.hover_since = get_time();
             self.hover_scroll = 0;
             self.hover_rect = None;
@@ -4217,8 +4232,10 @@ impl App {
                 GOLD,
             );
             let live = self
-                .hover_unit
-                .and_then(|(owner, unit_id)| live_unit_description(&self.game, owner, unit_id))
+                .hover_object
+                .and_then(|(owner, object_id)| {
+                    live_object_description(&self.game, owner, object_id, id)
+                })
                 .unwrap_or_else(|| token.rules.clone());
             self.ui.scroll_text(
                 &live,
@@ -4292,10 +4309,9 @@ impl App {
         } else {
             format!("{}\n\nPractice note\n{}", card.official_text, notes)
         };
-        let text = if let Some(live) = self
-            .hover_unit
-            .and_then(|(owner, unit_id)| live_unit_description(&self.game, owner, unit_id))
-        {
+        let text = if let Some(live) = self.hover_object.and_then(|(owner, object_id)| {
+            live_object_description(&self.game, owner, object_id, id)
+        }) {
             format!(
                 "{live}\n\nPRINTED RULES\n{}",
                 if printed.is_empty() {
@@ -6359,10 +6375,9 @@ impl App {
         } else {
             format!("{}\n\nPractice note\n{}", card.official_text, notes)
         };
-        let text = if let Some(live) = self
-            .hover_unit
-            .and_then(|(owner, unit_id)| live_unit_description(&self.game, owner, unit_id))
-        {
+        let text = if let Some(live) = self.hover_object.and_then(|(owner, object_id)| {
+            live_object_description(&self.game, owner, object_id, id)
+        }) {
             format!(
                 "{live}\n\nPRINTED RULES\n{}",
                 if printed.is_empty() {
@@ -6628,6 +6643,82 @@ fn difficulty_description(difficulty: Difficulty) -> &'static str {
     }
 }
 
+/// Keep live status tied to the exact object and printed card being inspected.
+fn live_object_description(
+    game: &Game,
+    owner: usize,
+    object_id: u32,
+    card_id: usize,
+) -> Option<String> {
+    let player = game.players.get(owner)?;
+    if player
+        .units
+        .iter()
+        .any(|unit| unit.id == object_id && unit.card_id == card_id)
+    {
+        live_unit_description(game, owner, object_id)
+    } else if player
+        .gear
+        .iter()
+        .any(|gear| gear.id == object_id && gear.card_id == card_id)
+    {
+        live_gear_description(game, owner, object_id)
+    } else {
+        None
+    }
+}
+
+fn live_gear_description(game: &Game, owner: usize, gear_id: u32) -> Option<String> {
+    let gear = game
+        .players
+        .get(owner)?
+        .gear
+        .iter()
+        .find(|gear| gear.id == gear_id)?;
+    let mut lines = vec![
+        format!(
+            "ON BOARD · {} · {}",
+            if owner == 0 {
+                "Your gear"
+            } else {
+                "Opponent's gear"
+            },
+            if gear.ready { "Ready" } else { "Exhausted" }
+        ),
+        if game.unit_empowered(gear.id) {
+            "EMPOWERED · available for effects or costs that check this state.".into()
+        } else {
+            "Not Empowered.".into()
+        },
+    ];
+    if let Some(unit) = gear
+        .attached_to
+        .and_then(|id| game.players[owner].units.iter().find(|unit| unit.id == id))
+    {
+        lines.push(format!("Attached to {}. Its printed gear abilities are inactive while attached; its equipment effects apply to the bearer.", game.unit_name(unit)));
+    } else {
+        lines.push("Unattached in base.".into());
+    }
+    if gear.token {
+        lines.push(GOLD_RULES.into());
+    } else {
+        for rule in local_rift::activated::activated_rules(gear.card_id) {
+            lines.push(format!(
+                "ABILITY · {}\n{} · {}{}",
+                rule.label,
+                ability_ui::cost_label(rule),
+                ability_ui::timing_label(rule),
+                if rule.only_if_not_empowered {
+                    " · only while not Empowered; no chosen target"
+                } else {
+                    ""
+                }
+            ));
+        }
+    }
+    Some(lines.join("\n\n"))
+}
+
 fn live_unit_description(game: &Game, owner: usize, unit_id: u32) -> Option<String> {
     let unit = game
         .players
@@ -6815,6 +6906,46 @@ mod live_preview_tests {
             banish_on_death: false,
         }
     }
+    #[test]
+    fn live_gear_preview_tracks_instance_state_and_never_leaks_to_another_card() {
+        let mut game = Game::new(3, 2, 7, Difficulty::Easy);
+        for id in [200, 201] {
+            game.players[1].gear.push(GearState {
+                id,
+                card_id: 250,
+                attached_to: None,
+                ready: id == 200,
+                temporary: false,
+                token: false,
+            });
+        }
+        game.empowered_units.push(201);
+        let first = live_object_description(&game, 1, 200, 250).unwrap();
+        let second = live_object_description(&game, 1, 201, 250).unwrap();
+        assert!(first.contains("Opponent's gear · Ready") && first.contains("Not Empowered"));
+        assert!(second.contains("Exhausted") && second.contains("EMPOWERED ·"));
+        assert!(second.contains("Disempower source · 1 energy · exhaust source"));
+        assert!(second.contains("no chosen target"));
+        assert!(live_object_description(&game, 1, 201, 251).is_none());
+        assert_eq!(
+            ability_ui::source_state(
+                &game,
+                AbilitySource::Gear {
+                    player: 1,
+                    gear_id: 201
+                }
+            ),
+            "Exhausted · Empowered"
+        );
+        game.players[1].gear[1].attached_to = Some(100);
+        game.players[1].units.push(unit(100, 238));
+        assert!(
+            live_gear_description(&game, 1, 201)
+                .unwrap()
+                .contains("printed gear abilities are inactive while attached")
+        );
+    }
+
     #[test]
     fn opponent_ability_preview_exposes_both_renata_costs_and_timing() {
         let mut game = Game::new(3, 2, 7, Difficulty::Easy);

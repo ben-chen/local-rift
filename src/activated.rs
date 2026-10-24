@@ -87,13 +87,17 @@ enum AbilityEffect {
     Buff,
     Damage(u8),
     SourceMightDamage,
-    Recruits(u8),
+    Tokens,
     Draw(u8),
     Points(u8),
     AddEnergy(u8),
     Conversion(ConversionDirection),
     EmpowerGear,
-    Mech,
+    EmpowerSource,
+    BuffOrMight(u8),
+    MoveTargetToBase,
+    MightIfSourceEmpowered { base: i16, empowered: i16 },
+    AddEnergyIfSourceEmpowered { base: u8, empowered: u8 },
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -107,6 +111,8 @@ pub struct ActivatedRule {
     pub recycle_count: u8,
     pub recycle_unit_only: bool,
     pub kill_source: bool,
+    pub only_if_not_empowered: bool,
+    pub disempower_source: bool,
     pub requires_battlefield: bool,
     pub targets: AbilityTargets,
     effect: AbilityEffect,
@@ -116,7 +122,9 @@ impl ActivatedRule {
     pub fn adds_resources(&self) -> bool {
         matches!(
             self.effect,
-            AbilityEffect::AddEnergy(_) | AbilityEffect::Conversion(_)
+            AbilityEffect::AddEnergy(_)
+                | AbilityEffect::AddEnergyIfSourceEmpowered { .. }
+                | AbilityEffect::Conversion(_)
         )
     }
     pub fn conversion_direction(&self) -> Option<ConversionDirection> {
@@ -143,6 +151,8 @@ const fn exhaust(
         recycle_count: 0,
         recycle_unit_only: false,
         kill_source: false,
+        only_if_not_empowered: false,
+        disempower_source: false,
         requires_battlefield: false,
         targets,
         effect,
@@ -203,7 +213,7 @@ pub fn activated_rules(card_id: CardId) -> &'static [ActivatedRule] {
                 &[exhaust(
                     "Play three Recruits",
                     AbilityTargets::NONE,
-                    AbilityEffect::Recruits(3),
+                    AbilityEffect::Tokens,
                 )]
             }
         }
@@ -256,6 +266,8 @@ pub fn activated_rules(card_id: CardId) -> &'static [ActivatedRule] {
                 recycle_count: 0,
                 recycle_unit_only: false,
                 kill_source: false,
+                only_if_not_empowered: false,
+                disempower_source: false,
                 requires_battlefield: true,
                 targets: AbilityTargets::NONE,
                 effect: AbilityEffect::Draw(1),
@@ -270,6 +282,8 @@ pub fn activated_rules(card_id: CardId) -> &'static [ActivatedRule] {
                 recycle_count: 0,
                 recycle_unit_only: false,
                 kill_source: false,
+                only_if_not_empowered: false,
+                disempower_source: false,
                 requires_battlefield: true,
                 targets: AbilityTargets::NONE,
                 effect: AbilityEffect::Points(1),
@@ -299,7 +313,7 @@ pub fn activated_rules(card_id: CardId) -> &'static [ActivatedRule] {
                     ..exhaust(
                         "Recycle a unit, play a Mech",
                         AbilityTargets::NONE,
-                        AbilityEffect::Mech,
+                        AbilityEffect::Tokens,
                     )
                 }]
             }
@@ -357,6 +371,153 @@ pub fn activated_rules(card_id: CardId) -> &'static [ActivatedRule] {
                 }]
             }
         }
+        246 => {
+            const {
+                &[ActivatedRule {
+                    energy: 1,
+                    power: 1,
+                    domain: Some(Domain::Calm),
+                    kill_source: true,
+                    ..exhaust(
+                        "Kill this: draw 1",
+                        AbilityTargets::NONE,
+                        AbilityEffect::Draw(1),
+                    )
+                }]
+            }
+        }
+        247 => {
+            const {
+                &[ActivatedRule {
+                    energy: 1,
+                    ..exhaust(
+                        "Move a friendly battlefield unit to its base",
+                        AbilityTargets {
+                            allegiance: Allegiance::Friendly,
+                            ..AbilityTargets::FIELD
+                        },
+                        AbilityEffect::MoveTargetToBase,
+                    )
+                }]
+            }
+        }
+        248 => {
+            const {
+                &[exhaust(
+                    "Buff a unit; if already buffed, +2 Might this turn",
+                    AbilityTargets::UNIT,
+                    AbilityEffect::BuffOrMight(2),
+                )]
+            }
+        }
+        249 => {
+            const {
+                &[ActivatedRule {
+                    requires_battlefield: true,
+                    ..exhaust(
+                        "Play two Birds with Deflect",
+                        AbilityTargets::NONE,
+                        AbilityEffect::Tokens,
+                    )
+                }]
+            }
+        }
+        250 => {
+            const {
+                &[
+                    ActivatedRule {
+                        only_if_not_empowered: true,
+                        ..exhaust(
+                            "Empower this",
+                            AbilityTargets::NONE,
+                            AbilityEffect::EmpowerSource,
+                        )
+                    },
+                    ActivatedRule {
+                        energy: 1,
+                        disempower_source: true,
+                        ..exhaust(
+                            "Disempower this: draw 1",
+                            AbilityTargets::NONE,
+                            AbilityEffect::Draw(1),
+                        )
+                    },
+                ]
+            }
+        }
+        251 => {
+            const {
+                &[
+                    ActivatedRule {
+                        only_if_not_empowered: true,
+                        ..exhaust(
+                            "Empower this",
+                            AbilityTargets::NONE,
+                            AbilityEffect::EmpowerSource,
+                        )
+                    },
+                    ActivatedRule {
+                        energy: 1,
+                        disempower_source: true,
+                        ..exhaust(
+                            "Disempower this: play a Mech to base",
+                            AbilityTargets::NONE,
+                            AbilityEffect::Tokens,
+                        )
+                    },
+                ]
+            }
+        }
+        252 => {
+            const {
+                &[
+                    ActivatedRule {
+                        energy: 1,
+                        only_if_not_empowered: true,
+                        ..exhaust(
+                            "Empower this",
+                            AbilityTargets::NONE,
+                            AbilityEffect::EmpowerSource,
+                        )
+                    },
+                    ActivatedRule {
+                        timing: AbilityTiming::Reaction,
+                        ..exhaust(
+                            "Add 1 energy, or 2 if Empowered",
+                            AbilityTargets::NONE,
+                            AbilityEffect::AddEnergyIfSourceEmpowered {
+                                base: 1,
+                                empowered: 2,
+                            },
+                        )
+                    },
+                ]
+            }
+        }
+        253 => {
+            const {
+                &[
+                    ActivatedRule {
+                        energy: 2,
+                        exhaust: false,
+                        only_if_not_empowered: true,
+                        ..exhaust(
+                            "Empower this",
+                            AbilityTargets::NONE,
+                            AbilityEffect::EmpowerSource,
+                        )
+                    },
+                    exhaust(
+                        "Give a unit +2 Might, or +4 if this is Empowered",
+                        AbilityTargets::UNIT,
+                        AbilityEffect::MightIfSourceEmpowered {
+                            base: 2,
+                            empowered: 4,
+                        },
+                    ),
+                ]
+            }
+        }
         _ => const { &[] },
     }
 }
@@ -389,6 +550,14 @@ impl Game {
                     )
                 }),
         }
+    }
+
+    fn ability_source_empowered(&self, source: AbilitySource) -> bool {
+        self.ability_source_state(source).is_some()
+            && self.unit_empowered(match source {
+                AbilitySource::Unit { unit_id, .. } => unit_id,
+                AbilitySource::Gear { gear_id, .. } => gear_id,
+            })
     }
 
     /// Every live printed source ability, including ones currently unavailable.
@@ -592,6 +761,12 @@ impl Game {
         if !timing {
             return Err("This ability cannot be used in this timing window.".into());
         }
+        if rule.only_if_not_empowered && self.ability_source_empowered(source) {
+            return Err("Use this ability only while its source is not Empowered.".into());
+        }
+        if rule.disempower_source && !self.ability_source_empowered(source) {
+            return Err("The source must be Empowered to pay its Disempower cost.".into());
+        }
         if rule.exhaust && !ready {
             return Err("The source must be ready to pay its Exhaust cost.".into());
         }
@@ -712,6 +887,13 @@ impl Game {
         let rule = &activated_rules(card_id)[ability_index];
         self.pay_ability_costs(player, rule, &targets)?;
         self.recycle_cards(player, &trash_indices);
+        if rule.disempower_source {
+            let id = match source {
+                AbilitySource::Unit { unit_id, .. } => unit_id,
+                AbilitySource::Gear { gear_id, .. } => gear_id,
+            };
+            self.empowered_units.retain(|&current| current != id);
+        }
         if rule.exhaust {
             match source {
                 AbilitySource::Unit { unit_id, .. } => self.exhaust_unit(player, unit_id),
@@ -793,12 +975,72 @@ impl Game {
                     }
                 }
             }
-            AbilityEffect::Recruits(count) => {
-                for _ in 0..count {
-                    self.queue_token_play(player, card_id, 1, None, false);
+            AbilityEffect::Tokens => {
+                if let Some(spec) = crate::rules::token_spec(card_id) {
+                    let destination = match crate::rules::token_placement(card_id) {
+                        crate::rules::TokenPlacement::Default => None,
+                        crate::rules::TokenPlacement::Base => Some(None),
+                        crate::rules::TokenPlacement::Here => {
+                            if self.ability_source_state(source).is_none() {
+                                return;
+                            }
+                            Some(match source {
+                                AbilitySource::Unit { player, unit_id } => {
+                                    self.unit_ref(Target::Unit { player, unit_id })
+                                        .unwrap()
+                                        .lane
+                                }
+                                AbilitySource::Gear { player, gear_id } => {
+                                    self.gear_location(player, gear_id)
+                                }
+                            })
+                        }
+                    };
+                    for _ in 0..spec.count {
+                        self.queue_token_play(
+                            player,
+                            card_id,
+                            spec.might,
+                            destination,
+                            spec.is_gear,
+                        );
+                    }
                 }
             }
-            AbilityEffect::Mech => self.queue_token_play(player, card_id, 3, Some(None), false),
+            AbilityEffect::EmpowerSource => {
+                let id = match source {
+                    AbilitySource::Unit { unit_id, .. } => unit_id,
+                    AbilitySource::Gear { gear_id, .. } => gear_id,
+                };
+                self.empower_now(player, Some(id), None);
+            }
+            AbilityEffect::BuffOrMight(amount) => {
+                for target in valid {
+                    if self
+                        .unit_ref(target)
+                        .is_some_and(|unit| self.buffed_units.contains(&unit.id))
+                    {
+                        self.modify_might(target, i16::from(amount), 0);
+                    } else {
+                        self.buff_unit_by(player, target);
+                    }
+                }
+            }
+            AbilityEffect::MoveTargetToBase => {
+                for target in valid {
+                    self.move_effect(player, target, None, false);
+                }
+            }
+            AbilityEffect::MightIfSourceEmpowered { base, empowered } => {
+                let amount = if self.ability_source_empowered(source) {
+                    empowered
+                } else {
+                    base
+                };
+                for target in valid {
+                    self.modify_might(target, amount, 0);
+                }
+            }
             AbilityEffect::EmpowerGear => {
                 for target in valid {
                     if let Target::Gear { player, gear_id } = target {
@@ -823,7 +1065,18 @@ impl Game {
             AbilityEffect::Points(count) => {
                 self.players[player].score = self.players[player].score.saturating_add(count)
             }
-            AbilityEffect::AddEnergy(amount) => {
+            AbilityEffect::AddEnergy(_) | AbilityEffect::AddEnergyIfSourceEmpowered { .. } => {
+                let amount = match rule.effect {
+                    AbilityEffect::AddEnergy(amount) => amount,
+                    AbilityEffect::AddEnergyIfSourceEmpowered { base, empowered } => {
+                        if self.ability_source_empowered(source) {
+                            empowered
+                        } else {
+                            base
+                        }
+                    }
+                    _ => unreachable!(),
+                };
                 self.players[player].energy_pool = self.players[player]
                     .energy_pool
                     .saturating_add(amount.into());
@@ -959,14 +1212,34 @@ impl Game {
             matches!(target, Some(Target::Unit { player: owner, .. }) if owner != player);
         match rule.effect {
             AbilityEffect::Points(amount) => Some(if self.players[player].score.saturating_add(amount) >= 8 { 1000 } else { 120 }),
-            AbilityEffect::Recruits(_) | AbilityEffect::Mech => Some(90),
+            AbilityEffect::Tokens => Some(90),
+            AbilityEffect::EmpowerSource => Some(if rule.exhaust { 16 } else { 24 }),
+            AbilityEffect::MoveTargetToBase => unit.filter(|_| !enemy_target).and_then(|unit| {
+                let origin = unit.lane?;
+                if !unit.ready || self.unit_keywords(unit).ganking || self.movement_locked(player, unit.id) {
+                    return None;
+                }
+                let another_mover = self.players[player].units.iter().any(|u| u.lane.is_none() && u.ready);
+                let destination = (0..2).any(|lane| lane != origin
+                    && self.battlefield_owner[lane] != Some(player)
+                    && !self.player_scored_this_turn[player][lane]
+                    && self.players[1-player].units.iter().all(|u| u.lane != Some(lane)));
+                let retains_hold = self.players[player].units.iter().any(|u| u.id != unit.id && u.lane == Some(origin));
+                (destination && !another_mover && (retains_hold || self.player_scored_this_turn[player][origin]))
+                    .then_some(if self.players[player].score >= 7 && self.player_scored_this_turn[player][origin] { 1000 } else { 70 })
+            }),
             AbilityEffect::EmpowerGear => targets.first().and_then(|target| match target {
                 Target::Gear { player: owner, gear_id } if *owner == player && !self.unit_empowered(*gear_id) => Some(35),
                 _ => None,
             }),
             AbilityEffect::Conversion(_) => None,
             AbilityEffect::Draw(_) => (self.players[player].hand.len() < 8 && (!self.players[player].deck.is_empty() || !self.players[player].discard.is_empty())).then_some(30),
-            AbilityEffect::Buff => unit.filter(|unit| unit.buff == 0).map(|_| 65),
+            AbilityEffect::Buff | AbilityEffect::BuffOrMight(_) => unit.filter(|unit| {
+                !enemy_target && (matches!(rule.effect, AbilityEffect::BuffOrMight(_)) || !self.buffed_units.contains(&unit.id))
+            }).filter(|_| {
+                !matches!(source, AbilitySource::Unit { unit_id, .. } if self.unit_ref(Target::Unit { player, unit_id }).is_some_and(|u| u.lane.is_none()))
+                    || !(0..2).any(|lane| self.battlefield_owner[lane] != Some(player) && self.players[1-player].units.iter().all(|u| u.lane != Some(lane)))
+            }).map(|_| 65),
             AbilityEffect::Damage(amount) => unit.filter(|_| enemy_target).map(|unit| {
                 if unit.damage.saturating_add(self.battlefield_damage(target.unwrap(), amount)) >= self.unit_might(unit) { 150 } else { 40 }
             }),
@@ -982,7 +1255,7 @@ impl Game {
                 if unit.damage > 0 && unit.damage >= reduced { Some(140) }
                 else { unit.lane.filter(|&lane| self.players[player].units.iter().any(|u| u.lane == Some(lane) || (u.lane.is_none() && u.ready))).map(|_| 40) }
             }),
-            AbilityEffect::Might { .. } => unit.filter(|_| !enemy_target).and_then(|unit| {
+            AbilityEffect::Might { .. } | AbilityEffect::MightIfSourceEmpowered { .. } => unit.filter(|_| !enemy_target).and_then(|unit| {
                 // Do not exhaust a ready mover merely to increase its Might,
                 // or spend a temporary boost on an uncontested empty field.
                 if matches!(source, AbilitySource::Unit { unit_id, .. } if unit_id == unit.id) { return None; }
@@ -995,7 +1268,7 @@ impl Game {
                     && (0..2).any(|lane| self.battlefield_owner[lane] != Some(player) && self.players[1 - player].units.iter().all(|u| u.lane != Some(lane)));
                 (relevant && !preserve_mover).then_some(55)
             }),
-            AbilityEffect::AddEnergy(_) => {
+            AbilityEffect::AddEnergy(_) | AbilityEffect::AddEnergyIfSourceEmpowered { .. } => {
                 let mut probe = self.clone();
                 probe.activate_ability(source, index, Vec::new()).ok()?;
                 let opens_play = self.players[player].hand.iter().any(|&id| {

@@ -816,6 +816,70 @@ mod tests {
     }
 
     #[test]
+    fn empowered_egg_resource_witness_uses_exact_yield_and_not_ordinary_empower() {
+        for empowered in [false, true] {
+            let mut g = fixture();
+            add_gear(&mut g, 819, 252);
+            add_gear(&mut g, 820, 244);
+            if empowered {
+                g.empowered_units.push(819);
+            }
+            g.players[0].hand = vec![230];
+            g.players[0].energy = 2;
+            g.players[0].energy_pool = 2;
+            let witness = g.funded_action_witness(&heart());
+            assert_eq!(
+                witness.is_some(),
+                empowered,
+                "two stored + Egg yield must cover 3E + 1P"
+            );
+            if let Some(witness) = witness {
+                for action in witness {
+                    g.apply(action).unwrap();
+                }
+                assert!(g.players[0].gear.iter().any(|gear| gear.card_id == 230));
+            }
+        }
+    }
+
+    #[test]
+    fn resource_proof_does_not_double_spend_eggs_exhaust_for_self_empower() {
+        let mut g = fixture();
+        add_gear(&mut g, 821, 252);
+        let action = Action::ActivateAbility {
+            source: crate::activated::AbilitySource::Gear {
+                player: 0,
+                gear_id: 821,
+            },
+            ability_index: 0,
+            targets: vec![],
+        };
+        assert!(g.funded_action_witness(&action).is_none());
+        g.players[0].units.push(Unit {
+            id: 822,
+            card_id: 236,
+            lane: None,
+            ready: true,
+            damage: 0,
+            buff: 0,
+            temporary_buff: 0,
+            token: false,
+            protected: false,
+            stunned: false,
+            banish_on_death: false,
+        });
+        let path = g.funded_action_witness(&action).unwrap();
+        for action in path {
+            g.apply(action).unwrap();
+        }
+        assert!(!g.players[0].gear[0].ready);
+        assert!(!g.unit_empowered(821), "status is the respondable effect");
+        g.apply(Action::Pass).unwrap();
+        g.apply(Action::Pass).unwrap();
+        assert!(g.unit_empowered(821));
+    }
+
+    #[test]
     fn strategic_payment_continuation_ignores_opponent_private_zones() {
         let mut g = fixture();
         g.difficulty = Difficulty::Strategic;

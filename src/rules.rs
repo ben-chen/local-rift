@@ -154,7 +154,7 @@ pub fn effect(id: usize) -> OfficialEffect {
     match id {
         // These permanents have reviewed activated abilities in activated.rs,
         // not automatic effects when the card is played.
-        230..=245 => None,
+        230..=253 => None,
         0 | 2 | 13 | 17 | 18 | 20 | 22 | 24 | 25 | 30 | 31 | 34 | 43 | 45 | 46 | 47 | 49 | 54
         | 56 | 59 | 60 | 68 | 69 | 70 | 71 | 72 | 73 => None,
         1 => Counter(CounterKind::Abandon),
@@ -761,6 +761,13 @@ pub enum Mechanic {
 pub fn requirements(id: usize) -> &'static [Mechanic] {
     use Mechanic::*;
     match id {
+        246 => &[Gear, Chain, ActivatedAbilities],
+        247 => &[Gear, Chain, ActivatedAbilities, Move],
+        248 => &[Chain, ActivatedAbilities],
+        249 => &[Chain, ActivatedAbilities, Tokens, Deflect],
+        250 | 253 => &[Gear, Chain, ActivatedAbilities, Empower],
+        251 => &[Gear, Chain, ActivatedAbilities, Empower, Tokens],
+        252 => &[Gear, Chain, ActivatedAbilities, Empower, ResourceAbilities],
         240 => &[Gear, Chain, ActivatedAbilities],
         241 => &[Gear, Chain, ActivatedAbilities, Tokens],
         242 => &[Gear, Chain, ActivatedAbilities, Predict],
@@ -1066,7 +1073,7 @@ pub enum StaticAbility {
 pub fn static_abilities(id: usize) -> &'static [StaticAbility] {
     use StaticAbility::*;
     match id {
-        232 | 243 => &[EntersExhausted],
+        232 | 243 | 252 => &[EntersExhausted],
         233 => &[EntersReady],
         // Caitlyn spells out the exact Backline assignment restriction.
         238 => &[Backline],
@@ -1306,7 +1313,7 @@ pub enum TokenPlacement {
 
 pub fn token_placement(id: usize) -> TokenPlacement {
     match id {
-        48 | 87 | 138 | 187 | 220 | 235 => TokenPlacement::Default,
+        48 | 87 | 138 | 187 | 220 | 235 | 249 => TokenPlacement::Default,
         102 | 147 | 148 | 178 | 179 | 180 | 203 => TokenPlacement::Here,
         _ => TokenPlacement::Base,
     }
@@ -1348,10 +1355,10 @@ pub fn token_spec(id: usize) -> Option<TokenSpec> {
             deflect: false,
             tag: None,
         }),
-        34 | 148 | 150 | 187 => Some(TokenSpec {
+        34 | 148 | 150 | 187 | 249 => Some(TokenSpec {
             name: "Bird",
             might: 1,
-            count: 1,
+            count: if id == 249 { 2 } else { 1 },
             is_gear: false,
             deflect: true,
             tag: Some("Bird"),
@@ -1364,7 +1371,7 @@ pub fn token_spec(id: usize) -> Option<TokenSpec> {
             deflect: false,
             tag: Some("Bilgewater"),
         }),
-        54 | 138 | 241 => Some(TokenSpec {
+        54 | 138 | 241 | 251 => Some(TokenSpec {
             name: "Mech",
             might: 3,
             count: if id == 54 { 2 } else { 1 },
@@ -1418,7 +1425,7 @@ mod tests {
     #[test]
     fn all_catalog_entries_have_official_classification() {
         let cards = cards();
-        assert_eq!(cards.len(), 246);
+        assert_eq!(cards.len(), 254);
         for card in cards {
             assert_ne!(
                 effect(card.id),
@@ -1428,7 +1435,7 @@ mod tests {
             );
             assert_ne!(support_status(card.id), SupportStatus::UnknownCard);
         }
-        assert_eq!(effect(246), OfficialEffect::Unsupported);
+        assert_eq!(effect(254), OfficialEffect::Unsupported);
     }
 
     #[test]

@@ -631,6 +631,23 @@ impl Ui {
         shortened.push('…');
         self.text(&shortened, x, y, size, c);
     }
+    /// Printed ability names may be longer than a single line at readable size.
+    pub fn ability_button(&self, r: Rect, label: &str) -> bool {
+        let clicked = self.button(r, "", false, true);
+        let lines = self.text_lines(label, r.w - 16.0, 11.0);
+        let count = lines.len().min(2);
+        let top = r.y + (r.h - count as f32 * 13.0) / 2.0 + 10.0;
+        for (index, line) in lines.iter().take(2).enumerate() {
+            self.text(
+                line,
+                r.x + (r.w - self.width(line, 11.0)) / 2.0,
+                top + index as f32 * 13.0,
+                11.0,
+                TEXT,
+            );
+        }
+        clicked
+    }
     pub fn button(&self, r: Rect, label: &str, primary: bool, enabled: bool) -> bool {
         let h = self.hover(r) && enabled;
         let bg = if primary {

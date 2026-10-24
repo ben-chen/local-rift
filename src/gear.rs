@@ -460,6 +460,7 @@ impl Game {
             return false;
         };
         let gear = state.gear.remove(index);
+        self.empowered_units.retain(|&id| id != gear_id);
         if !gear.token {
             state.discard.push(gear.card_id);
         }

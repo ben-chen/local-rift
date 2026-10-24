@@ -169,6 +169,7 @@ pub fn trigger_rules(card_id: usize) -> &'static [TriggerRule] {
     use TokenPlacement::*;
     match card_id {
         242 => const { &[rule(SelfPlayed, &[], false, TargetRule::NONE, &[Predict])] },
+        246 => const { &[rule(SelfPlayed, &[], false, TargetRule::NONE, &[Draw(1)])] },
         152 => {
             const {
                 &[rule(

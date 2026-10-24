@@ -268,9 +268,9 @@ fn expansion_fixture(app: &mut App, card_id: usize) {
     app.hand_scroll = 0;
     app.hover_card = None;
     app.hover_rect = None;
-    app.hover_unit = None;
+    app.hover_object = None;
     app.hover_token = None;
-    app.hover_unit_candidate = None;
+    app.hover_object_candidate = None;
     app.toast_until = 0.0;
     app.payment_draft = None;
     app.suspended_payments.clear();
@@ -294,6 +294,18 @@ fn played_gear_fixture(app: &mut App, card_id: usize) {
         })
         .unwrap();
     app.tray = super::Tray::Loadout;
+}
+fn save_state(app: &App) {
+    COMBAT_SNAPSHOT.with(|value| *value.borrow_mut() = Some(format!("{:?}", app.game)));
+}
+fn assert_same_state(app: &App) {
+    COMBAT_SNAPSHOT.with(|value| {
+        assert_eq!(
+            value.borrow().as_ref().unwrap(),
+            &format!("{:?}", app.game),
+            "UI draft or invalid choice must not mutate the game"
+        )
+    });
 }
 fn fixture_counter_tax(app: &mut App, unit_id: u32) {
     app.game.players[0].hand = vec![7];
@@ -2384,7 +2396,7 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
             let position = app.ui.mouse();
             app.ui.input_override = Some((position, false, false));
             app.hover_card = Some(98);
-            app.hover_unit = Some((0, unit_id));
+            app.hover_object = Some((0, unit_id));
             app.hover_since = -1.0;
             app.hover_rect = None;
         }
@@ -2395,7 +2407,7 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
                 .find(|unit| unit.card_id == 98)
                 .unwrap()
                 .id;
-            assert_eq!(app.hover_unit, Some((0, unit_id)));
+            assert_eq!(app.hover_object, Some((0, unit_id)));
             let panel = app.hover_rect.expect("live keyword hover appears");
             let text = super::live_unit_description(&app.game, 0, unit_id).unwrap();
             assert!(
@@ -2571,7 +2583,7 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
             app.selection = None;
             app.hover_card = None;
             app.hover_rect = None;
-            app.hover_unit = None;
+            app.hover_object = None;
             app.hover_token = None;
             app.toast_until = 0.0;
             app.prefs.use_custom = [false; 2];
@@ -2697,7 +2709,7 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
             let r = unit_rect(app, 100);
             app.ui.input_override = Some((vec2(r.x + r.w / 2.0, r.y + 10.0), false, false));
             app.hover_card = Some(110);
-            app.hover_unit = Some((0, 100));
+            app.hover_object = Some((0, 100));
             app.hover_since = -1.0;
         }
         233 => {
@@ -2715,7 +2727,7 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
             }
             app.hover_card = None;
             app.hover_rect = None;
-            app.hover_unit = None;
+            app.hover_object = None;
             let r = unit_rect(app, 100);
             app.ui.input_override = Some((vec2(r.x + r.w / 2.0, r.y + r.h - 9.0), false, false));
         }
@@ -2725,7 +2737,7 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
                 Some(121),
                 "attached gear has its own readable hover"
             );
-            assert_eq!(app.hover_unit, None);
+            assert_eq!(app.hover_object, Some((0, app.game.players[0].gear[0].id)));
             let r = unit_rect(app, 100);
             click(app, r.x + r.w / 2.0, r.y + r.h - 9.0);
         }
@@ -2992,6 +3004,7 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
             app.tray = super::Tray::Loadout;
             app.ui.input_override = Some((vec2(615.0, 760.0), false, false));
             app.hover_card = Some(18);
+            app.hover_object = Some((0, 900));
             app.hover_token = Some(super::TokenPreview {
                 name: "Gold".into(),
                 might: 0,
@@ -4659,15 +4672,478 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
             COMBAT_SNAPSHOT.with(|value| {
                 assert_eq!(value.borrow().as_ref().unwrap(), &format!("{:?}", app.game))
             });
+            played_gear_fixture(app, 246);
+            finish_chain_until_choice(app);
+            app.prefs.exact_payment = true;
+        }
+        456 => {
+            assert_eq!(
+                app.game.players[0].hand.len(),
+                1,
+                "Snax's play trigger draws first"
+            );
+            click(app, 615.0, 760.0);
+        }
+        457 => {
+            click(app, 1285.0, 417.0);
+        }
+        458 => {
+            save_state(app);
+            click(app, 1285.0, 548.0);
+        }
+        459 => {
+            assert_same_state(app);
+            click(app, 1285.0, 417.0);
+        }
+        460 => {
+            click(app, 1285.0, 510.0);
+        }
+        461 => {
+            assert!(app.payment_draft.is_some());
+            click(app, 480.0, 709.0);
+        }
+        462 => {
+            assert_same_state(app);
+            click(app, 1285.0, 510.0);
+        }
+        463 => {
+            click(app, 936.0, 709.0);
+        }
+        464 => {
+            assert!(
+                app.game.players[0].gear.is_empty(),
+                "Snax is killed as a cost"
+            );
+            assert_eq!(
+                app.game.players[0].hand.len(),
+                1,
+                "activation has not resolved yet"
+            );
+            assert!(app.game.players[0].discard.contains(&246));
+            finish_chain_until_choice(app);
+            assert_eq!(app.game.players[0].hand.len(), 2);
+            played_gear_fixture(app, 250);
+            click(app, 615.0, 760.0);
+        }
+        465 => {
+            assert_eq!(
+                app.source_abilities(local_rift::activated::AbilitySource::Gear {
+                    player: 0,
+                    gear_id: app.game.players[0].gear[0].id
+                })
+                .len(),
+                2
+            );
+            click(app, 1285.0, 481.0);
+        }
+        466 => {
+            save_state(app);
+            click(app, 1285.0, 510.0);
+        }
+        467 => {
+            assert_same_state(app);
+            assert!(app.game.chain.is_empty());
+            click(app, 1285.0, 548.0);
+        }
+        468 => {
+            click(app, 1285.0, 417.0);
+        }
+        469 => {
+            assert!(app.ability_targets.is_empty());
+            click(app, 1285.0, 510.0);
+        }
+        470 => {
+            let id = app.game.players[0].gear[0].id;
+            assert!(!app.game.players[0].gear[0].ready);
+            assert!(
+                !app.game.unit_empowered(id),
+                "Empower waits for its response window"
+            );
+            assert!(app.game.chain.last().unwrap().targets.is_empty());
+            finish_chain_until_choice(app);
+            assert!(app.game.unit_empowered(id));
+            app.game.players[0].gear[0].ready = true;
+            click(app, 615.0, 760.0);
+        }
+        471 => {
+            click(app, 1285.0, 417.0);
+        }
+        472 => {
+            save_state(app);
+            click(app, 1285.0, 510.0);
+        }
+        473 => {
+            assert_same_state(app);
+            click(app, 1285.0, 548.0);
+        }
+        474 => {
+            click(app, 1285.0, 481.0);
+        }
+        475 => {
+            capture(app, "RIFT_SMOKE_EMPOWER_TOME_SCREENSHOT");
+            click(app, 1285.0, 510.0);
+        }
+        476 => {
+            assert!(
+                !app.game.unit_empowered(app.game.players[0].gear[0].id),
+                "Disempower is paid before responses"
+            );
+            assert!(!app.game.players[0].gear[0].ready);
+            assert!(app.game.players[0].hand.is_empty());
+            finish_chain_until_choice(app);
+            assert_eq!(app.game.players[0].hand.len(), 1);
+            played_gear_fixture(app, 251);
+            click(app, 615.0, 760.0);
+        }
+        477 => {
+            click(app, 1285.0, 417.0);
+        }
+        478 => {
+            click(app, 1285.0, 510.0);
+        }
+        479 => {
+            finish_chain_until_choice(app);
+            assert!(app.game.unit_empowered(app.game.players[0].gear[0].id));
+            app.game.players[0].gear[0].ready = true;
+            click(app, 615.0, 760.0);
+        }
+        480 => {
+            click(app, 1285.0, 481.0);
+        }
+        481 => {
+            click(app, 1285.0, 510.0);
+        }
+        482 => {
+            assert!(!app.game.unit_empowered(app.game.players[0].gear[0].id));
+            assert!(!app.game.players[0].gear[0].ready);
+            finish_chain_until_choice(app);
+            let mech = app.game.players[0]
+                .units
+                .iter()
+                .find(|unit| unit.token)
+                .unwrap();
+            assert_eq!(app.game.unit_name(mech), "Mech token");
+            assert_eq!(app.game.unit_might(mech), 3);
+            assert_eq!(mech.lane, None);
+            played_gear_fixture(app, 253);
+            app.game.players[0].units = vec![public_unit(9901, 18, None)];
+            click(app, 615.0, 760.0);
+        }
+        483 => {
+            click(app, 1285.0, 417.0);
+        }
+        484 => {
+            click(app, 1285.0, 510.0);
+        }
+        485 => {
+            assert!(
+                app.game.players[0].gear[0].ready,
+                "Tools' Empower has no Exhaust cost"
+            );
+            assert_eq!(app.game.players[0].energy, 6);
+            finish_chain_until_choice(app);
+            assert!(app.game.unit_empowered(app.game.players[0].gear[0].id));
+            click(app, 615.0, 760.0);
+        }
+        486 => {
+            capture(app, "RIFT_SMOKE_EMPOWER_TOOLS_SCREENSHOT");
+            click(app, 1285.0, 481.0);
+        }
+        487 => {
+            click_unit(app, 9901);
+        }
+        488 => {
+            assert_eq!(
+                app.ability_targets,
+                vec![Target::Unit {
+                    player: 0,
+                    unit_id: 9901
+                }]
+            );
+            click(app, 1285.0, 510.0);
+        }
+        489 => {
+            assert!(!app.game.players[0].gear[0].ready);
+            finish_chain_until_choice(app);
+            assert_eq!(app.game.players[0].units[0].temporary_buff, 4);
+            played_gear_fixture(app, 252);
+            assert!(!app.game.players[0].gear[0].ready, "Egg enters exhausted");
+            app.game.players[0].gear[0].ready = true;
+            click(app, 615.0, 760.0);
+        }
+        490 => {
+            click(app, 1285.0, 481.0);
+        }
+        491 => {
+            click(app, 1285.0, 510.0);
+        }
+        492 => {
+            assert_eq!(app.game.players[0].energy, 10);
+            assert!(!app.game.players[0].gear[0].ready);
+            assert!(app.game.chain.is_empty(), "Egg Add has no response window");
+            played_gear_fixture(app, 252);
+            app.game.players[0].gear[0].ready = true;
+            click(app, 615.0, 760.0);
+        }
+        493 => {
+            click(app, 1285.0, 417.0);
+        }
+        494 => {
+            click(app, 1285.0, 510.0);
+        }
+        495 => {
+            assert_eq!(app.game.players[0].energy, 8);
+            finish_chain_until_choice(app);
+            assert!(app.game.unit_empowered(app.game.players[0].gear[0].id));
+            app.game.players[0].gear[0].ready = true;
+            app.game.players[0].units = vec![public_unit(9901, 18, None)];
+            fixture_counter_tax(app, 9901);
+            app.game.players[0].exhausted_runes = app.game.players[0].runes;
+            app.game.players[0].energy = 0;
+            app.game.players[0].energy_pool = 0;
+            app.selection = None;
+            app.tray = super::Tray::Loadout;
+            click(app, 615.0, 760.0);
+        }
+        496 => {
+            click(app, 1285.0, 417.0);
+        }
+        497 => {
+            save_state(app);
+            click(app, 1285.0, 510.0);
+        }
+        498 => {
+            assert_same_state(app);
+            click(app, 1285.0, 548.0);
+        }
+        499 => {
+            click(app, 1285.0, 481.0);
+        }
+        500 => {
+            capture(app, "RIFT_SMOKE_EMPOWER_EGG_SCREENSHOT");
+            click(app, 1285.0, 510.0);
+        }
+        501 => {
+            assert!(matches!(
+                app.game.decision,
+                Some(Decision::CounterTax { cost: 2, .. })
+            ));
+            assert_eq!(app.game.players[0].energy, 2);
+            assert!(!app.game.players[0].gear[0].ready);
+            assert!(
+                app.game.unit_empowered(app.game.players[0].gear[0].id),
+                "Add keeps Empowered"
+            );
+            click(app, 1285.0, 510.0);
+        }
+        502 => {
+            assert_eq!(app.game.players[0].energy, 0);
+            finish_chain_until_choice(app);
+            assert!(app.game.decision.is_none());
+            played_gear_fixture(app, 247);
+            let mut moving = public_unit(9901, 18, Some(0));
+            moving.ready = false;
+            app.game.players[0].units = vec![moving, public_unit(9902, 18, None)];
+            app.game.players[1].units = vec![public_unit(9903, 18, Some(1))];
+            app.game.battlefield_owner = [Some(0), Some(1)];
+            click(app, 615.0, 760.0);
+        }
+        503 => {
+            click(app, 1285.0, 417.0);
+        }
+        504 => {
+            save_state(app);
+            click_unit(app, 9902);
+        }
+        505 => {
+            assert_same_state(app);
+            assert!(app.ability_targets.is_empty());
+            click_unit(app, 9903);
+        }
+        506 => {
+            assert_same_state(app);
+            assert!(app.ability_targets.is_empty());
+            click_unit(app, 9901);
+        }
+        507 => {
+            assert_eq!(
+                app.ability_targets,
+                vec![Target::Unit {
+                    player: 0,
+                    unit_id: 9901
+                }]
+            );
+            click(app, 1285.0, 510.0);
+        }
+        508 => {
+            assert!(!app.game.players[0].gear[0].ready);
+            assert_eq!(app.game.players[0].energy, 9);
+            finish_chain_until_choice(app);
+            let moved = &app.game.players[0].units[0];
+            assert_eq!(moved.lane, None);
+            assert!(!moved.ready, "Syren moves, without readying");
+            expansion_fixture(app, 248);
+            app.game
+                .apply(Action::PlayCard {
+                    hand_index: 0,
+                    lane: None,
+                    target: None,
+                })
+                .unwrap();
+            app.game.players[0].units[0].ready = true;
+            app.game.players[1].units = vec![public_unit(9901, 18, None)];
+            let id = app.game.players[0].units[0].id;
+            click_unit(app, id);
+        }
+        509 => {
+            click(app, 1340.0, 547.0);
+        }
+        510 => {
+            click(app, 1285.0, 417.0);
+        }
+        511 => {
+            click_unit(app, 9901);
+        }
+        512 => {
+            assert_eq!(
+                app.ability_targets,
+                vec![Target::Unit {
+                    player: 1,
+                    unit_id: 9901
+                }]
+            );
+            click(app, 1285.0, 510.0);
+        }
+        513 => {
+            finish_chain_until_choice(app);
+            assert_eq!(app.game.players[1].units[0].buff, 1);
+            assert_eq!(app.game.players[1].units[0].temporary_buff, 0);
+            app.game.players[0].units[0].ready = true;
+            let id = app.game.players[0].units[0].id;
+            click_unit(app, id);
+        }
+        514 => {
+            click(app, 1340.0, 547.0);
+        }
+        515 => {
+            click(app, 1285.0, 417.0);
+        }
+        516 => {
+            click_unit(app, 9901);
+        }
+        517 => {
+            click(app, 1285.0, 510.0);
+        }
+        518 => {
+            finish_chain_until_choice(app);
+            assert_eq!(app.game.players[1].units[0].buff, 1);
+            assert_eq!(app.game.players[1].units[0].temporary_buff, 2);
+            expansion_fixture(app, 249);
+            app.game
+                .apply(Action::PlayCard {
+                    hand_index: 0,
+                    lane: None,
+                    target: None,
+                })
+                .unwrap();
+            app.game.players[0].units[0].ready = true;
+            let id = app.game.players[0].units[0].id;
+            click_unit(app, id);
+        }
+        519 => {
+            click(app, 1340.0, 547.0);
+        }
+        520 => {
+            click(app, 1285.0, 417.0);
+        }
+        521 => {
+            save_state(app);
+            click(app, 1285.0, 510.0);
+        }
+        522 => {
+            assert_same_state(app);
+            app.game.players[0].units[0].lane = Some(0);
+            app.game.battlefield_owner[0] = Some(0);
+            click(app, 1285.0, 510.0);
+        }
+        523 => {
+            assert!(!app.game.players[0].units[0].ready);
+            assert!(app.game.players[0].units.iter().all(|unit| !unit.token));
+            finish_chain_until_choice(app);
+            assert!(matches!(
+                app.game.decision,
+                Some(Decision::TokenPlacement {
+                    card_id: 249,
+                    remaining: 2,
+                    ..
+                })
+            ));
+            assert!(app.game.chain.is_empty());
+            capture(app, "RIFT_SMOKE_EMPOWER_BIRDS_SCREENSHOT");
+            click(app, 1285.0, 469.0);
+        }
+        524 => {
+            let birds: Vec<_> = app.game.players[0]
+                .units
+                .iter()
+                .filter(|unit| unit.token)
+                .collect();
+            assert_eq!(birds.len(), 1);
+            assert_eq!(birds[0].lane, None);
+            assert!(matches!(
+                app.game.decision,
+                Some(Decision::TokenPlacement { remaining: 1, .. })
+            ));
+            click(app, 1285.0, 504.0);
+        }
+        525 => {
+            let birds: Vec<_> = app.game.players[0]
+                .units
+                .iter()
+                .filter(|unit| unit.token)
+                .collect();
+            assert_eq!(birds.len(), 2);
+            assert_eq!(birds[1].lane, Some(0));
+            for bird in birds {
+                assert_eq!(app.game.unit_name(bird), "Bird token");
+                assert_eq!(app.game.unit_might(bird), 1);
+                assert_eq!(app.game.unit_keywords(bird).deflect, 1);
+            }
+            played_gear_fixture(app, 250);
+            app.game
+                .empowered_units
+                .push(app.game.players[0].gear[0].id);
+            app.game.players[0].gear[0].ready = false;
+            app.hover_candidate = Some(250);
+            app.hover_card = Some(250);
+            app.hover_object = Some((0, app.game.players[0].gear[0].id));
+            app.hover_since = -1.0;
+            app.hover_rect = Some(Rect::new(776.0, 176.0, 350.0, 458.0));
+            app.ui.input_override = Some((vec2(800.0, 420.0), false, false));
+        }
+        526 => {
+            assert_eq!(app.hover_object, Some((0, app.game.players[0].gear[0].id)));
+            let text =
+                super::live_gear_description(&app.game, 0, app.game.players[0].gear[0].id).unwrap();
+            assert!(
+                text.contains("Exhausted")
+                    && text.contains("EMPOWERED")
+                    && text.contains("Disempower source")
+            );
+            app.ui.input_override = Some((vec2(800.0, 420.0), false, false));
+            if let Ok(path) = std::env::var("RIFT_SMOKE_EMPOWER_HOVER_SCREENSHOT") {
+                app.draw();
+                get_screen_data().export_png(&path);
+            }
             app.ui.input_override = None;
             app.ui.pointer_override = None;
             app.ui.wheel_override = None;
             println!(
-                "PASS: 456 native UI frames including six C2 activations, separate trash costs, gear targets, nested Add, frozen exact payment and failed-attempt rollback."
+                "PASS: 527 native UI frames including eight Empower-family cards, source state, targetless Empower, Disempower costs, cancellation, reaction Add and separate Bird placements."
             );
             return true;
         }
-        _ => panic!("UI smoke runner exceeded its 456-frame script"),
+        _ => panic!("UI smoke runner exceeded its 527-frame script"),
     }
     false
 }

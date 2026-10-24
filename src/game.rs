@@ -5532,7 +5532,7 @@ impl Game {
         }
     }
 
-    fn move_effect(
+    pub(crate) fn move_effect(
         &mut self,
         actor: usize,
         target: Target,
@@ -7028,6 +7028,22 @@ impl Game {
                     } else {
                         20 - friendly as i32
                     };
+                    let fresh_score = !self.player_scored_this_turn[player][lane]
+                        && self.battlefield_owner[lane] != Some(player);
+                    let wins = fresh_score
+                        && can_win
+                        && self.players[player].score >= VICTORY_SCORE.saturating_sub(1)
+                        && (0..BATTLEFIELDS).all(|other| {
+                            other == lane || self.player_scored_this_turn[player][other]
+                        });
+                    let score = score
+                        + if wins {
+                            500
+                        } else if fresh_score {
+                            10
+                        } else {
+                            0
+                        };
                     Some((score, lane))
                 })
                 .collect();

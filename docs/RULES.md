@@ -1,6 +1,6 @@
 # Implemented rules and limitations
 
-**Local Rift is an unofficial, incomplete Riftbound client. This document describes its current behavior, not the complete tabletop game.** Full official card text appears in hover previews and pinned inspectors. All 246 bundled cards have executable printed-effect mappings. An official description in the catalog and a passing simulation are not proof of complete tabletop equivalence.
+**Local Rift is an unofficial, incomplete Riftbound client. This document describes its current behavior, not the complete tabletop game.** Full official card text appears in hover previews and pinned inspectors. All 254 bundled cards have executable printed-effect mappings. An official description in the catalog and a passing simulation are not proof of complete tabletop equivalence.
 
 For physical play, use Riot's [Rules Hub](https://playriftbound.com/en-us/rules-hub/), current errata, and printed card text. The core timing reference used here is the [October 9, 2026 Core Rules](https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/5c7946f7c3b8c6e0faff85ab6dadc6d2e721ea94.pdf). [SOURCES.md](SOURCES.md) records the card and deck sources.
 
@@ -99,6 +99,16 @@ Supported play options include Repeat, Accelerate, Rampage's optional might paym
 
 The expanded unit pool includes explicit Assault, Shield, Tank, Deflect, Ganking, Ambush, Accelerate, and Legion behavior. Shield adds its printed amount to Might while defending in combat; it does not change Tank/Backline damage priority. Equipment-granted keywords are included in the unit inspector and current Might. Ready-entry units enter ready, and Battering Ram’s energy discount counts cards played that turn while respecting its one-energy minimum. Legion play triggers capture whether another card was played that turn, then enter the ordinary response system. Discard-and-draw effects keep their resolving chain item in place until the discard choice and draws finish. Lunar Boon therefore cannot recycle itself into its own draw during burnout. Repeated draws also finish before the physical spell enters trash. Printed Flow can require a specific colored power: Iterative Design requires Mind, while a printed Any-power Flow cost accepts any domain. Wind Wall counters a spell of any cost, including its controller's spell, but cannot counter a triggered ability.
 
+### Gear Empower and Disempower costs
+
+Questionable Tome, Hextech Disc, Platewyrm Egg, and Tools of Empire have separate printed Empower activations. They are ordinary abilities, usable only when the exact source is not already Empowered. They do not choose or target their own source. Their printed costs are paid before responses; the source becomes Empowered only when the ability resolves. If that source leaves play, another copy does not inherit the effect. Tools pays two Energy without Exhaust, while the other three require Exhaust; Egg also costs one Energy.
+
+Tome and Disc require an Empowered source for their second ability. Disempower, one Energy, and Exhaust are costs paid before responses. The later draw or Mech play still resolves if the source leaves, and countering the effect does not refund those costs. A fixed payment keeps the intended ability and resource obligation; source costs must still be legal when payment completes. Egg cannot fund its own Exhaust-cost Empower by first exhausting itself to add Energy. If that makes completion impossible, rollback restores the original position.
+
+Egg enters exhausted. Its separate Reaction ability immediately adds one Energy, or two if it is currently Empowered, and can operate during permitted payments. Tools gives a chosen unit +2 Might this turn, or +4 if its source is Empowered when the instruction resolves. These are alternative amounts, not cumulative bonuses. A departed source cannot supply its former Empowered state for that condition.
+
+Poro Snax draws through its exact-object on-play trigger; its later draw activation pays Energy, Calm power, Exhaust, and Kill-self first. The Syren uses its corrected text to Move a friendly battlefield unit to its base, preserving its ready/exhausted state. Iridescent Avian either Buffs its chosen unit or, if that unit is already buffed when the effect resolves, gives +2 Might this turn instead. Ultrasoft Poro can activate only at a battlefield and queues two separate 1-Might Bird tokens with Deflect after its ability finishes. Each token has its own ordinary legal placement choice; the source's later departure does not cancel them.
+
 ## Priority, chains, and showdowns
 
 The turn owner and the player allowed to act are separate. The interface identifies **your priority** or **AI priority**. You can receive priority during the opponent's turn.
@@ -151,7 +161,7 @@ The deck library includes the real legends and authored strategy notes. All seve
 
 ## Remaining fidelity limits
 
-Seven supported legends, four battlefield choices, and 246 main-deck cards are available through the four supplied presets and custom deck editor. There is no sideboarding, tournament match structure, multiplayer mode, or full card-set coverage. The presets are dated tournament lists, not a ranking of the current metagame.
+Seven supported legends, four battlefield choices, and 254 main-deck cards are available through the four supplied presets and custom deck editor. There is no sideboarding, tournament match structure, multiplayer mode, or full card-set coverage. The presets are dated tournament lists, not a ranking of the current metagame.
 
 The desktop and bot API expose exact damage allocations and power-source payments. The default automatic payment remains available; energy can be prepared by exhausting chosen rune domains before a play. These controls share engine validation, but broader card and interaction coverage is still required.
 

@@ -666,6 +666,7 @@ fn activated_rule_to_json(index: usize, rule: &ActivatedRule) -> Value {
         "exhaust":rule.exhaust,"requires_battlefield":rule.requires_battlefield,
         "adds_resources":rule.adds_resources(),
         "recycle_count":rule.recycle_count,"recycle_unit_only":rule.recycle_unit_only,"kill_source":rule.kill_source,
+        "only_if_not_empowered":rule.only_if_not_empowered,"disempower_source":rule.disempower_source,
         "conversion_direction":rule.conversion_direction().map(conversion_direction_name),
         "targets":{"min":rule.targets.min,"max":rule.targets.max,
             "kind":match rule.targets.kind {AbilityTargetKind::Unit=>"unit",AbilityTargetKind::Gear=>"gear"},"another":rule.targets.another,
@@ -2198,6 +2199,182 @@ mod tests {
         assert_eq!(response["ok"], false, "{response}");
         assert_eq!(session.revision(), revision);
         assert_eq!(format!("{:?}", session.game), before);
+    }
+
+    #[test]
+    fn empowered_catalog_distinguishes_source_restrictions_costs_and_targets() {
+        let catalog = catalog();
+        let rule = |id: usize, index: usize| &catalog["cards"][id]["activated_abilities"][index];
+        for id in 250..254 {
+            let empower = rule(id, 0);
+            assert_eq!(empower["only_if_not_empowered"], true, "card {id}");
+            assert_eq!(empower["disempower_source"], false);
+            assert_eq!(empower["targets"]["max"], 0);
+            assert_eq!(empower["timing"], "main");
+            assert_eq!(empower["adds_resources"], false);
+            assert_eq!(empower["exhaust"], id != 253);
+        }
+        assert_eq!(rule(252, 0)["energy"], 1);
+        assert_eq!(rule(253, 0)["energy"], 2);
+        for id in [250, 251] {
+            let spend = rule(id, 1);
+            assert_eq!(spend["only_if_not_empowered"], false);
+            assert_eq!(spend["disempower_source"], true);
+            assert_eq!(spend["energy"], 1);
+            assert_eq!(spend["exhaust"], true);
+            assert_eq!(spend["targets"]["max"], 0);
+        }
+        assert_eq!(rule(252, 1)["timing"], "reaction");
+        assert_eq!(rule(252, 1)["adds_resources"], true);
+        assert_eq!(rule(253, 1)["targets"]["max"], 1);
+        assert_eq!(rule(253, 1)["targets"]["allegiance"], "any");
+        assert_eq!(rule(247, 0)["targets"]["allegiance"], "friendly");
+        assert_eq!(rule(247, 0)["targets"]["battlefield"], true);
+        assert_eq!(rule(249, 0)["requires_battlefield"], true);
+        for id in 230..250 {
+            for existing in catalog["cards"][id]["activated_abilities"]
+                .as_array()
+                .unwrap()
+            {
+                assert_eq!(existing["only_if_not_empowered"], false);
+                assert_eq!(existing["disempower_source"], false);
+            }
+        }
+    }
+
+    fn quoted_wire_apply(session: &mut Session, action: Value) {
+        let before = format!("{:?}", session.game);
+        let revision = session.revision();
+        let player = session.game.priority();
+        let quote = session.handle(json!({"command":"quote_payment","revision":revision,
+            "player":player,"action":action}));
+        assert_eq!(quote["ok"], true, "{quote}");
+        let wrapped = json!({"type":"with_power_payment","action":action,
+            "payment":quote["result"]["suggested"]});
+        let validation = session.handle(json!({"command":"validate","revision":revision,
+            "player":player,"action":wrapped}));
+        assert_eq!(validation["ok"], true, "{validation}");
+        assert_eq!(format!("{:?}", session.game), before);
+        assert_eq!(session.revision(), revision);
+        let response = session.handle(json!({"command":"apply","revision":revision,
+            "player":player,"action":wrapped}));
+        assert_eq!(response["ok"], true, "{response}");
+        assert_eq!(session.revision(), revision + 1);
+    }
+
+    #[test]
+    fn self_empower_and_disempower_wire_cycle_has_public_costs_and_no_chosen_source() {
+        let mut session = ability_position();
+        let source = add_api_gear(&mut session, 700, 250);
+        let action = |index| {
+            json!({"type":"activate_ability",
+            "source":ability_source_to_json(source),"ability_index":index,"targets":[]})
+        };
+        rejected_wire_action(&mut session, action(1));
+        let mut targeted = action(0);
+        targeted["targets"] = json!([{"type":"gear","player":0,"gear_id":700}]);
+        rejected_wire_action(&mut session, targeted);
+        quoted_wire_apply(&mut session, action(0));
+        for viewer in 0..2 {
+            let view = session.observe(viewer).unwrap();
+            assert_eq!(view["players"][0]["gear"][0]["empowered"], false);
+            assert_eq!(view["players"][0]["gear"][0]["ready"], false);
+            assert_eq!(view["chain"][0]["targets"], json!([]));
+            assert_eq!(view["chain"][0]["ability"]["ability_index"], 0);
+        }
+        pass_twice(&mut session);
+        assert!(session.game.unit_empowered(700));
+        submit(&mut session, Action::EndTurn);
+        submit(&mut session, Action::EndTurn);
+        rejected_wire_action(&mut session, action(0));
+        let hand_count = session.game.players[0].hand.len();
+        let energy = session.game.players[0].energy;
+        quoted_wire_apply(&mut session, action(1));
+        for viewer in 0..2 {
+            let view = session.observe(viewer).unwrap();
+            assert_eq!(view["players"][0]["gear"][0]["empowered"], false);
+            assert_eq!(view["players"][0]["gear"][0]["ready"], false);
+            assert_eq!(view["players"][0]["hand_count"], hand_count);
+            assert_eq!(view["players"][0]["energy"], energy - 1);
+            assert_eq!(view["chain"][0]["ability"]["ability_index"], 1);
+            assert_eq!(view["chain"][0]["targets"], json!([]));
+        }
+        pass_twice(&mut session);
+        assert_eq!(session.game.players[0].hand.len(), hand_count + 1);
+        assert!(session.observe(1).unwrap()["players"][0]["hand"].is_null());
+    }
+
+    #[test]
+    fn egg_wire_payment_cannot_spend_the_same_exhaust_twice_and_undo_restores_it() {
+        let mut session = ability_position();
+        session.game.players[0].energy = 0;
+        session.game.players[0].energy_pool = 0;
+        let source = add_api_gear(&mut session, 700, 252);
+        let original = format!("{:?}", session.game);
+        submit(
+            &mut session,
+            Action::BeginPayment {
+                action: Box::new(Action::ActivateAbility {
+                    source,
+                    ability_index: 0,
+                    targets: vec![],
+                }),
+            },
+        );
+        assert_eq!(session.observe(0).unwrap()["payment_plan"]["energy"], 1);
+        assert!(session.observe(1).unwrap()["payment_plan"]["action"].is_null());
+        assert!(session.observe(0).unwrap()["payment_plan"]["pending_card"].is_null());
+        quoted_wire_apply(
+            &mut session,
+            json!({"type":"activate_ability",
+            "source":ability_source_to_json(source),"ability_index":1,"targets":[]}),
+        );
+        assert_eq!(session.game.players[0].energy_pool, 1);
+        assert!(!session.game.players[0].gear[0].ready);
+        rejected_wire_action(&mut session, json!({"type":"complete_payment"}));
+        assert_eq!(session.observe(0).unwrap()["decision"]["can_cancel"], true);
+        quoted_wire_apply(&mut session, json!({"type":"choose","accept":false}));
+        assert_eq!(format!("{:?}", session.game), original);
+    }
+
+    #[test]
+    fn disempower_cost_waits_for_fixed_payment_completion_with_an_independent_egg() {
+        let mut session = ability_position();
+        session.game.players[0].energy = 0;
+        session.game.players[0].energy_pool = 0;
+        let tome = add_api_gear(&mut session, 700, 250);
+        let egg = add_api_gear(&mut session, 701, 252);
+        // Start from a public position with two previously Empowered gear.
+        session.game.empowered_units.extend([700, 701]);
+        let hand_count = session.game.players[0].hand.len();
+        submit(
+            &mut session,
+            Action::BeginPayment {
+                action: Box::new(Action::ActivateAbility {
+                    source: tome,
+                    ability_index: 1,
+                    targets: vec![],
+                }),
+            },
+        );
+        assert!(session.game.unit_empowered(700));
+        assert!(session.game.players[0].gear[0].ready);
+        rejected_wire_action(&mut session, json!({"type":"complete_payment"}));
+        quoted_wire_apply(
+            &mut session,
+            json!({"type":"activate_ability",
+            "source":ability_source_to_json(egg),"ability_index":1,"targets":[]}),
+        );
+        assert_eq!(session.game.players[0].energy_pool, 2);
+        quoted_wire_apply(&mut session, json!({"type":"complete_payment"}));
+        assert!(!session.game.unit_empowered(700));
+        assert!(session.game.unit_empowered(701));
+        assert_eq!(session.game.players[0].energy_pool, 1);
+        assert!(session.game.players[0].gear.iter().all(|gear| !gear.ready));
+        assert_eq!(session.game.players[0].hand.len(), hand_count);
+        assert!(session.observe(0).unwrap()["payment_plan"].is_null());
+        pass_twice(&mut session);
+        assert_eq!(session.game.players[0].hand.len(), hand_count + 1);
     }
 
     #[test]

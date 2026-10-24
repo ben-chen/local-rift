@@ -402,6 +402,37 @@ fn advice(game: &Game, level: AdviceLevel) -> Vec<&'static str> {
             "You have an affordable deployment. Compare its next-turn pressure with preserving runes for an immediate, useful effect."
         });
     }
+    let empower_gear: Vec<_> = human
+        .gear
+        .iter()
+        .filter(|gear| {
+            !gear.token
+                && gear.attached_to.is_none()
+                && local_rift::activated::activated_rules(gear.card_id)
+                    .iter()
+                    .any(|rule| rule.only_if_not_empowered)
+        })
+        .collect();
+    if !empower_gear.is_empty() {
+        let empowered = empower_gear.iter().any(|gear| game.unit_empowered(gear.id));
+        tips.push(if empowered {
+            if beginner {
+                "Your gear is Empowered. If an ability costs Disempower, that state is spent before responses; countering the ability does not restore it."
+            } else {
+                "An ability with a Disempower cost spends that state before responses. A counter stops its effect, but does not restore the paid state."
+            }
+        } else if beginner {
+            "Your gear is not Empowered. Its self-Empower ability chooses no target, pays its printed costs, and takes effect after the response window."
+        } else {
+            "Self-Empower is targetless and respondable. Compare its future payoff with today's energy and ready state before committing to the printed costs."
+        });
+        if empower_gear
+            .iter()
+            .any(|gear| !gear.ready && game.unit_empowered(gear.id))
+        {
+            tips.push("Exhausted and Empowered are separate states. Your gear keeps Empowered while exhausted; an Exhaust cost still needs a ready source.");
+        }
+    }
     if !game.activated_options(0).is_empty() {
         tips.push(if beginner {
             "Units and gear can have their own abilities. Select the source, then Abilities to read its timing, costs and legal targets before committing."
@@ -837,6 +868,67 @@ mod tests {
 
     fn game() -> Game {
         Game::new(0, 1, 72, Difficulty::Easy)
+    }
+
+    #[test]
+    fn gear_empower_advice_distinguishes_targetless_effect_and_paid_cost() {
+        let mut game = game();
+        game.start_match().unwrap();
+        game.players[0].gear.push(local_rift::gear::GearState {
+            id: 800,
+            card_id: 250,
+            attached_to: None,
+            ready: true,
+            temporary: false,
+            token: false,
+        });
+        game.players[0].gear.push(local_rift::gear::GearState {
+            id: 801,
+            card_id: 243,
+            attached_to: None,
+            ready: false,
+            temporary: false,
+            token: false,
+        });
+        game.empowered_units.push(801);
+        let beginner = advice(&game, AdviceLevel::Beginner);
+        assert!(
+            !beginner
+                .iter()
+                .any(|tip| tip.contains("keeps Empowered while exhausted")),
+            "unrelated Empowered gear must not change Tome advice"
+        );
+        assert!(
+            beginner
+                .iter()
+                .any(|tip| tip.contains("not Empowered") && tip.contains("chooses no target"))
+        );
+        game.empowered_units.push(800);
+        game.players[0].gear[0].ready = false;
+        let empowered = advice(&game, AdviceLevel::Beginner);
+        let advanced = advice(&game, AdviceLevel::Advanced);
+        assert!(
+            empowered
+                .iter()
+                .any(|tip| tip.contains("spent before responses"))
+        );
+        assert!(
+            empowered
+                .iter()
+                .any(|tip| tip.contains("keeps Empowered while exhausted"))
+        );
+        assert!(
+            advanced
+                .iter()
+                .any(|tip| tip.contains("counter") && tip.contains("does not restore"))
+        );
+        assert!(
+            beginner
+                .iter()
+                .chain(&empowered)
+                .chain(&advanced)
+                .all(|tip| tip.chars().count() <= 180)
+        );
     }
 
     #[test]
