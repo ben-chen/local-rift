@@ -259,6 +259,59 @@ impl Ui {
         let p = self.offset + p * self.scale;
         draw_poly(p.x, p.y, 4, r * self.scale, 0.0, c);
     }
+    /// A physical-mat style score track. Drawing it never consumes input.
+    pub fn victory_track(&self, r: Rect, score: u8, label: &str, color: Color) {
+        self.rect(r, PANEL);
+        let center = r.x + r.w / 2.0;
+        for (text, y) in [(label, r.y + 20.0), ("VP", r.y + 35.0)] {
+            self.bold(text, center - self.width(text, 9.0) / 2.0, y, 9.0, color);
+        }
+        let top = r.y + 64.0;
+        let bottom = r.y + r.h - 25.0;
+        let step = (bottom - top) / 8.0;
+        let position = score.min(8);
+        self.line(vec2(center, top), vec2(center, bottom), 2.0, LINE);
+        self.line(
+            vec2(center, bottom - f32::from(position) * step),
+            vec2(center, bottom),
+            3.0,
+            color,
+        );
+        for point in 0..=8 {
+            let y = bottom - f32::from(point) * step;
+            let reached = point <= position;
+            let slot = Rect::new(r.x + 3.0, y - 18.0, r.w - 6.0, 36.0);
+            self.rect(
+                slot,
+                if reached {
+                    Color::new(color.r * 0.24, color.g * 0.24, color.b * 0.24, 1.0)
+                } else {
+                    BG
+                },
+            );
+            self.border(slot, if reached || point == 8 { color } else { LINE });
+            let current = point == position;
+            if current {
+                self.diamond(vec2(center, y), r.w / 2.0, color);
+            }
+            // Cleanup may compare scores above eight; keep the exact total visible.
+            let value = if current { score } else { point }.to_string();
+            let size = if value.len() > 2 { 9.0 } else { 12.0 };
+            self.bold(
+                &value,
+                center - self.width(&value, size) / 2.0,
+                y + size * 0.35,
+                size,
+                if current {
+                    BG
+                } else if reached {
+                    color
+                } else {
+                    MUTED
+                },
+            );
+        }
+    }
     fn facet(&self, a: Vec2, b: Vec2, c: Vec2, color: Color) {
         draw_triangle(
             self.offset + a * self.scale,

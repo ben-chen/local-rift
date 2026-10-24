@@ -665,6 +665,15 @@ pub fn draw_scene(rect: Rect, state: &SceneState) -> SceneHits {
         ..Default::default()
     };
     set_camera(&camera);
+    // The viewport positions the scenery; scissoring also confines rasterization
+    // to the board on drivers that draw geometry beyond that viewport.
+    // SAFETY: this is the render thread, and the context borrow ends immediately.
+    unsafe { get_internal_gl() }.quad_gl.scissor(Some((
+        rect.x.round() as i32,
+        rect.y.round() as i32,
+        rect.w.round() as i32,
+        rect.h.round() as i32,
+    )));
     ENVIRONMENT.with(|cache| {
         let mut cache = cache.borrow_mut();
         if cache.is_none() {
@@ -768,5 +777,8 @@ pub fn draw_scene(rect: Rect, state: &SceneState) -> SceneHits {
         draw_mesh(mesh);
     }
     set_default_camera();
+    // set_default_camera flushes the clipped scene before restoring the UI clip.
+    // SAFETY: no other internal graphics-context reference is retained here.
+    unsafe { get_internal_gl() }.quad_gl.scissor(None);
     hits
 }

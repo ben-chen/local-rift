@@ -3961,6 +3961,18 @@ impl App {
         }
     }
     fn draw_playmat(&mut self, hits: &scene::SceneHits) -> Result<(), String> {
+        self.ui.victory_track(
+            Rect::new(218.0, 110.0, 23.0, 527.0),
+            self.game.players[0].score,
+            "YOU",
+            TEAL,
+        );
+        self.ui.victory_track(
+            Rect::new(1132.0, 110.0, 23.0, 527.0),
+            self.game.players[1].score,
+            "AI",
+            GOLD,
+        );
         for owner in 0..2 {
             let rail = Rect::new(245.0, if owner == 1 { 110.0 } else { 571.0 }, 883.0, 66.0);
             self.ui.rune_rail(
@@ -5497,25 +5509,15 @@ impl App {
             10.0,
             MUTED,
         );
-        self.ui.title(
-            &format!("{}", self.game.players[0].score),
-            1185.0,
+        self.ui.bold("CONQUER · HOLD", 1178.0, 165.0, 13.0, TEXT);
+        self.ui.wrapped(
+            "Score by taking and holding battlefields. Reach 8 points and lead to win.",
+            1178.0,
             187.0,
-            42.0,
-            TEAL,
+            212.0,
+            11.0,
+            MUTED,
         );
-        self.ui.text("/ 8", 1221.0, 183.0, 15.0, MUTED);
-        self.ui.text("YOU", 1185.0, 207.0, 9.0, TEAL);
-        self.ui.title(
-            &format!("{}", self.game.players[1].score),
-            1321.0,
-            187.0,
-            42.0,
-            GOLD,
-        );
-        self.ui.text("/ 8", 1357.0, 183.0, 15.0, MUTED);
-        self.ui.text("OPPONENT", 1314.0, 207.0, 9.0, GOLD);
-        self.ui.text("vs", 1275.0, 180.0, 12.0, MUTED);
         self.ui
             .line(vec2(1178.0, 225.0), vec2(1390.0, 225.0), 1.0, LINE);
         if self.game.in_window() {

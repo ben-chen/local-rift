@@ -8124,15 +8124,37 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
             capture(app, "RIFT_SMOKE_C13_DECLINED_SCREENSHOT");
         }
         795 => {
+            // Public score fixtures exercise both tracks without changing scoring rules.
+            expansion_fixture(app, 367);
+            app.game.players[0].score = 0;
+            app.game.players[1].score = 0;
+            capture(app, "RIFT_SMOKE_VICTORY_TRACK_START_SCREENSHOT");
+        }
+        796 => {
+            app.game.players[0].score = 4;
+            app.game.players[1].score = 7;
+            capture(app, "RIFT_SMOKE_VICTORY_TRACK_RACE_SCREENSHOT");
+        }
+        797 => {
+            app.game.players[0].score = 8;
+            app.game.players[1].score = 3;
+            capture(app, "RIFT_SMOKE_VICTORY_TRACK_YOU_SCREENSHOT");
+        }
+        798 => {
+            app.game.players[0].score = 2;
+            app.game.players[1].score = 8;
+            capture(app, "RIFT_SMOKE_VICTORY_TRACK_AI_SCREENSHOT");
+        }
+        799 => {
             app.ui.input_override = None;
             app.ui.pointer_override = None;
             app.ui.wheel_override = None;
             println!(
-                "PASS: 796 native UI frames including optional gear triggers, attached targets, retained choices across Loadouts, printed Energy limits, and mixed gear/unit targets, ordered Hidden targets and prefix editing, distinct Sprite child drafts, live Temporary and Petal previews, simultaneous Beginning expiry and new-token survival, plus all previous 765 controls."
+                "PASS: 800 native UI frames including side victory tracks at zero, midgame, last-point pressure and eight for both seats, optional gear triggers, attached targets, retained choices across Loadouts, printed Energy limits, and mixed gear/unit targets, ordered Hidden targets and prefix editing, distinct Sprite child drafts, live Temporary and Petal previews, simultaneous Beginning expiry and new-token survival, plus all previous 765 controls."
             );
             return true;
         }
-        _ => panic!("UI smoke runner exceeded its 796-frame script"),
+        _ => panic!("UI smoke runner exceeded its 800-frame script"),
     }
     false
 }
