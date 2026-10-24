@@ -288,6 +288,12 @@ impl Game {
         }
     }
     pub(super) fn emit_event(&mut self, event: EventSnapshot) {
+        if event.kind == Occurrence::SpellPlayed
+            && !event.token
+            && let Some(card_id) = event.card_id
+        {
+            self.legend_on_spell_completed(event.player, card_id);
+        }
         for (card_id, source) in self.trigger_sources() {
             for (rule_index, rule) in metadata::trigger_rules(card_id).iter().enumerate() {
                 if rule.event == Event::SelfDeath {

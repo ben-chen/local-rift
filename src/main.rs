@@ -170,6 +170,10 @@ struct App {
     selection: Option<Selection>,
     mulligan: HashSet<usize>,
     art: Vec<Option<Texture2D>>,
+    legend_art: Vec<Option<Texture2D>>,
+    legend_picker: Option<usize>,
+    legend_hover: Option<usize>,
+    deck_load_errors: Vec<String>,
     prefs: Preferences,
     companion: Companion,
     toast: String,
@@ -231,17 +235,12 @@ fn seed() -> u64 {
 impl App {
     fn new() -> Self {
         let mut prefs = Preferences::load();
-        let custom_decks = deck_editor::load_saved_decks();
+        let (custom_decks, deck_load_errors) = deck_editor::load_saved_decks_with_errors();
         for (owner, deck) in custom_decks.iter().enumerate() {
             prefs.use_custom[owner] &= deck.is_some();
         }
-        let selected: [usize; 2] = std::array::from_fn(|owner| {
-            if prefs.use_custom[owner] {
-                custom_decks[owner].as_ref().unwrap().legend
-            } else {
-                owner
-            }
-        });
+        // These remain tournament preset indices; custom legends have a separate registry.
+        let selected = [0, 1];
         let fields = std::array::from_fn(|owner| {
             if prefs.use_custom[owner] {
                 custom_decks[owner].as_ref().unwrap().battlefield
@@ -271,6 +270,14 @@ impl App {
                 art[id] = Some(tex);
             }
         }
+        let mut legend_art = vec![None; local_rift::legend_catalog::legends().len()];
+        for &(id, bytes) in LEGEND_ART {
+            if let Some(slot) = legend_art.get_mut(id) {
+                let texture = Texture2D::from_file_with_format(bytes, None);
+                texture.set_filter(FilterMode::Linear);
+                *slot = Some(texture);
+            }
+        }
         Self {
             ui: Ui::new(),
             game,
@@ -284,6 +291,10 @@ impl App {
             selection: None,
             mulligan: HashSet::new(),
             art,
+            legend_art,
+            legend_picker: None,
+            legend_hover: None,
+            deck_load_errors,
             companion: Companion::new(if prefs.advanced {
                 AdviceLevel::Advanced
             } else {
@@ -477,6 +488,12 @@ impl App {
     }
     fn update(&mut self) {
         self.ui.resize();
+        if self.legend_picker.is_some() || !self.deck_load_errors.is_empty() {
+            if is_key_pressed(KeyCode::Escape) {
+                self.legend_picker = None;
+            }
+            return;
+        }
         self.companion.observe(&self.game);
         if self.payment_draft.is_some() {
             if is_key_pressed(KeyCode::Escape) {
@@ -625,6 +642,7 @@ impl App {
         clear_background(BG);
         self.ui.rect(Rect::new(0.0, 0.0, 1440.0, 900.0), BG);
         self.field_hover = None;
+        self.legend_hover = None;
         self.hover_candidate = None;
         self.hover_unit_candidate = None;
         self.hover_token_candidate = None;
@@ -635,7 +653,9 @@ impl App {
         {
             self.inspect = self.hover_card;
         }
-        self.ui.enabled = self.inspect.is_none()
+        self.ui.enabled = self.legend_picker.is_none()
+            && self.deck_load_errors.is_empty()
+            && self.inspect.is_none()
             && self.lesson.is_none()
             && !self.confirm_restart
             && !self.show_journal
@@ -685,6 +705,9 @@ impl App {
         self.battlefield_help();
         self.equipment_help();
         self.payment_editor();
+        self.legend_tooltip();
+        self.draw_legend_picker();
+        self.saved_deck_notice();
         self.ui.enabled = true;
     }
     fn sidebar(&mut self) {
@@ -806,6 +829,96 @@ impl App {
         self.ui
             .line(vec2(244.0, 91.0), vec2(1410.0, 91.0), 1.0, LINE);
     }
+    fn setup_legend(&self, owner: usize) -> &'static local_rift::legend_catalog::LegendDef {
+        let preset = if owner == 0 {
+            self.player_deck
+        } else {
+            self.opponent_deck
+        };
+        let id = self.custom_decks[owner]
+            .as_ref()
+            .filter(|_| self.prefs.use_custom[owner])
+            .map_or(self.game.presets[preset].legend_id, |deck| deck.legend);
+        local_rift::legend_catalog::legend(id).expect("validated setup legend")
+    }
+    fn setup_champion(&self, owner: usize) -> usize {
+        let preset = if owner == 0 {
+            self.player_deck
+        } else {
+            self.opponent_deck
+        };
+        self.custom_decks[owner]
+            .as_ref()
+            .filter(|_| self.prefs.use_custom[owner])
+            .map_or(self.game.presets[preset].chosen_champion, |deck| {
+                deck.chosen_champion
+            })
+    }
+    fn draw_legend_art(&self, id: usize, rect: Rect, crop: bool, tint: Color) {
+        if let Some(Some(texture)) = self.legend_art.get(id) {
+            self.ui.image(
+                texture,
+                rect,
+                crop.then(|| {
+                    Rect::new(
+                        texture.width() * 0.08,
+                        texture.height() * 0.12,
+                        texture.width() * 0.84,
+                        texture.height() * 0.43,
+                    )
+                }),
+                tint,
+            );
+        } else if let Some(legend) = local_rift::legend_catalog::legend(id) {
+            self.ui.rect(rect, rgb(legend.accent));
+        }
+    }
+    fn legend_tooltip(&mut self) {
+        let Some(id) = self.legend_hover else {
+            return;
+        };
+        if self.lesson.is_some()
+            || self.inspect.is_some()
+            || self.legend_picker.is_some()
+            || self.payment_draft.is_some()
+        {
+            return;
+        }
+        let definition = local_rift::legend_catalog::legend(id).unwrap();
+        self.hover_card = None;
+        self.hover_rect = None;
+        let r = Rect::new(
+            (self.ui.mouse().x - 165.0).clamp(240.0, 1095.0),
+            210.0,
+            330.0,
+            370.0,
+        );
+        self.ui.rect(r, PANEL);
+        self.ui.border(r, GOLD);
+        self.draw_legend_art(
+            id,
+            Rect::new(r.x + 14.0, r.y + 14.0, 92.0, 129.0),
+            false,
+            WHITE,
+        );
+        self.ui.wrapped(
+            &legend_label(definition),
+            r.x + 120.0,
+            r.y + 34.0,
+            195.0,
+            16.0,
+            TEXT,
+        );
+        self.ui
+            .wrapped(definition.text, r.x + 14.0, r.y + 168.0, 302.0, 12.0, TEXT);
+        self.ui.text(
+            "Right-click to open full legend rules",
+            r.x + 14.0,
+            r.y + 352.0,
+            10.0,
+            GOLD,
+        );
+    }
     fn champion_art(&self, deck: usize, r: Rect, tint: Color) {
         let id = self.game.presets[deck].chosen_champion;
         if let Some(Some(tex)) = self.art.get(id) {
@@ -858,12 +971,7 @@ impl App {
                     location: unit.lane.map(|i| i + 1).unwrap_or(0),
                     ready: unit.ready,
                     might: self.game.unit_might(unit),
-                    accent: self.game.presets[if player == 0 {
-                        self.player_deck
-                    } else {
-                        self.opponent_deck
-                    }]
-                    .accent,
+                    accent: self.game.legend_def(player).accent,
                 });
             }
         }
@@ -1118,12 +1226,7 @@ impl App {
         }
         if !self.in_match {
             for (index, (_, rect)) in hits.units.iter().enumerate() {
-                let deck = if index == 0 {
-                    self.player_deck
-                } else {
-                    self.opponent_deck
-                };
-                let id = self.game.presets[deck].chosen_champion;
+                let id = self.setup_champion(index);
                 let card = self.game.catalog[id];
                 self.board_card(
                     self.ui.logical(*rect),
@@ -1249,7 +1352,23 @@ impl App {
                 2,
             );
             if self.ui.hover(r) {
-                self.hover_candidate = Some(item.card_id);
+                match self.game.chain_source(&item) {
+                    local_rift::game::ChainSource::Card { card_id } => {
+                        self.hover_candidate = Some(card_id)
+                    }
+                    local_rift::game::ChainSource::Legend { legend_id, .. } => {
+                        self.legend_hover = Some(legend_id);
+                        if self.ui.secondary_pressed() {
+                            self.lesson = Some(legend_id);
+                        }
+                    }
+                    local_rift::game::ChainSource::Battlefield { battlefield_id, .. } => {
+                        self.field_hover = Some(battlefield_id);
+                        if self.ui.secondary_pressed() {
+                            self.field_inspect = Some(battlefield_id);
+                        }
+                    }
+                }
             }
             if self.ui.button(
                 Rect::new(1178.0, 307.0, 28.0, 26.0),
@@ -2009,9 +2128,11 @@ impl App {
                 Selection::Trash(_)
                 | Selection::Pending(_)
                 | Selection::Hidden(_)
-                | Selection::Gear(_)
-                | Selection::Legend,
+                | Selection::Gear(_),
             ) => true,
+            Some(Selection::Legend) => {
+                self.game.legend[0].kind == local_rift::legends::LegendKind::Kennen
+            }
             _ => false,
         }
     }
@@ -2241,18 +2362,30 @@ impl App {
                 self.hand_scroll = 0;
             }
             let owner = self.gear_owner;
-            let deck = if owner == 0 {
-                self.player_deck
-            } else {
-                self.opponent_deck
-            };
             let champion = self.game.players[owner].champion;
-            let id = self.game.presets[deck].chosen_champion;
+            let legend = self.game.legend_def(owner);
+            let id = legend.default_champion;
             let r = self.tile(
                 id,
                 0,
                 "Legend power",
                 self.selection == Some(Selection::Legend) && owner == 0,
+            );
+            if self.ui.clicked(r) && owner == 0 {
+                self.selection = Some(Selection::Legend);
+                self.targets.clear();
+            }
+            self.ui
+                .rect(Rect::new(r.x + 2.0, r.y + 2.0, 136.0, 96.0), BG);
+            self.draw_legend_art(
+                legend.id,
+                Rect::new(r.x + 2.0, r.y + 2.0, 136.0, 96.0),
+                true,
+                WHITE,
+            );
+            self.ui.rect(
+                Rect::new(r.x + 3.0, r.y + 72.0, r.w - 6.0, 24.0),
+                Color::new(0.025, 0.06, 0.08, 0.9),
             );
             self.ui.text(
                 if self.game.legend[owner].ready {
@@ -2265,12 +2398,17 @@ impl App {
                 9.0,
                 GOLD,
             );
-            if self.ui.clicked(r) && owner == 0 {
-                self.selection = Some(Selection::Legend);
-                self.targets.clear();
-            }
-            if self.ui.hover(r) && self.ui.secondary_pressed() {
-                self.lesson = Some(deck);
+            self.ui
+                .rect(Rect::new(r.x + 3.0, r.y + 128.0, r.w - 6.0, 47.0), PANEL);
+            self.ui
+                .ellipsis(legend.champion, r.x + 9.0, r.y + 143.0, 122.0, 10.0, TEXT);
+            self.ui
+                .ellipsis(legend.name, r.x + 9.0, r.y + 163.0, 122.0, 9.0, GOLD);
+            if self.ui.hover(r) {
+                self.legend_hover = Some(legend.id);
+                if self.ui.secondary_pressed() {
+                    self.lesson = Some(legend.id);
+                }
             }
             if let Some(id) = champion {
                 let r = self.tile(
@@ -2771,7 +2909,8 @@ impl App {
         self.tray_scroll(cards.len(), 6);
         true
     }
-    fn legend_lesson(&mut self, deck: usize) {
+    fn legend_lesson(&mut self, id: usize) {
+        let definition = local_rift::legend_catalog::legend(id).expect("registered legend");
         self.ui.rect(
             Rect::new(0.0, 0.0, 1440.0, 900.0),
             Color::new(0.0, 0.015, 0.02, 0.9),
@@ -2779,24 +2918,26 @@ impl App {
         self.ui.enabled = true;
         self.ui.rect(Rect::new(350.0, 140.0, 840.0, 623.0), PANEL);
         self.ui.border(Rect::new(350.0, 140.0, 840.0, 623.0), LINE);
-        let p = &self.game.presets[deck];
+        self.ui.pill(380.0, 170.0, "OFFICIAL LEGEND RULES", GOLD);
         self.ui
-            .pill(380.0, 170.0, "OFFICIAL LEGEND & STRATEGY", GOLD);
-        self.ui.title(p.legend_name, 380.0, 237.0, 31.0, TEXT);
-        let y = self
+            .ellipsis(&legend_label(definition), 380.0, 237.0, 775.0, 28.0, TEXT);
+        self.draw_legend_art(id, Rect::new(380.0, 263.0, 147.0, 206.0), false, WHITE);
+        self.ui
+            .wrapped(definition.text, 550.0, 283.0, 608.0, 14.0, TEXT);
+        self.ui.text("PRACTICE PLAN", 380.0, 510.0, 11.0, TEAL);
+        let notes = self
+            .game
+            .presets
+            .iter()
+            .find(|preset| preset.legend_id == id)
+            .map(|preset| preset.learning_notes)
+            .unwrap_or_else(|| legend_practice_tip(id));
+        self.ui.wrapped(notes, 380.0, 541.0, 775.0, 13.0, MUTED);
+        self.ui.wrapped("Legend rules and training ideas are separate from tournament deck results. Your custom list is editable, and the original four tournament presets keep their sourced lists.",380.0,644.0,770.0,11.0,GOLD);
+        if self
             .ui
-            .wrapped(p.legend_text, 380.0, 282.0, 775.0, 14.0, TEXT);
-        self.ui
-            .text("THE REAL DECK'S PLAN", 380.0, y + 35.0, 11.0, TEAL);
-        self.ui
-            .wrapped(p.learning_notes, 380.0, y + 66.0, 775.0, 13.0, MUTED);
-        self.ui.wrapped("These are the legend powers used in this client. Check individual card support for remaining differences; a simple AI is practice for decisions, not a competitive metagame benchmark.",380.0,644.0,770.0,11.0,GOLD);
-        if self.ui.button(
-            Rect::new(380.0, 701.0, 780.0, 38.0),
-            "Back to the deck library",
-            true,
-            true,
-        ) {
+            .button(Rect::new(380.0, 701.0, 780.0, 38.0), "Back", true, true)
+        {
             self.lesson = None;
         }
     }
@@ -2906,9 +3047,11 @@ impl App {
             };
             let r = Rect::new(x, 693.0, 570.0, 163.0);
             self.ui.rect(r, PANEL);
-            self.champion_art(
-                deck,
+            let legend = self.setup_legend(side);
+            self.draw_legend_art(
+                legend.id,
                 Rect::new(x, 693.0, 205.0, 163.0),
+                true,
                 Color::new(0.72, 0.80, 0.78, 1.0),
             );
             for n in 0..50 {
@@ -2929,13 +3072,7 @@ impl App {
                 10.0,
                 if side == 0 { TEAL } else { GOLD },
             );
-            self.ui.title(
-                p.champion.split(',').next().unwrap_or(p.champion),
-                x + 218.0,
-                751.0,
-                26.0,
-                TEXT,
-            );
+            self.ui.title(legend.champion, x + 218.0, 751.0, 26.0, TEXT);
             let deck_name = if self.prefs.use_custom[side] {
                 self.custom_decks[side]
                     .as_ref()
@@ -4387,7 +4524,7 @@ impl App {
         } else {
             self.ui.text("YOUR LEGEND", 1178.0, 245.0, 9.0, GOLD);
             self.ui.ellipsis(
-                self.game.presets[self.player_deck].legend_name,
+                &legend_label(self.game.legend_def(0)),
                 1178.0,
                 269.0,
                 212.0,
@@ -5055,13 +5192,24 @@ impl App {
                 }
             }
             Some(Selection::Legend) => {
-                let preset = &self.game.presets[self.player_deck];
-                self.ui.title("Your legend", 1178.0, 363.0, 22.0, TEXT);
+                let definition = self.game.legend_def(0);
                 self.ui
-                    .wrapped_lines(preset.legend_text, 1178.0, 392.0, 210.0, 11.0, MUTED, 8);
+                    .title(definition.champion, 1178.0, 363.0, 22.0, TEXT);
+                self.ui
+                    .wrapped_lines(definition.text, 1178.0, 392.0, 210.0, 11.0, MUTED, 8);
                 let legend = &self.game.legend[0];
                 self.ui.text(
-                    if legend.ready { "READY" } else { "EXHAUSTED" },
+                    if !legend.ready {
+                        "EXHAUSTED"
+                    } else if self.game.legend_id(0) == 4 {
+                        if self.game.cards_played_this_turn(0) > 0 {
+                            "LEGION READY · ADDS 1 ENERGY"
+                        } else {
+                            "NO LEGION YET · ADDS 0 ENERGY"
+                        }
+                    } else {
+                        "READY"
+                    },
                     1178.0,
                     526.0,
                     9.0,
@@ -5069,12 +5217,25 @@ impl App {
                 );
                 if self.ui.button(
                     Rect::new(1178.0, 534.0, 212.0, 28.0),
-                    "Use legend power",
+                    legend_activation_label(self.game.legend_id(0)),
                     false,
-                    self.player_deck == 2 || self.player_deck == 3,
+                    self.game
+                        .clone()
+                        .apply(Action::ActivateLegend {
+                            target: if self.targeting_selection() {
+                                self.targets.first().copied()
+                            } else {
+                                None
+                            },
+                        })
+                        .is_ok(),
                 ) {
                     self.action(Action::ActivateLegend {
-                        target: self.targets.first().copied(),
+                        target: if self.targeting_selection() {
+                            self.targets.first().copied()
+                        } else {
+                            None
+                        },
                     });
                 }
             }
@@ -5412,7 +5573,14 @@ impl App {
             "Find your playstyle.",
             "Tournament deck lists, ready for a little practice. Every matchup is yours to try.",
         );
-        self.ui.pill(1234.0, 33.0, "4 PRELOADED DECKS", TEAL);
+        if self.ui.button(
+            Rect::new(1192.0, 25.0, 218.0, 42.0),
+            "Build with a legend  >",
+            false,
+            true,
+        ) {
+            self.legend_picker = Some(self.game.presets[self.browse_deck].legend_id);
+        }
         for index in 0..self.game.presets.len() {
             let x = 245.0 + index as f32 * 296.0;
             let r = Rect::new(x, 116.0, 274.0, 278.0);
@@ -5484,7 +5652,7 @@ impl App {
             false,
             true,
         ) {
-            self.lesson = Some(self.browse_deck);
+            self.lesson = Some(self.game.presets[self.browse_deck].legend_id);
         }
         if self.ui.button(
             Rect::new(265.0, 642.0, 320.0, 30.0),
@@ -6031,6 +6199,34 @@ fn card_brief(game: &Game, id: usize) -> String {
             } else {
                 "Inspect rules text".into()
             }
+        }
+    }
+}
+fn legend_label(legend: &local_rift::legend_catalog::LegendDef) -> String {
+    format!("{} · {}", legend.champion, legend.name)
+}
+fn legend_activation_label(id: usize) -> &'static str {
+    match id {
+        2 => "Grant Assault 2",
+        3 => "Add 1 spell-only power",
+        4 => "Exhaust · Legion: +1 energy",
+        5 => "Pay 1 energy · create Recruit",
+        _ => "Passive / triggered ability",
+    }
+}
+fn legend_practice_tip(id: usize) -> &'static str {
+    match id {
+        4 => {
+            "Play a cheap first card to enable Legion. Darius's legend can then add energy for your next play or response; keep track of resources across the whole turn."
+        }
+        5 => {
+            "Viktor can turn one energy into a Recruit during your own open Main Phase. Consider where an extra unit can defend a point before committing it."
+        }
+        6 => {
+            "Lux rewards spells whose printed energy cost is at least five. Early defenders help you reach those plays; a discounted spell can still meet that printed threshold."
+        }
+        _ => {
+            "Use your legend's printed ability to plan your resources and next scoring opportunity."
         }
     }
 }

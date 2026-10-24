@@ -1,4 +1,4 @@
-//! The four preset legends' printed powers.
+//! Registered legends' printed powers, independent of deck presets/champions.
 //!
 //! Trigger costs are paid during finalization (Core 383.3); non-resource
 //! abilities enter the ordinary chain. Kai'Sa's Add ability resolves immediately
@@ -12,17 +12,104 @@ pub enum LegendKind {
     MasterYi,
     Kennen,
     KaiSa,
+    Darius,
+    Viktor,
+    Lux,
 }
 
 impl LegendKind {
-    pub fn champion_id(self) -> usize {
+    pub fn id(self) -> usize {
         match self {
             Self::Irelia => 0,
-            Self::MasterYi => 22,
-            Self::Kennen => 33,
-            Self::KaiSa => 49,
+            Self::MasterYi => 1,
+            Self::Kennen => 2,
+            Self::KaiSa => 3,
+            Self::Darius => 4,
+            Self::Viktor => 5,
+            Self::Lux => 6,
         }
     }
+
+    pub fn from_id(id: usize) -> Option<Self> {
+        Some(match id {
+            0 => Self::Irelia,
+            1 => Self::MasterYi,
+            2 => Self::Kennen,
+            3 => Self::KaiSa,
+            4 => Self::Darius,
+            5 => Self::Viktor,
+            6 => Self::Lux,
+            _ => return None,
+        })
+    }
+
+    /// Default artwork/card reference only; never the legend's identity.
+    pub fn champion_id(self) -> usize {
+        crate::legend_catalog::legend(self.id())
+            .expect("registered legend")
+            .default_champion
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum LegendTiming {
+    Main,
+    Action,
+    Reaction,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum LegendActivationEffect {
+    SpellPower,
+    Assault,
+    LegionEnergy,
+    Recruit,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct LegendActivation {
+    pub timing: LegendTiming,
+    pub energy: u8,
+    pub exhaust: bool,
+    pub disempower: bool,
+    pub effect: LegendActivationEffect,
+}
+
+pub fn legend_activation(kind: LegendKind) -> Option<LegendActivation> {
+    let (timing, energy, disempower, effect) = match kind {
+        LegendKind::KaiSa => (
+            LegendTiming::Reaction,
+            0,
+            false,
+            LegendActivationEffect::SpellPower,
+        ),
+        LegendKind::Kennen => (
+            LegendTiming::Action,
+            0,
+            true,
+            LegendActivationEffect::Assault,
+        ),
+        LegendKind::Darius => (
+            LegendTiming::Reaction,
+            0,
+            false,
+            LegendActivationEffect::LegionEnergy,
+        ),
+        LegendKind::Viktor => (
+            LegendTiming::Main,
+            1,
+            false,
+            LegendActivationEffect::Recruit,
+        ),
+        _ => return None,
+    };
+    Some(LegendActivation {
+        timing,
+        energy,
+        exhaust: true,
+        disempower,
+        effect,
+    })
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -37,6 +124,23 @@ pub struct LegendState {
 }
 
 impl LegendState {
+    pub fn from_legend(id: usize) -> Result<Self, String> {
+        let kind = LegendKind::from_id(id).ok_or("Choose an implemented legend.")?;
+        if crate::legend_catalog::legend(id).is_none() {
+            return Err("Legend metadata is missing.".into());
+        }
+        Ok(Self {
+            kind,
+            ready: true,
+            empowered: false,
+            spell_power: 0,
+            assault_grants: Vec::new(),
+        })
+    }
+
+    /// Compatibility constructor for original four-legend Rust fixtures.
+    /// Match construction uses from_legend; a chosen champion does not select
+    /// or change its legend.
     pub fn new(champion_id: usize) -> Self {
         let kind = match champion_id {
             0 => LegendKind::Irelia,
@@ -61,6 +165,8 @@ pub enum LegendAbility {
     IreliaRefresh,
     KennenEmpower,
     KennenAssault { target: Target },
+    ViktorRecruit,
+    LuxDraw,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -70,6 +176,16 @@ pub enum LegendTrigger {
 }
 
 impl Game {
+    pub(crate) fn legend_on_spell_completed(&mut self, player: usize, card_id: usize) {
+        if self.legend[player].kind == LegendKind::Lux && self.catalog[card_id].cost >= 5 {
+            self.queue_ability(
+                player,
+                self.legend_def(player).default_champion,
+                Vec::new(),
+                ChainAbility::Legend(LegendAbility::LuxDraw),
+            );
+        }
+    }
     /// Derived bonuses must never be written into the printed or temporary
     /// might, because moving or adding another defender can remove them.
     pub(crate) fn legend_might_bonus(&self, unit: &Unit) -> u8 {
@@ -168,86 +284,155 @@ impl Game {
         true
     }
 
-    pub(crate) fn activate_legend(&mut self, target: Option<Target>) -> Result<(), String> {
-        if self.phase != Phase::Playing {
+    fn validate_legend_activation(
+        &self,
+        player: usize,
+        target: Option<Target>,
+    ) -> Result<LegendActivation, String> {
+        if self.phase != Phase::Playing || player != self.priority() {
+            return Err("Wait for priority before activating your legend.".into());
+        }
+        let activation = legend_activation(self.legend[player].kind).ok_or(
+            "This legend has no activated ability; its printed effects apply automatically.",
+        )?;
+        let adds = matches!(
+            activation.effect,
+            LegendActivationEffect::SpellPower | LegendActivationEffect::LegionEnergy
+        );
+        if self.decision.is_some() && !(self.resource_payment_pending() && adds) {
             return Err("Finish the current choice before activating your legend.".into());
         }
-        let player = self.priority();
-        if self.decision.is_some()
-            && !(self.resource_payment_pending() && self.legend[player].kind == LegendKind::KaiSa)
-        {
-            return Err("Finish the current choice before activating your legend.".into());
-        }
-        if !self.legend[player].ready {
+        if activation.exhaust && !self.legend[player].ready {
             return Err("Your legend is exhausted.".into());
         }
-        match self.legend[player].kind {
-            LegendKind::KaiSa => {
-                if target.is_some() { return Err("Kai'Sa's resource ability does not choose a target.".into()); }
-                self.legend[player].ready = false;
-                self.legend[player].spell_power = self.legend[player].spell_power.saturating_add(1);
-                self.push_log(format!("{} exhausts Kai'Sa's legend: add 1 flexible power for spells only.", self.players[player].name));
-                // An Add ability neither joins the chain nor passes priority.
-                Ok(())
-            }
-            LegendKind::Kennen => {
-                if !self.legend[player].empowered { return Err("Empower Kennen's legend by playing a card from outside your hand first.".into()); }
-                if !self.chain.is_empty() { return Err("Kennen's Action ability requires an open state.".into()); }
-                if self.showdown.is_none() && player != self.active { return Err("Wait for your turn or an open showdown.".into()); }
-                let target = target.ok_or("Choose a unit for Kennen's Assault ability.")?;
-                if !self.legend_target_valid(player, target) { return Err("That unit cannot be chosen by this legend ability.".into()); }
-                let deflect = self.deflect_cost(player, &[target]);
-                if self.available_power(player, None) < deflect { return Err("Choosing that unit requires additional power for Deflect.".into()); }
-                self.spend_power(player, None, deflect)?;
-                self.legend[player].ready = false;
-                self.legend[player].empowered = false;
-                self.queue_ability(player, 33, vec![target], ChainAbility::Legend(LegendAbility::KennenAssault { target }));
-                self.push_log(format!("{} activates Kennen's legend. Assault 2 waits on the chain.", self.players[player].name));
-                Ok(())
-            }
-            LegendKind::Irelia => Err("Irelia's legend offers optional choices when you choose a friendly unit or conquer.".into()),
-            LegendKind::MasterYi => Err("Master Yi's legend is passive: a friendly unit defending alone gets +2 might.".into()),
+        if activation.disempower && !self.legend[player].empowered {
+            return Err("Your legend must be empowered to pay this activation cost.".into());
         }
+        let allowed = match activation.timing {
+            LegendTiming::Main => {
+                self.is_main_phase()
+                    && player == self.active
+                    && self.chain.is_empty()
+                    && self.showdown.is_none()
+            }
+            LegendTiming::Action => {
+                self.chain.is_empty()
+                    && (self.showdown.is_some() || (self.is_main_phase() && player == self.active))
+            }
+            LegendTiming::Reaction => true,
+        };
+        if !allowed {
+            return Err(
+                "This legend ability cannot be activated in the current timing window.".into(),
+            );
+        }
+        if self.players[player].energy < activation.energy {
+            return Err(format!(
+                "Pay {} energy to activate this legend.",
+                activation.energy
+            ));
+        }
+        if activation.effect == LegendActivationEffect::Assault {
+            let target = target.ok_or("Choose a unit for Kennen's Assault ability.")?;
+            if !self.legend_target_valid(player, target) {
+                return Err("That unit cannot be chosen by this legend ability.".into());
+            }
+            if self.available_power(player, None) < self.deflect_cost(player, &[target]) {
+                return Err("Choosing that unit requires additional power for Deflect.".into());
+            }
+        } else if target.is_some() {
+            return Err("This legend ability does not choose a target.".into());
+        }
+        Ok(activation)
     }
 
-    pub(crate) fn legend_actions(&self, player: usize) -> Vec<Action> {
-        if self.phase != Phase::Playing
-            || self.priority() != player
-            || (self.decision.is_some()
-                && !(self.resource_payment_pending()
-                    && self.legend[player].kind == LegendKind::KaiSa))
-            || !self.legend[player].ready
-        {
+    pub(crate) fn activate_legend(&mut self, target: Option<Target>) -> Result<(), String> {
+        let player = self.priority();
+        let activation = self.validate_legend_activation(player, target)?;
+        self.pay_energy(player, activation.energy);
+        if let Some(target) = target {
+            self.spend_power(player, None, self.deflect_cost(player, &[target]))?;
+        }
+        if activation.exhaust {
+            self.legend[player].ready = false;
+        }
+        if activation.disempower {
+            self.legend[player].empowered = false;
+        }
+        match activation.effect {
+            LegendActivationEffect::SpellPower => {
+                self.legend[player].spell_power = self.legend[player].spell_power.saturating_add(1);
+                self.push_log(format!(
+                    "{} exhausts Kai'Sa's legend: add 1 flexible power for spells only.",
+                    self.players[player].name
+                ));
+            }
+            LegendActivationEffect::Assault => {
+                let target = target.expect("validated target");
+                self.queue_ability(
+                    player,
+                    self.legend_def(player).default_champion,
+                    vec![target],
+                    ChainAbility::Legend(LegendAbility::KennenAssault { target }),
+                );
+                self.push_log(format!(
+                    "{} activates Kennen's legend. Assault 2 waits on the chain.",
+                    self.players[player].name
+                ));
+            }
+            LegendActivationEffect::LegionEnergy => {
+                if self.cards_played_this_turn(player) > 0 {
+                    self.players[player].energy_pool += 1;
+                    self.players[player].energy += 1;
+                    self.push_log(format!(
+                        "{} exhausts Hand of Noxus: add 1 energy.",
+                        self.players[player].name
+                    ));
+                } else {
+                    self.push_log(format!(
+                        "{} exhausts Hand of Noxus; Legion is inactive, so it adds no energy.",
+                        self.players[player].name
+                    ));
+                }
+            }
+            LegendActivationEffect::Recruit => {
+                self.queue_ability(
+                    player,
+                    self.legend_def(player).default_champion,
+                    Vec::new(),
+                    ChainAbility::Legend(LegendAbility::ViktorRecruit),
+                );
+            }
+        }
+        Ok(())
+    }
+
+    /// Legal activations for this seat, including target and payment validation.
+    pub fn legend_actions(&self, player: usize) -> Vec<Action> {
+        if player >= self.players.len() {
             return Vec::new();
         }
-        match self.legend[player].kind {
-            LegendKind::KaiSa => vec![Action::ActivateLegend { target: None }],
-            LegendKind::Kennen
-                if self.legend[player].empowered
-                    && self.chain.is_empty()
-                    && (self.showdown.is_some() || player == self.active) =>
-            {
-                self.players
-                    .iter()
-                    .enumerate()
-                    .flat_map(|(owner, state)| {
-                        state.units.iter().map(move |unit| Target::Unit {
+        let mut targets = vec![None];
+        if self.legend[player].kind == LegendKind::Kennen {
+            targets = self
+                .players
+                .iter()
+                .enumerate()
+                .flat_map(|(owner, state)| {
+                    state.units.iter().map(move |unit| {
+                        Some(Target::Unit {
                             player: owner,
                             unit_id: unit.id,
                         })
                     })
-                    .filter(|target| {
-                        self.legend_target_valid(player, *target)
-                            && self.available_power(player, None)
-                                >= self.deflect_cost(player, &[*target])
-                    })
-                    .map(|target| Action::ActivateLegend {
-                        target: Some(target),
-                    })
-                    .collect()
-            }
-            _ => Vec::new(),
+                })
+                .collect();
         }
+        targets
+            .into_iter()
+            .filter(|&target| self.validate_legend_activation(player, target).is_ok())
+            .map(|target| Action::ActivateLegend { target })
+            .collect()
     }
 
     pub(crate) fn resolve_legend_choice(
@@ -317,6 +502,12 @@ impl Game {
                 {
                     self.legend[player].assault_grants.push((unit_id, 2));
                 }
+            }
+            LegendAbility::LuxDraw => self.draw(player, 1),
+            LegendAbility::ViktorRecruit => {
+                // Stable Recruit token-characteristics reference, independent
+                // of this legend's chosen champion or presentation artwork.
+                self.queue_token_play(player, 87, 1, None, false);
             }
         }
     }

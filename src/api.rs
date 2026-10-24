@@ -7,9 +7,10 @@ use crate::battlefields::{BATTLEFIELDS, BattlefieldAbility};
 use crate::cards::{Domain, cards, presets};
 use crate::deck::CustomDeck;
 use crate::game::{
-    Action, ChainAbility, Decision, Difficulty, FlowSource, Game, InstructedPlayKind, Phase,
-    Target, TriggerContext, TriggeredAbility,
+    Action, ChainAbility, ChainSource, Decision, Difficulty, FlowSource, Game, InstructedPlayKind,
+    Phase, Target, TriggerContext, TriggeredAbility,
 };
+use crate::legend_catalog::legends;
 use crate::legends::{LegendAbility, LegendKind, LegendTrigger};
 use crate::payment::{PaymentQuote, PowerPayment};
 use serde_json::{Map, Value, json};
@@ -323,8 +324,15 @@ impl Session {
                 "card_id":game.hidden_visible_card(viewer, owner, card.id)
             })).collect();
             let legend = &game.legend[owner];
+            let definition = game.legend_def(owner);
+            let legend_observation = json!({"id":definition.id,"official_id":definition.official_id,
+                "name":definition.name,"champion":definition.champion,
+                "domains":definition.domains.map(|domain|domain.name()),
+                "kind":legend_name(legend.kind),"ready":legend.ready,
+                "empowered":legend.empowered,"spell_power":legend.spell_power,
+                "assault_grants":legend.assault_grants});
             json!({"player":owner, "name":state.name, "preset":if game.custom_deck(owner).is_none() {Some(game.selected_decks[owner])} else {None},
-                "legend_id":game.selected_decks[owner], "custom":game.custom_deck(owner).is_some(),
+                "legend_id":game.legend_id(owner), "custom":game.custom_deck(owner).is_some(),
                 "custom_deck":if owner==viewer {game.custom_deck(owner).map(CustomDeck::to_json)} else {None},
                 "hand":hand, "hand_count":state.hand.len(), "deck_count":state.deck.len(),
                 "rune_deck_count":state.rune_deck.len(), "champion":state.champion,
@@ -343,12 +351,11 @@ impl Session {
                         "energy":flow.energy,"power":flow.power,"colored":flow.colored})).collect::<Vec<_>>()
                 })).filter(|row|!row["costs"].as_array().unwrap().is_empty()).collect::<Vec<_>>(),"queued_extra_turns":game.queued_extra_turns(owner),
                 "submitted_combat_damage":game.submitted_combat_damage(owner),
-                "legend":{"kind":legend_name(legend.kind),"ready":legend.ready,
-                    "empowered":legend.empowered,"spell_power":legend.spell_power,
-                    "assault_grants":legend.assault_grants}})
+                "legend":legend_observation})
         }).collect();
         let chain: Vec<_> = game.chain.iter().map(|item| json!({
             "id":item.id,"player":item.player,"card_id":item.card_id,"name":game.chain_name(item),
+            "source":chain_source_to_json(game.chain_source(item)),
             "ability":item.ability.as_ref().map(ability_to_json),"targets":item.targets.iter().map(target_to_json).collect::<Vec<_>>(),
             "lane":item.lane,"from_hidden":item.from_hidden,"recycle_after":item.recycle_after,
             "banish_after":item.banish_after,"repeat":item.options.repeat,"accelerate":item.options.accelerate,
@@ -632,6 +639,9 @@ fn legend_name(kind: LegendKind) -> &'static str {
         LegendKind::MasterYi => "master_yi",
         LegendKind::Kennen => "kennen",
         LegendKind::KaiSa => "kaisa",
+        LegendKind::Darius => "darius",
+        LegendKind::Viktor => "viktor",
+        LegendKind::Lux => "lux",
     }
 }
 
@@ -641,12 +651,36 @@ pub fn catalog() -> Value {
         "cards":cards().iter().map(|c|json!({"id":c.id,"official_id":c.official_id,"name":c.name,"energy":c.cost,"power":c.power_cost,
             "might":c.might,"domain":c.domain.name(),"domains":c.domains.iter().map(|d|d.name()).collect::<Vec<_>>(),
             "kind":c.kind.name(),"official_text":c.official_text,"keywords":c.keywords,"tags":c.tags})).collect::<Vec<_>>(),
-        "presets":presets().iter().enumerate().map(|(id,p)|json!({"id":id,"name":p.name,
+        "legends":legends().iter().map(|definition|json!({"id":definition.id,
+            "official_id":definition.official_id,"name":definition.name,"champion":definition.champion,
+            "domains":definition.domains.map(|domain|domain.name()),"official_text":definition.text,
+            "default_champion":definition.default_champion,
+            "eligible_cards":crate::deck::eligible_cards(definition.id),
+            "eligible_champions":crate::deck::eligible_champions(definition.id),
+            "training_deck":CustomDeck::from_legend(definition.id).ok().map(|deck|deck.to_json()),
+            "training_note":if presets().iter().any(|preset|preset.legend_id==definition.id) {
+                "Editable copy of the sourced preset; the original preset remains unchanged."
+            } else { "Authored practice list; not a tournament or meta recommendation." }
+        })).collect::<Vec<_>>(),
+        "presets":presets().iter().enumerate().map(|(id,p)|json!({"id":id,"name":p.name,"legend_id":p.legend_id,
             "legend_name":p.legend_name,"legend_text":p.legend_text,"chosen_champion":p.chosen_champion,
-            "eligible_cards":crate::deck::eligible_cards(id),"eligible_champions":crate::deck::eligible_champions(id),
+            "eligible_cards":crate::deck::eligible_cards(p.legend_id),"eligible_champions":crate::deck::eligible_champions(p.legend_id),
             "domains":p.domains.map(|d|d.name()),"rune_counts":p.rune_counts,"cards":p.cards,
             "strategy":p.strategy,"learning_notes":p.learning_notes,"source_url":p.source_url})).collect::<Vec<_>>(),
         "battlefields":BATTLEFIELDS.iter().map(|b|json!({"id":b.id,"name":b.name,"official_text":b.official_text})).collect::<Vec<_>>()})
+}
+
+fn chain_source_to_json(source: ChainSource) -> Value {
+    match source {
+        ChainSource::Card { card_id } => json!({"type":"card","card_id":card_id}),
+        ChainSource::Legend { player, legend_id } => {
+            json!({"type":"legend","player":player,"legend_id":legend_id})
+        }
+        ChainSource::Battlefield {
+            lane,
+            battlefield_id,
+        } => json!({"type":"battlefield","lane":lane,"battlefield_id":battlefield_id}),
+    }
 }
 
 pub fn target_to_json(target: &Target) -> Value {
@@ -1514,6 +1548,8 @@ fn ability_to_json(ability: &ChainAbility) -> Value {
             LegendAbility::KennenAssault { target } => {
                 json!({"type":"kennen_assault","target":target_to_json(target)})
             }
+            LegendAbility::ViktorRecruit => json!({"type":"viktor_recruit"}),
+            LegendAbility::LuxDraw => json!({"type":"lux_draw"}),
         },
         ChainAbility::Battlefield(ability) => json!({"type":match ability{
         BattlefieldAbility::TempleDraw{..}=>"temple_draw",BattlefieldAbility::SeatDraw{..}=>"seat_draw",BattlefieldAbility::MinefieldBurn{..}=>"minefield_burn"

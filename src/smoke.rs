@@ -22,6 +22,7 @@ fn click(app: &mut App, x: f32, y: f32) {
 
 fn capture(app: &mut App, variable: &str) {
     if let Ok(path) = std::env::var(variable) {
+        app.companion.observe(&app.game);
         let input = app.ui.input_override;
         app.ui.input_override = Some((vec2(-100.0, -100.0), false, false));
         app.draw();
@@ -91,12 +92,7 @@ fn unit_rect(app: &mut App, selected: u32) -> Rect {
             location: unit.lane.map_or(0, |lane| lane + 1),
             ready: unit.ready,
             might: app.game.unit_might(unit),
-            accent: app.game.presets[if owner == 0 {
-                app.player_deck
-            } else {
-                app.opponent_deck
-            }]
-            .accent,
+            accent: app.game.legend_def(owner).accent,
         })
         .collect();
     let state = SceneState {
@@ -3219,15 +3215,369 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
         }
         290 => {
             assert!(app.field_inspect.is_none());
+        }
+        291 => {
+            app.in_match = false;
+            app.screen = Screen::Decks;
+            app.browse_deck = 0;
+            app.selection = None;
+            app.hover_card = None;
+            app.hover_rect = None;
+            click(app, 1300.0, 46.0);
+        }
+        292 => {
+            assert!(app.legend_picker.is_some());
+            click(app, 447.0, 466.0);
+        }
+        293 => {
+            assert_eq!(app.legend_picker, Some(4));
+            capture(app, "RIFT_SMOKE_LEGEND_PICKER_SCREENSHOT");
+            click(app, 840.0, 700.0);
+        }
+        294 => {
+            let editor = app.deck_editor.as_mut().unwrap();
+            assert_eq!(editor.deck.legend, 4);
+            assert_eq!(editor.deck.card_count(), 40);
+            assert!(editor.deck.validate().is_ok());
+            editor.deck.name = "Crimson practice".into();
+            click(app, 328.0, 771.0);
+        }
+        295 => {
+            assert_eq!(app.custom_decks[0].as_ref().unwrap().legend, 4);
+            assert!(
+                app.player_deck < 4,
+                "custom legend never becomes a preset index"
+            );
+            assert_eq!(
+                super::deck_editor::load_saved_decks()[0],
+                app.custom_decks[0]
+            );
+            click(app, 509.0, 159.0);
+        }
+        296 => {
+            assert_eq!(app.legend_picker, Some(4));
+            click(app, 447.0, 519.0);
+        }
+        297 => {
+            assert_eq!(app.legend_picker, Some(5));
+            click(app, 840.0, 700.0);
+        }
+        298 => {
+            assert_eq!(app.deck_editor.as_ref().unwrap().deck.legend, 5);
+            assert!(app.deck_editor.as_ref().unwrap().deck.validate().is_ok());
+            click(app, 462.0, 771.0);
+        }
+        299 => {
+            assert_eq!(app.custom_decks[1].as_ref().unwrap().legend, 5);
+            assert!(app.opponent_deck < 4);
+            assert_eq!((app.setup_legend(0).id, app.setup_legend(1).id), (4, 5));
+            click(app, 395.0, 816.0);
+        }
+        300 => {
+            assert!(app.screen == Screen::Decks);
+            click(app, 425.0, 800.0);
+        }
+        301 => {
+            assert!(app.screen == Screen::Practice);
+            app.toast_until = 0.0;
+            capture(app, "RIFT_SMOKE_LEGEND_SETUP_SCREENSHOT");
+            click(app, 1328.0, 46.0);
+        }
+        302 => {
+            assert_eq!(app.game.phase, Phase::Mulligan);
+            assert_eq!((app.game.legend_id(0), app.game.legend_id(1)), (4, 5));
+            assert_eq!(app.game.players[0].champion, Some(183));
+            assert_eq!(app.game.players[1].champion, Some(175));
+            click(app, 1285.0, 510.0);
+        }
+        303 => {
+            assert_eq!(app.game.phase, Phase::Playing);
+            fixture_resources(app, Domain::Fury);
+            hand_card(app, "Inferna");
+            app.hand_scroll = 0;
+            click(app, 315.0, 760.0);
+        }
+        304 => {
+            assert!(matches!(app.selection, Some(Selection::Hand(0))));
+            click(app, 1285.0, 510.0);
+        }
+        305 => {
+            assert!(app.game.cards_played_this_turn(0) > 0);
+            assert_eq!(app.game.players[0].energy, 4);
+            click(app, 400.0, 663.0);
+        }
+        306 => {
+            assert!(app.tray == super::Tray::Loadout);
+            click(app, 315.0, 760.0);
+        }
+        307 => {
+            assert_eq!(app.game.legend_id(0), 4);
+            assert!(app.selection == Some(Selection::Legend));
+            capture(app, "RIFT_SMOKE_DARIUS_SCREENSHOT");
+            click(app, 1285.0, 548.0);
+        }
+        308 => {
+            assert_eq!(app.game.players[0].energy, 5);
+            assert_eq!(app.game.players[0].energy_pool, 1);
+            assert!(!app.game.legend[0].ready);
+            assert!(app.game.chain.is_empty());
+            assert_eq!(app.game.priority(), 0);
+            click(app, 1328.0, 46.0);
+        }
+        309 => {
+            assert!(app.confirm_restart);
+            click(app, 854.0, 500.0);
+        }
+        310 => {
+            assert!(!app.in_match);
+            click(app, 1328.0, 46.0);
+        }
+        311 => {
+            assert_eq!((app.game.legend_id(0), app.game.legend_id(1)), (4, 5));
+            assert_eq!(app.game.custom_deck(0), app.custom_decks[0].as_ref());
+            click(app, 1285.0, 510.0);
+        }
+        312 => {
+            assert_eq!(app.game.phase, Phase::Playing);
+            app.custom_decks.swap(0, 1);
+            app.reset();
+            app.game.start_match().unwrap();
+            assert_eq!(app.game.legend_id(0), 5);
+            app.tray = super::Tray::Loadout;
+            click(app, 315.0, 760.0);
+        }
+        313 => {
+            assert!(app.selection == Some(Selection::Legend));
+            app.game.showdown = Some(local_rift::game::Showdown {
+                lane: 0,
+                attacker: 0,
+                focus: 0,
+                passes: 0,
+                combat: false,
+            });
+            COMBAT_SNAPSHOT
+                .with(|snapshot| *snapshot.borrow_mut() = Some(format!("{:?}", app.game)));
+            click(app, 1285.0, 548.0);
+        }
+        314 => {
+            COMBAT_SNAPSHOT.with(|snapshot| {
+                assert_eq!(
+                    snapshot.borrow().as_deref(),
+                    Some(format!("{:?}", app.game).as_str()),
+                    "Viktor cannot activate during showdown"
+                )
+            });
+            app.game.showdown = None;
+            app.toast_until = 0.0;
+            capture(app, "RIFT_SMOKE_VIKTOR_SCREENSHOT");
+            click(app, 1285.0, 548.0);
+        }
+        315 => {
+            assert_eq!(app.game.players[0].energy, 1);
+            assert!(!app.game.legend[0].ready);
+            assert!(app.game.chain.iter().any(|item| matches!(
+                app.game.chain_source(item),
+                local_rift::game::ChainSource::Legend { legend_id: 5, .. }
+            )));
+            finish_chain_until_choice(app);
+        }
+        316 => {
+            assert!(matches!(
+                app.game.decision,
+                Some(Decision::TokenPlacement { remaining: 1, .. })
+            ));
+            click(app, 1285.0, 470.0);
+        }
+        317 => {
+            assert!(
+                app.game.players[0]
+                    .units
+                    .iter()
+                    .any(|unit| unit.token && app.game.unit_name(unit) == "Recruit token")
+            );
+            app.in_match = false;
+            app.screen = Screen::Decks;
+            app.selection = None;
+            app.hover_card = None;
+            app.hover_rect = None;
+            click(app, 1300.0, 46.0);
+        }
+        318 => {
+            assert!(app.legend_picker.is_some());
+            click(app, 447.0, 572.0);
+        }
+        319 => {
+            assert_eq!(app.legend_picker, Some(6));
+            click(app, 840.0, 700.0);
+        }
+        320 => {
+            assert_eq!(app.deck_editor.as_ref().unwrap().deck.legend, 6);
+            assert!(app.deck_editor.as_ref().unwrap().deck.validate().is_ok());
+            click(app, 328.0, 771.0);
+        }
+        321 => {
+            assert_eq!(app.custom_decks[0].as_ref().unwrap().legend, 6);
+            click(app, 395.0, 816.0);
+        }
+        322 => {
+            click(app, 425.0, 800.0);
+        }
+        323 => {
+            click(app, 1328.0, 46.0);
+        }
+        324 => {
+            assert_eq!(app.game.legend_id(0), 6);
+            click(app, 1285.0, 510.0);
+        }
+        325 => {
+            click(app, 400.0, 663.0);
+        }
+        326 => {
+            click(app, 315.0, 760.0);
+        }
+        327 => {
+            assert!(app.selection == Some(Selection::Legend));
+            COMBAT_SNAPSHOT
+                .with(|snapshot| *snapshot.borrow_mut() = Some(format!("{:?}", app.game)));
+            click(app, 1285.0, 548.0);
+        }
+        328 => {
+            COMBAT_SNAPSHOT.with(|snapshot| {
+                assert_eq!(
+                    snapshot.borrow().as_deref(),
+                    Some(format!("{:?}", app.game).as_str()),
+                    "Lux has no activated button"
+                )
+            });
+            fixture_resources(app, Domain::Mind);
+            hand_card(app, "Progress Day");
+            app.deck_scroll = app.game.players[0].hand.len();
+            app.hand_scroll = 0;
+            click(app, 300.0, 663.0);
+        }
+        329 => {
+            click(app, 315.0, 760.0);
+        }
+        330 => {
+            click(app, 1285.0, 510.0);
+        }
+        331 => {
+            assert!(
+                app.game
+                    .chain
+                    .iter()
+                    .any(|item| item.card_id == 77 && item.ability.is_none()),
+                "Progress Day is on the chain first"
+            );
+            app.game.apply(Action::Pass).unwrap();
+            app.game.apply(Action::Pass).unwrap();
+            assert!(app.game.chain.iter().any(|item| matches!(
+                app.game.chain_source(item),
+                local_rift::game::ChainSource::Legend { legend_id: 6, .. }
+            )));
+            app.chain_cursor = app
+                .game
+                .chain
+                .iter()
+                .rev()
+                .position(|item| {
+                    matches!(
+                        app.game.chain_source(item),
+                        local_rift::game::ChainSource::Legend { legend_id: 6, .. }
+                    )
+                })
+                .unwrap();
+            app.ui.input_override = Some((vec2(1285.0, 270.0), false, true));
+        }
+        332 => {
+            assert_eq!(
+                app.lesson,
+                Some(6),
+                "chain opens canonical legend instead of champion rules"
+            );
+            capture(app, "RIFT_SMOKE_LUX_SCREENSHOT");
+            click(app, 760.0, 720.0);
+        }
+        333 => {
+            assert!(app.lesson.is_none());
+            finish_chain_until_choice(app);
+            assert_eq!(
+                app.game.players[0].hand.len(),
+                app.deck_scroll + 4,
+                "Progress Day draws4 and Lux adds1 after spending one card"
+            );
+            assert!(app.game.legend[0].ready);
+            SAVED_DECK_SNAPSHOT.with(|saved| {
+                *saved.borrow_mut() = std::fs::read(super::deck_editor::saved_path(0)).ok()
+            });
+            std::fs::write(super::deck_editor::saved_path(0), b"{broken deck").unwrap();
+            let (decks, errors) = super::deck_editor::load_saved_decks_with_errors();
+            assert!(decks[0].is_none() && errors.len() == 1);
+            assert_eq!(
+                std::fs::read(super::deck_editor::saved_path(0)).unwrap(),
+                b"{broken deck"
+            );
+            app.deck_load_errors = errors;
+        }
+        334 => {
+            assert!(!app.deck_load_errors.is_empty());
+            capture(app, "RIFT_SMOKE_DECK_ERROR_SCREENSHOT");
+            click(app, 720.0, 608.0);
+        }
+        335 => {
+            assert!(app.deck_load_errors.is_empty());
+            SAVED_DECK_SNAPSHOT.with(|saved| {
+                std::fs::write(
+                    super::deck_editor::saved_path(0),
+                    saved.borrow().as_ref().unwrap(),
+                )
+                .unwrap()
+            });
+            assert_eq!(
+                super::deck_editor::load_saved_decks()[0]
+                    .as_ref()
+                    .unwrap()
+                    .legend,
+                6
+            );
+            app.screen = Screen::DeckEditor;
+            app.legend_picker = Some(6);
+            COMBAT_SNAPSHOT.with(|snapshot| {
+                *snapshot.borrow_mut() =
+                    Some(app.deck_editor.as_ref().unwrap().deck.to_json().to_string())
+            });
+            click(app, 447.0, 254.0);
+        }
+        336 => {
+            assert_eq!(app.legend_picker, Some(0));
+            click(app, 447.0, 700.0);
+        }
+        337 => {
+            assert!(app.legend_picker.is_none());
+            COMBAT_SNAPSHOT.with(|snapshot| {
+                assert_eq!(
+                    snapshot.borrow().as_deref(),
+                    Some(
+                        app.deck_editor
+                            .as_ref()
+                            .unwrap()
+                            .deck
+                            .to_json()
+                            .to_string()
+                            .as_str()
+                    ),
+                    "canceling legend change preserves current edited list"
+                )
+            });
             app.ui.input_override = None;
             app.ui.pointer_override = None;
             app.ui.wheel_override = None;
             println!(
-                "PASS: 291 native UI frames including generic optional and ordered ability targets, atomic invalid choices, matched rune trays, attached gear lists, and battlefield rules."
+                "PASS: 338 native UI frames including seven-legend custom creation, saved identity and rematch, Darius energy, Viktor timing and Recruit, Lux passive chain, and visible saved-deck errors."
             );
             return true;
         }
-        _ => panic!("UI smoke runner exceeded its 291-frame script"),
+        _ => panic!("UI smoke runner exceeded its 338-frame script"),
     }
     false
 }

@@ -325,6 +325,8 @@ struct TrashOptions {
 pub struct ChainItem {
     pub id: u32,
     pub player: usize,
+    /// Legacy catalog/art reference. Use Game::chain_source for the canonical
+    /// source identity; a legend ability is not an ability of its champion.
     pub card_id: CardId,
     pub target: Option<Target>,
     pub targets: Vec<Target>,
@@ -336,6 +338,14 @@ pub struct ChainItem {
     pub from_hidden: bool,
     pub options: PlayOptions,
     pub repeat_targets: Vec<Target>,
+}
+
+/// Canonical definition source, independent of legacy main-card art references.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum ChainSource {
+    Card { card_id: CardId },
+    Legend { player: usize, legend_id: usize },
+    Battlefield { lane: usize, battlefield_id: usize },
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -828,10 +838,13 @@ impl Game {
         for deck in custom_decks.iter().flatten() {
             deck.validate()?;
         }
-        let selected_decks = std::array::from_fn(|player| {
+        let selected_decks = preset_indices;
+        let legend_ids = std::array::from_fn(|player| {
             custom_decks[player]
                 .as_ref()
-                .map_or(preset_indices[player], |deck| deck.legend)
+                .map_or(presets[preset_indices[player]].legend_id, |deck| {
+                    deck.legend
+                })
         });
         let mut rng = Rng::new(seed);
         let players = std::array::from_fn(|player| {
@@ -890,7 +903,7 @@ impl Game {
                 xp: 0,
             }
         });
-        let legend = selected_decks.map(|i| LegendState::new(presets[i].chosen_champion));
+        let legend = legend_ids.map(|id| LegendState::from_legend(id).expect("validated legend"));
         let mut game = Self {
             catalog,
             presets,
@@ -999,6 +1012,34 @@ impl Game {
         !self.chain.is_empty() || self.showdown.is_some() || self.decision.is_some()
     }
 
+    pub(crate) fn is_main_phase(&self) -> bool {
+        self.phase == Phase::Playing && self.pending_start.is_none() && !self.ending_turn
+    }
+
+    pub fn legend_id(&self, player: usize) -> usize {
+        self.legend[player].kind.id()
+    }
+
+    pub fn legend_def(&self, player: usize) -> &'static crate::legend_catalog::LegendDef {
+        crate::legend_catalog::legend(self.legend_id(player)).expect("registered game legend")
+    }
+
+    pub fn chain_source(&self, item: &ChainItem) -> ChainSource {
+        match item.ability {
+            Some(ChainAbility::Legend(_)) => ChainSource::Legend {
+                player: item.player,
+                legend_id: self.legend_id(item.player),
+            },
+            Some(ChainAbility::Battlefield(ability)) => ChainSource::Battlefield {
+                lane: ability.lane(),
+                battlefield_id: self.battlefields[ability.lane()],
+            },
+            _ => ChainSource::Card {
+                card_id: item.card_id,
+            },
+        }
+    }
+
     pub fn chain_name(&self, item: &ChainItem) -> String {
         match &item.ability {
             Some(ChainAbility::Disempower { .. }) => {
@@ -1008,10 +1049,9 @@ impl Game {
                 "{} ability",
                 crate::battlefields::battlefield(self.battlefields[ability.lane()]).name
             ),
-            Some(ChainAbility::Legend(_)) => format!(
-                "{} legend",
-                self.presets[self.selected_decks[item.player]].legend_name
-            ),
+            Some(ChainAbility::Legend(_)) => {
+                format!("{} legend", self.legend_def(item.player).name)
+            }
             Some(_) => format!("{} ability", self.catalog[item.card_id].name),
             None => self.catalog[item.card_id].name.into(),
         }
@@ -3513,7 +3553,7 @@ impl Game {
             .insert(index, card.card_id);
     }
 
-    fn queue_token_play(
+    pub(crate) fn queue_token_play(
         &mut self,
         player: usize,
         card_id: CardId,
@@ -3571,10 +3611,7 @@ impl Game {
                 "{} optional trigger",
                 crate::battlefields::battlefield(self.battlefields[*lane]).name
             ),
-            Decision::Legend { .. } => format!(
-                "{} legend",
-                self.presets[self.selected_decks[player]].legend_name
-            ),
+            Decision::Legend { .. } => format!("{} legend", self.legend_def(player).name),
             _ => self.catalog[card_id].name.into(),
         };
         self.pending_triggers.push(PendingTrigger {
@@ -3715,7 +3752,7 @@ impl Game {
                 | ChainAbility::Triggered(_)
                 | ChainAbility::Disempower { .. }
                 | ChainAbility::CardEffect { .. }
-                | ChainAbility::Legend(LegendAbility::KennenEmpower)
+                | ChainAbility::Legend(LegendAbility::KennenEmpower | LegendAbility::LuxDraw)
                 | ChainAbility::Battlefield(
                     BattlefieldAbility::SeatDraw { .. } | BattlefieldAbility::MinefieldBurn { .. }
                 )
@@ -3727,6 +3764,7 @@ impl Game {
         let id = self.next_chain_id;
         self.next_chain_id += 1;
         let label = match &ability {
+            ChainAbility::Legend(_) => format!("{} legend", self.legend_def(player).name),
             ChainAbility::Battlefield(a) => format!(
                 "{} trigger",
                 crate::battlefields::battlefield(self.battlefields[a.lane()]).name
@@ -6566,7 +6604,11 @@ impl Game {
             }
         }
         for action in self.legend_actions(player) {
-            plays.push((35, action));
+            if self.legend[player].kind != crate::legends::LegendKind::Darius
+                || self.cards_played[player] > 0
+            {
+                plays.push((35, action));
+            }
         }
         for action in self.gear_actions(player) {
             plays.push((25, action));

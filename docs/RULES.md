@@ -37,7 +37,7 @@ Only these four battlefield choices are implemented. The other tournament battle
 
 ## Legends
 
-Each preset has its real legend, separate from its chosen champion. Legends ready at the start of their controller's turn.
+Each deck has its registered legend, independent of preset selection and chosen-champion variant. Seven legends are available, with the original four preset identities preserved. Legends ready at the start of their controller's turn.
 
 | Legend | Implemented power |
 |---|---|
@@ -45,6 +45,9 @@ Each preset has its real legend, separate from its chosen champion. Legends read
 | Master Yi | A friendly unit defending alone receives +2 might. This is a derived bonus and disappears when the unit attacks, leaves combat, or gains another friendly defender. |
 | Kennen | Playing a card from outside the hand triggers Empower. In an open Action window, disempower and exhaust the legend to give a chosen unit Assault 2 for the turn. The bonus applies while that unit attacks. |
 | Kai'Sa | Exhaust the legend to add one flexible power usable only for playing spells. It cannot pay unit, gear, or ability costs. |
+| Darius | Exhaust for a Reaction resource ability that adds one energy if Legion is active. Legion checks an earlier finalized card this turn, even if it was countered. Before Legion, the legal activation exhausts the legend but adds nothing; see the rule-derived timing note in the audit. |
+| Viktor | In an open own main phase, pay one energy and exhaust to queue a Recruit ability. Opponents may respond. After it resolves, choose base or a controlled battlefield for the pending 1 Might Recruit. |
+| Lux | Completing a spell with printed Energy cost at least five triggers a separate draw-one ability. Discounts do not change that printed threshold; countered spells do not trigger it. |
 
 Irelia's optional costs are paid before its triggered ability enters the chain. Declining leaves the original play intact. Kennen's Empower and Assault abilities also use the chain. Kai'Sa's resource ability resolves immediately, does not create a response window, and preserves priority. Supported resource abilities remain available during pending payment choices, such as a spell replay; their normal cost restrictions still apply. Generated resources expire when rune pools empty; they are not extra rune cards.
 
@@ -124,15 +127,15 @@ When drawing or burning requires a card from an empty main deck, the trash is sh
 
 ## AI and Mote
 
-**Relaxed** makes simple choices and may accept a poor attack. **Tactical** considers public battlefield strength, useful interaction, resources, and scoring pressure. **Strategic** compares candidate outcomes and a bounded second own action, with group movement and explicit spell targets. It resolves hypothetical chains assuming further discretionary responses are passed, and samples unknown draws from compatible public legend domains. All three levels are deterministic. They do not examine the opponent’s hidden hand, private list, facedown identities, or future deck order; Strategic also replaces its own unknown future deck order before simulation. Strategic adds planning depth; its playing strength has not been calibrated against human experts. The AI handles priority passes and its own pending choices, with a bounded action loop to keep play moving.
+**Relaxed** makes simple choices and may accept a poor attack. **Tactical** considers public battlefield strength, useful interaction, resources, and scoring pressure. **Strategic** compares candidate outcomes and a bounded second own action, with group movement and explicit spell targets. It resolves hypothetical chains assuming further discretionary responses are passed, and samples unknown draws from cards legal for the public legend identity. All three levels are deterministic. They do not examine the opponent’s hidden hand, private list, facedown identities, or future deck order; Strategic also replaces its own unknown future deck order before simulation. Strategic adds planning depth; its playing strength has not been calibrated against human experts. The AI handles priority passes and its own pending choices, with a bounded action loop to keep play moving.
 
 Mote's **Beginner** advice explains resources, deployment, scoring, and the current timing window. **Advanced** advice discusses future holds, useful trades, interaction costs, and broad archetype goals. It sees your hand and information available to you, including cards an effect explicitly reveals or lets you inspect. It does not examine the opponent’s private hand, facedown identities, or Predict result. Its small panel is optional and never blocks input.
 
-The deck library includes the real legends and authored strategy notes. The four legend powers execute in matches, while the notes describe strategic goals beyond what the simple AI can teach. Mote and the simulator cannot establish competitive matchup rankings.
+The deck library includes the real legends and authored strategy notes. All seven registered legend powers execute in matches, while the notes describe strategic goals beyond what the simple AI can teach. Mote and the simulator cannot establish competitive matchup rankings.
 
 ## Remaining fidelity limits
 
-Four supported legends, four battlefield choices, and 230 main-deck cards are available through the four supplied presets and custom deck editor. There is no sideboarding, tournament match structure, multiplayer mode, or full card-set coverage. The presets are dated tournament lists, not a ranking of the current metagame.
+Seven supported legends, four battlefield choices, and 230 main-deck cards are available through the four supplied presets and custom deck editor. There is no sideboarding, tournament match structure, multiplayer mode, or full card-set coverage. The presets are dated tournament lists, not a ranking of the current metagame.
 
 The desktop and bot API expose exact damage allocations and power-source payments. The default automatic payment remains available; energy can be prepared by exhausting chosen rune domains before a play. These controls share engine validation, but broader card and interaction coverage is still required.
 

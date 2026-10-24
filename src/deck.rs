@@ -2,6 +2,7 @@
 use crate::battlefields::BATTLEFIELDS;
 use crate::cards::{CardId, CardKind, cards, presets};
 use crate::game::domain_index;
+use crate::legend_catalog::{legend, legends};
 use crate::rules::{SupportStatus, support_status};
 use serde_json::{Value, json};
 use std::collections::{HashMap, HashSet};
@@ -10,7 +11,7 @@ use std::sync::OnceLock;
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct CustomDeck {
     pub name: String,
-    /// One of the currently implemented legends, in preset order.
+    /// Stable legend registry ID, independent of preset and chosen champion.
     pub legend: usize,
     pub chosen_champion: CardId,
     pub cards: Vec<(CardId, u8)>,
@@ -31,7 +32,6 @@ struct Facts {
 
 struct Inventory {
     printings: HashMap<String, Facts>,
-    legends: HashMap<usize, String>,
 }
 
 fn strings(value: &Value) -> Vec<String> {
@@ -50,22 +50,12 @@ fn inventory() -> &'static Inventory {
         let data: Value = serde_json::from_str(include_str!("../assets/data/full_catalog.json"))
             .expect("validated bundled official inventory");
         let mut legal = HashMap::new();
-        let mut legends = HashMap::new();
         for card in data["cards"].as_array().expect("inventory cards") {
             let unique = strings(&card["keywords_observed"])
                 .iter()
                 .any(|k| k == "Unique");
             for id in strings(&card["official_ids"]) {
                 legal.insert(id, (card["standard_legal"] == true, unique));
-            }
-            if card["implementation"]["status"] == "implemented_preset_legend" {
-                legends.insert(
-                    card["implementation"]["runtime_id"].as_u64().unwrap() as usize,
-                    card["implementation"]["official_id"]
-                        .as_str()
-                        .unwrap()
-                        .to_owned(),
-                );
             }
         }
         let printings = data["printings"]
@@ -75,16 +65,12 @@ fn inventory() -> &'static Inventory {
             .map(|p| {
                 let id = p["official_id"].as_str().unwrap().to_owned();
                 let &(legal, unique) = legal.get(&id).expect("printing identity");
-                // These are the four implemented legends' official Champion Tags.
-                // In particular, Heart of the Tempest also has the Yordle tag;
-                // that shared creature tag must never admit Vex or Fizz as Kennen.
-                let champion_tag = match id.as_str() {
-                    "sfd-195-221" => Some("Irelia"),
-                    "ogs-019-024" => Some("Master Yi"),
-                    "ven-155-166" => Some("Kennen"),
-                    "ogn-247-298" => Some("Kai'Sa"),
-                    _ => None,
-                };
+                // A shared faction/creature tag (for example Yordle) does not
+                // qualify a different champion for this legend.
+                let champion_tag = legends()
+                    .iter()
+                    .find(|definition| definition.official_id == id)
+                    .map(|definition| definition.champion);
                 let tags = strings(&p["tags"]);
                 if let Some(tag) = champion_tag {
                     assert!(
@@ -105,13 +91,12 @@ fn inventory() -> &'static Inventory {
                 )
             })
             .collect();
-        Inventory { printings, legends }
+        Inventory { printings }
     })
 }
 
-fn legend_facts(legend: usize) -> Option<&'static Facts> {
-    let inventory = inventory();
-    inventory.printings.get(inventory.legends.get(&legend)?)
+fn legend_facts(id: usize) -> Option<&'static Facts> {
+    inventory().printings.get(legend(id)?.official_id)
 }
 
 fn same_champion(card: &Facts, legend: &Facts) -> bool {
@@ -228,7 +213,15 @@ impl CustomDeck {
                 .as_str()
                 .ok_or("Deck name must be text.")?
                 .to_owned(),
-            legend: number(&value["legend"])?,
+            legend: if let Some(official_id) = value["legend"].as_str() {
+                legends()
+                    .iter()
+                    .find(|definition| definition.official_id == official_id)
+                    .map(|definition| definition.id)
+                    .ok_or("Choose a supported official legend ID.")?
+            } else {
+                number(&value["legend"])?
+            },
             chosen_champion: number(&value["chosen_champion"])?,
             cards,
             runes,
@@ -249,12 +242,118 @@ impl CustomDeck {
         }
         Ok(Self {
             name: format!("Custom {}", preset.name),
-            legend: index,
+            legend: preset.legend_id,
             chosen_champion: preset.chosen_champion,
             cards: preset.cards.clone(),
             runes,
             battlefield: index,
         })
+    }
+
+    /// Authored practice lists, not additional tournament/meta snapshots.
+    /// The original four start from their existing exact preset lists. New
+    /// legends use deliberately fixed recipes so catalog growth never silently
+    /// changes an existing training list or a user's saved custom deck.
+    pub fn from_legend(id: usize) -> Result<Self, String> {
+        let definition = legend(id).ok_or("Choose a supported legend.")?;
+        if let Some(index) = presets().iter().position(|preset| preset.legend_id == id) {
+            let mut deck = Self::from_preset(index)?;
+            deck.name = format!("{} training", definition.champion);
+            deck.validate()?;
+            return Ok(deck);
+        }
+        let (cards, split): (&[(CardId, u8)], [u8; 2]) = match id {
+            // Cheap first plays enable Legion and Darius's second-card ready.
+            4 => (
+                &[
+                    (56, 3),
+                    (59, 3),
+                    (96, 3),
+                    (99, 3),
+                    (101, 3),
+                    (102, 3),
+                    (143, 3),
+                    (179, 3),
+                    (183, 3),
+                    (74, 3),
+                    (85, 3),
+                    (224, 2),
+                    (58, 3),
+                    (203, 2),
+                ],
+                [7, 5],
+            ),
+            // Recruit production plus Reactions that work with Innovator.
+            5 => (
+                &[
+                    (175, 3),
+                    (176, 3),
+                    (68, 3),
+                    (57, 3),
+                    (147, 3),
+                    (170, 3),
+                    (177, 2),
+                    (63, 3),
+                    (52, 3),
+                    (85, 3),
+                    (87, 2),
+                    (138, 3),
+                    (126, 2),
+                    (129, 2),
+                    (120, 2),
+                ],
+                [6, 6],
+            ),
+            // Early defenders support the printed five-or-more Energy spells.
+            6 => (
+                &[
+                    (182, 3),
+                    (68, 3),
+                    (57, 3),
+                    (60, 3),
+                    (109, 2),
+                    (139, 2),
+                    (75, 3),
+                    (77, 2),
+                    (79, 2),
+                    (61, 2),
+                    (87, 2),
+                    (52, 3),
+                    (63, 3),
+                    (85, 3),
+                    (126, 2),
+                    (129, 2),
+                ],
+                [8, 4],
+            ),
+            _ => return Err("No authored training list is available for this legend.".into()),
+        };
+        let mut runes = [0; 6];
+        for (domain, count) in definition.domains.into_iter().zip(split) {
+            runes[domain_index(domain)] = count;
+        }
+        let facts = legend_facts(id).ok_or("Missing official legend identity.")?;
+        let battlefield = BATTLEFIELDS
+            .iter()
+            .find(|field| {
+                inventory()
+                    .printings
+                    .get(field.source_id)
+                    .is_some_and(|field| compatible(field, facts))
+            })
+            .ok_or("No supported battlefield is legal for this legend.")?
+            .id;
+        let mut deck = Self {
+            name: format!("{} training", definition.champion),
+            legend: id,
+            chosen_champion: definition.default_champion,
+            cards: cards.to_vec(),
+            runes,
+            battlefield,
+        };
+        deck.cards.sort_unstable_by_key(|&(id, _)| id);
+        deck.validate()?;
+        Ok(deck)
     }
 
     pub fn card_count(&self) -> usize {

@@ -474,3 +474,47 @@ fn expanded_custom_games_finish_with_card_and_rune_conservation_after_every_acti
     );
     assert!(played.iter().any(|&id| id >= 74), "No new spells were cast");
 }
+
+#[test]
+fn independent_legend_training_games_finish_at_every_ai_level_and_starting_seat() {
+    for first in 0..local_rift::legend_catalog::legends().len() {
+        for difficulty in [
+            Difficulty::Easy,
+            Difficulty::Tactical,
+            Difficulty::Strategic,
+        ] {
+            for starting in 0..2 {
+                let second = [4, 5, 6][(first + starting) % 3];
+                let specs = [
+                    CustomDeck::from_legend(first).unwrap(),
+                    CustomDeck::from_legend(second).unwrap(),
+                ];
+                let mut game = Game::new_with_custom(
+                    [0, 3],
+                    [Some(specs[0].clone()), Some(specs[1].clone())],
+                    913 + (first * 2 + starting) as u64,
+                    difficulty,
+                    false,
+                )
+                .unwrap();
+                assert_eq!([game.legend_id(0), game.legend_id(1)], [first, second]);
+                game.choose_starting_player(starting).unwrap();
+                game.start_match().unwrap();
+                for step in 0..4000 {
+                    invariant(&game, &specs);
+                    if game.winner.is_some() {
+                        break;
+                    }
+                    assert!(game.step_ai().unwrap_or_else(|error| panic!(
+                        "legend{first}/{second} {difficulty:?} starter{starting} step{step}: {error}"
+                    )), "AI stopped in an unfinished match");
+                }
+                assert!(
+                    game.winner.is_some(),
+                    "legend{first}/{second} {difficulty:?} starter{starting} stalled"
+                );
+                invariant(&game, &specs);
+            }
+        }
+    }
+}

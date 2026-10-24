@@ -145,14 +145,15 @@
     "implemented_legal_by_kind": {
       "battlefield": 4,
       "gear": 33,
-      "legend": 4,
+      "legend": 7,
       "rune": 6,
       "spell": 66,
       "unit": 131
     },
     "implemented_main_cards": 230,
-    "implemented_legal_identities": 244,
-    "unimplemented_legal_identities": 835,
+    "implemented_legends": 7,
+    "implemented_legal_identities": 247,
+    "unimplemented_legal_identities": 832,
     "errata_entries": 67,
     "identities_with_errata": 67,
     "source_quality_issues": 37
@@ -161,7 +162,7 @@
     "ADD": 1,
     "Accelerate": 22,
     "Action": 78,
-    "Add": 29,
+    "Add": 28,
     "Ambush": 11,
     "Assault": 18,
     "Backline": 2,
@@ -177,11 +178,11 @@
     "Ganking": 38,
     "Hidden": 37,
     "Hunt": 6,
-    "Legion": 5,
+    "Legion": 4,
     "Mighty": 10,
     "Predict": 5,
     "Quick-Draw": 3,
-    "Reaction": 85,
+    "Reaction": 84,
     "Repeat": 14,
     "Shield": 15,
     "Show Off": 6,
@@ -9701,8 +9702,10 @@
       "rules_text_status": "official_gallery_printing_text",
       "conflicting_fields": [],
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_legend",
+        "runtime_id": 4,
+        "official_id": "ogn-253-298",
+        "playable_in_client": true
       }
     },
     {
@@ -10021,8 +10024,10 @@
       "rules_text_status": "official_gallery_printing_text",
       "conflicting_fields": [],
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_legend",
+        "runtime_id": 5,
+        "official_id": "ogn-265-298",
+        "playable_in_client": true
       }
     },
     {
@@ -12453,8 +12458,10 @@
       "rules_text_status": "official_gallery_printing_text",
       "conflicting_fields": [],
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_legend",
+        "runtime_id": 6,
+        "official_id": "ogs-021-024",
+        "playable_in_client": true
       }
     },
     {

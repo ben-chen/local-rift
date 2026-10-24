@@ -663,6 +663,15 @@ fn archetype_tip(game: &Game) -> &'static str {
         LegendKind::Kennen => {
             "Kennen empowers when you play from outside your hand. Spend that empowerment for Assault when the extra attacking might changes the point."
         }
+        LegendKind::Darius => {
+            "Darius adds energy once Legion is enabled by a card you've played this turn. Keep that resource ability available for a later play or response."
+        }
+        LegendKind::Viktor => {
+            "Viktor trades 1 energy and his ready state for a Recruit in your open Main Phase. Choose a useful location after the ability resolves."
+        }
+        LegendKind::Lux => {
+            "Lux draws after you play a spell with printed energy cost 5 or more. Discounts still help you reach that payoff while keeping resources for responses."
+        }
         LegendKind::KaiSa => {
             "Kai'Sa's legend adds flexible power for spells. Use it to preserve matching runes; it cannot pay for units or ability costs."
         }
@@ -802,20 +811,26 @@ mod tests {
     #[test]
     fn renamed_custom_decks_keep_their_legend_advice() {
         use local_rift::deck::CustomDeck;
-        for legend in 0..4 {
-            let preset = Game::new(legend, 1, 42, Difficulty::Easy);
-            let expected = archetype_tip(&preset);
-            let mut deck = CustomDeck::from_preset(legend).unwrap();
-            deck.name = "My quiet experiment".into();
+        for legend in local_rift::legend_catalog::legends() {
+            let deck = CustomDeck::from_legend(legend.id).unwrap();
+            let original = Game::new_with_custom(
+                [0, 1],
+                [Some(deck.clone()), None],
+                42,
+                Difficulty::Easy,
+                true,
+            )
+            .unwrap();
+            let expected = archetype_tip(&original);
+            assert!(expected.len() <= 180);
+            let mut renamed = deck;
+            renamed.name = "My quiet experiment".into();
             let custom =
-                Game::new_with_custom([legend, 1], [Some(deck), None], 42, Difficulty::Easy, true)
+                Game::new_with_custom([0, 1], [Some(renamed), None], 42, Difficulty::Easy, true)
                     .unwrap();
             assert_eq!(archetype_tip(&custom), expected);
-            assert!(
-                !custom.players[0]
-                    .name
-                    .starts_with(["Irelia", "Master Yi", "Kennen", "Kai'Sa"][legend])
-            );
+            assert_eq!(custom.legend_id(0), legend.id);
+            assert!(!custom.players[0].name.starts_with(legend.champion));
         }
     }
 

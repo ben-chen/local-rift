@@ -106,12 +106,31 @@ pub(super) fn saved_path(owner: usize) -> PathBuf {
         "custom-ai.json"
     })
 }
+pub(super) fn load_saved_deck(path: &std::path::Path) -> Result<Option<CustomDeck>, String> {
+    let bytes = match std::fs::read(path) {
+        Ok(bytes) => bytes,
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => return Ok(None),
+        Err(error) => return Err(format!("{}: {error}", path.display())),
+    };
+    let value = serde_json::from_slice(&bytes)
+        .map_err(|error| format!("{}: invalid JSON ({error})", path.display()))?;
+    CustomDeck::from_json(&value)
+        .map(Some)
+        .map_err(|error| format!("{}: {error}", path.display()))
+}
+pub(super) fn load_saved_decks_with_errors() -> ([Option<CustomDeck>; 2], Vec<String>) {
+    let mut errors = Vec::new();
+    let decks = std::array::from_fn(|owner| match load_saved_deck(&saved_path(owner)) {
+        Ok(deck) => deck,
+        Err(error) => {
+            errors.push(error);
+            None
+        }
+    });
+    (decks, errors)
+}
 pub(super) fn load_saved_decks() -> [Option<CustomDeck>; 2] {
-    std::array::from_fn(|owner| {
-        let bytes = std::fs::read(saved_path(owner)).ok()?;
-        let value = serde_json::from_slice(&bytes).ok()?;
-        CustomDeck::from_json(&value).ok()
-    })
+    load_saved_decks_with_errors().0
 }
 fn write_saved_deck(owner: usize, deck: &CustomDeck) -> Result<(), String> {
     deck.validate()?;
@@ -175,11 +194,6 @@ impl App {
         write_saved_deck(owner, deck)?;
         self.custom_decks[owner] = Some(deck.clone());
         self.prefs.use_custom[owner] = true;
-        if owner == 0 {
-            self.player_deck = deck.legend;
-        } else {
-            self.opponent_deck = deck.legend;
-        }
         self.fields[owner] = deck.battlefield;
         self.prefs.save();
         self.notify(format!(
@@ -258,10 +272,30 @@ impl App {
         self.header("Build your next idea.", "A separate custom list, using supported cards legal for your legend. Presets keep their original lists.");
         self.ui.rect(Rect::new(245.0, 116.0, 300.0, 731.0), PANEL);
         self.ui.rect(Rect::new(565.0, 116.0, 845.0, 731.0), PANEL);
-        let preset = &self.game.presets[editor.deck.legend];
+        let legend =
+            local_rift::legend_catalog::legend(editor.deck.legend).expect("validated legend");
         self.ui.text("YOUR LEGEND", 265.0, 142.0, 10.0, GOLD);
-        self.ui
-            .ellipsis(preset.legend_name, 265.0, 164.0, 260.0, 15.0, TEXT);
+        self.ui.ellipsis(
+            &super::legend_label(legend),
+            265.0,
+            164.0,
+            218.0,
+            13.0,
+            TEXT,
+        );
+        if self
+            .ui
+            .button(Rect::new(492.0, 145.0, 33.0, 28.0), ">", false, true)
+        {
+            self.legend_picker = Some(legend.id);
+            editor.input = None;
+        }
+        if self.ui.hover(Rect::new(265.0, 145.0, 218.0, 30.0)) {
+            self.legend_hover = Some(legend.id);
+            if self.ui.secondary_pressed() {
+                self.lesson = Some(legend.id);
+            }
+        }
         self.ui.text("DECK NAME", 265.0, 194.0, 9.0, MUTED);
         let name_rect = Rect::new(265.0, 204.0, 260.0, 36.0);
         self.ui.rect(name_rect, BG);
@@ -358,7 +392,7 @@ impl App {
             10.0,
             if rune_count == 12 { GOLD } else { TEAL },
         );
-        for (row, domain) in preset.domains.into_iter().enumerate() {
+        for (row, domain) in legend.domains.into_iter().enumerate() {
             let y = 487.0 + row as f32 * 45.0;
             let index = domain_index(domain);
             self.ui
@@ -637,9 +671,174 @@ impl App {
     }
 }
 
+impl App {
+    pub(super) fn draw_legend_picker(&mut self) {
+        let Some(selected) = self.legend_picker else {
+            return;
+        };
+        let definition =
+            local_rift::legend_catalog::legend(selected).expect("registered selection");
+        self.hover_card = None;
+        self.hover_rect = None;
+        self.ui.rect(
+            Rect::new(0.0, 0.0, 1440.0, 900.0),
+            Color::new(0.0, 0.015, 0.02, 0.9),
+        );
+        self.ui.rect(Rect::new(315.0, 135.0, 820.0, 630.0), PANEL);
+        self.ui.border(Rect::new(315.0, 135.0, 820.0, 630.0), GOLD);
+        self.ui.enabled = true;
+        self.ui
+            .title("Choose your legend.", 340.0, 180.0, 28.0, TEXT);
+        self.ui.text(
+            "Seven supported legends · four sourced tournament presets remain separate",
+            340.0,
+            207.0,
+            12.0,
+            MUTED,
+        );
+        for (row, legend) in local_rift::legend_catalog::legends().iter().enumerate() {
+            if self.ui.button(
+                Rect::new(340.0, 233.0 + row as f32 * 53.0, 214.0, 43.0),
+                legend.champion,
+                selected == legend.id,
+                true,
+            ) {
+                self.legend_picker = Some(legend.id);
+            }
+        }
+        self.ui.ellipsis(
+            &super::legend_label(definition),
+            580.0,
+            255.0,
+            525.0,
+            21.0,
+            TEXT,
+        );
+        self.draw_legend_art(
+            selected,
+            Rect::new(580.0, 278.0, 147.0, 206.0),
+            false,
+            WHITE,
+        );
+        self.ui
+            .wrapped(definition.text, 747.0, 298.0, 355.0, 13.0, TEXT);
+        self.ui.text(
+            &format!(
+                "{} / {}",
+                definition.domains[0].name(),
+                definition.domains[1].name()
+            ),
+            580.0,
+            510.0,
+            13.0,
+            rgb(definition.accent),
+        );
+        self.ui
+            .text("Default chosen champion", 580.0, 540.0, 11.0, GOLD);
+        self.ui.ellipsis(
+            self.game.catalog[definition.default_champion].name,
+            580.0,
+            564.0,
+            525.0,
+            14.0,
+            TEXT,
+        );
+        self.ui.wrapped("Start with an authored 40-card training list, then edit cards, champion and runes. These training lists are not tournament or meta recommendations.", 580.0, 600.0, 525.0, 12.0, MUTED);
+        if self.ui.button(
+            Rect::new(580.0, 679.0, 525.0, 42.0),
+            "Create editable training list",
+            true,
+            true,
+        ) {
+            match CustomDeck::from_legend(selected) {
+                Ok(deck) => {
+                    self.deck_editor = Some(DeckEditor::new(deck));
+                    self.screen = Screen::DeckEditor;
+                    self.legend_picker = None;
+                    self.toast_until = 0.0;
+                }
+                Err(error) => self.notify(error),
+            }
+        }
+        if self.ui.button(
+            Rect::new(340.0, 679.0, 214.0, 42.0),
+            "Cancel · keep current list",
+            false,
+            true,
+        ) {
+            self.legend_picker = None;
+        }
+    }
+    pub(super) fn saved_deck_notice(&mut self) {
+        if self.deck_load_errors.is_empty() {
+            return;
+        }
+        self.hover_card = None;
+        self.hover_rect = None;
+        self.ui.rect(
+            Rect::new(0.0, 0.0, 1440.0, 900.0),
+            Color::new(0.0, 0.015, 0.02, 0.9),
+        );
+        self.ui.rect(Rect::new(350.0, 220.0, 740.0, 430.0), PANEL);
+        self.ui.border(Rect::new(350.0, 220.0, 740.0, 430.0), GOLD);
+        self.ui
+            .title("A saved deck needs attention.", 376.0, 267.0, 27.0, TEXT);
+        self.ui.wrapped("The affected custom slot could not be loaded. Its file is unchanged; you can repair it before restarting, or continue with a preset.", 376.0, 304.0, 688.0, 13.0, MUTED);
+        let mut y = 370.0;
+        for error in &self.deck_load_errors {
+            y = self.ui.wrapped(error, 376.0, y, 688.0, 11.0, GOLD) + 23.0;
+        }
+        self.ui.enabled = true;
+        if self.ui.button(
+            Rect::new(376.0, 589.0, 688.0, 38.0),
+            "Continue with available decks",
+            true,
+            true,
+        ) {
+            self.deck_load_errors.clear();
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn saved_loader_reports_invalid_files_without_replacing_them() {
+        let path = std::env::temp_dir().join(format!(
+            "local-rift-ui-deck-loader-{}.json",
+            std::process::id()
+        ));
+        let _ = std::fs::remove_file(&path);
+        assert!(load_saved_deck(&path).unwrap().is_none());
+        for bytes in [b"{broken".to_vec(), br#"{"legend":999}"#.to_vec()] {
+            std::fs::write(&path, &bytes).unwrap();
+            assert!(
+                load_saved_deck(&path)
+                    .unwrap_err()
+                    .contains(path.to_str().unwrap())
+            );
+            assert_eq!(std::fs::read(&path).unwrap(), bytes);
+        }
+        for legend in local_rift::legend_catalog::legends() {
+            let deck = CustomDeck::from_legend(legend.id).unwrap();
+            std::fs::write(&path, serde_json::to_vec(&deck.to_json()).unwrap()).unwrap();
+            assert_eq!(load_saved_deck(&path).unwrap(), Some(deck));
+        }
+        std::fs::remove_file(path).unwrap();
+    }
+
+    #[test]
+    fn every_legend_has_an_editable_valid_training_list() {
+        for legend in local_rift::legend_catalog::legends() {
+            let editor = DeckEditor::new(CustomDeck::from_legend(legend.id).unwrap());
+            assert_eq!(editor.deck.card_count(), 40);
+            assert!(editor.deck.validate().is_ok());
+            assert!(editor.visible_cards().contains(&legend.default_champion));
+            assert_eq!(editor.deck.legend, legend.id);
+        }
+    }
+
     #[test]
     fn count_changes_keep_one_row_and_remove_zero() {
         let mut editor = DeckEditor::new(CustomDeck::from_preset(2).unwrap());

@@ -2,7 +2,7 @@
 
 Snapshot checked **2026-10-24**. The official gallery contains **1,408 printing records** grouped into **1,103 distinct full-name identities**. After excluding **12 auxiliary token/tracker identities** and **12 banned identities**, **1,079 identities are legal in Standard/1v1 Constructed**. The separate 2v2 list leaves **1,078**.
 
-**This client does not yet implement every legal card.** It currently maps **230 main-deck cards, 4 preset legends, 4 battlefields, and 6 rune resource types** (244 legal identities). **835 legal identities remain unimplemented and are not playable.** Importing this snapshot does not register cards with the engine. Full inventory coverage is not full rules support.
+**This client does not yet implement every legal card.** It currently maps **230 main-deck cards, 7 independently registered legends, 4 battlefields, and 6 rune resource types** (247 legal identities). **832 legal identities remain unimplemented and are not playable.** Importing this snapshot does not register cards with the engine. Full inventory coverage is not full rules support.
 
 ## Scope and authority
 
@@ -29,7 +29,7 @@ Numbered positions include token slots where the publisher numbers them within a
 | --- | ---: | ---: | ---: |
 | Battlefield | 69 | 4 | 65 |
 | Gear | 127 | 33 | 94 |
-| Legend | 58 | 4 | 54 |
+| Legend | 58 | 7 | 51 |
 | Rune | 6 | 6 | 0 |
 | Spell | 269 | 66 | 203 |
 | Unit | 550 | 131 | 419 |
@@ -109,7 +109,7 @@ python3 -m unittest discover -s tools -p 'test_*.py'
 cargo test --test catalog_coverage
 ```
 
-The offline check verifies every archived source SHA-256, reparses gallery and legality, checks every official printing ID and all numbered base positions, rejects unknown sets/unresolved bans or errata, remaps the runtime manifests by official ID, and requires the generated snapshot and report to match byte for byte. It fails on truncated sources, missing records, stale implementation mappings, mapped identities with unresolved type conflicts, or unreviewed set changes.
+The four sourced tournament lists remain separate from the legend registry; new legend availability does not create a new tournament preset. The offline check verifies every archived source SHA-256, reparses gallery and legality, checks every official printing ID and all numbered base positions, rejects unknown sets/unresolved bans or errata, remaps the runtime manifests by official ID, verifies each independent legend’s source text/domains/artwork and matching chosen champion, and requires the generated snapshot and report to match byte for byte. It fails on truncated sources, missing records, stale implementation mappings, mapped identities with unresolved type conflicts, or unreviewed set changes.
 
 ```sh
 # Compare live official source data without changing the committed snapshot.
@@ -356,5 +356,19 @@ Source pages are archived as deterministic gzip files under `assets/data/catalog
 | 227 | Shock Blast | `ven-059-166` |
 | 228 | Against the Odds | `sfd-001-221` |
 | 229 | High Note | `rad-048-167` |
+
+## Implemented legend ID mapping
+
+Registry IDs are independent of the four sourced tournament presets. The original four retain their existing implementation status for compatibility; additional legends use `implemented_legend`. These mappings identify reviewed runtime identities, not a proof of all interactions.
+
+| Legend ID | Legend | Official printing ID |
+| ---: | --- | --- |
+| 0 | Blade Dancer | `sfd-195-221` |
+| 1 | Wuju Bladesman, Starter | `ogs-019-024` |
+| 2 | Heart of the Tempest | `ven-155-166` |
+| 3 | Daughter of the Void | `ogn-247-298` |
+| 4 | Hand of Noxus | `ogn-253-298` |
+| 5 | Herald of the Arcane | `ogn-265-298` |
+| 6 | Lady of Luminosity, Starter | `ogs-021-024` |
 
 Card names, rules, and images are Riot Games intellectual property. This noncommercial, unofficial project includes source references for verification and does not claim Riot affiliation.

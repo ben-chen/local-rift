@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 import re
 import unittest
+from unittest.mock import patch
 
 SPEC = importlib.util.spec_from_file_location("catalog", Path(__file__).with_name("import_catalog.py"))
 catalog = importlib.util.module_from_spec(SPEC)
@@ -37,10 +38,66 @@ class OfficialInventoryTests(unittest.TestCase):
         counts = self.snapshot["counts"]
         self.assertEqual((counts["gallery_printings"], counts["unique_gallery_identities"], counts["standard_legal_identities"]), (1408, 1103, 1079))
         self.assertEqual(counts["implemented_main_cards"], 230)
-        self.assertEqual(counts["unimplemented_legal_identities"], 835)
+        self.assertEqual(counts["implemented_legends"], 7)
+        self.assertEqual(counts["unimplemented_legal_identities"], 832)
         for card in self.snapshot["cards"]:
             if card["implementation"]["status"] == "not_implemented":
                 self.assertFalse(card["implementation"]["playable_in_client"])
+
+    def test_independent_legend_registry_keeps_original_ids_and_adds_no_presets(self):
+        legends = catalog.load_legend_manifest()
+        self.assertEqual([v["id"] for v in legends], list(range(7)))
+        self.assertEqual([v["default_champion"] for v in legends], [0, 22, 33, 49, 183, 175, 182])
+        for entry in legends:
+            identity = next(c for c in self.snapshot["cards"] if entry["official_id"] in c["official_ids"])
+            self.assertEqual(identity["implementation"]["runtime_id"], entry["id"])
+            self.assertEqual(identity["implementation"]["status"], "implemented_preset_legend" if entry["id"] < 4 else "implemented_legend")
+            self.assertTrue(identity["standard_legal"])
+        presets = json.loads((catalog.ROOT / "assets/data/decks.json").read_text())["decks"]
+        self.assertEqual(len(presets), 4)
+
+    def test_legend_manifest_rejects_changed_source_facts_or_invalid_champion(self):
+        mutations = [
+            ("text", "Invented effect", "Legend source text mismatch"),
+            ("domains", ["Calm", "Body"], "Legend domain mismatch"),
+            ("champion", "Kennen", "Legend champion tag mismatch"),
+            ("art_url", "https://example.invalid/art.png", "Legend source artwork mismatch"),
+            ("default_champion", 230, "Legend default champion is not a runtime card"),
+            ("default_champion_official_id", "ogn-117-298", "Legend default champion ID mismatch"),
+        ]
+        for field, value, message in mutations:
+            with self.subTest(field=field):
+                entries = copy.deepcopy(catalog.load_legend_manifest())
+                entries[4][field] = value
+                with patch.object(catalog, "load_legend_manifest", return_value=entries):
+                    with self.assertRaisesRegex(ValueError, message):
+                        catalog.make_catalog(self.manifest, self.data)
+
+    def test_legend_registry_rejects_wrong_identity_and_nonchampion_unit(self):
+        entries = copy.deepcopy(catalog.load_legend_manifest())
+        entries[4]["official_id"] = "ogn-027-298"
+        with patch.object(catalog, "load_legend_manifest", return_value=entries):
+            with self.assertRaisesRegex(ValueError, "Legend registry maps a non-legend"):
+                catalog.make_catalog(self.manifest, self.data)
+        entries = copy.deepcopy(catalog.load_legend_manifest())
+        entries[4]["default_champion"] = 81
+        runtime = json.loads((catalog.ROOT / "assets/data/decks.json").read_text())
+        entries[4]["default_champion_official_id"] = runtime["cards"][81]["official_id"]
+        with patch.object(catalog, "load_legend_manifest", return_value=entries):
+            with self.assertRaisesRegex(ValueError, "lacks matching champion identity"):
+                catalog.make_catalog(self.manifest, self.data)
+
+    def test_legend_registry_rejects_missing_original_or_duplicate_runtime_ids(self):
+        entries = copy.deepcopy(catalog.load_legend_manifest())
+        entries[6]["id"] = 5
+        with patch.object(catalog, "load_legend_manifest", return_value=entries):
+            with self.assertRaisesRegex(ValueError, "Legend registry IDs"):
+                catalog.make_catalog(self.manifest, self.data)
+        entries = catalog.load_legend_manifest()[1:]
+        entries = [{**entry, "id": i} for i, entry in enumerate(entries)]
+        with patch.object(catalog, "load_legend_manifest", return_value=entries):
+            with self.assertRaisesRegex(ValueError, "Preset legend absent"):
+                catalog.make_catalog(self.manifest, self.data)
 
     def test_missing_base_slot_is_rejected(self):
         data = self.changed_gallery(lambda cards: cards.remove(next(c for c in cards if c["id"] == "rad-001-167")))

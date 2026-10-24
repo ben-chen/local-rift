@@ -1,7 +1,7 @@
 //! Bounded, deterministic planning from the acting player's information.
 //!
 //! Rollouts settle the current chain/combat assuming no further discretionary
-//! responses. Unknown draws are sampled from public legend domains, never from
+//! responses. Unknown draws are sampled from public legend legality, never from
 //! the real opponent's list, hand, facedown cards, or either deck's order.
 //! This is a practice opponent, not a claim of tournament-level strength.
 use super::*;
@@ -88,21 +88,10 @@ impl Game {
         }
         let mut rng = Rng::new(seed);
         for owner in 0..2 {
-            let champion = self.legend[owner].kind.champion_id();
-            let domains = self
-                .presets
-                .iter()
-                .find(|p| p.chosen_champion == champion)
-                .map(|p| p.domains)
-                .unwrap_or([Domain::Mind, Domain::Order]);
-            let pool: Vec<_> = self
-                .catalog
-                .iter()
-                .filter(|card| {
-                    self.card_supported(card.id)
-                        && card.domains.iter().all(|domain| domains.contains(domain))
-                })
-                .map(|card| card.id)
+            let domains = self.legend_def(owner).domains;
+            let pool: Vec<_> = crate::deck::eligible_cards(self.legend_id(owner))
+                .into_iter()
+                .filter(|&id| self.card_supported(id))
                 .collect();
             let sample = |rng: &mut Rng| pool[rng.next() as usize % pool.len()];
             for id in &mut state.players[owner].deck {
@@ -173,7 +162,9 @@ impl Game {
             !matches!(
                 action,
                 Action::ActivateRune { .. } | Action::RecycleRune { .. }
-            )
+            ) && !(matches!(action, Action::ActivateLegend { .. })
+                && self.legend[actor].kind == crate::legends::LegendKind::Darius
+                && self.cards_played[actor] == 0)
         }));
         if self.decision.is_none() {
             let targets: Vec<_> = self
@@ -581,6 +572,90 @@ mod tests {
             first.choose_strategic_action(),
             second.choose_strategic_action()
         );
+    }
+
+    #[test]
+    fn registry_legends_sample_only_publicly_legal_cards_and_rune_domains() {
+        for legend in 0..crate::legend_catalog::legends().len() {
+            let custom = crate::deck::CustomDeck::from_legend(legend).unwrap();
+            let mut game = Game::new_with_custom(
+                [0, 0],
+                [Some(custom.clone()), Some(custom)],
+                811,
+                Difficulty::Strategic,
+                false,
+            )
+            .unwrap();
+            game.start_match().unwrap();
+            // A wide deterministic sample exercises the public pool; these
+            // secret placeholders must never be used as the source of draws.
+            game.players[0].deck = vec![69; 1_000];
+            game.players[1].deck = vec![69; 1_000];
+            game.players[1].hand = vec![69; 100];
+            let belief = game.strategic_belief(0);
+            let eligible = crate::deck::eligible_cards(legend);
+            for owner in 0..2 {
+                assert!(
+                    belief.players[owner]
+                        .deck
+                        .iter()
+                        .all(|id| eligible.contains(id))
+                );
+                assert!(
+                    belief.players[owner]
+                        .rune_deck
+                        .iter()
+                        .all(|domain| { game.legend_def(owner).domains.contains(domain) })
+                );
+            }
+            assert!(
+                belief.players[1]
+                    .hand
+                    .iter()
+                    .all(|id| eligible.contains(id))
+            );
+            // Currently supported Signatures have unique full domain pairs;
+            // eligibility still applies their champion restriction explicitly.
+            for (owner, signature) in [(0, 5), (2, 39)] {
+                if legend != owner {
+                    assert!(belief.players[1].deck.iter().all(|&id| id != signature));
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn new_legend_beliefs_do_not_read_the_opponents_saved_training_recipe() {
+        let mut game = Game::new_with_custom(
+            [0, 0],
+            [
+                Some(crate::deck::CustomDeck::from_legend(4).unwrap()),
+                Some(crate::deck::CustomDeck::from_legend(5).unwrap()),
+            ],
+            812,
+            Difficulty::Strategic,
+            false,
+        )
+        .unwrap();
+        game.start_match().unwrap();
+        let first = game.strategic_belief(0);
+        // Preserve public identity and zone sizes while changing private data.
+        let private = game.custom_decks[1].as_mut().unwrap();
+        private.name = "A different private list".into();
+        private.cards = vec![(69, 40)];
+        game.players[1].hand.fill(69);
+        game.players[1].deck.fill(70);
+        game.players[0].deck.fill(77);
+        game.rng = Rng::new(123456);
+        let second = game.strategic_belief(0);
+        for owner in 0..2 {
+            assert_eq!(first.players[owner].deck, second.players[owner].deck);
+            assert_eq!(
+                first.players[owner].rune_deck,
+                second.players[owner].rune_deck
+            );
+        }
+        assert_eq!(first.players[1].hand, second.players[1].hand);
     }
 
     #[test]

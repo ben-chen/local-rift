@@ -75,6 +75,8 @@ pub struct CardDef {
 
 #[derive(Clone, Debug)]
 pub struct DeckPreset {
+    /// Stable legend registry ID; independent of the preset list index.
+    pub legend_id: usize,
     pub name: &'static str,
     pub legend_name: &'static str,
     pub legend_text: &'static str,
@@ -3552,6 +3554,7 @@ pub fn cards() -> Vec<CardDef> {
 pub fn presets() -> Vec<DeckPreset> {
     vec![
         DeckPreset {
+            legend_id: 0,
             name: "Irelia / Blade Dance",
             legend_name: "Irelia, Blade Dancer",
             legend_text: "When you choose a friendly unit, you may exhaust me and pay [Any Power] to ready it.\nWhen you conquer, you may pay [1 Energy] to ready me.",
@@ -3590,6 +3593,7 @@ pub fn presets() -> Vec<DeckPreset> {
             chosen_champion: 0,
         },
         DeckPreset {
+            legend_id: 1,
             name: "Master Yi / Wuju",
             legend_name: "Master Yi, Wuju Bladesman",
             legend_text: "While a friendly unit defends alone, it gets +2 Might.",
@@ -3624,6 +3628,7 @@ pub fn presets() -> Vec<DeckPreset> {
             chosen_champion: 22,
         },
         DeckPreset {
+            legend_id: 2,
             name: "Kennen / Tempest",
             legend_name: "Kennen, Heart of the Tempest",
             legend_text: "When you play a card from anywhere other than your hand, empower me.\n[Action] —  Disempower me, [Exhaust]: Give a unit [Assault 2] this turn. (+2 Might while it's an attacker.)",
@@ -3661,6 +3666,7 @@ pub fn presets() -> Vec<DeckPreset> {
             chosen_champion: 33,
         },
         DeckPreset {
+            legend_id: 3,
             name: "Kai'Sa / Void Control",
             legend_name: "Kai'Sa, Daughter of the Void",
             legend_text: "[Exhaust]: [Reaction] — [Add] [Any Power]. Use only to play spells. (Abilities that add resources can't be reacted to.)",
