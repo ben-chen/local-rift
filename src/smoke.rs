@@ -529,6 +529,62 @@ fn c18_offer(app: &mut App, card: usize) {
     assert!(matches!(app.game.decision,Some(Decision::BanishPlay{card_id,..}) if card_id==card));
 }
 
+fn c19_look(app: &mut App, spell: usize, top_first: &[usize]) {
+    c17_fixture(app, spell);
+    app.deck_look_draft = None;
+    app.game.players[0].deck = top_first.iter().rev().copied().collect();
+    app.game
+        .apply(Action::PlayCardWithTargets {
+            hand_index: 0,
+            lane: None,
+            targets: vec![],
+        })
+        .unwrap();
+    finish_chain_until_choice(app);
+    assert!(matches!(
+        app.game.decision,
+        Some(Decision::DeckLookPlay { player: 0, .. })
+    ));
+}
+fn c19_hook(app: &mut App) {
+    c17_fixture(app, 385);
+    app.deck_look_draft = None;
+    app.game.players[0].hand.clear();
+    app.game.players[0].units[0].card_id = 273;
+    app.game.players[0].units[0].buff = 3;
+    app.game.players[0].gear.push(GearState {
+        id: 19001,
+        card_id: 385,
+        ready: true,
+        temporary: false,
+        token: false,
+        attached_to: None,
+    });
+    app.game.players[0].deck = vec![96, 145, 96, 10, 133];
+    app.game
+        .apply(Action::ActivateAbility {
+            source: local_rift::activated::AbilitySource::Gear {
+                player: 0,
+                gear_id: 19001,
+            },
+            ability_index: 0,
+            targets: vec![Target::Unit {
+                player: 0,
+                unit_id: 17001,
+            }],
+        })
+        .unwrap();
+    finish_chain_until_choice(app);
+    assert!(matches!(
+        app.game.decision,
+        Some(Decision::DeckLookPlay {
+            player: 0,
+            killed_might: Some(3),
+            ..
+        })
+    ));
+}
+
 /// Returns true after all assertions pass. Use an isolated XDG_DATA_HOME because
 /// the settings controls intentionally exercise the normal persistence path.
 pub fn run_frame(app: &mut App, frame: u32) -> bool {
@@ -8821,15 +8877,368 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
                 2
             );
             capture(app, "RIFT_SMOKE_C18_SPELL_RESOLVED_SCREENSHOT");
+        }
+        880 => {
+            c19_hook(app);
+        }
+        881 => {
+            assert_eq!(app.deck_look_draft.as_ref().unwrap().selection, None);
+            assert!(
+                matches!(&app.game.decision,Some(Decision::DeckLookPlay{cards,eligible,..}) if cards==&vec![133,10,96,145,96] && eligible==&vec![2,3,4])
+            );
+            save_state(app);
+            capture(app, "RIFT_SMOKE_C19_HOOK_LOOK_SCREENSHOT");
+            click(app, 320.0, 760.0);
+        }
+        882 => {
+            assert_same_state(app);
+            assert_eq!(app.deck_look_draft.as_ref().unwrap().selection, None);
+            app.ui.input_override = Some((vec2(670.0, 760.0), false, true));
+        }
+        883 => {
+            assert_eq!(app.inspect, Some(96));
+            capture(app, "RIFT_SMOKE_C19_LOOK_INSPECT_SCREENSHOT");
+            click(app, 960.0, 704.0);
+        }
+        884 => {
+            assert!(app.inspect.is_none());
+            click(app, 1029.0, 760.0);
+        }
+        885 => {
+            assert_eq!(
+                app.deck_look_draft.as_ref().unwrap().selection,
+                Some(Some(4))
+            );
+            assert_same_state(app);
+            capture(app, "RIFT_SMOKE_C19_DUPLICATE_CHOICE_SCREENSHOT");
+            click(app, 1285.0, 578.0);
+        }
+        886 => {
+            assert_eq!(app.deck_look_draft.as_ref().unwrap().selection, None);
+            assert_same_state(app);
+            click(app, 670.0, 760.0);
+        }
+        887 => {
+            assert_eq!(
+                app.deck_look_draft.as_ref().unwrap().selection,
+                Some(Some(2))
+            );
+            click(app, 1285.0, 510.0);
+        }
+        888 => {
+            assert!(matches!(
+                app.game.decision,
+                Some(Decision::PendingPlay { card_id: 96, .. })
+            ));
+            assert_eq!(app.game.players[0].deck.len(), 4);
+            capture(app, "RIFT_SMOKE_C19_HOOK_PENDING_SCREENSHOT");
+            click(app, 1285.0, 510.0);
+        }
+        889 => {
+            assert!(app.game.players[0].units.iter().any(|u| u.card_id == 96));
+            assert!(app.game.pending_cards().is_empty());
+        }
+        890 => {
+            c19_look(app, 387, &[10, 133, 70, 145, 70]);
+        }
+        891 => {
+            save_state(app);
+            click(app, 1029.0, 760.0);
+        }
+        892 => {
+            assert_same_state(app);
+            assert_eq!(
+                app.deck_look_draft.as_ref().unwrap().selection,
+                Some(Some(4))
+            );
+            capture(app, "RIFT_SMOKE_C19_REINFORCE_LOOK_SCREENSHOT");
+            click(app, 1285.0, 510.0);
+        }
+        893 => {
+            assert!(matches!(
+                app.game.decision,
+                Some(Decision::PendingPlay { card_id: 70, .. })
+            ));
+            let action = Action::FinalizePendingPlay {
+                lane: None,
+                targets: vec![],
+                repeat_targets: vec![],
+                repeat: false,
+                accelerate: false,
+                bonus: false,
+            };
+            assert_eq!(app.game.cost_plan(&action).unwrap().energy, 4);
+            capture(app, "RIFT_SMOKE_C19_REDUCED_COST_SCREENSHOT");
+            save_state(app);
+        }
+        894 => {
+            click(app, 1285.0, 510.0);
+        }
+        895 => {
+            assert!(app.game.players[0].units.iter().any(|u| u.card_id == 70));
+            assert!(app.game.pending_cards().is_empty());
+        }
+        896 => {
+            c19_look(app, 388, &[133, 250, 70, 250, 96]);
+        }
+        897 => {
+            click(app, 496.0, 760.0);
+        }
+        898 => {
+            assert_eq!(
+                app.deck_look_draft.as_ref().unwrap().selection,
+                Some(Some(1))
+            );
+            capture(app, "RIFT_SMOKE_C19_WILD_GEAR_CHOICE_SCREENSHOT");
+            click(app, 1285.0, 510.0);
+        }
+        899 => {
+            assert!(matches!(
+                app.game.decision,
+                Some(Decision::PendingPlay { card_id: 250, .. })
+            ));
+            capture(app, "RIFT_SMOKE_C19_WILD_PENDING_SCREENSHOT");
+            click(app, 1285.0, 510.0);
+        }
+        900 => {
+            finish_chain_until_choice(app);
+            assert!(matches!(
+                app.game.decision,
+                Some(Decision::EmpowerPlayed {
+                    target: Some(Target::Gear { player: 0, .. }),
+                    ..
+                })
+            ));
+            let gear = app.game.players[0]
+                .gear
+                .iter()
+                .find(|g| g.card_id == 250)
+                .unwrap();
+            assert!(
+                !app.game
+                    .object_empowered(local_rift::empower::BoardObject::Gear {
+                        player: 0,
+                        gear_id: gear.id
+                    })
+            );
+            capture(app, "RIFT_SMOKE_C19_EMPOWER_OFFER_SCREENSHOT");
+            click(app, 1285.0, 578.0);
+        }
+        901 => {
+            assert_eq!(app.inspect, Some(250));
+            capture(app, "RIFT_SMOKE_C19_EMPOWER_INSPECT_SCREENSHOT");
+            click(app, 960.0, 704.0);
+        }
+        902 => {
+            assert!(app.inspect.is_none());
+            click(app, 1285.0, 510.0);
+        }
+        903 => {
+            assert!(app.game.chain.iter().any(|i| matches!(
+                i.ability,
+                Some(local_rift::game::ChainAbility::EmpowerLinked { .. })
+            )));
+            let gear = app.game.players[0]
+                .gear
+                .iter()
+                .find(|g| g.card_id == 250)
+                .unwrap();
+            assert!(
+                !app.game
+                    .object_empowered(local_rift::empower::BoardObject::Gear {
+                        player: 0,
+                        gear_id: gear.id
+                    })
+            );
+            finish_chain_until_choice(app);
+            let gear = app.game.players[0]
+                .gear
+                .iter()
+                .find(|g| g.card_id == 250)
+                .unwrap();
+            assert!(
+                app.game
+                    .object_empowered(local_rift::empower::BoardObject::Gear {
+                        player: 0,
+                        gear_id: gear.id
+                    })
+            );
+            capture(app, "RIFT_SMOKE_C19_EMPOWERED_GEAR_SCREENSHOT");
+        }
+        904 => {
+            c19_look(app, 388, &[70, 250, 133]);
+        }
+        905 => {
+            save_state(app);
+            click(app, 1285.0, 547.0);
+        }
+        906 => {
+            assert_same_state(app);
+            assert_eq!(app.deck_look_draft.as_ref().unwrap().selection, Some(None));
+            capture(app, "RIFT_SMOKE_C19_RECYCLE_ALL_SCREENSHOT");
+            click(app, 1285.0, 510.0);
+        }
+        907 => {
+            finish_chain_until_choice(app);
+            assert!(matches!(
+                app.game.decision,
+                Some(Decision::EmpowerPlayed { target: None, .. })
+            ));
+            assert_eq!(app.game.players[0].deck.len(), 3);
+            save_state(app);
+            click(app, 1285.0, 510.0);
+        }
+        908 => {
+            assert_same_state(app);
+            capture(app, "RIFT_SMOKE_C19_NO_PLAYED_OBJECT_SCREENSHOT");
+            click(app, 1285.0, 547.0);
+        }
+        909 => {
+            assert!(app.game.decision.is_none());
+            assert!(app.game.players[0].gear.is_empty());
+        }
+        910 => {
+            c17_fixture(app, 386);
+            app.game
+                .apply(Action::PlayCardWithTargets {
+                    hand_index: 0,
+                    lane: None,
+                    targets: vec![],
+                })
+                .unwrap();
+            finish_chain_until_choice(app);
+            app.game.players[0].deck = vec![96, 133, 133, 133, 133, 133, 133];
+            app.game.apply(Action::EndTurn).unwrap();
+            finish_chain_until_choice(app);
+            assert!(
+                matches!(&app.game.decision,Some(Decision::RevealedDeck{cards,..}) if cards.len()==7)
+            );
+        }
+        911 => {
+            save_state(app);
+            capture(app, "RIFT_SMOKE_C19_AURORA_REVEAL_SCREENSHOT");
+            click(app, 320.0, 760.0);
+        }
+        912 => {
+            assert_same_state(app);
+            assert!(app.deck_look_draft.is_none());
+            click(app, 1104.0, 661.0);
+        }
+        913 => {
+            assert_eq!(app.hand_scroll, 2);
+            assert_same_state(app);
+            capture(app, "RIFT_SMOKE_C19_AURORA_LAST_CARDS_SCREENSHOT");
+            click(app, 1285.0, 510.0);
+        }
+        914 => {
+            assert!(matches!(
+                app.game.decision,
+                Some(Decision::PendingPlay { card_id: 96, .. })
+            ));
+            capture(app, "RIFT_SMOKE_C19_AURORA_PENDING_SCREENSHOT");
+            click(app, 1285.0, 510.0);
+        }
+        915 => {
+            assert!(app.game.players[0].units.iter().any(|u| u.card_id == 96));
+            assert!(app.game.pending_cards().is_empty());
+        }
+        916 => {
+            c17_fixture(app, 387);
+            app.game.players[0].hand.clear();
+            app.game.apply(Action::EndTurn).unwrap();
+            finish_chain_until_choice(app);
+            assert_eq!(app.game.priority(), 1);
+            app.game.players[1].hand = vec![387];
+            app.game.players[1].deck = vec![70, 250, 133, 96, 145];
+            app.game.players[1].energy = 30;
+            app.game.players[1].energy_pool =
+                30 - app.game.players[1].runes.iter().sum::<u8>() as u16;
+            app.game
+                .apply(Action::PlayCardWithTargets {
+                    hand_index: 0,
+                    lane: None,
+                    targets: vec![],
+                })
+                .unwrap();
+            finish_chain_until_choice(app);
+            assert!(matches!(
+                app.game.decision,
+                Some(Decision::DeckLookPlay { player: 1, .. })
+            ));
+        }
+        917 => {
+            assert!(app.deck_look_draft.is_none());
+            assert!(
+                !app.deck_look_tray(),
+                "Opponent private look must not produce a card strip"
+            );
+            capture(app, "RIFT_SMOKE_C19_OPPONENT_PRIVATE_SCREENSHOT");
+        }
+        918 => {
+            c17_fixture(app, 386);
+            app.game.players[0].hand.clear();
+            app.game.apply(Action::EndTurn).unwrap();
+            finish_chain_until_choice(app);
+            app.game.players[1].hand = vec![386];
+            app.game.players[1].power_pool = [5; 6];
+            app.game.players[1].energy = 30;
+            app.game.players[1].energy_pool =
+                30 - u16::from(app.game.players[1].runes.iter().sum::<u8>());
+            app.game
+                .apply(Action::PlayCardWithTargets {
+                    hand_index: 0,
+                    lane: None,
+                    targets: vec![],
+                })
+                .unwrap();
+            finish_chain_until_choice(app);
+            app.game.players[1].deck = vec![96, 133, 133];
+            app.game.apply(Action::EndTurn).unwrap();
+            finish_chain_until_choice(app);
+            assert!(matches!(
+                app.game.decision,
+                Some(Decision::RevealedDeck { player: 1, .. })
+            ));
+        }
+        919 => {
+            save_state(app);
+            app.next_ai = 0.0;
+            app.update();
+            assert_same_state(app);
+            app.next_ai = f64::INFINITY;
+            capture(app, "RIFT_SMOKE_C19_OPPONENT_PUBLIC_SCREENSHOT");
+            app.ui.input_override = Some((vec2(670.0, 760.0), false, true));
+        }
+        920 => {
+            assert_eq!(app.inspect, Some(96));
+            capture(app, "RIFT_SMOKE_C19_OPPONENT_REVEAL_INSPECT_SCREENSHOT");
+            click(app, 960.0, 704.0);
+        }
+        921 => {
+            assert!(app.inspect.is_none());
+            assert_same_state(app);
+            click(app, 1285.0, 510.0);
+        }
+        922 => {
+            assert!(matches!(
+                app.game.decision,
+                Some(Decision::PendingPlay {
+                    player: 1,
+                    card_id: 96,
+                    ..
+                })
+            ));
+        }
+        923 => {
             app.ui.input_override = None;
             app.ui.pointer_override = None;
             app.ui.wheel_override = None;
             println!(
-                "PASS: 880 native UI frames including Clocktower Predict3, inspected Banish offers, optional decline, unit and spell finalization with Energy waived, and all previous 863 controls."
+                "PASS: 924 native UI frames including private deck-look occurrence selection, explicit recycle confirmation, reduced child costs, fixed-object Empower responses, persistent public opponent reveals, and all previous 880 controls."
             );
             return true;
         }
-        _ => panic!("UI smoke runner exceeded its 880-frame script"),
+        _ => panic!("UI smoke runner exceeded its 924-frame script"),
     }
     false
 }

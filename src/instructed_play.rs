@@ -19,6 +19,8 @@ pub enum PlayDestination {
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct PlayInstruction {
+    /// Whole-cost Energy discount, applied after component discounts (CR356.4).
+    pub energy_discount: u8,
     pub cost: BaseCostWaiver,
     pub destination: PlayDestination,
 }
@@ -54,13 +56,22 @@ impl InstructedPlayKind {
         use PlayDestination::{AnyBattlefield, Base, Exact, Normal};
         let (cost, destination) = match self {
             Self::Fizz | Self::ClocktowerGuardian => (Energy, Normal),
-            Self::LastRites => (None, Normal),
+            Self::LastRites | Self::Reinforce | Self::WildClaw => (None, Normal),
+            Self::BaitedHook | Self::DazzlingAurora => (All, Normal),
             Self::Matriarch | Self::PortalRescue => (All, Base),
             Self::TemporalBreach => (All, Exact(previous_location)),
             Self::ThrillOfTheHunt => (All, AnyBattlefield),
             Self::ArcaneShift => (All, Normal),
         };
-        PlayInstruction { cost, destination }
+        PlayInstruction {
+            cost,
+            destination,
+            energy_discount: if matches!(self, Self::Reinforce | Self::WildClaw) {
+                5
+            } else {
+                0
+            },
+        }
     }
 }
 
@@ -112,7 +123,7 @@ impl Game {
         index: usize,
         kind: InstructedPlayKind,
         previous_location: Option<usize>,
-    ) {
+    ) -> u32 {
         let card_id = self.players[player].banish.remove(index);
         let id = self.next_chain_id;
         self.next_chain_id += 1;
@@ -124,6 +135,7 @@ impl Game {
             instruction: kind.instruction(previous_location),
             origin: PendingOrigin::Banish { index },
         });
+        id
     }
     pub(crate) fn replay_target_score(&self, actor: usize, target: Target) -> Result<i128, String> {
         let Some(unit) = self.unit_ref(target) else {

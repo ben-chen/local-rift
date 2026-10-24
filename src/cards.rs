@@ -5873,6 +5873,66 @@ pub fn cards() -> Vec<CardDef> {
             tags: &["Shurima"],
             art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/b846d604eee450a4ab8f457f2738b0596e7b361e-744x1039.png?w=280&q=80&fm=png",
         },
+        CardDef {
+            id: 385,
+            official_id: "ogn-242-298",
+            name: "Baited Hook",
+            cost: 3,
+            power_cost: 0,
+            might: 0,
+            domain: Domain::Order,
+            domains: &[Domain::Order],
+            kind: CardKind::Gear,
+            official_text: "[1][C], [E]: Kill a friendly unit. Look at the top 5 cards of your Main Deck. You may banish a unit from among them that has Might up to 1 more than the killed unit and play it, ignoring its cost. Then recycle the rest.",
+            keywords: &[],
+            tags: &[],
+            art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/7b4e6a1e32878a7d5fe4e40869c83e47ea08de7c-744x1039.png?w=300&q=80&fm=png",
+        },
+        CardDef {
+            id: 386,
+            official_id: "ogn-160-298",
+            name: "Dazzling Aurora",
+            cost: 9,
+            power_cost: 2,
+            might: 0,
+            domain: Domain::Body,
+            domains: &[Domain::Body],
+            kind: CardKind::Gear,
+            official_text: "At the end of your turn, reveal cards from the top of your Main Deck until you reveal a unit and banish it. Play it, ignoring its cost, and recycle the rest.",
+            keywords: &[],
+            tags: &[],
+            art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/c023856a50c75058465f283d181277ce265ba108-744x1039.png?w=320&q=80&fm=png",
+        },
+        CardDef {
+            id: 387,
+            official_id: "ogn-062-298",
+            name: "Reinforce",
+            cost: 5,
+            power_cost: 0,
+            might: 0,
+            domain: Domain::Calm,
+            domains: &[Domain::Calm],
+            kind: CardKind::Spell,
+            official_text: "Look at the top 5 cards of your Main Deck. You may banish a unit from among them, then play it, reducing its cost by [5]. Recycle the remaining cards.",
+            keywords: &[],
+            tags: &[],
+            art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/5bb4ce960c7636dac103c560a2e2f4e32f9d5390-744x1039.png?w=360&q=80&fm=png",
+        },
+        CardDef {
+            id: 388,
+            official_id: "ven-089-166",
+            name: "Wild Claw",
+            cost: 7,
+            power_cost: 1,
+            might: 0,
+            domain: Domain::Body,
+            domains: &[Domain::Body],
+            kind: CardKind::Spell,
+            official_text: "Look at the top 5 cards of your Main Deck. You may banish a unit or gear from among them and play it, reducing its Energy cost by [5 Energy]. Recycle the rest. Then you may do this: Empower it. (It becomes Empowered if it's not already.)",
+            keywords: &[],
+            tags: &[],
+            art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/a58871b08a51efb8ce33f399fe4d168fd25b596a-744x1039.png?w=360&q=80&fm=png",
+        },
     ]
 }
 
@@ -6037,7 +6097,7 @@ mod tests {
     #[test]
     fn presets_are_complete_and_references_are_consistent() {
         let catalog = cards();
-        assert_eq!(catalog.len(), 385);
+        assert_eq!(catalog.len(), 389);
         for (index, card) in catalog.iter().enumerate() {
             assert_eq!(index, card.id);
             assert!(!card.official_id.is_empty());

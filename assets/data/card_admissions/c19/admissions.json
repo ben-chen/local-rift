@@ -1,0 +1,520 @@
+{
+  "schema_version": 1,
+  "draft_not_for_import": false,
+  "reviewed_on": "2026-10-24",
+  "origin_gallery": {
+    "url": "https://playriftbound.com/en-us/card-gallery/",
+    "uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+    "archive": "assets/data/catalog_sources/gallery.html.gz"
+  },
+  "pre_admission_catalog_sha256": "cc119535972e2c10e576f5b52b57fbb6574a3cbb8b3f46c97beccce02828a56e",
+  "preserved_runtime_prefix": {
+    "card_count": 385,
+    "cards_sha256": "08f7365c983c374cb6d400e00ce06ab8c5227bc4698e7f8f97e27f550911e6ec",
+    "carddefs_source_prefix_sha256": "44e8e387b563453069d16bc3f71167ed6a88aabd47ac20e56adf95fe59bcfe5d",
+    "presets_sha256": "d6e64ebf3f8921686682dacd87d4b2b4baec5754dbd284c6d60bf3fb324571e2",
+    "legends_manifest_sha256": "a31bb93c27588bd4759985e9a4083372d5afae59d22b9ac9d48c54946e5474fe",
+    "training_recipe_source_sha256": "dc498f4f98cec6421dade7e01ead261693ed5f70d30d4d2c808da4a1bcb5b706"
+  },
+  "preserved_source_reviews": {
+    "field_resolutions_sha256": "09a8e5a40da3bf0016d5a2b9f5f8dc31213d4d6641608a1b9704c4fa319db8c4",
+    "raw_printings_sha256": "e0f8bc7fc0f5d513f9f361596e7d7472e4e63900bbf67f6de1664cdccf855cc3",
+    "historical_issues_sha256": "5016c1d2afa72e7c82ca2634689d1cbcc12e993f4996e91ea3371b2c5fcfde3e",
+    "field_image_index_sha256": "1bd536ff0843cf750c7802f6884b89bb3e41bce4dff88c005acdccf314134890",
+    "identity_reviews_sha256": "c61c191636c74795ec15c4149805d994c76c020093c98592a489766f30f54ad3"
+  },
+  "pre_admission_counts": {
+    "main_cards": 385,
+    "mapped_legal": 412,
+    "remaining_legal": 667
+  },
+  "scope": "Four complete original faces independently inspected. Original physical wording, untouched raw/effective gallery facts and separately authoritative errata are preserved. No source correction or identity-review change; executable behavior is verified separately.",
+  "errata_sources": [
+    {
+      "key": "origins_errata",
+      "url": "https://playriftbound.com/en-us/news/rules-and-releases/riftbound-origins-card-errata/",
+      "archive": "assets/data/catalog_sources/origins_errata.html.gz",
+      "uncompressed_sha256": "035848c5cc61007683111e63b91289d3fc386d2b33437af32d4d13d565727c52",
+      "parsed_entries_sha256": "5d5ed4e6d5e03033184b5382ab360eade62ca9cf032cf94e811cc1e0acaed581",
+      "live_checked_on": "2026-10-24",
+      "live_uncompressed_sha256": "035848c5cc61007683111e63b91289d3fc386d2b33437af32d4d13d565727c52",
+      "live_parsed_entries_sha256": "5d5ed4e6d5e03033184b5382ab360eade62ca9cf032cf94e811cc1e0acaed581"
+    },
+    {
+      "key": "spiritforged_errata",
+      "url": "https://playriftbound.com/en-us/news/rules-and-releases/riftbound-spiritforged-errata/",
+      "archive": "assets/data/catalog_sources/spiritforged_errata.html.gz",
+      "uncompressed_sha256": "2fcd51e6104eb76212c42abc850beffaf1cf3e623d875b2d9ad47ed149a726a8",
+      "parsed_entries_sha256": "88be71f74e159dde0b339273fed000ac097ae50318a0aa535b02fdc23c666d57",
+      "live_checked_on": "2026-10-24",
+      "live_uncompressed_sha256": "44a73fe653506bc89ff41e9b81c004fc5c952c10df29de34f528b6ddfd48335d",
+      "live_parsed_entries_sha256": "88be71f74e159dde0b339273fed000ac097ae50318a0aa535b02fdc23c666d57"
+    },
+    {
+      "key": "unleashed_errata",
+      "url": "https://playriftbound.com/en-us/news/rules-and-releases/unleashed-errata-updates/",
+      "archive": "assets/data/catalog_sources/unleashed_errata.html.gz",
+      "uncompressed_sha256": "8b3cb69fea7c499e435c6af0ac89b5c5013711477a172c6bbed3a782eff7ac7b",
+      "parsed_entries_sha256": "801ad0c9bcc9d7bbdde1fa8c5b229dbcaf718daaf3f3db208dd8942a119e3df3",
+      "live_checked_on": "2026-10-24",
+      "live_uncompressed_sha256": "38ed4c7427e2996cdf5b1463ac5ba1311297a317729a9a506e20ed376feb8368",
+      "live_parsed_entries_sha256": "801ad0c9bcc9d7bbdde1fa8c5b229dbcaf718daaf3f3db208dd8942a119e3df3"
+    },
+    {
+      "key": "vendetta_errata",
+      "url": "https://playriftbound.com/en-us/news/announcements/vendetta-errata-updates/",
+      "archive": "assets/data/catalog_sources/vendetta_errata.html.gz",
+      "uncompressed_sha256": "d17603177df347cd44c4ef67c1c547344afcd847cec72ae545239f3c232ef2a6",
+      "parsed_entries_sha256": "9e6fb29ba5bd2bce1023b6927c395e4ed0ced61bf2fc766410d9f000c68a16be",
+      "live_checked_on": "2026-10-24",
+      "live_uncompressed_sha256": "b2fe4126a8c007c60576bf225eb7add078e816fe8aca4419bc4200f8e4e24065",
+      "live_parsed_entries_sha256": "9e6fb29ba5bd2bce1023b6927c395e4ed0ced61bf2fc766410d9f000c68a16be"
+    },
+    {
+      "key": "radiance_errata",
+      "url": "https://playriftbound.com/en-us/news/announcements/radiance-errata-updates/",
+      "archive": "assets/data/catalog_sources/radiance_errata.html.gz",
+      "uncompressed_sha256": "63735225d6c2f0b757e933289175fb09dcbae86178075fb227e4afa4e1a478a7",
+      "parsed_entries_sha256": "84fd3234a6cdc8c5ddd0b8b4f18c100f339497acdc02318f74b352b6da23866e",
+      "live_checked_on": "2026-10-24",
+      "live_uncompressed_sha256": "63735225d6c2f0b757e933289175fb09dcbae86178075fb227e4afa4e1a478a7",
+      "live_parsed_entries_sha256": "84fd3234a6cdc8c5ddd0b8b4f18c100f339497acdc02318f74b352b6da23866e"
+    }
+  ],
+  "records": [
+    {
+      "official_id": "ogn-242-298",
+      "name": "Baited Hook",
+      "runtime_id": 385,
+      "raw_printing": {
+        "official_id": "ogn-242-298",
+        "public_code": "OGN-242/298",
+        "name": "Baited Hook",
+        "set": "OGN",
+        "collector_number": 242,
+        "types": [
+          "gear"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "gear"
+        ],
+        "accessibility_types": [
+          "gear"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "order"
+        ],
+        "energy": 3,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "rules_html": "<p>:rb_energy_1::rb_rune_order:, :rb_exhaust:: Kill a friendly unit. Look at the top 5 cards of your Main Deck. You may banish a unit from among them that has Might up to 1 more than the killed unit and play it, ignoring its cost. Then recycle the rest.</p>",
+        "rules_text": "[1 Energy][Order Power], [Exhaust]: Kill a friendly unit. Look at the top 5 cards of your Main Deck. You may banish a unit from among them that has Might up to 1 more than the killed unit and play it, ignoring its cost. Then recycle the rest.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [],
+        "rarity": "epic",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/7b4e6a1e32878a7d5fe4e40869c83e47ea08de7c-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Gear: Baited Hook. [1][C], [E]: Kill a friendly unit. Look at the top 5 cards of your Main Deck. You may banish a unit from among them that has Might up to 1 more than the killed unit and play it, ignoring its cost. Then recycle the rest.",
+        "illustrators": [
+          "Kudos Productions"
+        ]
+      },
+      "raw_printing_sha256": "9c260ca9d20e6675a79b4b0a1a9699843392d4b95b27897b106a8e84d93f2a09",
+      "effective": {
+        "types": [
+          "gear"
+        ],
+        "super_types": [],
+        "domains": [
+          "order"
+        ],
+        "energy": 3,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>:rb_energy_1::rb_rune_order:, :rb_exhaust:: Kill a friendly unit. Look at the top 5 cards of your Main Deck. You may banish a unit from among them that has Might up to 1 more than the killed unit and play it, ignoring its cost. Then recycle the rest.</p>",
+        "rules_text": "[1 Energy][Order Power], [Exhaust]: Kill a friendly unit. Look at the top 5 cards of your Main Deck. You may banish a unit from among them that has Might up to 1 more than the killed unit and play it, ignoring its cost. Then recycle the rest.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "existing_field_resolution_ids": [],
+      "errata": [
+        {
+          "article_heading": "Baited Hook",
+          "text": "[1][C], [E]: Kill a friendly unit. Look at the top 5 cards of your Main Deck. You may banish a unit from among them that has Might up to 1 more than the killed unit and play it, ignoring its cost. Then recycle the rest.",
+          "source_url": "https://playriftbound.com/en-us/news/rules-and-releases/riftbound-origins-card-errata/"
+        }
+      ],
+      "runtime_rules_text": "[1][C], [E]: Kill a friendly unit. Look at the top 5 cards of your Main Deck. You may banish a unit from among them that has Might up to 1 more than the killed unit and play it, ignoring its cost. Then recycle the rest.",
+      "runtime_text_authority": "official_errata",
+      "visual_observation": {
+        "printed_types": [
+          "gear"
+        ],
+        "printed_supertypes": [],
+        "printed_domains": [
+          "order"
+        ],
+        "printed_tags": [],
+        "printed_energy": 3,
+        "printed_power": null,
+        "printed_might": null,
+        "printed_might_bonus": null,
+        "printed_equipment_icons_expanded": "",
+        "name": "Baited Hook",
+        "collector_code": "OGN-242/298",
+        "official_id": "ogn-242-298",
+        "original_image_sha256": "7b2edab90efc23a1d6e1bbf2803ef7b6016ae2d419185322ae86b24c738ac799",
+        "face_visually_inspected": true,
+        "reviewed_on": "2026-10-24",
+        "printed_rules_icons_expanded": "[1 Energy][Order Power], [Exhaust]: Kill a friendly unit. Look at the top 5 cards of your Main Deck. You may play a unit from among them that has Might up to 1 more than the killed unit, ignoring its cost. Then recycle the rest.",
+        "uncertainties": [],
+        "independently_reinspected_on": "2026-10-24"
+      },
+      "original_image": {
+        "path": "assets/data/card_admissions/c19/originals/ogn-242-298.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/7b4e6a1e32878a7d5fe4e40869c83e47ea08de7c-744x1039.png?accountingTag=RB",
+        "bytes": 1148887,
+        "sha256": "7b2edab90efc23a1d6e1bbf2803ef7b6016ae2d419185322ae86b24c738ac799"
+      },
+      "runtime_image": {
+        "path": "assets/art/card_385.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/7b4e6a1e32878a7d5fe4e40869c83e47ea08de7c-744x1039.png?w=300&q=80&fm=png",
+        "bytes": 278058,
+        "sha256": "e6fd3cdc045e1f27a8345b2cf1af7eeac956794717036f1c601591035ed2ba5a",
+        "width": 300,
+        "height": 419
+      },
+      "formatting_observation": "Physical artwork predates the separately linked official erratum; gallery text is retained without replacement."
+    },
+    {
+      "official_id": "ogn-160-298",
+      "name": "Dazzling Aurora",
+      "runtime_id": 386,
+      "raw_printing": {
+        "official_id": "ogn-160-298",
+        "public_code": "OGN-160/298",
+        "name": "Dazzling Aurora",
+        "set": "OGN",
+        "collector_number": 160,
+        "types": [
+          "gear"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "gear"
+        ],
+        "accessibility_types": [
+          "gear"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "body"
+        ],
+        "energy": 9,
+        "power": 2,
+        "might": null,
+        "might_bonus": null,
+        "rules_html": "<p>At the end of your turn, reveal cards from the top of your Main Deck until you reveal a unit. Play it, ignoring its cost, and recycle the rest.</p>",
+        "rules_text": "At the end of your turn, reveal cards from the top of your Main Deck until you reveal a unit. Play it, ignoring its cost, and recycle the rest.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [],
+        "rarity": "epic",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/c023856a50c75058465f283d181277ce265ba108-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Gear: Dazzling Aurora. At the end of your turn, reveal cards from the top of your Main Deck until you reveal a unit. Play it, ignoring its cost, and recycle the rest.",
+        "illustrators": [
+          "Six More Vodka"
+        ]
+      },
+      "raw_printing_sha256": "a55d0989554044c3aad752234bd1c5cfa6abc1928e83038af515e42def8c7a25",
+      "effective": {
+        "types": [
+          "gear"
+        ],
+        "super_types": [],
+        "domains": [
+          "body"
+        ],
+        "energy": 9,
+        "power": 2,
+        "might": null,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>At the end of your turn, reveal cards from the top of your Main Deck until you reveal a unit. Play it, ignoring its cost, and recycle the rest.</p>",
+        "rules_text": "At the end of your turn, reveal cards from the top of your Main Deck until you reveal a unit. Play it, ignoring its cost, and recycle the rest.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "existing_field_resolution_ids": [],
+      "errata": [
+        {
+          "article_heading": "Dazzling Aurora",
+          "text": "At the end of your turn, reveal cards from the top of your Main Deck until you reveal a unit and banish it. Play it, ignoring its cost, and recycle the rest.",
+          "source_url": "https://playriftbound.com/en-us/news/rules-and-releases/riftbound-origins-card-errata/"
+        }
+      ],
+      "runtime_rules_text": "At the end of your turn, reveal cards from the top of your Main Deck until you reveal a unit and banish it. Play it, ignoring its cost, and recycle the rest.",
+      "runtime_text_authority": "official_errata",
+      "visual_observation": {
+        "printed_types": [
+          "gear"
+        ],
+        "printed_supertypes": [],
+        "printed_domains": [
+          "body"
+        ],
+        "printed_tags": [],
+        "printed_energy": 9,
+        "printed_power": 2,
+        "printed_might": null,
+        "printed_might_bonus": null,
+        "printed_equipment_icons_expanded": "",
+        "name": "Dazzling Aurora",
+        "collector_code": "OGN-160/298",
+        "official_id": "ogn-160-298",
+        "original_image_sha256": "24cfe92031e2b76355dd5f9abc8ae56f59d6efb78330a77536731e8917a45776",
+        "face_visually_inspected": true,
+        "reviewed_on": "2026-10-24",
+        "printed_rules_icons_expanded": "At the end of your turn, reveal cards from the top of your Main Deck until you reveal a unit. Play it, ignoring its cost, and recycle the rest.",
+        "uncertainties": [],
+        "independently_reinspected_on": "2026-10-24"
+      },
+      "original_image": {
+        "path": "assets/data/card_admissions/c19/originals/ogn-160-298.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/c023856a50c75058465f283d181277ce265ba108-744x1039.png?accountingTag=RB",
+        "bytes": 890162,
+        "sha256": "24cfe92031e2b76355dd5f9abc8ae56f59d6efb78330a77536731e8917a45776"
+      },
+      "runtime_image": {
+        "path": "assets/art/card_386.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/c023856a50c75058465f283d181277ce265ba108-744x1039.png?w=320&q=80&fm=png",
+        "bytes": 248707,
+        "sha256": "f015fd53930b1ecfe1c8eae398d17221cb66eb39d0d14f547fd188bfabcc9bc2",
+        "width": 320,
+        "height": 447
+      },
+      "formatting_observation": "Physical artwork predates the separately linked official erratum; gallery text is retained without replacement."
+    },
+    {
+      "official_id": "ogn-062-298",
+      "name": "Reinforce",
+      "runtime_id": 387,
+      "raw_printing": {
+        "official_id": "ogn-062-298",
+        "public_code": "OGN-062/298",
+        "name": "Reinforce",
+        "set": "OGN",
+        "collector_number": 62,
+        "types": [
+          "spell"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "spell"
+        ],
+        "accessibility_types": [
+          "spell"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "calm"
+        ],
+        "energy": 5,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "rules_html": "<p>Look at the top 5 cards of your Main Deck. You may banish a unit from among them, then play it, reducing its cost by :rb_energy_5:. Recycle the remaining cards.</p>",
+        "rules_text": "Look at the top 5 cards of your Main Deck. You may banish a unit from among them, then play it, reducing its cost by [5 Energy]. Recycle the remaining cards.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [],
+        "rarity": "uncommon",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/5bb4ce960c7636dac103c560a2e2f4e32f9d5390-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Spell: Reinforce. Look at the top 5 cards of your Main Deck. You may banish a unit from among them, then play it, reducing its cost by [5]. Recycle the remaining cards.",
+        "illustrators": [
+          "Kudos Productions"
+        ]
+      },
+      "raw_printing_sha256": "0b9590962f5f0819ed3310441c8dedf6ff6dcc3a8f36b0c74d18ae4458ffa69c",
+      "effective": {
+        "types": [
+          "spell"
+        ],
+        "super_types": [],
+        "domains": [
+          "calm"
+        ],
+        "energy": 5,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>Look at the top 5 cards of your Main Deck. You may banish a unit from among them, then play it, reducing its cost by :rb_energy_5:. Recycle the remaining cards.</p>",
+        "rules_text": "Look at the top 5 cards of your Main Deck. You may banish a unit from among them, then play it, reducing its cost by [5 Energy]. Recycle the remaining cards.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "existing_field_resolution_ids": [],
+      "errata": [
+        {
+          "article_heading": "Reinforce",
+          "text": "Look at the top 5 cards of your Main Deck. You may banish a unit from among them, then play it, reducing its cost by [5]. Recycle the remaining cards.",
+          "source_url": "https://playriftbound.com/en-us/news/rules-and-releases/riftbound-spiritforged-errata/"
+        }
+      ],
+      "runtime_rules_text": "Look at the top 5 cards of your Main Deck. You may banish a unit from among them, then play it, reducing its cost by [5]. Recycle the remaining cards.",
+      "runtime_text_authority": "official_errata",
+      "visual_observation": {
+        "printed_types": [
+          "spell"
+        ],
+        "printed_supertypes": [],
+        "printed_domains": [
+          "calm"
+        ],
+        "printed_tags": [],
+        "printed_energy": 5,
+        "printed_power": null,
+        "printed_might": null,
+        "printed_might_bonus": null,
+        "printed_equipment_icons_expanded": "",
+        "name": "Reinforce",
+        "collector_code": "OGN-062/298",
+        "official_id": "ogn-062-298",
+        "original_image_sha256": "8a5cd8a053daab029b8a3db622f514576dca7deb6115feef539cda23d127c4e8",
+        "face_visually_inspected": true,
+        "reviewed_on": "2026-10-24",
+        "printed_rules_icons_expanded": "Look at the top 5 cards of your Main Deck. You may play a unit from among them. Its Energy cost is reduced by [5 Energy]. Then recycle the remaining cards.",
+        "uncertainties": [],
+        "independently_reinspected_on": "2026-10-24"
+      },
+      "original_image": {
+        "path": "assets/data/card_admissions/c19/originals/ogn-062-298.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/5bb4ce960c7636dac103c560a2e2f4e32f9d5390-744x1039.png?accountingTag=RB",
+        "bytes": 758707,
+        "sha256": "8a5cd8a053daab029b8a3db622f514576dca7deb6115feef539cda23d127c4e8"
+      },
+      "runtime_image": {
+        "path": "assets/art/card_387.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/5bb4ce960c7636dac103c560a2e2f4e32f9d5390-744x1039.png?w=360&q=80&fm=png",
+        "bytes": 235638,
+        "sha256": "12414686d71572eb55a5c26479f63f3b344e4f2dbe76277c7aa6c52263dfa69c",
+        "width": 360,
+        "height": 503
+      },
+      "formatting_observation": "Physical artwork predates the separately linked official erratum; gallery text is retained without replacement."
+    },
+    {
+      "official_id": "ven-089-166",
+      "name": "Wild Claw",
+      "runtime_id": 388,
+      "raw_printing": {
+        "official_id": "ven-089-166",
+        "public_code": "VEN-089/166",
+        "name": "Wild Claw",
+        "set": "VEN",
+        "collector_number": 89,
+        "types": [
+          "spell"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "spell"
+        ],
+        "accessibility_types": [
+          "spell"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "body"
+        ],
+        "energy": 7,
+        "power": 1,
+        "might": null,
+        "might_bonus": null,
+        "rules_html": "<p>Look at the top 5 cards of your Main Deck. You may banish a unit or gear from among them and play it, reducing its Energy cost by :rb_energy_5:. Recycle the rest. Then you may do this: Empower it. (It becomes Empowered if it's not already.)</p>",
+        "rules_text": "Look at the top 5 cards of your Main Deck. You may banish a unit or gear from among them and play it, reducing its Energy cost by [5 Energy]. Recycle the rest. Then you may do this: Empower it. (It becomes Empowered if it's not already.)",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [],
+        "rarity": "rare",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/a58871b08a51efb8ce33f399fe4d168fd25b596a-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Spell: Wild Claw. Look at the top 5 cards of your Main Deck. You may banish a unit or gear from among them and play it, reducing its Energy cost by [5]. Recycle the rest. Then you may do this: Empower it. (It becomes Empowered if it's not already.)",
+        "illustrators": [
+          "Kudos Productions"
+        ]
+      },
+      "raw_printing_sha256": "68ddcfd70e3081ef8db03283c6a5b28b445db650253b9c171c9c4ca7765223ea",
+      "effective": {
+        "types": [
+          "spell"
+        ],
+        "super_types": [],
+        "domains": [
+          "body"
+        ],
+        "energy": 7,
+        "power": 1,
+        "might": null,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>Look at the top 5 cards of your Main Deck. You may banish a unit or gear from among them and play it, reducing its Energy cost by :rb_energy_5:. Recycle the rest. Then you may do this: Empower it. (It becomes Empowered if it's not already.)</p>",
+        "rules_text": "Look at the top 5 cards of your Main Deck. You may banish a unit or gear from among them and play it, reducing its Energy cost by [5 Energy]. Recycle the rest. Then you may do this: Empower it. (It becomes Empowered if it's not already.)",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "existing_field_resolution_ids": [],
+      "errata": [],
+      "runtime_rules_text": "Look at the top 5 cards of your Main Deck. You may banish a unit or gear from among them and play it, reducing its Energy cost by [5 Energy]. Recycle the rest. Then you may do this: Empower it. (It becomes Empowered if it's not already.)",
+      "runtime_text_authority": "official_gallery_and_original_face",
+      "visual_observation": {
+        "printed_types": [
+          "spell"
+        ],
+        "printed_supertypes": [],
+        "printed_domains": [
+          "body"
+        ],
+        "printed_tags": [],
+        "printed_energy": 7,
+        "printed_power": 1,
+        "printed_might": null,
+        "printed_might_bonus": null,
+        "printed_equipment_icons_expanded": "",
+        "name": "Wild Claw",
+        "collector_code": "VEN-089/166",
+        "official_id": "ven-089-166",
+        "original_image_sha256": "c595561259ba173bba83f2ece204aed576742b7025fce265f93e26b2feb0d1b9",
+        "face_visually_inspected": true,
+        "reviewed_on": "2026-10-24",
+        "printed_rules_icons_expanded": "Look at the top 5 cards of your Main Deck. You may banish a unit or gear from among them and play it, reducing its Energy cost by [5 Energy]. Recycle the rest. Then you may do this: Empower it. (It becomes Empowered if it's not already.)",
+        "uncertainties": [],
+        "independently_reinspected_on": "2026-10-24"
+      },
+      "original_image": {
+        "path": "assets/data/card_admissions/c19/originals/ven-089-166.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/a58871b08a51efb8ce33f399fe4d168fd25b596a-744x1039.png?accountingTag=RB",
+        "bytes": 776949,
+        "sha256": "c595561259ba173bba83f2ece204aed576742b7025fce265f93e26b2feb0d1b9"
+      },
+      "runtime_image": {
+        "path": "assets/art/card_388.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/a58871b08a51efb8ce33f399fe4d168fd25b596a-744x1039.png?w=360&q=80&fm=png",
+        "bytes": 270631,
+        "sha256": "8f6cd7bd3d5737a2e3e92174b9280547f3270100a2d9058e411ed35e54bf3ae0",
+        "width": 360,
+        "height": 503
+      },
+      "formatting_observation": "Original face and gallery wording agree; energy icon expanded in readable gallery text."
+    }
+  ]
+}

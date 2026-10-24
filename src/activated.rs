@@ -83,6 +83,7 @@ impl AbilityTargets {
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 enum AbilityEffect {
+    BaitedHook,
     Might { amount: i16, minimum: u8 },
     Buff,
     BuffSource,
@@ -220,6 +221,23 @@ const fn empower(
 /// Stable zero-based ability indices belong to each explicit source printing.
 pub fn activated_rules(card_id: CardId) -> &'static [ActivatedRule] {
     match card_id {
+        385 => {
+            const {
+                &[ActivatedRule {
+                    energy: 1,
+                    power: 1,
+                    domain: Some(Domain::Order),
+                    ..exhaust(
+                        "Kill a friendly unit; look for a replacement",
+                        AbilityTargets {
+                            allegiance: Allegiance::Friendly,
+                            ..AbilityTargets::UNIT
+                        },
+                        AbilityEffect::BaitedHook,
+                    )
+                }]
+            }
+        }
         345 | 346 => {
             const {
                 &[ActivatedRule {
@@ -1187,6 +1205,7 @@ impl Game {
             .filter(|&target| self.ability_target_valid(source, rule, target))
             .collect();
         match rule.effect {
+            AbilityEffect::BaitedHook => self.begin_deck_kill(player, valid.first().copied())?,
             AbilityEffect::SunDisc => {
                 if self.cards_played_this_turn(player) > 0 {
                     self.grant_play(
@@ -1380,6 +1399,11 @@ impl Game {
                     self.players[player].energy.saturating_add(amount.into());
             }
         }
+        // Hook still owes its private selection/recycle instructions. Its
+        // completed-use event belongs after any child it puts Pending.
+        if rule.effect == AbilityEffect::BaitedHook {
+            return Ok(());
+        }
         if matches!(source, AbilitySource::Gear { .. }) {
             self.gear_ability_used(player);
         }
@@ -1515,6 +1539,10 @@ impl Game {
             let enemy_target =
                 matches!(target, Some(Target::Unit { player: owner, .. }) if owner != player);
             match rule.effect {
+            AbilityEffect::BaitedHook => unit.filter(|_| !enemy_target).map(|u| {
+                // Only public value: no inspection of the next five cards.
+                if u.token || u.damage > 0 || !u.ready { 75 } else { 8 }
+            }),
             AbilityEffect::BuffSource => {
                 let AbilitySource::Unit { unit_id, .. } = source else { return Ok(None); };
                 let Some(unit) = self.unit_ref(Target::Unit { player, unit_id }) else { return Ok(None); };

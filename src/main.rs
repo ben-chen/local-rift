@@ -1,6 +1,7 @@
 mod ability_ui;
 mod companion;
 mod deck_editor;
+mod deck_look_ui;
 mod play_ui;
 mod predict_ui;
 use companion::{AdviceLevel, Companion, draw_mote};
@@ -222,6 +223,7 @@ struct App {
     banish_view: bool,
     choices: Vec<usize>,
     predict_draft: Option<predict_ui::PredictDraft>,
+    deck_look_draft: Option<deck_look_ui::DeckLookDraft>,
     options: PlayOptions,
     play_draft: Option<play_ui::PlayDraft>,
     cost_editor: Option<play_ui::CostEditor>,
@@ -392,6 +394,7 @@ impl App {
             banish_view: false,
             choices: Vec::new(),
             predict_draft: None,
+            deck_look_draft: None,
             options: PlayOptions::default(),
             play_draft: None,
             cost_editor: None,
@@ -460,6 +463,7 @@ impl App {
         }
         self.game = game;
         self.predict_draft = None;
+        self.deck_look_draft = None;
         self.play_draft = None;
         self.cost_editor = None;
         self.drag = None;
@@ -720,6 +724,8 @@ impl App {
             if self.in_match
                 && self.game.phase == Phase::Playing
                 && self.game.priority() == 1
+                // Public reveals wait for the viewer's mandatory acknowledgement.
+                && !matches!(self.game.decision, Some(Decision::RevealedDeck { .. }))
                 && self.drag.is_none()
                 && get_time() > self.next_ai
             {
@@ -743,6 +749,9 @@ impl App {
                 self.cancel_drag();
                 self.selection = None;
                 self.reset_predict_draft();
+                if let Some(draft) = &mut self.deck_look_draft {
+                    draft.selection = None;
+                }
             }
             let keys = [
                 KeyCode::Key1,
@@ -827,6 +836,7 @@ impl App {
     fn draw_checked(&mut self) -> Result<(), String> {
         self.game.validate_numeric_state()?;
         self.sync_predict_draft();
+        self.sync_deck_look_draft();
         self.sync_token_draft();
         self.sync_play_draft()?;
         let trigger_key = self
@@ -2045,6 +2055,21 @@ impl App {
         let Some(decision) = self.game.decision.clone() else {
             return Ok(());
         };
+        match decision {
+            Decision::DeckLookPlay { player: 0, .. } => {
+                self.deck_look_panel();
+                return Ok(());
+            }
+            Decision::RevealedDeck { .. } => {
+                self.revealed_deck_panel();
+                return Ok(());
+            }
+            Decision::EmpowerPlayed { player: 0, .. } => {
+                self.empower_played_panel();
+                return Ok(());
+            }
+            _ => {}
+        }
         if matches!(decision, Decision::PredictCards { player: 0, .. }) {
             self.predict_panel();
             return Ok(());
@@ -2398,7 +2423,7 @@ impl App {
         }
         let (title,body)=match &decision{
             Decision::BanishPlay{card_id,..}=>("Play from Banish",format!("Play {} now? Base energy is waived; power and extra costs still apply. Declining leaves it in Banish.",self.game.catalog[*card_id].name)),
-            Decision::PredictCards{..}|Decision::Payment{..}|Decision::ResourceConversion{..}|Decision::TriggerTargets{..}|Decision::LegendTargets{..}|Decision::CombatDamage{..}|Decision::TokenPlacement{..}|Decision::TokenPlay{..}|Decision::BattlefieldOrder{..}|Decision::RevivePlay{..}|Decision::PendingPlay{..}=>unreachable!(),
+            Decision::DeckLookPlay{..}|Decision::RevealedDeck{..}|Decision::EmpowerPlayed{..}|Decision::PredictCards{..}|Decision::Payment{..}|Decision::ResourceConversion{..}|Decision::TriggerTargets{..}|Decision::LegendTargets{..}|Decision::CombatDamage{..}|Decision::TokenPlacement{..}|Decision::TokenPlay{..}|Decision::BattlefieldOrder{..}|Decision::RevivePlay{..}|Decision::PendingPlay{..}=>unreachable!(),
             Decision::TrashTarget{..}=>("Choose a trash target","Choose an eligible card below before this ability enters the chain. Opponents may respond before the chosen card is played.".into()),
             Decision::OptionalPlay{card_id,..}=>("Use this triggered ability?",format!("{} offers a play from your trash. Accept and choose the ability's target, or decline now. Choose the card's own targets and costs after the ability resolves.",self.game.catalog[*card_id].name)),
             Decision::ResolutionTargets{..}=>("Choose the location", "Responses separated your targets. Choose which legal group below this spell should affect.".into()),
@@ -5690,6 +5715,8 @@ impl App {
                     Err(e) => self.notify(e),
                 }
             }
+        } else if matches!(self.game.decision, Some(Decision::RevealedDeck { .. })) {
+            self.revealed_deck_panel();
         } else if self.game.priority() == 1 && self.game.winner.is_none() {
             self.ui.title("Their move.", 1178.0, 366.0, 23.0, TEXT);
             self.ui.wrapped("Watch how your opponent spends runes and moves units. Your next turn will begin automatically.",1178.0,397.0,210.0,12.0,MUTED);
@@ -5997,7 +6024,12 @@ impl App {
                                     | local_rift::game::PlayDestination::Exact(_)
                             )
                         }) || matches!(self.game.decision, Some(Decision::RevivePlay { .. }));
-                    let cost_text = if resolving_revive || selecting_revive {
+                    let cost_text = if let Some(hint) = pending
+                        .as_ref()
+                        .and_then(|card| deck_look_ui::pending_cost_hint(card.kind))
+                    {
+                        hint.to_owned()
+                    } else if resolving_revive || selecting_revive {
                         "Base cost waived · extra costs still apply".into()
                     } else if pending.as_ref().is_some_and(|card| {
                         card.instruction.cost == local_rift::game::BaseCostWaiver::Energy
@@ -6717,6 +6749,9 @@ impl App {
         Ok(())
     }
     fn hand(&mut self) -> Result<(), String> {
+        if self.deck_look_tray() {
+            return Ok(());
+        }
         if self.draw_play_choices_tray()? {
             return Ok(());
         }
@@ -6934,6 +6969,11 @@ impl App {
                     "Finish your token plays."
                 } else if payment_waiting {
                     "A resource choice is waiting."
+                } else if matches!(
+                    self.game.decision,
+                    Some(Decision::EmpowerPlayed { .. } | Decision::DeckLookPlay { .. })
+                ) {
+                    "A choice is waiting."
                 } else if self.game.in_window() {
                     "A response window is open."
                 } else {
@@ -6951,6 +6991,10 @@ impl App {
                     "Use Board or Loadout for Add abilities, then finish the payment or conversion."
                 } else if payment_waiting {
                     "Your opponent is choosing resources. Play continues when the payment is finished."
+                } else if matches!(self.game.decision, Some(Decision::EmpowerPlayed { player:0, .. })) {
+                    "Accept or decline the Empower offer on the right before responses begin."
+                } else if matches!(self.game.decision, Some(Decision::DeckLookPlay { .. } | Decision::EmpowerPlayed { .. })) {
+                    "Your opponent is making a choice. You can inspect the public board while waiting."
                 } else if self.game.in_window() && self.game.priority() == 0 {
                     "Use an available response, or pass priority when you're ready."
                 } else if self.game.in_window() {

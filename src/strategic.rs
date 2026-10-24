@@ -146,7 +146,9 @@ impl Game {
                 }
             }
             Some(
-                Decision::TopThree { player, cards } | Decision::PredictCards { player, cards, .. },
+                Decision::TopThree { player, cards }
+                | Decision::PredictCards { player, cards, .. }
+                | Decision::DeckLookPlay { player, cards, .. },
             ) if *player == actor => {
                 for (slot, &id) in state.players[actor].deck.iter_mut().rev().zip(cards) {
                     *slot = id;
@@ -158,11 +160,11 @@ impl Game {
         // Keep them consistent with the sampled world instead of retaining a
         // private identity that a later rollout could consult.
         for decision in &mut state.pending_decisions {
-            scrub_queued_look(decision, &state.players);
+            scrub_queued_look(decision, &state.players, &state.catalog);
         }
         for trigger in &mut state.pending_triggers {
             if let PendingTriggerEffect::Choice(decision) = &mut trigger.effect {
-                scrub_queued_look(decision, &state.players);
+                scrub_queued_look(decision, &state.players, &state.catalog);
             }
         }
         state.rng = rng;
@@ -391,8 +393,25 @@ impl Game {
     }
 }
 
-fn scrub_queued_look(decision: &mut Decision, players: &[PlayerState; 2]) {
+fn scrub_queued_look(decision: &mut Decision, players: &[PlayerState; 2], catalog: &[CardDef]) {
     match decision {
+        Decision::DeckLookPlay {
+            player,
+            cards,
+            eligible,
+            kind,
+            killed_might,
+            ..
+        } => {
+            *cards = players[*player]
+                .deck
+                .iter()
+                .rev()
+                .take(cards.len())
+                .copied()
+                .collect();
+            *eligible = Game::deck_look_eligible(cards, *kind, *killed_might, catalog);
+        }
         Decision::Predict { player, card_id } => {
             if let Some(&id) = players[*player].deck.last() {
                 *card_id = id;

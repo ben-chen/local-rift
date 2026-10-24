@@ -895,6 +895,9 @@ fn action_json_at_depth(action: &Action, depth: usize) -> Value {
         Action::Attack { lane } => json!({"type":"attack","lane":lane}),
         Action::Pass => json!({"type":"pass"}),
         Action::Choose { accept } => json!({"type":"choose","accept":accept}),
+        Action::ResolveDeckLook { choice_id, index } => {
+            json!({"type":"resolve_deck_look","choice_id":choice_id,"index":index})
+        }
         Action::ResolvePredict {
             choice_id,
             recycle,
@@ -1399,6 +1402,22 @@ fn parse_action_at_depth(value: &Value, depth: usize) -> Result<Action, ApiError
                 accept: boolean(o, "accept")?,
             }
         }
+        "resolve_deck_look" => {
+            fields!("choice_id", "index");
+            Action::ResolveDeckLook {
+                choice_id: id32(o, "choice_id")?,
+                index: match required(o, "index")? {
+                    Value::Null => None,
+                    v => Some(
+                        v.as_u64()
+                            .and_then(|n| usize::try_from(n).ok())
+                            .ok_or_else(|| {
+                                ApiError::invalid("index must be a non-negative integer or null.")
+                            })?,
+                    ),
+                },
+            }
+        }
         "resolve_predict" => {
             fields!("choice_id", "recycle", "top_order");
             Action::ResolvePredict {
@@ -1677,6 +1696,9 @@ fn pending_instruction_to_json(card: &crate::game::PendingCard, value: &mut Valu
                 PlayDestination::AnyBattlefield=>json!({"mode":"any_battlefield"}),
             }
         });
+        if card.instruction.energy_discount > 0 {
+            value["instruction"]["total_energy_discount"] = json!(card.instruction.energy_discount);
+        }
     }
 }
 fn pending_card_to_json(card: &crate::game::PendingCard) -> Value {
@@ -1687,6 +1709,10 @@ fn pending_card_to_json(card: &crate::game::PendingCard) -> Value {
 
 fn instructed_kind(kind: InstructedPlayKind) -> &'static str {
     match kind {
+        InstructedPlayKind::BaitedHook => "baited_hook",
+        InstructedPlayKind::DazzlingAurora => "dazzling_aurora",
+        InstructedPlayKind::Reinforce => "reinforce",
+        InstructedPlayKind::WildClaw => "wild_claw",
         InstructedPlayKind::ClocktowerGuardian => "clocktower_guardian",
         InstructedPlayKind::Fizz => "fizz",
         InstructedPlayKind::LastRites => "last_rites",
@@ -1701,6 +1727,35 @@ fn instructed_kind(kind: InstructedPlayKind) -> &'static str {
 fn decision_to_json(game: &Game, decision: &Decision, viewer: usize) -> Result<Value, ApiError> {
     let player = decision.player();
     let mut out = match decision {
+        Decision::DeckLookPlay {
+            choice_id,
+            source_card_id,
+            cards,
+            eligible,
+            kind,
+            killed_might,
+            ..
+        } => {
+            let mut view = json!({"type":"deck_look_play","choice_id":choice_id,"source_card_id":source_card_id,"count":cards.len(),"kind":instructed_kind(*kind),"optional":true,"killed_might":killed_might,"killed_might_exact":killed_might.map(|n| n.to_string())});
+            if player == viewer {
+                view["cards"] = json!(cards);
+                view["eligible"] = json!(eligible);
+            }
+            view
+        }
+        Decision::RevealedDeck {
+            source_card_id,
+            cards,
+            ..
+        } => json!({"type":"revealed_deck","source_card_id":source_card_id,"cards":cards}),
+        Decision::EmpowerPlayed {
+            source_card_id,
+            pending_id,
+            target,
+            ..
+        } => {
+            json!({"type":"empower_played","source_card_id":source_card_id,"pending_id":pending_id,"target":target.map(|t| target_to_json(&t)),"optional":true})
+        }
         Decision::BanishPlay {
             banish_index,
             card_id,
@@ -1873,6 +1928,9 @@ fn decision_to_json(game: &Game, decision: &Decision, viewer: usize) -> Result<V
 
 fn ability_to_json(ability: &ChainAbility) -> Value {
     match ability {
+        ChainAbility::EmpowerLinked { target } => {
+            json!({"type":"empower_linked","target":target.map(|t|target_to_json(&t))})
+        }
         ChainAbility::Temporary {
             source,
             source_name,
@@ -4162,3 +4220,6 @@ mod c17;
 
 #[cfg(test)]
 mod c18;
+
+#[cfg(test)]
+mod c19;

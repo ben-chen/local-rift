@@ -146,17 +146,17 @@
     "unresolved_type_conflict_identities": 0,
     "implemented_legal_by_kind": {
       "battlefield": 11,
-      "gear": 63,
+      "gear": 65,
       "legend": 10,
       "rune": 6,
-      "spell": 107,
+      "spell": 109,
       "unit": 215
     },
-    "implemented_main_cards": 385,
+    "implemented_main_cards": 389,
     "implemented_legends": 10,
     "implemented_battlefields": 11,
-    "implemented_legal_identities": 412,
-    "unimplemented_legal_identities": 667,
+    "implemented_legal_identities": 416,
+    "unimplemented_legal_identities": 663,
     "errata_entries": 67,
     "identities_with_errata": 67,
     "source_quality_issues": 45,
@@ -2692,8 +2692,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 385,
+        "official_id": "ogn-242-298",
+        "playable_in_client": true
       }
     },
     {
@@ -7949,8 +7951,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 386,
+        "official_id": "ogn-160-298",
+        "playable_in_client": true
       }
     },
     {
@@ -28463,8 +28467,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 387,
+        "official_id": "ogn-062-298",
+        "playable_in_client": true
       }
     },
     {
@@ -40629,8 +40635,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 388,
+        "official_id": "ven-089-166",
+        "playable_in_client": true
       }
     },
     {

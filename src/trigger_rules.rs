@@ -7,6 +7,7 @@ use crate::rules::{Allegiance, PlayTargetKind, TokenPlacement};
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Event {
     ControllerBeginning,
+    ControllerEnding,
     SelfPlayed,
     FriendlyUnitPlayed,
     FriendlyGearPlayed,
@@ -130,6 +131,7 @@ pub enum Amount {
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Effect {
     ClocktowerDeathknell,
+    DazzlingAurora,
     KillUnitOrGear,
     ReturnUnitsAtMost(u8),
     KillGear {
@@ -245,6 +247,17 @@ pub fn trigger_rules(card_id: usize) -> &'static [TriggerRule] {
     use Operand::*;
     use TokenPlacement::*;
     match card_id {
+        386 => {
+            const {
+                &[rule(
+                    ControllerEnding,
+                    &[],
+                    false,
+                    TargetRule::NONE,
+                    &[DazzlingAurora],
+                )]
+            }
+        }
         384 => {
             const RULES: &[TriggerRule] = &[
                 rule(SelfPlayed, &[], false, TargetRule::NONE, &[PredictMany(3)]),

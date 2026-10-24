@@ -936,6 +936,30 @@ impl Game {
         }
         let source = ChainSource::Card { card_id: intent.id };
         let mut modifiers = Vec::new();
+        if intent.origin == PlayOrigin::Banish
+            && let Some(instruction) = self.current_play_instruction()
+            && instruction.energy_discount > 0
+        {
+            let source_card = self.pending_card.as_ref().map_or(intent.id, |c| {
+                if c.kind == InstructedPlayKind::Reinforce {
+                    387
+                } else {
+                    388
+                }
+            });
+            modifiers.push(modifier(
+                9_000_000,
+                "Instructed play Energy discount",
+                ChainSource::Card {
+                    card_id: source_card,
+                },
+                instruction.energy_discount.into(),
+                0,
+                0,
+                false,
+                false,
+            ));
+        }
         if !intent.token {
             for (i, a) in rules::static_abilities(intent.id).iter().enumerate() {
                 let (energy, minimum) = match *a {

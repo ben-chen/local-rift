@@ -45,6 +45,7 @@ impl TriggerState {
 #[derive(Clone, Copy, PartialEq, Eq)]
 pub(super) enum Occurrence {
     ControllerBeginning,
+    ControllerEnding,
     GearDeath,
     UnitPlayed,
     GearPlayed,
@@ -195,6 +196,7 @@ impl Game {
         ) && !event.token;
         let event_ok = match rule.event {
             Event::ControllerBeginning => own && event.kind == Occurrence::ControllerBeginning,
+            Event::ControllerEnding => own && event.kind == Occurrence::ControllerEnding,
             Event::SelfPlayed => {
                 (same && event.kind == Occurrence::UnitPlayed)
                     || (event.gear_id.is_some()
@@ -1057,6 +1059,7 @@ impl Game {
         let targets = selected;
         for effect in rule.effects {
             match *effect {
+                Effect::DazzlingAurora => self.reveal_aurora(player),
                 Effect::ClocktowerDeathknell => self.clocktower_deathknell(player),
                 Effect::KillGear {
                     buff_source_if_killed,

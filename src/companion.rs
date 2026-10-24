@@ -151,6 +151,23 @@ fn fingerprint(game: &Game) -> u64 {
                 cards.hash(&mut hash);
             }
         }
+        Some(Decision::DeckLookPlay {
+            player,
+            choice_id,
+            source_card_id,
+            cards,
+            eligible,
+            kind,
+            killed_might,
+        }) => {
+            (6_u8, *player, *choice_id, *source_card_id).hash(&mut hash);
+            format!("{kind:?}").hash(&mut hash);
+            if *player == 0 {
+                cards.hash(&mut hash);
+                eligible.hash(&mut hash);
+                killed_might.hash(&mut hash);
+            }
+        }
         Some(Decision::CounterTax {
             player,
             chain_id,
@@ -722,7 +739,7 @@ fn response_window_advice(
     beginner: bool,
 ) -> Result<Option<Vec<&'static str>>, String> {
     if let Some(decision) = &game.decision {
-        if decision.player() != 0 {
+        if decision.player() != 0 && !matches!(decision, Decision::RevealedDeck { .. }) {
             return Ok(Some(vec![
                 "Your opponent is making a choice. I'll watch the public board while we wait, then help when priority returns.",
                 "Use this pause to identify the unit or spell that matters most to the next point. A response is useful when it changes that outcome.",
@@ -740,6 +757,29 @@ fn response_window_advice(
             }
         }
         return Ok(Some(match decision {
+            Decision::DeckLookPlay { kind, .. } => vec![
+                if beginner {
+                    "Only you see this deck look. Choose a highlighted card, then confirm; or choose Recycle all. Clicking a card alone changes nothing."
+                } else {
+                    "Compare the eligible copies before committing. The other looked cards recycle in random order; this is a look, not a draw."
+                },
+                match kind {
+                    local_rift::game::InstructedPlayKind::BaitedHook => {
+                        "Hook checks printed Might against the killed unit’s Might plus one. Its chosen unit ignores base cost; additional costs still apply."
+                    }
+                    _ => {
+                        "The chosen card gets a total Energy reduction of 5. Power and any remaining additional costs still apply; review its final cost before playing."
+                    }
+                },
+            ],
+            Decision::RevealedDeck { .. } => vec![
+                "These cards were publicly revealed, not drawn. Review them, then continue to the banished unit’s play if one was found.",
+                "Aurora’s other revealed cards recycle in random order. The unit ignores its base cost, but optional additional costs still apply.",
+            ],
+            Decision::EmpowerPlayed { .. } => vec![
+                "Wild Claw offers to Empower the exact object it played. You may decline; accepting puts a separate ability on the chain for responses.",
+                "Check that object’s Empowered effects before accepting. This offer cannot be redirected to another copy of the same card.",
+            ],
             Decision::PredictCards { .. } => vec![
                 "Predict looks at cards without drawing them. Choose any to recycle, then set the kept cards in the order you want to draw them.",
                 "Keep the next draw that serves your plan. Recycling all is allowed; recycled cards go to the bottom in random order. Confirm only after checking the order.",
@@ -780,7 +820,7 @@ fn response_window_advice(
                 card_id: 366..=369, ..
             } => vec![
                 "Choose highlighted gear in either Loadout, then confirm. Attached gear is still a separate target; destroying it removes its benefit from the bearer. You may decline.",
-                "Check the gear's printed Energy limit and any on-death effect. Noxian Demolitionist checks its current Might again on resolution; Adaptatron buffs only if it actually kills the gear.",
+                "Check the gear's Energy limit and death effects. Noxian Demolitionist checks current Might again on resolution; Adaptatron buffs only if it actually kills the gear.",
             ],
             Decision::TriggerTargets { .. } => vec![
                 "Choose this ability's highlighted targets in order, then confirm. You can decline only when the ability is optional.",
@@ -904,6 +944,14 @@ fn response_window_advice(
             ],
             Decision::PendingPlay { kind, .. } => vec![
                 match kind {
+                    local_rift::game::InstructedPlayKind::BaitedHook
+                    | local_rift::game::InstructedPlayKind::DazzlingAurora => {
+                        "Finalize the chosen unit. Its base cost is waived; additional costs still apply. Choose its destination and optional costs before finishing."
+                    }
+                    local_rift::game::InstructedPlayKind::Reinforce
+                    | local_rift::game::InstructedPlayKind::WildClaw => {
+                        "The total Energy cost is reduced by 5. Power still applies, and optional costs contribute to that total. Review the final cost before finishing."
+                    }
                     local_rift::game::InstructedPlayKind::ClocktowerGuardian => {
                         "Finalize the banished card. Its base energy cost is waived, but power and additional costs still apply. Spells go to your trash after resolving normally."
                     }
@@ -924,7 +972,7 @@ fn response_window_advice(
                         "Play the unit at either battlefield, even one an opponent controls. Its base cost is waived; additional costs still apply. Choose the field that best advances your next point."
                     }
                     local_rift::game::InstructedPlayKind::ArcaneShift => {
-                        "Play the unit at base or another location where it can normally enter. Its base cost is waived; additional costs still apply. Arcane Shift has finished dealing damage and banished itself."
+                        "Play the unit at any normally legal location. Base cost is waived; additional costs still apply. Arcane Shift has finished its damage and banished itself."
                     }
                 },
                 "The card is pending on the chain. Add resources if needed; finish its choices and payment before ordinary priority resumes.",
@@ -1908,6 +1956,109 @@ mod tests {
             cards: vec![272, 273],
         });
         assert!(advice(&second, AdviceLevel::Beginner)[0].contains("Predict"));
+    }
+
+    #[test]
+    fn every_pending_play_tip_fits_the_companion_panel() {
+        use local_rift::game::InstructedPlayKind::*;
+        let mut g = game();
+        g.start_match().unwrap();
+        for kind in [
+            Fizz,
+            LastRites,
+            Matriarch,
+            PortalRescue,
+            TemporalBreach,
+            ThrillOfTheHunt,
+            ArcaneShift,
+            ClocktowerGuardian,
+            BaitedHook,
+            DazzlingAurora,
+            Reinforce,
+            WildClaw,
+        ] {
+            g.decision = Some(Decision::PendingPlay {
+                player: 0,
+                pending_id: 9,
+                card_id: 70,
+                kind,
+            });
+            for level in [AdviceLevel::Beginner, AdviceLevel::Advanced] {
+                assert!(
+                    advice(&g, level)
+                        .iter()
+                        .all(|tip| tip.chars().count() <= 180),
+                    "{kind:?}"
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn deck_look_advice_never_observes_opponents_private_cards_or_eligibility() {
+        let mut first = game();
+        first.start_match().unwrap();
+        first.decision = Some(Decision::DeckLookPlay {
+            player: 1,
+            choice_id: 73,
+            source_card_id: 387,
+            cards: vec![70, 145, 70],
+            eligible: vec![0, 2],
+            kind: local_rift::game::InstructedPlayKind::Reinforce,
+            killed_might: None,
+        });
+        let mut second = first.clone();
+        if let Some(Decision::DeckLookPlay {
+            cards, eligible, ..
+        }) = &mut second.decision
+        {
+            *cards = vec![133, 10, 96];
+            *eligible = vec![2];
+        }
+        assert_eq!(fingerprint(&first), fingerprint(&second));
+        for level in [AdviceLevel::Beginner, AdviceLevel::Advanced] {
+            assert_eq!(advice(&first, level), advice(&second, level));
+        }
+        if let Some(Decision::DeckLookPlay { player, .. }) = &mut first.decision {
+            *player = 0;
+        }
+        if let Some(Decision::DeckLookPlay { player, .. }) = &mut second.decision {
+            *player = 0;
+        }
+        assert_ne!(fingerprint(&first), fingerprint(&second));
+        assert!(advice(&first, AdviceLevel::Beginner)[0].contains("Only you"));
+        assert!(advice(&first, AdviceLevel::Advanced)[0].contains("eligible copies"));
+    }
+
+    #[test]
+    fn deck_instruction_advice_distinguishes_energy_reduction_and_fixed_empower() {
+        let mut g = game();
+        g.start_match().unwrap();
+        g.decision = Some(Decision::DeckLookPlay {
+            player: 0,
+            choice_id: 74,
+            source_card_id: 385,
+            cards: vec![],
+            eligible: vec![],
+            kind: local_rift::game::InstructedPlayKind::BaitedHook,
+            killed_might: Some(u64::MAX),
+        });
+        assert!(
+            advice(&g, AdviceLevel::Beginner)
+                .iter()
+                .any(|s| s.contains("printed Might"))
+        );
+        g.decision = Some(Decision::EmpowerPlayed {
+            player: 0,
+            source_card_id: 388,
+            pending_id: 81,
+            target: None,
+        });
+        for level in [AdviceLevel::Beginner, AdviceLevel::Advanced] {
+            let tips = advice(&g, level);
+            assert!(tips[0].contains("exact object"));
+            assert!(tips.iter().all(|s| s.chars().count() <= 180));
+        }
     }
 
     #[test]

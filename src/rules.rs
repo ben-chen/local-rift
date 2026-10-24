@@ -66,6 +66,7 @@ pub struct PlayTargetSpec {
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum OfficialEffect {
+    DeckLookPlay,
     BanishSmallOrGear {
         maximum: u8,
         burn: u8,
@@ -256,7 +257,8 @@ pub fn effect(id: usize) -> OfficialEffect {
         381 => BanishReplay(crate::game::InstructedPlayKind::TemporalBreach),
         382 => BanishReplay(crate::game::InstructedPlayKind::ThrillOfTheHunt),
         383 => ArcaneShift,
-        384 => None,
+        384..=386 => None,
+        387 | 388 => DeckLookPlay,
         362 | 364 => KillGear {
             controller_draw: if id == 362 { 2 } else { 0 },
         },
@@ -1029,6 +1031,10 @@ pub fn requirements(id: usize) -> &'static [Mechanic] {
         381 => &[Chain, Banish, Hidden],
         383 => &[Chain, Banish, MultipleTargets],
         384 => &[Chain, Banish, Predict, DeathTriggers, ConquerHoldTriggers],
+        385 => &[Gear, ActivatedAbilities, Chain, Banish],
+        386 => &[Gear, Chain, Banish],
+        387 => &[Chain, Banish, CostReduction],
+        388 => &[Chain, Banish, CostReduction, Empower],
         362 | 363 | 365 | 366 | 367 => &[Chain, Gear],
         364 => &[Chain, Gear, Flow],
         368 | 369 => &[Chain, Gear, ConquerHoldTriggers],
@@ -1894,7 +1900,7 @@ mod tests {
     #[test]
     fn all_catalog_entries_have_official_classification() {
         let cards = cards();
-        assert_eq!(cards.len(), 385);
+        assert_eq!(cards.len(), 389);
         for card in cards {
             assert_ne!(
                 effect(card.id),
@@ -1904,7 +1910,7 @@ mod tests {
             );
             assert_ne!(support_status(card.id), SupportStatus::UnknownCard);
         }
-        assert_eq!(effect(385), OfficialEffect::Unsupported);
+        assert_eq!(effect(389), OfficialEffect::Unsupported);
     }
 
     #[test]

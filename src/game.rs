@@ -16,6 +16,9 @@ use std::collections::VecDeque;
 
 #[path = "board_returns.rs"]
 mod board_returns;
+#[path = "deck_plays.rs"]
+mod deck_plays;
+use deck_plays::DeckKillContinuation;
 #[path = "instructed_play.rs"]
 mod instructed_play;
 use instructed_play::PendingOrigin;
@@ -68,6 +71,10 @@ pub enum Target {
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Action {
+    ResolveDeckLook {
+        choice_id: u32,
+        index: Option<usize>,
+    },
     ResolvePredict {
         choice_id: u32,
         recycle: Vec<usize>,
@@ -250,6 +257,9 @@ pub enum Action {
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum ChainAbility {
+    EmpowerLinked {
+        target: Option<Target>,
+    },
     Temporary {
         source: empower::BoardObject,
         source_name: String,
@@ -429,6 +439,26 @@ pub struct Showdown {
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Decision {
+    DeckLookPlay {
+        player: usize,
+        choice_id: u32,
+        source_card_id: CardId,
+        cards: Vec<CardId>,
+        eligible: Vec<usize>,
+        kind: InstructedPlayKind,
+        killed_might: Option<u64>,
+    },
+    RevealedDeck {
+        player: usize,
+        source_card_id: CardId,
+        cards: Vec<CardId>,
+    },
+    EmpowerPlayed {
+        player: usize,
+        source_card_id: CardId,
+        pending_id: u32,
+        target: Option<Target>,
+    },
     /// The top card is already public in Banish. Choosing to play it happens
     /// during its parent effect; finalization follows after the parent ends.
     BanishPlay {
@@ -609,6 +639,10 @@ enum PendingTriggerEffect {
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum InstructedPlayKind {
+    BaitedHook,
+    DazzlingAurora,
+    Reinforce,
+    WildClaw,
     ClocktowerGuardian,
     Fizz,
     LastRites,
@@ -667,7 +701,10 @@ pub enum CardSupport {
 impl Decision {
     pub fn player(&self) -> usize {
         match self {
-            Self::BanishPlay { player, .. }
+            Self::DeckLookPlay { player, .. }
+            | Self::RevealedDeck { player, .. }
+            | Self::EmpowerPlayed { player, .. }
+            | Self::BanishPlay { player, .. }
             | Self::TokenPlay { player, .. }
             | Self::Payment { player }
             | Self::ResourceConversion { player, .. }
@@ -837,6 +874,7 @@ pub struct Game {
     /// Original simultaneous lethal events survive ordered replacements (CR373).
     pending_cleanup_deaths: Option<Vec<(usize, u32)>>,
     pending_instruction_deaths: Option<Vec<(usize, u32)>>,
+    pending_deck_kill: Option<DeckKillContinuation>,
     pub buffed_units: Vec<u32>,
     pub optional_power_discount: [u8; 2],
     pub required_trash_play: bool,
@@ -1074,6 +1112,7 @@ impl Game {
             instructed_kills: Vec::new(),
             pending_cleanup_deaths: None,
             pending_instruction_deaths: None,
+            pending_deck_kill: None,
             buffed_units: Vec::new(),
             optional_power_discount: [0;2],
             required_trash_play:false,
@@ -1500,6 +1539,7 @@ impl Game {
             && !matches!(
                 action,
                 Action::ResolveConversion { .. }
+                    | Action::ResolveDeckLook { .. }
                     | Action::ResolvePredict { .. }
                     | Action::ChooseTriggerTargets { .. }
                     | Action::Choose { .. }
@@ -1784,6 +1824,9 @@ impl Game {
             } => self.play_from_trash(trash_index, lane, target)?,
             Action::AssignDamage { assignments } => self.assign_combat_damage(assignments)?,
             Action::Pass => self.pass()?,
+            Action::ResolveDeckLook { choice_id, index } => {
+                self.resolve_deck_look(choice_id, index)?
+            }
             Action::ResolvePredict {
                 choice_id,
                 recycle,
@@ -2491,6 +2534,7 @@ impl Game {
                         );
                     }
                 }
+                ChainAbility::EmpowerLinked { target } => self.resolve_linked_empower(target),
                 ChainAbility::EmpowerObject {
                     player,
                     object_id,
@@ -2688,6 +2732,12 @@ impl Game {
                 return Ok(());
             }
         }
+        self.finish_deck_kill();
+        // The parent still owes Banish/play/recycle while a private selection
+        // is pending. Cleanup cannot remove other damaged units mid-effect.
+        if matches!(self.decision, Some(Decision::DeckLookPlay { .. })) {
+            return Ok(());
+        }
         if self.resolution_frame.is_some() {
             if self.decision.is_none()
                 && !self.payment_blocks_cleanup()
@@ -2858,7 +2908,8 @@ impl Game {
         }
         if matches!(
             decision,
-            Decision::BattlefieldOrder { .. }
+            Decision::DeckLookPlay { .. }
+                | Decision::BattlefieldOrder { .. }
                 | Decision::PredictCards { .. }
                 | Decision::TrashTarget { .. }
                 | Decision::TokenPlacement { .. }
@@ -2922,6 +2973,26 @@ impl Game {
         }
         self.decision = None;
         match decision {
+            Decision::RevealedDeck { .. } => {
+                if !accept {
+                    return Err("Continue after inspecting the revealed cards.".into());
+                }
+            }
+            Decision::EmpowerPlayed {
+                player,
+                source_card_id,
+                target,
+                ..
+            } => {
+                if accept {
+                    self.queue_finalized_ability(
+                        player,
+                        source_card_id,
+                        vec![],
+                        ChainAbility::EmpowerLinked { target },
+                    );
+                }
+            }
             Decision::BanishPlay {
                 player,
                 banish_index,
@@ -2993,7 +3064,8 @@ impl Game {
                     }
                 }
             }
-            Decision::Discard { .. }
+            Decision::DeckLookPlay { .. }
+            | Decision::Discard { .. }
             | Decision::Sabotage { .. }
             | Decision::TopThree { .. }
             | Decision::GrantFlow { .. } => unreachable!(),
@@ -4891,6 +4963,9 @@ impl Game {
                 if pending.as_ref().is_some_and(|p| match p.kind {
                     InstructedPlayKind::Fizz => card.kind == CardKind::Spell && card.cost <= 3,
                     InstructedPlayKind::ClocktowerGuardian => true,
+                    InstructedPlayKind::WildClaw => {
+                        matches!(card.kind, CardKind::Unit | CardKind::Gear)
+                    }
                     _ => card.kind == CardKind::Unit,
                 }) => {}
             Some(Decision::LastRites { .. }) if card.kind == CardKind::Unit => {}
@@ -4998,6 +5073,9 @@ impl Game {
             .expect("validated trash costs");
         let entering = self.next_unit_id;
         self.play_or_queue_targets(player, id, lane, targets)?;
+        if let Some(ref pending) = pending {
+            self.link_instructed_entry(pending.id, player, card.kind, entering);
+        }
         if card.kind == CardKind::Spell {
             if let Some(item) =
                 self.chain.iter_mut().rev().find(|item| {
@@ -5179,6 +5257,23 @@ impl Game {
             if let Some(decision) = &self.decision {
                 let player = decision.player();
                 let mut actions = match decision {
+                    Decision::DeckLookPlay {
+                        choice_id,
+                        eligible,
+                        ..
+                    } => eligible
+                        .iter()
+                        .copied()
+                        .map(|i| Action::ResolveDeckLook {
+                            choice_id: *choice_id,
+                            index: Some(i),
+                        })
+                        .chain(std::iter::once(Action::ResolveDeckLook {
+                            choice_id: *choice_id,
+                            index: None,
+                        }))
+                        .collect(),
+                    Decision::RevealedDeck { .. } => vec![Action::Choose { accept: true }],
                     Decision::Payment { .. } => {
                         vec![Action::CompletePayment, Action::Choose { accept: false }]
                     }
@@ -6965,6 +7060,14 @@ impl Game {
                     self.gear_make_temporary(player, id, target);
                 }
             }
+            OfficialEffect::DeckLookPlay => {
+                let kind = if id == 387 {
+                    InstructedPlayKind::Reinforce
+                } else {
+                    InstructedPlayKind::WildClaw
+                };
+                self.look_for_play(player, id, kind, None);
+            }
             OfficialEffect::None | OfficialEffect::Unsupported => {}
             OfficialEffect::Counter(_) => {} // Executed by the chain resolver.
             OfficialEffect::Draw(count) => self.draw(player, count),
@@ -7280,6 +7383,11 @@ impl Game {
 
     fn begin_ending(&mut self) {
         self.ending_turn = true;
+        self.trigger_batch += 1;
+        self.emit_event(EventSnapshot::simple(
+            Occurrence::ControllerEnding,
+            self.active,
+        ));
         for (controller, player, object_id) in std::mem::take(&mut self.temporary_empower) {
             self.queue_ability(
                 controller,
@@ -7858,6 +7966,22 @@ impl Game {
                     .map(|u| (player, u))
             })
             .collect::<Vec<_>>();
+        let hook_target = self.pending_deck_kill.as_ref().and_then(|hook| hook.target);
+        let killed_might = doomed
+            .iter()
+            .find(|(player, unit)| {
+                hook_target
+                    == Some(Target::Unit {
+                        player: *player,
+                        unit_id: unit.id,
+                    })
+            })
+            .map(|(_, unit)| self.unit_might(unit))
+            .transpose()?;
+        if let Some(hook) = self.pending_deck_kill.as_mut() {
+            hook.killed = killed_might.is_some();
+            hook.might = killed_might;
+        }
         if !doomed.is_empty() {
             self.remove_death_set(doomed);
             self.trigger_batch += 1;
@@ -8397,6 +8521,22 @@ impl Game {
                             top_order: keep,
                         })
                     }
+                    Decision::DeckLookPlay {
+                        choice_id,
+                        cards,
+                        eligible,
+                        ..
+                    } => {
+                        let best = eligible.iter().copied().max_by_key(|&i| {
+                            let c = self.catalog[cards[i]];
+                            i32::from(c.might) * 4 + i32::from(c.cost) * 2
+                                - i32::from(c.power_cost) * 3
+                        });
+                        Some(Action::ResolveDeckLook {
+                            choice_id: *choice_id,
+                            index: best,
+                        })
+                    }
                     Decision::Predict { player, card_id } => Some(Action::Choose {
                         accept: self.catalog[*card_id].cost
                             > self.players[*player].total_runes() + 2,
@@ -8404,7 +8544,8 @@ impl Game {
                     Decision::CounterTax { player, cost, .. } => Some(Action::Choose {
                         accept: self.players[*player].energy >= (*cost).into(),
                     }),
-                    Decision::OptionalPlay { .. }
+                    Decision::EmpowerPlayed { .. }
+                    | Decision::OptionalPlay { .. }
                     | Decision::BanishPlay { .. }
                     | Decision::Legend { .. }
                     | Decision::BurnForMight { .. } => Some(Action::Choose { accept: true }),
