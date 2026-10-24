@@ -4,7 +4,7 @@
 //! Printed operations use the official-card metadata in `rules.rs`. Unsupported
 //! interactions are reported explicitly through `card_support`.
 
-use crate::activated::AbilitySource;
+use crate::activated::{AbilitySource, ConversionDirection, ResourceFrame};
 use crate::battlefields::{BattlefieldAbility, default_battlefield};
 use crate::cards::{CardDef, CardId, CardKind, DeckPreset, Domain, cards, presets};
 use crate::deck::CustomDeck;
@@ -49,6 +49,19 @@ pub enum Target {
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Action {
+    BeginPayment {
+        action: Box<Action>,
+    },
+    CompletePayment,
+    ActivateAbilityWithCosts {
+        source: AbilitySource,
+        ability_index: usize,
+        targets: Vec<Target>,
+        trash_indices: Vec<usize>,
+    },
+    ResolveConversion {
+        amount: u16,
+    },
     ActivateAbility {
         source: AbilitySource,
         ability_index: usize,
@@ -370,6 +383,16 @@ pub struct Showdown {
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Decision {
+    Payment {
+        player: usize,
+    },
+    ResourceConversion {
+        player: usize,
+        source: AbilitySource,
+        card_id: CardId,
+        ability_index: usize,
+        direction: ConversionDirection,
+    },
     TriggerTargets {
         player: usize,
         card_id: CardId,
@@ -570,7 +593,9 @@ pub enum CardSupport {
 impl Decision {
     pub fn player(&self) -> usize {
         match self {
-            Self::TriggerTargets { player, .. }
+            Self::Payment { player }
+            | Self::ResourceConversion { player, .. }
+            | Self::TriggerTargets { player, .. }
             | Self::BattlefieldOrder { player, .. }
             | Self::TrashTarget { player, .. }
             | Self::PendingPlay { player, .. }
@@ -643,13 +668,13 @@ pub struct PlayerState {
     pub units: Vec<Unit>,
     pub gear: Vec<GearState>,
     pub hidden: Vec<HiddenCard>,
-    pub power_pool: [u8; 6],
-    pub any_power: u8,
+    pub power_pool: [u16; 6],
+    pub any_power: u16,
     pub score: u8,
     /// Total available energy: stored energy plus energy obtainable from ready runes.
-    pub energy: u8,
+    pub energy: u16,
     /// Energy already generated in the rune pool; expires when pools empty.
-    pub energy_pool: u8,
+    pub energy_pool: u16,
     /// All channelled runes by domain, including exhausted runes.
     pub runes: [u8; 6],
     pub exhausted_runes: [u8; 6],
@@ -666,8 +691,10 @@ impl PlayerState {
         let d = domain_index(domain);
         self.runes[d].saturating_sub(self.exhausted_runes[d])
     }
-    pub fn domain_power(&self, domain: Domain) -> u8 {
-        self.runes[domain_index(domain)] + self.power_pool[domain_index(domain)] + self.any_power
+    pub fn domain_power(&self, domain: Domain) -> u16 {
+        u16::from(self.runes[domain_index(domain)])
+            + self.power_pool[domain_index(domain)]
+            + self.any_power
     }
 }
 
@@ -720,6 +747,8 @@ pub struct Game {
     pub required_trash_play: bool,
     pub hidden_view: [bool; 2],
     pub(crate) payment: Option<crate::payment::PaymentContext>,
+    pub(crate) resource_frames: Vec<ResourceFrame>,
+    pub(crate) payment_plan: Option<Box<crate::payment_plan::PaymentPlan>>,
     temporary_empower: Vec<(usize, usize, Option<u32>)>,
     ending_turn: bool,
     pending_decisions: VecDeque<Decision>,
@@ -752,6 +781,7 @@ pub struct Game {
     pub(crate) next_unit_id: u32,
     turns_taken: [u32; 2],
     ai_steps_this_turn: u16,
+    ai_resource_witness: Option<(usize, VecDeque<Action>)>,
 }
 
 /// Stable domain indices are intentionally independent of enum discriminants.
@@ -946,6 +976,8 @@ impl Game {
             required_trash_play:false,
             hidden_view:[false;2],
             payment: None,
+            resource_frames: Vec::new(),
+            payment_plan: None,
             temporary_empower: Vec::new(),
             ending_turn: false,
             pending_decisions: VecDeque::new(),
@@ -977,6 +1009,7 @@ impl Game {
             next_unit_id: 1,
             turns_taken: [0; 2],
             ai_steps_this_turn: 0,
+            ai_resource_witness: None,
         };
         if ai_mulligan {
             let choices: Vec<_> = game.players[1]
@@ -1100,6 +1133,9 @@ impl Game {
 
     // Base replacements and additional costs have already been applied (CR356).
     fn discounted_energy(&self, player: usize, card_id: CardId, mut cost: u8) -> u8 {
+        if let Some(original) = self.payment_frozen_source() {
+            return original.discounted_energy(player, card_id, cost);
+        }
         for ability in rules::static_abilities(card_id) {
             match *ability {
                 StaticAbility::HighestMightEnergyDiscount => {
@@ -1358,9 +1394,9 @@ impl Game {
     }
 
     pub fn can_afford(&self, player: usize, card: &CardDef) -> bool {
-        self.players[player].energy >= self.effective_cost(player, card)
+        self.payment_energy_available(player) >= self.effective_cost(player, card).into()
             && self.power_available(player, card.domains, card.kind == CardKind::Spell)
-                >= card.power_cost
+                >= card.power_cost.into()
     }
 
     /// All action validation happens before any mutation, so rejected actions
@@ -1369,13 +1405,27 @@ impl Game {
         if let Action::WithPowerPayment { action, payment } = action {
             return self.apply_power_payment(*action, payment);
         }
+        if let Action::BeginPayment { action } = action {
+            self.begin_payment(*action)?;
+            self.ai_resource_witness = None;
+            return Ok(());
+        }
+        if matches!(action, Action::CompletePayment) {
+            self.complete_payment()?;
+            self.ai_resource_witness = None;
+            return Ok(());
+        }
         if self.phase != Phase::Playing {
             return Err("Start a match before taking actions.".into());
+        }
+        if self.payment_plan.is_some() && matches!(action, Action::SetOptionalDiscount { .. }) {
+            return Err("Optional cost choices are locked for this payment.".into());
         }
         if self.decision.is_some()
             && !matches!(
                 action,
-                Action::ChooseTriggerTargets { .. }
+                Action::ResolveConversion { .. }
+                    | Action::ChooseTriggerTargets { .. }
                     | Action::Choose { .. }
                     | Action::SelectCards { .. }
                     | Action::PlayFromTrash { .. }
@@ -1395,6 +1445,7 @@ impl Game {
                     action,
                     Action::ActivateGear { .. }
                         | Action::ActivateAbility { .. }
+                        | Action::ActivateAbilityWithCosts { .. }
                         | Action::ActivateLegend { .. }
                         | Action::ActivateRune { .. }
                         | Action::RecycleRune { .. }
@@ -1407,6 +1458,7 @@ impl Game {
         let cleanup = !matches!(
             action,
             Action::Pass
+                | Action::ResolveConversion { .. }
                 | Action::SetOptionalDiscount { .. }
                 | Action::ChooseResolutionGroup { .. }
                 | Action::PlaceToken { .. }
@@ -1414,9 +1466,18 @@ impl Game {
                 | Action::RecycleRune { .. }
                 | Action::ActivateGear { .. }
                 | Action::ActivateAbility { .. }
+                | Action::ActivateAbilityWithCosts { .. }
                 | Action::ActivateLegend { .. }
         );
         match action {
+            Action::BeginPayment { .. } | Action::CompletePayment => unreachable!(),
+            Action::ResolveConversion { amount } => self.resolve_conversion(amount)?,
+            Action::ActivateAbilityWithCosts {
+                source,
+                ability_index,
+                targets,
+                trash_indices,
+            } => self.activate_ability_with_costs(source, ability_index, targets, trash_indices)?,
             Action::ActivateAbility {
                 source,
                 ability_index,
@@ -1805,7 +1866,9 @@ impl Game {
         matches!(
             self.decision,
             Some(
-                Decision::ReplaySpell { .. }
+                Decision::Payment { .. }
+                    | Decision::ResourceConversion { .. }
+                    | Decision::ReplaySpell { .. }
                     | Decision::PendingPlay { .. }
                     | Decision::LastRites { .. }
                     | Decision::ReviveUnit { .. }
@@ -2392,6 +2455,9 @@ impl Game {
     }
 
     pub(crate) fn after_resolution(&mut self) {
+        if self.payment_blocks_cleanup() || !self.resource_frames.is_empty() {
+            return;
+        }
         for player in [self.active, 1 - self.active] {
             self.check_winner(player);
         }
@@ -2495,6 +2561,22 @@ impl Game {
 
     fn choose(&mut self, accept: bool) -> Result<(), String> {
         let decision = self.decision.clone().ok_or("There is no pending choice.")?;
+        if matches!(decision, Decision::Payment { .. }) {
+            if accept {
+                self.complete_payment()?;
+            } else {
+                self.cancel_payment()?;
+            }
+            self.ai_resource_witness = None;
+            return Ok(());
+        }
+        if matches!(decision, Decision::ResourceConversion { .. }) {
+            return if accept {
+                Err("Choose the conversion amount explicitly.".into())
+            } else {
+                self.resolve_conversion(0)
+            };
+        }
         if matches!(decision, Decision::TriggerTargets { .. }) {
             if accept {
                 return Err("Choose the required targets before finalizing this ability.".into());
@@ -2520,7 +2602,7 @@ impl Game {
         }
         if let Decision::CounterTax { player, cost, .. } = decision
             && accept
-            && self.players[player].energy < cost
+            && self.payment_energy_available(player) < cost.into()
         {
             return Err(format!(
                 "You need {cost} energy to pay this counterspell's additional cost."
@@ -2603,7 +2685,9 @@ impl Game {
                     });
                 }
             }
-            Decision::TriggerTargets { .. }
+            Decision::Payment { .. }
+            | Decision::ResourceConversion { .. }
+            | Decision::TriggerTargets { .. }
             | Decision::BattlefieldOrder { .. }
             | Decision::TrashTarget { .. }
             | Decision::PendingPlay { .. }
@@ -2661,7 +2745,7 @@ impl Game {
                 cost,
             } => {
                 if accept {
-                    self.pay_energy(player, cost);
+                    self.pay_energy(player, cost.into());
                     self.push_log(format!(
                         "{} pays {cost} energy. The spell stays on the chain.",
                         self.players[player].name
@@ -2797,6 +2881,9 @@ impl Game {
         id: CardId,
         options: PlayOptions,
     ) -> Result<(u8, u8), String> {
+        if let Some(original) = self.payment_frozen_source() {
+            return original.optional_cost(player, id, options);
+        }
         let mut energy: u8 = 0;
         let mut power: u8 = 0;
         if options.repeat {
@@ -2935,7 +3022,7 @@ impl Game {
         } else {
             (2, 1, Domain::Chaos)
         };
-        if self.players[player].energy < energy
+        if self.payment_energy_available(player) < energy
             || self.available_power(player, Some(domain)) < power
         {
             return Err("Not enough energy and power to Empower this unit.".into());
@@ -2946,7 +3033,7 @@ impl Game {
         Ok(())
     }
 
-    fn empower_now(
+    pub(crate) fn empower_now(
         &mut self,
         player: usize,
         unit: Option<u32>,
@@ -3026,15 +3113,27 @@ impl Game {
         source_id: u32,
         lane: Option<usize>,
     ) {
-        let possible_power = self.available_power(player, None) + self.gear_available_power(player);
         let exists = self.players.iter().enumerate().any(|(owner, state)| {
             state.units.iter().any(|unit| {
                 let target = Target::Unit {
                     player: owner,
                     unit_id: unit.id,
                 };
-                self.on_play_target_valid(player, card_id, source_id, lane, target)
-                    && self.deflect_cost(player, &[target]) <= possible_power
+                if !self.on_play_target_valid(player, card_id, source_id, lane, target) {
+                    return false;
+                }
+                let mut probe = self.clone();
+                probe.decision = Some(Decision::OnPlayTarget {
+                    player,
+                    card_id,
+                    source_id,
+                    lane,
+                });
+                probe
+                    .funded_action_witness(&Action::ChooseTarget {
+                        target: Some(target),
+                    })
+                    .is_some()
             })
         });
         if exists {
@@ -3226,7 +3325,7 @@ impl Game {
         targets: &[Target],
     ) -> Result<(), String> {
         let tax = self.deflect_cost(player, targets);
-        self.consume_power(player, &ALL_DOMAINS, tax, is_spell)
+        self.consume_power(player, &ALL_DOMAINS, tax.into(), is_spell)
     }
 
     pub(crate) fn validate_hidden_targets(
@@ -3245,7 +3344,7 @@ impl Game {
             player,
             &ALL_DOMAINS,
             self.catalog[id].kind == CardKind::Spell,
-        ) < tax
+        ) < tax.into()
         {
             return Err("Not enough power to pay Deflect.".into());
         }
@@ -3304,6 +3403,9 @@ impl Game {
     }
 
     pub(crate) fn deflect_cost(&self, actor: usize, targets: &[Target]) -> u8 {
+        if let Some(original) = self.payment_frozen_source() {
+            return original.deflect_cost(actor, targets);
+        }
         let mut cost: u8 = 0;
         for &target in targets {
             if let Target::Unit { player, .. } = target
@@ -3339,7 +3441,7 @@ impl Game {
         self.spend_deflect(player, self.catalog[id].kind == CardKind::Spell, targets)
     }
 
-    pub(crate) fn available_power(&self, player: usize, domain: Option<Domain>) -> u8 {
+    pub(crate) fn available_power(&self, player: usize, domain: Option<Domain>) -> u16 {
         let domains: Vec<_> = domain.map_or_else(|| ALL_DOMAINS.to_vec(), |d| vec![d]);
         self.power_available(player, &domains, false)
     }
@@ -3348,7 +3450,7 @@ impl Game {
         &mut self,
         player: usize,
         domain: Option<Domain>,
-        amount: u8,
+        amount: u16,
     ) -> Result<(), String> {
         let domains: Vec<_> = domain.map_or_else(|| ALL_DOMAINS.to_vec(), |d| vec![d]);
         self.consume_power(player, &domains, amount, false)
@@ -3387,8 +3489,8 @@ impl Game {
                 .runes
                 .iter()
                 .zip(state.exhausted_runes)
-                .map(|(all, used)| all - used)
-                .sum::<u8>();
+                .map(|(all, used)| u16::from(all - used))
+                .sum::<u16>();
         self.push_log(format!(
             "{} {} a {} rune, adding {}.",
             self.players[player].name,
@@ -3492,6 +3594,56 @@ impl Game {
                 }
             }))
             .collect()
+    }
+
+    pub(crate) fn payment_detach_trash(
+        &mut self,
+        player: usize,
+        index: usize,
+    ) -> Result<PendingCard, String> {
+        if self
+            .players
+            .get(player)
+            .and_then(|p| p.discard.get(index))
+            .is_none()
+        {
+            return Err("Choose an existing trash card.".into());
+        }
+        let origin_flow = self.temporary_flow[player].contains(&index);
+        let origin_targets = self
+            .chain
+            .iter()
+            .filter_map(|item| {
+                if item.player != player {
+                    return None;
+                }
+                let selected = match &item.ability {
+                    Some(
+                        ChainAbility::PlayChosen { trash_index, .. }
+                        | ChainAbility::ReviveChosen { trash_index, .. }
+                        | ChainAbility::GrantFlowChosen { trash_index, .. },
+                    ) => *trash_index,
+                    _ => return None,
+                };
+                (selected == index).then_some(item.id)
+            })
+            .collect();
+        let card_id = self.remove_from_trash(player, index);
+        let id = self.next_chain_id;
+        self.next_chain_id += 1;
+        Ok(PendingCard {
+            id,
+            player,
+            card_id,
+            kind: InstructedPlayKind::Fizz,
+            origin_index: index,
+            origin_flow,
+            origin_targets,
+        })
+    }
+
+    pub(crate) fn payment_restore_trash(&mut self, card: PendingCard) {
+        self.restore_failed_card(card);
     }
 
     fn queue_card_play(&mut self, player: usize, trash_index: usize, kind: InstructedPlayKind) {
@@ -3647,6 +3799,9 @@ impl Game {
     }
 
     fn advance_triggers(&mut self) {
+        if self.payment_blocks_cleanup() || !self.resource_frames.is_empty() {
+            return;
+        }
         while self.decision.is_none() && !self.pending_triggers.is_empty() {
             // Finalize the oldest pending group before triggers generated
             // while finalizing that group. APNAP orders only simultaneous
@@ -4057,6 +4212,10 @@ impl Game {
     // Cancellation depends on existence of a legal explicit choice, never the
     // heuristic preferred target (which may have unaffordable Deflect).
     fn pending_play_actions(&self, limit: usize) -> Vec<Action> {
+        self.pending_play_actions_mode(limit, false)
+    }
+
+    fn pending_play_actions_mode(&self, limit: usize, prepare: bool) -> Vec<Action> {
         let Some(Decision::PendingPlay {
             player, card_id, ..
         }) = self.decision
@@ -4152,7 +4311,12 @@ impl Game {
                         accelerate: options.accelerate,
                         bonus: options.bonus,
                     };
-                    if self.clone().apply(action.clone()).is_ok() {
+                    let legal = if prepare {
+                        self.clone().begin_payment(action.clone()).is_ok()
+                    } else {
+                        self.clone().apply(action.clone()).is_ok()
+                    };
+                    if legal {
                         actions.push(action);
                         if actions.len() >= limit {
                             return actions;
@@ -4166,17 +4330,10 @@ impl Game {
 
     pub fn can_decline_trash_play(&self) -> bool {
         if matches!(self.decision, Some(Decision::PendingPlay { .. })) {
-            // Add-resource activations remain available during payment. Test
-            // the fully generated resources as well as the current pools.
-            let mut probe = self.clone();
-            let player = probe.priority();
-            probe.generate_ability_resources(player);
-            let gear_ids: Vec<_> = probe.players[player].gear.iter().map(|g| g.id).collect();
-            for gear_id in gear_ids {
-                let _ = probe.apply(Action::ActivateGear { gear_id });
-            }
-            let _ = probe.apply(Action::ActivateLegend { target: None });
-            return probe.pending_play_actions(1).is_empty();
+            return !self
+                .pending_play_actions_mode(usize::MAX, true)
+                .iter()
+                .any(|action| self.funded_action_witness(action).is_some());
         }
         if matches!(self.decision, Some(Decision::RevivePlay { .. })) {
             return false;
@@ -4271,10 +4428,10 @@ impl Game {
     ) -> Result<(), String> {
         let card = self.catalog[id];
         let energy = self.discounted_energy(player, id, base.0.saturating_add(extra.0));
-        if self.players[player].energy < energy {
+        if self.payment_energy_available(player) < energy.into() {
             return Err("Not enough energy for the base and additional costs.".into());
         }
-        self.pay_energy(player, energy);
+        self.pay_energy(player, energy.into());
         // Satisfy restricted colored obligations before flexible obligations.
         for (amount, colored) in [
             (extra.1, true),
@@ -4282,7 +4439,7 @@ impl Game {
             (self.deflect_cost(player, targets), false),
         ] {
             let domains = if colored { card.domains } else { &ALL_DOMAINS };
-            self.consume_power(player, domains, amount, card.kind == CardKind::Spell)?;
+            self.consume_power(player, domains, amount.into(), card.kind == CardKind::Spell)?;
         }
         Ok(())
     }
@@ -4507,14 +4664,17 @@ impl Game {
         }
     }
 
-    pub(crate) fn pay_energy(&mut self, player: usize, mut amount: u8) {
+    pub(crate) fn pay_energy(&mut self, player: usize, mut amount: u16) {
+        if self.payment_record_energy(player, amount) {
+            return;
+        }
         let state = &mut self.players[player];
         let stored = amount.min(state.energy_pool);
         state.energy_pool -= stored;
         amount -= stored;
         for domain in 0..6 {
-            let paid = (state.runes[domain] - state.exhausted_runes[domain]).min(amount);
-            state.exhausted_runes[domain] += paid;
+            let paid = u16::from(state.runes[domain] - state.exhausted_runes[domain]).min(amount);
+            state.exhausted_runes[domain] += paid as u8;
             amount -= paid;
         }
         state.energy = state.energy_pool
@@ -4522,8 +4682,8 @@ impl Game {
                 .runes
                 .iter()
                 .zip(state.exhausted_runes)
-                .map(|(all, spent)| all - spent)
-                .sum::<u8>();
+                .map(|(all, spent)| u16::from(all - spent))
+                .sum::<u16>();
     }
 
     fn rune_actions(&self, player: usize) -> Vec<Action> {
@@ -4546,6 +4706,14 @@ impl Game {
         if let Some(decision) = &self.decision {
             let player = decision.player();
             let mut actions = match decision {
+                Decision::Payment { .. } => {
+                    vec![Action::CompletePayment, Action::Choose { accept: false }]
+                }
+                Decision::ResourceConversion { .. } => {
+                    (0..=self.conversion_available().unwrap_or(0))
+                        .map(|amount| Action::ResolveConversion { amount })
+                        .collect()
+                }
                 Decision::TriggerTargets { .. } => self.trigger_target_actions(),
                 Decision::TrashTarget {
                     player,
@@ -4565,6 +4733,16 @@ impl Game {
                 }
                 Decision::PendingPlay { .. } => {
                     let mut choices = self.pending_play_actions(32);
+                    if choices.is_empty() {
+                        for intent in self.pending_play_actions_mode(usize::MAX, true) {
+                            if let Some(witness) = self.funded_action_witness(&intent) {
+                                if let Some(first) = witness.first() {
+                                    choices.push(first.clone());
+                                }
+                                break;
+                            }
+                        }
+                    }
                     choices.push(Action::Choose { accept: false });
                     choices
                 }
@@ -4715,6 +4893,7 @@ impl Game {
                 target: None,
             });
         }
+        actions.extend(self.conversion_play_actions());
         actions.extend(self.gear_actions(self.priority()));
         actions.extend(self.ability_actions(self.priority()));
         actions.extend(self.hidden_actions(self.priority()));
@@ -4789,9 +4968,43 @@ impl Game {
         if self.phase != Phase::Playing {
             return Ok(false);
         }
-        let action = self.choose_ai_action();
+        let player = self.priority();
+        // A resource witness belongs only to its interrupted payment. A manual
+        // completion or rollback must never make its Add actions a later plan.
+        if self.payment_plan.is_none() && self.resource_frames.is_empty() {
+            self.ai_resource_witness = None;
+        }
+        let cached = self
+            .ai_resource_witness
+            .as_mut()
+            .and_then(|(owner, steps)| (*owner == player).then(|| steps.pop_front()).flatten());
+        let action = if let Some(action) =
+            cached.filter(|action| self.clone().apply(action.clone()).is_ok())
+        {
+            action
+        } else {
+            self.ai_resource_witness = None;
+            self.choose_ai_action()
+        };
+        let witness = if let Action::BeginPayment { action: intent } = &action {
+            if self.decision.is_some() {
+                self.funded_action_witness(intent)
+            } else {
+                self.funded_suggestion_witness(intent, 48)
+            }
+        } else {
+            None
+        };
         self.ai_steps_this_turn += 1;
         self.apply(action)?;
+        // Install after BeginPayment captures its rollback snapshot, so undo
+        // restores no cached actions from this newly opened transaction.
+        if let Some(path) = witness {
+            self.ai_resource_witness = Some((player, path.into_iter().skip(1).collect()));
+        }
+        if self.payment_plan.is_none() && self.resource_frames.is_empty() {
+            self.ai_resource_witness = None;
+        }
         Ok(true)
     }
 
@@ -4942,7 +5155,7 @@ impl Game {
         Ok(())
     }
 
-    fn prepare_targets(
+    pub(crate) fn prepare_targets(
         &self,
         actor: usize,
         id: CardId,
@@ -4952,7 +5165,7 @@ impl Game {
         self.prepare_targets_mode(actor, id, lane, provided, true)
     }
 
-    fn prepare_targets_explicit(
+    pub(crate) fn prepare_targets_explicit(
         &self,
         actor: usize,
         id: CardId,
@@ -5253,22 +5466,31 @@ impl Game {
     pub(crate) fn spend(&mut self, player: usize, id: CardId) -> Result<(), String> {
         let card = self.catalog[id];
         let energy = self.effective_cost(player, &card);
-        let mut remaining = energy;
+        if self.payment_bypasses_cost_checks(player) {
+            self.pay_energy(player, energy.into());
+            return self.consume_power(
+                player,
+                card.domains,
+                card.power_cost.into(),
+                card.kind == CardKind::Spell,
+            );
+        }
+        let mut remaining = u16::from(energy);
         let stored = remaining.min(self.players[player].energy_pool);
         self.players[player].energy_pool -= stored;
         remaining -= stored;
         for &domain in card.domains {
             let d = domain_index(domain);
             let ready = self.players[player].runes[d] - self.players[player].exhausted_runes[d];
-            let paid = remaining.min(ready);
-            self.players[player].exhausted_runes[d] += paid;
+            let paid = remaining.min(u16::from(ready));
+            self.players[player].exhausted_runes[d] += paid as u8;
             remaining -= paid;
         }
         self.pay_energy(player, remaining);
         self.consume_power(
             player,
             card.domains,
-            card.power_cost,
+            card.power_cost.into(),
             card.kind == CardKind::Spell,
         )
     }
@@ -5873,7 +6095,7 @@ impl Game {
                 .runes
                 .iter()
                 .zip(state.exhausted_runes)
-                .map(|(all, used)| all - used)
+                .map(|(all, used)| u16::from(all - used))
                 .sum();
         }
         self.silenced = [false; 2];
@@ -5910,7 +6132,7 @@ impl Game {
         ));
         self.players[player].exhausted_runes = [0; 6];
         self.players[player].energy =
-            self.players[player].total_runes() + self.players[player].energy_pool;
+            u16::from(self.players[player].total_runes()) + self.players[player].energy_pool;
         self.gear_awaken(player);
         self.legend_begin_turn(player);
         self.pending_start = Some(StartStage::Beginning);
@@ -5961,8 +6183,8 @@ impl Game {
                         .runes
                         .iter()
                         .zip(&self.players[player].exhausted_runes)
-                        .map(|(all, spent)| all - spent)
-                        .sum::<u8>();
+                        .map(|(all, spent)| u16::from(all - spent))
+                        .sum::<u16>();
             }
             StartStage::Draw => {
                 self.pending_start = Some(StartStage::Main);
@@ -5977,7 +6199,7 @@ impl Game {
                         .runes
                         .iter()
                         .zip(state.exhausted_runes)
-                        .map(|(all, used)| all - used)
+                        .map(|(all, used)| u16::from(all - used))
                         .sum();
                 }
                 for legend in &mut self.legend {
@@ -6602,26 +6824,30 @@ impl Game {
         let player = self.priority();
         let enemy = 1 - player;
         if let Some(decision) = &self.decision {
-            let actions = self.legal_actions();
-            if let Decision::CounterTax { player, cost, .. } = decision
-                && self.players[*player].energy < *cost
-                && let Some(action) = actions.iter().find(|action| {
-                    matches!(
-                        action,
-                        Action::ActivateAbility { .. }
-                            | Action::ActivateGear { .. }
-                            | Action::ActivateLegend { .. }
-                    )
-                })
+            if matches!(
+                decision,
+                Decision::Payment { .. } | Decision::ResourceConversion { .. }
+            ) && let Some(action) = self.resource_completion_step()
             {
-                return action.clone();
+                return action;
+            }
+            let actions = self.legal_actions();
+            if matches!(decision, Decision::CounterTax { .. })
+                && self.clone().apply(Action::Choose { accept: true }).is_err()
+                && let Some(witness) = self.resource_witness(player, |state| {
+                    matches!(state.decision, Some(Decision::CounterTax { .. }))
+                        && state.clone().apply(Action::Choose { accept: true }).is_ok()
+                })
+                && let Some(first) = witness.first()
+            {
+                return first.clone();
             }
             let preferred = match decision {
                 Decision::Predict { player, card_id } => Some(Action::Choose {
                     accept: self.catalog[*card_id].cost > self.players[*player].total_runes() + 2,
                 }),
                 Decision::CounterTax { player, cost, .. } => Some(Action::Choose {
-                    accept: self.players[*player].energy >= *cost,
+                    accept: self.players[*player].energy >= (*cost).into(),
                 }),
                 Decision::OptionalPlay { .. }
                 | Decision::Legend { .. }
@@ -6645,6 +6871,17 @@ impl Game {
         // Only the active player's hand is read. The opponent contributes its
         // public units and score, never its hand or deck order.
         let mut plays: Vec<(i32, Action)> = Vec::new();
+        for action in self.conversion_play_actions() {
+            if let Action::BeginPayment { action: intent } = &action
+                && let Action::PlayCard { hand_index, .. } = **intent
+            {
+                plays.push((
+                    self.ai_card_score(self.players[player].hand[hand_index]),
+                    action,
+                ));
+            }
+        }
+
         for action in self.hidden_actions(player) {
             match &action {
                 Action::PlayHidden { .. } => {
@@ -6653,7 +6890,7 @@ impl Game {
                 Action::Hide { hand_index, .. } => {
                     let id = self.players[player].hand[*hand_index];
                     if self.catalog[id].cost >= 3
-                        || self.players[player].energy < self.catalog[id].cost
+                        || self.players[player].energy < self.catalog[id].cost.into()
                     {
                         plays.push((85, action));
                     }
@@ -6687,6 +6924,12 @@ impl Game {
                 source,
                 ability_index,
                 targets,
+            }
+            | Action::ActivateAbilityWithCosts {
+                source,
+                ability_index,
+                targets,
+                ..
             } = &action
                 && let Some(score) = self.ability_ai_score(*source, *ability_index, targets)
             {
@@ -7073,7 +7316,7 @@ mod tests {
         game.players[player].runes = [0; 6];
         game.players[player].runes[domain_index(domain)] = number;
         game.players[player].exhausted_runes = [0; 6];
-        game.players[player].energy = number;
+        game.players[player].energy = u16::from(number);
         game.players[player].rune_deck = vec![domain; (12 - number) as usize];
     }
 
@@ -7703,8 +7946,8 @@ mod tests {
                                         .runes
                                         .iter()
                                         .zip(player.exhausted_runes)
-                                        .map(|(&all, exhausted)| all - exhausted)
-                                        .sum::<u8>()
+                                        .map(|(&all, exhausted)| u16::from(all - exhausted))
+                                        .sum::<u16>()
                             );
                         }
                     }
@@ -7858,7 +8101,7 @@ mod tests {
         game.players[0].runes = [0; 6];
         game.players[0].exhausted_runes = [0; 6];
         game.players[0].runes[domain_index(domain)] = required;
-        game.players[0].energy = required;
+        game.players[0].energy = u16::from(required);
         let before = game.players.clone();
         assert!(
             game.apply(Action::PlayCard {
@@ -9103,7 +9346,7 @@ mod tests {
             bonus: false,
         })
         .unwrap();
-        assert_eq!(g.players[0].energy, 12 - card.cost - 1);
+        assert_eq!(g.players[0].energy, 12 - u16::from(card.cost) - 1);
         assert_eq!(g.players[0].total_runes(), 12 - card.power_cost - 1);
         assert!(g.chain.last().unwrap().options.repeat && g.chain.last().unwrap().banish_after);
         finish_windows(&mut g);
@@ -9133,7 +9376,7 @@ mod tests {
         })
         .unwrap();
         assert!(g.players[0].units[0].ready);
-        assert_eq!(g.players[0].energy, 12 - card.cost - 1);
+        assert_eq!(g.players[0].energy, 12 - u16::from(card.cost) - 1);
         assert_eq!(g.players[0].total_runes(), 12 - card.power_cost - 1);
     }
 

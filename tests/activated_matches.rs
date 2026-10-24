@@ -44,6 +44,11 @@ fn conserved(game: &Game, decks: &[CustomDeck; 2]) {
                 .chain(&player.banish)
                 .copied()
                 .chain(player.champion)
+                .chain(game.payment_plan_view(owner).and_then(|plan| {
+                    (plan.player == owner)
+                        .then_some(plan.pending_card)
+                        .flatten()
+                }))
                 .chain(
                     player
                         .units
@@ -95,10 +100,7 @@ fn conserved(game: &Game, decks: &[CustomDeck; 2]) {
             .zip(player.exhausted_runes)
             .map(|(&all, used)| u16::from(all - used))
             .sum();
-        assert_eq!(
-            u16::from(player.energy),
-            ready_energy + u16::from(player.energy_pool)
-        );
+        assert_eq!(player.energy, ready_energy + player.energy_pool);
         for unit in &player.units {
             assert!(objects.insert(unit.id), "duplicate object ID {}", unit.id);
             assert!(unit.lane.is_none_or(|lane| lane < 2));

@@ -84,7 +84,7 @@ fn check_invariants(game: &Game) -> Result<(), String> {
                     "player {owner}: more exhausted runes than channelled runes"
                 ));
             }
-            available += runes - exhausted;
+            available += u16::from(runes - exhausted);
         }
         available += player.energy_pool;
         if player.energy != available {
@@ -111,7 +111,11 @@ fn check_invariants(game: &Game) -> Result<(), String> {
             + usize::from(player.champion.is_some())
             + player.units.iter().filter(|unit| !unit.token).count()
             + player.gear.iter().filter(|gear| !gear.token).count()
-            + cards_in_chain;
+            + cards_in_chain
+            + usize::from(
+                game.payment_plan_view(owner)
+                    .is_some_and(|plan| plan.player == owner && plan.pending_card.is_some()),
+            );
         if cards_total != 40 {
             return Err(format!(
                 "player {owner}: card conservation failed ({cards_total} cards including chain)"

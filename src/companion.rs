@@ -386,7 +386,7 @@ fn advice(game: &Game, level: AdviceLevel) -> Vec<&'static str> {
     });
     let power_shortage = human.hand.iter().any(|&id| {
         let card = &game.catalog[id];
-        card.cost <= human.energy && !game.can_afford(0, card)
+        u16::from(card.cost) <= human.energy && !game.can_afford(0, card)
     });
     if power_shortage {
         tips.push(if beginner {
@@ -439,6 +439,14 @@ fn response_window_advice(game: &Game, beginner: bool) -> Option<Vec<&'static st
             ]);
         }
         return Some(match decision {
+            Decision::Payment { .. } => vec![
+                "This action's costs are fixed. Use Add abilities if needed, then finish the payment. An unsuccessful attempt can be undone with its resource steps.",
+                "Keep enough matching power and energy for the fixed cost. A conversion can help one resource while spending the other.",
+            ],
+            Decision::ResourceConversion { .. } => vec![
+                "Choose how much to convert. The gear is already exhausted. Zero finishes without adding resources; your original payment stays waiting.",
+                "Other Add abilities can supply this payment. Keep the energy and colored power needed for the original action, not just the conversion.",
+            ],
             Decision::TriggerTargets { .. } => vec![
                 "Choose this ability's highlighted targets in order, then confirm. You can decline only when the ability is optional.",
                 "The source has entered play; the ability joins the chain after you choose targets. Check the next trade and any Deflect costs before confirming.",
@@ -1181,6 +1189,17 @@ mod tests {
             });
             states.push(game.clone());
             for decision in [
+                Decision::Payment { player },
+                Decision::ResourceConversion {
+                    player,
+                    source: local_rift::activated::AbilitySource::Gear {
+                        player,
+                        gear_id: 90,
+                    },
+                    card_id: 244,
+                    ability_index: 0,
+                    direction: local_rift::activated::ConversionDirection::EnergyToPower,
+                },
                 Decision::TriggerTargets {
                     player,
                     card_id: 188,

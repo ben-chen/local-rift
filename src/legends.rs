@@ -117,7 +117,7 @@ pub struct LegendState {
     pub kind: LegendKind,
     pub ready: bool,
     pub empowered: bool,
-    pub spell_power: u8,
+    pub spell_power: u16,
     /// Each granted Assault instance lasts through the current turn. The unit
     /// identifier follows its owner even if that owner differs from the legend's.
     pub assault_grants: Vec<(u32, u8)>,
@@ -326,7 +326,7 @@ impl Game {
                 "This legend ability cannot be activated in the current timing window.".into(),
             );
         }
-        if self.players[player].energy < activation.energy {
+        if self.payment_energy_available(player) < activation.energy.into() {
             return Err(format!(
                 "Pay {} energy to activate this legend.",
                 activation.energy
@@ -337,7 +337,7 @@ impl Game {
             if !self.legend_target_valid(player, target) {
                 return Err("That unit cannot be chosen by this legend ability.".into());
             }
-            if self.available_power(player, None) < self.deflect_cost(player, &[target]) {
+            if self.available_power(player, None) < self.deflect_cost(player, &[target]).into() {
                 return Err("Choosing that unit requires additional power for Deflect.".into());
             }
         } else if target.is_some() {
@@ -349,9 +349,9 @@ impl Game {
     pub(crate) fn activate_legend(&mut self, target: Option<Target>) -> Result<(), String> {
         let player = self.priority();
         let activation = self.validate_legend_activation(player, target)?;
-        self.pay_energy(player, activation.energy);
+        self.pay_energy(player, activation.energy.into());
         if let Some(target) = target {
-            self.spend_power(player, None, self.deflect_cost(player, &[target]))?;
+            self.spend_power(player, None, self.deflect_cost(player, &[target]).into())?;
         }
         if activation.exhaust {
             self.legend[player].ready = false;
@@ -470,7 +470,7 @@ impl Game {
                 ));
             }
             LegendTrigger::IreliaConquer => {
-                if self.players[player].energy < 1 {
+                if self.payment_energy_available(player) < 1 {
                     return Err("Pay 1 energy to ready Irelia's legend.".into());
                 }
                 self.pay_energy(player, 1);

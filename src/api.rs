@@ -3,7 +3,10 @@
 //! `Session` never lends out its authoritative `Game`. Every mutation is tried
 //! on a clone and committed only on success. Suggestions are convenient engine
 //! candidates, not an exhaustive action space; submit any structured `Action`.
-use crate::activated::{AbilitySource, AbilityTiming, ActivatedRule, activated_rules};
+use crate::activated::{
+    AbilitySource, AbilityTargetKind, AbilityTiming, ActivatedRule, ConversionDirection,
+    activated_rules,
+};
 use crate::battlefields::{BATTLEFIELDS, BattlefieldAbility};
 use crate::cards::{Domain, cards, presets};
 use crate::deck::CustomDeck;
@@ -384,6 +387,11 @@ impl Session {
             "showdown":game.showdown.as_ref().map(|w|json!({"lane":w.lane,"attacker":w.attacker,
                 "focus":w.focus,"passes":w.passes,"combat":w.combat})),
             "resource_payment_pending":game.resource_payment_pending(),
+            "resource_continuations":game.resource_continuations().iter().map(|parent|json!({"player":parent.player,"task":parent.task})).collect::<Vec<_>>(),
+            "payment_plan":game.payment_plan_view(viewer).map(|plan|json!({
+                "player":plan.player,"energy":plan.energy,"pending_card":plan.pending_card,
+                "power":plan.power.iter().map(power_cost_to_json).collect::<Vec<_>>(),
+                "action":plan.action.as_ref().map(action_to_json)})),
             "required_trash_play":game.required_trash_play,
             "can_decline_trash_play":game.can_decline_trash_play()}),
         )
@@ -657,10 +665,20 @@ fn activated_rule_to_json(index: usize, rule: &ActivatedRule) -> Value {
         "energy":rule.energy,"power":rule.power,"power_domain":rule.domain.map(|domain|domain.name()),
         "exhaust":rule.exhaust,"requires_battlefield":rule.requires_battlefield,
         "adds_resources":rule.adds_resources(),
+        "recycle_count":rule.recycle_count,"recycle_unit_only":rule.recycle_unit_only,"kill_source":rule.kill_source,
+        "conversion_direction":rule.conversion_direction().map(conversion_direction_name),
         "targets":{"min":rule.targets.min,"max":rule.targets.max,
+            "kind":match rule.targets.kind {AbilityTargetKind::Unit=>"unit",AbilityTargetKind::Gear=>"gear"},"another":rule.targets.another,
             "allegiance":match rule.targets.allegiance {Allegiance::None=>"none",Allegiance::Any=>"any",
                 Allegiance::Friendly=>"friendly",Allegiance::Enemy=>"enemy",Allegiance::Mixed=>"mixed"},
             "battlefield":rule.targets.battlefield,"exhausted":rule.targets.exhausted}})
+}
+
+fn conversion_direction_name(direction: ConversionDirection) -> &'static str {
+    match direction {
+        ConversionDirection::EnergyToPower => "energy_to_power",
+        ConversionDirection::PowerToEnergy => "power_to_energy",
+    }
 }
 
 pub fn catalog() -> Value {
@@ -729,6 +747,11 @@ pub fn action_to_json(action: &Action) -> Value {
     let ts = |targets: &[Target]| targets.iter().map(target_to_json).collect::<Vec<_>>();
     let t = |target: &Option<Target>| target.as_ref().map(target_to_json);
     match action {
+        Action::BeginPayment { action } => json!({"type":"begin_payment",
+            "action":if matches!(**action, Action::BeginPayment {..} | Action::WithPowerPayment {..}) {
+                json!({"type":"invalid_nested_payment"})
+            } else { action_to_json(action) }}),
+        Action::CompletePayment => json!({"type":"complete_payment"}),
         Action::RecycleRune { domain, exhausted } => {
             json!({"type":"recycle_rune", "domain":domain.name().to_lowercase(), "exhausted":exhausted})
         }
@@ -786,6 +809,17 @@ pub fn action_to_json(action: &Action) -> Value {
         } => json!({
             "type":"activate_ability","source":ability_source_to_json(*source),
             "ability_index":ability_index,"targets":ts(targets)}),
+        Action::ActivateAbilityWithCosts {
+            source,
+            ability_index,
+            targets,
+            trash_indices,
+        } => json!({
+            "type":"activate_ability_with_costs","source":ability_source_to_json(*source),
+            "ability_index":ability_index,"targets":ts(targets),"trash_indices":trash_indices}),
+        Action::ResolveConversion { amount } => {
+            json!({"type":"resolve_conversion","amount":amount})
+        }
         Action::ActivateLegend { target } => json!({"type":"activate_legend","target":t(target)}),
         Action::ActivateRune { domain, recycle } => {
             json!({"type":"activate_rune","domain":domain.name(),"recycle":recycle})
@@ -1075,28 +1109,38 @@ fn payment_to_json(payment: &PowerPayment) -> Value {
     json!({"colored":payment.colored,"any":payment.any,"spell":payment.spell,"recycle":payment.recycle})
 }
 
+fn power_cost_to_json(cost: &crate::payment::PowerCost) -> Value {
+    json!({"domains":cost.domains.iter().map(|d|d.name()).collect::<Vec<_>>(),
+        "amount":cost.amount,"spell_eligible":cost.spell_eligible})
+}
+
 fn parse_payment(value: &Value) -> Result<PowerPayment, ApiError> {
     let o = object(value)?;
     keys(o, &["colored", "any", "spell", "recycle"])?;
-    let amounts = |key| -> Result<[u8; 6], ApiError> {
+    let amounts = |key| -> Result<[u16; 6], ApiError> {
         let values = usize_list(o, key)?;
         let array: [usize; 6] = values
             .try_into()
             .map_err(|_| ApiError::invalid("Power arrays need exactly six domain counts."))?;
         let mut out = [0; 6];
         for (dest, amount) in out.iter_mut().zip(array) {
-            *dest = u8::try_from(amount)
-                .map_err(|_| ApiError::invalid("Power counts must be between 0 and 255."))?;
+            *dest = u16::try_from(amount)
+                .map_err(|_| ApiError::invalid("Power counts must be between 0 and 65535."))?;
         }
         Ok(out)
     };
+    let mut recycle = [0; 6];
+    for (dest, amount) in recycle.iter_mut().zip(amounts("recycle")?) {
+        *dest = u8::try_from(amount)
+            .map_err(|_| ApiError::invalid("Rune counts must be between 0 and 255."))?;
+    }
     Ok(PowerPayment {
         colored: amounts("colored")?,
-        recycle: amounts("recycle")?,
-        any: u8::try_from(unsigned(o, "any")?)
-            .map_err(|_| ApiError::invalid("any exceeds 255."))?,
-        spell: u8::try_from(unsigned(o, "spell")?)
-            .map_err(|_| ApiError::invalid("spell exceeds 255."))?,
+        recycle,
+        any: u16::try_from(unsigned(o, "any")?)
+            .map_err(|_| ApiError::invalid("any exceeds 65535."))?,
+        spell: u16::try_from(unsigned(o, "spell")?)
+            .map_err(|_| ApiError::invalid("spell exceeds 65535."))?,
     })
 }
 
@@ -1245,6 +1289,26 @@ pub fn parse_action(value: &Value) -> Result<Action, ApiError> {
                 source: parse_ability_source(required(o, "source")?)?,
                 ability_index: index(o, "ability_index")?,
                 targets: targets(o, "targets")?,
+            }
+        }
+        "activate_ability_with_costs" => {
+            fields!("source", "ability_index", "targets", "trash_indices");
+            Action::ActivateAbilityWithCosts {
+                source: parse_ability_source(required(o, "source")?)?,
+                ability_index: index(o, "ability_index")?,
+                targets: targets(o, "targets")?,
+                trash_indices: usize_list(o, "trash_indices")?,
+            }
+        }
+        "resolve_conversion" => {
+            fields!("amount");
+            Action::ResolveConversion {
+                amount: required(o, "amount")?
+                    .as_u64()
+                    .and_then(|n| u16::try_from(n).ok())
+                    .ok_or_else(|| {
+                        ApiError::invalid("Conversion amount must be an integer from 0 to 65535.")
+                    })?,
             }
         }
         "activate_legend" => {
@@ -1422,6 +1486,25 @@ pub fn parse_action(value: &Value) -> Result<Action, ApiError> {
                 .collect::<Result<_, ApiError>>()?;
             Action::AssignDamage { assignments }
         }
+        "begin_payment" => {
+            fields!("action");
+            let intent = required(o, "action")?;
+            if matches!(
+                intent.get("type").and_then(Value::as_str),
+                Some("begin_payment" | "with_power_payment" | "complete_payment")
+            ) {
+                return Err(ApiError::invalid(
+                    "Begin payment requires an unwrapped payment action.",
+                ));
+            }
+            Action::BeginPayment {
+                action: Box::new(parse_action(intent)?),
+            }
+        }
+        "complete_payment" => {
+            fields!();
+            Action::CompletePayment
+        }
         "end_turn" => {
             fields!();
             Action::EndTurn
@@ -1450,6 +1533,18 @@ fn instructed_kind(kind: InstructedPlayKind) -> &'static str {
 fn decision_to_json(game: &Game, decision: &Decision, viewer: usize) -> Value {
     let player = decision.player();
     let mut out = match decision {
+        Decision::Payment { .. } => json!({"type":"payment",
+            "can_cancel":game.can_cancel_payment()}),
+        Decision::ResourceConversion {
+            source,
+            card_id,
+            ability_index,
+            direction,
+            ..
+        } => json!({
+            "type":"resource_conversion","source":ability_source_to_json(*source),
+            "card_id":card_id,"ability_index":ability_index,"direction":conversion_direction_name(*direction),
+            "available":game.conversion_available()}),
         Decision::TriggerTargets {
             card_id,
             rule_index,
@@ -1788,6 +1883,17 @@ mod tests {
                 ability_index: 0,
                 targets: vec![unit],
             },
+            Action::ActivateAbilityWithCosts {
+                source: AbilitySource::Gear {
+                    player: 0,
+                    gear_id: 20,
+                },
+                ability_index: 0,
+                targets: vec![],
+                trash_indices: vec![3, 1, 2],
+            },
+            Action::ResolveConversion { amount: 0 },
+            Action::ResolveConversion { amount: 65535 },
             Action::ActivateLegend { target: Some(unit) },
             Action::ActivateRune {
                 domain: Domain::Chaos,
@@ -1873,6 +1979,14 @@ mod tests {
             Action::AssignDamage {
                 assignments: vec![(9, 2), (3, 4)],
             },
+            Action::BeginPayment {
+                action: Box::new(Action::PlayCardWithTargets {
+                    hand_index: 1,
+                    lane: None,
+                    targets: vec![unit],
+                }),
+            },
+            Action::CompletePayment,
             Action::EndTurn,
             Action::WithPowerPayment {
                 action: Box::new(Action::Hide {
@@ -2044,6 +2158,459 @@ mod tests {
             assert_eq!(session.revision(), revision);
             assert_eq!(format!("{:?}", session.game), before);
         }
+    }
+
+    fn ability_position() -> Session {
+        let mut session = playing();
+        for player in &mut session.game.players {
+            player.units.clear();
+            player.gear.clear();
+            player.runes = [0; 6];
+            player.exhausted_runes = [0; 6];
+            player.energy = 8;
+            player.energy_pool = 8;
+            player.power_pool = [0; 6];
+            player.any_power = 0;
+        }
+        session
+    }
+
+    fn add_api_gear(session: &mut Session, id: u32, card_id: usize) -> AbilitySource {
+        session.game.players[0].gear.push(crate::gear::GearState {
+            id,
+            card_id,
+            attached_to: None,
+            ready: true,
+            temporary: false,
+            token: false,
+        });
+        AbilitySource::Gear {
+            player: 0,
+            gear_id: id,
+        }
+    }
+
+    fn rejected_wire_action(session: &mut Session, action: Value) {
+        let before = format!("{:?}", session.game);
+        let revision = session.revision();
+        let response = session.handle(json!({"command":"apply","revision":revision,
+            "player":session.game.priority(),"action":action}));
+        assert_eq!(response["ok"], false, "{response}");
+        assert_eq!(session.revision(), revision);
+        assert_eq!(format!("{:?}", session.game), before);
+    }
+
+    #[test]
+    fn object_cost_and_conversion_catalog_separates_costs_targets_and_resolution() {
+        let catalog = catalog();
+        let rule = |id: usize| &catalog["cards"][id]["activated_abilities"][0];
+        assert_eq!(rule(240)["recycle_count"], 3);
+        assert_eq!(rule(240)["recycle_unit_only"], false);
+        assert_eq!(rule(240)["targets"]["max"], 0);
+        assert_eq!(rule(241)["recycle_count"], 1);
+        assert_eq!(rule(241)["recycle_unit_only"], true);
+        assert_eq!(rule(241)["power_domain"], "Fury");
+        assert_eq!(rule(242)["timing"], "action");
+        assert_eq!(rule(242)["kill_source"], true);
+        assert_eq!(rule(243)["targets"]["kind"], "gear");
+        assert_eq!(rule(243)["targets"]["another"], true);
+        for (id, direction) in [(244, "energy_to_power"), (245, "power_to_energy")] {
+            assert_eq!(rule(id)["conversion_direction"], direction);
+            assert_eq!(
+                rule(id)["energy"],
+                0,
+                "conversion payment is not a base cost"
+            );
+            assert_eq!(rule(id)["power"], 0);
+            assert_eq!(rule(id)["adds_resources"], true);
+            assert_eq!(rule(id)["timing"], "reaction");
+            assert_eq!(rule(id)["exhaust"], true);
+        }
+    }
+
+    #[test]
+    fn explicit_recycling_api_pays_before_responses_and_rejects_bad_cost_selections() {
+        let mut session = ability_position();
+        let source = add_api_gear(&mut session, 700, 240);
+        session.game.players[0].discard = vec![21, 7, 49, 22];
+        let action = json!({"type":"activate_ability_with_costs","source":ability_source_to_json(source),
+            "ability_index":0,"targets":[],"trash_indices":[2,0,1]});
+        for indices in [
+            json!([]),
+            json!([0, 1]),
+            json!([0, 1, 2, 3]),
+            json!([0, 0, 1]),
+            json!([0, 1, 9]),
+            json!([0, -1, 2]),
+            json!([0, 1.5, 2]),
+            json!([0, "1", 2]),
+        ] {
+            let mut bad = action.clone();
+            bad["trash_indices"] = indices;
+            rejected_wire_action(&mut session, bad);
+        }
+        rejected_wire_action(
+            &mut session,
+            json!({"type":"activate_ability","source":ability_source_to_json(source),"ability_index":0,"targets":[]}),
+        );
+        let revision = session.revision();
+        let before = format!("{:?}", session.game);
+        let quote = session.handle(
+            json!({"command":"quote_payment","revision":revision,"player":0,"action":action}),
+        );
+        assert_eq!(quote["ok"], true, "{quote}");
+        assert_eq!(format!("{:?}", session.game), before);
+        assert_eq!(session.revision(), revision);
+        let hand = session.game.players[0].hand.len();
+        let deck = session.game.players[0].deck.len();
+        let energy = session.game.players[0].energy;
+        let response = session
+            .handle(json!({"command":"apply","revision":revision,"player":0,"action":action}));
+        assert_eq!(response["ok"], true, "{response}");
+        assert_eq!(session.game.players[0].discard, vec![22]);
+        assert_eq!(session.game.players[0].deck.len(), deck + 3);
+        assert_eq!(session.game.players[0].hand.len(), hand);
+        assert_eq!(session.game.players[0].energy, energy - 1);
+        assert!(!session.game.players[0].gear[0].ready);
+        let view = session.observe(1).unwrap();
+        assert_eq!(
+            view["chain"][0]["targets"],
+            json!([]),
+            "cost objects must not become targets"
+        );
+        assert!(view["players"][0]["hand"].is_null());
+        pass_twice(&mut session);
+        assert_eq!(session.game.players[0].hand.len(), hand + 1);
+    }
+
+    #[test]
+    fn nested_conversion_observations_preserve_source_and_outer_payment_task() {
+        let mut session = ability_position();
+        let first = add_api_gear(&mut session, 700, 244);
+        let second = add_api_gear(&mut session, 701, 244);
+        session.game.players[0].energy = 5;
+        session.game.players[0].energy_pool = 5;
+        submit(
+            &mut session,
+            Action::ActivateAbility {
+                source: first,
+                ability_index: 0,
+                targets: vec![],
+            },
+        );
+        let outer = session.observe(0).unwrap()["decision"].clone();
+        assert_eq!(outer["type"], "resource_conversion");
+        assert_eq!(outer["source"], ability_source_to_json(first));
+        assert_eq!(outer["available"], 5);
+        assert!(session.game.chain.is_empty());
+        submit(
+            &mut session,
+            Action::ActivateAbility {
+                source: second,
+                ability_index: 0,
+                targets: vec![],
+            },
+        );
+        let first_view = session.observe(0).unwrap();
+        let second_view = session.observe(1).unwrap();
+        assert_eq!(first_view["decision"], second_view["decision"]);
+        assert_eq!(
+            first_view["resource_continuations"],
+            second_view["resource_continuations"]
+        );
+        assert_eq!(
+            first_view["resource_continuations"],
+            json!([{"player":0,"task":"ResourceConversion"}])
+        );
+        assert_eq!(first_view["priority"], 0);
+        assert_eq!(
+            first_view["decision"]["source"],
+            ability_source_to_json(second)
+        );
+        for amount in [
+            json!(-1),
+            json!(6),
+            json!(65536),
+            json!(1.5),
+            json!("1"),
+            json!(true),
+        ] {
+            rejected_wire_action(
+                &mut session,
+                json!({"type":"resolve_conversion","amount":amount}),
+            );
+        }
+        rejected_wire_action(&mut session, json!({"type":"pass"}));
+        submit(&mut session, Action::ResolveConversion { amount: 1 });
+        assert_eq!(
+            session.observe(0).unwrap()["decision"]["source"],
+            ability_source_to_json(first)
+        );
+        assert_eq!(session.game.players[0].energy, 4);
+        assert_eq!(session.game.players[0].any_power, 1);
+        submit(&mut session, Action::ResolveConversion { amount: 2 });
+        let view = session.observe(0).unwrap();
+        assert!(view["decision"].is_null());
+        assert_eq!(view["resource_continuations"], json!([]));
+        assert_eq!(view["priority"], 0);
+        assert_eq!(session.game.players[0].energy, 2);
+        assert_eq!(session.game.players[0].any_power, 3);
+        assert!(session.game.players[0].gear.iter().all(|gear| !gear.ready));
+    }
+
+    #[test]
+    fn anomaly_wire_quote_and_exact_payment_preserve_other_colors_and_spell_power() {
+        let mut session = ability_position();
+        let source = add_api_gear(&mut session, 700, 245);
+        session.game.players[0].energy = 1;
+        session.game.players[0].energy_pool = 1;
+        session.game.players[0].power_pool = [2, 0, 1, 0, 0, 0];
+        session.game.players[0].any_power = 1;
+        session.game.legend[0].spell_power = 9;
+        submit(
+            &mut session,
+            Action::ActivateAbility {
+                source,
+                ability_index: 0,
+                targets: vec![],
+            },
+        );
+        let view = session.observe(1).unwrap();
+        assert_eq!(view["decision"]["direction"], "power_to_energy");
+        assert_eq!(view["decision"]["available"], 4);
+        let convert = Action::ResolveConversion { amount: 2 };
+        let before = format!("{:?}", session.game);
+        let quote = session.handle(
+            json!({"command":"quote_payment","revision":session.revision(),
+            "player":0,"action":action_to_json(&convert)}),
+        );
+        assert_eq!(quote["ok"], true, "{quote}");
+        assert_eq!(quote["result"]["costs"][0]["amount"], 2);
+        assert_eq!(quote["result"]["costs"][0]["spell_eligible"], false);
+        assert_eq!(format!("{:?}", session.game), before);
+        rejected_wire_action(
+            &mut session,
+            action_to_json(&Action::WithPowerPayment {
+                action: Box::new(convert.clone()),
+                payment: PowerPayment {
+                    spell: 2,
+                    ..PowerPayment::default()
+                },
+            }),
+        );
+        submit(
+            &mut session,
+            Action::WithPowerPayment {
+                action: Box::new(convert),
+                payment: PowerPayment {
+                    colored: [0, 0, 1, 0, 0, 0],
+                    any: 1,
+                    ..PowerPayment::default()
+                },
+            },
+        );
+        assert_eq!(session.game.players[0].energy, 3);
+        assert_eq!(session.game.players[0].power_pool, [2, 0, 0, 0, 0, 0]);
+        assert_eq!(session.game.legend[0].spell_power, 9);
+        assert!(session.game.decision.is_none());
+    }
+
+    #[test]
+    fn conversion_zero_is_a_successful_completion_not_an_exhaust_refund() {
+        let mut session = ability_position();
+        let source = add_api_gear(&mut session, 700, 244);
+        let energy = session.game.players[0].energy;
+        submit(
+            &mut session,
+            Action::ActivateAbility {
+                source,
+                ability_index: 0,
+                targets: vec![],
+            },
+        );
+        submit(&mut session, Action::ResolveConversion { amount: 0 });
+        assert!(!session.game.players[0].gear[0].ready);
+        assert_eq!(session.game.players[0].energy, energy);
+        assert!(session.game.decision.is_none());
+    }
+
+    #[test]
+    fn generated_power_counts_round_trip_above_255_without_widening_rune_counts() {
+        let action = Action::WithPowerPayment {
+            action: Box::new(Action::ResolveConversion { amount: 600 }),
+            payment: PowerPayment {
+                colored: [300, 0, 0, 0, 0, 0],
+                any: 300,
+                spell: 65535,
+                recycle: [0, 1, 0, 0, 0, 0],
+            },
+        };
+        let wire = action_to_json(&action);
+        assert_eq!(parse_action(&wire).unwrap(), action);
+        assert_eq!(parse_payment(&wire["payment"]).unwrap().total(), 66136);
+        for (key, value) in [
+            ("colored", json!([65536, 0, 0, 0, 0, 0])),
+            ("recycle", json!([256, 0, 0, 0, 0, 0])),
+            ("any", json!(65536)),
+            ("spell", json!(-1)),
+            ("any", json!(1.5)),
+        ] {
+            let mut malformed = wire.clone();
+            malformed["payment"][key] = value;
+            assert!(parse_action(&malformed).is_err());
+        }
+    }
+
+    #[test]
+    fn rollback_quote_and_exact_wrapper_preserve_transaction_and_revision_guards() {
+        let mut session = ability_position();
+        session.game.players[0].hand = vec![41];
+        add_api_gear(&mut session, 700, 13);
+        session.game.players[0].gear[0].token = true;
+        let original = format!("{:?}", session.game);
+        submit(
+            &mut session,
+            Action::BeginPayment {
+                action: Box::new(Action::PlayCardWithTargets {
+                    hand_index: 0,
+                    lane: None,
+                    targets: vec![Target::Gear {
+                        player: 0,
+                        gear_id: 700,
+                    }],
+                }),
+            },
+        );
+        submit(&mut session, Action::ActivateGear { gear_id: 700 });
+        rejected_wire_action(&mut session, json!({"type":"complete_payment"}));
+        assert!(session.game.can_cancel_payment());
+        let pending = format!("{:?}", session.game);
+        let revision = session.revision();
+        let quote = session.handle(json!({"command":"quote_payment","revision":revision,
+            "player":0,"action":{"type":"choose","accept":false}}));
+        assert_eq!(quote["ok"], true, "{quote}");
+        assert_eq!(
+            quote["result"]["suggested"],
+            payment_to_json(&PowerPayment::default())
+        );
+        assert_eq!(format!("{:?}", session.game), pending);
+        assert_eq!(session.revision(), revision);
+        rejected_wire_action(
+            &mut session,
+            action_to_json(&Action::WithPowerPayment {
+                action: Box::new(Action::Choose { accept: false }),
+                payment: PowerPayment {
+                    any: 1,
+                    ..PowerPayment::default()
+                },
+            }),
+        );
+        let stale = session.handle(json!({"command":"apply","revision":revision-1,
+            "player":0,"action":{"type":"choose","accept":false}}));
+        assert_eq!(stale["ok"], false);
+        assert_eq!(format!("{:?}", session.game), pending);
+        submit(
+            &mut session,
+            Action::WithPowerPayment {
+                action: Box::new(Action::Choose { accept: false }),
+                payment: PowerPayment::default(),
+            },
+        );
+        assert_eq!(session.revision(), revision + 1);
+        assert_eq!(format!("{:?}", session.game), original);
+    }
+
+    #[test]
+    fn payment_intent_survives_nested_conversion_and_failed_wire_actions_are_atomic() {
+        let mut session = ability_position();
+        session.game.players[0].hand = vec![227]; // Shock Blast.
+        session.game.players[1].units.push(crate::game::Unit {
+            id: 702,
+            card_id: 70,
+            lane: Some(0),
+            ready: true,
+            damage: 0,
+            buff: 0,
+            temporary_buff: 0,
+            token: false,
+            protected: false,
+            stunned: false,
+            banish_on_death: false,
+        });
+        let source = add_api_gear(&mut session, 700, 244);
+        let intent = Action::PlayCardWithTargets {
+            hand_index: 0,
+            lane: None,
+            targets: vec![Target::Unit {
+                player: 1,
+                unit_id: 702,
+            }],
+        };
+        for action in [
+            json!({"type":"begin_payment","action":{"type":"begin_payment","action":action_to_json(&intent)}}),
+            json!({"type":"begin_payment","action":{"type":"complete_payment"}}),
+            json!({"type":"begin_payment","action":{"type":"pass"}}),
+        ] {
+            rejected_wire_action(&mut session, action);
+        }
+        submit(
+            &mut session,
+            Action::BeginPayment {
+                action: Box::new(intent.clone()),
+            },
+        );
+        let owner = session.observe(0).unwrap();
+        let opponent = session.observe(1).unwrap();
+        assert_eq!(owner["decision"]["type"], "payment");
+        assert_eq!(owner["payment_plan"]["energy"], 3);
+        assert_eq!(owner["payment_plan"]["pending_card"], 227);
+        assert_eq!(opponent["payment_plan"]["pending_card"], 227);
+        assert_eq!(owner["players"][0]["hand_count"], 0);
+        assert_eq!(owner["payment_plan"]["action"], action_to_json(&intent));
+        assert!(opponent["payment_plan"]["action"].is_null());
+        rejected_wire_action(&mut session, json!({"type":"pass"}));
+        rejected_wire_action(&mut session, json!({"type":"complete_payment","amount":0}));
+        submit(
+            &mut session,
+            Action::ActivateAbility {
+                source,
+                ability_index: 0,
+                targets: vec![],
+            },
+        );
+        let nested = session.observe(0).unwrap();
+        assert_eq!(nested["decision"]["type"], "resource_conversion");
+        assert_eq!(
+            nested["resource_continuations"],
+            json!([{"player":0,"task":"Payment"}])
+        );
+        assert_eq!(nested["payment_plan"], owner["payment_plan"]);
+        rejected_wire_action(&mut session, json!({"type":"complete_payment"}));
+        submit(&mut session, Action::ResolveConversion { amount: 1 });
+        let before = format!("{:?}", session.game);
+        let quote = session.handle(
+            json!({"command":"quote_payment","revision":session.revision(),
+            "player":0,"action":{"type":"complete_payment"}}),
+        );
+        assert_eq!(quote["ok"], true, "{quote}");
+        assert_eq!(quote["result"]["suggested"]["any"], 1);
+        assert_eq!(format!("{:?}", session.game), before);
+        submit(
+            &mut session,
+            Action::WithPowerPayment {
+                action: Box::new(Action::CompletePayment),
+                payment: PowerPayment {
+                    any: 1,
+                    ..PowerPayment::default()
+                },
+            },
+        );
+        let done = session.observe(0).unwrap();
+        assert!(done["payment_plan"].is_null());
+        assert_eq!(done["priority"], 0);
+        assert_eq!(done["chain"][0]["card_id"], 227);
+        assert_eq!(done["players"][0]["energy"], 4);
+        assert_eq!(done["players"][0]["any_power"], 0);
     }
 
     #[test]

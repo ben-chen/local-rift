@@ -1,6 +1,6 @@
 # Implemented rules and limitations
 
-**Local Rift is an unofficial, incomplete Riftbound client. This document describes its current behavior, not the complete tabletop game.** Full official card text appears in hover previews and pinned inspectors. All 240 bundled cards have executable printed-effect mappings. An official description in the catalog and a passing simulation are not proof of complete tabletop equivalence.
+**Local Rift is an unofficial, incomplete Riftbound client. This document describes its current behavior, not the complete tabletop game.** Full official card text appears in hover previews and pinned inspectors. All 246 bundled cards have executable printed-effect mappings. An official description in the catalog and a passing simulation are not proof of complete tabletop equivalence.
 
 For physical play, use Riot's [Rules Hub](https://playriftbound.com/en-us/rules-hub/), current errata, and printed card text. The core timing reference used here is the [October 9, 2026 Core Rules](https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/5c7946f7c3b8c6e0faff85ab6dadc6d2e721ea94.pdf). [SOURCES.md](SOURCES.md) records the card and deck sources.
 
@@ -79,6 +79,12 @@ Renata Glasc has two distinct abilities: pay one energy and one Mind power to dr
 
 Dragonsoul Sage's Reaction ability exhausts it to add one energy immediately, including during permitted payment choices. This does not allow the unit card itself to be played as a Reaction. The other activations in this group require the controller's open main phase. Non-resource abilities enter the chain and allow responses; gear-use triggers occur after their ability resolves, including when its chosen target has left, and do not fire for a countered ability.
 
+Garbage Grabber recycles three selected trash cards and pays one energy before drawing on resolution. Assembly Rig instead recycles one unit, pays one energy and one Fury power, and plays a 3 Might Mech token at base after resolving. The trash choices are costs, not targets. Cards recycled together go to the bottom in random order. Divining Shells supplies Vision when played and kills and exhausts itself to give a unit temporary Might. Hextech Formula enters exhausted and can Empower another gear, including an opponent's or attached gear.
+
+Ancient Henge converts energy to flexible power; Hextech Anomaly converts any-domain power to energy. Exhaust is their activation cost. The conversion amount is chosen and paid as the immediate ability resolves. You may use another Add ability during that payment, finish it, then resume the original conversion. A zero conversion completes without restoring the source's ready state. Exact power choices apply to Anomaly, and spell-only power cannot pay for it.
+
+A committed payment keeps its targets, optional choices, and calculated discounts fixed while you generate resources. Target legality is checked again at completion. If the attempt cannot finish, rollback restores the complete position before the attempt, including resources spent or generated, and returns to any original mandatory choice. It never skips that mandatory action. A fully payable legal attempt must finish.
+
 ## Hidden, trash plays, and optional costs
 
 A card with Hidden can be placed facedown for one flexible power at a battlefield you control during your open main phase. There is one facedown slot per battlefield. Hiding is not playing the card. On a later turn, the card can be played as a Reaction with its base cost waived; additional costs such as Deflect still apply. Losing control reveals the hidden card and puts it in trash.
@@ -145,7 +151,7 @@ The deck library includes the real legends and authored strategy notes. All seve
 
 ## Remaining fidelity limits
 
-Seven supported legends, four battlefield choices, and 240 main-deck cards are available through the four supplied presets and custom deck editor. There is no sideboarding, tournament match structure, multiplayer mode, or full card-set coverage. The presets are dated tournament lists, not a ranking of the current metagame.
+Seven supported legends, four battlefield choices, and 246 main-deck cards are available through the four supplied presets and custom deck editor. There is no sideboarding, tournament match structure, multiplayer mode, or full card-set coverage. The presets are dated tournament lists, not a ranking of the current metagame.
 
 The desktop and bot API expose exact damage allocations and power-source payments. The default automatic payment remains available; energy can be prepared by exhausting chosen rune domains before a play. These controls share engine validation, but broader card and interaction coverage is still required.
 

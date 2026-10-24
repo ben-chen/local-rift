@@ -57,6 +57,11 @@ fn all_cards(game: &Game, owner: usize) -> BTreeMap<usize, usize> {
             .chain(&p.banish)
             .copied()
             .chain(p.champion)
+            .chain(game.payment_plan_view(owner).and_then(|plan| {
+                (plan.player == owner)
+                    .then_some(plan.pending_card)
+                    .flatten()
+            }))
             .chain(p.units.iter().filter(|u| !u.token).map(|u| u.card_id))
             .chain(p.gear.iter().filter(|g| !g.token).map(|g| g.card_id))
             .chain(
@@ -97,8 +102,8 @@ fn invariant(game: &Game, decks: &[CustomDeck; 2]) {
                 + p.runes
                     .iter()
                     .zip(p.exhausted_runes)
-                    .map(|(&all, spent)| all - spent)
-                    .sum::<u8>()
+                    .map(|(&all, spent)| u16::from(all - spent))
+                    .sum::<u16>()
         );
     }
 }

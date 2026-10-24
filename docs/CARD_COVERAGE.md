@@ -2,7 +2,7 @@
 
 Snapshot checked **2026-10-24**. The official gallery contains **1,408 printing records** grouped into **1,103 distinct full-name identities**. After excluding **12 auxiliary token/tracker identities** and **12 banned identities**, **1,079 identities are legal in Standard/1v1 Constructed**. The separate 2v2 list leaves **1,078**.
 
-**This client does not yet implement every legal card.** It currently maps **240 main-deck cards, 7 independently registered legends, 4 battlefields, and 6 rune resource types** (257 legal identities). **822 legal identities remain unimplemented and are not playable.** Importing this snapshot does not register cards with the engine. Full inventory coverage is not full rules support.
+**This client does not yet implement every legal card.** It currently maps **246 main-deck cards, 7 independently registered legends, 4 battlefields, and 6 rune resource types** (263 legal identities). **816 legal identities remain unimplemented and are not playable.** Importing this snapshot does not register cards with the engine. Full inventory coverage is not full rules support.
 
 ## Scope and authority
 
@@ -28,7 +28,7 @@ Numbered positions include token slots where the publisher numbers them within a
 | Kind | Standard legal | Implemented mapping | Not implemented |
 | --- | ---: | ---: | ---: |
 | Battlefield | 69 | 4 | 65 |
-| Gear | 127 | 38 | 89 |
+| Gear | 127 | 44 | 83 |
 | Legend | 58 | 7 | 51 |
 | Rune | 6 | 6 | 0 |
 | Spell | 269 | 66 | 203 |
@@ -366,6 +366,12 @@ Source pages are archived as deterministic gzip files under `assets/data/catalog
 | 237 | Xerath, Freed | `unl-026-219` |
 | 238 | Caitlyn, Patrolling | `ogn-068-298` |
 | 239 | Renata Glasc, Mastermind | `sfd-088-221` |
+| 240 | Garbage Grabber | `ogn-099-298` |
+| 241 | Assembly Rig | `sfd-019-221` |
+| 242 | Divining Shells | `unl-161-219` |
+| 243 | Hextech Formula | `ven-062-166` |
+| 244 | Ancient Henge | `sfd-117-221` |
+| 245 | Hextech Anomaly | `sfd-083-221` |
 
 ## Implemented legend ID mapping
 

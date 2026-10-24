@@ -273,10 +273,84 @@ fn expansion_fixture(app: &mut App, card_id: usize) {
     app.hover_unit_candidate = None;
     app.toast_until = 0.0;
     app.payment_draft = None;
+    app.suspended_payments.clear();
+    app.resource_drafts.clear();
+    app.ability_costs.clear();
+    app.conversion_key = None;
+    app.conversion_editor = None;
+    app.payment_origin = None;
     app.prefs.exact_payment = false;
     app.drag = None;
     app.damage_amounts = None;
     app.damage_editor = None;
+}
+fn played_gear_fixture(app: &mut App, card_id: usize) {
+    expansion_fixture(app, card_id);
+    app.game
+        .apply(Action::PlayCard {
+            hand_index: 0,
+            lane: None,
+            target: None,
+        })
+        .unwrap();
+    app.tray = super::Tray::Loadout;
+}
+fn fixture_counter_tax(app: &mut App, unit_id: u32) {
+    app.game.players[0].hand = vec![7];
+    app.game
+        .apply(Action::PlayCardWithTargets {
+            hand_index: 0,
+            lane: None,
+            targets: vec![Target::Unit { player: 0, unit_id }],
+        })
+        .unwrap();
+    let chain_id = app.game.chain.last().unwrap().id;
+    app.game.apply(Action::Pass).unwrap();
+    app.game.players[1].hand = vec![37];
+    app.game.players[1].runes = [0; 6];
+    app.game.players[1].runes[domain_index(Domain::Chaos)] = 6;
+    app.game.players[1].exhausted_runes = [0; 6];
+    app.game.players[1].energy = 6;
+    app.game.players[1].energy_pool = 0;
+    app.game
+        .apply(Action::PlayCardWithTargets {
+            hand_index: 0,
+            lane: None,
+            targets: vec![Target::Spell { chain_id }],
+        })
+        .unwrap();
+    app.game.apply(Action::Pass).unwrap();
+    app.game.apply(Action::Pass).unwrap();
+    assert!(matches!(
+        app.game.decision,
+        Some(Decision::CounterTax {
+            player: 0,
+            cost: 2,
+            ..
+        })
+    ));
+}
+fn anomaly_payment_fixture(app: &mut App, energy: u16, power: u16) {
+    played_gear_fixture(app, 245);
+    app.game.players[0].gear.push(GearState {
+        id: 9902,
+        card_id: 245,
+        ready: true,
+        attached_to: None,
+        temporary: false,
+        token: false,
+    });
+    app.game.players[0].units = vec![public_unit(9901, 239, Some(0))];
+    app.game.battlefield_owner[0] = Some(0);
+    app.game.players[0].runes = [0; 6];
+    app.game.players[0].exhausted_runes = [0; 6];
+    app.game.players[0].rune_deck = vec![Domain::Mind; 12];
+    app.game.players[0].energy_pool = energy;
+    app.game.players[0].energy = energy;
+    app.game.players[0].power_pool = [0; 6];
+    app.game.players[0].power_pool[domain_index(Domain::Mind)] = power;
+    app.prefs.exact_payment = true;
+    app.tray = super::Tray::Hand;
 }
 fn public_unit(id: u32, card_id: usize, lane: Option<usize>) -> Unit {
     Unit {
@@ -2296,7 +2370,7 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
             assert!(unit.ready);
             assert_eq!(
                 app.game.players[0].energy,
-                12 - app.game.catalog[98].cost - 1
+                12 - u16::from(app.game.catalog[98].cost) - 1
             );
         }
         196 => {
@@ -4068,15 +4142,532 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
                 })
                 .unwrap();
             assert!(app.game.players[1].units.is_empty());
+        }
+        385 => {
+            played_gear_fixture(app, 240);
+            let trash = app.game.players[0].deck.drain(..3).collect::<Vec<_>>();
+            app.game.players[0].discard = trash;
+            click(app, 615.0, 760.0);
+        }
+        386 => {
+            click(app, 1285.0, 417.0);
+        }
+        387 => {
+            assert!(app.tray == super::Tray::Trash);
+            assert!(app.ability_costs.is_empty());
+            click(app, 315.0, 760.0);
+        }
+        388 => {
+            assert_eq!(app.ability_costs, vec![0]);
+            click(app, 465.0, 760.0);
+        }
+        389 => {
+            assert_eq!(app.ability_costs, vec![0, 1]);
+            click(app, 615.0, 760.0);
+        }
+        390 => {
+            assert_eq!(app.ability_costs, vec![0, 1, 2]);
+            assert!(
+                app.ability_targets.is_empty(),
+                "recycled costs are not targets"
+            );
+            COMBAT_SNAPSHOT.with(|value| *value.borrow_mut() = Some(format!("{:?}", app.game)));
+            capture(app, "RIFT_SMOKE_TRASH_COST_SCREENSHOT");
+            click(app, 1285.0, 548.0);
+        }
+        391 => {
+            COMBAT_SNAPSHOT.with(|value| {
+                assert_eq!(value.borrow().as_ref().unwrap(), &format!("{:?}", app.game))
+            });
+            click(app, 1285.0, 417.0);
+        }
+        392 => {
+            assert!(app.ability_costs.is_empty());
+            click(app, 315.0, 760.0);
+        }
+        393 => {
+            click(app, 465.0, 760.0);
+        }
+        394 => {
+            click(app, 615.0, 760.0);
+        }
+        395 => {
+            click(app, 1285.0, 510.0);
+        }
+        396 => {
+            assert!(app.game.players[0].discard.is_empty());
+            assert!(!app.game.players[0].gear[0].ready);
+            assert!(app.game.chain.last().unwrap().targets.is_empty());
+            let before = app.game.players[0].hand.len();
+            finish_chain_until_choice(app);
+            assert_eq!(app.game.players[0].hand.len(), before + 1);
+            played_gear_fixture(app, 241);
+            let spell = app.game.players[0]
+                .deck
+                .iter()
+                .position(|id| app.game.catalog[*id].kind == CardKind::Spell)
+                .unwrap();
+            let spell = app.game.players[0].deck.remove(spell);
+            let unit = app.game.players[0]
+                .deck
+                .iter()
+                .position(|id| app.game.catalog[*id].kind == CardKind::Unit)
+                .unwrap();
+            let unit = app.game.players[0].deck.remove(unit);
+            app.game.players[0].discard = vec![spell, unit];
+            click(app, 615.0, 760.0);
+        }
+        397 => {
+            click(app, 1285.0, 417.0);
+        }
+        398 => {
+            COMBAT_SNAPSHOT.with(|value| *value.borrow_mut() = Some(format!("{:?}", app.game)));
+            click(app, 315.0, 760.0);
+        }
+        399 => {
+            assert!(
+                app.ability_costs.is_empty(),
+                "Rig cannot recycle a spell for its unit cost"
+            );
+            COMBAT_SNAPSHOT.with(|value| {
+                assert_eq!(value.borrow().as_ref().unwrap(), &format!("{:?}", app.game))
+            });
+            click(app, 465.0, 760.0);
+        }
+        400 => {
+            assert_eq!(app.ability_costs, vec![1]);
+            app.prefs.exact_payment = true;
+            click(app, 1285.0, 510.0);
+        }
+        401 => {
+            assert!(app.payment_draft.is_some());
+            click(app, 480.0, 709.0);
+        }
+        402 => {
+            assert!(app.payment_draft.is_none());
+            assert_eq!(app.ability_costs, vec![1]);
+            COMBAT_SNAPSHOT.with(|value| {
+                assert_eq!(value.borrow().as_ref().unwrap(), &format!("{:?}", app.game))
+            });
+            click(app, 1285.0, 510.0);
+        }
+        403 => {
+            click(app, 936.0, 709.0);
+        }
+        404 => {
+            assert_eq!(app.game.players[0].discard.len(), 1);
+            assert_eq!(
+                app.game.catalog[app.game.players[0].discard[0]].kind,
+                CardKind::Spell
+            );
+            assert!(!app.game.players[0].gear[0].ready);
+            finish_chain_until_choice(app);
+            let mech = app.game.players[0]
+                .units
+                .iter()
+                .find(|u| u.token && u.card_id == 241)
+                .unwrap();
+            assert_eq!(app.game.unit_might(mech), 3);
+            assert_eq!(mech.lane, None);
+            assert!(!mech.ready);
+            played_gear_fixture(app, 242);
+            finish_chain_until_choice(app);
+            assert!(
+                matches!(app.game.decision, Some(Decision::Predict { player: 0, .. })),
+                "Shells Vision responds before predicting"
+            );
+            click(app, 1285.0, 547.0);
+        }
+        405 => {
+            assert!(app.game.decision.is_none());
+            app.game.players[1].units = vec![public_unit(9901, 69, None)];
+            app.tray = super::Tray::Loadout;
+            click(app, 615.0, 760.0);
+        }
+        406 => {
+            click(app, 1285.0, 417.0);
+        }
+        407 => {
+            let r = unit_rect(app, 9901);
+            click(app, r.center().x, r.center().y);
+        }
+        408 => {
+            click(app, 1285.0, 510.0);
+        }
+        409 => {
+            assert!(
+                app.game.players[0].gear.is_empty(),
+                "Shells dies as a cost before responses"
+            );
+            assert!(app.game.players[0].discard.contains(&242));
+            assert!(!app.game.chain.is_empty());
+            finish_chain_until_choice(app);
+            assert_eq!(app.game.players[1].units[0].temporary_buff, 2);
+            played_gear_fixture(app, 243);
+            assert!(
+                !app.game.players[0].gear[0].ready,
+                "Formula enters exhausted"
+            );
+            app.game.players[0].gear[0].ready = true;
+            app.game.players[1].units = vec![public_unit(9901, 69, None)];
+            app.game.players[1].gear = vec![GearState {
+                id: 9902,
+                card_id: 121,
+                ready: true,
+                attached_to: Some(9901),
+                temporary: false,
+                token: false,
+            }];
+            click(app, 615.0, 760.0);
+        }
+        410 => {
+            click(app, 1285.0, 417.0);
+        }
+        411 => {
+            let id = app.game.players[0].gear[0].id;
+            assert!(!app.ability_target_candidate(Target::Gear {
+                player: 0,
+                gear_id: id
+            }));
+            COMBAT_SNAPSHOT.with(|value| *value.borrow_mut() = Some(format!("{:?}", app.game)));
+            click(app, 615.0, 760.0);
+        }
+        412 => {
+            assert!(app.ability_targets.is_empty());
+            COMBAT_SNAPSHOT.with(|value| {
+                assert_eq!(value.borrow().as_ref().unwrap(), &format!("{:?}", app.game))
+            });
+            app.toast_until = 0.0;
+            click(app, 850.0, 663.0);
+        }
+        413 => {
+            assert_eq!(app.gear_owner, 1);
+            click(app, 615.0, 760.0);
+        }
+        414 => {
+            assert_eq!(
+                app.ability_targets,
+                vec![Target::Gear {
+                    player: 1,
+                    gear_id: 9902
+                }]
+            );
+            capture(app, "RIFT_SMOKE_FORMULA_SCREENSHOT");
+            click(app, 1285.0, 510.0);
+        }
+        415 => {
+            assert!(!app.game.players[0].gear[0].ready);
+            finish_chain_until_choice(app);
+            assert!(app.game.unit_empowered(9902));
+            assert!(
+                !app.game.unit_empowered(9901),
+                "the gear's bearer is not empowered"
+            );
+            assert_eq!(app.game.players[1].units[0].temporary_buff, 0);
+            played_gear_fixture(app, 244);
+            app.game.players[0].units = vec![public_unit(9901, 236, None)];
+            fixture_resources(app, Domain::Body);
+            app.game.players[0].exhausted_runes[domain_index(Domain::Body)] = 2;
+            app.game.players[0].energy = 4;
+            fixture_counter_tax(app, 9901);
+            assert_eq!(app.game.players[0].energy, 2);
+            app.tray = super::Tray::Loadout;
+            click(app, 615.0, 760.0);
+        }
+        416 => {
+            click(app, 1285.0, 417.0);
+        }
+        417 => {
+            click(app, 1285.0, 510.0);
+        }
+        418 => {
+            app.draw();
+            assert!(matches!(
+                app.game.decision,
+                Some(Decision::ResourceConversion { card_id: 244, .. })
+            ));
+            assert!(!app.game.players[0].gear[0].ready);
+            assert_eq!(app.game.conversion_available(), Some(2));
+            app.conversion_amount = 3;
+            COMBAT_SNAPSHOT.with(|value| *value.borrow_mut() = Some(format!("{:?}", app.game)));
+            click(app, 1285.0, 510.0);
+        }
+        419 => {
+            COMBAT_SNAPSHOT.with(|value| {
+                assert_eq!(value.borrow().as_ref().unwrap(), &format!("{:?}", app.game))
+            });
+            app.toast_until = 0.0;
+            app.conversion_amount = 1;
+            capture(app, "RIFT_SMOKE_CONVERSION_SCREENSHOT");
+            click(app, 700.0, 663.0);
+        }
+        420 => {
+            click(app, 345.0, 715.0);
+        }
+        421 => {
+            click(app, 1285.0, 417.0);
+        }
+        422 => {
+            click(app, 1285.0, 510.0);
+        }
+        423 => {
+            assert!(matches!(
+                app.game.decision,
+                Some(Decision::ResourceConversion { card_id: 244, .. })
+            ));
+            assert_eq!(
+                app.conversion_amount, 1,
+                "nested Add restores the chosen outer amount"
+            );
+            assert_eq!(app.game.conversion_available(), Some(3));
+            assert!(!app.game.players[0].units[0].ready);
+            click(app, 1285.0, 510.0);
+        }
+        424 => {
+            assert!(matches!(
+                app.game.decision,
+                Some(Decision::CounterTax {
+                    player: 0,
+                    cost: 2,
+                    ..
+                })
+            ));
+            assert_eq!(app.game.players[0].energy, 2);
+            assert_eq!(app.game.players[0].any_power, 1);
+            click(app, 1285.0, 506.0);
+        }
+        425 => {
+            assert!(app.game.decision.is_none());
+            assert_eq!(app.game.players[0].energy, 0);
+            finish_chain_until_choice(app);
+            assert_eq!(app.game.players[0].units[0].temporary_buff, 2);
+            assert!(app.suspended_payments.is_empty());
+            assert!(app.resource_drafts.is_empty());
+        }
+        426 => {
+            anomaly_payment_fixture(app, 2, 3);
+            let r = unit_rect(app, 9901);
+            click(app, r.center().x, r.center().y);
+        }
+        427 => {
+            click(app, 1340.0, 547.0);
+        }
+        428 => {
+            click(app, 1285.0, 417.0);
+        }
+        429 => {
+            click(app, 1285.0, 510.0);
+        }
+        430 => {
+            assert!(app.payment_draft.is_some());
+            assert!(app.game.payment_plan_view(0).is_none());
+            click(app, 885.0, 595.0);
+        }
+        431 => {
+            assert!(app.payment_draft.is_none());
+            let plan = app.game.payment_plan_view(0).unwrap();
+            assert_eq!(plan.energy, 1);
+            assert_eq!(plan.power[0].amount, 1);
+            assert!(matches!(
+                app.game.decision,
+                Some(Decision::Payment { player: 0 })
+            ));
+            click(app, 615.0, 760.0);
+        }
+        432 => {
+            click(app, 1285.0, 417.0);
+        }
+        433 => {
+            click(app, 1285.0, 510.0);
+        }
+        434 => {
+            app.draw();
+            assert!(matches!(
+                app.game.decision,
+                Some(Decision::ResourceConversion { card_id: 245, .. })
+            ));
+            assert_eq!(app.game.conversion_available(), Some(3));
+            let before = format!("{:?}", app.game);
+            app.conversion_editor = Some("-1".into());
+            assert!(app.commit_conversion_editor().is_err());
+            app.conversion_editor = Some("65536".into());
+            assert!(app.commit_conversion_editor().is_err());
+            assert_eq!(
+                format!("{:?}", app.game),
+                before,
+                "malformed conversion input never pays"
+            );
+            app.conversion_editor = Some("1".into());
+            app.commit_conversion_editor().unwrap();
+            click(app, 1285.0, 510.0);
+        }
+        435 => {
+            assert_eq!(
+                app.payment_draft.as_ref().unwrap().chosen.colored[domain_index(Domain::Mind)],
+                1
+            );
+            capture(app, "RIFT_SMOKE_ANOMALY_PAYMENT_SCREENSHOT");
+            click(app, 885.0, 595.0);
+        }
+        436 => {
+            assert_eq!(app.suspended_payments.len(), 2);
+            assert!(app.game.payment_plan_view(0).is_some());
+            click(app, 765.0, 760.0);
+        }
+        437 => {
+            click(app, 1285.0, 417.0);
+        }
+        438 => {
+            click(app, 1285.0, 510.0);
+        }
+        439 => {
+            app.draw();
+            assert!(matches!(
+                app.game.decision,
+                Some(Decision::ResourceConversion {
+                    source: local_rift::activated::AbilitySource::Gear { gear_id: 9902, .. },
+                    ..
+                })
+            ));
+            assert_eq!(app.conversion_amount, 0);
+            assert!(app.game.players[0].gear.iter().all(|gear| !gear.ready));
+            click(app, 1285.0, 548.0);
+        }
+        440 => {
+            assert!(
+                matches!(app.game.decision,Some(Decision::ResourceConversion{source:local_rift::activated::AbilitySource::Gear{gear_id,..},..}) if gear_id!=9902)
+            );
+            assert_eq!(app.conversion_amount, 1);
+            assert_eq!(app.game.players[0].energy, 2);
+            assert_eq!(
+                app.game.players[0].power_pool[domain_index(Domain::Mind)],
+                3
+            );
+            click(app, 896.0, 106.0);
+        }
+        441 => {
+            assert!(matches!(
+                app.payment_draft.as_ref().unwrap().action,
+                Action::ResolveConversion { amount: 1 }
+            ));
+            click(app, 936.0, 709.0);
+        }
+        442 => {
+            assert!(matches!(
+                app.game.decision,
+                Some(Decision::Payment { player: 0 })
+            ));
+            assert_eq!(app.game.players[0].energy, 3);
+            assert_eq!(
+                app.game.players[0].power_pool[domain_index(Domain::Mind)],
+                2
+            );
+            assert_eq!(app.suspended_payments.len(), 1);
+            click(app, 896.0, 106.0);
+        }
+        443 => {
+            let draft = app.payment_draft.as_ref().unwrap();
+            assert!(matches!(draft.action, Action::CompletePayment));
+            assert_eq!(
+                draft.chosen.colored[domain_index(Domain::Mind)],
+                1,
+                "original source choice survives nested Add"
+            );
+            capture(app, "RIFT_SMOKE_FROZEN_PAYMENT_SCREENSHOT");
+            click(app, 480.0, 709.0);
+        }
+        444 => {
+            assert!(app.payment_draft.is_none());
+            assert!(matches!(
+                app.game.decision,
+                Some(Decision::Payment { player: 0 })
+            ));
+            assert!(
+                !app.game.can_cancel_payment(),
+                "a legal begun payment must complete"
+            );
+            click(app, 1285.0, 510.0);
+        }
+        445 => {
+            assert!(app.payment_draft.is_some());
+            click(app, 936.0, 709.0);
+        }
+        446 => {
+            assert!(app.game.payment_plan_view(0).is_none());
+            assert!(app.suspended_payments.is_empty());
+            assert!(app.payment_origin.is_none());
+            assert_eq!(app.game.players[0].energy, 2);
+            assert_eq!(
+                app.game.players[0].power_pool[domain_index(Domain::Mind)],
+                1
+            );
+            assert!(app.game.players[0].units[0].ready);
+            finish_chain_until_choice(app);
+            assert_eq!(app.game.players[0].hand.len(), 1);
+            anomaly_payment_fixture(app, 0, 0);
+            let r = unit_rect(app, 9901);
+            click(app, r.center().x, r.center().y);
+        }
+        447 => {
+            click(app, 1340.0, 547.0);
+        }
+        448 => {
+            click(app, 1285.0, 417.0);
+        }
+        449 => {
+            COMBAT_SNAPSHOT.with(|value| *value.borrow_mut() = Some(format!("{:?}", app.game)));
+            click(app, 1285.0, 510.0);
+        }
+        450 => {
+            assert!(matches!(
+                app.game.decision,
+                Some(Decision::Payment { player: 0 })
+            ));
+            assert!(app.game.can_cancel_payment());
+            click(app, 615.0, 760.0);
+        }
+        451 => {
+            click(app, 1285.0, 417.0);
+        }
+        452 => {
+            click(app, 1285.0, 510.0);
+        }
+        453 => {
+            assert!(matches!(
+                app.game.decision,
+                Some(Decision::ResourceConversion { card_id: 245, .. })
+            ));
+            assert!(!app.game.players[0].gear[0].ready);
+            assert_eq!(app.game.conversion_available(), Some(0));
+            click(app, 1285.0, 548.0);
+        }
+        454 => {
+            assert!(matches!(
+                app.game.decision,
+                Some(Decision::Payment { player: 0 })
+            ));
+            assert!(app.game.can_cancel_payment());
+            assert!(!app.game.players[0].gear[0].ready);
+            click(app, 1285.0, 548.0);
+        }
+        455 => {
+            assert!(app.game.payment_plan_view(0).is_none());
+            assert!(
+                app.game.players[0].gear[0].ready,
+                "rollback undoes in-payment Add costs"
+            );
+            COMBAT_SNAPSHOT.with(|value| {
+                assert_eq!(value.borrow().as_ref().unwrap(), &format!("{:?}", app.game))
+            });
             app.ui.input_override = None;
             app.ui.pointer_override = None;
             app.ui.wheel_override = None;
             println!(
-                "PASS: 385 native UI frames including activated source targets, Renata choices and exact costs, Dragonsoul during a real payment, and combined Tank/Backline first or last."
+                "PASS: 456 native UI frames including six C2 activations, separate trash costs, gear targets, nested Add, frozen exact payment and failed-attempt rollback."
             );
             return true;
         }
-        _ => panic!("UI smoke runner exceeded its 385-frame script"),
+        _ => panic!("UI smoke runner exceeded its 456-frame script"),
     }
     false
 }

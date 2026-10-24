@@ -12,3 +12,7 @@ pub mod payment;
 pub mod rules;
 
 pub mod trigger_rules;
+
+pub mod payment_plan;
+
+mod resources;

@@ -279,7 +279,7 @@ fn every_accelerate_mapping_pays_its_optional_cost_and_enters_ready() {
         assert!(game.players[0].units[0].ready);
         assert_eq!(
             before_energy - game.players[0].energy,
-            game.catalog[card].cost + cost.energy
+            u16::from(game.catalog[card].cost + cost.energy)
         );
         assert_eq!(
             before_runes - game.players[0].runes.iter().sum::<u8>(),

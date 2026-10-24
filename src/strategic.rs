@@ -12,6 +12,11 @@ const SETTLE_LIMIT: usize = 48;
 
 impl Game {
     pub(super) fn choose_strategic_action(&self) -> Action {
+        // A suspended transaction retains its rollback snapshot. Follow the
+        // public-resource witness rather than resampling only half that state.
+        if self.payment_plan.is_some() || !self.resource_frames.is_empty() {
+            return self.choose_heuristic_action();
+        }
         if self.ai_steps_this_turn >= 160 && !self.in_window() && self.decision.is_none() {
             return Action::EndTurn;
         }
@@ -400,7 +405,8 @@ fn action_penalty(action: &Action) -> i32 {
         Action::Pass | Action::EndTurn => 0,
         Action::ActivateGear { .. }
         | Action::ActivateLegend { .. }
-        | Action::ActivateAbility { .. } => 5,
+        | Action::ActivateAbility { .. }
+        | Action::ActivateAbilityWithCosts { .. } => 5,
         _ => 2,
     }
 }

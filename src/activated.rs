@@ -1,7 +1,7 @@
 //! Explicit printed activations for the reviewed unit/gear foundation.
 //! Costs and targets finalize before responses; Add resolves immediately.
 use crate::cards::{CardId, Domain};
-use crate::game::{Action, ChainAbility, Game, Phase, Target};
+use crate::game::{Action, ChainAbility, Decision, Game, Phase, Target};
 use crate::rules::Allegiance;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -26,7 +26,32 @@ pub enum AbilityTiming {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum AbilityTargetKind {
+    Unit,
+    Gear,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum ConversionDirection {
+    EnergyToPower,
+    PowerToEnergy,
+}
+
+#[derive(Clone, Debug)]
+pub(crate) struct ResourceFrame {
+    pub suspended: Option<Decision>,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct ResourceContinuationView {
+    pub player: usize,
+    pub task: &'static str,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct AbilityTargets {
+    pub kind: AbilityTargetKind,
+    pub another: bool,
     pub min: u8,
     pub max: u8,
     pub allegiance: Allegiance,
@@ -36,6 +61,8 @@ pub struct AbilityTargets {
 
 impl AbilityTargets {
     const NONE: Self = Self {
+        kind: AbilityTargetKind::Unit,
+        another: false,
         min: 0,
         max: 0,
         allegiance: Allegiance::None,
@@ -64,6 +91,9 @@ enum AbilityEffect {
     Draw(u8),
     Points(u8),
     AddEnergy(u8),
+    Conversion(ConversionDirection),
+    EmpowerGear,
+    Mech,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -74,6 +104,9 @@ pub struct ActivatedRule {
     pub power: u8,
     pub domain: Option<Domain>,
     pub exhaust: bool,
+    pub recycle_count: u8,
+    pub recycle_unit_only: bool,
+    pub kill_source: bool,
     pub requires_battlefield: bool,
     pub targets: AbilityTargets,
     effect: AbilityEffect,
@@ -81,7 +114,17 @@ pub struct ActivatedRule {
 
 impl ActivatedRule {
     pub fn adds_resources(&self) -> bool {
-        matches!(self.effect, AbilityEffect::AddEnergy(_))
+        matches!(
+            self.effect,
+            AbilityEffect::AddEnergy(_) | AbilityEffect::Conversion(_)
+        )
+    }
+    pub fn conversion_direction(&self) -> Option<ConversionDirection> {
+        if let AbilityEffect::Conversion(direction) = self.effect {
+            Some(direction)
+        } else {
+            None
+        }
     }
 }
 
@@ -97,6 +140,9 @@ const fn exhaust(
         power: 0,
         domain: None,
         exhaust: true,
+        recycle_count: 0,
+        recycle_unit_only: false,
+        kill_source: false,
         requires_battlefield: false,
         targets,
         effect,
@@ -207,6 +253,9 @@ pub fn activated_rules(card_id: CardId) -> &'static [ActivatedRule] {
                 power: 1,
                 domain: Some(Domain::Mind),
                 exhaust: false,
+                recycle_count: 0,
+                recycle_unit_only: false,
+                kill_source: false,
                 requires_battlefield: true,
                 targets: AbilityTargets::NONE,
                 effect: AbilityEffect::Draw(1),
@@ -218,11 +267,96 @@ pub fn activated_rules(card_id: CardId) -> &'static [ActivatedRule] {
                 power: 4,
                 domain: Some(Domain::Mind),
                 exhaust: true,
+                recycle_count: 0,
+                recycle_unit_only: false,
+                kill_source: false,
                 requires_battlefield: true,
                 targets: AbilityTargets::NONE,
                 effect: AbilityEffect::Points(1),
             },
         ],
+        240 => {
+            const {
+                &[ActivatedRule {
+                    energy: 1,
+                    recycle_count: 3,
+                    ..exhaust(
+                        "Recycle three cards, draw 1",
+                        AbilityTargets::NONE,
+                        AbilityEffect::Draw(1),
+                    )
+                }]
+            }
+        }
+        241 => {
+            const {
+                &[ActivatedRule {
+                    energy: 1,
+                    power: 1,
+                    domain: Some(Domain::Fury),
+                    recycle_count: 1,
+                    recycle_unit_only: true,
+                    ..exhaust(
+                        "Recycle a unit, play a Mech",
+                        AbilityTargets::NONE,
+                        AbilityEffect::Mech,
+                    )
+                }]
+            }
+        }
+        242 => {
+            const {
+                &[ActivatedRule {
+                    timing: AbilityTiming::Action,
+                    kill_source: true,
+                    ..exhaust(
+                        "Kill this: give a unit +2 Might",
+                        AbilityTargets::UNIT,
+                        AbilityEffect::Might {
+                            amount: 2,
+                            minimum: 0,
+                        },
+                    )
+                }]
+            }
+        }
+        243 => {
+            const {
+                &[exhaust(
+                    "Empower another gear",
+                    AbilityTargets {
+                        kind: AbilityTargetKind::Gear,
+                        another: true,
+                        ..AbilityTargets::UNIT
+                    },
+                    AbilityEffect::EmpowerGear,
+                )]
+            }
+        }
+        244 => {
+            const {
+                &[ActivatedRule {
+                    timing: AbilityTiming::Reaction,
+                    ..exhaust(
+                        "Convert energy to Any power",
+                        AbilityTargets::NONE,
+                        AbilityEffect::Conversion(ConversionDirection::EnergyToPower),
+                    )
+                }]
+            }
+        }
+        245 => {
+            const {
+                &[ActivatedRule {
+                    timing: AbilityTiming::Reaction,
+                    ..exhaust(
+                        "Convert power to energy",
+                        AbilityTargets::NONE,
+                        AbilityEffect::Conversion(ConversionDirection::PowerToEnergy),
+                    )
+                }]
+            }
+        }
         _ => const { &[] },
     }
 }
@@ -294,15 +428,44 @@ impl Game {
             .collect()
     }
 
-    fn ability_target_valid(&self, actor: usize, rule: &ActivatedRule, target: Target) -> bool {
-        if rule.targets.max == 0 || !self.can_choose_unit(actor, target) {
+    fn ability_target_valid(
+        &self,
+        source: AbilitySource,
+        rule: &ActivatedRule,
+        target: Target,
+    ) -> bool {
+        let actor = source.player();
+        if rule.targets.max == 0 {
             return false;
         }
-        let Target::Unit { player, .. } = target else {
-            return false;
-        };
-        let Some(unit) = self.unit_ref(target) else {
-            return false;
+        let (player, battlefield, ready) = match (rule.targets.kind, target) {
+            (AbilityTargetKind::Unit, Target::Unit { player, .. }) => {
+                if !self.can_choose_unit(actor, target) {
+                    return false;
+                }
+                let Some(unit) = self.unit_ref(target) else {
+                    return false;
+                };
+                (player, unit.lane.is_some(), unit.ready)
+            }
+            (AbilityTargetKind::Gear, Target::Gear { player, gear_id }) => {
+                let Some(gear) = self
+                    .players
+                    .get(player)
+                    .and_then(|p| p.gear.iter().find(|g| g.id == gear_id))
+                else {
+                    return false;
+                };
+                if rule.targets.another && source == (AbilitySource::Gear { player, gear_id }) {
+                    return false;
+                }
+                (
+                    player,
+                    self.gear_location(player, gear_id).is_some(),
+                    gear.ready,
+                )
+            }
+            _ => return false,
         };
         match rule.targets.allegiance {
             Allegiance::Friendly if player != actor => return false,
@@ -310,8 +473,7 @@ impl Game {
             Allegiance::None => return false,
             _ => {}
         }
-        (!rule.targets.battlefield || unit.lane.is_some())
-            && (!rule.targets.exhausted || !unit.ready)
+        (!rule.targets.battlefield || battlefield) && (!rule.targets.exhausted || !ready)
     }
 
     /// Structural candidates; full action validation also checks timing/costs.
@@ -326,12 +488,45 @@ impl Game {
             .iter()
             .enumerate()
             .flat_map(|(player, state)| {
-                state.units.iter().map(move |u| Target::Unit {
-                    player,
-                    unit_id: u.id,
-                })
+                state
+                    .units
+                    .iter()
+                    .map(move |u| Target::Unit {
+                        player,
+                        unit_id: u.id,
+                    })
+                    .chain(state.gear.iter().map(move |g| Target::Gear {
+                        player,
+                        gear_id: g.id,
+                    }))
             })
-            .filter(|&target| self.ability_target_valid(source.player(), rule, target))
+            .filter(|&target| self.ability_target_valid(source, rule, target))
+            .collect()
+    }
+
+    /// Trash selections are costs, never chosen targets (CR417.6).
+    pub fn ability_cost_candidates(
+        &self,
+        source: AbilitySource,
+        ability_index: usize,
+    ) -> Vec<usize> {
+        let Some((card_id, ..)) = self.ability_source_state(source) else {
+            return Vec::new();
+        };
+        let Some(rule) = activated_rules(card_id).get(ability_index) else {
+            return Vec::new();
+        };
+        if rule.recycle_count == 0 {
+            return Vec::new();
+        }
+        self.players[source.player()]
+            .discard
+            .iter()
+            .enumerate()
+            .filter_map(|(i, &id)| {
+                (!rule.recycle_unit_only || self.catalog[id].kind == crate::cards::CardKind::Unit)
+                    .then_some(i)
+            })
             .collect()
     }
 
@@ -341,11 +536,11 @@ impl Game {
         rule: &ActivatedRule,
         targets: &[Target],
     ) -> Result<(), String> {
-        if self.players[player].energy < rule.energy {
+        if self.payment_energy_available(player) < rule.energy.into() {
             return Err(format!("This ability needs {} energy.", rule.energy));
         }
-        self.pay_energy(player, rule.energy);
-        self.spend_power(player, rule.domain, rule.power)?;
+        self.pay_energy(player, rule.energy.into());
+        self.spend_power(player, rule.domain, rule.power.into())?;
         self.spend_deflect(player, false, targets)
     }
 
@@ -354,6 +549,16 @@ impl Game {
         source: AbilitySource,
         ability_index: usize,
         targets: &[Target],
+    ) -> Result<(), String> {
+        self.validate_ability_with_costs(source, ability_index, targets, &[])
+    }
+
+    pub fn validate_ability_with_costs(
+        &self,
+        source: AbilitySource,
+        ability_index: usize,
+        targets: &[Target],
+        trash_indices: &[usize],
     ) -> Result<(), String> {
         let player = source.player();
         let (card_id, ready, battlefield, active) = self
@@ -397,9 +602,21 @@ impl Game {
             || targets.len() > usize::from(rule.targets.max)
             || targets
                 .iter()
-                .any(|&target| !self.ability_target_valid(player, rule, target))
+                .any(|&target| !self.ability_target_valid(source, rule, target))
         {
             return Err("Choose exactly the eligible targets for this ability.".into());
+        }
+        let candidates = self.ability_cost_candidates(source, ability_index);
+        if trash_indices.len() != usize::from(rule.recycle_count)
+            || trash_indices
+                .iter()
+                .enumerate()
+                .any(|(i, n)| !candidates.contains(n) || trash_indices[..i].contains(n))
+        {
+            return Err(format!(
+                "Choose {} different eligible trash cards to recycle as a cost.",
+                rule.recycle_count
+            ));
         }
         // One shared payment simulation covers overlapping colored and Deflect
         // obligations, including explicit source restrictions from the wrapper.
@@ -418,16 +635,55 @@ impl Game {
                     .map(|target| vec![target])
                     .collect()
             };
+            let mut costs = Vec::new();
+            fn combinations(
+                candidates: &[usize],
+                count: usize,
+                selected: &mut Vec<usize>,
+                out: &mut Vec<Vec<usize>>,
+            ) {
+                if count == 0 {
+                    out.push(selected.clone());
+                    return;
+                }
+                for i in 0..candidates.len() {
+                    selected.push(candidates[i]);
+                    combinations(&candidates[i + 1..], count - 1, selected, out);
+                    selected.pop();
+                }
+            }
+            combinations(
+                &self.ability_cost_candidates(option.source, option.ability_index),
+                usize::from(rule.recycle_count),
+                &mut Vec::new(),
+                &mut costs,
+            );
             for targets in groups {
-                if self
-                    .validate_ability(option.source, option.ability_index, &targets)
-                    .is_ok()
-                {
-                    actions.push(Action::ActivateAbility {
-                        source: option.source,
-                        ability_index: option.ability_index,
-                        targets,
-                    });
+                for trash_indices in &costs {
+                    if self
+                        .validate_ability_with_costs(
+                            option.source,
+                            option.ability_index,
+                            &targets,
+                            trash_indices,
+                        )
+                        .is_ok()
+                    {
+                        actions.push(if trash_indices.is_empty() {
+                            Action::ActivateAbility {
+                                source: option.source,
+                                ability_index: option.ability_index,
+                                targets: targets.clone(),
+                            }
+                        } else {
+                            Action::ActivateAbilityWithCosts {
+                                source: option.source,
+                                ability_index: option.ability_index,
+                                targets: targets.clone(),
+                                trash_indices: trash_indices.clone(),
+                            }
+                        });
+                    }
                 }
             }
         }
@@ -440,11 +696,22 @@ impl Game {
         ability_index: usize,
         targets: Vec<Target>,
     ) -> Result<(), String> {
-        self.validate_ability(source, ability_index, &targets)?;
+        self.activate_ability_with_costs(source, ability_index, targets, Vec::new())
+    }
+
+    pub(crate) fn activate_ability_with_costs(
+        &mut self,
+        source: AbilitySource,
+        ability_index: usize,
+        targets: Vec<Target>,
+        trash_indices: Vec<usize>,
+    ) -> Result<(), String> {
+        self.validate_ability_with_costs(source, ability_index, &targets, &trash_indices)?;
         let player = source.player();
         let card_id = self.ability_source_state(source).unwrap().0;
         let rule = &activated_rules(card_id)[ability_index];
         self.pay_ability_costs(player, rule, &targets)?;
+        self.recycle_cards(player, &trash_indices);
         if rule.exhaust {
             match source {
                 AbilitySource::Unit { unit_id, .. } => self.exhaust_unit(player, unit_id),
@@ -457,6 +724,11 @@ impl Game {
                         .ready = false
                 }
             }
+        }
+        if rule.kill_source
+            && let AbilitySource::Gear { gear_id, .. } = source
+        {
+            self.gear_destroy(player, gear_id);
         }
         if rule.adds_resources() {
             self.resolve_activated(source, card_id, ability_index, &targets);
@@ -489,7 +761,7 @@ impl Game {
         let valid: Vec<_> = targets
             .iter()
             .copied()
-            .filter(|&target| self.ability_target_valid(player, rule, target))
+            .filter(|&target| self.ability_target_valid(source, rule, target))
             .collect();
         match rule.effect {
             AbilityEffect::Might { amount, minimum } => {
@@ -526,14 +798,37 @@ impl Game {
                     self.queue_token_play(player, card_id, 1, None, false);
                 }
             }
+            AbilityEffect::Mech => self.queue_token_play(player, card_id, 3, Some(None), false),
+            AbilityEffect::EmpowerGear => {
+                for target in valid {
+                    if let Target::Gear { player, gear_id } = target {
+                        self.empower_now(player, Some(gear_id), None);
+                    }
+                }
+            }
+            AbilityEffect::Conversion(direction) => {
+                self.resource_frames.push(ResourceFrame {
+                    suspended: self.decision.take(),
+                });
+                self.decision = Some(Decision::ResourceConversion {
+                    player,
+                    source,
+                    card_id,
+                    ability_index,
+                    direction,
+                });
+                return;
+            }
             AbilityEffect::Draw(count) => self.draw(player, count),
             AbilityEffect::Points(count) => {
                 self.players[player].score = self.players[player].score.saturating_add(count)
             }
             AbilityEffect::AddEnergy(amount) => {
-                self.players[player].energy_pool =
-                    self.players[player].energy_pool.saturating_add(amount);
-                self.players[player].energy = self.players[player].energy.saturating_add(amount);
+                self.players[player].energy_pool = self.players[player]
+                    .energy_pool
+                    .saturating_add(amount.into());
+                self.players[player].energy =
+                    self.players[player].energy.saturating_add(amount.into());
             }
         }
         if matches!(source, AbilitySource::Gear { .. }) {
@@ -543,6 +838,108 @@ impl Game {
             "{} resolves {}: {}.",
             self.players[player].name, self.catalog[card_id].name, rule.label
         ));
+    }
+
+    /// Immediate resources only; future Add effects remain separate actions.
+    pub fn conversion_available(&self) -> Option<u16> {
+        let Decision::ResourceConversion {
+            player, direction, ..
+        } = self.decision.as_ref()?
+        else {
+            return None;
+        };
+        let state = &self.players[*player];
+        Some(match direction {
+            ConversionDirection::EnergyToPower => state.energy,
+            ConversionDirection::PowerToEnergy => (u32::from(state.any_power)
+                + state.power_pool.iter().map(|&n| u32::from(n)).sum::<u32>()
+                + state.runes.iter().map(|&n| u32::from(n)).sum::<u32>())
+            .min(u32::from(u16::MAX)) as u16,
+        })
+    }
+
+    pub fn resource_continuations(&self) -> Vec<ResourceContinuationView> {
+        self.resource_frames
+            .iter()
+            .filter_map(|frame| frame.suspended.as_ref())
+            .map(|decision| {
+                let task = match decision {
+                    Decision::Payment { .. } => "Payment",
+                    Decision::ResourceConversion { .. } => "ResourceConversion",
+                    Decision::CounterTax { .. } => "CounterTax",
+                    Decision::PendingPlay { .. } => "PendingPlay",
+                    Decision::TriggerTargets { .. } => "TriggerTargets",
+                    Decision::OnPlayTarget { .. } => "OnPlayTarget",
+                    Decision::Legend { .. } => "Legend",
+                    Decision::Battlefield { .. } => "Battlefield",
+                    Decision::LastRites { .. } => "LastRites",
+                    Decision::ReplaySpell { .. } => "ReplaySpell",
+                    Decision::RevivePlay { .. } => "RevivePlay",
+                    _ => "PaymentChoice",
+                };
+                ResourceContinuationView {
+                    player: decision.player(),
+                    task,
+                }
+            })
+            .collect()
+    }
+
+    pub(crate) fn resolve_conversion(&mut self, amount: u16) -> Result<(), String> {
+        let Some(Decision::ResourceConversion {
+            player,
+            source,
+            card_id,
+            ability_index,
+            direction,
+        }) = self.decision.clone()
+        else {
+            return Err("There is no resource conversion to finish.".into());
+        };
+        let available = self.conversion_available().unwrap_or(0);
+        if amount > available {
+            return Err(format!(
+                "Choose at most {available} currently payable resources."
+            ));
+        }
+        // Validate the entire command before committing: a selected power budget
+        // can be insufficient even when a different collection could pay.
+        let mut probe = self.clone();
+        match direction {
+            ConversionDirection::EnergyToPower => {
+                probe.pay_energy(player, amount);
+                probe.players[player].any_power = probe.players[player]
+                    .any_power
+                    .checked_add(amount)
+                    .ok_or("Any power pool capacity exceeded.")?;
+            }
+            ConversionDirection::PowerToEnergy => {
+                probe.spend_power(player, None, amount)?;
+                probe.players[player].energy_pool = probe.players[player]
+                    .energy_pool
+                    .checked_add(amount)
+                    .ok_or("Stored energy pool capacity exceeded.")?;
+                probe.players[player].energy = probe.players[player]
+                    .energy
+                    .checked_add(amount)
+                    .ok_or("Energy pool capacity exceeded.")?;
+            }
+        }
+        probe.decision = probe
+            .resource_frames
+            .pop()
+            .ok_or("The suspended resource task is missing.")?
+            .suspended;
+        if matches!(source, AbilitySource::Gear { .. }) {
+            probe.gear_ability_used(player);
+        }
+        probe.push_log(format!(
+            "{} finishes {}: converts {} resource(s).",
+            probe.players[player].name, probe.catalog[card_id].name, amount
+        ));
+        debug_assert!(activated_rules(card_id).get(ability_index).is_some());
+        *self = probe;
+        Ok(())
     }
 
     /// A deliberately conservative heuristic: public board value only. The
@@ -562,7 +959,12 @@ impl Game {
             matches!(target, Some(Target::Unit { player: owner, .. }) if owner != player);
         match rule.effect {
             AbilityEffect::Points(amount) => Some(if self.players[player].score.saturating_add(amount) >= 8 { 1000 } else { 120 }),
-            AbilityEffect::Recruits(_) => Some(90),
+            AbilityEffect::Recruits(_) | AbilityEffect::Mech => Some(90),
+            AbilityEffect::EmpowerGear => targets.first().and_then(|target| match target {
+                Target::Gear { player: owner, gear_id } if *owner == player && !self.unit_empowered(*gear_id) => Some(35),
+                _ => None,
+            }),
+            AbilityEffect::Conversion(_) => None,
             AbilityEffect::Draw(_) => (self.players[player].hand.len() < 8 && (!self.players[player].deck.is_empty() || !self.players[player].discard.is_empty())).then_some(30),
             AbilityEffect::Buff => unit.filter(|unit| unit.buff == 0).map(|_| 65),
             AbilityEffect::Damage(amount) => unit.filter(|_| enemy_target).map(|unit| {
@@ -600,17 +1002,6 @@ impl Game {
                     self.validate_play(id, None, None).is_err() && probe.validate_play(id, None, None).is_ok()
                 }) || self.players[player].champion.is_some_and(|id| self.validate_play(id, None, None).is_err() && probe.validate_play(id, None, None).is_ok());
                 opens_play.then_some(80)
-            }
-        }
-    }
-
-    /// Only fixed, cost-free Add effects are considered here. Later conversion
-    /// abilities need an obligation-aware search, not an unconditional greedy pass.
-    pub(crate) fn generate_ability_resources(&mut self, player: usize) {
-        for option in self.activated_options(player) {
-            let rule = &activated_rules(option.card_id)[option.ability_index];
-            if rule.adds_resources() && rule.energy == 0 && rule.power == 0 {
-                let _ = self.activate_ability(option.source, option.ability_index, Vec::new());
             }
         }
     }

@@ -104,6 +104,10 @@ Targets have exactly one of these forms:
 | `equip_with_trash` | `gear_id`, `target`, `trash_indices` | Equip Last Rites with an explicit pair of trash cards to recycle |
 | `activate_gear` | `gear_id` | Activate a Seal, Energy Conduit, or Gold when legal |
 | `activate_ability` | `source`, `ability_index`, optional `targets` | Use a registered unit or gear ability with its exact source, printed ability index, and chosen targets |
+| `activate_ability_with_costs` | `source`, `ability_index`, optional `targets`, `trash_indices` | Activate with exact trash positions to recycle as costs; cost objects are separate from targets |
+| `resolve_conversion` | `amount` | Pay and resolve the current energy/power conversion; integer from 0 to 65535 |
+| `begin_payment` | `action` | Fix an unwrapped card or ability intent before using resource abilities during its payment |
+| `complete_payment` | none | Pay the fixed obligations and finish the selected action; may use an exact power wrapper |
 | `activate_legend` | optional `target` | Activate the selected legend's supported ability |
 | `empower_unit` | `unit_id`, optional `pay_power` | Activate Legion Marauder or Tail-Cloaked Matriarch's Empower ability |
 | `hide` | `hand_index`, `lane` | Pay to hide a Hidden card at a controlled battlefield |
@@ -125,7 +129,7 @@ Targets have exactly one of these forms:
 | `set_optional_discount` | `power` | Set how many friendly Ezreal discounts reduce power; remaining discounts reduce energy |
 | `place_token` | optional `lane` | Finalize the next token whose effect allows a destination choice at base or a battlefield you control |
 
-Registered activations use a source object such as `{"type":"unit","player":0,"unit_id":12}` or `{"type":"gear","player":0,"gear_id":15}`. The source is distinct from the targets. `ability_index` is zero-based within that card's `catalog.cards[].activated_abilities`; for Renata Glasc, Mastermind, index `0` draws and index `1` scores. The catalog supplies each ability's label, timing, energy/power cost, power domain, exhaust cost, source battlefield requirement, target restrictions, and whether it adds resources. This registry currently covers cards 230–239; existing Equip, resource-gear, Empower, and legend actions retain their own interfaces.
+Registered activations use a source object such as `{"type":"unit","player":0,"unit_id":12}` or `{"type":"gear","player":0,"gear_id":15}`. The source is distinct from the targets. `ability_index` is zero-based within that card's `catalog.cards[].activated_abilities`; for Renata Glasc, Mastermind, index `0` draws and index `1` scores. The catalog supplies each ability's label, timing, energy/power cost, power domain, exhaust cost, source battlefield requirement, target restrictions, whether it adds resources, recycling costs, source sacrifice, and conversion direction. Target restrictions distinguish units from gear and identify an “another” requirement. This registry currently covers cards 230–245; existing Equip, resource-gear, Empower, and legend actions retain their own interfaces.
 
 ```json
 {"type":"activate_ability","source":{"type":"unit","player":0,"unit_id":12},"ability_index":1,"targets":[]}
@@ -133,6 +137,12 @@ Registered activations use a source object such as `{"type":"unit","player":0,"u
 ```
 
 These action shapes require matching live objects and a legal timing window. Use `validate`, `quote_payment`, or `with_power_payment` as with card plays. Costs are paid before responses. Ordinary abilities enter the chain; Dragonsoul Sage's Reaction Add resolves immediately and can be used during a permitted payment choice. Its Reaction ability does not grant permission to play the unit as a Reaction.
+
+`activate_ability_with_costs` requires distinct, in-range positions from the controller's current trash. Garbage Grabber requires three cards; Assembly Rig requires one unit. These are costs, not targets, and move before responses. Divining Shells kills and exhausts itself as costs; its target remains a separate unit. Hextech Formula targets another gear object, including opposing or attached gear.
+
+Ancient Henge and Hextech Anomaly exhaust when activated, then create `decision.type:"resource_conversion"`. The decision includes the exact source, card/ability identity, direction (`energy_to_power` or `power_to_energy`), and `available`, the maximum currently payable amount. Conversion payment occurs during resolution. `resolve_conversion` with zero completes without refunding Exhaust; `choose` with `accept:false` has the same zero-payment meaning here. Anomaly can be wrapped in `with_power_payment` to preserve chosen colors and runes. Spell-only power cannot fund it.
+
+Other Add abilities and rune actions remain available during a conversion. A nested conversion must finish before its parent resumes. `resource_continuations` reports suspended tasks from outermost to innermost as `{player,task}` without exposing private decision payloads. These immediate abilities do not create a response window.
 
 For `play_from_trash_options`, `flow:"printed"` or `flow:"granted"` selects that exact available Flow instance. Omission or `null` uses an available payable instance. Explicit selection never falls back to another cost. A Flow choice cannot override an instructed Fizz/Last Rites replay and does not change the spell’s normal timing. Observed `flow_costs` lists trash indices with each instance’s source, energy, power, and whether power is colored. Quote and exact-payment commands preserve the selected instance.
 
@@ -164,7 +174,21 @@ Submit the original action inside a single payment wrapper:
 {"command":"apply","revision":4,"player":0,"action":{"type":"with_power_payment","action":{"type":"hide","hand_index":0,"lane":0},"payment":{"colored":[0,0,0,0,0,0],"any":1,"spell":0,"recycle":[0,0,0,0,0,0]}}}
 ```
 
-This example spends one generated flexible power to hide a card while preserving colored power and runes. The battlefield and card must satisfy the usual hiding rules. Use `validate` to check any proposed allocation. Nested payment wrappers are rejected, every count must be an integer from 0 to 255, and both arrays must contain six counts. Every rejected payment preserves game state and revision. Quoted sources are only valid for the current match revision.
+This example spends one generated flexible power to hide a card while preserving colored power and runes. The battlefield and card must satisfy the usual hiding rules. Use `validate` to check any proposed allocation. Nested payment wrappers are rejected. Generated power counts (`colored`, `any`, and `spell`) must be integers from 0 to 65535; `recycle` rune counts remain integers from 0 to 255. Both arrays must contain six counts. Every rejected payment preserves game state and revision. Quoted sources are only valid for the current match revision.
+
+## Using abilities during a fixed payment
+
+Use `begin_payment` when the intended action needs resources from Add abilities, especially when consuming a source would change a discount. Select targets and optional costs first. The engine fixes the resulting obligations; subsequent resource actions do not recalculate that cost. For example, using Empowered Gold while paying for Shock Blast preserves the discount established before the Gold leaves.
+
+```json
+{"type":"begin_payment","action":{"type":"play_card_targets","hand_index":0,"targets":[{"type":"unit","player":1,"unit_id":7}]}}
+{"type":"activate_gear","gear_id":15}
+{"type":"complete_payment"}
+```
+
+Each action is a separate `apply` request with the current revision and acting player. `begin_payment` cannot wrap another payment, an exact-power wrapper, or `complete_payment`. Quote `complete_payment` after generating the resources, then wrap that completion in `with_power_payment` if exact source selection is wanted.
+
+The top-level `payment_plan` remains available during nested conversions. It contains `player`, fixed `energy`, ordered `power` obligations, a public `pending_card` ID when it moved a card from its source zone, and the normalized `action` for the acting player only (`null` for the opponent). Count `pending_card` once for physical-card conservation; its source zone already excludes it. An instructed card already listed in `pending_card_plays` has no second payment-plan card. The action retains its originally selected source index; it is an intent description, not an index into the temporarily shortened zone. `decision.type:"payment"` also reports `can_cancel`. Targets and choices remain fixed, but the engine checks their legality again when completing. If the attempt cannot complete, `choose` with `accept:false` restores the entire pre-attempt state, including resource abilities used during it and any original mandatory decision. It cannot skip that decision, and a fully payable legal attempt cannot be cancelled.
 
 ## Observations and decisions
 

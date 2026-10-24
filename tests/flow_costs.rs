@@ -116,7 +116,7 @@ fn quote_and_exact_payment_use_the_chosen_flow_instance() {
         .quote_power_payment(&action(Some(FlowSource::Printed)))
         .unwrap();
     assert_eq!(printed.suggested.colored[0], 1);
-    assert_eq!(printed.costs.iter().map(|c| c.amount).sum::<u8>(), 1);
+    assert_eq!(printed.costs.iter().map(|c| c.amount).sum::<u16>(), 1);
     let granted = game
         .quote_power_payment(&action(Some(FlowSource::Granted)))
         .unwrap();

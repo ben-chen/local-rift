@@ -6366,6 +6366,141 @@
         "Renata Glasc",
         "Zaun"
       ]
+    },
+    {
+      "id": 240,
+      "name": "Garbage Grabber",
+      "official_id": "ogn-099-298",
+      "energy": 2,
+      "power": 0,
+      "might": 0,
+      "domains": [
+        "Mind"
+      ],
+      "kind": "Gear",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/199f21237aeee2582904463a15ec62ce29452c10-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "Recycle 3 from your trash, [1 Energy], [Exhaust]: Draw 1.",
+      "official_text_html": "<p>Recycle 3 from your trash, :rb_energy_1:, :rb_exhaust:: Draw 1.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": []
+    },
+    {
+      "id": 241,
+      "name": "Assembly Rig",
+      "official_id": "sfd-019-221",
+      "energy": 4,
+      "power": 0,
+      "might": 0,
+      "domains": [
+        "Fury"
+      ],
+      "kind": "Gear",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/40ae6f61f1a0b5d65d91e3bb3fd2a0dad9148208-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[1 Energy][Fury Power], Recycle a unit from your trash, [Exhaust]: Play a 3 Might Mech unit token to your base.",
+      "official_text_html": "<p>:rb_energy_1::rb_rune_fury:, Recycle a unit from your trash, :rb_exhaust:: Play a 3 :rb_might: Mech unit token to your base.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": []
+    },
+    {
+      "id": 242,
+      "name": "Divining Shells",
+      "official_id": "unl-161-219",
+      "energy": 2,
+      "power": 0,
+      "might": 0,
+      "domains": [
+        "Order"
+      ],
+      "kind": "Gear",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/f2b626602f5db047b96cf9112474d42bf5b483e7-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Vision] (When you play this, look at the top card of your Main Deck. You may recycle it.)\n[Action][>] Kill this, [Exhaust]: Give a unit +2 Might this turn.",
+      "official_text_html": "<p>[Vision] (When you play this, look at the top card of your Main Deck. You may recycle it.)<br />[Action][&gt;] Kill this, :rb_exhaust:: Give a unit +2 :rb_might: this turn.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Action",
+        "Vision"
+      ],
+      "tags": []
+    },
+    {
+      "id": 243,
+      "name": "Hextech Formula",
+      "official_id": "ven-062-166",
+      "energy": 2,
+      "power": 0,
+      "might": 0,
+      "domains": [
+        "Mind"
+      ],
+      "kind": "Gear",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/95f4ee0625dda4213847e6649465397be03c8bd1-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "This enters exhausted.\n[Exhaust]: Empower another gear. (It becomes Empowered if it's not already.)",
+      "official_text_html": "<p>This enters exhausted.<br />:rb_exhaust:: Empower another gear. (It becomes Empowered if it's not already.)</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": []
+    },
+    {
+      "id": 244,
+      "name": "Ancient Henge",
+      "official_id": "sfd-117-221",
+      "energy": 2,
+      "power": 1,
+      "might": 0,
+      "domains": [
+        "Body"
+      ],
+      "kind": "Gear",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/c7c260b77b4174a61aed6243ed90f76594102193-744x1039.png?w=320&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Exhaust]: [Reaction] — Pay any amount of Energy to [Add] that much [Any Power]. (Abilities that add resources can't be reacted to.)",
+      "official_text_html": "<p>:rb_exhaust:: [Reaction] — Pay any amount of Energy to [Add] that much :rb_rune_rainbow:. (Abilities that add resources can't be reacted to.)</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Add",
+        "Reaction"
+      ],
+      "tags": []
+    },
+    {
+      "id": 245,
+      "name": "Hextech Anomaly",
+      "official_id": "sfd-083-221",
+      "energy": 3,
+      "power": 1,
+      "might": 0,
+      "domains": [
+        "Mind"
+      ],
+      "kind": "Gear",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/32a46943778755e2b6210e5adb4507780f08e2c8-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Exhaust]: [Reaction] — Pay any amount of [Any Power] to [Add] that much Energy. (Abilities that add resources can't be reacted to.)",
+      "official_text_html": "<p>:rb_exhaust:: [Reaction] — Pay any amount of :rb_rune_rainbow: to [Add] that much Energy. (Abilities that add resources can't be reacted to.)</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Add",
+        "Reaction"
+      ],
+      "tags": []
     }
   ],
   "official_text_note": "Official card/legend rules text from the Riot Card Gallery, retrieved 2026-10-24 and corrected by cited errata. Resource icon tokens are expanded to readable bracketed names. Raw card and equipment HTML is preserved separately. Official text does not establish full implementation fidelity."

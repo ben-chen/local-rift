@@ -94,7 +94,7 @@ impl Game {
         if rules::equipment(card_id).is_some_and(|rule| rule.quick_draw) {
             self.request_on_play_target(player, card_id, id, None);
         }
-        self.gear_play_completed(player, card_id, false);
+        self.gear_play_completed(player, card_id, id, false);
         Ok(())
     }
 
@@ -114,7 +114,7 @@ impl Game {
             "{} creates a Gold gear token.",
             self.players[player].name
         ));
-        self.gear_play_completed(player, 13, true);
+        self.gear_play_completed(player, 13, id, true);
         id
     }
 
@@ -158,11 +158,11 @@ impl Game {
         }
         let rule = rules::equipment(gear.card_id).unwrap();
         let state = &self.players[player];
-        if state.energy < rule.equip_energy {
+        if self.payment_energy_available(player) < rule.equip_energy.into() {
             return Err(format!("Equip needs {} energy.", rule.equip_energy));
         }
         let available = self.available_power(player, Some(rule.equip_domain));
-        if available < rule.equip_power {
+        if available < rule.equip_power.into() {
             return Err(format!(
                 "Equip needs {} {} power.",
                 rule.equip_power,
@@ -219,8 +219,8 @@ impl Game {
             return Err("Choose different cards that are still in your trash.".into());
         }
         // Pay energy first so the same rune may be exhausted and then recycled.
-        self.pay_energy(player, rule.equip_energy);
-        self.spend_power(player, Some(rule.equip_domain), rule.equip_power)?;
+        self.pay_energy(player, rule.equip_energy.into());
+        self.spend_power(player, Some(rule.equip_domain), rule.equip_power.into())?;
         if !distinct.is_empty() {
             self.recycle_cards(player, &distinct);
         }
@@ -296,16 +296,18 @@ impl Game {
             let ability = rules::resource_gear(card_id).expect("validated resource gear");
             self.players[player].energy_pool = self.players[player]
                 .energy_pool
-                .saturating_add(ability.energy);
-            self.players[player].energy =
-                self.players[player].energy.saturating_add(ability.energy);
+                .saturating_add(ability.energy.into());
+            self.players[player].energy = self.players[player]
+                .energy
+                .saturating_add(ability.energy.into());
             if let Some(domain) = ability.domain {
                 let slot = domain_index(domain);
                 self.players[player].power_pool[slot] =
-                    self.players[player].power_pool[slot].saturating_add(ability.power);
+                    self.players[player].power_pool[slot].saturating_add(ability.power.into());
             } else {
-                self.players[player].any_power =
-                    self.players[player].any_power.saturating_add(ability.power);
+                self.players[player].any_power = self.players[player]
+                    .any_power
+                    .saturating_add(ability.power.into());
             }
             self.push_log(format!(
                 "{} exhausts {} to add {} energy and {} {}power.",
@@ -324,6 +326,7 @@ impl Game {
 
     /// Power available from legal immediate resource abilities. Energy-only
     /// gear cannot pay Deflect or any other power requirement.
+    #[cfg(test)]
     pub(crate) fn gear_available_power(&self, player: usize) -> u8 {
         self.players.get(player).map_or(0, |state| {
             state
@@ -616,7 +619,7 @@ mod tests {
         game.players[player].runes = [0; 6];
         game.players[player].exhausted_runes = [0; 6];
         game.players[player].runes[domain_index(domain)] = count;
-        game.players[player].energy = count;
+        game.players[player].energy = u16::from(count);
     }
 
     fn gear(game: &mut Game, player: usize, card_id: usize) -> u32 {
@@ -1011,7 +1014,10 @@ mod tests {
         .unwrap();
         assert!(game.players[0].discard.is_empty());
         assert_eq!(game.players[0].units.len(), 2);
-        assert_eq!(game.players[0].energy, energy - game.catalog[25].cost);
+        assert_eq!(
+            game.players[0].energy,
+            energy - u16::from(game.catalog[25].cost)
+        );
         assert!(!game.players[0].units.last().unwrap().ready);
     }
 

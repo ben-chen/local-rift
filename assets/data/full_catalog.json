@@ -144,16 +144,16 @@
     "unresolved_type_conflict_identities": 23,
     "implemented_legal_by_kind": {
       "battlefield": 4,
-      "gear": 38,
+      "gear": 44,
       "legend": 7,
       "rune": 6,
       "spell": 66,
       "unit": 136
     },
-    "implemented_main_cards": 240,
+    "implemented_main_cards": 246,
     "implemented_legends": 7,
-    "implemented_legal_identities": 257,
-    "unimplemented_legal_identities": 822,
+    "implemented_legal_identities": 263,
+    "unimplemented_legal_identities": 816,
     "errata_entries": 67,
     "identities_with_errata": 67,
     "source_quality_issues": 37
@@ -161,8 +161,8 @@
   "unimplemented_by_observed_keyword": {
     "ADD": 1,
     "Accelerate": 22,
-    "Action": 78,
-    "Add": 27,
+    "Action": 77,
+    "Add": 25,
     "Ambush": 11,
     "Assault": 18,
     "Backline": 2,
@@ -182,7 +182,7 @@
     "Mighty": 10,
     "Predict": 5,
     "Quick-Draw": 3,
-    "Reaction": 83,
+    "Reaction": 81,
     "Repeat": 14,
     "Shield": 15,
     "Show Off": 6,
@@ -190,7 +190,7 @@
     "Tank": 25,
     "Temporary": 22,
     "Unique": 3,
-    "Vision": 8,
+    "Vision": 7,
     "Weaponmaster": 12
   },
   "cards": [
@@ -840,8 +840,10 @@
       "rules_text_status": "official_gallery_printing_text",
       "conflicting_fields": [],
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 244,
+        "official_id": "sfd-117-221",
+        "playable_in_client": true
       }
     },
     {
@@ -1360,8 +1362,10 @@
       "rules_text_status": "official_gallery_printing_text",
       "conflicting_fields": [],
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 241,
+        "official_id": "sfd-019-221",
+        "playable_in_client": true
       }
     },
     {
@@ -5922,8 +5926,10 @@
       "rules_text_status": "official_gallery_printing_text",
       "conflicting_fields": [],
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 242,
+        "official_id": "unl-161-219",
+        "playable_in_client": true
       }
     },
     {
@@ -8805,8 +8811,10 @@
       "rules_text_status": "official_gallery_printing_text",
       "conflicting_fields": [],
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 240,
+        "official_id": "ogn-099-298",
+        "playable_in_client": true
       }
     },
     {
@@ -10202,8 +10210,10 @@
       "rules_text_status": "official_gallery_printing_text",
       "conflicting_fields": [],
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 245,
+        "official_id": "sfd-083-221",
+        "playable_in_client": true
       }
     },
     {
@@ -10246,8 +10256,10 @@
       "rules_text_status": "official_gallery_printing_text",
       "conflicting_fields": [],
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 243,
+        "official_id": "ven-062-166",
+        "playable_in_client": true
       }
     },
     {

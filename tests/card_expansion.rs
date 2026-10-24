@@ -131,7 +131,7 @@ fn five_vanilla_units_keep_empty_text_and_enter_exhausted_without_fake_triggers(
         assert_eq!(entered.lane, None);
         assert!(!entered.ready);
         assert_eq!(game.unit_might(entered), card.might);
-        assert_eq!(game.players[0].energy, 24 - card.cost);
+        assert_eq!(game.players[0].energy, 24 - u16::from(card.cost));
         assert!(game.chain.is_empty());
         assert!(game.decision.is_none());
     }

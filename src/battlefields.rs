@@ -129,7 +129,7 @@ impl Game {
         if lane >= 2 || self.battlefields[lane] != 0 {
             return Err("That field has no optional Sunken Temple trigger.".into());
         }
-        if self.players[player].energy < 1 {
+        if self.payment_energy_available(player) < 1 {
             return Err("Sunken Temple needs 1 energy to draw a card.".into());
         }
         self.pay_energy(player, 1);

@@ -56,6 +56,7 @@ pub(super) struct EventSnapshot {
     pub player: usize,
     pub subject_player: usize,
     pub unit: Option<Unit>,
+    pub gear_id: Option<u32>,
     pub card_id: Option<CardId>,
     pub token: bool,
     pub hidden: bool,
@@ -66,6 +67,7 @@ impl EventSnapshot {
     pub(super) fn unit(kind: Occurrence, player: usize, unit: Unit) -> Self {
         Self {
             kind,
+            gear_id: None,
             player,
             subject_player: player,
             card_id: Some(unit.card_id),
@@ -79,6 +81,7 @@ impl EventSnapshot {
     pub(super) fn simple(kind: Occurrence, player: usize) -> Self {
         Self {
             kind,
+            gear_id: None,
             player,
             subject_player: player,
             unit: None,
@@ -165,7 +168,12 @@ impl Game {
             Occurrence::UnitPlayed | Occurrence::GearPlayed | Occurrence::SpellPlayed
         ) && !event.token;
         let event_ok = match rule.event {
-            Event::SelfPlayed => same && event.kind == Occurrence::UnitPlayed,
+            Event::SelfPlayed => {
+                (same && event.kind == Occurrence::UnitPlayed)
+                    || (event.gear_id.is_some()
+                        && event.gear_id == source.gear_id
+                        && event.kind == Occurrence::GearPlayed)
+            }
             Event::FriendlyUnitPlayed => own && event.kind == Occurrence::UnitPlayed,
             Event::FriendlyGearPlayed => own && event.kind == Occurrence::GearPlayed,
             Event::FriendlySpellPlayed => own && event.kind == Occurrence::SpellPlayed,
@@ -300,10 +308,19 @@ impl Game {
                     continue;
                 }
                 if self.event_matches(source, rule, &event) {
-                    let subject = event.unit.as_ref().map(|u| Target::Unit {
-                        player: event.subject_player,
-                        unit_id: u.id,
-                    });
+                    let subject = event
+                        .unit
+                        .as_ref()
+                        .map(|u| Target::Unit {
+                            player: event.subject_player,
+                            unit_id: u.id,
+                        })
+                        .or_else(|| {
+                            event.gear_id.map(|gear_id| Target::Gear {
+                                player: event.subject_player,
+                                gear_id,
+                            })
+                        });
                     self.queue_card_trigger(
                         card_id,
                         rule_index,
@@ -372,20 +389,32 @@ impl Game {
         event.hidden = hidden;
         self.emit_event(event);
     }
-    pub(crate) fn gear_play_completed(&mut self, player: usize, card_id: CardId, token: bool) {
-        self.emit_play_event(
-            Occurrence::GearPlayed,
-            player,
-            card_id,
-            token,
-            self.trigger_state.hidden_play,
-        );
+    pub(crate) fn gear_play_completed(
+        &mut self,
+        player: usize,
+        card_id: CardId,
+        gear_id: u32,
+        token: bool,
+    ) {
+        if !token {
+            self.trigger_state.completed_cards[player] += 1;
+        }
+        let mut event = EventSnapshot::simple(Occurrence::GearPlayed, player);
+        event.card_id = Some(card_id);
+        event.gear_id = Some(gear_id);
+        event.token = token;
+        event.hidden = self.trigger_state.hidden_play;
+        self.emit_event(event);
         if token {
             self.trigger_batch += 1;
         }
     }
     pub(crate) fn gear_ability_used(&mut self, player: usize) {
+        // Each completed use is a distinct chronological event, including
+        // nested Add abilities whose observers wait for the outer task.
+        self.trigger_batch += 1;
         self.emit_event(EventSnapshot::simple(Occurrence::GearActivated, player));
+        self.trigger_batch += 1;
     }
     pub(crate) fn buff_unit(&mut self, target: Target) {
         let Target::Unit { player, .. } = target else {
@@ -582,6 +611,10 @@ impl Game {
         ))
     }
     pub fn valid_trigger_target(&self, target: Target, prior: &[Target]) -> bool {
+        self.valid_trigger_target_mode(target, prior, true)
+    }
+
+    fn valid_trigger_target_mode(&self, target: Target, prior: &[Target], costs: bool) -> bool {
         let Some(Decision::TriggerTargets {
             card_id,
             rule_index,
@@ -602,8 +635,9 @@ impl Game {
         }
         let mut targets = prior.to_vec();
         targets.push(target);
-        self.available_power(context.source.player, None)
-            >= self.deflect_cost(context.source.player, &targets)
+        !costs
+            || self.available_power(context.source.player, None)
+                >= self.deflect_cost(context.source.player, &targets).into()
     }
     pub fn trigger_target_candidates(&self) -> Vec<Target> {
         self.players
@@ -618,6 +652,10 @@ impl Game {
             .collect()
     }
     pub(super) fn trigger_target_actions(&self) -> Vec<Action> {
+        self.trigger_target_actions_mode(true)
+    }
+
+    fn trigger_target_actions_mode(&self, costs: bool) -> Vec<Action> {
         let Some((max, min)) = self.trigger_target_bounds() else {
             return Vec::new();
         };
@@ -635,7 +673,7 @@ impl Game {
             let mut next = Vec::new();
             for prior in &sets {
                 for &target in &candidates {
-                    if self.valid_trigger_target(target, prior) {
+                    if self.valid_trigger_target_mode(target, prior, costs) {
                         let mut v = prior.clone();
                         v.push(target);
                         next.push(v);
@@ -686,19 +724,11 @@ impl Game {
         if !matches!(self.decision, Some(Decision::TriggerTargets { .. })) {
             return;
         }
-        let mut probe = self.clone();
-        // Additional resource abilities may be used during finalization.
-        let player = probe.priority();
-        let ids: Vec<_> = probe.players[player]
-            .gear
+        if !self
+            .trigger_target_actions_mode(false)
             .iter()
-            .filter(|g| probe.gear_can_activate(player, g.id))
-            .map(|g| g.id)
-            .collect();
-        for id in ids {
-            let _ = probe.gear_activate(player, id);
-        }
-        if probe.trigger_target_actions().is_empty() {
+            .any(|action| self.funded_action_witness(action).is_some())
+        {
             self.decision = None;
             self.push_log(
                 "A triggered ability cannot finalize because no payable legal targets remain."

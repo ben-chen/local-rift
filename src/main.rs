@@ -190,6 +190,13 @@ struct App {
     group: Vec<u32>,
     targets: Vec<Target>,
     ability_targets: Vec<Target>,
+    ability_costs: Vec<usize>,
+    conversion_amount: u16,
+    conversion_editor: Option<String>,
+    conversion_key: Option<String>,
+    resource_drafts: Vec<(String, ability_ui::UiDraft)>,
+    suspended_payments: Vec<ability_ui::SuspendedPayment>,
+    payment_origin: Option<ability_ui::UiDraft>,
     repeat_targets: Vec<Target>,
     editing_repeat: bool,
     destination: Option<usize>,
@@ -316,6 +323,13 @@ impl App {
             group: Vec::new(),
             targets: Vec::new(),
             ability_targets: Vec::new(),
+            ability_costs: Vec::new(),
+            conversion_amount: 0,
+            conversion_editor: None,
+            conversion_key: None,
+            resource_drafts: Vec::new(),
+            suspended_payments: Vec::new(),
+            payment_origin: None,
             repeat_targets: Vec::new(),
             editing_repeat: false,
             destination: None,
@@ -386,6 +400,11 @@ impl App {
         self.drag = None;
         self.hover_card = None;
         self.payment_draft = None;
+        self.suspended_payments.clear();
+        self.payment_origin = None;
+        self.resource_drafts.clear();
+        self.ability_costs.clear();
+        self.conversion_key = None;
         self.equipment_inspect = None;
         self.trigger_choice_key = None;
         self.show_journal = false;
@@ -413,6 +432,10 @@ impl App {
         self.toast_until = get_time() + 4.5;
     }
     fn action(&mut self, a: Action) {
+        if !self.suspended_payments.is_empty() && !self.resource_visit_action_allowed(&a) {
+            self.notify("Resume or cancel your saved payment before taking another action.");
+            return;
+        }
         if self.prefs.exact_payment
             && self.game.priority() == 0
             && !matches!(a, Action::WithPowerPayment { .. })
@@ -446,6 +469,9 @@ impl App {
         } else {
             &a
         };
+        let finishing_plan = matches!(self.game.decision, Some(Decision::Payment { .. }))
+            && matches!(inner, Action::CompletePayment | Action::Choose { .. });
+        let cancelling_plan = finishing_plan && matches!(inner, Action::Choose { accept: false });
         let preserve_selection = matches!(
             inner,
             Action::ActivateRune { .. }
@@ -456,13 +482,29 @@ impl App {
             inner,
             Action::ActivateGear { .. }
                 | Action::ActivateAbility { .. }
+                | Action::ActivateAbilityWithCosts { .. }
+                | Action::ResolveConversion { .. }
                 | Action::ActivateLegend { .. }
                 | Action::ActivateRune { .. }
                 | Action::RecycleRune { .. }
         ) && self.game.decision.is_some();
         match self.game.apply(a) {
             Ok(()) => {
+                if finishing_plan {
+                    self.suspended_payments.clear();
+                    self.resource_drafts.clear();
+                    let original = self.payment_origin.take();
+                    if cancelling_plan {
+                        if let Some(original) = original {
+                            self.restore_ui_draft(original);
+                        }
+                        return;
+                    }
+                }
                 if preserve_selection {
+                    return;
+                }
+                if adding_resource && self.restore_resource_draft() {
                     return;
                 }
                 if adding_resource
@@ -505,6 +547,29 @@ impl App {
             if is_key_pressed(KeyCode::Escape) {
                 self.payment_draft = None;
             }
+            return;
+        }
+        if self.conversion_editor.is_some() {
+            while let Some(character) = get_char_pressed() {
+                if (character.is_ascii_digit() || character == '-')
+                    && self.conversion_editor.as_ref().unwrap().len() < 6
+                {
+                    self.conversion_editor.as_mut().unwrap().push(character);
+                }
+            }
+            if is_key_pressed(KeyCode::Backspace) {
+                self.conversion_editor.as_mut().unwrap().pop();
+            }
+            if is_key_pressed(KeyCode::Escape) {
+                self.conversion_editor = None;
+            } else if is_key_pressed(KeyCode::Enter)
+                && let Err(error) = self.commit_conversion_editor()
+            {
+                self.notify(error);
+            }
+            return;
+        }
+        if !self.suspended_payments.is_empty() {
             return;
         }
         if self.screen == Screen::DeckEditor && self.inspect.is_none() {
@@ -710,6 +775,7 @@ impl App {
         self.rune_popover();
         self.battlefield_help();
         self.equipment_help();
+        self.suspended_payment_banner();
         self.payment_editor();
         self.legend_tooltip();
         self.draw_legend_picker();
@@ -1754,6 +1820,17 @@ impl App {
             }
             return;
         }
+        if matches!(decision, Decision::Payment { .. }) {
+            self.locked_payment_panel();
+            return;
+        }
+        if let Decision::ResourceConversion {
+            card_id, direction, ..
+        } = decision
+        {
+            self.conversion_panel(card_id, direction);
+            return;
+        }
         if let Decision::PendingPlay { pending_id, .. } = decision {
             if self.selection != Some(Selection::Pending(pending_id)) {
                 self.selection = Some(Selection::Pending(pending_id));
@@ -1916,7 +1993,7 @@ impl App {
             return;
         }
         let (title,body)=match &decision{
-            Decision::TriggerTargets{..}|Decision::CombatDamage{..}|Decision::TokenPlacement{..}|Decision::BattlefieldOrder{..}|Decision::RevivePlay{..}|Decision::PendingPlay{..}=>unreachable!(),
+            Decision::Payment{..}|Decision::ResourceConversion{..}|Decision::TriggerTargets{..}|Decision::CombatDamage{..}|Decision::TokenPlacement{..}|Decision::BattlefieldOrder{..}|Decision::RevivePlay{..}|Decision::PendingPlay{..}=>unreachable!(),
             Decision::TrashTarget{..}=>("Choose a trash target","Choose an eligible card below before this ability enters the chain. Opponents may respond before the chosen card is played.".into()),
             Decision::OptionalPlay{card_id,..}=>("Use this triggered ability?",format!("{} offers a play from your trash. Accept and choose the ability's target, or decline now. Choose the card's own targets and costs after the ability resolves.",self.game.catalog[*card_id].name)),
             Decision::ResolutionTargets{..}=>("Choose the location", "Responses separated your targets. Choose which legal group below this spell should affect.".into()),
@@ -2385,6 +2462,9 @@ impl App {
         }
     }
     fn other_tray(&mut self) {
+        if self.ability_cost_tray() {
+            return;
+        }
         if self.tray == Tray::Board {
             self.board_tray();
             return;
@@ -2463,8 +2543,11 @@ impl App {
                 self.selection == Some(Selection::Legend) && owner == 0,
             );
             if self.ui.clicked(r) && owner == 0 {
+                self.remember_resource_draft();
                 self.selection = Some(Selection::Legend);
-                self.targets.clear();
+                if !self.game.resource_payment_pending() {
+                    self.targets.clear();
+                }
             }
             self.ui
                 .rect(Rect::new(r.x + 2.0, r.y + 2.0, 136.0, 96.0), BG);
@@ -2555,6 +2638,51 @@ impl App {
                     9.0,
                     TEAL,
                 );
+                if !gear.is_gold() {
+                    self.ui
+                        .rect(Rect::new(r.x + 3.0, r.y + 127.0, r.w - 6.0, 48.0), PANEL);
+                    self.ui.text(
+                        if gear.ready { "READY" } else { "EXHAUSTED" },
+                        r.x + 9.0,
+                        r.y + 144.0,
+                        10.0,
+                        if gear.ready { TEAL } else { MUTED },
+                    );
+                    self.ui.text(
+                        if self.game.unit_empowered(gear.id) {
+                            "EMPOWERED GEAR"
+                        } else if gear.attached_to.is_some() {
+                            "Attached equipment"
+                        } else {
+                            "In base"
+                        },
+                        r.x + 9.0,
+                        r.y + 165.0,
+                        9.0,
+                        if self.game.unit_empowered(gear.id) {
+                            GOLD
+                        } else {
+                            MUTED
+                        },
+                    );
+                }
+                let target = Target::Gear {
+                    player: owner,
+                    gear_id: gear.id,
+                };
+                if self.ability_target_candidate(target) {
+                    self.ui.border(r, TEAL);
+                    self.ui.pill(
+                        r.x + 8.0,
+                        r.y + 37.0,
+                        if self.ability_targets.contains(&target) {
+                            "TARGETED"
+                        } else {
+                            "TARGET"
+                        },
+                        TEAL,
+                    );
+                }
                 let source = AbilitySource::Gear {
                     player: owner,
                     gear_id: gear.id,
@@ -2585,9 +2713,12 @@ impl App {
                             gear_id: gear.id,
                         }];
                     } else if owner == 0 {
+                        self.remember_resource_draft();
                         self.selection = Some(Selection::Gear(gear.id));
-                        self.targets.clear();
-                        self.choices.clear();
+                        if !self.game.resource_payment_pending() {
+                            self.targets.clear();
+                            self.choices.clear();
+                        }
                     }
                 }
                 if self.ui.hover(r) {
@@ -2703,6 +2834,29 @@ impl App {
         let Some(decision) = self.game.decision.clone() else {
             return false;
         };
+        if matches!(
+            decision,
+            Decision::Payment { .. } | Decision::ResourceConversion { .. }
+        ) {
+            if let Some(card_id) = self
+                .game
+                .payment_plan_view(0)
+                .and_then(|plan| plan.pending_card)
+            {
+                self.ui
+                    .text("PENDING CARD · COST FIXED", 780.0, 671.0, 10.0, GOLD);
+                let r = self.tile(card_id, 0, self.game.catalog[card_id].name, true);
+                self.ui.pill(r.x + 8.0, r.y + 8.0, "BEING PAID", GOLD);
+                if self.ui.hover(r) {
+                    self.hover_candidate = Some(card_id);
+                }
+                if self.ui.hover(r) && self.ui.secondary_pressed() {
+                    self.inspect = Some(card_id);
+                }
+                return true;
+            }
+            return false;
+        }
         if matches!(decision, Decision::TriggerTargets { .. }) {
             self.board_tray();
             return true;
@@ -4182,7 +4336,22 @@ impl App {
         }
     }
     fn payment_action_name(&self, action: &Action) -> String {
+        if matches!(action, Action::CompletePayment)
+            && let Some(view) = self.game.payment_plan_view(0)
+        {
+            if let Some(id) = view.pending_card {
+                return self.game.catalog[id].name.to_owned();
+            }
+            if let Some(original) = view.action {
+                return self.payment_action_name(&original);
+            }
+        }
         if let Action::ActivateAbility {
+            source,
+            ability_index,
+            ..
+        }
+        | Action::ActivateAbilityWithCosts {
             source,
             ability_index,
             ..
@@ -4190,6 +4359,9 @@ impl App {
             && let Some((id, rule)) = self.ability_rule(*source, *ability_index)
         {
             return format!("{} · {}", self.game.catalog[id].name, rule.label);
+        }
+        if let Action::ResolveConversion { amount } = action {
+            return format!("Convert {amount} power into energy");
         }
         let card_id = match action {
             Action::PlayCard { hand_index, .. }
@@ -4226,15 +4398,17 @@ impl App {
         self.payment_draft = None;
         self.apply_action(action);
     }
-    fn payment_counter(
+    fn payment_counter<T: Copy + Into<u32> + TryFrom<u32>>(
         &self,
         x: f32,
         y: f32,
         label: &str,
         color: Color,
-        selected: &mut u8,
-        available: u8,
+        selected: &mut T,
+        available: T,
     ) {
+        let value: u32 = (*selected).into();
+        let available: u32 = available.into();
         self.ui.text(
             label,
             x,
@@ -4242,28 +4416,26 @@ impl App {
             11.0,
             if available > 0 { color } else { MUTED },
         );
-        if self.ui.button(
-            Rect::new(x + 166.0, y, 27.0, 28.0),
-            "-",
-            false,
-            *selected > 0,
-        ) {
-            *selected = selected.saturating_sub(1);
+        if self
+            .ui
+            .button(Rect::new(x + 166.0, y, 27.0, 28.0), "-", false, value > 0)
+        {
+            *selected = T::try_from(value.saturating_sub(1)).ok().unwrap();
         }
         self.ui.text(
-            &format!("{} / {available}", *selected),
+            &format!("{value} / {available}"),
             x + 202.0,
             y + 20.0,
-            11.0,
+            if available > 99 { 9.0 } else { 11.0 },
             TEXT,
         );
         if self.ui.button(
             Rect::new(x + 260.0, y, 27.0, 28.0),
             "+",
             false,
-            *selected < available,
+            value < available,
         ) {
-            *selected += 1;
+            *selected = T::try_from(value + 1).ok().unwrap();
         }
     }
     fn payment_editor(&mut self) {
@@ -4358,7 +4530,21 @@ impl App {
             &mut draft.chosen.spell,
             draft.quote.available.spell,
         );
-        self.ui.wrapped_lines("Recycled runes return to the rune deck. Exhausted runes are used first; ready runes can store energy before recycling.",738.0,545.0,285.0,11.0,MUTED,3);
+        self.ui.wrapped_lines(
+            "Recycled runes return to the rune deck. Exhausted runes are used first.",
+            738.0,
+            545.0,
+            285.0,
+            11.0,
+            MUTED,
+            2,
+        );
+        let generate = self.ui.button(
+            Rect::new(738.0, 581.0, 287.0, 28.0),
+            "Generate resources · keep this payment",
+            false,
+            true,
+        );
         let required = draft.quote.suggested.total();
         self.ui.bold(
             &format!("{} / {required} power selected", draft.chosen.total()),
@@ -4396,6 +4582,10 @@ impl App {
             self.toast_until = 0.0;
         }
         self.payment_draft = Some(draft.clone());
+        if generate {
+            self.suspend_payment();
+            return;
+        }
         if self.ui.button(
             Rect::new(388.0, 692.0, 184.0, 34.0),
             "Cancel  [ESC]",
@@ -4721,6 +4911,10 @@ impl App {
             self.selection_panel();
         }
         if self.game.phase == Phase::Playing
+            && !matches!(
+                self.game.decision,
+                Some(Decision::Payment { .. } | Decision::ResourceConversion { .. })
+            )
             && self.ui.button(
                 Rect::new(1178.0, 574.0, 212.0, 44.0),
                 if self.game.chain.is_empty() && self.game.showdown.is_none() {
@@ -5164,10 +5358,51 @@ impl App {
                             }
                         }
                     }
-                    let affordable =
-                        (from_trash || pending.is_some() || self.game.can_afford(0, &card))
-                            && self.game.card_supported(card_id)
-                            && (flows.len() < 2 || self.flow_source.is_some());
+                    let action = if pending.is_some() {
+                        Action::FinalizePendingPlay {
+                            lane: self.destination,
+                            targets: self.targets.clone(),
+                            repeat_targets: self.repeat_targets.clone(),
+                            repeat: self.options.repeat,
+                            accelerate: self.options.accelerate,
+                            bonus: self.options.bonus,
+                        }
+                    } else if from_trash {
+                        Action::PlayFromTrashOptions {
+                            trash_index: index,
+                            flow: self.flow_source,
+                            lane: self.destination,
+                            targets: self.targets.clone(),
+                            repeat_targets: self.repeat_targets.clone(),
+                            repeat: self.options.repeat,
+                            accelerate: self.options.accelerate,
+                            bonus: self.options.bonus,
+                        }
+                    } else if champion {
+                        Action::PlayChampionOptions {
+                            lane: self.destination,
+                            target: self.targets.first().copied(),
+                            accelerate: self.options.accelerate,
+                        }
+                    } else {
+                        Action::PlayCardOptions {
+                            hand_index: index,
+                            lane: self.destination,
+                            targets: self.targets.clone(),
+                            repeat_targets: self.repeat_targets.clone(),
+                            repeat: self.options.repeat,
+                            accelerate: self.options.accelerate,
+                            bonus: self.options.bonus,
+                        }
+                    };
+                    let payable_now = self.game.clone().apply(action.clone()).is_ok()
+                        && self.game.card_supported(card_id)
+                        && (flows.len() < 2 || self.flow_source.is_some());
+                    let begin_payment = !payable_now
+                        && self.game.card_supported(card_id)
+                        && (flows.len() < 2 || self.flow_source.is_some())
+                        && self.can_begin_payment(&action);
+                    let affordable = payable_now || begin_payment;
                     let label = if selecting_revive {
                         "Choose this unit to revive"
                     } else if card.kind == CardKind::Unit {
@@ -5181,48 +5416,19 @@ impl App {
                     };
                     if self.ui.button(
                         Rect::new(1178.0, 493.0, 212.0, 34.0),
-                        label,
+                        if begin_payment {
+                            "Begin payment · use resources"
+                        } else {
+                            label
+                        },
                         false,
                         affordable,
                     ) {
-                        let action = if pending.is_some() {
-                            Action::FinalizePendingPlay {
-                                lane: self.destination,
-                                targets: self.targets.clone(),
-                                repeat_targets: self.repeat_targets.clone(),
-                                repeat: self.options.repeat,
-                                accelerate: self.options.accelerate,
-                                bonus: self.options.bonus,
-                            }
-                        } else if from_trash {
-                            Action::PlayFromTrashOptions {
-                                trash_index: index,
-                                flow: self.flow_source,
-                                lane: self.destination,
-                                targets: self.targets.clone(),
-                                repeat_targets: self.repeat_targets.clone(),
-                                repeat: self.options.repeat,
-                                accelerate: self.options.accelerate,
-                                bonus: self.options.bonus,
-                            }
-                        } else if champion {
-                            Action::PlayChampionOptions {
-                                lane: self.destination,
-                                target: self.targets.first().copied(),
-                                accelerate: self.options.accelerate,
-                            }
+                        if begin_payment {
+                            self.begin_ui_payment(action);
                         } else {
-                            Action::PlayCardOptions {
-                                hand_index: index,
-                                lane: self.destination,
-                                targets: self.targets.clone(),
-                                repeat_targets: self.repeat_targets.clone(),
-                                repeat: self.options.repeat,
-                                accelerate: self.options.accelerate,
-                                bonus: self.options.bonus,
-                            }
-                        };
-                        self.action(action);
+                            self.action(action);
+                        }
                     }
                     if !affordable {
                         self.ui.text(
@@ -5546,6 +5752,9 @@ impl App {
                     self.tray == *tray,
                     true,
                 ) {
+                    if matches!(tray, Tray::Loadout | Tray::Board) {
+                        self.remember_resource_draft();
+                    }
                     self.tray = *tray;
                     self.hand_scroll = 0;
                     if !matches!(self.selection, Some(Selection::Ability(..)))
@@ -5553,7 +5762,7 @@ impl App {
                             || (*tray == Tray::Trash && self.gear_owner == 1)
                             || !matches!(self.selection, Some(Selection::Gear(_))))
                         || matches!(self.selection, Some(Selection::Ability(..)))
-                            && !matches!(tray, Tray::Board | Tray::Loadout)
+                            && !matches!(tray, Tray::Board | Tray::Loadout | Tray::Trash)
                     {
                         self.selection = None;
                         if !matches!(self.game.decision, Some(Decision::TriggerTargets { .. })) {
@@ -5714,15 +5923,26 @@ impl App {
             }
         }
         if len == 0 {
+            let payment_waiting = self.game.resource_payment_pending();
             self.ui.title(
-                "An empty hand. A board full of possibility.",
+                if payment_waiting {
+                    "A resource choice is waiting."
+                } else {
+                    "An empty hand. A board full of possibility."
+                },
                 270.0,
                 757.0,
                 23.0,
                 MUTED,
             );
             self.ui.text(
-                "Move your ready units, or end your turn to draw.",
+                if payment_waiting && self.game.priority()==0 {
+                    "Use Board or Loadout for Add abilities, then finish the payment or conversion."
+                } else if payment_waiting {
+                    "Your opponent is choosing resources. Play continues when the payment is finished."
+                } else {
+                    "Move your ready units, or end your turn to draw."
+                },
                 270.0,
                 789.0,
                 12.0,
@@ -6758,7 +6978,7 @@ async fn main() {
                     && player.total_runes() >= 6
                     && player.runes.iter().filter(|count| **count > 0).count() >= 2
                     && player.energy >= 2
-                    && player.energy < player.total_runes()
+                    && player.energy < u16::from(player.total_runes())
                     && player.units.len() >= 2
                     && (!gear_preview || player.gear.iter().any(|gear| gear.attached_to.is_some()))
                     && preview_game.players[1].units.len() <= 3

@@ -15,21 +15,18 @@ pub const POWER_DOMAINS: [Domain; 6] = [
 /// that many channelled runes; the other entries spend already generated power.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct PowerPayment {
-    pub colored: [u8; 6],
-    pub any: u8,
-    pub spell: u8,
+    pub colored: [u16; 6],
+    pub any: u16,
+    pub spell: u16,
     pub recycle: [u8; 6],
 }
 
 impl PowerPayment {
-    pub fn total(&self) -> u16 {
-        self.colored
-            .iter()
-            .chain(&self.recycle)
-            .map(|&n| u16::from(n))
-            .sum::<u16>()
-            + u16::from(self.any)
-            + u16::from(self.spell)
+    pub fn total(&self) -> u32 {
+        self.colored.iter().map(|&n| u32::from(n)).sum::<u32>()
+            + self.recycle.iter().map(|&n| u32::from(n)).sum::<u32>()
+            + u32::from(self.any)
+            + u32::from(self.spell)
     }
     fn contains(&self, other: &Self) -> bool {
         self.any >= other.any
@@ -53,13 +50,13 @@ impl PowerPayment {
             self.recycle[d] += other.recycle[d];
         }
     }
-    fn available(&self, domains: &[Domain], spell: bool) -> u8 {
+    fn available(&self, domains: &[Domain], spell: bool) -> u16 {
         domains.iter().fold(
             self.any.saturating_add(if spell { self.spell } else { 0 }),
             |n, &d| {
                 let d = domain_index(d);
                 n.saturating_add(self.colored[d])
-                    .saturating_add(self.recycle[d])
+                    .saturating_add(u16::from(self.recycle[d]))
             },
         )
     }
@@ -68,7 +65,7 @@ impl PowerPayment {
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct PowerCost {
     pub domains: Vec<Domain>,
-    pub amount: u8,
+    pub amount: u16,
     pub spell_eligible: bool,
 }
 
@@ -123,7 +120,8 @@ impl Game {
                 .iter()
                 .zip(state.exhausted_runes)
                 .map(|(all, used)| all - used)
-                .sum::<u8>();
+                .map(u16::from)
+                .sum::<u16>();
         self.push_log(format!(
             "{} recycles a {} {} rune for power.",
             self.players[player].name,
@@ -205,8 +203,12 @@ impl Game {
             .unwrap_or_else(|| self.power_sources(player))
     }
 
-    pub(crate) fn power_available(&self, player: usize, domains: &[Domain], spell: bool) -> u8 {
-        self.permitted_sources(player).available(domains, spell)
+    pub(crate) fn power_available(&self, player: usize, domains: &[Domain], spell: bool) -> u16 {
+        if self.payment_bypasses_cost_checks(player) {
+            u16::MAX
+        } else {
+            self.permitted_sources(player).available(domains, spell)
+        }
     }
 
     /// Every power cost goes through this function, including abilities, Hidden,
@@ -216,9 +218,12 @@ impl Game {
         &mut self,
         player: usize,
         domains: &[Domain],
-        amount: u8,
+        amount: u16,
         spell: bool,
     ) -> Result<(), String> {
+        if self.payment_record_power(player, domains, amount, spell) {
+            return Ok(());
+        }
         let sources = self.permitted_sources(player);
         if sources.available(domains, spell) < amount {
             return Err(
@@ -250,8 +255,8 @@ impl Game {
                 } else {
                     sources.recycle[d] - used.recycle[d]
                 };
-                let paid = remaining.min(count);
-                used.recycle[d] += paid;
+                let paid = remaining.min(u16::from(count));
+                used.recycle[d] += paid as u8;
                 remaining -= paid;
             }
         }
@@ -268,7 +273,7 @@ impl Game {
             state.exhausted_runes[d] -= exhausted;
             state.runes[d] -= used.recycle[d];
             // A ready rune may exhaust for energy before it is recycled.
-            state.energy_pool += used.recycle[d] - exhausted;
+            state.energy_pool += u16::from(used.recycle[d] - exhausted);
             for _ in 0..used.recycle[d] {
                 state.rune_deck.insert(0, domain);
             }
@@ -279,7 +284,8 @@ impl Game {
                 .iter()
                 .zip(state.exhausted_runes)
                 .map(|(all, used)| all - used)
-                .sum::<u8>();
+                .map(u16::from)
+                .sum::<u16>();
         if let Some(context) = self.payment.as_mut().filter(|p| p.player == player) {
             if let Some(budget) = &mut context.remaining {
                 budget.subtract(&used);

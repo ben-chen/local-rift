@@ -31,22 +31,22 @@ pub struct RuneSlot {
 pub struct RuneReserve {
     pub slots: [Option<RuneSlot>; 12],
     pub ready: u8,
-    pub stored_energy: u8,
+    pub stored_energy: u16,
     pub exhausted: u8,
     pub in_deck: u8,
-    pub power: [u8; 6],
-    pub any_power: u8,
-    pub spell_power: u8,
+    pub power: [u16; 6],
+    pub any_power: u16,
+    pub spell_power: u16,
 }
 
 impl RuneReserve {
     pub fn new(
         runes: [u8; 6],
         exhausted: [u8; 6],
-        power: [u8; 6],
-        any_power: u8,
-        spell_power: u8,
-        stored_energy: u8,
+        power: [u16; 6],
+        any_power: u16,
+        spell_power: u16,
+        stored_energy: u16,
     ) -> Self {
         let mut slots = [None; 12];
         let mut occupied = 0;
@@ -399,8 +399,7 @@ impl Ui {
             TEXT,
         );
         self.bold(
-            &reserve
-                .ready
+            &u16::from(reserve.ready)
                 .saturating_add(reserve.stored_energy)
                 .to_string(),
             r.x + 12.0,
@@ -779,6 +778,30 @@ mod resource_tests {
             (6, 6, 0)
         );
         assert!(reserve.slots.iter().all(Option::is_some));
+    }
+    #[test]
+    fn generated_resources_above_255_keep_their_full_value() {
+        let reserve = RuneReserve::new(
+            [2, 0, 0, 0, 0, 0],
+            [1, 0, 0, 0, 0, 0],
+            [300, 0, 0, 0, 0, 0],
+            900,
+            700,
+            1000,
+        );
+        assert_eq!(
+            (reserve.ready, reserve.exhausted, reserve.in_deck),
+            (1, 1, 10)
+        );
+        assert_eq!(reserve.power[0], 300);
+        assert_eq!(
+            (
+                reserve.any_power,
+                reserve.spell_power,
+                reserve.stored_energy
+            ),
+            (900, 700, 1000)
+        );
     }
     #[test]
     fn stored_energy_is_separate_from_ready_rune_orientation() {

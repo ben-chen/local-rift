@@ -154,7 +154,7 @@ pub fn effect(id: usize) -> OfficialEffect {
     match id {
         // These permanents have reviewed activated abilities in activated.rs,
         // not automatic effects when the card is played.
-        230..=239 => None,
+        230..=245 => None,
         0 | 2 | 13 | 17 | 18 | 20 | 22 | 24 | 25 | 30 | 31 | 34 | 43 | 45 | 46 | 47 | 49 | 54
         | 56 | 59 | 60 | 68 | 69 | 70 | 71 | 72 | 73 => None,
         1 => Counter(CounterKind::Abandon),
@@ -761,6 +761,11 @@ pub enum Mechanic {
 pub fn requirements(id: usize) -> &'static [Mechanic] {
     use Mechanic::*;
     match id {
+        240 => &[Gear, Chain, ActivatedAbilities],
+        241 => &[Gear, Chain, ActivatedAbilities, Tokens],
+        242 => &[Gear, Chain, ActivatedAbilities, Predict],
+        243 => &[Gear, Chain, ActivatedAbilities, Empower],
+        244 | 245 => &[Gear, ActivatedAbilities, ResourceAbilities],
         230 | 232 | 234 => &[Gear, Chain, ActivatedAbilities],
         231 => &[Gear, Chain, ActivatedAbilities, NegativeMight],
         233 | 237 | 239 => &[Chain, ActivatedAbilities],
@@ -1061,7 +1066,7 @@ pub enum StaticAbility {
 pub fn static_abilities(id: usize) -> &'static [StaticAbility] {
     use StaticAbility::*;
     match id {
-        232 => &[EntersExhausted],
+        232 | 243 => &[EntersExhausted],
         233 => &[EntersReady],
         // Caitlyn spells out the exact Backline assignment restriction.
         238 => &[Backline],
@@ -1359,10 +1364,10 @@ pub fn token_spec(id: usize) -> Option<TokenSpec> {
             deflect: false,
             tag: Some("Bilgewater"),
         }),
-        54 | 138 => Some(TokenSpec {
+        54 | 138 | 241 => Some(TokenSpec {
             name: "Mech",
             might: 3,
-            count: if id == 138 { 1 } else { 2 },
+            count: if id == 54 { 2 } else { 1 },
             is_gear: false,
             deflect: false,
             tag: Some("Mech"),
@@ -1413,7 +1418,7 @@ mod tests {
     #[test]
     fn all_catalog_entries_have_official_classification() {
         let cards = cards();
-        assert_eq!(cards.len(), 240);
+        assert_eq!(cards.len(), 246);
         for card in cards {
             assert_ne!(
                 effect(card.id),
@@ -1423,7 +1428,7 @@ mod tests {
             );
             assert_ne!(support_status(card.id), SupportStatus::UnknownCard);
         }
-        assert_eq!(effect(240), OfficialEffect::Unsupported);
+        assert_eq!(effect(246), OfficialEffect::Unsupported);
     }
 
     #[test]

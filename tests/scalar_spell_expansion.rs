@@ -342,7 +342,7 @@ fn sky_splitter_cost_uses_highest_current_might_without_changing_printed_cost() 
         cast(&mut game, 226, vec![t(1, 101)]);
         assert_eq!(
             game.players[0].energy,
-            40 - 8_u8.saturating_sub(friendly_might)
+            40 - u16::from(8_u8.saturating_sub(friendly_might))
         );
         assert_eq!(game.catalog[226].cost, 8);
         settle(&mut game);
