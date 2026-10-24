@@ -216,6 +216,7 @@ fn flow_fixture(app: &mut App, granted: bool) {
     app.toast_until = 0.0;
     app.tray = super::Tray::Trash;
     app.gear_owner = 0;
+    app.banish_view = false;
     app.hand_scroll = 0;
     app.prefs.exact_payment = true;
 }
@@ -8238,15 +8239,141 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
             capture(app, "RIFT_SMOKE_C14_RESOLVED_SCREENSHOT");
         }
         810 => {
+            expansion_fixture(app, 378);
+            app.game.players[1].units = vec![public_unit(14000, 374, Some(0))];
+            app.game.players[1].gear = vec![GearState {
+                id: 14001,
+                card_id: 10,
+                attached_to: Some(14000),
+                ready: false,
+                temporary: false,
+                token: false,
+            }];
+            let current = app.game.unit_might(&app.game.players[1].units[0]).unwrap();
+            app.game.players[1].units[0].temporary_buff = 3 - i64::try_from(current).unwrap();
+            app.game
+                .apply(Action::PlayCardWithTargets {
+                    hand_index: 0,
+                    lane: None,
+                    targets: vec![Target::Unit {
+                        player: 1,
+                        unit_id: 14000,
+                    }],
+                })
+                .unwrap();
+            finish_chain_until_choice(app);
+            assert!(app.game.players[1].banish.contains(&374));
+            assert!(app.game.decision.is_none());
+            assert_eq!(app.game.players[1].gear[0].attached_to, None);
+            assert!(!app.game.players[1].gear[0].ready);
+            click(app, 500.0, 663.0); // Trash browser.
+        }
+        811 => {
+            click(app, 855.0, 663.0);
+        }
+        812 => {
+            click(app, 930.0, 663.0);
+        }
+        813 => {
+            assert!(app.banish_view && app.gear_owner == 1);
+            assert!(app.selection.is_none());
+            capture(app, "RIFT_SMOKE_C15_BANISH_BROWSER_SCREENSHOT");
+            click(app, 315.0, 760.0);
+        }
+        814 => {
+            assert_eq!(app.inspect, Some(374));
+            assert!(app.selection.is_none());
+            capture(app, "RIFT_SMOKE_C15_BANISH_INSPECT_SCREENSHOT");
+            click(app, 960.0, 704.0);
+        }
+        815 => {
+            assert!(app.inspect.is_none());
+            click(app, 855.0, 663.0);
+        }
+        816 => {
+            assert!(app.banish_view && app.gear_owner == 0);
+            capture(app, "RIFT_SMOKE_C15_EMPTY_BANISH_SCREENSHOT");
+            click(app, 930.0, 663.0);
+        }
+        817 => {
+            assert!(!app.banish_view);
+            capture(app, "RIFT_SMOKE_C15_TRASH_RESTORED_SCREENSHOT");
+            expansion_fixture(app, 376);
+            app.game.players[0].units = vec![public_unit(14010, 25, Some(0))];
+            app.game
+                .apply(Action::PlayCardWithTargets {
+                    hand_index: 0,
+                    lane: Some(0),
+                    targets: vec![],
+                })
+                .unwrap();
+            finish_chain_until_choice(app);
+        }
+        818 => {
+            assert!(matches!(
+                app.game.decision,
+                Some(Decision::TriggerTargets { card_id: 376, .. })
+            ));
+            capture(app, "RIFT_SMOKE_C15_APOTHECARY_CHOICE_SCREENSHOT");
+            click(app, 710.0, 663.0); // Board.
+        }
+        819 => {
+            click(app, 465.0, 760.0);
+        } // Apothecary is second own unit.
+        820 => {
+            assert_eq!(app.targets.len(), 1);
+            let Target::Unit { unit_id, .. } = app.targets[0] else {
+                panic!()
+            };
+            assert!(
+                app.game.players[0]
+                    .units
+                    .iter()
+                    .any(|u| u.id == unit_id && u.card_id == 376)
+            );
+            capture(app, "RIFT_SMOKE_C15_APOTHECARY_SELF_SCREENSHOT");
+            click(app, 1285.0, 510.0);
+        }
+        821 => {
+            finish_chain_until_choice(app);
+            assert!(app.game.players[0].hand.contains(&376));
+            assert_eq!(app.game.players[0].units.len(), 1);
+            expansion_fixture(app, 377);
+            app.game.players[0].units = vec![public_unit(14020, 25, Some(0))];
+            // Replace one ready rune with a rune in the deck, retaining the total.
+            let d = domain_index(Domain::Mind);
+            app.game.players[0].runes[d] -= 1;
+            app.game.players[0].energy -= 1;
+            app.game.players[0].rune_deck = vec![Domain::Mind];
+            app.game
+                .apply(Action::PlayCardWithTargets {
+                    hand_index: 0,
+                    lane: None,
+                    targets: vec![Target::Unit {
+                        player: 0,
+                        unit_id: 14020,
+                    }],
+                })
+                .unwrap();
+            finish_chain_until_choice(app);
+        }
+        822 => {
+            let d = domain_index(Domain::Mind);
+            assert!(app.game.players[0].hand.contains(&25));
+            assert_eq!(app.game.players[0].runes[d], 12);
+            assert_eq!(app.game.players[0].exhausted_runes[d], 2); // Pay one, Channel one exhausted.
+            capture(app, "RIFT_SMOKE_C15_RETREAT_RUNES_SCREENSHOT");
+        }
+        823 => {
             app.ui.input_override = None;
             app.ui.pointer_override = None;
             app.ui.wheel_override = None;
             println!(
-                "PASS: 811 native UI frames including captured death-location choices, mixed unit/gear draft retention, and side victory tracks at zero, midgame, last-point pressure and eight for both seats, optional gear triggers, attached targets, retained choices across Loadouts, printed Energy limits, and mixed gear/unit targets, ordered Hidden targets and prefix editing, distinct Sprite child drafts, live Temporary and Petal previews, simultaneous Beginning expiry and new-token survival, plus all previous 765 controls."
+                "PASS: 824 native UI frames including direct Banish without death replacement, both Banish browsers and card inspection, Apothecary self-return, Retreat exhausted Channel, and all previous 811 controls including side victory tracks and mixed unit/gear choices."
             );
             return true;
         }
-        _ => panic!("UI smoke runner exceeded its 811-frame script"),
+        _ => panic!("UI smoke runner exceeded its 824-frame script"),
     }
     false
 }

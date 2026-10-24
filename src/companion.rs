@@ -325,6 +325,13 @@ fn checked_advice(game: &Game, level: AdviceLevel) -> Result<Vec<&'static str>, 
         }
     }
 
+    if human.hand.iter().any(|id| matches!(id, 376..=378)) {
+        tips.push(if beginner {
+            "Retreat returns your unit and channels a rune exhausted. Wind and Ghosts banishes small units without triggering Deathknell; larger units return to hand."
+        } else {
+            "Keep Retreat or Apothecary for a threatened unit. Wind and Ghosts checks Might on resolution: a response can change whether its target is banished or returned."
+        });
+    }
     if human.hand.iter().any(|id| matches!(id, 372 | 373 | 375)) {
         tips.push(if beginner {
             "Return to hand does not kill, so Deathknell does not trigger. Tokens disappear; gear detaches when its unit leaves. Recall instead moves a unit to base."
@@ -756,6 +763,10 @@ fn response_window_advice(
             Decision::ResourceConversion { .. } => vec![
                 "Choose how much to convert. The gear is already exhausted. Zero finishes without adding resources; your original payment stays waiting.",
                 "Other Add abilities can supply this payment. Keep the energy and colored power needed for the original action, not just the conversion.",
+            ],
+            Decision::TriggerTargets { card_id: 376, .. } => vec![
+                "Apothecary can return one friendly unit at any battlefield, including itself. Choose a highlighted unit or decline; a returned token disappears.",
+                "Returning a unit can save its card from a response, but removes its board presence. Attached gear stays on the board and detaches. This does not trigger Deathknell.",
             ],
             Decision::TriggerTargets { card_id: 374, .. } => vec![
                 "Mournful Spirit remembers where it died. Choose a highlighted unit on the Board or gear in a Loadout at that location, then confirm. You may decline.",

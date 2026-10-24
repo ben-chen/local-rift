@@ -5863,6 +5863,14 @@ impl Game {
                 let Target::Unit { player: owner, .. } = target else {
                     continue;
                 };
+                if effect == OfficialEffect::ReturnAndChannel {
+                    candidates.push((self.friendly_return_score(actor, target)?, target));
+                    continue;
+                }
+                if let OfficialEffect::BanishSmallOrReturn { maximum } = effect {
+                    candidates.push((self.banish_or_return_score(actor, target, maximum)?, target));
+                    continue;
+                }
                 let hostile = matches!(
                     effect,
                     OfficialEffect::GiveTemporary
@@ -6136,6 +6144,7 @@ impl Game {
                 _ => {}
             }
             match rules::effect(id) {
+                OfficialEffect::BanishSmallOrReturn { .. } => unit.lane.is_some(),
                 OfficialEffect::GiveTemporary => unit.lane.is_some(),
                 OfficialEffect::Kill {
                     battlefield_only,
@@ -6337,26 +6346,7 @@ impl Game {
     }
 
     fn bounce(&mut self, target: Target) {
-        let Target::Unit { player, unit_id } = target else {
-            return;
-        };
-        if let Some(index) = self.players[player]
-            .units
-            .iter()
-            .position(|u| u.id == unit_id)
-        {
-            self.empowered_units.retain(|&id| id != unit_id);
-            self.granted_temporary_units.retain(|&id| id != unit_id);
-            self.gear_unit_left_board(player, unit_id);
-            let unit = self.players[player].units.remove(index);
-            self.push_log(format!(
-                "{} returns to its owner's hand.",
-                self.unit_name(&unit)
-            ));
-            if !unit.token {
-                self.players[player].hand.push(unit.card_id);
-            }
-        }
+        self.return_unit_to_hand(target);
     }
 
     fn resolve_play(
@@ -6638,6 +6628,27 @@ impl Game {
             valid.retain(|&target| self.target_location(target) == location);
         }
         match rules::effect(id) {
+            OfficialEffect::ReturnAndChannel => {
+                if let Some(&target) = valid.first()
+                    && let Some(owner) = self.return_unit_to_hand(target)
+                {
+                    self.channel_runes(owner, 1, true);
+                }
+            }
+            OfficialEffect::BanishSmallOrReturn { maximum } => {
+                if let Some(&target) = valid.first() {
+                    let small = self
+                        .unit_ref(target)
+                        .map(|unit| self.unit_might(unit))
+                        .transpose()?
+                        .is_some_and(|might| might <= u64::from(maximum));
+                    if small {
+                        self.banish_unit_directly(target);
+                    } else {
+                        self.return_unit_to_hand(target);
+                    }
+                }
+            }
             OfficialEffect::ReturnGear => self.return_board_targets(&valid),
             OfficialEffect::ReturnAllBoard => {
                 let targets = self.board_objects();
@@ -8105,6 +8116,26 @@ impl Game {
                 let preferred = match decision {
                     Decision::TriggerTargets {
                         player,
+                        card_id: 376,
+                        ..
+                    } => {
+                        let mut scored = Vec::new();
+                        for action in &actions {
+                            let Action::ChooseTriggerTargets { targets } = action else {
+                                continue;
+                            };
+                            let value = targets.iter().try_fold(0_i128, |sum, &target| {
+                                Ok::<_, String>(sum + self.friendly_return_score(*player, target)?)
+                            })?;
+                            scored.push((value, action));
+                        }
+                        scored
+                            .into_iter()
+                            .max_by_key(|(value, _)| *value)
+                            .map(|(_, action)| action.clone())
+                    }
+                    Decision::TriggerTargets {
+                        player,
                         card_id: 366..=369,
                         ..
                     } => actions
@@ -8513,6 +8544,23 @@ impl Game {
                 .prepare_targets(actor, id, None, &[])
                 .unwrap_or_default();
             match rules::effect(id) {
+                OfficialEffect::ReturnAndChannel => targets
+                    .first()
+                    .map_or(Ok::<_, String>(0), |&target| {
+                        Ok(self.friendly_return_score(actor, target)?
+                            + if self.players[actor].rune_deck.is_empty() {
+                                0
+                            } else {
+                                40
+                            })
+                    })?
+                    .max(0),
+                OfficialEffect::BanishSmallOrReturn { maximum } => targets
+                    .first()
+                    .map_or(Ok(0), |&target| {
+                        self.banish_or_return_score(actor, target, maximum)
+                    })?
+                    .max(0),
                 OfficialEffect::ReturnGear => targets
                     .first()
                     .map_or(Ok(0), |&target| self.return_target_score(actor, target))?,

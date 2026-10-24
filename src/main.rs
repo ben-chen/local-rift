@@ -219,6 +219,7 @@ struct App {
     destination: Option<usize>,
     tray: Tray,
     gear_owner: usize,
+    banish_view: bool,
     choices: Vec<usize>,
     predict_draft: Option<predict_ui::PredictDraft>,
     options: PlayOptions,
@@ -388,6 +389,7 @@ impl App {
             destination: None,
             tray: Tray::Hand,
             gear_owner: 0,
+            banish_view: false,
             choices: Vec::new(),
             predict_draft: None,
             options: PlayOptions::default(),
@@ -3157,11 +3159,12 @@ impl App {
             self.tray_scroll(gears.len(), 4);
         } else {
             if self.ui.button(
-                Rect::new(780.0, 648.0, 152.0, 29.0),
-                if self.gear_owner == 0 {
-                    "Your trash  >"
-                } else {
-                    "AI trash  >"
+                Rect::new(780.0, 648.0, 98.0, 29.0),
+                match (self.gear_owner, self.banish_view) {
+                    (0, false) => "Your trash >",
+                    (0, true) => "Your banish >",
+                    (_, false) => "AI trash >",
+                    (_, true) => "AI banish >",
                 },
                 false,
                 true,
@@ -3170,8 +3173,22 @@ impl App {
                 self.hand_scroll = 0;
                 self.selection = None;
             }
+            if self.ui.button(
+                Rect::new(884.0, 648.0, 92.0, 29.0),
+                "Banish",
+                self.banish_view,
+                true,
+            ) {
+                self.banish_view = !self.banish_view;
+                self.hand_scroll = 0;
+                self.selection = None;
+            }
             let owner = self.gear_owner;
-            let cards = self.game.players[owner].discard.clone();
+            let cards = if self.banish_view {
+                self.game.players[owner].banish.clone()
+            } else {
+                self.game.players[owner].discard.clone()
+            };
             self.hand_scroll = self.hand_scroll.min(cards.len().saturating_sub(6));
             for (slot, (index, id)) in cards
                 .iter()
@@ -3180,11 +3197,12 @@ impl App {
                 .take(6)
                 .enumerate()
             {
-                let chosen = self.choices.contains(&index)
-                    || self.selection == Some(Selection::Trash(index));
+                let chosen = !self.banish_view
+                    && (self.choices.contains(&index)
+                        || self.selection == Some(Selection::Trash(index)));
                 let r = self.tile(*id, slot, self.game.catalog[*id].name, chosen);
                 if self.ui.clicked(r) {
-                    if owner == 1 {
+                    if owner == 1 || self.banish_view {
                         self.inspect = Some(*id);
                     } else if matches!(self.selection, Some(Selection::Gear(_))) {
                         if let Some(i) = self.choices.iter().position(|x| *x == index) {
@@ -3211,10 +3229,11 @@ impl App {
             self.tray_scroll(cards.len(), 6);
             if cards.is_empty() {
                 self.ui.title(
-                    if owner == 0 {
-                        "Your trash is empty."
-                    } else {
-                        "The opponent's trash is empty."
+                    match (owner, self.banish_view) {
+                        (0, false) => "Your trash is empty.",
+                        (0, true) => "You have no banished cards.",
+                        (_, false) => "The opponent's trash is empty.",
+                        (_, true) => "The opponent has no banished cards.",
                     },
                     270.0,
                     757.0,
@@ -6611,6 +6630,9 @@ impl App {
                         self.remember_resource_draft();
                     }
                     self.tray = *tray;
+                    if *tray == Tray::Trash {
+                        self.banish_view = false;
+                    }
                     self.hand_scroll = 0;
                     let selecting_play_target = matches!(tray, Tray::Loadout | Tray::Board)
                         && self.selected_card_id().is_some_and(|card_id| {

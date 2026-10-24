@@ -236,7 +236,7 @@ These interactions have focused runtime/API tests and complete legal-home AI gam
 
 ## Remaining fidelity limits
 
-Eight supported legends, eleven battlefield choices, and 376 main-deck cards are available through the four supplied presets and custom deck editor. The additional cards preserve all preset and training recipes; add them through the custom deck editor where eligible. There is no sideboarding, tournament match structure, multiplayer mode, or full card-set coverage. The presets are dated tournament lists, not a ranking of the current metagame.
+Eight supported legends, eleven battlefield choices, and 379 main-deck cards are available through the four supplied presets and custom deck editor. The additional cards preserve all preset and training recipes; add them through the custom deck editor where eligible. There is no sideboarding, tournament match structure, multiplayer mode, or full card-set coverage. The presets are dated tournament lists, not a ranking of the current metagame.
 
 The desktop and bot API expose exact damage allocations and power-source payments. The default automatic payment remains available; energy can be prepared by exhausting chosen rune domains before a play. These controls share engine validation, but broader card and interaction coverage is still required.
 
@@ -263,3 +263,5 @@ Factory Recall returns one gear, including attached equipment, to hand. Returnin
 Angler Beast returns all units with current Might of two or less when its play ability resolves. It checks the complete set before any returned aura can change another unit’s Might. Targeting protection and Deflect do not apply because this effect does not choose targets.
 
 Mournful Spirit records where it actually died, then offers an optional unit-or-gear target at that location. Either base remains distinct from the other base. Its own detached gear is now in base, which can change its eligibility. The target must still be at the recorded location when the ability resolves. Unit protection, Deflect and death replacements remain applicable; gear is a separate target. The Board and Loadout tabs retain the choice, and the companion explains the location rule.
+
+Retreat returns a friendly unit and then its owner channels one rune exhausted. A token disappears but still supplies its owner; an unavailable target does not cause Channel. Grim Apothecary can Ambush and optionally return a friendly unit at any battlefield, including itself. Wind and Ghosts chooses a unit at a battlefield, then checks its current Might: at most three is banished, otherwise returned to hand. Banish is separate from Kill and bypasses death prevention and Deathknell. Use Trash → Banish to inspect either player’s banished cards.

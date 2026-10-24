@@ -5738,6 +5738,51 @@ pub fn cards() -> Vec<CardDef> {
             tags: &["Bilgewater"],
             art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/68872e2119146768f8fa113376876fa64699297d-744x1039.png?w=360&q=80&fm=png",
         },
+        CardDef {
+            id: 376,
+            official_id: "unl-021-219",
+            name: "Grim Apothecary",
+            cost: 3,
+            power_cost: 0,
+            might: 3,
+            domain: Domain::Fury,
+            domains: &[Domain::Fury],
+            kind: CardKind::Unit,
+            official_text: "[Ambush] (You may play me as a [Reaction] to a battlefield where you have units.)\nWhen you play me, you may return a friendly unit at a battlefield to its owner's hand.",
+            keywords: &["Ambush", "Reaction"],
+            tags: &["Noxus"],
+            art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/af548bbfc856e306c5feefb34eb6bd9a4e442904-744x1039.png?w=360&q=80&fm=png",
+        },
+        CardDef {
+            id: 377,
+            official_id: "ogn-104-298",
+            name: "Retreat",
+            cost: 1,
+            power_cost: 0,
+            might: 0,
+            domain: Domain::Mind,
+            domains: &[Domain::Mind],
+            kind: CardKind::Spell,
+            official_text: "[Reaction] (Play any time, even before spells and abilities resolve.)\nReturn a friendly unit to its owner's hand. Its owner channels 1 rune exhausted.",
+            keywords: &["Reaction"],
+            tags: &[],
+            art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/71ecf6c06d3110a81ac0f01c726c06921f479a13-744x1039.png?w=360&q=80&fm=png",
+        },
+        CardDef {
+            id: 378,
+            official_id: "ven-106-166",
+            name: "Wind and Ghosts",
+            cost: 3,
+            power_cost: 1,
+            might: 0,
+            domain: Domain::Chaos,
+            domains: &[Domain::Chaos],
+            kind: CardKind::Spell,
+            official_text: "[Action] (Play on your turn or in showdowns.)\nChoose a unit at a battlefield. If it has 3 Might or less, banish it. Otherwise, return it to its owner's hand.",
+            keywords: &["Action"],
+            tags: &[],
+            art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/ef118660422af84f6183d375b68ce1872acb1e2e-744x1039.png?w=360&q=80&fm=png",
+        },
     ]
 }
 
@@ -5902,7 +5947,7 @@ mod tests {
     #[test]
     fn presets_are_complete_and_references_are_consistent() {
         let catalog = cards();
-        assert_eq!(catalog.len(), 376);
+        assert_eq!(catalog.len(), 379);
         for (index, card) in catalog.iter().enumerate() {
             assert_eq!(index, card.id);
             assert!(!card.official_id.is_empty());

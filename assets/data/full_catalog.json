@@ -149,14 +149,14 @@
       "gear": 63,
       "legend": 8,
       "rune": 6,
-      "spell": 100,
-      "unit": 213
+      "spell": 102,
+      "unit": 214
     },
-    "implemented_main_cards": 376,
+    "implemented_main_cards": 379,
     "implemented_legends": 8,
     "implemented_battlefields": 11,
-    "implemented_legal_identities": 401,
-    "unimplemented_legal_identities": 678,
+    "implemented_legal_identities": 404,
+    "unimplemented_legal_identities": 675,
     "errata_entries": 67,
     "identities_with_errata": 67,
     "source_quality_issues": 43,
@@ -177,9 +177,9 @@
   "unimplemented_by_observed_keyword": {
     "ADD": 1,
     "Accelerate": 17,
-    "Action": 65,
+    "Action": 64,
     "Add": 23,
-    "Ambush": 11,
+    "Ambush": 10,
     "Assault": 15,
     "Backline": 2,
     "Buff": 10,
@@ -198,7 +198,7 @@
     "Mighty": 10,
     "Predict": 5,
     "Quick-Draw": 2,
-    "Reaction": 76,
+    "Reaction": 74,
     "Repeat": 11,
     "Shield": 13,
     "Show Off": 6,
@@ -14564,8 +14564,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 376,
+        "official_id": "unl-021-219",
+        "playable_in_client": true
       }
     },
     {
@@ -29322,8 +29324,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 377,
+        "official_id": "ogn-104-298",
+        "playable_in_client": true
       }
     },
     {
@@ -40709,8 +40713,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 378,
+        "official_id": "ven-106-166",
+        "playable_in_client": true
       }
     },
     {

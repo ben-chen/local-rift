@@ -294,11 +294,19 @@ Mournful Spirit uses the location recorded before its actual death under Core 38
 
 [Return regression tests](../src/board_returns/tests.rs), [public API tests](../src/api.rs), [reviewed facts](../tests/card_batch_sixteen.rs), and [C14 complete games](../tests/c14_matches.rs) cover the bounded family. Current supported cards do not transfer control of physical cards between players; the seat storing a card is still its owner. Future control-changing admissions require explicit ownership semantics before being enabled.
 
+### Linked return and direct Banish review (October 24, 2026)
+
+Grim Apothecary, Retreat and Wind and Ghosts use independently reviewed official faces in the [C15 evidence](../assets/data/card_admissions/c15/README.md). Core 359.3.e.12–14 and 359.3.f.2 distinguish an unavailable target from a target moved by the resolving instruction: Retreat retains the latter’s owner for Channel, including tokens, but ignores the linked Channel if the target mistargets. Core 431.2–3 supplies exhausted entry and partial Channel when the deck is empty. Core 428.2.a makes Banish separate from Kill, so Wind and Ghosts directly removes a legal battlefield target when its current referenced Might is at most three; it never offers Guardian Angel or emits Deathknell. Larger units return to hand. Might affects resolution, not target eligibility. Core 186 and 143.2.c govern token departure and negative Might references.
+
+Focused regressions cover physical identity, zone and battlefield changes in response, nested Retreat reactions, current Might across the branch boundary, protected and high-Might targets, equipment retention, exhausted rune accounting, and Apothecary self-return after Ambush. Public API checks cover target queries, quotes, invalid-action rollback and visibility of Banishment to both players. Current admitted cards do not transfer control; the stored seat remains the owner. Control-transfer cards still require complete ownership tracking before admission.
+
 ## Open questions and next audit targets
 
 These items are **not resolved by the passing examples**:
 
 - **Separate events within one resolving item:** RA-011 models pending token plays and their later entry events, while RA-005 preserves older pending groups during finalization. RA-012 extends the pending model to the included Fizz, Last Rites, and Matriarch instructions. A broader audit must still distinguish other separate instructions and future nested play effects; a single cleanup is not itself proof that all resulting triggers were simultaneous.
 - **Expanded card pool:** new keywords, replacement interactions, granted abilities, zone changes, and cards not in the original presets require dedicated executable behavior and tests. Importing their official text is not implementation coverage.
+- **Ownership and instructed plays:** no admitted card transfers control. Future control-changing effects need separate ownership throughout departures, zone targets, payments and instructed plays. Banish-and-replay cards must preserve the exact physical card and the player and location directed by the current erratum.
+- **Practice and metagame acceptance:** complete games and conservation checks do not establish current metagame relevance or expert opponent strength. Historical presets must be checked against dated competitive sources before being described as current meta decks. Matchup teaching and difficulty need evaluation against those complete lists as the supported pool expands.
 
 The audit read the original 69 card texts and the execution paths for targeting, pending triggers, death replacement, scoring, turn start/end, movement, combat, and resource payment. It did not exhaustively enumerate every pair or longer combination of those cards, and it did not audit the full currently legal card pool.

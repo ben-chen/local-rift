@@ -456,3 +456,6 @@ fn a_replaced_spirit_death_never_creates_its_deathknell() {
     assert!(g.decision.is_none());
     assert_eq!(g.unit_ref(spirit).unwrap().lane, None);
 }
+
+#[path = "c15.rs"]
+mod c15;

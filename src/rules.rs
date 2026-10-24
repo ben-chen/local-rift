@@ -68,6 +68,10 @@ pub struct PlayTargetSpec {
 pub enum OfficialEffect {
     ReturnGear,
     ReturnAllBoard,
+    ReturnAndChannel,
+    BanishSmallOrReturn {
+        maximum: u8,
+    },
     KillGear {
         controller_draw: u8,
     },
@@ -235,7 +239,9 @@ pub fn effect(id: usize) -> OfficialEffect {
     match id {
         372 => ReturnGear,
         373 => ReturnAllBoard,
-        374 | 375 => None,
+        374..=376 => None,
+        377 => ReturnAndChannel,
+        378 => BanishSmallOrReturn { maximum: 3 },
         362 | 364 => KillGear {
             controller_draw: if id == 362 { 2 } else { 0 },
         },
@@ -609,8 +615,8 @@ pub fn targeting(id: usize) -> Targeting {
     let allegiance = match id {
         290..=296 | 335 | 349 => Any,
         4 | 32 | 144 | 145 | 365 => Enemy,
-        362 | 364 | 372 => Any,
-        8 | 9 | 14 | 19 | 27 | 85 | 137 | 228 | 350 | 353 | 354 => Friendly,
+        362 | 364 | 372 | 378 => Any,
+        8 | 9 | 14 | 19 | 27 | 85 | 137 | 228 | 350 | 353 | 354 | 377 => Friendly,
         16 | 29 | 82 | 217 | 218 => Mixed,
         5 | 7 | 11 | 23 | 26 | 28 | 41 | 44 | 50 | 52 | 53 | 55 | 61 | 62 | 63 | 66 | 67 | 74
         | 75 | 76 | 79 | 80 | 81 | 83 | 99 | 135 | 136 | 141 | 142 | 143 | 146 | 216 | 219
@@ -644,6 +650,8 @@ pub fn target_bounds(id: usize) -> (usize, usize) {
         | Kill { .. }
         | KillGear { .. }
         | ReturnGear
+        | ReturnAndChannel
+        | BanishSmallOrReturn { .. }
         | KillEnemyDomain { .. }
         | Stun
         | GrantAssault(_) => (1, 1),
@@ -978,6 +986,8 @@ pub enum Mechanic {
     Temporary,
     SpellTriggers,
     BanishOnDeath,
+    Banish,
+    Channel,
     Legion,
     DelayedPlayGrants,
     BonusDamage,
@@ -991,6 +1001,9 @@ pub fn requirements(id: usize) -> &'static [Mechanic] {
         372 | 373 => &[Chain, Gear, Bounce],
         374 => &[Chain, Gear, DeathTriggers],
         375 => &[Chain, Bounce],
+        376 => &[Chain, Bounce, Ambush],
+        377 => &[Chain, Bounce, Channel],
+        378 => &[Chain, Bounce, Banish],
         362 | 363 | 365 | 366 | 367 => &[Chain, Gear],
         364 => &[Chain, Gear, Flow],
         368 | 369 => &[Chain, Gear, ConquerHoldTriggers],
@@ -1421,6 +1434,7 @@ pub enum StaticAbility {
 pub fn static_abilities(id: usize) -> &'static [StaticAbility] {
     use StaticAbility::*;
     match id {
+        376 => &[Ambush],
         367 => &[Shield(2)],
         371 => &[ControlsTagEnergyDiscount {
             tag: "Mech",
@@ -1855,7 +1869,7 @@ mod tests {
     #[test]
     fn all_catalog_entries_have_official_classification() {
         let cards = cards();
-        assert_eq!(cards.len(), 376);
+        assert_eq!(cards.len(), 379);
         for card in cards {
             assert_ne!(
                 effect(card.id),
@@ -1865,7 +1879,7 @@ mod tests {
             );
             assert_ne!(support_status(card.id), SupportStatus::UnknownCard);
         }
-        assert_eq!(effect(376), OfficialEffect::Unsupported);
+        assert_eq!(effect(379), OfficialEffect::Unsupported);
     }
 
     #[test]

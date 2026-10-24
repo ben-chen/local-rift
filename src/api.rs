@@ -1694,6 +1694,7 @@ fn decision_to_json(game: &Game, decision: &Decision, viewer: usize) -> Result<V
                 "context":trigger_context_to_json(context),"maximum":maximum,"required":required,
                 "target_rule":rule.map(|r|json!({"kind":targeting::target_kind(r.kind),
                     "allegiance":format!("{:?}",r.allegiance).to_lowercase(),
+                    "battlefield":r.battlefield,
                     "maximum_printed_energy":r.max_energy,
                     "here_basis":if r.here { Some(match r.here_basis {
                         crate::trigger_rules::HereLocationBasis::LiveSource => "live_source",
@@ -3996,5 +3997,105 @@ mod tests {
             pass_twice(&mut session);
             assert!(session.game.players[0].gear.is_empty());
         }
+    }
+    #[test]
+    fn retreat_api_quotes_without_mutation_and_channels_after_returned_token() {
+        let mut session = ability_position();
+        session.game.players[0].hand = vec![377];
+        session.game.players[0].units = vec![unit(901, None, 3)];
+        session.game.players[1].units = vec![unit(902, Some(0), 4)];
+        session.game.players[0].rune_deck = vec![Domain::Mind];
+        let target = json!({"type":"unit","player":0,"unit_id":901});
+        let action = json!({"type":"play_card_targets","hand_index":0,"targets":[target]});
+        let query = session.handle(
+            json!({"command":"target_candidates","revision":session.revision(),"player":0,
+            "action":{"type":"play_card_targets","hand_index":0,"targets":[]},"execution":0}),
+        );
+        assert_eq!(query["ok"], true, "{query}");
+        assert_eq!(query["result"]["candidates"], json!([target]));
+        rejected_wire_action(
+            &mut session,
+            json!({"type":"play_card_targets","hand_index":0,"targets":[{"type":"unit","player":1,"unit_id":902}]}),
+        );
+        quoted_wire_apply(&mut session, action);
+        pass_twice(&mut session);
+        for viewer in 0..2 {
+            let observed = session.observe(viewer).unwrap();
+            assert_eq!(observed["players"][0]["units"], json!([]));
+            assert_eq!(observed["players"][0]["banish"], json!([]));
+        }
+        assert!(session.game.players[0].hand.is_empty());
+        assert_eq!(session.game.players[0].runes[domain_index(Domain::Mind)], 1);
+        assert_eq!(
+            session.game.players[0].exhausted_runes[domain_index(Domain::Mind)],
+            1
+        );
+    }
+
+    #[test]
+    fn wind_and_ghosts_api_has_no_might_target_cap_and_exposes_banish_to_both_seats() {
+        let mut session = ability_position();
+        session.game.players[0].hand = vec![378];
+        session.game.players[0].power_pool = [3; 6];
+        let mut spirit = unit(903, Some(0), 0);
+        spirit.card_id = 374;
+        spirit.token = false;
+        session.game.players[1].units = vec![spirit, unit(904, Some(1), 100), unit(905, None, 2)];
+        let target = json!({"type":"unit","player":1,"unit_id":903});
+        let query = session.handle(
+            json!({"command":"target_candidates","revision":session.revision(),"player":0,
+            "action":{"type":"play_card_targets","hand_index":0,"targets":[]},"execution":0}),
+        );
+        assert_eq!(query["ok"], true, "{query}");
+        let candidates = query["result"]["candidates"].as_array().unwrap();
+        assert!(candidates.contains(&target));
+        assert!(candidates.contains(&json!({"type":"unit","player":1,"unit_id":904})));
+        assert!(!candidates.contains(&json!({"type":"unit","player":1,"unit_id":905})));
+        quoted_wire_apply(
+            &mut session,
+            json!({"type":"play_card_targets","hand_index":0,"targets":[target]}),
+        );
+        pass_twice(&mut session);
+        for viewer in 0..2 {
+            let observed = session.observe(viewer).unwrap();
+            assert_eq!(observed["players"][1]["banish"], json!([374]));
+            assert!(observed["decision"].is_null());
+        }
+        assert!(!session.game.players[1].discard.contains(&374));
+    }
+
+    #[test]
+    fn apothecary_api_exposes_optional_friendly_battlefield_choice() {
+        let mut session = ability_position();
+        session.game.players[0].hand = vec![376];
+        session.game.players[0].units = vec![unit(906, Some(0), 3)];
+        quoted_wire_apply(
+            &mut session,
+            json!({"type":"play_card_targets","hand_index":0,"targets":[]}),
+        );
+        if session.game.decision.is_none() {
+            pass_twice(&mut session);
+        }
+        let decision = session.observe(0).unwrap()["decision"].clone();
+        assert_eq!(decision["required"], 0);
+        assert_eq!(decision["target_rule"]["allegiance"], "friendly");
+        assert_eq!(decision["target_rule"]["battlefield"], true);
+        submit(
+            &mut session,
+            Action::ChooseTriggerTargets {
+                targets: vec![Target::Unit {
+                    player: 0,
+                    unit_id: 906,
+                }],
+            },
+        );
+        pass_twice(&mut session);
+        assert!(session.game.players[0].units.iter().all(|u| u.id != 906));
+        assert!(
+            session.game.players[0]
+                .units
+                .iter()
+                .any(|u| u.card_id == 376)
+        );
     }
 }
