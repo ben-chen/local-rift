@@ -1,6 +1,6 @@
 # Implemented rules and limitations
 
-**Local Rift is an unofficial, incomplete Riftbound client. This document describes its current behavior, not the complete tabletop game.** Full official card text appears in hover previews and pinned inspectors. All 308 bundled main-deck cards have executable printed-effect mappings. An official description in the catalog and a passing simulation are not proof of complete tabletop equivalence.
+**Local Rift is an unofficial, incomplete Riftbound client. This document describes its current behavior, not the complete tabletop game.** Full official card text appears in hover previews and pinned inspectors. All 334 bundled main-deck cards have executable printed-effect mappings. An official description in the catalog and a passing simulation are not proof of complete tabletop equivalence.
 
 For physical play, use Riot's [Rules Hub](https://playriftbound.com/en-us/rules-hub/), current errata, and printed card text. The core timing reference used here is the [October 9, 2026 Core Rules](https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/5c7946f7c3b8c6e0faff85ab6dadc6d2e721ea94.pdf). [SOURCES.md](SOURCES.md) records the card and deck sources.
 
@@ -79,7 +79,7 @@ Gear remains on the board and normally enters ready at base; Iron Ballista expli
 
 Equip is an activated ability with its own power and additional costs. It enters the chain and can be answered. Quick-Draw permits the gear card's reaction timing and creates its free attachment trigger; it does not make an ordinary Equip activation a Reaction. Last Rites asks you to choose two trash cards to recycle for Equip, and its attached unit’s conquest or hold trigger can offer a unit play from trash with normal costs.
 
-The gear implementation includes Boots of Swiftness's might/Ganking, Guardian Angel's heal-and-recall death replacement, the errata-corrected Zhonya's Hourglass replacement, Seal of Discord's generated Chaos power, and expendable Gold tokens that generate flexible power. Temporary gear is removed at the appropriate beginning; attached equipment's own rules text is inactive while attached.
+The gear implementation includes Boots of Swiftness's might/Ganking, Guardian Angel's heal-and-recall death replacement, the errata-corrected Zhonya's Hourglass replacement, Seal of Discord's generated Chaos power, and expendable Gold tokens that generate flexible power. Temporary gear is removed through its beginning-step ability. Attached equipment's printed rules text is inactive, but granted rules text remains active: attaching gear affected by Turn to Dust does not prevent its Temporary expiration. The inspector distinguishes the two origins.
 
 When multiple death replacements apply, the affected unit's controller chooses which one to use, including Guardian Angel, Zhonya's Hourglass, and Smite's banishment. Remaining replacements are checked again if applicable. Last Rites uses a triggered-ability chain before its optional unit choice, and Hourglass can use Hidden. Check the inspector and [errata provenance](SOURCES.md).
 
@@ -177,6 +177,18 @@ A unit with positive damage at least equal to its current might is defeated. A z
 
 Crimson Pigeons gains its bonus while attacking with another friendly unit at that location. Wielder of Water gains its bonus while attacking or defending alone. These conditions require actual combat and count friendly tokens, stunned or exhausted units, and units with zero Might. Captain Farron and Taric continuously grant their printed keyword to other friendly units at their current location; they do not grant it to themselves. Moving or removing the source updates the bonus. The inspector identifies each contributing source separately.
 
+## Global instructions and live equipment effects
+
+The Ruination kills all units at both bases and battlefields as one explicit instruction. Death replacements apply to the original set of units; choosing one replacement does not recompute that set. A repeated execution performs a new Kill instruction, so a unit saved by the first execution can die in the next. The physical spell remains on the chain while replacement choices and all executions finish. New lethal damage caused by a lost aura is handled by subsequent cleanup.
+
+Mobilize and Catalyst of Aeons channel available runes exhausted. Mobilize draws only if it channels none; Catalyst draws once if it channels fewer than two, including when one rune was available and successfully channeled. Exhausted runes contribute to controlled-rune thresholds without supplying ready Energy. Raucous Anthem readies friendly units and gives them temporary Might; an already-ready unit still receives the bonus without producing a Ready event. Unchecked Power exhausts friendly units at bases and fields, then damages every unit at a battlefield.
+
+The live inspector distinguishes actual Buff counters from temporary Might and Empower. Wizened Elder and Bilgewater Bully require a Buff counter. Trusty Ramhound checks for another friendly unit at its current location without requiring combat. Soul Shepherd benefits friendly unit tokens, including tokens played later. Master Yi, Meditative counts all controlled runes, while Targonian Visionary and Soul Sword use current XP. An attached Soul Sword grants its ordinary +1 Might plus another +1 at Level3; separate copies stack, and detaching removes their benefits.
+
+Hunter’s Machete grants Hunt to its bearer. Printed and granted Hunt values add together into one ability each time that unit Conquers or Holds. The ability captures its amount and identifies that physical bearer; removing equipment or the bearer after finalization does not alter the captured XP. Boneshiver’s separate channel ability occurs on Conquer only. Protector’s Shield shows its attached Might and Tank effects, while Petricite Monument grants friendly units Deflect and expires through its respondable Temporary ability before Hold.
+
+Antagonistic Apparatus creates a ready Mech; Industrious Mechsmith creates an ordinary exhausted Mech. This readiness belongs to that particular play instruction, not to all Mech tokens, and entering ready is not a Ready action. Each creator’s “here” uses its location when its ability resolves; an absent creator supplies no location. Once a token play is pending, its captured destination stays fixed. Optional Accelerate remains a separate play choice.
+
 ## Scoring and victory
 
 A player wins with **at least eight points and more points than the opponent**, checked by game cleanup.
@@ -199,7 +211,7 @@ The deck library includes the real legends and authored strategy notes. All eigh
 
 ## Remaining fidelity limits
 
-Eight supported legends, eleven battlefield choices, and 308 main-deck cards are available through the four supplied presets and custom deck editor. The eighteen-card expansion preserves all preset and training recipes; add its cards through the custom deck editor where eligible. There is no sideboarding, tournament match structure, multiplayer mode, or full card-set coverage. The presets are dated tournament lists, not a ranking of the current metagame.
+Eight supported legends, eleven battlefield choices, and 334 main-deck cards are available through the four supplied presets and custom deck editor. The latest twenty-six-card expansion preserves all preset and training recipes; add its cards through the custom deck editor where eligible. There is no sideboarding, tournament match structure, multiplayer mode, or full card-set coverage. The presets are dated tournament lists, not a ranking of the current metagame.
 
 The desktop and bot API expose exact damage allocations and power-source payments. The default automatic payment remains available; energy can be prepared by exhausting chosen rune domains before a play. These controls share engine validation, but broader card and interaction coverage is still required.
 

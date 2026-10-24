@@ -2,7 +2,7 @@
 
 Snapshot checked **2026-10-24**. The official gallery contains **1,408 printing records** grouped into **1,103 distinct full-name identities**. After excluding **12 auxiliary token/tracker identities** and **12 banned identities**, **1,079 identities are legal in Standard/1v1 Constructed**. The separate 2v2 list leaves **1,078**.
 
-**This client does not yet implement every legal card.** It currently maps **308 main-deck cards, 8 independently registered legends, 11 battlefields, and 6 rune resource types** (333 legal identities). **746 legal identities remain unimplemented and are not playable.** Importing this snapshot does not register cards with the engine. Full inventory coverage is not full rules support.
+**This client does not yet implement every legal card.** It currently maps **334 main-deck cards, 8 independently registered legends, 11 battlefields, and 6 rune resource types** (359 legal identities). **720 legal identities remain unimplemented and are not playable.** Importing this snapshot does not register cards with the engine. Full inventory coverage is not full rules support.
 
 ## Scope and authority
 
@@ -26,11 +26,11 @@ Numbered positions include token slots where the publisher numbers them within a
 | Kind | Standard legal | Implemented mapping | Not implemented |
 | --- | ---: | ---: | ---: |
 | Battlefield | 69 | 11 | 58 |
-| Gear | 131 | 55 | 76 |
+| Gear | 131 | 60 | 71 |
 | Legend | 58 | 8 | 50 |
 | Rune | 6 | 6 | 0 |
-| Spell | 268 | 79 | 189 |
-| Unit | 547 | 174 | 373 |
+| Spell | 268 | 85 | 183 |
+| Unit | 547 | 189 | 358 |
 
 Implemented mapping means the existing engine/preset/field/resource implementation, not a claim that every interaction has been formally proven. See `docs/RULES.md` for engine limits. Every unimplemented identity has `implementation.status: not_implemented` and `playable_in_client: false`. Printed keywords are recorded per card and counted under `unimplemented_by_observed_keyword` as discovery hints only; shared keywords do not imply shared effect semantics or completed implementation. Each unimplemented card still requires its specific effect, targets, timing, costs, continuous/replacement effects, and interaction tests to be reviewed and implemented.
 
@@ -63,7 +63,7 @@ The snapshot preserves printed rules HTML, readable rules, equipment text, exact
 - [Vendetta Errata](https://playriftbound.com/en-us/news/announcements/vendetta-errata-updates/)
 - [Radiance Errata](https://playriftbound.com/en-us/news/announcements/radiance-errata-updates/)
 
-**37 historical issue groups are preserved; 37 have evidence-backed resolutions and 0 remain unresolved.** The reviewed manifest contains 112 field corrections or confirmations across 69 printings. It preserves original gallery values, both type labels, original HTML, and the original issue records. The generated `effective` object applies only explicitly reviewed fields. This is a targeted review, not a complete visual audit of the gallery.
+**39 historical issue groups are preserved; 39 have evidence-backed resolutions and 0 remain unresolved.** The reviewed manifest contains 114 field corrections or confirmations across 70 printings. It preserves original gallery values, both type labels, original HTML, and the original issue records. The generated `effective` object applies only explicitly reviewed fields. This is a targeted review, not a complete visual audit of the gallery.
 
 **13 Radiance records have an empty structured type field.** Their raw normalized type still records the accessibility-label fallback. Matching card images corroborate the effective types; no structured source value was overwritten.
 
@@ -96,6 +96,8 @@ The snapshot preserves printed rules HTML, readable rules, equipment text, exact
 | `rad-136-167` | Dockside Lock-Up | unit | gear | gear |
 
 **Historical official stat conflict:** Kai'Sa, Rebel, `might`: `rad-063-167` = 5; `rad-sp4-005` = 4. The source values remain unchanged. Reviewed effective values: `rad-063-167` = 5; `rad-sp4-005` = 5.
+
+The original 37 parser issue groups remain unchanged. Another 2 issues were discovered by reading exact official card faces, then validated against the raw printing and linked field resolutions before being appended to the history. Bilgewater Tracker's raw Body domain and empty tags remain visible; its effective Fury domain and Bilgewater tag match the printed glyph and type/tag line. These are explicit visual observations, not additional discrepancies detected by the feed parser.
 
 The same reviewed evidence corrects missing/wrong domains, printed tags, Runeblade Anvil's activation power glyph, and Rousing Display's trailing editorial text. Four Device-tag exclusions are explicitly rule-derived and retain their Core Rules evidence. Every resolution names exact raw prerequisites, its immutable origin gallery, complete printing hash, and local official image evidence. A changed printing or corrupted evidence fails validation; publisher fixes require a deliberate review update. See [the review contract and evidence](CATALOG_REVIEW.md).
 
@@ -438,6 +440,32 @@ Current pages are archived under `assets/data/catalog_sources/`; immutable revie
 | 305 | Wielder of Water | `ogn-055-298` |
 | 306 | Captain Farron | `ogn-015-298` |
 | 307 | Taric, Protector | `ogn-074-298` |
+| 308 | The Ruination | `unl-180-219` |
+| 309 | Mobilize | `ogn-134-298` |
+| 310 | Catalyst of Aeons | `ogn-138-298` |
+| 311 | Grand Strategem | `ogn-233-298` |
+| 312 | Raucous Anthem | `rad-134-167` |
+| 313 | Unchecked Power | `ogn-123-298` |
+| 314 | Harnessed Dragon | `ogn-234-298` |
+| 315 | Sandshifter | `sfd-158-221` |
+| 316 | Ruined Rex | `unl-067-219` |
+| 317 | Inviolus Vox | `unl-027-219` |
+| 318 | Industrious Mechsmith | `rad-049-167` |
+| 319 | Antagonistic Apparatus | `rad-009-167` |
+| 320 | Garen, Commander | `ogs-013-024` |
+| 321 | Wizened Elder | `ogn-065-298` |
+| 322 | Bilgewater Bully | `ogn-125-298` |
+| 323 | Trusty Ramhound | `sfd-159-221` |
+| 324 | Soul Shepherd | `unl-077-219` |
+| 325 | Master Yi, Meditative | `ogs-004-024` |
+| 326 | Targonian Visionary | `unl-098-219` |
+| 327 | Protector's Shield | `rad-123-167` |
+| 328 | Hunter's Machete | `unl-096-219` |
+| 329 | Boneshiver | `sfd-118-221` |
+| 330 | Soul Sword | `unl-039-219` |
+| 331 | Petricite Monument | `sfd-104-221` |
+| 332 | Ribbon Dancer | `sfd-038-221` |
+| 333 | Bilgewater Tracker | `rad-003-167` |
 
 ## Implemented legend ID mapping
 

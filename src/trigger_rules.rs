@@ -141,6 +141,7 @@ pub enum Effect {
         gear: bool,
         opponent: bool,
         location: TokenPlacement,
+        entry_ready: bool,
     },
     Points(u8),
 }
@@ -194,6 +195,147 @@ pub fn trigger_rules(card_id: usize) -> &'static [TriggerRule] {
     use Operand::*;
     use TokenPlacement::*;
     match card_id {
+        314 => {
+            const {
+                &[rule(
+                    SelfPlayed,
+                    &[],
+                    false,
+                    TargetRule {
+                        allegiance: Allegiance::Enemy,
+                        ..ANY
+                    },
+                    &[KillTargets],
+                )]
+            }
+        }
+        315 => {
+            const {
+                &[rule(
+                    SelfPlayed,
+                    &[],
+                    false,
+                    TargetRule {
+                        allegiance: Allegiance::Enemy,
+                        max_might: Some(3),
+                        ..ANY
+                    },
+                    &[KillTargets],
+                )]
+            }
+        }
+        316 => {
+            const {
+                &[rule(
+                    SelfDeath,
+                    &[],
+                    false,
+                    TargetRule {
+                        allegiance: Allegiance::Enemy,
+                        ..ANY
+                    },
+                    &[Damage(4)],
+                )]
+            }
+        }
+        317 => {
+            const {
+                &[rule(
+                    SelfConquer,
+                    &[],
+                    false,
+                    FRIENDLY,
+                    &[Might {
+                        who: Targets,
+                        amount: 8,
+                        minimum: 0,
+                    }],
+                )]
+            }
+        }
+        318 => {
+            const {
+                &[rule(
+                    SelfPlayed,
+                    &[],
+                    false,
+                    TargetRule::NONE,
+                    &[Tokens {
+                        count: 1,
+                        might: 3,
+                        gear: false,
+                        opponent: false,
+                        location: Here,
+                        entry_ready: false,
+                    }],
+                )]
+            }
+        }
+        319 => {
+            const {
+                &[rule(
+                    SelfPlayed,
+                    &[],
+                    false,
+                    TargetRule::NONE,
+                    &[Tokens {
+                        count: 1,
+                        might: 3,
+                        gear: false,
+                        opponent: false,
+                        location: Here,
+                        entry_ready: true,
+                    }],
+                )]
+            }
+        }
+        329 => {
+            const {
+                &[rule(
+                    SelfConquer,
+                    &[],
+                    false,
+                    TargetRule::NONE,
+                    &[Channel {
+                        count: 1,
+                        exhausted: true,
+                    }],
+                )]
+            }
+        }
+        332 => {
+            const {
+                &[rule(
+                    SelfMoved,
+                    &[ToBattlefield],
+                    false,
+                    TargetRule {
+                        another: true,
+                        ..FRIENDLY
+                    },
+                    &[Might {
+                        who: Targets,
+                        amount: 1,
+                        minimum: 0,
+                    }],
+                )]
+            }
+        }
+        333 => {
+            const {
+                &[rule(
+                    SelfPlayed,
+                    &[],
+                    false,
+                    TargetRule {
+                        min: 0,
+                        max: 2,
+                        ..ANY
+                    },
+                    &[Damage(1)],
+                )]
+            }
+        }
         300 | 301 => {
             const {
                 &[rule(
@@ -268,6 +410,7 @@ pub fn trigger_rules(card_id: usize) -> &'static [TriggerRule] {
                         gear: false,
                         opponent: false,
                         location: Base,
+                        entry_ready: false,
                     }],
                 )]
             }
@@ -341,21 +484,15 @@ pub fn trigger_rules(card_id: usize) -> &'static [TriggerRule] {
                 )]
             }
         }
-        153 => {
-            const {
-                &[
-                    rule(SelfConquer, &[], false, TargetRule::NONE, &[Xp(Fixed(3))]),
-                    rule(SelfHold, &[], false, TargetRule::NONE, &[Xp(Fixed(3))]),
-                ]
-            }
-        }
         154 => {
             const {
-                &[
-                    rule(SelfPlayed, &[], false, TargetRule::NONE, &[Xp(Fixed(2))]),
-                    rule(SelfConquer, &[], false, TargetRule::NONE, &[Xp(Fixed(1))]),
-                    rule(SelfHold, &[], false, TargetRule::NONE, &[Xp(Fixed(1))]),
-                ]
+                &[rule(
+                    SelfPlayed,
+                    &[],
+                    false,
+                    TargetRule::NONE,
+                    &[Xp(Fixed(2))],
+                )]
             }
         }
         155 => {
@@ -430,6 +567,7 @@ pub fn trigger_rules(card_id: usize) -> &'static [TriggerRule] {
                         gear: true,
                         opponent: false,
                         location: Base,
+                        entry_ready: false,
                     }],
                 )]
             }
@@ -447,6 +585,7 @@ pub fn trigger_rules(card_id: usize) -> &'static [TriggerRule] {
                         gear: true,
                         opponent: false,
                         location: Base,
+                        entry_ready: false,
                     }],
                 )]
             }
@@ -464,6 +603,7 @@ pub fn trigger_rules(card_id: usize) -> &'static [TriggerRule] {
                         gear: true,
                         opponent: false,
                         location: Base,
+                        entry_ready: false,
                     }],
                 )]
             }
@@ -481,6 +621,7 @@ pub fn trigger_rules(card_id: usize) -> &'static [TriggerRule] {
                         gear: true,
                         opponent: false,
                         location: Base,
+                        entry_ready: false,
                     }],
                 )]
             }
@@ -655,6 +796,7 @@ pub fn trigger_rules(card_id: usize) -> &'static [TriggerRule] {
                         gear: false,
                         opponent: false,
                         location: Base,
+                        entry_ready: false,
                     }],
                 )]
             }
@@ -672,6 +814,7 @@ pub fn trigger_rules(card_id: usize) -> &'static [TriggerRule] {
                         gear: false,
                         opponent: false,
                         location: Base,
+                        entry_ready: false,
                     }],
                 )]
             }
@@ -689,6 +832,7 @@ pub fn trigger_rules(card_id: usize) -> &'static [TriggerRule] {
                         gear: false,
                         opponent: false,
                         location: Base,
+                        entry_ready: false,
                     }],
                 )]
             }
@@ -706,6 +850,7 @@ pub fn trigger_rules(card_id: usize) -> &'static [TriggerRule] {
                         gear: false,
                         opponent: false,
                         location: Here,
+                        entry_ready: false,
                     }],
                 )]
             }
@@ -723,6 +868,7 @@ pub fn trigger_rules(card_id: usize) -> &'static [TriggerRule] {
                         gear: false,
                         opponent: false,
                         location: Here,
+                        entry_ready: false,
                     }],
                 )]
             }
@@ -740,6 +886,7 @@ pub fn trigger_rules(card_id: usize) -> &'static [TriggerRule] {
                         gear: false,
                         opponent: false,
                         location: Here,
+                        entry_ready: false,
                     }],
                 )]
             }
@@ -838,6 +985,7 @@ pub fn trigger_rules(card_id: usize) -> &'static [TriggerRule] {
                         gear: false,
                         opponent: true,
                         location: Default,
+                        entry_ready: false,
                     }],
                 )]
             }
@@ -1015,6 +1163,7 @@ pub fn trigger_rules(card_id: usize) -> &'static [TriggerRule] {
                         gear: true,
                         opponent: false,
                         location: Base,
+                        entry_ready: false,
                     }],
                 )]
             }
@@ -1032,6 +1181,7 @@ pub fn trigger_rules(card_id: usize) -> &'static [TriggerRule] {
                         gear: true,
                         opponent: false,
                         location: Base,
+                        entry_ready: false,
                     }],
                 )]
             }
@@ -1049,6 +1199,7 @@ pub fn trigger_rules(card_id: usize) -> &'static [TriggerRule] {
                         gear: false,
                         opponent: false,
                         location: Here,
+                        entry_ready: false,
                     }],
                 )]
             }
@@ -1185,7 +1336,10 @@ mod tests {
     fn every_event_batch_card_has_an_explicit_nonempty_mapping() {
         for id in 152..=215 {
             assert!(
-                !trigger_rules(id).is_empty(),
+                !trigger_rules(id).is_empty()
+                    || crate::rules::static_abilities(id)
+                        .iter()
+                        .any(|a| matches!(a, crate::rules::StaticAbility::Hunt(_))),
                 "missing trigger metadata for {id}"
             );
             for rule in trigger_rules(id) {
@@ -1218,7 +1372,8 @@ mod tests {
                 might: 1,
                 gear: false,
                 opponent: true,
-                location: TokenPlacement::Default
+                location: TokenPlacement::Default,
+                entry_ready: false,
             }]
         );
         assert_eq!(
@@ -1228,7 +1383,8 @@ mod tests {
                 might: 2,
                 gear: false,
                 opponent: false,
-                location: TokenPlacement::Here
+                location: TokenPlacement::Here,
+                entry_ready: false,
             }]
         );
         assert_eq!(

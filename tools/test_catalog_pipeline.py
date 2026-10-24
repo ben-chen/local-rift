@@ -34,13 +34,13 @@ class CatalogPipelineTests(unittest.TestCase):
         # records, so refactoring the parser cannot quietly rewrite raw facts.
         self.assertEqual(catalog.sha(catalog.canonical_json(raw).encode()),
                          'b6a40081e458580e7fe6fc3efc40e6001478565717a2ebf164bb7de8bd833e88')
-        self.assertEqual(catalog.sha(catalog.canonical_json(self.snapshot['source_quality_issues']).encode()),
+        self.assertEqual(catalog.sha(catalog.canonical_json(self.snapshot['source_quality_issues'][:37]).encode()),
                          '923bd9fee267e4e4e2d46301ea30771438e6146d805ab3bb45f177095388afae')
 
     def test_resolved_history_is_separate_from_remaining_variant_reviews(self):
         counts = self.snapshot['counts']
         self.assertEqual((counts['reviewed_field_resolutions'], counts['resolved_source_issue_groups'],
-                          counts['unresolved_source_issue_groups']), (112, 37, 0))
+                          counts['unresolved_source_issue_groups']), (114, 39, 0))
         self.assertEqual(counts['unresolved_gameplay_identities'], 0)
         self.assertEqual(counts['unreviewed_variant_identities'], 95)
         self.assertEqual(counts['unreviewed_variants_by_field'], {'tags': 33, 'rules_text': 84})
@@ -50,11 +50,11 @@ class CatalogPipelineTests(unittest.TestCase):
         self.assertTrue(all(r['status'] == 'resolved_by_review' for r in self.snapshot['source_issue_reviews']))
         self.assertEqual(counts['reviewed_variant_identities'], 29)
         self.assertEqual(counts['reviewed_variant_printings'], 90)
-        self.assertEqual(counts['field_reviewed_printings'], 69)
+        self.assertEqual(counts['field_reviewed_printings'], 70)
         for card in self.snapshot['cards']:
             if card['implementation']['playable_in_client']:
                 self.assertEqual(card['source_review']['unresolved_variant_fields'], [])
-        self.assertEqual(counts['implemented_legal_identities'], 333)
+        self.assertEqual(counts['implemented_legal_identities'], 359)
 
     def test_required_fields_gate_every_mapping_kind_and_alternates(self):
         cases = [

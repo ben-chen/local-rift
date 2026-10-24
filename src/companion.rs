@@ -186,6 +186,17 @@ fn fingerprint(game: &Game) -> u64 {
     game.battlefields.hash(&mut hash);
     game.scored_this_turn.hash(&mut hash);
     game.empowered_units.hash(&mut hash);
+    game.buffed_units.hash(&mut hash);
+    for token in game.pending_tokens() {
+        (
+            token.id,
+            token.player,
+            token.card_id,
+            token.location,
+            token.entry_ready,
+        )
+            .hash(&mut hash);
+    }
     for legend in &game.legend {
         (legend.kind as u8).hash(&mut hash);
         legend.ready.hash(&mut hash);
@@ -211,6 +222,9 @@ fn fingerprint(game: &Game) -> u64 {
             gear.attached_to.hash(&mut hash);
             gear.ready.hash(&mut hash);
             gear.temporary.hash(&mut hash);
+            game.gear_temporary_status(owner, gear.id)
+                .map(|status| (status.intrinsic, status.granted, status.active))
+                .hash(&mut hash);
             gear.token.hash(&mut hash);
         }
         for hidden in &player.hidden {
@@ -488,9 +502,85 @@ fn advice(game: &Game, level: AdviceLevel) -> Vec<&'static str> {
             .is_empty()
     }) {
         tips.push(if beginner {
-            "Empowered and ready are separate states. A unit's live preview shows which conditional bonuses apply now, and which source supplies each bonus."
+            "A unit's live preview shows which conditional bonuses apply now and which source supplies each one. Ready, Empowered and Buffed are separate states."
         } else {
             "Check active conditional bonuses before trading. Removing or Disempowering an aura source can change several units' might immediately."
+        });
+    }
+    let conditions: Vec<_> = human
+        .units
+        .iter()
+        .flat_map(|unit| {
+            game.passive_contributions(local_rift::empower::BoardObject::Unit {
+                player: 0,
+                unit_id: unit.id,
+            })
+        })
+        .filter_map(|source| {
+            local_rift::continuous::passive_rules(source.card_id)
+                .get(source.rule_index)
+                .map(|rule| rule.condition)
+        })
+        .collect();
+    use local_rift::continuous::SourceCondition;
+    if conditions.contains(&SourceCondition::Buffed) {
+        tips.push(if beginner {
+            "Buffed means having a Buff counter. Temporary might and Empowered do not count; the live preview shows whether this unit's extra ability is active."
+        } else {
+            "Spending a Buff can remove a conditional bonus as well as the counter's might. Recheck Ganking and lethal damage before using that counter."
+        });
+    }
+    if conditions
+        .iter()
+        .any(|condition| matches!(condition, SourceCondition::ControllerRunesAtLeast(_)))
+    {
+        tips.push(if beginner {
+            "Rune thresholds count ready and exhausted runes in play. Recycling sends a rune back to the deck, so a live might bonus can disappear."
+        } else {
+            "Before recycling for power, check your rune threshold. Losing a live might bonus can expose a damaged unit even when the payment itself is affordable."
+        });
+    }
+    if conditions
+        .iter()
+        .any(|condition| matches!(condition, SourceCondition::ControllerXpAtLeast(_)))
+    {
+        tips.push(if beginner {
+            "Level checks your current XP. Equipment can grant a Level bonus to its bearer; the preview separates that bonus from the equipment's printed might."
+        } else {
+            "XP can improve several Level units or bearers at once. Inspect their live thresholds before planning the next scoring trade."
+        });
+    }
+    if human
+        .units
+        .iter()
+        .any(|unit| game.unit_keywords(unit).hunt > 0)
+    {
+        tips.push(if beginner {
+            "Hunt gains XP when its unit conquers or holds. Printed Hunt and equipped Hunt add together into one ability; the preview shows the total."
+        } else {
+            "Stacked Hunt produces one captured XP amount per bearer when it conquers or holds. Protect the scoring unit, and consider which Level thresholds that XP reaches."
+        });
+    }
+    if human.gear.iter().any(|gear| {
+        game.gear_temporary_status(0, gear.id)
+            .is_some_and(|status| status.active)
+    }) {
+        tips.push(if beginner {
+            "Temporary gear expires through a beginning trigger before hold scoring. Granted Temporary stays active when attached; printed Temporary does not."
+        } else {
+            "Attachment will not suppress granted Temporary. Count the gear bonuses or protection that will disappear when its beginning trigger resolves before hold."
+        });
+    }
+    if human.hand.iter().any(|&id| {
+        matches!(
+            local_rift::rules::effect(id),
+            local_rift::rules::OfficialEffect::KillAllUnits
+        )
+    }) {
+        tips.push(if beginner {
+            "The Ruination kills units at both bases and both fields, including yours. It chooses no targets; available death replacements are still offered."
+        } else {
+            "A global kill reaches both bases. Compare your surviving replacement effects and death triggers before spending it; untargeted does not mean enemy-only."
         });
     }
     if !game.activated_options(0).is_empty() {
@@ -550,8 +640,19 @@ fn response_window_advice(game: &Game, beginner: bool) -> Option<Vec<&'static st
                 "Accept or decline this trash-play trigger. If accepted, choose its trash target before the ability joins the chain; finalize the card after it resolves.",
                 "Check the trash and your available resources before accepting. Declining here keeps the ability off the chain.",
             ],
-            Decision::TokenPlay { .. } => vec![
-                "This token can enter ready if you pay Accelerate. Choose its allowed location and optional cost before it enters play.",
+            Decision::TokenPlay {
+                card_id, player, ..
+            } => vec![
+                if game
+                    .pending_tokens()
+                    .iter()
+                    .find(|token| token.player == *player && token.card_id == *card_id)
+                    .is_some_and(|token| token.entry_ready)
+                {
+                    "This token is instructed to enter ready. That is its initial state, not a later Ready effect; optional costs are separate."
+                } else {
+                    "This token can enter ready if you pay Accelerate. Choose its allowed location and optional cost before it enters play."
+                },
                 "Ready entry can enable a later move. Compare the optional cost with the resources you need for responses and later plays.",
             ],
             Decision::TokenPlacement { .. } => vec![
@@ -939,6 +1040,115 @@ mod tests {
 
     fn game() -> Game {
         Game::new(0, 1, 72, Difficulty::Easy)
+    }
+
+    #[test]
+    fn live_hunt_buff_and_level_advice_is_contextual_and_uses_no_hidden_cards() {
+        use local_rift::gear::GearState;
+        let mut game = game();
+        game.start_match().unwrap();
+        game.players[0].units = [22, 321, 325, 326]
+            .into_iter()
+            .enumerate()
+            .map(|(index, card_id)| Unit {
+                id: 800 + index as u32,
+                card_id,
+                lane: None,
+                ready: true,
+                damage: 0,
+                buff: 0,
+                temporary_buff: 0,
+                token: false,
+                protected: false,
+                stunned: false,
+                banish_on_death: false,
+            })
+            .collect();
+        game.players[0].gear = vec![GearState {
+            id: 900,
+            card_id: 331,
+            attached_to: None,
+            ready: true,
+            temporary: true,
+            token: false,
+        }];
+        game.players[0].hand = vec![308];
+        let before = fingerprint(&game);
+        game.buffed_units.push(801);
+        assert_ne!(
+            before,
+            fingerprint(&game),
+            "a public Buff counter refreshes coaching"
+        );
+        let beginner = advice(&game, AdviceLevel::Beginner);
+        assert!(
+            beginner
+                .iter()
+                .any(|tip| tip.contains("Printed Hunt and equipped Hunt add together"))
+        );
+        assert!(
+            beginner
+                .iter()
+                .any(|tip| tip.contains("Buffed means having a Buff counter"))
+        );
+        assert!(
+            beginner
+                .iter()
+                .any(|tip| tip.contains("ready and exhausted runes in play"))
+        );
+        assert!(
+            beginner
+                .iter()
+                .any(|tip| tip.contains("Level checks your current XP"))
+        );
+        assert!(beginner.iter().any(|tip| tip.contains("Temporary gear")));
+        assert!(beginner.iter().any(|tip| tip.contains("including yours")));
+        let mut hidden_changed = game.clone();
+        hidden_changed.players[1].hand = vec![308, 310, 313];
+        hidden_changed.players[1].deck.reverse();
+        assert_eq!(fingerprint(&game), fingerprint(&hidden_changed));
+        for level in [AdviceLevel::Beginner, AdviceLevel::Advanced] {
+            let tips = advice(&game, level);
+            assert_eq!(tips, advice(&hidden_changed, level));
+            assert!(tips.iter().all(|tip| tip.chars().count() <= 180));
+        }
+        assert_ne!(beginner, advice(&game, AdviceLevel::Advanced));
+        game.players[0].gear[0].attached_to = Some(800);
+        assert!(
+            !advice(&game, AdviceLevel::Beginner)
+                .iter()
+                .any(|tip| tip.contains("Temporary gear"))
+        );
+        let before_grant = fingerprint(&game);
+        game.players[0].hand = vec![66];
+        game.players[0].runes = [0; 6];
+        game.players[0].runes[local_rift::game::domain_index(local_rift::cards::Domain::Mind)] = 6;
+        game.players[0].exhausted_runes = [0; 6];
+        game.players[0].energy = 6;
+        game.apply(local_rift::game::Action::PlayCardWithTargets {
+            hand_index: 0,
+            lane: None,
+            targets: vec![Target::Gear {
+                player: 0,
+                gear_id: 900,
+            }],
+        })
+        .unwrap();
+        while !game.chain.is_empty() {
+            game.apply(local_rift::game::Action::Pass).unwrap();
+        }
+        assert_ne!(before_grant, fingerprint(&game));
+        let tips = advice(&game, AdviceLevel::Beginner);
+        assert!(
+            tips.iter()
+                .any(|tip| tip.contains("Granted Temporary stays active when attached"))
+        );
+        assert!(
+            advice(&game, AdviceLevel::Advanced)
+                .iter()
+                .any(|tip| tip.contains("Attachment will not suppress granted Temporary"))
+        );
+        assert!(tips.iter().all(|tip| tip.chars().count() <= 180));
     }
 
     #[test]

@@ -1,5 +1,6 @@
 //! CR315.2.b.2: holding every controlled battlefield is one outstanding task.
-use local_rift::game::{Action, ChainAbility, Decision, Difficulty, Game, TriggeredAbility, Unit};
+use local_rift::activated::AbilitySource;
+use local_rift::game::{Action, ChainAbility, ChainSource, Decision, Difficulty, Game, Unit};
 use local_rift::gear::GearState;
 
 fn position(score: u8, card_id: usize) -> Game {
@@ -68,10 +69,28 @@ fn both_hold_triggers_wait_for_all_points_then_finish_before_channel_draw() {
         game.apply(Action::OrderTrigger { trigger_id }).unwrap();
     }
     assert_eq!(game.chain.len(), 2);
-    assert!(game.chain.iter().all(|item| matches!(
-        item.ability,
-        Some(ChainAbility::Triggered(TriggeredAbility::Xp(2)))
-    )));
+    let mut bearers = Vec::new();
+    for item in &game.chain {
+        let Some(ChainAbility::Hunt {
+            source: AbilitySource::Unit { player: 1, unit_id },
+            amount: 2,
+            source_name,
+        }) = &item.ability
+        else {
+            panic!("Expected each held Yi's captured Hunt: {:?}", item.ability);
+        };
+        assert_eq!(source_name, game.catalog[22].name);
+        assert_eq!(
+            game.chain_source(item),
+            ChainSource::Unit {
+                player: 1,
+                unit_id: *unit_id
+            }
+        );
+        bearers.push(*unit_id);
+    }
+    bearers.sort_unstable();
+    assert_eq!(bearers, vec![100, 101]);
     for _ in 0..4 {
         game.apply(Action::Pass).unwrap();
     }

@@ -25,6 +25,9 @@ mod empowered;
 mod play_choices;
 mod targeting;
 
+#[cfg(test)]
+mod board_effects;
+
 pub const PROTOCOL_VERSION: u32 = 1;
 pub const MAX_REQUEST_BYTES: usize = 1_048_576;
 const MAX_ACTION_ITEMS: usize = 1024;
@@ -319,7 +322,7 @@ impl Session {
                 "protected":unit.protected, "banish_on_death":unit.banish_on_death,
                 "empowered":game.unit_empowered(unit.id),"hidden_play_origin":game.hidden_play_origin(unit.id),"movement_locked":game.movement_locked(owner,unit.id),
                 "keywords":{"assault":keywords.assault,"shield":keywords.shield,"tank":keywords.tank,"backline":keywords.backline,
-                    "deflect":keywords.deflect,"ganking":keywords.ganking,"ambush":keywords.ambush,
+                    "deflect":keywords.deflect,"ganking":keywords.ganking,"ambush":keywords.ambush,"hunt":keywords.hunt,
                     "accelerate":keywords.accelerate.map(|cost|json!({"energy":cost.energy,"power":cost.power,"domain":cost.domain.name()}))},
                 "damage_priority":game.damage_priority(unit),
                 "passive_contributions":game.passive_contributions(crate::empower::BoardObject::Unit {player:owner,unit_id:unit.id}).iter().map(empowered::contribution_to_json).collect::<Vec<_>>()
@@ -327,7 +330,9 @@ impl Session {
             let gear: Vec<_> = state.gear.iter().map(|gear| json!({
                 "id":gear.id, "card_id":gear.card_id, "name":game.gear_name(gear), "token":gear.token,
                 "attached_to":gear.attached_to, "lane":game.gear_location(owner,gear.id),
-                "ready":gear.ready, "temporary":gear.temporary,"empowered":game.unit_empowered(gear.id)
+                "ready":gear.ready, "temporary":gear.temporary,"empowered":game.unit_empowered(gear.id),
+                "temporary_status":game.gear_temporary_status(owner,gear.id).map(|status|json!({
+                    "intrinsic":status.intrinsic,"granted":status.granted,"active":status.active}))
             })).collect();
             let hidden: Vec<_> = state.hidden.iter().map(|card| json!({
                 "id":card.id, "lane":card.lane, "hidden_turn":card.hidden_turn,
@@ -394,7 +399,7 @@ impl Session {
             "chain":chain,"decision":game.decision.as_ref().map(|d|decision_to_json(game,d,viewer)),
             "pending_card_plays":game.pending_cards().iter().map(|card|json!({"id":card.id,"player":card.player,"card_id":card.card_id,"kind":instructed_kind(card.kind)})).collect::<Vec<_>>(),
             "pending_token_plays":game.pending_tokens().iter().map(|token|json!({
-                "id":token.id,"player":token.player,"card_id":token.card_id,"might":token.might,"gear":token.gear,
+                "id":token.id,"player":token.player,"card_id":token.card_id,"might":token.might,"gear":token.gear,"entry_ready":token.entry_ready,
                 "destination":match token.location {
                     None => json!({"mode":"choose"}),
                     Some(lane) => json!({"mode":"fixed","lane":lane}),
@@ -749,6 +754,9 @@ pub fn ability_source_to_json(source: AbilitySource) -> Value {
 fn chain_source_to_json(source: ChainSource) -> Value {
     match source {
         ChainSource::Card { card_id } => json!({"type":"card","card_id":card_id}),
+        ChainSource::Unit { player, unit_id } => {
+            json!({"type":"unit","player":player,"unit_id":unit_id})
+        }
         ChainSource::Legend { player, legend_id } => {
             json!({"type":"legend","player":player,"legend_id":legend_id})
         }
@@ -1757,6 +1765,13 @@ fn decision_to_json(game: &Game, decision: &Decision, viewer: usize) -> Value {
 
 fn ability_to_json(ability: &ChainAbility) -> Value {
     match ability {
+        ChainAbility::Hunt {
+            source,
+            amount,
+            source_name,
+        } => {
+            json!({"type":"hunt","source":ability_source_to_json(*source),"amount":amount,"source_name":source_name})
+        }
         ChainAbility::Activated {
             source,
             card_id,

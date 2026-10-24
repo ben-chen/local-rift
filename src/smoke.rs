@@ -128,6 +128,7 @@ fn click_field(app: &mut App, lane: usize) {
 }
 
 fn capture_unit(app: &mut App, id: u32, variable: &str) {
+    app.companion.observe(&app.game);
     let card = app.game.players[0]
         .units
         .iter()
@@ -143,6 +144,29 @@ fn capture_unit(app: &mut App, id: u32, variable: &str) {
         app.draw();
         get_screen_data().export_png(&path);
     }
+}
+
+fn capture_gear(app: &mut App, id: u32, variable: &str) {
+    app.companion.observe(&app.game);
+    let gear = app.game.players[0]
+        .gear
+        .iter()
+        .find(|gear| gear.id == id)
+        .unwrap();
+    app.hover_card = Some(gear.card_id);
+    app.hover_object = Some((0, id));
+    app.hover_token = None;
+    app.hover_rect = Some(Rect::new(776.0, 176.0, 350.0, 458.0));
+    app.hover_since = get_time() - 1.0;
+    app.hover_scroll = 0;
+    if let Ok(path) = std::env::var(variable) {
+        app.ui.input_override = Some((vec2(800.0, 450.0), false, false));
+        app.draw();
+        get_screen_data().export_png(&path);
+    }
+    app.hover_card = None;
+    app.hover_object = None;
+    app.hover_rect = None;
 }
 
 fn flow_fixture(app: &mut App, granted: bool) {
@@ -6229,15 +6253,526 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
             capture_unit(app, 9971, "RIFT_SMOKE_C8_ALONE_SCREENSHOT");
         }
         632 => {
+            played_gear_fixture(app, 328);
+            app.game.players[0].units = vec![public_unit(9980, 22, None)];
+            app.game.players[0].hand = vec![328];
+            app.game.players[0].any_power = 4;
+            app.game
+                .apply(Action::PlayCard {
+                    hand_index: 0,
+                    lane: None,
+                    target: None,
+                })
+                .unwrap();
+            assert_eq!(app.game.players[0].gear.len(), 2);
+            app.selection = Some(Selection::Gear(app.game.players[0].gear[0].id));
+            click_unit(app, 9980);
+        }
+        633 => {
+            assert_eq!(
+                app.targets,
+                vec![Target::Unit {
+                    player: 0,
+                    unit_id: 9980
+                }]
+            );
+            click(app, 1285.0, 522.0);
+        }
+        634 => {
+            assert!(
+                app.game.players[0].gear[0].attached_to.is_none(),
+                "Equip awaits responses"
+            );
+            finish_chain_until_choice(app);
+            assert_eq!(app.game.players[0].gear[0].attached_to, Some(9980));
+            app.selection = Some(Selection::Gear(app.game.players[0].gear[1].id));
+            click_unit(app, 9980);
+        }
+        635 => click(app, 1285.0, 522.0),
+        636 => {
+            finish_chain_until_choice(app);
+            assert!(
+                app.game.players[0]
+                    .gear
+                    .iter()
+                    .all(|gear| gear.attached_to == Some(9980))
+            );
+            assert_eq!(
+                app.game.unit_keywords(&app.game.players[0].units[0]).hunt,
+                4
+            );
+            let text = super::live_unit_description(&app.game, 0, 9980).unwrap();
+            assert!(text.contains("one Hunt ability gains 4 XP"));
+            capture_unit(app, 9980, "RIFT_SMOKE_C9_HUNT_SCREENSHOT");
+        }
+        637 => {
+            app.hover_card = None;
+            app.hover_rect = None;
+            let r = unit_rect(app, 9980);
+            click(app, r.x + r.w - 10.0, r.y + r.h - 9.0);
+        }
+        638 => {
+            assert_eq!(app.equipment_inspect, Some((0, 9980)));
+            capture(app, "RIFT_SMOKE_C9_GEAR_SCREENSHOT");
+            click(app, 700.0, 713.0);
+        }
+        639 => {
+            assert!(app.equipment_inspect.is_none());
+            app.game.battlefields = [3, 3];
+            app.game
+                .apply(Action::Move {
+                    unit_id: 9980,
+                    lane: Some(0),
+                })
+                .unwrap();
+            app.game.apply(Action::Pass).unwrap();
+            app.game.apply(Action::Pass).unwrap();
+            let hunts: Vec<_> = app
+                .game
+                .chain
+                .iter()
+                .filter(|item| {
+                    matches!(
+                        item.ability,
+                        Some(local_rift::game::ChainAbility::Hunt { .. })
+                    )
+                })
+                .collect();
+            assert_eq!(hunts.len(), 1);
+            assert!(app.game.chain_name(hunts[0]).contains("Hunt 4"));
+            capture(app, "RIFT_SMOKE_C9_HUNT_CHAIN_SCREENSHOT");
+        }
+        640 => {
+            finish_chain_until_choice(app);
+            assert_eq!(app.game.players[0].xp, 4);
+            expansion_fixture(app, 330);
+            app.game.players[0].units = vec![public_unit(9981, 110, None)];
+            app.game.players[0].gear = vec![GearState {
+                id: 9982,
+                card_id: 330,
+                ready: true,
+                attached_to: Some(9981),
+                temporary: false,
+                token: false,
+            }];
+            app.game.players[0].xp = 2;
+            assert!(
+                super::live_unit_description(&app.game, 0, 9981)
+                    .unwrap()
+                    .contains("INACTIVE · Soul Sword")
+            );
+            app.game.players[0].xp = 3;
+            assert_eq!(app.game.unit_might(&app.game.players[0].units[0]), 4);
+            capture_gear(app, 9982, "RIFT_SMOKE_C9_LEVEL_SCREENSHOT");
+        }
+        641 => {
+            expansion_fixture(app, 325);
+            app.game.players[0].units = vec![public_unit(9983, 325, None)];
+            let calm = domain_index(Domain::Calm);
+            app.game.players[0].runes = [0; 6];
+            app.game.players[0].runes[calm] = 8;
+            app.game.players[0].exhausted_runes = [0; 6];
+            app.game.players[0].exhausted_runes[calm] = 1;
+            app.game.players[0].energy = 7;
+            app.game.players[0].rune_deck = vec![Domain::Calm; 4];
+            assert_eq!(app.game.unit_might(&app.game.players[0].units[0]), 8);
+            capture_unit(app, 9983, "RIFT_SMOKE_C9_RUNES_SCREENSHOT");
+        }
+        642 => {
+            app.hover_card = None;
+            app.hover_rect = None;
+            click(app, 430.0, 605.0);
+        }
+        643 => {
+            assert_eq!(app.rune_menu, Some(Domain::Calm));
+            click(app, app.rune_menu_at.x + 123.0, app.rune_menu_at.y + 120.0);
+        }
+        644 => {
+            assert!(app.rune_menu.is_none());
+            assert_eq!(app.game.players[0].runes.iter().sum::<u8>(), 7);
+            assert_eq!(app.game.unit_might(&app.game.players[0].units[0]), 4);
+            let text = super::live_unit_description(&app.game, 0, 9983).unwrap();
+            assert!(text.contains("INACTIVE · Master Yi") && text.contains("currently 7;"));
+            capture_unit(app, 9983, "RIFT_SMOKE_C9_RECYCLED_SCREENSHOT");
+        }
+        645 => {
+            expansion_fixture(app, 319);
+            app.game.players[0].units = vec![public_unit(9984, 265, None)];
+            app.game.players[0].any_power = 4;
+            click(app, 315.0, 760.0);
+        }
+        646 => click(app, 1285.0, 510.0),
+        647 => {
+            finish_chain_until_choice(app);
+            assert!(matches!(
+                app.game.decision,
+                Some(Decision::TokenPlay {
+                    card_id: 319,
+                    fixed_lane: Some(None),
+                    ..
+                })
+            ));
+            assert!(
+                app.game
+                    .pending_tokens()
+                    .iter()
+                    .find(|token| token.card_id == 319)
+                    .unwrap()
+                    .entry_ready
+            );
+            assert!(!app.options.accelerate);
+            assert!(
+                app.game.players[0]
+                    .units
+                    .iter()
+                    .find(|unit| unit.card_id == 319 && !unit.token)
+                    .unwrap()
+                    .ready
+            );
+            save_state(app);
+            capture(app, "RIFT_SMOKE_C9_READY_TOKEN_SCREENSHOT");
+            click(app, 1285.0, 521.0);
+        }
+        648 => {
+            assert_same_state(app);
+            click(app, 1285.0, 492.0);
+        }
+        649 => {
+            assert!(
+                app.game.players[0]
+                    .units
+                    .iter()
+                    .any(|unit| unit.card_id == 319 && unit.token && unit.ready)
+            );
+            assert!(app.game.pending_tokens().is_empty());
+            expansion_fixture(app, 318);
+            app.game.players[0].units = vec![public_unit(9985, 265, None)];
+            app.game.players[0].any_power = 4;
+            app.game
+                .apply(Action::PlayCard {
+                    hand_index: 0,
+                    lane: None,
+                    target: None,
+                })
+                .unwrap();
+            finish_chain_until_choice(app);
+            assert!(matches!(
+                app.game.decision,
+                Some(Decision::TokenPlay { card_id: 318, .. })
+            ));
+            assert!(!app.game.pending_tokens()[0].entry_ready);
+        }
+        650 => click(app, 1285.0, 492.0),
+        651 => {
+            assert!(
+                app.game.players[0]
+                    .units
+                    .iter()
+                    .any(|unit| unit.card_id == 318 && unit.token && !unit.ready)
+            );
+            expansion_fixture(app, 331);
+            app.game.players[0].units = vec![public_unit(9986, 110, None)];
+            click(app, 315.0, 760.0);
+        }
+        652 => click(app, 1285.0, 510.0),
+        653 => {
+            let gear_id = app.game.players[0]
+                .gear
+                .iter()
+                .find(|gear| gear.card_id == 331 && gear.temporary)
+                .unwrap()
+                .id;
+            assert_eq!(
+                app.game
+                    .unit_keywords(&app.game.players[0].units[0])
+                    .deflect,
+                1
+            );
+            capture_gear(app, gear_id, "RIFT_SMOKE_C9_TEMPORARY_SCREENSHOT");
+            app.game.apply(Action::EndTurn).unwrap();
+            app.game.run_ai_turn().unwrap();
+        }
+        654 => {
+            assert_eq!(app.game.active, 0);
+            assert!(app.game.chain.iter().any(|item| item.card_id == 331));
+            assert!(
+                app.game.players[0]
+                    .gear
+                    .iter()
+                    .any(|gear| gear.card_id == 331),
+                "Temporary remains until its trigger resolves"
+            );
+            finish_chain_until_choice(app);
+            assert!(
+                !app.game.players[0]
+                    .gear
+                    .iter()
+                    .any(|gear| gear.card_id == 331)
+            );
+            assert_eq!(
+                app.game
+                    .unit_keywords(&app.game.players[0].units[0])
+                    .deflect,
+                0
+            );
+            expansion_fixture(app, 308);
+            app.game.players[0].units = vec![
+                public_unit(9987, 110, None),
+                public_unit(9988, 110, Some(0)),
+            ];
+            app.game.players[1].units = vec![
+                public_unit(9989, 110, None),
+                public_unit(9990, 110, Some(1)),
+            ];
+            app.game.players[0].gear = vec![
+                GearState {
+                    id: 9991,
+                    card_id: 10,
+                    ready: true,
+                    attached_to: Some(9987),
+                    temporary: false,
+                    token: false,
+                },
+                GearState {
+                    id: 9992,
+                    card_id: 21,
+                    ready: true,
+                    attached_to: None,
+                    temporary: false,
+                    token: false,
+                },
+            ];
+            app.game.players[0].any_power = 3;
+            click(app, 315.0, 760.0);
+        }
+        655 => {
+            assert!(super::card_brief(&app.game, 308).contains("both players, everywhere"));
+            assert_eq!(local_rift::rules::play_target_spec(308).maximum, 0);
+            click(app, 1285.0, 510.0);
+        }
+        656 => {
+            finish_chain_until_choice(app);
+            assert!(matches!(
+                app.game.decision,
+                Some(Decision::DeathReplacement { player: 0, .. })
+            ));
+            assert_eq!(
+                app.game
+                    .chain
+                    .iter()
+                    .filter(|item| item.card_id == 308 && item.ability.is_none())
+                    .count(),
+                1
+            );
+            save_state(app);
+            assert!(
+                app.game
+                    .apply(Action::ChooseDeathReplacement {
+                        unit_id: 999999,
+                        gear_id: None
+                    })
+                    .is_err()
+            );
+            assert_same_state(app);
+            capture(app, "RIFT_SMOKE_C9_RUINATION_SCREENSHOT");
+            let options = match &app.game.decision {
+                Some(Decision::DeathReplacement { options, .. }) => options,
+                _ => unreachable!(),
+            };
+            let index = options
+                .iter()
+                .position(|option| option.gear_id == Some(9991))
+                .unwrap();
+            click(app, 315.0 + 148.0 * index as f32, 760.0);
+        }
+        657 => {
+            if matches!(app.game.decision, Some(Decision::DeathReplacement { .. })) {
+                click(app, 315.0, 760.0);
+            } else {
+                finish_chain_until_choice(app);
+            }
+        }
+        658 => {
+            finish_chain_until_choice(app);
+            assert!(app.game.decision.is_none());
+            assert!(
+                app.game.players[1].units.is_empty(),
+                "global kill reaches both enemy locations"
+            );
+            assert!(
+                app.game.players[0]
+                    .units
+                    .iter()
+                    .any(|unit| unit.id == 9987 && unit.lane.is_none()),
+                "chosen Guardian saves and recalls its original bearer"
+            );
+            assert_eq!(
+                app.game.players[0]
+                    .discard
+                    .iter()
+                    .filter(|&&id| id == 308)
+                    .count(),
+                1
+            );
+            expansion_fixture(app, 310);
+            let body = domain_index(Domain::Body);
+            app.game.players[0].runes[body] = 11;
+            app.game.players[0].rune_deck = vec![Domain::Body];
+            app.game.players[0].energy = 11;
+            click(app, 315.0, 760.0);
+        }
+        659 => click(app, 1285.0, 510.0),
+        660 => {
+            finish_chain_until_choice(app);
+            assert_eq!(app.game.players[0].runes.iter().sum::<u8>(), 12);
+            assert_eq!(
+                app.game.players[0].exhausted_runes.iter().sum::<u8>(),
+                5,
+                "pay four energy, then channel the last rune exhausted"
+            );
+            assert_eq!(
+                app.game.players[0].hand.len(),
+                1,
+                "channeling fewer than two also draws exactly once"
+            );
+            expansion_fixture(app, 27);
+            app.game.players[0].units = vec![
+                public_unit(9993, 322, None),
+                public_unit(9994, 321, None),
+                public_unit(9995, 323, None),
+            ];
+            click(app, 315.0, 760.0);
+        }
+        661 => click(app, 1285.0, 510.0),
+        662 => {
+            assert!(matches!(
+                app.game.decision,
+                Some(Decision::OnPlayTarget { card_id: 27, .. })
+            ));
+            click_unit(app, 9993);
+        }
+        663 => {
+            finish_chain_until_choice(app);
+            assert!(app.game.buffed_units.contains(&9993));
+            let bully = app.game.players[0]
+                .units
+                .iter()
+                .find(|unit| unit.id == 9993)
+                .unwrap();
+            assert!(app.game.unit_keywords(bully).ganking);
+            let text = super::live_unit_description(&app.game, 0, 9993).unwrap();
+            assert!(
+                text.contains("BUFFED ·") && text.contains("ACTIVE · Bilgewater Bully: Ganking")
+            );
+            let hound = super::live_unit_description(&app.game, 0, 9995).unwrap();
+            assert!(
+                hound.contains("3 current might")
+                    && hound.contains("another friendly unit is at its location")
+            );
+            capture_unit(app, 9993, "RIFT_SMOKE_C9_BUFFED_SCREENSHOT");
+        }
+        664 => {
+            expansion_fixture(app, 66);
+            app.game.players[0].units = vec![public_unit(9997, 69, None)];
+            app.game.players[0].gear = vec![GearState {
+                id: 9996,
+                card_id: 3,
+                attached_to: None,
+                ready: true,
+                temporary: false,
+                token: false,
+            }];
+            app.game.players[0].any_power = 2;
+            click(app, 315.0, 760.0);
+        }
+        665 => {
+            assert!(app.selection == Some(Selection::Hand(0)));
+            save_state(app);
+            click(app, 400.0, 663.0);
+        }
+        666 => {
+            assert_same_state(app);
+            assert!(
+                app.selection == Some(Selection::Hand(0)),
+                "Loadout preserves a gear-targeting card draft"
+            );
+            assert!(app.targets.is_empty());
+            click(app, 615.0, 760.0);
+        }
+        667 => {
+            assert_same_state(app);
+            assert_eq!(
+                app.targets,
+                vec![Target::Gear {
+                    player: 0,
+                    gear_id: 9996
+                }]
+            );
+            click(app, 1285.0, 510.0);
+        }
+        668 => {
+            finish_chain_until_choice(app);
+            let status = app.game.gear_temporary_status(0, 9996).unwrap();
+            assert!(status.granted && status.active && !status.intrinsic);
+            click(app, 615.0, 760.0);
+        }
+        669 => click_unit(app, 9997),
+        670 => {
+            assert!(app.selection == Some(Selection::Gear(9996)));
+            assert_eq!(
+                app.targets,
+                vec![Target::Unit {
+                    player: 0,
+                    unit_id: 9997
+                }]
+            );
+            click(app, 1285.0, 522.0);
+        }
+        671 => {
+            assert!(
+                app.game.players[0].gear[0].attached_to.is_none(),
+                "Equip still offers responses"
+            );
+            finish_chain_until_choice(app);
+            assert_eq!(app.game.players[0].gear[0].attached_to, Some(9997));
+            let status = app.game.gear_temporary_status(0, 9996).unwrap();
+            assert!(status.granted && status.active && !status.intrinsic);
+            let text = super::live_gear_description(&app.game, 0, 9996).unwrap();
+            assert!(text.contains("Granted Temporary remains active even while attached"));
+            capture_gear(app, 9996, "RIFT_SMOKE_C9_GRANTED_TEMPORARY_SCREENSHOT");
+        }
+        672 => click(app, 1285.0, 595.0),
+        673 => {
+            assert_eq!(app.game.active, 1);
+            app.game.run_ai_turn().unwrap();
+        }
+        674 => {
+            assert_eq!(app.game.active, 0);
+            assert!(app.game.chain.iter().any(|item| item.card_id == 3));
+            assert_eq!(
+                app.game.players[0].gear[0].attached_to,
+                Some(9997),
+                "granted expiration waits on the chain"
+            );
+            capture(app, "RIFT_SMOKE_C9_GRANTED_EXPIRY_SCREENSHOT");
+            finish_chain_until_choice(app);
+            assert!(app.game.players[0].gear.iter().all(|gear| gear.id != 9996));
+            assert!(
+                app.game.players[0].units.iter().any(|unit| unit.id == 9997),
+                "only the gear expires, not its bearer"
+            );
+            assert!(app.game.players[0].discard.contains(&3));
+        }
+        675 => {
             app.ui.input_override = None;
             app.ui.pointer_override = None;
             app.ui.wheel_override = None;
             println!(
-                "PASS: 633 native UI frames including explicit empty/occupied battlefield targets, independent Repeat fields, exact-payment and cost-review cancellation, field drag validation, live local auras and combat conditions, and all previous mat/resource/gear controls."
+                "PASS: 676 native UI frames including stacked equipment Hunt, captured Hunt chain, live Level/rune/Buff conditions, instructed ready tokens, printed and granted Temporary expiry after Equip, global kill replacement choices, conditional channel draw, and all previous mat/resource/gear/field controls."
             );
             return true;
         }
-        _ => panic!("UI smoke runner exceeded its 633-frame script"),
+        _ => panic!("UI smoke runner exceeded its 676-frame script"),
     }
     false
 }

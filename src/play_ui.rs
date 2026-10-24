@@ -25,6 +25,12 @@ pub(super) struct CostEditor {
 pub(super) fn source_label(game: &Game, source: &ChainSource) -> String {
     match *source {
         ChainSource::Card { card_id } => game.catalog[card_id].name.into(),
+        ChainSource::Unit { player, unit_id } => game
+            .players
+            .get(player)
+            .and_then(|state| state.units.iter().find(|unit| unit.id == unit_id))
+            .map(|unit| game.unit_name(unit))
+            .unwrap_or_else(|| "Unit that left play".into()),
         ChainSource::Legend { legend_id, .. } => local_rift::legend_catalog::legend(legend_id)
             .map_or("Legend", |legend| legend.name)
             .into(),
@@ -1114,15 +1120,37 @@ impl App {
         fixed_lane: Option<Option<usize>>,
     ) {
         let name = local_rift::rules::token_spec(card_id).map_or("token", |spec| spec.name);
+        let entry_ready = self
+            .game
+            .pending_tokens()
+            .iter()
+            .find(|token| token.player == 0 && token.card_id == card_id)
+            .is_some_and(|token| token.entry_ready);
+        let base = Action::FinalizeTokenPlay {
+            lane: fixed_lane.flatten(),
+            accelerate: self.options.accelerate,
+        };
+        let accelerate = self
+            .game
+            .play_choices(&base)
+            .ok()
+            .and_then(|view| view.accelerate);
+        let location = match fixed_lane {
+            Some(Some(lane)) => format!("Fixed at field {}.", lane + 1),
+            Some(None) => "Fixed at your base.".into(),
+            None => "Choose base or a field you control.".into(),
+        };
         self.ui
             .title(&format!("Play a {name}"), 1178.0, 366.0, 21.0, TEXT);
         self.ui.wrapped_lines(
             &format!(
-                "{remaining} remaining. {}",
-                if fixed_lane.is_some() {
-                    "This token has a fixed location. Choose whether to pay for ready entry."
+                "{remaining} remaining. {location} {}",
+                if entry_ready {
+                    "Enters ready by instruction."
+                } else if accelerate.is_some() {
+                    "Accelerate can make it enter ready."
                 } else {
-                    "Choose your base or a field you control, and whether to pay for ready entry."
+                    "Normal entry rules apply."
                 }
             ),
             1178.0,
@@ -1132,23 +1160,16 @@ impl App {
             MUTED,
             3,
         );
-        let base = Action::FinalizeTokenPlay {
-            lane: fixed_lane.flatten(),
-            accelerate: self.options.accelerate,
-        };
-        let label = self
-            .game
-            .play_choices(&base)
-            .ok()
-            .and_then(|view| view.accelerate)
-            .map_or("Accelerate".into(), |option| {
+        let label = accelerate
+            .as_ref()
+            .map_or("No optional Accelerate".into(), |option| {
                 format!("Accelerate · {}", value_label(&option.cost))
             });
         if self.ui.button(
             Rect::new(1178.0, 443.0, 212.0, 29.0),
             &label,
             self.options.accelerate,
-            true,
+            accelerate.is_some(),
         ) {
             self.options.accelerate = !self.options.accelerate;
         }

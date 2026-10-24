@@ -300,6 +300,9 @@ def apply_reviews(printings, *, root: Path, project_gallery, plain, manifest=Non
     require(isinstance(history, list), "Invalid historical source issues")
     history_ids = set()
     resolution_printings = {r["id"]: r["official_id"] for r in resolutions}
+    resolutions_by_id = {r["id"]: r for r in resolutions}
+    artwork_issues = []
+    artwork_fields = set()
     for issue in history:
         require(isinstance(issue, dict), "Invalid historical issue entry")
         issue_id = issue.get("review_issue_id")
@@ -312,6 +315,38 @@ def apply_reviews(printings, *, root: Path, project_gallery, plain, manifest=Non
         require(all(resolution_printings[rid] in issue["printing_ids"] for rid in issue["resolution_ids"]),
                 f"Historical resolution belongs to another printing: {issue_id}")
         require(isinstance(issue.get("raw_issue"), dict), f"Missing historical raw issue: {issue_id}")
+        require(issue["raw_issue"].get("kind") != "official_artwork_field_mismatch"
+                or "discovery_basis" in issue, f"Artwork discovery requires evidence basis: {issue_id}")
+        if "discovery_basis" in issue:
+            # A valid but incorrect domain/tag cannot be detected by parsing the
+            # feed alone. Publish this explicit visual observation only after its
+            # exact raw/effective values and original image proof are validated.
+            require(issue["discovery_basis"] == "confirmed_artwork",
+                    f"Unknown historical discovery basis: {issue_id}")
+            raw_issue = issue["raw_issue"]
+            require(set(raw_issue) == {"kind", "official_ids", "field", "values", "detail"}
+                    and raw_issue["kind"] == "official_artwork_field_mismatch",
+                    f"Invalid artwork discovery shape: {issue_id}")
+            require(len(issue["printing_ids"]) == len(issue["resolution_ids"]) == 1
+                    and raw_issue["official_ids"] == issue["printing_ids"],
+                    f"Artwork discovery must identify one printing/resolution: {issue_id}")
+            pid = issue["printing_ids"][0]
+            r = resolutions_by_id[issue["resolution_ids"][0]]
+            field = raw_issue["field"]
+            require(field in GAMEPLAY_FIELDS and field == r["field"]
+                    and r["basis"] == "confirmed_artwork" and r["operation"] == "override",
+                    f"Artwork discovery field/basis differs from resolution: {issue_id}")
+            require((pid, field) not in artwork_fields, f"Duplicate artwork discovery field: {issue_id}")
+            artwork_fields.add((pid, field))
+            expected_values = [{"official_id": pid, "raw_value": preserved[pid][field],
+                                "printed_value": r["effective_value"]}]
+            require(typed_equal(raw_issue["values"], expected_values),
+                    f"Artwork discovery values differ from reviewed evidence: {issue_id}")
+            require(type(raw_issue["detail"]) is str and raw_issue["detail"].strip(),
+                    f"Missing artwork discovery detail: {issue_id}")
+            require(issue.get("discovered_on") == r["reviewed_on"],
+                    f"Artwork discovery date differs from evidence review: {issue_id}")
+            artwork_issues.append(copy.deepcopy(raw_issue))
 
     result = []
     for p in printings:
@@ -342,6 +377,7 @@ def apply_reviews(printings, *, root: Path, project_gallery, plain, manifest=Non
         "printings": result,
         "resolutions": copy.deepcopy(resolutions),
         "historical_issues": copy.deepcopy(history),
+        "artwork_discovery_issues": artwork_issues,
         "evidence_summary": {
             "printing_projection_version": PROJECTION_VERSION,
             "origin_archives": copy.deepcopy(origin_specs),

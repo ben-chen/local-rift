@@ -240,6 +240,11 @@ pub enum Action {
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum ChainAbility {
+    Hunt {
+        source: AbilitySource,
+        amount: u8,
+        source_name: String,
+    },
     Activated {
         source: AbilitySource,
         card_id: CardId,
@@ -392,6 +397,7 @@ pub struct ChainItem {
 /// Canonical definition source, independent of legacy main-card art references.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum ChainSource {
+    Unit { player: usize, unit_id: u32 },
     Card { card_id: CardId },
     Legend { player: usize, legend_id: usize },
     Battlefield { lane: usize, battlefield_id: usize },
@@ -602,6 +608,7 @@ pub struct PendingToken {
     pub card_id: CardId,
     pub might: u8,
     pub gear: bool,
+    pub entry_ready: bool,
     /// None permits the normal location choice; Some(None) mandates base.
     pub location: Option<Option<usize>>,
 }
@@ -686,6 +693,7 @@ pub struct Unit {
 /// Assault is the keyword's value; it increases Might only while attacking.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub struct UnitKeywords {
+    pub hunt: u8,
     pub assault: u8,
     pub shield: u8,
     pub tank: bool,
@@ -790,9 +798,11 @@ pub struct Game {
     pub legend: [LegendState; 2],
     pub battlefields: [usize; 2],
     pub empowered_units: Vec<u32>,
+    pub(crate) granted_temporary_gear: Vec<u32>,
     instructed_kills: Vec<u32>,
     /// Original simultaneous lethal events survive ordered replacements (CR373).
     pending_cleanup_deaths: Option<Vec<(usize, u32)>>,
+    pending_instruction_deaths: Option<Vec<(usize, u32)>>,
     pub buffed_units: Vec<u32>,
     pub optional_power_discount: [u8; 2],
     pub required_trash_play: bool,
@@ -1025,8 +1035,10 @@ impl Game {
             battlefields: std::array::from_fn(|player|custom_decks[player].as_ref()
                 .map_or_else(||default_battlefield(selected_decks[player]),|deck|deck.battlefield)),
             empowered_units: Vec::new(),
+            granted_temporary_gear: Vec::new(),
             instructed_kills: Vec::new(),
             pending_cleanup_deaths: None,
+            pending_instruction_deaths: None,
             buffed_units: Vec::new(),
             optional_power_discount: [0;2],
             required_trash_play:false,
@@ -1126,6 +1138,10 @@ impl Game {
 
     pub fn chain_source(&self, item: &ChainItem) -> ChainSource {
         match item.ability {
+            Some(ChainAbility::Hunt {
+                source: AbilitySource::Unit { player, unit_id },
+                ..
+            }) => ChainSource::Unit { player, unit_id },
             Some(ChainAbility::Legend(_)) => ChainSource::Legend {
                 player: item.player,
                 legend_id: self.legend_id(item.player),
@@ -1141,6 +1157,14 @@ impl Game {
     }
 
     pub fn chain_name(&self, item: &ChainItem) -> String {
+        if let Some(ChainAbility::Hunt {
+            source_name,
+            amount,
+            ..
+        }) = &item.ability
+        {
+            return format!("{source_name} · Hunt {amount}");
+        }
         match &item.ability {
             Some(ChainAbility::Disempower { .. }) => {
                 "Tornado Warrior: disempower at end of turn".into()
@@ -1321,6 +1345,9 @@ impl Game {
         } else {
             for ability in rules::static_abilities(unit.card_id) {
                 match *ability {
+                    StaticAbility::Hunt(value) => {
+                        keywords.hunt = keywords.hunt.saturating_add(value)
+                    }
                     StaticAbility::Assault(value) => {
                         keywords.assault = keywords.assault.saturating_add(value)
                     }
@@ -1351,6 +1378,7 @@ impl Game {
         keywords.deflect = keywords.deflect.saturating_add(conditional.deflect);
         keywords.ganking |= conditional.ganking;
         let gear = self.gear_keywords(unit.id);
+        keywords.hunt = keywords.hunt.saturating_add(gear.hunt);
         keywords.assault = keywords.assault.saturating_add(gear.assault);
         keywords.shield = keywords.shield.saturating_add(gear.shield);
         keywords.deflect = keywords.deflect.saturating_add(gear.deflect);
@@ -2396,6 +2424,10 @@ impl Game {
         });
         if let Some(ability) = item.ability.clone() {
             match ability {
+                ChainAbility::Hunt { amount, .. } => {
+                    self.players[item.player].xp =
+                        self.players[item.player].xp.saturating_add(amount)
+                }
                 ChainAbility::CardTrigger {
                     rule_index,
                     context,
@@ -2656,6 +2688,12 @@ impl Game {
     }
 
     pub(crate) fn after_resolution(&mut self) {
+        if self.pending_instruction_deaths.is_some() {
+            self.finish_instruction_deaths();
+            if self.pending_instruction_deaths.is_some() {
+                return;
+            }
+        }
         if self.resolution_frame.is_some() {
             if self.decision.is_none()
                 && !self.payment_blocks_cleanup()
@@ -3929,6 +3967,18 @@ impl Game {
         location: Option<Option<usize>>,
         gear: bool,
     ) {
+        self.queue_token_play_with_entry(player, card_id, might, location, gear, false);
+    }
+
+    pub(crate) fn queue_token_play_with_entry(
+        &mut self,
+        player: usize,
+        card_id: CardId,
+        might: u8,
+        location: Option<Option<usize>>,
+        gear: bool,
+        entry_ready: bool,
+    ) {
         // CR354.3: a play instructed by a resolving item first becomes Pending.
         // It cannot make choices, enter, or trigger observers until that item
         // finishes and older pending items have finalized (CR337.1.b).
@@ -3947,6 +3997,7 @@ impl Game {
             card_id,
             might,
             gear,
+            entry_ready,
             location,
         };
         self.pending_triggers.push(PendingTrigger {
@@ -3972,6 +4023,9 @@ impl Game {
         } else {
             let entering = self.create_unit(token.player, token.card_id, true, token.might);
             self.players[token.player].units.last_mut().unwrap().lane = lane;
+            if token.entry_ready {
+                self.players[token.player].units.last_mut().unwrap().ready = true;
+            }
             self.on_unit_played(token.player, entering);
         }
     }
@@ -4161,7 +4215,8 @@ impl Game {
         }
         let triggered = matches!(
             ability,
-            ChainAbility::CardTrigger { .. }
+            ChainAbility::Hunt { .. }
+                | ChainAbility::CardTrigger { .. }
                 | ChainAbility::Triggered(_)
                 | ChainAbility::Disempower { .. }
                 | ChainAbility::CardEffect { .. }
@@ -4183,6 +4238,11 @@ impl Game {
         let id = self.next_chain_id;
         self.next_chain_id += 1;
         let label = match &ability {
+            ChainAbility::Hunt {
+                source_name,
+                amount,
+                ..
+            } => format!("{source_name} · Hunt {amount}"),
             ChainAbility::Legend(_) => format!("{} legend", self.legend_def(player).name),
             ChainAbility::Battlefield(a) => format!(
                 "{} trigger",
@@ -6189,6 +6249,50 @@ impl Game {
         }
     }
 
+    pub(crate) fn channel_runes(&mut self, player: usize, count: u8, exhausted: bool) -> u8 {
+        let mut actual = 0;
+        for _ in 0..count {
+            let Some(domain) = self.players[player].rune_deck.pop() else {
+                break;
+            };
+            let index = domain_index(domain);
+            self.players[player].runes[index] += 1;
+            if exhausted {
+                self.players[player].exhausted_runes[index] += 1;
+            } else {
+                self.players[player].energy += 1;
+            }
+            actual += 1;
+        }
+        actual
+    }
+
+    fn deal_area_damage(
+        &mut self,
+        player: usize,
+        amount: u8,
+        selector: rules::AreaSelector,
+        targets: &[Target],
+    ) {
+        let context = self
+            .current_damage_context()
+            .unwrap_or(damage::DamageContext {
+                player,
+                bonus_damage: 0,
+                dealer: damage::DamageDealer::Ability,
+            });
+        let packets: Vec<_> = self
+            .area_damage_targets(player, selector, targets)
+            .into_iter()
+            .map(|t| (t, self.damage_amount(context, t, amount)))
+            .collect();
+        for (target, amount) in packets {
+            if let Some(unit) = self.unit_mut(target) {
+                unit.damage = unit.damage.saturating_add(amount);
+            }
+        }
+    }
+
     fn area_damage_targets(
         &self,
         player: usize,
@@ -6226,8 +6330,10 @@ impl Game {
     }
 
     fn area_damage_score(&self, player: usize, id: CardId, targets: &[Target]) -> i32 {
-        let OfficialEffect::AreaDamage { amount, selector } = rules::effect(id) else {
-            return 0;
+        let (amount, selector) = match rules::effect(id) {
+            OfficialEffect::AreaDamage { amount, selector }
+            | OfficialEffect::ExhaustFriendlyAndDamage { amount, selector } => (amount, selector),
+            _ => return 0,
         };
         let context = damage::DamageContext {
             player,
@@ -6347,24 +6453,51 @@ impl Game {
                 }
             }
             OfficialEffect::AreaDamage { amount, selector } => {
-                let context = self
-                    .current_damage_context()
-                    .unwrap_or(damage::DamageContext {
-                        player,
-                        bonus_damage: 0,
-                        dealer: damage::DamageDealer::Ability,
-                    });
-                // One Deal action: freeze recipients and amounts before any marks.
-                let packets: Vec<_> = self
-                    .area_damage_targets(player, selector, &valid)
-                    .into_iter()
-                    .map(|target| (target, self.damage_amount(context, target, amount)))
+                self.deal_area_damage(player, amount, selector, &valid)
+            }
+            OfficialEffect::KillAllUnits => {
+                let targets: Vec<_> = self
+                    .players
+                    .iter()
+                    .enumerate()
+                    .flat_map(|(player, state)| {
+                        state.units.iter().map(move |u| Target::Unit {
+                            player,
+                            unit_id: u.id,
+                        })
+                    })
                     .collect();
-                for (target, amount) in packets {
-                    if let Some(unit) = self.unit_mut(target) {
-                        unit.damage = unit.damage.saturating_add(amount);
-                    }
+                self.kill_units(&targets);
+            }
+            OfficialEffect::Channel {
+                count,
+                exhausted,
+                fallback_draw,
+            } => {
+                if self.channel_runes(player, count, exhausted) < count {
+                    self.draw(player, fallback_draw);
                 }
+            }
+            OfficialEffect::FriendlyMight(amount)
+            | OfficialEffect::ReadyFriendlyAndMight(amount) => {
+                let ids: Vec<_> = self.players[player].units.iter().map(|u| u.id).collect();
+                if matches!(rules::effect(id), OfficialEffect::ReadyFriendlyAndMight(_)) {
+                    for &unit_id in &ids {
+                        self.ready_unit_by(player, player, unit_id);
+                    }
+                    self.trigger_batch += 1;
+                }
+                for unit_id in ids {
+                    self.modify_might(Target::Unit { player, unit_id }, i16::from(amount), 0);
+                }
+            }
+            OfficialEffect::ExhaustFriendlyAndDamage { amount, selector } => {
+                let ids: Vec<_> = self.players[player].units.iter().map(|u| u.id).collect();
+                for unit_id in ids {
+                    self.exhaust_unit(player, unit_id);
+                }
+                self.trigger_batch += 1;
+                self.deal_area_damage(player, amount, selector, &[]);
             }
             effect @ (OfficialEffect::EmpoweredFight { .. }
             | OfficialEffect::DamageAndGold { .. }
@@ -7132,13 +7265,16 @@ impl Game {
     fn death_replacements(&self, player: usize) -> Vec<DeathReplacement> {
         let mut choices = Vec::new();
         for unit in self.players[player].units.iter().filter(|u| {
-            self.pending_cleanup_deaths.as_ref().map_or_else(
-                || {
-                    self.instructed_kills.contains(&u.id)
-                        || (u.damage > 0 && u.damage >= self.unit_might(u))
-                },
-                |events| events.contains(&(player, u.id)),
-            )
+            self.pending_instruction_deaths
+                .as_ref()
+                .or(self.pending_cleanup_deaths.as_ref())
+                .map_or_else(
+                    || {
+                        self.instructed_kills.contains(&u.id)
+                            || (u.damage > 0 && u.damage >= self.unit_might(u))
+                    },
+                    |events| events.contains(&(player, u.id)),
+                )
         }) {
             for gear in &self.players[player].gear {
                 if !gear.token
@@ -7163,6 +7299,9 @@ impl Game {
 
     fn apply_death_replacement(&mut self, player: usize, choice: DeathReplacement) {
         self.instructed_kills.retain(|id| *id != choice.unit_id);
+        if let Some(events) = self.pending_instruction_deaths.as_mut() {
+            events.retain(|(_, id)| *id != choice.unit_id);
+        }
         if let Some(events) = self.pending_cleanup_deaths.as_mut() {
             events.retain(|(_, id)| *id != choice.unit_id);
         }
@@ -7209,27 +7348,67 @@ impl Game {
     }
 
     fn kill_unit(&mut self, target: Target) {
-        let Target::Unit { player, unit_id } = target else {
-            return;
-        };
-        let Some(unit) = self.unit_ref(target).cloned() else {
-            return;
-        };
-        self.instructed_kills.push(unit_id);
-        let options: Vec<_> = self
-            .death_replacements(player)
-            .into_iter()
-            .filter(|o| o.unit_id == unit_id)
-            .collect();
-        if options.len() > 1 {
-            if let Some(old) = self.decision.take() {
-                self.pending_decisions.push_front(old);
+        self.kill_units(&[target]);
+    }
+
+    /// One instruction produces one fixed simultaneous death action (CR370.1).
+    /// Replacement actions complete before the remaining original victims die.
+    fn kill_units(&mut self, targets: &[Target]) {
+        debug_assert!(self.pending_instruction_deaths.is_none());
+        let mut events = Vec::new();
+        for &target in targets {
+            if let Target::Unit { player, unit_id } = target
+                && self.unit_ref(target).is_some()
+                && !events.contains(&(player, unit_id))
+            {
+                events.push((player, unit_id));
             }
-            self.decision = Some(Decision::DeathReplacement { player, options });
-        } else if let Some(choice) = options.first() {
-            self.apply_death_replacement(player, *choice);
-        } else {
-            self.remove_death_set(vec![(player, unit)]);
+        }
+        if events.is_empty() {
+            return;
+        }
+        self.pending_instruction_deaths = Some(events);
+        self.finish_instruction_deaths();
+    }
+
+    fn finish_instruction_deaths(&mut self) {
+        if matches!(self.decision, Some(Decision::DeathReplacement { .. })) {
+            return;
+        }
+        for player in [self.active, 1 - self.active] {
+            loop {
+                let options = self.death_replacements(player);
+                if options.len() > 1 {
+                    if let Some(old) = self.decision.take() {
+                        self.pending_decisions.push_front(old);
+                    }
+                    self.decision = Some(Decision::DeathReplacement { player, options });
+                    return;
+                }
+                if let Some(&choice) = options.first() {
+                    self.apply_death_replacement(player, choice);
+                } else {
+                    break;
+                }
+            }
+        }
+        let doomed = self
+            .pending_instruction_deaths
+            .take()
+            .unwrap()
+            .into_iter()
+            .filter_map(|(player, id)| {
+                self.players[player]
+                    .units
+                    .iter()
+                    .find(|u| u.id == id)
+                    .cloned()
+                    .map(|u| (player, u))
+            })
+            .collect::<Vec<_>>();
+        if !doomed.is_empty() {
+            self.remove_death_set(doomed);
+            self.trigger_batch += 1;
         }
     }
 
@@ -7491,6 +7670,26 @@ impl Game {
             .map(|u| u.id)
             .collect();
         for id in ids {
+            if let Some(unit) = self.players[player].units.iter().find(|unit| unit.id == id) {
+                let amount = self.unit_keywords(unit).hunt;
+                if amount > 0 {
+                    let card_id = unit.card_id;
+                    let source_name = self.unit_name(unit);
+                    self.queue_ability(
+                        player,
+                        card_id,
+                        vec![],
+                        ChainAbility::Hunt {
+                            source: AbilitySource::Unit {
+                                player,
+                                unit_id: id,
+                            },
+                            amount,
+                            source_name,
+                        },
+                    );
+                }
+            }
             self.emit_unit_event(
                 if holding {
                     Occurrence::Hold
@@ -7517,7 +7716,6 @@ impl Game {
             let effect = match card {
                 49 if !holding => Some(TriggeredAbility::Draw(1)),
                 33 if !holding => Some(TriggeredAbility::GrantFlow),
-                22 => Some(TriggeredAbility::Xp(2)),
                 _ => None,
             };
             if let Some(effect) = effect {
@@ -7575,6 +7773,48 @@ impl Game {
                 return first.clone();
             }
             let preferred = match decision {
+                Decision::TriggerTargets {
+                    player,
+                    card_id: 333,
+                    ..
+                } => actions
+                    .iter()
+                    .filter_map(|action| {
+                        let Action::ChooseTriggerTargets { targets } = action else {
+                            return None;
+                        };
+                        let value: i32 = targets
+                            .iter()
+                            .filter_map(|&target| {
+                                let unit = self.unit_ref(target)?;
+                                let Target::Unit { player: owner, .. } = target else {
+                                    return None;
+                                };
+                                let amount = self.damage_amount(
+                                    damage::DamageContext {
+                                        player: *player,
+                                        bonus_damage: 0,
+                                        dealer: damage::DamageDealer::Ability,
+                                    },
+                                    target,
+                                    1,
+                                );
+                                let value = i32::from(amount) * 4
+                                    + if amount > 0
+                                        && unit.damage.saturating_add(amount)
+                                            >= self.unit_might(unit)
+                                    {
+                                        30
+                                    } else {
+                                        0
+                                    };
+                                Some(if owner == *player { -value } else { value })
+                            })
+                            .sum();
+                        Some((value, action))
+                    })
+                    .max_by_key(|(value, _)| *value)
+                    .map(|(_, action)| action.clone()),
                 Decision::PredictCards {
                     player,
                     choice_id,
@@ -7871,6 +8111,35 @@ impl Game {
             .prepare_targets(actor, id, None, &[])
             .unwrap_or_default();
         match rules::effect(id) {
+            OfficialEffect::KillAllUnits => {
+                let value = |p: usize| {
+                    self.players[p]
+                        .units
+                        .iter()
+                        .map(|u| 25 + i32::from(self.unit_might(u)) * 4)
+                        .sum::<i32>()
+                };
+                (value(1 - actor) - value(actor)).max(0)
+            }
+            OfficialEffect::Channel { .. } => 30,
+            OfficialEffect::FriendlyMight(_) => {
+                if in_combat {
+                    70
+                } else {
+                    0
+                }
+            }
+            OfficialEffect::ReadyFriendlyAndMight(_) => {
+                if in_combat || self.players[actor].units.iter().any(|u| !u.ready) {
+                    70
+                } else {
+                    0
+                }
+            }
+            OfficialEffect::ExhaustFriendlyAndDamage { .. } => (self
+                .area_damage_score(actor, id, &targets)
+                - self.players[actor].units.iter().filter(|u| u.ready).count() as i32 * 8)
+                .max(0),
             OfficialEffect::AreaDamage { .. } => self.area_damage_score(actor, id, &targets).max(0),
             OfficialEffect::Kill { .. } => {
                 if targets
@@ -9606,11 +9875,25 @@ mod tests {
         assert_eq!(game.players[0].score, 1);
         assert_eq!(game.players[0].total_runes(), 2);
         assert_eq!(game.players[0].hand.len(), hand);
+        let hunt = game.chain.last().unwrap();
         assert!(matches!(
-            game.chain.last().unwrap().ability,
-            Some(ChainAbility::Triggered(TriggeredAbility::Xp(2)))
+            &hunt.ability,
+            Some(ChainAbility::Hunt {
+                source: AbilitySource::Unit { player: 0, unit_id },
+                amount: 2,
+                source_name,
+            }) if *unit_id == yi && source_name == game.catalog[22].name
         ));
+        assert_eq!(
+            game.chain_source(hunt),
+            ChainSource::Unit {
+                player: 0,
+                unit_id: yi
+            }
+        );
+        assert_eq!(game.players[0].xp, 0);
         finish_windows(&mut game);
+        assert_eq!(game.players[0].xp, 2);
         assert_eq!(game.players[0].total_runes(), 4);
         assert_eq!(game.players[0].hand.len(), hand + 1);
         assert!(

@@ -894,16 +894,16 @@ impl Game {
                     }
                 }
                 Effect::Damage(amount) => {
-                    for &target in &targets {
-                        let amount = self.damage_amount(
-                            crate::game::damage::DamageContext {
-                                player,
-                                bonus_damage: 0,
-                                dealer: crate::game::damage::DamageDealer::Ability,
-                            },
-                            target,
-                            amount,
-                        );
+                    let context = crate::game::damage::DamageContext {
+                        player,
+                        bonus_damage: 0,
+                        dealer: crate::game::damage::DamageDealer::Ability,
+                    };
+                    let packets: Vec<_> = targets
+                        .iter()
+                        .map(|&target| (target, self.damage_amount(context, target, amount)))
+                        .collect();
+                    for (target, amount) in packets {
                         if let Some(unit) = self.unit_mut(target) {
                             unit.damage = unit.damage.saturating_add(amount);
                         }
@@ -931,23 +931,9 @@ impl Game {
                 Effect::Predict => self.predict(player),
                 Effect::PredictMany(n) => self.predict_many(player, n),
                 Effect::Channel { count, exhausted } => {
-                    for _ in 0..count {
-                        if let Some(domain) = self.players[player].rune_deck.pop() {
-                            let index = domain_index(domain);
-                            self.players[player].runes[index] += 1;
-                            if exhausted {
-                                self.players[player].exhausted_runes[index] += 1;
-                            } else {
-                                self.players[player].energy += 1;
-                            }
-                        }
-                    }
+                    self.channel_runes(player, count, exhausted);
                 }
-                Effect::KillTargets => {
-                    for &target in &targets {
-                        self.kill_unit(target);
-                    }
-                }
+                Effect::KillTargets => self.kill_units(&targets),
                 Effect::DamageIfSourceEmpowered { base, empowered } => {
                     let amount = if Self::source_target(context.source)
                         .and_then(|t| self.unit_ref(t))
@@ -975,6 +961,7 @@ impl Game {
                     gear,
                     opponent,
                     location,
+                    entry_ready,
                 } => {
                     let owner = if opponent { 1 - player } else { player };
                     let location = match location {
@@ -988,7 +975,14 @@ impl Game {
                         }
                     };
                     for _ in 0..count {
-                        self.queue_token_play(owner, card_id, might, location, gear);
+                        self.queue_token_play_with_entry(
+                            owner,
+                            card_id,
+                            might,
+                            location,
+                            gear,
+                            entry_ready,
+                        );
                     }
                 }
                 Effect::Points(n) => {

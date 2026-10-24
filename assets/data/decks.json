@@ -8042,6 +8042,620 @@
         "Taric",
         "Mount Targon"
       ]
+    },
+    {
+      "id": 308,
+      "name": "The Ruination",
+      "official_id": "unl-180-219",
+      "energy": 9,
+      "power": 3,
+      "might": 0,
+      "domains": [
+        "Order"
+      ],
+      "kind": "Spell",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/f1fea5bfad864f8d58b1b55b04de951285f6ad4e-744x1039.png?w=280&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "Kill all units.",
+      "official_text_html": "<p>Kill all units.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": []
+    },
+    {
+      "id": 309,
+      "name": "Mobilize",
+      "official_id": "ogn-134-298",
+      "energy": 2,
+      "power": 0,
+      "might": 0,
+      "domains": [
+        "Body"
+      ],
+      "kind": "Spell",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/cb22153e84ce250192b8e6e75e7f4dc0b66a728c-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "Channel 1 rune exhausted. If you can't, draw 1.",
+      "official_text_html": "<p>Channel 1 rune exhausted. If you can't, draw 1.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": []
+    },
+    {
+      "id": 310,
+      "name": "Catalyst of Aeons",
+      "official_id": "ogn-138-298",
+      "energy": 4,
+      "power": 0,
+      "might": 0,
+      "domains": [
+        "Body"
+      ],
+      "kind": "Spell",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/4753707323ab6f9ac572c097f29f2f76ac62f54f-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "Channel 2 runes exhausted. If you couldn't channel 2 runes this way, draw 1.",
+      "official_text_html": "<p>Channel 2 runes exhausted. If you couldn't channel 2 runes this way, draw 1.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": []
+    },
+    {
+      "id": 311,
+      "name": "Grand Strategem",
+      "official_id": "ogn-233-298",
+      "energy": 6,
+      "power": 3,
+      "might": 0,
+      "domains": [
+        "Order"
+      ],
+      "kind": "Spell",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/bda7514aefa94ac3f368690cdd2d0f955d44c089-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Action] (Play on your turn or in showdowns.)\nGive friendly units +5 Might this turn.",
+      "official_text_html": "<p>[Action] (Play on your turn or in showdowns.)<br />Give friendly units +5 :rb_might: this turn.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Action"
+      ],
+      "tags": []
+    },
+    {
+      "id": 312,
+      "name": "Raucous Anthem",
+      "official_id": "rad-134-167",
+      "energy": 7,
+      "power": 1,
+      "might": 0,
+      "domains": [
+        "Order"
+      ],
+      "kind": "Spell",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/0c307d5f4785efc4f0a4c8e486b53735f8cf04aa-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "Ready your units and give them +3 Might this turn.",
+      "official_text_html": "<p>Ready your units and give them +3 :rb_might: this turn.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": []
+    },
+    {
+      "id": 313,
+      "name": "Unchecked Power",
+      "official_id": "ogn-123-298",
+      "energy": 7,
+      "power": 2,
+      "might": 0,
+      "domains": [
+        "Mind"
+      ],
+      "kind": "Spell",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/c44cd1f6f41144c770ac79f10e5ae75f0c6d6435-744x1039.png?w=320&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "Exhaust all friendly units, then deal 12 to ALL units at battlefields.",
+      "official_text_html": "<p>Exhaust all friendly units, then deal 12 to ALL units at battlefields.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": []
+    },
+    {
+      "id": 314,
+      "name": "Harnessed Dragon",
+      "official_id": "ogn-234-298",
+      "energy": 8,
+      "power": 2,
+      "might": 6,
+      "domains": [
+        "Order"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/00bc15bc1c2f5b8e6d1713819998df1c04864dcb-744x1039.png?w=320&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "When you play me, kill an enemy unit.",
+      "official_text_html": "<p>When you play me, kill an enemy unit.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": [
+        "Dragon",
+        "Demacia"
+      ]
+    },
+    {
+      "id": 315,
+      "name": "Sandshifter",
+      "official_id": "sfd-158-221",
+      "energy": 5,
+      "power": 2,
+      "might": 6,
+      "domains": [
+        "Order"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/57f72b30862074bb5d1f302e86ee3cec024cd980-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "When you play me, kill an enemy unit with 3 Might or less.",
+      "official_text_html": "<p>When you play me, kill an enemy unit with 3 :rb_might: or less.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": [
+        "Shurima"
+      ]
+    },
+    {
+      "id": 316,
+      "name": "Ruined Rex",
+      "official_id": "unl-067-219",
+      "energy": 6,
+      "power": 1,
+      "might": 6,
+      "domains": [
+        "Mind"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/05fc9613bd3a3c3c5002ff1d7d665b37fd18dcb7-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Deathknell][>] Deal 4 to an enemy unit. (When I die, get the effect.)",
+      "official_text_html": "<p>[Deathknell][&gt;] Deal 4 to an enemy unit. (When I die, get the effect.)</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Deathknell"
+      ],
+      "tags": [
+        "Bilgewater"
+      ]
+    },
+    {
+      "id": 317,
+      "name": "Inviolus Vox",
+      "official_id": "unl-027-219",
+      "energy": 8,
+      "power": 2,
+      "might": 8,
+      "domains": [
+        "Fury"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/9b742ef3dc17f5da03d41e3349839037183b5ea9-744x1039.png?w=320&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "When I conquer, give a friendly unit +8 Might this turn.",
+      "official_text_html": "<p>When I conquer, give a friendly unit +8 :rb_might: this turn.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": [
+        "Dragon",
+        "Mount Targon"
+      ]
+    },
+    {
+      "id": 318,
+      "name": "Industrious Mechsmith",
+      "official_id": "rad-049-167",
+      "energy": 4,
+      "power": 0,
+      "might": 1,
+      "domains": [
+        "Mind"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/c8f6b4191874f23b522566f8ebeeb6e5ee18eb7f-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "When you play me, play a 3 Might Mech unit token here.",
+      "official_text_html": "<p>When you play me, play a 3 :rb_might: Mech unit token here.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": [
+        "Zaun"
+      ]
+    },
+    {
+      "id": 319,
+      "name": "Antagonistic Apparatus",
+      "official_id": "rad-009-167",
+      "energy": 6,
+      "power": 1,
+      "might": 3,
+      "domains": [
+        "Fury"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/5be775464c8b897501317c6d32fd60c8b962b5c2-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "I enter ready.\nWhen you play me, play a ready 3 Might Mech unit token here.",
+      "official_text_html": "<p>I enter ready.<br />When you play me, play a ready 3 :rb_might: Mech unit token here.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": [
+        "Bandle City",
+        "Yordle",
+        "Mech"
+      ]
+    },
+    {
+      "id": 320,
+      "name": "Garen, Commander",
+      "official_id": "ogs-013-024",
+      "energy": 6,
+      "power": 1,
+      "might": 5,
+      "domains": [
+        "Order"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/cbf2c12d69a86566e4cda07050b2d4495e40187e-744x1039.png?w=320&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "Other friendly units have +1 Might here.",
+      "official_text_html": "<p>Other friendly units have +1 :rb_might: here.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": [
+        "Elite",
+        "Garen",
+        "Demacia"
+      ]
+    },
+    {
+      "id": 321,
+      "name": "Wizened Elder",
+      "official_id": "ogn-065-298",
+      "energy": 4,
+      "power": 0,
+      "might": 4,
+      "domains": [
+        "Calm"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/7b98797789ad7e3a6cf52126b82a42ec6f269bb7-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "While I'm buffed, I have an additional +1 Might.",
+      "official_text_html": "<p>While I'm buffed, I have an additional +1 :rb_might:.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": [
+        "Ionia"
+      ]
+    },
+    {
+      "id": 322,
+      "name": "Bilgewater Bully",
+      "official_id": "ogn-125-298",
+      "energy": 6,
+      "power": 0,
+      "might": 6,
+      "domains": [
+        "Body"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/474f66ffa1ecebd9e0341d644cb82a3b8135eece-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "While I'm buffed, I have [Ganking]. (I can move from battlefield to battlefield.)",
+      "official_text_html": "<p>While I'm buffed, I have [Ganking]. (I can move from battlefield to battlefield.)</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Ganking"
+      ],
+      "tags": [
+        "Bilgewater"
+      ]
+    },
+    {
+      "id": 323,
+      "name": "Trusty Ramhound",
+      "official_id": "sfd-159-221",
+      "energy": 2,
+      "power": 0,
+      "might": 2,
+      "domains": [
+        "Order"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/0bd3f82ebe45a4dc09204582d06900916e6c0480-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "While you have another unit here, I have +1 Might.",
+      "official_text_html": "<p>While you have another unit here, I have +1 :rb_might:.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": [
+        "Dog",
+        "Elite",
+        "Demacia"
+      ]
+    },
+    {
+      "id": 324,
+      "name": "Soul Shepherd",
+      "official_id": "unl-077-219",
+      "energy": 5,
+      "power": 0,
+      "might": 3,
+      "domains": [
+        "Mind"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/cb2a157e715ef103e688e094c21f772003775e45-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "Your token units have +1 Might.",
+      "official_text_html": "<p>Your token units have +1 :rb_might:.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": [
+        "Shadow Isles"
+      ]
+    },
+    {
+      "id": 325,
+      "name": "Master Yi, Meditative",
+      "official_id": "ogs-004-024",
+      "energy": 5,
+      "power": 1,
+      "might": 4,
+      "domains": [
+        "Calm"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/5508566c8f05f09492148faa803332a731095eb7-744x1039.png?w=320&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "While you have 8+ runes, I have +4 Might.",
+      "official_text_html": "<p>While you have 8+ runes, I have +4 :rb_might:.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": [
+        "Master Yi",
+        "Ionia"
+      ]
+    },
+    {
+      "id": 326,
+      "name": "Targonian Visionary",
+      "official_id": "unl-098-219",
+      "energy": 6,
+      "power": 0,
+      "might": 6,
+      "domains": [
+        "Body"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/fe645cecdd1f251218f5bf33225cde6c1e12b67e-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Level 11][>] I have +4 Might. (While you have 11+ XP, get the effect.)",
+      "official_text_html": "<p>[Level 11][&gt;] I have +4 :rb_might:. (While you have 11+ XP, get the effect.)</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": [
+        "Mount Targon"
+      ]
+    },
+    {
+      "id": 327,
+      "name": "Protector's Shield",
+      "official_id": "rad-123-167",
+      "energy": 2,
+      "power": 1,
+      "might": 1,
+      "domains": [
+        "Order"
+      ],
+      "kind": "Gear",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/97618bc30e9b65a2e5223e6f94db58d7098d30a6-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Quick-Draw] (This has [Reaction]. When you play it, attach it to a unit you control.)\n[Equip] [1 Energy] ([1 Energy]: Attach this to a unit you control.)\nAttached unit (+1 Might): [Tank] (I must be assigned combat damage first.)",
+      "official_text_html": "<p>[Quick-Draw] (This has [Reaction]. When you play it, attach it to a unit you control.)<br />[Equip] :rb_energy_1: (:rb_energy_1:: Attach this to a unit you control.)</p>",
+      "equipment_effect_html": "<p>[Tank] (I must be assigned combat damage first.)</p>",
+      "equipment_effect": "[Tank] (I must be assigned combat damage first.)",
+      "might_bonus": 1,
+      "keywords": [
+        "Equip",
+        "Quick-Draw",
+        "Reaction",
+        "Tank"
+      ],
+      "tags": [
+        "Equipment"
+      ]
+    },
+    {
+      "id": 328,
+      "name": "Hunter's Machete",
+      "official_id": "unl-096-219",
+      "energy": 3,
+      "power": 0,
+      "might": 2,
+      "domains": [
+        "Body"
+      ],
+      "kind": "Gear",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/374fd9220c204810c2b1abd48217b4d233362753-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Equip] [Body Power] ([Body Power]: Attach this to a unit you control.)\nAttached unit (+2 Might): [Hunt] (When I conquer or hold, gain 1 XP.)",
+      "official_text_html": "<p>[Equip] :rb_rune_body: (:rb_rune_body:: Attach this to a unit you control.)</p>",
+      "equipment_effect_html": "<p>[Hunt] (When I conquer or hold, gain 1 XP.)</p>",
+      "equipment_effect": "[Hunt] (When I conquer or hold, gain 1 XP.)",
+      "might_bonus": 2,
+      "keywords": [
+        "Equip",
+        "Hunt"
+      ],
+      "tags": [
+        "Equipment"
+      ]
+    },
+    {
+      "id": 329,
+      "name": "Boneshiver",
+      "official_id": "sfd-118-221",
+      "energy": 3,
+      "power": 0,
+      "might": 2,
+      "domains": [
+        "Body"
+      ],
+      "kind": "Gear",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/c3e4d8c3f3975a7429428ac90e5ebcffa1f8e5a9-744x1039.png?w=320&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Equip] [1 Energy][Body Power] ([1 Energy][Body Power]: Attach this to a unit you control.)\nAttached unit (+2 Might): When I conquer, channel 1 rune exhausted.",
+      "official_text_html": "<p>[Equip] :rb_energy_1::rb_rune_body: (:rb_energy_1::rb_rune_body:: Attach this to a unit you control.)</p>",
+      "equipment_effect_html": "<p>When I conquer, channel 1 rune exhausted.</p>",
+      "equipment_effect": "When I conquer, channel 1 rune exhausted.",
+      "might_bonus": 2,
+      "keywords": [
+        "Equip"
+      ],
+      "tags": [
+        "Equipment"
+      ]
+    },
+    {
+      "id": 330,
+      "name": "Soul Sword",
+      "official_id": "unl-039-219",
+      "energy": 1,
+      "power": 0,
+      "might": 1,
+      "domains": [
+        "Calm"
+      ],
+      "kind": "Gear",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/519361230cb8554cdf0f5dd795e115ffbb5bb932-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Equip] [Calm Power] ([Calm Power]: Attach this to a unit you control.)\nAttached unit (+1 Might): [Level 3][>] I have an additional +1 Might. (While you have 3+ XP, get the effect.)",
+      "official_text_html": "<p>[Equip] :rb_rune_calm: (:rb_rune_calm:: Attach this to a unit you control.)</p>",
+      "equipment_effect_html": "<p>[Level 3][&gt;] I have an additional +1 :rb_might:. (While you have 3+ XP, get the effect.)</p>",
+      "equipment_effect": "[Level 3][>] I have an additional +1 Might. (While you have 3+ XP, get the effect.)",
+      "might_bonus": 1,
+      "keywords": [
+        "Equip"
+      ],
+      "tags": [
+        "Equipment"
+      ]
+    },
+    {
+      "id": 331,
+      "name": "Petricite Monument",
+      "official_id": "sfd-104-221",
+      "energy": 2,
+      "power": 0,
+      "might": 0,
+      "domains": [
+        "Body"
+      ],
+      "kind": "Gear",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/c994dcefe24e00f8033bc31327bf7dbe4a8703d1-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Temporary] (Kill this at the start of its controller's Beginning Phase, before scoring.)\nFriendly units have [Deflect]. (Opponents must pay [Any Power] to choose them with a spell or ability.)",
+      "official_text_html": "<p>[Temporary] (Kill this at the start of its controller's Beginning Phase, before scoring.)<br />Friendly units have [Deflect]. (Opponents must pay :rb_rune_rainbow: to choose them with a spell or ability.)</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Deflect",
+        "Temporary"
+      ],
+      "tags": []
+    },
+    {
+      "id": 332,
+      "name": "Ribbon Dancer",
+      "official_id": "sfd-038-221",
+      "energy": 3,
+      "power": 0,
+      "might": 3,
+      "domains": [
+        "Calm"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/92550ab70647046115133c7547423bcf308906f6-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "When I move to a battlefield, give another friendly unit +1 Might this turn.",
+      "official_text_html": "<p>When I move to a battlefield, give another friendly unit +1 :rb_might: this turn.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": [
+        "Ionia"
+      ]
+    },
+    {
+      "id": 333,
+      "name": "Bilgewater Tracker",
+      "official_id": "rad-003-167",
+      "energy": 3,
+      "power": 0,
+      "might": 3,
+      "domains": [
+        "Fury"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/b660759a6bcb9c7ca41ea969cf11463259e284c9-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "When you play me, deal 1 to each of up to 2 units.",
+      "official_text_html": "<p>When you play me, deal 1 to each of up to 2 units.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": [
+        "Bilgewater"
+      ]
     }
   ],
   "official_text_note": "Official card/legend rules text from the Riot Card Gallery, retrieved 2026-10-24 and corrected by cited errata. Resource icon tokens are expanded to readable bracketed names. Raw card and equipment HTML is preserved separately. Official text does not establish full implementation fidelity."

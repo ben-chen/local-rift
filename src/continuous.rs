@@ -11,6 +11,10 @@ pub enum SourceCondition {
     NotEmpowered,
     AttackingWithAnother,
     CombatAlone,
+    Buffed,
+    OtherFriendlyHere,
+    ControllerRunesAtLeast(u8),
+    ControllerXpAtLeast(u8),
 }
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Recipients {
@@ -18,6 +22,8 @@ pub enum Recipients {
     FriendlyUnits,
     FriendlyEmpoweredUnits,
     OtherFriendlyUnitsHere,
+    FriendlyTokenUnits,
+    AttachedBearer,
 }
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum PassiveKeyword {
@@ -56,6 +62,87 @@ pub fn passive_rules(id: CardId) -> &'static [PassiveRule] {
     use PassiveEffect::*;
     use PassiveKeyword::*;
     match id {
+        320 => {
+            const {
+                &[PassiveRule {
+                    condition: SourceCondition::Always,
+                    recipients: Recipients::OtherFriendlyUnitsHere,
+                    effect: Might(1),
+                }]
+            }
+        }
+        321 => {
+            const {
+                &[PassiveRule {
+                    condition: SourceCondition::Buffed,
+                    recipients: Recipients::SelfUnit,
+                    effect: Might(1),
+                }]
+            }
+        }
+        322 => {
+            const {
+                &[PassiveRule {
+                    condition: SourceCondition::Buffed,
+                    recipients: Recipients::SelfUnit,
+                    effect: Keyword(Ganking),
+                }]
+            }
+        }
+        323 => {
+            const {
+                &[PassiveRule {
+                    condition: SourceCondition::OtherFriendlyHere,
+                    recipients: Recipients::SelfUnit,
+                    effect: Might(1),
+                }]
+            }
+        }
+        324 => {
+            const {
+                &[PassiveRule {
+                    condition: SourceCondition::Always,
+                    recipients: Recipients::FriendlyTokenUnits,
+                    effect: Might(1),
+                }]
+            }
+        }
+        325 => {
+            const {
+                &[PassiveRule {
+                    condition: SourceCondition::ControllerRunesAtLeast(8),
+                    recipients: Recipients::SelfUnit,
+                    effect: Might(4),
+                }]
+            }
+        }
+        326 => {
+            const {
+                &[PassiveRule {
+                    condition: SourceCondition::ControllerXpAtLeast(11),
+                    recipients: Recipients::SelfUnit,
+                    effect: Might(4),
+                }]
+            }
+        }
+        330 => {
+            const {
+                &[PassiveRule {
+                    condition: SourceCondition::ControllerXpAtLeast(3),
+                    recipients: Recipients::AttachedBearer,
+                    effect: Might(1),
+                }]
+            }
+        }
+        331 => {
+            const {
+                &[PassiveRule {
+                    condition: SourceCondition::Always,
+                    recipients: Recipients::FriendlyUnits,
+                    effect: Keyword(Deflect(1)),
+                }]
+            }
+        }
         304 => {
             const {
                 &[PassiveRule {
@@ -162,7 +249,7 @@ impl Game {
                     self.players[owner]
                         .gear
                         .iter()
-                        .filter(|g| !g.token && g.attached_to.is_none())
+                        .filter(|g| !g.token)
                         .map(|g| {
                             (
                                 BoardObject::Gear {
@@ -175,7 +262,31 @@ impl Game {
                 );
             for (source, card_id) in sources {
                 for (rule_index, rule) in passive_rules(card_id).iter().enumerate() {
+                    let attachment = if let BoardObject::Gear { gear_id, .. } = source {
+                        self.players[owner]
+                            .gear
+                            .iter()
+                            .find(|gear| gear.id == gear_id)
+                            .and_then(|gear| gear.attached_to)
+                    } else {
+                        None
+                    };
+                    if matches!(source, BoardObject::Gear { .. })
+                        && attachment.is_some() != (rule.recipients == Recipients::AttachedBearer)
+                    {
+                        continue;
+                    }
                     let recipient = match rule.recipients {
+                        Recipients::AttachedBearer => {
+                            owner == player && attachment == Some(unit_id)
+                        }
+                        Recipients::FriendlyTokenUnits => {
+                            owner == player
+                                && self.players[player]
+                                    .units
+                                    .iter()
+                                    .any(|unit| unit.id == unit_id && unit.token)
+                        }
                         Recipients::SelfUnit => source == target,
                         Recipients::OtherFriendlyUnitsHere => {
                             owner == player
@@ -204,6 +315,27 @@ impl Game {
                     }
                     let source_active = match rule.condition {
                         SourceCondition::Always => true,
+                        SourceCondition::Buffed => {
+                            matches!(source, BoardObject::Unit { unit_id, .. } if self.buffed_units.contains(&unit_id))
+                        }
+                        SourceCondition::ControllerRunesAtLeast(count) => {
+                            self.players[owner].total_runes() >= count
+                        }
+                        SourceCondition::ControllerXpAtLeast(count) => {
+                            self.players[owner].xp >= count
+                        }
+                        SourceCondition::OtherFriendlyHere => match source {
+                            BoardObject::Unit { unit_id, .. } => self.players[owner]
+                                .units
+                                .iter()
+                                .find(|u| u.id == unit_id)
+                                .is_some_and(|source| {
+                                    self.players[owner].units.iter().any(|unit| {
+                                        unit.id != source.id && unit.lane == source.lane
+                                    })
+                                }),
+                            _ => false,
+                        },
                         SourceCondition::Empowered => self.object_empowered(source),
                         SourceCondition::NotEmpowered => !self.object_empowered(source),
                         SourceCondition::AttackingWithAnother | SourceCondition::CombatAlone => {

@@ -1564,6 +1564,15 @@ impl App {
                     9.0,
                     GOLD,
                 );
+            } else if let Some(local_rift::game::ChainAbility::Hunt { amount, .. }) = &item.ability
+            {
+                self.ui.text(
+                    &format!("Gain {amount} XP · amount fixed when triggered"),
+                    1178.0,
+                    300.0,
+                    8.5,
+                    TEAL,
+                );
             } else if item.executions.len() > 1 {
                 self.ui.text(
                     &format!(
@@ -1578,6 +1587,25 @@ impl App {
             }
             if self.ui.hover(r) {
                 match self.game.chain_source(&item) {
+                    local_rift::game::ChainSource::Unit { player, unit_id } => {
+                        if let Some(unit) = self.game.players[player]
+                            .units
+                            .iter()
+                            .find(|unit| unit.id == unit_id)
+                        {
+                            self.hover_candidate = Some(unit.card_id);
+                            self.hover_object_candidate = Some((player, unit_id));
+                            if unit.token {
+                                self.hover_token_candidate = Some(TokenPreview {
+                                    name: self.game.unit_name(unit),
+                                    might: self.game.unit_might(unit),
+                                    gear: false,
+                                    rules: "This created unit uses its own current abilities."
+                                        .into(),
+                                });
+                            }
+                        }
+                    }
                     local_rift::game::ChainSource::Card { card_id } => {
                         self.hover_candidate = Some(card_id)
                     }
@@ -2141,7 +2169,7 @@ impl App {
             Decision::ResolutionTargets{..}=>("Choose the location", "Responses separated your targets. Choose which legal group below this spell should affect.".into()),
             Decision::OrderTriggers{..}=>("Order your triggers", "Choose which ability to put on the chain next. The last ability placed will resolve first. Pending triggers cannot be countered yet.".into()),
             Decision::OnPlayTarget{card_id,..}=>("Choose its target",format!("{} has entered play. Choose a highlighted unit for its ability, on the board or in the Board tab.",self.game.catalog[*card_id].name)),
-            Decision::DeathReplacement{..}=>("Choose what saves them", "Choose a unit and replacement from the cards below. This decides which gear or banishment changes the death.".into()),
+            Decision::DeathReplacement{..}=>("Resolve a death", "Choose a unit and replacement from the cards below. This decides which gear or banishment changes the death.".into()),
             Decision::RevealHand{..}=>("Scuttle Crab's discovery","The opponent's hand is revealed below. You can also inspect their hidden cards in the Hidden tab until this turn ends.".into()),
             Decision::Battlefield{..}=>("Sunken Temple","You conquered with a Mighty unit. Pay 1 energy to draw a card?".into()),
             Decision::ReviveUnit{..}=>("Return to the fight","Choose a unit costing at most 3 energy and 1 power from your trash, or skip. The ability plays it at base when it resolves.".into()),
@@ -2814,6 +2842,12 @@ impl App {
                     self.ui.text(
                         if self.game.unit_empowered(gear.id) {
                             "EMPOWERED GEAR"
+                        } else if self
+                            .game
+                            .gear_temporary_status(owner, gear.id)
+                            .is_some_and(|status| status.active)
+                        {
+                            "TEMPORARY · next beginning"
                         } else if gear.attached_to.is_some() {
                             "Attached equipment"
                         } else {
@@ -3134,8 +3168,22 @@ impl App {
                     .rect(Rect::new(r.x + 3.0, r.y + 128.0, r.w - 6.0, 47.0), PANEL);
                 self.ui
                     .wrapped_lines(&label, r.x + 9.0, r.y + 145.0, 122.0, 10.0, GOLD, 2);
+                self.ui.ellipsis(
+                    &format!(
+                        "{} · {} might",
+                        unit.lane
+                            .map_or("Base".into(), |lane| format!("Field {}", lane + 1)),
+                        self.game.unit_might(unit)
+                    ),
+                    r.x + 9.0,
+                    r.y + 174.0,
+                    122.0,
+                    8.5,
+                    TEAL,
+                );
                 if self.ui.hover(r) {
                     self.hover_candidate = Some(card_id);
+                    self.hover_object_candidate = Some((player, option.unit_id));
                 }
                 if self.ui.clicked(r) {
                     self.action(Action::ChooseDeathReplacement {
@@ -3932,7 +3980,7 @@ impl App {
         self.ui.rect(chip, Color::new(0.25, 0.20, 0.105, 1.0));
         self.ui.border(chip, GOLD);
         self.ui.diamond(vec2(chip.x + 7.0, chip.y + 9.5), 3.5, GOLD);
-        let count_width = if gears.len() > 1 { 23.0 } else { 0.0 };
+        let count_width = if gears.len() > 1 { 44.0 } else { 0.0 };
         self.ui.ellipsis(
             self.game.gear_name(gear),
             chip.x + 14.0,
@@ -3941,11 +3989,11 @@ impl App {
             10.0,
             Color::new(1.0, 0.88, 0.60, 1.0),
         );
-        let list = Rect::new(chip.x + chip.w - 23.0, chip.y, 23.0, chip.h);
+        let list = Rect::new(chip.x + chip.w - count_width, chip.y, count_width, chip.h);
         if gears.len() > 1 {
             self.ui.rect(list, Color::new(0.35, 0.27, 0.12, 1.0));
             self.ui.bold(
-                &format!("+{}", gears.len() - 1),
+                &format!("{} gear", gears.len()),
                 list.x + 3.0,
                 list.y + 13.0,
                 10.0,
@@ -6173,7 +6221,7 @@ impl App {
                 self.ui.title("Make your move.", 1178.0, 365.0, 22.0, TEXT);
                 let hint = if self.prefs.coach {
                     if !self.game.chain.is_empty() {
-                        "You have priority. Play a Reaction or pass. Two consecutive passes resolve the newest spell.".into()
+                        "You have priority. Play a Reaction or pass. Two passes resolve the newest spell or ability.".into()
                     } else if self.game.showdown.is_some() {
                         "Open showdown: play an Action or Reaction, or pass. Two passes close the showdown.".into()
                     } else {
@@ -6231,12 +6279,18 @@ impl App {
                     }
                     self.tray = *tray;
                     self.hand_scroll = 0;
-                    if !matches!(self.selection, Some(Selection::Ability(..)))
-                        && (*tray == Tray::Board
-                            || (*tray == Tray::Trash && self.gear_owner == 1)
-                            || !matches!(self.selection, Some(Selection::Gear(_))))
-                        || matches!(self.selection, Some(Selection::Ability(..)))
-                            && !matches!(tray, Tray::Board | Tray::Loadout | Tray::Trash)
+                    let selecting_gear = *tray == Tray::Loadout
+                        && self.selected_card_id().is_some_and(|card_id| {
+                            local_rift::rules::play_target_spec(card_id).kind
+                                == Some(local_rift::rules::PlayTargetKind::Gear)
+                        });
+                    if !selecting_gear
+                        && (!matches!(self.selection, Some(Selection::Ability(..)))
+                            && (*tray == Tray::Board
+                                || (*tray == Tray::Trash && self.gear_owner == 1)
+                                || !matches!(self.selection, Some(Selection::Gear(_))))
+                            || matches!(self.selection, Some(Selection::Ability(..)))
+                                && !matches!(tray, Tray::Board | Tray::Loadout | Tray::Trash))
                     {
                         self.selection = None;
                         if !matches!(self.game.decision, Some(Decision::TriggerTargets { .. })) {
@@ -6403,7 +6457,7 @@ impl App {
                     self.game.decision,
                     Some(Decision::TokenPlay { .. } | Decision::TokenPlacement { .. })
                 ) {
-                    "Your tokens are ready to enter."
+                    "Finish your token plays."
                 } else if payment_waiting {
                     "A resource choice is waiting."
                 } else if self.game.in_window() {
@@ -7103,6 +7157,25 @@ fn card_brief(game: &Game, id: usize) -> String {
             format!("{amount:+} might{}", if draw > 0 { " · draw" } else { "" })
         }
         Stun => "Stun a unit this turn".into(),
+        KillAllUnits => "Kill all units · both players, everywhere".into(),
+        Channel {
+            count,
+            exhausted,
+            fallback_draw,
+        } => format!(
+            "Channel {count}{}{}",
+            if exhausted { " exhausted" } else { " ready" },
+            if fallback_draw > 0 {
+                format!(" · if fewer, draw {fallback_draw}")
+            } else {
+                String::new()
+            }
+        ),
+        FriendlyMight(amount) => format!("Friendly units: {amount:+} might this turn"),
+        ReadyFriendlyAndMight(amount) => format!("Ready your units · {amount:+} might this turn"),
+        ExhaustFriendlyAndDamage { amount, .. } => {
+            format!("Exhaust yours · deal {amount} to all field units")
+        }
         GrantAssault(amount) => format!("Grant Assault {amount} this turn"),
         Kill {
             battlefield_only,
@@ -7245,8 +7318,34 @@ fn live_gear_description(game: &Game, owner: usize, gear_id: u32) -> Option<Stri
         .and_then(|id| game.players[owner].units.iter().find(|unit| unit.id == id))
     {
         lines.push(format!("Attached to {}. Its printed gear abilities are inactive while attached; its equipment effects apply to the bearer.", game.unit_name(unit)));
+        for contribution in game
+            .passive_contributions(local_rift::empower::BoardObject::Unit {
+                player: owner,
+                unit_id: unit.id,
+            })
+            .iter()
+            .filter(|contribution| {
+                contribution.source
+                    == local_rift::empower::BoardObject::Gear {
+                        player: owner,
+                        gear_id,
+                    }
+            })
+        {
+            lines.push(passive_description(game, contribution));
+        }
     } else {
         lines.push("Unattached in base.".into());
+    }
+    if let Some(status) = game.gear_temporary_status(owner, gear_id) {
+        if status.active {
+            if status.granted {
+                lines.push("Granted Temporary remains active even while attached. It expires the gear, not the bearer.".into());
+            }
+            lines.push("TEMPORARY · At the start of its controller's next Beginning Phase, before hold scoring, its triggered ability will kill this gear. Responses may be played before that ability resolves.".into());
+        } else if status.intrinsic {
+            lines.push("Printed Temporary is inactive while this gear is attached. A separately granted Temporary ability would remain active.".into());
+        }
     }
     if gear.token {
         lines.push(GOLD_RULES.into());
@@ -7266,6 +7365,76 @@ fn live_gear_description(game: &Game, owner: usize, gear_id: u32) -> Option<Stri
         }
     }
     Some(lines.join("\n\n"))
+}
+
+fn passive_description(
+    game: &Game,
+    contribution: &local_rift::continuous::PassiveContribution,
+) -> String {
+    use local_rift::continuous::{PassiveEffect, PassiveKeyword, Recipients, SourceCondition};
+    let effect = match contribution.effect {
+        PassiveEffect::Might(amount) => format!("{amount:+} might"),
+        PassiveEffect::Keyword(PassiveKeyword::Assault(amount)) => format!("Assault {amount}"),
+        PassiveEffect::Keyword(PassiveKeyword::Shield(amount)) => format!("Shield {amount}"),
+        PassiveEffect::Keyword(PassiveKeyword::Deflect(amount)) => format!("Deflect {amount}"),
+        PassiveEffect::Keyword(PassiveKeyword::Ganking) => "Ganking".into(),
+    };
+    let requirement = local_rift::continuous::passive_rules(contribution.card_id)
+        .get(contribution.rule_index)
+        .map(|rule| {
+            let controller = &game.players[contribution.source.player()];
+            let condition = match rule.condition {
+                SourceCondition::AttackingWithAnother => {
+                    " · while attacking with another unit".into()
+                }
+                SourceCondition::CombatAlone => " · while attacking or defending alone".into(),
+                SourceCondition::Empowered => " · while source is Empowered".into(),
+                SourceCondition::NotEmpowered => " · while source is not Empowered".into(),
+                SourceCondition::Buffed => " · while the unit has a Buff counter".into(),
+                SourceCondition::OtherFriendlyHere => {
+                    " · while another friendly unit is at its location".into()
+                }
+                SourceCondition::ControllerRunesAtLeast(threshold) => format!(
+                    " · {threshold}+ runes in play (currently {}; ready and exhausted both count)",
+                    controller
+                        .runes
+                        .iter()
+                        .map(|&count| u16::from(count))
+                        .sum::<u16>()
+                ),
+                SourceCondition::ControllerXpAtLeast(threshold) => format!(
+                    " · Level {threshold}: {threshold}+ XP (currently {})",
+                    controller.xp
+                ),
+                SourceCondition::Always => String::new(),
+            };
+            let recipients = match rule.recipients {
+                Recipients::OtherFriendlyUnitsHere => {
+                    " · other friendly units at the source's location"
+                }
+                Recipients::FriendlyTokenUnits => " · friendly unit tokens, at any location",
+                Recipients::AttachedBearer => " · attached bearer only",
+                _ => "",
+            };
+            format!("{condition}{recipients}")
+        })
+        .unwrap_or_default();
+    format!(
+        "{} · {}: {}{}{}",
+        if contribution.active {
+            "ACTIVE"
+        } else {
+            "INACTIVE"
+        },
+        game.catalog[contribution.card_id].name,
+        effect,
+        requirement,
+        if contribution.active {
+            " (included in current values when applicable)"
+        } else {
+            " (condition not met)"
+        }
+    )
 }
 
 fn live_unit_description(game: &Game, owner: usize, unit_id: u32) -> Option<String> {
@@ -7297,52 +7466,17 @@ fn live_unit_description(game: &Game, owner: usize, unit_id: u32) -> Option<Stri
             "Not Empowered.".into()
         },
     ];
+    if game.buffed_units.contains(&unit_id) {
+        lines.push("BUFFED · has a Buff counter. Its +1 might is included above; temporary might and Empowered are separate.".into());
+    }
     for contribution in game.passive_contributions(local_rift::empower::BoardObject::Unit {
         player: owner,
         unit_id,
     }) {
-        use local_rift::continuous::{PassiveEffect, PassiveKeyword};
-        let effect = match contribution.effect {
-            PassiveEffect::Might(amount) => format!("{amount:+} might"),
-            PassiveEffect::Keyword(PassiveKeyword::Assault(amount)) => format!("Assault {amount}"),
-            PassiveEffect::Keyword(PassiveKeyword::Shield(amount)) => format!("Shield {amount}"),
-            PassiveEffect::Keyword(PassiveKeyword::Deflect(amount)) => format!("Deflect {amount}"),
-            PassiveEffect::Keyword(PassiveKeyword::Ganking) => "Ganking".into(),
-        };
-        let requirement = local_rift::continuous::passive_rules(contribution.card_id)
-            .get(contribution.rule_index)
-            .map(|rule| {
-                use local_rift::continuous::{Recipients, SourceCondition};
-                match rule.condition {
-                    SourceCondition::AttackingWithAnother => " · while attacking with another unit",
-                    SourceCondition::CombatAlone => " · while attacking or defending alone",
-                    SourceCondition::Empowered => " · while source is Empowered",
-                    SourceCondition::NotEmpowered => " · while source is not Empowered",
-                    SourceCondition::Always
-                        if rule.recipients == Recipients::OtherFriendlyUnitsHere =>
-                    {
-                        " · other friendly units at the source's location"
-                    }
-                    SourceCondition::Always => "",
-                }
-            })
-            .unwrap_or("");
-        lines.push(format!(
-            "{} · {}: {}{}{}",
-            if contribution.active {
-                "ACTIVE"
-            } else {
-                "INACTIVE"
-            },
-            game.catalog[contribution.card_id].name,
-            effect,
-            requirement,
-            if contribution.active {
-                " (included in current values when applicable)"
-            } else {
-                " (condition not met)"
-            }
-        ));
+        lines.push(passive_description(game, &contribution));
+    }
+    if keywords.hunt > 0 {
+        lines.push(format!("Hunt {}: when this unit conquers or holds, one Hunt ability gains {} XP. Printed and equipped Hunt add together.", keywords.hunt, keywords.hunt));
     }
     if unit.stunned {
         lines.push("Stunned: contributes no might to combat damage this turn; still needs lethal damage equal to its full might.".into());
@@ -7506,6 +7640,186 @@ mod live_preview_tests {
             stunned: false,
             banish_on_death: false,
         }
+    }
+    fn attached(id: u32, card_id: usize, unit_id: u32) -> GearState {
+        GearState {
+            id,
+            card_id,
+            attached_to: Some(unit_id),
+            ready: true,
+            temporary: false,
+            token: false,
+        }
+    }
+    #[test]
+    fn buff_conditions_do_not_confuse_temporary_might_or_empower_with_a_counter() {
+        let mut game = Game::new(1, 3, 7, Difficulty::Easy);
+        let mut elder = unit(100, 321);
+        elder.temporary_buff = 2;
+        game.players[0].units = vec![elder];
+        game.empowered_units.push(100);
+        let before = live_unit_description(&game, 0, 100).unwrap();
+        assert!(before.contains("6 current might"));
+        assert!(before.contains("INACTIVE · Wizened Elder"));
+        assert!(!before.contains("BUFFED ·"));
+        game.buffed_units.push(100);
+        game.players[0].units[0].buff = 1;
+        let after = live_unit_description(&game, 0, 100).unwrap();
+        assert!(after.contains("8 current might"));
+        assert!(after.contains("BUFFED ·") && after.contains("ACTIVE · Wizened Elder"));
+    }
+    #[test]
+    fn rune_threshold_preview_counts_exhausted_runes_and_updates_on_recycling() {
+        let mut game = Game::new(1, 3, 7, Difficulty::Easy);
+        game.players[0].units = vec![unit(100, 325)];
+        game.players[0].runes = [8, 0, 0, 0, 0, 0];
+        game.players[0].exhausted_runes = [1, 0, 0, 0, 0, 0];
+        let before = live_unit_description(&game, 0, 100).unwrap();
+        assert!(before.contains("8 current might"));
+        assert!(before.contains("8+ runes in play (currently 8; ready and exhausted both count)"));
+        game.players[0].runes[0] = 7;
+        let after = live_unit_description(&game, 0, 100).unwrap();
+        assert!(after.contains("4 current might") && after.contains("INACTIVE · Master Yi"));
+        assert!(after.contains("currently 7;"));
+    }
+    #[test]
+    fn equipped_level_preview_tracks_each_attachment_and_controller_xp() {
+        let mut game = Game::new(1, 3, 7, Difficulty::Easy);
+        game.players[1].units = vec![unit(100, 110)];
+        game.players[1].gear = vec![attached(200, 330, 100), attached(201, 330, 100)];
+        game.players[0].xp = 15;
+        game.players[1].xp = 2;
+        let before = live_unit_description(&game, 1, 100).unwrap();
+        assert!(before.contains("4 current might"));
+        assert_eq!(before.matches("INACTIVE · Soul Sword").count(), 2);
+        assert!(
+            before.contains("Level 3: 3+ XP (currently 2)")
+                && before.contains("attached bearer only")
+        );
+        game.players[1].xp = 3;
+        let after = live_unit_description(&game, 1, 100).unwrap();
+        assert!(after.contains("6 current might"));
+        assert_eq!(after.matches("ACTIVE · Soul Sword").count(), 2);
+        assert!(
+            live_gear_description(&game, 1, 200)
+                .unwrap()
+                .contains("ACTIVE · Soul Sword")
+        );
+        game.players[1].gear[0].attached_to = None;
+        assert!(
+            live_unit_description(&game, 1, 100)
+                .unwrap()
+                .contains("4 current might")
+        );
+    }
+    #[test]
+    fn hunt_preview_sums_printed_and_attached_hunt_without_separate_trigger_claims() {
+        let mut game = Game::new(1, 3, 7, Difficulty::Easy);
+        game.players[0].units = vec![unit(100, 22)];
+        game.players[0].gear = vec![attached(200, 328, 100), attached(201, 328, 100)];
+        let text = live_unit_description(&game, 0, 100).unwrap();
+        assert!(text.contains("Hunt 4:") && text.contains("one Hunt ability gains 4 XP"));
+        assert!(
+            text.contains("ATTACHED EQUIPMENT") && text.matches("Hunter's Machete").count() == 2
+        );
+        game.players[0].gear.pop();
+        assert!(
+            live_unit_description(&game, 0, 100)
+                .unwrap()
+                .contains("Hunt 3:")
+        );
+    }
+    #[test]
+    fn token_aura_preview_uses_actual_token_identity_and_never_calls_base_might_a_buff() {
+        let mut game = Game::new(3, 1, 7, Difficulty::Easy);
+        let mut token = unit(100, 318);
+        token.token = true;
+        token.buff = 3;
+        game.players[0].units = vec![token, unit(101, 324), unit(102, 318)];
+        let text = live_unit_description(&game, 0, 100).unwrap();
+        assert!(
+            text.contains("4 current might")
+                && text.contains("friendly unit tokens, at any location")
+        );
+        assert!(!text.contains("BUFFED ·"));
+        assert!(
+            !live_unit_description(&game, 0, 102)
+                .unwrap()
+                .contains("Soul Shepherd")
+        );
+    }
+    #[test]
+    fn printed_temporary_preview_uses_canonical_attachment_status() {
+        let mut game = Game::new(1, 3, 7, Difficulty::Easy);
+        let mut gear = attached(200, 331, 100);
+        gear.attached_to = None;
+        gear.temporary = true;
+        game.players[0].gear = vec![gear];
+        let text = live_gear_description(&game, 0, 200).unwrap();
+        assert!(
+            text.contains("TEMPORARY ·")
+                && text.contains("before hold scoring")
+                && text.contains("Responses")
+        );
+        game.players[0].gear[0].attached_to = Some(100);
+        game.players[0].units = vec![unit(100, 110)];
+        let text = live_gear_description(&game, 0, 200).unwrap();
+        assert!(text.contains("Printed Temporary is inactive"));
+        assert!(!text.contains("TEMPORARY ·"));
+    }
+    #[test]
+    fn granted_temporary_preview_stays_active_after_actual_equip() {
+        let mut game = Game::new(1, 3, 7, Difficulty::Easy);
+        game.start_match().unwrap();
+        game.players[0].units = vec![unit(100, 69)];
+        let mut gear = attached(200, 3, 100);
+        gear.attached_to = None;
+        game.players[0].gear = vec![gear];
+        game.players[0].hand = vec![66];
+        game.players[0].runes = [0; 6];
+        game.players[0].runes[local_rift::game::domain_index(Domain::Mind)] = 6;
+        game.players[0].exhausted_runes = [0; 6];
+        game.players[0].energy = 6;
+        game.players[0].any_power = 2;
+        game.apply(Action::PlayCardWithTargets {
+            hand_index: 0,
+            lane: None,
+            targets: vec![Target::Gear {
+                player: 0,
+                gear_id: 200,
+            }],
+        })
+        .unwrap();
+        while !game.chain.is_empty() {
+            game.apply(Action::Pass).unwrap();
+        }
+        game.apply(Action::Equip {
+            gear_id: 200,
+            target: Target::Unit {
+                player: 0,
+                unit_id: 100,
+            },
+        })
+        .unwrap();
+        while !game.chain.is_empty() {
+            game.apply(Action::Pass).unwrap();
+        }
+        let text = live_gear_description(&game, 0, 200).unwrap();
+        assert!(
+            text.contains("TEMPORARY ·")
+                && text.contains("Granted Temporary remains active even while attached")
+                && text.contains("not the bearer")
+        );
+        assert!(!text.contains("Printed Temporary is inactive"));
+    }
+    #[test]
+    fn global_spell_briefs_preserve_scope_and_conditional_channel_draw() {
+        let game = Game::new(1, 3, 7, Difficulty::Easy);
+        assert!(card_brief(&game, 308).contains("both players, everywhere"));
+        assert!(card_brief(&game, 310).contains("Channel 2 exhausted · if fewer, draw 1"));
+        assert!(card_brief(&game, 311).contains("Friendly units: +5"));
+        assert!(card_brief(&game, 312).contains("Ready your units · +3"));
+        assert!(card_brief(&game, 313).contains("Exhaust yours · deal 12 to all field units"));
     }
     #[test]
     fn conditional_unit_preview_tracks_source_state_and_aura_removal() {

@@ -68,6 +68,18 @@ pub enum OfficialEffect {
         battlefield_only: bool,
         max_might: Option<u8>,
     },
+    KillAllUnits,
+    Channel {
+        count: u8,
+        exhausted: bool,
+        fallback_draw: u8,
+    },
+    FriendlyMight(i8),
+    ReadyFriendlyAndMight(i8),
+    ExhaustFriendlyAndDamage {
+        amount: u8,
+        selector: AreaSelector,
+    },
     Stun,
     GrantAssault(u8),
     AreaDamage {
@@ -209,7 +221,20 @@ pub fn effect(id: usize) -> OfficialEffect {
             amount: 3,
             selector: AreaSelector::EnemyAtTargetBattlefield,
         },
-        300..=307 => None,
+        308 => KillAllUnits,
+        309 | 310 => Channel {
+            count: if id == 309 { 1 } else { 2 },
+            exhausted: true,
+            fallback_draw: 1,
+        },
+        311 => FriendlyMight(5),
+        312 => ReadyFriendlyAndMight(3),
+        313 => ExhaustFriendlyAndDamage {
+            amount: 12,
+            selector: AreaSelector::AllBattlefields,
+        },
+        327..=330 => Equipment,
+        300..=307 | 314..=326 | 331..=333 => None,
         // These permanents have reviewed activated abilities in activated.rs,
         // not automatic effects when the card is played.
         230..=253 => None,
@@ -870,6 +895,15 @@ pub enum Mechanic {
 pub fn requirements(id: usize) -> &'static [Mechanic] {
     use Mechanic::*;
     match id {
+        308..=313 | 314..=317 | 320..=326 => &[Chain],
+        318..=319 => &[Chain, Tokens],
+        327 => &[Gear, Equip, Chain, Tank],
+        328 => &[Gear, Equip, Xp, ConquerHoldTriggers],
+        329 => &[Gear, Equip, ConquerHoldTriggers],
+        330 => &[Gear, Equip, Xp],
+        331 => &[Gear, Temporary, Deflect],
+        332 => &[Chain, MoveTriggers],
+        333 => &[Chain, MultipleTargets],
         290..=291 | 294..=299 => &[Chain],
         292 => &[Chain, Stun],
         293 => &[Chain, Assault],
@@ -1115,20 +1149,25 @@ pub fn equipment(id: usize) -> Option<EquipmentRule> {
         205 => (1, Domain::Fury, 0, false, EquipmentAbility::None),
         206 => (0, Domain::Fury, 0, false, EquipmentAbility::None),
         207 => (2, Domain::Body, 0, false, EquipmentAbility::None),
+        327 => (1, Domain::Order, 0, true, EquipmentAbility::None),
+        328 => (2, Domain::Body, 0, false, EquipmentAbility::None),
+        329 => (2, Domain::Body, 0, false, EquipmentAbility::None),
+        330 => (1, Domain::Calm, 0, false, EquipmentAbility::None),
         _ => return None,
     };
     Some(EquipmentRule {
         might,
-        equip_energy: u8::from(id == 124),
+        equip_energy: u8::from(matches!(id, 124 | 327 | 329)),
         equip_domain,
-        equip_power: u8::from(id != 124),
+        equip_power: u8::from(!matches!(id, 124 | 327)),
         recycle_trash,
         quick_draw,
         ability,
         grants: match id {
             3 => &[StaticAbility::Ganking],
             120 | 124 => &[StaticAbility::Shield(2)],
-            121 => &[StaticAbility::Tank],
+            121 | 327 => &[StaticAbility::Tank],
+            328 => &[StaticAbility::Hunt(1)],
             122 => &[StaticAbility::Deflect(1)],
             123 => &[StaticAbility::Assault(2)],
             _ => &[],
@@ -1176,6 +1215,8 @@ pub enum StaticAbility {
     EmpoweredEnergyDiscount(u8),
     Deflect(u8),
     Shield(u8),
+    Hunt(u8),
+    Temporary,
     EntersReady,
     /// Intrinsic entry state, not an Exhaust action or event.
     EntersExhausted,
@@ -1220,6 +1261,11 @@ pub enum StaticAbility {
 pub fn static_abilities(id: usize) -> &'static [StaticAbility] {
     use StaticAbility::*;
     match id {
+        319 => &[EntersReady],
+        327 => &[QuickDraw],
+        331 => &[Temporary],
+        153 => &[Hunt(3)],
+        154 => &[Hunt(1)],
         301 => &[Assault(1)],
         302 => &[Tank],
         307 => &[Shield(1), Tank],
@@ -1258,7 +1304,7 @@ pub fn static_abilities(id: usize) -> &'static [StaticAbility] {
         }],
         13 => &[Hidden, Backline],
         18 | 21 | 44 | 46 => &[Hidden],
-        22 => &[LevelSixDeflectAndGanking],
+        22 => &[LevelSixDeflectAndGanking, Hunt(2)],
         24 => &[
             Empower {
                 energy: 1,
@@ -1475,7 +1521,7 @@ pub enum TokenPlacement {
 pub fn token_placement(id: usize) -> TokenPlacement {
     match id {
         48 | 87 | 138 | 187 | 220 | 235 | 249 => TokenPlacement::Default,
-        102 | 147 | 148 | 178 | 179 | 180 | 203 => TokenPlacement::Here,
+        102 | 147 | 148 | 178 | 179 | 180 | 203 | 318 | 319 => TokenPlacement::Here,
         _ => TokenPlacement::Base,
     }
 }
@@ -1532,7 +1578,7 @@ pub fn token_spec(id: usize) -> Option<TokenSpec> {
             deflect: false,
             tag: Some("Bilgewater"),
         }),
-        54 | 138 | 241 | 251 => Some(TokenSpec {
+        54 | 138 | 241 | 251 | 318 | 319 => Some(TokenSpec {
             name: "Mech",
             might: 3,
             count: if id == 54 { 2 } else { 1 },
@@ -1586,7 +1632,7 @@ mod tests {
     #[test]
     fn all_catalog_entries_have_official_classification() {
         let cards = cards();
-        assert_eq!(cards.len(), 308);
+        assert_eq!(cards.len(), 334);
         for card in cards {
             assert_ne!(
                 effect(card.id),
@@ -1596,7 +1642,7 @@ mod tests {
             );
             assert_ne!(support_status(card.id), SupportStatus::UnknownCard);
         }
-        assert_eq!(effect(308), OfficialEffect::Unsupported);
+        assert_eq!(effect(334), OfficialEffect::Unsupported);
     }
 
     #[test]

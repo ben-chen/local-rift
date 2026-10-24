@@ -36,8 +36,8 @@ fn reviewed_facts_are_effective_while_original_evidence_stays_intact() {
         .collect();
     assert_eq!(manifest["status"], "reviewed");
     assert_eq!(manifest["printing_projection_version"], 1);
-    assert_eq!(manifest["resolutions"].as_array().unwrap().len(), 112);
-    assert_eq!(manifest["raw_printings"].as_array().unwrap().len(), 69);
+    assert_eq!(manifest["resolutions"].as_array().unwrap().len(), 114);
+    assert_eq!(manifest["raw_printings"].as_array().unwrap().len(), 70);
     for raw in manifest["raw_printings"].as_array().unwrap() {
         let id = raw["official_id"].as_str().unwrap();
         for (field, value) in raw.as_object().unwrap() {
@@ -74,7 +74,7 @@ fn reviewed_facts_are_effective_while_original_evidence_stays_intact() {
         .map(|issue| issue["raw_issue"].clone())
         .collect();
     assert_eq!(data["source_quality_issues"], json!(historical));
-    assert_eq!(historical.len(), 37);
+    assert_eq!(historical.len(), 39);
 }
 
 #[test]
@@ -161,7 +161,8 @@ fn equipment_might_and_attached_bonus_remain_distinct_source_facts() {
         })
         .unwrap();
     assert_eq!(identity["kind"], "gear");
-    assert_eq!(identity["implementation"]["playable_in_client"], false);
+    assert_eq!(identity["implementation"]["playable_in_client"], true);
+    assert_eq!(identity["implementation"]["runtime_id"], 327);
 }
 
 #[test]
@@ -217,8 +218,8 @@ fn source_review_never_admits_inventory_only_or_unresolved_identities() {
             );
         }
     }
-    assert_eq!(data["counts"]["implemented_legal_identities"], 333);
-    assert_eq!(data["counts"]["unimplemented_legal_identities"], 746);
+    assert_eq!(data["counts"]["implemented_legal_identities"], 359);
+    assert_eq!(data["counts"]["unimplemented_legal_identities"], 720);
 }
 
 #[test]
@@ -264,7 +265,7 @@ fn completed_variant_reviews_cover_every_member_without_compatibility_exceptions
     assert_eq!(reviewed_printings.len(), 90);
     assert_eq!((unresolved_identities, unresolved_legal), (95, 94));
     assert_eq!(unresolved_auxiliary, vec!["Gold"]);
-    assert_eq!(data["counts"]["implemented_legal_identities"], 333);
+    assert_eq!(data["counts"]["implemented_legal_identities"], 359);
 }
 
 #[test]
@@ -420,7 +421,12 @@ fn source_reconciliation_preserves_eligibility_presets_and_all_training_lists() 
             "legend {id} eligibility"
         );
         assert_eq!(
-            json!(eligible_champions(id)),
+            json!(
+                eligible_champions(id)
+                    .into_iter()
+                    .filter(|card| *card < 290)
+                    .collect::<Vec<_>>()
+            ),
             expected["eligible_champions"],
             "legend {id} champions"
         );

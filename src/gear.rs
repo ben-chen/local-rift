@@ -3,7 +3,8 @@
 //! Printed rules come from the official catalog, the 2025-10-21 Zhonya erratum,
 //! and Core Rules 149, 716-725, 816, 818-819. Attachments are separate objects:
 //! losing a unit does not put its equipment in the trash. Attached equipment's
-//! rules text is inactive; its might bonus and effect text apply to the unit.
+//! printed rules text is inactive; granted rules text remains active. Its might
+//! bonus and effect text apply to the unit.
 
 #[cfg(test)]
 use crate::cards::Domain;
@@ -33,7 +34,39 @@ impl GearState {
     }
 }
 
+/// Temporary's characteristic and its active expiry ability are distinct:
+/// attachment suppresses printed text, but not a granted ability (CR135.4.b).
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct GearTemporaryStatus {
+    pub intrinsic: bool,
+    pub granted: bool,
+    pub active: bool,
+}
+
 impl Game {
+    pub fn gear_temporary_status(
+        &self,
+        player: usize,
+        gear_id: u32,
+    ) -> Option<GearTemporaryStatus> {
+        let gear = self
+            .players
+            .get(player)?
+            .gear
+            .iter()
+            .find(|g| g.id == gear_id)?;
+        let granted = self.granted_temporary_gear.contains(&gear_id);
+        let intrinsic = !gear.token
+            && (rules::static_abilities(gear.card_id).contains(&StaticAbility::Temporary)
+                // Preserve the existing public state-fixture convention.
+                || (gear.temporary && !granted));
+        Some(GearTemporaryStatus {
+            intrinsic,
+            granted,
+            active: granted || (intrinsic && gear.attached_to.is_none()),
+        })
+    }
+
     pub fn gear_name(&self, gear: &GearState) -> &str {
         if gear.is_gold() {
             "Gold"
@@ -82,7 +115,7 @@ impl Game {
             card_id,
             attached_to: None,
             ready,
-            temporary: false,
+            temporary: rules::static_abilities(card_id).contains(&StaticAbility::Temporary),
             token: false,
         });
         self.push_log(format!(
@@ -348,6 +381,9 @@ impl Game {
         {
             for ability in rule.grants {
                 match *ability {
+                    StaticAbility::Hunt(amount) => {
+                        keywords.hunt = keywords.hunt.saturating_add(amount)
+                    }
                     StaticAbility::Assault(amount) => {
                         keywords.assault = keywords.assault.saturating_add(amount)
                     }
@@ -451,6 +487,7 @@ impl Game {
             return false;
         };
         let gear = state.gear.remove(index);
+        self.granted_temporary_gear.retain(|&id| id != gear_id);
         self.empowered_units.retain(|&id| id != gear_id);
         if !gear.token {
             state.discard.push(gear.card_id);
@@ -466,6 +503,9 @@ impl Game {
                 .and_then(|state| state.gear.iter_mut().find(|gear| gear.id == gear_id))
         {
             gear.temporary = true;
+            if !self.granted_temporary_gear.contains(&gear_id) {
+                self.granted_temporary_gear.push(gear_id);
+            }
         }
     }
 
@@ -479,8 +519,10 @@ impl Game {
         let doomed: Vec<_> = self.players[player]
             .gear
             .iter()
-            // CR721: Temporary in an attached gear's rules text is inactive.
-            .filter(|gear| gear.temporary && gear.attached_to.is_none())
+            .filter(|gear| {
+                self.gear_temporary_status(player, gear.id)
+                    .is_some_and(|status| status.active)
+            })
             .map(|gear| (gear.id, gear.card_id))
             .collect();
         for (gear_id, source) in doomed {
@@ -848,18 +890,20 @@ mod tests {
     }
 
     #[test]
-    fn temporary_is_inactive_while_attached_then_kills_at_next_beginning() {
+    fn intrinsic_temporary_is_inactive_while_attached_then_kills_at_next_beginning() {
         let mut game = game();
         let target = unit(&mut game, 0, None);
-        let boots = gear(&mut game, 0, 3);
-        game.gear_resolve_equip(0, boots, target);
-        game.gear_make_temporary(
-            1,
-            66,
-            Target::Gear {
-                player: 0,
-                gear_id: boots,
-            },
+        let monument = gear(&mut game, 0, 331);
+        // Explicit attachment-state fixture: Monument has printed Temporary,
+        // but the included card itself has no Equip activation.
+        game.players[0].gear[0].attached_to = Some(id(target));
+        assert_eq!(
+            game.gear_temporary_status(0, monument),
+            Some(GearTemporaryStatus {
+                intrinsic: true,
+                granted: false,
+                active: false,
+            })
         );
         game.gear_begin_turn(0);
         assert_eq!(game.players[0].gear.len(), 1);
@@ -874,7 +918,42 @@ mod tests {
         ));
         resolve_chain(&mut game);
         assert!(game.players[0].gear.is_empty());
-        assert_eq!(game.players[0].discard, vec![3]);
+        assert_eq!(game.players[0].discard, vec![331]);
+    }
+
+    #[test]
+    fn intrinsic_and_granted_temporary_make_one_expiry_and_departure_clears_grant() {
+        let mut game = game();
+        let monument = gear(&mut game, 0, 331);
+        let target = Target::Gear {
+            player: 0,
+            gear_id: monument,
+        };
+        game.gear_make_temporary(0, 66, target);
+        game.gear_make_temporary(0, 66, target);
+        assert_eq!(
+            game.gear_temporary_status(0, monument),
+            Some(GearTemporaryStatus {
+                intrinsic: true,
+                granted: true,
+                active: true,
+            })
+        );
+        game.gear_begin_turn(0);
+        assert_eq!(game.chain.len(), 1);
+        resolve_chain(&mut game);
+        assert!(!game.granted_temporary_gear.contains(&monument));
+        assert_eq!(game.gear_temporary_status(0, monument), None);
+        let fresh = gear(&mut game, 0, 331);
+        assert_eq!(
+            game.gear_temporary_status(0, fresh),
+            Some(GearTemporaryStatus {
+                intrinsic: true,
+                granted: false,
+                active: true,
+            })
+        );
+        assert_eq!(game.gear_temporary_status(9, fresh), None);
     }
 
     #[test]

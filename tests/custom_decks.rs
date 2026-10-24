@@ -190,7 +190,7 @@ fn all_printed_domains_must_fit_and_a_shared_single_domain_is_not_enough() {
 #[test]
 fn only_actual_champion_tags_qualify_not_yordle_or_ordinary_unit_tags() {
     assert_eq!(eligible_champions(0), vec![0, 271]);
-    assert_eq!(eligible_champions(1), vec![22, 106]);
+    assert_eq!(eligible_champions(1), vec![22, 106, 325]);
     assert_eq!(eligible_champions(2), vec![33]);
     assert_eq!(eligible_champions(3), vec![49]);
     for wrong in [20, 36] {

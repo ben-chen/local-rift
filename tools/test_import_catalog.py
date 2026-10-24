@@ -37,11 +37,11 @@ class OfficialInventoryTests(unittest.TestCase):
     def test_exact_published_scope_and_runtime_gap(self):
         counts = self.snapshot["counts"]
         self.assertEqual((counts["gallery_printings"], counts["unique_gallery_identities"], counts["standard_legal_identities"]), (1408, 1103, 1079))
-        self.assertEqual(counts["implemented_main_cards"], 308)
+        self.assertEqual(counts["implemented_main_cards"], 334)
         self.assertEqual(counts["implemented_legends"], 8)
         self.assertEqual(counts["implemented_battlefields"], 11)
-        self.assertEqual(counts["implemented_legal_identities"], 333)
-        self.assertEqual(counts["unimplemented_legal_identities"], 746)
+        self.assertEqual(counts["implemented_legal_identities"], 359)
+        self.assertEqual(counts["unimplemented_legal_identities"], 720)
         for card in self.snapshot["cards"]:
             if card["implementation"]["status"] == "not_implemented":
                 self.assertFalse(card["implementation"]["playable_in_client"])
@@ -109,7 +109,7 @@ class OfficialInventoryTests(unittest.TestCase):
         self.assertEqual((legend["official_id"], legend["default_champion"]), ("ven-153-166", 289))
         self.assertEqual(legend["champion"], "Ambessa")
         self.assertEqual(legend["domains"], ["Body", "Order"])
-        self.assertEqual(self.snapshot["counts"]["source_quality_issues"], 37)
+        self.assertEqual(self.snapshot["counts"]["source_quality_issues"], 39)
         self.assertEqual(self.snapshot["counts"]["unresolved_type_conflict_identities"], 0)
 
     def test_next_play_batch_maps_exact_source_ids_and_errata(self):
@@ -272,12 +272,12 @@ class OfficialInventoryTests(unittest.TestCase):
         issues = [i for i in self.snapshot["source_quality_issues"] if i["kind"] == "conflicting_type_labels"]
         self.assertEqual(len(issues), 23)
         self.assertTrue(all(i["official_ids"][0].startswith("rad-") for i in issues))
-        self.assertEqual(self.snapshot["counts"]["source_quality_issues"], 37)
+        self.assertEqual(self.snapshot["counts"]["source_quality_issues"], 39)
         self.assertFalse(self.snapshot["counts"]["standard_legal_by_kind_provisional"])
         self.assertEqual(self.snapshot["counts"]["unresolved_type_conflict_identities"], 0)
         self.assertEqual(printing["effective"]["types"], ["spell"])
         self.assertEqual(identity["source_review"]["unresolved_gameplay_fields"], [])
-        self.assertEqual(self.snapshot["counts"]["resolved_source_issue_groups"], 37)
+        self.assertEqual(self.snapshot["counts"]["resolved_source_issue_groups"], 39)
         self.assertIn("reviewed effective type", catalog.report(self.snapshot))
 
     def test_mapped_type_conflict_is_rejected(self):

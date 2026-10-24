@@ -48,9 +48,12 @@ fn effect_to_json(effect: PassiveEffect) -> Value {
 pub(super) fn passive_rule_to_json(index: usize, rule: &PassiveRule) -> Value {
     json!({"rule_index":index,
         "condition":match rule.condition {SourceCondition::Always=>"always",SourceCondition::Empowered=>"empowered",SourceCondition::NotEmpowered=>"not_empowered",
-            SourceCondition::AttackingWithAnother=>"attacking_with_another",SourceCondition::CombatAlone=>"combat_alone"},
+            SourceCondition::AttackingWithAnother=>"attacking_with_another",SourceCondition::CombatAlone=>"combat_alone",
+            SourceCondition::Buffed=>"buffed",SourceCondition::OtherFriendlyHere=>"other_friendly_here",
+            SourceCondition::ControllerRunesAtLeast(_)=>"controller_runes_at_least",SourceCondition::ControllerXpAtLeast(_)=>"controller_xp_at_least"},
+        "condition_threshold":match rule.condition {SourceCondition::ControllerRunesAtLeast(n)|SourceCondition::ControllerXpAtLeast(n)=>Some(n),_=>None},
         "recipients":match rule.recipients {Recipients::SelfUnit=>"self_unit",Recipients::FriendlyUnits=>"friendly_units",Recipients::FriendlyEmpoweredUnits=>"friendly_empowered_units",
-            Recipients::OtherFriendlyUnitsHere=>"other_friendly_units_here"},
+            Recipients::OtherFriendlyUnitsHere=>"other_friendly_units_here",Recipients::FriendlyTokenUnits=>"friendly_token_units",Recipients::AttachedBearer=>"attached_bearer"},
         "effect":effect_to_json(rule.effect)})
 }
 
