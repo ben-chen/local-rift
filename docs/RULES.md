@@ -1,6 +1,6 @@
 # Implemented rules and limitations
 
-**Local Rift is an unofficial, incomplete Riftbound client. This document describes its current behavior, not the complete tabletop game.** Full official card text appears in hover previews and pinned inspectors. All 334 bundled main-deck cards have executable printed-effect mappings. An official description in the catalog and a passing simulation are not proof of complete tabletop equivalence.
+**Local Rift is an unofficial, incomplete Riftbound client. This document describes its current behavior, not the complete tabletop game.** Full official card text appears in hover previews and pinned inspectors. All 345 bundled main-deck cards have executable printed-effect mappings. An official description in the catalog and a passing simulation are not proof of complete tabletop equivalence.
 
 For physical play, use Riot's [Rules Hub](https://playriftbound.com/en-us/rules-hub/), current errata, and printed card text. The core timing reference used here is the [October 9, 2026 Core Rules](https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/5c7946f7c3b8c6e0faff85ab6dadc6d2e721ea94.pdf). [SOURCES.md](SOURCES.md) records the card and deck sources.
 
@@ -188,6 +188,13 @@ The live inspector distinguishes actual Buff counters from temporary Might and E
 Hunter’s Machete grants Hunt to its bearer. Printed and granted Hunt values add together into one ability each time that unit Conquers or Holds. The ability captures its amount and identifies that physical bearer; removing equipment or the bearer after finalization does not alter the captured XP. Boneshiver’s separate channel ability occurs on Conquer only. Protector’s Shield shows its attached Might and Tank effects, while Petricite Monument grants friendly units Deflect and expires through its respondable Temporary ability before Hold.
 
 Antagonistic Apparatus creates a ready Mech; Industrious Mechsmith creates an ordinary exhausted Mech. This readiness belongs to that particular play instruction, not to all Mech tokens, and entering ready is not a Ready action. Each creator’s “here” uses its location when its ability resolves; an absent creator supplies no location. Once a token play is pending, its captured destination stays fixed. Optional Accelerate remains a separate play choice.
+
+
+XP has no game-rule maximum. The engine records positive gains separately from the current balance and clears that history for both players at the start of each turn. Wily Newtfish's Might and Ganking depend on gaining XP this turn, including a gain before it entered. Live Level benefits track current XP; crossing a threshold is not permanent. Gustwalker gains Ganking at Level3, Mosstomper gains Deflect at Level3, and Gemhand Hunter gains Might at Level6.
+
+Bandle Soldier and Scorchclaw check Level3 when they actually enter; entering ready does not trigger abilities that observe a Ready action. Wuju Apprentice checks Level6 when its completed play occurs. Once its draw trigger is generated, later XP changes do not remove it. Combat Experience instead checks current XP when each execution resolves, giving +3 Might instead of +1 at Level6. Concentrate uses only the highest eligible Energy reduction: two at Level6, four at Level11. The determined cost remains fixed during payment.
+
+Mister Root gains XP from a real Move to a battlefield; Nilah, Joyful Ascetic observes any real Move, including a return to base. Merely entering a location or recalling a unit does not create a Move event. Their XP abilities use the ordinary response chain. The separate XP history indicator and live inspector explain which benefits currently apply.
 
 ## Scoring and victory
 

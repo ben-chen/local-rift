@@ -216,6 +216,7 @@ fn fingerprint(game: &Game) -> u64 {
         player.power_pool.hash(&mut hash);
         player.any_power.hash(&mut hash);
         player.xp.hash(&mut hash);
+        game.gained_xp_this_turn(owner).hash(&mut hash);
         for gear in &player.gear {
             gear.id.hash(&mut hash);
             gear.card_id.hash(&mut hash);
@@ -523,6 +524,36 @@ fn advice(game: &Game, level: AdviceLevel) -> Vec<&'static str> {
         })
         .collect();
     use local_rift::continuous::SourceCondition;
+    if conditions.contains(&SourceCondition::ControllerGainedXpThisTurn) {
+        tips.push(if beginner {
+            "Wily Newtfish checks whether you gained XP this turn, not just your XP total. Its extra might and Ganking last while that public history is true."
+        } else {
+            "An XP gain can unlock Wily's field-to-field movement this turn. The gain history resets each turn; recheck Ganking before planning a later move."
+        });
+    }
+    if human.hand.iter().any(|&id| {
+        matches!(
+            local_rift::rules::entry_ready_rule(id),
+            Some(local_rift::rules::EntryReadyRule::ControllerXpAtLeast(_))
+        )
+    }) {
+        tips.push(if beginner {
+            "A Level entry rule checks your XP when the unit enters. Entering ready is its initial state, not a later Ready effect; Accelerate is a separate option."
+        } else {
+            "Reach the entry threshold before deploying. Gaining XP after a unit entered exhausted will not retroactively ready it."
+        });
+    }
+    if human
+        .hand
+        .iter()
+        .any(|&id| !local_rift::rules::xp_energy_discount_tiers(id).is_empty())
+    {
+        tips.push(if beginner {
+            "Concentrate uses only its highest reached Level discount. The cost panel shows what you pay; its two printed reductions do not add together."
+        } else {
+            "Concentrate's cost locks when finalization begins. Use the cost panel to review its current XP discount and any separate Repeat cost."
+        });
+    }
     if conditions.contains(&SourceCondition::Buffed) {
         tips.push(if beginner {
             "Buffed means having a Buff counter. Temporary might and Empowered do not count; the live preview shows whether this unit's extra ability is active."
@@ -1040,6 +1071,68 @@ mod tests {
 
     fn game() -> Game {
         Game::new(0, 1, 72, Difficulty::Easy)
+    }
+
+    #[test]
+    fn xp_entry_discount_and_history_advice_uses_public_events_and_stays_private() {
+        use local_rift::game::Action;
+        let mut game = game();
+        game.start_match().unwrap();
+        game.players[0].hand = vec![334, 336];
+        game.players[0].xp = 255;
+        game.players[0].units = [342, 343]
+            .into_iter()
+            .enumerate()
+            .map(|(index, card_id)| Unit {
+                id: 980 + index as u32,
+                card_id,
+                lane: None,
+                ready: true,
+                damage: 0,
+                buff: 0,
+                temporary_buff: 0,
+                token: false,
+                protected: false,
+                stunned: false,
+                banish_on_death: false,
+            })
+            .collect();
+        let beginner = advice(&game, AdviceLevel::Beginner);
+        assert!(
+            beginner
+                .iter()
+                .any(|tip| tip.contains("whether you gained XP this turn"))
+        );
+        assert!(
+            beginner
+                .iter()
+                .any(|tip| tip.contains("initial state, not a later Ready effect"))
+        );
+        assert!(
+            beginner
+                .iter()
+                .any(|tip| tip.contains("highest reached Level discount"))
+        );
+        game.apply(Action::Move {
+            unit_id: 981,
+            lane: Some(0),
+        })
+        .unwrap();
+        while !game.chain.is_empty() {
+            game.apply(Action::Pass).unwrap();
+        }
+        assert_eq!(game.players[0].xp, 257);
+        assert!(game.gained_xp_this_turn(0));
+        let mut hidden = game.clone();
+        hidden.players[1].hand = vec![334, 335, 336];
+        hidden.players[1].deck.reverse();
+        assert_eq!(fingerprint(&game), fingerprint(&hidden));
+        for level in [AdviceLevel::Beginner, AdviceLevel::Advanced] {
+            let tips = advice(&game, level);
+            assert_eq!(tips, advice(&hidden, level));
+            assert!(tips.iter().all(|tip| tip.chars().count() <= 180));
+        }
+        assert_ne!(beginner, advice(&game, AdviceLevel::Advanced));
     }
 
     #[test]

@@ -28,6 +28,7 @@ pub struct TriggerContext {
 pub struct TriggerState {
     pub draws: [u16; 2],
     pub completed_cards: [u16; 2],
+    pub xp_gained: [bool; 2],
     pub first_used: Vec<(TriggerSource, usize)>,
     pub combat_seen: Vec<u32>,
     pub(crate) hidden_play: bool,
@@ -36,6 +37,7 @@ impl TriggerState {
     pub(super) fn begin_turn(&mut self) {
         self.draws = [0; 2];
         self.completed_cards = [0; 2];
+        self.xp_gained = [false; 2];
         self.first_used.clear();
     }
 }
@@ -220,6 +222,7 @@ impl Game {
                 .unit_id
                 .or(source.gear_id)
                 .is_some_and(|id| self.unit_empowered(id)),
+            Condition::ControllerXpAtLeast(n) => self.players[source.player].xp >= u64::from(n),
             Condition::Other => !same,
             Condition::FromBattlefield => event.origin.is_some(),
             Condition::ToBattlefield => event.unit.as_ref().is_some_and(|u| u.lane.is_some()),
@@ -839,7 +842,7 @@ impl Game {
         index: usize,
         context: TriggerContext,
         targets: &[Target],
-    ) {
+    ) -> Result<(), String> {
         let rule = &metadata::trigger_rules(card_id)[index];
         let targets: Vec<_> = targets
             .iter()
@@ -853,10 +856,10 @@ impl Game {
             match *effect {
                 Effect::Xp(amount) => {
                     let count = match amount {
-                        Amount::Fixed(n) => n,
-                        Amount::FriendlyUnits => self.players[player].units.len().min(255) as u8,
+                        Amount::Fixed(n) => u64::from(n),
+                        Amount::FriendlyUnits => u64::try_from(self.players[player].units.len()).map_err(|_| "engine_capacity: Unit count exceeds the supported XP representation.")?,
                     };
-                    self.players[player].xp = self.players[player].xp.saturating_add(count);
+                    self.gain_xp(player, count)?;
                 }
                 Effect::Draw(n) => self.draw(player, n),
                 Effect::DrawBoth(n) => {
@@ -991,6 +994,7 @@ impl Game {
             }
             self.trigger_batch += 1;
         }
+        Ok(())
     }
 }
 

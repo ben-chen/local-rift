@@ -654,7 +654,7 @@ fn hunt_is_one_captured_sum_and_preserves_all_legacy_hunt_values() {
                 .all(|gear| gear.attached_to.is_none())
         );
         drain(&mut g);
-        assert_eq!(g.players[0].xp, base + 2);
+        assert_eq!(g.players[0].xp, u64::from(base + 2));
     }
 }
 #[test]

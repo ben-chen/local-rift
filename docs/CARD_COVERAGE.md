@@ -2,7 +2,7 @@
 
 Snapshot checked **2026-10-24**. The official gallery contains **1,408 printing records** grouped into **1,103 distinct full-name identities**. After excluding **12 auxiliary token/tracker identities** and **12 banned identities**, **1,079 identities are legal in Standard/1v1 Constructed**. The separate 2v2 list leaves **1,078**.
 
-**This client does not yet implement every legal card.** It currently maps **334 main-deck cards, 8 independently registered legends, 11 battlefields, and 6 rune resource types** (359 legal identities). **720 legal identities remain unimplemented and are not playable.** Importing this snapshot does not register cards with the engine. Full inventory coverage is not full rules support.
+**This client does not yet implement every legal card.** It currently maps **345 main-deck cards, 8 independently registered legends, 11 battlefields, and 6 rune resource types** (370 legal identities). **709 legal identities remain unimplemented and are not playable.** Importing this snapshot does not register cards with the engine. Full inventory coverage is not full rules support.
 
 ## Scope and authority
 
@@ -29,8 +29,8 @@ Numbered positions include token slots where the publisher numbers them within a
 | Gear | 131 | 60 | 71 |
 | Legend | 58 | 8 | 50 |
 | Rune | 6 | 6 | 0 |
-| Spell | 268 | 85 | 183 |
-| Unit | 547 | 189 | 358 |
+| Spell | 268 | 87 | 181 |
+| Unit | 547 | 198 | 349 |
 
 Implemented mapping means the existing engine/preset/field/resource implementation, not a claim that every interaction has been formally proven. See `docs/RULES.md` for engine limits. Every unimplemented identity has `implementation.status: not_implemented` and `playable_in_client: false`. Printed keywords are recorded per card and counted under `unimplemented_by_observed_keyword` as discovery hints only; shared keywords do not imply shared effect semantics or completed implementation. Each unimplemented card still requires its specific effect, targets, timing, costs, continuous/replacement effects, and interaction tests to be reviewed and implemented.
 
@@ -466,6 +466,17 @@ Current pages are archived under `assets/data/catalog_sources/`; immutable revie
 | 331 | Petricite Monument | `sfd-104-221` |
 | 332 | Ribbon Dancer | `sfd-038-221` |
 | 333 | Bilgewater Tracker | `rad-003-167` |
+| 334 | Bandle Soldier | `unl-151-219` |
+| 335 | Combat Experience | `unl-031-219` |
+| 336 | Concentrate | `unl-091-219` |
+| 337 | Gemhand Hunter | `unl-094-219` |
+| 338 | Gustwalker | `unl-075-219` |
+| 339 | Mosstomper | `unl-047-219` |
+| 340 | Scorchclaw | `unl-016-219` |
+| 341 | Wuju Apprentice | `unl-040-219` |
+| 342 | Wily Newtfish | `unl-108-219` |
+| 343 | Mister Root | `unl-127-219` |
+| 344 | Nilah, Joyful Ascetic | `unl-115-219` |
 
 ## Implemented legend ID mapping
 

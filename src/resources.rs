@@ -12,7 +12,11 @@ impl Game {
         let p = &self.players[player];
         format!(
             "{:?}|{:?}|{:?}|{:?}|{:?}|{:?}|{:?}|{:?}|{:?}|{:?}|{:?}|{:?}|{:?}",
-            self.play_history,
+            (
+                self.players.each_ref().map(|p| p.xp),
+                self.trigger_state.xp_gained,
+                &self.play_history
+            ),
             self.play_grants,
             p.runes,
             p.exhausted_runes,

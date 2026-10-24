@@ -1,0 +1,1198 @@
+{
+  "schema_version": 1,
+  "reviewed_on": "2026-10-24",
+  "scope": "C10 first11 XP/Level source admissions; source facts are separate from runtime implementation",
+  "origin_gallery": {
+    "url": "https://playriftbound.com/en-us/card-gallery/",
+    "uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9"
+  },
+  "pre_admission_catalog_sha256": "b3d1ecc566bf05a92001312453659def946a1dfaae483c812d2cdf3be8a513ed",
+  "records": [
+    {
+      "runtime_id": 334,
+      "official_id": "unl-151-219",
+      "name": "Bandle Soldier",
+      "raw_printing": {
+        "official_id": "unl-151-219",
+        "public_code": "UNL-151/219",
+        "name": "Bandle Soldier",
+        "set": "UNL",
+        "collector_number": 151,
+        "types": [
+          "unit"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "unit"
+        ],
+        "accessibility_types": [
+          "unit"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "order"
+        ],
+        "energy": 4,
+        "power": 1,
+        "might": 5,
+        "might_bonus": null,
+        "rules_html": "<p>[Level 3][&gt;] I enter ready. (While you have 3+ XP, get the effect.)</p>",
+        "rules_text": "[Level 3][>] I enter ready. (While you have 3+ XP, get the effect.)",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [
+          "Yordle",
+          "Bandle City"
+        ],
+        "rarity": "common",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/e43b54f22e0a038ee1f94ba2e99f80dd89999d8e-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Unit: Bandle Soldier. [Level 3][>] I enter ready. (While you have 3+ XP, get the effect.)",
+        "illustrators": [
+          "Caravan Studio"
+        ]
+      },
+      "raw_printing_sha256": "5940cd01d8d3baf5415b7493245923aa2d5515b22320eea4747a1718080b0f89",
+      "effective": {
+        "types": [
+          "unit"
+        ],
+        "super_types": [],
+        "domains": [
+          "order"
+        ],
+        "energy": 4,
+        "power": 1,
+        "might": 5,
+        "might_bonus": null,
+        "tags": [
+          "Yordle",
+          "Bandle City"
+        ],
+        "rules_html": "<p>[Level 3][&gt;] I enter ready. (While you have 3+ XP, get the effect.)</p>",
+        "rules_text": "[Level 3][>] I enter ready. (While you have 3+ XP, get the effect.)",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "existing_field_resolution_ids": [],
+      "original_image": {
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/e43b54f22e0a038ee1f94ba2e99f80dd89999d8e-744x1039.png?accountingTag=RB",
+        "path": "assets/data/card_admissions/c10/images/unl-151-219.png",
+        "sha256": "d2a61bb7481494ec1295e96ad5d7f4e0a0cf935e0852aefbf80a437675b500d7",
+        "bytes": 789017
+      },
+      "runtime_image": {
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/e43b54f22e0a038ee1f94ba2e99f80dd89999d8e-744x1039.png?w=360&q=80&fm=png",
+        "path": "assets/art/card_334.png",
+        "sha256": "de7eef2596a2094e4ade38d4f82732b07d6b7f2257ab2c009ccf35335592d164",
+        "bytes": 270511,
+        "width": 360
+      },
+      "visual_observation": {
+        "official_id": "unl-151-219",
+        "face_visually_inspected": true,
+        "original_image_sha256": "d2a61bb7481494ec1295e96ad5d7f4e0a0cf935e0852aefbf80a437675b500d7",
+        "name": "Bandle Soldier",
+        "collector_code": "UNL-151/219",
+        "printed_types": [
+          "unit"
+        ],
+        "printed_supertypes": [],
+        "printed_domains": [
+          "order"
+        ],
+        "printed_tags": [
+          "Yordle",
+          "Bandle City"
+        ],
+        "printed_energy": 4,
+        "printed_power": 1,
+        "printed_might": 5,
+        "printed_might_bonus": null,
+        "printed_rules_icons_expanded": "[Level 3][>] I enter ready. (While you have 3+ XP, get the effect.)",
+        "printed_equipment_icons_expanded": "",
+        "comparison": "No mismatch found in individually inspected face; icon expansion and line wrapping are presentation only.",
+        "uncertainties": []
+      }
+    },
+    {
+      "runtime_id": 335,
+      "official_id": "unl-031-219",
+      "name": "Combat Experience",
+      "raw_printing": {
+        "official_id": "unl-031-219",
+        "public_code": "UNL-031/219",
+        "name": "Combat Experience",
+        "set": "UNL",
+        "collector_number": 31,
+        "types": [
+          "spell"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "spell"
+        ],
+        "accessibility_types": [
+          "spell"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "calm"
+        ],
+        "energy": 1,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "rules_html": "<p>[Reaction] (Play any time, even before spells and abilities resolve.)<br />Give a unit +1 :rb_might: this turn.<br />[Level 6][&gt;] Give it +3 :rb_might: this turn instead. (While you have 6+ XP, get the effect.)</p>",
+        "rules_text": "[Reaction] (Play any time, even before spells and abilities resolve.)\nGive a unit +1 Might this turn.\n[Level 6][>] Give it +3 Might this turn instead. (While you have 6+ XP, get the effect.)",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [],
+        "rarity": "common",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/537b66b5f0259f80bf25b1aafb78558f4db6886a-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Spell: Combat Experience. [Reaction] (Play any time, even before spells and abilities resolve.)\nGive a unit +1 [S] this turn.\n[Level 6][>] Give it +3 [S] this turn instead. (While you have 6+ XP, get the effect.)",
+        "illustrators": [
+          "Kudos Productions"
+        ]
+      },
+      "raw_printing_sha256": "baca28f0ee57c4e7431ac69e14ab9f41f60fa3a063cde0d1b96f83b78e369afb",
+      "effective": {
+        "types": [
+          "spell"
+        ],
+        "super_types": [],
+        "domains": [
+          "calm"
+        ],
+        "energy": 1,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>[Reaction] (Play any time, even before spells and abilities resolve.)<br />Give a unit +1 :rb_might: this turn.<br />[Level 6][&gt;] Give it +3 :rb_might: this turn instead. (While you have 6+ XP, get the effect.)</p>",
+        "rules_text": "[Reaction] (Play any time, even before spells and abilities resolve.)\nGive a unit +1 Might this turn.\n[Level 6][>] Give it +3 Might this turn instead. (While you have 6+ XP, get the effect.)",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "existing_field_resolution_ids": [],
+      "original_image": {
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/537b66b5f0259f80bf25b1aafb78558f4db6886a-744x1039.png?accountingTag=RB",
+        "path": "assets/data/card_admissions/c10/images/unl-031-219.png",
+        "sha256": "00839b4123bf9373a8c9a14fcbaf1cbd4912644a235228f6a87cfc23e502355c",
+        "bytes": 746436
+      },
+      "runtime_image": {
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/537b66b5f0259f80bf25b1aafb78558f4db6886a-744x1039.png?w=360&q=80&fm=png",
+        "path": "assets/art/card_335.png",
+        "sha256": "3ee6832e357eaaeb86f925eb7dacaa7de1b133b2da2dd97c5cc212255002076c",
+        "bytes": 252572,
+        "width": 360
+      },
+      "visual_observation": {
+        "official_id": "unl-031-219",
+        "face_visually_inspected": true,
+        "original_image_sha256": "00839b4123bf9373a8c9a14fcbaf1cbd4912644a235228f6a87cfc23e502355c",
+        "name": "Combat Experience",
+        "collector_code": "UNL-031/219",
+        "printed_types": [
+          "spell"
+        ],
+        "printed_supertypes": [],
+        "printed_domains": [
+          "calm"
+        ],
+        "printed_tags": [],
+        "printed_energy": 1,
+        "printed_power": null,
+        "printed_might": null,
+        "printed_might_bonus": null,
+        "printed_rules_icons_expanded": "[Reaction] (Play any time, even before spells and abilities resolve.)\nGive a unit +1 Might this turn.\n[Level 6][>] Give it +3 Might this turn instead. (While you have 6+ XP, get the effect.)",
+        "printed_equipment_icons_expanded": "",
+        "comparison": "No mismatch found in individually inspected face; icon expansion and line wrapping are presentation only.",
+        "uncertainties": []
+      }
+    },
+    {
+      "runtime_id": 336,
+      "official_id": "unl-091-219",
+      "name": "Concentrate",
+      "raw_printing": {
+        "official_id": "unl-091-219",
+        "public_code": "UNL-091/219",
+        "name": "Concentrate",
+        "set": "UNL",
+        "collector_number": 91,
+        "types": [
+          "spell"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "spell"
+        ],
+        "accessibility_types": [
+          "spell"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "body"
+        ],
+        "energy": 5,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "rules_html": "<p>Draw 2.<br />[Level 6][&gt;] This costs :rb_energy_2: less. (While you have 6+ XP, get the effect.)<br />[Level 11][&gt;] This costs :rb_energy_4: less instead.</p>",
+        "rules_text": "Draw 2.\n[Level 6][>] This costs [2 Energy] less. (While you have 6+ XP, get the effect.)\n[Level 11][>] This costs [4 Energy] less instead.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [],
+        "rarity": "common",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/5e032420b6dcbdd96dca122b4d7875868feb82ed-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Spell: Concentrate. Draw 2.\n[Level 6][>] This costs [2] less. (While you have 6+ XP, get the effect.)\n[Level 11][>] This costs [4] less instead.",
+        "illustrators": [
+          "Kudos Productions & 黯荧岛Dark Glow"
+        ]
+      },
+      "raw_printing_sha256": "64810ffdbe07b2af74bcf6b92ce78093e2ee6ba6749fa1d70729058b59bb8b67",
+      "effective": {
+        "types": [
+          "spell"
+        ],
+        "super_types": [],
+        "domains": [
+          "body"
+        ],
+        "energy": 5,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>Draw 2.<br />[Level 6][&gt;] This costs :rb_energy_2: less. (While you have 6+ XP, get the effect.)<br />[Level 11][&gt;] This costs :rb_energy_4: less instead.</p>",
+        "rules_text": "Draw 2.\n[Level 6][>] This costs [2 Energy] less. (While you have 6+ XP, get the effect.)\n[Level 11][>] This costs [4 Energy] less instead.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "existing_field_resolution_ids": [],
+      "original_image": {
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/5e032420b6dcbdd96dca122b4d7875868feb82ed-744x1039.png?accountingTag=RB",
+        "path": "assets/data/card_admissions/c10/images/unl-091-219.png",
+        "sha256": "8488b69f72be385a8f97fbd80bd4f2c407a32255025ab5b8dd9914152e19730e",
+        "bytes": 725065
+      },
+      "runtime_image": {
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/5e032420b6dcbdd96dca122b4d7875868feb82ed-744x1039.png?w=360&q=80&fm=png",
+        "path": "assets/art/card_336.png",
+        "sha256": "d73679edd1e73d604af2f592731da84ed75b3aa4458a3816daae6b74cad8e751",
+        "bytes": 267532,
+        "width": 360
+      },
+      "visual_observation": {
+        "official_id": "unl-091-219",
+        "face_visually_inspected": true,
+        "original_image_sha256": "8488b69f72be385a8f97fbd80bd4f2c407a32255025ab5b8dd9914152e19730e",
+        "name": "Concentrate",
+        "collector_code": "UNL-091/219",
+        "printed_types": [
+          "spell"
+        ],
+        "printed_supertypes": [],
+        "printed_domains": [
+          "body"
+        ],
+        "printed_tags": [],
+        "printed_energy": 5,
+        "printed_power": null,
+        "printed_might": null,
+        "printed_might_bonus": null,
+        "printed_rules_icons_expanded": "Draw 2.\n[Level 6][>] This costs [2 Energy] less. (While you have 6+ XP, get the effect.)\n[Level 11][>] This costs [4 Energy] less instead.",
+        "printed_equipment_icons_expanded": "",
+        "comparison": "No mismatch found in individually inspected face; icon expansion and line wrapping are presentation only.",
+        "uncertainties": []
+      }
+    },
+    {
+      "runtime_id": 337,
+      "official_id": "unl-094-219",
+      "name": "Gemhand Hunter",
+      "raw_printing": {
+        "official_id": "unl-094-219",
+        "public_code": "UNL-094/219",
+        "name": "Gemhand Hunter",
+        "set": "UNL",
+        "collector_number": 94,
+        "types": [
+          "unit"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "unit"
+        ],
+        "accessibility_types": [
+          "unit"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "body"
+        ],
+        "energy": 2,
+        "power": null,
+        "might": 2,
+        "might_bonus": null,
+        "rules_html": "<p>[Hunt] (When I conquer or hold, gain 1 XP.)<br />[Level 6][&gt;] I have +1 :rb_might:. (While you have 6+ XP, get the effect.)</p>",
+        "rules_text": "[Hunt] (When I conquer or hold, gain 1 XP.)\n[Level 6][>] I have +1 Might. (While you have 6+ XP, get the effect.)",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [
+          "Yordle",
+          "Mount Targon"
+        ],
+        "rarity": "common",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/d824d666dc5f50c3c513c3f9722f6eafe21c6289-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Unit: Gemhand Hunter. [Hunt] (When I conquer or hold, gain 1 XP.)\n[Level 6][>] I have +1 [S]. (While you have 6+ XP, get the effect.)",
+        "illustrators": [
+          "Kudos Productions"
+        ]
+      },
+      "raw_printing_sha256": "031ddf2c90bc26b950b397973e6a6ec729c11e65def024e90b22365f350c1679",
+      "effective": {
+        "types": [
+          "unit"
+        ],
+        "super_types": [],
+        "domains": [
+          "body"
+        ],
+        "energy": 2,
+        "power": null,
+        "might": 2,
+        "might_bonus": null,
+        "tags": [
+          "Yordle",
+          "Mount Targon"
+        ],
+        "rules_html": "<p>[Hunt] (When I conquer or hold, gain 1 XP.)<br />[Level 6][&gt;] I have +1 :rb_might:. (While you have 6+ XP, get the effect.)</p>",
+        "rules_text": "[Hunt] (When I conquer or hold, gain 1 XP.)\n[Level 6][>] I have +1 Might. (While you have 6+ XP, get the effect.)",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "existing_field_resolution_ids": [],
+      "original_image": {
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/d824d666dc5f50c3c513c3f9722f6eafe21c6289-744x1039.png?accountingTag=RB",
+        "path": "assets/data/card_admissions/c10/images/unl-094-219.png",
+        "sha256": "85b0ba6214eca60706e2721f31a8dd657801c82efea6367d1955f45d25b68409",
+        "bytes": 825061
+      },
+      "runtime_image": {
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/d824d666dc5f50c3c513c3f9722f6eafe21c6289-744x1039.png?w=360&q=80&fm=png",
+        "path": "assets/art/card_337.png",
+        "sha256": "ca93075e1fc2c8d9f815f2e59ee8d50b98b16b18f35655d43c9984b681e0b142",
+        "bytes": 289235,
+        "width": 360
+      },
+      "visual_observation": {
+        "official_id": "unl-094-219",
+        "face_visually_inspected": true,
+        "original_image_sha256": "85b0ba6214eca60706e2721f31a8dd657801c82efea6367d1955f45d25b68409",
+        "name": "Gemhand Hunter",
+        "collector_code": "UNL-094/219",
+        "printed_types": [
+          "unit"
+        ],
+        "printed_supertypes": [],
+        "printed_domains": [
+          "body"
+        ],
+        "printed_tags": [
+          "Yordle",
+          "Mount Targon"
+        ],
+        "printed_energy": 2,
+        "printed_power": null,
+        "printed_might": 2,
+        "printed_might_bonus": null,
+        "printed_rules_icons_expanded": "[Hunt] (When I conquer or hold, gain 1 XP.)\n[Level 6][>] I have +1 Might. (While you have 6+ XP, get the effect.)",
+        "printed_equipment_icons_expanded": "",
+        "comparison": "No mismatch found in individually inspected face; icon expansion and line wrapping are presentation only.",
+        "uncertainties": []
+      }
+    },
+    {
+      "runtime_id": 338,
+      "official_id": "unl-075-219",
+      "name": "Gustwalker",
+      "raw_printing": {
+        "official_id": "unl-075-219",
+        "public_code": "UNL-075/219",
+        "name": "Gustwalker",
+        "set": "UNL",
+        "collector_number": 75,
+        "types": [
+          "unit"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "unit"
+        ],
+        "accessibility_types": [
+          "unit"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "mind"
+        ],
+        "energy": 3,
+        "power": 1,
+        "might": 3,
+        "might_bonus": null,
+        "rules_html": "<p>[Hunt 2] (When I conquer or hold, gain 2 XP.)<br />[Level 3][&gt;] I have +1 :rb_might: and [Ganking]. (While you have 3+ XP, get the effect. A [Ganking] unit can move from battlefield to battlefield.)</p>",
+        "rules_text": "[Hunt 2] (When I conquer or hold, gain 2 XP.)\n[Level 3][>] I have +1 Might and [Ganking]. (While you have 3+ XP, get the effect. A [Ganking] unit can move from battlefield to battlefield.)",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [
+          "Dog",
+          "Ionia"
+        ],
+        "rarity": "uncommon",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/3f314cea0c05d2ea274a81d723299e4e20b2ebde-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Unit: Gustwalker. [Hunt 2] (When I conquer or hold, gain 2 XP.)\n[Level 3][>] I have +1 [S] and [Ganking]. (While you have 3+ XP, get the effect. A [Ganking] unit can move from battlefield to battlefield.)",
+        "illustrators": [
+          "黯荧岛Dark Glow"
+        ]
+      },
+      "raw_printing_sha256": "49a1a0e2eb7fedeaba8b9f3bd6cdbbb526d841180c574a2da5237eed614f1166",
+      "effective": {
+        "types": [
+          "unit"
+        ],
+        "super_types": [],
+        "domains": [
+          "mind"
+        ],
+        "energy": 3,
+        "power": 1,
+        "might": 3,
+        "might_bonus": null,
+        "tags": [
+          "Dog",
+          "Ionia"
+        ],
+        "rules_html": "<p>[Hunt 2] (When I conquer or hold, gain 2 XP.)<br />[Level 3][&gt;] I have +1 :rb_might: and [Ganking]. (While you have 3+ XP, get the effect. A [Ganking] unit can move from battlefield to battlefield.)</p>",
+        "rules_text": "[Hunt 2] (When I conquer or hold, gain 2 XP.)\n[Level 3][>] I have +1 Might and [Ganking]. (While you have 3+ XP, get the effect. A [Ganking] unit can move from battlefield to battlefield.)",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "existing_field_resolution_ids": [],
+      "original_image": {
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/3f314cea0c05d2ea274a81d723299e4e20b2ebde-744x1039.png?accountingTag=RB",
+        "path": "assets/data/card_admissions/c10/images/unl-075-219.png",
+        "sha256": "01612b334b6cac1d026aa1f7d33b9c473fd8ff7ccde9a652c9b0c0aea2f69727",
+        "bytes": 812046
+      },
+      "runtime_image": {
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/3f314cea0c05d2ea274a81d723299e4e20b2ebde-744x1039.png?w=360&q=80&fm=png",
+        "path": "assets/art/card_338.png",
+        "sha256": "e920ddf163538258d0f4e63dc2c64e9d72ea7aa036781bc1e3392199467fd44d",
+        "bytes": 261748,
+        "width": 360
+      },
+      "visual_observation": {
+        "official_id": "unl-075-219",
+        "face_visually_inspected": true,
+        "original_image_sha256": "01612b334b6cac1d026aa1f7d33b9c473fd8ff7ccde9a652c9b0c0aea2f69727",
+        "name": "Gustwalker",
+        "collector_code": "UNL-075/219",
+        "printed_types": [
+          "unit"
+        ],
+        "printed_supertypes": [],
+        "printed_domains": [
+          "mind"
+        ],
+        "printed_tags": [
+          "Dog",
+          "Ionia"
+        ],
+        "printed_energy": 3,
+        "printed_power": 1,
+        "printed_might": 3,
+        "printed_might_bonus": null,
+        "printed_rules_icons_expanded": "[Hunt 2] (When I conquer or hold, gain 2 XP.)\n[Level 3][>] I have +1 Might and [Ganking]. (While you have 3+ XP, get the effect. A [Ganking] unit can move from battlefield to battlefield.)",
+        "printed_equipment_icons_expanded": "",
+        "comparison": "No mismatch found in individually inspected face; icon expansion and line wrapping are presentation only.",
+        "uncertainties": []
+      }
+    },
+    {
+      "runtime_id": 339,
+      "official_id": "unl-047-219",
+      "name": "Mosstomper",
+      "raw_printing": {
+        "official_id": "unl-047-219",
+        "public_code": "UNL-047/219",
+        "name": "Mosstomper",
+        "set": "UNL",
+        "collector_number": 47,
+        "types": [
+          "unit"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "unit"
+        ],
+        "accessibility_types": [
+          "unit"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "calm"
+        ],
+        "energy": 3,
+        "power": 1,
+        "might": 3,
+        "might_bonus": null,
+        "rules_html": "<p>[Hunt 2] (When I conquer or hold, gain 2 XP.)<br />[Level 3][&gt;] I have +1 :rb_might: and [Deflect]. (While you have 3+ XP, get the effect. Opponents must pay :rb_rune_rainbow: to choose a [Deflect] unit with a spell or ability.)</p>",
+        "rules_text": "[Hunt 2] (When I conquer or hold, gain 2 XP.)\n[Level 3][>] I have +1 Might and [Deflect]. (While you have 3+ XP, get the effect. Opponents must pay [Any Power] to choose a [Deflect] unit with a spell or ability.)",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [
+          "Dog",
+          "Ixtal"
+        ],
+        "rarity": "uncommon",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/0ea32d0f6f49c0b48b1ea2cc98fe0a3c540bc9db-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Unit: Mosstomper. [Hunt 2] (When I conquer or hold, gain 2 XP.)\n[Level 3][>] I have +1 [S] and [Deflect]. (While you have 3+ XP, get the effect. Opponents must pay [A] to choose a [Deflect] unit with a spell or ability.)",
+        "illustrators": [
+          "黯荧岛Dark Glow"
+        ]
+      },
+      "raw_printing_sha256": "d6c9cbd59030717549c6c11fee6ca6ff43080d188c1f0a8ccb3a84f34326289e",
+      "effective": {
+        "types": [
+          "unit"
+        ],
+        "super_types": [],
+        "domains": [
+          "calm"
+        ],
+        "energy": 3,
+        "power": 1,
+        "might": 3,
+        "might_bonus": null,
+        "tags": [
+          "Dog",
+          "Ixtal"
+        ],
+        "rules_html": "<p>[Hunt 2] (When I conquer or hold, gain 2 XP.)<br />[Level 3][&gt;] I have +1 :rb_might: and [Deflect]. (While you have 3+ XP, get the effect. Opponents must pay :rb_rune_rainbow: to choose a [Deflect] unit with a spell or ability.)</p>",
+        "rules_text": "[Hunt 2] (When I conquer or hold, gain 2 XP.)\n[Level 3][>] I have +1 Might and [Deflect]. (While you have 3+ XP, get the effect. Opponents must pay [Any Power] to choose a [Deflect] unit with a spell or ability.)",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "existing_field_resolution_ids": [],
+      "original_image": {
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/0ea32d0f6f49c0b48b1ea2cc98fe0a3c540bc9db-744x1039.png?accountingTag=RB",
+        "path": "assets/data/card_admissions/c10/images/unl-047-219.png",
+        "sha256": "341bff3a2678d7cfe498541f15c2c695c324ad6ca9488e100dee7589fdf6012b",
+        "bytes": 785196
+      },
+      "runtime_image": {
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/0ea32d0f6f49c0b48b1ea2cc98fe0a3c540bc9db-744x1039.png?w=360&q=80&fm=png",
+        "path": "assets/art/card_339.png",
+        "sha256": "18a474bfe912b0151ab805f44005ad5b0cd0a65682daa2013531797028fd6525",
+        "bytes": 261838,
+        "width": 360
+      },
+      "visual_observation": {
+        "official_id": "unl-047-219",
+        "face_visually_inspected": true,
+        "original_image_sha256": "341bff3a2678d7cfe498541f15c2c695c324ad6ca9488e100dee7589fdf6012b",
+        "name": "Mosstomper",
+        "collector_code": "UNL-047/219",
+        "printed_types": [
+          "unit"
+        ],
+        "printed_supertypes": [],
+        "printed_domains": [
+          "calm"
+        ],
+        "printed_tags": [
+          "Dog",
+          "Ixtal"
+        ],
+        "printed_energy": 3,
+        "printed_power": 1,
+        "printed_might": 3,
+        "printed_might_bonus": null,
+        "printed_rules_icons_expanded": "[Hunt 2] (When I conquer or hold, gain 2 XP.)\n[Level 3][>] I have +1 Might and [Deflect]. (While you have 3+ XP, get the effect. Opponents must pay [Any Power] to choose a [Deflect] unit with a spell or ability.)",
+        "printed_equipment_icons_expanded": "",
+        "comparison": "No mismatch found in individually inspected face; icon expansion and line wrapping are presentation only.",
+        "uncertainties": []
+      }
+    },
+    {
+      "runtime_id": 340,
+      "official_id": "unl-016-219",
+      "name": "Scorchclaw",
+      "raw_printing": {
+        "official_id": "unl-016-219",
+        "public_code": "UNL-016/219",
+        "name": "Scorchclaw",
+        "set": "UNL",
+        "collector_number": 16,
+        "types": [
+          "unit"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "unit"
+        ],
+        "accessibility_types": [
+          "unit"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "fury"
+        ],
+        "energy": 3,
+        "power": 1,
+        "might": 3,
+        "might_bonus": null,
+        "rules_html": "<p>[Hunt 2] (When I conquer or hold, gain 2 XP.)<br />[Level 3][&gt;] I have +1 :rb_might: and enter ready. (While you have 3+ XP, get the effect.)</p>",
+        "rules_text": "[Hunt 2] (When I conquer or hold, gain 2 XP.)\n[Level 3][>] I have +1 Might and enter ready. (While you have 3+ XP, get the effect.)",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [
+          "Dog",
+          "Noxus"
+        ],
+        "rarity": "uncommon",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/f69940824f8ce62a479df28988dcbdf6ea6d3960-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Unit: Scorchclaw. [Hunt 2] (When I conquer or hold, gain 2 XP.)\n[Level 3][>] I have +1 [S] and enter ready. (While you have 3+ XP, get the effect.)",
+        "illustrators": [
+          "黯荧岛Dark Glow"
+        ]
+      },
+      "raw_printing_sha256": "4f247fc567d8ef7d8c70eea5a47a830b928d0a424c3de3213de27918302baed4",
+      "effective": {
+        "types": [
+          "unit"
+        ],
+        "super_types": [],
+        "domains": [
+          "fury"
+        ],
+        "energy": 3,
+        "power": 1,
+        "might": 3,
+        "might_bonus": null,
+        "tags": [
+          "Dog",
+          "Noxus"
+        ],
+        "rules_html": "<p>[Hunt 2] (When I conquer or hold, gain 2 XP.)<br />[Level 3][&gt;] I have +1 :rb_might: and enter ready. (While you have 3+ XP, get the effect.)</p>",
+        "rules_text": "[Hunt 2] (When I conquer or hold, gain 2 XP.)\n[Level 3][>] I have +1 Might and enter ready. (While you have 3+ XP, get the effect.)",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "existing_field_resolution_ids": [],
+      "original_image": {
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/f69940824f8ce62a479df28988dcbdf6ea6d3960-744x1039.png?accountingTag=RB",
+        "path": "assets/data/card_admissions/c10/images/unl-016-219.png",
+        "sha256": "3e18219d17d02fa283526aa308101b2764bf05296d4d3c69818dbdab5ba3326d",
+        "bytes": 831177
+      },
+      "runtime_image": {
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/f69940824f8ce62a479df28988dcbdf6ea6d3960-744x1039.png?w=360&q=80&fm=png",
+        "path": "assets/art/card_340.png",
+        "sha256": "1912d8c9e5db8eb5fe00d4afe1604502a6e9c59e04ea745df50d7a1158332808",
+        "bytes": 267254,
+        "width": 360
+      },
+      "visual_observation": {
+        "official_id": "unl-016-219",
+        "face_visually_inspected": true,
+        "original_image_sha256": "3e18219d17d02fa283526aa308101b2764bf05296d4d3c69818dbdab5ba3326d",
+        "name": "Scorchclaw",
+        "collector_code": "UNL-016/219",
+        "printed_types": [
+          "unit"
+        ],
+        "printed_supertypes": [],
+        "printed_domains": [
+          "fury"
+        ],
+        "printed_tags": [
+          "Dog",
+          "Noxus"
+        ],
+        "printed_energy": 3,
+        "printed_power": 1,
+        "printed_might": 3,
+        "printed_might_bonus": null,
+        "printed_rules_icons_expanded": "[Hunt 2] (When I conquer or hold, gain 2 XP.)\n[Level 3][>] I have +1 Might and enter ready. (While you have 3+ XP, get the effect.)",
+        "printed_equipment_icons_expanded": "",
+        "comparison": "No mismatch found in individually inspected face; icon expansion and line wrapping are presentation only.",
+        "uncertainties": []
+      }
+    },
+    {
+      "runtime_id": 341,
+      "official_id": "unl-040-219",
+      "name": "Wuju Apprentice",
+      "raw_printing": {
+        "official_id": "unl-040-219",
+        "public_code": "UNL-040/219",
+        "name": "Wuju Apprentice",
+        "set": "UNL",
+        "collector_number": 40,
+        "types": [
+          "unit"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "unit"
+        ],
+        "accessibility_types": [
+          "unit"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "calm"
+        ],
+        "energy": 2,
+        "power": null,
+        "might": 2,
+        "might_bonus": null,
+        "rules_html": "<p>[Hunt] (When I conquer or hold, gain 1 XP.)<br />[Level 6][&gt;] When you play me, draw 1. (While you have 6+ XP, get the effect.)</p>",
+        "rules_text": "[Hunt] (When I conquer or hold, gain 1 XP.)\n[Level 6][>] When you play me, draw 1. (While you have 6+ XP, get the effect.)",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [
+          "Ionia"
+        ],
+        "rarity": "common",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/543789dd1b4b2654392a151d4bb1b0c6263c47dc-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Unit: Wuju Apprentice. [Hunt] (When I conquer or hold, gain 1 XP.)\n[Level 6][>] When you play me, draw 1. (While you have 6+ XP, get the effect.)",
+        "illustrators": [
+          "Polar Engine Studio"
+        ]
+      },
+      "raw_printing_sha256": "fa56921ab10d3f5713d502b68ce9ed0be2f96a5d71395e95116525f3f7f896e6",
+      "effective": {
+        "types": [
+          "unit"
+        ],
+        "super_types": [],
+        "domains": [
+          "calm"
+        ],
+        "energy": 2,
+        "power": null,
+        "might": 2,
+        "might_bonus": null,
+        "tags": [
+          "Ionia"
+        ],
+        "rules_html": "<p>[Hunt] (When I conquer or hold, gain 1 XP.)<br />[Level 6][&gt;] When you play me, draw 1. (While you have 6+ XP, get the effect.)</p>",
+        "rules_text": "[Hunt] (When I conquer or hold, gain 1 XP.)\n[Level 6][>] When you play me, draw 1. (While you have 6+ XP, get the effect.)",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "existing_field_resolution_ids": [],
+      "original_image": {
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/543789dd1b4b2654392a151d4bb1b0c6263c47dc-744x1039.png?accountingTag=RB",
+        "path": "assets/data/card_admissions/c10/images/unl-040-219.png",
+        "sha256": "c566ed4689f604460533165f1da8248859bc4ec987398176c41577e44a3dc58a",
+        "bytes": 830060
+      },
+      "runtime_image": {
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/543789dd1b4b2654392a151d4bb1b0c6263c47dc-744x1039.png?w=360&q=80&fm=png",
+        "path": "assets/art/card_341.png",
+        "sha256": "6161e2c7cfa30d3ef86657b96a23bc5e38c0a86b8c7e5159122a0c713a0cac72",
+        "bytes": 297037,
+        "width": 360
+      },
+      "visual_observation": {
+        "official_id": "unl-040-219",
+        "face_visually_inspected": true,
+        "original_image_sha256": "c566ed4689f604460533165f1da8248859bc4ec987398176c41577e44a3dc58a",
+        "name": "Wuju Apprentice",
+        "collector_code": "UNL-040/219",
+        "printed_types": [
+          "unit"
+        ],
+        "printed_supertypes": [],
+        "printed_domains": [
+          "calm"
+        ],
+        "printed_tags": [
+          "Ionia"
+        ],
+        "printed_energy": 2,
+        "printed_power": null,
+        "printed_might": 2,
+        "printed_might_bonus": null,
+        "printed_rules_icons_expanded": "[Hunt] (When I conquer or hold, gain 1 XP.)\n[Level 6][>] When you play me, draw 1. (While you have 6+ XP, get the effect.)",
+        "printed_equipment_icons_expanded": "",
+        "comparison": "No mismatch found in individually inspected face; icon expansion and line wrapping are presentation only.",
+        "uncertainties": []
+      }
+    },
+    {
+      "runtime_id": 342,
+      "official_id": "unl-108-219",
+      "name": "Wily Newtfish",
+      "raw_printing": {
+        "official_id": "unl-108-219",
+        "public_code": "UNL-108/219",
+        "name": "Wily Newtfish",
+        "set": "UNL",
+        "collector_number": 108,
+        "types": [
+          "unit"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "unit"
+        ],
+        "accessibility_types": [
+          "unit"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "body"
+        ],
+        "energy": 4,
+        "power": null,
+        "might": 4,
+        "might_bonus": null,
+        "rules_html": "<p>If you've gained XP this turn, I have +1 :rb_might: and [Ganking]. (I can move from battlefield to battlefield.)</p>",
+        "rules_text": "If you've gained XP this turn, I have +1 Might and [Ganking]. (I can move from battlefield to battlefield.)",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [
+          "Bilgewater"
+        ],
+        "rarity": "uncommon",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/4a0b0ebe9f47dadeb3b5f0520ec566a528df9c94-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Unit: Wily Newtfish. If you've gained XP this turn, I have +1 [S] and [Ganking]. (I can move from battlefield to battlefield.)",
+        "illustrators": [
+          "Kudos Productions"
+        ]
+      },
+      "raw_printing_sha256": "5991ee9d0d97c9cd22b79775521d03f661fb4b06d51dca761adb3f30154e8ba2",
+      "effective": {
+        "types": [
+          "unit"
+        ],
+        "super_types": [],
+        "domains": [
+          "body"
+        ],
+        "energy": 4,
+        "power": null,
+        "might": 4,
+        "might_bonus": null,
+        "tags": [
+          "Bilgewater"
+        ],
+        "rules_html": "<p>If you've gained XP this turn, I have +1 :rb_might: and [Ganking]. (I can move from battlefield to battlefield.)</p>",
+        "rules_text": "If you've gained XP this turn, I have +1 Might and [Ganking]. (I can move from battlefield to battlefield.)",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "existing_field_resolution_ids": [],
+      "original_image": {
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/4a0b0ebe9f47dadeb3b5f0520ec566a528df9c94-744x1039.png?accountingTag=RB",
+        "path": "assets/data/card_admissions/c10/images/unl-108-219.png",
+        "sha256": "e46d361f08572550bcabee3158845b5f1d8521a24fd5d3fbffa07ef0f9230168",
+        "bytes": 817001
+      },
+      "runtime_image": {
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/4a0b0ebe9f47dadeb3b5f0520ec566a528df9c94-744x1039.png?w=360&q=80&fm=png",
+        "path": "assets/art/card_342.png",
+        "sha256": "bc2b03dbf02fe6aad060630e5115a00c9351d246dc847d435c80cd82d64dc000",
+        "bytes": 250166,
+        "width": 360
+      },
+      "visual_observation": {
+        "official_id": "unl-108-219",
+        "face_visually_inspected": true,
+        "original_image_sha256": "e46d361f08572550bcabee3158845b5f1d8521a24fd5d3fbffa07ef0f9230168",
+        "name": "Wily Newtfish",
+        "collector_code": "UNL-108/219",
+        "printed_types": [
+          "unit"
+        ],
+        "printed_supertypes": [],
+        "printed_domains": [
+          "body"
+        ],
+        "printed_tags": [
+          "Bilgewater"
+        ],
+        "printed_energy": 4,
+        "printed_power": null,
+        "printed_might": 4,
+        "printed_might_bonus": null,
+        "printed_rules_icons_expanded": "If you've gained XP this turn, I have +1 Might and [Ganking]. (I can move from battlefield to battlefield.)",
+        "printed_equipment_icons_expanded": "",
+        "comparison": "No mismatch found in individually inspected face; icon expansion and line wrapping are presentation only.",
+        "uncertainties": []
+      }
+    },
+    {
+      "runtime_id": 343,
+      "official_id": "unl-127-219",
+      "name": "Mister Root",
+      "raw_printing": {
+        "official_id": "unl-127-219",
+        "public_code": "UNL-127/219",
+        "name": "Mister Root",
+        "set": "UNL",
+        "collector_number": 127,
+        "types": [
+          "unit"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "unit"
+        ],
+        "accessibility_types": [
+          "unit"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "chaos"
+        ],
+        "energy": 2,
+        "power": null,
+        "might": 1,
+        "might_bonus": null,
+        "rules_html": "<p>[Accelerate] (You may pay :rb_energy_1::rb_rune_chaos: as an additional cost to have me enter ready.)<br />When I move to a battlefield, gain 2 XP.</p>",
+        "rules_text": "[Accelerate] (You may pay [1 Energy][Chaos Power] as an additional cost to have me enter ready.)\nWhen I move to a battlefield, gain 2 XP.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [
+          "Fae",
+          "Ionia"
+        ],
+        "rarity": "common",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/c9bb7a8f5a1426a4af9843f2473ee6cc37dd24bd-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Unit: Mister Root. [Accelerate] (You may pay [1][C] as an additional cost to have me enter ready.)\nWhen I move to a battlefield, gain 2 XP.",
+        "illustrators": [
+          "Caravan Studio"
+        ]
+      },
+      "raw_printing_sha256": "41f243f702d056c89bfc649954d963ccb7fd48aeb2a24847d1c10511ac6e0934",
+      "effective": {
+        "types": [
+          "unit"
+        ],
+        "super_types": [],
+        "domains": [
+          "chaos"
+        ],
+        "energy": 2,
+        "power": null,
+        "might": 1,
+        "might_bonus": null,
+        "tags": [
+          "Fae",
+          "Ionia"
+        ],
+        "rules_html": "<p>[Accelerate] (You may pay :rb_energy_1::rb_rune_chaos: as an additional cost to have me enter ready.)<br />When I move to a battlefield, gain 2 XP.</p>",
+        "rules_text": "[Accelerate] (You may pay [1 Energy][Chaos Power] as an additional cost to have me enter ready.)\nWhen I move to a battlefield, gain 2 XP.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "existing_field_resolution_ids": [],
+      "original_image": {
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/c9bb7a8f5a1426a4af9843f2473ee6cc37dd24bd-744x1039.png?accountingTag=RB",
+        "path": "assets/data/card_admissions/c10/images/unl-127-219.png",
+        "sha256": "d31344019fac0c01af37cd5f55d3bc5d490f56650849829604143602431f9c59",
+        "bytes": 802295
+      },
+      "runtime_image": {
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/c9bb7a8f5a1426a4af9843f2473ee6cc37dd24bd-744x1039.png?w=360&q=80&fm=png",
+        "path": "assets/art/card_343.png",
+        "sha256": "4769016b88f57415c31c6e365dcf403b835b77ede81ccf3cf30d2a368137d5b1",
+        "bytes": 277852,
+        "width": 360
+      },
+      "visual_observation": {
+        "official_id": "unl-127-219",
+        "face_visually_inspected": true,
+        "original_image_sha256": "d31344019fac0c01af37cd5f55d3bc5d490f56650849829604143602431f9c59",
+        "name": "Mister Root",
+        "collector_code": "UNL-127/219",
+        "printed_types": [
+          "unit"
+        ],
+        "printed_supertypes": [],
+        "printed_domains": [
+          "chaos"
+        ],
+        "printed_tags": [
+          "Fae",
+          "Ionia"
+        ],
+        "printed_energy": 2,
+        "printed_power": null,
+        "printed_might": 1,
+        "printed_might_bonus": null,
+        "printed_rules_icons_expanded": "[Accelerate] (You may pay [1 Energy][Chaos Power] as an additional cost to have me enter ready.)\nWhen I move to a battlefield, gain 2 XP.",
+        "printed_equipment_icons_expanded": "",
+        "comparison": "No mismatch found in individually inspected face; icon expansion and line wrapping are presentation only.",
+        "uncertainties": []
+      }
+    },
+    {
+      "runtime_id": 344,
+      "official_id": "unl-115-219",
+      "name": "Nilah, Joyful Ascetic",
+      "raw_printing": {
+        "official_id": "unl-115-219",
+        "public_code": "UNL-115/219",
+        "name": "Nilah, Joyful Ascetic",
+        "set": "UNL",
+        "collector_number": 115,
+        "types": [
+          "unit"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "unit"
+        ],
+        "accessibility_types": [
+          "unit"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [
+          "champion"
+        ],
+        "domains": [
+          "body"
+        ],
+        "energy": 3,
+        "power": 1,
+        "might": 4,
+        "might_bonus": null,
+        "rules_html": "<p>[Accelerate] (You may pay :rb_energy_1::rb_rune_body: as an additional cost to have me enter ready.)<br />[Ganking] (I can move from battlefield to battlefield.)<br />When I move, gain 1 XP.</p>",
+        "rules_text": "[Accelerate] (You may pay [1 Energy][Body Power] as an additional cost to have me enter ready.)\n[Ganking] (I can move from battlefield to battlefield.)\nWhen I move, gain 1 XP.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [
+          "Nilah",
+          "Kathkan",
+          "Demon"
+        ],
+        "rarity": "rare",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/6138c519310f917461e09d90fe3f2a9480914947-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Unit: Nilah, Joyful Ascetic. [Accelerate] (You may pay [1][C] as an additional cost to have me enter ready.)\n[Ganking] (I can move from battlefield to battlefield.)\nWhen I move, gain 1 XP.",
+        "illustrators": [
+          "Envar Studio"
+        ]
+      },
+      "raw_printing_sha256": "c4f896cbebac5e60122fd3c7b0fd9ca5b134d7869a1e23d3e35b0b13c7444b36",
+      "effective": {
+        "types": [
+          "unit"
+        ],
+        "super_types": [
+          "champion"
+        ],
+        "domains": [
+          "body"
+        ],
+        "energy": 3,
+        "power": 1,
+        "might": 4,
+        "might_bonus": null,
+        "tags": [
+          "Nilah",
+          "Kathkan",
+          "Demon"
+        ],
+        "rules_html": "<p>[Accelerate] (You may pay :rb_energy_1::rb_rune_body: as an additional cost to have me enter ready.)<br />[Ganking] (I can move from battlefield to battlefield.)<br />When I move, gain 1 XP.</p>",
+        "rules_text": "[Accelerate] (You may pay [1 Energy][Body Power] as an additional cost to have me enter ready.)\n[Ganking] (I can move from battlefield to battlefield.)\nWhen I move, gain 1 XP.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "existing_field_resolution_ids": [],
+      "original_image": {
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/6138c519310f917461e09d90fe3f2a9480914947-744x1039.png?accountingTag=RB",
+        "path": "assets/data/card_admissions/c10/images/unl-115-219.png",
+        "sha256": "a17b877cf5cfa586940f66d6e1f100e265f73c7d93e9c1429c414318e909659b",
+        "bytes": 893545
+      },
+      "runtime_image": {
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/6138c519310f917461e09d90fe3f2a9480914947-744x1039.png?w=320&q=80&fm=png",
+        "path": "assets/art/card_344.png",
+        "sha256": "c762c91e041fa0fee4ed787bb7bfa21a94bd7bfcdcfb9fc972a6f6fcc2613064",
+        "bytes": 264994,
+        "width": 320
+      },
+      "visual_observation": {
+        "official_id": "unl-115-219",
+        "face_visually_inspected": true,
+        "original_image_sha256": "a17b877cf5cfa586940f66d6e1f100e265f73c7d93e9c1429c414318e909659b",
+        "name": "Nilah, Joyful Ascetic",
+        "collector_code": "UNL-115/219",
+        "printed_types": [
+          "unit"
+        ],
+        "printed_supertypes": [
+          "champion"
+        ],
+        "printed_domains": [
+          "body"
+        ],
+        "printed_tags": [
+          "Nilah",
+          "Kathkan",
+          "Demon"
+        ],
+        "printed_energy": 3,
+        "printed_power": 1,
+        "printed_might": 4,
+        "printed_might_bonus": null,
+        "printed_rules_icons_expanded": "[Accelerate] (You may pay [1 Energy][Body Power] as an additional cost to have me enter ready.)\n[Ganking] (I can move from battlefield to battlefield.)\nWhen I move, gain 1 XP.",
+        "printed_equipment_icons_expanded": "",
+        "comparison": "No mismatch found in individually inspected face; icon expansion and line wrapping are presentation only.",
+        "uncertainties": []
+      }
+    }
+  ],
+  "preserved_runtime_prefix": {
+    "card_count": 334,
+    "cards_sha256": "d4269f8f390475cc34bfb10f53b5b16651fe1d71c04e271fe16548a0aa9a83c7",
+    "presets_sha256": "d6e64ebf3f8921686682dacd87d4b2b4baec5754dbd284c6d60bf3fb324571e2",
+    "legends_manifest_sha256": "2b621121a54761ccee91e6d0df7b720e572138e7c2caac2c52abaaabd951b37f",
+    "training_recipe_source_sha256": "ad6b2ad3d5e3e34c99af35eef5a283b615cc813db27cec246fd2f433063ec1e4"
+  },
+  "preserved_source_reviews": {
+    "field_resolution_count": 114,
+    "raw_printing_count": 70,
+    "historical_issue_count": 39,
+    "identity_review_count": 29,
+    "field_image_count": 70,
+    "field_resolutions_sha256": "11423f26e8af15ca8739fd610972f6bebc5c517636d8c462783b3d03d543b21e",
+    "raw_printings_sha256": "3a3d0a7c28a9e23ed44080991157f1086baccbf67997aba7811d5522f1d99555",
+    "historical_issues_sha256": "241d9096a7397d1511483f0db7683c11f78163f692ec4157b8b9c14e8515b6dd",
+    "identity_reviews_sha256": "c61c191636c74795ec15c4149805d994c76c020093c98592a489766f30f54ad3",
+    "field_image_index_sha256": "20298558b3462cda4a60e0eb232a87967f66959c45c69d06c6a17d71b144115e"
+  },
+  "pre_admission_counts": {
+    "main_cards": 334,
+    "mapped_legal": 359,
+    "remaining_legal": 720
+  }
+}

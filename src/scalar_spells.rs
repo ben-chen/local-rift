@@ -56,6 +56,15 @@ impl Game {
             OfficialEffect::ContextualMight(condition) => {
                 for &target in valid {
                     let amount = match condition {
+                        SpellMight::ControllerXp {
+                            minimum_xp,
+                            below,
+                            at_least,
+                        } => i16::from(if self.players[player].xp >= u64::from(minimum_xp) {
+                            at_least
+                        } else {
+                            below
+                        }),
                         SpellMight::Empowered { base, empowered } => {
                             if self
                                 .unit_ref(target)

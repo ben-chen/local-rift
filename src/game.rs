@@ -727,7 +727,7 @@ pub struct PlayerState {
     pub exhausted_runes: [u8; 6],
     /// The top of the rune deck is the end of this vector.
     pub rune_deck: Vec<Domain>,
-    pub xp: u8,
+    pub xp: crate::xp::XpAmount,
 }
 
 impl PlayerState {
@@ -764,6 +764,7 @@ struct PendingCombat {
 
 #[derive(Clone, Debug)]
 pub struct Game {
+    applying_action: bool,
     pub play_history: PlayHistory,
     pub play_grants: Vec<PlayGrant>,
     pub(crate) active_play: Option<ActivePlay>,
@@ -1007,7 +1008,7 @@ impl Game {
         });
         let legend = legend_ids.map(|id| LegendState::from_legend(id).expect("validated legend"));
         let mut game = Self {
-            play_history:PlayHistory::default(),
+            applying_action: false,            play_history:PlayHistory::default(),
             play_grants:Vec::new(),
             active_play:None,selected_cost_order:Vec::new(),reserved_play_grants:Vec::new(),payment_play_grants:Vec::new(),resolution_frame:None,damage_context:None,
             catalog,
@@ -1237,6 +1238,14 @@ impl Game {
                 }
                 StaticAbility::LegionEnergyDiscount(amount) if self.cards_played[player] > 0 => {
                     cost = cost.saturating_sub(amount);
+                }
+                StaticAbility::XpEnergyDiscount { tiers } => {
+                    let reduction = tiers
+                        .iter()
+                        .rev()
+                        .find(|t| self.players[player].xp >= u64::from(t.minimum_xp))
+                        .map_or(0, |t| t.energy);
+                    cost = u16::from(cost).saturating_sub(reduction) as u8;
                 }
                 StaticAbility::PerCardEnergyDiscount { amount, minimum } => {
                     let discount = self.cards_played[player]
@@ -1491,9 +1500,24 @@ impl Game {
                 >= card.power_cost.into()
     }
 
-    /// All action validation happens before any mutation, so rejected actions
-    /// never spend resources or consume cards.
+    /// An entire command is atomic, including checked capacity errors during
+    /// resolution. Nested adapters share the outer transaction.
     pub fn apply(&mut self, action: Action) -> Result<(), String> {
+        if self.applying_action {
+            return self.apply_inner(action);
+        }
+        let original = self.clone();
+        self.applying_action = true;
+        let result = self.apply_inner(action);
+        if result.is_err() {
+            *self = original;
+        } else {
+            self.applying_action = false;
+        }
+        result
+    }
+
+    fn apply_inner(&mut self, action: Action) -> Result<(), String> {
         Self::validate_choice_nesting(&action)?;
         if let Action::WithPlayChoices { action, choices } = action {
             return self.apply_play_choices(*action, Some(choices));
@@ -2425,8 +2449,7 @@ impl Game {
         if let Some(ability) = item.ability.clone() {
             match ability {
                 ChainAbility::Hunt { amount, .. } => {
-                    self.players[item.player].xp =
-                        self.players[item.player].xp.saturating_add(amount)
+                    self.gain_xp(item.player, u64::from(amount))?;
                 }
                 ChainAbility::CardTrigger {
                     rule_index,
@@ -2439,7 +2462,7 @@ impl Game {
                             rule_index,
                             context,
                             &item.targets,
-                        );
+                        )?;
                     }
                 }
                 ChainAbility::PlayChosen {
@@ -2604,7 +2627,7 @@ impl Game {
                     }
                 }
                 ChainAbility::Triggered(ability) => {
-                    self.resolve_trigger(item.player, item.card_id, ability)
+                    self.resolve_trigger(item.player, item.card_id, ability)?
                 }
             }
         } else if self.is_counter(item.card_id) {
@@ -5404,6 +5427,21 @@ impl Game {
     /// Executes exactly one action for the active player. The renderer owns the
     /// pacing and can pause between calls. This also supports headless AI-v-AI.
     pub fn step_ai(&mut self) -> Result<bool, String> {
+        if self.applying_action {
+            return self.step_ai_inner();
+        }
+        let original = self.clone();
+        self.applying_action = true;
+        let result = self.step_ai_inner();
+        if result.is_err() {
+            *self = original;
+        } else {
+            self.applying_action = false;
+        }
+        result
+    }
+
+    fn step_ai_inner(&mut self) -> Result<bool, String> {
         if self.phase != Phase::Playing {
             return Ok(false);
         }
@@ -6754,7 +6792,12 @@ impl Game {
         // Cleanup waits until the whole chain item, including Repeat, finishes.
     }
 
-    fn resolve_trigger(&mut self, player: usize, source: CardId, ability: TriggeredAbility) {
+    fn resolve_trigger(
+        &mut self,
+        player: usize,
+        source: CardId,
+        ability: TriggeredAbility,
+    ) -> Result<(), String> {
         match ability {
             TriggeredAbility::DestroyGear { gear_id } => {
                 self.gear_destroy(player, gear_id);
@@ -6770,7 +6813,7 @@ impl Game {
                 })
             }
             TriggeredAbility::RevealHandXp => {
-                self.players[player].xp = self.players[player].xp.saturating_add(1);
+                self.gain_xp(player, 1)?;
                 self.hidden_view[player] = true;
                 self.enqueue_decision(Decision::RevealHand {
                     player,
@@ -6809,7 +6852,7 @@ impl Game {
                 }
             }
             TriggeredAbility::Xp(count) => {
-                self.players[player].xp = self.players[player].xp.saturating_add(count)
+                self.gain_xp(player, u64::from(count))?;
             }
             TriggeredAbility::GrantFlow => self.enqueue_decision(Decision::GrantFlow { player }),
             TriggeredAbility::Loot { count, draw } => self.enqueue_decision(Decision::Discard {
@@ -6825,6 +6868,7 @@ impl Game {
             }
         }
         self.remove_defeated();
+        Ok(())
     }
 
     pub(crate) fn burn(&mut self, player: usize, count: u8) {
@@ -6838,8 +6882,7 @@ impl Game {
             id,
             card_id,
             lane: None,
-            ready: (!token
-                && rules::static_abilities(card_id).contains(&StaticAbility::EntersReady))
+            ready: (!token && self.printed_entry_ready(player, card_id))
                 || self.play_enters_ready(player, card_id, token),
             damage: 0,
             buff,
@@ -9805,7 +9848,8 @@ mod tests {
                 player: 0,
                 unit_id: id,
             },
-        );
+        )
+        .unwrap();
         let target = Target::Unit {
             player: 0,
             unit_id: id,
@@ -9829,7 +9873,8 @@ mod tests {
         game.legend[0] = LegendState::new(33);
         game.create_unit(1, 20, false, 0);
         game.players[1].units[0].lane = Some(0);
-        game.resolve_trigger(0, 34, TriggeredAbility::Tokens { might: 1, count: 1 });
+        game.resolve_trigger(0, 34, TriggeredAbility::Tokens { might: 1, count: 1 })
+            .unwrap();
         game.after_resolution();
         assert_eq!(game.chain.len(), 1);
         assert!(matches!(
@@ -9972,7 +10017,8 @@ mod tests {
                 player: 0,
                 unit_id: id,
             },
-        );
+        )
+        .unwrap();
         game.move_effect(
             0,
             Target::Unit {

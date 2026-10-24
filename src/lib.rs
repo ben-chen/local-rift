@@ -10,6 +10,7 @@ pub mod legend_catalog;
 pub mod legends;
 pub mod payment;
 pub mod rules;
+pub mod xp;
 
 pub mod trigger_rules;
 

@@ -15,6 +15,7 @@ pub enum SourceCondition {
     OtherFriendlyHere,
     ControllerRunesAtLeast(u8),
     ControllerXpAtLeast(u8),
+    ControllerGainedXpThisTurn,
 }
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Recipients {
@@ -62,6 +63,72 @@ pub fn passive_rules(id: CardId) -> &'static [PassiveRule] {
     use PassiveEffect::*;
     use PassiveKeyword::*;
     match id {
+        337 => {
+            const {
+                &[PassiveRule {
+                    condition: SourceCondition::ControllerXpAtLeast(6),
+                    recipients: Recipients::SelfUnit,
+                    effect: Might(1),
+                }]
+            }
+        }
+        338 => {
+            const {
+                &[
+                    PassiveRule {
+                        condition: SourceCondition::ControllerXpAtLeast(3),
+                        recipients: Recipients::SelfUnit,
+                        effect: Might(1),
+                    },
+                    PassiveRule {
+                        condition: SourceCondition::ControllerXpAtLeast(3),
+                        recipients: Recipients::SelfUnit,
+                        effect: Keyword(Ganking),
+                    },
+                ]
+            }
+        }
+        339 => {
+            const {
+                &[
+                    PassiveRule {
+                        condition: SourceCondition::ControllerXpAtLeast(3),
+                        recipients: Recipients::SelfUnit,
+                        effect: Might(1),
+                    },
+                    PassiveRule {
+                        condition: SourceCondition::ControllerXpAtLeast(3),
+                        recipients: Recipients::SelfUnit,
+                        effect: Keyword(Deflect(1)),
+                    },
+                ]
+            }
+        }
+        340 => {
+            const {
+                &[PassiveRule {
+                    condition: SourceCondition::ControllerXpAtLeast(3),
+                    recipients: Recipients::SelfUnit,
+                    effect: Might(1),
+                }]
+            }
+        }
+        342 => {
+            const {
+                &[
+                    PassiveRule {
+                        condition: SourceCondition::ControllerGainedXpThisTurn,
+                        recipients: Recipients::SelfUnit,
+                        effect: Might(1),
+                    },
+                    PassiveRule {
+                        condition: SourceCondition::ControllerGainedXpThisTurn,
+                        recipients: Recipients::SelfUnit,
+                        effect: Keyword(Ganking),
+                    },
+                ]
+            }
+        }
         320 => {
             const {
                 &[PassiveRule {
@@ -322,7 +389,10 @@ impl Game {
                             self.players[owner].total_runes() >= count
                         }
                         SourceCondition::ControllerXpAtLeast(count) => {
-                            self.players[owner].xp >= count
+                            self.players[owner].xp >= u64::from(count)
+                        }
+                        SourceCondition::ControllerGainedXpThisTurn => {
+                            self.gained_xp_this_turn(owner)
                         }
                         SourceCondition::OtherFriendlyHere => match source {
                             BoardObject::Unit { unit_id, .. } => self.players[owner]

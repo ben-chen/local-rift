@@ -148,14 +148,14 @@
       "gear": 60,
       "legend": 8,
       "rune": 6,
-      "spell": 85,
-      "unit": 189
+      "spell": 87,
+      "unit": 198
     },
-    "implemented_main_cards": 334,
+    "implemented_main_cards": 345,
     "implemented_legends": 8,
     "implemented_battlefields": 11,
-    "implemented_legal_identities": 359,
-    "unimplemented_legal_identities": 720,
+    "implemented_legal_identities": 370,
+    "unimplemented_legal_identities": 709,
     "errata_entries": 67,
     "identities_with_errata": 67,
     "source_quality_issues": 39,
@@ -175,7 +175,7 @@
   },
   "unimplemented_by_observed_keyword": {
     "ADD": 1,
-    "Accelerate": 20,
+    "Accelerate": 18,
     "Action": 70,
     "Add": 24,
     "Ambush": 11,
@@ -183,21 +183,21 @@
     "Backline": 2,
     "Buff": 12,
     "Deathknell": 14,
-    "Deflect": 27,
+    "Deflect": 26,
     "Deploy": 24,
     "Disarm": 6,
     "Empower": 13,
     "Empowered": 16,
     "Equip": 28,
     "Flow": 9,
-    "Ganking": 35,
+    "Ganking": 32,
     "Hidden": 36,
-    "Hunt": 5,
+    "Hunt": 3,
     "Legion": 3,
     "Mighty": 10,
     "Predict": 5,
     "Quick-Draw": 2,
-    "Reaction": 78,
+    "Reaction": 77,
     "Repeat": 11,
     "Shield": 14,
     "Show Off": 6,
@@ -2753,8 +2753,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 334,
+        "official_id": "unl-151-219",
+        "playable_in_client": true
       }
     },
     {
@@ -6431,8 +6433,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 335,
+        "official_id": "unl-031-219",
+        "playable_in_client": true
       }
     },
     {
@@ -6538,8 +6542,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 336,
+        "official_id": "unl-091-219",
+        "playable_in_client": true
       }
     },
     {
@@ -13974,8 +13980,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 337,
+        "official_id": "unl-094-219",
+        "playable_in_client": true
       }
     },
     {
@@ -14885,8 +14893,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 338,
+        "official_id": "unl-075-219",
+        "playable_in_client": true
       }
     },
     {
@@ -22856,8 +22866,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 343,
+        "official_id": "unl-127-219",
+        "playable_in_client": true
       }
     },
     {
@@ -23358,8 +23370,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 339,
+        "official_id": "unl-047-219",
+        "playable_in_client": true
       }
     },
     {
@@ -24100,8 +24114,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 344,
+        "official_id": "unl-115-219",
+        "playable_in_client": true
       }
     },
     {
@@ -30829,8 +30845,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 340,
+        "official_id": "unl-016-219",
+        "playable_in_client": true
       }
     },
     {
@@ -40583,8 +40601,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 342,
+        "official_id": "unl-108-219",
+        "playable_in_client": true
       }
     },
     {
@@ -40894,8 +40914,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 341,
+        "official_id": "unl-040-219",
+        "playable_in_client": true
       }
     },
     {

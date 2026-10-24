@@ -35,6 +35,7 @@ pub enum Event {
 /// conditions to be rechecked during resolution (CR383.2.a.1).
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Condition {
+    ControllerXpAtLeast(u8),
     Other,
     FromBattlefield,
     ToBattlefield,
@@ -195,6 +196,39 @@ pub fn trigger_rules(card_id: usize) -> &'static [TriggerRule] {
     use Operand::*;
     use TokenPlacement::*;
     match card_id {
+        341 => {
+            const {
+                &[rule(
+                    SelfPlayed,
+                    &[ControllerXpAtLeast(6)],
+                    false,
+                    TargetRule::NONE,
+                    &[Draw(1)],
+                )]
+            }
+        }
+        343 => {
+            const {
+                &[rule(
+                    SelfMoved,
+                    &[ToBattlefield],
+                    false,
+                    TargetRule::NONE,
+                    &[Xp(Fixed(2))],
+                )]
+            }
+        }
+        344 => {
+            const {
+                &[rule(
+                    SelfMoved,
+                    &[],
+                    false,
+                    TargetRule::NONE,
+                    &[Xp(Fixed(1))],
+                )]
+            }
+        }
         314 => {
             const {
                 &[rule(

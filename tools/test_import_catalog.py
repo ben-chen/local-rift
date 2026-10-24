@@ -37,11 +37,11 @@ class OfficialInventoryTests(unittest.TestCase):
     def test_exact_published_scope_and_runtime_gap(self):
         counts = self.snapshot["counts"]
         self.assertEqual((counts["gallery_printings"], counts["unique_gallery_identities"], counts["standard_legal_identities"]), (1408, 1103, 1079))
-        self.assertEqual(counts["implemented_main_cards"], 334)
+        self.assertEqual(counts["implemented_main_cards"], 345)
         self.assertEqual(counts["implemented_legends"], 8)
         self.assertEqual(counts["implemented_battlefields"], 11)
-        self.assertEqual(counts["implemented_legal_identities"], 359)
-        self.assertEqual(counts["unimplemented_legal_identities"], 720)
+        self.assertEqual(counts["implemented_legal_identities"], 370)
+        self.assertEqual(counts["unimplemented_legal_identities"], 709)
         for card in self.snapshot["cards"]:
             if card["implementation"]["status"] == "not_implemented":
                 self.assertFalse(card["implementation"]["playable_in_client"])

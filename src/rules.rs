@@ -18,9 +18,21 @@ pub enum CounterKind {
 /// Amounts calculated when the instruction resolves, after responses.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum SpellMight {
-    Empowered { base: i8, empowered: i8 },
-    EnemiesHere { per_enemy: i8 },
-    OwnExhausted { per_unit: i8 },
+    Empowered {
+        base: i8,
+        empowered: i8,
+    },
+    EnemiesHere {
+        per_enemy: i8,
+    },
+    OwnExhausted {
+        per_unit: i8,
+    },
+    ControllerXp {
+        minimum_xp: u8,
+        below: i8,
+        at_least: i8,
+    },
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -196,6 +208,13 @@ pub struct Targeting {
 pub fn effect(id: usize) -> OfficialEffect {
     use OfficialEffect::*;
     match id {
+        334 | 337..=344 => None,
+        335 => ContextualMight(SpellMight::ControllerXp {
+            minimum_xp: 6,
+            below: 1,
+            at_least: 3,
+        }),
+        336 => Draw(2),
         290 | 291 => Damage {
             amount: if id == 290 { 8 } else { 10 },
             targets: 1,
@@ -540,7 +559,7 @@ pub fn effect(id: usize) -> OfficialEffect {
 pub fn targeting(id: usize) -> Targeting {
     use Allegiance::*;
     let allegiance = match id {
-        290..=296 => Any,
+        290..=296 | 335 => Any,
         4 | 32 | 144 | 145 => Enemy,
         8 | 9 | 14 | 19 | 27 | 85 | 137 | 228 => Friendly,
         16 | 29 | 82 | 217 | 218 => Mixed,
@@ -895,6 +914,12 @@ pub enum Mechanic {
 pub fn requirements(id: usize) -> &'static [Mechanic] {
     use Mechanic::*;
     match id {
+        334 | 335 | 342 => &[Chain, Xp],
+        336 => &[Chain, Xp, CostReduction],
+        337 | 340 | 341 => &[Chain, Xp, ConquerHoldTriggers],
+        338 => &[Chain, Xp, ConquerHoldTriggers, Move],
+        339 => &[Chain, Xp, ConquerHoldTriggers, Deflect],
+        343 | 344 => &[Chain, Xp, MoveTriggers, Accelerate],
         308..=313 | 314..=317 | 320..=326 => &[Chain],
         318..=319 => &[Chain, Tokens],
         327 => &[Gear, Equip, Chain, Tank],
@@ -1207,10 +1232,44 @@ pub fn resource_gear(id: usize) -> Option<ResourceGear> {
     })
 }
 
+/// Printed entry replacements are distinct from performing a Ready action.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum EntryReadyRule {
+    Always,
+    ControllerXpAtLeast(u8),
+}
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct XpDiscountTier {
+    pub minimum_xp: u8,
+    pub energy: u16,
+}
+pub fn entry_ready_rule(id: CardId) -> Option<EntryReadyRule> {
+    static_abilities(id)
+        .iter()
+        .find_map(|ability| match *ability {
+            StaticAbility::EntersReady => Some(EntryReadyRule::Always),
+            StaticAbility::EntersReadyAtXp(n) => Some(EntryReadyRule::ControllerXpAtLeast(n)),
+            _ => None,
+        })
+}
+pub fn xp_energy_discount_tiers(id: CardId) -> &'static [XpDiscountTier] {
+    static_abilities(id)
+        .iter()
+        .find_map(|ability| match *ability {
+            StaticAbility::XpEnergyDiscount { tiers } => Some(tiers),
+            _ => None,
+        })
+        .unwrap_or(&[])
+}
+
 /// Passive and activated abilities that are not represented by the immediate
 /// operation. These must not be silently discarded for a "base-stats" unit.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum StaticAbility {
+    EntersReadyAtXp(u8),
+    XpEnergyDiscount {
+        tiers: &'static [XpDiscountTier],
+    },
     HighestMightEnergyDiscount,
     EmpoweredEnergyDiscount(u8),
     Deflect(u8),
@@ -1261,6 +1320,35 @@ pub enum StaticAbility {
 pub fn static_abilities(id: usize) -> &'static [StaticAbility] {
     use StaticAbility::*;
     match id {
+        334 => &[EntersReadyAtXp(3)],
+        336 => &[XpEnergyDiscount {
+            tiers: &[
+                XpDiscountTier {
+                    minimum_xp: 6,
+                    energy: 2,
+                },
+                XpDiscountTier {
+                    minimum_xp: 11,
+                    energy: 4,
+                },
+            ],
+        }],
+        337 | 341 => &[Hunt(1)],
+        338 | 339 => &[Hunt(2)],
+        340 => &[Hunt(2), EntersReadyAtXp(3)],
+        343 => &[Accelerate {
+            energy: 1,
+            power: 1,
+            domain: Domain::Chaos,
+        }],
+        344 => &[
+            Accelerate {
+                energy: 1,
+                power: 1,
+                domain: Domain::Body,
+            },
+            Ganking,
+        ],
         319 => &[EntersReady],
         327 => &[QuickDraw],
         331 => &[Temporary],
@@ -1632,7 +1720,7 @@ mod tests {
     #[test]
     fn all_catalog_entries_have_official_classification() {
         let cards = cards();
-        assert_eq!(cards.len(), 334);
+        assert_eq!(cards.len(), 345);
         for card in cards {
             assert_ne!(
                 effect(card.id),
@@ -1642,7 +1730,7 @@ mod tests {
             );
             assert_ne!(support_status(card.id), SupportStatus::UnknownCard);
         }
-        assert_eq!(effect(334), OfficialEffect::Unsupported);
+        assert_eq!(effect(345), OfficialEffect::Unsupported);
     }
 
     #[test]

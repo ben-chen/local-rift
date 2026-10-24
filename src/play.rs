@@ -839,6 +839,16 @@ impl Game {
                     StaticAbility::LegionEnergyDiscount(n) if self.cards_played[p] > 0 => {
                         (n.into(), 0)
                     }
+                    StaticAbility::XpEnergyDiscount { tiers } => {
+                        let Some(tier) = tiers
+                            .iter()
+                            .rev()
+                            .find(|t| self.players[p].xp >= u64::from(t.minimum_xp))
+                        else {
+                            continue;
+                        };
+                        (tier.energy, 0)
+                    }
                     StaticAbility::PerCardEnergyDiscount { amount, minimum } => (
                         self.cards_played[p].saturating_mul(amount.into()),
                         minimum.into(),

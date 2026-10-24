@@ -23,6 +23,7 @@ use std::panic::{AssertUnwindSafe, catch_unwind};
 
 mod empowered;
 mod play_choices;
+mod progression;
 mod targeting;
 
 #[cfg(test)]
@@ -73,7 +74,12 @@ impl ApiError {
         Self::new("invalid_request", message)
     }
     fn illegal(message: impl Into<String>) -> Self {
-        Self::new("illegal_action", message)
+        let message = message.into();
+        if let Some(detail) = message.strip_prefix("engine_capacity:") {
+            Self::new("engine_capacity", detail.trim())
+        } else {
+            Self::new("illegal_action", message)
+        }
     }
 }
 
@@ -349,7 +355,7 @@ impl Session {
             let activated_observation: Vec<_> = game.activated_options(owner).iter().map(|option|json!({
                 "source":ability_source_to_json(option.source),"card_id":option.card_id,
                 "ability_index":option.ability_index})).collect();
-            json!({"player":owner, "name":state.name, "preset":if game.custom_deck(owner).is_none() {Some(game.selected_decks[owner])} else {None},
+            let mut observed = json!({"player":owner, "name":state.name, "preset":if game.custom_deck(owner).is_none() {Some(game.selected_decks[owner])} else {None},
                 "legend_id":game.legend_id(owner), "custom":game.custom_deck(owner).is_some(),
                 "custom_deck":if owner==viewer {game.custom_deck(owner).map(CustomDeck::to_json)} else {None},
                 "hand":hand, "hand_count":state.hand.len(), "deck_count":state.deck.len(),
@@ -370,7 +376,10 @@ impl Session {
                         "energy":flow.energy,"power":flow.power,"colored":flow.colored})).collect::<Vec<_>>()
                 })).filter(|row|!row["costs"].as_array().unwrap().is_empty()).collect::<Vec<_>>(),"queued_extra_turns":game.queued_extra_turns(owner),
                 "submitted_combat_damage":game.submitted_combat_damage(owner),
-                "legend":legend_observation})
+                "legend":legend_observation});
+            observed["xp_exact"] = json!(state.xp.to_string());
+            observed["xp_gained_this_turn"] = json!(game.gained_xp_this_turn(owner));
+            observed
         }).collect();
         let chain: Vec<_> = game.chain.iter().map(|item| json!({
             "id":item.id,"player":item.player,"card_id":item.card_id,"name":game.chain_name(item),
@@ -718,6 +727,8 @@ pub fn catalog() -> Value {
             "might":c.might,"domain":c.domain.name(),"domains":c.domains.iter().map(|d|d.name()).collect::<Vec<_>>(),
             "kind":c.kind.name(),"official_text":c.official_text,"keywords":c.keywords,"tags":c.tags,
             "play_targets":targeting::play_targets_to_json(c.id),
+            "entry_ready":progression::entry_ready_to_json(c.id),
+            "xp_energy_discounts":progression::xp_discounts_to_json(c.id),
             "passive_rules":crate::continuous::passive_rules(c.id).iter().enumerate().map(|(index,rule)|empowered::passive_rule_to_json(index,rule)).collect::<Vec<_>>(),
             "activated_abilities":activated_rules(c.id).iter().enumerate().map(|(index,rule)|activated_rule_to_json(index,rule)).collect::<Vec<_>>()})).collect::<Vec<_>>(),
         "legends":legends().iter().map(|definition|json!({"id":definition.id,

@@ -6764,15 +6764,317 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
             assert!(app.game.players[0].discard.contains(&3));
         }
         675 => {
+            expansion_fixture(app, 334);
+            app.game.players[0].xp = 2;
+            click(app, 315.0, 760.0);
+        }
+        676 => {
+            assert_eq!(
+                super::entry_ready_hint(&app.game, 0, 334).unwrap(),
+                "Level 3 entry: exhausted · XP 2"
+            );
+            capture(app, "RIFT_SMOKE_C10_ENTRY_LOW_SCREENSHOT");
+            click(app, 1285.0, 510.0);
+        }
+        677 => {
+            finish_chain_until_choice(app);
+            assert!(
+                !app.game.players[0]
+                    .units
+                    .iter()
+                    .find(|unit| unit.card_id == 334)
+                    .unwrap()
+                    .ready
+            );
+            expansion_fixture(app, 334);
+            app.game.players[0].xp = 3;
+            click(app, 315.0, 760.0);
+        }
+        678 => {
+            assert_eq!(
+                super::entry_ready_hint(&app.game, 0, 334).unwrap(),
+                "Level 3 entry: ready · XP 3"
+            );
+            capture(app, "RIFT_SMOKE_C10_ENTRY_HIGH_SCREENSHOT");
+            click(app, 1285.0, 510.0);
+        }
+        679 => {
+            finish_chain_until_choice(app);
+            assert!(
+                app.game.players[0]
+                    .units
+                    .iter()
+                    .find(|unit| unit.card_id == 334)
+                    .unwrap()
+                    .ready
+            );
+            // This controlled balance fixture is not an available XP-spending action.
+            app.game.players[0].xp = 2;
+            assert!(
+                app.game.players[0]
+                    .units
+                    .iter()
+                    .find(|unit| unit.card_id == 334)
+                    .unwrap()
+                    .ready,
+                "losing the entry threshold does not exhaust an entered unit"
+            );
+        }
+        680 => {
+            expansion_fixture(app, 342);
+            app.game.battlefields = [3, 3];
+            app.game.players[0].xp = 255;
+            app.game.players[0].units = vec![
+                public_unit(10010, 342, Some(0)),
+                public_unit(10011, 343, None),
+            ];
+            app.game.battlefield_owner = [Some(0), None];
+            assert!(
+                !app.game.gained_xp_this_turn(0),
+                "setting the public fixture balance is not an XP gain"
+            );
+            assert!(
+                !app.game
+                    .unit_keywords(&app.game.players[0].units[0])
+                    .ganking
+            );
+            click_unit(app, 10010);
+        }
+        681 => {
+            save_state(app);
+            click(app, 1285.0, 462.0);
+        }
+        682 => {
+            assert_same_state(app);
+            assert_eq!(app.game.players[0].units[0].lane, Some(0));
+            click_unit(app, 10011);
+        }
+        683 => click(app, 1285.0, 462.0),
+        684 => {
+            finish_chain_until_choice(app);
+            assert_eq!(
+                app.game.players[0].xp, 257,
+                "actual Root move resolves a gain beyond 255"
+            );
+            assert!(app.game.gained_xp_this_turn(0));
+            while app.game.in_window() {
+                app.game.apply(Action::Pass).unwrap();
+            }
+            let text = super::live_unit_description(&app.game, 0, 10010).unwrap();
+            assert!(
+                text.contains("gained XP this turn: yes (current XP 257")
+                    && text.contains("ACTIVE · Wily Newtfish: Ganking")
+            );
+            capture_unit(app, 10010, "RIFT_SMOKE_C10_HISTORY_SCREENSHOT");
+        }
+        685 => {
+            app.hover_card = None;
+            app.hover_rect = None;
+            click_unit(app, 10010);
+        }
+        686 => click(app, 1285.0, 462.0),
+        687 => {
+            assert_eq!(
+                app.game.players[0]
+                    .units
+                    .iter()
+                    .find(|unit| unit.id == 10010)
+                    .unwrap()
+                    .lane,
+                Some(1),
+                "history-granted Ganking enables the actual move button"
+            );
+            while app.game.in_window() {
+                app.game.apply(Action::Pass).unwrap();
+            }
+            app.game.apply(Action::EndTurn).unwrap();
+            assert!(
+                !app.game.gained_xp_this_turn(0),
+                "history resets at the next turn"
+            );
+            assert!(
+                !app.game
+                    .unit_keywords(
+                        app.game.players[0]
+                            .units
+                            .iter()
+                            .find(|unit| unit.id == 10010)
+                            .unwrap()
+                    )
+                    .ganking
+            );
+            capture_unit(app, 10010, "RIFT_SMOKE_C10_HISTORY_RESET_SCREENSHOT");
+        }
+        688 => {
+            expansion_fixture(app, 336);
+            app.game.players[0].xp = 10;
+            click(app, 315.0, 760.0);
+        }
+        689 => {
+            assert_eq!(
+                app.game
+                    .cost_plan(&app.canonical_action(app.selected_play_action().unwrap()))
+                    .unwrap()
+                    .energy,
+                3
+            );
+            save_state(app);
+            click(app, 1285.0, 468.0);
+        }
+        690 => {
+            assert!(
+                app.play_draft.as_ref().is_some_and(|draft| draft.open),
+                "the actual Level reduction opens canonical cost choices"
+            );
+            click(app, 900.0, 851.0);
+        }
+        691 => {
+            assert!(app.cost_editor.is_some());
+            capture(app, "RIFT_SMOKE_C10_COST_SCREENSHOT");
+            click(app, 420.0, 752.0);
+        }
+        692 => {
+            assert!(app.cost_editor.is_none());
+            assert_same_state(app);
+            assert!(app.selection == Some(Selection::Hand(0)));
+            // Controlled threshold fixture: the first slice has no XP spending action.
+            app.game.players[0].xp = 11;
+            assert_eq!(
+                app.game
+                    .cost_plan(&app.canonical_action(app.selected_play_action().unwrap()))
+                    .unwrap()
+                    .energy,
+                1,
+                "Concentrate uses only the highest reached discount"
+            );
+            click(app, 1285.0, 510.0);
+        }
+        693 => {
+            finish_chain_until_choice(app);
+            assert_eq!(app.game.players[0].energy, 11);
+            assert_eq!(app.game.players[0].hand.len(), 2);
+            expansion_fixture(app, 335);
+            app.game.players[0].xp = 6;
+            app.game.players[1].units = vec![public_unit(10012, 110, None)];
+            click(app, 315.0, 760.0);
+        }
+        694 => click_unit(app, 10012),
+        695 => click(app, 1285.0, 510.0),
+        696 => {
+            finish_chain_until_choice(app);
+            assert_eq!(
+                app.game.players[1].units[0].temporary_buff, 3,
+                "Combat Experience may target an enemy and uses +3 instead"
+            );
+            expansion_fixture(app, 344);
+            app.game.battlefields = [3, 3];
+            app.game.players[0].xp = 255;
+            app.game.players[1].xp = u64::MAX;
+            app.game.players[0].units = vec![public_unit(10013, 344, Some(0))];
+            app.game.battlefield_owner = [Some(0), None];
+            click_unit(app, 10013);
+        }
+        697 => click(app, 1285.0, 462.0),
+        698 => {
+            assert_eq!(
+                app.game.players[0].units[0].lane,
+                Some(1),
+                "intrinsic Nilah Ganking enables the actual move button"
+            );
+            finish_chain_until_choice(app);
+            while app.game.in_window() {
+                app.game.apply(Action::Pass).unwrap();
+            }
+            assert_eq!(app.game.players[0].xp, 256);
+            assert_eq!(super::xp_status(&app.game, 0), "Your XP 256 · + this turn");
+            assert_eq!(
+                super::xp_status(&app.game, 1),
+                "Opponent XP 18446744073709551615"
+            );
+            capture(app, "RIFT_SMOKE_C10_WIDE_XP_SCREENSHOT");
+            expansion_fixture(app, 341);
+            app.game.players[0].xp = 6;
+            click(app, 315.0, 760.0);
+        }
+        699 => click(app, 1285.0, 510.0),
+        700 => {
+            finish_chain_until_choice(app);
+            assert_eq!(
+                app.game.players[0].hand.len(),
+                1,
+                "actual Level6 Wuju play draws exactly one"
+            );
+            expansion_fixture(app, 340);
+            app.game.battlefields = [3, 3];
+            app.game.players[0].xp = 1;
+            app.game.players[0].units = vec![public_unit(10014, 343, None)];
+            click_unit(app, 10014);
+        }
+        701 => click(app, 1285.0, 420.0),
+        702 => {
+            finish_chain_until_choice(app);
+            while app.game.in_window() {
+                app.game.apply(Action::Pass).unwrap();
+            }
+            assert_eq!(
+                app.game.players[0].xp, 3,
+                "Root reaches the entry threshold through its actual move trigger"
+            );
+            click(app, 315.0, 760.0);
+        }
+        703 => {
+            assert!(
+                super::entry_ready_hint(&app.game, 0, 340)
+                    .unwrap()
+                    .contains("ready · XP 3")
+            );
+            click(app, 1285.0, 510.0);
+        }
+        704 => {
+            finish_chain_until_choice(app);
+            let unit = app.game.players[0]
+                .units
+                .iter()
+                .find(|unit| unit.card_id == 340)
+                .unwrap();
+            assert!(unit.ready);
+            assert_eq!(app.game.unit_might(unit), 4);
+            capture_unit(app, unit.id, "RIFT_SMOKE_C10_READY_ENTRY_SCREENSHOT");
+        }
+        705 => {
+            expansion_fixture(app, 338);
+            app.game.battlefields = [3, 3];
+            app.game.players[0].xp = 3;
+            app.game.players[0].units = vec![public_unit(10015, 338, Some(0))];
+            app.game.battlefield_owner = [Some(0), None];
+            click_unit(app, 10015);
+        }
+        706 => click(app, 1285.0, 462.0),
+        707 => {
+            assert_eq!(
+                app.game.players[0].units[0].lane,
+                Some(1),
+                "Level-granted Gustwalker Ganking enables the actual move button"
+            );
+            while app.game.in_window() {
+                app.game.apply(Action::Pass).unwrap();
+            }
+            assert_eq!(
+                app.game.players[0].xp, 5,
+                "actual Hunt2 conquest resolves after the move"
+            );
+            capture_unit(app, 10015, "RIFT_SMOKE_C10_GANKING_SCREENSHOT");
+        }
+        708 => {
             app.ui.input_override = None;
             app.ui.pointer_override = None;
             app.ui.wheel_override = None;
             println!(
-                "PASS: 676 native UI frames including stacked equipment Hunt, captured Hunt chain, live Level/rune/Buff conditions, instructed ready tokens, printed and granted Temporary expiry after Equip, global kill replacement choices, conditional channel draw, and all previous mat/resource/gear/field controls."
+                "PASS: 709 native UI frames including exact XP above255, conditional ready entry, actual movement XP/history, all three intrinsic/Level/history Ganking paths, Concentrate discount and cancellation, Wuju draw, Combat Experience targeting, and all previous 676 mat/resource/gear/field controls."
             );
             return true;
         }
-        _ => panic!("UI smoke runner exceeded its 676-frame script"),
+        _ => panic!("UI smoke runner exceeded its 709-frame script"),
     }
     false
 }

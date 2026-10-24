@@ -5399,21 +5399,29 @@ impl App {
             .line(vec2(1178.0, 816.0), vec2(1390.0, 816.0), 1.0, LINE);
         self.ui.text(
             &format!(
-                "Deck {} · Trash {} · AI hand {} · XP {}",
+                "Deck {} · Trash {} · AI hand {}",
                 player.deck.len(),
                 player.discard.len(),
-                self.game.players[1].hand.len(),
-                player.xp
+                self.game.players[1].hand.len()
             ),
             1178.0,
-            838.0,
+            830.0,
             9.0,
             MUTED,
         );
+        for owner in 0..2 {
+            self.ui.text(
+                &xp_status(&self.game, owner),
+                1178.0,
+                844.0 + owner as f32 * 13.0,
+                9.0,
+                if owner == 0 { TEAL } else { GOLD },
+            );
+        }
         self.ui.text(
             "Drag to play · hover to read · right-click to pin",
             1178.0,
-            861.0,
+            872.0,
             9.0,
             MUTED,
         );
@@ -5435,6 +5443,7 @@ impl App {
                     let card_id = unit.card_id;
                     let ready = unit.ready;
                     let lane = unit.lane;
+                    let ganking = self.game.unit_keywords(unit).ganking;
                     self.ui
                         .ellipsis(&self.game.unit_name(unit), 1178.0, 359.0, 212.0, 16.0, TEXT);
                     self.ui.text(
@@ -5453,9 +5462,7 @@ impl App {
                         "Move to field 1",
                         false,
                         ready
-                            && (lane.is_none()
-                                || self.game.gear_grants_ganking(id)
-                                || card_id == 22 && self.game.players[0].xp >= 6)
+                            && (lane.is_none() || ganking)
                             && self.game.chain.is_empty()
                             && self.game.showdown.is_none(),
                     ) {
@@ -5466,9 +5473,7 @@ impl App {
                         "Move to field 2",
                         false,
                         ready
-                            && (lane.is_none()
-                                || self.game.gear_grants_ganking(id)
-                                || card_id == 22 && self.game.players[0].xp >= 6)
+                            && (lane.is_none() || ganking)
                             && self.game.chain.is_empty()
                             && self.game.showdown.is_none(),
                     ) {
@@ -5675,12 +5680,16 @@ impl App {
                             MUTED,
                         );
                     }
-                    self.ui.text(
-                        "Hover the card to read its full text.",
+                    let entry_hint = entry_ready_hint(&self.game, 0, card_id);
+                    self.ui.ellipsis(
+                        entry_hint
+                            .as_deref()
+                            .unwrap_or("Hover the card to read its full text."),
                         1178.0,
                         423.0,
+                        212.0,
                         9.0,
-                        MUTED,
+                        if entry_hint.is_some() { TEAL } else { MUTED },
                     );
                     if flows.len() > 1 {
                         for (slot, source) in [FlowSource::Printed, FlowSource::Granted]
@@ -7141,6 +7150,35 @@ fn target_label(game: &Game, target: Target) -> String {
     }
 }
 
+fn xp_status(game: &Game, owner: usize) -> String {
+    format!(
+        "{} XP {}{}",
+        if owner == 0 { "Your" } else { "Opponent" },
+        game.players[owner].xp,
+        if game.gained_xp_this_turn(owner) {
+            " · + this turn"
+        } else {
+            ""
+        }
+    )
+}
+
+fn entry_ready_hint(game: &Game, owner: usize, card_id: usize) -> Option<String> {
+    use local_rift::rules::EntryReadyRule;
+    Some(match local_rift::rules::entry_ready_rule(card_id)? {
+        EntryReadyRule::Always => "Printed rule: enters ready".into(),
+        EntryReadyRule::ControllerXpAtLeast(threshold) => format!(
+            "Level {threshold} entry: {} · XP {}",
+            if game.printed_entry_ready(owner, card_id) {
+                "ready"
+            } else {
+                "exhausted"
+            },
+            game.players[owner].xp
+        ),
+    })
+}
+
 fn card_brief(game: &Game, id: usize) -> String {
     use local_rift::rules::OfficialEffect::*;
     match local_rift::rules::effect(id) {
@@ -7156,6 +7194,11 @@ fn card_brief(game: &Game, id: usize) -> String {
         ModifyMight { amount, draw, .. } => {
             format!("{amount:+} might{}", if draw > 0 { " · draw" } else { "" })
         }
+        ContextualMight(local_rift::rules::SpellMight::ControllerXp {
+            minimum_xp,
+            below,
+            at_least,
+        }) => format!("{below:+} might · Level {minimum_xp}: {at_least:+} instead"),
         Stun => "Stun a unit this turn".into(),
         KillAllUnits => "Kill all units · both players, everywhere".into(),
         Channel {
@@ -7406,6 +7449,11 @@ fn passive_description(
                     " · Level {threshold}: {threshold}+ XP (currently {})",
                     controller.xp
                 ),
+                SourceCondition::ControllerGainedXpThisTurn => format!(
+                    " · controller gained XP this turn: {} (current XP {}; the gain history resets each turn)",
+                    if game.gained_xp_this_turn(contribution.source.player()) { "yes" } else { "no" },
+                    controller.xp
+                ),
                 SourceCondition::Always => String::new(),
             };
             let recipients = match rule.recipients {
@@ -7525,6 +7573,9 @@ fn live_unit_description(game: &Game, owner: usize, unit_id: u32) -> Option<Stri
         ));
     }
     if !unit.token {
+        if let Some(hint) = entry_ready_hint(game, owner, unit.card_id) {
+            lines.push(format!("PRINTED ENTRY RULE · {hint}. Checked when it enters; this does not ready a unit already in play. Optional Accelerate is separate."));
+        }
         for rule in local_rift::activated::activated_rules(unit.card_id) {
             lines.push(format!(
                 "ABILITY · {}
@@ -7650,6 +7701,70 @@ mod live_preview_tests {
             temporary: false,
             token: false,
         }
+    }
+    #[test]
+    fn xp_status_preserves_full_integer_for_both_players() {
+        let mut game = Game::new(1, 3, 7, Difficulty::Easy);
+        game.players[0].xp = 9_007_199_254_740_993;
+        game.players[1].xp = u64::MAX;
+        assert_eq!(xp_status(&game, 0), "Your XP 9007199254740993");
+        assert_eq!(xp_status(&game, 1), "Opponent XP 18446744073709551615");
+        game.players[1].units = vec![unit(100, 337)];
+        assert!(
+            live_unit_description(&game, 1, 100)
+                .unwrap()
+                .contains("currently 18446744073709551615")
+        );
+    }
+    #[test]
+    fn conditional_entry_preview_is_not_a_promise_to_ready_an_existing_unit() {
+        let mut game = Game::new(1, 3, 7, Difficulty::Easy);
+        game.players[0].xp = 2;
+        assert_eq!(
+            entry_ready_hint(&game, 0, 334).unwrap(),
+            "Level 3 entry: exhausted · XP 2"
+        );
+        let mut soldier = unit(100, 334);
+        soldier.ready = false;
+        game.players[0].units = vec![soldier];
+        game.players[0].xp = 3;
+        assert_eq!(
+            entry_ready_hint(&game, 0, 334).unwrap(),
+            "Level 3 entry: ready · XP 3"
+        );
+        let text = live_unit_description(&game, 0, 100).unwrap();
+        assert!(text.contains("Your unit · Exhausted"));
+        assert!(
+            text.contains("does not ready a unit already in play")
+                && text.contains("Optional Accelerate is separate")
+        );
+    }
+    #[test]
+    fn xp_gain_history_preview_requires_an_actual_gain_event() {
+        let mut game = Game::new(2, 3, 7, Difficulty::Easy);
+        game.start_match().unwrap();
+        game.players[0].xp = 255;
+        game.players[0].units = vec![unit(100, 342), unit(101, 343)];
+        let before = live_unit_description(&game, 0, 100).unwrap();
+        assert!(before.contains("gained XP this turn: no (current XP 255"));
+        assert!(before.contains("INACTIVE · Wily Newtfish: Ganking"));
+        game.apply(Action::Move {
+            unit_id: 101,
+            lane: Some(0),
+        })
+        .unwrap();
+        while !game.chain.is_empty() {
+            game.apply(Action::Pass).unwrap();
+        }
+        let after = live_unit_description(&game, 0, 100).unwrap();
+        assert!(after.contains("gained XP this turn: yes (current XP 257"));
+        assert!(after.contains("ACTIVE · Wily Newtfish: Ganking"));
+        assert_eq!(xp_status(&game, 0), "Your XP 257 · + this turn");
+    }
+    #[test]
+    fn combat_experience_brief_keeps_the_instead_threshold() {
+        let game = Game::new(1, 3, 7, Difficulty::Easy);
+        assert_eq!(card_brief(&game, 335), "+1 might · Level 6: +3 instead");
     }
     #[test]
     fn buff_conditions_do_not_confuse_temporary_might_or_empower_with_a_counter() {
