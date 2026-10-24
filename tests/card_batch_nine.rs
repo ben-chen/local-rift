@@ -134,9 +134,18 @@ fn eighteen_appended_cards_preserve_clean_source_facts_and_art() {
                 .any(|t| t == "champion")
         );
     }
-    // This increment deliberately leaves the separately researched source issues intact.
+    // The C6 review preserves raw issue history while resolving effective facts.
     assert_eq!(source["counts"]["source_quality_issues"], 37);
-    assert_eq!(source["counts"]["unresolved_type_conflict_identities"], 23);
+    assert_eq!(
+        source["source_quality_issues"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .filter(|issue| issue["kind"] == "conflicting_type_labels")
+            .count(),
+        23
+    );
+    assert_eq!(source["counts"]["unresolved_type_conflict_identities"], 0);
 }
 
 #[test]

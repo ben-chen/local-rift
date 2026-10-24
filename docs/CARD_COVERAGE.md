@@ -23,16 +23,14 @@ Numbered positions include token slots where the publisher numbers them within a
 
 ## Runtime gap by card kind
 
-**The by-kind counts below are provisional:** 23 identities have contradictory official structured types and accessibility labels. The table retains structured types without adjudicating them; total identities and legality counts are unaffected. None of these unresolved identities is mapped to the runtime.
-
 | Kind | Standard legal | Implemented mapping | Not implemented |
 | --- | ---: | ---: | ---: |
 | Battlefield | 69 | 11 | 58 |
-| Gear | 127 | 55 | 72 |
+| Gear | 131 | 55 | 76 |
 | Legend | 58 | 8 | 50 |
 | Rune | 6 | 6 | 0 |
-| Spell | 269 | 69 | 200 |
-| Unit | 550 | 166 | 384 |
+| Spell | 268 | 69 | 199 |
+| Unit | 547 | 166 | 381 |
 
 Implemented mapping means the existing engine/preset/field/resource implementation, not a claim that every interaction has been formally proven. See `docs/RULES.md` for engine limits. Every unimplemented identity has `implementation.status: not_implemented` and `playable_in_client: false`. Printed keywords are recorded per card and counted under `unimplemented_by_observed_keyword` as discovery hints only; shared keywords do not imply shared effect semantics or completed implementation. Each unimplemented card still requires its specific effect, targets, timing, costs, continuous/replacement effects, and interaction tests to be reviewed and implemented.
 
@@ -65,39 +63,45 @@ The snapshot preserves printed rules HTML, readable rules, equipment text, exact
 - [Vendetta Errata](https://playriftbound.com/en-us/news/announcements/vendetta-errata-updates/)
 - [Radiance Errata](https://playriftbound.com/en-us/news/announcements/radiance-errata-updates/)
 
-**13 Radiance records have an empty structured type field.** Their type is taken from the same record’s explicit official image accessibility label and marked `type_source: cardImage.accessibilityText`. The archived record preserves the missing field.
+**37 historical issue groups are preserved; 37 have evidence-backed resolutions and 0 remain unresolved.** The reviewed manifest contains 73 field corrections or confirmations across 38 printings. It preserves original gallery values, both type labels, original HTML, and the original issue records. The generated `effective` object applies only explicitly reviewed fields. This is a targeted review, not a complete visual audit of the gallery.
 
-**23 records have contradictory structured and accessibility type labels.** `structured_types`, `accessibility_types`, and `type_labels_conflict` preserve both claims. Each affected identity lists `types` under `conflicting_fields`; the importer rejects any runtime mapping to such an identity, even when another printing is selected. No source label is silently preferred as the correct answer.
+**13 Radiance records have an empty structured type field.** Their raw normalized type still records the accessibility-label fallback. Matching card images corroborate the effective types; no structured source value was overwritten.
 
-| Official ID | Card | Structured type | Accessibility type |
-| --- | --- | --- | --- |
-| `rad-007-167` | Rally for War | gear | spell |
-| `rad-012-167` | Runeblade Anvil | unit | gear |
-| `rad-016-167` | Coalesced Energy | spell | unit |
-| `rad-025-167` | Consult the Heavens | unit | spell |
-| `rad-033-167` | Command: Attack | gear | spell |
-| `rad-035-167` | Invigorating Bloom | unit | gear |
-| `rad-039-167` | Ephemeral Ward | unit | gear |
-| `rad-044-167` | Hunting Blind | unit | gear |
-| `rad-046-167` | Resplendent Rostrum | spell | gear |
-| `rad-056-167` | Improvised Projectile | gear | spell |
-| `rad-059-167` | Supernova | unit | spell |
-| `rad-064-167` | Scrutinizing Scope | spell | gear |
-| `rad-069-167` | Zero Point Inflection | spell | gear |
-| `rad-072-167` | Overloaded Traveler | spell | unit |
-| `rad-087-167` | Portable Portal | unit | gear |
-| `rad-097-167` | Siren of the Shallows | spell | unit |
-| `rad-101-167` | An Offer You Can't Refuse | gear | spell |
-| `rad-108-167` | Bushwhack Trap | unit | gear |
-| `rad-120-167` | Meticulous Restorationist | gear | unit |
-| `rad-124-167` | Burn Away | gear | spell |
-| `rad-130-167` | Battlefield Armorer | spell | unit |
-| `rad-131-167` | Demacian Illuminators | spell | unit |
-| `rad-136-167` | Dockside Lock-Up | unit | gear |
+**23 records have contradictory structured and accessibility type labels.** The table below preserves both claims beside the reviewed effective type. Corrections come from the matching printed artwork, not a blanket preference for accessibility labels. The by-kind coverage table uses effective types. Any still-unresolved gameplay field, including an alternate printing's costs, Might, domain or type, prevents runtime admission.
 
-**Unresolved official stat conflict:** Kai'Sa, Rebel, `might`: `rad-063-167` = 5; `rad-sp4-005` = 4. Both values are retained. The numbered base card is the inventory representative, not a ruling that resolves this discrepancy.
+| Official ID | Card | Structured type | Accessibility type | Effective type |
+| --- | --- | --- | --- | --- |
+| `rad-007-167` | Rally for War | gear | spell | spell |
+| `rad-012-167` | Runeblade Anvil | unit | gear | gear |
+| `rad-016-167` | Coalesced Energy | spell | unit | unit |
+| `rad-025-167` | Consult the Heavens | unit | spell | spell |
+| `rad-033-167` | Command: Attack | gear | spell | spell |
+| `rad-035-167` | Invigorating Bloom | unit | gear | gear |
+| `rad-039-167` | Ephemeral Ward | unit | gear | gear |
+| `rad-044-167` | Hunting Blind | unit | gear | gear |
+| `rad-046-167` | Resplendent Rostrum | spell | gear | gear |
+| `rad-056-167` | Improvised Projectile | gear | spell | spell |
+| `rad-059-167` | Supernova | unit | spell | spell |
+| `rad-064-167` | Scrutinizing Scope | spell | gear | gear |
+| `rad-069-167` | Zero Point Inflection | spell | gear | gear |
+| `rad-072-167` | Overloaded Traveler | spell | unit | unit |
+| `rad-087-167` | Portable Portal | unit | gear | gear |
+| `rad-097-167` | Siren of the Shallows | spell | unit | unit |
+| `rad-101-167` | An Offer You Can't Refuse | gear | spell | spell |
+| `rad-108-167` | Bushwhack Trap | unit | gear | gear |
+| `rad-120-167` | Meticulous Restorationist | gear | unit | unit |
+| `rad-124-167` | Burn Away | gear | spell | spell |
+| `rad-130-167` | Battlefield Armorer | spell | unit | unit |
+| `rad-131-167` | Demacian Illuminators | spell | unit | unit |
+| `rad-136-167` | Dockside Lock-Up | unit | gear | gear |
 
-Gallery text may contain editorial errors (for example Rousing Display ends with `instead.disa`); source text is preserved rather than silently repaired. The gallery’s auxiliary entries are also incomplete as a complete token catalog: official rules/card text mentions additional tokens such as Tentacle, Mech, and Bomb. Tokens cannot be included in legal constructed decks and are excluded from the 1,079 denominator; a future full engine still needs every rules-created token and marker.
+**Historical official stat conflict:** Kai'Sa, Rebel, `might`: `rad-063-167` = 5; `rad-sp4-005` = 4. The source values remain unchanged. Reviewed effective values: `rad-063-167` = 5; `rad-sp4-005` = 5.
+
+The same reviewed evidence corrects missing/wrong domains, printed tags, Runeblade Anvil's activation power glyph, and Rousing Display's trailing editorial text. Four Device-tag exclusions are explicitly rule-derived and retain their Core Rules evidence. Every resolution names exact raw prerequisites, its immutable origin gallery, complete printing hash, and local official image evidence. A changed printing or corrupted evidence fails validation; publisher fixes require a deliberate review update. See [the review contract and evidence](CATALOG_REVIEW.md).
+
+**Alternate-printing review remains incomplete:** 124 identities have unreviewed differences (42 tag sets and 110 rules-text variants, with overlap). Reminder omissions and possible gameplay differences are recorded without automatic normalization. The 29 already-playable affected identities retain only their exact existing mappings and printing hashes; this compatibility baseline does not adjudicate those variants. New mappings with unreviewed variant differences are rejected. Changing a pinned printing also requires review.
+
+The gallery's auxiliary entries are incomplete as a complete token catalog: official rules/card text mentions additional tokens such as Tentacle, Mech, and Bomb. Tokens cannot be included in legal constructed decks and are excluded from the 1,079 denominator; a full engine still needs every rules-created token and marker. These source corrections enable no new playable cards.
 
 ## Reproduce and validate
 
@@ -106,21 +110,21 @@ No extra Python packages are needed:
 ```sh
 python3 tools/import_catalog.py --check
 python3 -m unittest discover -s tools -p 'test_*.py'
-cargo test --test catalog_coverage
+cargo test --test catalog_coverage --test catalog_review
 ```
 
-The four sourced tournament lists remain separate from the legend registry; new legend availability does not create a new tournament preset. The offline check verifies every archived source SHA-256, reparses gallery and legality, checks every official printing ID and all numbered base positions, rejects unknown sets/unresolved bans or errata, remaps the runtime manifests by official ID, verifies each independent legend’s source text/domains/artwork and matching chosen champion, and requires the generated snapshot and report to match byte for byte. It fails on truncated sources, missing records, stale implementation mappings, mapped identities with unresolved type conflicts, or unreviewed set changes.
+The four tournament lists remain separate from the legend registry. The offline check verifies current source archives, immutable origin evidence, every reviewed image and rules PDF, printing prerequisites, all numbered base positions, legality/errata, and runtime source readiness. It regenerates raw/effective inventory and this report deterministically. No unsupported identity becomes playable through a resolution entry.
 
 ```sh
-# Compare live official source data without changing the committed snapshot.
+# Compare live official page data without changing the committed snapshot.
 python3 tools/import_catalog.py --check-live
 # Refresh after reviewing newly released sets/legality; adjust RELEASED_SETS when needed.
 python3 tools/import_catalog.py --refresh --as-of YYYY-MM-DD
-# Regenerate after an intentional runtime mapping change, without a network request.
+# Regenerate after an intentional reviewed mapping/source change.
 python3 tools/import_catalog.py --write
 ```
 
-Source pages are archived as deterministic gzip files under `assets/data/catalog_sources/`; `assets/data/catalog_sources.json` records their official URLs, retrieval date, SHA-256 hashes, and reviewed release boundary. `--check-live` compares gameplay inventory, ban lists, and errata rather than unrelated website build markup. The snapshot is dated evidence; it cannot assert that a future ban list remains unchanged.
+Current pages are archived under `assets/data/catalog_sources/`; immutable review evidence is retained separately under `assets/data/catalog_evidence/`. Schema 2 keeps every original printing field and adds `effective`, `resolution_ids`, and `unresolved_gameplay_fields`. `source_quality_issues` and `conflicting_fields` retain raw history; `source_issue_reviews` and `source_review` describe the current reviewed status. `--check-live` compares parsed page facts, bans and errata, ignoring unrelated website markup. It verifies local evidence but does not re-download remote image bytes, so it is not a fresh visual review. Failed candidate validation replaces no committed sources or outputs.
 
 ## Implemented main-card ID mapping
 

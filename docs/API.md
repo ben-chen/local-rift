@@ -23,6 +23,8 @@ Replace `choose_action(view, suggestions, rng)` in that example with your policy
 
 The initial session is in `mulligan` phase, with decks `[0,1]`, seed `1`, Tactical AI, and player `0` going first. `info` reports protocol version `1`; `catalog` reports separate preset, legend, card, domain, and battlefield IDs.
 
+The repository's `assets/data/full_catalog.json` is a separate inventory with schema version `2`; it is not the bot protocol or the playable `catalog` response. It preserves raw printing fields and adds reviewed `effective` facts, resolution references, and unresolved-field diagnostics. Deck validation uses those effective facts and rejects unresolved gameplay fields, including conflicts on alternate printings. The source review changes neither protocol version `1` nor existing playable IDs, eligible-card lists, presets, or training decks. See [the inventory review contract](CATALOG_REVIEW.md) for evidence and remaining variant-review limits.
+
 ```json
 {"id":"hello","command":"info"}
 {"command":"reset","revision":0,"seed":42,"decks":[0,3],"difficulty":"tactical","first_player":0,"battlefields":[0,3]}

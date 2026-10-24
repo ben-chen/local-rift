@@ -4,7 +4,13 @@ use serde_json::Value;
 use std::collections::{BTreeMap, BTreeSet};
 
 fn snapshot() -> Value {
-    serde_json::from_str(include_str!("../assets/data/full_catalog.json")).unwrap()
+    let data: Value =
+        serde_json::from_str(include_str!("../assets/data/full_catalog.json")).unwrap();
+    assert_eq!(
+        data["schema_version"], 2,
+        "coverage requires effective catalog facts"
+    );
+    data
 }
 
 #[test]
@@ -86,8 +92,24 @@ fn every_runtime_card_maps_by_official_id_without_enabling_inventory_only_cards(
             .iter()
             .find(|p| p["official_id"] == entry["implementation"]["official_id"])
             .unwrap();
-        // An absent printed resource icon means no cost; preserve its original
-        // null in the source snapshot rather than rewriting source facts.
+        assert!(
+            entry["source_review"]["unresolved_gameplay_fields"]
+                .as_array()
+                .unwrap()
+                .is_empty()
+        );
+        assert!(
+            official["unresolved_gameplay_fields"]
+                .as_array()
+                .unwrap()
+                .is_empty()
+        );
+        let official = official
+            .get("effective")
+            .filter(|value| value.is_object())
+            .expect("complete effective source facts");
+        // Absent resource icons remain null in the effective projection. Runtime
+        // numeric costs use zero; raw preservation is tested separately.
         assert_eq!(
             u64::from(card.cost),
             official["energy"].as_u64().unwrap_or(0)
@@ -96,10 +118,23 @@ fn every_runtime_card_maps_by_official_id_without_enabling_inventory_only_cards(
             u64::from(card.power_cost),
             official["power"].as_u64().unwrap_or(0)
         );
-        assert_eq!(
-            u64::from(card.might),
-            official["might"].as_u64().unwrap_or(0)
-        );
+        match card.kind {
+            cards::CardKind::Unit => assert_eq!(
+                u64::from(card.might),
+                official["might"].as_u64().expect("a unit has base Might"),
+                "{} unit Might",
+                card.name
+            ),
+            // CardDef stores an equipment bonus in this shared numeric field;
+            // the catalog's non-unit `might` is not a unit base stat.
+            cards::CardKind::Gear => assert_eq!(
+                u64::from(card.might),
+                official["might_bonus"].as_u64().unwrap_or(0),
+                "{} equipment bonus",
+                card.name
+            ),
+            cards::CardKind::Spell => assert_eq!(card.might, 0),
+        }
         let domains: BTreeSet<_> = card
             .domains
             .iter()
@@ -112,6 +147,19 @@ fn every_runtime_card_maps_by_official_id_without_enabling_inventory_only_cards(
             .map(|d| d.as_str().unwrap().to_owned())
             .collect();
         assert_eq!(domains, official_domains);
+        let runtime_tags: BTreeSet<_> = card.tags.iter().copied().collect();
+        let effective_tags: BTreeSet<_> = official["tags"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|tag| tag.as_str().unwrap())
+            .collect();
+        assert_eq!(
+            runtime_tags.len(),
+            card.tags.len(),
+            "duplicate runtime tags"
+        );
+        assert_eq!(runtime_tags, effective_tags, "{} source tags", card.name);
     }
     for card in data["cards"].as_array().unwrap() {
         if card["implementation"]["status"] == "not_implemented" {

@@ -27,6 +27,7 @@ struct Facts {
     champion_tag: Option<&'static str>,
     super_types: Vec<String>,
     legal: bool,
+    source_ready: bool,
     unique: bool,
 }
 
@@ -34,14 +35,131 @@ struct Inventory {
     printings: HashMap<String, Facts>,
 }
 
-fn strings(value: &Value) -> Vec<String> {
-    value
+fn fact_strings(object: &Value, field: &str) -> Result<Vec<String>, String> {
+    object[field]
         .as_array()
-        .into_iter()
-        .flatten()
-        .filter_map(Value::as_str)
-        .map(str::to_owned)
+        .ok_or_else(|| format!("Catalog field {field} must be an array."))?
+        .iter()
+        .map(|value| {
+            value
+                .as_str()
+                .map(str::to_owned)
+                .ok_or_else(|| format!("Catalog field {field} must contain only text."))
+        })
         .collect()
+}
+
+impl Inventory {
+    fn parse(data: &Value) -> Result<Self, String> {
+        if data["schema_version"].as_u64() != Some(2) {
+            return Err(
+                "Deck validation requires catalog schema 2 with effective reviewed facts.".into(),
+            );
+        }
+        let mut printings = HashMap::new();
+        for printing in data["printings"]
+            .as_array()
+            .ok_or("Missing catalog printings.")?
+        {
+            let id = printing["official_id"]
+                .as_str()
+                .ok_or("Missing printing ID.")?
+                .to_owned();
+            let effective = printing
+                .get("effective")
+                .filter(|value| value.is_object())
+                .ok_or_else(|| format!("Printing {id} has no effective fact object."))?;
+            for field in [
+                "types",
+                "super_types",
+                "domains",
+                "energy",
+                "power",
+                "might",
+                "might_bonus",
+                "tags",
+                "rules_html",
+                "rules_text",
+                "equipment_html",
+                "equipment_text",
+            ] {
+                if effective.get(field).is_none() {
+                    return Err(format!("Printing {id} lacks effective {field}."));
+                }
+            }
+            // Do not fall back to the preserved raw fields, even if they would
+            // make an incomplete effective record appear compatible.
+            let domains = fact_strings(effective, "domains")?;
+            let tags = fact_strings(effective, "tags")?;
+            let super_types = fact_strings(effective, "super_types")?;
+            let champion_tag = legends()
+                .iter()
+                .find(|definition| definition.official_id == id)
+                .map(|definition| definition.champion);
+            if let Some(tag) = champion_tag
+                && !tags.iter().any(|candidate| candidate == tag)
+            {
+                return Err(format!("Official legend champion tag changed for {id}."));
+            }
+            let source_ready = fact_strings(printing, "unresolved_gameplay_fields")?.is_empty();
+            if printings
+                .insert(
+                    id.clone(),
+                    Facts {
+                        domains,
+                        tags,
+                        champion_tag,
+                        super_types,
+                        legal: false,
+                        source_ready,
+                        unique: false,
+                    },
+                )
+                .is_some()
+            {
+                return Err(format!("Duplicate catalog printing {id}."));
+            }
+        }
+        let mut assigned = HashSet::new();
+        for card in data["cards"]
+            .as_array()
+            .ok_or("Missing catalog identities.")?
+        {
+            let ids = fact_strings(card, "official_ids")?;
+            let legal = card["standard_legal"]
+                .as_bool()
+                .ok_or("Missing Standard legality.")?;
+            let unique = fact_strings(card, "effective_keywords_observed")?
+                .iter()
+                .any(|keyword| keyword == "Unique");
+            let review = card
+                .get("source_review")
+                .filter(|value| value.is_object())
+                .ok_or("Missing identity source review.")?;
+            // Variant diagnostics can remain unreviewed on an already mapped
+            // identity. Actual unresolved gameplay facts block every printing.
+            let mut source_ready = fact_strings(review, "unresolved_gameplay_fields")?.is_empty();
+            for id in &ids {
+                source_ready &= printings
+                    .get(id)
+                    .ok_or_else(|| format!("Unknown printing {id} in identity."))?
+                    .source_ready;
+            }
+            for id in ids {
+                if !assigned.insert(id.clone()) {
+                    return Err(format!("Printing {id} has multiple identities."));
+                }
+                let facts = printings.get_mut(&id).expect("validated identity printing");
+                facts.legal = legal;
+                facts.unique = unique;
+                facts.source_ready = source_ready;
+            }
+        }
+        if assigned.len() != printings.len() {
+            return Err("Some catalog printings have no identity.".into());
+        }
+        Ok(Self { printings })
+    }
 }
 
 fn inventory() -> &'static Inventory {
@@ -49,49 +167,7 @@ fn inventory() -> &'static Inventory {
     INVENTORY.get_or_init(|| {
         let data: Value = serde_json::from_str(include_str!("../assets/data/full_catalog.json"))
             .expect("validated bundled official inventory");
-        let mut legal = HashMap::new();
-        for card in data["cards"].as_array().expect("inventory cards") {
-            let unique = strings(&card["keywords_observed"])
-                .iter()
-                .any(|k| k == "Unique");
-            for id in strings(&card["official_ids"]) {
-                legal.insert(id, (card["standard_legal"] == true, unique));
-            }
-        }
-        let printings = data["printings"]
-            .as_array()
-            .expect("inventory printings")
-            .iter()
-            .map(|p| {
-                let id = p["official_id"].as_str().unwrap().to_owned();
-                let &(legal, unique) = legal.get(&id).expect("printing identity");
-                // A shared faction/creature tag (for example Yordle) does not
-                // qualify a different champion for this legend.
-                let champion_tag = legends()
-                    .iter()
-                    .find(|definition| definition.official_id == id)
-                    .map(|definition| definition.champion);
-                let tags = strings(&p["tags"]);
-                if let Some(tag) = champion_tag {
-                    assert!(
-                        tags.iter().any(|t| t == tag),
-                        "Official legend champion tag changed"
-                    );
-                }
-                (
-                    id,
-                    Facts {
-                        domains: strings(&p["domains"]),
-                        tags,
-                        champion_tag,
-                        super_types: strings(&p["super_types"]),
-                        legal,
-                        unique,
-                    },
-                )
-            })
-            .collect();
-        Inventory { printings }
+        Inventory::parse(&data).expect("validated schema 2 effective official inventory")
     })
 }
 
@@ -107,6 +183,10 @@ fn same_champion(card: &Facts, legend: &Facts) -> bool {
 
 fn compatible(card: &Facts, legend: &Facts) -> bool {
     card.legal
+        && card.source_ready
+        && legend.source_ready
+        && !card.domains.is_empty()
+        && !legend.domains.is_empty()
         && card
             .domains
             .iter()
@@ -118,7 +198,9 @@ fn compatible(card: &Facts, legend: &Facts) -> bool {
 /// Supported legal cards of this legend's complete domain identity. Signature
 /// counts and the final deck size still need whole-deck validation.
 pub fn eligible_cards(legend: usize) -> Vec<CardId> {
-    let Some(legend) = legend_facts(legend).filter(|l| l.legal) else {
+    let Some(legend) =
+        legend_facts(legend).filter(|l| l.legal && l.source_ready && !l.domains.is_empty())
+    else {
         return Vec::new();
     };
     cards()
@@ -394,8 +476,10 @@ impl CustomDeck {
             return Err("Give your deck a name of 1–100 characters without line breaks.".into());
         }
         let legend = legend_facts(self.legend)
-            .filter(|l| l.legal)
-            .ok_or("Choose one of the supported Standard-legal legends.")?;
+            .filter(|l| l.legal && l.source_ready && !l.domains.is_empty())
+            .ok_or(
+                "Choose one of the supported Standard-legal legends with resolved source facts.",
+            )?;
         let catalog = cards();
         let mut ids = HashSet::new();
         let mut names = HashMap::new();
@@ -419,6 +503,12 @@ impl CustomDeck {
                 .ok_or("Missing official card identity.")?;
             if !facts.legal {
                 return Err(format!("{} is not Standard legal.", card.name));
+            }
+            if !facts.source_ready {
+                return Err(format!(
+                    "{} has unresolved gameplay source facts.",
+                    card.name
+                ));
             }
             if !compatible(facts, legend) {
                 return Err(format!(
@@ -479,5 +569,154 @@ impl CustomDeck {
             return Err("That battlefield is not legal for this legend.".into());
         }
         Ok(())
+    }
+}
+
+#[cfg(test)]
+mod catalog_fact_tests {
+    use super::*;
+
+    fn fixture() -> Value {
+        let effective = json!({
+            "types":["unit"], "super_types":[], "domains":["fury"],
+            "energy":1, "power":null, "might":1, "might_bonus":null,
+            "tags":["Correct"], "rules_html":"", "rules_text":"",
+            "equipment_html":"", "equipment_text":""
+        });
+        json!({"schema_version":2,
+            "printings":[{"official_id":"test-main", "domains":["body"], "tags":["Raw"], "super_types":["signature"], "effective":effective,"unresolved_gameplay_fields":[]}],
+            "cards":[{"official_ids":["test-main"],"standard_legal":true,"keywords_observed":["Unique"],"effective_keywords_observed":[],"source_review":{"status":"unreviewed_variants","unresolved_gameplay_fields":[],"variant_diagnostics":[{"field":"rules_text"}]}}]
+        })
+    }
+    fn legend_fact() -> Facts {
+        Facts {
+            domains: vec!["fury".into()],
+            tags: vec![],
+            champion_tag: Some("Correct"),
+            super_types: vec![],
+            legal: true,
+            source_ready: true,
+            unique: false,
+        }
+    }
+
+    #[test]
+    fn schema_and_effective_projection_are_required_without_raw_fallback() {
+        let mut data = fixture();
+        data["schema_version"] = json!(1);
+        assert!(Inventory::parse(&data).err().unwrap().contains("schema 2"));
+        data["schema_version"] = json!(2);
+        data["printings"][0]
+            .as_object_mut()
+            .unwrap()
+            .remove("effective");
+        assert!(
+            Inventory::parse(&data)
+                .err()
+                .unwrap()
+                .contains("effective fact")
+        );
+        let mut data = fixture();
+        data["printings"][0]["effective"]
+            .as_object_mut()
+            .unwrap()
+            .remove("domains");
+        assert!(
+            Inventory::parse(&data)
+                .err()
+                .unwrap()
+                .contains("effective domains")
+        );
+        let mut data = fixture();
+        data["cards"][0]
+            .as_object_mut()
+            .unwrap()
+            .remove("effective_keywords_observed");
+        assert!(
+            Inventory::parse(&data)
+                .err()
+                .unwrap()
+                .contains("effective_keywords_observed")
+        );
+    }
+
+    #[test]
+    fn corrected_deck_facts_are_used_without_rewriting_raw_fields() {
+        let mut data = fixture();
+        data["printings"][0]["effective"]["super_types"] = json!(["signature", "champion"]);
+        let before = data.clone();
+        let inventory = Inventory::parse(&data).unwrap();
+        let facts = &inventory.printings["test-main"];
+        assert_eq!(facts.domains, vec!["fury"]);
+        assert_eq!(facts.tags, vec!["Correct"]);
+        assert_eq!(facts.super_types, vec!["signature", "champion"]);
+        assert!(compatible(facts, &legend_fact()));
+        assert_eq!(data, before, "parsing must not rewrite source evidence");
+    }
+
+    #[test]
+    fn unique_uses_effective_keywords_in_both_directions() {
+        let mut data = fixture();
+        assert!(!Inventory::parse(&data).unwrap().printings["test-main"].unique);
+        data["cards"][0]["keywords_observed"] = json!([]);
+        data["cards"][0]["effective_keywords_observed"] = json!(["Unique"]);
+        assert!(Inventory::parse(&data).unwrap().printings["test-main"].unique);
+    }
+
+    #[test]
+    fn missing_domains_are_not_colorless_compatibility() {
+        let mut data = fixture();
+        data["printings"][0]["effective"]["domains"] = json!([]);
+        assert!(!compatible(
+            &Inventory::parse(&data).unwrap().printings["test-main"],
+            &legend_fact()
+        ));
+        data["printings"][0]["effective"]["domains"] = json!(["colorless"]);
+        let inventory = Inventory::parse(&data).unwrap();
+        assert!(compatible(
+            &inventory.printings["test-main"],
+            &legend_fact()
+        ));
+        let mut legend = legend_fact();
+        legend.domains.clear();
+        assert!(!compatible(&inventory.printings["test-main"], &legend));
+    }
+
+    #[test]
+    fn an_unresolved_alternate_blocks_the_whole_identity() {
+        let mut data = fixture();
+        let mut alternate = data["printings"][0].clone();
+        alternate["official_id"] = json!("test-alternate");
+        alternate["unresolved_gameplay_fields"] = json!(["domains"]);
+        data["printings"].as_array_mut().unwrap().push(alternate);
+        data["cards"][0]["official_ids"] = json!(["test-main", "test-alternate"]);
+        let inventory = Inventory::parse(&data).unwrap();
+        for facts in inventory.printings.values() {
+            assert!(!compatible(facts, &legend_fact()));
+            assert!(!facts.source_ready);
+        }
+    }
+
+    #[test]
+    fn identity_conflicts_block_but_unreviewed_diagnostics_do_not() {
+        let mut data = fixture();
+        assert!(compatible(
+            &Inventory::parse(&data).unwrap().printings["test-main"],
+            &legend_fact()
+        ));
+        data["cards"][0]["source_review"]["unresolved_gameplay_fields"] = json!(["might"]);
+        assert!(!compatible(
+            &Inventory::parse(&data).unwrap().printings["test-main"],
+            &legend_fact()
+        ));
+    }
+
+    #[test]
+    fn malformed_fact_arrays_cannot_turn_into_empty_permissive_values() {
+        for value in [json!(null), json!([true]), json!([1]), json!({})] {
+            let mut data = fixture();
+            data["printings"][0]["effective"]["domains"] = value;
+            assert!(Inventory::parse(&data).is_err());
+        }
     }
 }

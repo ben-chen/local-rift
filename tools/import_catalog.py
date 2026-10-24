@@ -20,6 +20,8 @@ import sys
 import unicodedata
 import urllib.request
 
+from catalog_review import apply_reviews
+
 ROOT = Path(__file__).resolve().parents[1]
 ARCHIVE = ROOT / "assets/data/catalog_sources"
 MANIFEST = ROOT / "assets/data/catalog_sources.json"
@@ -64,6 +66,10 @@ def json_bytes(value):
 def load_legend_manifest():
     """Reviewed runtime identities, independent of tournament-list provenance."""
     return json.loads((ROOT / "assets/data/legends.json").read_text())["legends"]
+
+
+def load_runtime_manifest():
+    return json.loads((ROOT / "assets/data/decks.json").read_text())
 
 
 def load_battlefield_manifest():
@@ -158,42 +164,33 @@ def fetch_sources():
     return dict(ThreadPoolExecutor(max_workers=4).map(fetch, SOURCES.items()))
 
 
-def archive_sources(data, as_of):
+def source_manifest(data, as_of):
     require(re.fullmatch(r"\d{4}-\d{2}-\d{2}", as_of), "--as-of must be YYYY-MM-DD")
     date.fromisoformat(as_of)
-    ARCHIVE.mkdir(parents=True, exist_ok=True)
+    require(set(data) == set(SOURCES), "Candidate source set differs from reviewed sources")
     manifest = {"schema_version": 1, "as_of": as_of, "released_sets_reviewed": RELEASED_SETS, "sources": {}}
     for key in SOURCES:
+        require(isinstance(data[key], bytes), f"Candidate source must be bytes: {key}")
         path = ARCHIVE / f"{key}.html.gz"
-        path.write_bytes(gzip.compress(data[key], mtime=0))
         manifest["sources"][key] = {"url": SOURCES[key], "archive": str(path.relative_to(ROOT)), "sha256": sha(data[key]), "uncompressed_bytes": len(data[key])}
+    return manifest
+
+
+def archive_sources(data, as_of):
+    manifest = source_manifest(data, as_of)
+    payloads = {key: gzip.compress(data[key], mtime=0) for key in SOURCES}
+    ARCHIVE.mkdir(parents=True, exist_ok=True)
+    for key, payload in payloads.items():
+        (ARCHIVE / f"{key}.html.gz").write_bytes(payload)
     MANIFEST.write_bytes(json_bytes(manifest))
     return manifest
 
 
-def make_catalog(manifest, data):
-    require(manifest["released_sets_reviewed"] == RELEASED_SETS, "Reviewed set boundary differs from importer")
-    raw_cards = gallery_cards(data["gallery"])
-    raw_by_id = {c["id"]: c for c in raw_cards}
-    observed_sets = {c["set"]["value"]["id"] for c in raw_cards}
-    require(observed_sets == set(RELEASED_SETS), f"Gallery set scope changed: {sorted(observed_sets)}; release/legality review required")
-    overview = plain(body(data["radiance"]))
-    require("October 23, 2026" in overview, "Radiance release date must be reviewed")
-    require(manifest["as_of"] >= "2026-10-23", "Radiance is not released on requested as-of date")
+def project_gallery(raw):
+    """Version-1 normalized printing projection; raw evidence stays unchanged."""
+    raw_cards = gallery_cards(raw)
     quality = []
     printings = []
-    groups = defaultdict(list)
-    set_counts = {}
-    for set_id, total in RELEASED_SETS.items():
-        members = [c for c in raw_cards if c["set"]["value"]["id"] == set_id]
-        numbered = []
-        for c in members:
-            match = re.fullmatch(r"([A-Z]+)-(\d+)/(\d+)", c["publicCode"])
-            if match and int(match[2]) <= int(match[3]):
-                require(match[1] == set_id and int(match[3]) == total, f"Unexpected set denominator: {c['publicCode']}")
-                numbered.append(int(match[2]))
-        require(sorted(numbered) == list(range(1, total + 1)), f"Missing/duplicated numbered base cards for {set_id}")
-        set_counts[set_id] = {"name": members[0]["set"]["value"]["label"], "numbered_base_slots": total, "numbered_base_slots_present": len(numbered), "gallery_printings": len(members)}
     for raw in sorted(raw_cards, key=lambda c: c["id"]):
         name = raw["name"] + (", " + raw["subtitle"] if raw.get("subtitle") else "")
         types = [t["id"] for t in raw["cardType"].get("type", [])]
@@ -216,7 +213,124 @@ def make_catalog(manifest, data):
             return raw.get(key, {}).get("value", {}).get("id")
         value = {"official_id": raw["id"], "public_code": raw["publicCode"], "name": name, "set": raw["set"]["value"]["id"], "collector_number": raw["collectorNumber"], "types": types, "type_source": type_source, "structured_types": structured_types, "accessibility_types": accessibility_types, "type_labels_conflict": type_labels_conflict, "super_types": super_types, "domains": [d["id"] for d in raw["domain"].get("values", [])], "energy": stat("energy"), "power": stat("power"), "might": stat("might"), "might_bonus": stat("mightBonus"), "rules_html": rules_html, "rules_text": plain(rules_html), "equipment_html": equip_html, "equipment_text": plain(equip_html), "tags": raw.get("tags", {}).get("tags", []), "rarity": raw["rarity"]["value"]["id"], "image_url": raw["cardImage"]["url"], "image_accessibility_text": raw["cardImage"].get("accessibilityText", ""), "illustrators": [a["label"] for a in raw["illustrator"]["values"]]}
         printings.append(value)
-        groups[normalize(name)].append(value)
+    return printings, quality
+
+
+def preferred_printing(p):
+    match = re.fullmatch(r"[A-Z]+-(\d+)/(\d+)", p["public_code"])
+    is_base = match and int(match[1]) <= int(match[2])
+    return (not bool(is_base), SET_ORDER[p["set"]], p["collector_number"], p["official_id"])
+
+
+def canonical_json(value):
+    return json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+
+
+def raw_identity_conflicts(groups, quality):
+    """Keep the original issue objects and ordering as historical source data."""
+    result = {}
+    for key, variants in sorted(groups.items(), key=lambda pair: pair[1][0]["name"].casefold()):
+        variants.sort(key=preferred_printing)
+        conflicts = ["types"] if any(p["type_labels_conflict"] for p in variants) else []
+        if len({canonical_json(p["types"]) for p in variants}) > 1 and "types" not in conflicts:
+            conflicts.append("types")
+        for attr in ["energy", "power", "might", "might_bonus", "domains"]:
+            if len({canonical_json(p[attr]) for p in variants}) > 1:
+                conflicts.append(attr)
+                quality.append({"kind": "conflicting_printing_stat", "name": variants[0]["name"], "field": attr, "values": [{"official_id": p["official_id"], "value": p[attr]} for p in variants], "detail": "Every source value is preserved. Preferred base printing is an inventory representative, not adjudication of the conflict."})
+        result[key] = conflicts
+    return result
+
+
+def identity_source_review(variants):
+    unresolved = {field for p in variants for field in p["unresolved_gameplay_fields"]}
+    for field in ("types", "super_types", "domains", "energy", "power", "might", "might_bonus"):
+        values = [p["effective"][field] for p in variants]
+        if field in ("types", "super_types", "domains"):
+            values = [sorted(value) for value in values]
+        if len({canonical_json(value) for value in values}) > 1:
+            unresolved.add(field)
+    diagnostics = []
+    for field in ("tags", "rules_text", "equipment_text"):
+        values = [sorted(set(p["effective"][field])) if field == "tags" else p["effective"][field] for p in variants]
+        if len({canonical_json(value) for value in values}) > 1:
+            diagnostics.append({"field": field, "status": "unreviewed_variant_difference", "values": [{"official_id": p["official_id"], "value": value} for p, value in zip(variants, values)]})
+    resolutions = sorted({r for p in variants for r in p["resolution_ids"]})
+    status = "unresolved_gameplay_fields" if unresolved else "unreviewed_variants" if diagnostics else "reviewed_corrections" if resolutions else "no_detected_conflicts"
+    return {"status": status, "resolution_ids": resolutions, "unresolved_gameplay_fields": sorted(unresolved), "variant_diagnostics": diagnostics}
+
+
+def load_variant_baseline():
+    return json.loads((ROOT / "assets/data/catalog_variant_baseline.json").read_text())
+
+
+def validate_variant_baseline(baseline):
+    require(type(baseline.get("schema_version")) is int and baseline["schema_version"] == 1, "Unknown variant baseline schema")
+    require(type(baseline.get("printing_projection_version")) is int and baseline["printing_projection_version"] == 1, "Unknown variant baseline printing projection")
+    require(baseline.get("status") == "existing_runtime_mappings_not_variant_adjudication", "Variant baseline must not claim adjudication")
+    require(isinstance(baseline.get("entries"), list), "Missing variant baseline entries")
+    ids = [entry["identity"] for entry in baseline["entries"]]
+    require(len(ids) == len(set(ids)), "Duplicate variant baseline identity")
+    for entry in baseline["entries"]:
+        require(entry["printing_sha256"] and all(re.fullmatch(r"[0-9a-f]{64}", value) for value in entry["printing_sha256"].values()), f"Invalid variant baseline printing hash: {entry['identity']}")
+
+
+def require_mapping_source_ready(review, variants, mapping, printing_pins, baseline):
+    source_id = mapping.get("official_id", variants[0]["official_id"])
+    unresolved = review["unresolved_gameplay_fields"]
+    if "types" in unresolved:
+        raise ValueError(f"Runtime mapping has unresolved official type conflict: {source_id}")
+    require(not unresolved, f"Runtime mapping has unresolved gameplay fields: {source_id}: {', '.join(unresolved)}")
+    matches = [entry for entry in baseline["entries"] if entry["identity"] == variants[0]["official_id"]]
+    if not matches and not review["variant_diagnostics"]:
+        return
+    require(len(matches) == 1, f"New runtime mapping requires review of alternate-printing differences: {source_id}")
+    entry = matches[0]
+    require(canonical_json(entry["implementation"]) == canonical_json(mapping), f"Variant baseline permits only its existing runtime mapping: {source_id}")
+    current = {p["official_id"]: printing_pins[p["official_id"]] for p in variants}
+    require(entry["printing_sha256"] == current, f"Existing runtime variant printing changed; source review required: {source_id}")
+    require(entry["diagnostic_fields"] == [d["field"] for d in review["variant_diagnostics"]], f"Variant diagnostics changed; source review required: {source_id}")
+    review["runtime_variant_admission"] = "pinned_existing_mapping_not_variant_adjudication"
+
+
+def make_catalog(manifest, data, *, review_manifest=None, variant_baseline=None):
+    require(manifest["released_sets_reviewed"] == RELEASED_SETS, "Reviewed set boundary differs from importer")
+    raw_cards = gallery_cards(data["gallery"])
+    raw_by_id = {c["id"]: c for c in raw_cards}
+    observed_sets = {c["set"]["value"]["id"] for c in raw_cards}
+    require(observed_sets == set(RELEASED_SETS), f"Gallery set scope changed: {sorted(observed_sets)}; release/legality review required")
+    overview = plain(body(data["radiance"]))
+    require("October 23, 2026" in overview, "Radiance release date must be reviewed")
+    require(manifest["as_of"] >= "2026-10-23", "Radiance is not released on requested as-of date")
+    quality = []
+    printings = []
+    groups = defaultdict(list)
+    set_counts = {}
+    for set_id, total in RELEASED_SETS.items():
+        members = [c for c in raw_cards if c["set"]["value"]["id"] == set_id]
+        numbered = []
+        for c in members:
+            match = re.fullmatch(r"([A-Z]+)-(\d+)/(\d+)", c["publicCode"])
+            if match and int(match[2]) <= int(match[3]):
+                require(match[1] == set_id and int(match[3]) == total, f"Unexpected set denominator: {c['publicCode']}")
+                numbered.append(int(match[2]))
+        require(sorted(numbered) == list(range(1, total + 1)), f"Missing/duplicated numbered base cards for {set_id}")
+        set_counts[set_id] = {"name": members[0]["set"]["value"]["label"], "numbered_base_slots": total, "numbered_base_slots_present": len(numbered), "gallery_printings": len(members)}
+    printings, quality = project_gallery(data["gallery"])
+    for printing in printings:
+        groups[normalize(printing["name"])].append(printing)
+    raw_conflicts = raw_identity_conflicts(groups, quality)
+    printing_pins = {p["official_id"]: sha(canonical_json(p).encode()) for p in printings}
+    reviewed = apply_reviews(printings, root=ROOT, project_gallery=lambda raw: project_gallery(raw)[0], plain=plain, manifest=review_manifest)
+    printings = reviewed["printings"]
+    groups = defaultdict(list)
+    for printing in printings:
+        groups[normalize(printing["name"])].append(printing)
+    for variants in groups.values():
+        variants.sort(key=preferred_printing)
+    source_reviews = {key: identity_source_review(variants) for key, variants in groups.items()}
+    baseline = load_variant_baseline() if variant_baseline is None else variant_baseline
+    validate_variant_baseline(baseline)
     def resolve_name(name, aliases=BAN_ALIASES):
         key = aliases.get(normalize(name), normalize(name))
         require(key in groups, f"Official name does not resolve uniquely in gallery: {name}")
@@ -230,7 +344,7 @@ def make_catalog(manifest, data):
         if key.endswith("_errata"):
             for entry in parse_errata(data[key], key):
                 errata[resolve_name(entry["article_heading"], ERRATA_ALIASES)].append(entry)
-    runtime = json.loads((ROOT / "assets/data/decks.json").read_text())
+    runtime = load_runtime_manifest()
     fields = load_battlefield_manifest()
     mappings = {}
     def add_mapping(official_id, kind, runtime_id, expected_name=None):
@@ -239,35 +353,56 @@ def make_catalog(manifest, data):
         name = raw["name"] + (", " + raw["subtitle"] if raw.get("subtitle") else "")
         key = normalize(name)
         require(key not in banned, f"Runtime includes Standard banned card: {name}")
-        require(not any(p["type_labels_conflict"] for p in groups[key]), f"Runtime mapping has unresolved official type conflict: {official_id}")
         if expected_name:
             require(normalize(expected_name) == key, f"Runtime official ID/name mismatch: {expected_name}")
         require(key not in mappings, f"Duplicate runtime mapping: {official_id}")
-        mappings[key] = {"status": kind, "runtime_id": runtime_id, "official_id": official_id, "playable_in_client": True}
+        mapping = {"status": kind, "runtime_id": runtime_id, "official_id": official_id, "playable_in_client": True}
+        require_mapping_source_ready(source_reviews[key], groups[key], mapping, printing_pins, baseline)
+        mappings[key] = mapping
+    printing_by_id = {p["official_id"]: p for p in printings}
     for card in runtime["cards"]:
         add_mapping(card["official_id"], "implemented_main_card", card["id"], card["name"])
+        effective = printing_by_id[card["official_id"]]["effective"]
+        require(effective["types"] == [card["kind"].lower()], f"Runtime main-card kind mismatch: {card['official_id']}")
+        for stat in ("energy", "power"):
+            require((card.get(stat) or 0) == (effective[stat] or 0), f"Runtime main-card {stat} mismatch: {card['official_id']}")
+        # Gear's runtime Might value is its attached-unit bonus, not a unit's
+        # base stat. Some gallery records duplicate that bonus in both fields.
+        might_field = "might" if card["kind"] == "Unit" else "might_bonus" if card["kind"] == "Gear" else None
+        expected_might = (effective[might_field] or 0) if might_field else 0
+        require((card.get("might") or 0) == expected_might, f"Runtime main-card Might/attachment bonus mismatch: {card['official_id']}")
+        require({domain.lower() for domain in card["domains"]} == set(effective["domains"]), f"Runtime main-card domains mismatch: {card['official_id']}")
+        tags = card.get("tags")
+        require(isinstance(tags, list) and all(type(tag) is str for tag in tags)
+                and len(tags) == len(set(tags)) and set(tags) == set(effective["tags"]),
+                f"Runtime main-card tags mismatch: {card['official_id']}")
+        # The readable runtime text also includes equipment panels and reviewed
+        # errata/formatting. Compare its original HTML sources separately.
+        require(card.get("official_text_html") == effective["rules_html"],
+                f"Runtime main-card rules HTML mismatch: {card['official_id']}")
+        require(card.get("equipment_effect_html") == effective["equipment_html"],
+                f"Runtime main-card equipment HTML mismatch: {card['official_id']}")
     legends = load_legend_manifest()
     require([v["id"] for v in legends] == list(range(len(legends))), "Legend registry IDs must be unique, ordered, and contiguous")
-    printing_by_id = {p["official_id"]: p for p in printings}
     preset_legend_ids = {deck["legend_id"] for deck in runtime["decks"]}
     require(preset_legend_ids <= {v["official_id"] for v in legends}, "Preset legend absent from independent registry")
     for entry in legends:
         official_id = entry["official_id"]
         require(official_id in printing_by_id, f"Legend absent from official gallery: {official_id}")
         printing = printing_by_id[official_id]
-        require(printing["types"] == ["legend"], f"Legend registry maps a non-legend: {official_id}")
+        require(printing["effective"]["types"] == ["legend"], f"Legend registry maps a non-legend: {official_id}")
         require(entry["name"] == printing["name"], f"Legend source name mismatch: {official_id}")
-        require(entry["text"] == printing["rules_text"] and entry["rules_html"] == printing["rules_html"], f"Legend source text mismatch: {official_id}")
+        require(entry["text"] == printing["effective"]["rules_text"] and entry["rules_html"] == printing["effective"]["rules_html"], f"Legend source text mismatch: {official_id}")
         require(entry["art_url"] == printing["image_url"], f"Legend source artwork mismatch: {official_id}")
-        require(entry["champion"] in printing["tags"], f"Legend champion tag mismatch: {official_id}")
-        require(len(entry["domains"]) == 2 and {d.lower() for d in entry["domains"]} == set(printing["domains"]), f"Legend domain mismatch: {official_id}")
+        require(entry["champion"] in printing["effective"]["tags"], f"Legend champion tag mismatch: {official_id}")
+        require(len(entry["domains"]) == 2 and {d.lower() for d in entry["domains"]} == set(printing["effective"]["domains"]), f"Legend domain mismatch: {official_id}")
         chosen_id = entry["default_champion"]
         require(isinstance(chosen_id, int) and not isinstance(chosen_id, bool) and 0 <= chosen_id < len(runtime["cards"]), f"Legend default champion is not a runtime card: {official_id}")
         chosen = runtime["cards"][chosen_id]
         require(chosen["id"] == chosen_id and chosen["official_id"] == entry["default_champion_official_id"], f"Legend default champion ID mismatch: {official_id}")
         chosen_printing = printing_by_id[chosen["official_id"]]
-        require(chosen_printing["types"] == ["unit"] and "champion" in chosen_printing["super_types"] and entry["champion"] in chosen_printing["tags"], f"Legend default champion lacks matching champion identity: {official_id}")
-        require(set(chosen_printing["domains"]) <= set(printing["domains"]), f"Legend default champion has incompatible domains: {official_id}")
+        require(chosen_printing["effective"]["types"] == ["unit"] and "champion" in chosen_printing["effective"]["super_types"] and entry["champion"] in chosen_printing["effective"]["tags"], f"Legend default champion lacks matching champion identity: {official_id}")
+        require(set(chosen_printing["effective"]["domains"]) <= set(printing["effective"]["domains"]), f"Legend default champion has incompatible domains: {official_id}")
         for deck in runtime["decks"]:
             if deck["legend_id"] == official_id:
                 require(deck["chosen_champion"] == chosen_id and deck["domains"] == entry["domains"], f"Preset legend/default champion mismatch: {official_id}")
@@ -278,44 +413,46 @@ def make_catalog(manifest, data):
         official_id = field["source_id"]
         require(official_id in printing_by_id, f"Battlefield absent from official gallery: {official_id}")
         printing = printing_by_id[official_id]
-        require(printing["types"] == ["battlefield"], f"Battlefield registry maps a non-battlefield: {official_id}")
+        require(printing["effective"]["types"] == ["battlefield"], f"Battlefield registry maps a non-battlefield: {official_id}")
         require(field["name"] == printing["name"], f"Battlefield source name mismatch: {official_id}")
-        require(field["official_html"] == printing["rules_html"], f"Battlefield source text mismatch: {official_id}")
+        require(field["official_html"] == printing["effective"]["rules_html"], f"Battlefield source text mismatch: {official_id}")
         if "official_text" in field:
-            require(field["official_text"] == printing["rules_text"], f"Battlefield readable source text mismatch: {official_id}")
+            require(field["official_text"] == printing["effective"]["rules_text"], f"Battlefield readable source text mismatch: {official_id}")
         require(field["image_url"] == printing["image_url"], f"Battlefield source artwork mismatch: {official_id}")
         add_mapping(official_id, "implemented_battlefield", field["id"], field["name"])
     cards = []
     for key, variants in sorted(groups.items(), key=lambda pair: pair[1][0]["name"].casefold()):
-        def pref(p):
-            match = re.fullmatch(r"[A-Z]+-(\d+)/(\d+)", p["public_code"])
-            is_base = match and int(match[1]) <= int(match[2])
-            return (not bool(is_base), SET_ORDER[p["set"]], p["collector_number"], p["official_id"])
-        variants.sort(key=pref)
         canonical = variants[0]
-        auxiliary = any("token" in p["super_types"] for p in variants)
-        require(all(("token" in p["super_types"]) == auxiliary for p in variants), f"Token/card identity collision: {key}")
-        type_set = {tuple(p["types"]) for p in variants}
-        require(len(type_set) == 1, f"Conflicting card types require manual review: {key}")
-        kind = canonical["types"][0] if canonical["types"] else "tracker"
+        auxiliary = any("token" in p["effective"]["super_types"] for p in variants)
+        require(all(("token" in p["effective"]["super_types"]) == auxiliary for p in variants), f"Token/card identity collision: {key}")
+        source_kind = canonical["types"][0] if canonical["types"] else "tracker"
+        kind = canonical["effective"]["types"][0] if canonical["effective"]["types"] else "tracker"
         implementation = mappings.get(key, {"status": "not_implemented", "playable_in_client": False})
         if kind == "rune" and not auxiliary:
-            require(not any(p["type_labels_conflict"] for p in variants), f"Runtime resource mapping has unresolved official type conflict: {key}")
-            implementation = {"status": "implemented_resource_model", "playable_in_client": True, "domain": canonical["domains"][0]}
-        conflicts = ["types"] if any(p["type_labels_conflict"] for p in variants) else []
-        for attr in ["energy", "power", "might", "might_bonus", "domains"]:
-            seen = {json.dumps(p[attr], sort_keys=True) for p in variants}
-            if len(seen) > 1:
-                conflicts.append(attr)
-                quality.append({"kind": "conflicting_printing_stat", "name": canonical["name"], "field": attr, "values": [{"official_id": p["official_id"], "value": p[attr]} for p in variants], "detail": "Every source value is preserved. Preferred base printing is an inventory representative, not adjudication of the conflict."})
-        combined_text = "\n".join(p["rules_text"] + "\n" + p["equipment_text"] for p in variants)
-        keyword_names = sorted(set(re.findall(r"\[([A-Za-z][A-Za-z -]*)\]", combined_text)) - {"Exhaust", "Any Power", "Body Power", "Calm Power", "Chaos Power", "Fury Power", "Mind Power", "Order Power"})
-        cards.append({"identity": canonical["official_id"], "name": canonical["name"], "kind": kind, "auxiliary": auxiliary, "preferred_printing": canonical["official_id"], "official_ids": [p["official_id"] for p in variants], "standard_legal": not auxiliary and key not in banned, "two_v_two_legal": not auxiliary and key not in banned_teams, "exclusion": "auxiliary_token_or_tracker" if auxiliary else "banned_in_constructed" if key in banned else None, "keywords_observed": keyword_names, "errata": errata.get(key, []), "rules_text_status": "official_gallery_plus_separate_errata" if key in errata else "official_gallery_printing_text", "conflicting_fields": conflicts, "implementation": implementation})
+            implementation = {"status": "implemented_resource_model", "playable_in_client": True, "domain": canonical["effective"]["domains"][0]}
+            require_mapping_source_ready(source_reviews[key], variants, implementation, printing_pins, baseline)
+        def keywords(effective):
+            values = [p["effective"] if effective else p for p in variants]
+            combined = "\n".join(p["rules_text"] + "\n" + p["equipment_text"] for p in values)
+            return sorted(set(re.findall(r"\[([A-Za-z][A-Za-z -]*)\]", combined)) - {"Exhaust", "Any Power", "Body Power", "Calm Power", "Chaos Power", "Fury Power", "Mind Power", "Order Power"})
+        cards.append({"identity": canonical["official_id"], "name": canonical["name"], "kind": kind, "source_kind": source_kind, "auxiliary": auxiliary, "preferred_printing": canonical["official_id"], "official_ids": [p["official_id"] for p in variants], "standard_legal": not auxiliary and key not in banned, "two_v_two_legal": not auxiliary and key not in banned_teams, "exclusion": "auxiliary_token_or_tracker" if auxiliary else "banned_in_constructed" if key in banned else None, "keywords_observed": keywords(False), "effective_keywords_observed": keywords(True), "errata": errata.get(key, []), "rules_text_status": "official_gallery_plus_separate_errata" if key in errata else "official_gallery_printing_text", "conflicting_fields": raw_conflicts[key], "source_review": source_reviews[key], "implementation": implementation})
+    history = {canonical_json(item["raw_issue"]): item for item in reviewed["historical_issues"]}
+    require(len(history) == len(reviewed["historical_issues"]), "Duplicate historical issue review")
+    require(set(history) <= {canonical_json(issue) for issue in quality}, "Historical review issue no longer matches current raw source")
+    resolved_ids = {r["id"] for r in reviewed["resolutions"]}
+    issue_reviews = []
+    for issue in quality:
+        historical = history.get(canonical_json(issue))
+        ids = issue.get("official_ids", [v["official_id"] for v in issue.get("values", [])])
+        issue_field = issue.get("field", "types")
+        resolutions = historical["resolution_ids"] if historical else []
+        resolved = bool(historical and resolutions and set(resolutions) <= resolved_ids and all(issue_field not in source_reviews[normalize(printing_by_id[i]["name"])]["unresolved_gameplay_fields"] for i in ids))
+        issue_reviews.append({"review_issue_id": historical["review_issue_id"] if historical else "source-" + sha(canonical_json(issue).encode())[:16], "official_ids": ids, "resolution_ids": resolutions, "status": "resolved_by_review" if resolved else "unresolved", "raw_issue": issue})
     by_kind = Counter(c["kind"] for c in cards if c["standard_legal"])
     implemented_kind = Counter(c["kind"] for c in cards if c["standard_legal"] and c["implementation"]["playable_in_client"])
-    counts = {"gallery_printings": len(printings), "unique_gallery_identities": len(cards), "additional_gallery_printings": len(printings) - len(cards), "numbered_base_printings": sum(RELEASED_SETS.values()), "auxiliary_identities": sum(c["auxiliary"] for c in cards), "standard_banned_identities": len(banned), "standard_legal_identities": sum(c["standard_legal"] for c in cards), "two_v_two_legal_identities": sum(c["two_v_two_legal"] for c in cards), "standard_legal_by_kind": dict(sorted(by_kind.items())), "standard_legal_by_kind_provisional": any("types" in c["conflicting_fields"] for c in cards), "unresolved_type_conflict_identities": sum("types" in c["conflicting_fields"] for c in cards), "implemented_legal_by_kind": dict(sorted(implemented_kind.items())), "implemented_main_cards": len(runtime["cards"]), "implemented_legends": len(legends), "implemented_battlefields": len(fields), "implemented_legal_identities": sum(implemented_kind.values()), "unimplemented_legal_identities": sum(by_kind.values()) - sum(implemented_kind.values()), "errata_entries": sum(len(v) for v in errata.values()), "identities_with_errata": len(errata), "source_quality_issues": len(quality)}
-    gap_keywords = Counter(keyword for c in cards if c["standard_legal"] and not c["implementation"]["playable_in_client"] for keyword in c["keywords_observed"])
-    return {"schema_version": 1, "as_of": manifest["as_of"], "scope": "English official gallery; released sets through Radiance; Standard/1v1 Constructed legality. This is inventory data, not executable card support.", "sources": manifest["sources"], "legality": legality, "set_coverage": set_counts, "counts": counts, "unimplemented_by_observed_keyword": dict(sorted(gap_keywords.items())), "cards": cards, "printings": printings, "source_quality_issues": quality}
+    counts = {"gallery_printings": len(printings), "unique_gallery_identities": len(cards), "additional_gallery_printings": len(printings) - len(cards), "numbered_base_printings": sum(RELEASED_SETS.values()), "auxiliary_identities": sum(c["auxiliary"] for c in cards), "standard_banned_identities": len(banned), "standard_legal_identities": sum(c["standard_legal"] for c in cards), "two_v_two_legal_identities": sum(c["two_v_two_legal"] for c in cards), "standard_legal_by_kind": dict(sorted(by_kind.items())), "standard_legal_by_kind_provisional": any("types" in c["source_review"]["unresolved_gameplay_fields"] for c in cards), "unresolved_type_conflict_identities": sum("types" in c["source_review"]["unresolved_gameplay_fields"] for c in cards), "implemented_legal_by_kind": dict(sorted(implemented_kind.items())), "implemented_main_cards": len(runtime["cards"]), "implemented_legends": len(legends), "implemented_battlefields": len(fields), "implemented_legal_identities": sum(implemented_kind.values()), "unimplemented_legal_identities": sum(by_kind.values()) - sum(implemented_kind.values()), "errata_entries": sum(len(v) for v in errata.values()), "identities_with_errata": len(errata), "source_quality_issues": len(quality), "reviewed_field_resolutions": len(reviewed["resolutions"]), "resolved_source_issue_groups": sum(r["status"] == "resolved_by_review" for r in issue_reviews), "unresolved_source_issue_groups": sum(r["status"] == "unresolved" for r in issue_reviews), "unresolved_gameplay_identities": sum(bool(c["source_review"]["unresolved_gameplay_fields"]) for c in cards), "unreviewed_variant_identities": sum(bool(c["source_review"]["variant_diagnostics"]) for c in cards), "unreviewed_variants_by_field": dict(sorted(Counter(d["field"] for c in cards for d in c["source_review"]["variant_diagnostics"]).items())), "pinned_runtime_variant_identities": sum("runtime_variant_admission" in c["source_review"] for c in cards)}
+    gap_keywords = Counter(keyword for c in cards if c["standard_legal"] and not c["implementation"]["playable_in_client"] for keyword in c["effective_keywords_observed"])
+    return {"schema_version": 2, "as_of": manifest["as_of"], "scope": "English official gallery; released sets through Radiance; Standard/1v1 Constructed legality. Raw evidence and reviewed effective facts are separate; inventory data does not enable executable card support.", "sources": manifest["sources"], "legality": legality, "set_coverage": set_counts, "counts": counts, "unimplemented_by_observed_keyword": dict(sorted(gap_keywords.items())), "cards": cards, "printings": printings, "source_quality_issues": quality, "source_issue_reviews": issue_reviews, "reviewed_field_resolutions": reviewed["resolutions"], "review_evidence": reviewed["evidence_summary"]}
 
 
 def report(catalog):
@@ -325,7 +462,7 @@ def report(catalog):
         lines.append(f"| {v['name']} ({key}) | {v['numbered_base_slots_present']}/{v['numbered_base_slots']} | {v['gallery_printings']} |")
     lines += ["", "Numbered positions include token slots where the publisher numbers them within a set (including Origins). Special, alternate, signed, rune, and token codes remain in the printing inventory even when they are outside these numbered ranges.", "", "## Runtime gap by card kind", "", "| Kind | Standard legal | Implemented mapping | Not implemented |", "| --- | ---: | ---: | ---: |"]
     if c["standard_legal_by_kind_provisional"]:
-        lines[-2:-2] = [f"**The by-kind counts below are provisional:** {c['unresolved_type_conflict_identities']} identities have contradictory official structured types and accessibility labels. The table retains structured types without adjudicating them; total identities and legality counts are unaffected. None of these unresolved identities is mapped to the runtime.", ""]
+        lines[-2:-2] = [f"**The by-kind counts below are provisional:** {c['unresolved_type_conflict_identities']} identities retain unresolved type findings after the evidence review. The table uses the preferred effective type provisionally; total identities and legality counts are unaffected. None of these unresolved identities is mapped to the runtime.", ""]
     for kind, count in c["standard_legal_by_kind"].items():
         supported = c["implemented_legal_by_kind"].get(kind, 0)
         lines.append(f"| {kind.title()} | {count} | {supported} | {count-supported} |")
@@ -338,16 +475,19 @@ def report(catalog):
             lines.append(f"- [{key.replace('_', ' ').title()}]({SOURCES[key]})")
     issues = catalog["source_quality_issues"]
     missing = [v for v in issues if v["kind"] == "missing_structured_type"]
-    lines += ["", f"**{len(missing)} Radiance records have an empty structured type field.** Their type is taken from the same record’s explicit official image accessibility label and marked `type_source: cardImage.accessibilityText`. The archived record preserves the missing field."]
     type_conflicts = [v for v in issues if v["kind"] == "conflicting_type_labels"]
-    lines += ["", f"**{len(type_conflicts)} records have contradictory structured and accessibility type labels.** `structured_types`, `accessibility_types`, and `type_labels_conflict` preserve both claims. Each affected identity lists `types` under `conflicting_fields`; the importer rejects any runtime mapping to such an identity, even when another printing is selected. No source label is silently preferred as the correct answer.", "", "| Official ID | Card | Structured type | Accessibility type |", "| --- | --- | --- | --- |"]
+    printing_by_id = {p["official_id"]: p for p in catalog["printings"]}
+    lines += ["", f"**{c['source_quality_issues']} historical issue groups are preserved; {c['resolved_source_issue_groups']} have evidence-backed resolutions and {c['unresolved_source_issue_groups']} remain unresolved.** The reviewed manifest contains {c['reviewed_field_resolutions']} field corrections or confirmations across 38 printings. It preserves original gallery values, both type labels, original HTML, and the original issue records. The generated `effective` object applies only explicitly reviewed fields. This is a targeted review, not a complete visual audit of the gallery.", "", f"**{len(missing)} Radiance records have an empty structured type field.** Their raw normalized type still records the accessibility-label fallback. Matching card images corroborate the effective types; no structured source value was overwritten.", "", f"**{len(type_conflicts)} records have contradictory structured and accessibility type labels.** The table below preserves both claims beside the reviewed effective type. Corrections come from the matching printed artwork, not a blanket preference for accessibility labels. The by-kind coverage table uses effective types. Any still-unresolved gameplay field, including an alternate printing's costs, Might, domain or type, prevents runtime admission.", "", "| Official ID | Card | Structured type | Accessibility type | Effective type |", "| --- | --- | --- | --- | --- |"]
     for issue in type_conflicts:
-        lines.append(f"| `{issue['official_ids'][0]}` | {issue['name']} | {', '.join(issue['structured_types'])} | {', '.join(issue['accessibility_types'])} |")
+        official_id = issue['official_ids'][0]
+        effective_type = ', '.join(printing_by_id[official_id]['effective']['types'])
+        lines.append(f"| `{official_id}` | {issue['name']} | {', '.join(issue['structured_types'])} | {', '.join(issue['accessibility_types'])} | {effective_type} |")
     for issue in issues:
         if issue["kind"] == "conflicting_printing_stat":
-            values = "; ".join(f"`{v['official_id']}` = {v['value']}" for v in issue["values"])
-            lines += ["", f"**Unresolved official stat conflict:** {issue['name']}, `{issue['field']}`: {values}. Both values are retained. The numbered base card is the inventory representative, not a ruling that resolves this discrepancy."]
-    lines += ["", "Gallery text may contain editorial errors (for example Rousing Display ends with `instead.disa`); source text is preserved rather than silently repaired. The gallery’s auxiliary entries are also incomplete as a complete token catalog: official rules/card text mentions additional tokens such as Tentacle, Mech, and Bomb. Tokens cannot be included in legal constructed decks and are excluded from the 1,079 denominator; a future full engine still needs every rules-created token and marker.", "", "## Reproduce and validate", "", "No extra Python packages are needed:", "", "```sh", "python3 tools/import_catalog.py --check", "python3 -m unittest discover -s tools -p 'test_*.py'", "cargo test --test catalog_coverage", "```", "", "The four sourced tournament lists remain separate from the legend registry; new legend availability does not create a new tournament preset. The offline check verifies every archived source SHA-256, reparses gallery and legality, checks every official printing ID and all numbered base positions, rejects unknown sets/unresolved bans or errata, remaps the runtime manifests by official ID, verifies each independent legend’s source text/domains/artwork and matching chosen champion, and requires the generated snapshot and report to match byte for byte. It fails on truncated sources, missing records, stale implementation mappings, mapped identities with unresolved type conflicts, or unreviewed set changes.", "", "```sh", "# Compare live official source data without changing the committed snapshot.", "python3 tools/import_catalog.py --check-live", "# Refresh after reviewing newly released sets/legality; adjust RELEASED_SETS when needed.", "python3 tools/import_catalog.py --refresh --as-of YYYY-MM-DD", "# Regenerate after an intentional runtime mapping change, without a network request.", "python3 tools/import_catalog.py --write", "```", "", "Source pages are archived as deterministic gzip files under `assets/data/catalog_sources/`; `assets/data/catalog_sources.json` records their official URLs, retrieval date, SHA-256 hashes, and reviewed release boundary. `--check-live` compares gameplay inventory, ban lists, and errata rather than unrelated website build markup. The snapshot is dated evidence; it cannot assert that a future ban list remains unchanged.", "", "## Implemented main-card ID mapping", "", "| Runtime ID | Card | Official printing ID |", "| ---: | --- | --- |"]
+            values = "; ".join(f"`{v['official_id']}` = {v['value']}" for v in issue['values'])
+            effective = "; ".join(f"`{v['official_id']}` = {printing_by_id[v['official_id']]['effective'][issue['field']]}" for v in issue['values'])
+            lines += ["", f"**Historical official stat conflict:** {issue['name']}, `{issue['field']}`: {values}. The source values remain unchanged. Reviewed effective values: {effective}."]
+    lines += ["", "The same reviewed evidence corrects missing/wrong domains, printed tags, Runeblade Anvil's activation power glyph, and Rousing Display's trailing editorial text. Four Device-tag exclusions are explicitly rule-derived and retain their Core Rules evidence. Every resolution names exact raw prerequisites, its immutable origin gallery, complete printing hash, and local official image evidence. A changed printing or corrupted evidence fails validation; publisher fixes require a deliberate review update. See [the review contract and evidence](CATALOG_REVIEW.md).", "", f"**Alternate-printing review remains incomplete:** {c['unreviewed_variant_identities']} identities have unreviewed differences ({c['unreviewed_variants_by_field'].get('tags', 0)} tag sets and {c['unreviewed_variants_by_field'].get('rules_text', 0)} rules-text variants, with overlap). Reminder omissions and possible gameplay differences are recorded without automatic normalization. The {c['pinned_runtime_variant_identities']} already-playable affected identities retain only their exact existing mappings and printing hashes; this compatibility baseline does not adjudicate those variants. New mappings with unreviewed variant differences are rejected. Changing a pinned printing also requires review.", "", "The gallery's auxiliary entries are incomplete as a complete token catalog: official rules/card text mentions additional tokens such as Tentacle, Mech, and Bomb. Tokens cannot be included in legal constructed decks and are excluded from the 1,079 denominator; a full engine still needs every rules-created token and marker. These source corrections enable no new playable cards.", "", "## Reproduce and validate", "", "No extra Python packages are needed:", "", "```sh", "python3 tools/import_catalog.py --check", "python3 -m unittest discover -s tools -p 'test_*.py'", "cargo test --test catalog_coverage --test catalog_review", "```", "", "The four tournament lists remain separate from the legend registry. The offline check verifies current source archives, immutable origin evidence, every reviewed image and rules PDF, printing prerequisites, all numbered base positions, legality/errata, and runtime source readiness. It regenerates raw/effective inventory and this report deterministically. No unsupported identity becomes playable through a resolution entry.", "", "```sh", "# Compare live official page data without changing the committed snapshot.", "python3 tools/import_catalog.py --check-live", "# Refresh after reviewing newly released sets/legality; adjust RELEASED_SETS when needed.", "python3 tools/import_catalog.py --refresh --as-of YYYY-MM-DD", "# Regenerate after an intentional reviewed mapping/source change.", "python3 tools/import_catalog.py --write", "```", "", "Current pages are archived under `assets/data/catalog_sources/`; immutable review evidence is retained separately under `assets/data/catalog_evidence/`. Schema 2 keeps every original printing field and adds `effective`, `resolution_ids`, and `unresolved_gameplay_fields`. `source_quality_issues` and `conflicting_fields` retain raw history; `source_issue_reviews` and `source_review` describe the current reviewed status. `--check-live` compares parsed page facts, bans and errata, ignoring unrelated website markup. It verifies local evidence but does not re-download remote image bytes, so it is not a fresh visual review. Failed candidate validation replaces no committed sources or outputs.", "", "## Implemented main-card ID mapping", "", "| Runtime ID | Card | Official printing ID |", "| ---: | --- | --- |"]
     mapped = sorted((card for card in catalog["cards"] if card["implementation"]["status"] == "implemented_main_card"), key=lambda card: card["implementation"]["runtime_id"])
     for card in mapped:
         m = card["implementation"]
@@ -377,21 +517,27 @@ def main():
     if args.refresh:
         require(args.as_of, "--refresh requires an explicitly reviewed --as-of date")
         data = fetch_sources()
-        proposed = {"as_of": args.as_of, "released_sets_reviewed": RELEASED_SETS, "sources": {k: {"url": url} for k, url in SOURCES.items()}}
-        make_catalog(proposed, data)  # Validate before replacing any committed sources.
-        manifest = archive_sources(data, args.as_of)
+        manifest = source_manifest(data, args.as_of)
     else:
         manifest, data = read_archives()
     catalog = make_catalog(manifest, data)
+    # Validate and render every candidate artifact before changing any current
+    # archive or output. Immutable origin evidence is never replaced here.
+    catalog_payload = json_bytes(catalog)
+    report_payload = report(catalog)
     if args.check_live:
+        require(OUTPUT.read_bytes() == catalog_payload and REPORT.read_text() == report_payload,
+                "Committed inventory/report is stale; validate or regenerate before checking live sources")
         live = make_catalog(manifest, fetch_sources())
         require(comparable(live) == comparable(catalog), "Official inventory/legality/errata changed. Review differences, then refresh the snapshot.")
     elif args.write or args.refresh:
-        OUTPUT.write_bytes(json_bytes(catalog))
-        REPORT.write_text(report(catalog))
+        if args.refresh:
+            archive_sources(data, args.as_of)
+        OUTPUT.write_bytes(catalog_payload)
+        REPORT.write_text(report_payload)
     else:
-        require(OUTPUT.read_bytes() == json_bytes(catalog), "full_catalog.json differs from validated official sources/runtime mappings; run --write after reviewing the change")
-        require(REPORT.read_text() == report(catalog), "CARD_COVERAGE.md differs from generated coverage; run --write")
+        require(OUTPUT.read_bytes() == catalog_payload, "full_catalog.json differs from validated official sources/runtime mappings; run --write after reviewing the change")
+        require(REPORT.read_text() == report_payload, "CARD_COVERAGE.md differs from generated coverage; run --write")
     print(json.dumps(catalog["counts"], indent=2))
     return 0
 

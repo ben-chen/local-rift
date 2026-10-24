@@ -1,0 +1,201 @@
+"""End-to-end source admission, provenance preservation, and refresh failures."""
+from contextlib import ExitStack, redirect_stdout
+import copy
+import gzip
+import io
+import json
+from pathlib import Path
+import tempfile
+import unittest
+from unittest.mock import patch
+
+import import_catalog as catalog
+from test_import_catalog import edit_page
+
+
+class CatalogPipelineTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.manifest, cls.data = catalog.read_archives()
+        cls.snapshot = catalog.make_catalog(cls.manifest, cls.data)
+
+    def changed_gallery(self, change):
+        def update(page):
+            records = next(b['cards']['items'] for b in page['blades']
+                           if isinstance(b.get('cards'), dict) and 'items' in b['cards'])
+            change(records)
+        return {**self.data, 'gallery': edit_page(self.data['gallery'], update)}
+
+    def test_all_raw_printings_and_issue_history_match_published_c5(self):
+        raw = [{k: v for k, v in p.items() if k not in
+                ('effective', 'resolution_ids', 'unresolved_gameplay_fields')}
+               for p in self.snapshot['printings']]
+        # Pins the complete published C5 projection, not only the 38 corrected
+        # records, so refactoring the parser cannot quietly rewrite raw facts.
+        self.assertEqual(catalog.sha(catalog.canonical_json(raw).encode()),
+                         'b6a40081e458580e7fe6fc3efc40e6001478565717a2ebf164bb7de8bd833e88')
+        self.assertEqual(catalog.sha(catalog.canonical_json(self.snapshot['source_quality_issues']).encode()),
+                         '923bd9fee267e4e4e2d46301ea30771438e6146d805ab3bb45f177095388afae')
+
+    def test_resolved_history_is_separate_from_remaining_variant_reviews(self):
+        counts = self.snapshot['counts']
+        self.assertEqual((counts['reviewed_field_resolutions'], counts['resolved_source_issue_groups'],
+                          counts['unresolved_source_issue_groups']), (73, 37, 0))
+        self.assertEqual(counts['unresolved_gameplay_identities'], 0)
+        self.assertEqual(counts['unreviewed_variant_identities'], 124)
+        self.assertEqual(counts['unreviewed_variants_by_field'], {'tags': 42, 'rules_text': 110})
+        self.assertEqual(counts['pinned_runtime_variant_identities'], 29)
+        self.assertEqual(counts['standard_legal_by_kind'],
+                         {'battlefield': 69, 'gear': 131, 'legend': 58, 'rune': 6, 'spell': 268, 'unit': 547})
+        self.assertTrue(all(r['status'] == 'resolved_by_review' for r in self.snapshot['source_issue_reviews']))
+        corrected = {r['official_id'] for r in self.snapshot['reviewed_field_resolutions']}
+        for card in self.snapshot['cards']:
+            if corrected.intersection(card['official_ids']):
+                self.assertFalse(card['implementation']['playable_in_client'])
+
+    def test_required_fields_gate_every_mapping_kind_and_alternates(self):
+        cases = [
+            ('ogn-093-298', 'domain', {'values': []}, 'unresolved gameplay fields'),
+            ('sfd-057a-221', 'might', {'value': {'id': 9}}, 'unresolved gameplay fields'),
+            ('ven-197-166', 'domain', {'values': []}, 'unresolved gameplay fields'),
+            ('sfd-218-221', 'cardType', {'type': [], 'superType': []}, 'unresolved official type'),
+            ('ven-r04', 'domain', {'values': []}, 'unresolved gameplay fields'),
+            ('sfd-057-221', 'might', {}, 'unresolved gameplay fields'),
+        ]
+        for official_id, field, value, error in cases:
+            with self.subTest(official_id=official_id, field=field):
+                def change(records):
+                    next(p for p in records if p['id'] == official_id)[field] = value
+                with self.assertRaisesRegex(ValueError, error):
+                    catalog.make_catalog(self.manifest, self.changed_gallery(change))
+
+    def test_new_alternate_difference_cannot_reuse_a_clean_runtime_mapping(self):
+        def change(records):
+            variant = copy.deepcopy(next(p for p in records if p['id'] == 'ogn-093-298'))
+            variant.update(id='ogn-review-variant', publicCode='OGN-REVIEW/999')
+            variant['text']['richText']['body'] = '<p>Draw 1.</p>'
+            records.append(variant)
+        with self.assertRaisesRegex(ValueError, 'New runtime mapping requires review'):
+            catalog.make_catalog(self.manifest, self.changed_gallery(change))
+
+    def test_new_main_mapping_with_variant_difference_requires_review(self):
+        candidate = next(c for c in self.snapshot['cards'] if c['kind'] == 'unit'
+                         and c['standard_legal'] and not c['implementation']['playable_in_client']
+                         and c['source_review']['variant_diagnostics']
+                         and not c['source_review']['unresolved_gameplay_fields'])
+        runtime = copy.deepcopy(catalog.load_runtime_manifest())
+        runtime['cards'].append({'id': len(runtime['cards']), 'official_id': candidate['preferred_printing'],
+                                 'name': candidate['name']})
+        with patch.object(catalog, 'load_runtime_manifest', return_value=runtime):
+            with self.assertRaisesRegex(ValueError, 'New runtime mapping requires review'):
+                catalog.make_catalog(self.manifest, self.data)
+
+    def test_pinned_printings_remain_pinned_when_differences_disappear(self):
+        def change(records):
+            base = next(p for p in records if p['id'] == 'sfd-057-221')
+            for p in records:
+                if p['name'] == base['name'] and p.get('subtitle') == base.get('subtitle'):
+                    p['text']['richText']['body'] = '<p>Draw 4.</p>'
+        with self.assertRaisesRegex(ValueError, 'Existing runtime variant printing changed'):
+            catalog.make_catalog(self.manifest, self.changed_gallery(change))
+
+    def test_runtime_tags_and_both_html_panels_must_match_effective_sources(self):
+        original = catalog.load_runtime_manifest()
+        cases = [(0, 'tags', ['Piltover'], 'tags mismatch'),
+                 (0, 'tags', original['cards'][0]['tags'] * 2, 'tags mismatch'),
+                 (0, 'official_text_html', '<p>Draw 4.</p>', 'rules HTML mismatch'),
+                 (121, 'equipment_effect_html', '<p>[Backline]</p>', 'equipment HTML mismatch')]
+        for card_id, field, value, error in cases:
+            with self.subTest(card_id=card_id, field=field):
+                runtime = copy.deepcopy(original)
+                runtime['cards'][card_id][field] = value
+                with patch.object(catalog, 'load_runtime_manifest', return_value=runtime):
+                    with self.assertRaisesRegex(ValueError, error):
+                        catalog.make_catalog(self.manifest, self.data)
+
+    def test_pinned_mapping_identity_and_complete_records_cannot_change(self):
+        baseline = copy.deepcopy(catalog.load_variant_baseline())
+        entry = next(e for e in baseline['entries'] if e['implementation']['status'] == 'implemented_main_card')
+        entry['implementation']['runtime_id'] += 1
+        with self.assertRaisesRegex(ValueError, 'only its existing runtime mapping'):
+            catalog.make_catalog(self.manifest, self.data, variant_baseline=baseline)
+        baseline = copy.deepcopy(catalog.load_variant_baseline())
+        baseline['entries'].append(copy.deepcopy(baseline['entries'][0]))
+        with self.assertRaisesRegex(ValueError, 'Duplicate variant baseline'):
+            catalog.make_catalog(self.manifest, self.data, variant_baseline=baseline)
+
+    def test_markup_only_live_check_preserves_origin_and_writes_nothing(self):
+        changed = {**self.data, 'gallery': self.data['gallery'] + b'\n<!-- unrelated website build -->'}
+        paths = (catalog.OUTPUT, catalog.REPORT, catalog.MANIFEST)
+        before = {p: p.read_bytes() for p in paths}
+        with patch('sys.argv', ['import_catalog.py', '--check-live']), \
+             patch.object(catalog, 'fetch_sources', return_value=changed), \
+             patch.object(catalog, 'archive_sources') as archive, redirect_stdout(io.StringIO()):
+            self.assertEqual(catalog.main(), 0)
+        archive.assert_not_called()
+        self.assertEqual(before, {p: p.read_bytes() for p in paths})
+
+    def test_live_check_requires_current_committed_outputs(self):
+        with tempfile.TemporaryDirectory() as folder:
+            stale = Path(folder) / 'catalog.json'
+            stale.write_text('{}')
+            with patch('sys.argv', ['import_catalog.py', '--check-live']), \
+                 patch.object(catalog, 'OUTPUT', stale), patch.object(catalog, 'fetch_sources') as fetch:
+                with self.assertRaisesRegex(ValueError, 'Committed inventory/report is stale'):
+                    catalog.main()
+            fetch.assert_not_called()
+
+    def test_failed_candidate_or_report_cannot_replace_any_current_artifact(self):
+        def stale_record(records):
+            next(p for p in records if p['id'] == 'rad-sp4-005')['might']['value']['id'] = 5
+        for label, data, report_error in [('printing', self.changed_gallery(stale_record), False),
+                                           ('report', self.data, True)]:
+            with self.subTest(failure=label), tempfile.TemporaryDirectory() as folder:
+                output, report = Path(folder) / 'catalog.json', Path(folder) / 'report.md'
+                output.write_bytes(b'old catalog'); report.write_bytes(b'old report')
+                with ExitStack() as stack:
+                    stack.enter_context(patch('sys.argv', ['import_catalog.py', '--refresh', '--as-of', '2026-10-24']))
+                    stack.enter_context(patch.object(catalog, 'fetch_sources', return_value=data))
+                    stack.enter_context(patch.object(catalog, 'OUTPUT', output))
+                    stack.enter_context(patch.object(catalog, 'REPORT', report))
+                    archive = stack.enter_context(patch.object(catalog, 'archive_sources'))
+                    if report_error:
+                        stack.enter_context(patch.object(catalog, 'report', side_effect=ValueError('report invalid')))
+                    with self.assertRaises(ValueError):
+                        catalog.main()
+                archive.assert_not_called()
+                self.assertEqual(output.read_bytes(), b'old catalog')
+                self.assertEqual(report.read_bytes(), b'old report')
+
+    def test_successful_markup_refresh_retains_reviewed_origin(self):
+        real_root, real_make = catalog.ROOT, catalog.make_catalog
+        changed = {**self.data, 'gallery': self.data['gallery'] + b'\n<!-- new website layout -->'}
+        origins = self.snapshot['review_evidence']['origin_archives']
+        origin_bytes = {spec['archive']: (real_root / spec['archive']).read_bytes() for spec in origins.values()}
+        def validate_candidate(manifest, data):
+            with patch.object(catalog, 'ROOT', real_root):
+                return real_make(manifest, data)
+        with tempfile.TemporaryDirectory() as folder, ExitStack() as stack:
+            root = Path(folder)
+            (root / 'assets/data').mkdir(parents=True); (root / 'docs').mkdir()
+            for name, value in {'ROOT': root, 'ARCHIVE': root / 'assets/data/catalog_sources',
+                                'MANIFEST': root / 'assets/data/catalog_sources.json',
+                                'OUTPUT': root / 'assets/data/full_catalog.json',
+                                'REPORT': root / 'docs/CARD_COVERAGE.md'}.items():
+                stack.enter_context(patch.object(catalog, name, value))
+            stack.enter_context(patch('sys.argv', ['import_catalog.py', '--refresh', '--as-of', '2026-10-25']))
+            stack.enter_context(patch.object(catalog, 'fetch_sources', return_value=changed))
+            stack.enter_context(patch.object(catalog, 'make_catalog', side_effect=validate_candidate))
+            with redirect_stdout(io.StringIO()):
+                self.assertEqual(catalog.main(), 0)
+            refreshed = json.loads(catalog.OUTPUT.read_text())
+            current = json.loads(catalog.MANIFEST.read_text())
+            self.assertNotEqual(current['sources']['gallery']['sha256'], self.manifest['sources']['gallery']['sha256'])
+            self.assertEqual(gzip.decompress((root / current['sources']['gallery']['archive']).read_bytes()), changed['gallery'])
+            self.assertEqual(refreshed['review_evidence']['origin_archives'], origins)
+            self.assertEqual(catalog.comparable(refreshed), catalog.comparable(self.snapshot))
+        self.assertEqual(origin_bytes, {path: (real_root / path).read_bytes() for path in origin_bytes})
+
+
+if __name__ == '__main__':
+    unittest.main()

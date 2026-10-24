@@ -1,0 +1,535 @@
+{
+  "schema_version": 1,
+  "printing_projection_version": 1,
+  "as_of": "2026-10-24",
+  "baseline_commit": "fccba1bb346d65b36b3037032d0b68a288a0e1fb",
+  "status": "existing_runtime_mappings_not_variant_adjudication",
+  "scope": "Pins existing selected runtime mappings while alternate-printing tag/text differences remain explicitly unreviewed. This permits no new mapping and no changed printing. Resolve or explicitly review variant equivalence before admitting new identities.",
+  "entries": [
+    {
+      "identity": "ogn-119-298",
+      "name": "Ahri, Inquisitive",
+      "implementation": {
+        "status": "implemented_main_card",
+        "runtime_id": 168,
+        "official_id": "ogn-119-298",
+        "playable_in_client": true
+      },
+      "diagnostic_fields": [
+        "tags"
+      ],
+      "printing_sha256": {
+        "ogn-119-298": "11d16610ede23f4871ac5648f53136da9d414083d27f611d22239aadd8184467",
+        "ogn-119a-298": "ddbaa9a92810e8746d808f255bd6cb3a5089306a673c4bedea920848fcf275a7",
+        "sfd-227-221": "a8b6b4229a8f5f517ec5ed6356bcd00cc83aa861afdc41b16022395171409ba9",
+        "sfd-227-star-221": "5b0bef36642884183042d03bf21ab24d4ea1592689c37cef713a04a59e39f2e6",
+        "ven-sp3-006": "207f517ae00c4cbad91589a847532a0b97d672a1eabb2283974275148f7ad8d3"
+      }
+    },
+    {
+      "identity": "ven-021-166",
+      "name": "Akali, Deadly Weapon",
+      "implementation": {
+        "status": "implemented_main_card",
+        "runtime_id": 288,
+        "official_id": "ven-021-166",
+        "playable_in_client": true
+      },
+      "diagnostic_fields": [
+        "tags",
+        "rules_text"
+      ],
+      "printing_sha256": {
+        "ven-021-166": "ef40e13272d35691880598f2110c82512c0665eeff601bf6361db6ab930a282e",
+        "ven-021a-166": "bee0ba5c1c0df0b2c8f9236c90c6c8e6fb783bf29bbb33c50557977128f4ff98"
+      }
+    },
+    {
+      "identity": "ven-038-166",
+      "name": "Akali, Silent",
+      "implementation": {
+        "status": "implemented_main_card",
+        "runtime_id": 2,
+        "official_id": "ven-038-166",
+        "playable_in_client": true
+      },
+      "diagnostic_fields": [
+        "tags"
+      ],
+      "printing_sha256": {
+        "ven-038-166": "4b9f7bb915a3a18ca635a9578281c17d60f23b393e3e006de86e89194cf90c60",
+        "ven-038a-166": "1772da85442f4fbf252a0dc3b3a195408cd21af27c467dc19c774049d47a2347"
+      }
+    },
+    {
+      "identity": "ven-136-166",
+      "name": "Ambessa, Respected and Feared",
+      "implementation": {
+        "status": "implemented_main_card",
+        "runtime_id": 289,
+        "official_id": "ven-136-166",
+        "playable_in_client": true
+      },
+      "diagnostic_fields": [
+        "tags",
+        "rules_text"
+      ],
+      "printing_sha256": {
+        "ven-136-166": "f96c49029691113480a641d13cb2af34b0b20fa72d26efb8f784361e44bd3a8d",
+        "ven-136a-166": "309080078bef0b119d3e4b65a860b4d339cd1914c06d1ebcbdd69d3a8b21e25e",
+        "ven-187-166": "39bb85b798693eafd4e2ccabc3ad6af28b146050bba2754fe1ed8bacbfa47ce5"
+      }
+    },
+    {
+      "identity": "ogn-126-298",
+      "name": "Body Rune",
+      "implementation": {
+        "status": "implemented_resource_model",
+        "playable_in_client": true,
+        "domain": "body"
+      },
+      "diagnostic_fields": [
+        "rules_text"
+      ],
+      "printing_sha256": {
+        "ogn-126-298": "4e30527a99863c0d17826236bb3837fc9714094198b129654675e88aa0296b8c",
+        "ogn-126a-298": "6a6f986c370aceb55ba0decb4ade01fb58d4495541283b44234fb971ca5a1e95",
+        "ven-r04": "64847a22e4872fe6a5f8ba9621e1b6e7153f12c33a8e670ed32ace2445f78a71",
+        "rad-r04": "8631d9a6b976406fc05c3340bd88aea5739db5c47eedf6958a0effe5c3f6674b",
+        "rad-r04a": "f5975f6d579b3617592b867296e14935225d04dad73c14eca45fde9b2a16190b"
+      }
+    },
+    {
+      "identity": "ogn-042-298",
+      "name": "Calm Rune",
+      "implementation": {
+        "status": "implemented_resource_model",
+        "playable_in_client": true,
+        "domain": "calm"
+      },
+      "diagnostic_fields": [
+        "rules_text"
+      ],
+      "printing_sha256": {
+        "ogn-042-298": "04153ebc4ab5355af77040f022d1e639fc83a2f55b8339c2b199e193b719530c",
+        "ogn-042a-298": "512f94a7e53ec86dad7f604022ecb6a76c2144af9b807e1aaee9e772c3faf7b2",
+        "ven-r02": "c4e2df2658345533cdb114564cf5fac12f3fca1a1b366696ebc38a007913ab29",
+        "rad-r02": "4ad754ce26e54db929c3c930045c6afb327297e94fa0f8d6c07ed94acd27ac1b",
+        "rad-r02a": "fb1d0449dc7d3fdb91b81cedff0a0d4f3e40cd3cc15907cbca455e17abcd4427"
+      }
+    },
+    {
+      "identity": "ogn-166-298",
+      "name": "Chaos Rune",
+      "implementation": {
+        "status": "implemented_resource_model",
+        "playable_in_client": true,
+        "domain": "chaos"
+      },
+      "diagnostic_fields": [
+        "rules_text"
+      ],
+      "printing_sha256": {
+        "ogn-166-298": "60772ff92da6e4be98696ecdbf154e1b975a6adc1733301c30b7159a888822ee",
+        "ogn-166a-298": "9df227570a331451913a6b2f305d2d68b4d746c980757edc78a34a2443cdc11e",
+        "ven-r05": "320d551ee91bb832b16a0212059cccf1e8ed93ceb58c35a29b5fd91542f2e9f0",
+        "rad-r05": "1970763ef2241d1da6d19b81f34a3faceaa4d60095a9c65d54bc58b8a9857020",
+        "rad-r05a": "b8f6554e925738310cc6190558aa70d46235d32ab8fed2fd9b08edd0c74ed47a"
+      }
+    },
+    {
+      "identity": "ogn-210-298",
+      "name": "Daring Poro",
+      "implementation": {
+        "status": "implemented_main_card",
+        "runtime_id": 88,
+        "official_id": "ogn-210-298",
+        "playable_in_client": true
+      },
+      "diagnostic_fields": [
+        "rules_text"
+      ],
+      "printing_sha256": {
+        "ogn-210-298": "5239ee391145cd211f655db93e000b9bdd4cc603db3bd003450ad79f3376b6f8",
+        "unl-225-219": "5d1e2a74cc58cc11a65d95f9fd3f353479312bf4fde6870f876453526f15c291"
+      }
+    },
+    {
+      "identity": "unl-149-219",
+      "name": "Diana, No Longer Human",
+      "implementation": {
+        "status": "implemented_main_card",
+        "runtime_id": 173,
+        "official_id": "unl-149-219",
+        "playable_in_client": true
+      },
+      "diagnostic_fields": [
+        "rules_text"
+      ],
+      "printing_sha256": {
+        "unl-149-219": "2fec79274a82f928f0734e5d364cfc106e9c5b20a8f430d67e246816a48ed1f4",
+        "unl-149a-219": "8ed1689735b535615ddccfc6cfbe63bb8cf3e7e6c0c5f95dbf1b7f744fa5b531",
+        "ven-183-166": "d68cca6f6067f0b6a5e2d85a90f7aaf450b1adf736dace5a86b73c8c8853473f"
+      }
+    },
+    {
+      "identity": "ogn-007-298",
+      "name": "Fury Rune",
+      "implementation": {
+        "status": "implemented_resource_model",
+        "playable_in_client": true,
+        "domain": "fury"
+      },
+      "diagnostic_fields": [
+        "rules_text"
+      ],
+      "printing_sha256": {
+        "ogn-007-298": "91f290b323c25faacd8fd00a8dc10272e94f54f48cf5e2b7e75e61f776fbb581",
+        "ogn-007a-298": "3039a9c8b1a8be027718ef6c98095a5670644cfdd26d7d2f4151c78dd0b73541",
+        "ven-r01": "fd731b83c7d54640ce37750269c5eaf3f514358f188d1316f8fd484bfd09e95e",
+        "rad-r01": "341b8dfd818e5fba923e2aa832ed58a7d510cfb072180631fe15825816ad4bb9",
+        "rad-r01a": "3eca4d1dd60b91dc104eb4d0876fc9a3933ec7e725d4f9f19249f2d7b4335378"
+      }
+    },
+    {
+      "identity": "ven-155-166",
+      "name": "Heart of the Tempest",
+      "implementation": {
+        "status": "implemented_preset_legend",
+        "runtime_id": 2,
+        "official_id": "ven-155-166",
+        "playable_in_client": true
+      },
+      "diagnostic_fields": [
+        "rules_text"
+      ],
+      "printing_sha256": {
+        "ven-155-166": "26366f3e1d95be2bd3b399981d6d04374d9cdff50894934186df92217a45d002",
+        "ven-197-166": "155a84cb1456e81793356d7e161aa1bf8b847939e207748d889d8511607cf683",
+        "ven-197-star-166": "5828391ced6417f9bcd3ee058c936abd15c278f35eeb0a923655eda48e34f0b1"
+      }
+    },
+    {
+      "identity": "sfd-057-221",
+      "name": "Irelia, Fervent",
+      "implementation": {
+        "status": "implemented_main_card",
+        "runtime_id": 0,
+        "official_id": "sfd-057-221",
+        "playable_in_client": true
+      },
+      "diagnostic_fields": [
+        "rules_text"
+      ],
+      "printing_sha256": {
+        "sfd-057-221": "d3dd3b82ffb43c0f36e465ce59fbeb872b859027ba51370fe5c990d7b9e0ca11",
+        "sfd-057a-221": "12bdd499dd18ea4fdb5dc89b806034e95166a4e1f10c1bff8ff77c03e52a796a",
+        "sfd-225-221": "85926aa032e883450c3f6ec3e12b18a4cc123d29e8b6dd29c3630bba88c840c2",
+        "sfd-225-star-221": "02218c8afa74736d986e8ead8e6048f38c5cda296b25bc53f7f976785ad2012a",
+        "ven-174-166": "d68205eadb0355b99a778ae84f7ae09f194dbf8af71ebfa303b1aef90d68dd5d"
+      }
+    },
+    {
+      "identity": "ogn-039-298",
+      "name": "Kai'Sa, Survivor",
+      "implementation": {
+        "status": "implemented_main_card",
+        "runtime_id": 49,
+        "official_id": "ogn-039-298",
+        "playable_in_client": true
+      },
+      "diagnostic_fields": [
+        "tags",
+        "rules_text"
+      ],
+      "printing_sha256": {
+        "ogn-039-298": "17bd12f88ac568b353b2134d0bdf8b5d938e705c559eeda3eed343035ffa7ef4",
+        "ogn-039a-298": "60382be7db4a7d8f3b19954dc96cceb33cd68c608fae0da9aac3f376f8fcf19e",
+        "ven-sp1-006": "6cdc2a45ea94cc4190e6290d4664d2c3750bc54fac80bf67c92a622f230dfaf9"
+      }
+    },
+    {
+      "identity": "ven-113-166",
+      "name": "Kennen, Storm of Shuriken",
+      "implementation": {
+        "status": "implemented_main_card",
+        "runtime_id": 33,
+        "official_id": "ven-113-166",
+        "playable_in_client": true
+      },
+      "diagnostic_fields": [
+        "tags",
+        "rules_text"
+      ],
+      "printing_sha256": {
+        "ven-113-166": "ba34b565538cd9285b9db505786e346aebbe72913b2bc3e38e53a5facb6f60f9",
+        "ven-113a-166": "21311e223e0fe1b607a4b15de4a9dfaf3c919f901dfc5850ec7606f6f0cfa186"
+      }
+    },
+    {
+      "identity": "sfd-036-221",
+      "name": "Lonely Poro",
+      "implementation": {
+        "status": "implemented_main_card",
+        "runtime_id": 25,
+        "official_id": "sfd-036-221",
+        "playable_in_client": true
+      },
+      "diagnostic_fields": [
+        "rules_text"
+      ],
+      "printing_sha256": {
+        "sfd-036-221": "4abc03097e30fcca721ae649804b26a7fcf1f8c0d973b0cc1c1ce959b5bf64d1",
+        "unl-221-219": "f28d8e8bd425aefb46a308a2c42e2cd9e008e254a0a2da788ff6d45968cfb0c5"
+      }
+    },
+    {
+      "identity": "unl-113-219",
+      "name": "Master Yi, Tempered",
+      "implementation": {
+        "status": "implemented_main_card",
+        "runtime_id": 22,
+        "official_id": "unl-113-219",
+        "playable_in_client": true
+      },
+      "diagnostic_fields": [
+        "rules_text"
+      ],
+      "printing_sha256": {
+        "unl-113-219": "5af1993cf32e969659c40f0a810106ab607a33d0816e562877aa90763fbbfb58",
+        "unl-113a-219": "a7dcb04564eceb3d0f83befd439fe28a1447e612d2624a0c72315331ac5431f7"
+      }
+    },
+    {
+      "identity": "ven-153-166",
+      "name": "Matriarch of War",
+      "implementation": {
+        "status": "implemented_legend",
+        "runtime_id": 7,
+        "official_id": "ven-153-166",
+        "playable_in_client": true
+      },
+      "diagnostic_fields": [
+        "rules_text"
+      ],
+      "printing_sha256": {
+        "ven-153-166": "5475d132b33644faad92ce76619670f0fb30c36a50cd16bd8ff89e79f6a76ede",
+        "ven-196-166": "731252ddc3554f46daf8a60ebc1a00f57c19f47c7d568f7740ea4fd25500e3cb",
+        "ven-196-star-166": "a0e676b5c092d4a47f5b02bcdbc174d7dbe13dca65b4fedae61dd93f32d56fef"
+      }
+    },
+    {
+      "identity": "ogn-089-298",
+      "name": "Mind Rune",
+      "implementation": {
+        "status": "implemented_resource_model",
+        "playable_in_client": true,
+        "domain": "mind"
+      },
+      "diagnostic_fields": [
+        "rules_text"
+      ],
+      "printing_sha256": {
+        "ogn-089-298": "145dd1f400fab0282b58fda39f06997f5d7844cd7f817172ed887c8c4b23f143",
+        "ogn-089a-298": "2cd987dadc072582b65cbbd90e9793b9922c19251fab63cdab24d304450095ef",
+        "ven-r03": "18ed6653d7846ffc7ed813886f12395c941b280e0ac2d10bae5bb155f9be79a4",
+        "rad-r03": "5009a38d669c6b9cc633b86b1adc4ad53d5d71eb7b67e610315d805d43fae4f0",
+        "rad-r03a": "719ede47fbdaf72eeb49e747f1580506ea0c10bce2f2bc55cd333a62f3c110b5"
+      }
+    },
+    {
+      "identity": "ogn-171-298",
+      "name": "Mystic Poro",
+      "implementation": {
+        "status": "implemented_main_card",
+        "runtime_id": 193,
+        "official_id": "ogn-171-298",
+        "playable_in_client": true
+      },
+      "diagnostic_fields": [
+        "rules_text"
+      ],
+      "printing_sha256": {
+        "ogn-171-298": "26e8cdc8a2c9df58a65e83cc1b6db31d3f82e7f9f71405611c7be5719b8d0fc2",
+        "unl-224-219": "b2e0381253fd4dab66c48f93e0753171ba4a88e967efbdce31a3ff7fb40b5016"
+      }
+    },
+    {
+      "identity": "ven-046-166",
+      "name": "Nasus, Ascended",
+      "implementation": {
+        "status": "implemented_main_card",
+        "runtime_id": 287,
+        "official_id": "ven-046-166",
+        "playable_in_client": true
+      },
+      "diagnostic_fields": [
+        "tags",
+        "rules_text"
+      ],
+      "printing_sha256": {
+        "ven-046-166": "42d63ac2d71e27fc1a874d9a023ec5fe358d838a4174d78d4af01b45a0653773",
+        "ven-046a-166": "e26962f94a665c0a2b9041da6ab2ccaffa59ab96ec9dc2f1ba10d776ea77da71"
+      }
+    },
+    {
+      "identity": "ogn-214-298",
+      "name": "Order Rune",
+      "implementation": {
+        "status": "implemented_resource_model",
+        "playable_in_client": true,
+        "domain": "order"
+      },
+      "diagnostic_fields": [
+        "rules_text"
+      ],
+      "printing_sha256": {
+        "ogn-214-298": "296d64a12d650465389c48cb125b506a4b5e17749d3511b2b8c918c367a4651a",
+        "ogn-214a-298": "a95501a78e935cabb1f52b188144c682c604c1aab879bfa75a5a186b374c019c",
+        "ven-r06": "d00bdec1e8dfbbcf8d28f99625ef53159391a86d784c369cb2a6f0998ec03a05",
+        "rad-r06": "06852a5ecc5e6db6ffeb15c886acf7ce97e9bc8e5e885db3f5afd7a3d548e897",
+        "rad-r06a": "8a99704e76ed51b3c92b08664ef94864932d4af1e066a4015b3b57ed11019b60"
+      }
+    },
+    {
+      "identity": "ogn-013-298",
+      "name": "Pouty Poro",
+      "implementation": {
+        "status": "implemented_main_card",
+        "runtime_id": 93,
+        "official_id": "ogn-013-298",
+        "playable_in_client": true
+      },
+      "diagnostic_fields": [
+        "rules_text"
+      ],
+      "printing_sha256": {
+        "ogn-013-298": "ab1d9ff98d4b1828bee517a5776c2427a43aec2acd3fad11e01b45865aeb9f33",
+        "unl-220-219": "d9677e57e628417a125049319eb8101a431104a2260980afb0835fd88ca42e35"
+      }
+    },
+    {
+      "identity": "unl-145-219",
+      "name": "Pyke, Returned",
+      "implementation": {
+        "status": "implemented_main_card",
+        "runtime_id": 13,
+        "official_id": "unl-145-219",
+        "playable_in_client": true
+      },
+      "diagnostic_fields": [
+        "rules_text"
+      ],
+      "printing_sha256": {
+        "unl-145-219": "634673823296a1bceceb01bd4e7727f94ea283ea7238ecb9db88753d129e0d6f",
+        "unl-145a-219": "6b51486cb8d794bee9a4c6ad4d632f54a74890ae4665f65aab3ddec79dff3a4a"
+      }
+    },
+    {
+      "identity": "unl-120-219",
+      "name": "Rengar, Trophy Hunter",
+      "implementation": {
+        "status": "implemented_main_card",
+        "runtime_id": 30,
+        "official_id": "unl-120-219",
+        "playable_in_client": true
+      },
+      "diagnostic_fields": [
+        "rules_text"
+      ],
+      "printing_sha256": {
+        "unl-120-219": "b9af81592b3dbdd4ce030a2467e2bfea685124607259e0d546f4b4d896c8297c",
+        "unl-120a-219": "4c3361edf061f4c15346567e90feb3aa875ee550221210d6f1c45a2110c94912",
+        "ven-179-166": "28d917ebc26e6b9701d9294a124480c4671253c216825e8fa1c1d82c4c0eb872"
+      }
+    },
+    {
+      "identity": "unl-024-219",
+      "name": "Rengar, Unseen",
+      "implementation": {
+        "status": "implemented_main_card",
+        "runtime_id": 98,
+        "official_id": "unl-024-219",
+        "playable_in_client": true
+      },
+      "diagnostic_fields": [
+        "rules_text"
+      ],
+      "printing_sha256": {
+        "unl-024-219": "ea6f1ea98175184d3490d4d5ea1e6d2f9551b60269156dcdb820bc9f9dbc3075",
+        "unl-024a-219": "a6c90cb7552b59e9cfbdda9e017320b58477ef7f2fad7f1c53678f716ba12ebd"
+      }
+    },
+    {
+      "identity": "ven-138-166",
+      "name": "Shen, Leader of the Kinkou Order",
+      "implementation": {
+        "status": "implemented_main_card",
+        "runtime_id": 209,
+        "official_id": "ven-138-166",
+        "playable_in_client": true
+      },
+      "diagnostic_fields": [
+        "rules_text"
+      ],
+      "printing_sha256": {
+        "ven-138-166": "c5aaaab8b91009e87e6639326345238f803901264b839c5a741210aa63e47bab",
+        "ven-138a-166": "840334ec8470b6ff980ce616b385b58a75e6575ec0ef5743320313b146e50bbd"
+      }
+    },
+    {
+      "identity": "ven-042-166",
+      "name": "Shen, Scourge of Shadows",
+      "implementation": {
+        "status": "implemented_main_card",
+        "runtime_id": 210,
+        "official_id": "ven-042-166",
+        "playable_in_client": true
+      },
+      "diagnostic_fields": [
+        "tags"
+      ],
+      "printing_sha256": {
+        "ven-042-166": "25b554c55220ce649223d2e1a7824d8401f5edbe4f3307c0e2951752c2b2514d",
+        "ven-042a-166": "0d485a3678539eec6520ec003010b882c616347c22c5ba74d1d2984d049b3020",
+        "ven-170-166": "9a492bc03d91cc0f27663fc1b4d6cbe309038880c9436ef618b81098a5f22c45"
+      }
+    },
+    {
+      "identity": "unl-150-219",
+      "name": "Vex, Apathetic",
+      "implementation": {
+        "status": "implemented_main_card",
+        "runtime_id": 20,
+        "official_id": "unl-150-219",
+        "playable_in_client": true
+      },
+      "diagnostic_fields": [
+        "rules_text"
+      ],
+      "printing_sha256": {
+        "unl-150-219": "c0ccdad1ff84581ad6ce9ba07d149cade09b166de1a8a078e50fe339eeaea34f",
+        "unl-150a-219": "b6f12b25a83f11d2d8458c08e4ed2f090a7f8513af44e68ec154b77a1fbc4185"
+      }
+    },
+    {
+      "identity": "ogn-117-298",
+      "name": "Viktor, Innovator",
+      "implementation": {
+        "status": "implemented_main_card",
+        "runtime_id": 175,
+        "official_id": "ogn-117-298",
+        "playable_in_client": true
+      },
+      "diagnostic_fields": [
+        "tags",
+        "rules_text"
+      ],
+      "printing_sha256": {
+        "ogn-117-298": "a02a5781f84a7e18331d4d5c0433785cdb078e2d523fe672a2eec29d96d00fd6",
+        "ogn-117a-298": "ba8b35343a2c1cf2238591faae9ebd0e21edd489d3a1acc5ed5c9a2b4b8082e9",
+        "ven-176-166": "351f71b50fb8037efb16b8b3f57d899b1a0b9087518c1b7430bf6a694f66ed60"
+      }
+    }
+  ]
+}
