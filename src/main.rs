@@ -6,6 +6,7 @@ mod ui;
 use local_rift::{
     cards::{CardKind, Domain},
     game::{Action, Decision, Difficulty, Game, Phase, PlayOptions, Target, domain_index},
+    payment::{POWER_DOMAINS, PaymentQuote, PowerPayment},
 };
 use macroquad::prelude::*;
 use scene::{SceneState, SceneUnit};
@@ -66,11 +67,20 @@ enum DropZone {
     Chain(u32),
 }
 
+#[derive(Clone)]
+struct PaymentDraft {
+    action: Action,
+    quote: PaymentQuote,
+    chosen: PowerPayment,
+    just_opened: bool,
+}
+
 struct Preferences {
     coach: bool,
     advanced: bool,
     animation: bool,
     tactical: bool,
+    exact_payment: bool,
     wins: u32,
     losses: u32,
 }
@@ -94,6 +104,7 @@ impl Preferences {
             advanced: value("advanced") == Some("true"),
             animation: value("animation") != Some("false"),
             tactical: value("tactical") == Some("true"),
+            exact_payment: value("exact_payment") == Some("true"),
             wins: value("wins").and_then(|v| v.parse().ok()).unwrap_or(0),
             losses: value("losses").and_then(|v| v.parse().ok()).unwrap_or(0),
         }
@@ -106,8 +117,14 @@ impl Preferences {
         let _ = std::fs::write(
             p,
             format!(
-                "coach={}\nadvanced={}\nanimation={}\ntactical={}\nwins={}\nlosses={}\n",
-                self.coach, self.advanced, self.animation, self.tactical, self.wins, self.losses
+                "coach={}\nadvanced={}\nanimation={}\ntactical={}\nexact_payment={}\nwins={}\nlosses={}\n",
+                self.coach,
+                self.advanced,
+                self.animation,
+                self.tactical,
+                self.exact_payment,
+                self.wins,
+                self.losses
             ),
         );
     }
@@ -148,6 +165,9 @@ struct App {
     journal_page: usize,
     chain_cursor: usize,
     damage_order: Vec<u32>,
+    damage_amounts: Option<Vec<(u32, u16)>>,
+    damage_editor: Option<(u32, String)>,
+    payment_draft: Option<PaymentDraft>,
     confirm_restart: bool,
     recorded: bool,
     drag: Option<DragState>,
@@ -233,6 +253,9 @@ impl App {
             journal_page: 0,
             chain_cursor: 0,
             damage_order: Vec::new(),
+            damage_amounts: None,
+            damage_editor: None,
+            payment_draft: None,
             confirm_restart: false,
             recorded: false,
             drag: None,
@@ -277,8 +300,11 @@ impl App {
         }
         self.drag = None;
         self.hover_card = None;
+        self.payment_draft = None;
         self.show_journal = false;
         self.damage_order.clear();
+        self.damage_amounts = None;
+        self.damage_editor = None;
         self.tray = Tray::Hand;
         self.repeat_targets.clear();
         self.editing_repeat = false;
@@ -299,15 +325,51 @@ impl App {
         self.toast_until = get_time() + 4.5;
     }
     fn action(&mut self, a: Action) {
+        if self.prefs.exact_payment
+            && self.game.priority() == 0
+            && !matches!(a, Action::WithPowerPayment { .. })
+        {
+            match self.game.quote_power_payment(&a) {
+                Ok(quote) if quote.suggested.total() > 0 => {
+                    self.payment_draft = Some(PaymentDraft {
+                        action: a,
+                        chosen: quote.suggested.clone(),
+                        quote,
+                        just_opened: true,
+                    });
+                    self.hover_card = None;
+                    self.hover_rect = None;
+                    self.rune_menu = None;
+                    self.toast_until = 0.0;
+                    return;
+                }
+                Ok(_) => {}
+                Err(error) => {
+                    self.notify(error);
+                    return;
+                }
+            }
+        }
+        self.apply_action(a);
+    }
+    fn apply_action(&mut self, a: Action) {
+        let inner = if let Action::WithPowerPayment { action, .. } = &a {
+            action.as_ref()
+        } else {
+            &a
+        };
         let preserve_selection = matches!(
-            a,
-            Action::ActivateRune { .. } | Action::SetOptionalDiscount { .. }
+            inner,
+            Action::ActivateRune { .. }
+                | Action::RecycleRune { .. }
+                | Action::SetOptionalDiscount { .. }
         );
         let adding_resource = matches!(
-            a,
+            inner,
             Action::ActivateGear { .. }
                 | Action::ActivateLegend { .. }
                 | Action::ActivateRune { .. }
+                | Action::RecycleRune { .. }
         ) && self.game.decision.is_some();
         match self.game.apply(a) {
             Ok(()) => {
@@ -318,6 +380,8 @@ impl App {
                     self.tray = Tray::Hand;
                 }
                 self.damage_order.clear();
+                self.damage_amounts = None;
+                self.damage_editor = None;
                 self.selection = None;
                 self.group.clear();
                 self.targets.clear();
@@ -334,6 +398,33 @@ impl App {
     fn update(&mut self) {
         self.ui.resize();
         self.companion.observe(&self.game);
+        if self.payment_draft.is_some() {
+            if is_key_pressed(KeyCode::Escape) {
+                self.payment_draft = None;
+            }
+            return;
+        }
+        if self.damage_editor.is_some() && self.inspect.is_none() {
+            while let Some(character) = get_char_pressed() {
+                if character.is_ascii_digit() {
+                    let (_, value) = self.damage_editor.as_mut().unwrap();
+                    if value.len() < 5 {
+                        value.push(character);
+                    }
+                }
+            }
+            if is_key_pressed(KeyCode::Backspace) {
+                self.damage_editor.as_mut().unwrap().1.pop();
+            }
+            if is_key_pressed(KeyCode::Escape) {
+                self.damage_editor = None;
+            } else if is_key_pressed(KeyCode::Enter)
+                && let Err(error) = self.commit_damage_editor()
+            {
+                self.notify(error);
+            }
+            return;
+        }
         if self.in_match && self.game.winner.is_some() && !self.recorded {
             if self.game.winner == Some(0) {
                 self.prefs.wins += 1;
@@ -443,6 +534,7 @@ impl App {
             && !self.show_journal
             && self.rune_menu.is_none()
             && self.field_inspect.is_none()
+            && self.payment_draft.is_none()
             && !self.hover_rect.is_some_and(|r| r.contains(self.ui.mouse()));
         self.sidebar();
         match self.screen {
@@ -482,6 +574,7 @@ impl App {
         self.resource_tooltip();
         self.rune_popover();
         self.battlefield_help();
+        self.payment_editor();
         self.ui.enabled = true;
     }
     fn sidebar(&mut self) {
@@ -1062,14 +1155,26 @@ impl App {
             }
         } else if let Some(showdown) = &self.game.showdown {
             self.ui.text(
-                &format!("SHOWDOWN · FIELD {}", showdown.lane + 1),
+                &format!(
+                    "{} · FIELD {}",
+                    if matches!(self.game.decision, Some(Decision::CombatDamage { .. })) {
+                        "COMBAT"
+                    } else {
+                        "SHOWDOWN"
+                    },
+                    showdown.lane + 1
+                ),
                 1178.0,
                 252.0,
                 11.0,
                 GOLD,
             );
             self.ui.wrapped(
-                "Both players may respond before the field is settled. Pass when you're ready.",
+                if matches!(self.game.decision, Some(Decision::CombatDamage { .. })) {
+                    "Both players assign damage before either side is hit. Spells and abilities wait until combat finishes."
+                } else {
+                    "Both players may respond before the field is settled. Pass when you're ready."
+                },
                 1178.0,
                 279.0,
                 209.0,
@@ -1080,6 +1185,13 @@ impl App {
     }
 
     fn damage_assignment(&self, lane: usize, total: u16) -> Vec<(u32, u16)> {
+        if let Some(amounts) = &self.damage_amounts {
+            return amounts
+                .iter()
+                .copied()
+                .filter(|(_, amount)| *amount > 0)
+                .collect();
+        }
         let suggested = self.game.automatic_damage_assignment(0, lane, total);
         let mut order = self.damage_order.clone();
         for (id, _) in &suggested {
@@ -1116,6 +1228,42 @@ impl App {
         }
         allocation
     }
+    fn set_damage_amount(&mut self, id: u32, amount: u16) {
+        if let Some(amounts) = &mut self.damage_amounts {
+            self.toast_until = 0.0;
+            if let Some((_, current)) = amounts.iter_mut().find(|(unit, _)| *unit == id) {
+                *current = amount;
+            } else {
+                amounts.push((id, amount));
+            }
+        }
+    }
+    fn commit_damage_editor(&mut self) -> Result<(), String> {
+        if let Some((id, value)) = self.damage_editor.take() {
+            let amount = value
+                .parse::<u16>()
+                .map_err(|_| "Enter a damage amount from 0 to 65535.")?;
+            self.set_damage_amount(id, amount);
+        }
+        Ok(())
+    }
+    fn damage_validation(&self, lane: usize, total: u16) -> Result<(), String> {
+        self.game.clone().apply(Action::AssignDamage {
+            assignments: self.damage_assignment(lane, total),
+        })
+    }
+    fn confirm_damage(&mut self, lane: usize, total: u16) {
+        if let Err(error) = self
+            .commit_damage_editor()
+            .and_then(|_| self.damage_validation(lane, total))
+        {
+            self.notify(error);
+            return;
+        }
+        self.action(Action::AssignDamage {
+            assignments: self.damage_assignment(lane, total),
+        });
+    }
     fn combat_tray(&mut self, lane: usize, total: u16) {
         let units = self.game.players[1]
             .units
@@ -1123,15 +1271,36 @@ impl App {
             .filter(|u| u.lane == Some(lane))
             .cloned()
             .collect::<Vec<_>>();
+        let manual = self.damage_amounts.is_some();
+        if self.ui.button(
+            Rect::new(780.0, 648.0, 170.0, 29.0),
+            if manual {
+                "Exact amounts  >"
+            } else {
+                "Edit amounts  >"
+            },
+            manual,
+            true,
+        ) {
+            self.damage_amounts = if manual {
+                None
+            } else {
+                Some(self.damage_assignment(lane, total))
+            };
+            self.damage_editor = None;
+        }
         let allocation = self.damage_assignment(lane, total);
-        self.ui.text("Choose damage order", 780.0, 671.0, 9.0, GOLD);
         self.hand_scroll = self.hand_scroll.min(units.len().saturating_sub(6));
         for (slot, unit) in units.iter().skip(self.hand_scroll).take(6).enumerate() {
             let r = self.tile(
                 unit.card_id,
                 slot,
                 &self.game.unit_name(unit),
-                self.damage_order.contains(&unit.id),
+                if manual {
+                    allocation.iter().any(|(id, _)| *id == unit.id)
+                } else {
+                    self.damage_order.contains(&unit.id)
+                },
             );
             if unit.token {
                 self.ui
@@ -1142,6 +1311,18 @@ impl App {
                 .iter()
                 .find(|(id, _)| *id == unit.id)
                 .map_or(0, |(_, n)| *n);
+            let lethal = self
+                .game
+                .unit_might(unit)
+                .saturating_sub(unit.damage)
+                .max(1);
+            let role = if !unit.token && unit.card_id == 57 {
+                " · TANK"
+            } else if !unit.token && unit.card_id == 13 {
+                " · BACKLINE"
+            } else {
+                ""
+            };
             let order = allocation
                 .iter()
                 .position(|(id, _)| *id == unit.id)
@@ -1156,17 +1337,73 @@ impl App {
                 10.0,
                 GOLD,
             );
-            if self.ui.clicked(r) {
-                if let Some(i) = self.damage_order.iter().position(|id| *id == unit.id) {
+            self.ui
+                .rect(Rect::new(r.x + 2.0, r.y + 124.0, 136.0, 53.0), PANEL);
+            self.ui.text(
+                &format!("Lethal: {lethal}{role}"),
+                r.x + 9.0,
+                r.y + 136.0,
+                9.0,
+                TEXT,
+            );
+            if manual {
+                let step = if is_key_down(KeyCode::LeftShift) || is_key_down(KeyCode::RightShift) {
+                    10
+                } else {
+                    1
+                };
+                if self.ui.button(
+                    Rect::new(r.x + 7.0, r.y + 143.0, 28.0, 28.0),
+                    "-",
+                    false,
+                    amount > 0,
+                ) {
+                    self.damage_editor = None;
+                    self.set_damage_amount(unit.id, amount.saturating_sub(step));
+                }
+                let editing = self.damage_editor.as_ref().filter(|(id, _)| *id == unit.id);
+                let value = editing
+                    .map(|(_, value)| format!("{value}|"))
+                    .unwrap_or_else(|| amount.to_string());
+                if self.ui.button(
+                    Rect::new(r.x + 40.0, r.y + 143.0, 60.0, 28.0),
+                    &value,
+                    editing.is_some(),
+                    true,
+                ) {
+                    while get_char_pressed().is_some() {}
+                    self.damage_editor = Some((unit.id, String::new()));
+                }
+                if self.ui.button(
+                    Rect::new(r.x + 105.0, r.y + 143.0, 28.0, 28.0),
+                    "+",
+                    false,
+                    amount < total,
+                ) {
+                    self.damage_editor = None;
+                    self.set_damage_amount(unit.id, amount.saturating_add(step).min(total));
+                }
+            } else {
+                self.ui
+                    .text("Click to choose order", r.x + 9.0, r.y + 161.0, 9.0, MUTED);
+            }
+            let card_face = Rect::new(r.x, r.y, r.w, 123.0);
+            if self.ui.clicked(card_face) {
+                if let Some(amounts) = &mut self.damage_amounts {
+                    amounts.retain(|(id, _)| *id != unit.id);
+                    amounts.push((unit.id, amount));
+                    self.damage_editor = None;
+                    self.toast_until = 0.0;
+                } else if let Some(i) = self.damage_order.iter().position(|id| *id == unit.id) {
                     self.damage_order.remove(i);
                 } else {
                     self.damage_order.push(unit.id);
                 }
             }
-            if self.ui.hover(r) {
+            if self.ui.hover(card_face) {
                 self.hover_candidate = Some(unit.card_id);
             }
-            if self.ui.hover(r) && self.ui.secondary_pressed() {
+            if self.ui.hover(card_face) && self.ui.secondary_pressed() {
                 self.inspect = Some(unit.card_id);
             }
         }
@@ -1218,24 +1455,59 @@ impl App {
         if let Decision::CombatDamage { lane, total, .. } = decision {
             self.ui
                 .title("Assign combat damage", 1178.0, 366.0, 20.0, TEXT);
-            self.ui.wrapped_lines(&format!("Distribute {total} damage. Click enemy cards below in order. Assign lethal before moving to the next unit: Tank first, Backline last. Both sides deal damage together."),1178.0,397.0,209.0,12.0,MUTED,5);
+            let assigned: u32 = self
+                .damage_assignment(lane, total)
+                .iter()
+                .map(|(_, n)| *n as u32)
+                .sum();
+            let remaining = if assigned > total as u32 {
+                format!("{} over", assigned - total as u32)
+            } else {
+                format!("{} remaining", total as u32 - assigned)
+            };
+            self.ui.bold(
+                &format!("{assigned} / {total} · {remaining}"),
+                1178.0,
+                393.0,
+                12.0,
+                GOLD,
+            );
+            let validation = self.damage_validation(lane, total);
+            let guidance = if self.damage_editor.is_some() {
+                "Type the amount. Enter sets it; Escape cancels. Shift +/- changes ten. Click art to move that unit last in the order.".to_owned()
+            } else if let Err(error) = &validation {
+                format!("{error} Edit the amounts below; confirming keeps an invalid draft here.")
+            } else if self.damage_amounts.is_some() {
+                "Legal allocation. Tank first, Backline last; lethal before the next unit. Click a number to type, or art to move it last.".to_owned()
+            } else {
+                "Suggested amounts follow your card order. Tank first, Backline last; lethal before the next unit. Both sides deal damage together.".to_owned()
+            };
+            self.ui.wrapped_lines(
+                &guidance,
+                1178.0,
+                417.0,
+                209.0,
+                11.0,
+                if validation.is_err() { GOLD } else { MUTED },
+                4,
+            );
             if self.ui.button(
                 Rect::new(1178.0, 493.0, 212.0, 34.0),
-                "Confirm damage order",
+                "Confirm damage",
                 true,
                 true,
             ) {
-                self.action(Action::AssignDamage {
-                    assignments: self.damage_assignment(lane, total),
-                });
+                self.confirm_damage(lane, total);
             }
             if self.ui.button(
                 Rect::new(1178.0, 534.0, 212.0, 27.0),
-                "Use suggested order",
+                "Use suggested allocation",
                 false,
                 true,
             ) {
                 self.damage_order.clear();
+                self.damage_amounts = None;
+                self.damage_editor = None;
             }
             return;
         }
@@ -2792,6 +3064,9 @@ impl App {
         self.drag = Some(drag);
     }
     fn hover_preview(&mut self) {
+        if self.payment_draft.is_some() {
+            return;
+        }
         if self.inspect.is_some()
             || self.lesson.is_some()
             || self.show_journal
@@ -2951,11 +3226,241 @@ impl App {
             self.inspect_scroll = 0;
         }
     }
+    fn payment_action_name(&self, action: &Action) -> String {
+        let card_id = match action {
+            Action::PlayCard { hand_index, .. }
+            | Action::PlayCardOptions { hand_index, .. }
+            | Action::PlayCardWithTargets { hand_index, .. } => {
+                self.game.players[0].hand.get(*hand_index).copied()
+            }
+            Action::PlayFromTrash { trash_index, .. }
+            | Action::PlayFromTrashWithTargets { trash_index, .. }
+            | Action::PlayFromTrashOptions { trash_index, .. } => {
+                self.game.players[0].discard.get(*trash_index).copied()
+            }
+            _ => None,
+        };
+        card_id
+            .map(|id| self.game.catalog[id].name.to_owned())
+            .unwrap_or_else(|| "Your selected action".into())
+    }
+    fn payment_action(draft: &PaymentDraft) -> Action {
+        Action::WithPowerPayment {
+            action: Box::new(draft.action.clone()),
+            payment: draft.chosen.clone(),
+        }
+    }
+    fn confirm_payment(&mut self) {
+        let Some(draft) = &self.payment_draft else {
+            return;
+        };
+        let action = Self::payment_action(draft);
+        if let Err(error) = self.game.clone().apply(action.clone()) {
+            self.notify(error);
+            return;
+        }
+        self.payment_draft = None;
+        self.apply_action(action);
+    }
+    fn payment_counter(
+        &self,
+        x: f32,
+        y: f32,
+        label: &str,
+        color: Color,
+        selected: &mut u8,
+        available: u8,
+    ) {
+        self.ui.text(
+            label,
+            x,
+            y + 20.0,
+            11.0,
+            if available > 0 { color } else { MUTED },
+        );
+        if self.ui.button(
+            Rect::new(x + 166.0, y, 27.0, 28.0),
+            "-",
+            false,
+            *selected > 0,
+        ) {
+            *selected = selected.saturating_sub(1);
+        }
+        self.ui.text(
+            &format!("{} / {available}", *selected),
+            x + 202.0,
+            y + 20.0,
+            11.0,
+            TEXT,
+        );
+        if self.ui.button(
+            Rect::new(x + 260.0, y, 27.0, 28.0),
+            "+",
+            false,
+            *selected < available,
+        ) {
+            *selected += 1;
+        }
+    }
+    fn payment_editor(&mut self) {
+        let Some(mut draft) = self.payment_draft.clone() else {
+            return;
+        };
+        self.ui.rect(
+            Rect::new(0.0, 0.0, 1440.0, 900.0),
+            Color::new(0.0, 0.015, 0.02, 0.86),
+        );
+        self.ui.enabled = !draft.just_opened;
+        draft.just_opened = false;
+        let r = Rect::new(360.0, 160.0, 720.0, 590.0);
+        self.ui.rect(r, PANEL);
+        self.ui.border(r, GOLD);
+        self.ui
+            .title("Choose power sources", 388.0, 198.0, 25.0, TEXT);
+        self.ui.ellipsis(
+            &self.payment_action_name(&draft.action),
+            388.0,
+            223.0,
+            640.0,
+            13.0,
+            GOLD,
+        );
+        let cost = draft
+            .quote
+            .costs
+            .iter()
+            .map(|cost| {
+                let domains = if cost.domains.len() == 6 {
+                    "any domain".into()
+                } else {
+                    cost.domains
+                        .iter()
+                        .map(|d| d.name())
+                        .collect::<Vec<_>>()
+                        .join(" / ")
+                };
+                format!(
+                    "{} {}{}",
+                    cost.amount,
+                    domains,
+                    if cost.spell_eligible { " (spell)" } else { "" }
+                )
+            })
+            .collect::<Vec<_>>()
+            .join(" + ");
+        self.ui.wrapped_lines(
+            &format!("Power required: {cost}. Energy is paid automatically."),
+            388.0,
+            247.0,
+            660.0,
+            11.0,
+            MUTED,
+            2,
+        );
+        self.ui.bold("GENERATED POWER", 388.0, 295.0, 10.0, GOLD);
+        self.ui.bold("RUNES TO RECYCLE", 738.0, 295.0, 10.0, GOLD);
+        for (i, domain) in POWER_DOMAINS.into_iter().enumerate() {
+            let y = 309.0 + i as f32 * 36.0;
+            self.payment_counter(
+                388.0,
+                y,
+                domain.name(),
+                rgb(domain.color()),
+                &mut draft.chosen.colored[i],
+                draft.quote.available.colored[i],
+            );
+            self.payment_counter(
+                738.0,
+                y,
+                domain.name(),
+                rgb(domain.color()),
+                &mut draft.chosen.recycle[i],
+                draft.quote.available.recycle[i],
+            );
+        }
+        self.payment_counter(
+            388.0,
+            525.0,
+            "Any power",
+            TEXT,
+            &mut draft.chosen.any,
+            draft.quote.available.any,
+        );
+        self.payment_counter(
+            388.0,
+            561.0,
+            "Spell-only power",
+            TEAL,
+            &mut draft.chosen.spell,
+            draft.quote.available.spell,
+        );
+        self.ui.wrapped_lines("Recycled runes return to the rune deck. Exhausted runes are used first; ready runes can store energy before recycling.",738.0,545.0,285.0,11.0,MUTED,3);
+        let required = draft.quote.suggested.total();
+        self.ui.bold(
+            &format!("{} / {required} power selected", draft.chosen.total()),
+            388.0,
+            626.0,
+            13.0,
+            GOLD,
+        );
+        self.ui.text(
+            "Each count shows selected / available",
+            738.0,
+            626.0,
+            10.0,
+            MUTED,
+        );
+        let validation = self.game.clone().apply(Self::payment_action(&draft));
+        self.ui.wrapped_lines(
+            validation
+                .as_ref()
+                .err()
+                .map(String::as_str)
+                .unwrap_or("Ready. Only these power sources will be spent."),
+            388.0,
+            650.0,
+            660.0,
+            11.0,
+            if validation.is_ok() { TEAL } else { GOLD },
+            2,
+        );
+        let changed = self
+            .payment_draft
+            .as_ref()
+            .is_some_and(|old| old.chosen != draft.chosen);
+        if changed {
+            self.toast_until = 0.0;
+        }
+        self.payment_draft = Some(draft.clone());
+        if self.ui.button(
+            Rect::new(388.0, 692.0, 184.0, 34.0),
+            "Cancel  [ESC]",
+            false,
+            true,
+        ) {
+            self.payment_draft = None;
+        } else if self.ui.button(
+            Rect::new(586.0, 692.0, 220.0, 34.0),
+            "Use suggested sources",
+            false,
+            true,
+        ) {
+            self.payment_draft.as_mut().unwrap().chosen = draft.quote.suggested;
+            self.toast_until = 0.0;
+        } else if self.ui.button(
+            Rect::new(820.0, 692.0, 232.0, 34.0),
+            "Pay & continue",
+            true,
+            true,
+        ) {
+            self.confirm_payment();
+        }
+    }
     fn rune_popover(&mut self) {
         let Some(domain) = self.rune_menu else {
             return;
         };
-        let r = Rect::new(self.rune_menu_at.x, self.rune_menu_at.y, 246.0, 170.0);
+        let r = Rect::new(self.rune_menu_at.x, self.rune_menu_at.y, 246.0, 220.0);
         self.ui.enabled = true;
         self.ui.rect(r, PANEL);
         self.ui.border(r, rgb(domain.color()));
@@ -2966,24 +3471,47 @@ impl App {
             16.0,
             TEXT,
         );
+        let i = domain_index(domain);
+        let exhausted = self.game.players[0].exhausted_runes[i];
+        let ready = self.game.players[0].runes[i].saturating_sub(exhausted);
         self.ui.text(
-            "Prepare resources; payment stays automatic.",
+            &format!("{ready} ready · {exhausted} exhausted"),
             r.x + 16.0,
             r.y + 48.0,
-            9.0,
+            10.0,
             MUTED,
         );
-        for (index, recycle) in [false, true].into_iter().enumerate() {
-            let action = Action::ActivateRune { domain, recycle };
-            let mut check = self.game.clone();
-            let valid = self.game.priority() == 0 && check.apply(action.clone()).is_ok();
+        for (index, (action, label)) in [
+            (
+                Action::ActivateRune {
+                    domain,
+                    recycle: false,
+                },
+                "Exhaust ready: +1 energy",
+            ),
+            (
+                Action::RecycleRune {
+                    domain,
+                    exhausted: true,
+                },
+                "Recycle exhausted: +1 power",
+            ),
+            (
+                Action::RecycleRune {
+                    domain,
+                    exhausted: false,
+                },
+                "Recycle ready: +1 power",
+            ),
+        ]
+        .into_iter()
+        .enumerate()
+        {
+            let valid =
+                self.game.priority() == 0 && self.game.clone().apply(action.clone()).is_ok();
             if self.ui.button(
                 Rect::new(r.x + 16.0, r.y + 61.0 + index as f32 * 42.0, 214.0, 34.0),
-                if recycle {
-                    "Recycle → matching power"
-                } else {
-                    "Exhaust → store 1 energy"
-                },
+                label,
                 false,
                 valid,
             ) {
@@ -2992,6 +3520,13 @@ impl App {
                 break;
             }
         }
+        self.ui.text(
+            "Ready recycling gives no energy.",
+            r.x + 16.0,
+            r.y + 208.0,
+            9.0,
+            MUTED,
+        );
         if (self.ui.primary_pressed()
             && !r.contains(self.ui.mouse())
             && !Rect::new(245.0, 571.0, 883.0, 66.0).contains(self.ui.mouse()))
@@ -3002,6 +3537,9 @@ impl App {
         }
     }
     fn resource_tooltip(&self) {
+        if self.payment_draft.is_some() {
+            return;
+        }
         if !self.in_match
             || self.screen != Screen::Practice
             || self.inspect.is_some()
@@ -3064,7 +3602,7 @@ impl App {
             .collect::<Vec<_>>()
             .join(" · ");
         self.ui.text(&summary, r.x + 14.0, r.y + 102.0, 9.5, TEAL);
-        self.ui.wrapped("Click a rune to store energy or recycle for matching power. Exhausted runes can still recycle. Payment is automatic.",r.x+14.0,r.y+123.0,290.0,10.0,MUTED);
+        self.ui.wrapped("Click a rune to store energy or recycle for matching power. Exhausted runes can still recycle. Choose payment mode below the turn button.",r.x+14.0,r.y+123.0,290.0,10.0,MUTED);
         self.ui.text(
             &format!(
                 "{} in play · {} in deck · {} stored energy",
@@ -3235,8 +3773,21 @@ impl App {
         {
             self.pass_or_end();
         }
+        if self.ui.button(
+            Rect::new(1178.0, 623.0, 212.0, 21.0),
+            if self.prefs.exact_payment {
+                "Power: choose sources  >"
+            } else {
+                "Power: automatic  >"
+            },
+            self.prefs.exact_payment,
+            true,
+        ) {
+            self.prefs.exact_payment = !self.prefs.exact_payment;
+            self.prefs.save();
+        }
         self.ui
-            .line(vec2(1178.0, 639.0), vec2(1390.0, 639.0), 1.0, LINE);
+            .line(vec2(1178.0, 647.0), vec2(1390.0, 647.0), 1.0, LINE);
         if self.ui.button(
             Rect::new(1178.0, 650.0, 212.0, 24.0),
             "MATCH JOURNAL  >",

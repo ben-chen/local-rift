@@ -38,7 +38,7 @@ These are consecutive requests, not a single JSON array. An optional `id` is ech
 {"ok":false,"revision":4,"error":{"code":"stale_revision","message":"Expected revision 4, received 3."}}
 ```
 
-Every successful mutation increments the session revision by one. Reset also increments it; it never reuses an old revision. All mutation commands require the current revision. `observe`, `info`, `catalog`, `suggest`, and successful `validate` leave it unchanged. Rejected requests leave both game state and revision unchanged. The facade validates on a cloned game and commits only on success, including when the core engine rejects an action after beginning its internal work.
+Every successful mutation increments the session revision by one. Reset also increments it; it never reuses an old revision. All mutation commands require the current revision. `observe`, `info`, `catalog`, `suggest`, `quote_payment`, and successful `validate` leave it unchanged. Rejected requests leave both game state and revision unchanged. The facade validates on a cloned game and commits only on success, including when the core engine rejects an action after beginning its internal work.
 
 | Command | Fields besides `command` and optional `id` | Result |
 | --- | --- | --- |
@@ -49,6 +49,7 @@ Every successful mutation increments the session revision by one. Reset also inc
 | `mulligan` | `revision`, `player`, `indices` | Replace up to two distinct opening-hand positions, once per seat |
 | `start` | `revision` | Begin match; an unused mulligan means keep that hand |
 | `suggest` | `player` | `{exhaustive:false, actions:[{id, action}, ...]}`; empty when this seat cannot act |
+| `quote_payment` | `revision`, `player`, exactly one of `action` or `action_id` | Suggested and available power sources, exact cost obligations; no mutation |
 | `validate` | `revision`, `player`, exactly one of `action` or `action_id` | `{legal:true}`, or an error; no mutation |
 | `apply` | `revision`, `player`, exactly one of `action` or `action_id` | Apply one legal action and return public summary |
 | `step_ai` | `revision`, `player` | Ask the built-in AI to take one action for the seat with priority |
@@ -77,6 +78,7 @@ Targets have exactly one of these forms:
 
 | Action `type` | Fields | Purpose |
 | --- | --- | --- |
+| `with_power_payment` | `action`, `payment` | Pay for a single nested action using exact chosen power sources |
 | `play_card` | `hand_index`, optional `lane`, `target` | Play from hand with engine default targeting when target is omitted |
 | `play_card_targets` | `hand_index`, optional `lane`, `targets` | Play with the exact target list, including an intentionally empty list |
 | `play_card_options` | `hand_index`, optional `lane`, `targets`, `repeat_targets`, `repeat`, `accelerate`, `bonus` | Exact targets plus supported optional costs; `bonus` selects Rampage's extra payment |
@@ -88,6 +90,7 @@ Targets have exactly one of these forms:
 | `pass` | none | Pass priority/focus in an open response window |
 | `end_turn` | none | End the active player's main phase when legal |
 | `activate_rune` | `domain`, `recycle` | Exhaust a ready rune for stored energy, or recycle one for its domain power |
+| `recycle_rune` | `domain`, required `exhausted` | Recycle an explicitly ready (`false`) or exhausted (`true`) rune; no implicit energy generation |
 | `equip` | `gear_id`, `target` | Pay and attach gear to a friendly unit |
 | `equip_with_trash` | `gear_id`, `target`, `trash_indices` | Equip Last Rites with an explicit pair of trash cards to recycle |
 | `activate_gear` | `gear_id` | Activate Seal or Gold when legal |
@@ -116,6 +119,28 @@ Optional costs also apply to trash plays. Fizz ignores a replayed spell's base e
 Resource actions may be available while a payment decision is pending. For example, generate power with a rune, Seal, Gold, or Kai'Sa, then complete a replay/payment choice using the new revision. The decision remains pending. Resource actions are not a way to bypass target, combat assignment, or card selection decisions.
 
 `set_optional_discount` changes the player's `optional_power_discount` preference without spending resources or passing priority. The next optional-cost cast uses that preference. It still counts as a successful API mutation and advances the revision.
+
+## Choosing power sources
+
+Automatic payment remains the default. Request `quote_payment` with the intended action, including its targets and optional costs. The result contains `suggested`, `available`, and `costs`. A quote validates on a disposable match copy and neither advances play nor changes the revision.
+
+Power amounts have this form; both arrays use **Fury, Calm, Mind, Body, Chaos, Order** order:
+
+```json
+{"colored":[0,0,0,0,0,0],"any":1,"spell":0,"recycle":[0,0,0,0,0,0]}
+```
+
+`colored`, `any`, and `spell` spend generated power. `recycle` activates that many channelled runes of each domain. Spell-only power cannot pay for units, gear, abilities, or hiding. A recycled ready rune can exhaust for energy first, preserving that energy in the pool. Select exactly the power needed: unused selected sources are an error. Existing unselected resources remain untouched.
+
+The payment wrapper recycles exhausted runes before ready ones and exhausts ready runes for energy before recycling. To choose a different physical rune state, prepare power with `recycle_rune` first: `exhausted:false` recycles a ready rune without generating energy, even if an exhausted rune of that domain is also available. The original `activate_rune` recycling action retains its exhausted-first convenience behavior.
+
+Submit the original action inside a single payment wrapper:
+
+```json
+{"command":"apply","revision":4,"player":0,"action":{"type":"with_power_payment","action":{"type":"hide","hand_index":0,"lane":0},"payment":{"colored":[0,0,0,0,0,0],"any":1,"spell":0,"recycle":[0,0,0,0,0,0]}}}
+```
+
+This example spends one generated flexible power to hide a card while preserving colored power and runes. The battlefield and card must satisfy the usual hiding rules. Use `validate` to check any proposed allocation. Nested payment wrappers are rejected, every count must be an integer from 0 to 255, and both arrays must contain six counts. Every rejected payment preserves game state and revision. Quoted sources are only valid for the current match revision.
 
 ## Observations and decisions
 

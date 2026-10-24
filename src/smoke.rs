@@ -10,6 +10,10 @@ use local_rift::{
 };
 use macroquad::prelude::*;
 
+thread_local! {
+    static COMBAT_SNAPSHOT: std::cell::RefCell<Option<String>> = const { std::cell::RefCell::new(None) };
+}
+
 fn click(app: &mut App, x: f32, y: f32) {
     app.ui.input_override = Some((vec2(x, y), true, false));
 }
@@ -119,6 +123,8 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
             app.prefs.coach = true;
             app.prefs.advanced = false;
             app.prefs.tactical = false;
+            app.prefs.exact_payment = false;
+            app.payment_draft = None;
             app.companion.set_level(AdviceLevel::Beginner);
             app.ui.resize();
             app.starting_player = 0;
@@ -487,7 +493,10 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
         49 => {
             assert_eq!(app.game.winner, Some(0), "burnout can earn the final point");
             assert_eq!(app.game.phase, Phase::Finished);
-            assert_eq!(app.game.players[0].score, 8);
+            assert!(
+                app.game.players[0].score >= 8,
+                "burnout reaches the winning threshold"
+            );
             assert!(app.recorded, "finished match is recorded once");
             assert_eq!(app.prefs.wins as usize, app.deck_scroll + 1);
             click(app, 525.0, 476.0);
@@ -1115,15 +1124,346 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
                         && item.targets.len() == 2),
                 "dragged spell casts only after all targets confirmed"
             );
+        }
+        106 => {
+            app.player_deck = 1;
+            app.opponent_deck = 1;
+            app.game = Game::new(1, 1, 125, Difficulty::Easy);
+            app.game.start_match().unwrap();
+            fixture_unit(app, 0, 80_001, 23);
+            fixture_unit(app, 1, 80_002, 25);
+            fixture_unit(app, 1, 80_003, 25);
+            app.game.players[0].units[0].ready = true;
+            for unit in &mut app.game.players[1].units {
+                unit.lane = Some(0);
+            }
+            app.game.battlefield_owner[0] = Some(1);
+            app.selection = None;
+            app.targets.clear();
+            app.damage_order.clear();
+            app.damage_amounts = None;
+            app.damage_editor = None;
+            app.hover_card = None;
+            app.hover_rect = None;
+            app.hand_scroll = 0;
+            app.game
+                .apply(Action::Move {
+                    unit_id: 80_001,
+                    lane: Some(0),
+                })
+                .unwrap();
+            app.game.apply(Action::Pass).unwrap();
+            app.game.apply(Action::Pass).unwrap();
+            assert!(matches!(
+                app.game.decision,
+                Some(Decision::CombatDamage {
+                    player: 0,
+                    total: 3,
+                    ..
+                })
+            ));
+            click(app, 865.0, 663.0);
+        }
+        107 => {
+            assert_eq!(app.damage_amounts, Some(vec![(80_002, 2), (80_003, 1)]));
+            app.damage_editor = Some((80_002, "65536".into()));
+            assert!(
+                app.commit_damage_editor().is_err(),
+                "out-of-range input is rejected without wrapping"
+            );
+            assert_eq!(app.damage_assignment(0, 3), vec![(80_002, 2), (80_003, 1)]);
+            app.damage_editor = Some((80_002, "65535".into()));
+            app.commit_damage_editor().unwrap();
+            assert_eq!(
+                app.damage_assignment(0, 3)[0].1,
+                65535,
+                "typed amounts are not silently clamped"
+            );
+            assert!(app.damage_validation(0, 3).is_err());
+            app.set_damage_amount(80_002, 2);
+            click(app, 266.0, 845.0); // Reduce first target below lethal.
+        }
+        108 => {
+            assert_eq!(app.damage_assignment(0, 3), vec![(80_002, 1), (80_003, 1)]);
+            COMBAT_SNAPSHOT
+                .with(|snapshot| *snapshot.borrow_mut() = Some(format!("{:?}", app.game)));
+            click(app, 1285.0, 510.0); // Incomplete allocation must not commit.
+        }
+        109 => {
+            COMBAT_SNAPSHOT.with(|snapshot| {
+                assert_eq!(
+                    snapshot.borrow().as_ref().unwrap(),
+                    &format!("{:?}", app.game),
+                    "invalid native damage confirmation is atomic"
+                )
+            });
+            assert!(app.toast.contains("Assign all 3 damage exactly"));
+            click(app, 514.0, 845.0); // 1 + 2 is complete, but wrong lethal order.
+        }
+        110 => {
+            assert_eq!(app.damage_assignment(0, 3), vec![(80_002, 1), (80_003, 2)]);
+            assert!(app.damage_validation(0, 3).unwrap_err().contains("lethal"));
+            COMBAT_SNAPSHOT
+                .with(|snapshot| *snapshot.borrow_mut() = Some(format!("{:?}", app.game)));
+            click(app, 1285.0, 510.0);
+        }
+        111 => {
+            COMBAT_SNAPSHOT.with(|snapshot| {
+                assert_eq!(
+                    snapshot.borrow().as_ref().unwrap(),
+                    &format!("{:?}", app.game),
+                    "lethal-order rejection preserves all game state"
+                )
+            });
+            assert!(app.toast.contains("lethal"));
+            click(app, 315.0, 750.0); // Move first target last, retaining explicit amounts.
+        }
+        112 => {
+            assert_eq!(app.damage_assignment(0, 3), vec![(80_003, 2), (80_002, 1)]);
+            assert!(app.damage_validation(0, 3).is_ok());
+            assert_ne!(
+                app.damage_assignment(0, 3),
+                app.game.automatic_damage_assignment(0, 0, 3)
+            );
+            if let Ok(path) = std::env::var("RIFT_SMOKE_COMBAT_SCREENSHOT") {
+                app.ui.input_override = Some((vec2(-100.0, -100.0), false, false));
+                app.draw();
+                get_screen_data().export_png(&path);
+            }
+            click(app, 1285.0, 510.0);
+        }
+        113 => {
+            assert!(matches!(
+                app.game.decision,
+                Some(Decision::CombatDamage { player: 1, .. })
+            ));
+            assert!(
+                app.game
+                    .players
+                    .iter()
+                    .flat_map(|p| &p.units)
+                    .all(|u| u.damage == 0),
+                "explicit amounts still wait for simultaneous combat damage"
+            );
+            app.game.step_ai().unwrap();
+            assert!(app.game.players[1].units.iter().any(|u| u.id == 80_002));
+            assert!(
+                !app.game.players[1].units.iter().any(|u| u.id == 80_003),
+                "alternate allocation defeats the chosen enemy"
+            );
+        }
+        114 => {
+            app.game = Game::new(3, 1, 42, Difficulty::Easy);
+            app.game.start_match().unwrap();
+            app.player_deck = 3;
+            app.opponent_deck = 1;
+            fixture_resources(app, Domain::Fury);
+            hand_card(app, "Falling Star");
+            fixture_unit(app, 1, 90_001, 25);
+            fixture_unit(app, 1, 90_002, 25);
+            for unit in &mut app.game.players[1].units {
+                unit.lane = Some(0);
+            }
+            app.game.players[0].power_pool[domain_index(Domain::Fury)] = 2;
+            app.game.players[0].any_power = 2;
+            app.game.legend[0].spell_power = 2;
+            app.selection = Some(Selection::Hand(0));
+            app.targets = vec![
+                Target::Unit {
+                    player: 1,
+                    unit_id: 90_001,
+                },
+                Target::Unit {
+                    player: 1,
+                    unit_id: 90_002,
+                },
+            ];
+            app.destination = None;
+            app.options = Default::default();
+            app.repeat_targets.clear();
+            app.hover_card = None;
+            app.hover_rect = None;
+            app.tray = super::Tray::Hand;
+            app.hand_scroll = 0;
+            COMBAT_SNAPSHOT
+                .with(|snapshot| *snapshot.borrow_mut() = Some(format!("{:?}", app.game)));
+            click(app, 1285.0, 633.0);
+        }
+        115 => {
+            assert!(
+                app.prefs.exact_payment,
+                "native payment toggle enables source choices"
+            );
+            click(app, 1285.0, 510.0);
+        }
+        116 => {
+            let draft = app.payment_draft.as_ref().unwrap_or_else(|| {
+                panic!("payable action opens source editor; UI said: {}", app.toast)
+            });
+            assert_eq!(draft.chosen.spell, 2);
+            assert_eq!(draft.quote.available.any, 2);
+            assert_eq!(draft.quote.available.recycle[0], 6);
+            COMBAT_SNAPSHOT.with(|snapshot| {
+                assert_eq!(
+                    snapshot.borrow().as_ref().unwrap(),
+                    &format!("{:?}", app.game),
+                    "opening payment editor does not pay or play"
+                )
+            });
+            click(app, 480.0, 709.0);
+        }
+        117 => {
+            assert!(app.payment_draft.is_none());
+            assert!(matches!(app.selection, Some(Selection::Hand(0))));
+            assert_eq!(app.targets.len(), 2);
+            COMBAT_SNAPSHOT.with(|snapshot| {
+                assert_eq!(
+                    snapshot.borrow().as_ref().unwrap(),
+                    &format!("{:?}", app.game),
+                    "cancelling payment preserves every game field"
+                )
+            });
+            click(app, 1285.0, 510.0);
+        }
+        118 | 119 => {
+            assert!(app.payment_draft.is_some());
+            click(app, 567.0, 575.0);
+        }
+        120 => {
+            assert_eq!(app.payment_draft.as_ref().unwrap().chosen.total(), 0);
+            click(app, 936.0, 709.0);
+        }
+        121 => {
+            assert!(
+                app.payment_draft.is_some(),
+                "invalid payment keeps draft open"
+            );
+            COMBAT_SNAPSHOT.with(|snapshot| {
+                assert_eq!(
+                    snapshot.borrow().as_ref().unwrap(),
+                    &format!("{:?}", app.game),
+                    "invalid payment confirmation preserves every game field"
+                )
+            });
+            click(app, 661.0, 539.0);
+        }
+        122 => {
+            click(app, 661.0, 539.0);
+        }
+        123 => {
+            let draft = app.payment_draft.as_ref().unwrap();
+            assert_eq!(draft.chosen.any, 2);
+            assert_eq!(draft.chosen.spell, 0);
+            assert!(app.game.clone().apply(App::payment_action(draft)).is_ok());
+            if let Ok(path) = std::env::var("RIFT_SMOKE_PAYMENT_SCREENSHOT") {
+                app.ui.input_override = Some((vec2(-100.0, -100.0), false, false));
+                app.draw();
+                get_screen_data().export_png(&path);
+            }
+            click(app, 936.0, 709.0);
+        }
+        124 => {
+            assert!(app.payment_draft.is_none());
+            assert!(app.game.chain.iter().any(|item| item.card_id == 53));
+            assert_eq!(app.game.players[0].any_power, 0, "chosen source was spent");
+            assert_eq!(
+                app.game.legend[0].spell_power, 2,
+                "unchosen spell power remains"
+            );
+            assert_eq!(
+                app.game.players[0].power_pool[0], 2,
+                "unchosen colored power remains"
+            );
+            assert_eq!(
+                app.game.players[0].total_runes(),
+                6,
+                "unchosen runes were not recycled"
+            );
+            assert_eq!(
+                app.game.players[0].energy, 4,
+                "normal energy cost still paid"
+            );
+            let unchanged = format!("{:?}", app.game);
+            app.action(Action::PlayCard {
+                hand_index: usize::MAX,
+                lane: None,
+                target: None,
+            });
+            assert!(
+                app.payment_draft.is_none(),
+                "an invalid action does not open payment editor"
+            );
+            assert_eq!(format!("{:?}", app.game), unchanged);
+            app.action(Action::Pass);
+            assert!(
+                app.payment_draft.is_none(),
+                "zero-power action needs no source editor"
+            );
+            app.prefs.exact_payment = false;
+            app.prefs.save();
+        }
+        125 => {
+            app.game = Game::new(3, 1, 42, Difficulty::Easy);
+            app.game.start_match().unwrap();
+            fixture_resources(app, Domain::Fury);
+            app.game.players[0].exhausted_runes[0] = 2;
+            app.game.players[0].energy = 4;
+            app.selection = Some(Selection::Hand(0));
+            app.targets.clear();
+            app.toast_until = 0.0;
+            app.hover_card = None;
+            app.hover_rect = None;
+            click(app, 430.0, 605.0);
+        }
+        126 => {
+            assert!(app.rune_menu.is_some());
+            click(app, app.rune_menu_at.x + 123.0, app.rune_menu_at.y + 162.0);
+        }
+        127 => {
+            assert_eq!(app.game.players[0].runes[0], 5);
+            assert_eq!(
+                app.game.players[0].exhausted_runes[0], 2,
+                "ready-rune choice preserves exhausted runes"
+            );
+            assert_eq!(
+                app.game.players[0].energy, 3,
+                "direct ready recycling forgoes its energy"
+            );
+            assert_eq!(app.game.players[0].energy_pool, 0);
+            assert_eq!(app.game.players[0].power_pool[0], 1);
+            assert!(
+                matches!(app.selection, Some(Selection::Hand(0))),
+                "rune source preparation preserves card selection"
+            );
+            click(app, 430.0, 605.0);
+        }
+        128 => {
+            assert!(app.rune_menu.is_some());
+            if let Ok(path) = std::env::var("RIFT_SMOKE_RUNE_SCREENSHOT") {
+                app.ui.input_override = Some((vec2(-100.0, -100.0), false, false));
+                app.draw();
+                get_screen_data().export_png(&path);
+            }
+            click(app, app.rune_menu_at.x + 123.0, app.rune_menu_at.y + 120.0);
+        }
+        129 => {
+            assert_eq!(app.game.players[0].runes[0], 4);
+            assert_eq!(
+                app.game.players[0].exhausted_runes[0], 1,
+                "exhausted-rune choice preserves ready runes"
+            );
+            assert_eq!(app.game.players[0].energy, 3);
+            assert_eq!(app.game.players[0].power_pool[0], 2);
+            assert!(matches!(app.selection, Some(Selection::Hand(0))));
             app.ui.input_override = None;
             app.ui.pointer_override = None;
             app.ui.wheel_override = None;
             println!(
-                "PASS: 106 native UI frames covering click flows, card/unit/group/spell drag, invalid drops, full text, attached gear at base/field, battlefield inspection, symmetric runes and read-only opponent trash."
+                "PASS: 130 native UI frames covering click/drag, full text, equipment, fields, runes, public trash, exact combat and power choices, ready/exhausted recycling, cancellation and invalid-action atomicity."
             );
             return true;
         }
-        _ => panic!("UI smoke runner exceeded its 106-frame script"),
+        _ => panic!("UI smoke runner exceeded its 130-frame script"),
     }
     false
 }

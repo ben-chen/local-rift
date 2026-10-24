@@ -39,6 +39,8 @@
                 ./src
                 ./tests
                 ./assets
+                ./tools
+                ./docs
               ];
             };
             cargoLock.lockFile = ./Cargo.lock;
@@ -50,7 +52,7 @@
                 --prefix LD_LIBRARY_PATH : "${graphicsPath}"
             '';
             meta = {
-              description = "Offline 3D Riftbound practice client with an AI opponent and companion";
+              description = "Offline Riftbound practice client with an AI opponent and companion";
               mainProgram = "local-rift";
               platforms = systems;
             };
@@ -67,6 +69,7 @@
               clippy
               rust-analyzer
               nixfmt
+              python3
             ];
             RUST_SRC_PATH = pkgs.rustPlatform.rustLibSrc;
             # Both `cargo run` and the launcher can find the native libraries.
@@ -76,6 +79,14 @@
           };
           simulation = pkgs.runCommand "local-rift-simulation-check" { } ''
             ${package}/bin/simulate --seeds 8 > "$out"
+          '';
+          catalog = pkgs.runCommand "local-rift-catalog-check" { nativeBuildInputs = [ pkgs.python3 ]; } ''
+            cp -r ${package.src} source
+            chmod -R u+w source
+            cd source
+            python3 tools/import_catalog.py --check
+            python3 -m unittest discover -s tools -p 'test_*.py'
+            touch "$out"
           '';
         }
       );
@@ -108,6 +119,7 @@
       checks = forAllSystems (system: {
         package = perSystem.${system}.package;
         simulation = perSystem.${system}.simulation;
+        catalog = perSystem.${system}.catalog;
       });
       formatter = forAllSystems (system: perSystem.${system}.pkgs.nixfmt-tree);
     };

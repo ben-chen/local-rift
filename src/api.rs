@@ -9,6 +9,7 @@ use crate::game::{
     Action, ChainAbility, Decision, Difficulty, Game, Phase, Target, TriggeredAbility,
 };
 use crate::legends::{LegendAbility, LegendKind, LegendTrigger};
+use crate::payment::{PaymentQuote, PowerPayment};
 use serde_json::{Map, Value, json};
 use std::fmt;
 use std::panic::{AssertUnwindSafe, catch_unwind};
@@ -210,6 +211,23 @@ impl Session {
         self.require_actor(player)?;
         self.transaction(revision, |game| game.step_ai().map(|_| ()))
     }
+    pub fn quote_payment(
+        &self,
+        player: usize,
+        revision: u64,
+        action: Action,
+    ) -> Result<PaymentQuote, ApiError> {
+        self.require_revision(revision)?;
+        self.require_actor(player)?;
+        let action = parse_action(&action_to_json(&action))?;
+        match catch_unwind(AssertUnwindSafe(|| self.game.quote_power_payment(&action))) {
+            Ok(result) => result.map_err(ApiError::illegal),
+            Err(_) => Err(ApiError::new(
+                "engine_error",
+                "Could not quote this action; the live match was preserved.",
+            )),
+        }
+    }
     /// A non-exhaustive collection of legal convenience actions. In particular,
     /// explicit multi-target, optional-cost and damage choices remain available
     /// through `apply_action`, even if no suggestion describes them.
@@ -368,7 +386,7 @@ impl Session {
                 keys(object, &["command", "id"])?;
                 Ok(
                     json!({"protocol":PROTOCOL_VERSION,"name":"Local Rift","summary":self.summary(),
-                    "commands":["info","catalog","reset","observe","suggest","validate","apply","mulligan","start","step_ai"],
+                    "commands":["info","catalog","reset","observe","suggest","quote_payment","validate","apply","mulligan","start","step_ai"],
                     "suggestions_exhaustive":false,"max_request_bytes":MAX_REQUEST_BYTES}),
                 )
             }
@@ -438,7 +456,7 @@ impl Session {
                 self.step_ai(player(object)?, unsigned(object, "revision")?)?;
                 Ok(self.summary())
             }
-            "apply" | "validate" => {
+            "apply" | "validate" | "quote_payment" => {
                 keys(
                     object,
                     &["command", "id", "revision", "player", "action", "action_id"],
@@ -467,7 +485,15 @@ impl Session {
                         })?
                         .action
                 };
-                if command == "validate" {
+                if command == "quote_payment" {
+                    let quote = self.quote_payment(player, revision, action)?;
+                    Ok(json!({"suggested":payment_to_json(&quote.suggested),
+                        "available":payment_to_json(&quote.available),
+                        "domain_order":["fury","calm","mind","body","chaos","order"],
+                        "costs":quote.costs.iter().map(|cost| json!({"amount":cost.amount,
+                            "domains":cost.domains.iter().map(|d|d.name().to_lowercase()).collect::<Vec<_>>(),
+                            "spell_eligible":cost.spell_eligible})).collect::<Vec<_>>() }))
+                } else if command == "validate" {
                     self.validate_action(player, revision, action)?;
                     Ok(json!({"legal":true}))
                 } else {
@@ -566,6 +592,12 @@ pub fn action_to_json(action: &Action) -> Value {
     let ts = |targets: &[Target]| targets.iter().map(target_to_json).collect::<Vec<_>>();
     let t = |target: &Option<Target>| target.as_ref().map(target_to_json);
     match action {
+        Action::RecycleRune { domain, exhausted } => {
+            json!({"type":"recycle_rune", "domain":domain.name().to_lowercase(), "exhausted":exhausted})
+        }
+        Action::WithPowerPayment { action, payment } => json!({"type":"with_power_payment",
+            "action":if matches!(**action, Action::WithPowerPayment {..}) {json!({"type":"with_power_payment"})} else {action_to_json(action)},
+            "payment":payment_to_json(payment)}),
         Action::PlaceToken { lane } => json!({"type":"place_token","lane":lane}),
         Action::ChooseResolutionGroup { index } => {
             json!({"type":"choose_resolution_group","index":index})
@@ -857,11 +889,66 @@ fn targets(obj: &Map<String, Value>, key: &str) -> Result<Vec<Target>, ApiError>
     }
 }
 
+fn payment_to_json(payment: &PowerPayment) -> Value {
+    json!({"colored":payment.colored,"any":payment.any,"spell":payment.spell,"recycle":payment.recycle})
+}
+
+fn parse_payment(value: &Value) -> Result<PowerPayment, ApiError> {
+    let o = object(value)?;
+    keys(o, &["colored", "any", "spell", "recycle"])?;
+    let amounts = |key| -> Result<[u8; 6], ApiError> {
+        let values = usize_list(o, key)?;
+        let array: [usize; 6] = values
+            .try_into()
+            .map_err(|_| ApiError::invalid("Power arrays need exactly six domain counts."))?;
+        let mut out = [0; 6];
+        for (dest, amount) in out.iter_mut().zip(array) {
+            *dest = u8::try_from(amount)
+                .map_err(|_| ApiError::invalid("Power counts must be between 0 and 255."))?;
+        }
+        Ok(out)
+    };
+    Ok(PowerPayment {
+        colored: amounts("colored")?,
+        recycle: amounts("recycle")?,
+        any: u8::try_from(unsigned(o, "any")?)
+            .map_err(|_| ApiError::invalid("any exceeds 255."))?,
+        spell: u8::try_from(unsigned(o, "spell")?)
+            .map_err(|_| ApiError::invalid("spell exceeds 255."))?,
+    })
+}
+
 pub fn parse_action(value: &Value) -> Result<Action, ApiError> {
     let o = object(value)?;
     let kind = string(o, "type")?;
     macro_rules! fields {($($name:literal),* $(,)?)=>{keys(o,&["type",$($name),*])?};}
     Ok(match kind {
+        "recycle_rune" => {
+            fields!("domain", "exhausted");
+            Action::RecycleRune {
+                domain: parse_domain(string(o, "domain")?)?,
+                exhausted: o
+                    .get("exhausted")
+                    .and_then(Value::as_bool)
+                    .ok_or_else(|| ApiError::invalid("exhausted must specify true or false."))?,
+            }
+        }
+        "with_power_payment" => {
+            fields!("action", "payment");
+            let inner = o
+                .get("action")
+                .ok_or_else(|| ApiError::invalid("Provide the action to pay for."))?;
+            if inner.get("type").and_then(Value::as_str) == Some("with_power_payment") {
+                return Err(ApiError::invalid("Payment choices cannot be nested."));
+            }
+            Action::WithPowerPayment {
+                action: Box::new(parse_action(inner)?),
+                payment: parse_payment(
+                    o.get("payment")
+                        .ok_or_else(|| ApiError::invalid("Provide a payment choice."))?,
+                )?,
+            }
+        }
         "place_token" => {
             fields!("lane");
             Action::PlaceToken { lane: lane(o)? }
@@ -1203,7 +1290,16 @@ fn decision_to_json(game: &Game, decision: &Decision, viewer: usize) -> Value {
 
 fn ability_to_json(ability: &ChainAbility) -> Value {
     match ability {
+        ChainAbility::Disempower { player, object_id } => {
+            json!({"type":"disempower","player":player,"object_id":object_id})
+        }
         ChainAbility::OptionalPlay { gear_id } => json!({"type":"optional_play","gear_id":gear_id}),
+        ChainAbility::GrantFlowChosen {
+            trash_index,
+            card_id,
+        } => {
+            json!({"type":"grant_flow_chosen","trash_index":if *trash_index==usize::MAX {None} else {Some(*trash_index)},"card_id":card_id})
+        }
         ChainAbility::ReviveChosen {
             trash_index,
             card_id,
@@ -1363,6 +1459,14 @@ mod tests {
                 domain: Domain::Chaos,
                 recycle: true,
             },
+            Action::RecycleRune {
+                domain: Domain::Chaos,
+                exhausted: false,
+            },
+            Action::RecycleRune {
+                domain: Domain::Chaos,
+                exhausted: true,
+            },
             Action::SelectCards {
                 indices: vec![4, 1],
             },
@@ -1430,10 +1534,61 @@ mod tests {
                 assignments: vec![(9, 2), (3, 4)],
             },
             Action::EndTurn,
+            Action::WithPowerPayment {
+                action: Box::new(Action::Hide {
+                    hand_index: 2,
+                    lane: 1,
+                }),
+                payment: PowerPayment {
+                    colored: [1, 0, 2, 0, 0, 0],
+                    recycle: [0, 1, 0, 0, 0, 0],
+                    any: 3,
+                    spell: 2,
+                },
+            },
         ];
         for action in actions {
             assert_eq!(parse_action(&action_to_json(&action)).unwrap(), action);
         }
+    }
+
+    #[test]
+    fn payment_quotes_and_explicit_sources_are_revision_checked_and_atomic() {
+        let mut session = playing();
+        session.game.players[0].hand = vec![21];
+        session.game.players[0].units.push(unit(100, Some(0), 3));
+        session.game.players[0].power_pool[4] = 1;
+        session.game.players[0].any_power = 1;
+        session.game.battlefield_owner[0] = Some(0);
+        let revision = session.revision();
+        let action = json!({"type":"hide","hand_index":0,"lane":0});
+        let before = format!("{:?}", session.game);
+        let response = session.handle(
+            json!({"command":"quote_payment","revision":revision,"player":0,"action":action}),
+        );
+        assert_eq!(response["ok"], true, "{response}");
+        assert_eq!(response["result"]["suggested"]["colored"][4], 1);
+        assert_eq!(response["result"]["available"]["any"], 1);
+        assert_eq!(format!("{:?}", session.game), before);
+        assert_eq!(session.revision(), revision);
+        for request in [
+            json!({"command":"quote_payment","revision":revision-1,"player":0,"action":action}),
+            json!({"command":"quote_payment","revision":revision,"player":1,"action":action}),
+            json!({"command":"apply","revision":revision,"player":0,"action":{"type":"with_power_payment","action":action,"payment":{"colored":[0,0,0,0,0,0],"recycle":[0,0,0,0,0,0],"any":2,"spell":0}}}),
+            json!({"command":"apply","revision":revision,"player":0,"action":{"type":"with_power_payment","action":{"type":"with_power_payment","action":action},"payment":{}}}),
+            json!({"command":"apply","revision":revision,"player":0,"action":{"type":"with_power_payment","action":action,"payment":{"colored":[0,0,0],"recycle":[0,0,0,0,0,0],"any":1,"spell":0}}}),
+        ] {
+            let response = session.handle(request);
+            assert_eq!(response["ok"], false, "{response}");
+            assert_eq!(session.revision(), revision);
+            assert_eq!(format!("{:?}", session.game), before);
+        }
+        let response = session.handle(json!({"command":"apply","revision":revision,"player":0,"action":{"type":"with_power_payment","action":action,"payment":{"colored":[0,0,0,0,0,0],"recycle":[0,0,0,0,0,0],"any":1,"spell":0}}}));
+        assert_eq!(response["ok"], true, "{response}");
+        assert_eq!(session.revision(), revision + 1);
+        assert_eq!(session.game.players[0].any_power, 0);
+        assert_eq!(session.game.players[0].power_pool[4], 1);
+        assert_eq!(session.game.players[0].hidden.len(), 1);
     }
 
     #[test]

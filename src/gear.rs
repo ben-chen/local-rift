@@ -148,9 +148,7 @@ impl Game {
         }
         let rule = rules::equipment(gear.card_id).unwrap();
         let state = &self.players[player];
-        let available = state.runes[domain_index(rule.equip_domain)]
-            .saturating_add(state.power_pool[domain_index(rule.equip_domain)])
-            .saturating_add(state.any_power);
+        let available = self.available_power(player, Some(rule.equip_domain));
         if available < rule.equip_power {
             return Err(format!(
                 "Equip needs {} {} power.",

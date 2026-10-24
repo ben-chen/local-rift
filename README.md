@@ -67,10 +67,11 @@ Outputs are provided for x86-64 and ARM64 Linux, plus Apple Silicon macOS. Linux
 5. During a showdown or spell chain, use your legal responses or **Pass priority**. In an open turn, the same control becomes **End turn**.
 6. Hover over a card or unit to read its full text; right-click to pin the inspector. Mote can explain a current decision or offer another thought.
 
-Both players use the same rune layout: upright runes are ready, sideways runes are exhausted, and the rune deck shows how many remain to be channeled. Use your rune controls to exhaust or recycle a chosen domain before a play, or let payment activate runes automatically. Stored energy, colored power, flexible power, and spell-only power are shown separately. Battlefield panels explain their effects, and equipped gear is visible on its unit with hover access to the card text.
+Both players use the same rune layout: upright runes are ready, sideways runes are exhausted, and the rune deck shows how many remain to be channeled. Use your rune controls to exhaust or recycle a chosen domain before a play, or let payment activate runes automatically. Enable **Power: choose sources** to choose exactly which generated power and runes pay for each action. Stored energy, colored power, flexible power, and spell-only power are shown separately. Battlefield panels explain their effects, and equipped gear is visible on its unit with hover access to the card text.
 
 | Control | Action |
 |---|---|
+| **Power: choose sources** | Review each power payment; adjust sources, use the suggestion, or cancel without spending |
 | Click one of your rune cards | Choose to exhaust it for energy or recycle it for power |
 | Click a unit's equipment label | Inspect that attached gear and its complete text |
 | Battlefield **i** button | Pin the location's full effect and scoring reminder |
@@ -83,7 +84,7 @@ Both players use the same rune layout: upright runes are ready, sideways runes a
 | Move / return buttons | Move the selected unit or group |
 | **Pass priority** / `Space` | Pass during a chain or showdown; end the turn when no window is open |
 | Decision buttons and card choices | Resolve Predict, optional payments, discard, revealed cards, trash plays, and unit choices |
-| Combat damage controls | Review or edit the target order before simultaneous combat damage |
+| Combat damage controls | Reorder targets or use **Exact amounts** to assign damage to each unit before simultaneous combat damage |
 | Repeat target toggle | Choose separate targets for the repeated spell effect |
 | **Board** / **Loadout** / **Trash** | Browse all units, inspect public loadouts and trash for either player, and use your eligible cards |
 | Right-click a card or unit | Open its inspector and official rules text |
@@ -113,11 +114,13 @@ The three Los Angeles lists are recent competitive examples as of **October 24, 
 
 Counts, card IDs, original rune splits, and source URLs are recorded in [`assets/data/decks.json`](assets/data/decks.json). The [official tournament sources](docs/SOURCES.md) explain provenance and historical legality.
 
+The [full card inventory](docs/CARD_COVERAGE.md) accounts for 1,079 legal Standard identities as of October 24, 2026. Current support maps 83 identities, including the preset cards, legends, battlefields, and runes; 996 remain unavailable. The reproducible importer preserves official printings, bans, and errata without registering unsupported cards as playable. The [independent rules audit](docs/RULES_AUDIT.md) records reproduced fixes and remaining interaction work.
+
 ## Automated opponents
 
 Run `cargo run --locked --bin rift-api` or `nix run .#api` for a local JSONL process: send one JSON request per line on standard input and read one response per line from standard output. No server or API key is required. The Rust facade is `local_rift::api::Session`.
 
-The API supports seeded setup, both players' mulligans, private player observations, action validation, explicit targets and optional costs, group movement, combat assignments, and stepping the built-in AI. Every mutation checks a revision and commits only after validation. Suggested actions are a convenience subset; custom bots can submit structured actions directly. See [the protocol and example bot](docs/API.md).
+The API supports seeded setup, both players' mulligans, private player observations, action validation, explicit targets and optional costs, exact power payments and quotes, group movement, combat assignments, and stepping the built-in AI. Every mutation checks a revision and commits only after validation. Suggested actions are a convenience subset; custom bots can submit structured actions directly. See [the protocol and example bot](docs/API.md).
 
 This process is a trusted match coordinator that can request either player's view. Keep opponent bots separated from that coordinator if hidden-information isolation matters.
 
@@ -134,6 +137,7 @@ The implementation uses **Rust + Macroquad**, with a pure Rust rules layer separ
 | `src/legends.rs` | Four legend powers, optional trigger costs, and combat bonuses |
 | `src/hidden.rs` | Facedown slots, Hidden timing, target restrictions, and visibility |
 | `src/gear.rs` | Persistent gear, attachment abilities, resource generation, and death prevention |
+| `src/payment.rs` | Shared resource quotes and atomic exact power-source choices |
 | `src/rules.rs` | Declarative official effect and keyword reference; metadata alone does not imply engine support |
 | `src/companion.rs` | Mote's advice and procedural character drawing |
 | `src/scene.rs` | Tabletop backdrop, unit positions, and picking regions |

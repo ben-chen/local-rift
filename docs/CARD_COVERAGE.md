@@ -1,0 +1,169 @@
+# Official card inventory and implementation coverage
+
+Snapshot checked **2026-10-24**. The official gallery contains **1,408 printing records** grouped into **1,103 distinct full-name identities**. After excluding **12 auxiliary token/tracker identities** and **12 banned identities**, **1,079 identities are legal in Standard/1v1 Constructed**. The separate 2v2 list leaves **1,078**.
+
+**This client does not yet implement every legal card.** It currently maps **69 main-deck cards, 4 preset legends, 4 battlefields, and 6 rune resource types** (83 legal identities). **996 legal identities remain unimplemented and are not playable.** Importing this snapshot does not register cards with the engine. Full inventory coverage is not full rules support.
+
+## Scope and authority
+
+The [official Rules Hub](https://playriftbound.com/en-us/rules-hub/) says all currently produced sets are legal; its Constructed lists were updated **September 18, 2026**. Its Core and Tournament Rules links are dated October 9, 2026. The [Radiance overview](https://playriftbound.com/en-us/news/announcements/the-radiance-overview/) confirms its October 23, 2026 release. The reviewed release boundary is Origins, Proving Grounds, Spiritforged, Unleashed, Vendetta, and Radiance. Future gallery previews fail the importer until their release/legality is reviewed. This is the globally legal card pool; deck identity, signature, copy-limit, and other deckbuilding requirements still apply. The client supports 1v1, not the separately reported 2v2 format.
+
+The inventory is extracted from the [official English card gallery](https://playriftbound.com/en-us/card-gallery/). A gameplay identity here means one full gallery name including subtitle; alternate art, signed, showcase, and cross-set reprints with the same name are grouped. All 305 additional gallery printings remain individually available. This proves completeness against this published gallery and all numbered base-set positions; it does not claim an inventory of every physical foil/promo/language variant.
+
+| Set | Numbered base positions present | Gallery printings |
+| --- | ---: | ---: |
+| Origins (OGN) | 298/298 | 352 |
+| Proving Grounds (OGS) | 24/24 | 24 |
+| Spiritforged (SFD) | 221/221 | 288 |
+| Unleashed (UNL) | 219/219 | 288 |
+| Vendetta (VEN) | 166/166 | 237 |
+| Radiance (RAD) | 167/167 | 219 |
+
+Numbered positions include token slots where the publisher numbers them within a set (including Origins). Special, alternate, signed, rune, and token codes remain in the printing inventory even when they are outside these numbered ranges.
+
+## Runtime gap by card kind
+
+| Kind | Standard legal | Implemented mapping | Not implemented |
+| --- | ---: | ---: | ---: |
+| Battlefield | 69 | 4 | 65 |
+| Gear | 127 | 6 | 121 |
+| Legend | 58 | 4 | 54 |
+| Rune | 6 | 6 | 0 |
+| Spell | 269 | 31 | 238 |
+| Unit | 550 | 32 | 518 |
+
+Implemented mapping means the existing engine/preset/field/resource implementation, not a claim that every interaction has been formally proven. See `docs/RULES.md` for engine limits. Every unimplemented identity has `implementation.status: not_implemented` and `playable_in_client: false`. Printed keywords are recorded per card and counted under `unimplemented_by_observed_keyword` as discovery hints only; shared keywords do not imply shared effect semantics or completed implementation. Each unimplemented card still requires its specific effect, targets, timing, costs, continuous/replacement effects, and interaction tests to be reviewed and implemented.
+
+## Ban lists
+
+Standard/1v1 bans from the Rules Hub:
+
+- Called Shot
+- Ekko, Recurrent
+- Draven, Vanquisher
+- Fight or Flight
+- Scrapheap
+- Stealthy Pursuer
+- Stacked Deck
+- The Arena’s Greatest
+- Aspirant’s Climb
+- Dreaming Tree
+- Obelisk of Power
+- Reaver’s Row
+
+2v2 additionally bans Master Yi, Wuju Bladesman (gallery identity **Wuju Bladesman, Starter**, `ogs-019-024`). The Rules Hub calls one banned field “Dreaming Tree”; the gallery calls it **The Dreaming Tree**. These two explicit name aliases are audited in the importer. Punctuation/case normalization handles the 2v2 list’s “Draven Vanquisher”. Bans apply to all printings of the identity.
+
+## Text provenance and source issues
+
+The snapshot preserves printed rules HTML, readable rules, equipment text, exact official IDs, costs/stats, domains, tags, and source image URLs for every printing. Missing structured values stay JSON `null`; they are not invented. **67 errata entries affecting 67 identities** are separately linked to their official article. Errata text preserves Riot’s `[C]`, `[A]`, `[M]`, and exhaustion notation. These patches are not automatically interpreted as executable effects or silently merged into printed text. Explicit errata aliases connect Dragon's Rage to its Lee Sin signature printing, Highlander to its Yi signature printing, Icathian Rain to its Kai'Sa signature printing, and Leblanc, Deceiver to the Deceiver legend.
+
+- [Origins Errata](https://playriftbound.com/en-us/news/rules-and-releases/riftbound-origins-card-errata/)
+- [Spiritforged Errata](https://playriftbound.com/en-us/news/rules-and-releases/riftbound-spiritforged-errata/)
+- [Unleashed Errata](https://playriftbound.com/en-us/news/rules-and-releases/unleashed-errata-updates/)
+- [Vendetta Errata](https://playriftbound.com/en-us/news/announcements/vendetta-errata-updates/)
+- [Radiance Errata](https://playriftbound.com/en-us/news/announcements/radiance-errata-updates/)
+
+**13 Radiance records have an empty structured type field.** Their type is taken from the same record’s explicit official image accessibility label and marked `type_source: cardImage.accessibilityText`. The archived record preserves the missing field.
+
+**Unresolved official stat conflict:** Kai'Sa, Rebel, `might`: `rad-063-167` = 5; `rad-sp4-005` = 4. Both values are retained. The numbered base card is the inventory representative, not a ruling that resolves this discrepancy.
+
+Gallery text may contain editorial errors (for example Rousing Display ends with `instead.disa`); source text is preserved rather than silently repaired. The gallery’s auxiliary entries are also incomplete as a complete token catalog: official rules/card text mentions additional tokens such as Tentacle, Mech, and Bomb. Tokens cannot be included in legal constructed decks and are excluded from the 1,079 denominator; a future full engine still needs every rules-created token and marker.
+
+## Reproduce and validate
+
+No extra Python packages are needed:
+
+```sh
+python3 tools/import_catalog.py --check
+python3 -m unittest discover -s tools -p 'test_*.py'
+cargo test --test catalog_coverage
+```
+
+The offline check verifies every archived source SHA-256, reparses gallery and legality, checks every official printing ID and all numbered base positions, rejects unknown sets/unresolved bans or errata, remaps the runtime manifests by official ID, and requires the generated snapshot and report to match byte for byte. It fails on truncated sources, missing records, stale implementation mappings, or unreviewed set changes.
+
+```sh
+# Compare live official source data without changing the committed snapshot.
+python3 tools/import_catalog.py --check-live
+# Refresh after reviewing newly released sets/legality; adjust RELEASED_SETS when needed.
+python3 tools/import_catalog.py --refresh --as-of YYYY-MM-DD
+# Regenerate after an intentional runtime mapping change, without a network request.
+python3 tools/import_catalog.py --write
+```
+
+Source pages are archived as deterministic gzip files under `assets/data/catalog_sources/`; `assets/data/catalog_sources.json` records their official URLs, retrieval date, SHA-256 hashes, and reviewed release boundary. `--check-live` compares gameplay inventory, ban lists, and errata rather than unrelated website build markup. The snapshot is dated evidence; it cannot assert that a future ban list remains unchanged.
+
+## Implemented main-card ID mapping
+
+| Runtime ID | Card | Official printing ID |
+| ---: | --- | --- |
+| 0 | Irelia, Fervent | `sfd-057-221` |
+| 1 | Abandon | `unl-131-219` |
+| 2 | Akali, Silent | `ven-038-166` |
+| 3 | Boots of Swiftness | `sfd-133-221` |
+| 4 | Charm | `ogn-043-298` |
+| 5 | Defiant Dance | `sfd-196-221` |
+| 6 | Defy | `ogn-045-298` |
+| 7 | Discipline | `ogn-058-298` |
+| 8 | En Garde | `ogn-046-298` |
+| 9 | Flash | `ogs-011-024` |
+| 10 | Guardian Angel | `sfd-051-221` |
+| 11 | Gust | `ogn-169-298` |
+| 12 | Not So Fast | `sfd-045-221` |
+| 13 | Pyke, Returned | `unl-145-219` |
+| 14 | Ride the Wind | `ogn-173-298` |
+| 15 | Scuttle Crab | `unl-053-219` |
+| 16 | Star-Crossed | `unl-128-219` |
+| 17 | Stellacorn Herder | `sfd-048-221` |
+| 18 | Tideturner | `ogn-199-298` |
+| 19 | Twilight Shroud | `ven-031-166` |
+| 20 | Vex, Apathetic | `unl-150-219` |
+| 21 | Zhonya's Hourglass | `ogn-077-298` |
+| 22 | Master Yi, Tempered | `unl-113-219` |
+| 23 | First Mate | `ogn-132-298` |
+| 24 | Legion Marauder | `ven-074-166` |
+| 25 | Lonely Poro | `sfd-036-221` |
+| 26 | Onslaught | `ven-081-166` |
+| 27 | Pit Rookie | `ogn-136-298` |
+| 28 | Punch First | `sfd-097-221` |
+| 29 | Rampage | `ven-083-166` |
+| 30 | Rengar, Trophy Hunter | `unl-120-219` |
+| 31 | Ruin Runner | `sfd-105-221` |
+| 32 | Sabotage | `ogn-156-298` |
+| 33 | Kennen, Storm of Shuriken | `ven-113-166` |
+| 34 | Carrion Dredger | `unl-153-219` |
+| 35 | Ezreal, Prodigy | `sfd-149-221` |
+| 36 | Fizz, Trickster | `sfd-140-221` |
+| 37 | Hard Bargain | `sfd-136-221` |
+| 38 | Last Rites | `sfd-150-221` |
+| 39 | Lightning Rush | `ven-156-166` |
+| 40 | Rhasa the Sunderer | `ogn-195-298` |
+| 41 | Salvage | `ogn-224-298` |
+| 42 | Seal of Discord | `ogn-204-298` |
+| 43 | Shadow Order Disciple | `ven-095-166` |
+| 44 | Switcheroo | `sfd-145-221` |
+| 45 | Tail-Cloaked Matriarch | `ven-104-166` |
+| 46 | Tornado Warrior | `ven-099-166` |
+| 47 | Traveling Merchant | `ogn-185-298` |
+| 48 | Up from the Deep | `ven-100-166` |
+| 49 | Kai'Sa, Survivor | `ogn-039-298` |
+| 50 | Bellows Breath | `sfd-080-221` |
+| 51 | Brynhir Thundersong | `ogn-026-298` |
+| 52 | Eclipse | `unl-063-219` |
+| 53 | Falling Star | `ogn-029-298` |
+| 54 | Ferrous Forerunner | `sfd-021-221` |
+| 55 | Hextech Ray | `ogn-009-298` |
+| 56 | Inferna | `unl-002-219` |
+| 57 | Lecturing Yordle | `ogn-087-298` |
+| 58 | Long Sword | `sfd-022-221` |
+| 59 | Noxus Hopeful | `ogn-012-298` |
+| 60 | Ravenbloom Student | `ogn-103-298` |
+| 61 | Singularity | `ogn-105-298` |
+| 62 | Smite | `unl-007-219` |
+| 63 | Stupefy | `ogn-095-298` |
+| 64 | Thousand-Tailed Watcher | `ogn-116-298` |
+| 65 | Time Warp | `ogn-122-298` |
+| 66 | Turn to Dust | `unl-070-219` |
+| 67 | Void Seeker | `ogn-024-298` |
+| 68 | Watchful Sentry | `ogn-096-298` |
+
+Card names, rules, and images are Riot Games intellectual property. This noncommercial, unofficial project includes source references for verification and does not claim Riot affiliation.

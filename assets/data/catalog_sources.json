@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "as_of": "2026-10-24",
+  "released_sets_reviewed": {
+    "OGN": 298,
+    "OGS": 24,
+    "SFD": 221,
+    "UNL": 219,
+    "VEN": 166,
+    "RAD": 167
+  },
+  "sources": {
+    "gallery": {
+      "url": "https://playriftbound.com/en-us/card-gallery/",
+      "archive": "assets/data/catalog_sources/gallery.html.gz",
+      "sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+      "uncompressed_bytes": 3986973
+    },
+    "hub": {
+      "url": "https://playriftbound.com/en-us/rules-hub/",
+      "archive": "assets/data/catalog_sources/hub.html.gz",
+      "sha256": "9a96b453d96b90ea2cdbb635fdae83df04586a93b3c850f523e1ccca77a76a51",
+      "uncompressed_bytes": 149867
+    },
+    "radiance": {
+      "url": "https://playriftbound.com/en-us/news/announcements/the-radiance-overview/",
+      "archive": "assets/data/catalog_sources/radiance.html.gz",
+      "sha256": "6899a3b2c5cb2261e448577ab850d721d0ce0a09d5745a9405f9f273ccafe0ef",
+      "uncompressed_bytes": 172453
+    },
+    "origins_errata": {
+      "url": "https://playriftbound.com/en-us/news/rules-and-releases/riftbound-origins-card-errata/",
+      "archive": "assets/data/catalog_sources/origins_errata.html.gz",
+      "sha256": "035848c5cc61007683111e63b91289d3fc386d2b33437af32d4d13d565727c52",
+      "uncompressed_bytes": 176735
+    },
+    "spiritforged_errata": {
+      "url": "https://playriftbound.com/en-us/news/rules-and-releases/riftbound-spiritforged-errata/",
+      "archive": "assets/data/catalog_sources/spiritforged_errata.html.gz",
+      "sha256": "2fcd51e6104eb76212c42abc850beffaf1cf3e623d875b2d9ad47ed149a726a8",
+      "uncompressed_bytes": 161726
+    },
+    "unleashed_errata": {
+      "url": "https://playriftbound.com/en-us/news/rules-and-releases/unleashed-errata-updates/",
+      "archive": "assets/data/catalog_sources/unleashed_errata.html.gz",
+      "sha256": "8b3cb69fea7c499e435c6af0ac89b5c5013711477a172c6bbed3a782eff7ac7b",
+      "uncompressed_bytes": 148046
+    },
+    "vendetta_errata": {
+      "url": "https://playriftbound.com/en-us/news/announcements/vendetta-errata-updates/",
+      "archive": "assets/data/catalog_sources/vendetta_errata.html.gz",
+      "sha256": "d17603177df347cd44c4ef67c1c547344afcd847cec72ae545239f3c232ef2a6",
+      "uncompressed_bytes": 149703
+    },
+    "radiance_errata": {
+      "url": "https://playriftbound.com/en-us/news/announcements/radiance-errata-updates/",
+      "archive": "assets/data/catalog_sources/radiance_errata.html.gz",
+      "sha256": "63735225d6c2f0b757e933289175fb09dcbae86178075fb227e4afa4e1a478a7",
+      "uncompressed_bytes": 143126
+    }
+  }
+}

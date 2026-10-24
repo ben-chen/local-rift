@@ -5,4 +5,5 @@ pub mod game;
 pub mod gear;
 pub mod hidden;
 pub mod legends;
+pub mod payment;
 pub mod rules;

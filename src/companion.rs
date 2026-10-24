@@ -322,7 +322,7 @@ fn advice(game: &Game, level: AdviceLevel) -> Vec<&'static str> {
     } else if recent.iter().any(|line| {
         line.contains(" plays ") && line.contains(" power)") && !line.contains(", 0 power)")
     }) {
-        tips.push("Power spends future access to runes, too. Before recycling another matching rune, glance at the costs still in your hand.");
+        tips.push("Recycling for power spends future access to runes, too. Check generated power before recycling another matching rune.");
     } else if recent.iter().any(|line| line.contains("is defeated")) {
         tips.push(if beginner {
             "A unit was defeated. Take a fresh look at both battlefields; the open route may matter more than the last trade."
@@ -414,7 +414,7 @@ fn advice(game: &Game, level: AdviceLevel) -> Vec<&'static str> {
     }
     if beginner {
         tips.push("Turn rhythm: ready, beginning and hold scoring, channel runes, then draw. After those steps, plan your actions.");
-        tips.push("Energy exhausts runes; power recycles matching runes. A rune can supply energy before that same rune is recycled for power.");
+        tips.push("Ready runes can exhaust for energy. Recycle a rune for matching power, or use generated power. Exhaust first if you want both.");
     } else {
         tips.push("A turn's best trade may be a point, not a unit. Count the next scoring opportunities on both sides before choosing a fight.");
         tips.push("Real matchups depend on printed timing, legends, and keywords. Practice results here are not a ranking of the tournament decks.");
@@ -463,7 +463,7 @@ fn response_window_advice(game: &Game, beginner: bool) -> Option<Vec<&'static st
                     "Allocate for the next point. Within Tank/Backline restrictions, choose which opposing unit must die and whether excess damage changes a replacement."
                 },
                 "Both players assign before damage is dealt simultaneously. Your units still deal their captured total even if the opposing assignment defeats them.",
-                "The automatic suggestion is a starting point. Check the selected order and amounts before confirming your damage.",
+                "Use the suggestion or edit exact amounts. Every point must be assigned; lethal comes before the next unit, with Tank first and Backline last.",
             ],
             Decision::Predict { .. } => vec![
                 if beginner {
