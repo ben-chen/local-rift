@@ -4,6 +4,7 @@
 //! Printed operations use the official-card metadata in `rules.rs`. Unsupported
 //! interactions are reported explicitly through `card_support`.
 
+use crate::activated::AbilitySource;
 use crate::battlefields::{BattlefieldAbility, default_battlefield};
 use crate::cards::{CardDef, CardId, CardKind, DeckPreset, Domain, cards, presets};
 use crate::deck::CustomDeck;
@@ -48,6 +49,11 @@ pub enum Target {
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Action {
+    ActivateAbility {
+        source: AbilitySource,
+        ability_index: usize,
+        targets: Vec<Target>,
+    },
     ChooseTriggerTargets {
         targets: Vec<Target>,
     },
@@ -199,6 +205,11 @@ pub enum Action {
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum ChainAbility {
+    Activated {
+        source: AbilitySource,
+        card_id: CardId,
+        ability_index: usize,
+    },
     CardTrigger {
         rule_index: usize,
         context: TriggerContext,
@@ -1260,7 +1271,8 @@ impl Game {
         keywords
     }
 
-    /// The printed/granted assignment ordering shared by rules and the client.
+    /// The default automatic ordering. A unit with both Tank and Backline may
+    /// instead be assigned last under CR467.2.c.8; explicit validation permits both.
     pub fn damage_priority(&self, unit: &Unit) -> u8 {
         let keywords = self.unit_keywords(unit);
         if keywords.tank {
@@ -1382,6 +1394,7 @@ impl Game {
                 && matches!(
                     action,
                     Action::ActivateGear { .. }
+                        | Action::ActivateAbility { .. }
                         | Action::ActivateLegend { .. }
                         | Action::ActivateRune { .. }
                         | Action::RecycleRune { .. }
@@ -1400,9 +1413,15 @@ impl Game {
                 | Action::ActivateRune { .. }
                 | Action::RecycleRune { .. }
                 | Action::ActivateGear { .. }
+                | Action::ActivateAbility { .. }
                 | Action::ActivateLegend { .. }
         );
         match action {
+            Action::ActivateAbility {
+                source,
+                ability_index,
+                targets,
+            } => self.activate_ability(source, ability_index, targets)?,
             Action::ChooseTriggerTargets { targets } => self.choose_trigger_targets(targets)?,
             Action::FinalizePendingPlay {
                 lane,
@@ -2236,6 +2255,13 @@ impl Game {
                     // (CR377.2.a and CR359.3.e.1).
                     self.gear_ability_used(item.player);
                 }
+                ChainAbility::Activated {
+                    source,
+                    card_id,
+                    ability_index,
+                } => {
+                    self.resolve_activated(source, card_id, ability_index, &item.targets);
+                }
                 ChainAbility::QuickDrawAttach { gear_id, target } => {
                     self.gear_resolve_equip(item.player, gear_id, target)
                 }
@@ -2722,19 +2748,17 @@ impl Game {
                     .find(|target| target.id == chain_id)
                     .unwrap()
                     .player;
-                if self.players[target_player].energy >= 2 {
-                    self.enqueue_decision(Decision::CounterTax {
-                        player: target_player,
-                        chain_id,
-                        cost: 2,
-                    });
-                    self.push_log(format!(
-                        "{} may pay 2 energy to prevent Hard Bargain countering their spell.",
-                        self.players[target_player].name
-                    ));
-                } else {
-                    self.counter_spell(chain_id, false);
-                }
+                // Add abilities remain available while paying this instruction.
+                // Current energy alone cannot decide whether payment is possible.
+                self.enqueue_decision(Decision::CounterTax {
+                    player: target_player,
+                    chain_id,
+                    cost: 2,
+                });
+                self.push_log(format!(
+                    "{} may pay 2 energy to prevent Hard Bargain countering their spell.",
+                    self.players[target_player].name
+                ));
             }
             _ => {}
         }
@@ -4146,6 +4170,7 @@ impl Game {
             // the fully generated resources as well as the current pools.
             let mut probe = self.clone();
             let player = probe.priority();
+            probe.generate_ability_resources(player);
             let gear_ids: Vec<_> = probe.players[player].gear.iter().map(|g| g.id).collect();
             for gear_id in gear_ids {
                 let _ = probe.apply(Action::ActivateGear { gear_id });
@@ -4663,6 +4688,7 @@ impl Game {
                 ],
             };
             if self.resource_payment_pending() {
+                actions.extend(self.ability_actions(player));
                 actions.extend(self.gear_actions(player));
                 actions.extend(self.legend_actions(player));
                 actions.extend(self.rune_actions(player));
@@ -4690,6 +4716,7 @@ impl Game {
             });
         }
         actions.extend(self.gear_actions(self.priority()));
+        actions.extend(self.ability_actions(self.priority()));
         actions.extend(self.hidden_actions(self.priority()));
         for unit in &self.players[self.priority()].units {
             if matches!(unit.card_id, 24 | 45) && !unit.token {
@@ -4833,7 +4860,7 @@ impl Game {
         }
     }
 
-    fn validate_play(
+    pub(crate) fn validate_play(
         &self,
         id: CardId,
         lane: Option<usize>,
@@ -4870,20 +4897,19 @@ impl Game {
         let abilities = rules::static_abilities(id);
         let ambush = abilities.contains(&StaticAbility::Ambush);
         let enemy_field = abilities.contains(&StaticAbility::MayDeployToEnemyBattlefield);
-        let reaction = card
-            .official_text
-            .lines()
-            .any(|line| line.starts_with("[Reaction]") || line.starts_with("[Quick-Draw]"))
-            || (ambush
-                && lane.is_some_and(|l| {
-                    l < BATTLEFIELDS
-                        && (self.lane_count(actor, l) > 0
-                            || (enemy_field && self.lane_count(1 - actor, l) > 0))
-                }));
+        let reaction = card.official_text.lines().any(|line| {
+            !line.contains(':')
+                && (line.starts_with("[Reaction]") || line.starts_with("[Quick-Draw]"))
+        }) || (ambush
+            && lane.is_some_and(|l| {
+                l < BATTLEFIELDS
+                    && (self.lane_count(actor, l) > 0
+                        || (enemy_field && self.lane_count(1 - actor, l) > 0))
+            }));
         let action = card
             .official_text
             .lines()
-            .any(|line| line.starts_with("[Action]"));
+            .any(|line| !line.contains(':') && line.starts_with("[Action]"));
         if !self.chain.is_empty() && !reaction {
             return Err("Only Reaction cards may be added to an existing chain.".into());
         }
@@ -5146,6 +5172,28 @@ impl Game {
                 }))
     }
 
+    /// Target prohibitions shared by spells and chosen activated abilities.
+    pub(crate) fn can_choose_unit(&self, actor: usize, target: Target) -> bool {
+        if actor >= self.players.len() {
+            return false;
+        }
+        let Target::Unit { player, .. } = target else {
+            return false;
+        };
+        let Some(unit) = self.unit_ref(target) else {
+            return false;
+        };
+        player == actor
+            || !(unit.protected
+                || (!unit.token && unit.card_id == 31)
+                || (!unit.token
+                    && unit.card_id == 2
+                    && !self
+                        .showdown
+                        .as_ref()
+                        .is_some_and(|w| unit.lane == Some(w.lane) && w.combat)))
+    }
+
     fn official_target_valid(
         &self,
         actor: usize,
@@ -5164,16 +5212,7 @@ impl Game {
         else {
             return false;
         };
-        if player != actor
-            && (unit.protected
-                || (!unit.token && unit.card_id == 31)
-                || (!unit.token
-                    && unit.card_id == 2
-                    && !self
-                        .showdown
-                        .as_ref()
-                        .is_some_and(|w| unit.lane == Some(w.lane) && w.combat)))
-        {
+        if !self.can_choose_unit(actor, target) {
             return false;
         }
         match rules::targeting(id).allegiance {
@@ -5256,7 +5295,7 @@ impl Game {
             .find(|unit| unit.id == unit_id)
     }
 
-    fn modify_might(&mut self, target: Target, amount: i16, minimum: u8) {
+    pub(crate) fn modify_might(&mut self, target: Target, amount: i16, minimum: u8) {
         let Some(unit) = self.unit_ref(target) else {
             return;
         };
@@ -6110,6 +6149,7 @@ impl Game {
         if sum != total as u32 {
             return Err(format!("Assign all {total} damage exactly."));
         }
+        let mut previous_priority = 0;
         for (index, &(id, amount)) in assignments.iter().enumerate() {
             if amount == 0 {
                 return Err("Each selected unit must receive positive damage.".into());
@@ -6120,14 +6160,16 @@ impl Game {
                 );
             };
             let unit = remaining[position];
-            let minimum_priority = remaining
-                .iter()
-                .map(|u| self.damage_priority(u))
-                .min()
-                .unwrap();
-            if self.damage_priority(unit) != minimum_priority {
-                return Err("Assign to Tank units first and Backline units last.".into());
+            let keywords = self.unit_keywords(unit);
+            let priority = if keywords.tank && keywords.backline {
+                if previous_priority == 0 { 0 } else { 2 }
+            } else {
+                self.damage_priority(unit)
+            };
+            if priority < previous_priority {
+                return Err("Assign to Tank units first and Backline units last; a unit with both may use either priority.".into());
             }
+            previous_priority = priority;
             let lethal = self.unit_might(unit).saturating_sub(unit.damage).max(1) as u16;
             if amount < lethal && index + 1 < assignments.len() {
                 return Err(
@@ -6138,6 +6180,20 @@ impl Game {
                 return Err("Do not over-assign lethal damage while another unit remains.".into());
             }
             remaining.remove(position);
+        }
+        if remaining.iter().any(|unit| {
+            let keywords = self.unit_keywords(unit);
+            let last_possible = if keywords.backline {
+                2
+            } else {
+                self.damage_priority(unit)
+            };
+            last_possible < previous_priority
+        }) {
+            return Err(
+                "Earlier-priority units must receive lethal damage before later-priority units."
+                    .into(),
+            );
         }
         self.pending_combat
             .as_mut()
@@ -6547,6 +6603,19 @@ impl Game {
         let enemy = 1 - player;
         if let Some(decision) = &self.decision {
             let actions = self.legal_actions();
+            if let Decision::CounterTax { player, cost, .. } = decision
+                && self.players[*player].energy < *cost
+                && let Some(action) = actions.iter().find(|action| {
+                    matches!(
+                        action,
+                        Action::ActivateAbility { .. }
+                            | Action::ActivateGear { .. }
+                            | Action::ActivateLegend { .. }
+                    )
+                })
+            {
+                return action.clone();
+            }
             let preferred = match decision {
                 Decision::Predict { player, card_id } => Some(Action::Choose {
                     accept: self.catalog[*card_id].cost > self.players[*player].total_runes() + 2,
@@ -6612,6 +6681,17 @@ impl Game {
         }
         for action in self.gear_actions(player) {
             plays.push((25, action));
+        }
+        for action in self.ability_actions(player) {
+            if let Action::ActivateAbility {
+                source,
+                ability_index,
+                targets,
+            } = &action
+                && let Some(score) = self.ability_ai_score(*source, *ability_index, targets)
+            {
+                plays.push((score, action));
+            }
         }
         for trash_index in 0..self.players[player].discard.len() {
             let action = Action::PlayFromTrash {

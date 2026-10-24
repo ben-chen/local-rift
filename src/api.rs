@@ -3,6 +3,7 @@
 //! `Session` never lends out its authoritative `Game`. Every mutation is tried
 //! on a clone and committed only on success. Suggestions are convenient engine
 //! candidates, not an exhaustive action space; submit any structured `Action`.
+use crate::activated::{AbilitySource, AbilityTiming, ActivatedRule, activated_rules};
 use crate::battlefields::{BATTLEFIELDS, BattlefieldAbility};
 use crate::cards::{Domain, cards, presets};
 use crate::deck::CustomDeck;
@@ -331,6 +332,9 @@ impl Session {
                 "kind":legend_name(legend.kind),"ready":legend.ready,
                 "empowered":legend.empowered,"spell_power":legend.spell_power,
                 "assault_grants":legend.assault_grants});
+            let activated_observation: Vec<_> = game.activated_options(owner).iter().map(|option|json!({
+                "source":ability_source_to_json(option.source),"card_id":option.card_id,
+                "ability_index":option.ability_index})).collect();
             json!({"player":owner, "name":state.name, "preset":if game.custom_deck(owner).is_none() {Some(game.selected_decks[owner])} else {None},
                 "legend_id":game.legend_id(owner), "custom":game.custom_deck(owner).is_some(),
                 "custom_deck":if owner==viewer {game.custom_deck(owner).map(CustomDeck::to_json)} else {None},
@@ -340,6 +344,7 @@ impl Session {
                 "energy":state.energy, "energy_pool":state.energy_pool, "runes":state.runes,
                 "exhausted_runes":state.exhausted_runes, "power_pool":state.power_pool,
                 "any_power":state.any_power, "xp":state.xp, "units":units, "gear":gear, "hidden":hidden,
+                "activated_abilities":activated_observation,
                 "cards_played_this_turn":game.cards_played_this_turn(owner),"cannot_play_cards":game.cannot_play_cards(owner),
                 "cards_completed_this_turn":game.trigger_state.completed_cards[owner],
                 "cards_drawn_this_turn":game.trigger_state.draws[owner],
@@ -645,12 +650,26 @@ fn legend_name(kind: LegendKind) -> &'static str {
     }
 }
 
+fn activated_rule_to_json(index: usize, rule: &ActivatedRule) -> Value {
+    use crate::rules::Allegiance;
+    json!({"ability_index":index,"label":rule.label,
+        "timing":match rule.timing {AbilityTiming::Main=>"main",AbilityTiming::Action=>"action",AbilityTiming::Reaction=>"reaction"},
+        "energy":rule.energy,"power":rule.power,"power_domain":rule.domain.map(|domain|domain.name()),
+        "exhaust":rule.exhaust,"requires_battlefield":rule.requires_battlefield,
+        "adds_resources":rule.adds_resources(),
+        "targets":{"min":rule.targets.min,"max":rule.targets.max,
+            "allegiance":match rule.targets.allegiance {Allegiance::None=>"none",Allegiance::Any=>"any",
+                Allegiance::Friendly=>"friendly",Allegiance::Enemy=>"enemy",Allegiance::Mixed=>"mixed"},
+            "battlefield":rule.targets.battlefield,"exhausted":rule.targets.exhausted}})
+}
+
 pub fn catalog() -> Value {
     json!({"as_of":crate::cards::DATA_AS_OF,
         "domains":["Fury","Calm","Mind","Body","Chaos","Order"],
         "cards":cards().iter().map(|c|json!({"id":c.id,"official_id":c.official_id,"name":c.name,"energy":c.cost,"power":c.power_cost,
             "might":c.might,"domain":c.domain.name(),"domains":c.domains.iter().map(|d|d.name()).collect::<Vec<_>>(),
-            "kind":c.kind.name(),"official_text":c.official_text,"keywords":c.keywords,"tags":c.tags})).collect::<Vec<_>>(),
+            "kind":c.kind.name(),"official_text":c.official_text,"keywords":c.keywords,"tags":c.tags,
+            "activated_abilities":activated_rules(c.id).iter().enumerate().map(|(index,rule)|activated_rule_to_json(index,rule)).collect::<Vec<_>>()})).collect::<Vec<_>>(),
         "legends":legends().iter().map(|definition|json!({"id":definition.id,
             "official_id":definition.official_id,"name":definition.name,"champion":definition.champion,
             "domains":definition.domains.map(|domain|domain.name()),"official_text":definition.text,
@@ -668,6 +687,17 @@ pub fn catalog() -> Value {
             "domains":p.domains.map(|d|d.name()),"rune_counts":p.rune_counts,"cards":p.cards,
             "strategy":p.strategy,"learning_notes":p.learning_notes,"source_url":p.source_url})).collect::<Vec<_>>(),
         "battlefields":BATTLEFIELDS.iter().map(|b|json!({"id":b.id,"name":b.name,"official_text":b.official_text})).collect::<Vec<_>>()})
+}
+
+pub fn ability_source_to_json(source: AbilitySource) -> Value {
+    match source {
+        AbilitySource::Unit { player, unit_id } => {
+            json!({"type":"unit","player":player,"unit_id":unit_id})
+        }
+        AbilitySource::Gear { player, gear_id } => {
+            json!({"type":"gear","player":player,"gear_id":gear_id})
+        }
+    }
 }
 
 fn chain_source_to_json(source: ChainSource) -> Value {
@@ -749,6 +779,13 @@ pub fn action_to_json(action: &Action) -> Value {
             json!({"type":"equip_with_trash","gear_id":gear_id,"target":target_to_json(target),"trash_indices":trash_indices})
         }
         Action::ActivateGear { gear_id } => json!({"type":"activate_gear","gear_id":gear_id}),
+        Action::ActivateAbility {
+            source,
+            ability_index,
+            targets,
+        } => json!({
+            "type":"activate_ability","source":ability_source_to_json(*source),
+            "ability_index":ability_index,"targets":ts(targets)}),
         Action::ActivateLegend { target } => json!({"type":"activate_legend","target":t(target)}),
         Action::ActivateRune { domain, recycle } => {
             json!({"type":"activate_rune","domain":domain.name(),"recycle":recycle})
@@ -969,6 +1006,29 @@ fn parse_domain(value: &str) -> Result<Domain, ApiError> {
         _ => Err(ApiError::invalid("Unknown domain.")),
     }
 }
+pub fn parse_ability_source(value: &Value) -> Result<AbilitySource, ApiError> {
+    let obj = object(value)?;
+    match string(obj, "type")? {
+        "unit" => {
+            keys(obj, &["type", "player", "unit_id"])?;
+            Ok(AbilitySource::Unit {
+                player: player(obj)?,
+                unit_id: id32(obj, "unit_id")?,
+            })
+        }
+        "gear" => {
+            keys(obj, &["type", "player", "gear_id"])?;
+            Ok(AbilitySource::Gear {
+                player: player(obj)?,
+                gear_id: id32(obj, "gear_id")?,
+            })
+        }
+        _ => Err(ApiError::invalid(
+            "Ability source must be a unit or gear object.",
+        )),
+    }
+}
+
 pub fn parse_target(value: &Value) -> Result<Target, ApiError> {
     let obj = object(value)?;
     match string(obj, "type")? {
@@ -1177,6 +1237,14 @@ pub fn parse_action(value: &Value) -> Result<Action, ApiError> {
             fields!("gear_id");
             Action::ActivateGear {
                 gear_id: id32(o, "gear_id")?,
+            }
+        }
+        "activate_ability" => {
+            fields!("source", "ability_index", "targets");
+            Action::ActivateAbility {
+                source: parse_ability_source(required(o, "source")?)?,
+                ability_index: index(o, "ability_index")?,
+                targets: targets(o, "targets")?,
             }
         }
         "activate_legend" => {
@@ -1491,6 +1559,13 @@ fn decision_to_json(game: &Game, decision: &Decision, viewer: usize) -> Value {
 
 fn ability_to_json(ability: &ChainAbility) -> Value {
     match ability {
+        ChainAbility::Activated {
+            source,
+            card_id,
+            ability_index,
+        } => json!({
+            "type":"activated","source":ability_source_to_json(*source),
+            "card_id":card_id,"ability_index":ability_index}),
         ChainAbility::CardTrigger {
             rule_index,
             context,
@@ -1697,6 +1772,22 @@ mod tests {
                 trash_indices: vec![4, 2],
             },
             Action::ActivateGear { gear_id: 3 },
+            Action::ActivateAbility {
+                source: AbilitySource::Unit {
+                    player: 0,
+                    unit_id: 19,
+                },
+                ability_index: 1,
+                targets: vec![],
+            },
+            Action::ActivateAbility {
+                source: AbilitySource::Gear {
+                    player: 1,
+                    gear_id: 20,
+                },
+                ability_index: 0,
+                targets: vec![unit],
+            },
             Action::ActivateLegend { target: Some(unit) },
             Action::ActivateRune {
                 domain: Domain::Chaos,
@@ -1798,6 +1889,160 @@ mod tests {
         ];
         for action in actions {
             assert_eq!(parse_action(&action_to_json(&action)).unwrap(), action);
+        }
+    }
+
+    #[test]
+    fn activated_catalog_exposes_printed_costs_timing_and_target_restrictions() {
+        let catalog = catalog();
+        let renata = &catalog["cards"][239]["activated_abilities"];
+        assert_eq!(renata.as_array().unwrap().len(), 2);
+        assert_eq!(renata[0]["ability_index"], 0);
+        assert_eq!(renata[0]["energy"], 1);
+        assert_eq!(renata[0]["power"], 1);
+        assert_eq!(renata[0]["power_domain"], "Mind");
+        assert_eq!(renata[0]["exhaust"], false);
+        assert_eq!(renata[1]["ability_index"], 1);
+        assert_eq!(renata[1]["energy"], 4);
+        assert_eq!(renata[1]["power"], 4);
+        assert_eq!(renata[1]["exhaust"], true);
+        assert_eq!(renata[1]["requires_battlefield"], true);
+        let sage = &catalog["cards"][236]["activated_abilities"][0];
+        assert_eq!(sage["timing"], "reaction");
+        assert_eq!(sage["adds_resources"], true);
+        let bar = &catalog["cards"][234]["activated_abilities"][0];
+        assert_eq!(bar["targets"]["allegiance"], "friendly");
+        assert_eq!(bar["targets"]["exhausted"], true);
+        let ballista = &catalog["cards"][232]["activated_abilities"][0];
+        assert_eq!(ballista["timing"], "main");
+        assert_eq!(ballista["targets"]["battlefield"], true);
+    }
+
+    #[test]
+    fn activated_api_distinguishes_source_copies_and_ability_indices() {
+        let mut session = playing();
+        session.game.battlefields = [0, 0];
+        session.game.players[0].units = [700, 701]
+            .into_iter()
+            .map(|id| Unit {
+                card_id: 239,
+                token: false,
+                buff: 0,
+                ..unit(id, Some(0), 0)
+            })
+            .collect();
+        session.game.battlefield_owner[0] = Some(0);
+        session.game.players[0].energy_pool = 10;
+        session.game.players[0].energy = 10;
+        session.game.players[0].runes = [0; 6];
+        session.game.players[0].exhausted_runes = [0; 6];
+        session.game.players[0].power_pool = [0, 0, 8, 0, 0, 0];
+        let first = session.observe(0).unwrap();
+        let second = session.observe(1).unwrap();
+        assert_eq!(
+            first["players"][0]["activated_abilities"],
+            second["players"][0]["activated_abilities"]
+        );
+        assert_eq!(
+            first["players"][0]["activated_abilities"]
+                .as_array()
+                .unwrap()
+                .len(),
+            4
+        );
+        assert!(second["players"][0]["hand"].is_null());
+
+        let source = AbilitySource::Unit {
+            player: 0,
+            unit_id: 700,
+        };
+        let draw = Action::ActivateAbility {
+            source,
+            ability_index: 0,
+            targets: vec![],
+        };
+        let revision = session.revision();
+        let quoted = session.handle(json!({"command":"quote_payment","revision":revision,
+            "player":0,"action":action_to_json(&draw)}));
+        assert_eq!(quoted["ok"], true, "{quoted}");
+        assert_eq!(session.revision(), revision);
+        assert_eq!(quoted["result"]["suggested"]["colored"][2], 1);
+        let hand_count = session.game.players[0].hand.len();
+        submit(&mut session, draw);
+        let pending = session.observe(1).unwrap();
+        assert_eq!(
+            pending["chain"][0]["source"],
+            json!({"type":"card","card_id":239})
+        );
+        assert_eq!(
+            pending["chain"][0]["ability"],
+            json!({"type":"activated",
+            "source":{"type":"unit","player":0,"unit_id":700},"card_id":239,"ability_index":0})
+        );
+        assert_eq!(session.game.players[0].hand.len(), hand_count);
+        pass_twice(&mut session);
+        assert_eq!(session.game.players[0].hand.len(), hand_count + 1);
+        assert!(session.game.players[0].units[0].ready);
+
+        let score = Action::ActivateAbility {
+            source,
+            ability_index: 1,
+            targets: vec![],
+        };
+        submit(
+            &mut session,
+            Action::WithPowerPayment {
+                action: Box::new(score),
+                payment: PowerPayment {
+                    colored: [0, 0, 4, 0, 0, 0],
+                    ..PowerPayment::default()
+                },
+            },
+        );
+        assert_eq!(
+            session.observe(0).unwrap()["chain"][0]["ability"]["ability_index"],
+            1
+        );
+        assert!(!session.game.players[0].units[0].ready);
+        assert!(session.game.players[0].units[1].ready);
+        assert_eq!(session.game.players[0].score, 0);
+        pass_twice(&mut session);
+        assert_eq!(session.game.players[0].score, 1);
+        assert_eq!(session.game.player_scored_this_turn[0], [false; 2]);
+    }
+
+    #[test]
+    fn malformed_and_invalid_activated_commands_preserve_match_and_revision() {
+        let mut session = playing();
+        let good = json!({"type":"activate_ability","source":{"type":"unit","player":0,"unit_id":8},
+            "ability_index":0,"targets":[]});
+        let mut cases = vec![good.clone()]; // A valid-shaped but absent source.
+        for source in [
+            json!({"type":"unit","player":2,"unit_id":8}),
+            json!({"type":"unit","player":0,"unit_id":-1}),
+            json!({"type":"unit","player":0,"unit_id":4294967296u64}),
+            json!({"type":"gear","player":0,"gear_id":1.5}),
+            json!({"type":"unit","player":0,"unit_id":8,"gear_id":8}),
+            json!({"type":"legend","player":0,"legend_id":3}),
+            json!({"type":"unit","unit_id":8}),
+        ] {
+            let mut value = good.clone();
+            value["source"] = source;
+            cases.push(value);
+        }
+        for index in [json!(-1), json!(0.5), json!(true), json!("0")] {
+            let mut value = good.clone();
+            value["ability_index"] = index;
+            cases.push(value);
+        }
+        let before = format!("{:?}", session.game);
+        let revision = session.revision();
+        for action in cases {
+            let response = session
+                .handle(json!({"command":"apply","revision":revision,"player":0,"action":action}));
+            assert_eq!(response["ok"], false, "{response}");
+            assert_eq!(session.revision(), revision);
+            assert_eq!(format!("{:?}", session.game), before);
         }
     }
 

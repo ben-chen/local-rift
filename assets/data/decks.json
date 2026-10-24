@@ -6139,6 +6139,233 @@
         "Reaction"
       ],
       "tags": []
+    },
+    {
+      "id": 230,
+      "name": "Heart of Dark Ice",
+      "official_id": "sfd-052-221",
+      "energy": 3,
+      "power": 1,
+      "might": 0,
+      "domains": [
+        "Calm"
+      ],
+      "kind": "Gear",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/73d8251c3bd8f7cd77010e9628515cd7fa462386-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Exhaust]: Give a unit +3 Might this turn.",
+      "official_text_html": "<p>:rb_exhaust:: Give a unit +3 :rb_might: this turn.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": []
+    },
+    {
+      "id": 231,
+      "name": "Orb of Regret",
+      "official_id": "ogn-090-298",
+      "energy": 1,
+      "power": 0,
+      "might": 0,
+      "domains": [
+        "Mind"
+      ],
+      "kind": "Gear",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/fd883b646d1a3cdb1a03b0c19dc62c92ca552f4f-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Exhaust]: Give a unit -1 Might this turn, to a minimum of 1 Might.",
+      "official_text_html": "<p>:rb_exhaust:: Give a unit -1 :rb_might: this turn, to a minimum of 1 :rb_might:.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": []
+    },
+    {
+      "id": 232,
+      "name": "Iron Ballista",
+      "official_id": "ogn-017-298",
+      "energy": 3,
+      "power": 0,
+      "might": 0,
+      "domains": [
+        "Fury"
+      ],
+      "kind": "Gear",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/9b5cfe757b6067994e17e284eba46433880a1461-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "This enters exhausted.\n[Exhaust]: Deal 2 to a unit at a battlefield.",
+      "official_text_html": "<p>This enters exhausted.<br />:rb_exhaust:: Deal 2 to a unit at a battlefield.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": []
+    },
+    {
+      "id": 233,
+      "name": "Arena Kingpin",
+      "official_id": "unl-001-219",
+      "energy": 5,
+      "power": 0,
+      "might": 3,
+      "domains": [
+        "Fury"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/db48f8c1da0e4f9804ae94398f0864859db0002a-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "I enter ready.\n[Exhaust]: Give a unit +3 Might this turn.",
+      "official_text_html": "<p>I enter ready.<br />:rb_exhaust:: Give a unit +3 :rb_might: this turn.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": [
+        "Yordle",
+        "Noxus"
+      ]
+    },
+    {
+      "id": 234,
+      "name": "Arena Bar",
+      "official_id": "ogn-124-298",
+      "energy": 3,
+      "power": 0,
+      "might": 0,
+      "domains": [
+        "Body"
+      ],
+      "kind": "Gear",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/519306d1d4a36f2d54fe0982268a197a257f5e5d-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Exhaust]: Buff an exhausted friendly unit. (If it doesn't have a buff, it gets a +1 Might buff.)",
+      "official_text_html": "<p>:rb_exhaust:: Buff an exhausted friendly unit. (If it doesn't have a buff, it gets a +1 :rb_might: buff.)</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": []
+    },
+    {
+      "id": 235,
+      "name": "Vanguard Armory",
+      "official_id": "sfd-168-221",
+      "energy": 7,
+      "power": 1,
+      "might": 0,
+      "domains": [
+        "Order"
+      ],
+      "kind": "Gear",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/4f4d735ff77ea599307e142196338d438fcedc05-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Exhaust]: Play three 1 Might Recruit unit tokens. (You may play them to different locations.)",
+      "official_text_html": "<p>:rb_exhaust:: Play three 1 :rb_might: Recruit unit tokens. (You may play them to different locations.)</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": []
+    },
+    {
+      "id": 236,
+      "name": "Dragonsoul Sage",
+      "official_id": "unl-093-219",
+      "energy": 2,
+      "power": 0,
+      "might": 1,
+      "domains": [
+        "Body"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/2065a3b0fef9779fed8a3d42202606a31acf59ff-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Reaction][>] [Exhaust]: [Add] [1 Energy]. (Abilities that add resources can't be reacted to.)",
+      "official_text_html": "<p>[Reaction][&gt;] :rb_exhaust:: [Add] :rb_energy_1:. (Abilities that add resources can't be reacted to.)</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Add",
+        "Reaction"
+      ],
+      "tags": [
+        "Ionia"
+      ]
+    },
+    {
+      "id": 237,
+      "name": "Xerath, Freed",
+      "official_id": "unl-026-219",
+      "energy": 5,
+      "power": 0,
+      "might": 5,
+      "domains": [
+        "Fury"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/ef52e66a137a80cf5df862f31a114bfc00914a93-744x1039.png?w=320&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Fury Power], [Exhaust]: Deal 3 to a unit. Use this ability only while I'm at a battlefield.",
+      "official_text_html": "<p>:rb_rune_fury:, :rb_exhaust:: Deal 3 to a unit. Use this ability only while I'm at a battlefield.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": [
+        "Shurima",
+        "Xerath"
+      ]
+    },
+    {
+      "id": 238,
+      "name": "Caitlyn, Patrolling",
+      "official_id": "ogn-068-298",
+      "energy": 3,
+      "power": 1,
+      "might": 3,
+      "domains": [
+        "Calm"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/51e6bacf25d19e7c391367ff107efb9e0b9f1ff5-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "I must be assigned combat damage last.\n[Exhaust]: Deal damage equal to my Might to a unit at a battlefield. Use this ability only while I'm at a battlefield.",
+      "official_text_html": "<p>I must be assigned combat damage last.<br />:rb_exhaust:: Deal damage equal to my Might to a unit at a battlefield. Use this ability only while I'm at a battlefield.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": [
+        "Caitlyn",
+        "Piltover"
+      ]
+    },
+    {
+      "id": 239,
+      "name": "Renata Glasc, Mastermind",
+      "official_id": "sfd-088-221",
+      "energy": 5,
+      "power": 0,
+      "might": 4,
+      "domains": [
+        "Mind"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/be8f7e08562c076e8947aafc3ecd202051d17c02-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[1 Energy][Mind Power]: Draw 1.\n[4 Energy][Mind Power][Mind Power][Mind Power][Mind Power], [Exhaust]: Score 1 point.\nUse my abilities only while I'm at a battlefield.",
+      "official_text_html": "<p>:rb_energy_1::rb_rune_mind:: Draw 1.<br />:rb_energy_4::rb_rune_mind::rb_rune_mind::rb_rune_mind::rb_rune_mind:, :rb_exhaust:: Score 1 point.<br />Use my abilities only while I'm at a battlefield.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": [
+        "Renata Glasc",
+        "Zaun"
+      ]
     }
   ],
   "official_text_note": "Official card/legend rules text from the Riot Card Gallery, retrieved 2026-10-24 and corrected by cited errata. Resource icon tokens are expanded to readable bracketed names. Raw card and equipment HTML is preserved separately. Official text does not establish full implementation fidelity."

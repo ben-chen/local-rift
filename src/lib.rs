@@ -1,3 +1,4 @@
+pub mod activated;
 pub mod api;
 pub mod battlefields;
 pub mod cards;

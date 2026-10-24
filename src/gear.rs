@@ -57,7 +57,8 @@ impl Game {
             .lane
     }
 
-    /// Resolve playing an already paid-for gear. Gear enters ready (CR149.1).
+    /// Resolve playing an already paid-for gear. Gear normally enters ready
+    /// (CR149.1); an explicit entry replacement can make it enter exhausted.
     /// Quick-Draw's free attachment is a separate triggered chain ability.
     pub(crate) fn gear_play(
         &mut self,
@@ -75,17 +76,20 @@ impl Game {
         }
         let id = self.next_unit_id;
         self.next_unit_id += 1;
+        let ready = !rules::static_abilities(card_id).contains(&StaticAbility::EntersExhausted);
         self.players[player].gear.push(GearState {
             id,
             card_id,
             attached_to: None,
-            ready: true,
+            ready,
             temporary: false,
             token: false,
         });
         self.push_log(format!(
-            "{} plays {} to base, ready.",
-            self.players[player].name, self.catalog[card_id].name
+            "{} plays {} to base, {}.",
+            self.players[player].name,
+            self.catalog[card_id].name,
+            if ready { "ready" } else { "exhausted" }
         ));
         if rules::equipment(card_id).is_some_and(|rule| rule.quick_draw) {
             self.request_on_play_target(player, card_id, id, None);

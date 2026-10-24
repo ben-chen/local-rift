@@ -1,3 +1,4 @@
+mod ability_ui;
 mod companion;
 mod deck_editor;
 use companion::{AdviceLevel, Companion, draw_mote};
@@ -6,6 +7,7 @@ mod scene;
 mod smoke;
 mod ui;
 use local_rift::{
+    activated::AbilitySource,
     cards::{CardKind, Domain},
     game::{
         Action, Decision, Difficulty, FlowSource, Game, Phase, PlayOptions, Target, domain_index,
@@ -31,6 +33,7 @@ enum Screen {
 enum Selection {
     Hand(usize),
     Unit(u32),
+    Ability(AbilitySource, Option<usize>),
     Champion,
     Gear(u32),
     Legend,
@@ -186,6 +189,7 @@ struct App {
     lesson: Option<usize>,
     group: Vec<u32>,
     targets: Vec<Target>,
+    ability_targets: Vec<Target>,
     repeat_targets: Vec<Target>,
     editing_repeat: bool,
     destination: Option<usize>,
@@ -311,6 +315,7 @@ impl App {
             lesson: None,
             group: Vec::new(),
             targets: Vec::new(),
+            ability_targets: Vec::new(),
             repeat_targets: Vec::new(),
             editing_repeat: false,
             destination: None,
@@ -450,6 +455,7 @@ impl App {
         let adding_resource = matches!(
             inner,
             Action::ActivateGear { .. }
+                | Action::ActivateAbility { .. }
                 | Action::ActivateLegend { .. }
                 | Action::ActivateRune { .. }
                 | Action::RecycleRune { .. }
@@ -1063,10 +1069,27 @@ impl App {
                     self.targets.contains(&Target::Unit {
                         player: owner,
                         unit_id: *id,
-                    }),
+                    }) || self.ability_targets.contains(&Target::Unit {
+                        player: owner,
+                        unit_id: *id,
+                    }) && matches!(self.selection, Some(Selection::Ability(..))),
                 );
                 self.drop_zones
                     .push((DropZone::Unit(owner, *id), card_rect));
+                if self.ability_target_candidate(Target::Unit {
+                    player: owner,
+                    unit_id: *id,
+                }) {
+                    self.ui.border(
+                        Rect::new(
+                            card_rect.x - 3.0,
+                            card_rect.y - 3.0,
+                            card_rect.w + 6.0,
+                            card_rect.h + 6.0,
+                        ),
+                        TEAL,
+                    );
+                }
                 if self.game.trigger_target_bounds().is_some()
                     && self.game.valid_trigger_target(
                         Target::Unit {
@@ -1157,7 +1180,9 @@ impl App {
                             };
                             self.arm_drag(DragSource::Units { ids, card_id });
                         }
-                        if matches!(self.game.decision, Some(Decision::TriggerTargets { .. })) {
+                        if matches!(self.selection, Some(Selection::Ability(_, Some(_))))
+                            || matches!(self.game.decision, Some(Decision::TriggerTargets { .. }))
+                        {
                             self.toggle_unit_target(Target::Unit {
                                 player: owner,
                                 unit_id: *id,
@@ -1568,7 +1593,9 @@ impl App {
                 .saturating_sub(unit.damage)
                 .max(1);
             let keywords = self.game.unit_keywords(unit);
-            let role = if keywords.tank {
+            let role = if keywords.tank && keywords.backline {
+                " · FIRST / LAST"
+            } else if keywords.tank {
                 " · TANK"
             } else if keywords.backline {
                 " · BACKLINE"
@@ -1668,7 +1695,15 @@ impl App {
             return;
         };
         if self.game.resource_payment_pending()
-            && matches!(self.selection, Some(Selection::Gear(_) | Selection::Legend))
+            && matches!(
+                self.selection,
+                Some(
+                    Selection::Gear(_)
+                        | Selection::Legend
+                        | Selection::Ability(..)
+                        | Selection::Unit(_)
+                )
+            )
         {
             self.selection_panel();
             return;
@@ -1832,10 +1867,20 @@ impl App {
                 GOLD,
             );
             let validation = self.damage_validation(lane, total);
+            let dual_rank = self.game.players[1]
+                .units
+                .iter()
+                .filter(|unit| unit.lane == Some(lane))
+                .any(|unit| {
+                    let keywords = self.game.unit_keywords(unit);
+                    keywords.tank && keywords.backline
+                });
             let guidance = if self.damage_editor.is_some() {
                 "Type the amount. Enter sets it; Escape cancels. Shift +/- changes ten. Click art to move that unit last in the order.".to_owned()
             } else if let Err(error) = &validation {
                 format!("{error} Edit the amounts below; confirming keeps an invalid draft here.")
+            } else if dual_rank {
+                "Tank + Backline: you choose first or last for that unit. Click its art to change order; assign lethal before moving on.".to_owned()
             } else if self.damage_amounts.is_some() {
                 "Legal allocation. Tank first, Backline last; lethal before the next unit. Click a number to type, or art to move it last.".to_owned()
             } else {
@@ -2036,6 +2081,27 @@ impl App {
         }
     }
     fn toggle_unit_target(&mut self, target: Target) {
+        if let Some(Selection::Ability(source, Some(index))) = self.selection {
+            if let Some(position) = self
+                .ability_targets
+                .iter()
+                .position(|chosen| *chosen == target)
+            {
+                self.ability_targets.remove(position);
+            } else if self.ability_target_candidate(target) {
+                let maximum = self
+                    .ability_rule(source, index)
+                    .map_or(0, |(_, rule)| rule.targets.max as usize);
+                if self.ability_targets.len() >= maximum {
+                    self.ability_targets.clear();
+                }
+                self.ability_targets.push(target);
+                self.toast_until = 0.0;
+            } else {
+                self.notify("Choose a highlighted unit that meets this ability's requirements.");
+            }
+            return;
+        }
         if let Some((maximum, _)) = self.game.trigger_target_bounds() {
             if let Some(index) = self.targets.iter().position(|chosen| *chosen == target) {
                 // Later slots may have different eligibility, so undo this and later choices.
@@ -2120,6 +2186,9 @@ impl App {
     }
     fn targeting_selection(&self) -> bool {
         match self.selection {
+            Some(Selection::Ability(source, Some(index))) => self
+                .ability_rule(source, index)
+                .is_some_and(|(_, rule)| rule.targets.max > 0),
             Some(Selection::Hand(i)) => self.game.players[0].hand.get(i).is_some_and(|id| {
                 self.game.catalog[*id].kind != CardKind::Unit
                     && !local_rift::rules::on_play_requires_target(*id)
@@ -2260,12 +2329,34 @@ impl App {
                 self.inspect = Some(unit.card_id);
             }
             let gear_hovered = self.gear_badges(Rect::new(r.x, r.y, r.w, 112.0), *owner, unit.id);
-            if self.ui.clicked(r) && self.game.priority() == 0 && !gear_hovered {
+            let source = AbilitySource::Unit {
+                player: *owner,
+                unit_id: unit.id,
+            };
+            let ability_button = !self.source_abilities(source).is_empty()
+                && self.ui.button(
+                    Rect::new(r.x + 67.0, r.y + 7.0, 66.0, 22.0),
+                    "Abilities",
+                    false,
+                    true,
+                );
+            if ability_button {
+                self.open_abilities(source);
+            }
+            if self.ability_target_candidate(Target::Unit {
+                player: *owner,
+                unit_id: unit.id,
+            }) {
+                self.ui.border(r, TEAL);
+            }
+            if self.ui.clicked(r) && self.game.priority() == 0 && !gear_hovered && !ability_button {
                 let target = Target::Unit {
                     player: *owner,
                     unit_id: unit.id,
                 };
-                if matches!(self.game.decision, Some(Decision::TriggerTargets { .. })) {
+                if matches!(self.selection, Some(Selection::Ability(_, Some(_))))
+                    || matches!(self.game.decision, Some(Decision::TriggerTargets { .. }))
+                {
                     self.toggle_unit_target(target);
                 } else if self.game.decision.is_some() {
                     self.action(Action::ChooseTarget {
@@ -2464,8 +2555,29 @@ impl App {
                     9.0,
                     TEAL,
                 );
-                if self.ui.clicked(r) {
-                    if self.targeting_selection()
+                let source = AbilitySource::Gear {
+                    player: owner,
+                    gear_id: gear.id,
+                };
+                let ability_button = !self.source_abilities(source).is_empty()
+                    && self.ui.button(
+                        Rect::new(r.x + 67.0, r.y + 7.0, 66.0, 22.0),
+                        "Abilities",
+                        false,
+                        true,
+                    );
+                if ability_button {
+                    self.open_abilities(source);
+                }
+                if self.ui.clicked(r) && !ability_button {
+                    if matches!(self.selection, Some(Selection::Ability(..)))
+                        && self.targeting_selection()
+                    {
+                        self.toggle_unit_target(Target::Gear {
+                            player: owner,
+                            gear_id: gear.id,
+                        });
+                    } else if self.targeting_selection()
                         && !matches!(self.selection, Some(Selection::Gear(_)))
                     {
                         self.targets = vec![Target::Gear {
@@ -4070,6 +4182,15 @@ impl App {
         }
     }
     fn payment_action_name(&self, action: &Action) -> String {
+        if let Action::ActivateAbility {
+            source,
+            ability_index,
+            ..
+        } = action
+            && let Some((id, rule)) = self.ability_rule(*source, *ability_index)
+        {
+            return format!("{} · {}", self.game.catalog[id].name, rule.label);
+        }
         let card_id = match action {
             Action::PlayCard { hand_index, .. }
             | Action::PlayCardOptions { hand_index, .. }
@@ -4677,7 +4798,17 @@ impl App {
     }
     fn selection_panel(&mut self) {
         match self.selection {
+            Some(Selection::Ability(source, index)) => self.ability_panel(source, index),
             Some(Selection::Unit(id)) => {
+                let source = AbilitySource::Unit {
+                    player: 0,
+                    unit_id: id,
+                };
+                if self.game.resource_payment_pending() && !self.source_abilities(source).is_empty()
+                {
+                    self.ability_panel(source, None);
+                    return;
+                }
                 if let Some(unit) = self.game.players[0].units.iter().find(|u| u.id == id) {
                     let card_id = unit.card_id;
                     let ready = unit.ready;
@@ -4764,9 +4895,26 @@ impl App {
                             });
                         }
                     } else {
+                        let source = AbilitySource::Unit {
+                            player: 0,
+                            unit_id: id,
+                        };
+                        let abilities = !self.source_abilities(source).is_empty();
+                        if abilities
+                            && self.ui.button(
+                                Rect::new(1288.0, 533.0, 102.0, 27.0),
+                                "Abilities >",
+                                false,
+                                true,
+                            )
+                        {
+                            self.open_abilities(source);
+                        }
                         if self.ui.button(
-                            Rect::new(1178.0, 533.0, 212.0, 27.0),
-                            &if self.group.len() > 1 {
+                            Rect::new(1178.0, 533.0, if abilities { 102.0 } else { 212.0 }, 27.0),
+                            &if abilities {
+                                "Group units".into()
+                            } else if self.group.len() > 1 {
                                 format!("{} units grouped · clear", self.group.len())
                             } else {
                                 format!("Group all {} ready here", group_available.len())
@@ -5240,6 +5388,14 @@ impl App {
                 }
             }
             Some(Selection::Gear(id)) => {
+                let source = AbilitySource::Gear {
+                    player: 0,
+                    gear_id: id,
+                };
+                if !self.source_abilities(source).is_empty() {
+                    self.ability_panel(source, None);
+                    return;
+                }
                 if let Some(gear) = self.game.players[0]
                     .gear
                     .iter()
@@ -5392,18 +5548,24 @@ impl App {
                 ) {
                     self.tray = *tray;
                     self.hand_scroll = 0;
-                    if *tray == Tray::Board
-                        || (*tray == Tray::Trash && self.gear_owner == 1)
-                        || !matches!(self.selection, Some(Selection::Gear(_)))
+                    if !matches!(self.selection, Some(Selection::Ability(..)))
+                        && (*tray == Tray::Board
+                            || (*tray == Tray::Trash && self.gear_owner == 1)
+                            || !matches!(self.selection, Some(Selection::Gear(_))))
+                        || matches!(self.selection, Some(Selection::Ability(..)))
+                            && !matches!(tray, Tray::Board | Tray::Loadout)
                     {
                         self.selection = None;
-                        self.targets.clear();
+                        if !matches!(self.game.decision, Some(Decision::TriggerTargets { .. })) {
+                            self.targets.clear();
+                        }
                     }
                 }
             }
             if self.game.decision.is_some()
                 && self.game.priority() == 0
-                && !(self.tray == Tray::Loadout && self.game.resource_payment_pending())
+                && !(matches!(self.tray, Tray::Loadout | Tray::Board)
+                    && self.game.resource_payment_pending())
                 && self.choice_tray()
             {
                 return;
@@ -6288,10 +6450,12 @@ fn live_unit_description(game: &Game, owner: usize, unit_id: u32) -> Option<Stri
             keywords.shield, keywords.shield
         ));
     }
-    if keywords.tank {
+    if keywords.tank && keywords.backline {
+        lines.push("Tank + Backline: the player assigning combat damage chooses whether this unit is treated as first or last, never the middle group.".into());
+    } else if keywords.tank {
         lines.push("Tank: must be assigned combat damage before units without Tank.".into());
     }
-    if keywords.backline {
+    if keywords.backline && !keywords.tank {
         lines.push("Backline: assigned combat damage after units without Backline.".into());
     }
     if keywords.deflect > 0 {
@@ -6313,6 +6477,22 @@ fn live_unit_description(game: &Game, owner: usize, unit_id: u32) -> Option<Stri
             cost.power,
             cost.domain.name()
         ));
+    }
+    if !unit.token {
+        for rule in local_rift::activated::activated_rules(unit.card_id) {
+            lines.push(format!(
+                "ABILITY · {}
+{} · {}{}",
+                rule.label,
+                ability_ui::cost_label(rule),
+                ability_ui::timing_label(rule),
+                if rule.requires_battlefield {
+                    " · source must be at a battlefield"
+                } else {
+                    ""
+                }
+            ));
+        }
     }
     let gear: Vec<_> = game.players[owner]
         .gear
@@ -6415,6 +6595,27 @@ mod live_preview_tests {
             banish_on_death: false,
         }
     }
+    #[test]
+    fn opponent_ability_preview_exposes_both_renata_costs_and_timing() {
+        let mut game = Game::new(3, 2, 7, Difficulty::Easy);
+        game.players[1].units = vec![unit(100, 239)];
+        let text = live_unit_description(&game, 1, 100).unwrap();
+        assert!(text.contains("Opponent's unit"));
+        assert!(text.contains("ABILITY · Draw 1") && text.contains("1 energy · 1 Mind power"));
+        assert!(
+            text.contains("ABILITY · Score 1 point")
+                && text.contains("4 energy · 4 Mind power · exhaust source")
+        );
+        assert!(text.contains("source must be at a battlefield"));
+        game.players[1].units[0].token = true;
+        assert!(
+            !live_unit_description(&game, 1, 100)
+                .unwrap()
+                .contains("ABILITY ·"),
+            "tokens do not inherit their source card's activation"
+        );
+    }
+
     #[test]
     fn live_preview_distinguishes_instances_and_granted_keywords() {
         let mut game = Game::new(3, 2, 7, Difficulty::Easy);

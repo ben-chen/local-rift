@@ -2,7 +2,7 @@
 
 Snapshot checked **2026-10-24**. The official gallery contains **1,408 printing records** grouped into **1,103 distinct full-name identities**. After excluding **12 auxiliary token/tracker identities** and **12 banned identities**, **1,079 identities are legal in Standard/1v1 Constructed**. The separate 2v2 list leaves **1,078**.
 
-**This client does not yet implement every legal card.** It currently maps **230 main-deck cards, 7 independently registered legends, 4 battlefields, and 6 rune resource types** (247 legal identities). **832 legal identities remain unimplemented and are not playable.** Importing this snapshot does not register cards with the engine. Full inventory coverage is not full rules support.
+**This client does not yet implement every legal card.** It currently maps **240 main-deck cards, 7 independently registered legends, 4 battlefields, and 6 rune resource types** (257 legal identities). **822 legal identities remain unimplemented and are not playable.** Importing this snapshot does not register cards with the engine. Full inventory coverage is not full rules support.
 
 ## Scope and authority
 
@@ -28,11 +28,11 @@ Numbered positions include token slots where the publisher numbers them within a
 | Kind | Standard legal | Implemented mapping | Not implemented |
 | --- | ---: | ---: | ---: |
 | Battlefield | 69 | 4 | 65 |
-| Gear | 127 | 33 | 94 |
+| Gear | 127 | 38 | 89 |
 | Legend | 58 | 7 | 51 |
 | Rune | 6 | 6 | 0 |
 | Spell | 269 | 66 | 203 |
-| Unit | 550 | 131 | 419 |
+| Unit | 550 | 136 | 414 |
 
 Implemented mapping means the existing engine/preset/field/resource implementation, not a claim that every interaction has been formally proven. See `docs/RULES.md` for engine limits. Every unimplemented identity has `implementation.status: not_implemented` and `playable_in_client: false`. Printed keywords are recorded per card and counted under `unimplemented_by_observed_keyword` as discovery hints only; shared keywords do not imply shared effect semantics or completed implementation. Each unimplemented card still requires its specific effect, targets, timing, costs, continuous/replacement effects, and interaction tests to be reviewed and implemented.
 
@@ -356,6 +356,16 @@ Source pages are archived as deterministic gzip files under `assets/data/catalog
 | 227 | Shock Blast | `ven-059-166` |
 | 228 | Against the Odds | `sfd-001-221` |
 | 229 | High Note | `rad-048-167` |
+| 230 | Heart of Dark Ice | `sfd-052-221` |
+| 231 | Orb of Regret | `ogn-090-298` |
+| 232 | Iron Ballista | `ogn-017-298` |
+| 233 | Arena Kingpin | `unl-001-219` |
+| 234 | Arena Bar | `ogn-124-298` |
+| 235 | Vanguard Armory | `sfd-168-221` |
+| 236 | Dragonsoul Sage | `unl-093-219` |
+| 237 | Xerath, Freed | `unl-026-219` |
+| 238 | Caitlyn, Patrolling | `ogn-068-298` |
+| 239 | Renata Glasc, Mastermind | `sfd-088-221` |
 
 ## Implemented legend ID mapping
 

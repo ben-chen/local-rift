@@ -3569,15 +3569,514 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
                     "canceling legend change preserves current edited list"
                 )
             });
+        }
+        338 => {
+            expansion_fixture(app, 230);
+            app.game.players[1].units.push(public_unit(9000, 239, None));
+            click(app, 315.0, 760.0);
+        }
+        339 => {
+            click(app, 1285.0, 510.0);
+        }
+        340 => {
+            assert!(
+                app.game.players[0]
+                    .gear
+                    .iter()
+                    .any(|gear| gear.card_id == 230 && gear.ready)
+            );
+            click(app, 400.0, 663.0);
+        }
+        341 => {
+            click(app, 615.0, 760.0);
+        }
+        342 => {
+            assert!(matches!(app.selection, Some(Selection::Gear(_))));
+            click(app, 1285.0, 417.0);
+        }
+        343 => {
+            assert!(matches!(
+                app.selection,
+                Some(Selection::Ability(_, Some(0)))
+            ));
+            COMBAT_SNAPSHOT
+                .with(|snapshot| *snapshot.borrow_mut() = Some(format!("{:?}", app.game)));
+            click_unit(app, 9000);
+        }
+        344 => {
+            assert_eq!(
+                app.ability_targets,
+                vec![Target::Unit {
+                    player: 1,
+                    unit_id: 9000
+                }],
+                "Heart may choose an enemy"
+            );
+            capture(app, "RIFT_SMOKE_ABILITY_TARGET_SCREENSHOT");
+            click(app, 1285.0, 548.0);
+        }
+        345 => {
+            assert!(matches!(app.selection, Some(Selection::Ability(_, None))));
+            COMBAT_SNAPSHOT.with(|snapshot| {
+                assert_eq!(
+                    snapshot.borrow().as_deref(),
+                    Some(format!("{:?}", app.game).as_str()),
+                    "cancel does not exhaust or spend"
+                )
+            });
+            click(app, 1285.0, 417.0);
+        }
+        346 => {
+            assert!(app.ability_targets.is_empty());
+            click_unit(app, 9000);
+        }
+        347 => {
+            click(app, 1285.0, 510.0);
+        }
+        348 => {
+            assert!(app.game.chain.iter().any(|item| matches!(
+                item.ability,
+                Some(local_rift::game::ChainAbility::Activated {
+                    card_id: 230,
+                    ability_index: 0,
+                    ..
+                })
+            )));
+            assert!(
+                !app.game.players[0]
+                    .gear
+                    .iter()
+                    .find(|gear| gear.card_id == 230)
+                    .unwrap()
+                    .ready
+            );
+            finish_chain_until_choice(app);
+            assert_eq!(
+                app.game.players[1]
+                    .units
+                    .iter()
+                    .find(|unit| unit.id == 9000)
+                    .unwrap()
+                    .temporary_buff,
+                3
+            );
+            click(app, 700.0, 663.0);
+        }
+        349 => {
+            assert!(app.tray == super::Tray::Board);
+            click(app, 345.0, 715.0);
+        }
+        350 => {
+            assert!(matches!(
+                app.selection,
+                Some(Selection::Ability(
+                    super::AbilitySource::Unit {
+                        player: 1,
+                        unit_id: 9000
+                    },
+                    None
+                ))
+            ));
+            click(app, 1285.0, 417.0);
+        }
+        351 => {
+            COMBAT_SNAPSHOT
+                .with(|snapshot| *snapshot.borrow_mut() = Some(format!("{:?}", app.game)));
+            click(app, 1285.0, 510.0);
+        }
+        352 => {
+            COMBAT_SNAPSHOT.with(|snapshot| {
+                assert_eq!(
+                    snapshot.borrow().as_deref(),
+                    Some(format!("{:?}", app.game).as_str()),
+                    "opponent abilities are read only"
+                )
+            });
+            expansion_fixture(app, 233);
+            click(app, 315.0, 760.0);
+        }
+        353 => {
+            click(app, 1285.0, 510.0);
+        }
+        354 => {
+            let unit = app.game.players[0]
+                .units
+                .iter()
+                .find(|unit| unit.card_id == 233)
+                .unwrap();
+            assert!(unit.ready, "Arena Kingpin enters ready");
+            let id = unit.id;
+            click_unit(app, id);
+        }
+        355 => {
+            click(app, 1340.0, 547.0);
+        }
+        356 => {
+            assert!(matches!(app.selection, Some(Selection::Ability(_, None))));
+            click(app, 1285.0, 417.0);
+        }
+        357 => {
+            let id = app.game.players[0]
+                .units
+                .iter()
+                .find(|unit| unit.card_id == 233)
+                .unwrap()
+                .id;
+            click_unit(app, id);
+        }
+        358 => {
+            click(app, 1285.0, 510.0);
+        }
+        359 => {
+            finish_chain_until_choice(app);
+            let unit = app.game.players[0]
+                .units
+                .iter()
+                .find(|unit| unit.card_id == 233)
+                .unwrap();
+            assert!(!unit.ready);
+            assert_eq!(unit.temporary_buff, 3, "source may target itself");
+            expansion_fixture(app, 239);
+            click(app, 315.0, 760.0);
+        }
+        360 => {
+            click(app, 1285.0, 510.0);
+        }
+        361 => {
+            let id = app.game.players[0]
+                .units
+                .iter()
+                .find(|unit| unit.card_id == 239)
+                .unwrap()
+                .id;
+            click_unit(app, id);
+        }
+        362 => {
+            click(app, 1340.0, 547.0);
+        }
+        363 => {
+            assert!(matches!(app.selection, Some(Selection::Ability(_, None))));
+            capture(app, "RIFT_SMOKE_RENATA_SCREENSHOT");
+            click(app, 1285.0, 417.0);
+        }
+        364 => {
+            assert!(matches!(
+                app.selection,
+                Some(Selection::Ability(_, Some(0)))
+            ));
+            COMBAT_SNAPSHOT
+                .with(|snapshot| *snapshot.borrow_mut() = Some(format!("{:?}", app.game)));
+            click(app, 1285.0, 510.0);
+        }
+        365 => {
+            COMBAT_SNAPSHOT.with(|snapshot| {
+                assert_eq!(
+                    snapshot.borrow().as_deref(),
+                    Some(format!("{:?}", app.game).as_str()),
+                    "base-only Renata cannot pay for a battlefield ability"
+                )
+            });
+            let unit = app.game.players[0]
+                .units
+                .iter_mut()
+                .find(|unit| unit.card_id == 239)
+                .unwrap();
+            unit.lane = Some(0);
+            unit.ready = true;
+            app.game.battlefield_owner[0] = Some(0);
+            app.game.players[0].power_pool[domain_index(Domain::Mind)] = 2;
+            app.prefs.exact_payment = true;
+            COMBAT_SNAPSHOT
+                .with(|snapshot| *snapshot.borrow_mut() = Some(format!("{:?}", app.game)));
+            click(app, 1285.0, 510.0);
+        }
+        366 => {
+            assert!(app.payment_draft.is_some());
+            assert_eq!(
+                app.payment_draft.as_ref().unwrap().chosen.colored[domain_index(Domain::Mind)],
+                1
+            );
+            capture(app, "RIFT_SMOKE_ABILITY_PAYMENT_SCREENSHOT");
+            click(app, 480.0, 709.0);
+        }
+        367 => {
+            assert!(app.payment_draft.is_none());
+            COMBAT_SNAPSHOT.with(|snapshot| {
+                assert_eq!(
+                    snapshot.borrow().as_deref(),
+                    Some(format!("{:?}", app.game).as_str()),
+                    "ability payment cancellation is atomic"
+                )
+            });
+            click(app, 1285.0, 510.0);
+        }
+        368 => {
+            click(app, 936.0, 709.0);
+        }
+        369 => {
+            assert!(app.payment_draft.is_none());
+            assert_eq!(app.game.players[0].energy, 6);
+            assert_eq!(
+                app.game.players[0].power_pool[domain_index(Domain::Mind)],
+                1
+            );
+            assert!(
+                app.game.players[0]
+                    .units
+                    .iter()
+                    .find(|unit| unit.card_id == 239)
+                    .unwrap()
+                    .ready,
+                "draw ability does not exhaust"
+            );
+            let before = app.game.players[0].hand.len();
+            finish_chain_until_choice(app);
+            assert_eq!(app.game.players[0].hand.len(), before + 1);
+            app.prefs.exact_payment = false;
+            let id = app.game.players[0]
+                .units
+                .iter()
+                .find(|unit| unit.card_id == 239)
+                .unwrap()
+                .id;
+            click_unit(app, id);
+        }
+        370 => {
+            click(app, 1340.0, 547.0);
+        }
+        371 => {
+            click(app, 1285.0, 481.0);
+        }
+        372 => {
+            assert!(matches!(
+                app.selection,
+                Some(Selection::Ability(_, Some(1)))
+            ));
+            click(app, 1285.0, 510.0);
+        }
+        373 => {
+            assert_eq!(app.game.players[0].score, 0, "scoring waits for responses");
+            assert!(app.game.chain.iter().any(|item| matches!(
+                item.ability,
+                Some(local_rift::game::ChainAbility::Activated {
+                    card_id: 239,
+                    ability_index: 1,
+                    ..
+                })
+            )));
+            finish_chain_until_choice(app);
+            assert_eq!(app.game.players[0].score, 1);
+            assert!(
+                !app.game.players[0]
+                    .units
+                    .iter()
+                    .find(|unit| unit.card_id == 239)
+                    .unwrap()
+                    .ready
+            );
+            expansion_fixture(app, 236);
+            click(app, 315.0, 760.0);
+        }
+        374 => {
+            click(app, 1285.0, 510.0);
+        }
+        375 => {
+            let source = app.game.players[0]
+                .units
+                .iter_mut()
+                .find(|unit| unit.card_id == 236)
+                .unwrap();
+            source.ready = true;
+            let id = source.id;
+            fixture_resources(app, Domain::Body);
+            app.game.players[0].exhausted_runes[domain_index(Domain::Body)] = 3;
+            app.game.players[0].energy = 3;
+            app.game.players[0].hand = vec![7];
+            app.game
+                .apply(Action::PlayCardWithTargets {
+                    hand_index: 0,
+                    lane: None,
+                    targets: vec![Target::Unit {
+                        player: 0,
+                        unit_id: id,
+                    }],
+                })
+                .unwrap();
+            let chain_id = app.game.chain.last().unwrap().id;
+            app.game.apply(Action::Pass).unwrap();
+            app.game.players[1].hand = vec![37];
+            app.game.players[1].runes = [0; 6];
+            app.game.players[1].runes[domain_index(Domain::Chaos)] = 6;
+            app.game.players[1].exhausted_runes = [0; 6];
+            app.game.players[1].energy = 6;
+            app.game.players[1].energy_pool = 0;
+            app.game
+                .apply(Action::PlayCardWithTargets {
+                    hand_index: 0,
+                    lane: None,
+                    targets: vec![Target::Spell { chain_id }],
+                })
+                .unwrap();
+            app.game.apply(Action::Pass).unwrap();
+            app.game.apply(Action::Pass).unwrap();
+            assert!(matches!(
+                app.game.decision,
+                Some(Decision::CounterTax {
+                    player: 0,
+                    cost: 2,
+                    ..
+                })
+            ));
+            assert_eq!(app.game.players[0].energy, 1);
+            click(app, 700.0, 663.0);
+        }
+        376 => {
+            assert!(app.tray == super::Tray::Board);
+            click(app, 345.0, 715.0);
+        }
+        377 => {
+            assert!(matches!(app.selection, Some(Selection::Ability(_, None))));
+            click(app, 1285.0, 417.0);
+        }
+        378 => {
+            assert!(matches!(
+                app.selection,
+                Some(Selection::Ability(_, Some(0)))
+            ));
+            capture(app, "RIFT_SMOKE_DRAGONSOUL_SCREENSHOT");
+            click(app, 1285.0, 510.0);
+        }
+        379 => {
+            assert_eq!(app.game.players[0].energy, 2);
+            assert_eq!(app.game.players[0].energy_pool, 1);
+            assert_eq!(app.game.priority(), 0);
+            assert_eq!(app.game.chain.len(), 1, "Add has no response item");
+            assert!(matches!(
+                app.game.decision,
+                Some(Decision::CounterTax { cost: 2, .. })
+            ));
+            assert!(
+                !app.game.players[0]
+                    .units
+                    .iter()
+                    .find(|unit| unit.card_id == 236)
+                    .unwrap()
+                    .ready
+            );
+            click(app, 1285.0, 506.0);
+        }
+        380 => {
+            assert!(app.game.decision.is_none());
+            assert_eq!(app.game.players[0].energy, 0);
+            finish_chain_until_choice(app);
+            assert_eq!(
+                app.game.players[0]
+                    .units
+                    .iter()
+                    .find(|unit| unit.card_id == 236)
+                    .unwrap()
+                    .temporary_buff,
+                2,
+                "tax payment preserves the spell"
+            );
+        }
+        381 => {
+            app.game = Game::new(3, 3, 934, Difficulty::Easy);
+            app.game.start_match().unwrap();
+            app.game.players[0].units = vec![public_unit(9001, 69, None)];
+            app.game.players[1].units = vec![
+                public_unit(9002, 238, Some(0)),
+                public_unit(9003, 25, Some(0)),
+                public_unit(9004, 25, Some(0)),
+            ];
+            app.game.players[1].gear.push(GearState {
+                id: 9010,
+                card_id: 121,
+                ready: true,
+                attached_to: Some(9002),
+                temporary: false,
+                token: false,
+            });
+            app.game.battlefield_owner[0] = Some(1);
+            app.selection = None;
+            app.targets.clear();
+            app.ability_targets.clear();
+            app.damage_order.clear();
+            app.damage_amounts = None;
+            app.damage_editor = None;
+            app.hover_card = None;
+            app.hover_rect = None;
+            app.hand_scroll = 0;
+            app.toast_until = 0.0;
+            app.game
+                .apply(Action::Move {
+                    unit_id: 9001,
+                    lane: Some(0),
+                })
+                .unwrap();
+            app.game.apply(Action::Pass).unwrap();
+            app.game.apply(Action::Pass).unwrap();
+            assert!(matches!(
+                app.game.decision,
+                Some(Decision::CombatDamage {
+                    player: 0,
+                    total: 8,
+                    ..
+                })
+            ));
+            assert!(
+                app.damage_validation(0, 8).is_ok(),
+                "automatic Tank choice remains legal"
+            );
+            click(app, 865.0, 663.0);
+        }
+        382 => {
+            assert_eq!(
+                app.damage_assignment(0, 8),
+                vec![(9002, 4), (9003, 2), (9004, 2)]
+            );
+            click(app, 315.0, 750.0);
+        }
+        383 => {
+            assert_eq!(
+                app.damage_assignment(0, 8),
+                vec![(9003, 2), (9004, 2), (9002, 4)]
+            );
+            assert!(
+                app.damage_validation(0, 8).is_ok(),
+                "Caitlyn plus Doran Shield may be assigned last"
+            );
+            capture(app, "RIFT_SMOKE_TANK_BACKLINE_SCREENSHOT");
+            click(app, 1285.0, 510.0);
+        }
+        384 => {
+            assert!(matches!(
+                app.game.decision,
+                Some(Decision::CombatDamage { player: 1, .. })
+            ));
+            let Decision::CombatDamage {
+                player,
+                lane,
+                total,
+            } = app.game.decision.clone().unwrap()
+            else {
+                unreachable!()
+            };
+            app.game
+                .apply(Action::AssignDamage {
+                    assignments: app.game.automatic_damage_assignment(player, lane, total),
+                })
+                .unwrap();
+            assert!(app.game.players[1].units.is_empty());
             app.ui.input_override = None;
             app.ui.pointer_override = None;
             app.ui.wheel_override = None;
             println!(
-                "PASS: 338 native UI frames including seven-legend custom creation, saved identity and rematch, Darius energy, Viktor timing and Recruit, Lux passive chain, and visible saved-deck errors."
+                "PASS: 385 native UI frames including activated source targets, Renata choices and exact costs, Dragonsoul during a real payment, and combined Tank/Backline first or last."
             );
             return true;
         }
-        _ => panic!("UI smoke runner exceeded its 338-frame script"),
+        _ => panic!("UI smoke runner exceeded its 385-frame script"),
     }
     false
 }

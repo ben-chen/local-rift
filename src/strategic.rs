@@ -398,7 +398,9 @@ fn scrub_queued_look(decision: &mut Decision, players: &[PlayerState; 2]) {
 fn action_penalty(action: &Action) -> i32 {
     match action {
         Action::Pass | Action::EndTurn => 0,
-        Action::ActivateGear { .. } | Action::ActivateLegend { .. } => 5,
+        Action::ActivateGear { .. }
+        | Action::ActivateLegend { .. }
+        | Action::ActivateAbility { .. } => 5,
         _ => 2,
     }
 }

@@ -37,9 +37,9 @@ class OfficialInventoryTests(unittest.TestCase):
     def test_exact_published_scope_and_runtime_gap(self):
         counts = self.snapshot["counts"]
         self.assertEqual((counts["gallery_printings"], counts["unique_gallery_identities"], counts["standard_legal_identities"]), (1408, 1103, 1079))
-        self.assertEqual(counts["implemented_main_cards"], 230)
+        self.assertEqual(counts["implemented_main_cards"], 240)
         self.assertEqual(counts["implemented_legends"], 7)
-        self.assertEqual(counts["unimplemented_legal_identities"], 832)
+        self.assertEqual(counts["unimplemented_legal_identities"], 822)
         for card in self.snapshot["cards"]:
             if card["implementation"]["status"] == "not_implemented":
                 self.assertFalse(card["implementation"]["playable_in_client"])
@@ -62,7 +62,7 @@ class OfficialInventoryTests(unittest.TestCase):
             ("domains", ["Calm", "Body"], "Legend domain mismatch"),
             ("champion", "Kennen", "Legend champion tag mismatch"),
             ("art_url", "https://example.invalid/art.png", "Legend source artwork mismatch"),
-            ("default_champion", 230, "Legend default champion is not a runtime card"),
+            ("default_champion", 240, "Legend default champion is not a runtime card"),
             ("default_champion_official_id", "ogn-117-298", "Legend default champion ID mismatch"),
         ]
         for field, value, message in mutations:

@@ -103,6 +103,7 @@ Targets have exactly one of these forms:
 | `equip` | `gear_id`, `target` | Pay and attach gear to a friendly unit |
 | `equip_with_trash` | `gear_id`, `target`, `trash_indices` | Equip Last Rites with an explicit pair of trash cards to recycle |
 | `activate_gear` | `gear_id` | Activate a Seal, Energy Conduit, or Gold when legal |
+| `activate_ability` | `source`, `ability_index`, optional `targets` | Use a registered unit or gear ability with its exact source, printed ability index, and chosen targets |
 | `activate_legend` | optional `target` | Activate the selected legend's supported ability |
 | `empower_unit` | `unit_id`, optional `pay_power` | Activate Legion Marauder or Tail-Cloaked Matriarch's Empower ability |
 | `hide` | `hand_index`, `lane` | Pay to hide a Hidden card at a controlled battlefield |
@@ -123,6 +124,15 @@ Targets have exactly one of these forms:
 | `choose_resolution_group` | `index` | Select a listed legal target group when a resolving spell requires that choice |
 | `set_optional_discount` | `power` | Set how many friendly Ezreal discounts reduce power; remaining discounts reduce energy |
 | `place_token` | optional `lane` | Finalize the next token whose effect allows a destination choice at base or a battlefield you control |
+
+Registered activations use a source object such as `{"type":"unit","player":0,"unit_id":12}` or `{"type":"gear","player":0,"gear_id":15}`. The source is distinct from the targets. `ability_index` is zero-based within that card's `catalog.cards[].activated_abilities`; for Renata Glasc, Mastermind, index `0` draws and index `1` scores. The catalog supplies each ability's label, timing, energy/power cost, power domain, exhaust cost, source battlefield requirement, target restrictions, and whether it adds resources. This registry currently covers cards 230–239; existing Equip, resource-gear, Empower, and legend actions retain their own interfaces.
+
+```json
+{"type":"activate_ability","source":{"type":"unit","player":0,"unit_id":12},"ability_index":1,"targets":[]}
+{"type":"activate_ability","source":{"type":"gear","player":0,"gear_id":15},"ability_index":0,"targets":[{"type":"unit","player":1,"unit_id":7}]}
+```
+
+These action shapes require matching live objects and a legal timing window. Use `validate`, `quote_payment`, or `with_power_payment` as with card plays. Costs are paid before responses. Ordinary abilities enter the chain; Dragonsoul Sage's Reaction Add resolves immediately and can be used during a permitted payment choice. Its Reaction ability does not grant permission to play the unit as a Reaction.
 
 For `play_from_trash_options`, `flow:"printed"` or `flow:"granted"` selects that exact available Flow instance. Omission or `null` uses an available payable instance. Explicit selection never falls back to another cost. A Flow choice cannot override an instructed Fizz/Last Rites replay and does not change the spell’s normal timing. Observed `flow_costs` lists trash indices with each instance’s source, energy, power, and whether power is colored. Quote and exact-payment commands preserve the selected instance.
 
@@ -161,6 +171,8 @@ This example spends one generated flexible power to hide a card while preserving
 Observations include phase, turn, active player, priority, winner, mulligan status, public resources, champion slots, units, gear, battlefield control/scoring, showdown state, and the public chain. The last chain entry is the top item, which resolves first after the required passes. Each player object includes hand/deck/rune-deck counts. Domain-indexed arrays use `Fury, Calm, Mind, Body, Chaos, Order`, matching `catalog.domains`. `energy` includes ready rune energy and stored energy; `energy_pool` is the stored portion. `runes` counts all runes on board, and `exhausted_runes` identifies its exhausted subset. `legend.spell_power` is restricted to spell costs.
 
 Both seats expose the same public resource and equipment fields. A gear object's `attached_to` identifies its bearer unit, or is `null` when unattached. Its `lane` follows the bearer; `null` means base and does not by itself mean unattached. `card_id`, `name`, `token`, `ready`, and `temporary` remain visible while attached. Battlefield IDs refer to `catalog.battlefields`, which contains the field's official effect text; field abilities on the chain include their lane.
+
+Each player's `activated_abilities` lists the registered abilities of their public live units and gear as `{source, card_id, ability_index}`. This describes printed options, including exhausted sources and abilities that are currently unusable; it is not a list of legal actions. No private hand or deck abilities are exposed. An activated chain item has `ability.type:"activated"` with the same live source identity, immutable `card_id`, and selected `ability_index`, even after that source leaves play. Its outer `chain.source` remains the card-definition reference. The two fields distinguish which physical object used which printed ability.
 
 Player observations expose the actual `legend_id` independently of `preset` (which is `null` for custom lists). The `legend` object also includes its `id`, `official_id`, `name`, `champion`, and `domains`, alongside its existing status fields. These identities and domains are public; an opponent's custom list remains private.
 

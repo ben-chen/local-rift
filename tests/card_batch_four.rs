@@ -105,7 +105,7 @@ fn new_card_facts_match_both_official_panels_and_stable_identity() {
     let inventory: Value =
         serde_json::from_str(include_str!("../assets/data/full_catalog.json")).unwrap();
     let manifest: Value = serde_json::from_str(include_str!("../assets/data/decks.json")).unwrap();
-    assert!(cards.len() == 230);
+    assert!(cards.len() >= 230);
     for (offset, official_id) in IDS.into_iter().enumerate() {
         let card = cards[152 + offset];
         assert_eq!(card.id, 152 + offset);

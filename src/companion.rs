@@ -402,6 +402,13 @@ fn advice(game: &Game, level: AdviceLevel) -> Vec<&'static str> {
             "You have an affordable deployment. Compare its next-turn pressure with preserving runes for an immediate, useful effect."
         });
     }
+    if !game.activated_options(0).is_empty() {
+        tips.push(if beginner {
+            "Units and gear can have their own abilities. Select the source, then Abilities to read its timing, costs and legal targets before committing."
+        } else {
+            "An exhaust cost competes with movement. Compare the ability's payoff with a useful move, and reserve resources for responses after it enters the chain."
+        });
+    }
     if human.energy == 0 {
         tips.push(if beginner {
             "No energy left? Ready units may still move. When your useful actions are done, end the turn and let your next turn refresh things."
@@ -468,6 +475,21 @@ fn response_window_advice(game: &Game, beginner: bool) -> Option<Vec<&'static st
                 },
                 "Consider which field's score or triggers will affect the next fight. Choosing a field opens its normal response window.",
             ],
+            Decision::CombatDamage { player, lane, .. }
+                if game.players[1 - *player]
+                    .units
+                    .iter()
+                    .filter(|unit| unit.lane == Some(*lane))
+                    .any(|unit| {
+                        let keywords = game.unit_keywords(unit);
+                        keywords.tank && keywords.backline
+                    }) =>
+            {
+                vec![
+                    "A unit has both Tank and Backline. You choose first or last for that unit, never the middle group. Deal lethal before assigning to the next unit.",
+                    "Both players assign before damage is dealt simultaneously. Use exact amounts and click a card's art to change its order.",
+                ]
+            }
             Decision::CombatDamage { .. } => vec![
                 if beginner {
                     "Choose how your combat damage reaches opposing units. Assign Tank first and Backline last; deal lethal before moving to another unit."
@@ -492,6 +514,7 @@ fn response_window_advice(game: &Game, beginner: bool) -> Option<Vec<&'static st
                     "Price the counter tax against the point at stake. Paying keeps the spell, but those runes won't be available for the next exchange."
                 },
                 "Check the energy you would have left after paying. Protecting this spell is a choice, not an obligation.",
+                "Resource abilities can be used before paying. Board → Abilities shows unit sources; Loadout shows gear and legends.",
             ],
             Decision::Legend {
                 trigger: LegendTrigger::IreliaChoose { .. },
@@ -1102,6 +1125,44 @@ mod tests {
             total: 4,
         });
         assert!(advice(&game, AdviceLevel::Beginner)[0].contains("opponent is making a choice"));
+    }
+
+    #[test]
+    fn combined_tank_backline_advice_preserves_both_legal_choices() {
+        let mut game = game();
+        game.start_match().unwrap();
+        game.players[1].units.push(Unit {
+            id: 991,
+            card_id: 238,
+            lane: Some(0),
+            ready: true,
+            damage: 0,
+            buff: 0,
+            temporary_buff: 0,
+            token: false,
+            protected: false,
+            stunned: false,
+            banish_on_death: false,
+        });
+        game.players[1].gear.push(local_rift::gear::GearState {
+            id: 992,
+            card_id: 121,
+            ready: true,
+            attached_to: Some(991),
+            temporary: false,
+            token: false,
+        });
+        game.decision = Some(Decision::CombatDamage {
+            player: 0,
+            lane: 0,
+            total: 8,
+        });
+        for level in [AdviceLevel::Beginner, AdviceLevel::Advanced] {
+            let tips = advice(&game, level);
+            assert!(tips[0].contains("You choose first or last"));
+            assert!(tips.iter().all(|tip| tip.chars().count() <= 180));
+            assert!(!tips.iter().any(|tip| tip.contains("Assign Tank first")));
+        }
     }
 
     #[test]

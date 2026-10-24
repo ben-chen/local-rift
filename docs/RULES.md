@@ -1,6 +1,6 @@
 # Implemented rules and limitations
 
-**Local Rift is an unofficial, incomplete Riftbound client. This document describes its current behavior, not the complete tabletop game.** Full official card text appears in hover previews and pinned inspectors. All 230 bundled cards have executable printed-effect mappings. An official description in the catalog and a passing simulation are not proof of complete tabletop equivalence.
+**Local Rift is an unofficial, incomplete Riftbound client. This document describes its current behavior, not the complete tabletop game.** Full official card text appears in hover previews and pinned inspectors. All 240 bundled cards have executable printed-effect mappings. An official description in the catalog and a passing simulation are not proof of complete tabletop equivalence.
 
 For physical play, use Riot's [Rules Hub](https://playriftbound.com/en-us/rules-hub/), current errata, and printed card text. The core timing reference used here is the [October 9, 2026 Core Rules](https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/5c7946f7c3b8c6e0faff85ab6dadc6d2e721ea94.pdf). [SOURCES.md](SOURCES.md) records the card and deck sources.
 
@@ -61,13 +61,23 @@ A targeted card requires legal targets when played. The engine can choose valid 
 
 ## Persistent gear
 
-Gear remains on the board and enters ready at base. Equipment adds its printed might bonus and equipment text to its attached unit. The gear remains a separate object: if the unit leaves, the equipment detaches and remains at base.
+Gear remains on the board and normally enters ready at base; Iron Ballista explicitly enters exhausted. Equipment adds its printed might bonus and equipment text to its attached unit. The gear remains a separate object: if the unit leaves, the equipment detaches and remains at base.
 
 Equip is an activated ability with its own power and additional costs. It enters the chain and can be answered. Quick-Draw permits the gear card's reaction timing and creates its free attachment trigger; it does not make an ordinary Equip activation a Reaction. Last Rites asks you to choose two trash cards to recycle for Equip, and its attached unit’s conquest or hold trigger can offer a unit play from trash with normal costs.
 
 The gear implementation includes Boots of Swiftness's might/Ganking, Guardian Angel's heal-and-recall death replacement, the errata-corrected Zhonya's Hourglass replacement, Seal of Discord's generated Chaos power, and expendable Gold tokens that generate flexible power. Temporary gear is removed at the appropriate beginning; attached equipment's own rules text is inactive while attached.
 
 When multiple death replacements apply, the affected unit's controller chooses which one to use, including Guardian Angel, Zhonya's Hourglass, and Smite's banishment. Remaining replacements are checked again if applicable. Last Rites uses a triggered-ability chain before its optional unit choice, and Hourglass can use Hidden. Check the inspector and [errata provenance](SOURCES.md).
+
+## Unit and gear activations
+
+A selected unit exposes **Abilities** alongside its movement controls. Choose the printed ability, select its targets, then confirm its costs. Gear uses the same controls for its printed activations. Each physical source is tracked separately, including two copies of the same card. Cancelling before confirmation spends nothing; committed costs are paid before opponents respond. Exact power-source choices apply to these costs too, including Deflect, and spell-only power cannot pay for them.
+
+Heart of Dark Ice and Arena Kingpin grant temporary Might; Orb of Regret reduces Might with its printed minimum when the effect resolves. Arena Bar buffs an exhausted friendly unit. Iron Ballista targets a battlefield unit. Xerath and Caitlyn must themselves be at a battlefield to activate; this source restriction is checked when activating. Their targets must still satisfy the target restrictions when the ability resolves. Caitlyn deals damage equal to her current Might, and cannot supply a Might value after leaving play. Vanguard Armory queues three separate Recruit plays after its ability completes, allowing a legal destination for each.
+
+Renata Glasc has two distinct abilities: pay one energy and one Mind power to draw, or pay four of each and exhaust her to score one point. Both require her at a battlefield. The draw ability does not exhaust her. Her point is not conquest and does not consume a battlefield's scoring opportunity.
+
+Dragonsoul Sage's Reaction ability exhausts it to add one energy immediately, including during permitted payment choices. This does not allow the unit card itself to be played as a Reaction. The other activations in this group require the controller's open main phase. Non-resource abilities enter the chain and allow responses; gear-use triggers occur after their ability resolves, including when its chosen target has left, and do not fire for a countered ability.
 
 ## Hidden, trash plays, and optional costs
 
@@ -109,7 +119,7 @@ A standard move exhausts a ready unit. It can move from base to a battlefield, o
 
 Use **Group all … ready here** to move several ready units from the selected unit’s location in a single standard move. Shift-click individual units to choose a different group. Official rules also permit units with different origins to move together to one destination; the engine accepts that, while this grouping button selects one origin. Choose the group before entering a showdown: ordinary movement cannot add extra attackers after the response window begins. Cards with legal timing may still change the fight.
 
-After the showdown closes, each player assigns their captured combat might among the opposing units. Exhausted units normally contribute might; stun and combat modifiers may change that total. Assign all damage, respecting Tank first and Backline last, and assign lethal damage before moving to another unit. The UI offers a suggested allocation, target reordering, and an **Exact amounts** editor with per-unit controls. It shows assigned and remaining damage, lethal requirements, and any invalid choice before confirmation. A rejected allocation preserves the draft and game state. Both sides finish assigning before damage is dealt simultaneously. If lethal damage creates a replacement choice, the affected units stay visible until their controller makes that choice and cleanup resumes.
+After the showdown closes, each player assigns their captured combat might among the opposing units. Exhausted units normally contribute might; stun and combat modifiers may change that total. Assign all damage, respecting Tank first and Backline last, and assign lethal damage before moving to another unit. If a unit has both restrictions, such as Caitlyn wearing Doran’s Shield, the assigning player may place it first or last, independently for each such unit. The UI offers a suggested allocation, target reordering, and an **Exact amounts** editor with per-unit controls. It shows assigned and remaining damage, lethal requirements, and any invalid choice before confirmation. A rejected allocation preserves the draft and game state. Both sides finish assigning before damage is dealt simultaneously. If lethal damage creates a replacement choice, the affected units stay visible until their controller makes that choice and cleanup resumes.
 
 A unit with positive damage at least equal to its current might is defeated. A zero-might unit is not defeated merely for having zero might and can conquer or hold an undefended battlefield. Combat cleanup clears damage from **all surviving units**, including those elsewhere on the board. If both sides retain units after combat, surviving attackers return to base, preserving their ready or exhausted state. An empty battlefield becomes unclaimed. End-of-turn cleanup also clears surviving damage and temporary might changes.
 
@@ -135,7 +145,7 @@ The deck library includes the real legends and authored strategy notes. All seve
 
 ## Remaining fidelity limits
 
-Seven supported legends, four battlefield choices, and 230 main-deck cards are available through the four supplied presets and custom deck editor. There is no sideboarding, tournament match structure, multiplayer mode, or full card-set coverage. The presets are dated tournament lists, not a ranking of the current metagame.
+Seven supported legends, four battlefield choices, and 240 main-deck cards are available through the four supplied presets and custom deck editor. There is no sideboarding, tournament match structure, multiplayer mode, or full card-set coverage. The presets are dated tournament lists, not a ranking of the current metagame.
 
 The desktop and bot API expose exact damage allocations and power-source payments. The default automatic payment remains available; energy can be prepared by exhausting chosen rune domains before a play. These controls share engine validation, but broader card and interaction coverage is still required.
 
