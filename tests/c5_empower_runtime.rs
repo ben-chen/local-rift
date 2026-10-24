@@ -204,7 +204,12 @@ fn conditional_keywords_might_and_aura_replacement_are_live() {
         );
         assert_eq!(u(&g, t).buff, 0);
         assert_eq!(u(&g, t).temporary_buff, 0);
-        assert!(g.passive_contributions(object(t)).iter().all(|c| c.active));
+        assert!(
+            g.passive_contributions(object(t))
+                .unwrap()
+                .iter()
+                .all(|c| c.active)
+        );
     }
     let mut g = position();
     let target = unit(&mut g, 0, 1000, 72, None);
@@ -219,7 +224,7 @@ fn conditional_keywords_might_and_aura_replacement_are_live() {
         g.unit_might(u(&g, target)).unwrap(),
         u64::from(g.catalog[72].might) + 2
     );
-    let contributions = g.passive_contributions(object(target));
+    let contributions = g.passive_contributions(object(target)).unwrap();
     assert_eq!(contributions.iter().filter(|c| c.active).count(), 1);
 }
 #[test]

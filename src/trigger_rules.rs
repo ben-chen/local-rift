@@ -6,6 +6,7 @@ use crate::rules::{Allegiance, TokenPlacement};
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Event {
+    ControllerBeginning,
     SelfPlayed,
     FriendlyUnitPlayed,
     FriendlyGearPlayed,
@@ -107,6 +108,7 @@ pub enum Amount {
 }
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Effect {
+    GiveTemporary(Operand),
     Xp(Amount),
     Draw(u8),
     DrawBoth(u8),
@@ -216,6 +218,139 @@ pub fn trigger_rules(card_id: usize) -> &'static [TriggerRule] {
     use Operand::*;
     use TokenPlacement::*;
     match card_id {
+        351 => {
+            const {
+                &[rule(
+                    SelfPlayed,
+                    &[OpponentTurn],
+                    false,
+                    TargetRule::NONE,
+                    &[GiveTemporary(Operand::Source)],
+                )]
+            }
+        }
+        357 => {
+            const {
+                &[rule(
+                    SelfPlayed,
+                    &[],
+                    false,
+                    TargetRule::NONE,
+                    &[Tokens {
+                        count: 1,
+                        might: 3,
+                        gear: false,
+                        opponent: false,
+                        location: Here,
+                        entry_ready: true,
+                    }],
+                )]
+            }
+        }
+        358 => {
+            const {
+                &[
+                    rule(
+                        SelfPlayed,
+                        &[],
+                        false,
+                        TargetRule::NONE,
+                        &[Tokens {
+                            count: 1,
+                            might: 3,
+                            gear: false,
+                            opponent: false,
+                            location: Base,
+                            entry_ready: true,
+                        }],
+                    ),
+                    rule(
+                        ControllerBeginning,
+                        &[],
+                        false,
+                        TargetRule::NONE,
+                        &[Tokens {
+                            count: 1,
+                            might: 3,
+                            gear: false,
+                            opponent: false,
+                            location: Base,
+                            entry_ready: true,
+                        }],
+                    ),
+                ]
+            }
+        }
+        359 => {
+            const {
+                &[rule(
+                    SelfHold,
+                    &[],
+                    false,
+                    TargetRule::NONE,
+                    &[Tokens {
+                        count: 1,
+                        might: 3,
+                        gear: false,
+                        opponent: false,
+                        location: Here,
+                        entry_ready: true,
+                    }],
+                )]
+            }
+        }
+        360 => {
+            const {
+                &[
+                    rule(
+                        SelfPlayed,
+                        &[],
+                        false,
+                        TargetRule::NONE,
+                        &[Tokens {
+                            count: 1,
+                            might: 3,
+                            gear: false,
+                            opponent: false,
+                            location: Base,
+                            entry_ready: true,
+                        }],
+                    ),
+                    rule(
+                        SelfDeath,
+                        &[],
+                        false,
+                        TargetRule::NONE,
+                        &[Tokens {
+                            count: 1,
+                            might: 3,
+                            gear: false,
+                            opponent: false,
+                            location: Base,
+                            entry_ready: true,
+                        }],
+                    ),
+                ]
+            }
+        }
+        361 => {
+            const {
+                &[rule(
+                    SelfDeath,
+                    &[],
+                    false,
+                    TargetRule::NONE,
+                    &[
+                        Channel {
+                            count: 2,
+                            exhausted: true,
+                        },
+                        Draw(1),
+                    ],
+                )]
+            }
+        }
+
         348 => {
             const {
                 &[rule(

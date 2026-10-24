@@ -1,0 +1,1373 @@
+{
+  "schema_version": 1,
+  "origin_gallery": {
+    "url": "https://playriftbound.com/en-us/card-gallery/",
+    "uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9"
+  },
+  "pre_admission_catalog_sha256": "c300d1f5c578b7bd59ca237890c6300d7680119013ebdee8e5d786bcdf858b4e",
+  "preserved_runtime_prefix": {
+    "card_count": 349,
+    "cards_sha256": "450b0f37effaf03d7ee7496aa8943643980ca95ab563fd9a9ecedd208f7912fe",
+    "presets_sha256": "d6e64ebf3f8921686682dacd87d4b2b4baec5754dbd284c6d60bf3fb324571e2",
+    "legends_manifest_sha256": "2b621121a54761ccee91e6d0df7b720e572138e7c2caac2c52abaaabd951b37f",
+    "training_recipe_source_sha256": "ad6b2ad3d5e3e34c99af35eef5a283b615cc813db27cec246fd2f433063ec1e4"
+  },
+  "preserved_source_reviews": {
+    "field_resolution_count": 115,
+    "raw_printing_count": 71,
+    "historical_issue_count": 40,
+    "identity_review_count": 29,
+    "field_image_count": 71,
+    "field_resolutions_sha256": "3c75cb257042b2f364c4557900f8723454fc1d3a1ace3cfcaee0693e9a70fd58",
+    "raw_printings_sha256": "8ee41b60e102f1e53fdad2b2c7693f374fda274717c48c2d1ef542e22354f301",
+    "historical_issues_sha256": "3ff51d7ce73e585e948a06e1b165794abd0b5f6bf768d12126038b57942b11bf",
+    "identity_reviews_sha256": "c61c191636c74795ec15c4149805d994c76c020093c98592a489766f30f54ad3",
+    "field_image_index_sha256": "3c764d54c851a30f3378af34fe930907631fdb2fa2a15d3809e452adcb4eae19"
+  },
+  "pre_admission_counts": {
+    "main_cards": 349,
+    "mapped_legal": 374,
+    "remaining_legal": 705
+  },
+  "reviewed_on": "2026-10-24",
+  "scope": "Thirteen Temporary/Sprite source admissions. Source evidence and interaction conformance are verified separately.",
+  "records": [
+    {
+      "official_id": "ogn-180-298",
+      "name": "Fading Memories",
+      "raw_printing": {
+        "official_id": "ogn-180-298",
+        "public_code": "OGN-180/298",
+        "name": "Fading Memories",
+        "set": "OGN",
+        "collector_number": 180,
+        "types": [
+          "spell"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "spell"
+        ],
+        "accessibility_types": [
+          "spell"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "chaos"
+        ],
+        "energy": 4,
+        "power": 1,
+        "might": null,
+        "might_bonus": null,
+        "rules_html": "<p>Give a unit at a battlefield or a gear [Temporary]. (Kill it at the start of its controller's Beginning Phase, before scoring.)</p>",
+        "rules_text": "Give a unit at a battlefield or a gear [Temporary]. (Kill it at the start of its controller's Beginning Phase, before scoring.)",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [],
+        "rarity": "uncommon",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/a2b366942f1a7ec1f4bd3c1b17e10356214705d7-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Spell: Fading Memories. Give a unit at a battlefield or a gear [Temporary]. (Kill it at the start of its controller's Beginning Phase, before scoring.)",
+        "illustrators": [
+          "Kudos Productions"
+        ]
+      },
+      "raw_printing_sha256": "6ec017938baa721e94476b03d17ce2fc82d311f8495dc42c34436b3a2167ec86",
+      "effective": {
+        "types": [
+          "spell"
+        ],
+        "super_types": [],
+        "domains": [
+          "chaos"
+        ],
+        "energy": 4,
+        "power": 1,
+        "might": null,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>Give a unit at a battlefield or a gear [Temporary]. (Kill it at the start of its controller's Beginning Phase, before scoring.)</p>",
+        "rules_text": "Give a unit at a battlefield or a gear [Temporary]. (Kill it at the start of its controller's Beginning Phase, before scoring.)",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "existing_field_resolution_ids": [],
+      "visual_observation": {
+        "official_id": "ogn-180-298",
+        "face_visually_inspected": true,
+        "original_image_sha256": "07de9896aebfe4a46950bb30ccca9ee1416abc2307667db1e2d3e9d43b3f8865",
+        "name": "Fading Memories",
+        "collector_code": "OGN-180/298",
+        "printed_types": [
+          "spell"
+        ],
+        "printed_supertypes": [],
+        "printed_domains": [
+          "chaos"
+        ],
+        "printed_tags": [],
+        "printed_energy": 4,
+        "printed_power": 1,
+        "printed_might": null,
+        "printed_might_bonus": null,
+        "printed_rules_icons_expanded": "Give a unit at a battlefield or a gear [Temporary]. (Kill it at the start of its controller's Beginning Phase, before scoring.)",
+        "printed_equipment_icons_expanded": "",
+        "comparison": "No mismatch found in individually inspected face; icon expansion and line wrapping are presentation only.",
+        "uncertainties": []
+      },
+      "original_image": {
+        "path": "assets/data/card_admissions/c12/originals/ogn-180-298.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/a2b366942f1a7ec1f4bd3c1b17e10356214705d7-744x1039.png?accountingTag=RB",
+        "bytes": 786970,
+        "sha256": "07de9896aebfe4a46950bb30ccca9ee1416abc2307667db1e2d3e9d43b3f8865"
+      },
+      "runtime_id": 349,
+      "runtime_image": {
+        "path": "assets/art/card_349.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/a2b366942f1a7ec1f4bd3c1b17e10356214705d7-744x1039.png?w=360&q=80&fm=png",
+        "bytes": 253656,
+        "sha256": "d8431405ffe5cfbb27530c44d8e2c656b7b655e0969e05dbec2de87018d073ce"
+      },
+      "append_offset": 0,
+      "interpretation_note": "Mixed single target: Unit at battlefield OR Gear anywhere; either allegiance. Grant Temporary without duration; actual provenance/Deflect and live target revalidation."
+    },
+    {
+      "official_id": "ogn-069-298",
+      "name": "Last Stand",
+      "raw_printing": {
+        "official_id": "ogn-069-298",
+        "public_code": "OGN-069/298",
+        "name": "Last Stand",
+        "set": "OGN",
+        "collector_number": 69,
+        "types": [
+          "spell"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "spell"
+        ],
+        "accessibility_types": [
+          "spell"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "calm"
+        ],
+        "energy": 3,
+        "power": 1,
+        "might": null,
+        "might_bonus": null,
+        "rules_html": "<p>[Action] (Play on your turn or in showdowns.)<br />Double a friendly unit's Might this turn. Give it [Temporary]. (Kill it at the start of its controller's Beginning Phase, before scoring.)</p>",
+        "rules_text": "[Action] (Play on your turn or in showdowns.)\nDouble a friendly unit's Might this turn. Give it [Temporary]. (Kill it at the start of its controller's Beginning Phase, before scoring.)",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [],
+        "rarity": "rare",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/9062d372d299c5c6a0c679f0ff07ba71590ca5f1-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Spell: Last Stand. [Action] (Play on your turn or in showdowns.)\nDouble a friendly unit's Might this turn. Give it [Temporary]. (Kill it at the start of its controller's Beginning Phase, before scoring.)",
+        "illustrators": [
+          "Kudos Productions"
+        ]
+      },
+      "raw_printing_sha256": "718ff670a0d17074be80ca4ad18be63673ebd3ea6358648badc6b8a7e518f9b7",
+      "effective": {
+        "types": [
+          "spell"
+        ],
+        "super_types": [],
+        "domains": [
+          "calm"
+        ],
+        "energy": 3,
+        "power": 1,
+        "might": null,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>[Action] (Play on your turn or in showdowns.)<br />Double a friendly unit's Might this turn. Give it [Temporary]. (Kill it at the start of its controller's Beginning Phase, before scoring.)</p>",
+        "rules_text": "[Action] (Play on your turn or in showdowns.)\nDouble a friendly unit's Might this turn. Give it [Temporary]. (Kill it at the start of its controller's Beginning Phase, before scoring.)",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "existing_field_resolution_ids": [],
+      "visual_observation": {
+        "official_id": "ogn-069-298",
+        "face_visually_inspected": true,
+        "original_image_sha256": "8753f6ce132e5ddca36ac7b6fc01e48fba447f5de7bc14bb0a1da28429140913",
+        "name": "Last Stand",
+        "collector_code": "OGN-069/298",
+        "printed_types": [
+          "spell"
+        ],
+        "printed_supertypes": [],
+        "printed_domains": [
+          "calm"
+        ],
+        "printed_tags": [],
+        "printed_energy": 3,
+        "printed_power": 1,
+        "printed_might": null,
+        "printed_might_bonus": null,
+        "printed_rules_icons_expanded": "[Action] (Play on your turn or in showdowns.)\nDouble a friendly unit's Might this turn. Give it [Temporary]. (Kill it at the start of its controller's Beginning Phase, before scoring.)",
+        "printed_equipment_icons_expanded": "",
+        "comparison": "No mismatch found in individually inspected face; icon expansion and line wrapping are presentation only.",
+        "uncertainties": []
+      },
+      "original_image": {
+        "path": "assets/data/card_admissions/c12/originals/ogn-069-298.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/9062d372d299c5c6a0c679f0ff07ba71590ca5f1-744x1039.png?accountingTag=RB",
+        "bytes": 951310,
+        "sha256": "8753f6ce132e5ddca36ac7b6fc01e48fba447f5de7bc14bb0a1da28429140913"
+      },
+      "runtime_id": 350,
+      "runtime_image": {
+        "path": "assets/art/card_350.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/9062d372d299c5c6a0c679f0ff07ba71590ca5f1-744x1039.png?w=320&q=80&fm=png",
+        "bytes": 263654,
+        "sha256": "027f66dc029dfd642cb7d61dd1db5ace89c6cb80ba059a27eb457e9cbfd6ef05"
+      },
+      "append_offset": 1,
+      "interpretation_note": "Action; one friendly unit. Double signed current Might as a fixed nonnegative increase (433.1/479.4.c), then grant Temporary indefinitely; each Repeat takes a fresh snapshot."
+    },
+    {
+      "official_id": "rad-095-167",
+      "name": "Momentary Companion",
+      "raw_printing": {
+        "official_id": "rad-095-167",
+        "public_code": "RAD-095/167",
+        "name": "Momentary Companion",
+        "set": "RAD",
+        "collector_number": 95,
+        "types": [
+          "unit"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "unit"
+        ],
+        "accessibility_types": [
+          "unit"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "chaos"
+        ],
+        "energy": 4,
+        "power": null,
+        "might": 4,
+        "might_bonus": null,
+        "rules_html": "<p>[Hidden] (Hide now for :rb_rune_rainbow: to react with later for :rb_energy_0:.)<br />When you play me, if it's not your turn, give me [Temporary]. (Kill me at the start of my controller's Beginning Phase, before scoring.)</p>",
+        "rules_text": "[Hidden] (Hide now for [Any Power] to react with later for [0 Energy].)\nWhen you play me, if it's not your turn, give me [Temporary]. (Kill me at the start of my controller's Beginning Phase, before scoring.)",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [],
+        "rarity": "common",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/aea67209470e47ec876a11ae9b3eacda00df7be1-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Unit: Momentary Companion. [Hidden] (Hide now for [A] to react with later for [0].)\nWhen you play me, if it's not your turn, give me [Temporary]. (Kill me at the start of my controller's Beginning Phase, before scoring.)",
+        "illustrators": [
+          "Kudos Productions"
+        ]
+      },
+      "raw_printing_sha256": "c3a2a4f9e90de9439edf1e8ef96a05a29f0c348e67f66816c26936a32fd2df52",
+      "effective": {
+        "types": [
+          "unit"
+        ],
+        "super_types": [],
+        "domains": [
+          "chaos"
+        ],
+        "energy": 4,
+        "power": null,
+        "might": 4,
+        "might_bonus": null,
+        "tags": [
+          "Shadow Isles",
+          "Demon"
+        ],
+        "rules_html": "<p>[Hidden] (Hide now for :rb_rune_rainbow: to react with later for :rb_energy_0:.)<br />When you play me, if it's not your turn, give me [Temporary]. (Kill me at the start of my controller's Beginning Phase, before scoring.)</p>",
+        "rules_text": "[Hidden] (Hide now for [Any Power] to react with later for [0 Energy].)\nWhen you play me, if it's not your turn, give me [Temporary]. (Kill me at the start of my controller's Beginning Phase, before scoring.)",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "existing_field_resolution_ids": [
+        "rad-095-167:tags"
+      ],
+      "visual_observation": {
+        "official_id": "rad-095-167",
+        "face_visually_inspected": true,
+        "original_image_sha256": "55ab5e101b569288674f8aa83d9db4f729274b427b3187b5c1b57efaf9db6950",
+        "name": "Momentary Companion",
+        "collector_code": "RAD-095/167",
+        "printed_types": [
+          "unit"
+        ],
+        "printed_supertypes": [],
+        "printed_domains": [
+          "chaos"
+        ],
+        "printed_tags": [
+          "Shadow Isles",
+          "Demon"
+        ],
+        "printed_energy": 4,
+        "printed_power": null,
+        "printed_might": 4,
+        "printed_might_bonus": null,
+        "printed_rules_icons_expanded": "[Hidden] (Hide now for [Any Power] to react with later for [0 Energy].)\nWhen you play me, if it's not your turn, give me [Temporary]. (Kill me at the start of my controller's Beginning Phase, before scoring.)",
+        "printed_equipment_icons_expanded": "",
+        "comparison": "Confirmed new mismatch on direct reinspection: face prints Shadow Isles and Demon; current raw/effective feed tags are empty. The prior observation incorrectly recorded no tags and is retained separately, not silently rewritten.",
+        "uncertainties": []
+      },
+      "original_image": {
+        "path": "assets/data/catalog_evidence/images/rad-095-167.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/aea67209470e47ec876a11ae9b3eacda00df7be1-744x1039.png?accountingTag=RB",
+        "bytes": 759278,
+        "sha256": "55ab5e101b569288674f8aa83d9db4f729274b427b3187b5c1b57efaf9db6950"
+      },
+      "runtime_id": 351,
+      "runtime_image": {
+        "path": "assets/art/card_351.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/aea67209470e47ec876a11ae9b3eacda00df7be1-744x1039.png?w=360&q=80&fm=png",
+        "bytes": 265311,
+        "sha256": "af34a8bcef04820125a6c5cc266b547b96c7db28546b4714c15e7f7078c5ec10"
+      },
+      "append_offset": 2,
+      "interpretation_note": "Hidden unit. Event-time opponent-turn SelfPlayed trigger grants Temporary to its original source object. Requires integrated source correction commit 996f58c; only the effective tags differ from raw."
+    },
+    {
+      "official_id": "unl-076-219",
+      "name": "Petal Pixie",
+      "raw_printing": {
+        "official_id": "unl-076-219",
+        "public_code": "UNL-076/219",
+        "name": "Petal Pixie",
+        "set": "UNL",
+        "collector_number": 76,
+        "types": [
+          "unit"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "unit"
+        ],
+        "accessibility_types": [
+          "unit"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "mind"
+        ],
+        "energy": 2,
+        "power": null,
+        "might": 2,
+        "might_bonus": null,
+        "rules_html": "<p>I have +1 :rb_might: for each of your units with [Temporary] at my battlefield.</p>",
+        "rules_text": "I have +1 Might for each of your units with [Temporary] at my battlefield.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [
+          "Fae",
+          "Ionia"
+        ],
+        "rarity": "uncommon",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/68189fb5a6b3193e8925969ac0c545bc78b210c9-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Unit: Petal Pixie. I have +1 [S] for each of your units with [Temporary] at my battlefield.",
+        "illustrators": [
+          "Envar Studio"
+        ]
+      },
+      "raw_printing_sha256": "9f28be4c7b54bfa59f498eff94fc112441c4d45d43a6e2520e6d5307b4a74c6a",
+      "effective": {
+        "types": [
+          "unit"
+        ],
+        "super_types": [],
+        "domains": [
+          "mind"
+        ],
+        "energy": 2,
+        "power": null,
+        "might": 2,
+        "might_bonus": null,
+        "tags": [
+          "Fae",
+          "Ionia"
+        ],
+        "rules_html": "<p>I have +1 :rb_might: for each of your units with [Temporary] at my battlefield.</p>",
+        "rules_text": "I have +1 Might for each of your units with [Temporary] at my battlefield.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "existing_field_resolution_ids": [],
+      "visual_observation": {
+        "official_id": "unl-076-219",
+        "face_visually_inspected": true,
+        "original_image_sha256": "6ba870a54dd9f9d408452a36bae390bc2111248fc4b6f20b88954c0559db133c",
+        "name": "Petal Pixie",
+        "collector_code": "UNL-076/219",
+        "printed_types": [
+          "unit"
+        ],
+        "printed_supertypes": [],
+        "printed_domains": [
+          "mind"
+        ],
+        "printed_tags": [
+          "Fae",
+          "Ionia"
+        ],
+        "printed_energy": 2,
+        "printed_power": null,
+        "printed_might": 2,
+        "printed_might_bonus": null,
+        "printed_rules_icons_expanded": "I have +1 Might for each of your units with [Temporary] at my battlefield.",
+        "printed_equipment_icons_expanded": "",
+        "comparison": "No mismatch found in individually inspected face; icon expansion and line wrapping are presentation only.",
+        "uncertainties": []
+      },
+      "original_image": {
+        "path": "assets/data/card_admissions/c12/originals/unl-076-219.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/68189fb5a6b3193e8925969ac0c545bc78b210c9-744x1039.png?accountingTag=RB",
+        "bytes": 852460,
+        "sha256": "6ba870a54dd9f9d408452a36bae390bc2111248fc4b6f20b88954c0559db133c"
+      },
+      "runtime_id": 352,
+      "runtime_image": {
+        "path": "assets/art/card_352.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/68189fb5a6b3193e8925969ac0c545bc78b210c9-744x1039.png?w=360&q=80&fm=png",
+        "bytes": 284356,
+        "sha256": "f8abcbf8a1b7d1c74aa5a463702d4b03d23c21dd1ac834d4dd43367f3e19cbe9"
+      },
+      "append_offset": 3,
+      "interpretation_note": "Live Might count: each own Temporary unit at source battlefield, self included if Temporary; base0; no enemy or pending-token count."
+    },
+    {
+      "official_id": "unl-165-219",
+      "name": "Shadow's Call",
+      "raw_printing": {
+        "official_id": "unl-165-219",
+        "public_code": "UNL-165/219",
+        "name": "Shadow's Call",
+        "set": "UNL",
+        "collector_number": 165,
+        "types": [
+          "spell"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "spell"
+        ],
+        "accessibility_types": [
+          "spell"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "order"
+        ],
+        "energy": 2,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "rules_html": "<p>Choose a friendly unit without [Temporary]. Give it [Temporary]. Draw 2. (Kill it at the start of its controller's Beginning Phase, before scoring.)</p>",
+        "rules_text": "Choose a friendly unit without [Temporary]. Give it [Temporary]. Draw 2. (Kill it at the start of its controller's Beginning Phase, before scoring.)",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [],
+        "rarity": "uncommon",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/5a9a81d353131fc275313e737d55ca6e2661dce6-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Spell: Shadow's Call. Choose a friendly unit without [Temporary]. Give it [Temporary]. Draw 2. (Kill it at the start of its controller's Beginning Phase, before scoring.)",
+        "illustrators": [
+          "Kudos Productions"
+        ]
+      },
+      "raw_printing_sha256": "d84956ec649298202e326d0c80373b472dc8ffe11a3b14812879dfe5961abe18",
+      "effective": {
+        "types": [
+          "spell"
+        ],
+        "super_types": [],
+        "domains": [
+          "order"
+        ],
+        "energy": 2,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>Choose a friendly unit without [Temporary]. Give it [Temporary]. Draw 2. (Kill it at the start of its controller's Beginning Phase, before scoring.)</p>",
+        "rules_text": "Choose a friendly unit without [Temporary]. Give it [Temporary]. Draw 2. (Kill it at the start of its controller's Beginning Phase, before scoring.)",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "existing_field_resolution_ids": [],
+      "visual_observation": {
+        "official_id": "unl-165-219",
+        "face_visually_inspected": true,
+        "original_image_sha256": "1db02c4efc4eb314d7e9bc7072c4a95cba5ac385cb5be5ae6745f11503700f92",
+        "name": "Shadow's Call",
+        "collector_code": "UNL-165/219",
+        "printed_types": [
+          "spell"
+        ],
+        "printed_supertypes": [],
+        "printed_domains": [
+          "order"
+        ],
+        "printed_tags": [],
+        "printed_energy": 2,
+        "printed_power": null,
+        "printed_might": null,
+        "printed_might_bonus": null,
+        "printed_rules_icons_expanded": "Choose a friendly unit without [Temporary]. Give it [Temporary]. Draw 2. (Kill it at the start of its controller's Beginning Phase, before scoring.)",
+        "printed_equipment_icons_expanded": "",
+        "comparison": "No mismatch found in individually inspected face; icon expansion and line wrapping are presentation only.",
+        "uncertainties": []
+      },
+      "original_image": {
+        "path": "assets/data/card_admissions/c12/originals/unl-165-219.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/5a9a81d353131fc275313e737d55ca6e2661dce6-744x1039.png?accountingTag=RB",
+        "bytes": 786210,
+        "sha256": "1db02c4efc4eb314d7e9bc7072c4a95cba5ac385cb5be5ae6745f11503700f92"
+      },
+      "runtime_id": 353,
+      "runtime_image": {
+        "path": "assets/art/card_353.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/5a9a81d353131fc275313e737d55ca6e2661dce6-744x1039.png?w=360&q=80&fm=png",
+        "bytes": 250986,
+        "sha256": "30cde326d45743783d8d5ff1b283cfe11d972da35bab8992e7438ede483e2b93"
+      },
+      "append_offset": 4,
+      "interpretation_note": "One friendly unit without Temporary; grant Temporary then independently Draw2. Recheck target per execution; parent stays represented through burnout."
+    },
+    {
+      "official_id": "unl-083-219",
+      "name": "Smoke and Mirrors",
+      "raw_printing": {
+        "official_id": "unl-083-219",
+        "public_code": "UNL-083/219",
+        "name": "Smoke and Mirrors",
+        "set": "UNL",
+        "collector_number": 83,
+        "types": [
+          "spell"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "spell"
+        ],
+        "accessibility_types": [
+          "spell"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "mind"
+        ],
+        "energy": 2,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "rules_html": "<p>[Hidden] (Hide now for :rb_rune_rainbow: to react with later for :rb_energy_0:.)<br />[Action] (Play on your turn or in showdowns.)<br />Choose a unit you control and another unit you control at a different location. If at least one of them has [Temporary], move each to the other's location. Draw 1.</p>",
+        "rules_text": "[Hidden] (Hide now for [Any Power] to react with later for [0 Energy].)\n[Action] (Play on your turn or in showdowns.)\nChoose a unit you control and another unit you control at a different location. If at least one of them has [Temporary], move each to the other's location. Draw 1.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [],
+        "rarity": "rare",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/38886634ee8646707d9c26020f977f14c934a4c0-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Spell: Smoke and Mirrors. [Hidden] (Hide now for [A] to react with later for [0].)\n[Action] (Play on your turn or in showdowns.)\nChoose a unit you control and another unit you control at a different location. If at least one of them has [Temporary], move each to the other's location. Draw 1.",
+        "illustrators": [
+          "Wild Blue Studios"
+        ]
+      },
+      "raw_printing_sha256": "857c7b6cbd0d38528bdb8456c079b18d8e50b35d539b49ea6d6d155e4c72461e",
+      "effective": {
+        "types": [
+          "spell"
+        ],
+        "super_types": [],
+        "domains": [
+          "mind"
+        ],
+        "energy": 2,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>[Hidden] (Hide now for :rb_rune_rainbow: to react with later for :rb_energy_0:.)<br />[Action] (Play on your turn or in showdowns.)<br />Choose a unit you control and another unit you control at a different location. If at least one of them has [Temporary], move each to the other's location. Draw 1.</p>",
+        "rules_text": "[Hidden] (Hide now for [Any Power] to react with later for [0 Energy].)\n[Action] (Play on your turn or in showdowns.)\nChoose a unit you control and another unit you control at a different location. If at least one of them has [Temporary], move each to the other's location. Draw 1.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "existing_field_resolution_ids": [],
+      "visual_observation": {
+        "official_id": "unl-083-219",
+        "face_visually_inspected": true,
+        "original_image_sha256": "47358d85947d6f50336dcfa15098e25a428a0d4a844497691b0dad6c22b36836",
+        "name": "Smoke and Mirrors",
+        "collector_code": "UNL-083/219",
+        "printed_types": [
+          "spell"
+        ],
+        "printed_supertypes": [],
+        "printed_domains": [
+          "mind"
+        ],
+        "printed_tags": [],
+        "printed_energy": 2,
+        "printed_power": null,
+        "printed_might": null,
+        "printed_might_bonus": null,
+        "printed_rules_icons_expanded": "[Hidden] (Hide now for [Any Power] to react with later for [0 Energy].)\n[Action] (Play on your turn or in showdowns.)\nChoose a unit you control and another unit you control at a different location. If at least one of them has [Temporary], move each to the other's location. Draw 1.",
+        "printed_equipment_icons_expanded": "",
+        "comparison": "No mismatch found in individually inspected face; icon expansion and line wrapping are presentation only.",
+        "uncertainties": []
+      },
+      "original_image": {
+        "path": "assets/data/card_admissions/c12/originals/unl-083-219.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/38886634ee8646707d9c26020f977f14c934a4c0-744x1039.png?accountingTag=RB",
+        "bytes": 844854,
+        "sha256": "47358d85947d6f50336dcfa15098e25a428a0d4a844497691b0dad6c22b36836"
+      },
+      "runtime_id": 354,
+      "runtime_image": {
+        "path": "assets/art/card_354.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/38886634ee8646707d9c26020f977f14c934a4c0-744x1039.png?w=320&q=80&fm=png",
+        "bytes": 261737,
+        "sha256": "14fb9e5c7ff28f450fe92ac002de74eb7530d7f6a8bcf351c6454a9cc7711ada"
+      },
+      "append_offset": 5,
+      "interpretation_note": "Hidden/Action ordered two controlled units at different locations; conditional Move each to other location if at least one Temporary, then independent Draw1. Hidden first target forced here, second elsewhere. Per-unit movement blocking; no all-or-nothing numeric Swap."
+    },
+    {
+      "official_id": "unl-069-219",
+      "name": "Sprite Burst",
+      "raw_printing": {
+        "official_id": "unl-069-219",
+        "public_code": "UNL-069/219",
+        "name": "Sprite Burst",
+        "set": "UNL",
+        "collector_number": 69,
+        "types": [
+          "spell"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "spell"
+        ],
+        "accessibility_types": [
+          "spell"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "mind"
+        ],
+        "energy": 5,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "rules_html": "<p>Play two ready 3 :rb_might: Sprite unit tokens with [Temporary]. (Kill each at the start of its controller's Beginning Phase, before scoring.)</p>",
+        "rules_text": "Play two ready 3 Might Sprite unit tokens with [Temporary]. (Kill each at the start of its controller's Beginning Phase, before scoring.)",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [],
+        "rarity": "common",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/4427ceffae1c3e7b012167461ce7c080bb2c1fe4-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Spell: Sprite Burst. Play two ready 3 [S] Sprite unit tokens with [Temporary]. (Kill each at the start of its controller's Beginning Phase, before scoring.)",
+        "illustrators": [
+          "Envar Studio"
+        ]
+      },
+      "raw_printing_sha256": "7f20d5530b03a331338afcf273a5d1ea9a0df85f1d06e1a7687260b1c5046185",
+      "effective": {
+        "types": [
+          "spell"
+        ],
+        "super_types": [],
+        "domains": [
+          "mind"
+        ],
+        "energy": 5,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>Play two ready 3 :rb_might: Sprite unit tokens with [Temporary]. (Kill each at the start of its controller's Beginning Phase, before scoring.)</p>",
+        "rules_text": "Play two ready 3 Might Sprite unit tokens with [Temporary]. (Kill each at the start of its controller's Beginning Phase, before scoring.)",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "existing_field_resolution_ids": [],
+      "visual_observation": {
+        "official_id": "unl-069-219",
+        "face_visually_inspected": true,
+        "original_image_sha256": "96123c516b7883d6d70b761fd4e267da6284508cd7f12d01031f2a534ee1ba52",
+        "name": "Sprite Burst",
+        "collector_code": "UNL-069/219",
+        "printed_types": [
+          "spell"
+        ],
+        "printed_supertypes": [],
+        "printed_domains": [
+          "mind"
+        ],
+        "printed_tags": [],
+        "printed_energy": 5,
+        "printed_power": null,
+        "printed_might": null,
+        "printed_might_bonus": null,
+        "printed_rules_icons_expanded": "Play two ready 3 Might Sprite unit tokens with [Temporary]. (Kill each at the start of its controller's Beginning Phase, before scoring.)",
+        "printed_equipment_icons_expanded": "",
+        "comparison": "No mismatch found in individually inspected face; icon expansion and line wrapping are presentation only.",
+        "uncertainties": []
+      },
+      "original_image": {
+        "path": "assets/data/card_admissions/c12/originals/unl-069-219.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/4427ceffae1c3e7b012167461ce7c080bb2c1fe4-744x1039.png?accountingTag=RB",
+        "bytes": 803239,
+        "sha256": "96123c516b7883d6d70b761fd4e267da6284508cd7f12d01031f2a534ee1ba52"
+      },
+      "runtime_id": 355,
+      "runtime_image": {
+        "path": "assets/art/card_355.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/4427ceffae1c3e7b012167461ce7c080bb2c1fe4-744x1039.png?w=320&q=80&fm=png",
+        "bytes": 245856,
+        "sha256": "7df1a57f97255a22894f3e39377fe7c18b779e5783ceb694501b0cca6e0ff149"
+      },
+      "append_offset": 6,
+      "interpretation_note": "Two distinct pending ready Sprite3/Fae/domainless/Temporary unit plays; normal default locations individually; parent completes first."
+    },
+    {
+      "official_id": "ogn-094-298",
+      "name": "Sprite Call",
+      "raw_printing": {
+        "official_id": "ogn-094-298",
+        "public_code": "OGN-094/298",
+        "name": "Sprite Call",
+        "set": "OGN",
+        "collector_number": 94,
+        "types": [
+          "spell"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "spell"
+        ],
+        "accessibility_types": [
+          "spell"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "mind"
+        ],
+        "energy": 3,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "rules_html": "<p>[Hidden] (Hide now for :rb_rune_rainbow: to react with later for :rb_energy_0:.)<br />[Action] (Play on your turn or in showdowns.)<br />Play a ready 3 :rb_might: Sprite unit token with [Temporary]. (Kill it at the start of its controller's Beginning Phase, before scoring.)</p>",
+        "rules_text": "[Hidden] (Hide now for [Any Power] to react with later for [0 Energy].)\n[Action] (Play on your turn or in showdowns.)\nPlay a ready 3 Might Sprite unit token with [Temporary]. (Kill it at the start of its controller's Beginning Phase, before scoring.)",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [],
+        "rarity": "common",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/ab3db48dcbb12b01151d3a08c2412020380b7ca5-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Spell: Sprite Call. [Hidden] (Hide now for [A] to react with later for [0].)\n[Action] (Play on your turn or in showdowns.)\nPlay a ready 3 [S] Sprite unit token with [Temporary]. (Kill it at the start of its controller's Beginning Phase, before scoring.)",
+        "illustrators": [
+          "Envar Studio"
+        ]
+      },
+      "raw_printing_sha256": "b4474087642c95ec1048991c2e3cf8e146d0fbef02706cc9a23597a2e84240ec",
+      "effective": {
+        "types": [
+          "spell"
+        ],
+        "super_types": [],
+        "domains": [
+          "mind"
+        ],
+        "energy": 3,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>[Hidden] (Hide now for :rb_rune_rainbow: to react with later for :rb_energy_0:.)<br />[Action] (Play on your turn or in showdowns.)<br />Play a ready 3 :rb_might: Sprite unit token with [Temporary]. (Kill it at the start of its controller's Beginning Phase, before scoring.)</p>",
+        "rules_text": "[Hidden] (Hide now for [Any Power] to react with later for [0 Energy].)\n[Action] (Play on your turn or in showdowns.)\nPlay a ready 3 Might Sprite unit token with [Temporary]. (Kill it at the start of its controller's Beginning Phase, before scoring.)",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "existing_field_resolution_ids": [],
+      "visual_observation": {
+        "official_id": "ogn-094-298",
+        "face_visually_inspected": true,
+        "original_image_sha256": "376d67f962cd3fb98cac68637575a08231e012646d1b98704546887be5dd1b44",
+        "name": "Sprite Call",
+        "collector_code": "OGN-094/298",
+        "printed_types": [
+          "spell"
+        ],
+        "printed_supertypes": [],
+        "printed_domains": [
+          "mind"
+        ],
+        "printed_tags": [],
+        "printed_energy": 3,
+        "printed_power": null,
+        "printed_might": null,
+        "printed_might_bonus": null,
+        "printed_rules_icons_expanded": "[Hidden] (Hide now for [Any Power] to react with later for [0 Energy].)\n[Action] (Play on your turn or in showdowns.)\nPlay a ready 3 Might Sprite unit token with [Temporary]. (Kill it at the start of its controller's Beginning Phase, before scoring.)",
+        "printed_equipment_icons_expanded": "",
+        "comparison": "No mismatch found in individually inspected face; icon expansion and line wrapping are presentation only.",
+        "uncertainties": []
+      },
+      "original_image": {
+        "path": "assets/data/card_admissions/c12/originals/ogn-094-298.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/ab3db48dcbb12b01151d3a08c2412020380b7ca5-744x1039.png?accountingTag=RB",
+        "bytes": 702367,
+        "sha256": "376d67f962cd3fb98cac68637575a08231e012646d1b98704546887be5dd1b44"
+      },
+      "runtime_id": 356,
+      "runtime_image": {
+        "path": "assets/art/card_356.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/ab3db48dcbb12b01151d3a08c2412020380b7ca5-744x1039.png?w=360&q=80&fm=png",
+        "bytes": 244555,
+        "sha256": "209312a075163e368141abdcd350f0c3c4dd70f56c866e1f3d964d2a572a9f8c"
+      },
+      "append_offset": 7,
+      "interpretation_note": "Hidden/Action; pending ready Sprite. Hand play uses normal default location; Hidden forces token to original hidden field under811.1.d.5."
+    },
+    {
+      "official_id": "ogn-106-298",
+      "name": "Sprite Mother",
+      "raw_printing": {
+        "official_id": "ogn-106-298",
+        "public_code": "OGN-106/298",
+        "name": "Sprite Mother",
+        "set": "OGN",
+        "collector_number": 106,
+        "types": [
+          "unit"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "unit"
+        ],
+        "accessibility_types": [
+          "unit"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "mind"
+        ],
+        "energy": 4,
+        "power": 1,
+        "might": 3,
+        "might_bonus": null,
+        "rules_html": "<p>When you play me, play a ready 3 :rb_might: Sprite unit token with [Temporary] here. (Kill it at the start of its controller's Beginning Phase, before scoring.)</p>",
+        "rules_text": "When you play me, play a ready 3 Might Sprite unit token with [Temporary] here. (Kill it at the start of its controller's Beginning Phase, before scoring.)",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [
+          "Fae"
+        ],
+        "rarity": "uncommon",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/65c06528f88de1ac207b382d4830ccfdd08a2d12-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Unit: Sprite Mother. When you play me, play a ready 3 [S] Sprite unit token with [Temporary] here. (Kill it at the start of its controller's Beginning Phase, before scoring.)",
+        "illustrators": [
+          "Envar Studio"
+        ]
+      },
+      "raw_printing_sha256": "09687b1bf0e40773a69ed7dd163aeb23efd92411d64849191f3da4626cd4fb6b",
+      "effective": {
+        "types": [
+          "unit"
+        ],
+        "super_types": [],
+        "domains": [
+          "mind"
+        ],
+        "energy": 4,
+        "power": 1,
+        "might": 3,
+        "might_bonus": null,
+        "tags": [
+          "Fae"
+        ],
+        "rules_html": "<p>When you play me, play a ready 3 :rb_might: Sprite unit token with [Temporary] here. (Kill it at the start of its controller's Beginning Phase, before scoring.)</p>",
+        "rules_text": "When you play me, play a ready 3 Might Sprite unit token with [Temporary] here. (Kill it at the start of its controller's Beginning Phase, before scoring.)",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "existing_field_resolution_ids": [],
+      "visual_observation": {
+        "official_id": "ogn-106-298",
+        "face_visually_inspected": true,
+        "original_image_sha256": "c3173ed8e02ac58e0f4f7a3644f00a9c9ef5007f776c363b72bbd1e623d48ba6",
+        "name": "Sprite Mother",
+        "collector_code": "OGN-106/298",
+        "printed_types": [
+          "unit"
+        ],
+        "printed_supertypes": [],
+        "printed_domains": [
+          "mind"
+        ],
+        "printed_tags": [
+          "Fae"
+        ],
+        "printed_energy": 4,
+        "printed_power": 1,
+        "printed_might": 3,
+        "printed_might_bonus": null,
+        "printed_rules_icons_expanded": "When you play me, play a ready 3 Might Sprite unit token with [Temporary] here. (Kill it at the start of its controller's Beginning Phase, before scoring.)",
+        "printed_equipment_icons_expanded": "",
+        "comparison": "No mismatch found in individually inspected face; icon expansion and line wrapping are presentation only.",
+        "uncertainties": []
+      },
+      "original_image": {
+        "path": "assets/data/card_admissions/c12/originals/ogn-106-298.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/65c06528f88de1ac207b382d4830ccfdd08a2d12-744x1039.png?accountingTag=RB",
+        "bytes": 827331,
+        "sha256": "c3173ed8e02ac58e0f4f7a3644f00a9c9ef5007f776c363b72bbd1e623d48ba6"
+      },
+      "runtime_id": 357,
+      "runtime_image": {
+        "path": "assets/art/card_357.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/65c06528f88de1ac207b382d4830ccfdd08a2d12-744x1039.png?w=360&q=80&fm=png",
+        "bytes": 274172,
+        "sha256": "dd151419532bbf8f02da18d215a1d4f21a9ad433a9e592dde11275e4512a1981"
+      },
+      "append_offset": 8,
+      "interpretation_note": "SelfPlayed queues ready Temporary Sprite at live Here when ability executes; source absent means no location. Capture destination in pending token after instruction."
+    },
+    {
+      "official_id": "unl-084-219",
+      "name": "Sprite Queen",
+      "raw_printing": {
+        "official_id": "unl-084-219",
+        "public_code": "UNL-084/219",
+        "name": "Sprite Queen",
+        "set": "UNL",
+        "collector_number": 84,
+        "types": [
+          "unit"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "unit"
+        ],
+        "accessibility_types": [
+          "unit"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "mind"
+        ],
+        "energy": 7,
+        "power": 1,
+        "might": 6,
+        "might_bonus": null,
+        "rules_html": "<p>When you play me or at the start of your Beginning Phase, play a ready 3 :rb_might: Sprite unit token with [Temporary] to your base. (Kill them at the start of their controller's next Beginning Phase, before scoring.)</p>",
+        "rules_text": "When you play me or at the start of your Beginning Phase, play a ready 3 Might Sprite unit token with [Temporary] to your base. (Kill them at the start of their controller's next Beginning Phase, before scoring.)",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [
+          "Fae",
+          "Ionia"
+        ],
+        "rarity": "rare",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/64b7debe0dd3d7b644f627eba562187bc45dd313-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Unit: Sprite Queen. When you play me or at the start of your Beginning Phase, play a ready 3 [S] Sprite unit token with [Temporary] to your base. (Kill them at the start of their controller's next Beginning Phase, before scoring.)",
+        "illustrators": [
+          "Envar Studio"
+        ]
+      },
+      "raw_printing_sha256": "6debd77eacffa904997898395fd09f87ae70d3151e23a161f475bbe048cf95c1",
+      "effective": {
+        "types": [
+          "unit"
+        ],
+        "super_types": [],
+        "domains": [
+          "mind"
+        ],
+        "energy": 7,
+        "power": 1,
+        "might": 6,
+        "might_bonus": null,
+        "tags": [
+          "Fae",
+          "Ionia"
+        ],
+        "rules_html": "<p>When you play me or at the start of your Beginning Phase, play a ready 3 :rb_might: Sprite unit token with [Temporary] to your base. (Kill them at the start of their controller's next Beginning Phase, before scoring.)</p>",
+        "rules_text": "When you play me or at the start of your Beginning Phase, play a ready 3 Might Sprite unit token with [Temporary] to your base. (Kill them at the start of their controller's next Beginning Phase, before scoring.)",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "existing_field_resolution_ids": [],
+      "visual_observation": {
+        "official_id": "unl-084-219",
+        "face_visually_inspected": true,
+        "original_image_sha256": "d1bdcd3655cc6ea9f2563c1345ba7856eb1a0547aca3e884b076c9d337b07194",
+        "name": "Sprite Queen",
+        "collector_code": "UNL-084/219",
+        "printed_types": [
+          "unit"
+        ],
+        "printed_supertypes": [],
+        "printed_domains": [
+          "mind"
+        ],
+        "printed_tags": [
+          "Fae",
+          "Ionia"
+        ],
+        "printed_energy": 7,
+        "printed_power": 1,
+        "printed_might": 6,
+        "printed_might_bonus": null,
+        "printed_rules_icons_expanded": "When you play me or at the start of your Beginning Phase, play a ready 3 Might Sprite unit token with [Temporary] to your base. (Kill them at the start of their controller's next Beginning Phase, before scoring.)",
+        "printed_equipment_icons_expanded": "",
+        "comparison": "No mismatch found in individually inspected face; icon expansion and line wrapping are presentation only.",
+        "uncertainties": []
+      },
+      "original_image": {
+        "path": "assets/data/card_admissions/c12/originals/unl-084-219.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/64b7debe0dd3d7b644f627eba562187bc45dd313-744x1039.png?accountingTag=RB",
+        "bytes": 859908,
+        "sha256": "d1bdcd3655cc6ea9f2563c1345ba7856eb1a0547aca3e884b076c9d337b07194"
+      },
+      "runtime_id": 358,
+      "runtime_image": {
+        "path": "assets/art/card_358.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/64b7debe0dd3d7b644f627eba562187bc45dd313-744x1039.png?w=320&q=80&fm=png",
+        "bytes": 267414,
+        "sha256": "3d7d568796b74704545752a256bf7e72bab370dc223a760db49b3039489be57d"
+      },
+      "append_offset": 9,
+      "interpretation_note": "SelfPlayed and controller Beginning-start each queue ready Temporary Sprite to base. One Beginning event snapshot; newly created token expires next matching start, not current phase."
+    },
+    {
+      "official_id": "unl-048-219",
+      "name": "Trevor Snoozebottom",
+      "raw_printing": {
+        "official_id": "unl-048-219",
+        "public_code": "UNL-048/219",
+        "name": "Trevor Snoozebottom",
+        "set": "UNL",
+        "collector_number": 48,
+        "types": [
+          "unit"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "unit"
+        ],
+        "accessibility_types": [
+          "unit"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "calm"
+        ],
+        "energy": 3,
+        "power": null,
+        "might": 3,
+        "might_bonus": null,
+        "rules_html": "<p>[Shield] (+1 :rb_might: while I'm a defender.)<br />When I hold, play a ready 3 :rb_might: Sprite unit token with [Temporary] here. (Kill it at the start of its controller's next Beginning Phase, before scoring.)</p>",
+        "rules_text": "[Shield] (+1 Might while I'm a defender.)\nWhen I hold, play a ready 3 Might Sprite unit token with [Temporary] here. (Kill it at the start of its controller's next Beginning Phase, before scoring.)",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [
+          "Yordle",
+          "Ionia"
+        ],
+        "rarity": "uncommon",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/fa843ee80d1a35416d61482bc1602279955a2c7f-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Unit: Trevor Snoozebottom. [Shield] (+1 [S] while I'm a defender.)\nWhen I hold, play a ready 3 [S] Sprite unit token with [Temporary] here. (Kill it at the start of its controller's next Beginning Phase, before scoring.)",
+        "illustrators": [
+          "Six More Vodka"
+        ]
+      },
+      "raw_printing_sha256": "9785f0484c99f9b3bf5edfa62fd19d9232dd6e62e7d9eaef7535e496b82e13ee",
+      "effective": {
+        "types": [
+          "unit"
+        ],
+        "super_types": [],
+        "domains": [
+          "calm"
+        ],
+        "energy": 3,
+        "power": null,
+        "might": 3,
+        "might_bonus": null,
+        "tags": [
+          "Yordle",
+          "Ionia"
+        ],
+        "rules_html": "<p>[Shield] (+1 :rb_might: while I'm a defender.)<br />When I hold, play a ready 3 :rb_might: Sprite unit token with [Temporary] here. (Kill it at the start of its controller's next Beginning Phase, before scoring.)</p>",
+        "rules_text": "[Shield] (+1 Might while I'm a defender.)\nWhen I hold, play a ready 3 Might Sprite unit token with [Temporary] here. (Kill it at the start of its controller's next Beginning Phase, before scoring.)",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "existing_field_resolution_ids": [],
+      "visual_observation": {
+        "official_id": "unl-048-219",
+        "face_visually_inspected": true,
+        "original_image_sha256": "6b3657d1ee8a79a09986871af308ccab84a345cc4399daf9331a236a475f34f9",
+        "name": "Trevor Snoozebottom",
+        "collector_code": "UNL-048/219",
+        "printed_types": [
+          "unit"
+        ],
+        "printed_supertypes": [],
+        "printed_domains": [
+          "calm"
+        ],
+        "printed_tags": [
+          "Yordle",
+          "Ionia"
+        ],
+        "printed_energy": 3,
+        "printed_power": null,
+        "printed_might": 3,
+        "printed_might_bonus": null,
+        "printed_rules_icons_expanded": "[Shield] (+1 Might while I'm a defender.)\nWhen I hold, play a ready 3 Might Sprite unit token with [Temporary] here. (Kill it at the start of its controller's next Beginning Phase, before scoring.)",
+        "printed_equipment_icons_expanded": "",
+        "comparison": "No mismatch found in individually inspected face; icon expansion and line wrapping are presentation only.",
+        "uncertainties": []
+      },
+      "original_image": {
+        "path": "assets/data/card_admissions/c12/originals/unl-048-219.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/fa843ee80d1a35416d61482bc1602279955a2c7f-744x1039.png?accountingTag=RB",
+        "bytes": 838431,
+        "sha256": "6b3657d1ee8a79a09986871af308ccab84a345cc4399daf9331a236a475f34f9"
+      },
+      "runtime_id": 359,
+      "runtime_image": {
+        "path": "assets/art/card_359.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/fa843ee80d1a35416d61482bc1602279955a2c7f-744x1039.png?w=360&q=80&fm=png",
+        "bytes": 265312,
+        "sha256": "450efaf0d7daae7e672e3ade974f822030daa77696d28b35d64cc13596493b49"
+      },
+      "append_offset": 10,
+      "interpretation_note": "Shield1; Hold-only trigger queues ready Temporary Sprite Here. Uses live source location at instruction, fixed destination for pending token."
+    },
+    {
+      "official_id": "unl-078-219",
+      "name": "Sprite Fountain",
+      "raw_printing": {
+        "official_id": "unl-078-219",
+        "public_code": "UNL-078/219",
+        "name": "Sprite Fountain",
+        "set": "UNL",
+        "collector_number": 78,
+        "types": [
+          "gear"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "gear"
+        ],
+        "accessibility_types": [
+          "gear"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "mind"
+        ],
+        "energy": 2,
+        "power": 1,
+        "might": null,
+        "might_bonus": null,
+        "rules_html": "<p>[Temporary] (Kill this at the start of its controller's Beginning Phase, before scoring.)<br />When you play this, play a ready 3 :rb_might: Sprite unit token with [Temporary] to your base.<br />[Deathknell][&gt;] Repeat this gear's play effect. (When this dies, get the effect.)</p>",
+        "rules_text": "[Temporary] (Kill this at the start of its controller's Beginning Phase, before scoring.)\nWhen you play this, play a ready 3 Might Sprite unit token with [Temporary] to your base.\n[Deathknell][>] Repeat this gear's play effect. (When this dies, get the effect.)",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [],
+        "rarity": "uncommon",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/fcb3ea3e8f829b8dc845fbf49080552d635bb47b-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Gear: Sprite Fountain. [Temporary] (Kill this at the start of its controller's Beginning Phase, before scoring.)\nWhen you play this, play a ready 3 [S] Sprite unit token with [Temporary] to your base.\n[Deathknell][>] Repeat this gear's play effect. (When this dies, get the effect.)",
+        "illustrators": [
+          "Envar Studio"
+        ]
+      },
+      "raw_printing_sha256": "ff861432686e8c91793f2e80dae6c0b7ef49bdb1eb8aed399c38d730039877cd",
+      "effective": {
+        "types": [
+          "gear"
+        ],
+        "super_types": [],
+        "domains": [
+          "mind"
+        ],
+        "energy": 2,
+        "power": 1,
+        "might": null,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>[Temporary] (Kill this at the start of its controller's Beginning Phase, before scoring.)<br />When you play this, play a ready 3 :rb_might: Sprite unit token with [Temporary] to your base.<br />[Deathknell][&gt;] Repeat this gear's play effect. (When this dies, get the effect.)</p>",
+        "rules_text": "[Temporary] (Kill this at the start of its controller's Beginning Phase, before scoring.)\nWhen you play this, play a ready 3 Might Sprite unit token with [Temporary] to your base.\n[Deathknell][>] Repeat this gear's play effect. (When this dies, get the effect.)",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "existing_field_resolution_ids": [],
+      "visual_observation": {
+        "official_id": "unl-078-219",
+        "face_visually_inspected": true,
+        "original_image_sha256": "b57295011924cc83d04bd5b043ce1a84486213098de35bf1895850f4a6014175",
+        "name": "Sprite Fountain",
+        "collector_code": "UNL-078/219",
+        "printed_types": [
+          "gear"
+        ],
+        "printed_supertypes": [],
+        "printed_domains": [
+          "mind"
+        ],
+        "printed_tags": [],
+        "printed_energy": 2,
+        "printed_power": 1,
+        "printed_might": null,
+        "printed_might_bonus": null,
+        "printed_rules_icons_expanded": "[Temporary] (Kill this at the start of its controller's Beginning Phase, before scoring.)\nWhen you play this, play a ready 3 Might Sprite unit token with [Temporary] to your base.\n[Deathknell][>] Repeat this gear's play effect. (When this dies, get the effect.)",
+        "printed_equipment_icons_expanded": "",
+        "comparison": "No mismatch found in individually inspected face; icon expansion and line wrapping are presentation only.",
+        "uncertainties": []
+      },
+      "original_image": {
+        "path": "assets/data/card_admissions/c12/originals/unl-078-219.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/fcb3ea3e8f829b8dc845fbf49080552d635bb47b-744x1039.png?accountingTag=RB",
+        "bytes": 889102,
+        "sha256": "b57295011924cc83d04bd5b043ce1a84486213098de35bf1895850f4a6014175"
+      },
+      "runtime_id": 360,
+      "runtime_image": {
+        "path": "assets/art/card_360.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/fcb3ea3e8f829b8dc845fbf49080552d635bb47b-744x1039.png?w=320&q=80&fm=png",
+        "bytes": 255503,
+        "sha256": "cc5c0daa8f10cc01a8c769a470f03a16ead9508d4d3744af2782345a372d1ea9"
+      },
+      "append_offset": 11,
+      "interpretation_note": "Gear intrinsic Temporary; Rules-panel SelfPlayed base Sprite, actual GearDeathknell repeats play effect only. Preserve actual gear object and capture before departure; no fake replay or play event."
+    },
+    {
+      "official_id": "ogn-075-298",
+      "name": "Tasty Faefolk",
+      "raw_printing": {
+        "official_id": "ogn-075-298",
+        "public_code": "OGN-075/298",
+        "name": "Tasty Faefolk",
+        "set": "OGN",
+        "collector_number": 75,
+        "types": [
+          "unit"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "unit"
+        ],
+        "accessibility_types": [
+          "unit"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "calm"
+        ],
+        "energy": 7,
+        "power": null,
+        "might": 6,
+        "might_bonus": null,
+        "rules_html": "<p>[Accelerate] (You may pay :rb_energy_1::rb_rune_calm: as an additional cost to have me enter ready.)<br />[Deathknell] — Channel 2 runes exhausted and draw 1. (When I die, get the effect.)</p>",
+        "rules_text": "[Accelerate] (You may pay [1 Energy][Calm Power] as an additional cost to have me enter ready.)\n[Deathknell] — Channel 2 runes exhausted and draw 1. (When I die, get the effect.)",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [
+          "Fae",
+          "Bandle City"
+        ],
+        "rarity": "rare",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/65f69ca9a1087deb12e91fb6fdee7b6efd0c088f-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Unit: Tasty Faefolk. [Accelerate] (You may pay [1][C] as an additional cost to have me enter ready.)\n[Deathknell] — Channel 2 runes exhausted and draw 1. (When I die, get the effect.)",
+        "illustrators": [
+          "Dao Trong Le"
+        ]
+      },
+      "raw_printing_sha256": "db57e17c75d5e9e24043df3fb6e74aa2bb6e717317e0ac16ea4a93f7402e17bb",
+      "effective": {
+        "types": [
+          "unit"
+        ],
+        "super_types": [],
+        "domains": [
+          "calm"
+        ],
+        "energy": 7,
+        "power": null,
+        "might": 6,
+        "might_bonus": null,
+        "tags": [
+          "Fae",
+          "Bandle City"
+        ],
+        "rules_html": "<p>[Accelerate] (You may pay :rb_energy_1::rb_rune_calm: as an additional cost to have me enter ready.)<br />[Deathknell] — Channel 2 runes exhausted and draw 1. (When I die, get the effect.)</p>",
+        "rules_text": "[Accelerate] (You may pay [1 Energy][Calm Power] as an additional cost to have me enter ready.)\n[Deathknell] — Channel 2 runes exhausted and draw 1. (When I die, get the effect.)",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "existing_field_resolution_ids": [],
+      "visual_observation": {
+        "official_id": "ogn-075-298",
+        "face_visually_inspected": true,
+        "original_image_sha256": "fd81dab22a4b25bd93d9f5f100d079aaa0ffc564e2e143a479536d4cd937c49f",
+        "name": "Tasty Faefolk",
+        "collector_code": "OGN-075/298",
+        "printed_types": [
+          "unit"
+        ],
+        "printed_supertypes": [],
+        "printed_domains": [
+          "calm"
+        ],
+        "printed_tags": [
+          "Fae",
+          "Bandle City"
+        ],
+        "printed_energy": 7,
+        "printed_power": null,
+        "printed_might": 6,
+        "printed_might_bonus": null,
+        "printed_rules_icons_expanded": "[Accelerate] (You may pay [1 Energy][Calm Power] as an additional cost to have me enter ready.)\n[Deathknell] — Channel 2 runes exhausted and draw 1. (When I die, get the effect.)",
+        "printed_equipment_icons_expanded": "",
+        "comparison": "No mismatch found in individually inspected face; icon expansion and line wrapping are presentation only.",
+        "uncertainties": []
+      },
+      "original_image": {
+        "path": "assets/data/card_admissions/c12/originals/ogn-075-298.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/65f69ca9a1087deb12e91fb6fdee7b6efd0c088f-744x1039.png?accountingTag=RB",
+        "bytes": 880902,
+        "sha256": "fd81dab22a4b25bd93d9f5f100d079aaa0ffc564e2e143a479536d4cd937c49f"
+      },
+      "runtime_id": 361,
+      "runtime_image": {
+        "path": "assets/art/card_361.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/65f69ca9a1087deb12e91fb6fdee7b6efd0c088f-744x1039.png?w=360&q=80&fm=png",
+        "bytes": 272793,
+        "sha256": "bfeae24db1f66344f9fcd3f31794fb1ac7623726863f5cff9951c0bf7752b83c"
+      },
+      "append_offset": 12,
+      "interpretation_note": "Accelerate1Energy1Calm; Deathknell channels up to2 available runes exhausted, then always Draw1. No per-missing fallback draw; parent preserved during burnout."
+    }
+  ]
+}

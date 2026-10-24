@@ -704,10 +704,12 @@ fn local_aura_sources_exclude_self_stack_and_keep_opponents_bases_distinct() {
         assert_eq!(g.unit_keywords(u(&g, a)).unwrap().shield, shield);
         assert_eq!(g.unit_keywords(u(&g, enemy)).unwrap().assault, 0);
         assert_eq!(g.unit_keywords(u(&g, enemy)).unwrap().shield, 0);
-        let contributions = g.passive_contributions(BoardObject::Unit {
-            player: 0,
-            unit_id: 1000,
-        });
+        let contributions = g
+            .passive_contributions(BoardObject::Unit {
+                player: 0,
+                unit_id: 1000,
+            })
+            .unwrap();
         assert_eq!(contributions.len(), 1);
         assert_eq!(
             contributions[0].source,

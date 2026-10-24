@@ -51,6 +51,7 @@ pub enum AreaSelector {
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum PlayTargetKind {
+    UnitOrGear,
     Unit,
     Gear,
     Spell,
@@ -65,6 +66,14 @@ pub struct PlayTargetSpec {
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum OfficialEffect {
+    GiveTemporary,
+    DoubleMightAndTemporary,
+    TemporaryAndDraw {
+        draw: u8,
+    },
+    ExchangeLocationsIfTemporary {
+        draw: u8,
+    },
     /// No immediate spell/on-play operation. Check triggers and requirements.
     None,
     Counter(CounterKind),
@@ -201,6 +210,8 @@ pub struct Targeting {
     /// If true, multi-target choices must name different units.
     pub distinct: bool,
     pub same_location: bool,
+    pub different_locations: bool,
+    pub temporary: Option<bool>,
 }
 
 /// The immediate official operation. Unit triggers are also described below;
@@ -208,6 +219,13 @@ pub struct Targeting {
 pub fn effect(id: usize) -> OfficialEffect {
     use OfficialEffect::*;
     match id {
+        349 => GiveTemporary,
+        350 => DoubleMightAndTemporary,
+        353 => TemporaryAndDraw { draw: 2 },
+        354 => ExchangeLocationsIfTemporary { draw: 1 },
+        355 => Tokens { count: 2, might: 3 },
+        356 => Tokens { count: 1, might: 3 },
+        351 | 352 | 357..=361 => None,
         334 | 337..=348 => None,
         335 => ContextualMight(SpellMight::ControllerXp {
             minimum_xp: 6,
@@ -559,9 +577,9 @@ pub fn effect(id: usize) -> OfficialEffect {
 pub fn targeting(id: usize) -> Targeting {
     use Allegiance::*;
     let allegiance = match id {
-        290..=296 | 335 => Any,
+        290..=296 | 335 | 349 => Any,
         4 | 32 | 144 | 145 => Enemy,
-        8 | 9 | 14 | 19 | 27 | 85 | 137 | 228 => Friendly,
+        8 | 9 | 14 | 19 | 27 | 85 | 137 | 228 | 350 | 353 | 354 => Friendly,
         16 | 29 | 82 | 217 | 218 => Mixed,
         5 | 7 | 11 | 23 | 26 | 28 | 41 | 44 | 50 | 52 | 53 | 55 | 61 | 62 | 63 | 66 | 67 | 74
         | 75 | 76 | 79 | 80 | 81 | 83 | 99 | 135 | 136 | 141 | 142 | 143 | 146 | 216 | 219
@@ -572,9 +590,11 @@ pub fn targeting(id: usize) -> Targeting {
         allegiance,
         distinct: matches!(
             id,
-            5 | 9 | 16 | 44 | 50 | 61 | 82 | 83 | 85 | 137 | 217 | 218
+            5 | 9 | 16 | 44 | 50 | 61 | 82 | 83 | 85 | 137 | 217 | 218 | 354
         ),
         same_location: matches!(id, 44 | 50),
+        different_locations: id == 354,
+        temporary: if id == 353 { Some(false) } else { Option::None },
     }
 }
 
@@ -582,7 +602,7 @@ pub fn targeting(id: usize) -> Targeting {
 /// Location/allegiance restrictions remain in `targeting` and engine validation.
 pub fn target_bounds(id: usize) -> (usize, usize) {
     use OfficialEffect::*;
-    if matches!(id, 85 | 137) {
+    if matches!(id, 85 | 137 | 354) {
         return (2, 2);
     }
     match effect(id) {
@@ -611,7 +631,10 @@ pub fn target_bounds(id: usize) -> (usize, usize) {
         | MoveEnemy
         | MoveFriendlyAndReady
         | ReadyAnother
-        | BuffAnother => (1, 1),
+        | BuffAnother
+        | GiveTemporary
+        | DoubleMightAndTemporary
+        | TemporaryAndDraw { .. } => (1, 1),
         _ => (0, 0),
     }
 }
@@ -627,6 +650,7 @@ pub fn play_target_spec(id: CardId) -> PlayTargetSpec {
                 OfficialEffect::Counter(_) => (Some(Spell), 1, 1),
                 OfficialEffect::DestroyGearAndDraw => (Some(Gear), 1, 0),
                 OfficialEffect::TemporaryGear => (Some(Gear), 1, 1),
+                OfficialEffect::GiveTemporary => (Some(UnitOrGear), 1, 1),
                 OfficialEffect::AreaDamage {
                     selector: AreaSelector::EnemyAtTargetBattlefield,
                     ..
@@ -641,6 +665,20 @@ pub fn play_target_spec(id: CardId) -> PlayTargetSpec {
         kind,
         maximum,
         required,
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum HiddenTargetPolicy {
+    Here,
+    Elsewhere,
+    FirstHere,
+}
+pub fn hidden_target_policy(id: CardId) -> HiddenTargetPolicy {
+    match id {
+        18 => HiddenTargetPolicy::Elsewhere,
+        354 => HiddenTargetPolicy::FirstHere,
+        _ => HiddenTargetPolicy::Here,
     }
 }
 
@@ -914,6 +952,15 @@ pub enum Mechanic {
 pub fn requirements(id: usize) -> &'static [Mechanic] {
     use Mechanic::*;
     match id {
+        349 | 350 | 353 => &[Chain, Temporary],
+        351 => &[Hidden, Chain, Temporary],
+        352 => &[Chain, Temporary],
+        354 => &[Hidden, Chain, MultipleTargets, Move],
+        355 | 357 | 358 => &[Chain, Tokens, Temporary],
+        356 => &[Hidden, Chain, Tokens, Temporary],
+        359 => &[Chain, Tokens, Temporary, ConquerHoldTriggers],
+        360 => &[Chain, Gear, Temporary, Tokens, DeathTriggers],
+        361 => &[Chain, DeathTriggers, Accelerate],
         345 | 346 => &[Chain, Xp, ActivatedAbilities, ConquerHoldTriggers],
         347 => &[Gear, Xp, ActivatedAbilities, ResourceAbilities],
         348 => &[Gear, Xp, Equip, Chain],
@@ -1326,6 +1373,14 @@ pub enum StaticAbility {
 pub fn static_abilities(id: usize) -> &'static [StaticAbility] {
     use StaticAbility::*;
     match id {
+        351 | 354 | 356 => &[Hidden],
+        359 => &[Shield(1)],
+        360 => &[Temporary],
+        361 => &[Accelerate {
+            energy: 1,
+            power: 1,
+            domain: Domain::Calm,
+        }],
         334 => &[EntersReadyAtXp(3)],
         336 => &[XpEnergyDiscount {
             tiers: &[
@@ -1614,8 +1669,8 @@ pub enum TokenPlacement {
 
 pub fn token_placement(id: usize) -> TokenPlacement {
     match id {
-        48 | 87 | 138 | 187 | 220 | 235 | 249 => TokenPlacement::Default,
-        102 | 147 | 148 | 178 | 179 | 180 | 203 | 318 | 319 => TokenPlacement::Here,
+        48 | 87 | 138 | 187 | 220 | 235 | 249 | 355 | 356 => TokenPlacement::Default,
+        102 | 147 | 148 | 178 | 179 | 180 | 203 | 318 | 319 | 357 | 359 => TokenPlacement::Here,
         _ => TokenPlacement::Base,
     }
 }
@@ -1632,10 +1687,20 @@ pub struct TokenSpec {
     pub is_gear: bool,
     pub deflect: bool,
     pub tag: Option<&'static str>,
+    pub temporary: bool,
 }
 
 pub fn token_spec(id: usize) -> Option<TokenSpec> {
     match id {
+        355..=360 => Some(TokenSpec {
+            name: "Sprite",
+            might: 3,
+            count: if id == 355 { 2 } else { 1 },
+            is_gear: false,
+            deflect: false,
+            tag: Some("Fae"),
+            temporary: true,
+        }),
         178 | 220 => Some(TokenSpec {
             name: "Sand Soldier",
             might: 2,
@@ -1643,6 +1708,7 @@ pub fn token_spec(id: usize) -> Option<TokenSpec> {
             is_gear: false,
             deflect: false,
             tag: Some("Shurima"),
+            temporary: false,
         }),
         13 | 149 | 151 | 160 | 161 | 162 | 163 | 201 | 202 | 219 | 262 => Some(TokenSpec {
             name: "Gold",
@@ -1655,6 +1721,7 @@ pub fn token_spec(id: usize) -> Option<TokenSpec> {
             is_gear: true,
             deflect: false,
             tag: None,
+            temporary: false,
         }),
         34 | 148 | 150 | 187 | 249 => Some(TokenSpec {
             name: "Bird",
@@ -1663,6 +1730,7 @@ pub fn token_spec(id: usize) -> Option<TokenSpec> {
             is_gear: false,
             deflect: true,
             tag: Some("Bird"),
+            temporary: false,
         }),
         48 => Some(TokenSpec {
             name: "Tentacle",
@@ -1671,6 +1739,7 @@ pub fn token_spec(id: usize) -> Option<TokenSpec> {
             is_gear: false,
             deflect: false,
             tag: Some("Bilgewater"),
+            temporary: false,
         }),
         54 | 138 | 241 | 251 | 318 | 319 => Some(TokenSpec {
             name: "Mech",
@@ -1679,6 +1748,7 @@ pub fn token_spec(id: usize) -> Option<TokenSpec> {
             is_gear: false,
             deflect: false,
             tag: Some("Mech"),
+            temporary: false,
         }),
         87 | 102 | 147 | 175 | 176 | 177 | 179 | 180 | 203 | 235 | 285 => Some(TokenSpec {
             name: "Recruit",
@@ -1692,6 +1762,7 @@ pub fn token_spec(id: usize) -> Option<TokenSpec> {
             is_gear: false,
             deflect: false,
             tag: Some("Recruit"),
+            temporary: false,
         }),
         _ => None,
     }
@@ -1726,7 +1797,7 @@ mod tests {
     #[test]
     fn all_catalog_entries_have_official_classification() {
         let cards = cards();
-        assert_eq!(cards.len(), 349);
+        assert_eq!(cards.len(), 362);
         for card in cards {
             assert_ne!(
                 effect(card.id),
@@ -1736,7 +1807,7 @@ mod tests {
             );
             assert_ne!(support_status(card.id), SupportStatus::UnknownCard);
         }
-        assert_eq!(effect(349), OfficialEffect::Unsupported);
+        assert_eq!(effect(362), OfficialEffect::Unsupported);
     }
 
     #[test]

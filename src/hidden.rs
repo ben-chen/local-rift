@@ -8,6 +8,7 @@
 
 use crate::cards::{CardId, CardKind};
 use crate::game::{Action, BATTLEFIELDS, Game, Phase, Target};
+use crate::rules;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct HiddenCard {
@@ -142,6 +143,19 @@ impl Game {
     /// battlefield makes a hidden spell's target illegal even if its ordinary
     /// card text would allow the target at another battlefield (CR359.3.e2a).
     pub fn hidden_target_allowed(&self, card_id: CardId, lane: usize, target: Target) -> bool {
+        self.hidden_target_allowed_at(card_id, lane, 0, target)
+    }
+    pub(crate) fn hidden_target_allowed_at(
+        &self,
+        card_id: CardId,
+        lane: usize,
+        slot: usize,
+        target: Target,
+    ) -> bool {
+        if rules::hidden_target_policy(card_id) == rules::HiddenTargetPolicy::FirstHere && slot > 0
+        {
+            return true;
+        }
         let location = match target {
             Target::Unit { player, unit_id } => self
                 .players
@@ -157,7 +171,7 @@ impl Game {
         };
         // Tideturner's explicit 'another location' can never choose here, so
         // CR811.1.d3 permits its target outside the hidden battlefield.
-        if card_id == 18 {
+        if rules::hidden_target_policy(card_id) == rules::HiddenTargetPolicy::Elsewhere {
             location.is_some_and(|location| location != Some(lane))
         } else {
             location == Some(Some(lane))
@@ -222,10 +236,9 @@ impl Game {
         } else {
             self.validate_hidden_targets(player, card.card_id, card.lane, targets)?
         };
-        if resolved
-            .iter()
-            .any(|&target| !self.hidden_target_allowed(card.card_id, card.lane, target))
-        {
+        if resolved.iter().enumerate().any(|(slot, &target)| {
+            !self.hidden_target_allowed_at(card.card_id, card.lane, slot, target)
+        }) {
             return Err("A card played from Hidden must choose targets at its battlefield, except explicit different-location targets.".into());
         }
         Ok(resolved)
@@ -290,9 +303,9 @@ impl Game {
 
     /// Candidate actions read only the actor's facedown identities. The enemy's
     /// board is public; their hand, deck and facedown identities are not used.
-    pub fn hidden_actions(&self, player: usize) -> Vec<Action> {
+    pub fn hidden_actions(&self, player: usize) -> Result<Vec<Action>, String> {
         if player != self.priority() || player >= self.players.len() {
-            return Vec::new();
+            return Ok(Vec::new());
         }
         let mut actions = Vec::new();
         for (hand_index, _) in self.players[player].hand.iter().enumerate() {
@@ -309,28 +322,35 @@ impl Game {
         }
         for card in &self.players[player].hidden {
             let mut choices = vec![Vec::new()];
-            let targets: Vec<_> = self
-                .players
-                .iter()
-                .enumerate()
-                .flat_map(|(owner, state)| {
-                    state.units.iter().map(move |unit| Target::Unit {
-                        player: owner,
-                        unit_id: unit.id,
-                    })
-                })
-                .filter(|&target| self.hidden_target_allowed(card.card_id, card.lane, target))
-                .collect();
-            if card.card_id == 44 {
-                // Switcheroo requires two distinct units, with both at the
-                // hidden field. Both friendly and enemy choices are legal.
-                for (index, &first) in targets.iter().enumerate() {
-                    for &second in &targets[index + 1..] {
+            let draft = Action::PlayHidden {
+                hidden_id: card.id,
+                targets: vec![],
+            };
+            let view = match self.play_target_view(&draft, 0) {
+                Ok(view) => view,
+                Err(error) if error.starts_with("engine_capacity:") => return Err(error),
+                Err(_) => continue,
+            };
+            if view.spec.maximum == 2 {
+                for (index, &first) in view.candidates.iter().enumerate() {
+                    let second_view = self.play_target_view(
+                        &Action::PlayHidden {
+                            hidden_id: card.id,
+                            targets: vec![first],
+                        },
+                        0,
+                    )?;
+                    for second in second_view.candidates {
+                        // Switcheroo's unordered pair needs only one suggestion;
+                        // Smoke's ordered Hidden slots must retain both roles.
+                        if card.card_id == 44 && view.candidates[..=index].contains(&second) {
+                            continue;
+                        }
                         choices.push(vec![first, second]);
                     }
                 }
             } else {
-                choices.extend(targets.into_iter().map(|target| vec![target]));
+                choices.extend(view.candidates.into_iter().map(|target| vec![target]));
             }
             for targets in choices {
                 if let Ok(resolved) = self.hidden_can_play(player, card.id, &targets) {
@@ -344,7 +364,7 @@ impl Game {
                 }
             }
         }
-        actions
+        Ok(actions)
     }
 }
 
@@ -599,7 +619,7 @@ mod tests {
         unit(&mut game, 1, 22, Some(1));
         hide(&mut game, 44);
         make_old(&mut game);
-        let actions = game.hidden_actions(0);
+        let actions = game.hidden_actions(0).unwrap();
         assert!(!actions.is_empty());
         for action in actions {
             if let Action::PlayHidden { targets, .. } = action {
@@ -609,6 +629,26 @@ mod tests {
                 }
             }
         }
+    }
+
+    #[test]
+    fn targetless_hidden_gear_has_one_suggestion_without_ignored_unit_targets() {
+        let mut game = game();
+        let hidden_id = hide(&mut game, 21);
+        make_old(&mut game);
+        let plays: Vec<_> = game
+            .hidden_actions(0)
+            .unwrap()
+            .into_iter()
+            .filter(|action| matches!(action, Action::PlayHidden { .. }))
+            .collect();
+        assert_eq!(
+            plays,
+            vec![Action::PlayHidden {
+                hidden_id,
+                targets: vec![]
+            }]
+        );
     }
 
     #[test]

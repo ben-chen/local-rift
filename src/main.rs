@@ -259,6 +259,7 @@ struct App {
     equipment_inspect: Option<(usize, u32)>,
     equipment_scroll: usize,
     trigger_choice_key: Option<String>,
+    token_draft_id: Option<u32>,
 }
 fn optional_query<T>(result: Result<T, String>) -> Result<Option<T>, String> {
     match result {
@@ -427,6 +428,7 @@ impl App {
             equipment_inspect: None,
             equipment_scroll: 0,
             trigger_choice_key: None,
+            token_draft_id: None,
         }
     }
     fn reset(&mut self) {
@@ -468,6 +470,7 @@ impl App {
         self.conversion_key = None;
         self.equipment_inspect = None;
         self.trigger_choice_key = None;
+        self.token_draft_id = None;
         self.show_journal = false;
         self.damage_order.clear();
         self.damage_amounts = None;
@@ -819,6 +822,7 @@ impl App {
     fn draw_checked(&mut self) -> Result<(), String> {
         self.game.validate_numeric_state()?;
         self.sync_predict_draft();
+        self.sync_token_draft();
         self.sync_play_draft()?;
         let trigger_key = self
             .game
@@ -1272,6 +1276,11 @@ impl App {
                     owner,
                     unit.ready,
                     self.game.unit_empowered(unit.id),
+                    self.game
+                        .has_temporary(local_rift::empower::BoardObject::Unit {
+                            player: owner,
+                            unit_id: *id,
+                        }),
                     self.game.unit_might(unit)?,
                     unit.damage,
                     token,
@@ -1358,13 +1367,7 @@ impl App {
                             name: unit_name.clone(),
                             might: self.game.unit_might(unit)?,
                             gear: false,
-                            rules: if local_rift::rules::token_spec(card_id)
-                                .is_some_and(|spec| spec.deflect)
-                            {
-                                "Deflect: an opponent must pay 1 extra power to choose this Bird with a spell or ability.".into()
-                            } else {
-                                "This created unit has no printed abilities.".into()
-                            },
+                            rules: token_rules(card_id),
                         });
                     }
                 }
@@ -1376,7 +1379,7 @@ impl App {
                     hit_unit = true;
                     if self.ui.secondary_pressed() {
                         if token {
-                            self.notify(format!("{unit_name}: a created unit. Its current might is shown on the board.{}",if local_rift::rules::token_spec(card_id).is_some_and(|spec| spec.deflect) {" This Bird has Deflect."}else{""}));
+                            self.notify(token_rules(card_id));
                         } else {
                             self.inspect = Some(card_id);
                         }
@@ -1473,6 +1476,7 @@ impl App {
                     id,
                     index,
                     true,
+                    false,
                     false,
                     Might::from(card.might),
                     0,
@@ -1668,14 +1672,24 @@ impl App {
                                     name: self.game.unit_name(unit),
                                     might: self.game.unit_might(unit)?,
                                     gear: false,
-                                    rules: "This created unit uses its own current abilities."
-                                        .into(),
+                                    rules: token_rules(unit.card_id),
                                 });
                             }
                         }
                     }
                     local_rift::game::ChainSource::Card { card_id } => {
                         self.hover_candidate = Some(card_id)
+                    }
+                    local_rift::game::ChainSource::Gear { player, gear_id } => {
+                        // The physical gear remains the source after departure.
+                        self.hover_candidate = Some(item.card_id);
+                        if self.game.players[player]
+                            .gear
+                            .iter()
+                            .any(|gear| gear.id == gear_id)
+                        {
+                            self.hover_object_candidate = Some((player, gear_id));
+                        }
                     }
                     local_rift::game::ChainSource::Legend { legend_id, .. } => {
                         self.legend_hover = Some(legend_id);
@@ -2153,11 +2167,18 @@ impl App {
             card_id, remaining, ..
         } = decision
         {
+            let token = self.game.current_pending_token();
             let name = local_rift::rules::token_spec(card_id).map_or("token", |spec| spec.name);
             self.ui
                 .title(&format!("Place a {name}"), 1178.0, 366.0, 21.0, TEXT);
             self.ui.wrapped(
-                &format!("{remaining} remaining. Choose your base or a battlefield you control."),
+                &format!(
+                    "{remaining} remaining. {}",
+                    token.map_or_else(
+                        || "Choose your base or a battlefield you control.".into(),
+                        |token| play_ui::token_placement_description(&self.game, token)
+                    )
+                ),
                 1178.0,
                 397.0,
                 209.0,
@@ -2171,7 +2192,13 @@ impl App {
                         .map(|lane| format!("Field {}", lane + 1))
                         .unwrap_or_else(|| "Your base".into()),
                     false,
-                    lane.is_none_or(|lane| self.game.battlefield_owner[lane] == Some(0)),
+                    self.game
+                        .current_pending_token()
+                        .and_then(|token| token.location)
+                        .map_or_else(
+                            || lane.is_none_or(|lane| self.game.battlefield_owner[lane] == Some(0)),
+                            |fixed| fixed == lane,
+                        ),
                 ) {
                     self.action(Action::PlaceToken { lane });
                 }
@@ -2538,22 +2565,22 @@ impl App {
         })
     }
     fn card_target_candidate(&self, target: Target) -> Result<bool, String> {
-        let Some(card_id) = self.selected_card_id() else {
+        let Some((action, execution)) = self.selected_target_query(true)? else {
             return Ok(false);
         };
-        let prior = self.current_targets();
-        let prior = if local_rift::rules::play_target_spec(card_id).maximum == 1 {
-            &[]
-        } else {
-            prior
-        };
-        Ok(self
-            .game
-            .card_target_candidates(0, card_id, self.destination, prior)?
-            .contains(&target))
+        Ok(
+            optional_query(self.game.play_target_candidates(&action, execution))?
+                .is_some_and(|candidates| candidates.contains(&target)),
+        )
     }
     fn target_hint(&self, card_id: usize) -> String {
         use local_rift::rules::{Allegiance, PlayTargetKind, play_target_spec, targeting};
+        if let Ok(Some((action, execution))) = self.selected_target_query(false) {
+            match self.game.play_target_view(&action, execution) {
+                Ok(view) => return play_ui::target_view_hint(&self.game, &view),
+                Err(error) => return format!("Edit targets: {error}"),
+            }
+        }
         let spec = play_target_spec(card_id);
         let count = self.current_targets().len();
         match spec.kind {
@@ -2565,6 +2592,9 @@ impl App {
             Some(PlayTargetKind::Spell) => "Choose a pending spell above.".into(),
             Some(PlayTargetKind::Gear) => {
                 format!("Choose gear in Loadout · {count}/{}", spec.maximum)
+            }
+            Some(PlayTargetKind::UnitOrGear) => {
+                "Choose a battlefield unit, or gear in either Loadout.".into()
             }
             Some(PlayTargetKind::Unit) => {
                 let restriction = match targeting(card_id).allegiance {
@@ -2726,13 +2756,7 @@ impl App {
                         name: self.game.unit_name(unit),
                         might: self.game.unit_might(unit)?,
                         gear: false,
-                        rules: if local_rift::rules::token_spec(unit.card_id)
-                            .is_some_and(|spec| spec.deflect)
-                        {
-                            "Deflect: an opponent pays 1 extra power to choose this Bird with a spell or ability.".into()
-                        } else {
-                            "This created unit has no printed abilities.".into()
-                        },
+                        rules: token_rules(unit.card_id),
                     });
                 }
             }
@@ -3262,18 +3286,31 @@ impl App {
             self.ui.text("Choose next trigger", 780.0, 671.0, 9.0, GOLD);
             self.hand_scroll = self.hand_scroll.min(options.len().saturating_sub(6));
             for (slot, option) in options.iter().skip(self.hand_scroll).take(6).enumerate() {
-                let r = self.tile(
-                    option.card_id,
-                    slot,
-                    self.game.catalog[option.card_id].name,
-                    false,
-                );
+                let expiry = self.game.pending_temporary_source(option.id);
+                let name = expiry.map_or(self.game.catalog[option.card_id].name, |(_, name)| name);
+                let token = name != self.game.catalog[option.card_id].name;
+                let r = self.tile(option.card_id, slot, name, false);
+                if token {
+                    self.ui
+                        .rect(Rect::new(r.x + 2.0, r.y + 2.0, r.w - 4.0, 96.0), BG);
+                    self.ui
+                        .diamond(vec2(r.x + r.w / 2.0, r.y + 45.0), 22.0, TEAL);
+                }
                 self.ui
                     .rect(Rect::new(r.x + 3.0, r.y + 128.0, r.w - 6.0, 47.0), PANEL);
                 self.ui
                     .wrapped_lines(&option.label, r.x + 9.0, r.y + 141.0, 122.0, 9.0, GOLD, 3);
                 if self.ui.hover(r) {
                     self.hover_candidate = Some(option.card_id);
+                    if token {
+                        self.hover_token_candidate = Some(TokenPreview {
+                            name: name.into(),
+                            might: local_rift::rules::token_spec(option.card_id)
+                                .map_or(0, |spec| u64::from(spec.might)),
+                            gear: false,
+                            rules: token_rules(option.card_id),
+                        });
+                    }
                 }
                 if self.ui.clicked(r) {
                     self.action(Action::OrderTrigger {
@@ -4304,6 +4341,7 @@ impl App {
         owner: usize,
         ready: bool,
         empowered: bool,
+        temporary: bool,
         might: Might,
         damage: DamageAmount,
         token: bool,
@@ -4396,6 +4434,12 @@ impl App {
             self.ui
                 .bold(label, badge.x + 3.0, badge.y + 12.0, 9.0, GOLD);
         }
+        if temporary {
+            let badge = Rect::new(r.x + r.w - 18.0, r.y + 8.0, 14.0, 14.0);
+            self.ui.rect(badge, BG);
+            self.ui.border(badge, GOLD);
+            self.ui.bold("T", badge.x + 3.0, badge.y + 11.0, 9.0, GOLD);
+        }
         self.ui.ellipsis(
             name.split(',').next().unwrap_or(name),
             r.x + 4.0,
@@ -4408,10 +4452,10 @@ impl App {
             Rect::new(r.x + 3.0, r.y + r.h - 6.0, r.w - 6.0, 3.0),
             if ready { color } else { LINE },
         );
-        if ready {
+        if ready && !temporary {
             self.ui
                 .diamond(vec2(r.x + r.w - 9.0, r.y + 14.0), 3.5, TEAL);
-        } else {
+        } else if !ready {
             self.ui.line(
                 vec2(r.x + r.w - 14.0, r.y + 14.0),
                 vec2(r.x + r.w - 5.0, r.y + 14.0),
@@ -6064,11 +6108,16 @@ impl App {
                         }
                     }
                     if !affordable {
+                        let target_help = self.target_hint(card_id);
                         self.ui.wrapped_lines(
                             if !self.game.card_supported(card_id) {
                                 "This card's effect is not implemented."
                             } else if flows.len() > 1 && self.flow_source.is_none() {
                                 "Choose which Flow cost to pay."
+                            } else if self.current_targets().len()
+                                < local_rift::rules::play_target_spec(card_id).required
+                            {
+                                &target_help
                             } else {
                                 validation
                                     .as_ref()
@@ -6167,15 +6216,13 @@ impl App {
                         16.0,
                         TEXT,
                     );
-                    self.ui.wrapped_lines(
-                        self.game.catalog[card.card_id].official_text,
-                        1178.0,
-                        391.0,
-                        210.0,
-                        10.0,
-                        MUTED,
-                        7,
-                    );
+                    let hint = if local_rift::rules::play_target_spec(card.card_id).maximum > 0 {
+                        self.target_hint(card.card_id)
+                    } else {
+                        self.game.catalog[card.card_id].official_text.to_owned()
+                    };
+                    self.ui
+                        .wrapped_lines(&hint, 1178.0, 391.0, 210.0, 10.0, MUTED, 4);
                     self.play_choices_button()?;
                     let action = self.canonical_action(Action::PlayHidden {
                         hidden_id: id,
@@ -6505,12 +6552,17 @@ impl App {
                     }
                     self.tray = *tray;
                     self.hand_scroll = 0;
-                    let selecting_gear = *tray == Tray::Loadout
+                    let selecting_play_target = matches!(tray, Tray::Loadout | Tray::Board)
                         && self.selected_card_id().is_some_and(|card_id| {
-                            local_rift::rules::play_target_spec(card_id).kind
-                                == Some(local_rift::rules::PlayTargetKind::Gear)
+                            matches!(
+                                local_rift::rules::play_target_spec(card_id).kind,
+                                Some(
+                                    local_rift::rules::PlayTargetKind::Gear
+                                        | local_rift::rules::PlayTargetKind::UnitOrGear
+                                )
+                            )
                         });
-                    if !selecting_gear
+                    if !selecting_play_target
                         && (!matches!(self.selection, Some(Selection::Ability(..)))
                             && (*tray == Tray::Board
                                 || (*tray == Tray::Trash && self.gear_owner == 1)
@@ -7616,20 +7668,21 @@ fn live_gear_description(game: &Game, owner: usize, gear_id: u32) -> Option<Stri
         .and_then(|id| game.players[owner].units.iter().find(|unit| unit.id == id))
     {
         lines.push(format!("Attached to {}. Its printed gear abilities are inactive while attached; its equipment effects apply to the bearer.", game.unit_name(unit)));
-        for contribution in game
-            .passive_contributions(local_rift::empower::BoardObject::Unit {
+        let contributions =
+            match game.passive_contributions(local_rift::empower::BoardObject::Unit {
                 player: owner,
                 unit_id: unit.id,
-            })
-            .iter()
-            .filter(|contribution| {
-                contribution.source
-                    == local_rift::empower::BoardObject::Gear {
-                        player: owner,
-                        gear_id,
-                    }
-            })
-        {
+            }) {
+                Ok(contributions) => contributions,
+                Err(error) => return Some(format!("Cannot calculate equipped effects: {error}")),
+            };
+        for contribution in contributions.iter().filter(|contribution| {
+            contribution.source
+                == local_rift::empower::BoardObject::Gear {
+                    player: owner,
+                    gear_id,
+                }
+        }) {
             lines.push(passive_description(game, contribution));
         }
     } else {
@@ -7640,7 +7693,7 @@ fn live_gear_description(game: &Game, owner: usize, gear_id: u32) -> Option<Stri
             if status.granted {
                 lines.push("Granted Temporary remains active even while attached. It expires the gear, not the bearer.".into());
             }
-            lines.push("TEMPORARY · At the start of its controller's next Beginning Phase, before hold scoring, its triggered ability will kill this gear. Responses may be played before that ability resolves.".into());
+            lines.push("TEMPORARY · At the start of its controller's Beginning Phase, before hold scoring, it triggers an ability to kill this gear. Players can respond before the ability resolves; check the chain for an ability already waiting.".into());
         } else if status.intrinsic {
             lines.push("Printed Temporary is inactive while this gear is attached. A separately granted Temporary ability would remain active.".into());
         }
@@ -7680,6 +7733,10 @@ fn passive_description(
     use local_rift::continuous::{PassiveEffect, PassiveKeyword, Recipients, SourceCondition};
     let effect = match contribution.effect {
         PassiveEffect::Might(amount) => format!("{amount:+} might"),
+        PassiveEffect::MightPerFriendlyTemporaryHere { amount } => format!(
+            "{:+} might · +{amount} for each friendly Temporary unit at this battlefield",
+            contribution.computed_might.unwrap_or(0)
+        ),
         PassiveEffect::Keyword(PassiveKeyword::Assault(amount)) => format!("Assault {amount}"),
         PassiveEffect::Keyword(PassiveKeyword::Shield(amount)) => format!("Shield {amount}"),
         PassiveEffect::Keyword(PassiveKeyword::Deflect(amount)) => format!("Deflect {amount}"),
@@ -7748,6 +7805,30 @@ fn passive_description(
     )
 }
 
+fn token_identity_description(card_id: usize) -> String {
+    let Some(spec) = local_rift::rules::token_spec(card_id) else {
+        return "Created unit.".into();
+    };
+    format!(
+        "{} · {} printed Might · domainless{}.",
+        spec.name,
+        spec.might,
+        spec.tag.map_or(String::new(), |tag| format!(" · {tag}"))
+    )
+}
+fn token_rules(card_id: usize) -> String {
+    let mut text = token_identity_description(card_id);
+    if let Some(spec) = local_rift::rules::token_spec(card_id) {
+        if spec.deflect {
+            text.push_str(" Deflect: opponents pay 1 extra power to choose this unit with a spell or ability.");
+        }
+        if spec.temporary {
+            text.push_str(" Temporary: at the start of its controller's Beginning Phase, before hold scoring, it triggers an ability to kill this unit.");
+        }
+    }
+    text
+}
+
 fn live_unit_description(game: &Game, owner: usize, unit_id: u32) -> Option<String> {
     let unit = game
         .players
@@ -7784,6 +7865,9 @@ fn live_unit_description(game: &Game, owner: usize, unit_id: u32) -> Option<Stri
             "Not Empowered.".into()
         },
     ];
+    if unit.token {
+        lines.push(token_identity_description(unit.card_id));
+    }
     if stats.signed_might < 0 {
         lines.push(format!(
             "Calculated might: {}. Rules that reference Might use 0 while it is negative.",
@@ -7793,11 +7877,27 @@ fn live_unit_description(game: &Game, owner: usize, unit_id: u32) -> Option<Stri
     if game.buffed_units.contains(&unit_id) {
         lines.push("BUFFED · has a Buff counter. Its +1 might is included above; temporary might and Empowered are separate.".into());
     }
-    for contribution in game.passive_contributions(local_rift::empower::BoardObject::Unit {
+    let contributions = match game.passive_contributions(local_rift::empower::BoardObject::Unit {
         player: owner,
         unit_id,
     }) {
+        Ok(contributions) => contributions,
+        Err(error) => return Some(format!("Cannot calculate this unit's effects: {error}")),
+    };
+    for contribution in contributions {
         lines.push(passive_description(game, &contribution));
+    }
+    if let Some(status) = game.temporary_status(local_rift::empower::BoardObject::Unit {
+        player: owner,
+        unit_id,
+    }) && status.active
+    {
+        let origin = match (status.intrinsic, status.granted) {
+            (true, true) => "printed and granted",
+            (true, false) => "printed",
+            _ => "granted",
+        };
+        lines.push(format!("TEMPORARY · {origin}. At the start of its controller's Beginning Phase, before hold scoring, it triggers an ability to kill this unit. Players can respond; check the chain for an ability already waiting. Moving or recalling this unit keeps Temporary."));
     }
     if keywords.hunt > 0 {
         lines.push(format!("Hunt {}: when this unit conquers or holds, one Hunt ability gains {} XP. Printed and equipped Hunt add together.", keywords.hunt, keywords.hunt));
@@ -7981,6 +8081,42 @@ mod live_preview_tests {
             token: false,
         }
     }
+    #[test]
+    fn sprite_preview_shows_its_identity_and_temporary_without_factory_rules() {
+        let mut game = Game::new(3, 3, 7, Difficulty::Easy);
+        let mut sprite = unit(100, 355);
+        sprite.token = true;
+        sprite.buff = 3;
+        game.players[0].units = vec![sprite];
+        let text = live_unit_description(&game, 0, 100).unwrap();
+        assert!(text.contains("Sprite · 3 printed Might · domainless · Fae"));
+        assert!(text.contains("TEMPORARY · printed"));
+        assert!(text.contains("before hold scoring"));
+        assert!(!text.contains("BUFFED"));
+        assert!(!text.contains("Play two"));
+    }
+
+    #[test]
+    fn petal_preview_reports_evaluated_bonus_and_explains_its_battlefield_scope() {
+        let mut game = Game::new(3, 3, 7, Difficulty::Easy);
+        let mut petal = unit(100, 352);
+        petal.lane = Some(0);
+        let mut sprite = unit(101, 355);
+        sprite.token = true;
+        sprite.buff = 3;
+        sprite.lane = Some(0);
+        game.players[0].units = vec![petal, sprite];
+        let text = live_unit_description(&game, 0, 100).unwrap();
+        assert!(
+            text.contains("+1 might · +1 for each friendly Temporary unit at this battlefield")
+        );
+        game.players[0].units[0].lane = None;
+        let text = live_unit_description(&game, 0, 100).unwrap();
+        assert!(
+            text.contains("+0 might · +1 for each friendly Temporary unit at this battlefield")
+        );
+    }
+
     #[test]
     fn exact_damage_input_accepts_full_integer_range_without_float_rounding() {
         for value in [0, 65_536, 9_007_199_254_740_993, u64::MAX] {
@@ -8310,7 +8446,7 @@ mod live_preview_tests {
         assert!(
             text.contains("TEMPORARY ·")
                 && text.contains("before hold scoring")
-                && text.contains("Responses")
+                && text.contains("Players can respond")
         );
         game.players[0].gear[0].attached_to = Some(100);
         game.players[0].units = vec![unit(100, 110)];

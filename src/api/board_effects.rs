@@ -481,9 +481,13 @@ fn granted_temporary_is_observed_as_active_after_equip_and_expires_before_hold()
     assert_eq!(session.game.players[0].score, 0);
     assert!(session.game.chain.iter().any(|item| matches!(
         item.ability,
-        Some(ChainAbility::Triggered(TriggeredAbility::DestroyGear {
-            gear_id: 901
-        }))
+        Some(ChainAbility::Temporary {
+            source: crate::empower::BoardObject::Gear {
+                player: 0,
+                gear_id: 901
+            },
+            ..
+        })
     )));
     assert_eq!(session.game.players[0].gear.len(), 1);
     pass_until(&mut session, |s| !s.game.in_window());

@@ -37,6 +37,7 @@ pub enum PassiveKeyword {
 pub enum PassiveEffect {
     Might(i16),
     Keyword(PassiveKeyword),
+    MightPerFriendlyTemporaryHere { amount: u8 },
 }
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct PassiveRule {
@@ -51,6 +52,8 @@ pub struct PassiveContribution {
     pub rule_index: usize,
     pub active: bool,
     pub effect: PassiveEffect,
+    /// Exact evaluated value shared by previews and final numeric aggregation.
+    pub computed_might: Option<i128>,
 }
 const fn own(effect: PassiveEffect) -> PassiveRule {
     PassiveRule {
@@ -63,6 +66,15 @@ pub fn passive_rules(id: CardId) -> &'static [PassiveRule] {
     use PassiveEffect::*;
     use PassiveKeyword::*;
     match id {
+        352 => {
+            const {
+                &[PassiveRule {
+                    condition: SourceCondition::Always,
+                    recipients: Recipients::SelfUnit,
+                    effect: MightPerFriendlyTemporaryHere { amount: 1 },
+                }]
+            }
+        }
         337 => {
             const {
                 &[PassiveRule {
@@ -286,16 +298,19 @@ pub fn passive_rules(id: CardId) -> &'static [PassiveRule] {
     }
 }
 impl Game {
-    pub fn passive_contributions(&self, target: BoardObject) -> Vec<PassiveContribution> {
+    pub fn passive_contributions(
+        &self,
+        target: BoardObject,
+    ) -> Result<Vec<PassiveContribution>, String> {
         let BoardObject::Unit { player, unit_id } = target else {
-            return vec![];
+            return Ok(vec![]);
         };
         if self
             .players
             .get(player)
             .is_none_or(|p| !p.units.iter().any(|u| u.id == unit_id))
         {
-            return vec![];
+            return Ok(vec![]);
         }
         let mut result = Vec::new();
         for owner in 0..2 {
@@ -445,46 +460,85 @@ impl Game {
                     let active = source_active
                         && (rule.recipients != Recipients::FriendlyEmpoweredUnits
                             || self.object_empowered(target));
+                    let computed_might = match rule.effect {
+                        PassiveEffect::Might(amount) => {
+                            Some(if active { i128::from(amount) } else { 0 })
+                        }
+                        PassiveEffect::Keyword(_) => None,
+                        PassiveEffect::MightPerFriendlyTemporaryHere { amount } => {
+                            let lane = match source {
+                                BoardObject::Unit { player, unit_id } if active => self.players
+                                    [player]
+                                    .units
+                                    .iter()
+                                    .find(|u| u.id == unit_id)
+                                    .and_then(|u| u.lane),
+                                _ => None,
+                            };
+                            let count = if let Some(lane) = lane {
+                                self.players[owner]
+                                    .units
+                                    .iter()
+                                    .filter(|unit| {
+                                        unit.lane == Some(lane)
+                                            && self.has_temporary(BoardObject::Unit {
+                                                player: owner,
+                                                unit_id: unit.id,
+                                            })
+                                    })
+                                    .try_fold(0_i128, |count, _| {
+                                        count.checked_add(1).ok_or_else(|| {
+                                            crate::numeric::capacity("Temporary unit count")
+                                        })
+                                    })?
+                            } else {
+                                0
+                            };
+                            Some(
+                                count
+                                    .checked_mul(i128::from(amount))
+                                    .ok_or_else(|| crate::numeric::capacity("continuous Might"))?,
+                            )
+                        }
+                    };
                     result.push(PassiveContribution {
                         source,
                         card_id,
                         rule_index,
                         active,
                         effect: rule.effect,
+                        computed_might,
                     });
                 }
             }
         }
-        result
+        Ok(result)
     }
-    fn unit_passives(&self, u: &Unit) -> Vec<PassiveContribution> {
-        self.players
+    fn unit_passives(&self, u: &Unit) -> Result<Vec<PassiveContribution>, String> {
+        let Some(player) = self
+            .players
             .iter()
             .position(|p| p.units.iter().any(|x| x.id == u.id))
-            .map(|player| {
-                self.passive_contributions(BoardObject::Unit {
-                    player,
-                    unit_id: u.id,
-                })
-            })
-            .unwrap_or_default()
+        else {
+            return Ok(vec![]);
+        };
+        self.passive_contributions(BoardObject::Unit {
+            player,
+            unit_id: u.id,
+        })
     }
     pub(crate) fn continuous_might_bonus(&self, u: &Unit) -> Result<i128, String> {
-        self.unit_passives(u)
+        self.unit_passives(u)?
             .iter()
-            .filter(|p| p.active)
-            .map(|p| match p.effect {
-                PassiveEffect::Might(n) => i128::from(n),
-                _ => 0,
-            })
-            .try_fold(0_i128, |sum, n| {
-                sum.checked_add(n)
+            .filter_map(|p| p.computed_might)
+            .try_fold(0_i128, |sum, amount| {
+                sum.checked_add(amount)
                     .ok_or_else(|| crate::numeric::capacity("continuous Might"))
             })
     }
     pub(crate) fn continuous_keywords(&self, u: &Unit) -> Result<UnitKeywords, String> {
         let mut out = UnitKeywords::default();
-        for p in self.unit_passives(u).into_iter().filter(|p| p.active) {
+        for p in self.unit_passives(u)?.into_iter().filter(|p| p.active) {
             match p.effect {
                 PassiveEffect::Keyword(PassiveKeyword::Assault(n)) => {
                     out.assault = crate::numeric::add_u64(out.assault, u64::from(n), "assault")?

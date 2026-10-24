@@ -2,7 +2,7 @@
 
 Snapshot checked **2026-10-24**. The official gallery contains **1,408 printing records** grouped into **1,103 distinct full-name identities**. After excluding **12 auxiliary token/tracker identities** and **12 banned identities**, **1,079 identities are legal in Standard/1v1 Constructed**. The separate 2v2 list leaves **1,078**.
 
-**This client does not yet implement every legal card.** It currently maps **349 main-deck cards, 8 independently registered legends, 11 battlefields, and 6 rune resource types** (374 legal identities). **705 legal identities remain unimplemented and are not playable.** Importing this snapshot does not register cards with the engine. Full inventory coverage is not full rules support.
+**This client does not yet implement every legal card.** It currently maps **362 main-deck cards, 8 independently registered legends, 11 battlefields, and 6 rune resource types** (387 legal identities). **692 legal identities remain unimplemented and are not playable.** Importing this snapshot does not register cards with the engine. Full inventory coverage is not full rules support.
 
 ## Scope and authority
 
@@ -26,11 +26,11 @@ Numbered positions include token slots where the publisher numbers them within a
 | Kind | Standard legal | Implemented mapping | Not implemented |
 | --- | ---: | ---: | ---: |
 | Battlefield | 69 | 11 | 58 |
-| Gear | 131 | 62 | 69 |
+| Gear | 131 | 63 | 68 |
 | Legend | 58 | 8 | 50 |
 | Rune | 6 | 6 | 0 |
-| Spell | 268 | 87 | 181 |
-| Unit | 547 | 200 | 347 |
+| Spell | 268 | 93 | 175 |
+| Unit | 547 | 206 | 341 |
 
 Implemented mapping means the existing engine/preset/field/resource implementation, not a claim that every interaction has been formally proven. See `docs/RULES.md` for engine limits. Every unimplemented identity has `implementation.status: not_implemented` and `playable_in_client: false`. Printed keywords are recorded per card and counted under `unimplemented_by_observed_keyword` as discovery hints only; shared keywords do not imply shared effect semantics or completed implementation. Each unimplemented card still requires its specific effect, targets, timing, costs, continuous/replacement effects, and interaction tests to be reviewed and implemented.
 
@@ -481,6 +481,19 @@ Current pages are archived under `assets/data/catalog_sources/`; immutable revie
 | 346 | Enthralling Protector | `unl-162-219` |
 | 347 | Honeyfruit | `unl-049-219` |
 | 348 | Shepherd's Heirloom | `unl-158-219` |
+| 349 | Fading Memories | `ogn-180-298` |
+| 350 | Last Stand | `ogn-069-298` |
+| 351 | Momentary Companion | `rad-095-167` |
+| 352 | Petal Pixie | `unl-076-219` |
+| 353 | Shadow's Call | `unl-165-219` |
+| 354 | Smoke and Mirrors | `unl-083-219` |
+| 355 | Sprite Burst | `unl-069-219` |
+| 356 | Sprite Call | `ogn-094-298` |
+| 357 | Sprite Mother | `ogn-106-298` |
+| 358 | Sprite Queen | `unl-084-219` |
+| 359 | Trevor Snoozebottom | `unl-048-219` |
+| 360 | Sprite Fountain | `unl-078-219` |
+| 361 | Tasty Faefolk | `ogn-075-298` |
 
 ## Implemented legend ID mapping
 

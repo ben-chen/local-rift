@@ -26,6 +26,7 @@ mod numeric;
 mod play_choices;
 mod progression;
 mod targeting;
+mod temporary;
 mod xp_costs;
 
 #[cfg(test)]
@@ -338,20 +339,20 @@ impl Session {
                 "buff":unit.buff,"buff_exact":unit.buff.to_string(), "temporary_buff":unit.temporary_buff,
                 "temporary_buff_exact":unit.temporary_buff.to_string(), "stunned":unit.stunned,
                 "protected":unit.protected, "banish_on_death":unit.banish_on_death,
+                "temporary_status":game.temporary_status(crate::empower::BoardObject::Unit {player:owner,unit_id:unit.id}).map(temporary::status_to_json),
                 "empowered":game.unit_empowered(unit.id),"hidden_play_origin":game.hidden_play_origin(unit.id),"movement_locked":game.movement_locked(owner,unit.id),
                 "keywords":{"assault":keywords.assault,"assault_exact":keywords.assault.to_string(),
                     "shield":keywords.shield,"shield_exact":keywords.shield.to_string(),"tank":keywords.tank,"backline":keywords.backline,
                     "deflect":keywords.deflect,"ganking":keywords.ganking,"ambush":keywords.ambush,"hunt":keywords.hunt,
                     "accelerate":keywords.accelerate.map(|cost|json!({"energy":cost.energy,"power":cost.power,"domain":cost.domain.name()}))},
                 "damage_priority":game.damage_priority(unit).map_err(ApiError::illegal)?,
-                "passive_contributions":game.passive_contributions(crate::empower::BoardObject::Unit {player:owner,unit_id:unit.id}).iter().map(empowered::contribution_to_json).collect::<Vec<_>>()
+                "passive_contributions":game.passive_contributions(crate::empower::BoardObject::Unit {player:owner,unit_id:unit.id}).map_err(ApiError::illegal)?.iter().map(empowered::contribution_to_json).collect::<Vec<_>>()
             }))}).collect::<Result<Vec<_>,ApiError>>()?;
             let gear: Vec<_> = state.gear.iter().map(|gear| json!({
                 "id":gear.id, "card_id":gear.card_id, "name":game.gear_name(gear), "token":gear.token,
                 "attached_to":gear.attached_to, "lane":game.gear_location(owner,gear.id),
                 "ready":gear.ready, "temporary":gear.temporary,"empowered":game.unit_empowered(gear.id),
-                "temporary_status":game.gear_temporary_status(owner,gear.id).map(|status|json!({
-                    "intrinsic":status.intrinsic,"granted":status.granted,"active":status.active}))
+                "temporary_status":game.gear_temporary_status(owner,gear.id).map(temporary::status_to_json)
             })).collect();
             let hidden: Vec<_> = state.hidden.iter().map(|card| json!({
                 "id":card.id, "lane":card.lane, "hidden_turn":card.hidden_turn,
@@ -424,6 +425,7 @@ impl Session {
             "pending_card_plays":game.pending_cards().iter().map(|card|json!({"id":card.id,"player":card.player,"card_id":card.card_id,"kind":instructed_kind(card.kind)})).collect::<Vec<_>>(),
             "pending_token_plays":game.pending_tokens().iter().map(|token|json!({
                 "id":token.id,"player":token.player,"card_id":token.card_id,"might":token.might,"gear":token.gear,"entry_ready":token.entry_ready,
+                "token_identity":temporary::token_identity_to_json(token.card_id),
                 "destination":match token.location {
                     None => json!({"mode":"choose"}),
                     Some(lane) => json!({"mode":"fixed","lane":lane}),
@@ -482,7 +484,7 @@ impl Session {
                 keys(object, &["command", "id"])?;
                 Ok(
                     json!({"protocol":PROTOCOL_VERSION,"name":"Local Rift","summary":self.summary(),
-                    "commands":["info","catalog","validate_deck","reset","observe","suggest","quote_payment","play_choices","cost_plan","validate","apply","mulligan","start","step_ai"],
+                    "commands":["info","catalog","validate_deck","reset","observe","suggest","quote_payment","play_choices","cost_plan","target_candidates","validate","apply","mulligan","start","step_ai"],
                     "suggestions_exhaustive":false,"max_request_bytes":MAX_REQUEST_BYTES}),
                 )
             }
@@ -590,6 +592,20 @@ impl Session {
                 keys(object, &["command", "id", "revision", "player"])?;
                 self.step_ai(player(object)?, unsigned(object, "revision")?)?;
                 Ok(self.summary())
+            }
+            "target_candidates" => {
+                keys(
+                    object,
+                    &["command", "id", "revision", "player", "action", "execution"],
+                )?;
+                let player = player(object)?;
+                let revision = unsigned(object, "revision")?;
+                self.require_revision(revision)?;
+                self.require_actor(player)?;
+                let action = parse_action(required(object, "action")?)?;
+                let execution = index(object, "execution")?;
+                self.target_candidates(player, revision, action, execution)
+                    .map(|view| targeting::view_to_json(&view))
             }
             "apply" | "validate" | "quote_payment" | "play_choices" | "cost_plan" => {
                 keys(
@@ -745,6 +761,7 @@ pub fn catalog() -> Value {
             "might":c.might,"domain":c.domain.name(),"domains":c.domains.iter().map(|d|d.name()).collect::<Vec<_>>(),
             "kind":c.kind.name(),"official_text":c.official_text,"keywords":c.keywords,"tags":c.tags,
             "play_targets":targeting::play_targets_to_json(c.id),
+            "created_token":temporary::created_token_to_json(c.id),
             "entry_ready":progression::entry_ready_to_json(c.id),
             "equipment":xp_costs::equipment_to_json(c.id),
             "xp_energy_discounts":progression::xp_discounts_to_json(c.id),
@@ -786,6 +803,9 @@ fn chain_source_to_json(source: ChainSource) -> Value {
         ChainSource::Card { card_id } => json!({"type":"card","card_id":card_id}),
         ChainSource::Unit { player, unit_id } => {
             json!({"type":"unit","player":player,"unit_id":unit_id})
+        }
+        ChainSource::Gear { player, gear_id } => {
+            json!({"type":"gear","player":player,"gear_id":gear_id})
         }
         ChainSource::Legend { player, legend_id } => {
             json!({"type":"legend","player":player,"legend_id":legend_id})
@@ -1694,13 +1714,15 @@ fn decision_to_json(game: &Game, decision: &Decision, viewer: usize) -> Result<V
         } => json!({"type":"optional_play","card_id":card_id,"gear_id":gear_id}),
         Decision::TokenPlacement {
             card_id, remaining, ..
-        } => json!({"type":"token_placement","card_id":card_id,"remaining":remaining}),
+        } => json!({"type":"token_placement","card_id":card_id,"remaining":remaining,
+            "token_id":game.current_pending_token().map(|token|token.id)}),
         Decision::TokenPlay {
             card_id,
             remaining,
             fixed_lane,
             ..
         } => json!({"type":"token_play",
+            "token_id":game.current_pending_token().map(|token|token.id),
             "card_id":card_id,"remaining":remaining,"destination":match fixed_lane {
                 None=>json!({"mode":"choose"}), Some(lane)=>json!({"mode":"fixed","lane":lane})}}),
         Decision::ResolutionTargets {
@@ -1790,6 +1812,12 @@ fn decision_to_json(game: &Game, decision: &Decision, viewer: usize) -> Result<V
 
 fn ability_to_json(ability: &ChainAbility) -> Value {
     match ability {
+        ChainAbility::Temporary {
+            source,
+            source_name,
+        } => {
+            json!({"type":"temporary","source":empowered::board_object_to_json(*source),"source_name":source_name})
+        }
         ChainAbility::Hunt {
             source,
             amount,

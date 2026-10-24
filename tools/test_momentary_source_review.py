@@ -3,6 +3,7 @@ import copy
 import gzip
 import json
 import unittest
+from unittest.mock import patch
 
 import catalog_review as review
 import import_catalog as catalog
@@ -15,7 +16,10 @@ class MomentarySourceReviewTests(unittest.TestCase):
         cls.manifest = json.loads((catalog.ROOT / 'assets/data/catalog_resolutions.json').read_text())
         cls.proof = json.loads((catalog.ROOT / 'assets/data/catalog_evidence/reviews/momentary-companion.json').read_text())
         cls.raw = catalog.project_gallery(cls.data['gallery'])[0]
-        cls.snapshot = catalog.make_catalog(cls.archive_manifest, cls.data)
+        cls.historical_runtime = copy.deepcopy(catalog.load_runtime_manifest())
+        cls.historical_runtime["cards"] = cls.historical_runtime["cards"][:349]
+        with patch.object(catalog, "load_runtime_manifest", return_value=cls.historical_runtime):
+            cls.snapshot = catalog.make_catalog(cls.archive_manifest, cls.data)
 
     def apply(self, manifest=None, raw=None):
         return review.apply_reviews(
@@ -57,7 +61,7 @@ class MomentarySourceReviewTests(unittest.TestCase):
                          (115, 71, 40, 40))
         self.assertFalse(self.proof['enables_runtime_support'])
         self.assertFalse(self.resolution(self.manifest)['enables_runtime_support'])
-        self.assertNotIn(pid, {c['official_id'] for c in catalog.load_runtime_manifest()['cards']})
+        self.assertNotIn(pid, {c['official_id'] for c in self.historical_runtime['cards']})
 
     def test_original_face_and_origin_match_complete_raw_facts(self):
         raw = next(p for p in self.raw if p['official_id'] == 'rad-095-167')

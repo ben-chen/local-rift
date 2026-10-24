@@ -240,6 +240,12 @@ fn fingerprint(game: &Game) -> u64 {
         }
         for unit in &player.units {
             unit.id.hash(&mut hash);
+            game.temporary_status(local_rift::empower::BoardObject::Unit {
+                player: owner,
+                unit_id: unit.id,
+            })
+            .map(|status| (status.intrinsic, status.granted, status.active))
+            .hash(&mut hash);
             unit.card_id.hash(&mut hash);
             unit.lane.hash(&mut hash);
             unit.ready.hash(&mut hash);
@@ -509,29 +515,24 @@ fn checked_advice(game: &Game, level: AdviceLevel) -> Result<Vec<&'static str>, 
             tips.push("Exhausted and Empowered are separate states. Your gear keeps Empowered while exhausted; an Exhaust cost still needs a ready source.");
         }
     }
-    if human.units.iter().any(|unit| {
-        !game
-            .passive_contributions(local_rift::empower::BoardObject::Unit {
+    let mut contributions = Vec::new();
+    for unit in &human.units {
+        contributions.extend(game.passive_contributions(
+            local_rift::empower::BoardObject::Unit {
                 player: 0,
                 unit_id: unit.id,
-            })
-            .is_empty()
-    }) {
+            },
+        )?);
+    }
+    if !contributions.is_empty() {
         tips.push(if beginner {
             "A unit's live preview shows which conditional bonuses apply now and which source supplies each one. Ready, Empowered and Buffed are separate states."
         } else {
             "Check active conditional bonuses before trading. Removing or Disempowering an aura source can change several units' might immediately."
         });
     }
-    let conditions: Vec<_> = human
-        .units
+    let conditions: Vec<_> = contributions
         .iter()
-        .flat_map(|unit| {
-            game.passive_contributions(local_rift::empower::BoardObject::Unit {
-                player: 0,
-                unit_id: unit.id,
-            })
-        })
         .filter_map(|source| {
             local_rift::continuous::passive_rules(source.card_id)
                 .get(source.rule_index)
@@ -611,6 +612,25 @@ fn checked_advice(game: &Game, level: AdviceLevel) -> Result<Vec<&'static str>, 
             "Temporary gear expires through a beginning trigger before hold scoring. Granted Temporary stays active when attached; printed Temporary does not."
         } else {
             "Attachment will not suppress granted Temporary. Count the gear bonuses or protection that will disappear when its beginning trigger resolves before hold."
+        });
+    }
+    if human.units.iter().any(|unit| {
+        game.has_temporary(local_rift::empower::BoardObject::Unit {
+            player: 0,
+            unit_id: unit.id,
+        })
+    }) {
+        tips.push(if beginner {
+            "Temporary units trigger a kill ability at your Beginning Phase, before hold scoring. You can respond to that ability; moving or recalling them keeps Temporary."
+        } else {
+            "Temporary expires before hold scoring. Plan around the coming trigger: a Sprite can conquer now, but keeping it for next turn's hold needs another effect."
+        });
+    }
+    if human.hand.contains(&350) {
+        tips.push(if beginner {
+            "Last Stand doubles the unit's current Might, including active bonuses, then gives Temporary. Its fixed increase lasts this turn; Temporary lasts until removed."
+        } else {
+            "Each Last Stand execution takes a fresh Might snapshot. Combat bonuses affect that snapshot, but their later loss still reduces the final total."
         });
     }
     if human.hand.iter().any(|&id| {
@@ -737,13 +757,24 @@ fn response_window_advice(
                 "Accept or decline this trash-play trigger. If accepted, choose its trash target before the ability joins the chain; finalize the card after it resolves.",
                 "Check the trash and your available resources before accepting. Declining here keeps the ability off the chain.",
             ],
-            Decision::TokenPlay {
-                card_id, player, ..
-            } => vec![
+            Decision::TokenPlay { card_id, .. } | Decision::TokenPlacement { card_id, .. }
+                if local_rift::rules::token_spec(*card_id).is_some_and(|token| token.temporary) =>
+            {
+                vec![
+                    if game
+                        .current_pending_token()
+                        .is_some_and(|token| token.entry_ready)
+                    {
+                        "This Sprite has Temporary: its Beginning trigger kills it before hold scoring. It enters ready and can move later this turn."
+                    } else {
+                        "This Sprite has Temporary: its Beginning trigger kills it before hold scoring. Check its entry state before planning a move."
+                    },
+                    "A Sprite can help with a conquest or a trade now. A hold next turn needs a plan for its Temporary trigger first.",
+                ]
+            }
+            Decision::TokenPlay { .. } => vec![
                 if game
-                    .pending_tokens()
-                    .iter()
-                    .find(|token| token.player == *player && token.card_id == *card_id)
+                    .current_pending_token()
                     .is_some_and(|token| token.entry_ready)
                 {
                     "This token is instructed to enter ready. That is its initial state, not a later Ready effect; optional costs are separate."
@@ -1128,6 +1159,41 @@ mod tests {
 
     fn game() -> Game {
         Game::new(0, 1, 72, Difficulty::Easy)
+    }
+
+    #[test]
+    fn sprite_placement_coaching_explains_expiry_and_never_promises_a_hold() {
+        let mut game = Game::new(3, 3, 72, Difficulty::Easy);
+        game.start_match().unwrap();
+        game.players[0].hand = vec![355];
+        game.players[0].energy = 10;
+        game.players[0].energy_pool = 10;
+        game.players[0].runes = [0; 6];
+        game.players[0].exhausted_runes = [0; 6];
+        game.apply(local_rift::game::Action::PlayCardWithTargets {
+            hand_index: 0,
+            lane: None,
+            targets: vec![],
+        })
+        .unwrap();
+        while game.decision.is_none() {
+            game.apply(local_rift::game::Action::Pass).unwrap();
+        }
+        assert!(matches!(
+            game.decision,
+            Some(Decision::TokenPlacement { .. } | Decision::TokenPlay { .. })
+        ));
+        for level in [AdviceLevel::Beginner, AdviceLevel::Advanced] {
+            let tips = advice(&game, level);
+            assert!(tips[0].contains("Temporary"));
+            assert!(tips[0].contains("before hold scoring"));
+            assert!(tips.iter().all(|tip| tip.chars().count() <= 180));
+            let mut other = game.clone();
+            other.players[1].hand.reverse();
+            other.players[1].deck.reverse();
+            assert_eq!(tips, advice(&other, level));
+            assert_eq!(fingerprint(&game), fingerprint(&other));
+        }
     }
 
     #[test]

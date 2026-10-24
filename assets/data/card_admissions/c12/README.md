@@ -1,0 +1,11 @@
+# C12 Temporary and Sprites: thirteen source admissions
+
+Reviewed October 24, 2026. `admissions.json` records the official faces, complete raw/effective facts and artwork provenance for runtime IDs 349–361: Fading Memories, Last Stand, Momentary Companion, Petal Pixie, Shadow's Call, Smoke and Mirrors, Sprite Burst, Sprite Call, Sprite Mother, Sprite Queen, Trevor Snoozebottom, Sprite Fountain and Tasty Faefolk. Each is a Standard-legal single-print identity with no indexed erratum or unresolved gameplay/variant source field in the dated snapshot. No chosen champion is added.
+
+The thirteen original faces total 10,782,362 bytes. Twelve originals are preserved in `originals/`; Momentary reuses the original image in `assets/data/catalog_evidence/images/rad-095-167.png`. Momentary's raw tags remain empty; its separately reviewed source correction supplies Shadow Isles and Demon. The historical observation and correction proof are preserved. The runtime PNGs total 3,405,305 bytes and each is below 300 KB. Official artwork and credited illustrators remain Riot Games property.
+
+Sprite Fountain is gear with Temporary and Deathknell in its Rules panel, no printed Might or attached bonus, and an empty Equipment panel. Auxiliary Sprite printings are not constructed cards. Their domainless 3-Might Fae/Temporary identity is token metadata; ready entry and destination belong to each creation instruction.
+
+All prior 349 runtime cards, four tournament presets, eight authored training recipes, the legend registry, 115 field resolutions, 71 preserved raw records/images, 40 historical issue groups, and 29 complete identity reviews covering 90 variant printings remain pinned. Availability becomes 362 main cards, 387 mapped legal identities, and 692 unavailable legal identities of 1,079. No registered legend can include this entire cohort; tests use separate legal homes.
+
+Source proof establishes facts and provenance. Runtime interaction tests separately exercise the new rules and do not certify full official rules compliance. Validate with `python3 -m unittest discover -s tools -p test_c12_admissions.py -v`, `cargo test --test card_batch_fourteen`, and `python3 tools/import_catalog.py --check`. Live catalog checks compare current source facts and URLs without re-downloading these archived image bytes.

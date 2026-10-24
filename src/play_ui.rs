@@ -31,6 +31,12 @@ pub(super) fn source_label(game: &Game, source: &ChainSource) -> String {
             .and_then(|state| state.units.iter().find(|unit| unit.id == unit_id))
             .map(|unit| game.unit_name(unit))
             .unwrap_or_else(|| "Unit that left play".into()),
+        ChainSource::Gear { player, gear_id } => game
+            .players
+            .get(player)
+            .and_then(|state| state.gear.iter().find(|gear| gear.id == gear_id))
+            .map(|gear| game.gear_name(gear).to_owned())
+            .unwrap_or_else(|| "Gear that left play".into()),
         ChainSource::Legend { legend_id, .. } => local_rift::legend_catalog::legend(legend_id)
             .map_or("Legend", |legend| legend.name)
             .into(),
@@ -40,6 +46,35 @@ pub(super) fn source_label(game: &Game, source: &ChainSource) -> String {
                 .into()
         }
     }
+}
+pub(super) fn token_placement_description(
+    game: &Game,
+    token: &local_rift::game::PendingToken,
+) -> String {
+    let spec = local_rift::rules::token_spec(token.card_id);
+    let name = spec.map_or("Unit", |spec| spec.name);
+    let location = match token.location {
+        Some(Some(lane)) => format!(
+            "Fixed at {}",
+            local_rift::battlefields::battlefield(game.battlefields[lane]).name
+        ),
+        Some(None) => "Fixed at your base".into(),
+        None => "Choose base or a field you control".into(),
+    };
+    format!(
+        "{} Might {name} · {}{}. {location}.",
+        token.might,
+        if token.entry_ready {
+            "enters ready"
+        } else {
+            "enters exhausted"
+        },
+        if spec.is_some_and(|spec| spec.temporary) {
+            " · Temporary"
+        } else {
+            ""
+        }
+    )
 }
 fn value_label(value: &CostValue) -> String {
     let domains = if value.domains.is_empty() || value.domains.len() == 6 {
@@ -150,6 +185,119 @@ pub(super) fn core_action(action: &Action) -> &Action {
         other => other,
     }
 }
+/// Change one execution in a cloned query draft, never the player's selection.
+pub(super) fn replace_execution_targets(
+    action: &mut Action,
+    execution: usize,
+    targets: Vec<Target>,
+) -> Result<(), String> {
+    match action {
+        Action::WithPlayChoices { action, choices } => {
+            if execution == 0 {
+                replace_execution_targets(action, 0, targets)
+            } else {
+                let repeat = choices
+                    .repeats
+                    .get_mut(execution - 1)
+                    .ok_or("This Repeat execution is no longer selected.")?;
+                repeat.choices.targets = targets;
+                Ok(())
+            }
+        }
+        Action::WithPowerPayment { action, .. } | Action::BeginPayment { action } => {
+            replace_execution_targets(action, execution, targets)
+        }
+        Action::PlayCardOptions {
+            targets: original,
+            repeat_targets,
+            ..
+        }
+        | Action::PlayFromTrashOptions {
+            targets: original,
+            repeat_targets,
+            ..
+        }
+        | Action::FinalizePendingPlay {
+            targets: original,
+            repeat_targets,
+            ..
+        } if execution <= 1 => {
+            *if execution == 0 {
+                original
+            } else {
+                repeat_targets
+            } = targets;
+            Ok(())
+        }
+        Action::PlayCardWithTargets {
+            targets: original, ..
+        }
+        | Action::PlayFromTrashWithTargets {
+            targets: original, ..
+        }
+        | Action::PlayHidden {
+            targets: original, ..
+        } if execution == 0 => {
+            *original = targets;
+            Ok(())
+        }
+        Action::PlayChampionOptions { target, .. } if execution == 0 && targets.len() <= 1 => {
+            *target = targets.first().copied();
+            Ok(())
+        }
+        _ => Err("This action has no editable target execution.".into()),
+    }
+}
+
+pub(super) fn target_view_hint(game: &Game, view: &PlayTargetView) -> String {
+    let Some(slot) = &view.next_slot else {
+        return if view.spec.maximum == 0 {
+            "This execution needs no targets.".into()
+        } else {
+            format!(
+                "{} · Click a chosen target to edit its slot.",
+                view.targets
+                    .iter()
+                    .map(|target| target_label(game, *target))
+                    .collect::<Vec<_>>()
+                    .join(" · ")
+            )
+        };
+    };
+    let noun = match view.spec.kind {
+        Some(local_rift::rules::PlayTargetKind::UnitOrGear) => {
+            "a battlefield unit, or gear in Loadout"
+        }
+        Some(local_rift::rules::PlayTargetKind::Gear) => "gear in either player's Loadout",
+        Some(local_rift::rules::PlayTargetKind::Battlefield) => "either battlefield, even if empty",
+        Some(local_rift::rules::PlayTargetKind::Spell) => "a pending spell above",
+        _ => match local_rift::rules::targeting(view.card_id).allegiance {
+            local_rift::rules::Allegiance::Friendly => "a highlighted friendly unit",
+            local_rift::rules::Allegiance::Enemy => "a highlighted enemy unit",
+            local_rift::rules::Allegiance::Mixed if slot.index == 0 => {
+                "a highlighted friendly unit"
+            }
+            local_rift::rules::Allegiance::Mixed => "a highlighted enemy unit",
+            _ => "a highlighted unit",
+        },
+    };
+    let mut text = format!("{} · Choose {noun}", slot.index + 1);
+    if let Some(restriction) = slot.hidden {
+        let (lane, relation) = match restriction {
+            HiddenTargetRestriction::AtBattlefield { lane } => (lane, "at"),
+            HiddenTargetRestriction::OutsideBattlefield { lane } => (lane, "outside"),
+        };
+        let name = local_rift::battlefields::battlefield(game.battlefields[lane]).name;
+        text.push_str(&format!(" {relation} field {} · {name}", lane + 1));
+    }
+    if let Some(prior) = slot.different_location_from {
+        text.push_str(&format!(
+            " at a different location from target {}",
+            prior + 1
+        ));
+    }
+    text
+}
 fn has_play_choices(action: &Action) -> bool {
     matches!(
         action,
@@ -160,6 +308,37 @@ fn has_play_choices(action: &Action) -> bool {
     )
 }
 impl App {
+    pub(super) fn selected_target_query(
+        &self,
+        replace_single: bool,
+    ) -> Result<Option<(Action, usize)>, String> {
+        let Some(action) = self.selected_play_action() else {
+            return Ok(None);
+        };
+        let mut action = self.canonical_action(action);
+        let execution = self
+            .play_draft
+            .as_ref()
+            .map_or(usize::from(self.editing_repeat), |draft| draft.execution);
+        if replace_single
+            && self
+                .selected_card_id()
+                .is_some_and(|id| local_rift::rules::play_target_spec(id).maximum == 1)
+        {
+            replace_execution_targets(&mut action, execution, vec![])?;
+        }
+        Ok(Some((action, execution)))
+    }
+    pub(super) fn sync_token_draft(&mut self) {
+        let id = self.game.current_pending_token().map(|token| token.id);
+        if self.token_draft_id != id {
+            if id.is_some() {
+                self.options = PlayOptions::default();
+                self.destination = None;
+            }
+            self.token_draft_id = id;
+        }
+    }
     pub(super) fn review_action_costs(&mut self, action: Action) {
         self.cost_editor = Some(CostEditor {
             action,
@@ -546,6 +725,9 @@ impl App {
                 }
                 Some(local_rift::rules::PlayTargetKind::Gear) => {
                     "Choose gear in either player's Loadout.".into()
+                }
+                Some(local_rift::rules::PlayTargetKind::UnitOrGear) => {
+                    "Choose a unit at a battlefield or gear in either Loadout.".into()
                 }
                 Some(local_rift::rules::PlayTargetKind::Unit) => {
                     "Choose eligible units on the mat.".into()
@@ -1138,9 +1320,7 @@ impl App {
         let name = local_rift::rules::token_spec(card_id).map_or("token", |spec| spec.name);
         let entry_ready = self
             .game
-            .pending_tokens()
-            .iter()
-            .find(|token| token.player == 0 && token.card_id == card_id)
+            .current_pending_token()
             .is_some_and(|token| token.entry_ready);
         let base = Action::FinalizeTokenPlay {
             lane: fixed_lane.flatten(),

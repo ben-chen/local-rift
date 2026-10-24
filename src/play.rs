@@ -10,6 +10,28 @@ pub enum PlayOrigin {
     Token,
 }
 
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum HiddenTargetRestriction {
+    AtBattlefield { lane: usize },
+    OutsideBattlefield { lane: usize },
+}
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct PlayTargetSlot {
+    pub index: usize,
+    pub hidden: Option<HiddenTargetRestriction>,
+    pub different_location_from: Option<usize>,
+}
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct PlayTargetView {
+    pub card_id: CardId,
+    pub origin: PlayOrigin,
+    pub execution: usize,
+    pub targets: Vec<Target>,
+    pub spec: rules::PlayTargetSpec,
+    pub next_slot: Option<PlayTargetSlot>,
+    pub candidates: Vec<Target>,
+}
+
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct ExecutionChoices {
     pub targets: Vec<Target>,
@@ -665,6 +687,96 @@ impl Game {
         }
     }
 
+    pub fn play_target_candidates(
+        &self,
+        action: &Action,
+        execution: usize,
+    ) -> Result<Vec<Target>, String> {
+        Ok(self.play_target_view(action, execution)?.candidates)
+    }
+    pub fn play_target_view(
+        &self,
+        action: &Action,
+        execution: usize,
+    ) -> Result<PlayTargetView, String> {
+        if let Some(state) = self.payment_target_query_state()? {
+            if matches!(action, Action::CompletePayment) {
+                let intent = self
+                    .payment_plan_view(self.priority())
+                    .and_then(|view| view.action)
+                    .ok_or("The payment's play intent is unavailable.")?;
+                return state.play_target_view_inner(&intent, execution);
+            }
+            return state.play_target_view_inner(action, execution);
+        }
+        self.play_target_view_inner(action, execution)
+    }
+    fn play_target_view_inner(
+        &self,
+        action: &Action,
+        execution: usize,
+    ) -> Result<PlayTargetView, String> {
+        self.play_choices(action)?;
+        let intent = self.card_intent(action)?;
+        let targets = if execution == 0 {
+            intent.targets.clone()
+        } else {
+            intent
+                .legacy
+                .repeats
+                .get(execution - 1)
+                .ok_or("That execution is not selected.")?
+                .choices
+                .targets
+                .clone()
+        };
+        let spec = rules::play_target_spec(intent.id);
+        let next_slot = (targets.len() < spec.maximum).then(|| {
+            let hidden = match intent.origin {
+                PlayOrigin::Hidden { lane } => match rules::hidden_target_policy(intent.id) {
+                    rules::HiddenTargetPolicy::Here => {
+                        Some(HiddenTargetRestriction::AtBattlefield { lane })
+                    }
+                    rules::HiddenTargetPolicy::Elsewhere => {
+                        Some(HiddenTargetRestriction::OutsideBattlefield { lane })
+                    }
+                    rules::HiddenTargetPolicy::FirstHere if targets.is_empty() => {
+                        Some(HiddenTargetRestriction::AtBattlefield { lane })
+                    }
+                    _ => None,
+                },
+                _ => None,
+            };
+            PlayTargetSlot {
+                index: targets.len(),
+                hidden,
+                different_location_from: (rules::targeting(intent.id).different_locations
+                    && !targets.is_empty())
+                .then_some(0),
+            }
+        });
+        let mut candidates = Vec::new();
+        if next_slot.is_some() {
+            for target in
+                self.card_target_candidates(self.priority(), intent.id, intent.lane, &targets)?
+            {
+                if !matches!(intent.origin,PlayOrigin::Hidden {lane} if !self.hidden_target_allowed_at(intent.id,lane,targets.len(),target))
+                {
+                    candidates.push(target);
+                }
+            }
+        }
+        Ok(PlayTargetView {
+            card_id: intent.id,
+            origin: intent.origin,
+            execution,
+            targets,
+            spec,
+            next_slot,
+            candidates,
+        })
+    }
+
     pub fn play_choices(&self, action: &Action) -> Result<PlayChoiceView, String> {
         Self::validate_choice_nesting(action)?;
         let intent = self.card_intent(action)?;
@@ -683,7 +795,7 @@ impl Game {
                     intent.lane,
                     target,
                     &group[..slot],
-                )? || matches!(intent.origin, PlayOrigin::Hidden { lane } if !self.hidden_target_allowed(intent.id, lane, target))
+                )? || matches!(intent.origin, PlayOrigin::Hidden { lane } if !self.hidden_target_allowed_at(intent.id, lane, slot, target))
                 {
                     return Err("A supplied target does not meet this play's restrictions.".into());
                 }
@@ -1107,7 +1219,8 @@ impl Game {
                 && r.choices
                     .targets
                     .iter()
-                    .any(|&t| !probe.hidden_target_allowed(intent.id, lane, t))
+                    .enumerate()
+                    .any(|(slot, &t)| !probe.hidden_target_allowed_at(intent.id, lane, slot, t))
             {
                 return Err("Hidden Repeat targets must be at the hidden battlefield.".into());
             }
@@ -1544,13 +1657,6 @@ impl Game {
             let mut item = self.chain[index].clone();
             item.targets = item.executions[frame.execution].targets.clone();
             item.target = item.targets.first().copied();
-            if item.from_hidden {
-                item.targets.retain(|&t| {
-                    item.lane
-                        .is_some_and(|l| self.hidden_target_allowed(item.card_id, l, t))
-                });
-                item.target = item.targets.first().copied();
-            }
             let groups =
                 self.resolution_groups(item.player, item.card_id, item.lane, &item.targets)?;
             if rules::targeting(item.card_id).same_location && groups.len() > 1 {

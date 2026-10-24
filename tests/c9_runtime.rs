@@ -790,7 +790,7 @@ fn turn_to_dust_temporary_stays_active_when_equipped_before_or_after_grant() {
         drain(&mut g);
         g.apply(Action::EndTurn).unwrap();
         assert_eq!(g.chain.iter().filter(|item| matches!(item.ability,
-            Some(ChainAbility::Triggered(local_rift::game::TriggeredAbility::DestroyGear { gear_id: id })) if id == gear_id
+            Some(ChainAbility::Temporary { source: local_rift::empower::BoardObject::Gear { player: 0, gear_id: id }, .. }) if id == gear_id
         )).count(), 1);
         assert!(!g.players[0].discard.contains(&3), "expiry is respondable");
         drain(&mut g);

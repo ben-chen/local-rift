@@ -26,3 +26,5 @@ pub use game::empower;
 
 pub mod numeric;
 pub use numeric::{DamageAmount, Might, SignedMight, UnitStats};
+
+pub use game::temporary;

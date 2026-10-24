@@ -61,6 +61,18 @@ pub struct PaymentPlanView {
 }
 
 impl Game {
+    pub(crate) fn payment_target_query_state(&self) -> Result<Option<Game>, String> {
+        let Some(plan) = self.payment_plan.as_ref() else {
+            return Ok(None);
+        };
+        let mut state = self.clone();
+        state.decision = plan.original.decision.clone();
+        if let Some(card) = plan.pending_card.clone() {
+            state.restore_payment_card(card)?;
+        }
+        state.payment_plan.as_mut().unwrap().mode = Mode::Replaying;
+        Ok(Some(state))
+    }
     pub fn payment_plan_view(&self, viewer: usize) -> Option<PaymentPlanView> {
         let plan = self.payment_plan.as_ref()?;
         Some(PaymentPlanView {

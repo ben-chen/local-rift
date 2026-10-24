@@ -43,6 +43,8 @@ impl TriggerState {
 }
 #[derive(Clone, Copy, PartialEq, Eq)]
 pub(super) enum Occurrence {
+    ControllerBeginning,
+    GearDeath,
     UnitPlayed,
     GearPlayed,
     SpellPlayed,
@@ -189,6 +191,7 @@ impl Game {
             Occurrence::UnitPlayed | Occurrence::GearPlayed | Occurrence::SpellPlayed
         ) && !event.token;
         let event_ok = match rule.event {
+            Event::ControllerBeginning => own && event.kind == Occurrence::ControllerBeginning,
             Event::SelfPlayed => {
                 (same && event.kind == Occurrence::UnitPlayed)
                     || (event.gear_id.is_some()
@@ -214,7 +217,13 @@ impl Game {
             Event::SelfBuffed => own && same && event.kind == Occurrence::Buffed,
             Event::SelfEmpowered => same && event.kind == Occurrence::Empowered,
             Event::SelfMoved => same && event.kind == Occurrence::Moved,
-            Event::SelfDeath => same && event.kind == Occurrence::Death,
+            Event::SelfDeath => {
+                (same && event.kind == Occurrence::Death)
+                    || (event.kind == Occurrence::GearDeath
+                        && event.gear_id.is_some()
+                        && event.gear_id == source.gear_id
+                        && source.unit_id.is_none())
+            }
             Event::FriendlyDeath => own && event.kind == Occurrence::Death,
             Event::EnemyDeath => !own && event.kind == Occurrence::Death,
             Event::SelfAttack => same && event.kind == Occurrence::Attack,
@@ -408,6 +417,35 @@ impl Game {
                         },
                     );
                 }
+            }
+        }
+    }
+    pub(crate) fn capture_gear_death(&mut self, player: usize, gear_id: u32) {
+        // Capture the source and panel activation before departure; no unit-death observers.
+        let Some(gear) = self
+            .players
+            .get(player)
+            .and_then(|p| p.gear.iter().find(|g| g.id == gear_id))
+            .cloned()
+        else {
+            return;
+        };
+        let mut event = EventSnapshot::simple(Occurrence::GearDeath, player);
+        event.gear_id = Some(gear_id);
+        event.card_id = Some(gear.card_id);
+        event.token = gear.token;
+        for (card_id, index, source) in self.trigger_sources() {
+            let rule = &metadata::trigger_rules(card_id)[index];
+            if rule.event == Event::SelfDeath && self.event_matches(source, rule, &event) {
+                self.queue_card_trigger(
+                    card_id,
+                    index,
+                    TriggerContext {
+                        source,
+                        subject: Some(Target::Gear { player, gear_id }),
+                        movement: None,
+                    },
+                );
             }
         }
     }
@@ -903,6 +941,11 @@ impl Game {
         let targets = selected;
         for effect in rule.effects {
             match *effect {
+                Effect::GiveTemporary(who) => {
+                    for target in self.trigger_operands(context, who, &targets) {
+                        self.grant_temporary(target);
+                    }
+                }
                 Effect::Xp(amount) => {
                     let count = match amount {
                         Amount::Fixed(n) => u64::from(n),

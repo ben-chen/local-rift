@@ -222,9 +222,21 @@ Mote's **Beginner** advice explains resources, deployment, scoring, and the curr
 
 The deck library includes the real legends and authored strategy notes. All eight registered legend powers execute in matches, while the notes describe strategic goals beyond what the simple AI can teach. Mote and the simulator cannot establish competitive matchup rankings.
 
+## Temporary and Sprite interactions
+
+Temporary units and gear create a kill ability at their controller's Beginning event, before hold scoring. They remain in play while players respond. Countering that ability does not remove Temporary; Recall and Move retain it. Actual departure clears a granted instance. Attached gear keeps its intrinsic characteristic, but only a separately granted expiry remains active while attached.
+
+Beginning observers and existing Temporary objects are captured together once. A Sprite created by Sprite Queen or a dying Sprite Fountain during that event survives until a later Beginning event. Fountain's Deathknell is a real gear-death trigger; it does not count as another gear play. Its printed Rules panel is inactive while attached. Mother and Trevor need a live source for “here”; Queen and Fountain use their fixed base destination. Hidden Sprite Call retains its original field. Each token is a separate pending play with its own identity and optional costs.
+
+Last Stand takes a fresh current-Might snapshot on each execution, including current combat bonuses, and adds that amount for the turn before granting Temporary. Negative references contribute zero. Losing a combat bonus later does not change the previously fixed increase. Petal Pixie counts friendly Temporary units at its battlefield, including itself if Temporary; base is not a battlefield.
+
+Shadow's Call requires a friendly non-Temporary target at selection, but its Draw 2 is independent if that target becomes invalid. Smoke and Mirrors does not require Temporary to select its ordered pair. At resolution, it checks the live pair and each movement restriction; one locked mover does not stop the other legal move. A departed target supplies no invented destination, and Draw 1 remains independent. From Hidden, its first target is here and its second is at a different location. Tasty Faefolk channels as many of the two exhausted runes as remain, then draws independently.
+
+These interactions have focused runtime/API tests and complete legal-home AI games; they do not establish full Standard parity.
+
 ## Remaining fidelity limits
 
-Eight supported legends, eleven battlefield choices, and 349 main-deck cards are available through the four supplied presets and custom deck editor. The additional cards preserve all preset and training recipes; add them through the custom deck editor where eligible. There is no sideboarding, tournament match structure, multiplayer mode, or full card-set coverage. The presets are dated tournament lists, not a ranking of the current metagame.
+Eight supported legends, eleven battlefield choices, and 362 main-deck cards are available through the four supplied presets and custom deck editor. The additional cards preserve all preset and training recipes; add them through the custom deck editor where eligible. There is no sideboarding, tournament match structure, multiplayer mode, or full card-set coverage. The presets are dated tournament lists, not a ranking of the current metagame.
 
 The desktop and bot API expose exact damage allocations and power-source payments. The default automatic payment remains available; energy can be prepared by exhausting chosen rune domains before a play. These controls share engine validation, but broader card and interaction coverage is still required.
 

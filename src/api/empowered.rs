@@ -9,7 +9,7 @@ use crate::empower::BoardObject;
 use crate::legends::{LegendActivation, LegendActivationEffect, LegendTiming};
 use crate::rules::Allegiance;
 
-fn board_object_to_json(source: BoardObject) -> Value {
+pub(super) fn board_object_to_json(source: BoardObject) -> Value {
     match source {
         BoardObject::Unit { player, unit_id } => {
             json!({"type":"unit","player":player,"unit_id":unit_id})
@@ -34,12 +34,15 @@ pub(super) fn contribution_to_json(contribution: &PassiveContribution) -> Value 
     }
     json!({"source":board_object_to_json(contribution.source),"card_id":contribution.card_id,
         "rule_index":contribution.rule_index,"active":contribution.active,
-        "effect":effect})
+        "effect":effect,"computed_might_exact":contribution.computed_might.map(|value|value.to_string())})
 }
 
 fn effect_to_json(effect: PassiveEffect) -> Value {
     match effect {
         PassiveEffect::Might(amount) => json!({"type":"might","amount":amount}),
+        PassiveEffect::MightPerFriendlyTemporaryHere { amount } => {
+            json!({"type":"might_per_friendly_temporary_here","amount":amount})
+        }
         PassiveEffect::Keyword(keyword) => match keyword {
             PassiveKeyword::Assault(amount) => {
                 json!({"type":"keyword","keyword":"assault","amount":amount})

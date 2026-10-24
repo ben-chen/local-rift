@@ -23,7 +23,7 @@ Replace `choose_action(view, suggestions, rng)` in that example with your policy
 
 The initial session is in `mulligan` phase, with decks `[0,1]`, seed `1`, Tactical AI, and player `0` going first. `info` reports protocol version `1`; `catalog` reports separate preset, legend, card, domain, and battlefield IDs.
 
-The repository's `assets/data/full_catalog.json` is a separate inventory with schema version `2`; it is not the bot protocol or the playable `catalog` response. It preserves raw printing fields and adds reviewed `effective` facts, resolution references, and unresolved-field diagnostics. Deck validation uses those effective facts and rejects unresolved gameplay or variant fields, including conflicts on alternate printings. Source review alone never registers a playable card. The current expansion appends main-card IDs 345–348, while preserving existing IDs, presets, training decks, and chosen-champion eligibility. Additive XP-cost, dependent-ability, fixed-resource-output and equipment metadata retain protocol version `1`. See [the inventory review contract](CATALOG_REVIEW.md) for evidence and remaining variant-review limits.
+The repository's `assets/data/full_catalog.json` is a separate inventory with schema version `2`; it is not the bot protocol or the playable `catalog` response. It preserves raw printing fields and adds reviewed `effective` facts, resolution references, and unresolved-field diagnostics. Deck validation uses those effective facts and rejects unresolved gameplay or variant fields, including conflicts on alternate printings. Source review alone never registers a playable card. The current expansion appends main-card IDs 349–361, while preserving existing IDs, presets, training decks, and chosen-champion eligibility. Additive Temporary status, token identity, evaluated passive values and target queries retain protocol version `1`. See [the inventory review contract](CATALOG_REVIEW.md) for evidence and remaining variant-review limits.
 
 ```json
 {"id":"hello","command":"info"}
@@ -42,7 +42,7 @@ These are consecutive requests, not a single JSON array. An optional `id` is ech
 {"ok":false,"revision":4,"error":{"code":"stale_revision","message":"Expected revision 4, received 3."}}
 ```
 
-Every successful mutation increments the session revision by one. Reset also increments it; it never reuses an old revision. All mutation commands require the current revision. `observe`, `info`, `catalog`, `validate_deck`, `suggest`, `quote_payment`, `play_choices`, `cost_plan`, and successful `validate` leave it unchanged. Rejected requests leave both game state and revision unchanged. The facade validates on a cloned game and commits only on success, including when the core engine rejects an action after beginning its internal work.
+Every successful mutation increments the session revision by one. Reset also increments it; it never reuses an old revision. All mutation commands require the current revision. `observe`, `info`, `catalog`, `validate_deck`, `suggest`, `quote_payment`, `play_choices`, `cost_plan`, `target_candidates`, and successful `validate` leave it unchanged. Rejected requests leave both game state and revision unchanged. The facade validates on a cloned game and commits only on success, including when the core engine rejects an action after beginning its internal work.
 
 | Command | Fields besides `command` and optional `id` | Result |
 | --- | --- | --- |
@@ -56,6 +56,7 @@ Every successful mutation increments the session revision by one. Reset also inc
 | `suggest` | `player` | `{exhaustive:false, actions:[{id, action}, ...]}`; empty when this seat cannot act |
 | `quote_payment` | `revision`, `player`, exactly one of `action` or `action_id` | Suggested and available power sources, exact Power obligations; no mutation |
 | `play_choices` | `revision`, `player`, exactly one of `action` or `action_id` | Available Repeat instances, Accelerate/bonus costs, original zone, and typed cost plan |
+| `target_candidates` | `revision`, `player`, structured `action`, `execution` | Pure action-aware target view for the next unfilled slot; see below |
 | `cost_plan` | `revision`, `player`, exactly one of `action` or `action_id` | Cost components, modifiers, applied discount order, final Energy, typed Power and XP obligations |
 | `validate` | `revision`, `player`, exactly one of `action` or `action_id` | `{legal:true}`, or an error; no mutation |
 | `apply` | `revision`, `player`, exactly one of `action` or `action_id` | Apply one legal action and return public summary |
@@ -92,7 +93,7 @@ Targets have exactly one of these forms:
 
 A battlefield target identifies physical slot `0` or `1`, independently of its controller or catalog definition. Two slots using the same battlefield card are distinct targets. It has no `player` or `battlefield_id` field, and cannot select a base. A spell's battlefield target belongs in `targets`; the action's outer `lane` keeps its existing deployment/movement meaning and is not an alias.
 
-Each playable card's `play_targets` reports `{kind, maximum, required}`. `kind` is `unit`, `gear`, `spell`, `battlefield`, or `null`. This describes choices made while playing that card; delayed on-play triggers retain their own later decisions. It does not replace card-specific allegiance, location, timing, or payment validation. Firestorm requires exactly one battlefield target, including an empty field. Flurry of Blades and Avalanche have no targets; the units they damage are not individually chosen and do not add Deflect costs. Use `validate` for the complete action.
+Each playable card's `play_targets` reports `{kind, maximum, required}`. `kind` is `unit`, `gear`, `unit_or_gear`, `spell`, `battlefield`, or `null`. This describes choices made while playing that card; delayed on-play triggers retain their own later decisions. It does not replace card-specific allegiance, location, timing, or payment validation. Firestorm requires exactly one battlefield target, including an empty field. Flurry of Blades and Avalanche have no targets; the units they damage are not individually chosen and do not add Deflect costs. Use `validate` for the complete action.
 
 ```json
 {"type":"play_card_targets","hand_index":0,"targets":[{"type":"battlefield","lane":1}]}
@@ -378,3 +379,21 @@ session.apply_action(0, session.revision(), Action::EndTurn)?;
 Validation tests cover all action round trips, private-state invariance, malformed and stale requests, explicit multi-target/group/combat choices, deterministic replay, and completed matches for all 16 preset pairings. Run `cargo test --lib api::tests` and `cargo test --bin rift-api`.
 
 Instructed real-card plays also wait in Pending until their parent effect finishes. `pending_card_plays` exposes `{id,player,card_id,kind}` in finalization order. The physical card is then absent from trash and counted in this queue until its actual play finalizes. Fizz and Last Rites choose their public trash target before responses; opponents may remove that exact target before resolution. A card that left trash and returned is a new object and does not satisfy the old target. Finalization chooses the child card’s legal targets, destination, and optional costs, without an intervening response window.
+
+## Ordered targets, Temporary and Sprite identity
+
+`target_candidates` accepts an incomplete play draft and zero-based `execution`: 0 is the original, 1 onward follows the draft's selected Repeat order. It accepts structured `action`, not `action_id`. Cost/payment/play-choice wrappers use the same parser as `apply`. During payment, `action:{"type":"complete_payment"}` queries the stored intent, including its detached physical card. The current actor and revision are required.
+
+```json
+{"command":"target_candidates","revision":4,"player":0,"action":{"type":"play_hidden","hidden_id":9,"targets":[{"type":"unit","player":0,"unit_id":7}]},"execution":0}
+```
+
+The result contains `card_id`, `origin`, `execution`, the original ordered `targets`, `spec:{kind,maximum,required}`, `next_slot`, and `candidates`. An incomplete slot reports `{index,hidden,different_location_from}`. `hidden` is null, `{type:"at_battlefield",lane}`, or `{type:"outside_battlefield",lane}`; `different_location_from` is a preceding slot index or null. A valid fully filled draft has `next_slot:null` and no candidates. Invalid prefixes or execution indices return an error without changing state. To replace an earlier choice, query a draft truncated before that slot, rather than compacting later targets into it. Final `validate`/`apply` still check timing, complete choices and payment.
+
+Fading Memories uses `unit_or_gear`: units must be at a battlefield, while gear may be anywhere. Shadow's Call chooses a friendly unit without Temporary. Smoke and Mirrors chooses friendly units at different locations; from Hidden, slot 0 must be at the original field and slot 1 uses the different-location exception. Temporary is a condition for Smoke's movement, not its target selection. Each original slot retains its role if another target later leaves.
+
+Units and gear expose `temporary_status:{intrinsic,granted,active}`. The characteristic exists when intrinsic or granted is true. Attached gear's intrinsic Rules-panel expiry is inactive; a granted expiry remains active. A queued expiry has `ability:{type:"temporary",source,source_name}` and a physical `chain.source` of `unit` or `gear`, with its controller/object ID. The captured name survives departure. This replaces the old generated `triggered/DestroyGear` expiry representation; Rules-panel gear triggers also expose their actual `gear` source instead of a catalog-only `card` source; their existing context, payload and numeric exact fields retain their meanings.
+
+Each catalog card has `created_token:null` or `{name,might,kind,domains,tags,deflect,temporary,count}`. Individual `pending_token_plays[].token_identity` uses the same identity without creator `count`. Tokens are domainless; they do not inherit their creator's name, domains, tags or abilities. Sprite is a 3-Might Fae unit with Temporary. Entry readiness and destination remain on the pending instruction. `token_play` and `token_placement` decisions include the exact `token_id`; use it to key client drafts through payment and between identical children. Token fields cannot be overridden by action input. Suggested plays omit redundant ignored unit targets for targetless Hidden cards such as Zhonya’s Hourglass; the targetless play remains available. Suggestion IDs are revision-local, so clients must use fresh results rather than persist an old index.
+
+Passive contributions add `computed_might_exact:string|null`: the exact evaluated Might contribution, zero for an inactive Might expression, null for a keyword. Petal Pixie's descriptor remains `{type:"might_per_friendly_temporary_here",amount:1}` while the evaluated count updates with the board. Existing fixed effects keep their prior descriptors. The legacy unit `buff` numeric field also stores token base Might; use live stats rather than treating that field as a Buff-counter count.

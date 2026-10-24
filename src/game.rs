@@ -26,6 +26,8 @@ use play::*;
 mod scalar_spells;
 #[path = "strategic.rs"]
 mod strategic;
+#[path = "temporary.rs"]
+pub mod temporary;
 #[path = "triggers.rs"]
 pub mod triggers;
 use triggers::{EventSnapshot, Occurrence};
@@ -240,6 +242,10 @@ pub enum Action {
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum ChainAbility {
+    Temporary {
+        source: empower::BoardObject,
+        source_name: String,
+    },
     Hunt {
         source: AbilitySource,
         amount: u8,
@@ -397,6 +403,7 @@ pub struct ChainItem {
 /// Canonical definition source, independent of legacy main-card art references.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum ChainSource {
+    Gear { player: usize, gear_id: u32 },
     Unit { player: usize, unit_id: u32 },
     Card { card_id: CardId },
     Legend { player: usize, legend_id: usize },
@@ -800,6 +807,7 @@ pub struct Game {
     pub battlefields: [usize; 2],
     pub empowered_units: Vec<u32>,
     pub(crate) granted_temporary_gear: Vec<u32>,
+    granted_temporary_units: Vec<u32>,
     instructed_kills: Vec<u32>,
     /// Original simultaneous lethal events survive ordered replacements (CR373).
     pending_cleanup_deaths: Option<Vec<(usize, u32)>>,
@@ -1037,6 +1045,7 @@ impl Game {
                 .map_or_else(||default_battlefield(selected_decks[player]),|deck|deck.battlefield)),
             empowered_units: Vec::new(),
             granted_temporary_gear: Vec::new(),
+            granted_temporary_units: Vec::new(),
             instructed_kills: Vec::new(),
             pending_cleanup_deaths: None,
             pending_instruction_deaths: None,
@@ -1139,6 +1148,27 @@ impl Game {
 
     pub fn chain_source(&self, item: &ChainItem) -> ChainSource {
         match item.ability {
+            Some(ChainAbility::Temporary {
+                source: empower::BoardObject::Unit { player, unit_id },
+                ..
+            }) => ChainSource::Unit { player, unit_id },
+            Some(ChainAbility::Temporary {
+                source: empower::BoardObject::Gear { player, gear_id },
+                ..
+            }) => ChainSource::Gear { player, gear_id },
+            Some(ChainAbility::CardTrigger {
+                context:
+                    TriggerContext {
+                        source:
+                            TriggerSource {
+                                player,
+                                gear_id: Some(gear_id),
+                                unit_id: None,
+                            },
+                        ..
+                    },
+                ..
+            }) => ChainSource::Gear { player, gear_id },
             Some(ChainAbility::Hunt {
                 source: AbilitySource::Unit { player, unit_id },
                 ..
@@ -1167,6 +1197,9 @@ impl Game {
             return format!("{source_name} · Hunt {amount}");
         }
         match &item.ability {
+            Some(ChainAbility::Temporary { source_name, .. }) => {
+                format!("{source_name} · Temporary")
+            }
             Some(ChainAbility::Disempower { .. }) => {
                 "Tornado Warrior: disempower at end of turn".into()
             }
@@ -2201,7 +2234,9 @@ impl Game {
         Ok({
             let mut groups: Vec<Vec<Target>> = Vec::new();
             for (slot, &target) in targets.iter().enumerate() {
-                if !self.official_target_valid(player, card_id, lane, target, slot)? {
+                if !self.official_target_valid(player, card_id, lane, target, slot)?
+                    || !self.current_hidden_slot_valid(card_id, slot, target)
+                {
                     continue;
                 }
                 let location = self.target_location(target);
@@ -2350,6 +2385,7 @@ impl Game {
         });
         if let Some(ability) = item.ability.clone() {
             match ability {
+                ChainAbility::Temporary { source, .. } => self.resolve_temporary(source)?,
                 ChainAbility::Hunt { amount, .. } => {
                     self.gain_xp(item.player, u64::from(amount))?;
                 }
@@ -3749,6 +3785,10 @@ impl Game {
     }
 
     /// Public pending chain objects; their board-entry choices have not all finalized.
+    pub fn current_pending_token(&self) -> Option<&PendingToken> {
+        self.pending_token.as_ref()
+    }
+
     pub fn pending_tokens(&self) -> Vec<PendingToken> {
         self.pending_token
             .iter()
@@ -4172,6 +4212,7 @@ impl Game {
         let triggered = matches!(
             ability,
             ChainAbility::Hunt { .. }
+                | ChainAbility::Temporary { .. }
                 | ChainAbility::CardTrigger { .. }
                 | ChainAbility::Triggered(_)
                 | ChainAbility::Disempower { .. }
@@ -4194,6 +4235,7 @@ impl Game {
         let id = self.next_chain_id;
         self.next_chain_id += 1;
         let label = match &ability {
+            ChainAbility::Temporary { source_name, .. } => format!("{source_name} · Temporary"),
             ChainAbility::Hunt {
                 source_name,
                 amount,
@@ -5355,7 +5397,7 @@ impl Game {
             actions.extend(self.conversion_play_actions());
             actions.extend(self.gear_actions(self.priority()));
             actions.extend(self.ability_actions(self.priority()));
-            actions.extend(self.hidden_actions(self.priority()));
+            actions.extend(self.hidden_actions(self.priority())?);
             for unit in &self.players[self.priority()].units {
                 if matches!(unit.card_id, 24 | 45) && !unit.token {
                     for pay_power in [false, true] {
@@ -5776,6 +5818,13 @@ impl Game {
             {
                 return Err("These targets must be at the same location.".into());
             }
+            if rules::targeting(id).different_locations
+                && targets
+                    .iter()
+                    .any(|&first| self.target_location(first) == self.target_location(target))
+            {
+                return Err("Choose units at different locations.".into());
+            }
             targets.push(target);
         }
         let desired = if !automatic {
@@ -5793,6 +5842,10 @@ impl Game {
                     candidates.push((value * 100 - lane as i128, target));
                     continue;
                 }
+                if let Target::Gear { player: owner, .. } = target {
+                    candidates.push((if owner != actor { 1500 } else { 0 }, target));
+                    continue;
+                }
                 let Some(unit) = self.unit_ref(target) else {
                     continue;
                 };
@@ -5801,7 +5854,8 @@ impl Game {
                 };
                 let hostile = matches!(
                     effect,
-                    OfficialEffect::Damage { .. }
+                    OfficialEffect::GiveTemporary
+                        | OfficialEffect::Damage { .. }
                         | OfficialEffect::ContextualDamage(_)
                         | OfficialEffect::DamageAndGold { .. }
                         | OfficialEffect::Bounce { .. }
@@ -5887,6 +5941,23 @@ impl Game {
                         })
                     })
                     .collect(),
+                Some(rules::PlayTargetKind::UnitOrGear) => self
+                    .players
+                    .iter()
+                    .enumerate()
+                    .flat_map(|(player, p)| {
+                        p.units
+                            .iter()
+                            .map(move |u| Target::Unit {
+                                player,
+                                unit_id: u.id,
+                            })
+                            .chain(p.gear.iter().map(move |g| Target::Gear {
+                                player,
+                                gear_id: g.id,
+                            }))
+                    })
+                    .collect(),
                 Some(rules::PlayTargetKind::Unit) => self
                     .players
                     .iter()
@@ -5946,6 +6017,10 @@ impl Game {
         Ok({
             self.official_target_valid(player, card_id, lane, target, prior.len())?
                 && (!rules::targeting(card_id).distinct || !prior.contains(&target))
+                && (!rules::targeting(card_id).different_locations
+                    || prior
+                        .iter()
+                        .all(|&first| self.target_location(first) != self.target_location(target)))
                 && (!rules::targeting(card_id).same_location
                     || prior.first().is_none_or(|&first| {
                         self.target_location(first) == self.target_location(target)
@@ -6004,6 +6079,11 @@ impl Game {
                         matches!(target, Target::Spell { chain_id } if self.counter_target_valid(actor, id, chain_id)),
                     );
                 }
+                OfficialEffect::GiveTemporary if matches!(target, Target::Gear { .. }) => {
+                    return Ok(
+                        matches!(target,Target::Gear {player,gear_id} if self.players.get(player).is_some_and(|p|p.gear.iter().any(|g|g.id==gear_id))),
+                    );
+                }
                 OfficialEffect::DestroyGearAndDraw | OfficialEffect::TemporaryGear => {
                     return Ok(
                         matches!(target, Target::Gear { player, gear_id } if self.players.get(player).is_some_and(|p| p.gear.iter().any(|g| g.id == gear_id))),
@@ -6021,6 +6101,11 @@ impl Game {
             else {
                 return Ok(false);
             };
+            if rules::targeting(id).temporary.is_some_and(|required| {
+                self.has_temporary(empower::BoardObject::Unit { player, unit_id }) != required
+            }) {
+                return Ok(false);
+            }
             if !self.can_choose_unit(actor, target) {
                 return Ok(false);
             }
@@ -6031,6 +6116,7 @@ impl Game {
                 _ => {}
             }
             match rules::effect(id) {
+                OfficialEffect::GiveTemporary => unit.lane.is_some(),
                 OfficialEffect::Kill {
                     battlefield_only,
                     max_might,
@@ -6240,6 +6326,7 @@ impl Game {
             .position(|u| u.id == unit_id)
         {
             self.empowered_units.retain(|&id| id != unit_id);
+            self.granted_temporary_units.retain(|&id| id != unit_id);
             self.gear_unit_left_board(player, unit_id);
             let unit = self.players[player].units.remove(index);
             self.push_log(format!(
@@ -6520,7 +6607,9 @@ impl Game {
         }
         let mut valid = Vec::new();
         for (slot, &target) in targets.iter().enumerate() {
-            if self.official_target_valid(player, id, lane, target, slot)? {
+            if self.official_target_valid(player, id, lane, target, slot)?
+                && self.current_hidden_slot_valid(id, slot, target)
+            {
                 valid.push(target);
             }
         }
@@ -6529,6 +6618,35 @@ impl Game {
             valid.retain(|&target| self.target_location(target) == location);
         }
         match rules::effect(id) {
+            OfficialEffect::GiveTemporary => {
+                for target in valid {
+                    self.grant_temporary(target);
+                }
+            }
+            OfficialEffect::DoubleMightAndTemporary => {
+                for target in valid {
+                    let amount = self
+                        .unit_ref(target)
+                        .map(|u| self.actual_unit_might(u))
+                        .transpose()?
+                        .unwrap_or(0)
+                        .max(0);
+                    self.modify_might(target, i128::from(amount), 0)?;
+                    self.grant_temporary(target);
+                }
+            }
+            OfficialEffect::TemporaryAndDraw { draw } => {
+                for target in valid {
+                    self.grant_temporary(target);
+                }
+                self.draw(player, draw);
+            }
+            OfficialEffect::ExchangeLocationsIfTemporary { draw } => {
+                if targets.len() == 2 && valid.len() == 2 {
+                    self.exchange_temporary_locations(player, targets[0], targets[1])?;
+                }
+                self.draw(player, draw);
+            }
             OfficialEffect::Kill { .. } => {
                 if let Some(&target) = valid.first() {
                     self.kill_unit(target)?;
@@ -6804,16 +6922,19 @@ impl Game {
             }
             OfficialEffect::Tokens { count, might } => {
                 for _ in 0..count {
-                    self.queue_token_play(
+                    self.queue_token_play_with_entry(
                         player,
                         id,
                         might,
                         match rules::token_placement(id) {
-                            rules::TokenPlacement::Default => None,
+                            rules::TokenPlacement::Default => {
+                                self.current_hidden_origin().map(Some)
+                            }
                             rules::TokenPlacement::Base => Some(None),
                             rules::TokenPlacement::Here => Some(lane),
                         },
                         rules::token_is_gear(id),
+                        matches!(id, 355 | 356),
                     );
                 }
             }
@@ -7045,7 +7166,7 @@ impl Game {
         match stage {
             StartStage::Beginning => {
                 self.pending_start = Some(StartStage::Holding);
-                self.gear_beginning(player);
+                self.temporary_beginning(player);
             }
             StartStage::Holding => {
                 self.pending_start = Some(StartStage::Channel);
@@ -7434,6 +7555,8 @@ impl Game {
         {
             self.gear_unit_left_board(player, choice.unit_id);
             self.empowered_units.retain(|&id| id != choice.unit_id);
+            self.granted_temporary_units
+                .retain(|&id| id != choice.unit_id);
             let unit = self.players[player].units.remove(index);
             self.push_log(format!(
                 "{} is banished instead of dying.",
@@ -7650,6 +7773,7 @@ impl Game {
                     *has_real_death = true;
                 }
                 self.empowered_units.retain(|&id| id != unit_id);
+                self.granted_temporary_units.retain(|&id| id != unit_id);
                 self.instructed_kills.retain(|&id| id != unit_id);
                 self.gear_unit_left_board(player, unit_id);
                 let unit = self.players[player].units.remove(index);
@@ -8023,7 +8147,7 @@ impl Game {
                 }
             }
 
-            for action in self.hidden_actions(player) {
+            for action in self.hidden_actions(player)? {
                 match &action {
                     Action::PlayHidden { .. } => {
                         plays.push((if self.showdown.is_some() { 95 } else { 25 }, action))

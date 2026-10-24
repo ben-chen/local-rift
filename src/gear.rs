@@ -36,12 +36,7 @@ impl GearState {
 
 /// Temporary's characteristic and its active expiry ability are distinct:
 /// attachment suppresses printed text, but not a granted ability (CR135.4.b).
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub struct GearTemporaryStatus {
-    pub intrinsic: bool,
-    pub granted: bool,
-    pub active: bool,
-}
+pub type GearTemporaryStatus = crate::temporary::TemporaryStatus;
 
 impl Game {
     pub fn gear_temporary_status(
@@ -49,22 +44,7 @@ impl Game {
         player: usize,
         gear_id: u32,
     ) -> Option<GearTemporaryStatus> {
-        let gear = self
-            .players
-            .get(player)?
-            .gear
-            .iter()
-            .find(|g| g.id == gear_id)?;
-        let granted = self.granted_temporary_gear.contains(&gear_id);
-        let intrinsic = !gear.token
-            && (rules::static_abilities(gear.card_id).contains(&StaticAbility::Temporary)
-                // Preserve the existing public state-fixture convention.
-                || (gear.temporary && !granted));
-        Some(GearTemporaryStatus {
-            intrinsic,
-            granted,
-            active: granted || (intrinsic && gear.attached_to.is_none()),
-        })
+        self.temporary_status(crate::empower::BoardObject::Gear { player, gear_id })
     }
 
     pub fn gear_name(&self, gear: &GearState) -> &str {
@@ -489,6 +469,7 @@ impl Game {
     }
 
     pub(crate) fn gear_destroy(&mut self, player: usize, gear_id: u32) -> bool {
+        self.capture_gear_death(player, gear_id);
         let Some(state) = self.players.get_mut(player) else {
             return false;
         };
@@ -524,25 +505,9 @@ impl Game {
         }
     }
 
+    #[cfg(test)]
     pub(crate) fn gear_beginning(&mut self, player: usize) {
-        let doomed: Vec<_> = self.players[player]
-            .gear
-            .iter()
-            .filter(|gear| {
-                self.gear_temporary_status(player, gear.id)
-                    .is_some_and(|status| status.active)
-            })
-            .map(|gear| (gear.id, gear.card_id))
-            .collect();
-        for (gear_id, source) in doomed {
-            self.queue_ability(
-                player,
-                source,
-                Vec::new(),
-                ChainAbility::Triggered(TriggeredAbility::DestroyGear { gear_id }),
-            );
-            self.push_log("Temporary gear's expiration waits on the chain before scoring.".into());
-        }
+        self.temporary_beginning(player);
     }
 
     #[cfg(test)]
@@ -921,9 +886,10 @@ mod tests {
         assert_eq!(game.players[0].gear.len(), 1);
         assert!(matches!(
             game.chain.last().unwrap().ability,
-            Some(ChainAbility::Triggered(
-                TriggeredAbility::DestroyGear { .. }
-            ))
+            Some(ChainAbility::Temporary {
+                source: crate::empower::BoardObject::Gear { .. },
+                ..
+            })
         ));
         resolve_chain(&mut game);
         assert!(game.players[0].gear.is_empty());
