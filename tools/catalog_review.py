@@ -127,7 +127,8 @@ def _strings(value, label, allowed=None):
 def _validate_facts(facts, label):
     for field, allowed in (("types", TYPES), ("super_types", SUPER_TYPES), ("domains", DOMAINS), ("tags", None)):
         _strings(facts[field], f"{label}:{field}", allowed)
-    require(len(facts["types"]) <= 1, f"Multiple card types: {label}")
+    # Core 178 permits multiple types; all are retained as reviewed facts.
+    # Runtime admission separately requires an exactly supported type set.
     require("colorless" not in facts["domains"] or facts["domains"] == ["colorless"],
             f"Colorless mixed with colored domains: {label}")
     for field in ("energy", "power", "might", "might_bonus"):
@@ -368,7 +369,7 @@ def apply_reviews(printings, *, root: Path, project_gallery, plain, manifest=Non
                 unresolved.add("types")
             if set(effective["types"]) & {"unit", "spell", "gear", "legend", "rune"} and not effective["domains"]:
                 unresolved.add("domains")
-            if effective["types"] == ["unit"] and effective["might"] is None:
+            if "unit" in effective["types"] and effective["might"] is None:
                 unresolved.add("might")
         value.update(effective=effective, resolution_ids=[r["id"] for r in applied],
                      unresolved_gameplay_fields=sorted(unresolved))

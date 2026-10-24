@@ -6,13 +6,13 @@ This is a source-data review, dated **October 24, 2026**. It adds no playable ca
 
 The first review covers every group in the catalog's original **37 source-quality issue records**, representing **38 official printings**. Matching official card images corroborate 13 missing-type fallbacks, resolve 23 structured/accessibility type contradictions, and show Might 5 on both printings of Kai'Sa, Rebel. The same images reveal additional domain, tag, and text defects on these records. This is a bounded review of those records, not a complete visual audit of the gallery or a count of every possible source error.
 
-The [resolution manifest](../assets/data/catalog_resolutions.json) now records **115 field resolutions across 71 printings: 88 effective changes and 27 confirmations**. The original 73 entries, 38 raw printings, and all 37 historical issue records remain unchanged. A subsequent variant review adds 25 tag observations, one paired Akali punctuation correction, and six paired Rune-placeholder corrections. Two subsequent artwork discoveries correct Bilgewater Tracker’s domain and tag; one further discovery corrects Momentary Companion’s missing tags. Of the complete 115 entries, 111 are direct artwork observations; four exclusions of an unprinted Device classification remain explicitly rule-derived. The separate [identity review](VARIANT_REVIEW.md) assesses whole printing groups without rewriting genuine printed text.
+The [resolution manifest](../assets/data/catalog_resolutions.json) now records **117 field resolutions across 73 printings: 90 effective changes and 27 confirmations**. The original 73 entries, 38 raw printings, and all 37 historical issue records remain unchanged. A subsequent variant review adds 25 tag observations, one paired Akali punctuation correction, and six paired Rune-placeholder corrections. Two subsequent artwork discoveries correct Bilgewater Tracker’s domain and tag; one further discovery corrects Momentary Companion’s missing tags. Two more observations correct Stalwart Goatherd’s missing Mount Targon tag and Patched Porobot’s incomplete type. Of the complete 117 entries, 113 are direct artwork observations; four exclusions of an unprinted Device classification remain explicitly rule-derived. The separate [identity review](VARIANT_REVIEW.md) assesses whole printing groups without rewriting genuine printed text.
 
 | Field | Entries | Review |
 | --- | ---: | --- |
-| Types | 36 | 23 contradictory structured types; 13 corroborated accessibility fallbacks |
+| Types | 37 | 23 contradictory structured types; 13 corroborated accessibility fallbacks; one incomplete dual type |
 | Domains | 17 | Six incorrect nonempty domains, including Tracker; 11 missing domains |
-| Tags | 42 | Original 15 entries; 14 further missing-tag corrections and 13 confirmations |
+| Tags | 43 | Original 15 entries; 15 further missing-tag corrections and 13 confirmations |
 | Rules HTML | 9 | Activation glyph, stray suffix, duplicate Akali period, six Rune placeholders |
 | Readable rules | 9 | The same nine corrections in readable text |
 | Might | 2 | Numbered Kai'Sa 5 confirmed; showcase 4 corrected to 5 |
@@ -29,7 +29,7 @@ Each resolution pins its exact official printing ID, field, typed raw value, ori
 
 ## Evidence retained in the repository
 
-- [Field-resolution image index](../assets/data/catalog_evidence/images.json): 71 original Riot CDN images, 67,792,991 bytes in total, with exact URLs, file sizes, and SHA-256 values. The separate [variant image index](../assets/data/catalog_evidence/variant_images.json) covers all 90 members of 29 complete identity reviews. The indexes share 31 files; together they reference 130 distinct originals. These unchanged evidence files are separate from the smaller artwork embedded in the game. Riftbound and this artwork belong to Riot Games; the project is unaffiliated.
+- [Field-resolution image index](../assets/data/catalog_evidence/images.json): 73 original Riot CDN images, 69,344,983 bytes in total, with exact URLs, file sizes, and SHA-256 values. The separate [variant image index](../assets/data/catalog_evidence/variant_images.json) covers all 90 members of 29 complete identity reviews. The indexes share 31 files; together they reference 132 distinct originals. These unchanged evidence files are separate from the smaller artwork embedded in the game. Riftbound and this artwork belong to Riot Games; the project is unaffiliated.
 - [Immutable origin gallery](../assets/data/catalog_evidence/pages/97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9.html.gz): the original gzip bytes. Its decompressed SHA-256 is `97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9`. The importer independently reparses this origin rather than trusting a copied prerequisite in the manifest.
 - [October 9 Core Rules PDF](../assets/data/catalog_evidence/rules/94d41fee86f88b61c4157c0389c0595d990b98e5b42555c99d9f649ee64d1fec.pdf): unchanged official bytes with SHA-256 `94d41fee86f88b61c4157c0389c0595d990b98e5b42555c99d9f649ee64d1fec`. [Official PDF URL](https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/5c7946f7c3b8c6e0faff85ab6dadc6d2e721ea94.pdf).
 
@@ -37,7 +37,7 @@ Every artwork observation matched the printed name and collector number before r
 
 ## Reviewed corrections
 
-The table below retains the original 73 manifest entries; the later 42 entries are summarized after it. A type shown as ∅ means the structured type was absent; the current accessibility-derived type is corroborated. Every image link points to the exact bytes used for review. Complete raw/effective strings and hash prerequisites are in the manifest.
+The table below retains the original 73 manifest entries; the later 44 entries are summarized after it. A type shown as ∅ means the structured type was absent; the current accessibility-derived type is corroborated. Every image link points to the exact bytes used for review. Complete raw/effective strings and hash prerequisites are in the manifest.
 
 | Official printing | Card | Reviewed values | Evidence |
 | --- | --- | --- | --- |
@@ -108,9 +108,19 @@ The original 112 resolutions, 69 preserved printings, 37 historical issue record
 
 The later review of **Momentary Companion**, `rad-095-167`, found that its exact [original face](../assets/data/catalog_evidence/images/rad-095-167.png) prints **UNIT / SHADOW ISLES / DEMON**, while the feed's tag array is empty. The preserved original PNG is 759,278 bytes, SHA-256 `55ab5e101b569288674f8aa83d9db4f729274b427b3187b5c1b57efaf9db6950`. Only its effective tags change, to `Shadow Isles` and `Demon`; its raw tags, Chaos domain, printed costs, Might, type, and rules text remain intact. This is an artwork transcription correction, not an erratum or an inference from the illustration.
 
-The [bounded review proof](../assets/data/catalog_evidence/reviews/momentary-companion.json) records the complete raw printing and immutable origin, the new observation, and an explicitly superseded preliminary observation that overlooked the tags. It also pins the unchanged earlier 114 resolutions, 70 preserved printings/images, 39 historical issue records, all 29 complete identity reviews, and their 90-printing evidence. The correction adds one linked `official_artwork_field_mismatch` history record, bringing the current totals to **115 field entries, 71 preserved printings, and 40 visible issue groups**. It does not rewrite the original parser diagnostics or any prior review object.
+The [bounded review proof](../assets/data/catalog_evidence/reviews/momentary-companion.json) records the complete raw printing and immutable origin, the new observation, and an explicitly superseded preliminary observation that overlooked the tags. It also pins the unchanged earlier 114 resolutions, 70 preserved printings/images, 39 historical issue records, all 29 complete identity reviews, and their 90-printing evidence. The correction adds one linked `official_artwork_field_mismatch` history record, bringing the totals at that checkpoint to **115 field entries, 71 preserved printings, and 40 visible issue groups**. It does not rewrite the original parser diagnostics or any prior review object.
 
 This source-only checkpoint remains **349 main cards, 374 mapped legal identities, and 705 unavailable**. Momentary Companion is Standard legal but remains unavailable in the client. No runtime card, thumbnail, rule implementation, preset, training recipe, or chosen-champion eligibility is added here. Its eventual gameplay admission must be reviewed separately.
+
+### Stalwart Goatherd and Patched Porobot: two source corrections
+
+The next original-face review found two further omissions. **Stalwart Goatherd**, `rad-083-167`, explicitly prints **UNIT / MOUNT TARGON**; its raw tags are empty. **Patched Porobot**, `ven-058-166`, explicitly prints **UNIT GEAR / PILTOVER / MECH / PORO**, with both type icons. Its raw structured type is only `unit`. The complete original accessibility string already says “Unit, Gear”, but the version 1 projection does not parse compound labels. The original string, empty parsed accessibility-type array, and every other raw field remain unchanged. Only Goatherd’s effective tags and Porobot’s effective types change.
+
+The [review proof](../assets/data/catalog_evidence/reviews/gear-source-corrections.json) pins both original images (1,551,992 bytes combined), complete printing hashes, immutable origin, and individual visual observations. It preserves the preceding 115 resolutions, 71 raw printings/images, 40 issue groups, every complete identity review, and all runtime cards/lists byte for byte. Current totals are **117 resolutions, 73 printings/images, and 42 historical issue groups**. No artwork or gameplay text is inferred from the card names.
+
+Core **178–178.3** makes multiple types cumulative: a Unit Gear has unit entry, Might, damage and movement properties, and can be affected by both Unit and Gear effects. The source validator therefore retains complete type arrays and requires Might whenever `unit` is present. Inventory `kind` uses a sorted `+`-joined type set (`gear+unit` here), counted once in a separate coverage row. This classification is not a new engine card kind or runtime implementation. Mapping Porobot as an ordinary Unit or Gear cannot bypass the importer’s exact type-set check.
+
+This source-only checkpoint preserves **362 main cards, 387 mapped legal identities and 692 unavailable**. Both cards remain unavailable. Porobot requires complete dual-type gameplay support before admission; it is excluded from the initial single-type gear-interaction implementation group. These two visual discoveries do not retroactively change the original 37 parser diagnostics or establish that every unflagged type is accurate.
 
 ## Remaining source review
 

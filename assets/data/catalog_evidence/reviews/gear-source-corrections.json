@@ -1,0 +1,301 @@
+{
+  "schema_version": 1,
+  "status": "reviewed_source_only",
+  "reviewed_on": "2026-10-24",
+  "scope": "Two exact-face corrections, with complete type-set inventory classification. Neither card is admitted to gameplay.",
+  "enables_runtime_support": false,
+  "baseline_commit": "8554baed3b4b6ece24b6519f32df2b3110b5bbb3",
+  "baseline_counts": {
+    "main": 362,
+    "mapped_legal": 387,
+    "unavailable": 692
+  },
+  "origin_gallery": {
+    "url": "https://playriftbound.com/en-us/card-gallery/",
+    "archive": "assets/data/catalog_evidence/pages/97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9.html.gz",
+    "sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+    "uncompressed_bytes": 3986973
+  },
+  "records": [
+    {
+      "official_id": "rad-083-167",
+      "name": "Stalwart Goatherd",
+      "resolution_ids": [
+        "rad-083-167:tags"
+      ],
+      "raw_printing": {
+        "official_id": "rad-083-167",
+        "public_code": "RAD-083/167",
+        "name": "Stalwart Goatherd",
+        "set": "RAD",
+        "collector_number": 83,
+        "types": [
+          "unit"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "unit"
+        ],
+        "accessibility_types": [
+          "unit"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "body"
+        ],
+        "energy": 4,
+        "power": null,
+        "might": 2,
+        "might_bonus": null,
+        "rules_html": "<p>[Shield 2] (+2 :rb_might: while I'm a defender.)<br />When you play me, you may kill a gear with Energy cost :rb_energy_4: or less.</p>",
+        "rules_text": "[Shield 2] (+2 Might while I'm a defender.)\nWhen you play me, you may kill a gear with Energy cost [4 Energy] or less.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [],
+        "rarity": "uncommon",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/bff85727b58017cbd3921fd73e9b363f5a0205e4-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Unit: Stalwart Goatherd. [Shield 2] (+2 [S] while I'm a defender.)\nWhen you play me, you may kill a gear with Energy cost [4] or less.",
+        "illustrators": [
+          "Six More Vodka"
+        ]
+      },
+      "raw_printing_sha256": "b9f8c0bfde0aae8a59fbc2c2d01796ff336537babd67a88a254f5185f48d6183",
+      "effective_before": {
+        "types": [
+          "unit"
+        ],
+        "super_types": [],
+        "domains": [
+          "body"
+        ],
+        "energy": 4,
+        "power": null,
+        "might": 2,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>[Shield 2] (+2 :rb_might: while I'm a defender.)<br />When you play me, you may kill a gear with Energy cost :rb_energy_4: or less.</p>",
+        "rules_text": "[Shield 2] (+2 Might while I'm a defender.)\nWhen you play me, you may kill a gear with Energy cost [4 Energy] or less.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "effective_after": {
+        "types": [
+          "unit"
+        ],
+        "super_types": [],
+        "domains": [
+          "body"
+        ],
+        "energy": 4,
+        "power": null,
+        "might": 2,
+        "might_bonus": null,
+        "tags": [
+          "Mount Targon"
+        ],
+        "rules_html": "<p>[Shield 2] (+2 :rb_might: while I'm a defender.)<br />When you play me, you may kill a gear with Energy cost :rb_energy_4: or less.</p>",
+        "rules_text": "[Shield 2] (+2 Might while I'm a defender.)\nWhen you play me, you may kill a gear with Energy cost [4 Energy] or less.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "original_image": {
+        "official_id": "rad-083-167",
+        "path": "assets/data/catalog_evidence/images/rad-083-167.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/bff85727b58017cbd3921fd73e9b363f5a0205e4-744x1039.png?accountingTag=RB",
+        "bytes": 800074,
+        "sha256": "8ced2784d486a993fb2b291bf2d5220bfd10a78b0a74f53002e0fecbb32536c1"
+      },
+      "visual_observation": {
+        "official_id": "rad-083-167",
+        "face_visually_inspected": true,
+        "original_image_sha256": "8ced2784d486a993fb2b291bf2d5220bfd10a78b0a74f53002e0fecbb32536c1",
+        "name": "Stalwart Goatherd",
+        "collector_code": "RAD-083/167",
+        "printed_types": [
+          "unit"
+        ],
+        "printed_supertypes": [],
+        "printed_domains": [
+          "body"
+        ],
+        "printed_tags": [
+          "Mount Targon"
+        ],
+        "printed_energy": 4,
+        "printed_power": null,
+        "printed_might": 2,
+        "printed_might_bonus": null,
+        "printed_rules_icons_expanded": "[Shield 2] (+2 Might while I'm a defender.)\nWhen you play me, you may kill a gear with Energy cost [4 Energy] or less.",
+        "printed_equipment_icons_expanded": "",
+        "comparison": "The exact RAD-083/167 official face prints UNIT / MOUNT TARGON. The empty structured tag array omits the printed Mount Targon tag.",
+        "uncertainties": []
+      }
+    },
+    {
+      "official_id": "ven-058-166",
+      "name": "Patched Porobot",
+      "resolution_ids": [
+        "ven-058-166:types"
+      ],
+      "raw_printing": {
+        "official_id": "ven-058-166",
+        "public_code": "VEN-058/166",
+        "name": "Patched Porobot",
+        "set": "VEN",
+        "collector_number": 58,
+        "types": [
+          "unit"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "unit"
+        ],
+        "accessibility_types": [],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "mind"
+        ],
+        "energy": 2,
+        "power": null,
+        "might": 2,
+        "might_bonus": null,
+        "rules_html": "<p>(I enter exhausted.)<br />When you play me, if you control 3 or more other gear, draw 1.</p>",
+        "rules_text": "(I enter exhausted.)\nWhen you play me, if you control 3 or more other gear, draw 1.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [
+          "Mech",
+          "Poro",
+          "Piltover"
+        ],
+        "rarity": "common",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/7667d7e0c902782c38221e9326d1bb98181ec17f-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Unit, Gear: Patched Porobot. (I enter exhausted.)\nWhen you play me, if you control 3 or more other gear, draw 1.",
+        "illustrators": [
+          "Six More Vodka"
+        ]
+      },
+      "raw_printing_sha256": "f5d83d7d6da13d31f20cd060a872518d582443e6c4844de99bdf6855bbd7ca89",
+      "effective_before": {
+        "types": [
+          "unit"
+        ],
+        "super_types": [],
+        "domains": [
+          "mind"
+        ],
+        "energy": 2,
+        "power": null,
+        "might": 2,
+        "might_bonus": null,
+        "tags": [
+          "Mech",
+          "Poro",
+          "Piltover"
+        ],
+        "rules_html": "<p>(I enter exhausted.)<br />When you play me, if you control 3 or more other gear, draw 1.</p>",
+        "rules_text": "(I enter exhausted.)\nWhen you play me, if you control 3 or more other gear, draw 1.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "effective_after": {
+        "types": [
+          "unit",
+          "gear"
+        ],
+        "super_types": [],
+        "domains": [
+          "mind"
+        ],
+        "energy": 2,
+        "power": null,
+        "might": 2,
+        "might_bonus": null,
+        "tags": [
+          "Mech",
+          "Poro",
+          "Piltover"
+        ],
+        "rules_html": "<p>(I enter exhausted.)<br />When you play me, if you control 3 or more other gear, draw 1.</p>",
+        "rules_text": "(I enter exhausted.)\nWhen you play me, if you control 3 or more other gear, draw 1.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "original_image": {
+        "official_id": "ven-058-166",
+        "path": "assets/data/catalog_evidence/images/ven-058-166.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/7667d7e0c902782c38221e9326d1bb98181ec17f-744x1039.png?accountingTag=RB",
+        "bytes": 751918,
+        "sha256": "83b7edbd3de3c8067e3ed6477df417c1f90f6a1dea00b2f1b89f6f1e9976b42a"
+      },
+      "visual_observation": {
+        "official_id": "ven-058-166",
+        "face_visually_inspected": true,
+        "original_image_sha256": "83b7edbd3de3c8067e3ed6477df417c1f90f6a1dea00b2f1b89f6f1e9976b42a",
+        "name": "Patched Porobot",
+        "collector_code": "VEN-058/166",
+        "printed_types": [
+          "unit",
+          "gear"
+        ],
+        "printed_supertypes": [],
+        "printed_domains": [
+          "mind"
+        ],
+        "printed_tags": [
+          "Mech",
+          "Poro",
+          "Piltover"
+        ],
+        "printed_energy": 2,
+        "printed_power": null,
+        "printed_might": 2,
+        "printed_might_bonus": null,
+        "printed_rules_icons_expanded": "(I enter exhausted.)\nWhen you play me, if you control 3 or more other gear, draw 1.",
+        "printed_equipment_icons_expanded": "",
+        "comparison": "The exact VEN-058/166 official face prints UNIT GEAR, with both type icons. The structured feed projects only unit. The preserved accessibility string also says Unit, Gear, but projection v1 does not parse the compound label. This is one object with both types, not a choice between them.",
+        "uncertainties": []
+      }
+    }
+  ],
+  "preserved_source_cohorts": {
+    "resolutions": {
+      "count": 115,
+      "canonical_sha256": "3c75cb257042b2f364c4557900f8723454fc1d3a1ace3cfcaee0693e9a70fd58"
+    },
+    "raw_printings": {
+      "count": 71,
+      "canonical_sha256": "8ee41b60e102f1e53fdad2b2c7693f374fda274717c48c2d1ef542e22354f301"
+    },
+    "historical_issues": {
+      "count": 40,
+      "canonical_sha256": "3ff51d7ce73e585e948a06e1b165794abd0b5f6bf768d12126038b57942b11bf"
+    }
+  },
+  "preserved_field_image_index": {
+    "count": 71,
+    "canonical_sha256": "3c764d54c851a30f3378af34fe930907631fdb2fa2a15d3809e452adcb4eae19"
+  },
+  "preserved_files": {
+    "assets/data/catalog_identity_reviews.json": "e678c7f2f2e1ae70fb6b399ce1b0ab88a314e9018810d1ccadb1759a1f7b5e12",
+    "assets/data/catalog_evidence/variant_images.json": "1826db0a53cbe62eb1a1196d08df1cbef215b9d9e24cc006689559bbc7693b92",
+    "assets/data/decks.json": "9bd26107a430d33b43f23f15dda7ad6a5575581d71642a9a7053574343960ab4",
+    "assets/data/legends.json": "2b621121a54761ccee91e6d0df7b720e572138e7c2caac2c52abaaabd951b37f",
+    "src/deck.rs": "ad6b2ad3d5e3e34c99af35eef5a283b615cc813db27cec246fd2f433063ec1e4"
+  },
+  "type_semantics": {
+    "core_rules": "assets/data/catalog_evidence/rules/94d41fee86f88b61c4157c0389c0595d990b98e5b42555c99d9f649ee64d1fec.pdf",
+    "core_rules_sha256": "94d41fee86f88b61c4157c0389c0595d990b98e5b42555c99d9f649ee64d1fec",
+    "sections": [
+      "178",
+      "178.1.a.1",
+      "178.2",
+      "178.3"
+    ],
+    "inventory_kind": "gear+unit",
+    "meaning": "Sorted complete type set in one disjoint inventory bucket. It is not an engine CardKind. Runtime main-card admission still requires an exact supported type set.",
+    "raw_projection": "Projection version 1 remains byte-for-byte unchanged. The full original compound accessibility string remains preserved; its unparsed accessibility_types array stays empty."
+  }
+}

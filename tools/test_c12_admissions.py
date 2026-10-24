@@ -98,8 +98,9 @@ class C12AdmissionTests(unittest.TestCase):
             (images, 71, 'field_image_index_sha256'),
             (identities['reviews'], 29, 'identity_reviews_sha256'),
         ]:
-            self.assertEqual(len(values), count)
-            self.assertEqual(digest(values), p[key])
+            # Later source reviews append entries; this admission pins its original cohort.
+            self.assertGreaterEqual(len(values), count)
+            self.assertEqual(digest(values[:count]), p[key])
         self.assertEqual(self.proof['pre_admission_counts'], {'main_cards': 349, 'mapped_legal': 374, 'remaining_legal': 705})
 
     def test_momentary_uses_prior_effective_tags_and_reuses_source_original(self):

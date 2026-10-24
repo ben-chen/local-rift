@@ -2,7 +2,7 @@
   "schema_version": 1,
   "status": "reviewed",
   "prepared_on": "2026-10-24",
-  "scope": "Existing C6/C7 and Tracker reviews preserved, plus one artwork-proven Momentary Companion missing-tag correction; source review alone enables no runtime card.",
+  "scope": "Earlier reviews preserved, plus two artwork-proven corrections: Stalwart Goatherd tags and Patched Porobot dual type. Source review alone enables no runtime card.",
   "baseline": {
     "main_cards": 290,
     "legends": 8,
@@ -63,7 +63,7 @@
     }
   },
   "evidence_manifest_path": "assets/data/catalog_evidence/images.json",
-  "evidence_manifest_sha256": "da06717cc8d052f555b5ecb6d4ff283286ba504e31af47e5e3ed474d14a74eb8",
+  "evidence_manifest_sha256": "8a02f46f3b8c8152d7384cdeecbed455780c82c4a06493b1dea1cbbb284806ba",
   "evidence_checks": {
     "historical_c6_review": {
       "all8_archives_verified": true,
@@ -72,12 +72,12 @@
       "artwork_review": "Dated visual review of the matching official card images, documented in docs/CATALOG_REVIEW.md. No automatic preference for accessibility labels or new inferred source values."
     },
     "current_field_review": {
-      "reviewed_printings": 71,
+      "reviewed_printings": 73,
       "all_image_hashes_verified": true,
       "all_image_urls_match_pinned_raw_printings": true,
       "all_raw_projection_and_origin_checks_pass": true,
       "visual_review_date": "2026-10-24",
-      "note": "The original 70 field-reviewed printings are preserved; one newly face-reviewed Momentary Companion printing adds a missing-tag correction. The C7 identity-review index of 90 printings remains unchanged."
+      "note": "The original 71 field-reviewed printings are preserved; Stalwart Goatherd and Patched Porobot add two individually inspected corrections. The 29 complete identity reviews and their 90-printing evidence remain unchanged."
     }
   },
   "preservation_contract": [
@@ -88,23 +88,25 @@
     "Preserve the distinction between artwork-confirmed observations and four rule-derived exclusions of unprinted Device tags.",
     "Confirming missing-type fallbacks is not permission to accept other missing domains or unreviewed fields.",
     "Metadata resolution does not set playable_in_client or implement cards, and does not alter presets or training recipes.",
-    "Preserve absence as null for unreviewed statistics. Protector\u2019s Shield raw Might 1 is not a unit base stat; its existing might_bonus 1 and equipment effect remain separate and unchanged.",
+    "Preserve absence as null for unreviewed statistics. Protector’s Shield raw Might 1 is not a unit base stat; its existing might_bonus 1 and equipment effect remain separate and unchanged.",
     "Live page checks fetch current gallery and legality pages but do not freshly download image evidence; the stored visual review remains dated."
   ],
   "stats": {
-    "historical_issue_groups": 40,
-    "reviewed_printings": 71,
-    "field_resolutions": 115,
-    "overrides": 88,
+    "historical_issue_groups": 42,
+    "reviewed_printings": 73,
+    "field_resolutions": 117,
+    "overrides": 90,
     "confirmations": 27,
-    "artwork_confirmed": 111,
+    "artwork_confirmed": 113,
     "rule_derived": 4,
     "c7_new_field_resolutions": 39,
     "c7_new_printings": 31,
     "c9_new_field_resolutions": 2,
     "c9_new_printings": 1,
     "momentary_new_field_resolutions": 1,
-    "momentary_new_printings": 1
+    "momentary_new_printings": 1,
+    "gear_review_new_field_resolutions": 2,
+    "gear_review_new_printings": 2
   },
   "historical_issues": [
     {
@@ -1072,6 +1074,69 @@
       "runtime_support": "source_review_only",
       "discovery_basis": "confirmed_artwork",
       "discovered_on": "2026-10-24"
+    },
+    {
+      "review_issue_id": "gear-review-rad-083-167-tags",
+      "raw_issue": {
+        "kind": "official_artwork_field_mismatch",
+        "field": "tags",
+        "official_ids": [
+          "rad-083-167"
+        ],
+        "values": [
+          {
+            "official_id": "rad-083-167",
+            "raw_value": [],
+            "printed_value": [
+              "Mount Targon"
+            ]
+          }
+        ],
+        "detail": "The exact RAD-083/167 official face prints UNIT / MOUNT TARGON. The empty structured tag array omits the printed Mount Targon tag."
+      },
+      "printing_ids": [
+        "rad-083-167"
+      ],
+      "resolution_ids": [
+        "rad-083-167:tags"
+      ],
+      "proposed_status": "reviewed",
+      "runtime_support": "source_review_only",
+      "discovery_basis": "confirmed_artwork",
+      "discovered_on": "2026-10-24"
+    },
+    {
+      "review_issue_id": "gear-review-ven-058-166-types",
+      "raw_issue": {
+        "kind": "official_artwork_field_mismatch",
+        "field": "types",
+        "official_ids": [
+          "ven-058-166"
+        ],
+        "values": [
+          {
+            "official_id": "ven-058-166",
+            "raw_value": [
+              "unit"
+            ],
+            "printed_value": [
+              "unit",
+              "gear"
+            ]
+          }
+        ],
+        "detail": "The exact VEN-058/166 official face prints UNIT GEAR, with both type icons. The structured feed projects only unit. The preserved accessibility string also says Unit, Gear, but projection v1 does not parse the compound label. This is one object with both types, not a choice between them."
+      },
+      "printing_ids": [
+        "ven-058-166"
+      ],
+      "resolution_ids": [
+        "ven-058-166:types"
+      ],
+      "proposed_status": "reviewed",
+      "runtime_support": "source_review_only",
+      "discovery_basis": "confirmed_artwork",
+      "discovered_on": "2026-10-24"
     }
   ],
   "raw_printings": [
@@ -1388,14 +1453,14 @@
       "power": 1,
       "might": null,
       "might_bonus": null,
-      "rules_html": "<p>Choose one \u2014</p><ul><li>Move a friendly gear with [Deploy] to a battlefield.</li><li>Look at the top 5 cards of your Main Deck. You may reveal a gear from among them and draw it. Recycle the rest.</li></ul>",
-      "rules_text": "Choose one \u2014\nMove a friendly gear with [Deploy] to a battlefield.\nLook at the top 5 cards of your Main Deck. You may reveal a gear from among them and draw it. Recycle the rest.",
+      "rules_html": "<p>Choose one —</p><ul><li>Move a friendly gear with [Deploy] to a battlefield.</li><li>Look at the top 5 cards of your Main Deck. You may reveal a gear from among them and draw it. Recycle the rest.</li></ul>",
+      "rules_text": "Choose one —\nMove a friendly gear with [Deploy] to a battlefield.\nLook at the top 5 cards of your Main Deck. You may reveal a gear from among them and draw it. Recycle the rest.",
       "equipment_html": "",
       "equipment_text": "",
       "tags": [],
       "rarity": "uncommon",
       "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/b025756992e22af480902e13b01e25acbc747221-744x1039.png?accountingTag=RB",
-      "image_accessibility_text": "Riftbound Spell: Command: Attack. Choose one \u2014\n- Move a friendly gear with [Deploy] to a battlefield.\n- Look at the top 5 cards of your Main Deck. You may reveal a gear from among them and draw it. Recycle the rest.",
+      "image_accessibility_text": "Riftbound Spell: Command: Attack. Choose one —\n- Move a friendly gear with [Deploy] to a battlefield.\n- Look at the top 5 cards of your Main Deck. You may reveal a gear from among them and draw it. Recycle the rest.",
       "illustrators": [],
       "review_draft_sha256": "671a782e5bed098f730709b00074d0745354518346c30aaebc8ca1cd0a009c6e"
     },
@@ -2864,7 +2929,7 @@
       "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/564e5f35ae39b6604290e83f39ffb61c2b2b9175-744x1039.png?accountingTag=RB",
       "image_accessibility_text": "Riftbound Unit: Akali, Deadly Weapon. [Empower] [2][C] ([2][C]: Empower me. Use only if not Empowered.)\nWhen I move, you may deal 1 to a unit at a battlefield I moved to or from. If I'm [Empowered], deal 2 instead.\n[Empowered][>] I have +1 [S].",
       "illustrators": [
-        "\u83ba\u4e4b\u6b4c"
+        "莺之歌"
       ],
       "review_draft_sha256": "ef40e13272d35691880598f2110c82512c0665eeff601bf6361db6ab930a282e"
     },
@@ -3377,7 +3442,7 @@
       "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/56d6b54bdc2ae37579da820cec613c127a8843d3-744x1039.png?accountingTag=RB",
       "image_accessibility_text": "Riftbound Unit: Shen, Scourge of Shadows. When I hold, if there is exactly one other unit you control here, draw 1.",
       "illustrators": [
-        "\u534e\u9510"
+        "华锐"
       ],
       "review_draft_sha256": "9a492bc03d91cc0f27663fc1b4d6cbe309038880c9436ef618b81098a5f22c45"
     },
@@ -3419,7 +3484,7 @@
       "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/0416b4a447494acac41413a4511bb59ce983b4ec-744x1039.png?accountingTag=RB",
       "image_accessibility_text": "Riftbound Unit: Viktor, Innovator. When you play a card on an opponent's turn, play a 1 [S] Recruit unit token to your base.",
       "illustrators": [
-        "\u83ba\u4e4b\u6b4c"
+        "莺之歌"
       ],
       "review_draft_sha256": "351f71b50fb8037efb16b8b3f57d899b1a0b9087518c1b7430bf6a694f66ed60"
     },
@@ -3461,7 +3526,7 @@
       "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/17552788c608d9cb044c0a9bf7076d462548875b-744x1039.png?accountingTag=RB",
       "image_accessibility_text": "Riftbound Unit: Ambessa, Respected and Feared. [Empower] [1][C][C]\n[Empowered][>] I have [Assault 2].\n[Empowered][>] When I attack, kill an enemy unit here with less Might than me.",
       "illustrators": [
-        "\u86cb\u8d39\u9e21\u4e01"
+        "蛋费鸡丁"
       ],
       "review_draft_sha256": "39bb85b798693eafd4e2ccabc3ad6af28b146050bba2754fe1ed8bacbfa47ce5"
     },
@@ -3853,6 +3918,84 @@
         "Kudos Productions"
       ],
       "review_draft_sha256": "c3a2a4f9e90de9439edf1e8ef96a05a29f0c348e67f66816c26936a32fd2df52"
+    },
+    {
+      "official_id": "rad-083-167",
+      "public_code": "RAD-083/167",
+      "name": "Stalwart Goatherd",
+      "set": "RAD",
+      "collector_number": 83,
+      "types": [
+        "unit"
+      ],
+      "type_source": "cardType.type",
+      "structured_types": [
+        "unit"
+      ],
+      "accessibility_types": [
+        "unit"
+      ],
+      "type_labels_conflict": false,
+      "super_types": [],
+      "domains": [
+        "body"
+      ],
+      "energy": 4,
+      "power": null,
+      "might": 2,
+      "might_bonus": null,
+      "rules_html": "<p>[Shield 2] (+2 :rb_might: while I'm a defender.)<br />When you play me, you may kill a gear with Energy cost :rb_energy_4: or less.</p>",
+      "rules_text": "[Shield 2] (+2 Might while I'm a defender.)\nWhen you play me, you may kill a gear with Energy cost [4 Energy] or less.",
+      "equipment_html": "",
+      "equipment_text": "",
+      "tags": [],
+      "rarity": "uncommon",
+      "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/bff85727b58017cbd3921fd73e9b363f5a0205e4-744x1039.png?accountingTag=RB",
+      "image_accessibility_text": "Riftbound Unit: Stalwart Goatherd. [Shield 2] (+2 [S] while I'm a defender.)\nWhen you play me, you may kill a gear with Energy cost [4] or less.",
+      "illustrators": [
+        "Six More Vodka"
+      ],
+      "review_draft_sha256": "b9f8c0bfde0aae8a59fbc2c2d01796ff336537babd67a88a254f5185f48d6183"
+    },
+    {
+      "official_id": "ven-058-166",
+      "public_code": "VEN-058/166",
+      "name": "Patched Porobot",
+      "set": "VEN",
+      "collector_number": 58,
+      "types": [
+        "unit"
+      ],
+      "type_source": "cardType.type",
+      "structured_types": [
+        "unit"
+      ],
+      "accessibility_types": [],
+      "type_labels_conflict": false,
+      "super_types": [],
+      "domains": [
+        "mind"
+      ],
+      "energy": 2,
+      "power": null,
+      "might": 2,
+      "might_bonus": null,
+      "rules_html": "<p>(I enter exhausted.)<br />When you play me, if you control 3 or more other gear, draw 1.</p>",
+      "rules_text": "(I enter exhausted.)\nWhen you play me, if you control 3 or more other gear, draw 1.",
+      "equipment_html": "",
+      "equipment_text": "",
+      "tags": [
+        "Mech",
+        "Poro",
+        "Piltover"
+      ],
+      "rarity": "common",
+      "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/7667d7e0c902782c38221e9326d1bb98181ec17f-744x1039.png?accountingTag=RB",
+      "image_accessibility_text": "Riftbound Unit, Gear: Patched Porobot. (I enter exhausted.)\nWhen you play me, if you control 3 or more other gear, draw 1.",
+      "illustrators": [
+        "Six More Vodka"
+      ],
+      "review_draft_sha256": "f5d83d7d6da13d31f20cd060a872518d582443e6c4844de99bdf6855bbd7ca89"
     }
   ],
   "resolutions": [
@@ -6272,7 +6415,7 @@
           "sha256": "848e1020bc1f1bbcc45a04142e9afcc6b478c4be76b07db893394b78669055d4",
           "bytes": 1441045,
           "local_path": "assets/data/catalog_evidence/images/ogn-039-298.png",
-          "location": "Printed Champion Unit/tag line below the artwork: CHAMPION UNIT \u00b7 KAI'SA \u00b7 THE VOID"
+          "location": "Printed Champion Unit/tag line below the artwork: CHAMPION UNIT · KAI'SA · THE VOID"
         }
       ],
       "enables_runtime_support": false
@@ -6309,7 +6452,7 @@
           "sha256": "542b9965affa15deb5bacb3ba92d9bde06bdd716d6b9f8594252f3e3f4aefb49",
           "bytes": 1029461,
           "local_path": "assets/data/catalog_evidence/images/ogn-039a-298.png",
-          "location": "Printed Champion Unit/tag line below the artwork: CHAMPION UNIT \u00b7 KAI'SA \u00b7 THE VOID"
+          "location": "Printed Champion Unit/tag line below the artwork: CHAMPION UNIT · KAI'SA · THE VOID"
         }
       ],
       "enables_runtime_support": false
@@ -6346,7 +6489,7 @@
           "sha256": "6571072a195d89f4be5bd0293d538c27db4493beb08c1952553e116e38f336f4",
           "bytes": 1065171,
           "local_path": "assets/data/catalog_evidence/images/ogn-117-298.png",
-          "location": "Printed Champion Unit/tag line below the artwork: CHAMPION UNIT \u00b7 VIKTOR \u00b7 ZAUN"
+          "location": "Printed Champion Unit/tag line below the artwork: CHAMPION UNIT · VIKTOR · ZAUN"
         }
       ],
       "enables_runtime_support": false
@@ -6383,7 +6526,7 @@
           "sha256": "1d10a5c73134b0fccdb9d1d9a41b572b0a2b9088eae433fb9780fb72d81fbc6e",
           "bytes": 812098,
           "local_path": "assets/data/catalog_evidence/images/ogn-117a-298.png",
-          "location": "Printed Champion Unit/tag line below the artwork: CHAMPION UNIT \u00b7 VIKTOR \u00b7 ZAUN"
+          "location": "Printed Champion Unit/tag line below the artwork: CHAMPION UNIT · VIKTOR · ZAUN"
         }
       ],
       "enables_runtime_support": false
@@ -6420,7 +6563,7 @@
           "sha256": "eb7cc1894e3a6d40c037f1bddb0396c3505cfab3393835229766bfa53d879f2b",
           "bytes": 1148880,
           "local_path": "assets/data/catalog_evidence/images/ogn-119-298.png",
-          "location": "Printed Champion Unit/tag line below the artwork: CHAMPION UNIT \u00b7 AHRI \u00b7 IONIA"
+          "location": "Printed Champion Unit/tag line below the artwork: CHAMPION UNIT · AHRI · IONIA"
         }
       ],
       "enables_runtime_support": false
@@ -6457,7 +6600,7 @@
           "sha256": "fbe5a8320e8d02035649b0442557415617c46b627a75831a151b9b81d968d8c1",
           "bytes": 939695,
           "local_path": "assets/data/catalog_evidence/images/ogn-119a-298.png",
-          "location": "Printed Champion Unit/tag line below the artwork: CHAMPION UNIT \u00b7 AHRI \u00b7 IONIA"
+          "location": "Printed Champion Unit/tag line below the artwork: CHAMPION UNIT · AHRI · IONIA"
         }
       ],
       "enables_runtime_support": false
@@ -6492,7 +6635,7 @@
           "sha256": "a2e2c28f5180e329664a9d487cae02f354f481f4b8fbd1666cce4cc574fcc96b",
           "bytes": 1412623,
           "local_path": "assets/data/catalog_evidence/images/sfd-227-221.png",
-          "location": "Printed Champion Unit/tag line below the artwork: CHAMPION UNIT \u00b7 AHRI \u00b7 IONIA"
+          "location": "Printed Champion Unit/tag line below the artwork: CHAMPION UNIT · AHRI · IONIA"
         }
       ],
       "enables_runtime_support": false
@@ -6527,7 +6670,7 @@
           "sha256": "2c082b1bd15b3f49be8689f12aa0dbb7ac4b2160ea39a7acdf2871bbb59d371f",
           "bytes": 1419738,
           "local_path": "assets/data/catalog_evidence/images/sfd-227-star-221.png",
-          "location": "Printed Champion Unit/tag line below the artwork: CHAMPION UNIT \u00b7 AHRI \u00b7 IONIA"
+          "location": "Printed Champion Unit/tag line below the artwork: CHAMPION UNIT · AHRI · IONIA"
         }
       ],
       "enables_runtime_support": false
@@ -6564,7 +6707,7 @@
           "sha256": "f2f9a04e726a4d327f38d76fca4200f7d67e5c09fe11dc6a3e4fbe70b219026c",
           "bytes": 1030172,
           "local_path": "assets/data/catalog_evidence/images/ven-021-166.png",
-          "location": "Printed Champion Unit/tag line below the artwork: CHAMPION UNIT \u00b7 AKALI \u00b7 IONIA"
+          "location": "Printed Champion Unit/tag line below the artwork: CHAMPION UNIT · AKALI · IONIA"
         }
       ],
       "enables_runtime_support": false
@@ -6599,7 +6742,7 @@
           "sha256": "0bef70039a3edbde543b3d065153bb7139a427e6fe8f326c5561dd977f74f9db",
           "bytes": 1175912,
           "local_path": "assets/data/catalog_evidence/images/ven-021a-166.png",
-          "location": "Printed Champion Unit/tag line below the artwork: CHAMPION UNIT \u00b7 AKALI \u00b7 IONIA"
+          "location": "Printed Champion Unit/tag line below the artwork: CHAMPION UNIT · AKALI · IONIA"
         }
       ],
       "enables_runtime_support": false
@@ -6692,7 +6835,7 @@
           "sha256": "211f5a4c7d5a6c47c4071e41fe7bba968b90c739677ded3edd34f63a007f17b1",
           "bytes": 917217,
           "local_path": "assets/data/catalog_evidence/images/ven-038-166.png",
-          "location": "Printed Champion Unit/tag line below the artwork: CHAMPION UNIT \u00b7 AKALI \u00b7 IONIA"
+          "location": "Printed Champion Unit/tag line below the artwork: CHAMPION UNIT · AKALI · IONIA"
         }
       ],
       "enables_runtime_support": false
@@ -6727,7 +6870,7 @@
           "sha256": "d1bce243540ae991560950ae36d4dc95dc341606366590315023f38cce35e07c",
           "bytes": 1007049,
           "local_path": "assets/data/catalog_evidence/images/ven-038a-166.png",
-          "location": "Printed Champion Unit/tag line below the artwork: CHAMPION UNIT \u00b7 AKALI \u00b7 IONIA"
+          "location": "Printed Champion Unit/tag line below the artwork: CHAMPION UNIT · AKALI · IONIA"
         }
       ],
       "enables_runtime_support": false
@@ -6764,7 +6907,7 @@
           "sha256": "3a26168a7926a850947fde45c8f12a29808936c11f30ef45cd98e835b575783d",
           "bytes": 854277,
           "local_path": "assets/data/catalog_evidence/images/ven-042-166.png",
-          "location": "Printed Champion Unit/tag line below the artwork: CHAMPION UNIT \u00b7 SHEN \u00b7 IONIA"
+          "location": "Printed Champion Unit/tag line below the artwork: CHAMPION UNIT · SHEN · IONIA"
         }
       ],
       "enables_runtime_support": false
@@ -6799,7 +6942,7 @@
           "sha256": "df2adffef6475d9e289ba68ba688baf7c3e99013715238a9ee9068e774249bd4",
           "bytes": 1067347,
           "local_path": "assets/data/catalog_evidence/images/ven-042a-166.png",
-          "location": "Printed Champion Unit/tag line below the artwork: CHAMPION UNIT \u00b7 SHEN \u00b7 IONIA"
+          "location": "Printed Champion Unit/tag line below the artwork: CHAMPION UNIT · SHEN · IONIA"
         }
       ],
       "enables_runtime_support": false
@@ -6839,7 +6982,7 @@
           "sha256": "24f2768f05dfd82750bd2e52948ead29bab93291a7da36ef5202098226a9f4e9",
           "bytes": 1108877,
           "local_path": "assets/data/catalog_evidence/images/ven-046-166.png",
-          "location": "Printed Champion Unit/tag line below the artwork: CHAMPION UNIT \u00b7 NASUS \u00b7 SHURIMA \u00b7 DOG"
+          "location": "Printed Champion Unit/tag line below the artwork: CHAMPION UNIT · NASUS · SHURIMA · DOG"
         }
       ],
       "enables_runtime_support": false
@@ -6877,7 +7020,7 @@
           "sha256": "74d7d0194792ad39e59d4a46b900d34e968eccb73650b762692ac0f3178c135b",
           "bytes": 1073276,
           "local_path": "assets/data/catalog_evidence/images/ven-046a-166.png",
-          "location": "Printed Champion Unit/tag line below the artwork: CHAMPION UNIT \u00b7 NASUS \u00b7 SHURIMA \u00b7 DOG"
+          "location": "Printed Champion Unit/tag line below the artwork: CHAMPION UNIT · NASUS · SHURIMA · DOG"
         }
       ],
       "enables_runtime_support": false
@@ -6915,7 +7058,7 @@
           "sha256": "6f0b20a963933fa4529c27abbaa05bf88455310097e6add9040cee71427a3def",
           "bytes": 1023455,
           "local_path": "assets/data/catalog_evidence/images/ven-113-166.png",
-          "location": "Printed Champion Unit/tag line below the artwork: CHAMPION UNIT \u00b7 KENNEN \u00b7 IONIA \u00b7 YORDLE"
+          "location": "Printed Champion Unit/tag line below the artwork: CHAMPION UNIT · KENNEN · IONIA · YORDLE"
         }
       ],
       "enables_runtime_support": false
@@ -6955,7 +7098,7 @@
           "sha256": "fb54d2849777c3c1e8c7bae0688181f4a9850fa49490e14c4739dd7d33cb9caa",
           "bytes": 1216018,
           "local_path": "assets/data/catalog_evidence/images/ven-113a-166.png",
-          "location": "Printed Champion Unit/tag line below the artwork: CHAMPION UNIT \u00b7 KENNEN \u00b7 IONIA \u00b7 YORDLE"
+          "location": "Printed Champion Unit/tag line below the artwork: CHAMPION UNIT · KENNEN · IONIA · YORDLE"
         }
       ],
       "enables_runtime_support": false
@@ -6992,7 +7135,7 @@
           "sha256": "6ca0305f92843a9181a571a3eee34e86b85dddd21f43584a27c208ca6cd4abf8",
           "bytes": 1119993,
           "local_path": "assets/data/catalog_evidence/images/ven-136-166.png",
-          "location": "Printed Champion Unit/tag line below the artwork: CHAMPION UNIT \u00b7 AMBESSA \u00b7 NOXUS"
+          "location": "Printed Champion Unit/tag line below the artwork: CHAMPION UNIT · AMBESSA · NOXUS"
         }
       ],
       "enables_runtime_support": false
@@ -7027,7 +7170,7 @@
           "sha256": "6d33d4ee78d6c3c7379b04c22046200df5b1a36961c2ce1baad1606825e0108b",
           "bytes": 1229862,
           "local_path": "assets/data/catalog_evidence/images/ven-136a-166.png",
-          "location": "Printed Champion Unit/tag line below the artwork: CHAMPION UNIT \u00b7 AMBESSA \u00b7 NOXUS"
+          "location": "Printed Champion Unit/tag line below the artwork: CHAMPION UNIT · AMBESSA · NOXUS"
         }
       ],
       "enables_runtime_support": false
@@ -7062,7 +7205,7 @@
           "sha256": "e1e24d335f7e31e4115c573de0e69b3435ac9b9402a652f9e703283a844b18f5",
           "bytes": 1058756,
           "local_path": "assets/data/catalog_evidence/images/ven-170-166.png",
-          "location": "Printed Champion Unit/tag line below the artwork: CHAMPION UNIT \u00b7 SHEN \u00b7 IONIA"
+          "location": "Printed Champion Unit/tag line below the artwork: CHAMPION UNIT · SHEN · IONIA"
         }
       ],
       "enables_runtime_support": false
@@ -7097,7 +7240,7 @@
           "sha256": "afa65d54ef5835e5c694fe44d8e4e85185aeb07197fa8ee773fb627759465468",
           "bytes": 1094992,
           "local_path": "assets/data/catalog_evidence/images/ven-176-166.png",
-          "location": "Printed Champion Unit/tag line below the artwork: CHAMPION UNIT \u00b7 VIKTOR \u00b7 ZAUN"
+          "location": "Printed Champion Unit/tag line below the artwork: CHAMPION UNIT · VIKTOR · ZAUN"
         }
       ],
       "enables_runtime_support": false
@@ -7132,7 +7275,7 @@
           "sha256": "f86db5af1f218c59fad92e04e47e98d1d07dc19d86d3dd375a9d7ee757318896",
           "bytes": 1253057,
           "local_path": "assets/data/catalog_evidence/images/ven-187-166.png",
-          "location": "Printed Champion Unit/tag line below the artwork: CHAMPION UNIT \u00b7 AMBESSA \u00b7 NOXUS"
+          "location": "Printed Champion Unit/tag line below the artwork: CHAMPION UNIT · AMBESSA · NOXUS"
         }
       ],
       "enables_runtime_support": false
@@ -7167,7 +7310,7 @@
           "sha256": "6cd3a833840f8e8afa9800329475ee846a4c924fcd5b59dd5bb0442d583c2d3b",
           "bytes": 1278296,
           "local_path": "assets/data/catalog_evidence/images/ven-sp1-006.png",
-          "location": "Printed Champion Unit/tag line below the artwork: CHAMPION UNIT \u00b7 KAI'SA \u00b7 THE VOID"
+          "location": "Printed Champion Unit/tag line below the artwork: CHAMPION UNIT · KAI'SA · THE VOID"
         }
       ],
       "enables_runtime_support": false
@@ -7204,7 +7347,7 @@
           "sha256": "33acb3a5f9acd8182d4b04b2f183eb9ca730e4bd013ff6786830135850267663",
           "bytes": 1359970,
           "local_path": "assets/data/catalog_evidence/images/ven-sp3-006.png",
-          "location": "Printed Champion Unit/tag line below the artwork: CHAMPION UNIT \u00b7 AHRI \u00b7 IONIA"
+          "location": "Printed Champion Unit/tag line below the artwork: CHAMPION UNIT · AHRI · IONIA"
         }
       ],
       "enables_runtime_support": false
@@ -7636,6 +7779,71 @@
           "bytes": 759278,
           "local_path": "assets/data/catalog_evidence/images/rad-095-167.png",
           "location": "Printed UNIT / SHADOW ISLES / DEMON type/tag line directly above card name."
+        }
+      ],
+      "enables_runtime_support": false
+    },
+    {
+      "id": "rad-083-167:tags",
+      "official_id": "rad-083-167",
+      "name": "Stalwart Goatherd",
+      "field": "tags",
+      "reviewed_on": "2026-10-24",
+      "basis": "confirmed_artwork",
+      "operation": "override",
+      "expected_raw_value": [],
+      "raw_source_field": "tags",
+      "expected_raw_source_value": [],
+      "effective_value": [
+        "Mount Targon"
+      ],
+      "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+      "expected_printing_sha256": "b9f8c0bfde0aae8a59fbc2c2d01796ff336537babd67a88a254f5185f48d6183",
+      "printing_hash_encoding": "UTF-8 JSON sorted keys; ensure_ascii=false; separators=(',', ':')",
+      "reason": "The exact RAD-083/167 official face prints UNIT / MOUNT TARGON. The empty structured tag array omits the printed Mount Targon tag.",
+      "evidence": [
+        {
+          "kind": "official_card_image",
+          "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/bff85727b58017cbd3921fd73e9b363f5a0205e4-744x1039.png?accountingTag=RB",
+          "sha256": "8ced2784d486a993fb2b291bf2d5220bfd10a78b0a74f53002e0fecbb32536c1",
+          "bytes": 800074,
+          "local_path": "assets/data/catalog_evidence/images/rad-083-167.png",
+          "location": "Printed type/tag line directly above the name; type icons on its left."
+        }
+      ],
+      "enables_runtime_support": false
+    },
+    {
+      "id": "ven-058-166:types",
+      "official_id": "ven-058-166",
+      "name": "Patched Porobot",
+      "field": "types",
+      "reviewed_on": "2026-10-24",
+      "basis": "confirmed_artwork",
+      "operation": "override",
+      "expected_raw_value": [
+        "unit"
+      ],
+      "raw_source_field": "types",
+      "expected_raw_source_value": [
+        "unit"
+      ],
+      "effective_value": [
+        "unit",
+        "gear"
+      ],
+      "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+      "expected_printing_sha256": "f5d83d7d6da13d31f20cd060a872518d582443e6c4844de99bdf6855bbd7ca89",
+      "printing_hash_encoding": "UTF-8 JSON sorted keys; ensure_ascii=false; separators=(',', ':')",
+      "reason": "The exact VEN-058/166 official face prints UNIT GEAR, with both type icons. The structured feed projects only unit. The preserved accessibility string also says Unit, Gear, but projection v1 does not parse the compound label. This is one object with both types, not a choice between them.",
+      "evidence": [
+        {
+          "kind": "official_card_image",
+          "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/7667d7e0c902782c38221e9326d1bb98181ec17f-744x1039.png?accountingTag=RB",
+          "sha256": "83b7edbd3de3c8067e3ed6477df417c1f90f6a1dea00b2f1b89f6f1e9976b42a",
+          "bytes": 751918,
+          "local_path": "assets/data/catalog_evidence/images/ven-058-166.png",
+          "location": "Printed type/tag line directly above the name; type icons on its left."
         }
       ],
       "enables_runtime_support": false

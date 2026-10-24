@@ -495,5 +495,19 @@
     "path": "assets/data/catalog_evidence/images/rad-095-167.png",
     "sha256": "55ab5e101b569288674f8aa83d9db4f729274b427b3187b5c1b57efaf9db6950",
     "bytes": 759278
+  },
+  {
+    "official_id": "rad-083-167",
+    "path": "assets/data/catalog_evidence/images/rad-083-167.png",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/bff85727b58017cbd3921fd73e9b363f5a0205e4-744x1039.png?accountingTag=RB",
+    "bytes": 800074,
+    "sha256": "8ced2784d486a993fb2b291bf2d5220bfd10a78b0a74f53002e0fecbb32536c1"
+  },
+  {
+    "official_id": "ven-058-166",
+    "path": "assets/data/catalog_evidence/images/ven-058-166.png",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/7667d7e0c902782c38221e9326d1bb98181ec17f-744x1039.png?accountingTag=RB",
+    "bytes": 751918,
+    "sha256": "83b7edbd3de3c8067e3ed6477df417c1f90f6a1dea00b2f1b89f6f1e9976b42a"
   }
 ]

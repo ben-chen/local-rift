@@ -36,8 +36,8 @@ fn reviewed_facts_are_effective_while_original_evidence_stays_intact() {
         .collect();
     assert_eq!(manifest["status"], "reviewed");
     assert_eq!(manifest["printing_projection_version"], 1);
-    assert_eq!(manifest["resolutions"].as_array().unwrap().len(), 115);
-    assert_eq!(manifest["raw_printings"].as_array().unwrap().len(), 71);
+    assert_eq!(manifest["resolutions"].as_array().unwrap().len(), 117);
+    assert_eq!(manifest["raw_printings"].as_array().unwrap().len(), 73);
     for raw in manifest["raw_printings"].as_array().unwrap() {
         let id = raw["official_id"].as_str().unwrap();
         for (field, value) in raw.as_object().unwrap() {
@@ -74,7 +74,43 @@ fn reviewed_facts_are_effective_while_original_evidence_stays_intact() {
         .map(|issue| issue["raw_issue"].clone())
         .collect();
     assert_eq!(data["source_quality_issues"], json!(historical));
-    assert_eq!(historical.len(), 40);
+    assert_eq!(historical.len(), 42);
+}
+
+#[test]
+fn reviewed_dual_type_and_missing_tag_do_not_register_gameplay() {
+    let data = catalog();
+    let printing = |id: &str| {
+        data["printings"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .find(|p| p["official_id"] == id)
+            .unwrap()
+    };
+    let porobot = printing("ven-058-166");
+    assert_eq!(porobot["types"], json!(["unit"]));
+    assert_eq!(porobot["effective"]["types"], json!(["unit", "gear"]));
+    assert_eq!(porobot["effective"]["might"], 2);
+    assert_eq!(porobot["effective"]["equipment_text"], "");
+    let goatherd = printing("rad-083-167");
+    assert_eq!(goatherd["tags"], json!([]));
+    assert_eq!(goatherd["effective"]["tags"], json!(["Mount Targon"]));
+    for id in ["ven-058-166", "rad-083-167"] {
+        let identity = data["cards"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .find(|c| c["identity"] == id)
+            .unwrap();
+        assert_eq!(identity["standard_legal"], true);
+        assert_eq!(identity["implementation"]["playable_in_client"], false);
+        assert!(!cards::cards().iter().any(|card| card.official_id == id));
+    }
+    assert_eq!(data["counts"]["standard_legal_by_kind"]["gear+unit"], 1);
+    assert_eq!(data["counts"]["implemented_main_cards"], 362);
+    assert_eq!(data["counts"]["implemented_legal_identities"], 387);
+    assert_eq!(data["counts"]["unimplemented_legal_identities"], 692);
 }
 
 #[test]

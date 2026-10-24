@@ -27,10 +27,13 @@ Numbered positions include token slots where the publisher numbers them within a
 | --- | ---: | ---: | ---: |
 | Battlefield | 69 | 11 | 58 |
 | Gear | 131 | 63 | 68 |
+| Gear + Unit | 1 | 0 | 1 |
 | Legend | 58 | 8 | 50 |
 | Rune | 6 | 6 | 0 |
 | Spell | 268 | 93 | 175 |
-| Unit | 547 | 206 | 341 |
+| Unit | 546 | 206 | 340 |
+
+Each row is a disjoint complete type set. A reviewed Unit Gear has both types (Core 178) and is counted once in `gear+unit`, rather than once in each single-type row. Patched Porobot is the first explicitly reviewed dual-type correction; this is not a complete visual audit of every gallery type. No dual-type card is currently admitted to the engine.
 
 Implemented mapping means the existing engine/preset/field/resource implementation, not a claim that every interaction has been formally proven. See `docs/RULES.md` for engine limits. Every unimplemented identity has `implementation.status: not_implemented` and `playable_in_client: false`. Printed keywords are recorded per card and counted under `unimplemented_by_observed_keyword` as discovery hints only; shared keywords do not imply shared effect semantics or completed implementation. Each unimplemented card still requires its specific effect, targets, timing, costs, continuous/replacement effects, and interaction tests to be reviewed and implemented.
 
@@ -63,7 +66,7 @@ The snapshot preserves printed rules HTML, readable rules, equipment text, exact
 - [Vendetta Errata](https://playriftbound.com/en-us/news/announcements/vendetta-errata-updates/)
 - [Radiance Errata](https://playriftbound.com/en-us/news/announcements/radiance-errata-updates/)
 
-**40 historical issue groups are preserved; 40 have evidence-backed resolutions and 0 remain unresolved.** The reviewed manifest contains 115 field corrections or confirmations across 71 printings. It preserves original gallery values, both type labels, original HTML, and the original issue records. The generated `effective` object applies only explicitly reviewed fields. This is a targeted review, not a complete visual audit of the gallery.
+**42 historical issue groups are preserved; 42 have evidence-backed resolutions and 0 remain unresolved.** The reviewed manifest contains 117 field corrections or confirmations across 73 printings. It preserves original gallery values, both type labels, original HTML, and the original issue records. The generated `effective` object applies only explicitly reviewed fields. This is a targeted review, not a complete visual audit of the gallery.
 
 **13 Radiance records have an empty structured type field.** Their raw normalized type still records the accessibility-label fallback. Matching card images corroborate the effective types; no structured source value was overwritten.
 
@@ -97,7 +100,7 @@ The snapshot preserves printed rules HTML, readable rules, equipment text, exact
 
 **Historical official stat conflict:** Kai'Sa, Rebel, `might`: `rad-063-167` = 5; `rad-sp4-005` = 4. The source values remain unchanged. Reviewed effective values: `rad-063-167` = 5; `rad-sp4-005` = 5.
 
-The original 37 parser issue groups remain unchanged. Another 3 issues were discovered by reading exact official card faces, then validated against the raw printing and linked field resolutions before being appended to the history. Bilgewater Tracker's raw Body domain and empty tags remain visible; its effective Fury domain and Bilgewater tag match the printed glyph and type/tag line. These are explicit visual observations, not additional discrepancies detected by the feed parser.
+The original 37 parser issue groups remain unchanged. Another 5 issues were discovered by reading exact official card faces, then validated against the raw printing and linked field resolutions before being appended to the history. Bilgewater Tracker's raw Body domain and empty tags remain visible; its effective Fury domain and Bilgewater tag match the printed glyph and type/tag line. These are explicit visual observations, not additional discrepancies detected by the feed parser.
 
 The same reviewed evidence corrects missing/wrong domains, printed tags, Runeblade Anvil's activation power glyph, and Rousing Display's trailing editorial text. Four Device-tag exclusions are explicitly rule-derived and retain their Core Rules evidence. Every resolution names exact raw prerequisites, its immutable origin gallery, complete printing hash, and local official image evidence. A changed printing or corrupted evidence fails validation; publisher fixes require a deliberate review update. See [the review contract and evidence](CATALOG_REVIEW.md).
 

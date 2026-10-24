@@ -268,6 +268,11 @@ def canonical_json(value):
     return json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
 
 
+def inventory_kind(types):
+    """One disjoint coverage bucket per complete type set, never its first type."""
+    return "+".join(sorted(types)) if types else "tracker"
+
+
 def raw_identity_conflicts(groups, quality):
     """Keep the original issue objects and ordering as historical source data."""
     result = {}
@@ -469,8 +474,8 @@ def make_catalog(manifest, data, *, review_manifest=None, identity_review_manife
         canonical = variants[0]
         auxiliary = any("token" in p["effective"]["super_types"] for p in variants)
         require(all(("token" in p["effective"]["super_types"]) == auxiliary for p in variants), f"Token/card identity collision: {key}")
-        source_kind = canonical["types"][0] if canonical["types"] else "tracker"
-        kind = canonical["effective"]["types"][0] if canonical["effective"]["types"] else "tracker"
+        source_kind = inventory_kind(canonical["types"])
+        kind = inventory_kind(canonical["effective"]["types"])
         implementation = mappings.get(key, {"status": "not_implemented", "playable_in_client": False})
         if kind == "rune" and not auxiliary:
             implementation = {"status": "implemented_resource_model", "playable_in_client": True, "domain": canonical["effective"]["domains"][0]}
@@ -509,7 +514,8 @@ def report(catalog):
         lines[-2:-2] = [f"**The by-kind counts below are provisional:** {c['unresolved_type_conflict_identities']} identities retain unresolved type findings after the evidence review. The table uses the preferred effective type provisionally; total identities and legality counts are unaffected. None of these unresolved identities is mapped to the runtime.", ""]
     for kind, count in c["standard_legal_by_kind"].items():
         supported = c["implemented_legal_by_kind"].get(kind, 0)
-        lines.append(f"| {kind.title()} | {count} | {supported} | {count-supported} |")
+        lines.append(f"| {kind.replace('+', ' + ').title()} | {count} | {supported} | {count-supported} |")
+    lines += ["", "Each row is a disjoint complete type set. A reviewed Unit Gear has both types (Core 178) and is counted once in `gear+unit`, rather than once in each single-type row. Patched Porobot is the first explicitly reviewed dual-type correction; this is not a complete visual audit of every gallery type. No dual-type card is currently admitted to the engine."]
     lines += ["", "Implemented mapping means the existing engine/preset/field/resource implementation, not a claim that every interaction has been formally proven. See `docs/RULES.md` for engine limits. Every unimplemented identity has `implementation.status: not_implemented` and `playable_in_client: false`. Printed keywords are recorded per card and counted under `unimplemented_by_observed_keyword` as discovery hints only; shared keywords do not imply shared effect semantics or completed implementation. Each unimplemented card still requires its specific effect, targets, timing, costs, continuous/replacement effects, and interaction tests to be reviewed and implemented.", "", "## Ban lists", "", "Standard/1v1 bans from the Rules Hub:", ""]
     for name in catalog["legality"]["standard_banned_names"]:
         lines.append(f"- {name}")

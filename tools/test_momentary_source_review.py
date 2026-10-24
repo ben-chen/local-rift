@@ -58,7 +58,7 @@ class MomentarySourceReviewTests(unittest.TestCase):
                           counts['unimplemented_legal_identities']), (349, 374, 705))
         self.assertEqual((counts['reviewed_field_resolutions'], counts['field_reviewed_printings'],
                           counts['source_quality_issues'], counts['resolved_source_issue_groups']),
-                         (115, 71, 40, 40))
+                         (117, 73, 42, 42))
         self.assertFalse(self.proof['enables_runtime_support'])
         self.assertFalse(self.resolution(self.manifest)['enables_runtime_support'])
         self.assertNotIn(pid, {c['official_id'] for c in self.historical_runtime['cards']})
@@ -99,12 +99,12 @@ class MomentarySourceReviewTests(unittest.TestCase):
     def test_previous_source_cohorts_and_all_variant_evidence_are_unchanged(self):
         digest = lambda value: catalog.sha(review.canonical_bytes(value))
         for key, preserved in self.proof['preserved_source_cohorts'].items():
-            self.assertEqual(len(self.manifest[key]), preserved['count'] + 1)
+            self.assertGreaterEqual(len(self.manifest[key]), preserved['count'] + 1)
             self.assertEqual(digest(self.manifest[key][:preserved['count']]),
                              preserved['canonical_sha256'])
         images = json.loads((catalog.ROOT / 'assets/data/catalog_evidence/images.json').read_text())
         preserved = self.proof['preserved_field_image_index']
-        self.assertEqual(len(images), preserved['count'] + 1)
+        self.assertGreaterEqual(len(images), preserved['count'] + 1)
         self.assertEqual(digest(images[:preserved['count']]), preserved['canonical_sha256'])
         variant = self.proof['preserved_variant_review']
         for path, key in [
