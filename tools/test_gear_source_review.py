@@ -16,7 +16,11 @@ class GearSourceReviewTests(unittest.TestCase):
         cls.manifest = json.loads((catalog.ROOT / 'assets/data/catalog_resolutions.json').read_text())
         cls.proof = json.loads((catalog.ROOT / 'assets/data/catalog_evidence/reviews/gear-source-corrections.json').read_text())
         cls.raw = catalog.project_gallery(cls.data['gallery'])[0]
-        cls.snapshot = catalog.make_catalog(cls.archive_manifest, cls.data)
+        # Reconstruct the runtime at the source-only review; later admission is separate.
+        cls.historical_runtime = copy.deepcopy(catalog.load_runtime_manifest())
+        cls.historical_runtime['cards'] = cls.historical_runtime['cards'][:362]
+        with patch.object(catalog, 'load_runtime_manifest', return_value=cls.historical_runtime):
+            cls.snapshot = catalog.make_catalog(cls.archive_manifest, cls.data)
 
     def apply(self, manifest=None, raw=None):
         return review.apply_reviews(
@@ -111,7 +115,10 @@ class GearSourceReviewTests(unittest.TestCase):
         self.assertEqual(len(images), saved['count'] + 2)
         self.assertEqual(digest(images[:saved['count']]), saved['canonical_sha256'])
         for path, sha in self.proof['preserved_files'].items():
-            self.assertEqual(catalog.sha((catalog.ROOT / path).read_bytes()), sha, path)
+            payload = (catalog.ROOT / path).read_bytes()
+            if path == 'assets/data/decks.json':
+                payload = (json.dumps(self.historical_runtime, ensure_ascii=False, indent=2) + '\n').encode()
+            self.assertEqual(catalog.sha(payload), sha, path)
 
     def test_porobot_cannot_be_registered_as_an_ordinary_unit_or_gear(self):
         record = next(r for r in self.proof['records'] if r['official_id'] == 'ven-058-166')

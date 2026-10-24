@@ -8016,15 +8016,123 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
             capture(app, "RIFT_SMOKE_C12_SURVIVORS_SCREENSHOT");
         }
         786 => {
+            expansion_fixture(app, 366);
+            app.game.players[1].units = vec![public_unit(12000, 2, Some(0))];
+            app.game.battlefield_owner[0] = Some(1);
+            app.game.players[1].gear = vec![GearState {
+                id: 12001,
+                card_id: 3,
+                attached_to: Some(12000),
+                ready: true,
+                temporary: false,
+                token: false,
+            }];
+            app.game.players[0].gear = vec![GearState {
+                id: 12002,
+                card_id: 21,
+                attached_to: None,
+                ready: true,
+                temporary: false,
+                token: false,
+            }];
+            app.game
+                .apply(Action::PlayCardWithTargets {
+                    hand_index: 0,
+                    lane: None,
+                    targets: vec![],
+                })
+                .unwrap();
+            finish_chain_until_choice(app);
+            assert!(matches!(
+                app.game.decision,
+                Some(Decision::TriggerTargets { card_id: 366, .. })
+            ));
+        }
+        787 => {
+            assert!(app.tray == super::Tray::Loadout);
+            assert_eq!(app.gear_owner, 1);
+            capture(app, "RIFT_SMOKE_C13_GEAR_CHOICE_SCREENSHOT");
+            click(app, 615.0, 760.0);
+        }
+        788 => {
+            assert_eq!(
+                app.targets,
+                vec![Target::Gear {
+                    player: 1,
+                    gear_id: 12001
+                }]
+            );
+            click(app, 855.0, 663.0);
+        }
+        789 => {
+            assert_eq!(app.gear_owner, 0);
+            assert_eq!(
+                app.targets,
+                vec![Target::Gear {
+                    player: 1,
+                    gear_id: 12001
+                }]
+            );
+            capture(app, "RIFT_SMOKE_C13_RETAINED_SCREENSHOT");
+            click(app, 855.0, 663.0);
+        }
+        790 => {
+            assert_eq!(app.gear_owner, 1);
+            capture(app, "RIFT_SMOKE_C13_SELECTED_SCREENSHOT");
+            click(app, 1285.0, 510.0);
+        }
+        791 => {
+            assert!(!matches!(
+                app.game.decision,
+                Some(Decision::TriggerTargets { .. })
+            ));
+            finish_chain_until_choice(app);
+            assert!(app.game.players[1].gear.is_empty());
+            assert_eq!(app.game.players[1].units[0].id, 12000);
+            assert_eq!(app.game.players[0].gear.len(), 1);
+        }
+        792 => {
+            expansion_fixture(app, 367);
+            app.game.players[1].gear = vec![GearState {
+                id: 12003,
+                card_id: 3,
+                attached_to: None,
+                ready: true,
+                temporary: false,
+                token: false,
+            }];
+            app.game
+                .apply(Action::PlayCardWithTargets {
+                    hand_index: 0,
+                    lane: None,
+                    targets: vec![],
+                })
+                .unwrap();
+            finish_chain_until_choice(app);
+        }
+        793 => {
+            assert!(matches!(
+                app.game.decision,
+                Some(Decision::TriggerTargets { card_id: 367, .. })
+            ));
+            capture(app, "RIFT_SMOKE_C13_ENERGY_LIMIT_SCREENSHOT");
+            click(app, 1285.0, 547.0);
+        }
+        794 => {
+            assert!(app.game.decision.is_none());
+            assert_eq!(app.game.players[1].gear.len(), 1);
+            capture(app, "RIFT_SMOKE_C13_DECLINED_SCREENSHOT");
+        }
+        795 => {
             app.ui.input_override = None;
             app.ui.pointer_override = None;
             app.ui.wheel_override = None;
             println!(
-                "PASS: 787 native UI frames including mixed gear/unit targets, ordered Hidden targets and prefix editing, distinct Sprite child drafts, live Temporary and Petal previews, simultaneous Beginning expiry and new-token survival, plus all previous 765 controls."
+                "PASS: 796 native UI frames including optional gear triggers, attached targets, retained choices across Loadouts, printed Energy limits, and mixed gear/unit targets, ordered Hidden targets and prefix editing, distinct Sprite child drafts, live Temporary and Petal previews, simultaneous Beginning expiry and new-token survival, plus all previous 765 controls."
             );
             return true;
         }
-        _ => panic!("UI smoke runner exceeded its 787-frame script"),
+        _ => panic!("UI smoke runner exceeded its 796-frame script"),
     }
     false
 }

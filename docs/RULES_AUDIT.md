@@ -276,6 +276,16 @@ Last Stand uses checked wide arithmetic on each fresh signed snapshot (negative 
 
 [Focused engine tests](../src/temporary/tests.rs), [independent protocol tests](../src/api/temporary/tests.rs), [source/deck tests](../tests/card_batch_fourteen.rs) and [96 complete legal-home games](../tests/c12_matches.rs) cover the bounded family. The native script additionally exercises mixed targets across Loadout, ordered Hidden selection and editing, separate child IDs, expiry ordering, live previews and new-Sprite survival. These are executable examples, not an exhaustive proof of all Standard interactions.
 
+### Gear targets, simultaneous destruction and linked instructions
+
+IDs 362–371 use ten reviewed single-type faces. Their shared board query distinguishes either base, a live battlefield, and a missing object. Gear follows its bearer for location but retains its own type, domains and printed Energy. Gold and unit tokens use zero printed Energy and no domains, not their creator's characteristics. Gear does not inherit the bearer's targeting protection.
+
+Noxian Demolitionist uses current referenced Might at selection and resolution (Core 143.2.c); a negative live value references zero, while a departed source is null (359.3.e.12). Detonate's linked draw uses the legal target's controller, whereas Adaptatron requires an actual Kill for its “if you do” Buff (359.3.e.14). No currently supported non-unit gear replaces its own Kill; the typed outcome preserves the distinction without claiming a fabricated replacement example. Decree uses existing unit death replacements when choosing a unit.
+
+Thermo Beam fixes one simultaneous gear set and captures all gear Deathknells before any departure (370.1, 383.2.c). Later lethal unit cleanup and pending Fountain children stay outside that set. The controlled fixture destroys attached Might bonuses and Guardian Angel together before the bearer becomes lethal. Dropboarder captures its gear-count condition at the play event; its triggered Ready still emits a Ready event. Production Surge fixes its Mech discount during payment, draws before child finalization, and makes separate pending children for Repeat.
+
+[Focused board tests](../src/board_targets/tests.rs), [protocol tests](../src/api.rs), [source/deck tests](../tests/card_batch_fifteen.rs), and [complete legal-home games](../tests/c13_matches.rs) exercise this family. Native checks cover optional attached-gear selection, retained choices across Loadouts, the printed Energy limit and declining. Patched Porobot remains unavailable because its reviewed combined Unit/Gear type needs a complete physical-object model under Core 178. These bounded checks do not establish complete Standard parity.
+
 ## Open questions and next audit targets
 
 These items are **not resolved by the passing examples**:

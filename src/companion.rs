@@ -749,9 +749,15 @@ fn response_window_advice(
                 "Choose how much to convert. The gear is already exhausted. Zero finishes without adding resources; your original payment stays waiting.",
                 "Other Add abilities can supply this payment. Keep the energy and colored power needed for the original action, not just the conversion.",
             ],
+            Decision::TriggerTargets {
+                card_id: 366..=369, ..
+            } => vec![
+                "Choose highlighted gear in either Loadout, then confirm. Attached gear is still a separate target; destroying it removes its benefit from the bearer. You may decline.",
+                "Check the gear's printed Energy limit and any on-death effect. Noxian Demolitionist checks its current Might again on resolution; Adaptatron buffs only if it actually kills the gear.",
+            ],
             Decision::TriggerTargets { .. } => vec![
                 "Choose this ability's highlighted targets in order, then confirm. You can decline only when the ability is optional.",
-                "The source has entered play; the ability joins the chain after you choose targets. Check the next trade and any Deflect costs before confirming.",
+                "The ability joins the chain after you choose targets. Check the next trade and any Deflect costs before confirming.",
             ],
             Decision::OptionalPlay { .. } => vec![
                 "Accept or decline this trash-play trigger. If accepted, choose its trash target before the ability joins the chain; finalize the card after it resolves.",

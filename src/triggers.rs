@@ -163,10 +163,12 @@ impl Game {
         if let Some(target) = Self::source_target(source) {
             return self.target_location(target);
         }
-        source
-            .gear_id
-            .and_then(|id| self.players[source.player].gear.iter().find(|g| g.id == id))
-            .map(|_| (None, source.player))
+        source.gear_id.and_then(|gear_id| {
+            self.target_location(Target::Gear {
+                player: source.player,
+                gear_id,
+            })
+        })
     }
     fn unit_has_tag(&self, unit: &Unit, tag: &str) -> bool {
         if unit.token {
@@ -244,6 +246,9 @@ impl Game {
                 .or(source.gear_id)
                 .is_some_and(|id| self.unit_empowered(id)),
             Condition::ControllerXpAtLeast(n) => self.players[source.player].xp >= u64::from(n),
+            Condition::ControllerGearAtLeast(n) => {
+                self.players[source.player].gear.len() >= usize::from(n)
+            }
             Condition::Other => !same,
             Condition::FromBattlefield => event.origin.is_some(),
             Condition::ToBattlefield => event.unit.as_ref().is_some_and(|u| u.lane.is_some()),
@@ -637,15 +642,14 @@ impl Game {
     ) -> Result<bool, String> {
         Ok({
             let rule = &metadata::trigger_rules(card_id)[index];
-            let Target::Unit { player, unit_id } = target else {
-                return Ok(false);
-            };
-            let Some(unit) = self.unit_ref(target) else {
+            let Some(facts) = self.board_target_facts(target) else {
                 return Ok(false);
             };
             let actor = context.source.player;
-            // Shared target prohibitions are independent of the operation itself.
-            if !self.official_target_valid(actor, 7, None, target, slot)? {
+            let player = facts.controller;
+            if !self.board_target_matches_kind(target, rule.targets.kind)
+                || !self.can_choose_board_target(actor, target)
+            {
                 return Ok(false);
             }
             match rule.targets.allegiance {
@@ -654,26 +658,46 @@ impl Game {
                 Allegiance::Mixed if (slot == 0) != (player == actor) => return Ok(false),
                 _ => {}
             }
+            let lane = facts.location.battlefield();
             if rule.targets.event_locations
                 == metadata::EventLocationConstraint::MovedToOrFromBattlefield
-                && !context.movement.is_some_and(|m| {
-                    unit.lane.is_some() && (unit.lane == m.origin || unit.lane == m.destination)
-                })
+                && !context
+                    .movement
+                    .is_some_and(|m| lane.is_some() && (lane == m.origin || lane == m.destination))
             {
                 return Ok(false);
             }
-            if rule.targets.relative_might == metadata::RelativeMightConstraint::LessThanSource
-                && !(match Self::source_target(context.source).and_then(|t| self.unit_ref(t)) {
-                    Some(source) => self.unit_might(unit)? < self.unit_might(source)?,
-                    None => false,
-                })
+            if rule.targets.relative_might == metadata::RelativeMightConstraint::LessThanSource {
+                let Some((unit, source)) = self
+                    .unit_ref(target)
+                    .zip(Self::source_target(context.source).and_then(|t| self.unit_ref(t)))
+                else {
+                    return Ok(false);
+                };
+                if self.unit_might(unit)? >= self.unit_might(source)? {
+                    return Ok(false);
+                }
+            }
+            if rule.targets.relative_energy == metadata::RelativeEnergyConstraint::AtMostSourceMight
             {
+                let Some(source) =
+                    Self::source_target(context.source).and_then(|t| self.unit_ref(t))
+                else {
+                    return Ok(false);
+                };
+                if u64::from(facts.printed_energy) > self.unit_might(source)? {
+                    return Ok(false);
+                }
+            }
+            let is_source = match target {
+                Target::Unit { unit_id, .. } => context.source.unit_id == Some(unit_id),
+                Target::Gear { gear_id, .. } => context.source.gear_id == Some(gear_id),
+                _ => false,
+            };
+            if rule.targets.another && is_source {
                 return Ok(false);
             }
-            if rule.targets.another && context.source.unit_id == Some(unit_id) {
-                return Ok(false);
-            }
-            if rule.targets.battlefield && unit.lane.is_none() {
+            if rule.targets.battlefield && lane.is_none() {
                 return Ok(false);
             }
             if rule.targets.here
@@ -681,33 +705,54 @@ impl Game {
             {
                 return Ok(false);
             }
-            if let Some(n) = rule.targets.max_might
-                && self.unit_might(unit)? > u64::from(n)
+            if let Some(n) = rule.targets.max_might {
+                let Some(unit) = self.unit_ref(target) else {
+                    return Ok(false);
+                };
+                if self.unit_might(unit)? > u64::from(n) {
+                    return Ok(false);
+                }
+            }
+            if rule
+                .targets
+                .max_energy
+                .is_some_and(|n| facts.printed_energy > n)
             {
                 return Ok(false);
             }
             if rule
                 .targets
                 .tag
-                .is_some_and(|tag| !self.unit_has_tag(unit, tag))
+                .is_some_and(|tag| !self.board_target_has_tag(target, tag))
             {
                 return Ok(false);
             }
             if rule.event == Event::SelfPlayed
                 && let Some(source) = context.source.unit_id
-                && let Some(lane) = self.hidden_play_origin(source)
+                && let Some(origin) = self.hidden_play_origin(source)
                 && (self
                     .unit_ref(Target::Unit {
                         player: actor,
                         unit_id: source,
                     })
                     .is_none()
-                    || unit.lane != Some(lane))
+                    || lane != Some(origin))
             {
                 return Ok(false);
             }
             true
         })
+    }
+    pub fn trigger_target_rule(&self) -> Option<&'static metadata::TargetRule> {
+        let Decision::TriggerTargets {
+            card_id,
+            rule_index,
+            ..
+        } = self.decision.as_ref()?
+        else {
+            return None;
+        };
+        Some(&metadata::trigger_rules(*card_id).get(*rule_index)?.targets)
     }
     pub fn trigger_target_bounds(&self) -> Option<(usize, usize)> {
         let Decision::TriggerTargets {
@@ -771,18 +816,32 @@ impl Game {
         })
     }
     pub fn trigger_target_candidates(&self) -> Result<Vec<Target>, String> {
-        Ok({
-            self.players
-                .iter()
-                .enumerate()
-                .flat_map(|(player, p)| {
-                    p.units.iter().map(move |u| Target::Unit {
+        let kind = match self.decision.as_ref() {
+            Some(Decision::TriggerTargets {
+                card_id,
+                rule_index,
+                ..
+            }) => metadata::trigger_rules(*card_id)[*rule_index].targets.kind,
+            _ => rules::PlayTargetKind::Unit,
+        };
+        Ok(self
+            .players
+            .iter()
+            .enumerate()
+            .flat_map(|(player, p)| {
+                p.units
+                    .iter()
+                    .map(move |u| Target::Unit {
                         player,
                         unit_id: u.id,
                     })
-                })
-                .collect()
-        })
+                    .chain(p.gear.iter().map(move |g| Target::Gear {
+                        player,
+                        gear_id: g.id,
+                    }))
+            })
+            .filter(|&target| self.board_target_matches_kind(target, kind))
+            .collect())
     }
     pub(super) fn trigger_target_actions(&self) -> Result<Vec<Action>, String> {
         self.trigger_target_actions_mode(true)
@@ -941,6 +1000,22 @@ impl Game {
         let targets = selected;
         for effect in rule.effects {
             match *effect {
+                Effect::KillGear {
+                    buff_source_if_killed,
+                } => {
+                    for &target in &targets {
+                        let outcome = self.kill_gear_target(target);
+                        if buff_source_if_killed
+                            && matches!(
+                                outcome,
+                                board_targets::GearKillResult::Resolved { killed: true, .. }
+                            )
+                            && let Some(source) = Self::source_target(context.source)
+                        {
+                            self.buff_unit_by(player, source)?;
+                        }
+                    }
+                }
                 Effect::GiveTemporary(who) => {
                     for target in self.trigger_operands(context, who, &targets) {
                         self.grant_temporary(target);

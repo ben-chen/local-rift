@@ -265,6 +265,14 @@ pub(super) fn target_view_hint(game: &Game, view: &PlayTargetView) -> String {
         };
     };
     let noun = match view.spec.kind {
+        Some(local_rift::rules::PlayTargetKind::UnitOrGear)
+            if matches!(
+                local_rift::rules::effect(view.card_id),
+                local_rift::rules::OfficialEffect::KillEnemyDomain { .. }
+            ) =>
+        {
+            "an enemy Chaos unit (base or field), or gear in Loadout"
+        }
         Some(local_rift::rules::PlayTargetKind::UnitOrGear) => {
             "a battlefield unit, or gear in Loadout"
         }

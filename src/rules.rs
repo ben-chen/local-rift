@@ -66,6 +66,18 @@ pub struct PlayTargetSpec {
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum OfficialEffect {
+    KillGear {
+        controller_draw: u8,
+    },
+    KillAllGear,
+    KillEnemyDomain {
+        domain: Domain,
+    },
+    TokensAndDraw {
+        count: u8,
+        might: u8,
+        draw: u8,
+    },
     GiveTemporary,
     DoubleMightAndTemporary,
     TemporaryAndDraw {
@@ -219,6 +231,19 @@ pub struct Targeting {
 pub fn effect(id: usize) -> OfficialEffect {
     use OfficialEffect::*;
     match id {
+        362 | 364 => KillGear {
+            controller_draw: if id == 362 { 2 } else { 0 },
+        },
+        363 => KillAllGear,
+        365 => KillEnemyDomain {
+            domain: Domain::Chaos,
+        },
+        366..=370 => None,
+        371 => TokensAndDraw {
+            count: 1,
+            might: 3,
+            draw: 1,
+        },
         349 => GiveTemporary,
         350 => DoubleMightAndTemporary,
         353 => TemporaryAndDraw { draw: 2 },
@@ -578,7 +603,8 @@ pub fn targeting(id: usize) -> Targeting {
     use Allegiance::*;
     let allegiance = match id {
         290..=296 | 335 | 349 => Any,
-        4 | 32 | 144 | 145 => Enemy,
+        4 | 32 | 144 | 145 | 365 => Enemy,
+        362 | 364 => Any,
         8 | 9 | 14 | 19 | 27 | 85 | 137 | 228 | 350 | 353 | 354 => Friendly,
         16 | 29 | 82 | 217 | 218 => Mixed,
         5 | 7 | 11 | 23 | 26 | 28 | 41 | 44 | 50 | 52 | 53 | 55 | 61 | 62 | 63 | 66 | 67 | 74
@@ -611,6 +637,8 @@ pub fn target_bounds(id: usize) -> (usize, usize) {
             ..
         }
         | Kill { .. }
+        | KillGear { .. }
+        | KillEnemyDomain { .. }
         | Stun
         | GrantAssault(_) => (1, 1),
         Damage { targets, .. } => (
@@ -647,6 +675,8 @@ pub fn play_target_spec(id: CardId) -> PlayTargetSpec {
             (None, 0, 0)
         } else {
             match effect(id) {
+                OfficialEffect::KillGear { .. } => (Some(Gear), 1, 1),
+                OfficialEffect::KillEnemyDomain { .. } => (Some(UnitOrGear), 1, 1),
                 OfficialEffect::Counter(_) => (Some(Spell), 1, 1),
                 OfficialEffect::DestroyGearAndDraw => (Some(Gear), 1, 0),
                 OfficialEffect::TemporaryGear => (Some(Gear), 1, 1),
@@ -952,6 +982,11 @@ pub enum Mechanic {
 pub fn requirements(id: usize) -> &'static [Mechanic] {
     use Mechanic::*;
     match id {
+        362 | 363 | 365 | 366 | 367 => &[Chain, Gear],
+        364 => &[Chain, Gear, Flow],
+        368 | 369 => &[Chain, Gear, ConquerHoldTriggers],
+        370 => &[Chain, Gear, ChooseReadyTriggers],
+        371 => &[Chain, Tokens, CostReduction],
         349 | 350 | 353 => &[Chain, Temporary],
         351 => &[Hidden, Chain, Temporary],
         352 => &[Chain, Temporary],
@@ -1319,6 +1354,10 @@ pub fn xp_energy_discount_tiers(id: CardId) -> &'static [XpDiscountTier] {
 /// operation. These must not be silently discarded for a "base-stats" unit.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum StaticAbility {
+    ControlsTagEnergyDiscount {
+        tag: &'static str,
+        energy: u8,
+    },
     EntersReadyAtXp(u8),
     XpEnergyDiscount {
         tiers: &'static [XpDiscountTier],
@@ -1373,6 +1412,11 @@ pub enum StaticAbility {
 pub fn static_abilities(id: usize) -> &'static [StaticAbility] {
     use StaticAbility::*;
     match id {
+        367 => &[Shield(2)],
+        371 => &[ControlsTagEnergyDiscount {
+            tag: "Mech",
+            energy: 2,
+        }],
         351 | 354 | 356 => &[Hidden],
         359 => &[Shield(1)],
         360 => &[Temporary],
@@ -1598,6 +1642,11 @@ pub struct FlowCost {
 /// A card played using Flow is banished afterwards instead of going to trash.
 pub fn flow_cost(id: usize) -> Option<FlowCost> {
     match id {
+        364 => Some(FlowCost {
+            energy: 4,
+            any_power: 1,
+            colored: true,
+        }),
         19 => Some(FlowCost {
             energy: 2,
             any_power: 0,
@@ -1741,7 +1790,7 @@ pub fn token_spec(id: usize) -> Option<TokenSpec> {
             tag: Some("Bilgewater"),
             temporary: false,
         }),
-        54 | 138 | 241 | 251 | 318 | 319 => Some(TokenSpec {
+        54 | 138 | 241 | 251 | 318 | 319 | 371 => Some(TokenSpec {
             name: "Mech",
             might: 3,
             count: if id == 54 { 2 } else { 1 },
@@ -1797,7 +1846,7 @@ mod tests {
     #[test]
     fn all_catalog_entries_have_official_classification() {
         let cards = cards();
-        assert_eq!(cards.len(), 362);
+        assert_eq!(cards.len(), 372);
         for card in cards {
             assert_ne!(
                 effect(card.id),
@@ -1807,7 +1856,7 @@ mod tests {
             );
             assert_ne!(support_status(card.id), SupportStatus::UnknownCard);
         }
-        assert_eq!(effect(362), OfficialEffect::Unsupported);
+        assert_eq!(effect(372), OfficialEffect::Unsupported);
     }
 
     #[test]

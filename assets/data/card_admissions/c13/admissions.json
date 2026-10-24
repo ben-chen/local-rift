@@ -1,0 +1,1057 @@
+{
+  "schema_version": 1,
+  "draft_not_for_import": false,
+  "origin_gallery": {
+    "url": "https://playriftbound.com/en-us/card-gallery/",
+    "uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+    "archive": "assets/data/catalog_sources/gallery.html.gz"
+  },
+  "pre_admission_catalog_sha256": "c47093313c721f12ba12ed433434a18cd27c7117d8211d5d06f569851cc5b26d",
+  "preserved_runtime_prefix": {
+    "card_count": 362,
+    "cards_sha256": "d3566b3cb054ea3014d4faaacae2e3a042af235b38025a7e9ef7c0faf0052296",
+    "presets_sha256": "d6e64ebf3f8921686682dacd87d4b2b4baec5754dbd284c6d60bf3fb324571e2",
+    "legends_manifest_sha256": "2b621121a54761ccee91e6d0df7b720e572138e7c2caac2c52abaaabd951b37f",
+    "training_recipe_source_sha256": "ad6b2ad3d5e3e34c99af35eef5a283b615cc813db27cec246fd2f433063ec1e4",
+    "manifest_ascii_escaped": false
+  },
+  "preserved_source_reviews": {
+    "field_resolutions_sha256": "dd4e64077c9df5d6f5ec2e3eee43fb9ce8f7881d393546f6d707dd1036818761",
+    "raw_printings_sha256": "fa4e450d6c74652ddb25110805c7c41c1bdb12381cf139726112564024933d3b",
+    "historical_issues_sha256": "ad98fe95f92e687a1b632578d66329b281407374be0dd7dce240ca3aa8b9d512",
+    "field_image_index_sha256": "e7bceb6589f9d4a795d3d97bd9d2284971c212c9365d7cdeaffeb8cc28635724",
+    "identity_reviews_sha256": "c61c191636c74795ec15c4149805d994c76c020093c98592a489766f30f54ad3"
+  },
+  "pre_admission_counts": {
+    "main_cards": 362,
+    "mapped_legal": 387,
+    "remaining_legal": 692
+  },
+  "reviewed_on": "2026-10-24",
+  "scope": "Ten reviewed single-type gear-interaction admissions. Patched Porobot remains excluded pending complete dual-type support. Source provenance and runtime verification are separate evidence.",
+  "records": [
+    {
+      "official_id": "sfd-005-221",
+      "name": "Detonate",
+      "raw_printing": {
+        "official_id": "sfd-005-221",
+        "public_code": "SFD-005/221",
+        "name": "Detonate",
+        "set": "SFD",
+        "collector_number": 5,
+        "types": [
+          "spell"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "spell"
+        ],
+        "accessibility_types": [
+          "spell"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "fury"
+        ],
+        "energy": 1,
+        "power": 1,
+        "might": null,
+        "might_bonus": null,
+        "rules_html": "<p>Kill a gear. Its controller draws 2.</p>",
+        "rules_text": "Kill a gear. Its controller draws 2.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [],
+        "rarity": "common",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/e837fbd6aeeb1293386dcfa284aae5a4baca10ef-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Spell: Detonate. Kill a gear. Its controller draws 2.",
+        "illustrators": [
+          "Kudos Productions"
+        ]
+      },
+      "raw_printing_sha256": "56182b5c552ef2b4d9024f2d6bf0099d8fff13bb1afd70404491290991b0992c",
+      "effective": {
+        "types": [
+          "spell"
+        ],
+        "super_types": [],
+        "domains": [
+          "fury"
+        ],
+        "energy": 1,
+        "power": 1,
+        "might": null,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>Kill a gear. Its controller draws 2.</p>",
+        "rules_text": "Kill a gear. Its controller draws 2.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "existing_field_resolution_ids": [],
+      "visual_observation": {
+        "official_id": "sfd-005-221",
+        "face_visually_inspected": true,
+        "original_image_sha256": "d512e6b48e921e0d610da00dc0a851fde1909e4e68820f977d3b47d3f5a75c18",
+        "name": "Detonate",
+        "collector_code": "SFD-005/221",
+        "printed_types": [
+          "spell"
+        ],
+        "printed_supertypes": [],
+        "printed_domains": [
+          "fury"
+        ],
+        "printed_tags": [],
+        "printed_energy": 1,
+        "printed_power": 1,
+        "printed_might": null,
+        "printed_might_bonus": null,
+        "printed_rules_icons_expanded": "Kill a gear. Its controller draws 2.",
+        "printed_equipment_icons_expanded": "",
+        "comparison": "No gameplay mismatch found in the directly inspected face. Icon expansion, line wrapping and tag order are presentation only.",
+        "uncertainties": []
+      },
+      "original_image": {
+        "path": "assets/data/card_admissions/c13/originals/sfd-005-221.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/e837fbd6aeeb1293386dcfa284aae5a4baca10ef-744x1039.png?accountingTag=RB",
+        "bytes": 818004,
+        "sha256": "d512e6b48e921e0d610da00dc0a851fde1909e4e68820f977d3b47d3f5a75c18"
+      },
+      "runtime_id": 362,
+      "append_offset": 0,
+      "interpretation_note": "Target gear Kill; draw2 for its controller through linked instructions; capture target controller before departure.",
+      "runtime_image": {
+        "path": "assets/art/card_362.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/e837fbd6aeeb1293386dcfa284aae5a4baca10ef-744x1039.png?w=320&q=80&fm=png",
+        "bytes": 241768,
+        "sha256": "6ad4491963836d7e027e7c066f977d703a7f3fe78925e58855f1c7ce388b730d"
+      }
+    },
+    {
+      "official_id": "ogn-022-298",
+      "name": "Thermo Beam",
+      "raw_printing": {
+        "official_id": "ogn-022-298",
+        "public_code": "OGN-022/298",
+        "name": "Thermo Beam",
+        "set": "OGN",
+        "collector_number": 22,
+        "types": [
+          "spell"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "spell"
+        ],
+        "accessibility_types": [
+          "spell"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "fury"
+        ],
+        "energy": 5,
+        "power": 2,
+        "might": null,
+        "might_bonus": null,
+        "rules_html": "<p>[Action] (Play on your turn or in showdowns.)<br />Kill all gear.</p>",
+        "rules_text": "[Action] (Play on your turn or in showdowns.)\nKill all gear.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [],
+        "rarity": "uncommon",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/88661e852b864491e6d7f5f087caf4263f61c361-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Spell: Thermo Beam. [Action] (Play on your turn or in showdowns.)\nKill all gear.",
+        "illustrators": [
+          "Max Grecke"
+        ]
+      },
+      "raw_printing_sha256": "f20c4811ec4576555c99b690558fdd8b7975c51fa4a7a925eb322413b37f0d3e",
+      "effective": {
+        "types": [
+          "spell"
+        ],
+        "super_types": [],
+        "domains": [
+          "fury"
+        ],
+        "energy": 5,
+        "power": 2,
+        "might": null,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>[Action] (Play on your turn or in showdowns.)<br />Kill all gear.</p>",
+        "rules_text": "[Action] (Play on your turn or in showdowns.)\nKill all gear.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "existing_field_resolution_ids": [],
+      "visual_observation": {
+        "official_id": "ogn-022-298",
+        "face_visually_inspected": true,
+        "original_image_sha256": "5d9f0b346481adc41acf3406197fb714a5bc7972fa65432a65ce95bb3b22590f",
+        "name": "Thermo Beam",
+        "collector_code": "OGN-022/298",
+        "printed_types": [
+          "spell"
+        ],
+        "printed_supertypes": [],
+        "printed_domains": [
+          "fury"
+        ],
+        "printed_tags": [],
+        "printed_energy": 5,
+        "printed_power": 2,
+        "printed_might": null,
+        "printed_might_bonus": null,
+        "printed_rules_icons_expanded": "[Action] (Play on your turn or in showdowns.)\nKill all gear.",
+        "printed_equipment_icons_expanded": "",
+        "comparison": "No gameplay mismatch found in the directly inspected face. Icon expansion, line wrapping and tag order are presentation only.",
+        "uncertainties": []
+      },
+      "original_image": {
+        "path": "assets/data/card_admissions/c13/originals/ogn-022-298.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/88661e852b864491e6d7f5f087caf4263f61c361-744x1039.png?accountingTag=RB",
+        "bytes": 778118,
+        "sha256": "5d9f0b346481adc41acf3406197fb714a5bc7972fa65432a65ce95bb3b22590f"
+      },
+      "runtime_id": 363,
+      "append_offset": 1,
+      "interpretation_note": "Action; simultaneous Kill all gear with gear-death observers and no target/Deflect.",
+      "runtime_image": {
+        "path": "assets/art/card_363.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/88661e852b864491e6d7f5f087caf4263f61c361-744x1039.png?w=360&q=80&fm=png",
+        "bytes": 248252,
+        "sha256": "f1e59b0d2124b081d0302825e6067be7124404fe03184e2583b3c42b55aa46d7"
+      }
+    },
+    {
+      "official_id": "ven-003-166",
+      "name": "Brittle Steel",
+      "raw_printing": {
+        "official_id": "ven-003-166",
+        "public_code": "VEN-003/166",
+        "name": "Brittle Steel",
+        "set": "VEN",
+        "collector_number": 3,
+        "types": [
+          "spell"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "spell"
+        ],
+        "accessibility_types": [
+          "spell"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "fury"
+        ],
+        "energy": 2,
+        "power": 1,
+        "might": null,
+        "might_bonus": null,
+        "rules_html": "<p>Kill a gear.<br />[Flow] :rb_energy_4::rb_rune_fury: (You may play this from your trash for its Flow cost. Then banish it.)</p>",
+        "rules_text": "Kill a gear.\n[Flow] [4 Energy][Fury Power] (You may play this from your trash for its Flow cost. Then banish it.)",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [],
+        "rarity": "common",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/2264ab788558ec69b1b6ed3e03ce69a3f63bdbb7-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Spell: Brittle Steel. Kill a gear.\n[Flow] [4][C] (You may play this from your trash for its Flow cost. Then banish it.)",
+        "illustrators": [
+          "Six More Vodka"
+        ]
+      },
+      "raw_printing_sha256": "30564fa1552837424b3037f3df6c58bfc1f44bda94c05f04fa81d79f522bba08",
+      "effective": {
+        "types": [
+          "spell"
+        ],
+        "super_types": [],
+        "domains": [
+          "fury"
+        ],
+        "energy": 2,
+        "power": 1,
+        "might": null,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>Kill a gear.<br />[Flow] :rb_energy_4::rb_rune_fury: (You may play this from your trash for its Flow cost. Then banish it.)</p>",
+        "rules_text": "Kill a gear.\n[Flow] [4 Energy][Fury Power] (You may play this from your trash for its Flow cost. Then banish it.)",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "existing_field_resolution_ids": [],
+      "visual_observation": {
+        "official_id": "ven-003-166",
+        "face_visually_inspected": true,
+        "original_image_sha256": "75524f748fc24eab0b2822a3a490e50b687ed9726f59234b061782416b56567e",
+        "name": "Brittle Steel",
+        "collector_code": "VEN-003/166",
+        "printed_types": [
+          "spell"
+        ],
+        "printed_supertypes": [],
+        "printed_domains": [
+          "fury"
+        ],
+        "printed_tags": [],
+        "printed_energy": 2,
+        "printed_power": 1,
+        "printed_might": null,
+        "printed_might_bonus": null,
+        "printed_rules_icons_expanded": "Kill a gear.\n[Flow] [4 Energy][Fury Power] (You may play this from your trash for its Flow cost. Then banish it.)",
+        "printed_equipment_icons_expanded": "",
+        "comparison": "No gameplay mismatch found in the directly inspected face. Icon expansion, line wrapping and tag order are presentation only.",
+        "uncertainties": []
+      },
+      "original_image": {
+        "path": "assets/data/card_admissions/c13/originals/ven-003-166.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/2264ab788558ec69b1b6ed3e03ce69a3f63bdbb7-744x1039.png?accountingTag=RB",
+        "bytes": 816929,
+        "sha256": "75524f748fc24eab0b2822a3a490e50b687ed9726f59234b061782416b56567e"
+      },
+      "runtime_id": 364,
+      "append_offset": 2,
+      "interpretation_note": "Target gear Kill; explicit Fury Flow4E1P; existing independent Repeat and final banish.",
+      "runtime_image": {
+        "path": "assets/art/card_364.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/2264ab788558ec69b1b6ed3e03ce69a3f63bdbb7-744x1039.png?w=360&q=80&fm=png",
+        "bytes": 284420,
+        "sha256": "bab4b0d763f009c23b91c3655a72d925acc2baef36ce158796b559cc8e5a3bd7"
+      }
+    },
+    {
+      "official_id": "ven-131-166",
+      "name": "Decree of Unity",
+      "raw_printing": {
+        "official_id": "ven-131-166",
+        "public_code": "VEN-131/166",
+        "name": "Decree of Unity",
+        "set": "VEN",
+        "collector_number": 131,
+        "types": [
+          "spell"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "spell"
+        ],
+        "accessibility_types": [
+          "spell"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "order"
+        ],
+        "energy": 2,
+        "power": 1,
+        "might": null,
+        "might_bonus": null,
+        "rules_html": "<p>Kill an enemy Chaos (:rb_rune_chaos:) unit or gear.</p>",
+        "rules_text": "Kill an enemy Chaos ([Chaos Power]) unit or gear.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [],
+        "rarity": "rare",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/220161ac48f1307e4d74c372d549fea18829a86b-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Spell: Decree of Unity. Kill an enemy Chaos ([P]) unit or gear.",
+        "illustrators": [
+          "Envar Studio"
+        ]
+      },
+      "raw_printing_sha256": "b8117ff75a9e4d3c711ca2b3aa185c5f295db084522d7b198776080ac668db7d",
+      "effective": {
+        "types": [
+          "spell"
+        ],
+        "super_types": [],
+        "domains": [
+          "order"
+        ],
+        "energy": 2,
+        "power": 1,
+        "might": null,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>Kill an enemy Chaos (:rb_rune_chaos:) unit or gear.</p>",
+        "rules_text": "Kill an enemy Chaos ([Chaos Power]) unit or gear.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "existing_field_resolution_ids": [],
+      "visual_observation": {
+        "official_id": "ven-131-166",
+        "face_visually_inspected": true,
+        "original_image_sha256": "0b12d9ad6d99312ccde3ec9fd6ff5ecdf4898ce2b27c8bf86e9ce0c61a759a26",
+        "name": "Decree of Unity",
+        "collector_code": "VEN-131/166",
+        "printed_types": [
+          "spell"
+        ],
+        "printed_supertypes": [],
+        "printed_domains": [
+          "order"
+        ],
+        "printed_tags": [],
+        "printed_energy": 2,
+        "printed_power": 1,
+        "printed_might": null,
+        "printed_might_bonus": null,
+        "printed_rules_icons_expanded": "Kill an enemy Chaos ([Chaos Power]) unit or gear.",
+        "printed_equipment_icons_expanded": "",
+        "comparison": "No gameplay mismatch found in the directly inspected face. Icon expansion, line wrapping and tag order are presentation only.",
+        "uncertainties": []
+      },
+      "original_image": {
+        "path": "assets/data/card_admissions/c13/originals/ven-131-166.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/220161ac48f1307e4d74c372d549fea18829a86b-744x1039.png?accountingTag=RB",
+        "bytes": 1033747,
+        "sha256": "0b12d9ad6d99312ccde3ec9fd6ff5ecdf4898ce2b27c8bf86e9ce0c61a759a26"
+      },
+      "runtime_id": 365,
+      "append_offset": 3,
+      "interpretation_note": "Target enemy Chaos unit OR gear; chosen domain and kind rechecked; use real Kill.",
+      "runtime_image": {
+        "path": "assets/art/card_365.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/220161ac48f1307e4d74c372d549fea18829a86b-744x1039.png?w=320&q=80&fm=png",
+        "bytes": 292975,
+        "sha256": "1eadb424d880ddb79803cd239fe5f2edbdc2ce7eb229ac16a609b100915086f3"
+      }
+    },
+    {
+      "official_id": "sfd-032-221",
+      "name": "Disarming Rake",
+      "raw_printing": {
+        "official_id": "sfd-032-221",
+        "public_code": "SFD-032/221",
+        "name": "Disarming Rake",
+        "set": "SFD",
+        "collector_number": 32,
+        "types": [
+          "unit"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "unit"
+        ],
+        "accessibility_types": [
+          "unit"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "calm"
+        ],
+        "energy": 3,
+        "power": 1,
+        "might": 2,
+        "might_bonus": null,
+        "rules_html": "<p>When you play me, you may kill a gear.</p>",
+        "rules_text": "When you play me, you may kill a gear.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [
+          "Demacia"
+        ],
+        "rarity": "common",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/523732db17d8cf3c7c55f57c5dfb397b73e2b116-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Unit: Disarming Rake. When you play me, you may kill a gear.",
+        "illustrators": [
+          "Six More Vodka"
+        ]
+      },
+      "raw_printing_sha256": "3a96628979f8d3392ff9cf6ec48f9e928ad8ae744ab7e9b2e05f5b1d496c5f03",
+      "effective": {
+        "types": [
+          "unit"
+        ],
+        "super_types": [],
+        "domains": [
+          "calm"
+        ],
+        "energy": 3,
+        "power": 1,
+        "might": 2,
+        "might_bonus": null,
+        "tags": [
+          "Demacia"
+        ],
+        "rules_html": "<p>When you play me, you may kill a gear.</p>",
+        "rules_text": "When you play me, you may kill a gear.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "existing_field_resolution_ids": [],
+      "visual_observation": {
+        "official_id": "sfd-032-221",
+        "face_visually_inspected": true,
+        "original_image_sha256": "9b7395efe0af66279fb35d4ef18fc7326cf2b42cb5b7417e6e18f2322d52c81a",
+        "name": "Disarming Rake",
+        "collector_code": "SFD-032/221",
+        "printed_types": [
+          "unit"
+        ],
+        "printed_supertypes": [],
+        "printed_domains": [
+          "calm"
+        ],
+        "printed_tags": [
+          "Demacia"
+        ],
+        "printed_energy": 3,
+        "printed_power": 1,
+        "printed_might": 2,
+        "printed_might_bonus": null,
+        "printed_rules_icons_expanded": "When you play me, you may kill a gear.",
+        "printed_equipment_icons_expanded": "",
+        "comparison": "No gameplay mismatch found in the directly inspected face. Icon expansion, line wrapping and tag order are presentation only.",
+        "uncertainties": []
+      },
+      "original_image": {
+        "path": "assets/data/card_admissions/c13/originals/sfd-032-221.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/523732db17d8cf3c7c55f57c5dfb397b73e2b116-744x1039.png?accountingTag=RB",
+        "bytes": 793349,
+        "sha256": "9b7395efe0af66279fb35d4ef18fc7326cf2b42cb5b7417e6e18f2322d52c81a"
+      },
+      "runtime_id": 366,
+      "append_offset": 4,
+      "interpretation_note": "Optional SelfPlayed chosen gear Kill; choose/pay Deflect at finalization, not execution.",
+      "runtime_image": {
+        "path": "assets/art/card_366.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/523732db17d8cf3c7c55f57c5dfb397b73e2b116-744x1039.png?w=360&q=80&fm=png",
+        "bytes": 259862,
+        "sha256": "5725d9ac6006d3ac28c5844be0fd07d479a1f20ab51cf9ee4db80c484763f87e"
+      }
+    },
+    {
+      "official_id": "rad-083-167",
+      "name": "Stalwart Goatherd",
+      "raw_printing": {
+        "official_id": "rad-083-167",
+        "public_code": "RAD-083/167",
+        "name": "Stalwart Goatherd",
+        "set": "RAD",
+        "collector_number": 83,
+        "types": [
+          "unit"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "unit"
+        ],
+        "accessibility_types": [
+          "unit"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "body"
+        ],
+        "energy": 4,
+        "power": null,
+        "might": 2,
+        "might_bonus": null,
+        "rules_html": "<p>[Shield 2] (+2 :rb_might: while I'm a defender.)<br />When you play me, you may kill a gear with Energy cost :rb_energy_4: or less.</p>",
+        "rules_text": "[Shield 2] (+2 Might while I'm a defender.)\nWhen you play me, you may kill a gear with Energy cost [4 Energy] or less.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [],
+        "rarity": "uncommon",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/bff85727b58017cbd3921fd73e9b363f5a0205e4-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Unit: Stalwart Goatherd. [Shield 2] (+2 [S] while I'm a defender.)\nWhen you play me, you may kill a gear with Energy cost [4] or less.",
+        "illustrators": [
+          "Six More Vodka"
+        ]
+      },
+      "raw_printing_sha256": "b9f8c0bfde0aae8a59fbc2c2d01796ff336537babd67a88a254f5185f48d6183",
+      "effective": {
+        "types": [
+          "unit"
+        ],
+        "super_types": [],
+        "domains": [
+          "body"
+        ],
+        "energy": 4,
+        "power": null,
+        "might": 2,
+        "might_bonus": null,
+        "tags": [
+          "Mount Targon"
+        ],
+        "rules_html": "<p>[Shield 2] (+2 :rb_might: while I'm a defender.)<br />When you play me, you may kill a gear with Energy cost :rb_energy_4: or less.</p>",
+        "rules_text": "[Shield 2] (+2 Might while I'm a defender.)\nWhen you play me, you may kill a gear with Energy cost [4 Energy] or less.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "existing_field_resolution_ids": [
+        "rad-083-167:tags"
+      ],
+      "visual_observation": {
+        "official_id": "rad-083-167",
+        "face_visually_inspected": true,
+        "original_image_sha256": "8ced2784d486a993fb2b291bf2d5220bfd10a78b0a74f53002e0fecbb32536c1",
+        "name": "Stalwart Goatherd",
+        "collector_code": "RAD-083/167",
+        "printed_types": [
+          "unit"
+        ],
+        "printed_supertypes": [],
+        "printed_domains": [
+          "body"
+        ],
+        "printed_tags": [
+          "Mount Targon"
+        ],
+        "printed_energy": 4,
+        "printed_power": null,
+        "printed_might": 2,
+        "printed_might_bonus": null,
+        "printed_rules_icons_expanded": "[Shield 2] (+2 Might while I'm a defender.)\nWhen you play me, you may kill a gear with Energy cost [4 Energy] or less.",
+        "printed_equipment_icons_expanded": "",
+        "comparison": "The exact RAD-083/167 official face prints UNIT / MOUNT TARGON. The empty structured tag array omits the printed Mount Targon tag.",
+        "uncertainties": []
+      },
+      "original_image": {
+        "path": "assets/data/catalog_evidence/images/rad-083-167.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/bff85727b58017cbd3921fd73e9b363f5a0205e4-744x1039.png?accountingTag=RB",
+        "bytes": 800074,
+        "sha256": "8ced2784d486a993fb2b291bf2d5220bfd10a78b0a74f53002e0fecbb32536c1"
+      },
+      "runtime_id": 367,
+      "append_offset": 5,
+      "interpretation_note": "Shield2; optional SelfPlayed chosen gear Kill with printed energy<=4 bound.",
+      "runtime_image": {
+        "path": "assets/art/card_367.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/bff85727b58017cbd3921fd73e9b363f5a0205e4-744x1039.png?w=360&q=80&fm=png",
+        "bytes": 252451,
+        "sha256": "0b375dccb176f1db5eae71b53f9ffcde37054c2af93242556d67d881edb4652c"
+      }
+    },
+    {
+      "official_id": "ven-080-166",
+      "name": "Noxian Demolitionist",
+      "raw_printing": {
+        "official_id": "ven-080-166",
+        "public_code": "VEN-080/166",
+        "name": "Noxian Demolitionist",
+        "set": "VEN",
+        "collector_number": 80,
+        "types": [
+          "unit"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "unit"
+        ],
+        "accessibility_types": [
+          "unit"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "body"
+        ],
+        "energy": 2,
+        "power": null,
+        "might": 1,
+        "might_bonus": null,
+        "rules_html": "<p>When I conquer, you may kill a gear with Energy cost no more than my Might.</p>",
+        "rules_text": "When I conquer, you may kill a gear with Energy cost no more than my Might.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [
+          "Noxus"
+        ],
+        "rarity": "uncommon",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/a8c9a1b0eefc89106aa154ce3958c82d86e70940-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Unit: Noxian Demolitionist. When I conquer, you may kill a gear with Energy cost no more than my Might.",
+        "illustrators": [
+          "Dao Trong Le"
+        ]
+      },
+      "raw_printing_sha256": "b27d906e3dc33c8af1473081d31811259e4ecb6c6969b3699fefce560318580d",
+      "effective": {
+        "types": [
+          "unit"
+        ],
+        "super_types": [],
+        "domains": [
+          "body"
+        ],
+        "energy": 2,
+        "power": null,
+        "might": 1,
+        "might_bonus": null,
+        "tags": [
+          "Noxus"
+        ],
+        "rules_html": "<p>When I conquer, you may kill a gear with Energy cost no more than my Might.</p>",
+        "rules_text": "When I conquer, you may kill a gear with Energy cost no more than my Might.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "existing_field_resolution_ids": [],
+      "visual_observation": {
+        "official_id": "ven-080-166",
+        "face_visually_inspected": true,
+        "original_image_sha256": "cb77a76bc6bdf7c864c3a4cd29e3ebeeefb00408e0064e3b1c10280cb6f408e2",
+        "name": "Noxian Demolitionist",
+        "collector_code": "VEN-080/166",
+        "printed_types": [
+          "unit"
+        ],
+        "printed_supertypes": [],
+        "printed_domains": [
+          "body"
+        ],
+        "printed_tags": [
+          "Noxus"
+        ],
+        "printed_energy": 2,
+        "printed_power": null,
+        "printed_might": 1,
+        "printed_might_bonus": null,
+        "printed_rules_icons_expanded": "When I conquer, you may kill a gear with Energy cost no more than my Might.",
+        "printed_equipment_icons_expanded": "",
+        "comparison": "No gameplay mismatch found in the directly inspected face. Icon expansion, line wrapping and tag order are presentation only.",
+        "uncertainties": []
+      },
+      "original_image": {
+        "path": "assets/data/card_admissions/c13/originals/ven-080-166.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/a8c9a1b0eefc89106aa154ce3958c82d86e70940-744x1039.png?accountingTag=RB",
+        "bytes": 705089,
+        "sha256": "cb77a76bc6bdf7c864c3a4cd29e3ebeeefb00408e0064e3b1c10280cb6f408e2"
+      },
+      "runtime_id": 368,
+      "append_offset": 6,
+      "interpretation_note": "Optional SelfConquer gear Kill; chosen gear printed energy<=source live Might; departed source has null Might and yields no valid numeric bound (359.3.e.12,359.3.f.2).",
+      "runtime_image": {
+        "path": "assets/art/card_368.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/a8c9a1b0eefc89106aa154ce3958c82d86e70940-744x1039.png?w=360&q=80&fm=png",
+        "bytes": 214233,
+        "sha256": "c866b4995f205f3d8939a44f84075cacb35bc0b022eb1b717eb77a343a536a92"
+      }
+    },
+    {
+      "official_id": "ogn-056-298",
+      "name": "Adaptatron",
+      "raw_printing": {
+        "official_id": "ogn-056-298",
+        "public_code": "OGN-056/298",
+        "name": "Adaptatron",
+        "set": "OGN",
+        "collector_number": 56,
+        "types": [
+          "unit"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "unit"
+        ],
+        "accessibility_types": [
+          "unit"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "calm"
+        ],
+        "energy": 4,
+        "power": null,
+        "might": 3,
+        "might_bonus": null,
+        "rules_html": "<p>When I conquer, you may kill a gear. If you do, buff me. (If I don't have a buff, I get a +1 :rb_might: buff.)</p>",
+        "rules_text": "When I conquer, you may kill a gear. If you do, buff me. (If I don't have a buff, I get a +1 Might buff.)",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [
+          "Mech",
+          "Piltover"
+        ],
+        "rarity": "uncommon",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/a3ddb00a2a872eaceb96469739531414aa27455d-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Unit: Adaptatron. When I conquer, you may kill a gear. If you do, buff me. (If I don't have a buff, I get a +1 [S] buff.)",
+        "illustrators": [
+          "Kudos Productions"
+        ]
+      },
+      "raw_printing_sha256": "4f72a0b45a4ba6dd04bbc16d66d092ced60b7eab88c54bd1eed3d6e9be77e3e4",
+      "effective": {
+        "types": [
+          "unit"
+        ],
+        "super_types": [],
+        "domains": [
+          "calm"
+        ],
+        "energy": 4,
+        "power": null,
+        "might": 3,
+        "might_bonus": null,
+        "tags": [
+          "Mech",
+          "Piltover"
+        ],
+        "rules_html": "<p>When I conquer, you may kill a gear. If you do, buff me. (If I don't have a buff, I get a +1 :rb_might: buff.)</p>",
+        "rules_text": "When I conquer, you may kill a gear. If you do, buff me. (If I don't have a buff, I get a +1 Might buff.)",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "existing_field_resolution_ids": [],
+      "visual_observation": {
+        "official_id": "ogn-056-298",
+        "face_visually_inspected": true,
+        "original_image_sha256": "19d75cacf9d452750d102e223f5f350fbdbe513dd71d60fddf1656edbd1db928",
+        "name": "Adaptatron",
+        "collector_code": "OGN-056/298",
+        "printed_types": [
+          "unit"
+        ],
+        "printed_supertypes": [],
+        "printed_domains": [
+          "calm"
+        ],
+        "printed_tags": [
+          "Mech",
+          "Piltover"
+        ],
+        "printed_energy": 4,
+        "printed_power": null,
+        "printed_might": 3,
+        "printed_might_bonus": null,
+        "printed_rules_icons_expanded": "When I conquer, you may kill a gear. If you do, buff me. (If I don't have a buff, I get a +1 Might buff.)",
+        "printed_equipment_icons_expanded": "",
+        "comparison": "No gameplay mismatch found in the directly inspected face. Icon expansion, line wrapping and tag order are presentation only.",
+        "uncertainties": []
+      },
+      "original_image": {
+        "path": "assets/data/card_admissions/c13/originals/ogn-056-298.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/a3ddb00a2a872eaceb96469739531414aa27455d-744x1039.png?accountingTag=RB",
+        "bytes": 818848,
+        "sha256": "19d75cacf9d452750d102e223f5f350fbdbe513dd71d60fddf1656edbd1db928"
+      },
+      "runtime_id": 369,
+      "append_offset": 7,
+      "interpretation_note": "Optional SelfConquer gear Kill followed by conditional Buff-source only if actual Kill happened; no Buff on invalid target/replaced Kill.",
+      "runtime_image": {
+        "path": "assets/art/card_369.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/a3ddb00a2a872eaceb96469739531414aa27455d-744x1039.png?w=360&q=80&fm=png",
+        "bytes": 238172,
+        "sha256": "3ac88a1f342716d43ed1bdd66c9af9625fab3be2b476f6dbf8c12bfcda7cd210"
+      }
+    },
+    {
+      "official_id": "sfd-072-221",
+      "name": "Dropboarder",
+      "raw_printing": {
+        "official_id": "sfd-072-221",
+        "public_code": "SFD-072/221",
+        "name": "Dropboarder",
+        "set": "SFD",
+        "collector_number": 72,
+        "types": [
+          "unit"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "unit"
+        ],
+        "accessibility_types": [
+          "unit"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "mind"
+        ],
+        "energy": 4,
+        "power": null,
+        "might": 4,
+        "might_bonus": null,
+        "rules_html": "<p>When you play me, if you control two or more gear, ready me.</p>",
+        "rules_text": "When you play me, if you control two or more gear, ready me.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [
+          "Zaun"
+        ],
+        "rarity": "uncommon",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/8572e4cb5af60dd548e3b87374ff1b12840d981a-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Unit: Dropboarder. When you play me, if you control two or more gear, ready me.",
+        "illustrators": [
+          "Dao Trong Le"
+        ]
+      },
+      "raw_printing_sha256": "38abd349ac849025d26c2fc8edd9d8084b2f03b9ed8e39474f9c28b18521a6f9",
+      "effective": {
+        "types": [
+          "unit"
+        ],
+        "super_types": [],
+        "domains": [
+          "mind"
+        ],
+        "energy": 4,
+        "power": null,
+        "might": 4,
+        "might_bonus": null,
+        "tags": [
+          "Zaun"
+        ],
+        "rules_html": "<p>When you play me, if you control two or more gear, ready me.</p>",
+        "rules_text": "When you play me, if you control two or more gear, ready me.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "existing_field_resolution_ids": [],
+      "visual_observation": {
+        "official_id": "sfd-072-221",
+        "face_visually_inspected": true,
+        "original_image_sha256": "bf1e9b7e590b26bd60ef83de18b074b66e6a04f4eb5c27f7ed46ca1e21bc7f84",
+        "name": "Dropboarder",
+        "collector_code": "SFD-072/221",
+        "printed_types": [
+          "unit"
+        ],
+        "printed_supertypes": [],
+        "printed_domains": [
+          "mind"
+        ],
+        "printed_tags": [
+          "Zaun"
+        ],
+        "printed_energy": 4,
+        "printed_power": null,
+        "printed_might": 4,
+        "printed_might_bonus": null,
+        "printed_rules_icons_expanded": "When you play me, if you control two or more gear, ready me.",
+        "printed_equipment_icons_expanded": "",
+        "comparison": "No gameplay mismatch found in the directly inspected face. Icon expansion, line wrapping and tag order are presentation only.",
+        "uncertainties": []
+      },
+      "original_image": {
+        "path": "assets/data/card_admissions/c13/originals/sfd-072-221.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/8572e4cb5af60dd548e3b87374ff1b12840d981a-744x1039.png?accountingTag=RB",
+        "bytes": 825143,
+        "sha256": "bf1e9b7e590b26bd60ef83de18b074b66e6a04f4eb5c27f7ed46ca1e21bc7f84"
+      },
+      "runtime_id": 370,
+      "append_offset": 8,
+      "interpretation_note": "SelfPlayed if control>=2gear then Ready source; conditional event-time ability and actual Ready event.",
+      "runtime_image": {
+        "path": "assets/art/card_370.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/8572e4cb5af60dd548e3b87374ff1b12840d981a-744x1039.png?w=360&q=80&fm=png",
+        "bytes": 257043,
+        "sha256": "9ac963fb28efa6959800965cb853c284081b6a6590901f5699f81229f33e8973"
+      }
+    },
+    {
+      "official_id": "sfd-076-221",
+      "name": "Production Surge",
+      "raw_printing": {
+        "official_id": "sfd-076-221",
+        "public_code": "SFD-076/221",
+        "name": "Production Surge",
+        "set": "SFD",
+        "collector_number": 76,
+        "types": [
+          "spell"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "spell"
+        ],
+        "accessibility_types": [
+          "spell"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "mind"
+        ],
+        "energy": 4,
+        "power": 1,
+        "might": null,
+        "might_bonus": null,
+        "rules_html": "<p>This costs :rb_energy_2: less if you control a Mech.<br />Play a 3 :rb_might: Mech unit token to your base.<br />Draw 1.</p>",
+        "rules_text": "This costs [2 Energy] less if you control a Mech.\nPlay a 3 Might Mech unit token to your base.\nDraw 1.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [],
+        "rarity": "uncommon",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/78783854dd9372138e599affbe96a269d8908c29-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Spell: Production Surge. This costs [2] less if you control a Mech.\nPlay a 3 [S] Mech unit token to your base.\nDraw 1.",
+        "illustrators": [
+          "Kudos Productions"
+        ]
+      },
+      "raw_printing_sha256": "a9aea2a9985e2b5f20877431ca36c52c4a7edf3f476b17a449114ff63b7ddf67",
+      "effective": {
+        "types": [
+          "spell"
+        ],
+        "super_types": [],
+        "domains": [
+          "mind"
+        ],
+        "energy": 4,
+        "power": 1,
+        "might": null,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>This costs :rb_energy_2: less if you control a Mech.<br />Play a 3 :rb_might: Mech unit token to your base.<br />Draw 1.</p>",
+        "rules_text": "This costs [2 Energy] less if you control a Mech.\nPlay a 3 Might Mech unit token to your base.\nDraw 1.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "existing_field_resolution_ids": [],
+      "visual_observation": {
+        "official_id": "sfd-076-221",
+        "face_visually_inspected": true,
+        "original_image_sha256": "257d3f94066aef7315bc530f7eb40b5bc85550e788d976c633639049e4e550e2",
+        "name": "Production Surge",
+        "collector_code": "SFD-076/221",
+        "printed_types": [
+          "spell"
+        ],
+        "printed_supertypes": [],
+        "printed_domains": [
+          "mind"
+        ],
+        "printed_tags": [],
+        "printed_energy": 4,
+        "printed_power": 1,
+        "printed_might": null,
+        "printed_might_bonus": null,
+        "printed_rules_icons_expanded": "This costs [2 Energy] less if you control a Mech.\nPlay a 3 Might Mech unit token to your base.\nDraw 1.",
+        "printed_equipment_icons_expanded": "",
+        "comparison": "No gameplay mismatch found in the directly inspected face. Icon expansion, line wrapping and tag order are presentation only.",
+        "uncertainties": []
+      },
+      "original_image": {
+        "path": "assets/data/card_admissions/c13/originals/sfd-076-221.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/78783854dd9372138e599affbe96a269d8908c29-744x1039.png?accountingTag=RB",
+        "bytes": 827219,
+        "sha256": "257d3f94066aef7315bc530f7eb40b5bc85550e788d976c633639049e4e550e2"
+      },
+      "runtime_id": 371,
+      "append_offset": 9,
+      "interpretation_note": "Energy discount2 if control Mech; pending fixed-base Mech3 play then Draw1; parent finishes before token.",
+      "runtime_image": {
+        "path": "assets/art/card_371.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/78783854dd9372138e599affbe96a269d8908c29-744x1039.png?w=360&q=80&fm=png",
+        "bytes": 267586,
+        "sha256": "d2a400cb222c93041b03250275f338a2a7dbb762cbed1030f98209bde2467664"
+      }
+    }
+  ]
+}

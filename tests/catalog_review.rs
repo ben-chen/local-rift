@@ -78,7 +78,7 @@ fn reviewed_facts_are_effective_while_original_evidence_stays_intact() {
 }
 
 #[test]
-fn reviewed_dual_type_and_missing_tag_do_not_register_gameplay() {
+fn reviewed_dual_type_stays_unavailable_and_goatherd_uses_later_admission() {
     let data = catalog();
     let printing = |id: &str| {
         data["printings"]
@@ -104,13 +104,19 @@ fn reviewed_dual_type_and_missing_tag_do_not_register_gameplay() {
             .find(|c| c["identity"] == id)
             .unwrap();
         assert_eq!(identity["standard_legal"], true);
-        assert_eq!(identity["implementation"]["playable_in_client"], false);
-        assert!(!cards::cards().iter().any(|card| card.official_id == id));
+        assert_eq!(
+            identity["implementation"]["playable_in_client"],
+            id == "rad-083-167"
+        );
+        assert_eq!(
+            cards::cards().iter().any(|card| card.official_id == id),
+            id == "rad-083-167"
+        );
     }
     assert_eq!(data["counts"]["standard_legal_by_kind"]["gear+unit"], 1);
-    assert_eq!(data["counts"]["implemented_main_cards"], 362);
-    assert_eq!(data["counts"]["implemented_legal_identities"], 387);
-    assert_eq!(data["counts"]["unimplemented_legal_identities"], 692);
+    assert_eq!(data["counts"]["implemented_main_cards"], 372);
+    assert_eq!(data["counts"]["implemented_legal_identities"], 397);
+    assert_eq!(data["counts"]["unimplemented_legal_identities"], 682);
 }
 
 #[test]
@@ -254,8 +260,8 @@ fn source_review_never_admits_inventory_only_or_unresolved_identities() {
             );
         }
     }
-    assert_eq!(data["counts"]["implemented_legal_identities"], 387);
-    assert_eq!(data["counts"]["unimplemented_legal_identities"], 692);
+    assert_eq!(data["counts"]["implemented_legal_identities"], 397);
+    assert_eq!(data["counts"]["unimplemented_legal_identities"], 682);
 }
 
 #[test]
@@ -301,7 +307,7 @@ fn completed_variant_reviews_cover_every_member_without_compatibility_exceptions
     assert_eq!(reviewed_printings.len(), 90);
     assert_eq!((unresolved_identities, unresolved_legal), (95, 94));
     assert_eq!(unresolved_auxiliary, vec!["Gold"]);
-    assert_eq!(data["counts"]["implemented_legal_identities"], 387);
+    assert_eq!(data["counts"]["implemented_legal_identities"], 397);
 }
 
 #[test]

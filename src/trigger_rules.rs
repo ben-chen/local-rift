@@ -2,7 +2,7 @@
 //! These are interpreted by the runtime, never inferred from printed keywords.
 //! Timing and event boundaries follow Core Rules 337, 354-355 and 383.
 
-use crate::rules::{Allegiance, TokenPlacement};
+use crate::rules::{Allegiance, PlayTargetKind, TokenPlacement};
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Event {
@@ -36,6 +36,7 @@ pub enum Event {
 /// conditions to be rechecked during resolution (CR383.2.a.1).
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Condition {
+    ControllerGearAtLeast(u8),
     ControllerXpAtLeast(u8),
     Other,
     FromBattlefield,
@@ -65,7 +66,13 @@ pub enum RelativeMightConstraint {
     LessThanSource,
 }
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum RelativeEnergyConstraint {
+    None,
+    AtMostSourceMight,
+}
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct TargetRule {
+    pub kind: PlayTargetKind,
     pub min: u8,
     pub max: u8,
     pub allegiance: Allegiance,
@@ -73,13 +80,16 @@ pub struct TargetRule {
     pub battlefield: bool,
     pub here: bool,
     pub max_might: Option<u8>,
+    pub max_energy: Option<u8>,
     pub tag: Option<&'static str>,
     pub distinct: bool,
     pub event_locations: EventLocationConstraint,
     pub relative_might: RelativeMightConstraint,
+    pub relative_energy: RelativeEnergyConstraint,
 }
 impl TargetRule {
     pub const NONE: Self = Self {
+        kind: PlayTargetKind::Unit,
         min: 0,
         max: 0,
         allegiance: Allegiance::None,
@@ -87,10 +97,12 @@ impl TargetRule {
         battlefield: false,
         here: false,
         max_might: None,
+        max_energy: None,
         tag: None,
         distinct: true,
         event_locations: EventLocationConstraint::None,
         relative_might: RelativeMightConstraint::None,
+        relative_energy: RelativeEnergyConstraint::None,
     };
 }
 
@@ -108,6 +120,9 @@ pub enum Amount {
 }
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Effect {
+    KillGear {
+        buff_source_if_killed: bool,
+    },
     GiveTemporary(Operand),
     Xp(Amount),
     Draw(u8),
@@ -218,6 +233,59 @@ pub fn trigger_rules(card_id: usize) -> &'static [TriggerRule] {
     use Operand::*;
     use TokenPlacement::*;
     match card_id {
+        366..=369 => {
+            const RAKE: TriggerRule = rule(
+                SelfPlayed,
+                &[],
+                true,
+                TargetRule {
+                    kind: PlayTargetKind::Gear,
+                    ..ANY
+                },
+                &[KillGear {
+                    buff_source_if_killed: false,
+                }],
+            );
+            const GOATHERD: TriggerRule = TriggerRule {
+                targets: TargetRule {
+                    max_energy: Some(4),
+                    ..RAKE.targets
+                },
+                ..RAKE
+            };
+            const DEMOLITIONIST: TriggerRule = TriggerRule {
+                event: SelfConquer,
+                targets: TargetRule {
+                    relative_energy: RelativeEnergyConstraint::AtMostSourceMight,
+                    ..RAKE.targets
+                },
+                ..RAKE
+            };
+            const ADAPTATRON: TriggerRule = TriggerRule {
+                event: SelfConquer,
+                effects: &[KillGear {
+                    buff_source_if_killed: true,
+                }],
+                ..RAKE
+            };
+            match card_id {
+                366 => &[RAKE],
+                367 => &[GOATHERD],
+                368 => &[DEMOLITIONIST],
+                _ => &[ADAPTATRON],
+            }
+        }
+        370 => {
+            const {
+                &[rule(
+                    SelfPlayed,
+                    &[ControllerGearAtLeast(2)],
+                    false,
+                    TargetRule::NONE,
+                    &[Ready(Operand::Source)],
+                )]
+            }
+        }
         351 => {
             const {
                 &[rule(

@@ -28,7 +28,7 @@ impl Session {
     }
 }
 
-fn target_kind(kind: PlayTargetKind) -> &'static str {
+pub(super) fn target_kind(kind: PlayTargetKind) -> &'static str {
     match kind {
         PlayTargetKind::Unit => "unit",
         PlayTargetKind::Gear => "gear",

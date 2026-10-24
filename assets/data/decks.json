@@ -9357,6 +9357,233 @@
         "Fae",
         "Bandle City"
       ]
+    },
+    {
+      "id": 362,
+      "name": "Detonate",
+      "official_id": "sfd-005-221",
+      "energy": 1,
+      "power": 1,
+      "might": 0,
+      "domains": [
+        "Fury"
+      ],
+      "kind": "Spell",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/e837fbd6aeeb1293386dcfa284aae5a4baca10ef-744x1039.png?w=320&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "Kill a gear. Its controller draws 2.",
+      "official_text_html": "<p>Kill a gear. Its controller draws 2.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": []
+    },
+    {
+      "id": 363,
+      "name": "Thermo Beam",
+      "official_id": "ogn-022-298",
+      "energy": 5,
+      "power": 2,
+      "might": 0,
+      "domains": [
+        "Fury"
+      ],
+      "kind": "Spell",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/88661e852b864491e6d7f5f087caf4263f61c361-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Action] (Play on your turn or in showdowns.)\nKill all gear.",
+      "official_text_html": "<p>[Action] (Play on your turn or in showdowns.)<br />Kill all gear.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Action"
+      ],
+      "tags": []
+    },
+    {
+      "id": 364,
+      "name": "Brittle Steel",
+      "official_id": "ven-003-166",
+      "energy": 2,
+      "power": 1,
+      "might": 0,
+      "domains": [
+        "Fury"
+      ],
+      "kind": "Spell",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/2264ab788558ec69b1b6ed3e03ce69a3f63bdbb7-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "Kill a gear.\n[Flow] [4 Energy][Fury Power] (You may play this from your trash for its Flow cost. Then banish it.)",
+      "official_text_html": "<p>Kill a gear.<br />[Flow] :rb_energy_4::rb_rune_fury: (You may play this from your trash for its Flow cost. Then banish it.)</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Flow"
+      ],
+      "tags": []
+    },
+    {
+      "id": 365,
+      "name": "Decree of Unity",
+      "official_id": "ven-131-166",
+      "energy": 2,
+      "power": 1,
+      "might": 0,
+      "domains": [
+        "Order"
+      ],
+      "kind": "Spell",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/220161ac48f1307e4d74c372d549fea18829a86b-744x1039.png?w=320&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "Kill an enemy Chaos ([Chaos Power]) unit or gear.",
+      "official_text_html": "<p>Kill an enemy Chaos (:rb_rune_chaos:) unit or gear.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": []
+    },
+    {
+      "id": 366,
+      "name": "Disarming Rake",
+      "official_id": "sfd-032-221",
+      "energy": 3,
+      "power": 1,
+      "might": 2,
+      "domains": [
+        "Calm"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/523732db17d8cf3c7c55f57c5dfb397b73e2b116-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "When you play me, you may kill a gear.",
+      "official_text_html": "<p>When you play me, you may kill a gear.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": [
+        "Demacia"
+      ]
+    },
+    {
+      "id": 367,
+      "name": "Stalwart Goatherd",
+      "official_id": "rad-083-167",
+      "energy": 4,
+      "power": 0,
+      "might": 2,
+      "domains": [
+        "Body"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/bff85727b58017cbd3921fd73e9b363f5a0205e4-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Shield 2] (+2 Might while I'm a defender.)\nWhen you play me, you may kill a gear with Energy cost [4 Energy] or less.",
+      "official_text_html": "<p>[Shield 2] (+2 :rb_might: while I'm a defender.)<br />When you play me, you may kill a gear with Energy cost :rb_energy_4: or less.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Shield"
+      ],
+      "tags": [
+        "Mount Targon"
+      ]
+    },
+    {
+      "id": 368,
+      "name": "Noxian Demolitionist",
+      "official_id": "ven-080-166",
+      "energy": 2,
+      "power": 0,
+      "might": 1,
+      "domains": [
+        "Body"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/a8c9a1b0eefc89106aa154ce3958c82d86e70940-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "When I conquer, you may kill a gear with Energy cost no more than my Might.",
+      "official_text_html": "<p>When I conquer, you may kill a gear with Energy cost no more than my Might.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": [
+        "Noxus"
+      ]
+    },
+    {
+      "id": 369,
+      "name": "Adaptatron",
+      "official_id": "ogn-056-298",
+      "energy": 4,
+      "power": 0,
+      "might": 3,
+      "domains": [
+        "Calm"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/a3ddb00a2a872eaceb96469739531414aa27455d-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "When I conquer, you may kill a gear. If you do, buff me. (If I don't have a buff, I get a +1 Might buff.)",
+      "official_text_html": "<p>When I conquer, you may kill a gear. If you do, buff me. (If I don't have a buff, I get a +1 :rb_might: buff.)</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": [
+        "Mech",
+        "Piltover"
+      ]
+    },
+    {
+      "id": 370,
+      "name": "Dropboarder",
+      "official_id": "sfd-072-221",
+      "energy": 4,
+      "power": 0,
+      "might": 4,
+      "domains": [
+        "Mind"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/8572e4cb5af60dd548e3b87374ff1b12840d981a-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "When you play me, if you control two or more gear, ready me.",
+      "official_text_html": "<p>When you play me, if you control two or more gear, ready me.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": [
+        "Zaun"
+      ]
+    },
+    {
+      "id": 371,
+      "name": "Production Surge",
+      "official_id": "sfd-076-221",
+      "energy": 4,
+      "power": 1,
+      "might": 0,
+      "domains": [
+        "Mind"
+      ],
+      "kind": "Spell",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/78783854dd9372138e599affbe96a269d8908c29-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "This costs [2 Energy] less if you control a Mech.\nPlay a 3 Might Mech unit token to your base.\nDraw 1.",
+      "official_text_html": "<p>This costs :rb_energy_2: less if you control a Mech.<br />Play a 3 :rb_might: Mech unit token to your base.<br />Draw 1.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": []
     }
   ],
   "official_text_note": "Official card/legend rules text from the Riot Card Gallery, retrieved 2026-10-24 and corrected by cited errata. Resource icon tokens are expanded to readable bracketed names. Raw card and equipment HTML is preserved separately. Official text does not establish full implementation fidelity."

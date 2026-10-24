@@ -1689,8 +1689,13 @@ fn decision_to_json(game: &Game, decision: &Decision, viewer: usize) -> Result<V
             ..
         } => {
             let (maximum, required) = game.trigger_target_bounds().unwrap_or((0, 0));
+            let rule = game.trigger_target_rule();
             json!({"type":"trigger_targets","card_id":card_id,"rule_index":rule_index,
                 "context":trigger_context_to_json(context),"maximum":maximum,"required":required,
+                "target_rule":rule.map(|r|json!({"kind":targeting::target_kind(r.kind),
+                    "allegiance":format!("{:?}",r.allegiance).to_lowercase(),
+                    "maximum_printed_energy":r.max_energy,
+                    "energy_at_most_live_source_might":r.relative_energy==crate::trigger_rules::RelativeEnergyConstraint::AtMostSourceMight})),
                 "candidates":game.trigger_target_candidates().map_err(ApiError::illegal)?.iter().map(target_to_json).collect::<Vec<_>>()})
         }
         Decision::TrashTarget {
@@ -3739,5 +3744,118 @@ mod tests {
         );
         assert!(session.game.decision.is_none());
         assert!(session.game.chain.is_empty());
+    }
+    #[test]
+    fn gear_spell_api_queries_quotes_and_applies_exact_physical_targets_atomically() {
+        let mut session = ability_position();
+        session.game.players[0].hand = vec![362];
+        session.game.players[0].energy = 10;
+        session.game.players[0].energy_pool = 10;
+        session.game.players[0].power_pool = [3; 6];
+        add_api_gear(&mut session, 700, 3);
+        let action = json!({"type":"play_card_targets","hand_index":0,"targets":[{"type":"gear","player":0,"gear_id":700}]});
+        let before = session.observe(0).unwrap();
+        let revision = session.revision();
+        let query = session.handle(
+            json!({"command":"target_candidates","revision":revision,"player":0,
+            "action":{"type":"play_card_targets","hand_index":0,"targets":[]},"execution":0}),
+        );
+        assert_eq!(query["ok"], true, "{query}");
+        assert_eq!(query["result"]["spec"]["kind"], "gear");
+        assert!(
+            query["result"]["candidates"]
+                .as_array()
+                .unwrap()
+                .contains(&action["targets"][0])
+        );
+        for invalid in [
+            json!({"type":"play_card_targets","hand_index":0,"targets":[{"type":"unit","player":0,"unit_id":700}]}),
+            json!({"type":"play_card_targets","hand_index":0,"targets":[{"type":"gear","player":0,"gear_id":701}]}),
+            json!({"type":"play_card_targets","hand_index":0,"targets":[{"type":"gear","player":0,"gear_id":700,"unit_id":700}]}),
+        ] {
+            let response = session
+                .handle(json!({"command":"apply","revision":revision,"player":0,"action":invalid}));
+            assert_eq!(response["ok"], false);
+            assert_eq!(session.observe(0).unwrap(), before);
+            assert_eq!(session.revision(), revision);
+        }
+        let quote = session.handle(
+            json!({"command":"quote_payment","revision":revision,"player":0,"action":action}),
+        );
+        assert_eq!(quote["ok"], true, "{quote}");
+        assert_eq!(session.observe(0).unwrap(), before);
+        let response = session.handle(json!({"command":"apply","revision":revision,"player":0,
+            "action":{"type":"with_power_payment","action":action,"payment":quote["result"]["suggested"]}}));
+        assert_eq!(response["ok"], true, "{response}");
+        pass_twice(&mut session);
+        assert!(session.game.players[0].gear.is_empty());
+        assert_eq!(session.game.players[0].hand.len(), 2);
+        assert!(session.game.players[0].discard.contains(&3));
+    }
+
+    #[test]
+    fn gear_trigger_api_exposes_energy_bounds_and_preserves_exact_gear_choice() {
+        for card_id in [366, 367, 368, 369] {
+            let mut session = ability_position();
+            let mut source = unit(100, Some(0), 8);
+            source.token = false;
+            source.card_id = card_id;
+            session.game.players[0].units = vec![source];
+            session.game.battlefield_owner[0] = Some(0);
+            add_api_gear(&mut session, 700, 3);
+            session.game.decision = Some(Decision::TriggerTargets {
+                player: 0,
+                card_id,
+                rule_index: 0,
+                context: TriggerContext {
+                    movement: None,
+                    source: crate::game::TriggerSource {
+                        player: 0,
+                        unit_id: Some(100),
+                        gear_id: None,
+                    },
+                    subject: Some(Target::Unit {
+                        player: 0,
+                        unit_id: 100,
+                    }),
+                },
+            });
+            let target = json!({"type":"gear","player":0,"gear_id":700});
+            for viewer in 0..2 {
+                let view = session.observe(viewer).unwrap();
+                let decision = &view["decision"];
+                assert_eq!(decision["required"], 0);
+                assert_eq!(decision["target_rule"]["kind"], "gear");
+                assert_eq!(
+                    decision["target_rule"]["maximum_printed_energy"],
+                    if card_id == 367 {
+                        json!(4)
+                    } else {
+                        Value::Null
+                    }
+                );
+                assert_eq!(
+                    decision["target_rule"]["energy_at_most_live_source_might"],
+                    card_id == 368
+                );
+                assert_eq!(decision["candidates"], json!([target]));
+            }
+            let before = session.observe(0).unwrap();
+            let invalid = session.handle(json!({"command":"apply","revision":session.revision(),"player":0,
+                "action":{"type":"choose_trigger_targets","targets":[{"type":"unit","player":0,"unit_id":100}]}}));
+            assert_eq!(invalid["ok"], false);
+            assert_eq!(session.observe(0).unwrap(), before);
+            let response = session.handle(
+                json!({"command":"apply","revision":session.revision(),"player":0,
+                "action":{"type":"choose_trigger_targets","targets":[target]}}),
+            );
+            assert_eq!(response["ok"], true, "{response}");
+            assert_eq!(
+                session.observe(0).unwrap()["chain"][0]["targets"],
+                json!([target])
+            );
+            pass_twice(&mut session);
+            assert!(session.game.players[0].gear.is_empty());
+        }
     }
 }

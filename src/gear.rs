@@ -470,6 +470,12 @@ impl Game {
 
     pub(crate) fn gear_destroy(&mut self, player: usize, gear_id: u32) -> bool {
         self.capture_gear_death(player, gear_id);
+        self.remove_gear_from_board(player, gear_id)
+    }
+
+    /// Raw departure after the whole instruction has captured its death events.
+    /// Callers must distinguish Kill from other departures before calling this.
+    pub(crate) fn remove_gear_from_board(&mut self, player: usize, gear_id: u32) -> bool {
         let Some(state) = self.players.get_mut(player) else {
             return false;
         };

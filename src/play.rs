@@ -943,6 +943,27 @@ impl Game {
         if !intent.token {
             for (i, a) in rules::static_abilities(intent.id).iter().enumerate() {
                 let (energy, minimum) = match *a {
+                    StaticAbility::ControlsTagEnergyDiscount { tag, energy }
+                        if self.players[p].units.iter().any(|u| {
+                            self.board_target_has_tag(
+                                Target::Unit {
+                                    player: p,
+                                    unit_id: u.id,
+                                },
+                                tag,
+                            )
+                        }) || self.players[p].gear.iter().any(|g| {
+                            self.board_target_has_tag(
+                                Target::Gear {
+                                    player: p,
+                                    gear_id: g.id,
+                                },
+                                tag,
+                            )
+                        }) =>
+                    {
+                        (u64::from(energy), 0)
+                    }
                     StaticAbility::HighestMightEnergyDiscount => (
                         self.players[p]
                             .units

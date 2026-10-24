@@ -14,6 +14,8 @@ use crate::legends::{LegendAbility, LegendState, LegendTrigger};
 use crate::rules::{self, Allegiance, CounterKind, OfficialEffect, StaticAbility};
 use std::collections::VecDeque;
 
+#[path = "board_targets.rs"]
+pub mod board_targets;
 #[path = "damage.rs"]
 pub mod damage;
 #[path = "empower.rs"]
@@ -4340,11 +4342,11 @@ impl Game {
     }
 
     fn target_location(&self, target: Target) -> Option<(Option<usize>, usize)> {
-        let Target::Unit { player, .. } = target else {
-            return None;
-        };
-        let unit = self.unit_ref(target)?;
-        Some((unit.lane, if unit.lane.is_none() { player } else { 0 }))
+        self.board_target_facts(target)
+            .map(|facts| match facts.location {
+                board_targets::BoardLocation::Base { player } => (None, player),
+                board_targets::BoardLocation::Battlefield { lane } => (Some(lane), 0),
+            })
     }
 
     pub fn trash_target_valid(
@@ -6066,6 +6068,15 @@ impl Game {
                 return Ok(false);
             }
             match rules::effect(id) {
+                OfficialEffect::KillGear { .. } => {
+                    return Ok(matches!(target, Target::Gear { .. })
+                        && self.can_choose_board_target(actor, target));
+                }
+                OfficialEffect::KillEnemyDomain { domain } => {
+                    return Ok(self.board_target_facts(target).is_some_and(|facts| {
+                        facts.controller != actor && facts.domains.contains(&domain)
+                    }) && self.can_choose_board_target(actor, target));
+                }
                 OfficialEffect::AreaDamage {
                     selector: rules::AreaSelector::EnemyAtTargetBattlefield,
                     ..
@@ -6618,6 +6629,39 @@ impl Game {
             valid.retain(|&target| self.target_location(target) == location);
         }
         match rules::effect(id) {
+            OfficialEffect::KillGear { controller_draw } => {
+                if let Some(&target) = valid.first()
+                    && let board_targets::GearKillResult::Resolved { controller, .. } =
+                        self.kill_gear_target(target)
+                {
+                    self.draw(controller, controller_draw);
+                }
+            }
+            OfficialEffect::KillEnemyDomain { .. } => {
+                if let Some(&target) = valid.first() {
+                    match target {
+                        Target::Unit { .. } => self.kill_unit(target)?,
+                        Target::Gear { .. } => {
+                            self.kill_gear_target(target);
+                        }
+                        _ => {}
+                    }
+                }
+            }
+            OfficialEffect::KillAllGear => {
+                let targets = self
+                    .players
+                    .iter()
+                    .enumerate()
+                    .flat_map(|(player, p)| {
+                        p.gear.iter().map(move |g| Target::Gear {
+                            player,
+                            gear_id: g.id,
+                        })
+                    })
+                    .collect::<Vec<_>>();
+                self.kill_gear_targets(&targets);
+            }
             OfficialEffect::GiveTemporary => {
                 for target in valid {
                     self.grant_temporary(target);
@@ -6920,7 +6964,8 @@ impl Game {
                     self.buff_unit(Target::Unit { player, unit_id })?;
                 }
             }
-            OfficialEffect::Tokens { count, might } => {
+            OfficialEffect::Tokens { count, might }
+            | OfficialEffect::TokensAndDraw { count, might, .. } => {
                 for _ in 0..count {
                     self.queue_token_play_with_entry(
                         player,
@@ -6936,6 +6981,9 @@ impl Game {
                         rules::token_is_gear(id),
                         matches!(id, 355 | 356),
                     );
+                }
+                if let OfficialEffect::TokensAndDraw { draw, .. } = rules::effect(id) {
+                    self.draw(player, draw);
                 }
             }
             OfficialEffect::Burn(count) => self.burn(player, count),
@@ -8043,6 +8091,24 @@ impl Game {
                 let preferred = match decision {
                     Decision::TriggerTargets {
                         player,
+                        card_id: 366..=369,
+                        ..
+                    } => actions
+                        .iter()
+                        .filter_map(|action| {
+                            let Action::ChooseTriggerTargets { targets } = action else {
+                                return None;
+                            };
+                            let value = targets
+                                .iter()
+                                .map(|&target| self.gear_kill_score(*player, target))
+                                .sum::<i128>();
+                            Some((value, action))
+                        })
+                        .max_by_key(|(value, _)| *value)
+                        .map(|(_, action)| action.clone()),
+                    Decision::TriggerTargets {
+                        player,
                         card_id: 333,
                         ..
                     } => {
@@ -8391,6 +8457,39 @@ impl Game {
                 .prepare_targets(actor, id, None, &[])
                 .unwrap_or_default();
             match rules::effect(id) {
+                OfficialEffect::KillGear { controller_draw } => {
+                    targets.first().map_or(0, |&target| {
+                        let draw = i128::from(controller_draw) * 10;
+                        self.gear_kill_score(actor, target)
+                            + if matches!(target, Target::Gear { player, .. } if player == actor) {
+                                draw
+                            } else {
+                                -draw
+                            }
+                    })
+                }
+                OfficialEffect::KillEnemyDomain { .. } => {
+                    targets.first().map_or(Ok::<i128, String>(0), |&target| {
+                        if let Some(unit) = self.unit_ref(target) {
+                            Ok(35 + i128::from(self.unit_might(unit)?) * 4)
+                        } else {
+                            Ok(self.gear_kill_score(actor, target))
+                        }
+                    })?
+                }
+                OfficialEffect::KillAllGear => self
+                    .players
+                    .iter()
+                    .enumerate()
+                    .flat_map(|(player, p)| {
+                        p.gear.iter().map(move |g| Target::Gear {
+                            player,
+                            gear_id: g.id,
+                        })
+                    })
+                    .map(|target| self.gear_kill_score(actor, target))
+                    .sum::<i128>()
+                    .max(0),
                 OfficialEffect::KillAllUnits => {
                     let value = |p: usize| -> Result<i128, String> {
                         self.players[p].units.iter().try_fold(0_i128, |sum, u| {
@@ -8556,7 +8655,10 @@ impl Game {
                         0
                     }
                 }
-                OfficialEffect::Tokens { count, might } => 45 + count as i128 * might as i128 * 4,
+                OfficialEffect::Tokens { count, might }
+                | OfficialEffect::TokensAndDraw { count, might, .. } => {
+                    45 + count as i128 * might as i128 * 4
+                }
                 OfficialEffect::ReadyAnother => {
                     if targets.iter().any(|&target| {
                         matches!(target, Target::Unit { player, .. } if player == actor)

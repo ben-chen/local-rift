@@ -837,6 +837,14 @@ impl App {
                 self.repeat_targets.clear();
                 self.editing_repeat = false;
                 self.hand_scroll = 0;
+                if self
+                    .game
+                    .trigger_target_rule()
+                    .is_some_and(|rule| rule.kind == local_rift::rules::PlayTargetKind::Gear)
+                {
+                    self.tray = Tray::Loadout;
+                    self.gear_owner = 1;
+                }
             }
             self.trigger_choice_key = trigger_key;
         }
@@ -2046,9 +2054,23 @@ impl App {
                 GOLD,
             );
             self.ui.wrapped_lines(
-                &format!("{} / {maximum} selected. Choose highlighted units in order, then confirm. Click a chosen unit to undo it.{}", self.targets.len(), if required == 0 { " Choosing none declines this ability." } else { " All required targets must be chosen." }),
+                &format!("{} / {maximum} selected. Choose highlighted {} in order, then confirm. Click a chosen target to undo.{}", self.targets.len(),
+                    if self.game.trigger_target_rule().is_some_and(|r|r.kind==local_rift::rules::PlayTargetKind::Gear) { "gear in either Loadout" } else { "units" },
+                    if required == 0 { " Choosing none declines." } else { " Choose all required targets." }),
                 1178.0, 416.0, 209.0, 11.0, TEXT, 4,
             );
+            if let Some(rule) = self.game.trigger_target_rule() {
+                let limit = if let Some(energy) = rule.max_energy {
+                    format!("Printed Energy: {energy} or less")
+                } else if rule.relative_energy
+                    == local_rift::trigger_rules::RelativeEnergyConstraint::AtMostSourceMight
+                {
+                    "Printed Energy ≤ source's current Might".into()
+                } else {
+                    String::new()
+                };
+                self.ui.ellipsis(&limit, 1178.0, 480.0, 209.0, 10.0, GOLD);
+            }
             let action = Action::ChooseTriggerTargets {
                 targets: self.targets.clone(),
             };
@@ -2515,14 +2537,12 @@ impl App {
                 // Later slots may have different eligibility, so undo this and later choices.
                 self.targets.truncate(index);
             } else if self.targets.len() >= maximum {
-                self.notify("All target slots are filled. Click a chosen unit to undo it.");
+                self.notify("All target slots are filled. Click a chosen target to undo it.");
             } else if self.game.valid_trigger_target(target, &self.targets)? {
                 self.targets.push(target);
                 self.toast_until = 0.0;
             } else {
-                self.notify(
-                    "Choose a highlighted unit for this target slot. Check any Deflect cost.",
-                );
+                self.notify("Choose a highlighted target for this slot. Check any Deflect cost.");
             }
             return Ok(());
         }
@@ -2594,7 +2614,14 @@ impl App {
                 format!("Choose gear in Loadout · {count}/{}", spec.maximum)
             }
             Some(PlayTargetKind::UnitOrGear) => {
-                "Choose a battlefield unit, or gear in either Loadout.".into()
+                if matches!(
+                    local_rift::rules::effect(card_id),
+                    local_rift::rules::OfficialEffect::KillEnemyDomain { .. }
+                ) {
+                    "Choose an enemy Chaos unit (base or field), or Chaos gear in Loadout.".into()
+                } else {
+                    "Choose a battlefield unit, or gear in either Loadout.".into()
+                }
             }
             Some(PlayTargetKind::Unit) => {
                 let restriction = match targeting(card_id).allegiance {
@@ -2618,6 +2645,9 @@ impl App {
         }
     }
     fn targeting_selection(&self) -> bool {
+        if self.game.trigger_target_bounds().is_some() {
+            return true;
+        }
         match self.selection {
             Some(Selection::Ability(source, Some(index))) => self
                 .ability_rule(source, index)
@@ -3035,12 +3065,18 @@ impl App {
                     player: owner,
                     gear_id: gear.id,
                 };
-                if self.ability_target_candidate(target) || self.card_target_candidate(target)? {
+                if self.ability_target_candidate(target)
+                    || self.card_target_candidate(target)?
+                    || (self.game.trigger_target_bounds().is_some()
+                        && (self.targets.contains(&target)
+                            || self.game.valid_trigger_target(target, &self.targets)?))
+                {
                     self.ui.border(r, TEAL);
                     self.ui.pill(
                         r.x + 8.0,
                         r.y + 37.0,
-                        if self.ability_targets.contains(&target) {
+                        if self.ability_targets.contains(&target) || self.targets.contains(&target)
+                        {
                             "TARGETED"
                         } else {
                             "TARGET"
@@ -3225,7 +3261,11 @@ impl App {
             return Ok(false);
         }
         if matches!(decision, Decision::TriggerTargets { .. }) {
-            self.board_tray()?;
+            if self.tray == Tray::Loadout {
+                self.other_tray()?;
+            } else {
+                self.board_tray()?;
+            }
             return Ok(true);
         }
         if let Decision::CombatDamage { lane, total, .. } = decision {
@@ -7480,6 +7520,15 @@ fn entry_ready_hint(game: &Game, owner: usize, card_id: usize) -> Option<String>
 fn card_brief(game: &Game, id: usize) -> String {
     use local_rift::rules::OfficialEffect::*;
     match local_rift::rules::effect(id) {
+        KillGear { controller_draw: 0 } => "Kill a gear".into(),
+        KillGear { controller_draw } => {
+            format!("Kill gear · its controller draws {controller_draw}")
+        }
+        KillAllGear => "Kill all gear · including attached equipment".into(),
+        KillEnemyDomain { domain } => format!("Kill an enemy {} unit or gear", domain.name()),
+        TokensAndDraw { count, might, draw } => {
+            format!("{count} × {might} Might Mech at base · draw {draw}")
+        }
         Damage {
             amount,
             targets,

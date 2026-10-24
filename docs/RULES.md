@@ -236,7 +236,7 @@ These interactions have focused runtime/API tests and complete legal-home AI gam
 
 ## Remaining fidelity limits
 
-Eight supported legends, eleven battlefield choices, and 362 main-deck cards are available through the four supplied presets and custom deck editor. The additional cards preserve all preset and training recipes; add them through the custom deck editor where eligible. There is no sideboarding, tournament match structure, multiplayer mode, or full card-set coverage. The presets are dated tournament lists, not a ranking of the current metagame.
+Eight supported legends, eleven battlefield choices, and 372 main-deck cards are available through the four supplied presets and custom deck editor. The additional cards preserve all preset and training recipes; add them through the custom deck editor where eligible. There is no sideboarding, tournament match structure, multiplayer mode, or full card-set coverage. The presets are dated tournament lists, not a ranking of the current metagame.
 
 The desktop and bot API expose exact damage allocations and power-source payments. The default automatic payment remains available; energy can be prepared by exhausting chosen rune domains before a play. These controls share engine validation, but broader card and interaction coverage is still required.
 
@@ -245,3 +245,12 @@ Dynamic Might and damage no longer stop at the previous eight-/sixteen-bit limit
 Further sequencing and interaction audits are still needed. Tests cover particular official examples and whole-match consistency; they do not establish that every interaction is identical to standard Riftbound. Consult the official reference when preparing for an interaction outside those checked cases.
 
 The [independent audit](RULES_AUDIT.md) tracks confirmed fixes and open cases, including separate events within one resolving item. The [full card inventory](CARD_COVERAGE.md) measures unimplemented cards separately from implemented mappings.
+
+
+## Gear interaction expansion
+
+Detonate and Brittle Steel choose one physical gear, including attached gear and Gold. The gear uses its own characteristics; it does not inherit its bearer's targeting protection or its token creator's domains and cost. Detonate draws for the legal target's controller. An invalidated target also invalidates that linked draw. Thermo Beam fixes all gear recipients, captures their Deathknells, and removes them before later cleanup or children can enter.
+
+Decree of Unity targets an enemy Chaos unit or gear, including a unit in base. Ordinary unit death replacements still apply. Disarming Rake and Stalwart Goatherd offer optional gear choices on play; Goatherd uses printed Energy up to four. Noxian Demolitionist compares printed Energy to its live Might, including revalidation on resolution. A departed source has no Might; a negative referenced Might is zero. Adaptatron's Conquer ability buffs its original source only after an actual gear kill.
+
+Dropboarder checks control of two gear at its play event and emits a real Ready event when its ability resolves. Production Surge uses the actual Mech tag for its two-Energy reduction; its token cannot reduce its own parent. The parent draws before the fixed-base 3-Might Mech child is finalized. Each Repeat makes a separate child. Brittle Steel can use its printed four-Energy, one-Fury Flow cost.
