@@ -14,9 +14,15 @@ pub struct TriggerSource {
     pub gear_id: Option<u32>,
 }
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct MoveFacts {
+    pub origin: Option<usize>,
+    pub destination: Option<usize>,
+}
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct TriggerContext {
     pub source: TriggerSource,
     pub subject: Option<Target>,
+    pub movement: Option<MoveFacts>,
 }
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct TriggerState {
@@ -41,6 +47,7 @@ pub(super) enum Occurrence {
     Ready,
     Exhausted,
     Buffed,
+    Empowered,
     Moved,
     Death,
     Attack,
@@ -191,6 +198,7 @@ impl Game {
             }
             Event::SelfExhausted => same && event.kind == Occurrence::Exhausted,
             Event::SelfBuffed => own && same && event.kind == Occurrence::Buffed,
+            Event::SelfEmpowered => same && event.kind == Occurrence::Empowered,
             Event::SelfMoved => same && event.kind == Occurrence::Moved,
             Event::SelfDeath => same && event.kind == Occurrence::Death,
             Event::FriendlyDeath => own && event.kind == Occurrence::Death,
@@ -208,6 +216,10 @@ impl Game {
             return false;
         }
         rule.conditions.iter().all(|condition| match *condition {
+            Condition::SourceEmpowered => source
+                .unit_id
+                .or(source.gear_id)
+                .is_some_and(|id| self.unit_empowered(id)),
             Condition::Other => !same,
             Condition::FromBattlefield => event.origin.is_some(),
             Condition::ToBattlefield => event.unit.as_ref().is_some_and(|u| u.lane.is_some()),
@@ -347,7 +359,14 @@ impl Game {
                     self.queue_card_trigger(
                         card_id,
                         rule_index,
-                        TriggerContext { source, subject },
+                        TriggerContext {
+                            source,
+                            subject,
+                            movement: (event.kind == Occurrence::Moved).then(|| MoveFacts {
+                                origin: event.origin,
+                                destination: event.unit.as_ref().and_then(|u| u.lane),
+                            }),
+                        },
                     );
                 }
             }
@@ -367,6 +386,7 @@ impl Game {
                             index,
                             TriggerContext {
                                 source,
+                                movement: None,
                                 subject: Some(Target::Unit {
                                     player: *player,
                                     unit_id: unit.id,
@@ -574,6 +594,21 @@ impl Game {
             Allegiance::Enemy if player == actor => return false,
             Allegiance::Mixed if (slot == 0) != (player == actor) => return false,
             _ => {}
+        }
+        if rule.targets.event_locations
+            == metadata::EventLocationConstraint::MovedToOrFromBattlefield
+            && !context.movement.is_some_and(|m| {
+                unit.lane.is_some() && (unit.lane == m.origin || unit.lane == m.destination)
+            })
+        {
+            return false;
+        }
+        if rule.targets.relative_might == metadata::RelativeMightConstraint::LessThanSource
+            && !Self::source_target(context.source)
+                .and_then(|t| self.unit_ref(t))
+                .is_some_and(|source| self.unit_might(unit) < self.unit_might(source))
+        {
+            return false;
         }
         if rule.targets.another && context.source.unit_id == Some(unit_id) {
             return false;
@@ -894,6 +929,46 @@ impl Game {
                     }
                 }
                 Effect::Predict => self.predict(player),
+                Effect::PredictMany(n) => self.predict_many(player, n),
+                Effect::Channel { count, exhausted } => {
+                    for _ in 0..count {
+                        if let Some(domain) = self.players[player].rune_deck.pop() {
+                            let index = domain_index(domain);
+                            self.players[player].runes[index] += 1;
+                            if exhausted {
+                                self.players[player].exhausted_runes[index] += 1;
+                            } else {
+                                self.players[player].energy += 1;
+                            }
+                        }
+                    }
+                }
+                Effect::KillTargets => {
+                    for &target in &targets {
+                        self.kill_unit(target);
+                    }
+                }
+                Effect::DamageIfSourceEmpowered { base, empowered } => {
+                    let amount = if Self::source_target(context.source)
+                        .and_then(|t| self.unit_ref(t))
+                        .is_some_and(|u| self.unit_empowered(u.id))
+                    {
+                        empowered
+                    } else {
+                        base
+                    };
+                    for &target in &targets {
+                        self.deal_damage(
+                            crate::game::damage::DamageContext {
+                                player,
+                                bonus_damage: 0,
+                                dealer: crate::game::damage::DamageDealer::Ability,
+                            },
+                            target,
+                            amount,
+                        );
+                    }
+                }
                 Effect::Tokens {
                     count,
                     might,

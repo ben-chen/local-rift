@@ -326,6 +326,28 @@ impl CustomDeck {
                 ],
                 [8, 4],
             ),
+            // Empowered threats enable Matriarch of War's ready activation.
+            // This authored training recipe is independent of the meta presets.
+            7 => (
+                &[
+                    (24, 3),
+                    (85, 3),
+                    (128, 2),
+                    (129, 2),
+                    (221, 3),
+                    (225, 2),
+                    (236, 3),
+                    (252, 2),
+                    (253, 2),
+                    (276, 3),
+                    (277, 3),
+                    (282, 3),
+                    (285, 3),
+                    (286, 3),
+                    (289, 3),
+                ],
+                [5, 7],
+            ),
             _ => return Err("No authored training list is available for this legend.".into()),
         };
         let mut runes = [0; 6];
@@ -349,7 +371,8 @@ impl CustomDeck {
             chosen_champion: definition.default_champion,
             cards: cards.to_vec(),
             runes,
-            battlefield,
+            // Risen Altar rewards investing in the units' Empower abilities.
+            battlefield: if id == 7 { 9 } else { battlefield },
         };
         deck.cards.sort_unstable_by_key(|&(id, _)| id);
         deck.validate()?;

@@ -1,6 +1,6 @@
 # Implemented rules and limitations
 
-**Local Rift is an unofficial, incomplete Riftbound client. This document describes its current behavior, not the complete tabletop game.** Full official card text appears in hover previews and pinned inspectors. All 272 bundled main-deck cards have executable printed-effect mappings. An official description in the catalog and a passing simulation are not proof of complete tabletop equivalence.
+**Local Rift is an unofficial, incomplete Riftbound client. This document describes its current behavior, not the complete tabletop game.** Full official card text appears in hover previews and pinned inspectors. All 290 bundled main-deck cards have executable printed-effect mappings. An official description in the catalog and a passing simulation are not proof of complete tabletop equivalence.
 
 For physical play, use Riot's [Rules Hub](https://playriftbound.com/en-us/rules-hub/), current errata, and printed card text. The core timing reference used here is the [October 9, 2026 Core Rules](https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/5c7946f7c3b8c6e0faff85ab6dadc6d2e721ea94.pdf). [SOURCES.md](SOURCES.md) records the card and deck sources.
 
@@ -46,7 +46,7 @@ Other tournament battlefields remain source-list references, including the histo
 
 ## Legends
 
-Each deck has its registered legend, independent of preset selection and chosen-champion variant. Seven legends are available, with the original four preset identities preserved. Legends ready at the start of their controller's turn.
+Each deck has its registered legend, independent of preset selection and chosen-champion variant. Eight legends are available, with the original four preset identities preserved. Legends ready at the start of their controller's turn.
 
 | Legend | Implemented power |
 |---|---|
@@ -57,6 +57,7 @@ Each deck has its registered legend, independent of preset selection and chosen-
 | Darius | Exhaust for a Reaction resource ability that adds one energy if Legion is active. Legion checks an earlier finalized card this turn, even if it was countered. Before Legion, the legal activation exhausts the legend but adds nothing; see the rule-derived timing note in the audit. |
 | Viktor | In an open own main phase, pay one energy and exhaust to queue a Recruit ability. Opponents may respond. After it resolves, choose base or a controlled battlefield for the pending 1 Might Recruit. |
 | Lux | Completing a spell with printed Energy cost at least five triggers a separate draw-one ability. Discounts do not change that printed threshold; countered spells do not trigger it. |
+| Ambessa / Matriarch of War | Empowering another object triggers a separate ability to Empower the legend, even if the affected object belongs to the opponent. In the controller's open main phase, Disempower, pay one Any Power, and exhaust to Ready a chosen unit on resolution. Enemy Deflect adds its normal cost. |
 
 Irelia's optional costs are paid before its triggered ability enters the chain. Declining leaves the original play intact. Kennen's Empower and Assault abilities also use the chain. Kai'Sa's resource ability resolves immediately, does not create a response window, and preserves priority. Supported resource abilities remain available during pending payment choices, such as a spell replay; their normal cost restrictions still apply. Generated resources expire when rune pools empty; they are not extra rune cards.
 
@@ -118,6 +119,18 @@ Cost modifiers preserve their scope. Ezreal's discounts apply separately to opti
 
 The expanded unit pool includes explicit Assault, Shield, Tank, Deflect, Ganking, Ambush, Accelerate, and Legion behavior. Shield adds its printed amount to Might while defending in combat; it does not change Tank/Backline damage priority. Equipment-granted keywords are included in the unit inspector and current Might. Ready-entry units enter ready, and Battering Ram’s energy discount counts cards played that turn while respecting its one-energy minimum. Legion play triggers capture whether another card was played that turn, then enter the ordinary response system. Discard-and-draw effects keep their resolving chain item in place until the discard choice and draws finish. Lunar Boon therefore cannot recycle itself into its own draw during burnout. Repeated draws also finish before the physical spell enters trash. Printed Flow can require a specific colored power: Iterative Design requires Mind, while a printed Any-power Flow cost accepts any domain. Wind Wall counters a spell of any cost, including its controller's spell, but cannot counter a triggered ability.
 
+### Live Empowered abilities
+
+Empowered is a status of the physical object. Ordinary Empower activations pay their printed costs before opponents may respond, and apply the status when they resolve. An already-Empowered object does not become Empowered again. Returning a unit to hand or otherwise removing its physical object ends its status; another copy does not inherit it.
+
+The supported conditional Might, Assault, Shield, Deflect, and Ganking abilities follow the live status. The unit inspector explains active and inactive benefits and identifies each contributing source. These benefits do not add Buff counters. Rage Amplifier grants +1 Might, or +2 instead while Empowered. Each Empowered Aurok General grants +2 to friendly Empowered units, including itself and eligible tokens. Removing an aura can make wounded units die; cleanup completes all resulting deaths before finalizing their triggered abilities.
+
+Frostcoat Mother and Grumpy Rockbear's nominal 12-Energy Empower costs lose one Energy per controlled rune, including exhausted runes. Baccai Sandspinner's nominal five becomes two with four or fewer controlled runes. The ability controls and API quote the payable cost; the printed cost remains available in details. A payment fixes that cost before resource generation or rune recycling.
+
+Apprentice Mage's actual Empower transition triggers Predict2. Its controller looks at up to two available cards, chooses which to recycle, and orders the rest on top. Cards stay in the deck while the private choice is pending; confirming commits the whole choice. Predict neither draws nor causes burnout with a short deck. The other seat and its companion cannot see the looked-at cards.
+
+Covert Informant's Move, Nasus's conquest, Emissary and Witherclaw's Deathknell, and Ambessa's attack require Empowered status when the event occurs. Once created, the trigger persists independently. Akali's Move records the battlefields she moved to or from, so those locations remain valid if she leaves; its damage is two only while that same source remains Empowered, otherwise one. Ambessa's kill rechecks an enemy's current location and strictly lower Might on resolution. Witherclaw channels up to two available runes exhausted, without drawing or burnout.
+
 ### Gear Empower and Disempower costs
 
 Questionable Tome, Hextech Disc, Platewyrm Egg, and Tools of Empire have separate printed Empower activations. They are ordinary abilities, usable only when the exact source is not already Empowered. They do not choose or target their own source. Their printed costs are paid before responses; the source becomes Empowered only when the ability resolves. If that source leaves play, another copy does not inherit the effect. Tools pays two Energy without Exhaust, while the other three require Exhaust; Egg also costs one Energy.
@@ -176,11 +189,11 @@ When drawing or burning requires a card from an empty main deck, the trash is sh
 
 Mote's **Beginner** advice explains resources, deployment, scoring, and the current timing window. **Advanced** advice discusses future holds, useful trades, interaction costs, and broad archetype goals. It sees your hand and information available to you, including cards an effect explicitly reveals or lets you inspect. It does not examine the opponent’s private hand, facedown identities, or Predict result. Its small panel is optional and never blocks input.
 
-The deck library includes the real legends and authored strategy notes. All seven registered legend powers execute in matches, while the notes describe strategic goals beyond what the simple AI can teach. Mote and the simulator cannot establish competitive matchup rankings.
+The deck library includes the real legends and authored strategy notes. All eight registered legend powers execute in matches, while the notes describe strategic goals beyond what the simple AI can teach. Mote and the simulator cannot establish competitive matchup rankings.
 
 ## Remaining fidelity limits
 
-Seven supported legends, eleven battlefield choices, and 272 main-deck cards are available through the four supplied presets and custom deck editor. There is no sideboarding, tournament match structure, multiplayer mode, or full card-set coverage. The presets are dated tournament lists, not a ranking of the current metagame.
+Eight supported legends, eleven battlefield choices, and 290 main-deck cards are available through the four supplied presets and custom deck editor. There is no sideboarding, tournament match structure, multiplayer mode, or full card-set coverage. The presets are dated tournament lists, not a ranking of the current metagame.
 
 The desktop and bot API expose exact damage allocations and power-source payments. The default automatic payment remains available; energy can be prepared by exhausting chosen rune domains before a play. These controls share engine validation, but broader card and interaction coverage is still required.
 

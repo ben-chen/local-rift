@@ -199,6 +199,34 @@
         "Grafit Studio/Maki Planas Mata"
       ],
       "preset_index": null
+    },
+    {
+      "id": 7,
+      "official_id": "ven-153-166",
+      "name": "Matriarch of War",
+      "champion": "Ambessa",
+      "domains": [
+        "Body",
+        "Order"
+      ],
+      "text": "When you empower something else, empower me. (I become Empowered if I'm not already.)\nDisempower me, [Any Power], [Exhaust]: Ready a unit.",
+      "rules_html": "<p>When you empower something else, empower me. (I become Empowered if I'm not already.)<br />Disempower me, :rb_rune_rainbow:, :rb_exhaust:: Ready a unit.</p>",
+      "default_champion": 289,
+      "default_champion_official_id": "ven-136-166",
+      "accent": [
+        219,
+        158,
+        106
+      ],
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/49e81916d7ae72b24de845223e1798652d26e789-744x1039.png?accountingTag=RB",
+      "art_path": "assets/art/legend_7.png",
+      "tags": [
+        "Ambessa"
+      ],
+      "illustrators": [
+        "Envar Studio"
+      ],
+      "preset_index": null
     }
   ]
 }

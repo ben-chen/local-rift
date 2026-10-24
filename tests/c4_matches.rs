@@ -8,12 +8,16 @@ use std::collections::{BTreeMap, BTreeSet};
 fn expanded(legend: usize, battlefield: usize) -> CustomDeck {
     let mut deck = CustomDeck::from_legend(legend).unwrap();
     deck.name = format!("Play choices verification {legend}");
-    deck.cards.extend(
-        eligible_cards(legend)
-            .into_iter()
-            .filter(|id| (254..272).contains(id))
-            .map(|id| (id, 3)),
-    );
+    for id in eligible_cards(legend)
+        .into_iter()
+        .filter(|id| (254..272).contains(id))
+    {
+        if let Some((_, copies)) = deck.cards.iter_mut().find(|(existing, _)| *existing == id) {
+            *copies = 3;
+        } else {
+            deck.cards.push((id, 3));
+        }
+    }
     deck.battlefield = battlefield;
     deck.validate().unwrap();
     deck
@@ -135,12 +139,13 @@ fn play_choices_finish_all_legend_pairings_fields_levels_and_starting_seats() {
             for first in 0..legends().len() {
                 for second in 0..legends().len() {
                     let fields = [
-                        (first * 7 + second + starting * 3 + level) % 11,
-                        (second * 7 + first + starting * 5 + level * 3) % 11,
+                        (first * legends().len() + second + starting * 3 + level) % 11,
+                        (second * legends().len() + first + starting * 5 + level * 3) % 11,
                     ];
                     let decks = [expanded(first, fields[0]), expanded(second, fields[1])];
                     seen_fields.extend(fields);
-                    let seed = 44000 + (level * 1000 + starting * 100 + first * 7 + second) as u64;
+                    let seed = 44000
+                        + (level * 1000 + starting * 100 + first * legends().len() + second) as u64;
                     let mut game = Game::new_with_custom(
                         [0, 3],
                         [Some(decks[0].clone()), Some(decks[1].clone())],
@@ -196,7 +201,7 @@ fn play_choices_finish_all_legend_pairings_fields_levels_and_starting_seats() {
             }
         }
     }
-    assert_eq!(matches, 294);
+    assert_eq!(matches, legends().len() * legends().len() * 6);
     assert!(
         (254..272).all(|id| seen_cards.contains(&id)),
         "not all new cards entered play: {seen_cards:?}"

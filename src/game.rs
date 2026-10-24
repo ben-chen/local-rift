@@ -16,6 +16,8 @@ use std::collections::VecDeque;
 
 #[path = "damage.rs"]
 pub mod damage;
+#[path = "empower.rs"]
+pub mod empower;
 #[path = "play.rs"]
 pub mod play;
 use play::*;
@@ -55,6 +57,11 @@ pub enum Target {
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Action {
+    ResolvePredict {
+        choice_id: u32,
+        recycle: Vec<usize>,
+        top_order: Vec<usize>,
+    },
     WithPlayChoices {
         action: Box<Action>,
         choices: PlayChoices,
@@ -400,6 +407,11 @@ pub struct Showdown {
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Decision {
+    PredictCards {
+        player: usize,
+        choice_id: u32,
+        cards: Vec<CardId>,
+    },
     TokenPlay {
         player: usize,
         card_id: CardId,
@@ -638,6 +650,7 @@ impl Decision {
             | Self::SwapUnit { player, .. }
             | Self::EmpowerHere { player, .. }
             | Self::Predict { player, .. }
+            | Self::PredictCards { player, .. }
             | Self::CounterTax { player, .. }
             | Self::Legend { player, .. }
             | Self::LastRites { player, .. }
@@ -776,6 +789,7 @@ pub struct Game {
     pub legend: [LegendState; 2],
     pub battlefields: [usize; 2],
     pub empowered_units: Vec<u32>,
+    instructed_kills: Vec<u32>,
     pub buffed_units: Vec<u32>,
     pub optional_power_discount: [u8; 2],
     pub required_trash_play: bool,
@@ -1008,6 +1022,7 @@ impl Game {
             battlefields: std::array::from_fn(|player|custom_decks[player].as_ref()
                 .map_or_else(||default_battlefield(selected_decks[player]),|deck|deck.battlefield)),
             empowered_units: Vec::new(),
+            instructed_kills: Vec::new(),
             buffed_units: Vec::new(),
             optional_power_discount: [0;2],
             required_trash_play:false,
@@ -1326,6 +1341,11 @@ impl Game {
             }
             keywords.accelerate = rules::accelerate_cost(unit.card_id);
         }
+        let conditional = self.continuous_keywords(unit);
+        keywords.assault = keywords.assault.saturating_add(conditional.assault);
+        keywords.shield = keywords.shield.saturating_add(conditional.shield);
+        keywords.deflect = keywords.deflect.saturating_add(conditional.deflect);
+        keywords.ganking |= conditional.ganking;
         let gear = self.gear_keywords(unit.id);
         keywords.assault = keywords.assault.saturating_add(gear.assault);
         keywords.shield = keywords.shield.saturating_add(gear.shield);
@@ -1394,11 +1414,7 @@ impl Game {
             + unit.temporary_buff
             + assault
             + shield
-            + if unit.card_id == 24 && self.empowered_units.contains(&unit.id) {
-                1
-            } else {
-                0
-            }
+            + self.continuous_might_bonus(unit)
             + self.gear_might_bonus(unit.id) as i16
             + self.legend_might_bonus(unit) as i16
     }
@@ -1479,6 +1495,7 @@ impl Game {
             && !matches!(
                 action,
                 Action::ResolveConversion { .. }
+                    | Action::ResolvePredict { .. }
                     | Action::ChooseTriggerTargets { .. }
                     | Action::Choose { .. }
                     | Action::SelectCards { .. }
@@ -1762,6 +1779,11 @@ impl Game {
             } => self.play_from_trash(trash_index, lane, target)?,
             Action::AssignDamage { assignments } => self.assign_combat_damage(assignments)?,
             Action::Pass => self.pass()?,
+            Action::ResolvePredict {
+                choice_id,
+                recycle,
+                top_order,
+            } => self.resolve_predict_many(choice_id, &recycle, &top_order)?,
             Action::Choose { accept } => self.choose(accept)?,
             Action::EndTurn => {
                 if self.in_window() {
@@ -2404,11 +2426,20 @@ impl Game {
                     }
                 }
                 ChainAbility::Disempower { player, object_id } => {
-                    if let Some(id) = object_id {
-                        self.empowered_units.retain(|&unit| unit != id);
-                    } else {
-                        self.legend[player].empowered = false;
-                    }
+                    let object = match object_id {
+                        Some(id) if self.players[player].units.iter().any(|u| u.id == id) => {
+                            crate::empower::BoardObject::Unit {
+                                player,
+                                unit_id: id,
+                            }
+                        }
+                        Some(id) => crate::empower::BoardObject::Gear {
+                            player,
+                            gear_id: id,
+                        },
+                        None => crate::empower::BoardObject::Legend { player },
+                    };
+                    self.disempower_by(item.player, object);
                 }
                 ChainAbility::OptionalPlay { gear_id } => {
                     self.required_trash_play = true;
@@ -2468,7 +2499,12 @@ impl Game {
                         lane.is_none()
                     };
                     if valid {
-                        self.empower_now(player, object_id, Some(item.player));
+                        self.empower_object_legacy(
+                            item.player,
+                            player,
+                            object_id,
+                            Some(item.player),
+                        );
                     }
                 }
                 ChainAbility::Equip { gear_id, target } => {
@@ -2782,6 +2818,7 @@ impl Game {
         if matches!(
             decision,
             Decision::BattlefieldOrder { .. }
+                | Decision::PredictCards { .. }
                 | Decision::TrashTarget { .. }
                 | Decision::TokenPlacement { .. }
                 | Decision::TokenPlay { .. }
@@ -2857,7 +2894,8 @@ impl Game {
                     });
                 }
             }
-            Decision::Payment { .. }
+            Decision::PredictCards { .. }
+            | Decision::Payment { .. }
             | Decision::ResourceConversion { .. }
             | Decision::TriggerTargets { .. }
             | Decision::BattlefieldOrder { .. }
@@ -3215,42 +3253,7 @@ impl Game {
         unit: Option<u32>,
         temporary_controller: Option<usize>,
     ) {
-        if let Some(id) = unit {
-            let Some(source) = self.players[player]
-                .units
-                .iter()
-                .find(|u| u.id == id)
-                .map(|u| u.card_id)
-                .or_else(|| {
-                    self.players[player]
-                        .gear
-                        .iter()
-                        .find(|g| g.id == id)
-                        .map(|g| g.card_id)
-                })
-            else {
-                return;
-            };
-            if self.unit_empowered(id) {
-                if let Some(controller) = temporary_controller
-                    && !self.ending_turn
-                {
-                    self.temporary_empower.push((controller, player, unit));
-                }
-                return;
-            }
-            self.empowered_units.push(id);
-            if source == 45 {
-                self.queue_trigger_choice(player, 45, Decision::ReviveUnit { player });
-            }
-        } else {
-            self.legend[player].empowered = true;
-        }
-        if let Some(controller) = temporary_controller
-            && !self.ending_turn
-        {
-            self.temporary_empower.push((controller, player, unit));
-        }
+        self.empower_object_legacy(player, player, unit, temporary_controller);
     }
 
     pub fn on_play_target_valid(
@@ -4158,7 +4161,11 @@ impl Game {
                 | ChainAbility::Triggered(_)
                 | ChainAbility::Disempower { .. }
                 | ChainAbility::CardEffect { .. }
-                | ChainAbility::Legend(LegendAbility::KennenEmpower | LegendAbility::LuxDraw)
+                | ChainAbility::Legend(
+                    LegendAbility::KennenEmpower
+                        | LegendAbility::MatriarchEmpower
+                        | LegendAbility::LuxDraw
+                )
                 | ChainAbility::Battlefield(
                     BattlefieldAbility::SeatDraw { .. }
                         | BattlefieldAbility::MinefieldBurn { .. }
@@ -4913,6 +4920,77 @@ impl Game {
         }
     }
 
+    fn predict_many(&mut self, player: usize, count: u8) {
+        let cards: Vec<_> = self.players[player]
+            .deck
+            .iter()
+            .rev()
+            .take(count as usize)
+            .copied()
+            .collect();
+        if cards.is_empty() {
+            return;
+        }
+        let choice_id = self.next_chain_id;
+        self.next_chain_id += 1;
+        self.enqueue_decision(Decision::PredictCards {
+            player,
+            choice_id,
+            cards,
+        });
+    }
+    fn resolve_predict_many(
+        &mut self,
+        choice_id: u32,
+        recycle: &[usize],
+        top_order: &[usize],
+    ) -> Result<(), String> {
+        let Some(Decision::PredictCards {
+            player,
+            choice_id: expected,
+            cards,
+        }) = self.decision.clone()
+        else {
+            return Err("No Predict choice is pending.".into());
+        };
+        if choice_id != expected {
+            return Err("That Predict choice is no longer current.".into());
+        }
+        let mut indices: Vec<_> = recycle.iter().chain(top_order).copied().collect();
+        indices.sort_unstable();
+        if indices != (0..cards.len()).collect::<Vec<_>>() {
+            return Err(
+                "Recycle and top order must contain every looked-at index exactly once.".into(),
+            );
+        }
+        if self.players[player]
+            .deck
+            .iter()
+            .rev()
+            .take(cards.len())
+            .copied()
+            .collect::<Vec<_>>()
+            != cards
+        {
+            return Err("The looked-at cards have changed.".into());
+        }
+        let mut bottom: Vec<_> = recycle.iter().map(|i| cards[*i]).collect();
+        self.rng.shuffle(&mut bottom);
+        let deck = &mut self.players[player].deck;
+        deck.truncate(deck.len() - cards.len());
+        deck.splice(0..0, bottom);
+        deck.extend(top_order.iter().rev().map(|i| cards[*i]));
+        self.decision = None;
+        self.push_log(format!(
+            "{} predicts {} cards and recycles {}.",
+            self.players[player].name,
+            cards.len(),
+            recycle.len()
+        ));
+        self.after_resolution();
+        Ok(())
+    }
+
     pub(crate) fn pay_energy(&mut self, player: usize, amount: u16) {
         self.pay_energy_preferring(player, amount, &[]);
     }
@@ -4971,6 +5049,29 @@ impl Game {
                     (0..=self.conversion_available().unwrap_or(0))
                         .map(|amount| Action::ResolveConversion { amount })
                         .collect()
+                }
+                Decision::PredictCards {
+                    choice_id, cards, ..
+                } => {
+                    let n = cards.len();
+                    let mut out = Vec::new();
+                    for mask in 0..(1usize << n) {
+                        let recycle: Vec<_> = (0..n).filter(|i| mask & (1 << i) != 0).collect();
+                        let keep: Vec<_> = (0..n).filter(|i| mask & (1 << i) == 0).collect();
+                        out.push(Action::ResolvePredict {
+                            choice_id: *choice_id,
+                            recycle: recycle.clone(),
+                            top_order: keep.clone(),
+                        });
+                        if keep.len() > 1 {
+                            out.push(Action::ResolvePredict {
+                                choice_id: *choice_id,
+                                recycle,
+                                top_order: keep.into_iter().rev().collect(),
+                            });
+                        }
+                    }
+                    out
                 }
                 Decision::TriggerTargets { .. } => self.trigger_target_actions(),
                 Decision::TrashTarget {
@@ -6836,11 +6937,10 @@ impl Game {
 
     fn death_replacements(&self, player: usize) -> Vec<DeathReplacement> {
         let mut choices = Vec::new();
-        for unit in self.players[player]
-            .units
-            .iter()
-            .filter(|u| u.damage > 0 && u.damage >= self.unit_might(u))
-        {
+        for unit in self.players[player].units.iter().filter(|u| {
+            self.instructed_kills.contains(&u.id)
+                || (u.damage > 0 && u.damage >= self.unit_might(u))
+        }) {
             for gear in &self.players[player].gear {
                 if !gear.token
                     && ((gear.card_id == 10 && gear.attached_to == Some(unit.id))
@@ -6863,6 +6963,7 @@ impl Game {
     }
 
     fn apply_death_replacement(&mut self, player: usize, choice: DeathReplacement) {
+        self.instructed_kills.retain(|id| *id != choice.unit_id);
         if let Some(gear_id) = choice.gear_id {
             self.gear_replace_death(player, choice.unit_id, gear_id);
         } else if let Some(index) = self.players[player]
@@ -6905,43 +7006,83 @@ impl Game {
         Ok(())
     }
 
-    pub(crate) fn remove_defeated(&mut self) {
-        if matches!(self.decision, Some(Decision::DeathReplacement { .. })) {
+    fn kill_unit(&mut self, target: Target) {
+        let Target::Unit { player, unit_id } = target else {
             return;
+        };
+        let Some(unit) = self.unit_ref(target).cloned() else {
+            return;
+        };
+        self.instructed_kills.push(unit_id);
+        let options: Vec<_> = self
+            .death_replacements(player)
+            .into_iter()
+            .filter(|o| o.unit_id == unit_id)
+            .collect();
+        if options.len() > 1 {
+            if let Some(old) = self.decision.take() {
+                self.pending_decisions.push_front(old);
+            }
+            self.decision = Some(Decision::DeathReplacement { player, options });
+        } else if let Some(choice) = options.first() {
+            self.apply_death_replacement(player, *choice);
+        } else {
+            self.remove_death_set(vec![(player, unit)]);
         }
-        // CR373: perform replacements before simultaneous unmodified deaths,
-        // in turn order; the controller chooses both effect and affected event.
-        for player in [self.active, 1 - self.active] {
-            loop {
-                let options = self.death_replacements(player);
-                if options.len() > 1 {
-                    if let Some(old) = self.decision.take() {
-                        self.pending_decisions.push_front(old);
+    }
+
+    pub(crate) fn remove_defeated(&mut self) {
+        loop {
+            if matches!(self.decision, Some(Decision::DeathReplacement { .. })) {
+                return;
+            }
+            for player in [self.active, 1 - self.active] {
+                loop {
+                    let options = self.death_replacements(player);
+                    if options.len() > 1 {
+                        if let Some(old) = self.decision.take() {
+                            self.pending_decisions.push_front(old);
+                        }
+                        self.decision = Some(Decision::DeathReplacement { player, options });
+                        return;
                     }
-                    self.decision = Some(Decision::DeathReplacement { player, options });
-                    return;
-                }
-                if let Some(&choice) = options.first() {
-                    self.apply_death_replacement(player, choice);
-                } else {
-                    break;
+                    if let Some(&choice) = options.first() {
+                        self.apply_death_replacement(player, choice);
+                    } else {
+                        break;
+                    }
                 }
             }
+            // One immutable simultaneous set per cleanup pass. An aura lost in
+            // this pass can cause a separate death set in the next pass (CR322).
+            let doomed: Vec<_> = self
+                .players
+                .iter()
+                .enumerate()
+                .flat_map(|(p, state)| {
+                    state
+                        .units
+                        .iter()
+                        .filter(|u| {
+                            self.instructed_kills.contains(&u.id)
+                                || (u.damage > 0 && u.damage >= self.unit_might(u))
+                        })
+                        .cloned()
+                        .map(move |u| (p, u))
+                })
+                .collect();
+            if doomed.is_empty() {
+                break;
+            }
+            self.remove_death_set(doomed);
+            self.trigger_batch += 1;
         }
-        let dying: Vec<_> = self
-            .players
+    }
+    fn remove_death_set(&mut self, doomed: Vec<(usize, Unit)>) {
+        let dying: Vec<_> = doomed
             .iter()
-            .enumerate()
-            .flat_map(|(player, state)| {
-                state
-                    .units
-                    .iter()
-                    .filter(|u| {
-                        u.damage > 0 && u.damage >= self.unit_might(u) && !u.banish_on_death
-                    })
-                    .cloned()
-                    .map(move |u| (player, u))
-            })
+            .filter(|(_, u)| !u.banish_on_death)
+            .cloned()
             .collect();
         let death_events: Vec<_> = dying
             .iter()
@@ -6967,7 +7108,7 @@ impl Game {
                 .units
                 .iter()
                 .enumerate()
-                .filter(|(_, u)| u.damage > 0 && u.damage >= self.unit_might(u))
+                .filter(|(_, u)| doomed.iter().any(|(_, dead)| dead.id == u.id))
                 .map(|(i, u)| {
                     (
                         i,
@@ -6987,6 +7128,7 @@ impl Game {
                     *has_real_death = true;
                 }
                 self.empowered_units.retain(|&id| id != unit_id);
+                self.instructed_kills.retain(|&id| id != unit_id);
                 self.gear_unit_left_board(player, unit_id);
                 let unit = self.players[player].units.remove(index);
                 self.push_log(format!(
@@ -7213,6 +7355,23 @@ impl Game {
                 return first.clone();
             }
             let preferred = match decision {
+                Decision::PredictCards {
+                    player,
+                    choice_id,
+                    cards,
+                } => {
+                    let mut keep: Vec<_> = (0..cards.len())
+                        .filter(|&i| {
+                            self.catalog[cards[i]].cost as u16 <= self.players[*player].energy + 2
+                        })
+                        .collect();
+                    keep.sort_by_key(|&i| std::cmp::Reverse(self.catalog[cards[i]].cost));
+                    Some(Action::ResolvePredict {
+                        choice_id: *choice_id,
+                        recycle: (0..cards.len()).filter(|i| !keep.contains(i)).collect(),
+                        top_order: keep,
+                    })
+                }
                 Decision::Predict { player, card_id } => Some(Action::Choose {
                     accept: self.catalog[*card_id].cost > self.players[*player].total_runes() + 2,
                 }),
@@ -7283,10 +7442,10 @@ impl Game {
             }
         }
         for action in self.legend_actions(player) {
-            if self.legend[player].kind != crate::legends::LegendKind::Darius
-                || self.cards_played[player] > 0
+            if let Action::ActivateLegend { target } = action
+                && let Some(score) = self.legend_ai_score(player, target)
             {
-                plays.push((35, action));
+                plays.push((score, action));
             }
         }
         for action in self.gear_actions(player) {

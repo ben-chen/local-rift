@@ -14,6 +14,7 @@ thread_local! {
     static ADD_CHAIN_SNAPSHOT: std::cell::RefCell<Vec<u32>> = const { std::cell::RefCell::new(Vec::new()) };
     static SAVED_DECK_SNAPSHOT: std::cell::RefCell<Option<Vec<u8>>> = const { std::cell::RefCell::new(None) };
     static COMBAT_SNAPSHOT: std::cell::RefCell<Option<String>> = const { std::cell::RefCell::new(None) };
+    static PREDICT_CHOICE: std::cell::Cell<u32> = const { std::cell::Cell::new(0) };
     static DIFFICULTY_SNAPSHOT: std::cell::RefCell<Option<String>> = const { std::cell::RefCell::new(None) };
 }
 
@@ -5552,15 +5553,341 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
         568 => {
             assert_eq!(app.game.players[0].energy, 11);
             assert_eq!(app.game.chain.last().unwrap().executions.len(), 2);
+            expansion_fixture(app, 283);
+            app.game.players[0].deck.extend([18, 20]);
+            app.game
+                .apply(Action::PlayCard {
+                    hand_index: 0,
+                    lane: None,
+                    target: None,
+                })
+                .unwrap();
+            finish_chain_until_choice(app);
+            let id = app.game.players[0].units[0].id;
+            click_unit(app, id);
+        }
+        569 => {
+            click(app, 1340.0, 547.0);
+        }
+        570 => {
+            click(app, 1285.0, 417.0);
+        }
+        571 => {
+            assert!(app.ability_targets.is_empty());
+            click(app, 1285.0, 510.0);
+        }
+        572 => {
+            assert!(!app.game.unit_empowered(app.game.players[0].units[0].id));
+            finish_chain_until_choice(app);
+            let Some(Decision::PredictCards {
+                player: 0,
+                choice_id,
+                ref cards,
+            }) = app.game.decision
+            else {
+                panic!("Apprentice must Predict after Empower");
+            };
+            assert_eq!(cards, &vec![20, 18]);
+            PREDICT_CHOICE.with(|id| id.set(choice_id));
+            assert!(app.game.unit_empowered(app.game.players[0].units[0].id));
+            save_state(app);
+            app.sync_predict_draft();
+            capture(app, "RIFT_SMOKE_C5_PREDICT_SCREENSHOT");
+            click(app, 935.0, 826.0);
+        }
+        573 => {
+            assert_same_state(app);
+            assert_eq!(app.predict_draft.as_ref().unwrap().top_order, vec![1, 0]);
+            click(app, 365.0, 858.0);
+        }
+        574 => {
+            assert_same_state(app);
+            assert_eq!(app.predict_draft.as_ref().unwrap().recycle, vec![0]);
+            assert_eq!(app.predict_draft.as_ref().unwrap().top_order, vec![1]);
+            click(app, 1285.0, 548.0);
+        }
+        575 => {
+            assert_same_state(app);
+            assert!(app.predict_draft.as_ref().unwrap().recycle.is_empty());
+            assert_eq!(app.predict_draft.as_ref().unwrap().top_order, vec![0, 1]);
+            click(app, 935.0, 826.0);
+        }
+        576 => {
+            click(app, 1285.0, 510.0);
+        }
+        577 => {
+            assert!(app.game.decision.is_none());
+            assert_eq!(app.game.players[0].deck.last(), Some(&18));
+            assert_eq!(app.game.players[0].deck.iter().rev().nth(1), Some(&20));
+            finish_chain_until_choice(app);
+            app.game.empowered_units.clear();
+            app.game.players[0].deck.extend([18, 18]);
+            let id = app.game.players[0].units[0].id;
+            app.game
+                .apply(Action::ActivateAbility {
+                    source: local_rift::activated::AbilitySource::Unit {
+                        player: 0,
+                        unit_id: id,
+                    },
+                    ability_index: 0,
+                    targets: vec![],
+                })
+                .unwrap();
+            finish_chain_until_choice(app);
+            app.sync_predict_draft();
+            let draft = app.predict_draft.as_ref().unwrap();
+            PREDICT_CHOICE.with(|id| assert_ne!(draft.choice_id, id.get()));
+            assert_eq!(draft.top_order, vec![0, 1]);
+            save_state(app);
+            let old_id = PREDICT_CHOICE.with(|id| id.get());
+            assert!(
+                app.game
+                    .apply(Action::ResolvePredict {
+                        choice_id: old_id,
+                        recycle: vec![],
+                        top_order: vec![0, 1]
+                    })
+                    .is_err()
+            );
+            assert_same_state(app);
+            let id = app.predict_draft.as_ref().unwrap().choice_id;
+            assert!(
+                app.game
+                    .apply(Action::ResolvePredict {
+                        choice_id: id,
+                        recycle: vec![0],
+                        top_order: vec![0]
+                    })
+                    .is_err()
+            );
+            assert_same_state(app);
+            click(app, 365.0, 858.0);
+        }
+        578 => {
+            click(app, 605.0, 858.0);
+        }
+        579 => {
+            assert!(app.predict_draft.as_ref().unwrap().top_order.is_empty());
+            assert_eq!(app.predict_draft.as_ref().unwrap().recycle, vec![0, 1]);
+            assert_same_state(app);
+            click(app, 1285.0, 510.0);
+        }
+        580 => {
+            assert!(app.game.decision.is_none());
+            finish_chain_until_choice(app);
+            assert_eq!(&app.game.players[0].deck[..2], &[18, 18]);
+            let id = app.game.players[0].units[0].id;
+            app.hover_card = Some(283);
+            app.hover_object = Some((0, id));
+            app.hover_since = get_time() - 1.0;
+            if let Ok(path) = std::env::var("RIFT_SMOKE_C5_EMPOWER_SCREENSHOT") {
+                let r = unit_rect(app, id);
+                app.ui.input_override = Some((r.center(), false, false));
+                app.draw();
+                get_screen_data().export_png(&path);
+            }
+            expansion_fixture(app, 278);
+            app.game
+                .apply(Action::PlayCard {
+                    hand_index: 0,
+                    lane: None,
+                    target: None,
+                })
+                .unwrap();
+            finish_chain_until_choice(app);
+            fixture_resources(app, Domain::Calm);
+            let id = app.game.players[0].units[0].id;
+            click_unit(app, id);
+        }
+        581 => {
+            click(app, 1340.0, 547.0);
+        }
+        582 => {
+            click(app, 1285.0, 417.0);
+        }
+        583 => {
+            let Some(Selection::Ability(source, Some(index))) = app.selection else {
+                panic!("Empower cost control");
+            };
+            let plan = app
+                .game
+                .cost_plan(&Action::ActivateAbility {
+                    source,
+                    ability_index: index,
+                    targets: vec![],
+                })
+                .unwrap();
+            assert_eq!(plan.energy, 6);
+            save_state(app);
+            capture(app, "RIFT_SMOKE_C5_COST_SCREENSHOT");
+            click(app, 1354.0, 548.0);
+        }
+        584 => {
+            assert!(app.cost_editor.is_some());
+            capture(app, "RIFT_SMOKE_C5_COST_DETAIL_SCREENSHOT");
+            click(app, 430.0, 752.0);
+        }
+        585 => {
+            assert!(app.cost_editor.is_none());
+            assert_same_state(app);
+            let domain = Domain::Calm;
+            app.game
+                .apply(Action::RecycleRune {
+                    domain,
+                    exhausted: false,
+                })
+                .unwrap();
+            let Some(Selection::Ability(source, Some(index))) = app.selection else {
+                panic!("source retained");
+            };
+            let plan = app
+                .game
+                .cost_plan(&Action::ActivateAbility {
+                    source,
+                    ability_index: index,
+                    targets: vec![],
+                })
+                .unwrap();
+            assert_eq!(plan.energy, 7);
+            save_state(app);
+            click(app, 1285.0, 510.0);
+        }
+        586 => {
+            assert!(matches!(
+                app.game.decision,
+                Some(Decision::Payment { player: 0 })
+            ));
+            assert_eq!(app.game.payment_plan_view(0).unwrap().energy, 7);
+            click(app, 1285.0, 548.0);
+        }
+        587 => {
+            assert_same_state(app);
+            app.game.players[0].energy_pool = 7;
+            app.game.players[0].energy = 12;
+            click(app, 1285.0, 510.0);
+        }
+        588 => {
+            assert_eq!(app.game.players[0].energy, 5);
+            finish_chain_until_choice(app);
+            assert!(app.game.unit_empowered(app.game.players[0].units[0].id));
+            app.in_match = false;
+            app.legend_picker = Some(0);
+            click(app, 447.0, 625.0);
+        }
+        589 => {
+            assert_eq!(app.legend_picker, Some(7));
+            capture(app, "RIFT_SMOKE_C5_LEGEND_PICKER_SCREENSHOT");
+            click(app, 840.0, 700.0);
+        }
+        590 => {
+            assert_eq!(app.deck_editor.as_ref().unwrap().deck.legend, 7);
+            assert_eq!(app.deck_editor.as_ref().unwrap().deck.card_count(), 40);
+            click(app, 328.0, 771.0);
+        }
+        591 => {
+            assert_eq!(app.custom_decks[0].as_ref().unwrap().legend, 7);
+            assert!(app.player_deck < 4);
+            app.reset();
+            assert_eq!(app.game.legend_id(0), 7);
+            app.game.start_match().unwrap();
+            app.game.players[0].units = vec![public_unit(9901, 275, None)];
+            app.game.players[0].units[0].ready = false;
+            fixture_resources(app, Domain::Body);
+            app.game
+                .apply(Action::ActivateAbility {
+                    source: local_rift::activated::AbilitySource::Unit {
+                        player: 0,
+                        unit_id: 9901,
+                    },
+                    ability_index: 0,
+                    targets: vec![],
+                })
+                .unwrap();
+            finish_chain_until_choice(app);
+            assert!(
+                app.game.legend[0].empowered,
+                "Matriarch observes another object's Empower"
+            );
+            app.screen = Screen::Practice;
+            app.tray = super::Tray::Loadout;
+            click(app, 315.0, 760.0);
+        }
+        592 => {
+            assert!(matches!(app.selection, Some(Selection::Legend)));
+            assert!(app.targeting_selection());
+            save_state(app);
+            click(app, 1285.0, 548.0);
+        }
+        593 => {
+            assert_same_state(app);
+            app.game.players[1].units.push(public_unit(9902, 279, None));
+            app.game.players[1].units.last_mut().unwrap().ready = false;
+            app.game.empowered_units.push(9902);
+            save_state(app);
+            assert!(app.ability_target_candidate(Target::Unit {
+                player: 1,
+                unit_id: 9902
+            }));
+            click_unit(app, 9902);
+        }
+        594 => {
+            assert_eq!(
+                app.targets,
+                vec![Target::Unit {
+                    player: 1,
+                    unit_id: 9902
+                }]
+            );
+            let action = Action::ActivateLegend {
+                target: app.targets.first().copied(),
+            };
+            let plan = app.game.cost_plan(&action).unwrap();
+            assert_eq!(
+                plan.power.iter().map(|cost| cost.amount).sum::<u16>(),
+                2,
+                "Any power plus enemy Deflect"
+            );
+            assert_same_state(app);
+            capture(app, "RIFT_SMOKE_C5_LEGEND_ENEMY_SCREENSHOT");
+            click_unit(app, 9902);
+        }
+        595 => {
+            assert!(app.targets.is_empty());
+            assert_same_state(app);
+            click_unit(app, 9901);
+        }
+        596 => {
+            assert_eq!(
+                app.targets,
+                vec![Target::Unit {
+                    player: 0,
+                    unit_id: 9901
+                }]
+            );
+            capture(app, "RIFT_SMOKE_C5_LEGEND_SCREENSHOT");
+            click(app, 1285.0, 548.0);
+        }
+        597 => {
+            assert!(!app.game.legend[0].ready);
+            assert!(!app.game.legend[0].empowered);
+            assert!(
+                !app.game.players[0].units[0].ready,
+                "ready effect waits for responses"
+            );
+            finish_chain_until_choice(app);
+            assert!(app.game.players[0].units[0].ready);
+            app.reset();
+            assert_eq!(app.game.legend_id(0), 7);
+            assert_eq!(app.game.players[0].champion, Some(289));
             app.ui.input_override = None;
             app.ui.pointer_override = None;
             app.ui.wheel_override = None;
             println!(
-                "PASS: 569 native UI frames including eleven battlefield choices, independent Repeat targets, typed reductions and application order, explicit component allocation, atomic cancellation, token Accelerate and public turn effects."
+                "PASS: 598 native UI frames including private Predict partitions/order, atomic reset and stale-choice rejection, live Empowered stats, effective ability costs, Ambessa training/targeted activation and all previous mat/resource/gear controls."
             );
             return true;
         }
-        _ => panic!("UI smoke runner exceeded its 569-frame script"),
+        _ => panic!("UI smoke runner exceeded its 598-frame script"),
     }
     false
 }

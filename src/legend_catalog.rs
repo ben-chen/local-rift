@@ -103,6 +103,17 @@ const LEGENDS: &[LegendDef] = &[
         accent: [235, 214, 132],
         art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/44885d811b70621b188d9813b2b10b5cff1b81e6-744x1039.png?accountingTag=RB",
     },
+    LegendDef {
+        id: 7,
+        official_id: "ven-153-166",
+        name: "Matriarch of War",
+        champion: "Ambessa",
+        domains: [Domain::Body, Domain::Order],
+        text: "When you empower something else, empower me. (I become Empowered if I'm not already.)\nDisempower me, [Any Power], [Exhaust]: Ready a unit.",
+        default_champion: 289,
+        accent: [219, 158, 106],
+        art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/49e81916d7ae72b24de845223e1798652d26e789-744x1039.png?accountingTag=RB",
+    },
 ];
 
 #[cfg(test)]
@@ -119,7 +130,7 @@ mod tests {
         let catalog: Value =
             serde_json::from_str(include_str!("../assets/data/full_catalog.json")).unwrap();
         let main_cards = cards();
-        assert_eq!(legends().len(), 7);
+        assert_eq!(legends().len(), 8);
         assert_eq!(
             manifest["legends"].as_array().unwrap().len(),
             legends().len()

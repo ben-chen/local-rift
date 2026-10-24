@@ -53,6 +53,22 @@ fn value_label(value: &CostValue) -> String {
         (energy, power) => format!("{energy} energy + {power} {domains} power"),
     }
 }
+pub(super) fn total_label(plan: &CostPlanView) -> String {
+    let mut parts = vec![format!("{} energy", plan.energy)];
+    for cost in &plan.power {
+        let domains = if cost.domains.is_empty() || cost.domains.len() == 6 {
+            "Any".into()
+        } else {
+            cost.domains
+                .iter()
+                .map(|domain| domain.name())
+                .collect::<Vec<_>>()
+                .join(" / ")
+        };
+        parts.push(format!("{} {domains} power", cost.amount));
+    }
+    format!("Pay {}", parts.join(" + "))
+}
 fn strip_options(action: Action) -> Action {
     match action {
         Action::PlayCardOptions {
@@ -123,6 +139,20 @@ fn has_play_choices(action: &Action) -> bool {
     )
 }
 impl App {
+    pub(super) fn review_action_costs(&mut self, action: Action) {
+        self.cost_editor = Some(CostEditor {
+            action,
+            choices: PlayChoices::default(),
+            commit: true,
+            scroll: 0,
+            allocation: None,
+            last_plan: None,
+            component_scroll: 0,
+            allocation_scroll: 0,
+        });
+        self.hover_card = None;
+        self.hover_rect = None;
+    }
     pub(super) fn selected_play_action(&self) -> Option<Action> {
         let lane = self.destination;
         let targets = self.targets.clone();

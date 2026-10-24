@@ -16,6 +16,7 @@ pub enum Event {
     FriendlyReady,
     SelfExhausted,
     SelfBuffed,
+    SelfEmpowered,
     SelfMoved,
     SelfDeath,
     FriendlyDeath,
@@ -48,8 +49,19 @@ pub enum Condition {
     Alone,
     FirstEachTurn,
     SecondDraw,
+    SourceEmpowered,
 }
 
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum EventLocationConstraint {
+    None,
+    MovedToOrFromBattlefield,
+}
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum RelativeMightConstraint {
+    None,
+    LessThanSource,
+}
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct TargetRule {
     pub min: u8,
@@ -61,6 +73,8 @@ pub struct TargetRule {
     pub max_might: Option<u8>,
     pub tag: Option<&'static str>,
     pub distinct: bool,
+    pub event_locations: EventLocationConstraint,
+    pub relative_might: RelativeMightConstraint,
 }
 impl TargetRule {
     pub const NONE: Self = Self {
@@ -73,6 +87,8 @@ impl TargetRule {
         max_might: None,
         tag: None,
         distinct: true,
+        event_locations: EventLocationConstraint::None,
+        relative_might: RelativeMightConstraint::None,
     };
 }
 
@@ -109,6 +125,16 @@ pub enum Effect {
     FightSource,
     Stun,
     Predict,
+    PredictMany(u8),
+    Channel {
+        count: u8,
+        exhausted: bool,
+    },
+    KillTargets,
+    DamageIfSourceEmpowered {
+        base: u8,
+        empowered: u8,
+    },
     Tokens {
         count: u8,
         might: u8,
@@ -168,6 +194,101 @@ pub fn trigger_rules(card_id: usize) -> &'static [TriggerRule] {
     use Operand::*;
     use TokenPlacement::*;
     match card_id {
+        283 => {
+            const {
+                &[rule(
+                    SelfEmpowered,
+                    &[],
+                    false,
+                    TargetRule::NONE,
+                    &[PredictMany(2)],
+                )]
+            }
+        }
+        284 => {
+            const {
+                &[rule(
+                    SelfMoved,
+                    &[SourceEmpowered],
+                    false,
+                    TargetRule::NONE,
+                    &[Draw(1)],
+                )]
+            }
+        }
+        285 => {
+            const {
+                &[rule(
+                    SelfDeath,
+                    &[SourceEmpowered],
+                    false,
+                    TargetRule::NONE,
+                    &[Tokens {
+                        count: 2,
+                        might: 1,
+                        gear: false,
+                        opponent: false,
+                        location: Base,
+                    }],
+                )]
+            }
+        }
+        286 => {
+            const {
+                &[rule(
+                    SelfDeath,
+                    &[SourceEmpowered],
+                    false,
+                    TargetRule::NONE,
+                    &[Channel {
+                        count: 2,
+                        exhausted: true,
+                    }],
+                )]
+            }
+        }
+        287 => {
+            const {
+                &[rule(
+                    SelfConquer,
+                    &[SourceEmpowered],
+                    false,
+                    TargetRule::NONE,
+                    &[Points(1)],
+                )]
+            }
+        }
+        288 => {
+            const {
+                &[rule(
+                    SelfMoved,
+                    &[],
+                    true,
+                    TargetRule {
+                        event_locations: EventLocationConstraint::MovedToOrFromBattlefield,
+                        ..ANY
+                    },
+                    &[DamageIfSourceEmpowered {
+                        base: 1,
+                        empowered: 2,
+                    }],
+                )]
+            }
+        }
+        289 => {
+            const {
+                &[rule(
+                    SelfAttack,
+                    &[SourceEmpowered],
+                    false,
+                    TargetRule {
+                        relative_might: RelativeMightConstraint::LessThanSource,
+                        ..ENEMY_HERE
+                    },
+                    &[KillTargets],
+                )]
+            }
+        }
         242 => const { &[rule(SelfPlayed, &[], false, TargetRule::NONE, &[Predict])] },
         246 => const { &[rule(SelfPlayed, &[], false, TargetRule::NONE, &[Draw(1)])] },
         152 => {

@@ -63,7 +63,7 @@ Reset defaults match the initial settings. `decks` is a pair of preset IDs. `bat
 
 A custom list can replace either seat through `custom_decks:[deck_or_null,deck_or_null]`. Omission uses presets for both seats. Each deck object contains `name`, `legend`, `chosen_champion`, `cards` (pairs of card ID and count), `runes` (six counts in catalog domain order), and `battlefield`. `legend` accepts a stable numeric registry ID or its official printing ID, such as `"ogn-265-298"`; saved/output decks normalize it to the numeric ID. Existing numeric IDs0–3 retain their identities. The selected chosen-champion variant does not change the legend.
 
-`catalog.legends` is independent of `catalog.presets`: seven legends are supported while the four sourced preset lists retain their original IDs. Every legend reports its official identity/text, domains, default chosen champion, `eligible_cards`, `eligible_champions`, and a complete editable `training_deck`. For Darius, Viktor, and Lux those are authored practice lists, not tournament/meta recommendations; `training_note` describes the origin. Pass the returned training deck through `custom_decks` to practice with that legend. `CustomDeck::from_legend` provides the same starting list in Rust; `from_preset` still copies an exact sourced preset. `catalog.presets[].legend_id` links each preset to the registry. A new legend ID must not be used as a preset ID in `reset.decks`.
+`catalog.legends` is independent of `catalog.presets`: eight legends are supported while the four sourced preset lists retain their original IDs. Every legend reports its official identity/text, domains, default chosen champion, `eligible_cards`, `eligible_champions`, and a complete editable `training_deck`. For Darius, Viktor, Lux, and Ambessa those are authored practice lists, not tournament/meta recommendations; `training_note` describes the origin. Pass the returned training deck through `custom_decks` to practice with that legend. `CustomDeck::from_legend` provides the same starting list in Rust; `from_preset` still copies an exact sourced preset. `catalog.presets[].legend_id` links each preset to the registry. A new legend ID must not be used as a preset ID in `reset.decks`.
 
 Deck validation requires at least 40 main-deck cards including the chosen champion, no more than three copies by full name, at most three Signature cards in total, matching champion tags, complete domain compatibility, exactly 12 legal runes, and an implemented legal battlefield. A `Unique` card is limited to one copy. Only implemented Standard-legal cards and legends can be selected. Zero-count rows should be omitted. Invalid decks are rejected before resetting the live match. Optional reset `battlefields` overrides the decks' selected fields. The API leaves both opening hands untouched for each agent's mulligan.
 
@@ -116,6 +116,7 @@ Targets have exactly one of these forms:
 | `hide_champion` | `lane` | Hide a chosen champion with Hidden |
 | `play_hidden` | `hidden_id`, optional `targets` | Play an eligible hidden card; an empty target list uses the engine's default targets |
 | `choose` | `accept` | Accept/decline a binary decision; Predict accepts recycling the top card |
+| `resolve_predict` | `choice_id`, `recycle`, `top_order` | Complete a multi-card Predict; the two index arrays partition the looked-at occurrences, with `top_order[0]` drawn next |
 | `choose_target` | optional `target` | Select a pending unit/gear target; during Tornado Warrior's base choice, `null` chooses the legend |
 | `choose_trigger_targets` | `targets` | Finalize an ordered target array for a `trigger_targets` decision; an empty array declines an optional trigger |
 | `select_cards` | `indices` | Select exact indices for discard, Top Three, Sabotage, or a granted Flow choice from trash |
@@ -159,6 +160,24 @@ Optional costs also apply to trash plays. Fizz ignores a replayed spell's base e
 Resource actions may be available while a payment decision is pending. For example, generate power with a rune, Seal, Gold, or Kai'Sa, then complete a replay/payment choice using the new revision. The decision remains pending. Resource actions are not a way to bypass target, combat assignment, or card selection decisions. Energy discounts apply after an alternative base cost and any additional costs are combined; `flow_costs` describes each instance's base cost, while validation and payment quotes use the live discounted total.
 
 `set_optional_discount` changes the player's `optional_power_discount` preference without spending resources or passing priority. The next optional-cost cast uses that preference. It still counts as a successful API mutation and advances the revision.
+
+## Empowered state, conditional effects, and Predict
+
+`catalog.cards[].passive_rules` describes the supported live passives with `rule_index`, `condition` (`always`, `empowered`, `not_empowered`), `recipients` (`self_unit`, `friendly_units`, `friendly_empowered_units`), and a typed `effect`. An effect is either `{type:"might",amount}` or `{type:"keyword",keyword,amount?}`. Ganking has no numeric amount. Observed units retain authoritative `might`, `keywords`, and `empowered`; their additional `passive_contributions` list reports each physical source, card/rule identity, active flag, and effect. Inactive conditional benefits are explanations, not current keywords or Buff counters. Two copies have separate source IDs and can contribute separately.
+
+Activated abilities retain nominal `energy` and `power`. Their `cost_modifiers` describe `energy_per_controlled_rune` with `amount`, or `energy_if_runes_at_most` with `maximum` and `amount`. Use `cost_plan` for the evaluated obligation, including Risen Altar and discount ordering. Controlled rune counts include exhausted runes but exclude the rune deck. Once `begin_payment` fixes a cost, recycling a rune does not reprice that pending activation.
+
+`catalog.legends[].activation` is null for legends without an activated ability. Otherwise it reports timing, Energy, Power, optional Power domain (null means Any), Exhaust/Disempower costs, target policy, and effect. Matriarch of War uses `activate_legend` with a unit target, including an enemy unit; it pays normal enemy Deflect. The resulting chain abilities are `matriarch_empower` and `matriarch_ready`, with the latter retaining its chosen target. Empowering is an effect; its triggered observers wait for a real transition and follow the actor, independently of the target's controller.
+
+A `predict_cards` decision reports `player`, `choice_id`, and actual available `count` to both viewers. Only its controller receives `cards`, ordered from next draw downward. Those cards remain in the main deck while the choice is pending. Submit exactly one occurrence index for every looked-at card across these two arrays:
+
+```json
+{"type":"resolve_predict","choice_id":12,"recycle":[1],"top_order":[0]}
+```
+
+`top_order[0]` will be drawn next. The recycled subset goes to the bottom in randomized order; `recycle` does not select a bottom order. Identical card IDs still have distinct occurrence indices. Duplicate, missing, out-of-range, and stale choice IDs are rejected atomically. No opponent view contains private identities or chosen order. An empty deck creates no choice and causes no burnout. Legacy single-card `predict` and its Boolean `choose` action are unchanged.
+
+Move-based trigger `context.movement` records `origin` and `destination`; a null endpoint means base. A null movement object means this was not a Move event. These event facts survive source departure. Akali's target battlefield comes from the recorded event, while its Empowered damage and Ambessa's comparative Might use the source's live state. Validate the full proposed target action, including its slot and other selected targets.
 
 ## Repeat instances and cost choices
 
@@ -245,6 +264,7 @@ The viewer sees their own hand as card IDs. The opposing hand is `null` except w
 | Decision | Data and response |
 | --- | --- |
 | `predict` | Owner sees `card_id`; `choose` recycles it when true, keeps it on top when false |
+| `predict_cards` | Public `choice_id` and actual `count`; only owner sees `cards`. Submit the exact index partition and kept order with `resolve_predict`. |
 | `counter_tax` | `chain_id`, energy `cost`; `choose`, with resource actions allowed before payment |
 | `discard` | `count`, `draw_after`; `select_cards` indexes your current hand |
 | `top_three` | Owner sees `cards`; `select_cards` indexes this list |

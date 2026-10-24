@@ -2,7 +2,7 @@
 
 Snapshot checked **2026-10-24**. The official gallery contains **1,408 printing records** grouped into **1,103 distinct full-name identities**. After excluding **12 auxiliary token/tracker identities** and **12 banned identities**, **1,079 identities are legal in Standard/1v1 Constructed**. The separate 2v2 list leaves **1,078**.
 
-**This client does not yet implement every legal card.** It currently maps **272 main-deck cards, 7 independently registered legends, 11 battlefields, and 6 rune resource types** (296 legal identities). **783 legal identities remain unimplemented and are not playable.** Importing this snapshot does not register cards with the engine. Full inventory coverage is not full rules support.
+**This client does not yet implement every legal card.** It currently maps **290 main-deck cards, 8 independently registered legends, 11 battlefields, and 6 rune resource types** (315 legal identities). **764 legal identities remain unimplemented and are not playable.** Importing this snapshot does not register cards with the engine. Full inventory coverage is not full rules support.
 
 ## Scope and authority
 
@@ -28,11 +28,11 @@ Numbered positions include token slots where the publisher numbers them within a
 | Kind | Standard legal | Implemented mapping | Not implemented |
 | --- | ---: | ---: | ---: |
 | Battlefield | 69 | 11 | 58 |
-| Gear | 127 | 54 | 73 |
-| Legend | 58 | 7 | 51 |
+| Gear | 127 | 55 | 72 |
+| Legend | 58 | 8 | 50 |
 | Rune | 6 | 6 | 0 |
 | Spell | 269 | 69 | 200 |
-| Unit | 550 | 149 | 401 |
+| Unit | 550 | 166 | 384 |
 
 Implemented mapping means the existing engine/preset/field/resource implementation, not a claim that every interaction has been formally proven. See `docs/RULES.md` for engine limits. Every unimplemented identity has `implementation.status: not_implemented` and `playable_in_client: false`. Printed keywords are recorded per card and counted under `unimplemented_by_observed_keyword` as discovery hints only; shared keywords do not imply shared effect semantics or completed implementation. Each unimplemented card still requires its specific effect, targets, timing, costs, continuous/replacement effects, and interaction tests to be reviewed and implemented.
 
@@ -398,6 +398,24 @@ Source pages are archived as deterministic gzip files under `assets/data/catalog
 | 269 | Stargazer | `ven-098-166` |
 | 270 | Vex, Cheerless | `sfd-146-221` |
 | 271 | Irelia, Graceful | `sfd-141-221` |
+| 272 | Shadow Fiend | `ven-014-166` |
+| 273 | Steel Paws | `ven-043-166` |
+| 274 | Serene Ascetic | `ven-030-166` |
+| 275 | Kinkou Lifeblade | `ven-093-166` |
+| 276 | Brutal Hunter | `ven-070-166` |
+| 277 | Solari Sunhawk | `ven-122-166` |
+| 278 | Frostcoat Mother | `ven-032-166` |
+| 279 | Grumpy Rockbear | `ven-050-166` |
+| 280 | Baccai Sandspinner | `ven-001-166` |
+| 281 | Rage Amplifier | `ven-018-166` |
+| 282 | Aurok General | `ven-130-166` |
+| 283 | Apprentice Mage | `ven-047-166` |
+| 284 | Covert Informant | `ven-057-166` |
+| 285 | Noxian Emissary | `ven-128-166` |
+| 286 | Baccai Witherclaw | `ven-078-166` |
+| 287 | Nasus, Ascended | `ven-046-166` |
+| 288 | Akali, Deadly Weapon | `ven-021-166` |
+| 289 | Ambessa, Respected and Feared | `ven-136-166` |
 
 ## Implemented legend ID mapping
 
@@ -412,5 +430,6 @@ Registry IDs are independent of the four sourced tournament presets. The origina
 | 4 | Hand of Noxus | `ogn-253-298` |
 | 5 | Herald of the Arcane | `ogn-265-298` |
 | 6 | Lady of Luminosity, Starter | `ogs-021-024` |
+| 7 | Matriarch of War | `ven-153-166` |
 
 Card names, rules, and images are Riot Games intellectual property. This noncommercial, unofficial project includes source references for verification and does not claim Riot affiliation.

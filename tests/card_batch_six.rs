@@ -157,7 +157,12 @@ fn all_six_have_existing_legend_homes_and_presets_stay_separate() {
         .filter(|l| eligible_cards(l.id).contains(&244))
         .map(|l| l.id)
         .collect();
-    assert_eq!(body_homes, vec![1]);
+    let expected: Vec<_> = legends()
+        .iter()
+        .filter(|legend| legend.domains.contains(&cards::Domain::Body))
+        .map(|legend| legend.id)
+        .collect();
+    assert_eq!(body_homes, expected);
     let presets = cards::presets();
     assert_eq!(presets.len(), 4);
     assert!(

@@ -60,7 +60,7 @@ pub struct AbilityTargets {
 }
 
 impl AbilityTargets {
-    const NONE: Self = Self {
+    pub const NONE: Self = Self {
         kind: AbilityTargetKind::Unit,
         another: false,
         min: 0,
@@ -69,13 +69,13 @@ impl AbilityTargets {
         battlefield: false,
         exhausted: false,
     };
-    const UNIT: Self = Self {
+    pub const UNIT: Self = Self {
         min: 1,
         max: 1,
         allegiance: Allegiance::Any,
         ..Self::NONE
     };
-    const FIELD: Self = Self {
+    pub const FIELD: Self = Self {
         battlefield: true,
         ..Self::UNIT
     };
@@ -103,7 +103,13 @@ enum AbilityEffect {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum AbilityCostModifier {
+    EnergyPerControlledRune { amount: u16 },
+    EnergyIfRunesAtMost { maximum: u8, amount: u16 },
+}
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct ActivatedRule {
+    pub cost_modifiers: &'static [AbilityCostModifier],
     pub label: &'static str,
     pub timing: AbilityTiming,
     pub energy: u8,
@@ -147,6 +153,7 @@ const fn exhaust(
     effect: AbilityEffect,
 ) -> ActivatedRule {
     ActivatedRule {
+        cost_modifiers: &[],
         label,
         timing: AbilityTiming::Main,
         energy: 0,
@@ -164,9 +171,63 @@ const fn exhaust(
     }
 }
 
+const fn empower(
+    energy: u8,
+    power: u8,
+    domain: Option<Domain>,
+    cost_modifiers: &'static [AbilityCostModifier],
+) -> ActivatedRule {
+    ActivatedRule {
+        energy,
+        power,
+        domain,
+        cost_modifiers,
+        exhaust: false,
+        only_if_not_empowered: true,
+        ..exhaust(
+            "Empower",
+            AbilityTargets::NONE,
+            AbilityEffect::EmpowerSource,
+        )
+    }
+}
+
 /// Stable zero-based ability indices belong to each explicit source printing.
 pub fn activated_rules(card_id: CardId) -> &'static [ActivatedRule] {
     match card_id {
+        272 | 288 => const { &[empower(2, 1, Some(Domain::Fury), &[])] },
+        273 => const { &[empower(7, 0, None, &[])] },
+        274 | 276 | 284 => const { &[empower(3, 0, None, &[])] },
+        275 | 277 | 283 => const { &[empower(2, 0, None, &[])] },
+        278 | 279 => {
+            const {
+                &[empower(
+                    12,
+                    0,
+                    None,
+                    &[AbilityCostModifier::EnergyPerControlledRune { amount: 1 }],
+                )]
+            }
+        }
+        280 => {
+            const {
+                &[empower(
+                    5,
+                    0,
+                    None,
+                    &[AbilityCostModifier::EnergyIfRunesAtMost {
+                        maximum: 4,
+                        amount: 3,
+                    }],
+                )]
+            }
+        }
+        281 => const { &[empower(6, 1, Some(Domain::Fury), &[])] },
+        282 => const { &[empower(3, 1, Some(Domain::Order), &[])] },
+        285 => const { &[empower(1, 1, Some(Domain::Order), &[])] },
+        286 => const { &[empower(1, 2, None, &[])] },
+        287 => const { &[empower(8, 0, None, &[])] },
+        289 => const { &[empower(1, 2, Some(Domain::Order), &[])] },
         254 => {
             const {
                 &[exhaust(
@@ -331,6 +392,7 @@ pub fn activated_rules(card_id: CardId) -> &'static [ActivatedRule] {
                 recycle_count: 0,
                 recycle_unit_only: false,
                 kill_source: false,
+                cost_modifiers: &[],
                 only_if_not_empowered: false,
                 disempower_source: false,
                 requires_battlefield: true,
@@ -347,6 +409,7 @@ pub fn activated_rules(card_id: CardId) -> &'static [ActivatedRule] {
                 recycle_count: 0,
                 recycle_unit_only: false,
                 kill_source: false,
+                cost_modifiers: &[],
                 only_if_not_empowered: false,
                 disempower_source: false,
                 requires_battlefield: true,
@@ -953,11 +1016,15 @@ impl Game {
         self.pay_ability_costs(source, ability_index, &targets)?;
         self.recycle_cards(player, &trash_indices);
         if rule.disempower_source {
-            let id = match source {
-                AbilitySource::Unit { unit_id, .. } => unit_id,
-                AbilitySource::Gear { gear_id, .. } => gear_id,
+            let object = match source {
+                AbilitySource::Unit { player, unit_id } => {
+                    crate::empower::BoardObject::Unit { player, unit_id }
+                }
+                AbilitySource::Gear { player, gear_id } => {
+                    crate::empower::BoardObject::Gear { player, gear_id }
+                }
             };
-            self.empowered_units.retain(|&current| current != id);
+            self.disempower_by(player, object);
         }
         if rule.exhaust {
             match source {
@@ -1132,7 +1199,7 @@ impl Game {
             AbilityEffect::EmpowerGear => {
                 for target in valid {
                     if let Target::Gear { player, gear_id } = target {
-                        self.empower_now(player, Some(gear_id), None);
+                        self.empower_object_legacy(source.player(), player, Some(gear_id), None);
                     }
                 }
             }

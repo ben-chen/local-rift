@@ -157,7 +157,7 @@ pub fn effect(id: usize) -> OfficialEffect {
         230..=253 => None,
         // C4 passives, delayed grants and conditional trigger effects execute
         // in the canonical play/activation modules, not as invented on-play text.
-        254..=259 | 261 | 262 | 264..=271 => None,
+        254..=259 | 261 | 262 | 264..=289 => None,
         263 => Draw(1),
         260 => Damage {
             amount: 2,
@@ -776,6 +776,7 @@ pub enum Mechanic {
 pub fn requirements(id: usize) -> &'static [Mechanic] {
     use Mechanic::*;
     match id {
+        272..=289 => &[ActivatedAbilities, Empower, Chain],
         254 => &[Gear, Chain, ActivatedAbilities, Legion, DelayedPlayGrants],
         255 => &[
             Gear,
@@ -1120,6 +1121,8 @@ pub enum StaticAbility {
 pub fn static_abilities(id: usize) -> &'static [StaticAbility] {
     use StaticAbility::*;
     match id {
+        273 => &[Deflect(1)],
+        287 => &[Deflect(2)],
         262 => &[Hidden],
         265 => &[
             Accelerate {
@@ -1435,12 +1438,12 @@ pub fn token_spec(id: usize) -> Option<TokenSpec> {
             deflect: false,
             tag: Some("Mech"),
         }),
-        87 | 102 | 147 | 175 | 176 | 177 | 179 | 180 | 203 | 235 => Some(TokenSpec {
+        87 | 102 | 147 | 175 | 176 | 177 | 179 | 180 | 203 | 235 | 285 => Some(TokenSpec {
             name: "Recruit",
             might: 1,
             count: match id {
                 87 => 4,
-                102 => 2,
+                102 | 285 => 2,
                 177 | 180 | 235 => 3,
                 _ => 1,
             },
@@ -1481,7 +1484,7 @@ mod tests {
     #[test]
     fn all_catalog_entries_have_official_classification() {
         let cards = cards();
-        assert_eq!(cards.len(), 272);
+        assert_eq!(cards.len(), 290);
         for card in cards {
             assert_ne!(
                 effect(card.id),
@@ -1491,7 +1494,7 @@ mod tests {
             );
             assert_ne!(support_status(card.id), SupportStatus::UnknownCard);
         }
-        assert_eq!(effect(272), OfficialEffect::Unsupported);
+        assert_eq!(effect(290), OfficialEffect::Unsupported);
     }
 
     #[test]

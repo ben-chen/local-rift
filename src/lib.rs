@@ -18,3 +18,6 @@ pub mod payment_plan;
 mod resources;
 
 pub use game::play;
+
+pub mod continuous;
+pub use game::empower;

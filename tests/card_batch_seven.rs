@@ -237,7 +237,12 @@ fn eight_cards_have_existing_legend_homes_without_changing_recipes() {
             .filter(|l| eligible_cards(l.id).contains(&id))
             .map(|l| l.id)
             .collect();
-        assert_eq!(homes, vec![1]);
+        let expected: Vec<_> = legends()
+            .iter()
+            .filter(|legend| legend.domains.contains(&cards::Domain::Body))
+            .map(|legend| legend.id)
+            .collect();
+        assert_eq!(homes, expected);
     }
     assert!(
         cards::presets()
@@ -245,7 +250,8 @@ fn eight_cards_have_existing_legend_homes_without_changing_recipes() {
             .flat_map(|p| &p.cards)
             .all(|(id, _)| *id < 69)
     );
-    for legend in legends() {
+    // The original C3 checkpoint promised to preserve these seven recipes.
+    for legend in &legends()[..7] {
         let deck = CustomDeck::from_legend(legend.id).unwrap();
         assert!(deck.cards.iter().all(|(id, _)| *id < 246));
         assert_eq!(deck.card_count(), 40);

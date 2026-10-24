@@ -8,12 +8,16 @@ use std::collections::{BTreeMap, BTreeSet};
 fn expanded(legend: usize) -> CustomDeck {
     let mut deck = CustomDeck::from_legend(legend).unwrap();
     deck.name = format!("Empower verification {legend}");
-    deck.cards.extend(
-        eligible_cards(legend)
-            .into_iter()
-            .filter(|id| (246..254).contains(id))
-            .map(|id| (id, 3)),
-    );
+    for id in eligible_cards(legend)
+        .into_iter()
+        .filter(|id| (246..254).contains(id))
+    {
+        if let Some((_, copies)) = deck.cards.iter_mut().find(|(existing, _)| *existing == id) {
+            *copies = 3;
+        } else {
+            deck.cards.push((id, 3));
+        }
+    }
     deck.validate().unwrap();
     deck
 }
@@ -132,7 +136,8 @@ fn empowered_cards_finish_all_legend_pairings_levels_and_starting_seats() {
             for first in 0..legends().len() {
                 for second in 0..legends().len() {
                     let decks = [expanded(first), expanded(second)];
-                    let seed = 38000 + (level * 1000 + starting * 100 + first * 7 + second) as u64;
+                    let seed = 38000
+                        + (level * 1000 + starting * 100 + first * legends().len() + second) as u64;
                     let mut game = Game::new_with_custom(
                         [0, 3],
                         [Some(decks[0].clone()), Some(decks[1].clone())],
@@ -184,7 +189,7 @@ fn empowered_cards_finish_all_legend_pairings_levels_and_starting_seats() {
             }
         }
     }
-    assert_eq!(matches, 294);
+    assert_eq!(matches, legends().len() * legends().len() * 6);
     assert!(
         (246..254).all(|id| seen_cards.contains(&id)),
         "not all new cards entered play: {seen_cards:?}"

@@ -371,6 +371,31 @@ pub(super) fn source_state(game: &Game, source: AbilitySource) -> String {
     )
 }
 
+fn effective_cost_label(rule: &ActivatedRule, plan: &local_rift::play::CostPlanView) -> String {
+    let mut parts = vec![play_ui::total_label(plan)];
+    if rule.disempower_source {
+        parts.push("Disempower source".into());
+    }
+    if rule.recycle_count > 0 {
+        parts.push(format!(
+            "recycle {} {} from trash",
+            rule.recycle_count,
+            if rule.recycle_unit_only {
+                "units"
+            } else {
+                "cards"
+            }
+        ));
+    }
+    if rule.exhaust {
+        parts.push("exhaust source".into());
+    }
+    if rule.kill_source {
+        parts.push("kill source".into());
+    }
+    parts.join(" · ")
+}
+
 pub(super) fn timing_label(rule: &ActivatedRule) -> &'static str {
     match rule.timing {
         AbilityTiming::Main => "Your open Main Phase",
@@ -408,6 +433,9 @@ impl App {
         self.hover_rect = None;
     }
     pub(super) fn ability_target_candidate(&self, target: Target) -> bool {
+        if self.selection == Some(Selection::Legend) && self.targeting_selection() {
+            return self.game.legend_target_valid(0, target);
+        }
         matches!(self.selection, Some(Selection::Ability(source,Some(index)))
             if source.player()==0 && self.game.ability_targets(source,index).contains(&target))
     }
@@ -738,6 +766,21 @@ impl App {
             };
             self.ui
                 .wrapped_lines(rule.label, 1178.0, 385.0, 212.0, 11.0, GOLD, 2);
+            let action = if rule.recycle_count > 0 {
+                Action::ActivateAbilityWithCosts {
+                    source,
+                    ability_index: index,
+                    targets: self.ability_targets.clone(),
+                    trash_indices: self.ability_costs.clone(),
+                }
+            } else {
+                Action::ActivateAbility {
+                    source,
+                    ability_index: index,
+                    targets: self.ability_targets.clone(),
+                }
+            };
+            let cost_plan = self.game.cost_plan(&action).ok();
             let deflect: u16 = self
                 .ability_targets
                 .iter()
@@ -752,13 +795,22 @@ impl App {
                     _ => None,
                 })
                 .sum();
-            let cost = if deflect > 0 {
+            let cost = if let Some(plan) = &cost_plan {
+                effective_cost_label(rule, plan)
+            } else if deflect > 0 {
                 format!("{} · +{deflect} Any power (Deflect)", cost_label(rule))
             } else {
                 cost_label(rule)
             };
-            self.ui
-                .wrapped_lines(&cost, 1178.0, 418.0, 212.0, 9.5, TEXT, 2);
+            self.ui.wrapped_lines(
+                &cost,
+                1178.0,
+                418.0,
+                212.0,
+                if cost.len() < 40 { 12.0 } else { 10.0 },
+                TEXT,
+                2,
+            );
             self.ui.text(timing_label(rule), 1178.0, 449.0, 9.0, MUTED);
             let status = if source.player() != 0 {
                 "Opponent ability · read only".to_owned()
@@ -844,20 +896,6 @@ impl App {
             };
             self.ui
                 .wrapped_lines(&status, 1178.0, 468.0, 212.0, 9.5, TEAL, 2);
-            let action = if rule.recycle_count > 0 {
-                Action::ActivateAbilityWithCosts {
-                    source,
-                    ability_index: index,
-                    targets: self.ability_targets.clone(),
-                    trash_indices: self.ability_costs.clone(),
-                }
-            } else {
-                Action::ActivateAbility {
-                    source,
-                    ability_index: index,
-                    targets: self.ability_targets.clone(),
-                }
-            };
             let valid = source.player() == 0
                 && self
                     .game
@@ -882,18 +920,38 @@ impl App {
                 valid || begin_payment,
             ) {
                 if begin_payment {
-                    self.begin_ui_payment(action);
+                    self.begin_ui_payment(action.clone());
                 } else {
-                    self.action(action);
+                    self.action(action.clone());
                 }
             }
+            let cost_details = source.player() == 0
+                && cost_plan
+                    .as_ref()
+                    .is_some_and(|plan| !plan.modifiers.is_empty());
             if self.ui.button(
-                Rect::new(1178.0, 534.0, 212.0, 27.0),
-                "Back · keep costs unspent",
+                Rect::new(
+                    1178.0,
+                    534.0,
+                    if cost_details { 133.0 } else { 212.0 },
+                    27.0,
+                ),
+                if cost_details {
+                    "Back · unspent"
+                } else {
+                    "Back · keep costs unspent"
+                },
                 false,
                 true,
             ) {
                 self.open_abilities(source);
+            }
+            if cost_details
+                && self
+                    .ui
+                    .button(Rect::new(1319.0, 534.0, 71.0, 27.0), "Costs", false, true)
+            {
+                self.review_action_costs(action);
             }
         } else {
             self.ui.text(

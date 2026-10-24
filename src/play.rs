@@ -1553,6 +1553,37 @@ impl Game {
         action: &Action,
         selection: &[CostSelection],
     ) -> Result<CostPlanView, String> {
+        if let Action::ActivateLegend { target } = action {
+            let player = self.priority();
+            let activation = crate::legends::legend_activation(self.legend[player].kind)
+                .ok_or("This legend has no activated ability.")?;
+            let mut components = vec![CostComponent {
+                id: 1,
+                label: "Legend ability".into(),
+                cost: CostValue {
+                    energy: activation.energy.into(),
+                    power: activation.power.into(),
+                    domains: activation
+                        .domain
+                        .map_or_else(|| ALL_DOMAINS.to_vec(), |d| vec![d]),
+                },
+                optional: false,
+            }];
+            let deflect = self.deflect_cost(player, &target.iter().copied().collect::<Vec<_>>());
+            if deflect > 0 {
+                components.push(CostComponent {
+                    id: 4,
+                    label: "Deflect".into(),
+                    cost: CostValue {
+                        energy: 0,
+                        power: deflect.into(),
+                        domains: ALL_DOMAINS.to_vec(),
+                    },
+                    optional: false,
+                });
+            }
+            return solve_cost_plan(components, vec![], selection, false, 0);
+        }
         let (player, source, card_id, energy, power, domains, empower, targets) = match action {
             Action::ActivateAbility {
                 source,
@@ -1674,7 +1705,7 @@ impl Game {
                 optional: false,
             });
         }
-        let modifiers = self.battlefield_cost_modifiers(&CostContext {
+        let mut modifiers = self.battlefield_cost_modifiers(&CostContext {
             player,
             card_id: Some(card_id),
             card_kind: None,
@@ -1691,6 +1722,50 @@ impl Game {
             gear_activation: matches!(source, AbilitySource::Gear { .. }),
             targets,
         });
+        if let Action::ActivateAbility { ability_index, .. }
+        | Action::ActivateAbilityWithCosts { ability_index, .. } = action
+            && let Some(rule) = crate::activated::activated_rules(card_id).get(*ability_index)
+        {
+            let runes: u16 = self.players[player]
+                .runes
+                .iter()
+                .map(|&n| u16::from(n))
+                .sum();
+            for (index, discount) in rule.cost_modifiers.iter().enumerate() {
+                let energy = match *discount {
+                    crate::activated::AbilityCostModifier::EnergyPerControlledRune { amount } => {
+                        amount * runes
+                    }
+                    crate::activated::AbilityCostModifier::EnergyIfRunesAtMost {
+                        maximum,
+                        amount,
+                    } => {
+                        if runes <= maximum.into() {
+                            amount
+                        } else {
+                            0
+                        }
+                    }
+                };
+                let object = match source {
+                    AbilitySource::Unit { unit_id, .. } => unit_id,
+                    AbilitySource::Gear { gear_id, .. } => gear_id,
+                };
+                modifiers.push(modifier(
+                    (1u64 << 62)
+                        | (u64::from(object) << 16)
+                        | ((*ability_index as u64) << 8)
+                        | index as u64,
+                    "Printed Empower discount",
+                    ChainSource::Card { card_id },
+                    energy,
+                    0,
+                    0,
+                    false,
+                    false,
+                ));
+            }
+        }
         solve_cost_plan(components, modifiers, selection, false, 0)
     }
 

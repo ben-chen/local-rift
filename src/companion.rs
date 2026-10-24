@@ -139,6 +139,16 @@ fn fingerprint(game: &Game) -> u64 {
                 card_id.hash(&mut hash);
             }
         }
+        Some(Decision::PredictCards {
+            player,
+            choice_id,
+            cards,
+        }) => {
+            (5_u8, *player, *choice_id, cards.len()).hash(&mut hash);
+            if *player == 0 {
+                cards.hash(&mut hash);
+            }
+        }
         Some(Decision::CounterTax {
             player,
             chain_id,
@@ -457,6 +467,20 @@ fn advice(game: &Game, level: AdviceLevel) -> Vec<&'static str> {
             tips.push("Exhausted and Empowered are separate states. Your gear keeps Empowered while exhausted; an Exhaust cost still needs a ready source.");
         }
     }
+    if human.units.iter().any(|unit| {
+        !game
+            .passive_contributions(local_rift::empower::BoardObject::Unit {
+                player: 0,
+                unit_id: unit.id,
+            })
+            .is_empty()
+    }) {
+        tips.push(if beginner {
+            "Empowered and ready are separate states. A unit's live preview shows which conditional bonuses apply now, and which source supplies each bonus."
+        } else {
+            "Check active conditional bonuses before trading. Removing or Disempowering an aura source can change several units' might immediately."
+        });
+    }
     if !game.activated_options(0).is_empty() {
         tips.push(if beginner {
             "Units and gear can have their own abilities. Select the source, then Abilities to read its timing, costs and legal targets before committing."
@@ -494,6 +518,10 @@ fn response_window_advice(game: &Game, beginner: bool) -> Option<Vec<&'static st
             ]);
         }
         return Some(match decision {
+            Decision::PredictCards { .. } => vec![
+                "Predict looks at cards without drawing them. Choose any to recycle, then set the kept cards in the order you want to draw them.",
+                "Keep the next draw that serves your plan. Recycling all is allowed; recycled cards go to the bottom in random order. Confirm only after checking the order.",
+            ],
             Decision::Payment { .. } => vec![
                 "This action's costs are fixed. Use Add abilities if needed, then finish the payment. An unsuccessful attempt can be undone with its resource steps.",
                 "Keep enough matching power and energy for the fixed cost. A conversion can help one resource while spending the other.",
@@ -744,6 +772,9 @@ fn response_window_advice(game: &Game, beginner: bool) -> Option<Vec<&'static st
 fn archetype_tip(game: &Game) -> &'static str {
     use local_rift::legends::LegendKind;
     match game.legend[0].kind {
+        LegendKind::Ambessa => {
+            "When you Empower any other object, Ambessa triggers her own Empower. Spend her state, ready status and 1 Any power to ready a unit during your open Main Phase."
+        }
         LegendKind::Irelia => {
             "Irelia can turn choosing a friendly unit into another ready. Plan a useful destination before paying for it, and keep energy for a conquest reset."
         }
@@ -1215,6 +1246,33 @@ mod tests {
     }
 
     #[test]
+    fn private_predict_many_keeps_identities_and_order_out_of_advice() {
+        let mut first = game();
+        first.start_match().unwrap();
+        first.decision = Some(Decision::PredictCards {
+            player: 1,
+            choice_id: 71,
+            cards: vec![272, 273],
+        });
+        let mut second = first.clone();
+        second.decision = Some(Decision::PredictCards {
+            player: 1,
+            choice_id: 71,
+            cards: vec![288, 279],
+        });
+        assert_eq!(fingerprint(&first), fingerprint(&second));
+        for level in [AdviceLevel::Beginner, AdviceLevel::Advanced] {
+            assert_eq!(advice(&first, level), advice(&second, level));
+        }
+        second.decision = Some(Decision::PredictCards {
+            player: 0,
+            choice_id: 72,
+            cards: vec![272, 273],
+        });
+        assert!(advice(&second, AdviceLevel::Beginner)[0].contains("Predict"));
+    }
+
+    #[test]
     fn private_opponent_top_three_choices_are_not_observed() {
         let mut first = game();
         first.start_match().unwrap();
@@ -1369,6 +1427,11 @@ mod tests {
             });
             states.push(game.clone());
             for decision in [
+                Decision::PredictCards {
+                    player,
+                    choice_id: 73,
+                    cards: vec![272, 273],
+                },
                 Decision::Payment { player },
                 Decision::ResourceConversion {
                     player,
@@ -1385,6 +1448,7 @@ mod tests {
                     card_id: 188,
                     rule_index: 0,
                     context: local_rift::game::TriggerContext {
+                        movement: None,
                         source: local_rift::game::TriggerSource {
                             player,
                             unit_id: Some(1),

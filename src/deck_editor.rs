@@ -699,7 +699,11 @@ impl App {
         self.ui
             .title("Choose your legend.", 340.0, 180.0, 28.0, TEXT);
         self.ui.text(
-            "Seven supported legends · four sourced tournament presets remain separate",
+            &format!(
+                "{} supported legends · {} sourced tournament presets remain separate",
+                local_rift::legend_catalog::legends().len(),
+                self.game.presets.len()
+            ),
             340.0,
             207.0,
             12.0,

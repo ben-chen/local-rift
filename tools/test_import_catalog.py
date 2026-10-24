@@ -37,14 +37,35 @@ class OfficialInventoryTests(unittest.TestCase):
     def test_exact_published_scope_and_runtime_gap(self):
         counts = self.snapshot["counts"]
         self.assertEqual((counts["gallery_printings"], counts["unique_gallery_identities"], counts["standard_legal_identities"]), (1408, 1103, 1079))
-        self.assertEqual(counts["implemented_main_cards"], 272)
-        self.assertEqual(counts["implemented_legends"], 7)
+        self.assertEqual(counts["implemented_main_cards"], 290)
+        self.assertEqual(counts["implemented_legends"], 8)
         self.assertEqual(counts["implemented_battlefields"], 11)
-        self.assertEqual(counts["implemented_legal_identities"], 296)
-        self.assertEqual(counts["unimplemented_legal_identities"], 783)
+        self.assertEqual(counts["implemented_legal_identities"], 315)
+        self.assertEqual(counts["unimplemented_legal_identities"], 764)
         for card in self.snapshot["cards"]:
             if card["implementation"]["status"] == "not_implemented":
                 self.assertFalse(card["implementation"]["playable_in_client"])
+
+    def test_empowered_board_batch_and_ambessa_use_clean_official_sources(self):
+        runtime = json.loads((catalog.ROOT / "assets/data/decks.json").read_text())["cards"]
+        ids = ["ven-014-166", "ven-043-166", "ven-030-166", "ven-093-166", "ven-070-166", "ven-122-166", "ven-032-166", "ven-050-166", "ven-001-166", "ven-018-166", "ven-130-166", "ven-047-166", "ven-057-166", "ven-128-166", "ven-078-166", "ven-046-166", "ven-021-166", "ven-136-166"]
+        for index, official_id in enumerate(ids, 272):
+            identity = next(c for c in self.snapshot["cards"] if c["identity"] == official_id)
+            printing = next(p for p in self.snapshot["printings"] if p["official_id"] == official_id)
+            self.assertEqual(identity["implementation"]["runtime_id"], index)
+            self.assertTrue(identity["standard_legal"])
+            self.assertEqual(identity["conflicting_fields"], [])
+            self.assertEqual(identity["errata"], [])
+            self.assertEqual(runtime[index]["official_id"], official_id)
+            self.assertEqual(runtime[index]["official_text"], printing["rules_text"])
+            self.assertEqual(runtime[index]["official_text_html"], printing["rules_html"])
+            self.assertEqual(runtime[index]["tags"], printing["tags"])
+        legend = catalog.load_legend_manifest()[7]
+        self.assertEqual((legend["official_id"], legend["default_champion"]), ("ven-153-166", 289))
+        self.assertEqual(legend["champion"], "Ambessa")
+        self.assertEqual(legend["domains"], ["Body", "Order"])
+        self.assertEqual(self.snapshot["counts"]["source_quality_issues"], 37)
+        self.assertEqual(self.snapshot["counts"]["unresolved_type_conflict_identities"], 23)
 
     def test_next_play_batch_maps_exact_source_ids_and_errata(self):
         runtime = json.loads((catalog.ROOT / "assets/data/decks.json").read_text())["cards"]
@@ -97,8 +118,8 @@ class OfficialInventoryTests(unittest.TestCase):
 
     def test_independent_legend_registry_keeps_original_ids_and_adds_no_presets(self):
         legends = catalog.load_legend_manifest()
-        self.assertEqual([v["id"] for v in legends], list(range(7)))
-        self.assertEqual([v["default_champion"] for v in legends], [0, 22, 33, 49, 183, 175, 182])
+        self.assertEqual([v["id"] for v in legends], list(range(8)))
+        self.assertEqual([v["default_champion"] for v in legends], [0, 22, 33, 49, 183, 175, 182, 289])
         for entry in legends:
             identity = next(c for c in self.snapshot["cards"] if entry["official_id"] in c["official_ids"])
             self.assertEqual(identity["implementation"]["runtime_id"], entry["id"])

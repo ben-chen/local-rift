@@ -21,6 +21,7 @@ use serde_json::{Map, Value, json};
 use std::fmt;
 use std::panic::{AssertUnwindSafe, catch_unwind};
 
+mod empowered;
 mod play_choices;
 
 pub const PROTOCOL_VERSION: u32 = 1;
@@ -319,7 +320,8 @@ impl Session {
                 "keywords":{"assault":keywords.assault,"shield":keywords.shield,"tank":keywords.tank,"backline":keywords.backline,
                     "deflect":keywords.deflect,"ganking":keywords.ganking,"ambush":keywords.ambush,
                     "accelerate":keywords.accelerate.map(|cost|json!({"energy":cost.energy,"power":cost.power,"domain":cost.domain.name()}))},
-                "damage_priority":game.damage_priority(unit)
+                "damage_priority":game.damage_priority(unit),
+                "passive_contributions":game.passive_contributions(crate::empower::BoardObject::Unit {player:owner,unit_id:unit.id}).iter().map(empowered::contribution_to_json).collect::<Vec<_>>()
             })}).collect();
             let gear: Vec<_> = state.gear.iter().map(|gear| json!({
                 "id":gear.id, "card_id":gear.card_id, "name":game.gear_name(gear), "token":gear.token,
@@ -674,6 +676,7 @@ fn legend_name(kind: LegendKind) -> &'static str {
         LegendKind::Darius => "darius",
         LegendKind::Viktor => "viktor",
         LegendKind::Lux => "lux",
+        LegendKind::Ambessa => "ambessa",
     }
 }
 
@@ -682,6 +685,7 @@ fn activated_rule_to_json(index: usize, rule: &ActivatedRule) -> Value {
     json!({"ability_index":index,"label":rule.label,
         "timing":match rule.timing {AbilityTiming::Main=>"main",AbilityTiming::Action=>"action",AbilityTiming::Reaction=>"reaction"},
         "energy":rule.energy,"power":rule.power,"power_domain":rule.domain.map(|domain|domain.name()),
+        "cost_modifiers":rule.cost_modifiers.iter().map(empowered::cost_modifier_to_json).collect::<Vec<_>>(),
         "exhaust":rule.exhaust,"requires_battlefield":rule.requires_battlefield,
         "adds_resources":rule.adds_resources(),
         "recycle_count":rule.recycle_count,"recycle_unit_only":rule.recycle_unit_only,"kill_source":rule.kill_source,
@@ -707,11 +711,13 @@ pub fn catalog() -> Value {
         "cards":cards().iter().map(|c|json!({"id":c.id,"official_id":c.official_id,"name":c.name,"energy":c.cost,"power":c.power_cost,
             "might":c.might,"domain":c.domain.name(),"domains":c.domains.iter().map(|d|d.name()).collect::<Vec<_>>(),
             "kind":c.kind.name(),"official_text":c.official_text,"keywords":c.keywords,"tags":c.tags,
+            "passive_rules":crate::continuous::passive_rules(c.id).iter().enumerate().map(|(index,rule)|empowered::passive_rule_to_json(index,rule)).collect::<Vec<_>>(),
             "activated_abilities":activated_rules(c.id).iter().enumerate().map(|(index,rule)|activated_rule_to_json(index,rule)).collect::<Vec<_>>()})).collect::<Vec<_>>(),
         "legends":legends().iter().map(|definition|json!({"id":definition.id,
             "official_id":definition.official_id,"name":definition.name,"champion":definition.champion,
             "domains":definition.domains.map(|domain|domain.name()),"official_text":definition.text,
             "default_champion":definition.default_champion,
+            "activation":LegendKind::from_id(definition.id).and_then(crate::legends::legend_activation).map(empowered::legend_activation_to_json),
             "eligible_cards":crate::deck::eligible_cards(definition.id),
             "eligible_champions":crate::deck::eligible_champions(definition.id),
             "training_deck":CustomDeck::from_legend(definition.id).ok().map(|deck|deck.to_json()),
@@ -823,6 +829,12 @@ fn action_json_at_depth(action: &Action, depth: usize) -> Value {
         Action::Attack { lane } => json!({"type":"attack","lane":lane}),
         Action::Pass => json!({"type":"pass"}),
         Action::Choose { accept } => json!({"type":"choose","accept":accept}),
+        Action::ResolvePredict {
+            choice_id,
+            recycle,
+            top_order,
+        } => json!({"type":"resolve_predict",
+            "choice_id":choice_id,"recycle":recycle,"top_order":top_order}),
         Action::Equip { gear_id, target } => {
             json!({"type":"equip","gear_id":gear_id,"target":target_to_json(target)})
         }
@@ -1317,6 +1329,14 @@ fn parse_action_at_depth(value: &Value, depth: usize) -> Result<Action, ApiError
                 accept: boolean(o, "accept")?,
             }
         }
+        "resolve_predict" => {
+            fields!("choice_id", "recycle", "top_order");
+            Action::ResolvePredict {
+                choice_id: id32(o, "choice_id")?,
+                recycle: usize_list(o, "recycle")?,
+                top_order: usize_list(o, "top_order")?,
+            }
+        }
         "equip" => {
             fields!("gear_id", "target");
             Action::Equip {
@@ -1708,6 +1728,16 @@ fn decision_to_json(game: &Game, decision: &Decision, viewer: usize) -> Value {
                 json!({"type":"predict"})
             }
         }
+        Decision::PredictCards {
+            choice_id, cards, ..
+        } => {
+            let mut view =
+                json!({"type":"predict_cards","choice_id":choice_id,"count":cards.len()});
+            if player == viewer {
+                view["cards"] = json!(cards);
+            }
+            view
+        }
         Decision::CounterTax { chain_id, cost, .. } => {
             json!({"type":"counter_tax","chain_id":chain_id,"cost":cost})
         }
@@ -1784,6 +1814,10 @@ fn ability_to_json(ability: &ChainAbility) -> Value {
             }
             LegendAbility::ViktorRecruit => json!({"type":"viktor_recruit"}),
             LegendAbility::LuxDraw => json!({"type":"lux_draw"}),
+            LegendAbility::MatriarchEmpower => json!({"type":"matriarch_empower"}),
+            LegendAbility::MatriarchReady { target } => {
+                json!({"type":"matriarch_ready","target":target_to_json(target)})
+            }
         },
         ChainAbility::Battlefield(ability) => match ability {
             BattlefieldAbility::Grant { lane, kind } => json!({"type":"battlefield_grant",
@@ -1834,7 +1868,8 @@ fn ability_to_json(ability: &ChainAbility) -> Value {
 
 fn trigger_context_to_json(context: &TriggerContext) -> Value {
     json!({"source":{"player":context.source.player,"unit_id":context.source.unit_id,
-        "gear_id":context.source.gear_id},"subject":context.subject.as_ref().map(target_to_json)})
+        "gear_id":context.source.gear_id},"subject":context.subject.as_ref().map(target_to_json),
+        "movement":context.movement.map(|movement|json!({"origin":movement.origin,"destination":movement.destination}))})
 }
 
 #[cfg(test)]
@@ -3530,6 +3565,7 @@ mod tests {
         session.game.players[0].units = vec![unit(100, None, 5), unit(101, None, 3)];
         session.game.players[1].units = vec![unit(102, None, 3)];
         let context = TriggerContext {
+            movement: None,
             source: crate::game::TriggerSource {
                 player: 0,
                 unit_id: Some(100),
@@ -3608,6 +3644,7 @@ mod tests {
             card_id: 188,
             rule_index: 0,
             context: TriggerContext {
+                movement: None,
                 source: crate::game::TriggerSource {
                     player: 0,
                     unit_id: Some(100),

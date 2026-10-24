@@ -137,7 +137,9 @@ impl Game {
                     *top = *card_id;
                 }
             }
-            Some(Decision::TopThree { player, cards }) if *player == actor => {
+            Some(
+                Decision::TopThree { player, cards } | Decision::PredictCards { player, cards, .. },
+            ) if *player == actor => {
                 for (slot, &id) in state.players[actor].deck.iter_mut().rev().zip(cards) {
                     *slot = id;
                 }
@@ -167,9 +169,7 @@ impl Game {
             !matches!(
                 action,
                 Action::ActivateRune { .. } | Action::RecycleRune { .. }
-            ) && !(matches!(action, Action::ActivateLegend { .. })
-                && self.legend[actor].kind == crate::legends::LegendKind::Darius
-                && self.cards_played[actor] == 0)
+            ) && !matches!(action,Action::ActivateLegend{target} if self.legend_ai_score(actor,*target).is_none())
         }));
         if self.decision.is_none() {
             let targets: Vec<_> = self
@@ -384,6 +384,15 @@ fn scrub_queued_look(decision: &mut Decision, players: &[PlayerState; 2]) {
                 *card_id = id;
             }
         }
+        Decision::PredictCards { player, cards, .. } => {
+            *cards = players[*player]
+                .deck
+                .iter()
+                .rev()
+                .take(cards.len())
+                .copied()
+                .collect();
+        }
         Decision::TopThree { player, cards } => {
             *cards = players[*player]
                 .deck
@@ -565,6 +574,20 @@ mod tests {
             player: 1,
             cards: vec![72, 73, 74],
         });
+        first.pending_decisions.push_back(Decision::PredictCards {
+            player: 1,
+            choice_id: 91,
+            cards: vec![72, 73],
+        });
+        first.queue_trigger_choice(
+            1,
+            283,
+            Decision::PredictCards {
+                player: 1,
+                choice_id: 92,
+                cards: vec![72, 73],
+            },
+        );
         let mut second = first.clone();
         second.pending_decisions = VecDeque::from([
             Decision::Predict {
@@ -575,14 +598,53 @@ mod tests {
                 player: 1,
                 cards: vec![52, 53, 54],
             },
+            Decision::PredictCards {
+                player: 1,
+                choice_id: 91,
+                cards: vec![52, 53],
+            },
         ]);
+        for trigger in &mut second.pending_triggers {
+            if let PendingTriggerEffect::Choice(Decision::PredictCards { cards, .. }) =
+                &mut trigger.effect
+            {
+                *cards = vec![52, 53];
+            }
+        }
         let a = first.strategic_belief(0);
         let b = second.strategic_belief(0);
         assert_eq!(a.pending_decisions, b.pending_decisions);
         assert_eq!(
+            format!("{:?}", a.pending_triggers),
+            format!("{:?}", b.pending_triggers)
+        );
+        assert_eq!(
             first.choose_strategic_action(),
             second.choose_strategic_action()
         );
+    }
+
+    #[test]
+    fn current_predict_two_preserves_the_actors_known_top_cards_in_sampled_worlds() {
+        let mut game = fixture();
+        game.players[0].deck = vec![69, 70, 71, 72];
+        game.decision = Some(Decision::PredictCards {
+            player: 0,
+            choice_id: 91,
+            cards: vec![72, 71],
+        });
+        let belief = game.strategic_belief(0);
+        assert_eq!(
+            belief.players[0]
+                .deck
+                .iter()
+                .rev()
+                .take(2)
+                .copied()
+                .collect::<Vec<_>>(),
+            vec![72, 71]
+        );
+        assert_eq!(belief.decision, game.decision);
     }
 
     #[test]

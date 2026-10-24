@@ -15,6 +15,7 @@ pub enum LegendKind {
     Darius,
     Viktor,
     Lux,
+    Ambessa,
 }
 
 impl LegendKind {
@@ -27,6 +28,7 @@ impl LegendKind {
             Self::Darius => 4,
             Self::Viktor => 5,
             Self::Lux => 6,
+            Self::Ambessa => 7,
         }
     }
 
@@ -39,6 +41,7 @@ impl LegendKind {
             4 => Self::Darius,
             5 => Self::Viktor,
             6 => Self::Lux,
+            7 => Self::Ambessa,
             _ => return None,
         })
     }
@@ -64,12 +67,16 @@ pub enum LegendActivationEffect {
     Assault,
     LegionEnergy,
     Recruit,
+    Ready,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct LegendActivation {
     pub timing: LegendTiming,
     pub energy: u8,
+    pub power: u8,
+    pub domain: Option<crate::cards::Domain>,
+    pub targets: crate::activated::AbilityTargets,
     pub exhaust: bool,
     pub disempower: bool,
     pub effect: LegendActivationEffect,
@@ -101,11 +108,19 @@ pub fn legend_activation(kind: LegendKind) -> Option<LegendActivation> {
             false,
             LegendActivationEffect::Recruit,
         ),
+        LegendKind::Ambessa => (LegendTiming::Main, 0, true, LegendActivationEffect::Ready),
         _ => return None,
     };
     Some(LegendActivation {
         timing,
         energy,
+        power: if kind == LegendKind::Ambessa { 1 } else { 0 },
+        domain: None,
+        targets: if matches!(kind, LegendKind::Kennen | LegendKind::Ambessa) {
+            crate::activated::AbilityTargets::UNIT
+        } else {
+            crate::activated::AbilityTargets::NONE
+        },
         exhaust: true,
         disempower,
         effect,
@@ -164,6 +179,8 @@ pub enum LegendAbility {
     IreliaReady { unit_id: u32 },
     IreliaRefresh,
     KennenEmpower,
+    MatriarchEmpower,
+    MatriarchReady { target: Target },
     KennenAssault { target: Target },
     ViktorRecruit,
     LuxDraw,
@@ -259,7 +276,10 @@ impl Game {
         }
     }
 
-    fn legend_target_valid(&self, actor: usize, target: Target) -> bool {
+    pub fn legend_target_valid(&self, actor: usize, target: Target) -> bool {
+        if actor >= 2 {
+            return false;
+        }
         let Target::Unit { player, .. } = target else {
             return false;
         };
@@ -332,12 +352,14 @@ impl Game {
                 activation.energy
             ));
         }
-        if activation.effect == LegendActivationEffect::Assault {
-            let target = target.ok_or("Choose a unit for Kennen's Assault ability.")?;
+        if activation.targets.max > 0 {
+            let target = target.ok_or("Choose a unit for this legend ability.")?;
             if !self.legend_target_valid(player, target) {
                 return Err("That unit cannot be chosen by this legend ability.".into());
             }
-            if self.available_power(player, None) < self.deflect_cost(player, &[target]).into() {
+            if self.available_power(player, None)
+                < u16::from(activation.power) + u16::from(self.deflect_cost(player, &[target]))
+            {
                 return Err("Choosing that unit requires additional power for Deflect.".into());
             }
         } else if target.is_some() {
@@ -349,17 +371,23 @@ impl Game {
     pub(crate) fn activate_legend(&mut self, target: Option<Target>) -> Result<(), String> {
         let player = self.priority();
         let activation = self.validate_legend_activation(player, target)?;
-        self.pay_energy(player, activation.energy.into());
-        if let Some(target) = target {
-            self.spend_power(player, None, self.deflect_cost(player, &[target]).into())?;
-        }
+        self.pay_action_cost(&Action::ActivateLegend { target })?;
         if activation.exhaust {
             self.legend[player].ready = false;
         }
         if activation.disempower {
-            self.legend[player].empowered = false;
+            self.disempower_by(player, crate::empower::BoardObject::Legend { player });
         }
         match activation.effect {
+            LegendActivationEffect::Ready => {
+                let target = target.expect("validated target");
+                self.queue_ability(
+                    player,
+                    self.legend_def(player).default_champion,
+                    vec![target],
+                    ChainAbility::Legend(LegendAbility::MatriarchReady { target }),
+                );
+            }
             LegendActivationEffect::SpellPower => {
                 self.legend[player].spell_power = self.legend[player].spell_power.saturating_add(1);
                 self.push_log(format!(
@@ -407,13 +435,42 @@ impl Game {
         Ok(())
     }
 
+    pub(crate) fn legend_ai_score(&self, player: usize, target: Option<Target>) -> Option<i32> {
+        match self.legend[player].kind {
+            LegendKind::Darius if self.cards_played_this_turn(player) == 0 => None,
+            LegendKind::Ambessa => {
+                let Target::Unit { player: owner, .. } = target? else {
+                    return None;
+                };
+                let unit = self.unit_ref(target?)?;
+                if owner != player || unit.ready {
+                    return None;
+                }
+                Some(
+                    if self.players[player].score >= 7
+                        && (0..2).any(|lane| {
+                            !self.player_scored_this_turn[player][lane]
+                                && self.battlefield_owner[lane] != Some(player)
+                                && self.lane_count(1 - player, lane) == 0
+                        })
+                    {
+                        180
+                    } else {
+                        65
+                    },
+                )
+            }
+            _ => Some(35),
+        }
+    }
+
     /// Legal activations for this seat, including target and payment validation.
     pub fn legend_actions(&self, player: usize) -> Vec<Action> {
         if player >= self.players.len() {
             return Vec::new();
         }
         let mut targets = vec![None];
-        if self.legend[player].kind == LegendKind::Kennen {
+        if legend_activation(self.legend[player].kind).is_some_and(|a| a.targets.max > 0) {
             targets = self
                 .players
                 .iter()
@@ -495,7 +552,19 @@ impl Game {
                 self.ready_unit(player, unit_id);
             }
             LegendAbility::IreliaRefresh => self.legend[player].ready = true,
-            LegendAbility::KennenEmpower => self.legend[player].empowered = true,
+            LegendAbility::KennenEmpower | LegendAbility::MatriarchEmpower => {
+                self.empower_by(player, crate::empower::BoardObject::Legend { player });
+            }
+            LegendAbility::MatriarchReady { target } => {
+                if self.legend_target_valid(player, target)
+                    && let Target::Unit {
+                        player: owner,
+                        unit_id,
+                    } = target
+                {
+                    self.ready_unit_by(player, owner, unit_id);
+                }
+            }
             LegendAbility::KennenAssault { target } => {
                 if self.legend_target_valid(player, target)
                     && let Target::Unit { unit_id, .. } = target

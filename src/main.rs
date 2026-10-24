@@ -2,6 +2,7 @@ mod ability_ui;
 mod companion;
 mod deck_editor;
 mod play_ui;
+mod predict_ui;
 use companion::{AdviceLevel, Companion, draw_mote};
 use deck_editor::DeckEditor;
 mod scene;
@@ -218,6 +219,7 @@ struct App {
     tray: Tray,
     gear_owner: usize,
     choices: Vec<usize>,
+    predict_draft: Option<predict_ui::PredictDraft>,
     options: PlayOptions,
     play_draft: Option<play_ui::PlayDraft>,
     cost_editor: Option<play_ui::CostEditor>,
@@ -365,6 +367,7 @@ impl App {
             tray: Tray::Hand,
             gear_owner: 0,
             choices: Vec::new(),
+            predict_draft: None,
             options: PlayOptions::default(),
             play_draft: None,
             cost_editor: None,
@@ -431,6 +434,7 @@ impl App {
                 .expect("valid selected battlefield");
         }
         self.game = game;
+        self.predict_draft = None;
         self.play_draft = None;
         self.cost_editor = None;
         self.drag = None;
@@ -692,6 +696,7 @@ impl App {
             if is_key_pressed(KeyCode::Escape) {
                 self.cancel_drag();
                 self.selection = None;
+                self.reset_predict_draft();
             }
             let keys = [
                 KeyCode::Key1,
@@ -747,6 +752,7 @@ impl App {
         }
     }
     fn draw(&mut self) {
+        self.sync_predict_draft();
         self.sync_play_draft();
         let trigger_key = self
             .game
@@ -1198,6 +1204,7 @@ impl App {
                     card_id,
                     owner,
                     unit.ready,
+                    self.game.unit_empowered(unit.id),
                     self.game.unit_might(unit),
                     unit.damage,
                     token,
@@ -1395,6 +1402,7 @@ impl App {
                     id,
                     index,
                     true,
+                    false,
                     card.might,
                     0,
                     false,
@@ -1855,6 +1863,10 @@ impl App {
         let Some(decision) = self.game.decision.clone() else {
             return;
         };
+        if matches!(decision, Decision::PredictCards { player: 0, .. }) {
+            self.predict_panel();
+            return;
+        }
         if self.game.resource_payment_pending()
             && matches!(
                 self.selection,
@@ -2098,7 +2110,7 @@ impl App {
             return;
         }
         let (title,body)=match &decision{
-            Decision::Payment{..}|Decision::ResourceConversion{..}|Decision::TriggerTargets{..}|Decision::CombatDamage{..}|Decision::TokenPlacement{..}|Decision::TokenPlay{..}|Decision::BattlefieldOrder{..}|Decision::RevivePlay{..}|Decision::PendingPlay{..}=>unreachable!(),
+            Decision::PredictCards{..}|Decision::Payment{..}|Decision::ResourceConversion{..}|Decision::TriggerTargets{..}|Decision::CombatDamage{..}|Decision::TokenPlacement{..}|Decision::TokenPlay{..}|Decision::BattlefieldOrder{..}|Decision::RevivePlay{..}|Decision::PendingPlay{..}=>unreachable!(),
             Decision::TrashTarget{..}=>("Choose a trash target","Choose an eligible card below before this ability enters the chain. Opponents may respond before the chosen card is played.".into()),
             Decision::OptionalPlay{card_id,..}=>("Use this triggered ability?",format!("{} offers a play from your trash. Accept and choose the ability's target, or decline now. Choose the card's own targets and costs after the ability resolves.",self.game.catalog[*card_id].name)),
             Decision::ResolutionTargets{..}=>("Choose the location", "Responses separated your targets. Choose which legal group below this spell should affect.".into()),
@@ -2300,6 +2312,10 @@ impl App {
             }
             return;
         }
+        if self.selection == Some(Selection::Legend) && !self.game.legend_target_valid(0, target) {
+            self.notify("Choose a highlighted unit that this legend can target.");
+            return;
+        }
         let chosen = self.current_targets();
         if let Some(index) = chosen.iter().position(|existing| *existing == target) {
             self.current_targets_mut().remove(index);
@@ -2366,7 +2382,8 @@ impl App {
                 | Selection::Gear(_),
             ) => true,
             Some(Selection::Legend) => {
-                self.game.legend[0].kind == local_rift::legends::LegendKind::Kennen
+                local_rift::legends::legend_activation(self.game.legend[0].kind)
+                    .is_some_and(|ability| ability.targets.max > 0)
             }
             _ => false,
         }
@@ -2925,6 +2942,12 @@ impl App {
         let Some(decision) = self.game.decision.clone() else {
             return false;
         };
+        if let Decision::PredictCards { player, cards, .. } = &decision {
+            if *player == 0 {
+                self.predict_tray(cards);
+            }
+            return true;
+        }
         if matches!(
             decision,
             Decision::Payment { .. } | Decision::ResourceConversion { .. }
@@ -4006,6 +4029,7 @@ impl App {
         id: usize,
         owner: usize,
         ready: bool,
+        empowered: bool,
         might: u8,
         damage: u8,
         token: bool,
@@ -4048,6 +4072,18 @@ impl App {
             .rect(Rect::new(r.x + 3.0, r.y + 8.0, 18.0, 19.0), BG);
         self.ui
             .bold(&might.to_string(), r.x + 7.0, r.y + 22.0, 13.0, TEXT);
+        if empowered {
+            let (label, width) = if r.w >= 108.0 {
+                ("EMP", 32.0)
+            } else {
+                ("E", 14.0)
+            };
+            let badge = Rect::new(r.x + 25.0, r.y + 8.0, width, 16.0);
+            self.ui.rect(badge, BG);
+            self.ui.border(badge, GOLD);
+            self.ui
+                .bold(label, badge.x + 3.0, badge.y + 12.0, 9.0, GOLD);
+        }
         if damage > 0 {
             self.ui.pill(
                 r.x + r.w - 27.0,
@@ -4471,17 +4507,21 @@ impl App {
             return;
         }
         if let Some(tex) = self.art.get(id).and_then(Option::as_ref) {
-            self.ui.image(
-                tex,
-                Rect::new(r.x + 1.0, r.y + 1.0, r.w - 2.0, 111.0),
-                Some(Rect::new(
-                    tex.width() * 0.08,
-                    tex.height() * 0.12,
-                    tex.width() * 0.84,
-                    tex.height() * 0.35,
-                )),
-                WHITE,
+            let art = Rect::new(r.x + 1.0, r.y + 1.0, r.w - 2.0, 111.0);
+            let bounds = Rect::new(
+                tex.width() * 0.08,
+                tex.height() * 0.12,
+                tex.width() * 0.84,
+                tex.height() * 0.35,
             );
+            let scale = (bounds.w / art.w).min(bounds.h / art.h);
+            let crop = Rect::new(
+                bounds.x + (bounds.w - art.w * scale) / 2.0,
+                bounds.y + (bounds.h - art.h * scale) / 2.0,
+                art.w * scale,
+                art.h * scale,
+            );
+            self.ui.image(tex, art, Some(crop), WHITE);
         }
         let card = self.game.catalog[id];
         self.ui.rect(
@@ -5825,25 +5865,77 @@ impl App {
                 self.ui
                     .title(definition.champion, 1178.0, 363.0, 22.0, TEXT);
                 self.ui
-                    .wrapped_lines(definition.text, 1178.0, 392.0, 210.0, 11.0, MUTED, 8);
+                    .wrapped_lines(definition.text, 1178.0, 392.0, 210.0, 11.0, MUTED, 6);
                 let legend = &self.game.legend[0];
-                self.ui.text(
-                    if !legend.ready {
-                        "EXHAUSTED"
-                    } else if self.game.legend_id(0) == 4 {
-                        if self.game.cards_played_this_turn(0) > 0 {
-                            "LEGION READY · ADDS 1 ENERGY"
-                        } else {
-                            "NO LEGION YET · ADDS 0 ENERGY"
-                        }
+                let status = format!(
+                    "{} · {}",
+                    if legend.ready { "READY" } else { "EXHAUSTED" },
+                    if legend.empowered {
+                        "EMPOWERED"
                     } else {
-                        "READY"
-                    },
-                    1178.0,
-                    526.0,
-                    9.0,
-                    TEAL,
+                        "NOT EMPOWERED"
+                    }
                 );
+                self.ui.text(&status, 1178.0, 487.0, 9.0, TEAL);
+                if let Some(ability) = local_rift::legends::legend_activation(legend.kind) {
+                    let action = Action::ActivateLegend {
+                        target: self
+                            .targets
+                            .first()
+                            .copied()
+                            .filter(|_| ability.targets.max > 0),
+                    };
+                    let resources = self
+                        .game
+                        .cost_plan(&action)
+                        .map(|plan| play_ui::total_label(&plan))
+                        .unwrap_or_else(|_| {
+                            format!(
+                                "Pay {} energy + {} {} power",
+                                ability.energy,
+                                ability.power,
+                                ability.domain.map_or("Any", |domain| domain.name())
+                            )
+                        });
+                    let mut costs = vec![resources];
+                    if ability.exhaust {
+                        costs.push("Exhaust".into());
+                    }
+                    if ability.disempower {
+                        costs.push("Disempower".into());
+                    }
+                    self.ui
+                        .wrapped_lines(&costs.join(" · "), 1178.0, 504.0, 211.0, 10.0, GOLD, 2);
+                    if ability.targets.max > 0 {
+                        let label = self
+                            .targets
+                            .first()
+                            .and_then(|target| match target {
+                                Target::Unit { player, unit_id } => self.game.players[*player]
+                                    .units
+                                    .iter()
+                                    .find(|unit| unit.id == *unit_id)
+                                    .map(|unit| format!("Target: {}", self.game.unit_name(unit))),
+                                _ => None,
+                            })
+                            .unwrap_or_else(|| "Choose a highlighted unit".into());
+                        self.ui.ellipsis(&label, 1178.0, 467.0, 211.0, 11.0, TEXT);
+                    } else if ability.effect
+                        == local_rift::legends::LegendActivationEffect::LegionEnergy
+                    {
+                        self.ui.text(
+                            if self.game.cards_played_this_turn(0) > 0 {
+                                "Legion: adds 1 energy"
+                            } else {
+                                "No Legion: adds 0 energy"
+                            },
+                            1178.0,
+                            467.0,
+                            11.0,
+                            TEXT,
+                        );
+                    }
+                }
                 if self.ui.button(
                     Rect::new(1178.0, 534.0, 212.0, 28.0),
                     legend_activation_label(self.game.legend_id(0)),
@@ -6877,11 +6969,15 @@ fn legend_activation_label(id: usize) -> &'static str {
         3 => "Add 1 spell-only power",
         4 => "Exhaust · Legion: +1 energy",
         5 => "Pay 1 energy · create Recruit",
+        7 => "Pay & ready a unit",
         _ => "Passive / triggered ability",
     }
 }
 fn legend_practice_tip(id: usize) -> &'static str {
     match id {
+        7 => {
+            "When you Empower any other object, Ambessa triggers her own Empower. Her ready ability spends Empowered, exhausts her and costs 1 Any power; choose a useful unit before committing."
+        }
         4 => {
             "Play a cheap first card to enable Legion. Darius's legend can then add energy for your next play or response; keep track of resources across the whole turn."
         }
@@ -7011,7 +7107,40 @@ fn live_unit_description(game: &Game, owner: usize, unit_id: u32) -> Option<Stri
             game.unit_might(unit),
             unit.damage
         ),
+        if game.unit_empowered(unit.id) {
+            "EMPOWERED · current might and keywords include active effects.".into()
+        } else {
+            "Not Empowered.".into()
+        },
     ];
+    for contribution in game.passive_contributions(local_rift::empower::BoardObject::Unit {
+        player: owner,
+        unit_id,
+    }) {
+        use local_rift::continuous::{PassiveEffect, PassiveKeyword};
+        let effect = match contribution.effect {
+            PassiveEffect::Might(amount) => format!("{amount:+} might"),
+            PassiveEffect::Keyword(PassiveKeyword::Assault(amount)) => format!("Assault {amount}"),
+            PassiveEffect::Keyword(PassiveKeyword::Shield(amount)) => format!("Shield {amount}"),
+            PassiveEffect::Keyword(PassiveKeyword::Deflect(amount)) => format!("Deflect {amount}"),
+            PassiveEffect::Keyword(PassiveKeyword::Ganking) => "Ganking".into(),
+        };
+        lines.push(format!(
+            "{} · {}: {}{}",
+            if contribution.active {
+                "ACTIVE"
+            } else {
+                "INACTIVE"
+            },
+            game.catalog[contribution.card_id].name,
+            effect,
+            if contribution.active {
+                " (included in current values when applicable)"
+            } else {
+                " (condition not met)"
+            }
+        ));
+    }
     if unit.stunned {
         lines.push("Stunned: contributes no might to combat damage this turn; still needs lethal damage equal to its full might.".into());
     }
@@ -7175,6 +7304,47 @@ mod live_preview_tests {
             banish_on_death: false,
         }
     }
+    #[test]
+    fn conditional_unit_preview_tracks_source_state_and_aura_removal() {
+        let mut game = Game::new(3, 2, 7, Difficulty::Easy);
+        game.players[0].units = vec![unit(100, 275)];
+        let before = live_unit_description(&game, 0, 100).unwrap();
+        assert!(
+            before.contains("Not Empowered")
+                && before.contains("INACTIVE")
+                && !before.contains("Ganking: can move")
+        );
+        game.empowered_units.push(100);
+        let after = live_unit_description(&game, 0, 100).unwrap();
+        assert!(
+            after.contains("EMPOWERED")
+                && after.contains("Ganking: can move")
+                && after.contains("ACTIVE · Kinkou")
+        );
+        game.players[0].gear.push(GearState {
+            id: 200,
+            card_id: 281,
+            attached_to: None,
+            ready: true,
+            temporary: false,
+            token: false,
+        });
+        let aura = live_unit_description(&game, 0, 100).unwrap();
+        assert!(aura.contains("ACTIVE · Rage Amplifier: +1 might"));
+        game.empowered_units.push(200);
+        let empowered = live_unit_description(&game, 0, 100).unwrap();
+        assert!(
+            empowered.contains("ACTIVE · Rage Amplifier: +2 might")
+                && empowered.contains("INACTIVE · Rage Amplifier: +1 might")
+        );
+        game.players[0].gear.clear();
+        assert!(
+            !live_unit_description(&game, 0, 100)
+                .unwrap()
+                .contains("Rage Amplifier")
+        );
+    }
+
     #[test]
     fn live_gear_preview_tracks_instance_state_and_never_leaks_to_another_card() {
         let mut game = Game::new(3, 2, 7, Difficulty::Easy);
