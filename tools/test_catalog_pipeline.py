@@ -40,27 +40,30 @@ class CatalogPipelineTests(unittest.TestCase):
     def test_resolved_history_is_separate_from_remaining_variant_reviews(self):
         counts = self.snapshot['counts']
         self.assertEqual((counts['reviewed_field_resolutions'], counts['resolved_source_issue_groups'],
-                          counts['unresolved_source_issue_groups']), (73, 37, 0))
+                          counts['unresolved_source_issue_groups']), (112, 37, 0))
         self.assertEqual(counts['unresolved_gameplay_identities'], 0)
-        self.assertEqual(counts['unreviewed_variant_identities'], 124)
-        self.assertEqual(counts['unreviewed_variants_by_field'], {'tags': 42, 'rules_text': 110})
-        self.assertEqual(counts['pinned_runtime_variant_identities'], 29)
+        self.assertEqual(counts['unreviewed_variant_identities'], 95)
+        self.assertEqual(counts['unreviewed_variants_by_field'], {'tags': 33, 'rules_text': 84})
+        self.assertEqual(counts['pinned_runtime_variant_identities'], 0)
         self.assertEqual(counts['standard_legal_by_kind'],
                          {'battlefield': 69, 'gear': 131, 'legend': 58, 'rune': 6, 'spell': 268, 'unit': 547})
         self.assertTrue(all(r['status'] == 'resolved_by_review' for r in self.snapshot['source_issue_reviews']))
-        corrected = {r['official_id'] for r in self.snapshot['reviewed_field_resolutions']}
+        self.assertEqual(counts['reviewed_variant_identities'], 29)
+        self.assertEqual(counts['reviewed_variant_printings'], 90)
+        self.assertEqual(counts['field_reviewed_printings'], 69)
         for card in self.snapshot['cards']:
-            if corrected.intersection(card['official_ids']):
-                self.assertFalse(card['implementation']['playable_in_client'])
+            if card['implementation']['playable_in_client']:
+                self.assertEqual(card['source_review']['unresolved_variant_fields'], [])
+        self.assertEqual(counts['implemented_legal_identities'], 315)
 
     def test_required_fields_gate_every_mapping_kind_and_alternates(self):
         cases = [
             ('ogn-093-298', 'domain', {'values': []}, 'unresolved gameplay fields'),
-            ('sfd-057a-221', 'might', {'value': {'id': 9}}, 'unresolved gameplay fields'),
-            ('ven-197-166', 'domain', {'values': []}, 'unresolved gameplay fields'),
+            ('sfd-057a-221', 'might', {'value': {'id': 9}}, 'Unresolved effective scalar differences'),
+            ('ven-197-166', 'domain', {'values': []}, 'Unresolved member gameplay facts'),
             ('sfd-218-221', 'cardType', {'type': [], 'superType': []}, 'unresolved official type'),
-            ('ven-r04', 'domain', {'values': []}, 'unresolved gameplay fields'),
-            ('sfd-057-221', 'might', {}, 'unresolved gameplay fields'),
+            ('ven-r04', 'domain', {'values': []}, 'Unresolved member gameplay facts'),
+            ('sfd-057-221', 'might', {}, 'Unresolved member gameplay facts'),
         ]
         for official_id, field, value, error in cases:
             with self.subTest(official_id=official_id, field=field):
@@ -75,7 +78,7 @@ class CatalogPipelineTests(unittest.TestCase):
             variant.update(id='ogn-review-variant', publicCode='OGN-REVIEW/999')
             variant['text']['richText']['body'] = '<p>Draw 1.</p>'
             records.append(variant)
-        with self.assertRaisesRegex(ValueError, 'New runtime mapping requires review'):
+        with self.assertRaisesRegex(ValueError, 'Runtime mapping requires review'):
             catalog.make_catalog(self.manifest, self.changed_gallery(change))
 
     def test_new_main_mapping_with_variant_difference_requires_review(self):
@@ -87,16 +90,16 @@ class CatalogPipelineTests(unittest.TestCase):
         runtime['cards'].append({'id': len(runtime['cards']), 'official_id': candidate['preferred_printing'],
                                  'name': candidate['name']})
         with patch.object(catalog, 'load_runtime_manifest', return_value=runtime):
-            with self.assertRaisesRegex(ValueError, 'New runtime mapping requires review'):
+            with self.assertRaisesRegex(ValueError, 'Runtime mapping requires review'):
                 catalog.make_catalog(self.manifest, self.data)
 
-    def test_pinned_printings_remain_pinned_when_differences_disappear(self):
+    def test_reviewed_printings_remain_pinned_when_differences_disappear(self):
         def change(records):
             base = next(p for p in records if p['id'] == 'sfd-057-221')
             for p in records:
                 if p['name'] == base['name'] and p.get('subtitle') == base.get('subtitle'):
                     p['text']['richText']['body'] = '<p>Draw 4.</p>'
-        with self.assertRaisesRegex(ValueError, 'Existing runtime variant printing changed'):
+        with self.assertRaisesRegex(ValueError, 'Stale raw printing pin'):
             catalog.make_catalog(self.manifest, self.changed_gallery(change))
 
     def test_runtime_tags_and_both_html_panels_must_match_effective_sources(self):
@@ -113,16 +116,52 @@ class CatalogPipelineTests(unittest.TestCase):
                     with self.assertRaisesRegex(ValueError, error):
                         catalog.make_catalog(self.manifest, self.data)
 
-    def test_pinned_mapping_identity_and_complete_records_cannot_change(self):
-        baseline = copy.deepcopy(catalog.load_variant_baseline())
-        entry = next(e for e in baseline['entries'] if e['implementation']['status'] == 'implemented_main_card')
-        entry['implementation']['runtime_id'] += 1
-        with self.assertRaisesRegex(ValueError, 'only its existing runtime mapping'):
-            catalog.make_catalog(self.manifest, self.data, variant_baseline=baseline)
-        baseline = copy.deepcopy(catalog.load_variant_baseline())
-        baseline['entries'].append(copy.deepcopy(baseline['entries'][0]))
-        with self.assertRaisesRegex(ValueError, 'Duplicate variant baseline'):
-            catalog.make_catalog(self.manifest, self.data, variant_baseline=baseline)
+    def test_reviewed_reminder_variants_cannot_use_a_compatibility_fallback(self):
+        identity = next(c for c in self.snapshot['cards'] if c['identity'] == 'sfd-057-221')
+        variants = [p for p in self.snapshot['printings'] if p['official_id'] in identity['official_ids']]
+        unreviewed = catalog.identity_source_review(variants)
+        self.assertEqual(unreviewed['unresolved_variant_fields'], ['rules_text'])
+        with self.assertRaisesRegex(ValueError, 'Runtime mapping requires review'):
+            catalog.require_mapping_source_ready(unreviewed, variants, identity['implementation'])
+        self.assertEqual(identity['source_review']['status'], 'reviewed_variants')
+        self.assertEqual(len({p['effective']['rules_text'] for p in variants}), 2)
+
+    def changed_hub_body(self, transform):
+        def change(page):
+            for blade in page['blades']:
+                rich_text = blade.get('richText')
+                if rich_text and rich_text.get('body'):
+                    rich_text['body'] = transform(rich_text['body'])
+        return edit_page(self.data['hub'], change)
+
+    def test_current_core_link_change_requires_review_even_if_old_link_is_retained(self):
+        old_url = catalog.parse_core_rules_url(self.data['hub'])
+        new_url = 'https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/revised-core.pdf'
+        hub = self.changed_hub_body(lambda text: text.replace(old_url, new_url) +
+                                    f'<h3>Historical documents</h3><a href="{old_url}">Core Rules</a>')
+        self.assertEqual(catalog.parse_core_rules_url(hub), new_url)
+        with self.assertRaisesRegex(ValueError, 'Core.*(link|URL|authority)|core.*(link|URL|authority)'):
+            catalog.make_catalog(self.manifest, {**self.data, 'hub': hub})
+
+    def test_changed_current_rengar_erratum_requires_review(self):
+        def update(page):
+            for blade in page['blades']:
+                rich_text = blade.get('richText')
+                if rich_text:
+                    rich_text['body'] = rich_text.get('body', '').replace(
+                        'I can [Ambush] to a battlefield where there are enemy units,',
+                        'I can [Ambush] to a battlefield where there are friendly units,')
+        changed = edit_page(self.data['unleashed_errata'], update)
+        self.assertNotEqual(changed, self.data['unleashed_errata'])
+        with self.assertRaisesRegex(ValueError, '[Ee]rrata differ'):
+            catalog.make_catalog(self.manifest, {**self.data, 'unleashed_errata': changed})
+
+    def test_ambiguous_current_core_links_fail_closed(self):
+        url = catalog.parse_core_rules_url(self.data['hub'])
+        hub = self.changed_hub_body(lambda text: text.replace('<h3>Tournament Rules</h3>',
+            f'<p><a href="{url}">Core Rules</a></p><h3>Tournament Rules</h3>'))
+        with self.assertRaisesRegex(ValueError, 'exactly one current Core Rules link'):
+            catalog.parse_core_rules_url(hub)
 
     def test_markup_only_live_check_preserves_origin_and_writes_nothing(self):
         changed = {**self.data, 'gallery': self.data['gallery'] + b'\n<!-- unrelated website build -->'}
@@ -148,8 +187,12 @@ class CatalogPipelineTests(unittest.TestCase):
     def test_failed_candidate_or_report_cannot_replace_any_current_artifact(self):
         def stale_record(records):
             next(p for p in records if p['id'] == 'rad-sp4-005')['might']['value']['id'] = 5
+        changed_core = self.changed_hub_body(lambda value: value.replace(
+            catalog.parse_core_rules_url(self.data['hub']),
+            'https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/revised-core.pdf'))
         for label, data, report_error in [('printing', self.changed_gallery(stale_record), False),
-                                           ('report', self.data, True)]:
+                                         ('core', {**self.data, 'hub': changed_core}, False),
+                                         ('report', self.data, True)]:
             with self.subTest(failure=label), tempfile.TemporaryDirectory() as folder:
                 output, report = Path(folder) / 'catalog.json', Path(folder) / 'report.md'
                 output.write_bytes(b'old catalog'); report.write_bytes(b'old report')

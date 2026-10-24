@@ -605,7 +605,7 @@ pub fn cards() -> Vec<CardDef> {
             kind: CardKind::Unit,
             official_text: "When you play me, [Burn 2]. (Put the top 2 cards of your Main Deck into your trash.)\nWhen I conquer, give a spell in your trash [Flow] equal to its cost this turn. (You may play it from your trash for its Flow cost. Then banish it.)",
             keywords: &["Burn 2", "Flow"],
-            tags: &["Yordle", "Kennen"],
+            tags: &["Yordle", "Kennen", "Ionia"],
             art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/2f27c99f3df2940940dddd65105e5e42bbeeab3d-744x1039.png?w=360&q=80&fm=png",
         },
         CardDef {

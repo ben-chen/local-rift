@@ -36,8 +36,8 @@ fn reviewed_facts_are_effective_while_original_evidence_stays_intact() {
         .collect();
     assert_eq!(manifest["status"], "reviewed");
     assert_eq!(manifest["printing_projection_version"], 1);
-    assert_eq!(manifest["resolutions"].as_array().unwrap().len(), 73);
-    assert_eq!(manifest["raw_printings"].as_array().unwrap().len(), 38);
+    assert_eq!(manifest["resolutions"].as_array().unwrap().len(), 112);
+    assert_eq!(manifest["raw_printings"].as_array().unwrap().len(), 69);
     for raw in manifest["raw_printings"].as_array().unwrap() {
         let id = raw["official_id"].as_str().unwrap();
         for (field, value) in raw.as_object().unwrap() {
@@ -167,13 +167,6 @@ fn equipment_might_and_attached_bonus_remain_distinct_source_facts() {
 #[test]
 fn source_review_never_admits_inventory_only_or_unresolved_identities() {
     let data = catalog();
-    let manifest = resolutions();
-    let reviewed: BTreeSet<_> = manifest["resolutions"]
-        .as_array()
-        .unwrap()
-        .iter()
-        .map(|entry| entry["official_id"].as_str().unwrap())
-        .collect();
     let auxiliary_printings: BTreeSet<_> = data["cards"]
         .as_array()
         .unwrap()
@@ -186,12 +179,13 @@ fn source_review_never_admits_inventory_only_or_unresolved_identities() {
         let unresolved = card["source_review"]["unresolved_gameplay_fields"]
             .as_array()
             .unwrap();
-        let reviewed_printing = card["official_ids"]
+        let unresolved_variants = card["source_review"]["unresolved_variant_fields"]
             .as_array()
-            .unwrap()
-            .iter()
-            .any(|id| reviewed.contains(id.as_str().unwrap()));
-        if !unresolved.is_empty() || reviewed_printing {
+            .unwrap();
+        if !unresolved.is_empty()
+            || !unresolved_variants.is_empty()
+            || card["implementation"]["status"] == "not_implemented"
+        {
             assert_eq!(
                 card["implementation"]["playable_in_client"], false,
                 "{} unexpectedly admitted",
@@ -225,6 +219,184 @@ fn source_review_never_admits_inventory_only_or_unresolved_identities() {
     }
     assert_eq!(data["counts"]["implemented_legal_identities"], 315);
     assert_eq!(data["counts"]["unimplemented_legal_identities"], 764);
+}
+
+#[test]
+fn completed_variant_reviews_cover_every_member_without_compatibility_exceptions() {
+    let data = catalog();
+    let mut reviewed_identities = 0;
+    let mut reviewed_printings = BTreeSet::new();
+    let mut review_ids = BTreeSet::new();
+    let mut unresolved_identities = 0;
+    let mut unresolved_legal = 0;
+    let mut unresolved_auxiliary = Vec::new();
+    for card in data["cards"].as_array().unwrap() {
+        let review = &card["source_review"];
+        let unresolved = review["unresolved_variant_fields"].as_array().unwrap();
+        assert!(unresolved.iter().all(Value::is_string));
+        let reviewed = review["reviewed_variant_fields"].as_array().unwrap();
+        assert!(reviewed.iter().all(Value::is_string));
+        if let Some(id) = review["identity_review_id"].as_str() {
+            assert!(!id.is_empty());
+            assert!(review_ids.insert(id), "duplicate whole-identity review");
+            assert!(
+                unresolved.is_empty(),
+                "{} is only partly reviewed",
+                card["name"]
+            );
+            assert!(!reviewed.is_empty());
+            assert_eq!(card["implementation"]["playable_in_client"], true);
+            reviewed_identities += 1;
+            for id in card["official_ids"].as_array().unwrap() {
+                assert!(reviewed_printings.insert(id.as_str().unwrap()));
+            }
+        }
+        if !unresolved.is_empty() {
+            unresolved_identities += 1;
+            unresolved_legal += usize::from(card["standard_legal"] == true);
+            if card["auxiliary"] == true {
+                unresolved_auxiliary.push(card["name"].as_str().unwrap());
+            }
+            assert_eq!(card["implementation"]["playable_in_client"], false);
+        }
+    }
+    assert_eq!(reviewed_identities, 29);
+    assert_eq!(reviewed_printings.len(), 90);
+    assert_eq!((unresolved_identities, unresolved_legal), (95, 94));
+    assert_eq!(unresolved_auxiliary, vec!["Gold"]);
+    assert_eq!(data["counts"]["implemented_legal_identities"], 315);
+}
+
+#[test]
+fn kennen_ionia_correction_reaches_runtime_and_public_catalog_without_rewriting_raw_tags() {
+    let data = catalog();
+    let printing = |id: &str| {
+        data["printings"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .find(|printing| printing["official_id"] == id)
+            .unwrap()
+    };
+    let base = printing("ven-113-166");
+    let alternate = printing("ven-113a-166");
+    assert_eq!(base["tags"], json!(["Yordle", "Kennen"]));
+    assert_eq!(alternate["tags"], json!(["Yordle", "Ionia", "Kennen"]));
+    let expected: BTreeSet<_> = ["Yordle", "Kennen", "Ionia"].into_iter().collect();
+    for face in [base, alternate] {
+        let effective: BTreeSet<_> = face["effective"]["tags"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|tag| tag.as_str().unwrap())
+            .collect();
+        assert_eq!(effective, expected);
+    }
+    // Keep the existing public tag order and append the evidenced missing tag.
+    let runtime = cards::cards();
+    assert_eq!(runtime[33].official_id, "ven-113-166");
+    assert_eq!(runtime[33].tags, &["Yordle", "Kennen", "Ionia"]);
+    let manifest: Value = serde_json::from_str(include_str!("../assets/data/decks.json")).unwrap();
+    assert_eq!(manifest["cards"][33]["tags"], json!(runtime[33].tags));
+    let public = local_rift::api::catalog();
+    assert_eq!(public["cards"][33]["tags"], json!(runtime[33].tags));
+    assert_eq!(public["cards"][33]["official_id"], "ven-113-166");
+}
+
+#[test]
+fn rune_placeholder_corrections_keep_raw_text_and_do_not_create_a_keyword() {
+    let data = catalog();
+    for id in [
+        "rad-r01a", "rad-r02a", "rad-r03a", "rad-r04a", "rad-r05a", "rad-r06a",
+    ] {
+        let printing = data["printings"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .find(|printing| printing["official_id"] == id)
+            .unwrap();
+        assert_eq!(printing["rules_text"], "[NO TEXT]");
+        assert_eq!(printing["rules_html"], "<p>[NO TEXT]</p>");
+        assert_eq!(printing["effective"]["rules_text"], "");
+        assert_eq!(printing["effective"]["rules_html"], "");
+        let identity = data["cards"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .find(|card| {
+                card["official_ids"]
+                    .as_array()
+                    .unwrap()
+                    .contains(&json!(id))
+            })
+            .unwrap();
+        assert_eq!(identity["keywords_observed"], json!(["NO TEXT"]));
+        assert_eq!(identity["effective_keywords_observed"], json!([]));
+        assert_eq!(
+            identity["implementation"]["status"],
+            "implemented_resource_model"
+        );
+    }
+}
+
+#[test]
+fn variant_review_preserves_printed_reminders_separators_and_separate_current_errata() {
+    let data = catalog();
+    let printing = |id: &str| {
+        data["printings"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .find(|printing| printing["official_id"] == id)
+            .unwrap()
+    };
+    for (base_id, alternate_id) in [
+        ("unl-113-219", "unl-113a-219"),
+        ("sfd-036-221", "unl-221-219"),
+        ("unl-120-219", "unl-120a-219"),
+    ] {
+        let base = printing(base_id);
+        let alternate = printing(alternate_id);
+        for face in [base, alternate] {
+            assert_eq!(face["effective"]["rules_text"], face["rules_text"]);
+            assert_eq!(face["effective"]["rules_html"], face["rules_html"]);
+        }
+        assert_ne!(
+            base["effective"]["rules_text"],
+            alternate["effective"]["rules_text"]
+        );
+    }
+    assert!(
+        printing("sfd-036-221")["effective"]["rules_text"]
+            .as_str()
+            .unwrap()
+            .starts_with("[Deathknell] —")
+    );
+    assert!(
+        printing("unl-221-219")["effective"]["rules_text"]
+            .as_str()
+            .unwrap()
+            .starts_with("[Deathknell][>]")
+    );
+    let rengar = printing("unl-120-219");
+    assert!(
+        rengar["effective"]["rules_text"]
+            .as_str()
+            .unwrap()
+            .contains("I can be played")
+    );
+    let identity = data["cards"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|card| card["identity"] == "unl-120-219")
+        .unwrap();
+    let runtime = cards::cards();
+    assert_eq!(
+        runtime[30].official_text,
+        identity["errata"][0]["text"].as_str().unwrap()
+    );
+    assert!(runtime[30].official_text.contains("I can [Ambush]"));
 }
 
 #[test]

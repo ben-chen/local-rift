@@ -1,0 +1,1473 @@
+[
+  {
+    "official_id": "ogn-007-298",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/12bcd0cde5d9ff4640e82945001e9fef863530f1-744x1039.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/ogn-007-298.png",
+    "sha256": "828656af6965978d63be77d6826c62d52fd84607d31f0c4bb2a7b34985679c88",
+    "bytes": 252759,
+    "visual_review": {
+      "reviewed_on": "2026-10-24",
+      "method": "Individual visual inspection of exact original official image; name/subtitle and collector footer matched. No OCR-based equivalence or tag union.",
+      "collector_footer": "OGN-007/298",
+      "printed_rules_text": "",
+      "printed_reminder_spans": [],
+      "observation": "Visually inspected the complete face: correct named rune, Rune type, domain icon, and exact collector footer. No rules instructions or [NO TEXT] literal are printed."
+    }
+  },
+  {
+    "official_id": "ogn-007a-298",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/09da06c69d07d4e72dde703737ef167472c715af-1488x2078.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/ogn-007a-298.png",
+    "sha256": "ce839d2cd8506fcc7906324139feb349b9ecbf5ee6cba461aa2fe5f5c254af6a",
+    "bytes": 1426033,
+    "visual_review": {
+      "reviewed_on": "2026-10-24",
+      "method": "Individual visual inspection of exact original official image; name/subtitle and collector footer matched. No OCR-based equivalence or tag union.",
+      "collector_footer": "OGN-007a/298",
+      "printed_rules_text": "",
+      "printed_reminder_spans": [],
+      "observation": "Visually inspected the complete face: correct named rune, Rune type, domain icon, and exact collector footer. No rules instructions or [NO TEXT] literal are printed."
+    }
+  },
+  {
+    "official_id": "ogn-013-298",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/d541bf3bcb5aa3ad0d48d87f5753569b72ac426f-744x1039.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/ogn-013-298.png",
+    "sha256": "6276ed9bfd02cd93df1d39844a599707f2711180955a9c28ff624cee11fce249",
+    "bytes": 785040,
+    "visual_review": {
+      "reviewed_on": "2026-10-24",
+      "method": "Individual visual inspection of exact original official image; name/subtitle and collector footer matched. No OCR-based equivalence or tag union.",
+      "collector_footer": "OGN-013/298",
+      "printed_rules_text": "[Deflect] (Opponents must pay [Any Power] to choose me with a spell or ability.)",
+      "printed_reminder_spans": [
+        "(Opponents must pay [Any Power] to choose me with a spell or ability.)"
+      ],
+      "observation": "Both faces retain Deflect. OGN 013 prints its italic Any-Power targeting reminder; UNL 220 omits it. Exact face name/subtitle and collector footer were checked."
+    }
+  },
+  {
+    "official_id": "ogn-039-298",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/3d942c02ad4e96a36dba14d663c5105bb6614500-744x1039.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/ogn-039-298.png",
+    "sha256": "848e1020bc1f1bbcc45a04142e9afcc6b478c4be76b07db893394b78669055d4",
+    "bytes": 1441045,
+    "visual_review": {
+      "reviewed_on": "2026-10-24",
+      "method": "Individual visual inspection of exact original official image; name/subtitle and collector footer matched. No OCR-based equivalence or tag union.",
+      "collector_footer": "OGN · 039/298",
+      "printed_type": "Champion Unit",
+      "printed_tags_in_face_order": [
+        "Kai'Sa",
+        "The Void"
+      ],
+      "observation": "Accelerate reminder explicitly 1Energy/FuryPower; conquer draw1."
+    }
+  },
+  {
+    "official_id": "ogn-039a-298",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/ad69bde670ce218adee1d2a618a7295d2fb7bd4c-744x1039.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/ogn-039a-298.png",
+    "sha256": "542b9965affa15deb5bacb3ba92d9bde06bdd716d6b9f8594252f3e3f4aefb49",
+    "bytes": 1029461,
+    "visual_review": {
+      "reviewed_on": "2026-10-24",
+      "method": "Individual visual inspection of exact original official image; name/subtitle and collector footer matched. No OCR-based equivalence or tag union.",
+      "collector_footer": "OGN · 039a/298",
+      "printed_type": "Champion Unit",
+      "printed_tags_in_face_order": [
+        "Kai'Sa",
+        "The Void"
+      ],
+      "observation": "Same Accelerate reminder and conquer draw1 as OGN039."
+    }
+  },
+  {
+    "official_id": "ogn-042-298",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/0a0e8c3d16c2595e2f8efcc2b1466226539b506c-744x1039.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/ogn-042-298.png",
+    "sha256": "00508f69fa10caf8d7ad2daf73e5c47a221a72373db2ffdb0d96b418147a3b65",
+    "bytes": 254554,
+    "visual_review": {
+      "reviewed_on": "2026-10-24",
+      "method": "Individual visual inspection of exact original official image; name/subtitle and collector footer matched. No OCR-based equivalence or tag union.",
+      "collector_footer": "OGN-042/298",
+      "printed_rules_text": "",
+      "printed_reminder_spans": [],
+      "observation": "Visually inspected the complete face: correct named rune, Rune type, domain icon, and exact collector footer. No rules instructions or [NO TEXT] literal are printed."
+    }
+  },
+  {
+    "official_id": "ogn-042a-298",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/88187b586b9b3cc2f48fd20c806dd5fc5e1bfc71-1488x2078.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/ogn-042a-298.png",
+    "sha256": "a9a3143070ea843e80441d9b2f0f51898940e8f12f2eb6843b4f1b40d5a4becd",
+    "bytes": 1603790,
+    "visual_review": {
+      "reviewed_on": "2026-10-24",
+      "method": "Individual visual inspection of exact original official image; name/subtitle and collector footer matched. No OCR-based equivalence or tag union.",
+      "collector_footer": "OGN-042a/298",
+      "printed_rules_text": "",
+      "printed_reminder_spans": [],
+      "observation": "Visually inspected the complete face: correct named rune, Rune type, domain icon, and exact collector footer. No rules instructions or [NO TEXT] literal are printed."
+    }
+  },
+  {
+    "official_id": "ogn-089-298",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/f99aa4874baaebd2e81798c8a3aa01c5900f6d30-744x1039.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/ogn-089-298.png",
+    "sha256": "35b018f88de91918b1311a810b3da524129457dae9edb193ceb4d54dd642c5cf",
+    "bytes": 302984,
+    "visual_review": {
+      "reviewed_on": "2026-10-24",
+      "method": "Individual visual inspection of exact original official image; name/subtitle and collector footer matched. No OCR-based equivalence or tag union.",
+      "collector_footer": "OGN-089/298",
+      "printed_rules_text": "",
+      "printed_reminder_spans": [],
+      "observation": "Visually inspected the complete face: correct named rune, Rune type, domain icon, and exact collector footer. No rules instructions or [NO TEXT] literal are printed."
+    }
+  },
+  {
+    "official_id": "ogn-089a-298",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/ecf8c8632c728520b51cd4bc79036677e96ebdfd-1488x2078.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/ogn-089a-298.png",
+    "sha256": "c9cb4a58341ee3953e42a07199cdd63c635ec92a7258f514f173be164f26a7d1",
+    "bytes": 1768191,
+    "visual_review": {
+      "reviewed_on": "2026-10-24",
+      "method": "Individual visual inspection of exact original official image; name/subtitle and collector footer matched. No OCR-based equivalence or tag union.",
+      "collector_footer": "OGN-089a/298",
+      "printed_rules_text": "",
+      "printed_reminder_spans": [],
+      "observation": "Visually inspected the complete face: correct named rune, Rune type, domain icon, and exact collector footer. No rules instructions or [NO TEXT] literal are printed."
+    }
+  },
+  {
+    "official_id": "ogn-117-298",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/35be0b10f13611b4f5d828f2a79001036ab57ba1-744x1039.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/ogn-117-298.png",
+    "sha256": "6571072a195d89f4be5bd0293d538c27db4493beb08c1952553e116e38f336f4",
+    "bytes": 1065171,
+    "visual_review": {
+      "reviewed_on": "2026-10-24",
+      "method": "Individual visual inspection of exact original official image; name/subtitle and collector footer matched. No OCR-based equivalence or tag union.",
+      "collector_footer": "OGN · 117/298",
+      "printed_type": "Champion Unit",
+      "printed_tags_in_face_order": [
+        "Viktor",
+        "Zaun"
+      ],
+      "observation": "The physical face says play a 1-Might Recruit unit token IN your base on opponent-turn card play."
+    }
+  },
+  {
+    "official_id": "ogn-117a-298",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/12dfa6b38edc9b23f216c0a1828474f7506d49c0-744x1039.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/ogn-117a-298.png",
+    "sha256": "1d10a5c73134b0fccdb9d1d9a41b572b0a2b9088eae433fb9780fb72d81fbc6e",
+    "bytes": 812098,
+    "visual_review": {
+      "reviewed_on": "2026-10-24",
+      "method": "Individual visual inspection of exact original official image; name/subtitle and collector footer matched. No OCR-based equivalence or tag union.",
+      "collector_footer": "OGN · 117a/298",
+      "printed_type": "Champion Unit",
+      "printed_tags_in_face_order": [
+        "Viktor",
+        "Zaun"
+      ],
+      "observation": "The physical face says play a 1-Might Recruit unit token IN your base, as OGN117."
+    }
+  },
+  {
+    "official_id": "ogn-119-298",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/cfa28e1abcac1db780d11e82985e13ee5978290d-744x1039.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/ogn-119-298.png",
+    "sha256": "eb7cc1894e3a6d40c037f1bddb0396c3505cfab3393835229766bfa53d879f2b",
+    "bytes": 1148880,
+    "visual_review": {
+      "reviewed_on": "2026-10-24",
+      "method": "Individual visual inspection of exact original official image; name/subtitle and collector footer matched. No OCR-based equivalence or tag union.",
+      "collector_footer": "OGN · 119/298",
+      "printed_type": "Champion Unit",
+      "printed_tags_in_face_order": [
+        "Ahri",
+        "Ionia"
+      ],
+      "observation": "Same attack/defend -2 Might, minimum 1, instruction as all five Ahri faces. Flavor and illustration vary."
+    }
+  },
+  {
+    "official_id": "ogn-119a-298",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/7adc5aa8dba66bf918b8140699cb3a74f7b0efb5-744x1039.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/ogn-119a-298.png",
+    "sha256": "fbe5a8320e8d02035649b0442557415617c46b627a75831a151b9b81d968d8c1",
+    "bytes": 939695,
+    "visual_review": {
+      "reviewed_on": "2026-10-24",
+      "method": "Individual visual inspection of exact original official image; name/subtitle and collector footer matched. No OCR-based equivalence or tag union.",
+      "collector_footer": "OGN · 119a/298",
+      "printed_type": "Champion Unit",
+      "printed_tags_in_face_order": [
+        "Ahri",
+        "Ionia"
+      ],
+      "observation": "Same attack/defend -2 Might, minimum 1, instruction as all five Ahri faces. Flavor and illustration vary."
+    }
+  },
+  {
+    "official_id": "ogn-126-298",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/3b3c3c07626d6180457c849047e0228dc0d19539-744x1039.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/ogn-126-298.png",
+    "sha256": "516e5bbbb64fc2bb7fdbe87768d2dbd058773c1795b0eea63387fc92b1217814",
+    "bytes": 208975,
+    "visual_review": {
+      "reviewed_on": "2026-10-24",
+      "method": "Individual visual inspection of exact original official image; name/subtitle and collector footer matched. No OCR-based equivalence or tag union.",
+      "collector_footer": "OGN-126/298",
+      "printed_rules_text": "",
+      "printed_reminder_spans": [],
+      "observation": "Visually inspected the complete face: correct named rune, Rune type, domain icon, and exact collector footer. No rules instructions or [NO TEXT] literal are printed."
+    }
+  },
+  {
+    "official_id": "ogn-126a-298",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/011081f82cab36f8ec0d6874492512fd7859f59e-1488x2078.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/ogn-126a-298.png",
+    "sha256": "ec691ae789bb0cdc34df3697b0d4c9a8e59a965f3b5466365db8a4fee0d587fb",
+    "bytes": 1591501,
+    "visual_review": {
+      "reviewed_on": "2026-10-24",
+      "method": "Individual visual inspection of exact original official image; name/subtitle and collector footer matched. No OCR-based equivalence or tag union.",
+      "collector_footer": "OGN-126a/298",
+      "printed_rules_text": "",
+      "printed_reminder_spans": [],
+      "observation": "Visually inspected the complete face: correct named rune, Rune type, domain icon, and exact collector footer. No rules instructions or [NO TEXT] literal are printed."
+    }
+  },
+  {
+    "official_id": "ogn-166-298",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/daf23b0deaa5e1a5a5d310b59e9ad25d1bd70363-744x1039.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/ogn-166-298.png",
+    "sha256": "0a982989200fb86a5e6b9cdc064bf66a410714ac9e2baf2b23ce9e56c9885651",
+    "bytes": 155565,
+    "visual_review": {
+      "reviewed_on": "2026-10-24",
+      "method": "Individual visual inspection of exact original official image; name/subtitle and collector footer matched. No OCR-based equivalence or tag union.",
+      "collector_footer": "OGN-166/298",
+      "printed_rules_text": "",
+      "printed_reminder_spans": [],
+      "observation": "Visually inspected the complete face: correct named rune, Rune type, domain icon, and exact collector footer. No rules instructions or [NO TEXT] literal are printed."
+    }
+  },
+  {
+    "official_id": "ogn-166a-298",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/fbcde2f71fcc06fb8afc83855e24447a393f8943-1488x2078.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/ogn-166a-298.png",
+    "sha256": "c7b5edcf8cfeceb8df61def7986b5cb263bf749e65117c6045ccd329c2b11965",
+    "bytes": 1532486,
+    "visual_review": {
+      "reviewed_on": "2026-10-24",
+      "method": "Individual visual inspection of exact original official image; name/subtitle and collector footer matched. No OCR-based equivalence or tag union.",
+      "collector_footer": "OGN-166a/298",
+      "printed_rules_text": "",
+      "printed_reminder_spans": [],
+      "observation": "Visually inspected the complete face: correct named rune, Rune type, domain icon, and exact collector footer. No rules instructions or [NO TEXT] literal are printed."
+    }
+  },
+  {
+    "official_id": "ogn-171-298",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/11af57d045768e886d05e1c0933b0d57cb1e459d-744x1039.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/ogn-171-298.png",
+    "sha256": "796104aecd4761b4bac1608f15c762680c4357a9f85107f2b6b45faf6e5e3fed",
+    "bytes": 772514,
+    "visual_review": {
+      "reviewed_on": "2026-10-24",
+      "method": "Individual visual inspection of exact original official image; name/subtitle and collector footer matched. No OCR-based equivalence or tag union.",
+      "collector_footer": "OGN-171/298",
+      "printed_rules_text": "[Vision] (When you play me, look at the top card of your Main Deck. You may recycle it.)",
+      "printed_reminder_spans": [
+        "(When you play me, look at the top card of your Main Deck. You may recycle it.)"
+      ],
+      "observation": "Both faces retain Vision. OGN 171 prints the italic top-card look/recycle reminder, UNL 224 omits it. Vision’s definition remains authoritative. Exact face name/subtitle and collector footer were checked."
+    }
+  },
+  {
+    "official_id": "ogn-210-298",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/41dee7ec46124c261352595cfbd8a6d38d32b947-744x1039.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/ogn-210-298.png",
+    "sha256": "0605dff08fafa2a40d75840c41077a83275bbd44bff38d9b457e01d497258e23",
+    "bytes": 712760,
+    "visual_review": {
+      "reviewed_on": "2026-10-24",
+      "method": "Individual visual inspection of exact original official image; name/subtitle and collector footer matched. No OCR-based equivalence or tag union.",
+      "collector_footer": "OGN-210/298",
+      "printed_rules_text": "[Assault] (+1 Might while I'm an attacker.)",
+      "printed_reminder_spans": [
+        "(+1 Might while I'm an attacker.)"
+      ],
+      "observation": "Both faces retain Assault. OGN prints the italic +1 Might attacker reminder; UNL omits it. Exact face name/subtitle and collector footer were checked."
+    }
+  },
+  {
+    "official_id": "ogn-214-298",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/35ec6fdd2124324bb7052cba31c8c44f2e98f3ae-744x1039.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/ogn-214-298.png",
+    "sha256": "e8517a68a65dee58b6068a5e1e57110dfa2c990ec877862c6404b7c6591ad114",
+    "bytes": 234044,
+    "visual_review": {
+      "reviewed_on": "2026-10-24",
+      "method": "Individual visual inspection of exact original official image; name/subtitle and collector footer matched. No OCR-based equivalence or tag union.",
+      "collector_footer": "OGN-214/298",
+      "printed_rules_text": "",
+      "printed_reminder_spans": [],
+      "observation": "Visually inspected the complete face: correct named rune, Rune type, domain icon, and exact collector footer. No rules instructions or [NO TEXT] literal are printed."
+    }
+  },
+  {
+    "official_id": "ogn-214a-298",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/0e4904221c3bbbfcfde1734bc414dbe97c67e295-1488x2078.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/ogn-214a-298.png",
+    "sha256": "2ca13efde8f08c9a52980c34983125921d93c3fdc6ce80d7144551b1613699d4",
+    "bytes": 1630535,
+    "visual_review": {
+      "reviewed_on": "2026-10-24",
+      "method": "Individual visual inspection of exact original official image; name/subtitle and collector footer matched. No OCR-based equivalence or tag union.",
+      "collector_footer": "OGN-214a/298",
+      "printed_rules_text": "",
+      "printed_reminder_spans": [],
+      "observation": "Visually inspected the complete face: correct named rune, Rune type, domain icon, and exact collector footer. No rules instructions or [NO TEXT] literal are printed."
+    }
+  },
+  {
+    "official_id": "rad-r01",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/e0337944fa56c357ab3b9a822064a8f58ead8315-744x1039.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/rad-r01.png",
+    "sha256": "f89c25e91ec28e0788db4e99f91a6ec91f8c239f9cc41a2aae32ceafb4ecd597",
+    "bytes": 249803,
+    "visual_review": {
+      "reviewed_on": "2026-10-24",
+      "method": "Individual visual inspection of exact original official image; name/subtitle and collector footer matched. No OCR-based equivalence or tag union.",
+      "collector_footer": "RAD-R01",
+      "printed_rules_text": "",
+      "printed_reminder_spans": [],
+      "observation": "Visually inspected the complete face: correct named rune, Rune type, domain icon, and exact collector footer. No rules instructions or [NO TEXT] literal are printed."
+    }
+  },
+  {
+    "official_id": "rad-r01a",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/55f5b003c67cd821895bc78a0a0c36322af53e11-744x1039.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/rad-r01a.png",
+    "sha256": "e9dc22612fba730628c05cb8fb6491a9d1c3f3454a603f7b464d0d37c8e54b65",
+    "bytes": 992280,
+    "visual_review": {
+      "reviewed_on": "2026-10-24",
+      "method": "Individual visual inspection of exact original official image; name/subtitle and collector footer matched. No OCR-based equivalence or tag union.",
+      "collector_footer": "RAD-R01a",
+      "printed_rules_text": "",
+      "printed_reminder_spans": [],
+      "observation": "Visually inspected the complete face: correct named rune, Rune type, domain icon, and exact collector footer. No rules instructions or [NO TEXT] literal are printed."
+    }
+  },
+  {
+    "official_id": "rad-r02",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/34661f9fff9e12addbfa320a88b794fcffd6652f-744x1039.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/rad-r02.png",
+    "sha256": "1f8a63b056a9589791f453fa3567928511f7dc4b149378aebaab0314cf08e0bc",
+    "bytes": 287795,
+    "visual_review": {
+      "reviewed_on": "2026-10-24",
+      "method": "Individual visual inspection of exact original official image; name/subtitle and collector footer matched. No OCR-based equivalence or tag union.",
+      "collector_footer": "RAD-R02",
+      "printed_rules_text": "",
+      "printed_reminder_spans": [],
+      "observation": "Visually inspected the complete face: correct named rune, Rune type, domain icon, and exact collector footer. No rules instructions or [NO TEXT] literal are printed."
+    }
+  },
+  {
+    "official_id": "rad-r02a",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/34b4e5127ca68f78ad43e824af61728cfc7fbc19-744x1039.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/rad-r02a.png",
+    "sha256": "b7ff80ebfd44ae9c48879315e821efb65da34f8888e66330754025f0a46e1132",
+    "bytes": 1058422,
+    "visual_review": {
+      "reviewed_on": "2026-10-24",
+      "method": "Individual visual inspection of exact original official image; name/subtitle and collector footer matched. No OCR-based equivalence or tag union.",
+      "collector_footer": "RAD-R02a",
+      "printed_rules_text": "",
+      "printed_reminder_spans": [],
+      "observation": "Visually inspected the complete face: correct named rune, Rune type, domain icon, and exact collector footer. No rules instructions or [NO TEXT] literal are printed."
+    }
+  },
+  {
+    "official_id": "rad-r03",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/10804d84483e8813a6b5277e4527ac148bbabdd0-744x1039.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/rad-r03.png",
+    "sha256": "bf1a6ee13e1f10e06bbec6a36099eddc5a0d3c1b524ffdd9483f1bb3fb4ea8fd",
+    "bytes": 262610,
+    "visual_review": {
+      "reviewed_on": "2026-10-24",
+      "method": "Individual visual inspection of exact original official image; name/subtitle and collector footer matched. No OCR-based equivalence or tag union.",
+      "collector_footer": "RAD-R03",
+      "printed_rules_text": "",
+      "printed_reminder_spans": [],
+      "observation": "Visually inspected the complete face: correct named rune, Rune type, domain icon, and exact collector footer. No rules instructions or [NO TEXT] literal are printed."
+    }
+  },
+  {
+    "official_id": "rad-r03a",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/7216a84b4c3c2446e9f96f1dae02cb4fd96283d8-744x1039.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/rad-r03a.png",
+    "sha256": "2f420564a1c35ec6667d4580cfff60cdb0bb38281b90fdd9c41e1ba9c22ca450",
+    "bytes": 1455640,
+    "visual_review": {
+      "reviewed_on": "2026-10-24",
+      "method": "Individual visual inspection of exact original official image; name/subtitle and collector footer matched. No OCR-based equivalence or tag union.",
+      "collector_footer": "RAD-R03a",
+      "printed_rules_text": "",
+      "printed_reminder_spans": [],
+      "observation": "Visually inspected the complete face: correct named rune, Rune type, domain icon, and exact collector footer. No rules instructions or [NO TEXT] literal are printed."
+    }
+  },
+  {
+    "official_id": "rad-r04",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/6d78f8e8cf237cc19a8546184501d4be97df29fd-744x1039.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/rad-r04.png",
+    "sha256": "2000131352f514ba418a2761074e4541b7e3b1fd82cdadc2b031633fa1538f79",
+    "bytes": 206602,
+    "visual_review": {
+      "reviewed_on": "2026-10-24",
+      "method": "Individual visual inspection of exact original official image; name/subtitle and collector footer matched. No OCR-based equivalence or tag union.",
+      "collector_footer": "RAD-R04",
+      "printed_rules_text": "",
+      "printed_reminder_spans": [],
+      "observation": "Visually inspected the complete face: correct named rune, Rune type, domain icon, and exact collector footer. No rules instructions or [NO TEXT] literal are printed."
+    }
+  },
+  {
+    "official_id": "rad-r04a",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/90b2706af9f1eaf167065087a09a8451f303ffe1-744x1039.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/rad-r04a.png",
+    "sha256": "3c29232f9a70fc486ba5bb1d6d455bbf9cf870e17631724734ff3fa24e004504",
+    "bytes": 1153429,
+    "visual_review": {
+      "reviewed_on": "2026-10-24",
+      "method": "Individual visual inspection of exact original official image; name/subtitle and collector footer matched. No OCR-based equivalence or tag union.",
+      "collector_footer": "RAD-R04a",
+      "printed_rules_text": "",
+      "printed_reminder_spans": [],
+      "observation": "Visually inspected the complete face: correct named rune, Rune type, domain icon, and exact collector footer. No rules instructions or [NO TEXT] literal are printed."
+    }
+  },
+  {
+    "official_id": "rad-r05",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/f420625850dc43c96e29b6d85b6581c7ccb6126c-744x1039.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/rad-r05.png",
+    "sha256": "9e7269e26ed974414cfd6718b6e4e9b992bcf62650c4235f8fcfabf7320e123b",
+    "bytes": 194678,
+    "visual_review": {
+      "reviewed_on": "2026-10-24",
+      "method": "Individual visual inspection of exact original official image; name/subtitle and collector footer matched. No OCR-based equivalence or tag union.",
+      "collector_footer": "RAD-R05",
+      "printed_rules_text": "",
+      "printed_reminder_spans": [],
+      "observation": "Visually inspected the complete face: correct named rune, Rune type, domain icon, and exact collector footer. No rules instructions or [NO TEXT] literal are printed."
+    }
+  },
+  {
+    "official_id": "rad-r05a",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/a8ad4d5345a7316ba76689988bcd211d63f66098-744x1039.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/rad-r05a.png",
+    "sha256": "3e339bfd5ad436b25f074a39c6ef719a23c57ab75bc8506dd2564e456c442699",
+    "bytes": 881423,
+    "visual_review": {
+      "reviewed_on": "2026-10-24",
+      "method": "Individual visual inspection of exact original official image; name/subtitle and collector footer matched. No OCR-based equivalence or tag union.",
+      "collector_footer": "RAD-R05a",
+      "printed_rules_text": "",
+      "printed_reminder_spans": [],
+      "observation": "Visually inspected the complete face: correct named rune, Rune type, domain icon, and exact collector footer. No rules instructions or [NO TEXT] literal are printed."
+    }
+  },
+  {
+    "official_id": "rad-r06",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/402fa10965dbee64aa1ddef654e4b9d9a5ccd28e-744x1039.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/rad-r06.png",
+    "sha256": "fd3aa24189b2dfe0d66c0e5bf88e8f9b1b3777b5b1cd5e777030065f962bfecf",
+    "bytes": 203629,
+    "visual_review": {
+      "reviewed_on": "2026-10-24",
+      "method": "Individual visual inspection of exact original official image; name/subtitle and collector footer matched. No OCR-based equivalence or tag union.",
+      "collector_footer": "RAD-R06",
+      "printed_rules_text": "",
+      "printed_reminder_spans": [],
+      "observation": "Visually inspected the complete face: correct named rune, Rune type, domain icon, and exact collector footer. No rules instructions or [NO TEXT] literal are printed."
+    }
+  },
+  {
+    "official_id": "rad-r06a",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/689797f63857003c7f21c478e86a811040c463c2-744x1039.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/rad-r06a.png",
+    "sha256": "0f5b3578203bfe9ac6d344cd094b120616e72e2b1b1424ea8fa51884de1040be",
+    "bytes": 784770,
+    "visual_review": {
+      "reviewed_on": "2026-10-24",
+      "method": "Individual visual inspection of exact original official image; name/subtitle and collector footer matched. No OCR-based equivalence or tag union.",
+      "collector_footer": "RAD-R06a",
+      "printed_rules_text": "",
+      "printed_reminder_spans": [],
+      "observation": "Visually inspected the complete face: correct named rune, Rune type, domain icon, and exact collector footer. No rules instructions or [NO TEXT] literal are printed."
+    }
+  },
+  {
+    "official_id": "sfd-036-221",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/f5ab933035b7a6d6bb1d35c10c13f58c7fbf3398-744x1039.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/sfd-036-221.png",
+    "sha256": "cda50fec3b67af49c753bef703f8c6dfece2031549b36d4e213ae6565dee7cf0",
+    "bytes": 707006,
+    "visual_review": {
+      "reviewed_on": "2026-10-24",
+      "method": "Individual visual inspection of exact original official image; name/subtitle and collector footer matched. No OCR-based equivalence or tag union.",
+      "collector_footer": "SFD-036/221",
+      "printed_rules_text": "[Deathknell] — If I died alone, draw 1. (When I die, get the effect. I'm alone if there are no other friendly units here.)",
+      "printed_reminder_spans": [
+        "(When I die, get the effect. I'm alone if there are no other friendly units here.)"
+      ],
+      "observation": "SFD 036 visibly uses an em dash following Deathknell; UNL 221 uses a right-pointing keyword tab/arrow. Both associate exactly “If I died alone, draw 1” with Deathknell. SFD also prints the italic death/alone reminder. Specific keyword-boundary reasoning from Core 808 applies; this is not a general dash/arrow normalization rule. Exact face name/subtitle and collector footer were checked."
+    }
+  },
+  {
+    "official_id": "sfd-057-221",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/fe05fa55781f8036f8bfc9c10bba94326a0c8cc9-744x1039.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/sfd-057-221.png",
+    "sha256": "5a1f52e32857033e17ae16de4d36bb1f247b60d6f1b235121cc20007b2d2fc04",
+    "bytes": 922386,
+    "visual_review": {
+      "reviewed_on": "2026-10-24",
+      "method": "Individual visual inspection of exact original official image; name/subtitle and collector footer matched. No OCR-based equivalence or tag union.",
+      "collector_footer": "SFD-057/221",
+      "printed_rules_text": "[Deflect] (Opponents must pay [Any Power] to choose me with a spell or ability.)\nWhen you choose or ready me, give me +1 Might this turn.",
+      "printed_reminder_spans": [
+        "(Opponents must pay [Any Power] to choose me with a spell or ability.)"
+      ],
+      "observation": "All five faces retain Deflect and the choose-or-ready +1 Might trigger. Four SFD faces print the italic Deflect reminder; VEN 174 omits it. This is not a change to either trigger event. Exact face name/subtitle and collector footer were checked."
+    }
+  },
+  {
+    "official_id": "sfd-057a-221",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/cef4f73541e0623b4024b483d141d0396f1dddcb-744x1039.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/sfd-057a-221.png",
+    "sha256": "9024f39722fa18c60e625b17ac4fcbabfd408ee02153b691ecbc845bde35a633",
+    "bytes": 1022069,
+    "visual_review": {
+      "reviewed_on": "2026-10-24",
+      "method": "Individual visual inspection of exact original official image; name/subtitle and collector footer matched. No OCR-based equivalence or tag union.",
+      "collector_footer": "SFD-057a/221",
+      "printed_rules_text": "[Deflect] (Opponents must pay [Any Power] to choose me with a spell or ability.)\nWhen you choose or ready me, give me +1 Might this turn.",
+      "printed_reminder_spans": [
+        "(Opponents must pay [Any Power] to choose me with a spell or ability.)"
+      ],
+      "observation": "All five faces retain Deflect and the choose-or-ready +1 Might trigger. Four SFD faces print the italic Deflect reminder; VEN 174 omits it. This is not a change to either trigger event. Exact face name/subtitle and collector footer were checked."
+    }
+  },
+  {
+    "official_id": "sfd-225-221",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/40454a8534f7c9444bafd000ffbfc0e5bcc847f0-744x1039.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/sfd-225-221.png",
+    "sha256": "7aea1476fdc20e5517cb9eebd01ee7077df870c757b9f63c4b07cea0a4d83246",
+    "bytes": 1101838,
+    "visual_review": {
+      "reviewed_on": "2026-10-24",
+      "method": "Individual visual inspection of exact original official image; name/subtitle and collector footer matched. No OCR-based equivalence or tag union.",
+      "collector_footer": "SFD-225/221",
+      "printed_rules_text": "[Deflect] (Opponents must pay [Any Power] to choose me with a spell or ability.)\nWhen you choose or ready me, give me +1 Might this turn.",
+      "printed_reminder_spans": [
+        "(Opponents must pay [Any Power] to choose me with a spell or ability.)"
+      ],
+      "observation": "All five faces retain Deflect and the choose-or-ready +1 Might trigger. Four SFD faces print the italic Deflect reminder; VEN 174 omits it. This is not a change to either trigger event. Exact face name/subtitle and collector footer were checked."
+    }
+  },
+  {
+    "official_id": "sfd-225-star-221",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/e064a9017b5d6bf0e18c4452acfca4ed8c279657-744x1039.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/sfd-225-star-221.png",
+    "sha256": "94b78cb569b2c9f320e3dea719a41051abb83a9abf4f4c1395dc157e8874f74e",
+    "bytes": 1112083,
+    "visual_review": {
+      "reviewed_on": "2026-10-24",
+      "method": "Individual visual inspection of exact original official image; name/subtitle and collector footer matched. No OCR-based equivalence or tag union.",
+      "collector_footer": "SFD-225*/221",
+      "printed_rules_text": "[Deflect] (Opponents must pay [Any Power] to choose me with a spell or ability.)\nWhen you choose or ready me, give me +1 Might this turn.",
+      "printed_reminder_spans": [
+        "(Opponents must pay [Any Power] to choose me with a spell or ability.)"
+      ],
+      "observation": "All five faces retain Deflect and the choose-or-ready +1 Might trigger. Four SFD faces print the italic Deflect reminder; VEN 174 omits it. This is not a change to either trigger event. Exact face name/subtitle and collector footer were checked."
+    }
+  },
+  {
+    "official_id": "sfd-227-221",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/d4c332e90c97e5e70b996598cd4a0f731b77fdef-744x1039.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/sfd-227-221.png",
+    "sha256": "a2e2c28f5180e329664a9d487cae02f354f481f4b8fbd1666cce4cc574fcc96b",
+    "bytes": 1412623,
+    "visual_review": {
+      "reviewed_on": "2026-10-24",
+      "method": "Individual visual inspection of exact original official image; name/subtitle and collector footer matched. No OCR-based equivalence or tag union.",
+      "collector_footer": "SFD · 227/221",
+      "printed_type": "Champion Unit",
+      "printed_tags_in_face_order": [
+        "Ahri",
+        "Ionia"
+      ],
+      "observation": "Same attack/defend -2 Might, minimum 1, instruction as all five Ahri faces. Printed Ionia is present despite feed omission."
+    }
+  },
+  {
+    "official_id": "sfd-227-star-221",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/608f786c30a7e80db87d3c2d45bc0c26b0840c5e-744x1039.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/sfd-227-star-221.png",
+    "sha256": "2c082b1bd15b3f49be8689f12aa0dbb7ac4b2160ea39a7acdf2871bbb59d371f",
+    "bytes": 1419738,
+    "visual_review": {
+      "reviewed_on": "2026-10-24",
+      "method": "Individual visual inspection of exact original official image; name/subtitle and collector footer matched. No OCR-based equivalence or tag union.",
+      "collector_footer": "SFD · 227*/221",
+      "printed_type": "Champion Unit",
+      "printed_tags_in_face_order": [
+        "Ahri",
+        "Ionia"
+      ],
+      "observation": "Same attack/defend -2 Might, minimum 1, instruction; signed art and star footer distinguish this image from SFD227. Printed Ionia is present."
+    }
+  },
+  {
+    "official_id": "unl-024-219",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/80c7d1c62301dd6e3ced910156f3fdeb8d34a621-744x1039.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/unl-024-219.png",
+    "sha256": "b0f2e4912698cceb3f2d77d5010c8c34f8a3ffa2e336a1d27744240a48faae16",
+    "bytes": 850240,
+    "visual_review": {
+      "reviewed_on": "2026-10-24",
+      "method": "Individual visual inspection of exact original official image; name/subtitle and collector footer matched. No OCR-based equivalence or tag union.",
+      "collector_footer": "UNL-024/219",
+      "printed_rules_text": "[Accelerate] (You may pay [1 Energy][Fury Power] as an additional cost to have me enter ready.)\n[Assault 2] (+2 Might while I'm an attacker.)\n[Deflect] (Opponents must pay [Any Power] to choose me with a spell or ability.)\n[Ganking] (I can move from battlefield to battlefield.)",
+      "printed_reminder_spans": [
+        "(You may pay [1 Energy][Fury Power] as an additional cost to have me enter ready.)",
+        "(+2 Might while I'm an attacker.)",
+        "(Opponents must pay [Any Power] to choose me with a spell or ability.)",
+        "(I can move from battlefield to battlefield.)"
+      ],
+      "observation": "Both faces retain Accelerate, Assault 2, Deflect, and Ganking. UNL 024 prints four italic reminders; alternate024a omits them. The printed1 Energy/Fury Accelerate reminder is consistent with Core 805’s1 Energy plus matching-domain Power; omission does not remove its additional cost. Exact face name/subtitle and collector footer were checked."
+    }
+  },
+  {
+    "official_id": "unl-024a-219",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/cdab60d27d6d920f19ebed000b13dc25a439848c-744x1039.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/unl-024a-219.png",
+    "sha256": "b496fc6b007c0bed7f6af332913d6087f2862d2faf287a9423d32344f1d642cb",
+    "bytes": 865071,
+    "visual_review": {
+      "reviewed_on": "2026-10-24",
+      "method": "Individual visual inspection of exact original official image; name/subtitle and collector footer matched. No OCR-based equivalence or tag union.",
+      "collector_footer": "UNL-024a/219",
+      "printed_rules_text": "[Accelerate]\n[Assault 2]\n[Deflect]\n[Ganking]",
+      "printed_reminder_spans": [],
+      "observation": "Both faces retain Accelerate, Assault 2, Deflect, and Ganking. UNL 024 prints four italic reminders; alternate024a omits them. The printed1 Energy/Fury Accelerate reminder is consistent with Core 805’s1 Energy plus matching-domain Power; omission does not remove its additional cost. Exact face name/subtitle and collector footer were checked."
+    }
+  },
+  {
+    "official_id": "unl-113-219",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/a21feb3555825392fdb98f868840db3827ad0389-744x1039.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/unl-113-219.png",
+    "sha256": "469b0e298b6cd8def5fe41f0875947b5f2b1a26557c7676a88abda787492e058",
+    "bytes": 803324,
+    "visual_review": {
+      "reviewed_on": "2026-10-24",
+      "method": "Individual visual inspection of exact original official image; name/subtitle and collector footer matched. No OCR-based equivalence or tag union.",
+      "collector_footer": "UNL-113/219",
+      "printed_rules_text": "[Hunt 2] (When I conquer or hold, gain 2 XP.)\n[Level 6][>] I have [Deflect] and [Ganking]. (While you have 6+ XP, opponents must pay [Any Power] to choose me with a spell or ability and I can move from battlefield to battlefield.)",
+      "printed_reminder_spans": [
+        "(When I conquer or hold, gain 2 XP.)",
+        "(While you have 6+ XP, opponents must pay [Any Power] to choose me with a spell or ability and I can move from battlefield to battlefield.)"
+      ],
+      "observation": "Both faces retain Hunt 2 and the Level 6-associated Deflect/Ganking ability. UNL 113 prints both italic reminders; alternate113a omits both. Keyword values and level threshold remain printed and unchanged. Exact face name/subtitle and collector footer were checked."
+    }
+  },
+  {
+    "official_id": "unl-113a-219",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/1adb032501aac0070ea1bb0ca31c4efa11cd31a3-744x1039.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/unl-113a-219.png",
+    "sha256": "3b0988c3a949b4dfe31d9bc2045fbb7fca9de07e40a37c928c8adbf79f107444",
+    "bytes": 933671,
+    "visual_review": {
+      "reviewed_on": "2026-10-24",
+      "method": "Individual visual inspection of exact original official image; name/subtitle and collector footer matched. No OCR-based equivalence or tag union.",
+      "collector_footer": "UNL-113a/219",
+      "printed_rules_text": "[Hunt 2]\n[Level 6][>] I have [Deflect] and [Ganking].",
+      "printed_reminder_spans": [],
+      "observation": "Both faces retain Hunt 2 and the Level 6-associated Deflect/Ganking ability. UNL 113 prints both italic reminders; alternate113a omits both. Keyword values and level threshold remain printed and unchanged. Exact face name/subtitle and collector footer were checked."
+    }
+  },
+  {
+    "official_id": "unl-120-219",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/8e159fd8aa9bb349e32bda6a10b0178cc28ca8dd-744x1039.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/unl-120-219.png",
+    "sha256": "80452ddbcd9d9952806f3c95d373c02beb07b11130166783c12ef46fe4b5513e",
+    "bytes": 1383985,
+    "visual_review": {
+      "reviewed_on": "2026-10-24",
+      "method": "Individual visual inspection of exact original official image; name/subtitle and collector footer matched. No OCR-based equivalence or tag union.",
+      "collector_footer": "UNL-120/219",
+      "printed_rules_text": "[Ambush] (You may play me as a [Reaction] to a battlefield where you have units.)\nI can be played to a battlefield where there are enemy units (even if you don't have units there).",
+      "printed_reminder_spans": [
+        "(You may play me as a [Reaction] to a battlefield where you have units.)",
+        "(even if you don't have units there)"
+      ],
+      "observation": "All three faces retain Ambush and old “I can be played” placement wording. UNL 120 includes both italic Ambush reminder and italic embedded “even if” placement reminder; alternate120a/VEN179 omit both. The old operative sentence itself is superseded by the existing official erratum, which says “I can [Ambush]”. Treat physical variants and current operative authority separately. Exact face name/subtitle and collector footer were checked."
+    }
+  },
+  {
+    "official_id": "unl-120a-219",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/7e6d106e0170e7f45341c1755f829f286d782bb7-744x1039.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/unl-120a-219.png",
+    "sha256": "5d25f2d35e9881e86da70d7d18748ec65df5565dded39126b6ba82915fcd0005",
+    "bytes": 1206187,
+    "visual_review": {
+      "reviewed_on": "2026-10-24",
+      "method": "Individual visual inspection of exact original official image; name/subtitle and collector footer matched. No OCR-based equivalence or tag union.",
+      "collector_footer": "UNL-120a/219",
+      "printed_rules_text": "[Ambush]\nI can be played to a battlefield where there are enemy units.",
+      "printed_reminder_spans": [],
+      "observation": "All three faces retain Ambush and old “I can be played” placement wording. UNL 120 includes both italic Ambush reminder and italic embedded “even if” placement reminder; alternate120a/VEN179 omit both. The old operative sentence itself is superseded by the existing official erratum, which says “I can [Ambush]”. Treat physical variants and current operative authority separately. Exact face name/subtitle and collector footer were checked."
+    }
+  },
+  {
+    "official_id": "unl-145-219",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/2eaa5396b1cac9b245bde5a56b87314f8ae76a38-744x1039.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/unl-145-219.png",
+    "sha256": "eddc82c637bbf741093b3906af65796ee0cce6375a013b6dde52b1fbeae2a8dd",
+    "bytes": 661739,
+    "visual_review": {
+      "reviewed_on": "2026-10-24",
+      "method": "Individual visual inspection of exact original official image; name/subtitle and collector footer matched. No OCR-based equivalence or tag union.",
+      "collector_footer": "UNL-145/219",
+      "printed_rules_text": "[Hidden] (Hide now for [Any Power] to react with later for [0 Energy].)\n[Backline] (I must be assigned combat damage last.)\nOnce each turn, when an enemy unit dies while I'm at a battlefield, play a Gold gear token exhausted. (It has \"[Reaction][>] Kill this, [Exhaust]: [Add] [Any Power].\")",
+      "printed_reminder_spans": [
+        "(Hide now for [Any Power] to react with later for [0 Energy].)",
+        "(I must be assigned combat damage last.)",
+        "(It has \"[Reaction][>] Kill this, [Exhaust]: [Add] [Any Power].\")"
+      ],
+      "observation": "Both faces retain Hidden, Backline, and the once-each-turn enemy-death trigger that plays a Gold gear token exhausted while Pyke is at a battlefield. UNL 145 prints italic Hidden, Backline, and Gold-token ability reminders; alternate145a omits all three. The Gold text is visibly italic and parenthesized, not an extra activated ability on Pyke. Exact face name/subtitle and collector footer were checked."
+    }
+  },
+  {
+    "official_id": "unl-145a-219",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/14a9712798a0b13bfa29ed841f171a21e7fdf035-744x1039.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/unl-145a-219.png",
+    "sha256": "0f38d3d984f16df579dc07a8ceb89bceab82c5befd0c0ee551208b3ebdff4034",
+    "bytes": 961118,
+    "visual_review": {
+      "reviewed_on": "2026-10-24",
+      "method": "Individual visual inspection of exact original official image; name/subtitle and collector footer matched. No OCR-based equivalence or tag union.",
+      "collector_footer": "UNL-145a/219",
+      "printed_rules_text": "[Hidden]\n[Backline]\nOnce each turn, when an enemy unit dies while I'm at a battlefield, play a Gold gear token exhausted.",
+      "printed_reminder_spans": [],
+      "observation": "Both faces retain Hidden, Backline, and the once-each-turn enemy-death trigger that plays a Gold gear token exhausted while Pyke is at a battlefield. UNL 145 prints italic Hidden, Backline, and Gold-token ability reminders; alternate145a omits all three. The Gold text is visibly italic and parenthesized, not an extra activated ability on Pyke. Exact face name/subtitle and collector footer were checked."
+    }
+  },
+  {
+    "official_id": "unl-149-219",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/37b015a64b6bc15e856c2d78e275b10e64db1de4-744x1039.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/unl-149-219.png",
+    "sha256": "dacafc0d14d9954dd33d966d008a035438098e676d7ac464de72f4dd9c33efb3",
+    "bytes": 943443,
+    "visual_review": {
+      "reviewed_on": "2026-10-24",
+      "method": "Individual visual inspection of exact original official image; name/subtitle and collector footer matched. No OCR-based equivalence or tag union.",
+      "collector_footer": "UNL-149/219",
+      "printed_rules_text": "[Ambush] (You may play me as a [Reaction] to a battlefield where you have units.)\nWhen you play a spell, give me +2 Might this turn.",
+      "printed_reminder_spans": [
+        "(You may play me as a [Reaction] to a battlefield where you have units.)"
+      ],
+      "observation": "All three faces retain Ambush and the same spell-play trigger granting +2 Might this turn. Only UNL 149 prints the italic Ambush reminder. Exact face name/subtitle and collector footer were checked."
+    }
+  },
+  {
+    "official_id": "unl-149a-219",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/d9082f75895c8645e05c0a38edc1b1c83c508d84-744x1039.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/unl-149a-219.png",
+    "sha256": "9594432d65ab522db1c83eb15e1d106f469e4edaad1ceb7787334f48e95ae811",
+    "bytes": 1177778,
+    "visual_review": {
+      "reviewed_on": "2026-10-24",
+      "method": "Individual visual inspection of exact original official image; name/subtitle and collector footer matched. No OCR-based equivalence or tag union.",
+      "collector_footer": "UNL-149a/219",
+      "printed_rules_text": "[Ambush]\nWhen you play a spell, give me +2 Might this turn.",
+      "printed_reminder_spans": [],
+      "observation": "All three faces retain Ambush and the same spell-play trigger granting +2 Might this turn. Only UNL 149 prints the italic Ambush reminder. Exact face name/subtitle and collector footer were checked."
+    }
+  },
+  {
+    "official_id": "unl-150-219",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/7f13b0216c5d805400bb64cf26cd119acfc6c5ca-744x1039.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/unl-150-219.png",
+    "sha256": "1904f0e8ed2001765c3406cd1f3b9d62d77131251520adfdcd4289042c03283f",
+    "bytes": 1367140,
+    "visual_review": {
+      "reviewed_on": "2026-10-24",
+      "method": "Individual visual inspection of exact original official image; name/subtitle and collector footer matched. No OCR-based equivalence or tag union.",
+      "collector_footer": "UNL-150/219",
+      "printed_rules_text": "[Deflect] (Opponents must pay [Any Power] to choose me with a spell or ability.)\nWhen an opponent plays a unit while I'm at a battlefield, [Stun] it. They can't move it this turn. (It doesn't deal combat damage this turn.)",
+      "printed_reminder_spans": [
+        "(Opponents must pay [Any Power] to choose me with a spell or ability.)",
+        "(It doesn't deal combat damage this turn.)"
+      ],
+      "observation": "Both faces retain Deflect and the enemy-unit-play trigger while Vex is at a battlefield, including Stun and the separate cannot-move-this-turn instruction. UNL 150 prints italic Deflect and Stun reminders; alternate150a omits both. No implication that Stun alone prevents movement. Exact face name/subtitle and collector footer were checked."
+    }
+  },
+  {
+    "official_id": "unl-150a-219",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/9dd2a50fcfe6258ef934bdcf73b2fdb19d18ea94-744x1039.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/unl-150a-219.png",
+    "sha256": "684dbcc4fa8a4ed6e5ff0859ebac31a9dca21fba2ae13c72ecaa239dbb8c4e22",
+    "bytes": 1254964,
+    "visual_review": {
+      "reviewed_on": "2026-10-24",
+      "method": "Individual visual inspection of exact original official image; name/subtitle and collector footer matched. No OCR-based equivalence or tag union.",
+      "collector_footer": "UNL-150a/219",
+      "printed_rules_text": "[Deflect]\nWhen an opponent plays a unit while I'm at a battlefield, [Stun] it. They can't move it this turn.",
+      "printed_reminder_spans": [],
+      "observation": "Both faces retain Deflect and the enemy-unit-play trigger while Vex is at a battlefield, including Stun and the separate cannot-move-this-turn instruction. UNL 150 prints italic Deflect and Stun reminders; alternate150a omits both. No implication that Stun alone prevents movement. Exact face name/subtitle and collector footer were checked."
+    }
+  },
+  {
+    "official_id": "unl-220-219",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/0c91b90d91c4f988aa9942dd9e06a634a66c6975-744x1039.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/unl-220-219.png",
+    "sha256": "83c81858bd1dac33bc481801892c3e190dc4c173075b64c6da8083879d0e4334",
+    "bytes": 1537696,
+    "visual_review": {
+      "reviewed_on": "2026-10-24",
+      "method": "Individual visual inspection of exact original official image; name/subtitle and collector footer matched. No OCR-based equivalence or tag union.",
+      "collector_footer": "UNL-220/219",
+      "printed_rules_text": "[Deflect]",
+      "printed_reminder_spans": [],
+      "observation": "Both faces retain Deflect. OGN 013 prints its italic Any-Power targeting reminder; UNL 220 omits it. Exact face name/subtitle and collector footer were checked."
+    }
+  },
+  {
+    "official_id": "unl-221-219",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/82b7043ef6519a4c7e2eb7d45cb6ae91dfd749ca-744x1039.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/unl-221-219.png",
+    "sha256": "2ac5c598eb0906cd24d18b70ba5b0bda2630c6c6d886d0592fb9d4acb48d3c84",
+    "bytes": 1173277,
+    "visual_review": {
+      "reviewed_on": "2026-10-24",
+      "method": "Individual visual inspection of exact original official image; name/subtitle and collector footer matched. No OCR-based equivalence or tag union.",
+      "collector_footer": "UNL-221/219",
+      "printed_rules_text": "[Deathknell][>] If I died alone, draw 1.",
+      "printed_reminder_spans": [],
+      "observation": "SFD 036 visibly uses an em dash following Deathknell; UNL 221 uses a right-pointing keyword tab/arrow. Both associate exactly “If I died alone, draw 1” with Deathknell. SFD also prints the italic death/alone reminder. Specific keyword-boundary reasoning from Core 808 applies; this is not a general dash/arrow normalization rule. Exact face name/subtitle and collector footer were checked."
+    }
+  },
+  {
+    "official_id": "unl-224-219",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/2fdb5e1ff9aae4137910fa59065b69ef17144752-744x1039.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/unl-224-219.png",
+    "sha256": "b624d8e006a673ba99f1e8d96f7b9baf45c9d90f417f7b9f6b415e77a5dcb04f",
+    "bytes": 1160039,
+    "visual_review": {
+      "reviewed_on": "2026-10-24",
+      "method": "Individual visual inspection of exact original official image; name/subtitle and collector footer matched. No OCR-based equivalence or tag union.",
+      "collector_footer": "UNL-224/219",
+      "printed_rules_text": "[Vision]",
+      "printed_reminder_spans": [],
+      "observation": "Both faces retain Vision. OGN 171 prints the italic top-card look/recycle reminder, UNL 224 omits it. Vision’s definition remains authoritative. Exact face name/subtitle and collector footer were checked."
+    }
+  },
+  {
+    "official_id": "unl-225-219",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/9b097e8f9866788e0de2bfada48627c752d3e4b9-744x1039.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/unl-225-219.png",
+    "sha256": "8001a14826b839cdc7e557790e0c016e4a1374e080164a1095cbdf878b06bbb5",
+    "bytes": 1128503,
+    "visual_review": {
+      "reviewed_on": "2026-10-24",
+      "method": "Individual visual inspection of exact original official image; name/subtitle and collector footer matched. No OCR-based equivalence or tag union.",
+      "collector_footer": "UNL-225/219",
+      "printed_rules_text": "[Assault]",
+      "printed_reminder_spans": [],
+      "observation": "Both faces retain Assault. OGN prints the italic +1 Might attacker reminder; UNL omits it. Exact face name/subtitle and collector footer were checked."
+    }
+  },
+  {
+    "official_id": "ven-021-166",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/564e5f35ae39b6604290e83f39ffb61c2b2b9175-744x1039.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/ven-021-166.png",
+    "sha256": "f2f9a04e726a4d327f38d76fca4200f7d67e5c09fe11dc6a3e4fbe70b219026c",
+    "bytes": 1030172,
+    "visual_review": {
+      "reviewed_on": "2026-10-24",
+      "method": "Individual visual inspection of exact original official image; name/subtitle and collector footer matched. No OCR-based equivalence or tag union.",
+      "collector_footer": "VEN · 021/166 · EN",
+      "printed_type": "Champion Unit",
+      "printed_tags_in_face_order": [
+        "Akali",
+        "Ionia"
+      ],
+      "observation": "Empower2Energy/FuryPower with full reminder. Move damage1/Empowered damage2 and Empowered+1Might instructions present."
+    }
+  },
+  {
+    "official_id": "ven-021a-166",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/92d8ad4bc4724da89f32348f290600f632f24e9e-744x1039.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/ven-021a-166.png",
+    "sha256": "0bef70039a3edbde543b3d065153bb7139a427e6fe8f326c5561dd977f74f9db",
+    "bytes": 1175912,
+    "visual_review": {
+      "reviewed_on": "2026-10-24",
+      "method": "Individual visual inspection of exact original official image; name/subtitle and collector footer matched. No OCR-based equivalence or tag union.",
+      "collector_footer": "VEN · 021a/166 · EN",
+      "printed_type": "Champion Unit",
+      "printed_tags_in_face_order": [
+        "Akali",
+        "Ionia"
+      ],
+      "observation": "Empower reminder omitted; move and Empowered instructions retained. Final +1Might sentence visibly ends in one period; feed ends in two periods. Treat the extra feed period as a separately observed punctuation transcription defect, not a rules change."
+    }
+  },
+  {
+    "official_id": "ven-038-166",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/f1a4d73853194a3dde02c51b083d197af89d2bda-744x1039.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/ven-038-166.png",
+    "sha256": "211f5a4c7d5a6c47c4071e41fe7bba968b90c739677ded3edd34f63a007f17b1",
+    "bytes": 917217,
+    "visual_review": {
+      "reviewed_on": "2026-10-24",
+      "method": "Individual visual inspection of exact original official image; name/subtitle and collector footer matched. No OCR-based equivalence or tag union.",
+      "collector_footer": "VEN · 038/166 · EN",
+      "printed_type": "Champion Unit",
+      "printed_tags_in_face_order": [
+        "Akali",
+        "Ionia"
+      ],
+      "observation": "Untargetable by enemy spells/abilities unless in combat; move-to-battlefield +2Might this turn. Same instructions as alternate."
+    }
+  },
+  {
+    "official_id": "ven-038a-166",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/6924311aab46a74aa2c54030c053427725860ea8-744x1039.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/ven-038a-166.png",
+    "sha256": "d1bce243540ae991560950ae36d4dc95dc341606366590315023f38cce35e07c",
+    "bytes": 1007049,
+    "visual_review": {
+      "reviewed_on": "2026-10-24",
+      "method": "Individual visual inspection of exact original official image; name/subtitle and collector footer matched. No OCR-based equivalence or tag union.",
+      "collector_footer": "VEN · 038a/166 · EN",
+      "printed_type": "Champion Unit",
+      "printed_tags_in_face_order": [
+        "Akali",
+        "Ionia"
+      ],
+      "observation": "Same untargetability and move-to-battlefield +2Might instructions as base. Printed Ionia is present."
+    }
+  },
+  {
+    "official_id": "ven-042-166",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/bbe849918c7f4189379ae8957dd427a3f272a1a6-744x1039.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/ven-042-166.png",
+    "sha256": "3a26168a7926a850947fde45c8f12a29808936c11f30ef45cd98e835b575783d",
+    "bytes": 854277,
+    "visual_review": {
+      "reviewed_on": "2026-10-24",
+      "method": "Individual visual inspection of exact original official image; name/subtitle and collector footer matched. No OCR-based equivalence or tag union.",
+      "collector_footer": "VEN · 042/166 · EN",
+      "printed_type": "Champion Unit",
+      "printed_tags_in_face_order": [
+        "Shen",
+        "Ionia"
+      ],
+      "observation": "Hold with exactly one other friendly unit here draws1. Same instruction across all three Shen faces."
+    }
+  },
+  {
+    "official_id": "ven-042a-166",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/a4bac7b94b87fbb3227ecdccd9e2aa1231b655c8-744x1039.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/ven-042a-166.png",
+    "sha256": "df2adffef6475d9e289ba68ba688baf7c3e99013715238a9ee9068e774249bd4",
+    "bytes": 1067347,
+    "visual_review": {
+      "reviewed_on": "2026-10-24",
+      "method": "Individual visual inspection of exact original official image; name/subtitle and collector footer matched. No OCR-based equivalence or tag union.",
+      "collector_footer": "VEN · 042a/166 · EN",
+      "printed_type": "Champion Unit",
+      "printed_tags_in_face_order": [
+        "Shen",
+        "Ionia"
+      ],
+      "observation": "Same hold/exactly-one-other-friendly/draw1 instruction. Printed Ionia is present."
+    }
+  },
+  {
+    "official_id": "ven-046-166",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/4d9e9cc17be6aebf33ee1db42b515ad87ba8ee8c-744x1039.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/ven-046-166.png",
+    "sha256": "24f2768f05dfd82750bd2e52948ead29bab93291a7da36ef5202098226a9f4e9",
+    "bytes": 1108877,
+    "visual_review": {
+      "reviewed_on": "2026-10-24",
+      "method": "Individual visual inspection of exact original official image; name/subtitle and collector footer matched. No OCR-based equivalence or tag union.",
+      "collector_footer": "VEN · 046/166 · EN",
+      "printed_type": "Champion Unit",
+      "printed_tags_in_face_order": [
+        "Nasus",
+        "Shurima",
+        "Dog"
+      ],
+      "observation": "Full Deflect2 and Empower8Energy reminders; Empowered conquer score1."
+    }
+  },
+  {
+    "official_id": "ven-046a-166",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/014103b536a1c5aa2397f0952323375ac9b73d60-744x1039.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/ven-046a-166.png",
+    "sha256": "74d7d0194792ad39e59d4a46b900d34e968eccb73650b762692ac0f3178c135b",
+    "bytes": 1073276,
+    "visual_review": {
+      "reviewed_on": "2026-10-24",
+      "method": "Individual visual inspection of exact original official image; name/subtitle and collector footer matched. No OCR-based equivalence or tag union.",
+      "collector_footer": "VEN · 046a/166 · EN",
+      "printed_type": "Champion Unit",
+      "printed_tags_in_face_order": [
+        "Nasus",
+        "Shurima",
+        "Dog"
+      ],
+      "observation": "Deflect2 and Empower reminders omitted; costs and Empowered conquer score1 retained. Printed Shurima is present."
+    }
+  },
+  {
+    "official_id": "ven-113-166",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/2f27c99f3df2940940dddd65105e5e42bbeeab3d-744x1039.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/ven-113-166.png",
+    "sha256": "6f0b20a963933fa4529c27abbaa05bf88455310097e6add9040cee71427a3def",
+    "bytes": 1023455,
+    "visual_review": {
+      "reviewed_on": "2026-10-24",
+      "method": "Individual visual inspection of exact original official image; name/subtitle and collector footer matched. No OCR-based equivalence or tag union.",
+      "collector_footer": "VEN · 113/166 · EN",
+      "printed_type": "Champion Unit",
+      "printed_tags_in_face_order": [
+        "Kennen",
+        "Ionia",
+        "Yordle"
+      ],
+      "observation": "Full Burn2 and Flow reminders. Conquer grants a trash spell Flow equal to cost this turn. Printed Ionia is present; selected runtime source feed omits it."
+    }
+  },
+  {
+    "official_id": "ven-113a-166",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/000c73937c370cd3572facc9b313b4eb2d26eee8-744x1039.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/ven-113a-166.png",
+    "sha256": "fb54d2849777c3c1e8c7bae0688181f4a9850fa49490e14c4739dd7d33cb9caa",
+    "bytes": 1216018,
+    "visual_review": {
+      "reviewed_on": "2026-10-24",
+      "method": "Individual visual inspection of exact original official image; name/subtitle and collector footer matched. No OCR-based equivalence or tag union.",
+      "collector_footer": "VEN · 113a/166 · EN",
+      "printed_type": "Champion Unit",
+      "printed_tags_in_face_order": [
+        "Kennen",
+        "Ionia",
+        "Yordle"
+      ],
+      "observation": "Burn2 and Flow reminders omitted; same operative play/conquer instructions. Printed tags match alternate feed."
+    }
+  },
+  {
+    "official_id": "ven-136-166",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/687c273217cd94067be9625a7f85b61d108a6293-744x1039.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/ven-136-166.png",
+    "sha256": "6ca0305f92843a9181a571a3eee34e86b85dddd21f43584a27c208ca6cd4abf8",
+    "bytes": 1119993,
+    "visual_review": {
+      "reviewed_on": "2026-10-24",
+      "method": "Individual visual inspection of exact original official image; name/subtitle and collector footer matched. No OCR-based equivalence or tag union.",
+      "collector_footer": "VEN · 136/166 · EN",
+      "printed_type": "Champion Unit",
+      "printed_tags_in_face_order": [
+        "Ambessa",
+        "Noxus"
+      ],
+      "observation": "Full Empower1Energy/2OrderPower reminder and Assault2 reminder; Empowered attack kill of lower-Might enemy here."
+    }
+  },
+  {
+    "official_id": "ven-136a-166",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/02a1cfcd6663687d28b98a2de3ba666231c4eeee-744x1039.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/ven-136a-166.png",
+    "sha256": "6d33d4ee78d6c3c7379b04c22046200df5b1a36961c2ce1baad1606825e0108b",
+    "bytes": 1229862,
+    "visual_review": {
+      "reviewed_on": "2026-10-24",
+      "method": "Individual visual inspection of exact original official image; name/subtitle and collector footer matched. No OCR-based equivalence or tag union.",
+      "collector_footer": "VEN · 136a/166 · EN",
+      "printed_type": "Champion Unit",
+      "printed_tags_in_face_order": [
+        "Ambessa",
+        "Noxus"
+      ],
+      "observation": "Empower and Assault reminders omitted; keyword costs and both Empowered instructions retained."
+    }
+  },
+  {
+    "official_id": "ven-138-166",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/b227d9f9abc6f165beffba4eaf3b5819cf06eab4-744x1039.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/ven-138-166.png",
+    "sha256": "fc0e9ee3ba5a096fb315395d1fb6e8734faaa3e5e7ed45a970be89bb6fe5b522",
+    "bytes": 1100043,
+    "visual_review": {
+      "reviewed_on": "2026-10-24",
+      "method": "Individual visual inspection of exact original official image; name/subtitle and collector footer matched. No OCR-based equivalence or tag union.",
+      "collector_footer": "VEN-138/166",
+      "printed_rules_text": "[Shield] (+1 Might while I'm a defender.)\nWhen I hold, if there is exactly one other unit you control here, you score 1 point.",
+      "printed_reminder_spans": [
+        "(+1 Might while I'm a defender.)"
+      ],
+      "observation": "Both faces retain Shield and the Hold condition requiring exactly one other friendly unit here before scoring 1 point. VEN 138 prints italic Shield +1 defender reminder; alternate138a omits it. Exact face name/subtitle and collector footer were checked."
+    }
+  },
+  {
+    "official_id": "ven-138a-166",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/bf3f260e47de2887ba16fbc02e9df7f02e57a24a-744x1039.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/ven-138a-166.png",
+    "sha256": "0551a2af62a122c164cfd2d822138130939037b9014ba7274d63d34ebf407120",
+    "bytes": 1203960,
+    "visual_review": {
+      "reviewed_on": "2026-10-24",
+      "method": "Individual visual inspection of exact original official image; name/subtitle and collector footer matched. No OCR-based equivalence or tag union.",
+      "collector_footer": "VEN-138a/166",
+      "printed_rules_text": "[Shield]\nWhen I hold, if there is exactly one other unit you control here, you score 1 point.",
+      "printed_reminder_spans": [],
+      "observation": "Both faces retain Shield and the Hold condition requiring exactly one other friendly unit here before scoring 1 point. VEN 138 prints italic Shield +1 defender reminder; alternate138a omits it. Exact face name/subtitle and collector footer were checked."
+    }
+  },
+  {
+    "official_id": "ven-153-166",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/49e81916d7ae72b24de845223e1798652d26e789-744x1039.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/ven-153-166.png",
+    "sha256": "227b8336f47f608a99ab6ff91ae192e661a4b28b27f64849592ef030f8ece8e6",
+    "bytes": 1387337,
+    "visual_review": {
+      "reviewed_on": "2026-10-24",
+      "method": "Individual visual inspection of exact original official image; name/subtitle and collector footer matched. No OCR-based equivalence or tag union.",
+      "collector_footer": "VEN-153/166",
+      "printed_rules_text": "When you empower something else, empower me. (I become Empowered if I'm not already.)\nDisempower me, [Any Power], [Exhaust]: Ready a unit.",
+      "printed_reminder_spans": [
+        "(I become Empowered if I'm not already.)"
+      ],
+      "observation": "All faces retain “When you empower something else, empower me” plus Disempower, one Any Power, Exhaust: Ready a unit. VEN 153 alone prints the italic Empower status reminder. Neither version restricts the targeted unit to friendly. Exact face name/subtitle and collector footer were checked."
+    }
+  },
+  {
+    "official_id": "ven-155-166",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/0eab83392b310417d2630d50a3bfee3dd02b31c4-744x1039.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/ven-155-166.png",
+    "sha256": "de7407b898e09d80b8ccd28210bdb858f956ccfcce186a20c2874e6d395a3398",
+    "bytes": 1214642,
+    "visual_review": {
+      "reviewed_on": "2026-10-24",
+      "method": "Individual visual inspection of exact original official image; name/subtitle and collector footer matched. No OCR-based equivalence or tag union.",
+      "collector_footer": "VEN-155/166",
+      "printed_rules_text": "When you play a card from anywhere other than your hand, empower me.\n[Action][>] Disempower me, [Exhaust]: Give a unit [Assault 2] this turn. (+2 Might while it's an attacker.)",
+      "printed_reminder_spans": [
+        "(+2 Might while it's an attacker.)"
+      ],
+      "observation": "All faces retain off-hand play Empower trigger and Action-associated Disempower plus Exhaust activation giving a unit Assault 2 this turn. VEN 155 alone prints the italic Assault 2 reminder. No timing, target allegiance, or cost difference is printed. Exact face name/subtitle and collector footer were checked."
+    }
+  },
+  {
+    "official_id": "ven-170-166",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/56d6b54bdc2ae37579da820cec613c127a8843d3-744x1039.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/ven-170-166.png",
+    "sha256": "e1e24d335f7e31e4115c573de0e69b3435ac9b9402a652f9e703283a844b18f5",
+    "bytes": 1058756,
+    "visual_review": {
+      "reviewed_on": "2026-10-24",
+      "method": "Individual visual inspection of exact original official image; name/subtitle and collector footer matched. No OCR-based equivalence or tag union.",
+      "collector_footer": "VEN · 170/166 · EN",
+      "printed_type": "Champion Unit",
+      "printed_tags_in_face_order": [
+        "Shen",
+        "Ionia"
+      ],
+      "observation": "Same hold/exactly-one-other-friendly/draw1 instruction. Printed Ionia is present; flavor differs."
+    }
+  },
+  {
+    "official_id": "ven-174-166",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/45d83debda443f1bf88e1cf7123eb8b844143124-744x1039.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/ven-174-166.png",
+    "sha256": "3092324c12d9e93b4a36c0837a76b9a56a79b3c8ff9e5545ed4f9aaa0e050dab",
+    "bytes": 1239389,
+    "visual_review": {
+      "reviewed_on": "2026-10-24",
+      "method": "Individual visual inspection of exact original official image; name/subtitle and collector footer matched. No OCR-based equivalence or tag union.",
+      "collector_footer": "VEN-174/166",
+      "printed_rules_text": "[Deflect]\nWhen you choose or ready me, give me +1 Might this turn.",
+      "printed_reminder_spans": [],
+      "observation": "All five faces retain Deflect and the choose-or-ready +1 Might trigger. Four SFD faces print the italic Deflect reminder; VEN 174 omits it. This is not a change to either trigger event. Exact face name/subtitle and collector footer were checked."
+    }
+  },
+  {
+    "official_id": "ven-176-166",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/0416b4a447494acac41413a4511bb59ce983b4ec-744x1039.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/ven-176-166.png",
+    "sha256": "afa65d54ef5835e5c694fe44d8e4e85185aeb07197fa8ee773fb627759465468",
+    "bytes": 1094992,
+    "visual_review": {
+      "reviewed_on": "2026-10-24",
+      "method": "Individual visual inspection of exact original official image; name/subtitle and collector footer matched. No OCR-based equivalence or tag union.",
+      "collector_footer": "VEN · 176/166 · EN",
+      "printed_type": "Champion Unit",
+      "printed_tags_in_face_order": [
+        "Viktor",
+        "Zaun"
+      ],
+      "observation": "The physical face says play a 1-Might Recruit unit token TO your base. This in/to difference genuinely exists on the images and is not a feed transcription error; retain both text variants pending explicit semantic review."
+    }
+  },
+  {
+    "official_id": "ven-179-166",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/1f16f5b1f980106057606a2faa3cce64fa4850e7-744x1039.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/ven-179-166.png",
+    "sha256": "b61ec10b0ecbc6b27393ecdbef090cd819774066913944b101aaa32947b11ff0",
+    "bytes": 1209515,
+    "visual_review": {
+      "reviewed_on": "2026-10-24",
+      "method": "Individual visual inspection of exact original official image; name/subtitle and collector footer matched. No OCR-based equivalence or tag union.",
+      "collector_footer": "VEN-179/166",
+      "printed_rules_text": "[Ambush]\nI can be played to a battlefield where there are enemy units.",
+      "printed_reminder_spans": [],
+      "observation": "All three faces retain Ambush and old “I can be played” placement wording. UNL 120 includes both italic Ambush reminder and italic embedded “even if” placement reminder; alternate120a/VEN179 omit both. The old operative sentence itself is superseded by the existing official erratum, which says “I can [Ambush]”. Treat physical variants and current operative authority separately. Exact face name/subtitle and collector footer were checked."
+    }
+  },
+  {
+    "official_id": "ven-183-166",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/d5a7071e4f1af712c9bf5342ba70fbb2e359483f-744x1039.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/ven-183-166.png",
+    "sha256": "088e3c5762010226e1de7de75a724c73b3a2d9d15e37552c84ff9557d67b293d",
+    "bytes": 1247307,
+    "visual_review": {
+      "reviewed_on": "2026-10-24",
+      "method": "Individual visual inspection of exact original official image; name/subtitle and collector footer matched. No OCR-based equivalence or tag union.",
+      "collector_footer": "VEN-183/166",
+      "printed_rules_text": "[Ambush]\nWhen you play a spell, give me +2 Might this turn.",
+      "printed_reminder_spans": [],
+      "observation": "All three faces retain Ambush and the same spell-play trigger granting +2 Might this turn. Only UNL 149 prints the italic Ambush reminder. Exact face name/subtitle and collector footer were checked."
+    }
+  },
+  {
+    "official_id": "ven-187-166",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/17552788c608d9cb044c0a9bf7076d462548875b-744x1039.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/ven-187-166.png",
+    "sha256": "f86db5af1f218c59fad92e04e47e98d1d07dc19d86d3dd375a9d7ee757318896",
+    "bytes": 1253057,
+    "visual_review": {
+      "reviewed_on": "2026-10-24",
+      "method": "Individual visual inspection of exact original official image; name/subtitle and collector footer matched. No OCR-based equivalence or tag union.",
+      "collector_footer": "VEN · 187/166 · EN",
+      "printed_type": "Champion Unit",
+      "printed_tags_in_face_order": [
+        "Ambessa",
+        "Noxus"
+      ],
+      "observation": "Empower and Assault reminders omitted; keyword costs and both Empowered instructions retained. Different flavor from other two faces."
+    }
+  },
+  {
+    "official_id": "ven-196-166",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/2d6c1bd7992ddd20fe524587274ed6f9a249e42c-744x1039.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/ven-196-166.png",
+    "sha256": "2df29cd4f593f2100647e59210c56488d2f2b7cee703e9778124aecbdd273530",
+    "bytes": 1390522,
+    "visual_review": {
+      "reviewed_on": "2026-10-24",
+      "method": "Individual visual inspection of exact original official image; name/subtitle and collector footer matched. No OCR-based equivalence or tag union.",
+      "collector_footer": "VEN-196/166",
+      "printed_rules_text": "When you empower something else, empower me.\nDisempower me, [Any Power], [Exhaust]: Ready a unit.",
+      "printed_reminder_spans": [],
+      "observation": "All faces retain “When you empower something else, empower me” plus Disempower, one Any Power, Exhaust: Ready a unit. VEN 153 alone prints the italic Empower status reminder. Neither version restricts the targeted unit to friendly. Exact face name/subtitle and collector footer were checked."
+    }
+  },
+  {
+    "official_id": "ven-196-star-166",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/844b4dd1ae4803abf61b42d53af2b4969e594332-744x1039.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/ven-196-star-166.png",
+    "sha256": "6e9305c89b366b8840b3af17a99942998c54b3cdca46ee532b3d2910582cf784",
+    "bytes": 1397980,
+    "visual_review": {
+      "reviewed_on": "2026-10-24",
+      "method": "Individual visual inspection of exact original official image; name/subtitle and collector footer matched. No OCR-based equivalence or tag union.",
+      "collector_footer": "VEN-196*/166",
+      "printed_rules_text": "When you empower something else, empower me.\nDisempower me, [Any Power], [Exhaust]: Ready a unit.",
+      "printed_reminder_spans": [],
+      "observation": "All faces retain “When you empower something else, empower me” plus Disempower, one Any Power, Exhaust: Ready a unit. VEN 153 alone prints the italic Empower status reminder. Neither version restricts the targeted unit to friendly. Exact face name/subtitle and collector footer were checked."
+    }
+  },
+  {
+    "official_id": "ven-197-166",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/f208ffb2ee76827cd4c608bcc8e1bcb9380bfa31-744x1039.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/ven-197-166.png",
+    "sha256": "65b98a36daa15269571aa7a98a51fa5c5c84307a3f440db90d1f2d37bab889e3",
+    "bytes": 1255745,
+    "visual_review": {
+      "reviewed_on": "2026-10-24",
+      "method": "Individual visual inspection of exact original official image; name/subtitle and collector footer matched. No OCR-based equivalence or tag union.",
+      "collector_footer": "VEN-197/166",
+      "printed_rules_text": "When you play a card from anywhere other than your hand, empower me.\n[Action][>] Disempower me, [Exhaust]: Give a unit [Assault 2] this turn.",
+      "printed_reminder_spans": [],
+      "observation": "All faces retain off-hand play Empower trigger and Action-associated Disempower plus Exhaust activation giving a unit Assault 2 this turn. VEN 155 alone prints the italic Assault 2 reminder. No timing, target allegiance, or cost difference is printed. Exact face name/subtitle and collector footer were checked."
+    }
+  },
+  {
+    "official_id": "ven-197-star-166",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/853681913bcd2a2e2b42217e290b530b72518142-744x1039.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/ven-197-star-166.png",
+    "sha256": "5f3e0878a8b31e8c1afb85e27f0b69048dda1a63ab71c8bf83ac7e9289831e62",
+    "bytes": 1271537,
+    "visual_review": {
+      "reviewed_on": "2026-10-24",
+      "method": "Individual visual inspection of exact original official image; name/subtitle and collector footer matched. No OCR-based equivalence or tag union.",
+      "collector_footer": "VEN-197*/166",
+      "printed_rules_text": "When you play a card from anywhere other than your hand, empower me.\n[Action][>] Disempower me, [Exhaust]: Give a unit [Assault 2] this turn.",
+      "printed_reminder_spans": [],
+      "observation": "All faces retain off-hand play Empower trigger and Action-associated Disempower plus Exhaust activation giving a unit Assault 2 this turn. VEN 155 alone prints the italic Assault 2 reminder. No timing, target allegiance, or cost difference is printed. Exact face name/subtitle and collector footer were checked."
+    }
+  },
+  {
+    "official_id": "ven-r01",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/f95ed6ba0c4d4d357c45bf5bdb1a8e540af1f85f-744x1039.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/ven-r01.png",
+    "sha256": "89949685e4cb26a1eb236d97cb106cd4408776697e4653e6e5a65b1382bf24b1",
+    "bytes": 249720,
+    "visual_review": {
+      "reviewed_on": "2026-10-24",
+      "method": "Individual visual inspection of exact original official image; name/subtitle and collector footer matched. No OCR-based equivalence or tag union.",
+      "collector_footer": "VEN-R01",
+      "printed_rules_text": "",
+      "printed_reminder_spans": [],
+      "observation": "Visually inspected the complete face: correct named rune, Rune type, domain icon, and exact collector footer. No rules instructions or [NO TEXT] literal are printed."
+    }
+  },
+  {
+    "official_id": "ven-r02",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/9b70aa1b334728a3e8beeea0c9154a2d0f79b1eb-744x1039.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/ven-r02.png",
+    "sha256": "f233f453d377365f55416c0b31c01373ac7957c0de74626ebd9fab8b0ffdc7ef",
+    "bytes": 287682,
+    "visual_review": {
+      "reviewed_on": "2026-10-24",
+      "method": "Individual visual inspection of exact original official image; name/subtitle and collector footer matched. No OCR-based equivalence or tag union.",
+      "collector_footer": "VEN-R02",
+      "printed_rules_text": "",
+      "printed_reminder_spans": [],
+      "observation": "Visually inspected the complete face: correct named rune, Rune type, domain icon, and exact collector footer. No rules instructions or [NO TEXT] literal are printed."
+    }
+  },
+  {
+    "official_id": "ven-r03",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/33df1c56c6e76f9cb783c19161f16fcdbdc20f98-744x1039.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/ven-r03.png",
+    "sha256": "09c508b27157e238a3c6952be61ae01deffcd73955352d422399242d7252fe5f",
+    "bytes": 262487,
+    "visual_review": {
+      "reviewed_on": "2026-10-24",
+      "method": "Individual visual inspection of exact original official image; name/subtitle and collector footer matched. No OCR-based equivalence or tag union.",
+      "collector_footer": "VEN-R03",
+      "printed_rules_text": "",
+      "printed_reminder_spans": [],
+      "observation": "Visually inspected the complete face: correct named rune, Rune type, domain icon, and exact collector footer. No rules instructions or [NO TEXT] literal are printed."
+    }
+  },
+  {
+    "official_id": "ven-r04",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/3313c73c5b31daa482073bfefbf4d2255a89d7d0-744x1039.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/ven-r04.png",
+    "sha256": "0b21db158281e82d055255f7709629d3d5bd0c99642fdc68e0dd5bcdc5de38ef",
+    "bytes": 206493,
+    "visual_review": {
+      "reviewed_on": "2026-10-24",
+      "method": "Individual visual inspection of exact original official image; name/subtitle and collector footer matched. No OCR-based equivalence or tag union.",
+      "collector_footer": "VEN-R04",
+      "printed_rules_text": "",
+      "printed_reminder_spans": [],
+      "observation": "Visually inspected the complete face: correct named rune, Rune type, domain icon, and exact collector footer. No rules instructions or [NO TEXT] literal are printed."
+    }
+  },
+  {
+    "official_id": "ven-r05",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/3861fc566891a70c21cf3d3075adec716deb7080-744x1039.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/ven-r05.png",
+    "sha256": "4aeea4b04af821ac17ce2a740ab1b3415df82ea7c433f9a790b41f6505994fd1",
+    "bytes": 194592,
+    "visual_review": {
+      "reviewed_on": "2026-10-24",
+      "method": "Individual visual inspection of exact original official image; name/subtitle and collector footer matched. No OCR-based equivalence or tag union.",
+      "collector_footer": "VEN-R05",
+      "printed_rules_text": "",
+      "printed_reminder_spans": [],
+      "observation": "Visually inspected the complete face: correct named rune, Rune type, domain icon, and exact collector footer. No rules instructions or [NO TEXT] literal are printed."
+    }
+  },
+  {
+    "official_id": "ven-r06",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/71e7d71ebadb81ccad7ca4cb8b3fb85d2f5fd4bf-744x1039.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/ven-r06.png",
+    "sha256": "4d04c1fad9fbf2c7afdb81abf8ded7627612afa48e0c1e2df78e446b0a78f19d",
+    "bytes": 203537,
+    "visual_review": {
+      "reviewed_on": "2026-10-24",
+      "method": "Individual visual inspection of exact original official image; name/subtitle and collector footer matched. No OCR-based equivalence or tag union.",
+      "collector_footer": "VEN-R06",
+      "printed_rules_text": "",
+      "printed_reminder_spans": [],
+      "observation": "Visually inspected the complete face: correct named rune, Rune type, domain icon, and exact collector footer. No rules instructions or [NO TEXT] literal are printed."
+    }
+  },
+  {
+    "official_id": "ven-sp1-006",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/a14d1be8f014a331f60885013d81a1a8f5c8c076-744x1039.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/ven-sp1-006.png",
+    "sha256": "6cd3a833840f8e8afa9800329475ee846a4c924fcd5b59dd5bb0442d583c2d3b",
+    "bytes": 1278296,
+    "visual_review": {
+      "reviewed_on": "2026-10-24",
+      "method": "Individual visual inspection of exact original official image; name/subtitle and collector footer matched. No OCR-based equivalence or tag union.",
+      "collector_footer": "VEN · SP1/006 · EN",
+      "printed_type": "Champion Unit",
+      "printed_tags_in_face_order": [
+        "Kai'Sa",
+        "The Void"
+      ],
+      "observation": "Accelerate reminder omitted; keyword and conquer draw1 retained. Printed The Void is present."
+    }
+  },
+  {
+    "official_id": "ven-sp3-006",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/e8d1993018d8317494cbaab4e4dd738c2e80740d-744x1039.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/ven-sp3-006.png",
+    "sha256": "33acb3a5f9acd8182d4b04b2f183eb9ca730e4bd013ff6786830135850267663",
+    "bytes": 1359970,
+    "visual_review": {
+      "reviewed_on": "2026-10-24",
+      "method": "Individual visual inspection of exact original official image; name/subtitle and collector footer matched. No OCR-based equivalence or tag union.",
+      "collector_footer": "VEN · SP3/006 · EN",
+      "printed_type": "Champion Unit",
+      "printed_tags_in_face_order": [
+        "Ahri",
+        "Ionia"
+      ],
+      "observation": "Same attack/defend -2 Might, minimum 1, instruction. Printed Ahri/Ionia tags agree with feed."
+    }
+  }
+]

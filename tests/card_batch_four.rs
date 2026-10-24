@@ -156,8 +156,9 @@ fn new_card_facts_match_both_official_panels_and_stable_identity() {
         assert!(bytes.len() < 300_000);
     }
     assert_eq!(rules::effect(cards.len()), OfficialEffect::Unsupported);
-    // Tags affect gameplay predicates, so compare exact structured source data,
-    // including intentionally empty tag arrays in some Radiance printings.
+    // Tags affect gameplay predicates, so compare reviewed effective facts.
+    // Raw feed preservation and Kennen's missing Ionia tag are pinned separately
+    // in catalog_review; tag order is not a gameplay distinction.
     for card in &cards {
         let printing = inventory["printings"]
             .as_array()
@@ -165,13 +166,19 @@ fn new_card_facts_match_both_official_panels_and_stable_identity() {
             .iter()
             .find(|p| p["official_id"] == card.official_id)
             .unwrap();
-        let tags: Vec<_> = printing["tags"]
+        let tags: BTreeSet<_> = printing["effective"]["tags"]
             .as_array()
             .unwrap()
             .iter()
             .map(|tag| tag.as_str().unwrap())
             .collect();
-        assert_eq!(card.tags, tags, "{}", card.name);
+        let runtime_tags: BTreeSet<_> = card.tags.iter().copied().collect();
+        assert_eq!(
+            runtime_tags.len(),
+            card.tags.len(),
+            "duplicate runtime tags"
+        );
+        assert_eq!(runtime_tags, tags, "{}", card.name);
     }
 }
 

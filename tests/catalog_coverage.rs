@@ -99,6 +99,12 @@ fn every_runtime_card_maps_by_official_id_without_enabling_inventory_only_cards(
                 .is_empty()
         );
         assert!(
+            entry["source_review"]["unresolved_variant_fields"]
+                .as_array()
+                .unwrap()
+                .is_empty()
+        );
+        assert!(
             official["unresolved_gameplay_fields"]
                 .as_array()
                 .unwrap()

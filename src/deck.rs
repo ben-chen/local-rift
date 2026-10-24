@@ -136,9 +136,12 @@ impl Inventory {
                 .get("source_review")
                 .filter(|value| value.is_object())
                 .ok_or("Missing identity source review.")?;
-            // Variant diagnostics can remain unreviewed on an already mapped
-            // identity. Actual unresolved gameplay facts block every printing.
-            let mut source_ready = fact_strings(review, "unresolved_gameplay_fields")?.is_empty();
+            // Historical differences can remain visible after review. Only
+            // resolved gameplay facts and resolved variant fields can enter a
+            // deck; being mapped already does not bypass either requirement.
+            let unresolved_gameplay = fact_strings(review, "unresolved_gameplay_fields")?;
+            let unresolved_variants = fact_strings(review, "unresolved_variant_fields")?;
+            let mut source_ready = unresolved_gameplay.is_empty() && unresolved_variants.is_empty();
             for id in &ids {
                 source_ready &= printings
                     .get(id)
@@ -585,7 +588,7 @@ mod catalog_fact_tests {
         });
         json!({"schema_version":2,
             "printings":[{"official_id":"test-main", "domains":["body"], "tags":["Raw"], "super_types":["signature"], "effective":effective,"unresolved_gameplay_fields":[]}],
-            "cards":[{"official_ids":["test-main"],"standard_legal":true,"keywords_observed":["Unique"],"effective_keywords_observed":[],"source_review":{"status":"unreviewed_variants","unresolved_gameplay_fields":[],"variant_diagnostics":[{"field":"rules_text"}]}}]
+            "cards":[{"official_ids":["test-main"],"standard_legal":true,"keywords_observed":["Unique"],"effective_keywords_observed":[],"source_review":{"status":"reviewed_variants","identity_review_id":"test-review","reviewed_variant_fields":["rules_text"],"unresolved_variant_fields":[],"unresolved_gameplay_fields":[],"variant_diagnostics":[{"field":"rules_text"}]}}]
         })
     }
     fn legend_fact() -> Facts {
@@ -698,7 +701,7 @@ mod catalog_fact_tests {
     }
 
     #[test]
-    fn identity_conflicts_block_but_unreviewed_diagnostics_do_not() {
+    fn resolved_diagnostics_remain_visible_without_blocking_eligibility() {
         let mut data = fixture();
         assert!(compatible(
             &Inventory::parse(&data).unwrap().printings["test-main"],
@@ -709,6 +712,49 @@ mod catalog_fact_tests {
             &Inventory::parse(&data).unwrap().printings["test-main"],
             &legend_fact()
         ));
+    }
+
+    #[test]
+    fn unresolved_variants_block_every_printing_despite_a_review_id_or_runtime_mapping() {
+        let mut data = fixture();
+        let mut alternate = data["printings"][0].clone();
+        alternate["official_id"] = json!("test-alternate");
+        data["printings"].as_array_mut().unwrap().push(alternate);
+        data["cards"][0]["official_ids"] = json!(["test-main", "test-alternate"]);
+        data["cards"][0]["implementation"] =
+            json!({"status":"implemented_main_card","playable_in_client":true});
+        data["cards"][0]["source_review"]["unresolved_variant_fields"] = json!(["tags"]);
+        let inventory = Inventory::parse(&data).unwrap();
+        for facts in inventory.printings.values() {
+            assert!(!facts.source_ready);
+            assert!(!compatible(facts, &legend_fact()));
+        }
+    }
+
+    #[test]
+    fn unresolved_variant_fields_must_be_present_and_typed_even_with_gameplay_conflicts() {
+        let mut data = fixture();
+        data["cards"][0]["source_review"]
+            .as_object_mut()
+            .unwrap()
+            .remove("unresolved_variant_fields");
+        assert!(
+            Inventory::parse(&data)
+                .err()
+                .unwrap()
+                .contains("unresolved_variant_fields")
+        );
+        for value in [json!(null), json!([true]), json!([1]), json!({})] {
+            let mut data = fixture();
+            data["cards"][0]["source_review"]["unresolved_gameplay_fields"] = json!(["might"]);
+            data["cards"][0]["source_review"]["unresolved_variant_fields"] = value;
+            assert!(
+                Inventory::parse(&data)
+                    .err()
+                    .unwrap()
+                    .contains("unresolved_variant_fields")
+            );
+        }
     }
 
     #[test]

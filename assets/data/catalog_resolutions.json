@@ -2,7 +2,7 @@
   "schema_version": 1,
   "status": "reviewed",
   "prepared_on": "2026-10-24",
-  "scope": "Field-level source review for all 37 historical issue groups, covering 38 official printings. This evidence changes neither runtime registration nor Standard legality.",
+  "scope": "Field-level source review: the original 37 historical issue groups plus exact C7 tag and punctuation/placeholder corrections. The 112 field resolutions cover 69 official printings. Raw data and history remain unchanged; no runtime registration or Standard legality is granted.",
   "baseline": {
     "main_cards": 290,
     "legends": 8,
@@ -63,12 +63,22 @@
     }
   },
   "evidence_manifest_path": "assets/data/catalog_evidence/images.json",
-  "evidence_manifest_sha256": "09b34b7ff5bde9c52f1f41103e2100f22873bb8ea5fd7288f21c1f40a0aa5a16",
+  "evidence_manifest_sha256": "ca4fa7ef9202532616d7b861ec8feecfbcc3f21b9a512218ad335b33575c7bcb",
   "evidence_checks": {
-    "all8_archives_verified": true,
-    "all38_image_hashes_verified": true,
-    "all38_image_urls_match_archived_printings": true,
-    "artwork_review": "Dated visual review of the matching official card images, documented in docs/CATALOG_REVIEW.md. No automatic preference for accessibility labels or new inferred source values."
+    "historical_c6_review": {
+      "all8_archives_verified": true,
+      "all38_image_hashes_verified": true,
+      "all38_image_urls_match_archived_printings": true,
+      "artwork_review": "Dated visual review of the matching official card images, documented in docs/CATALOG_REVIEW.md. No automatic preference for accessibility labels or new inferred source values."
+    },
+    "current_field_review": {
+      "reviewed_printings": 69,
+      "all69_image_hashes_verified": true,
+      "all69_image_urls_match_pinned_raw_printings": true,
+      "all69_raw_projection_and_origin_checks_pass": true,
+      "visual_review_date": "2026-10-24",
+      "note": "Includes the original 38 printings and 31 additional C7 printings. All exact local image evidence is verified; complete 90-member variant evidence is checked separately by catalog_identity_reviews.json."
+    }
   },
   "preservation_contract": [
     "Never overwrite raw gallery records, structured values, accessibility values, original HTML, or historical issue records.",
@@ -82,25 +92,15 @@
     "Live page checks fetch current gallery and legality pages but do not freshly download image evidence; the stored visual review remains dated."
   ],
   "stats": {
-    "legacy_issue_groups": 37,
-    "printings": 38,
-    "field_resolutions": 73,
-    "operations": {
-      "override": 59,
-      "confirm": 14
-    },
-    "basis": {
-      "confirmed_artwork": 69,
-      "rule_derived": 4
-    },
-    "fields": {
-      "domains": 16,
-      "types": 36,
-      "tags": 15,
-      "rules_html": 2,
-      "rules_text": 2,
-      "might": 2
-    }
+    "historical_issue_groups": 37,
+    "reviewed_printings": 69,
+    "field_resolutions": 112,
+    "overrides": 85,
+    "confirmations": 27,
+    "artwork_confirmed": 108,
+    "rule_derived": 4,
+    "c7_new_field_resolutions": 39,
+    "c7_new_printings": 31
   },
   "historical_issues": [
     {
@@ -2385,6 +2385,1301 @@
         "Zhongqi Li"
       ],
       "review_draft_sha256": "91226b66f3ba43bceac57a6d4cee62c634a97dc3d46a6346fdc31ffca6060bcd"
+    },
+    {
+      "official_id": "ogn-039-298",
+      "public_code": "OGN-039/298",
+      "name": "Kai'Sa, Survivor",
+      "set": "OGN",
+      "collector_number": 39,
+      "types": [
+        "unit"
+      ],
+      "type_source": "cardType.type",
+      "structured_types": [
+        "unit"
+      ],
+      "accessibility_types": [
+        "unit"
+      ],
+      "type_labels_conflict": false,
+      "super_types": [
+        "champion"
+      ],
+      "domains": [
+        "fury"
+      ],
+      "energy": 4,
+      "power": null,
+      "might": 4,
+      "might_bonus": null,
+      "rules_html": "<p>[Accelerate] (You may pay :rb_energy_1::rb_rune_fury: as an additional cost to have me enter ready.)<br />When I conquer, draw 1.</p>",
+      "rules_text": "[Accelerate] (You may pay [1 Energy][Fury Power] as an additional cost to have me enter ready.)\nWhen I conquer, draw 1.",
+      "equipment_html": "",
+      "equipment_text": "",
+      "tags": [
+        "Kai'Sa",
+        "The Void"
+      ],
+      "rarity": "epic",
+      "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/3d942c02ad4e96a36dba14d663c5105bb6614500-744x1039.png?accountingTag=RB",
+      "image_accessibility_text": "Riftbound Unit: Kai'Sa, Survivor. [Accelerate] (You may pay [1][C] as an additional cost to have me enter ready.)\nWhen I conquer, draw 1.",
+      "illustrators": [
+        "League Splash Team"
+      ],
+      "review_draft_sha256": "17bd12f88ac568b353b2134d0bdf8b5d938e705c559eeda3eed343035ffa7ef4"
+    },
+    {
+      "official_id": "ogn-039a-298",
+      "public_code": "OGN-039a/298",
+      "name": "Kai'Sa, Survivor",
+      "set": "OGN",
+      "collector_number": 39,
+      "types": [
+        "unit"
+      ],
+      "type_source": "cardType.type",
+      "structured_types": [
+        "unit"
+      ],
+      "accessibility_types": [
+        "unit"
+      ],
+      "type_labels_conflict": false,
+      "super_types": [
+        "champion"
+      ],
+      "domains": [
+        "fury"
+      ],
+      "energy": 4,
+      "power": null,
+      "might": 4,
+      "might_bonus": null,
+      "rules_html": "<p>[Accelerate] (You may pay :rb_energy_1::rb_rune_fury: as an additional cost to have me enter ready.)<br />When I conquer, draw 1.</p>",
+      "rules_text": "[Accelerate] (You may pay [1 Energy][Fury Power] as an additional cost to have me enter ready.)\nWhen I conquer, draw 1.",
+      "equipment_html": "",
+      "equipment_text": "",
+      "tags": [
+        "Kai'Sa",
+        "The Void"
+      ],
+      "rarity": "showcase",
+      "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/ad69bde670ce218adee1d2a618a7295d2fb7bd4c-744x1039.png?accountingTag=RB",
+      "image_accessibility_text": "Riftbound Unit: Kai'Sa, Survivor. [Accelerate] (You may pay [1][C] as an additional cost to have me enter ready.)\nWhen I conquer, draw 1.",
+      "illustrators": [
+        "Envar Studio"
+      ],
+      "review_draft_sha256": "60382be7db4a7d8f3b19954dc96cceb33cd68c608fae0da9aac3f376f8fcf19e"
+    },
+    {
+      "official_id": "ogn-117-298",
+      "public_code": "OGN-117/298",
+      "name": "Viktor, Innovator",
+      "set": "OGN",
+      "collector_number": 117,
+      "types": [
+        "unit"
+      ],
+      "type_source": "cardType.type",
+      "structured_types": [
+        "unit"
+      ],
+      "accessibility_types": [
+        "unit"
+      ],
+      "type_labels_conflict": false,
+      "super_types": [
+        "champion"
+      ],
+      "domains": [
+        "mind"
+      ],
+      "energy": 4,
+      "power": 1,
+      "might": 3,
+      "might_bonus": null,
+      "rules_html": "<p>When you play a card on an opponent's turn, play a 1 :rb_might: Recruit unit token in your base.</p>",
+      "rules_text": "When you play a card on an opponent's turn, play a 1 Might Recruit unit token in your base.",
+      "equipment_html": "",
+      "equipment_text": "",
+      "tags": [
+        "Viktor",
+        "Zaun"
+      ],
+      "rarity": "rare",
+      "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/35be0b10f13611b4f5d828f2a79001036ab57ba1-744x1039.png?accountingTag=RB",
+      "image_accessibility_text": "Riftbound Unit: Viktor, Innovator. When you play a card on an opponent's turn, play a 1 [S] Recruit unit token in your base.",
+      "illustrators": [
+        "League Splash Team"
+      ],
+      "review_draft_sha256": "a02a5781f84a7e18331d4d5c0433785cdb078e2d523fe672a2eec29d96d00fd6"
+    },
+    {
+      "official_id": "ogn-117a-298",
+      "public_code": "OGN-117a/298",
+      "name": "Viktor, Innovator",
+      "set": "OGN",
+      "collector_number": 117,
+      "types": [
+        "unit"
+      ],
+      "type_source": "cardType.type",
+      "structured_types": [
+        "unit"
+      ],
+      "accessibility_types": [
+        "unit"
+      ],
+      "type_labels_conflict": false,
+      "super_types": [
+        "champion"
+      ],
+      "domains": [
+        "mind"
+      ],
+      "energy": 4,
+      "power": 1,
+      "might": 3,
+      "might_bonus": null,
+      "rules_html": "<p>When you play a card on an opponent's turn, play a 1 :rb_might: Recruit unit token in your base.</p>",
+      "rules_text": "When you play a card on an opponent's turn, play a 1 Might Recruit unit token in your base.",
+      "equipment_html": "",
+      "equipment_text": "",
+      "tags": [
+        "Viktor",
+        "Zaun"
+      ],
+      "rarity": "showcase",
+      "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/12dfa6b38edc9b23f216c0a1828474f7506d49c0-744x1039.png?accountingTag=RB",
+      "image_accessibility_text": "Riftbound Unit: Viktor, Innovator. When you play a card on an opponent's turn, play a 1 [S] Recruit unit token in your base.",
+      "illustrators": [
+        "League Splash Team"
+      ],
+      "review_draft_sha256": "ba8b35343a2c1cf2238591faae9ebd0e21edd489d3a1acc5ed5c9a2b4b8082e9"
+    },
+    {
+      "official_id": "ogn-119-298",
+      "public_code": "OGN-119/298",
+      "name": "Ahri, Inquisitive",
+      "set": "OGN",
+      "collector_number": 119,
+      "types": [
+        "unit"
+      ],
+      "type_source": "cardType.type",
+      "structured_types": [
+        "unit"
+      ],
+      "accessibility_types": [
+        "unit"
+      ],
+      "type_labels_conflict": false,
+      "super_types": [
+        "champion"
+      ],
+      "domains": [
+        "mind"
+      ],
+      "energy": 3,
+      "power": 1,
+      "might": 3,
+      "might_bonus": null,
+      "rules_html": "<p>When I attack or defend, give an enemy unit here -2 :rb_might: this turn, to a minimum of 1 :rb_might:.</p>",
+      "rules_text": "When I attack or defend, give an enemy unit here -2 Might this turn, to a minimum of 1 Might.",
+      "equipment_html": "",
+      "equipment_text": "",
+      "tags": [
+        "Ahri",
+        "Ionia"
+      ],
+      "rarity": "epic",
+      "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/cfa28e1abcac1db780d11e82985e13ee5978290d-744x1039.png?accountingTag=RB",
+      "image_accessibility_text": "Riftbound Unit: Ahri, Inquisitive. When I attack or defend, give an enemy unit here -2 [S] this turn, to a minimum of 1 [S].",
+      "illustrators": [
+        "Six More Vodka"
+      ],
+      "review_draft_sha256": "11d16610ede23f4871ac5648f53136da9d414083d27f611d22239aadd8184467"
+    },
+    {
+      "official_id": "ogn-119a-298",
+      "public_code": "OGN-119a/298",
+      "name": "Ahri, Inquisitive",
+      "set": "OGN",
+      "collector_number": 119,
+      "types": [
+        "unit"
+      ],
+      "type_source": "cardType.type",
+      "structured_types": [
+        "unit"
+      ],
+      "accessibility_types": [
+        "unit"
+      ],
+      "type_labels_conflict": false,
+      "super_types": [
+        "champion"
+      ],
+      "domains": [
+        "mind"
+      ],
+      "energy": 3,
+      "power": 1,
+      "might": 3,
+      "might_bonus": null,
+      "rules_html": "<p>When I attack or defend, give an enemy unit here -2 :rb_might: this turn, to a minimum of 1 :rb_might:.</p>",
+      "rules_text": "When I attack or defend, give an enemy unit here -2 Might this turn, to a minimum of 1 Might.",
+      "equipment_html": "",
+      "equipment_text": "",
+      "tags": [
+        "Ahri",
+        "Ionia"
+      ],
+      "rarity": "showcase",
+      "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/7adc5aa8dba66bf918b8140699cb3a74f7b0efb5-744x1039.png?accountingTag=RB",
+      "image_accessibility_text": "Riftbound Unit: Ahri, Inquisitive. When I attack or defend, give an enemy unit here -2 [S] this turn, to a minimum of 1 [S].",
+      "illustrators": [
+        "Kudos Productions"
+      ],
+      "review_draft_sha256": "ddbaa9a92810e8746d808f255bd6cb3a5089306a673c4bedea920848fcf275a7"
+    },
+    {
+      "official_id": "sfd-227-221",
+      "public_code": "SFD-227/221",
+      "name": "Ahri, Inquisitive",
+      "set": "SFD",
+      "collector_number": 227,
+      "types": [
+        "unit"
+      ],
+      "type_source": "cardType.type",
+      "structured_types": [
+        "unit"
+      ],
+      "accessibility_types": [
+        "unit"
+      ],
+      "type_labels_conflict": false,
+      "super_types": [
+        "champion"
+      ],
+      "domains": [
+        "mind"
+      ],
+      "energy": 3,
+      "power": 1,
+      "might": 3,
+      "might_bonus": null,
+      "rules_html": "<p>When I attack or defend, give an enemy unit here -2 :rb_might: this turn, to a minimum of 1 :rb_might:.</p>",
+      "rules_text": "When I attack or defend, give an enemy unit here -2 Might this turn, to a minimum of 1 Might.",
+      "equipment_html": "",
+      "equipment_text": "",
+      "tags": [
+        "Ahri"
+      ],
+      "rarity": "showcase",
+      "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/d4c332e90c97e5e70b996598cd4a0f731b77fdef-744x1039.png?accountingTag=RB",
+      "image_accessibility_text": "Riftbound Unit: Ahri, Inquisitive. When I attack or defend, give an enemy unit here -2 [S] this turn, to a minimum of 1 [S].",
+      "illustrators": [
+        "Shawn Tan"
+      ],
+      "review_draft_sha256": "a8b6b4229a8f5f517ec5ed6356bcd00cc83aa861afdc41b16022395171409ba9"
+    },
+    {
+      "official_id": "sfd-227-star-221",
+      "public_code": "SFD-227*/221",
+      "name": "Ahri, Inquisitive",
+      "set": "SFD",
+      "collector_number": 227,
+      "types": [
+        "unit"
+      ],
+      "type_source": "cardType.type",
+      "structured_types": [
+        "unit"
+      ],
+      "accessibility_types": [
+        "unit"
+      ],
+      "type_labels_conflict": false,
+      "super_types": [
+        "champion"
+      ],
+      "domains": [
+        "mind"
+      ],
+      "energy": 3,
+      "power": 1,
+      "might": 3,
+      "might_bonus": null,
+      "rules_html": "<p>When I attack or defend, give an enemy unit here -2 :rb_might: this turn, to a minimum of 1 :rb_might:.</p>",
+      "rules_text": "When I attack or defend, give an enemy unit here -2 Might this turn, to a minimum of 1 Might.",
+      "equipment_html": "",
+      "equipment_text": "",
+      "tags": [
+        "Ahri"
+      ],
+      "rarity": "showcase",
+      "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/608f786c30a7e80db87d3c2d45bc0c26b0840c5e-744x1039.png?accountingTag=RB",
+      "image_accessibility_text": "Riftbound Unit: Ahri, Inquisitive. When I attack or defend, give an enemy unit here -2 [S] this turn, to a minimum of 1 [S].",
+      "illustrators": [
+        "Shawn Tan"
+      ],
+      "review_draft_sha256": "5b0bef36642884183042d03bf21ab24d4ea1592689c37cef713a04a59e39f2e6"
+    },
+    {
+      "official_id": "ven-021-166",
+      "public_code": "VEN-021/166",
+      "name": "Akali, Deadly Weapon",
+      "set": "VEN",
+      "collector_number": 21,
+      "types": [
+        "unit"
+      ],
+      "type_source": "cardType.type",
+      "structured_types": [
+        "unit"
+      ],
+      "accessibility_types": [
+        "unit"
+      ],
+      "type_labels_conflict": false,
+      "super_types": [
+        "champion"
+      ],
+      "domains": [
+        "fury"
+      ],
+      "energy": 3,
+      "power": null,
+      "might": 3,
+      "might_bonus": null,
+      "rules_html": "<p>[Empower] :rb_energy_2::rb_rune_fury: (:rb_energy_2::rb_rune_fury:: Empower me. Use only if not Empowered.)<br />When I move, you may deal 1 to a unit at a battlefield I moved to or from. If I'm [Empowered], deal 2 instead.<br />[Empowered][&gt;] I have +1 :rb_might:.</p>",
+      "rules_text": "[Empower] [2 Energy][Fury Power] ([2 Energy][Fury Power]: Empower me. Use only if not Empowered.)\nWhen I move, you may deal 1 to a unit at a battlefield I moved to or from. If I'm [Empowered], deal 2 instead.\n[Empowered][>] I have +1 Might.",
+      "equipment_html": "",
+      "equipment_text": "",
+      "tags": [
+        "Ionia",
+        "Akali"
+      ],
+      "rarity": "epic",
+      "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/564e5f35ae39b6604290e83f39ffb61c2b2b9175-744x1039.png?accountingTag=RB",
+      "image_accessibility_text": "Riftbound Unit: Akali, Deadly Weapon. [Empower] [2][C] ([2][C]: Empower me. Use only if not Empowered.)\nWhen I move, you may deal 1 to a unit at a battlefield I moved to or from. If I'm [Empowered], deal 2 instead.\n[Empowered][>] I have +1 [S].",
+      "illustrators": [
+        "莺之歌"
+      ],
+      "review_draft_sha256": "ef40e13272d35691880598f2110c82512c0665eeff601bf6361db6ab930a282e"
+    },
+    {
+      "official_id": "ven-021a-166",
+      "public_code": "VEN-021a/166",
+      "name": "Akali, Deadly Weapon",
+      "set": "VEN",
+      "collector_number": 21,
+      "types": [
+        "unit"
+      ],
+      "type_source": "cardType.type",
+      "structured_types": [
+        "unit"
+      ],
+      "accessibility_types": [
+        "unit"
+      ],
+      "type_labels_conflict": false,
+      "super_types": [
+        "champion"
+      ],
+      "domains": [
+        "fury"
+      ],
+      "energy": 3,
+      "power": null,
+      "might": 3,
+      "might_bonus": null,
+      "rules_html": "<p>[Empower] :rb_energy_2::rb_rune_fury:<br />When I move, you may deal 1 to a unit at a battlefield I moved to or from. If I'm [Empowered], deal 2 instead.<br />[Empowered][&gt;] I have +1 :rb_might:..</p>",
+      "rules_text": "[Empower] [2 Energy][Fury Power]\nWhen I move, you may deal 1 to a unit at a battlefield I moved to or from. If I'm [Empowered], deal 2 instead.\n[Empowered][>] I have +1 Might..",
+      "equipment_html": "",
+      "equipment_text": "",
+      "tags": [
+        "Akali"
+      ],
+      "rarity": "showcase",
+      "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/92d8ad4bc4724da89f32348f290600f632f24e9e-744x1039.png?accountingTag=RB",
+      "image_accessibility_text": "Riftbound Unit: Akali, Deadly Weapon. [Empower] [2][C]\nWhen I move, you may deal 1 to a unit at a battlefield I moved to or from. If I'm [Empowered], deal 2 instead.\n[Empowered][>] I have +1 [S]..",
+      "illustrators": [
+        "Wild Rift Splash Team"
+      ],
+      "review_draft_sha256": "bee0ba5c1c0df0b2c8f9236c90c6c8e6fb783bf29bbb33c50557977128f4ff98"
+    },
+    {
+      "official_id": "ven-038-166",
+      "public_code": "VEN-038/166",
+      "name": "Akali, Silent",
+      "set": "VEN",
+      "collector_number": 38,
+      "types": [
+        "unit"
+      ],
+      "type_source": "cardType.type",
+      "structured_types": [
+        "unit"
+      ],
+      "accessibility_types": [
+        "unit"
+      ],
+      "type_labels_conflict": false,
+      "super_types": [
+        "champion"
+      ],
+      "domains": [
+        "calm"
+      ],
+      "energy": 4,
+      "power": 1,
+      "might": 4,
+      "might_bonus": null,
+      "rules_html": "<p>I can't be chosen by enemy spells and abilities unless I'm in combat.<br />When I move to a battlefield, give me +2 :rb_might: this turn.</p>",
+      "rules_text": "I can't be chosen by enemy spells and abilities unless I'm in combat.\nWhen I move to a battlefield, give me +2 Might this turn.",
+      "equipment_html": "",
+      "equipment_text": "",
+      "tags": [
+        "Ionia",
+        "Akali"
+      ],
+      "rarity": "rare",
+      "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/f1a4d73853194a3dde02c51b083d197af89d2bda-744x1039.png?accountingTag=RB",
+      "image_accessibility_text": "Riftbound Unit: Akali, Silent. I can't be chosen by enemy spells and abilities unless I'm in combat.\nWhen I move to a battlefield, give me +2 [S] this turn.",
+      "illustrators": [
+        "League Splash Team"
+      ],
+      "review_draft_sha256": "4b9f7bb915a3a18ca635a9578281c17d60f23b393e3e006de86e89194cf90c60"
+    },
+    {
+      "official_id": "ven-038a-166",
+      "public_code": "VEN-038a/166",
+      "name": "Akali, Silent",
+      "set": "VEN",
+      "collector_number": 38,
+      "types": [
+        "unit"
+      ],
+      "type_source": "cardType.type",
+      "structured_types": [
+        "unit"
+      ],
+      "accessibility_types": [
+        "unit"
+      ],
+      "type_labels_conflict": false,
+      "super_types": [
+        "champion"
+      ],
+      "domains": [
+        "calm"
+      ],
+      "energy": 4,
+      "power": 1,
+      "might": 4,
+      "might_bonus": null,
+      "rules_html": "<p>I can't be chosen by enemy spells and abilities unless I'm in combat.<br />When I move to a battlefield, give me +2 :rb_might: this turn.</p>",
+      "rules_text": "I can't be chosen by enemy spells and abilities unless I'm in combat.\nWhen I move to a battlefield, give me +2 Might this turn.",
+      "equipment_html": "",
+      "equipment_text": "",
+      "tags": [
+        "Akali"
+      ],
+      "rarity": "showcase",
+      "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/6924311aab46a74aa2c54030c053427725860ea8-744x1039.png?accountingTag=RB",
+      "image_accessibility_text": "Riftbound Unit: Akali, Silent. I can't be chosen by enemy spells and abilities unless I'm in combat.\nWhen I move to a battlefield, give me +2 [S] this turn.",
+      "illustrators": [
+        "League Splash Team"
+      ],
+      "review_draft_sha256": "1772da85442f4fbf252a0dc3b3a195408cd21af27c467dc19c774049d47a2347"
+    },
+    {
+      "official_id": "ven-042-166",
+      "public_code": "VEN-042/166",
+      "name": "Shen, Scourge of Shadows",
+      "set": "VEN",
+      "collector_number": 42,
+      "types": [
+        "unit"
+      ],
+      "type_source": "cardType.type",
+      "structured_types": [
+        "unit"
+      ],
+      "accessibility_types": [
+        "unit"
+      ],
+      "type_labels_conflict": false,
+      "super_types": [
+        "champion"
+      ],
+      "domains": [
+        "calm"
+      ],
+      "energy": 5,
+      "power": 1,
+      "might": 6,
+      "might_bonus": null,
+      "rules_html": "<p>When I hold, if there is exactly one other unit you control here, draw 1.</p>",
+      "rules_text": "When I hold, if there is exactly one other unit you control here, draw 1.",
+      "equipment_html": "",
+      "equipment_text": "",
+      "tags": [
+        "Shen",
+        "Ionia"
+      ],
+      "rarity": "rare",
+      "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/bbe849918c7f4189379ae8957dd427a3f272a1a6-744x1039.png?accountingTag=RB",
+      "image_accessibility_text": "Riftbound Unit: Shen, Scourge of Shadows. When I hold, if there is exactly one other unit you control here, draw 1.",
+      "illustrators": [
+        "Six More Vodka"
+      ],
+      "review_draft_sha256": "25b554c55220ce649223d2e1a7824d8401f5edbe4f3307c0e2951752c2b2514d"
+    },
+    {
+      "official_id": "ven-042a-166",
+      "public_code": "VEN-042a/166",
+      "name": "Shen, Scourge of Shadows",
+      "set": "VEN",
+      "collector_number": 42,
+      "types": [
+        "unit"
+      ],
+      "type_source": "cardType.type",
+      "structured_types": [
+        "unit"
+      ],
+      "accessibility_types": [
+        "unit"
+      ],
+      "type_labels_conflict": false,
+      "super_types": [
+        "champion"
+      ],
+      "domains": [
+        "calm"
+      ],
+      "energy": 5,
+      "power": 1,
+      "might": 6,
+      "might_bonus": null,
+      "rules_html": "<p>When I hold, if there is exactly one other unit you control here, draw 1.</p>",
+      "rules_text": "When I hold, if there is exactly one other unit you control here, draw 1.",
+      "equipment_html": "",
+      "equipment_text": "",
+      "tags": [
+        "Shen"
+      ],
+      "rarity": "showcase",
+      "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/a4bac7b94b87fbb3227ecdccd9e2aa1231b655c8-744x1039.png?accountingTag=RB",
+      "image_accessibility_text": "Riftbound Unit: Shen, Scourge of Shadows. When I hold, if there is exactly one other unit you control here, draw 1.",
+      "illustrators": [
+        "League Splash Team"
+      ],
+      "review_draft_sha256": "0d485a3678539eec6520ec003010b882c616347c22c5ba74d1d2984d049b3020"
+    },
+    {
+      "official_id": "ven-046-166",
+      "public_code": "VEN-046/166",
+      "name": "Nasus, Ascended",
+      "set": "VEN",
+      "collector_number": 46,
+      "types": [
+        "unit"
+      ],
+      "type_source": "cardType.type",
+      "structured_types": [
+        "unit"
+      ],
+      "accessibility_types": [
+        "unit"
+      ],
+      "type_labels_conflict": false,
+      "super_types": [
+        "champion"
+      ],
+      "domains": [
+        "calm"
+      ],
+      "energy": 8,
+      "power": 1,
+      "might": 8,
+      "might_bonus": null,
+      "rules_html": "<p>[Deflect 2] (Opponents must pay :rb_rune_rainbow::rb_rune_rainbow: to choose me with a spell or ability.)<br />[Empower] :rb_energy_8: (:rb_energy_8:: Empower me. Use only if not Empowered.)<br />[Empowered][&gt;] When I conquer, you score 1 point.</p>",
+      "rules_text": "[Deflect 2] (Opponents must pay [Any Power][Any Power] to choose me with a spell or ability.)\n[Empower] [8 Energy] ([8 Energy]: Empower me. Use only if not Empowered.)\n[Empowered][>] When I conquer, you score 1 point.",
+      "equipment_html": "",
+      "equipment_text": "",
+      "tags": [
+        "Dog",
+        "Shurima",
+        "Nasus"
+      ],
+      "rarity": "epic",
+      "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/4d9e9cc17be6aebf33ee1db42b515ad87ba8ee8c-744x1039.png?accountingTag=RB",
+      "image_accessibility_text": "Riftbound Unit: Nasus, Ascended. [Deflect 2] (Opponents must pay [A][A] to choose me with a spell or ability.)\n[Empower] [8] ([8]: Empower me. Use only if not Empowered.)\n[Empowered][>] When I conquer, you score 1 point.",
+      "illustrators": [
+        "Six More Vodka"
+      ],
+      "review_draft_sha256": "42d63ac2d71e27fc1a874d9a023ec5fe358d838a4174d78d4af01b45a0653773"
+    },
+    {
+      "official_id": "ven-046a-166",
+      "public_code": "VEN-046a/166",
+      "name": "Nasus, Ascended",
+      "set": "VEN",
+      "collector_number": 46,
+      "types": [
+        "unit"
+      ],
+      "type_source": "cardType.type",
+      "structured_types": [
+        "unit"
+      ],
+      "accessibility_types": [
+        "unit"
+      ],
+      "type_labels_conflict": false,
+      "super_types": [
+        "champion"
+      ],
+      "domains": [
+        "calm"
+      ],
+      "energy": 8,
+      "power": 1,
+      "might": 8,
+      "might_bonus": null,
+      "rules_html": "<p>[Deflect 2]<br />[Empower] :rb_energy_8:<br />[Empowered][&gt;] When I conquer, you score 1 point.</p>",
+      "rules_text": "[Deflect 2]\n[Empower] [8 Energy]\n[Empowered][>] When I conquer, you score 1 point.",
+      "equipment_html": "",
+      "equipment_text": "",
+      "tags": [
+        "Dog",
+        "Nasus"
+      ],
+      "rarity": "showcase",
+      "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/014103b536a1c5aa2397f0952323375ac9b73d60-744x1039.png?accountingTag=RB",
+      "image_accessibility_text": "Riftbound Unit: Nasus, Ascended. [Deflect 2]\n[Empower] [8]\n[Empowered][>] When I conquer, you score 1 point.",
+      "illustrators": [
+        "League Splash Team"
+      ],
+      "review_draft_sha256": "e26962f94a665c0a2b9041da6ab2ccaffa59ab96ec9dc2f1ba10d776ea77da71"
+    },
+    {
+      "official_id": "ven-113-166",
+      "public_code": "VEN-113/166",
+      "name": "Kennen, Storm of Shuriken",
+      "set": "VEN",
+      "collector_number": 113,
+      "types": [
+        "unit"
+      ],
+      "type_source": "cardType.type",
+      "structured_types": [
+        "unit"
+      ],
+      "accessibility_types": [
+        "unit"
+      ],
+      "type_labels_conflict": false,
+      "super_types": [
+        "champion"
+      ],
+      "domains": [
+        "chaos"
+      ],
+      "energy": 3,
+      "power": 1,
+      "might": 4,
+      "might_bonus": null,
+      "rules_html": "<p>When you play me, [Burn 2]. (Put the top 2 cards of your Main Deck into your trash.)<br />When I conquer, give a spell in your trash [Flow] equal to its cost this turn. (You may play it from your trash for its Flow cost. Then banish it.)</p>",
+      "rules_text": "When you play me, [Burn 2]. (Put the top 2 cards of your Main Deck into your trash.)\nWhen I conquer, give a spell in your trash [Flow] equal to its cost this turn. (You may play it from your trash for its Flow cost. Then banish it.)",
+      "equipment_html": "",
+      "equipment_text": "",
+      "tags": [
+        "Yordle",
+        "Kennen"
+      ],
+      "rarity": "epic",
+      "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/2f27c99f3df2940940dddd65105e5e42bbeeab3d-744x1039.png?accountingTag=RB",
+      "image_accessibility_text": "Riftbound Unit: Kennen, Storm of Shuriken. When you play me, [Burn 2]. (Put the top 2 cards of your Main Deck into your trash.)\nWhen I conquer, give a spell in your trash [Flow] equal to its cost this turn. (You may play it from your trash for its Flow cost. Then banish it.)",
+      "illustrators": [
+        "Six More Vodka"
+      ],
+      "review_draft_sha256": "ba34b565538cd9285b9db505786e346aebbe72913b2bc3e38e53a5facb6f60f9"
+    },
+    {
+      "official_id": "ven-113a-166",
+      "public_code": "VEN-113a/166",
+      "name": "Kennen, Storm of Shuriken",
+      "set": "VEN",
+      "collector_number": 113,
+      "types": [
+        "unit"
+      ],
+      "type_source": "cardType.type",
+      "structured_types": [
+        "unit"
+      ],
+      "accessibility_types": [
+        "unit"
+      ],
+      "type_labels_conflict": false,
+      "super_types": [
+        "champion"
+      ],
+      "domains": [
+        "chaos"
+      ],
+      "energy": 3,
+      "power": 1,
+      "might": 4,
+      "might_bonus": null,
+      "rules_html": "<p>When you play me, [Burn 2].<br />When I conquer, give a spell in your trash [Flow] equal to its cost this turn.</p>",
+      "rules_text": "When you play me, [Burn 2].\nWhen I conquer, give a spell in your trash [Flow] equal to its cost this turn.",
+      "equipment_html": "",
+      "equipment_text": "",
+      "tags": [
+        "Yordle",
+        "Ionia",
+        "Kennen"
+      ],
+      "rarity": "showcase",
+      "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/000c73937c370cd3572facc9b313b4eb2d26eee8-744x1039.png?accountingTag=RB",
+      "image_accessibility_text": "Riftbound Unit: Kennen, Storm of Shuriken. When you play me, [Burn 2].\nWhen I conquer, give a spell in your trash [Flow] equal to its cost this turn.",
+      "illustrators": [
+        "Wild Rift Splash Team"
+      ],
+      "review_draft_sha256": "21311e223e0fe1b607a4b15de4a9dfaf3c919f901dfc5850ec7606f6f0cfa186"
+    },
+    {
+      "official_id": "ven-136-166",
+      "public_code": "VEN-136/166",
+      "name": "Ambessa, Respected and Feared",
+      "set": "VEN",
+      "collector_number": 136,
+      "types": [
+        "unit"
+      ],
+      "type_source": "cardType.type",
+      "structured_types": [
+        "unit"
+      ],
+      "accessibility_types": [
+        "unit"
+      ],
+      "type_labels_conflict": false,
+      "super_types": [
+        "champion"
+      ],
+      "domains": [
+        "order"
+      ],
+      "energy": 5,
+      "power": null,
+      "might": 5,
+      "might_bonus": null,
+      "rules_html": "<p>[Empower] :rb_energy_1::rb_rune_order::rb_rune_order: (:rb_energy_1::rb_rune_order::rb_rune_order:: Empower me. Use only if not Empowered.)<br />[Empowered][&gt;] I have [Assault 2]. (+2 :rb_might: while I'm an attacker.)<br />[Empowered][&gt;] When I attack, kill an enemy unit here with less Might than me.</p>",
+      "rules_text": "[Empower] [1 Energy][Order Power][Order Power] ([1 Energy][Order Power][Order Power]: Empower me. Use only if not Empowered.)\n[Empowered][>] I have [Assault 2]. (+2 Might while I'm an attacker.)\n[Empowered][>] When I attack, kill an enemy unit here with less Might than me.",
+      "equipment_html": "",
+      "equipment_text": "",
+      "tags": [
+        "Noxus",
+        "Ambessa"
+      ],
+      "rarity": "epic",
+      "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/687c273217cd94067be9625a7f85b61d108a6293-744x1039.png?accountingTag=RB",
+      "image_accessibility_text": "Riftbound Unit: Ambessa, Respected and Feared. [Empower] [1][C][C] ([1][C][C]: Empower me. Use only if not Empowered.)\n[Empowered][>] I have [Assault 2]. (+2 [S] while I'm an attacker.)\n[Empowered][>] When I attack, kill an enemy unit here with less Might than me.",
+      "illustrators": [
+        "Pandart Studio"
+      ],
+      "review_draft_sha256": "f96c49029691113480a641d13cb2af34b0b20fa72d26efb8f784361e44bd3a8d"
+    },
+    {
+      "official_id": "ven-136a-166",
+      "public_code": "VEN-136a/166",
+      "name": "Ambessa, Respected and Feared",
+      "set": "VEN",
+      "collector_number": 136,
+      "types": [
+        "unit"
+      ],
+      "type_source": "cardType.type",
+      "structured_types": [
+        "unit"
+      ],
+      "accessibility_types": [
+        "unit"
+      ],
+      "type_labels_conflict": false,
+      "super_types": [
+        "champion"
+      ],
+      "domains": [
+        "order"
+      ],
+      "energy": 5,
+      "power": null,
+      "might": 5,
+      "might_bonus": null,
+      "rules_html": "<p>[Empower] :rb_energy_1::rb_rune_order::rb_rune_order:<br />[Empowered][&gt;] I have [Assault 2].<br />[Empowered][&gt;] When I attack, kill an enemy unit here with less Might than me.</p>",
+      "rules_text": "[Empower] [1 Energy][Order Power][Order Power]\n[Empowered][>] I have [Assault 2].\n[Empowered][>] When I attack, kill an enemy unit here with less Might than me.",
+      "equipment_html": "",
+      "equipment_text": "",
+      "tags": [
+        "Ambessa"
+      ],
+      "rarity": "showcase",
+      "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/02a1cfcd6663687d28b98a2de3ba666231c4eeee-744x1039.png?accountingTag=RB",
+      "image_accessibility_text": "Riftbound Unit: Ambessa, Respected and Feared. [Empower] [1][C][C]\n[Empowered][>] I have [Assault 2].\n[Empowered][>] When I attack, kill an enemy unit here with less Might than me.",
+      "illustrators": [
+        "League Splash Team"
+      ],
+      "review_draft_sha256": "309080078bef0b119d3e4b65a860b4d339cd1914c06d1ebcbdd69d3a8b21e25e"
+    },
+    {
+      "official_id": "ven-170-166",
+      "public_code": "VEN-170/166",
+      "name": "Shen, Scourge of Shadows",
+      "set": "VEN",
+      "collector_number": 170,
+      "types": [
+        "unit"
+      ],
+      "type_source": "cardType.type",
+      "structured_types": [
+        "unit"
+      ],
+      "accessibility_types": [
+        "unit"
+      ],
+      "type_labels_conflict": false,
+      "super_types": [
+        "champion"
+      ],
+      "domains": [
+        "calm"
+      ],
+      "energy": 5,
+      "power": 1,
+      "might": 6,
+      "might_bonus": null,
+      "rules_html": "<p>When I hold, if there is exactly one other unit you control here, draw 1.</p>",
+      "rules_text": "When I hold, if there is exactly one other unit you control here, draw 1.",
+      "equipment_html": "",
+      "equipment_text": "",
+      "tags": [
+        "Shen"
+      ],
+      "rarity": "showcase",
+      "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/56d6b54bdc2ae37579da820cec613c127a8843d3-744x1039.png?accountingTag=RB",
+      "image_accessibility_text": "Riftbound Unit: Shen, Scourge of Shadows. When I hold, if there is exactly one other unit you control here, draw 1.",
+      "illustrators": [
+        "华锐"
+      ],
+      "review_draft_sha256": "9a492bc03d91cc0f27663fc1b4d6cbe309038880c9436ef618b81098a5f22c45"
+    },
+    {
+      "official_id": "ven-176-166",
+      "public_code": "VEN-176/166",
+      "name": "Viktor, Innovator",
+      "set": "VEN",
+      "collector_number": 176,
+      "types": [
+        "unit"
+      ],
+      "type_source": "cardType.type",
+      "structured_types": [
+        "unit"
+      ],
+      "accessibility_types": [
+        "unit"
+      ],
+      "type_labels_conflict": false,
+      "super_types": [
+        "champion"
+      ],
+      "domains": [
+        "mind"
+      ],
+      "energy": 4,
+      "power": 1,
+      "might": 3,
+      "might_bonus": null,
+      "rules_html": "<p>When you play a card on an opponent's turn, play a 1 :rb_might: Recruit unit token to your base.</p>",
+      "rules_text": "When you play a card on an opponent's turn, play a 1 Might Recruit unit token to your base.",
+      "equipment_html": "",
+      "equipment_text": "",
+      "tags": [
+        "Viktor"
+      ],
+      "rarity": "showcase",
+      "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/0416b4a447494acac41413a4511bb59ce983b4ec-744x1039.png?accountingTag=RB",
+      "image_accessibility_text": "Riftbound Unit: Viktor, Innovator. When you play a card on an opponent's turn, play a 1 [S] Recruit unit token to your base.",
+      "illustrators": [
+        "莺之歌"
+      ],
+      "review_draft_sha256": "351f71b50fb8037efb16b8b3f57d899b1a0b9087518c1b7430bf6a694f66ed60"
+    },
+    {
+      "official_id": "ven-187-166",
+      "public_code": "VEN-187/166",
+      "name": "Ambessa, Respected and Feared",
+      "set": "VEN",
+      "collector_number": 187,
+      "types": [
+        "unit"
+      ],
+      "type_source": "cardType.type",
+      "structured_types": [
+        "unit"
+      ],
+      "accessibility_types": [
+        "unit"
+      ],
+      "type_labels_conflict": false,
+      "super_types": [
+        "champion"
+      ],
+      "domains": [
+        "order"
+      ],
+      "energy": 5,
+      "power": null,
+      "might": 5,
+      "might_bonus": null,
+      "rules_html": "<p>[Empower] :rb_energy_1::rb_rune_order::rb_rune_order:<br />[Empowered][&gt;] I have [Assault 2].<br />[Empowered][&gt;] When I attack, kill an enemy unit here with less Might than me.</p>",
+      "rules_text": "[Empower] [1 Energy][Order Power][Order Power]\n[Empowered][>] I have [Assault 2].\n[Empowered][>] When I attack, kill an enemy unit here with less Might than me.",
+      "equipment_html": "",
+      "equipment_text": "",
+      "tags": [
+        "Ambessa"
+      ],
+      "rarity": "showcase",
+      "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/17552788c608d9cb044c0a9bf7076d462548875b-744x1039.png?accountingTag=RB",
+      "image_accessibility_text": "Riftbound Unit: Ambessa, Respected and Feared. [Empower] [1][C][C]\n[Empowered][>] I have [Assault 2].\n[Empowered][>] When I attack, kill an enemy unit here with less Might than me.",
+      "illustrators": [
+        "蛋费鸡丁"
+      ],
+      "review_draft_sha256": "39bb85b798693eafd4e2ccabc3ad6af28b146050bba2754fe1ed8bacbfa47ce5"
+    },
+    {
+      "official_id": "ven-sp1-006",
+      "public_code": "VEN-SP1/006",
+      "name": "Kai'Sa, Survivor",
+      "set": "VEN",
+      "collector_number": 1,
+      "types": [
+        "unit"
+      ],
+      "type_source": "cardType.type",
+      "structured_types": [
+        "unit"
+      ],
+      "accessibility_types": [
+        "unit"
+      ],
+      "type_labels_conflict": false,
+      "super_types": [
+        "champion"
+      ],
+      "domains": [
+        "fury"
+      ],
+      "energy": 4,
+      "power": null,
+      "might": 4,
+      "might_bonus": null,
+      "rules_html": "<p>[Accelerate]<br />When I conquer, draw 1.</p>",
+      "rules_text": "[Accelerate]\nWhen I conquer, draw 1.",
+      "equipment_html": "",
+      "equipment_text": "",
+      "tags": [
+        "Kai'Sa"
+      ],
+      "rarity": "showcase",
+      "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/a14d1be8f014a331f60885013d81a1a8f5c8c076-744x1039.png?accountingTag=RB",
+      "image_accessibility_text": "Riftbound Unit: Kai'Sa, Survivor. [Accelerate]\nWhen I conquer, draw 1.",
+      "illustrators": [
+        "Wild Rift Splash Team"
+      ],
+      "review_draft_sha256": "6cdc2a45ea94cc4190e6290d4664d2c3750bc54fac80bf67c92a622f230dfaf9"
+    },
+    {
+      "official_id": "ven-sp3-006",
+      "public_code": "VEN-SP3/006",
+      "name": "Ahri, Inquisitive",
+      "set": "VEN",
+      "collector_number": 3,
+      "types": [
+        "unit"
+      ],
+      "type_source": "cardType.type",
+      "structured_types": [
+        "unit"
+      ],
+      "accessibility_types": [
+        "unit"
+      ],
+      "type_labels_conflict": false,
+      "super_types": [
+        "champion"
+      ],
+      "domains": [
+        "mind"
+      ],
+      "energy": 3,
+      "power": 1,
+      "might": 3,
+      "might_bonus": null,
+      "rules_html": "<p>When I attack or defend, give an enemy unit here -2 :rb_might: this turn, to a minimum of 1 :rb_might:.</p>",
+      "rules_text": "When I attack or defend, give an enemy unit here -2 Might this turn, to a minimum of 1 Might.",
+      "equipment_html": "",
+      "equipment_text": "",
+      "tags": [
+        "Ahri",
+        "Ionia"
+      ],
+      "rarity": "showcase",
+      "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/e8d1993018d8317494cbaab4e4dd738c2e80740d-744x1039.png?accountingTag=RB",
+      "image_accessibility_text": "Riftbound Unit: Ahri, Inquisitive. When I attack or defend, give an enemy unit here -2 [S] this turn, to a minimum of 1 [S].",
+      "illustrators": [
+        "Wild Rift Splash Team"
+      ],
+      "review_draft_sha256": "207f517ae00c4cbad91589a847532a0b97d672a1eabb2283974275148f7ad8d3"
+    },
+    {
+      "official_id": "rad-r04a",
+      "public_code": "RAD-R04a",
+      "name": "Body Rune",
+      "set": "RAD",
+      "collector_number": 4,
+      "types": [
+        "rune"
+      ],
+      "type_source": "cardType.type",
+      "structured_types": [
+        "rune"
+      ],
+      "accessibility_types": [
+        "rune"
+      ],
+      "type_labels_conflict": false,
+      "super_types": [
+        "basic"
+      ],
+      "domains": [
+        "body"
+      ],
+      "energy": null,
+      "power": null,
+      "might": null,
+      "might_bonus": null,
+      "rules_html": "<p>[NO TEXT]</p>",
+      "rules_text": "[NO TEXT]",
+      "equipment_html": "",
+      "equipment_text": "",
+      "tags": [],
+      "rarity": "showcase",
+      "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/90b2706af9f1eaf167065087a09a8451f303ffe1-744x1039.png?accountingTag=RB",
+      "image_accessibility_text": "Riftbound Rune: Body Rune. [NO TEXT]",
+      "illustrators": [],
+      "review_draft_sha256": "f5975f6d579b3617592b867296e14935225d04dad73c14eca45fde9b2a16190b"
+    },
+    {
+      "official_id": "rad-r02a",
+      "public_code": "RAD-R02a",
+      "name": "Calm Rune",
+      "set": "RAD",
+      "collector_number": 2,
+      "types": [
+        "rune"
+      ],
+      "type_source": "cardType.type",
+      "structured_types": [
+        "rune"
+      ],
+      "accessibility_types": [
+        "rune"
+      ],
+      "type_labels_conflict": false,
+      "super_types": [
+        "basic"
+      ],
+      "domains": [
+        "calm"
+      ],
+      "energy": null,
+      "power": null,
+      "might": null,
+      "might_bonus": null,
+      "rules_html": "<p>[NO TEXT]</p>",
+      "rules_text": "[NO TEXT]",
+      "equipment_html": "",
+      "equipment_text": "",
+      "tags": [],
+      "rarity": "showcase",
+      "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/34b4e5127ca68f78ad43e824af61728cfc7fbc19-744x1039.png?accountingTag=RB",
+      "image_accessibility_text": "Riftbound Rune: Calm Rune. [NO TEXT]",
+      "illustrators": [],
+      "review_draft_sha256": "fb1d0449dc7d3fdb91b81cedff0a0d4f3e40cd3cc15907cbca455e17abcd4427"
+    },
+    {
+      "official_id": "rad-r05a",
+      "public_code": "RAD-R05a",
+      "name": "Chaos Rune",
+      "set": "RAD",
+      "collector_number": 5,
+      "types": [
+        "rune"
+      ],
+      "type_source": "cardType.type",
+      "structured_types": [
+        "rune"
+      ],
+      "accessibility_types": [
+        "rune"
+      ],
+      "type_labels_conflict": false,
+      "super_types": [
+        "basic"
+      ],
+      "domains": [
+        "chaos"
+      ],
+      "energy": null,
+      "power": null,
+      "might": null,
+      "might_bonus": null,
+      "rules_html": "<p>[NO TEXT]</p>",
+      "rules_text": "[NO TEXT]",
+      "equipment_html": "",
+      "equipment_text": "",
+      "tags": [],
+      "rarity": "showcase",
+      "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/a8ad4d5345a7316ba76689988bcd211d63f66098-744x1039.png?accountingTag=RB",
+      "image_accessibility_text": "Riftbound Rune: Chaos Rune. [NO TEXT]",
+      "illustrators": [],
+      "review_draft_sha256": "b8f6554e925738310cc6190558aa70d46235d32ab8fed2fd9b08edd0c74ed47a"
+    },
+    {
+      "official_id": "rad-r01a",
+      "public_code": "RAD-R01a",
+      "name": "Fury Rune",
+      "set": "RAD",
+      "collector_number": 1,
+      "types": [
+        "rune"
+      ],
+      "type_source": "cardType.type",
+      "structured_types": [
+        "rune"
+      ],
+      "accessibility_types": [
+        "rune"
+      ],
+      "type_labels_conflict": false,
+      "super_types": [
+        "basic"
+      ],
+      "domains": [
+        "fury"
+      ],
+      "energy": null,
+      "power": null,
+      "might": null,
+      "might_bonus": null,
+      "rules_html": "<p>[NO TEXT]</p>",
+      "rules_text": "[NO TEXT]",
+      "equipment_html": "",
+      "equipment_text": "",
+      "tags": [],
+      "rarity": "showcase",
+      "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/55f5b003c67cd821895bc78a0a0c36322af53e11-744x1039.png?accountingTag=RB",
+      "image_accessibility_text": "Riftbound Rune: Fury Rune. [NO TEXT]",
+      "illustrators": [],
+      "review_draft_sha256": "3eca4d1dd60b91dc104eb4d0876fc9a3933ec7e725d4f9f19249f2d7b4335378"
+    },
+    {
+      "official_id": "rad-r03a",
+      "public_code": "RAD-R03a",
+      "name": "Mind Rune",
+      "set": "RAD",
+      "collector_number": 3,
+      "types": [
+        "rune"
+      ],
+      "type_source": "cardType.type",
+      "structured_types": [
+        "rune"
+      ],
+      "accessibility_types": [
+        "rune"
+      ],
+      "type_labels_conflict": false,
+      "super_types": [
+        "basic"
+      ],
+      "domains": [
+        "mind"
+      ],
+      "energy": null,
+      "power": null,
+      "might": null,
+      "might_bonus": null,
+      "rules_html": "<p>[NO TEXT]</p>",
+      "rules_text": "[NO TEXT]",
+      "equipment_html": "",
+      "equipment_text": "",
+      "tags": [],
+      "rarity": "showcase",
+      "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/7216a84b4c3c2446e9f96f1dae02cb4fd96283d8-744x1039.png?accountingTag=RB",
+      "image_accessibility_text": "Riftbound Rune: Mind Rune. [NO TEXT]",
+      "illustrators": [],
+      "review_draft_sha256": "719ede47fbdaf72eeb49e747f1580506ea0c10bce2f2bc55cd333a62f3c110b5"
+    },
+    {
+      "official_id": "rad-r06a",
+      "public_code": "RAD-R06a",
+      "name": "Order Rune",
+      "set": "RAD",
+      "collector_number": 6,
+      "types": [
+        "rune"
+      ],
+      "type_source": "cardType.type",
+      "structured_types": [
+        "rune"
+      ],
+      "accessibility_types": [
+        "rune"
+      ],
+      "type_labels_conflict": false,
+      "super_types": [
+        "basic"
+      ],
+      "domains": [
+        "order"
+      ],
+      "energy": null,
+      "power": null,
+      "might": null,
+      "might_bonus": null,
+      "rules_html": "<p>[NO TEXT]</p>",
+      "rules_text": "[NO TEXT]",
+      "equipment_html": "",
+      "equipment_text": "",
+      "tags": [],
+      "rarity": "showcase",
+      "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/689797f63857003c7f21c478e86a811040c463c2-744x1039.png?accountingTag=RB",
+      "image_accessibility_text": "Riftbound Rune: Order Rune. [NO TEXT]",
+      "illustrators": [],
+      "review_draft_sha256": "8a99704e76ed51b3c92b08664ef94864932d4af1e066a4015b3b57ed11019b60"
     }
   ],
   "resolutions": [
@@ -4771,13 +6066,1317 @@
         }
       ],
       "enables_runtime_support": false
+    },
+    {
+      "id": "ogn-039-298:tags",
+      "official_id": "ogn-039-298",
+      "name": "Kai'Sa, Survivor",
+      "field": "tags",
+      "reviewed_on": "2026-10-24",
+      "basis": "confirmed_artwork",
+      "operation": "confirm",
+      "expected_raw_value": [
+        "Kai'Sa",
+        "The Void"
+      ],
+      "raw_source_field": "tags",
+      "expected_raw_source_value": [
+        "Kai'Sa",
+        "The Void"
+      ],
+      "effective_value": [
+        "Kai'Sa",
+        "The Void"
+      ],
+      "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+      "expected_printing_sha256": "17bd12f88ac568b353b2134d0bdf8b5d938e705c559eeda3eed343035ffa7ef4",
+      "printing_hash_encoding": "UTF-8 JSON sorted keys; ensure_ascii=false; separators=(',', ':')",
+      "reason": "Printed name, collector footer, Champion Unit line and every tag checked on this exact image. The original tag set is fully corroborated; preserve its ordering. This is not an inferred union with another printing.",
+      "evidence": [
+        {
+          "kind": "official_card_image",
+          "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/3d942c02ad4e96a36dba14d663c5105bb6614500-744x1039.png?accountingTag=RB",
+          "sha256": "848e1020bc1f1bbcc45a04142e9afcc6b478c4be76b07db893394b78669055d4",
+          "bytes": 1441045,
+          "local_path": "assets/data/catalog_evidence/images/ogn-039-298.png",
+          "location": "Printed Champion Unit/tag line below the artwork: CHAMPION UNIT · KAI'SA · THE VOID"
+        }
+      ],
+      "enables_runtime_support": false
+    },
+    {
+      "id": "ogn-039a-298:tags",
+      "official_id": "ogn-039a-298",
+      "name": "Kai'Sa, Survivor",
+      "field": "tags",
+      "reviewed_on": "2026-10-24",
+      "basis": "confirmed_artwork",
+      "operation": "confirm",
+      "expected_raw_value": [
+        "Kai'Sa",
+        "The Void"
+      ],
+      "raw_source_field": "tags",
+      "expected_raw_source_value": [
+        "Kai'Sa",
+        "The Void"
+      ],
+      "effective_value": [
+        "Kai'Sa",
+        "The Void"
+      ],
+      "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+      "expected_printing_sha256": "60382be7db4a7d8f3b19954dc96cceb33cd68c608fae0da9aac3f376f8fcf19e",
+      "printing_hash_encoding": "UTF-8 JSON sorted keys; ensure_ascii=false; separators=(',', ':')",
+      "reason": "Printed name, collector footer, Champion Unit line and every tag checked on this exact image. The original tag set is fully corroborated; preserve its ordering. This is not an inferred union with another printing.",
+      "evidence": [
+        {
+          "kind": "official_card_image",
+          "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/ad69bde670ce218adee1d2a618a7295d2fb7bd4c-744x1039.png?accountingTag=RB",
+          "sha256": "542b9965affa15deb5bacb3ba92d9bde06bdd716d6b9f8594252f3e3f4aefb49",
+          "bytes": 1029461,
+          "local_path": "assets/data/catalog_evidence/images/ogn-039a-298.png",
+          "location": "Printed Champion Unit/tag line below the artwork: CHAMPION UNIT · KAI'SA · THE VOID"
+        }
+      ],
+      "enables_runtime_support": false
+    },
+    {
+      "id": "ogn-117-298:tags",
+      "official_id": "ogn-117-298",
+      "name": "Viktor, Innovator",
+      "field": "tags",
+      "reviewed_on": "2026-10-24",
+      "basis": "confirmed_artwork",
+      "operation": "confirm",
+      "expected_raw_value": [
+        "Viktor",
+        "Zaun"
+      ],
+      "raw_source_field": "tags",
+      "expected_raw_source_value": [
+        "Viktor",
+        "Zaun"
+      ],
+      "effective_value": [
+        "Viktor",
+        "Zaun"
+      ],
+      "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+      "expected_printing_sha256": "a02a5781f84a7e18331d4d5c0433785cdb078e2d523fe672a2eec29d96d00fd6",
+      "printing_hash_encoding": "UTF-8 JSON sorted keys; ensure_ascii=false; separators=(',', ':')",
+      "reason": "Printed name, collector footer, Champion Unit line and every tag checked on this exact image. The original tag set is fully corroborated; preserve its ordering. This is not an inferred union with another printing.",
+      "evidence": [
+        {
+          "kind": "official_card_image",
+          "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/35be0b10f13611b4f5d828f2a79001036ab57ba1-744x1039.png?accountingTag=RB",
+          "sha256": "6571072a195d89f4be5bd0293d538c27db4493beb08c1952553e116e38f336f4",
+          "bytes": 1065171,
+          "local_path": "assets/data/catalog_evidence/images/ogn-117-298.png",
+          "location": "Printed Champion Unit/tag line below the artwork: CHAMPION UNIT · VIKTOR · ZAUN"
+        }
+      ],
+      "enables_runtime_support": false
+    },
+    {
+      "id": "ogn-117a-298:tags",
+      "official_id": "ogn-117a-298",
+      "name": "Viktor, Innovator",
+      "field": "tags",
+      "reviewed_on": "2026-10-24",
+      "basis": "confirmed_artwork",
+      "operation": "confirm",
+      "expected_raw_value": [
+        "Viktor",
+        "Zaun"
+      ],
+      "raw_source_field": "tags",
+      "expected_raw_source_value": [
+        "Viktor",
+        "Zaun"
+      ],
+      "effective_value": [
+        "Viktor",
+        "Zaun"
+      ],
+      "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+      "expected_printing_sha256": "ba8b35343a2c1cf2238591faae9ebd0e21edd489d3a1acc5ed5c9a2b4b8082e9",
+      "printing_hash_encoding": "UTF-8 JSON sorted keys; ensure_ascii=false; separators=(',', ':')",
+      "reason": "Printed name, collector footer, Champion Unit line and every tag checked on this exact image. The original tag set is fully corroborated; preserve its ordering. This is not an inferred union with another printing.",
+      "evidence": [
+        {
+          "kind": "official_card_image",
+          "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/12dfa6b38edc9b23f216c0a1828474f7506d49c0-744x1039.png?accountingTag=RB",
+          "sha256": "1d10a5c73134b0fccdb9d1d9a41b572b0a2b9088eae433fb9780fb72d81fbc6e",
+          "bytes": 812098,
+          "local_path": "assets/data/catalog_evidence/images/ogn-117a-298.png",
+          "location": "Printed Champion Unit/tag line below the artwork: CHAMPION UNIT · VIKTOR · ZAUN"
+        }
+      ],
+      "enables_runtime_support": false
+    },
+    {
+      "id": "ogn-119-298:tags",
+      "official_id": "ogn-119-298",
+      "name": "Ahri, Inquisitive",
+      "field": "tags",
+      "reviewed_on": "2026-10-24",
+      "basis": "confirmed_artwork",
+      "operation": "confirm",
+      "expected_raw_value": [
+        "Ahri",
+        "Ionia"
+      ],
+      "raw_source_field": "tags",
+      "expected_raw_source_value": [
+        "Ahri",
+        "Ionia"
+      ],
+      "effective_value": [
+        "Ahri",
+        "Ionia"
+      ],
+      "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+      "expected_printing_sha256": "11d16610ede23f4871ac5648f53136da9d414083d27f611d22239aadd8184467",
+      "printing_hash_encoding": "UTF-8 JSON sorted keys; ensure_ascii=false; separators=(',', ':')",
+      "reason": "Printed name, collector footer, Champion Unit line and every tag checked on this exact image. The original tag set is fully corroborated; preserve its ordering. This is not an inferred union with another printing.",
+      "evidence": [
+        {
+          "kind": "official_card_image",
+          "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/cfa28e1abcac1db780d11e82985e13ee5978290d-744x1039.png?accountingTag=RB",
+          "sha256": "eb7cc1894e3a6d40c037f1bddb0396c3505cfab3393835229766bfa53d879f2b",
+          "bytes": 1148880,
+          "local_path": "assets/data/catalog_evidence/images/ogn-119-298.png",
+          "location": "Printed Champion Unit/tag line below the artwork: CHAMPION UNIT · AHRI · IONIA"
+        }
+      ],
+      "enables_runtime_support": false
+    },
+    {
+      "id": "ogn-119a-298:tags",
+      "official_id": "ogn-119a-298",
+      "name": "Ahri, Inquisitive",
+      "field": "tags",
+      "reviewed_on": "2026-10-24",
+      "basis": "confirmed_artwork",
+      "operation": "confirm",
+      "expected_raw_value": [
+        "Ahri",
+        "Ionia"
+      ],
+      "raw_source_field": "tags",
+      "expected_raw_source_value": [
+        "Ahri",
+        "Ionia"
+      ],
+      "effective_value": [
+        "Ahri",
+        "Ionia"
+      ],
+      "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+      "expected_printing_sha256": "ddbaa9a92810e8746d808f255bd6cb3a5089306a673c4bedea920848fcf275a7",
+      "printing_hash_encoding": "UTF-8 JSON sorted keys; ensure_ascii=false; separators=(',', ':')",
+      "reason": "Printed name, collector footer, Champion Unit line and every tag checked on this exact image. The original tag set is fully corroborated; preserve its ordering. This is not an inferred union with another printing.",
+      "evidence": [
+        {
+          "kind": "official_card_image",
+          "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/7adc5aa8dba66bf918b8140699cb3a74f7b0efb5-744x1039.png?accountingTag=RB",
+          "sha256": "fbe5a8320e8d02035649b0442557415617c46b627a75831a151b9b81d968d8c1",
+          "bytes": 939695,
+          "local_path": "assets/data/catalog_evidence/images/ogn-119a-298.png",
+          "location": "Printed Champion Unit/tag line below the artwork: CHAMPION UNIT · AHRI · IONIA"
+        }
+      ],
+      "enables_runtime_support": false
+    },
+    {
+      "id": "sfd-227-221:tags",
+      "official_id": "sfd-227-221",
+      "name": "Ahri, Inquisitive",
+      "field": "tags",
+      "reviewed_on": "2026-10-24",
+      "basis": "confirmed_artwork",
+      "operation": "override",
+      "expected_raw_value": [
+        "Ahri"
+      ],
+      "raw_source_field": "tags",
+      "expected_raw_source_value": [
+        "Ahri"
+      ],
+      "effective_value": [
+        "Ahri",
+        "Ionia"
+      ],
+      "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+      "expected_printing_sha256": "a8b6b4229a8f5f517ec5ed6356bcd00cc83aa861afdc41b16022395171409ba9",
+      "printing_hash_encoding": "UTF-8 JSON sorted keys; ensure_ascii=false; separators=(',', ':')",
+      "reason": "Printed name, collector footer, Champion Unit line and every tag checked on this exact image. Add only the visibly printed missing tag Ionia. This is not an inferred union with another printing.",
+      "evidence": [
+        {
+          "kind": "official_card_image",
+          "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/d4c332e90c97e5e70b996598cd4a0f731b77fdef-744x1039.png?accountingTag=RB",
+          "sha256": "a2e2c28f5180e329664a9d487cae02f354f481f4b8fbd1666cce4cc574fcc96b",
+          "bytes": 1412623,
+          "local_path": "assets/data/catalog_evidence/images/sfd-227-221.png",
+          "location": "Printed Champion Unit/tag line below the artwork: CHAMPION UNIT · AHRI · IONIA"
+        }
+      ],
+      "enables_runtime_support": false
+    },
+    {
+      "id": "sfd-227-star-221:tags",
+      "official_id": "sfd-227-star-221",
+      "name": "Ahri, Inquisitive",
+      "field": "tags",
+      "reviewed_on": "2026-10-24",
+      "basis": "confirmed_artwork",
+      "operation": "override",
+      "expected_raw_value": [
+        "Ahri"
+      ],
+      "raw_source_field": "tags",
+      "expected_raw_source_value": [
+        "Ahri"
+      ],
+      "effective_value": [
+        "Ahri",
+        "Ionia"
+      ],
+      "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+      "expected_printing_sha256": "5b0bef36642884183042d03bf21ab24d4ea1592689c37cef713a04a59e39f2e6",
+      "printing_hash_encoding": "UTF-8 JSON sorted keys; ensure_ascii=false; separators=(',', ':')",
+      "reason": "Printed name, collector footer, Champion Unit line and every tag checked on this exact image. Add only the visibly printed missing tag Ionia. This is not an inferred union with another printing.",
+      "evidence": [
+        {
+          "kind": "official_card_image",
+          "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/608f786c30a7e80db87d3c2d45bc0c26b0840c5e-744x1039.png?accountingTag=RB",
+          "sha256": "2c082b1bd15b3f49be8689f12aa0dbb7ac4b2160ea39a7acdf2871bbb59d371f",
+          "bytes": 1419738,
+          "local_path": "assets/data/catalog_evidence/images/sfd-227-star-221.png",
+          "location": "Printed Champion Unit/tag line below the artwork: CHAMPION UNIT · AHRI · IONIA"
+        }
+      ],
+      "enables_runtime_support": false
+    },
+    {
+      "id": "ven-021-166:tags",
+      "official_id": "ven-021-166",
+      "name": "Akali, Deadly Weapon",
+      "field": "tags",
+      "reviewed_on": "2026-10-24",
+      "basis": "confirmed_artwork",
+      "operation": "confirm",
+      "expected_raw_value": [
+        "Ionia",
+        "Akali"
+      ],
+      "raw_source_field": "tags",
+      "expected_raw_source_value": [
+        "Ionia",
+        "Akali"
+      ],
+      "effective_value": [
+        "Ionia",
+        "Akali"
+      ],
+      "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+      "expected_printing_sha256": "ef40e13272d35691880598f2110c82512c0665eeff601bf6361db6ab930a282e",
+      "printing_hash_encoding": "UTF-8 JSON sorted keys; ensure_ascii=false; separators=(',', ':')",
+      "reason": "Printed name, collector footer, Champion Unit line and every tag checked on this exact image. The original tag set is fully corroborated; preserve its ordering. This is not an inferred union with another printing.",
+      "evidence": [
+        {
+          "kind": "official_card_image",
+          "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/564e5f35ae39b6604290e83f39ffb61c2b2b9175-744x1039.png?accountingTag=RB",
+          "sha256": "f2f9a04e726a4d327f38d76fca4200f7d67e5c09fe11dc6a3e4fbe70b219026c",
+          "bytes": 1030172,
+          "local_path": "assets/data/catalog_evidence/images/ven-021-166.png",
+          "location": "Printed Champion Unit/tag line below the artwork: CHAMPION UNIT · AKALI · IONIA"
+        }
+      ],
+      "enables_runtime_support": false
+    },
+    {
+      "id": "ven-021a-166:tags",
+      "official_id": "ven-021a-166",
+      "name": "Akali, Deadly Weapon",
+      "field": "tags",
+      "reviewed_on": "2026-10-24",
+      "basis": "confirmed_artwork",
+      "operation": "override",
+      "expected_raw_value": [
+        "Akali"
+      ],
+      "raw_source_field": "tags",
+      "expected_raw_source_value": [
+        "Akali"
+      ],
+      "effective_value": [
+        "Akali",
+        "Ionia"
+      ],
+      "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+      "expected_printing_sha256": "bee0ba5c1c0df0b2c8f9236c90c6c8e6fb783bf29bbb33c50557977128f4ff98",
+      "printing_hash_encoding": "UTF-8 JSON sorted keys; ensure_ascii=false; separators=(',', ':')",
+      "reason": "Printed name, collector footer, Champion Unit line and every tag checked on this exact image. Add only the visibly printed missing tag Ionia. This is not an inferred union with another printing.",
+      "evidence": [
+        {
+          "kind": "official_card_image",
+          "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/92d8ad4bc4724da89f32348f290600f632f24e9e-744x1039.png?accountingTag=RB",
+          "sha256": "0bef70039a3edbde543b3d065153bb7139a427e6fe8f326c5561dd977f74f9db",
+          "bytes": 1175912,
+          "local_path": "assets/data/catalog_evidence/images/ven-021a-166.png",
+          "location": "Printed Champion Unit/tag line below the artwork: CHAMPION UNIT · AKALI · IONIA"
+        }
+      ],
+      "enables_runtime_support": false
+    },
+    {
+      "id": "ven-021a-166:rules_html",
+      "official_id": "ven-021a-166",
+      "name": "Akali, Deadly Weapon",
+      "field": "rules_html",
+      "reviewed_on": "2026-10-24",
+      "basis": "confirmed_artwork",
+      "operation": "override",
+      "expected_raw_value": "<p>[Empower] :rb_energy_2::rb_rune_fury:<br />When I move, you may deal 1 to a unit at a battlefield I moved to or from. If I'm [Empowered], deal 2 instead.<br />[Empowered][&gt;] I have +1 :rb_might:..</p>",
+      "raw_source_field": "rules_html",
+      "expected_raw_source_value": "<p>[Empower] :rb_energy_2::rb_rune_fury:<br />When I move, you may deal 1 to a unit at a battlefield I moved to or from. If I'm [Empowered], deal 2 instead.<br />[Empowered][&gt;] I have +1 :rb_might:..</p>",
+      "effective_value": "<p>[Empower] :rb_energy_2::rb_rune_fury:<br />When I move, you may deal 1 to a unit at a battlefield I moved to or from. If I'm [Empowered], deal 2 instead.<br />[Empowered][&gt;] I have +1 :rb_might:.</p>",
+      "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+      "expected_printing_sha256": "bee0ba5c1c0df0b2c8f9236c90c6c8e6fb783bf29bbb33c50557977128f4ff98",
+      "printing_hash_encoding": "UTF-8 JSON sorted keys; ensure_ascii=false; separators=(',', ':')",
+      "reason": "The exact VEN021a card image shows one final period after the +1 Might instruction. Remove only the duplicate final period from this field; preserve reminder omissions, all wording and every other character.",
+      "evidence": [
+        {
+          "kind": "official_card_image",
+          "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/92d8ad4bc4724da89f32348f290600f632f24e9e-744x1039.png?accountingTag=RB",
+          "sha256": "0bef70039a3edbde543b3d065153bb7139a427e6fe8f326c5561dd977f74f9db",
+          "bytes": 1175912,
+          "local_path": "assets/data/catalog_evidence/images/ven-021a-166.png",
+          "location": "Final Empowered instruction: I have +1 Might, followed by one period."
+        }
+      ],
+      "enables_runtime_support": false
+    },
+    {
+      "id": "ven-021a-166:rules_text",
+      "official_id": "ven-021a-166",
+      "name": "Akali, Deadly Weapon",
+      "field": "rules_text",
+      "reviewed_on": "2026-10-24",
+      "basis": "confirmed_artwork",
+      "operation": "override",
+      "expected_raw_value": "[Empower] [2 Energy][Fury Power]\nWhen I move, you may deal 1 to a unit at a battlefield I moved to or from. If I'm [Empowered], deal 2 instead.\n[Empowered][>] I have +1 Might..",
+      "raw_source_field": "rules_text",
+      "expected_raw_source_value": "[Empower] [2 Energy][Fury Power]\nWhen I move, you may deal 1 to a unit at a battlefield I moved to or from. If I'm [Empowered], deal 2 instead.\n[Empowered][>] I have +1 Might..",
+      "effective_value": "[Empower] [2 Energy][Fury Power]\nWhen I move, you may deal 1 to a unit at a battlefield I moved to or from. If I'm [Empowered], deal 2 instead.\n[Empowered][>] I have +1 Might.",
+      "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+      "expected_printing_sha256": "bee0ba5c1c0df0b2c8f9236c90c6c8e6fb783bf29bbb33c50557977128f4ff98",
+      "printing_hash_encoding": "UTF-8 JSON sorted keys; ensure_ascii=false; separators=(',', ':')",
+      "reason": "The exact VEN021a card image shows one final period after the +1 Might instruction. Remove only the duplicate final period from this field; preserve reminder omissions, all wording and every other character.",
+      "evidence": [
+        {
+          "kind": "official_card_image",
+          "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/92d8ad4bc4724da89f32348f290600f632f24e9e-744x1039.png?accountingTag=RB",
+          "sha256": "0bef70039a3edbde543b3d065153bb7139a427e6fe8f326c5561dd977f74f9db",
+          "bytes": 1175912,
+          "local_path": "assets/data/catalog_evidence/images/ven-021a-166.png",
+          "location": "Final Empowered instruction: I have +1 Might, followed by one period."
+        }
+      ],
+      "enables_runtime_support": false
+    },
+    {
+      "id": "ven-038-166:tags",
+      "official_id": "ven-038-166",
+      "name": "Akali, Silent",
+      "field": "tags",
+      "reviewed_on": "2026-10-24",
+      "basis": "confirmed_artwork",
+      "operation": "confirm",
+      "expected_raw_value": [
+        "Ionia",
+        "Akali"
+      ],
+      "raw_source_field": "tags",
+      "expected_raw_source_value": [
+        "Ionia",
+        "Akali"
+      ],
+      "effective_value": [
+        "Ionia",
+        "Akali"
+      ],
+      "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+      "expected_printing_sha256": "4b9f7bb915a3a18ca635a9578281c17d60f23b393e3e006de86e89194cf90c60",
+      "printing_hash_encoding": "UTF-8 JSON sorted keys; ensure_ascii=false; separators=(',', ':')",
+      "reason": "Printed name, collector footer, Champion Unit line and every tag checked on this exact image. The original tag set is fully corroborated; preserve its ordering. This is not an inferred union with another printing.",
+      "evidence": [
+        {
+          "kind": "official_card_image",
+          "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/f1a4d73853194a3dde02c51b083d197af89d2bda-744x1039.png?accountingTag=RB",
+          "sha256": "211f5a4c7d5a6c47c4071e41fe7bba968b90c739677ded3edd34f63a007f17b1",
+          "bytes": 917217,
+          "local_path": "assets/data/catalog_evidence/images/ven-038-166.png",
+          "location": "Printed Champion Unit/tag line below the artwork: CHAMPION UNIT · AKALI · IONIA"
+        }
+      ],
+      "enables_runtime_support": false
+    },
+    {
+      "id": "ven-038a-166:tags",
+      "official_id": "ven-038a-166",
+      "name": "Akali, Silent",
+      "field": "tags",
+      "reviewed_on": "2026-10-24",
+      "basis": "confirmed_artwork",
+      "operation": "override",
+      "expected_raw_value": [
+        "Akali"
+      ],
+      "raw_source_field": "tags",
+      "expected_raw_source_value": [
+        "Akali"
+      ],
+      "effective_value": [
+        "Akali",
+        "Ionia"
+      ],
+      "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+      "expected_printing_sha256": "1772da85442f4fbf252a0dc3b3a195408cd21af27c467dc19c774049d47a2347",
+      "printing_hash_encoding": "UTF-8 JSON sorted keys; ensure_ascii=false; separators=(',', ':')",
+      "reason": "Printed name, collector footer, Champion Unit line and every tag checked on this exact image. Add only the visibly printed missing tag Ionia. This is not an inferred union with another printing.",
+      "evidence": [
+        {
+          "kind": "official_card_image",
+          "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/6924311aab46a74aa2c54030c053427725860ea8-744x1039.png?accountingTag=RB",
+          "sha256": "d1bce243540ae991560950ae36d4dc95dc341606366590315023f38cce35e07c",
+          "bytes": 1007049,
+          "local_path": "assets/data/catalog_evidence/images/ven-038a-166.png",
+          "location": "Printed Champion Unit/tag line below the artwork: CHAMPION UNIT · AKALI · IONIA"
+        }
+      ],
+      "enables_runtime_support": false
+    },
+    {
+      "id": "ven-042-166:tags",
+      "official_id": "ven-042-166",
+      "name": "Shen, Scourge of Shadows",
+      "field": "tags",
+      "reviewed_on": "2026-10-24",
+      "basis": "confirmed_artwork",
+      "operation": "confirm",
+      "expected_raw_value": [
+        "Shen",
+        "Ionia"
+      ],
+      "raw_source_field": "tags",
+      "expected_raw_source_value": [
+        "Shen",
+        "Ionia"
+      ],
+      "effective_value": [
+        "Shen",
+        "Ionia"
+      ],
+      "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+      "expected_printing_sha256": "25b554c55220ce649223d2e1a7824d8401f5edbe4f3307c0e2951752c2b2514d",
+      "printing_hash_encoding": "UTF-8 JSON sorted keys; ensure_ascii=false; separators=(',', ':')",
+      "reason": "Printed name, collector footer, Champion Unit line and every tag checked on this exact image. The original tag set is fully corroborated; preserve its ordering. This is not an inferred union with another printing.",
+      "evidence": [
+        {
+          "kind": "official_card_image",
+          "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/bbe849918c7f4189379ae8957dd427a3f272a1a6-744x1039.png?accountingTag=RB",
+          "sha256": "3a26168a7926a850947fde45c8f12a29808936c11f30ef45cd98e835b575783d",
+          "bytes": 854277,
+          "local_path": "assets/data/catalog_evidence/images/ven-042-166.png",
+          "location": "Printed Champion Unit/tag line below the artwork: CHAMPION UNIT · SHEN · IONIA"
+        }
+      ],
+      "enables_runtime_support": false
+    },
+    {
+      "id": "ven-042a-166:tags",
+      "official_id": "ven-042a-166",
+      "name": "Shen, Scourge of Shadows",
+      "field": "tags",
+      "reviewed_on": "2026-10-24",
+      "basis": "confirmed_artwork",
+      "operation": "override",
+      "expected_raw_value": [
+        "Shen"
+      ],
+      "raw_source_field": "tags",
+      "expected_raw_source_value": [
+        "Shen"
+      ],
+      "effective_value": [
+        "Shen",
+        "Ionia"
+      ],
+      "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+      "expected_printing_sha256": "0d485a3678539eec6520ec003010b882c616347c22c5ba74d1d2984d049b3020",
+      "printing_hash_encoding": "UTF-8 JSON sorted keys; ensure_ascii=false; separators=(',', ':')",
+      "reason": "Printed name, collector footer, Champion Unit line and every tag checked on this exact image. Add only the visibly printed missing tag Ionia. This is not an inferred union with another printing.",
+      "evidence": [
+        {
+          "kind": "official_card_image",
+          "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/a4bac7b94b87fbb3227ecdccd9e2aa1231b655c8-744x1039.png?accountingTag=RB",
+          "sha256": "df2adffef6475d9e289ba68ba688baf7c3e99013715238a9ee9068e774249bd4",
+          "bytes": 1067347,
+          "local_path": "assets/data/catalog_evidence/images/ven-042a-166.png",
+          "location": "Printed Champion Unit/tag line below the artwork: CHAMPION UNIT · SHEN · IONIA"
+        }
+      ],
+      "enables_runtime_support": false
+    },
+    {
+      "id": "ven-046-166:tags",
+      "official_id": "ven-046-166",
+      "name": "Nasus, Ascended",
+      "field": "tags",
+      "reviewed_on": "2026-10-24",
+      "basis": "confirmed_artwork",
+      "operation": "confirm",
+      "expected_raw_value": [
+        "Dog",
+        "Shurima",
+        "Nasus"
+      ],
+      "raw_source_field": "tags",
+      "expected_raw_source_value": [
+        "Dog",
+        "Shurima",
+        "Nasus"
+      ],
+      "effective_value": [
+        "Dog",
+        "Shurima",
+        "Nasus"
+      ],
+      "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+      "expected_printing_sha256": "42d63ac2d71e27fc1a874d9a023ec5fe358d838a4174d78d4af01b45a0653773",
+      "printing_hash_encoding": "UTF-8 JSON sorted keys; ensure_ascii=false; separators=(',', ':')",
+      "reason": "Printed name, collector footer, Champion Unit line and every tag checked on this exact image. The original tag set is fully corroborated; preserve its ordering. This is not an inferred union with another printing.",
+      "evidence": [
+        {
+          "kind": "official_card_image",
+          "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/4d9e9cc17be6aebf33ee1db42b515ad87ba8ee8c-744x1039.png?accountingTag=RB",
+          "sha256": "24f2768f05dfd82750bd2e52948ead29bab93291a7da36ef5202098226a9f4e9",
+          "bytes": 1108877,
+          "local_path": "assets/data/catalog_evidence/images/ven-046-166.png",
+          "location": "Printed Champion Unit/tag line below the artwork: CHAMPION UNIT · NASUS · SHURIMA · DOG"
+        }
+      ],
+      "enables_runtime_support": false
+    },
+    {
+      "id": "ven-046a-166:tags",
+      "official_id": "ven-046a-166",
+      "name": "Nasus, Ascended",
+      "field": "tags",
+      "reviewed_on": "2026-10-24",
+      "basis": "confirmed_artwork",
+      "operation": "override",
+      "expected_raw_value": [
+        "Dog",
+        "Nasus"
+      ],
+      "raw_source_field": "tags",
+      "expected_raw_source_value": [
+        "Dog",
+        "Nasus"
+      ],
+      "effective_value": [
+        "Dog",
+        "Nasus",
+        "Shurima"
+      ],
+      "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+      "expected_printing_sha256": "e26962f94a665c0a2b9041da6ab2ccaffa59ab96ec9dc2f1ba10d776ea77da71",
+      "printing_hash_encoding": "UTF-8 JSON sorted keys; ensure_ascii=false; separators=(',', ':')",
+      "reason": "Printed name, collector footer, Champion Unit line and every tag checked on this exact image. Add only the visibly printed missing tag Shurima. This is not an inferred union with another printing.",
+      "evidence": [
+        {
+          "kind": "official_card_image",
+          "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/014103b536a1c5aa2397f0952323375ac9b73d60-744x1039.png?accountingTag=RB",
+          "sha256": "74d7d0194792ad39e59d4a46b900d34e968eccb73650b762692ac0f3178c135b",
+          "bytes": 1073276,
+          "local_path": "assets/data/catalog_evidence/images/ven-046a-166.png",
+          "location": "Printed Champion Unit/tag line below the artwork: CHAMPION UNIT · NASUS · SHURIMA · DOG"
+        }
+      ],
+      "enables_runtime_support": false
+    },
+    {
+      "id": "ven-113-166:tags",
+      "official_id": "ven-113-166",
+      "name": "Kennen, Storm of Shuriken",
+      "field": "tags",
+      "reviewed_on": "2026-10-24",
+      "basis": "confirmed_artwork",
+      "operation": "override",
+      "expected_raw_value": [
+        "Yordle",
+        "Kennen"
+      ],
+      "raw_source_field": "tags",
+      "expected_raw_source_value": [
+        "Yordle",
+        "Kennen"
+      ],
+      "effective_value": [
+        "Yordle",
+        "Kennen",
+        "Ionia"
+      ],
+      "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+      "expected_printing_sha256": "ba34b565538cd9285b9db505786e346aebbe72913b2bc3e38e53a5facb6f60f9",
+      "printing_hash_encoding": "UTF-8 JSON sorted keys; ensure_ascii=false; separators=(',', ':')",
+      "reason": "Printed name, collector footer, Champion Unit line and every tag checked on this exact image. Add only the visibly printed missing tag Ionia. This is not an inferred union with another printing.",
+      "evidence": [
+        {
+          "kind": "official_card_image",
+          "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/2f27c99f3df2940940dddd65105e5e42bbeeab3d-744x1039.png?accountingTag=RB",
+          "sha256": "6f0b20a963933fa4529c27abbaa05bf88455310097e6add9040cee71427a3def",
+          "bytes": 1023455,
+          "local_path": "assets/data/catalog_evidence/images/ven-113-166.png",
+          "location": "Printed Champion Unit/tag line below the artwork: CHAMPION UNIT · KENNEN · IONIA · YORDLE"
+        }
+      ],
+      "enables_runtime_support": false
+    },
+    {
+      "id": "ven-113a-166:tags",
+      "official_id": "ven-113a-166",
+      "name": "Kennen, Storm of Shuriken",
+      "field": "tags",
+      "reviewed_on": "2026-10-24",
+      "basis": "confirmed_artwork",
+      "operation": "confirm",
+      "expected_raw_value": [
+        "Yordle",
+        "Ionia",
+        "Kennen"
+      ],
+      "raw_source_field": "tags",
+      "expected_raw_source_value": [
+        "Yordle",
+        "Ionia",
+        "Kennen"
+      ],
+      "effective_value": [
+        "Yordle",
+        "Ionia",
+        "Kennen"
+      ],
+      "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+      "expected_printing_sha256": "21311e223e0fe1b607a4b15de4a9dfaf3c919f901dfc5850ec7606f6f0cfa186",
+      "printing_hash_encoding": "UTF-8 JSON sorted keys; ensure_ascii=false; separators=(',', ':')",
+      "reason": "Printed name, collector footer, Champion Unit line and every tag checked on this exact image. The original tag set is fully corroborated; preserve its ordering. This is not an inferred union with another printing.",
+      "evidence": [
+        {
+          "kind": "official_card_image",
+          "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/000c73937c370cd3572facc9b313b4eb2d26eee8-744x1039.png?accountingTag=RB",
+          "sha256": "fb54d2849777c3c1e8c7bae0688181f4a9850fa49490e14c4739dd7d33cb9caa",
+          "bytes": 1216018,
+          "local_path": "assets/data/catalog_evidence/images/ven-113a-166.png",
+          "location": "Printed Champion Unit/tag line below the artwork: CHAMPION UNIT · KENNEN · IONIA · YORDLE"
+        }
+      ],
+      "enables_runtime_support": false
+    },
+    {
+      "id": "ven-136-166:tags",
+      "official_id": "ven-136-166",
+      "name": "Ambessa, Respected and Feared",
+      "field": "tags",
+      "reviewed_on": "2026-10-24",
+      "basis": "confirmed_artwork",
+      "operation": "confirm",
+      "expected_raw_value": [
+        "Noxus",
+        "Ambessa"
+      ],
+      "raw_source_field": "tags",
+      "expected_raw_source_value": [
+        "Noxus",
+        "Ambessa"
+      ],
+      "effective_value": [
+        "Noxus",
+        "Ambessa"
+      ],
+      "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+      "expected_printing_sha256": "f96c49029691113480a641d13cb2af34b0b20fa72d26efb8f784361e44bd3a8d",
+      "printing_hash_encoding": "UTF-8 JSON sorted keys; ensure_ascii=false; separators=(',', ':')",
+      "reason": "Printed name, collector footer, Champion Unit line and every tag checked on this exact image. The original tag set is fully corroborated; preserve its ordering. This is not an inferred union with another printing.",
+      "evidence": [
+        {
+          "kind": "official_card_image",
+          "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/687c273217cd94067be9625a7f85b61d108a6293-744x1039.png?accountingTag=RB",
+          "sha256": "6ca0305f92843a9181a571a3eee34e86b85dddd21f43584a27c208ca6cd4abf8",
+          "bytes": 1119993,
+          "local_path": "assets/data/catalog_evidence/images/ven-136-166.png",
+          "location": "Printed Champion Unit/tag line below the artwork: CHAMPION UNIT · AMBESSA · NOXUS"
+        }
+      ],
+      "enables_runtime_support": false
+    },
+    {
+      "id": "ven-136a-166:tags",
+      "official_id": "ven-136a-166",
+      "name": "Ambessa, Respected and Feared",
+      "field": "tags",
+      "reviewed_on": "2026-10-24",
+      "basis": "confirmed_artwork",
+      "operation": "override",
+      "expected_raw_value": [
+        "Ambessa"
+      ],
+      "raw_source_field": "tags",
+      "expected_raw_source_value": [
+        "Ambessa"
+      ],
+      "effective_value": [
+        "Ambessa",
+        "Noxus"
+      ],
+      "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+      "expected_printing_sha256": "309080078bef0b119d3e4b65a860b4d339cd1914c06d1ebcbdd69d3a8b21e25e",
+      "printing_hash_encoding": "UTF-8 JSON sorted keys; ensure_ascii=false; separators=(',', ':')",
+      "reason": "Printed name, collector footer, Champion Unit line and every tag checked on this exact image. Add only the visibly printed missing tag Noxus. This is not an inferred union with another printing.",
+      "evidence": [
+        {
+          "kind": "official_card_image",
+          "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/02a1cfcd6663687d28b98a2de3ba666231c4eeee-744x1039.png?accountingTag=RB",
+          "sha256": "6d33d4ee78d6c3c7379b04c22046200df5b1a36961c2ce1baad1606825e0108b",
+          "bytes": 1229862,
+          "local_path": "assets/data/catalog_evidence/images/ven-136a-166.png",
+          "location": "Printed Champion Unit/tag line below the artwork: CHAMPION UNIT · AMBESSA · NOXUS"
+        }
+      ],
+      "enables_runtime_support": false
+    },
+    {
+      "id": "ven-170-166:tags",
+      "official_id": "ven-170-166",
+      "name": "Shen, Scourge of Shadows",
+      "field": "tags",
+      "reviewed_on": "2026-10-24",
+      "basis": "confirmed_artwork",
+      "operation": "override",
+      "expected_raw_value": [
+        "Shen"
+      ],
+      "raw_source_field": "tags",
+      "expected_raw_source_value": [
+        "Shen"
+      ],
+      "effective_value": [
+        "Shen",
+        "Ionia"
+      ],
+      "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+      "expected_printing_sha256": "9a492bc03d91cc0f27663fc1b4d6cbe309038880c9436ef618b81098a5f22c45",
+      "printing_hash_encoding": "UTF-8 JSON sorted keys; ensure_ascii=false; separators=(',', ':')",
+      "reason": "Printed name, collector footer, Champion Unit line and every tag checked on this exact image. Add only the visibly printed missing tag Ionia. This is not an inferred union with another printing.",
+      "evidence": [
+        {
+          "kind": "official_card_image",
+          "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/56d6b54bdc2ae37579da820cec613c127a8843d3-744x1039.png?accountingTag=RB",
+          "sha256": "e1e24d335f7e31e4115c573de0e69b3435ac9b9402a652f9e703283a844b18f5",
+          "bytes": 1058756,
+          "local_path": "assets/data/catalog_evidence/images/ven-170-166.png",
+          "location": "Printed Champion Unit/tag line below the artwork: CHAMPION UNIT · SHEN · IONIA"
+        }
+      ],
+      "enables_runtime_support": false
+    },
+    {
+      "id": "ven-176-166:tags",
+      "official_id": "ven-176-166",
+      "name": "Viktor, Innovator",
+      "field": "tags",
+      "reviewed_on": "2026-10-24",
+      "basis": "confirmed_artwork",
+      "operation": "override",
+      "expected_raw_value": [
+        "Viktor"
+      ],
+      "raw_source_field": "tags",
+      "expected_raw_source_value": [
+        "Viktor"
+      ],
+      "effective_value": [
+        "Viktor",
+        "Zaun"
+      ],
+      "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+      "expected_printing_sha256": "351f71b50fb8037efb16b8b3f57d899b1a0b9087518c1b7430bf6a694f66ed60",
+      "printing_hash_encoding": "UTF-8 JSON sorted keys; ensure_ascii=false; separators=(',', ':')",
+      "reason": "Printed name, collector footer, Champion Unit line and every tag checked on this exact image. Add only the visibly printed missing tag Zaun. This is not an inferred union with another printing.",
+      "evidence": [
+        {
+          "kind": "official_card_image",
+          "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/0416b4a447494acac41413a4511bb59ce983b4ec-744x1039.png?accountingTag=RB",
+          "sha256": "afa65d54ef5835e5c694fe44d8e4e85185aeb07197fa8ee773fb627759465468",
+          "bytes": 1094992,
+          "local_path": "assets/data/catalog_evidence/images/ven-176-166.png",
+          "location": "Printed Champion Unit/tag line below the artwork: CHAMPION UNIT · VIKTOR · ZAUN"
+        }
+      ],
+      "enables_runtime_support": false
+    },
+    {
+      "id": "ven-187-166:tags",
+      "official_id": "ven-187-166",
+      "name": "Ambessa, Respected and Feared",
+      "field": "tags",
+      "reviewed_on": "2026-10-24",
+      "basis": "confirmed_artwork",
+      "operation": "override",
+      "expected_raw_value": [
+        "Ambessa"
+      ],
+      "raw_source_field": "tags",
+      "expected_raw_source_value": [
+        "Ambessa"
+      ],
+      "effective_value": [
+        "Ambessa",
+        "Noxus"
+      ],
+      "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+      "expected_printing_sha256": "39bb85b798693eafd4e2ccabc3ad6af28b146050bba2754fe1ed8bacbfa47ce5",
+      "printing_hash_encoding": "UTF-8 JSON sorted keys; ensure_ascii=false; separators=(',', ':')",
+      "reason": "Printed name, collector footer, Champion Unit line and every tag checked on this exact image. Add only the visibly printed missing tag Noxus. This is not an inferred union with another printing.",
+      "evidence": [
+        {
+          "kind": "official_card_image",
+          "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/17552788c608d9cb044c0a9bf7076d462548875b-744x1039.png?accountingTag=RB",
+          "sha256": "f86db5af1f218c59fad92e04e47e98d1d07dc19d86d3dd375a9d7ee757318896",
+          "bytes": 1253057,
+          "local_path": "assets/data/catalog_evidence/images/ven-187-166.png",
+          "location": "Printed Champion Unit/tag line below the artwork: CHAMPION UNIT · AMBESSA · NOXUS"
+        }
+      ],
+      "enables_runtime_support": false
+    },
+    {
+      "id": "ven-sp1-006:tags",
+      "official_id": "ven-sp1-006",
+      "name": "Kai'Sa, Survivor",
+      "field": "tags",
+      "reviewed_on": "2026-10-24",
+      "basis": "confirmed_artwork",
+      "operation": "override",
+      "expected_raw_value": [
+        "Kai'Sa"
+      ],
+      "raw_source_field": "tags",
+      "expected_raw_source_value": [
+        "Kai'Sa"
+      ],
+      "effective_value": [
+        "Kai'Sa",
+        "The Void"
+      ],
+      "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+      "expected_printing_sha256": "6cdc2a45ea94cc4190e6290d4664d2c3750bc54fac80bf67c92a622f230dfaf9",
+      "printing_hash_encoding": "UTF-8 JSON sorted keys; ensure_ascii=false; separators=(',', ':')",
+      "reason": "Printed name, collector footer, Champion Unit line and every tag checked on this exact image. Add only the visibly printed missing tag The Void. This is not an inferred union with another printing.",
+      "evidence": [
+        {
+          "kind": "official_card_image",
+          "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/a14d1be8f014a331f60885013d81a1a8f5c8c076-744x1039.png?accountingTag=RB",
+          "sha256": "6cd3a833840f8e8afa9800329475ee846a4c924fcd5b59dd5bb0442d583c2d3b",
+          "bytes": 1278296,
+          "local_path": "assets/data/catalog_evidence/images/ven-sp1-006.png",
+          "location": "Printed Champion Unit/tag line below the artwork: CHAMPION UNIT · KAI'SA · THE VOID"
+        }
+      ],
+      "enables_runtime_support": false
+    },
+    {
+      "id": "ven-sp3-006:tags",
+      "official_id": "ven-sp3-006",
+      "name": "Ahri, Inquisitive",
+      "field": "tags",
+      "reviewed_on": "2026-10-24",
+      "basis": "confirmed_artwork",
+      "operation": "confirm",
+      "expected_raw_value": [
+        "Ahri",
+        "Ionia"
+      ],
+      "raw_source_field": "tags",
+      "expected_raw_source_value": [
+        "Ahri",
+        "Ionia"
+      ],
+      "effective_value": [
+        "Ahri",
+        "Ionia"
+      ],
+      "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+      "expected_printing_sha256": "207f517ae00c4cbad91589a847532a0b97d672a1eabb2283974275148f7ad8d3",
+      "printing_hash_encoding": "UTF-8 JSON sorted keys; ensure_ascii=false; separators=(',', ':')",
+      "reason": "Printed name, collector footer, Champion Unit line and every tag checked on this exact image. The original tag set is fully corroborated; preserve its ordering. This is not an inferred union with another printing.",
+      "evidence": [
+        {
+          "kind": "official_card_image",
+          "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/e8d1993018d8317494cbaab4e4dd738c2e80740d-744x1039.png?accountingTag=RB",
+          "sha256": "33acb3a5f9acd8182d4b04b2f183eb9ca730e4bd013ff6786830135850267663",
+          "bytes": 1359970,
+          "local_path": "assets/data/catalog_evidence/images/ven-sp3-006.png",
+          "location": "Printed Champion Unit/tag line below the artwork: CHAMPION UNIT · AHRI · IONIA"
+        }
+      ],
+      "enables_runtime_support": false
+    },
+    {
+      "id": "rad-r04a:rules_html",
+      "official_id": "rad-r04a",
+      "name": "Body Rune",
+      "field": "rules_html",
+      "reviewed_on": "2026-10-24",
+      "basis": "confirmed_artwork",
+      "operation": "override",
+      "expected_raw_value": "<p>[NO TEXT]</p>",
+      "raw_source_field": "rules_html",
+      "expected_raw_source_value": "<p>[NO TEXT]</p>",
+      "effective_value": "",
+      "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+      "expected_printing_sha256": "f5975f6d579b3617592b867296e14935225d04dad73c14eca45fde9b2a16190b",
+      "printing_hash_encoding": "UTF-8 JSON sorted keys; ensure_ascii=false; separators=(',', ':')",
+      "reason": "This exact official Rune face has a blank rules area. The literal [NO TEXT] is an unprinted gallery placeholder. Remove only that placeholder; preserve the raw field and the Core-defined Basic Rune abilities.",
+      "evidence": [
+        {
+          "kind": "official_card_image",
+          "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/90b2706af9f1eaf167065087a09a8451f303ffe1-744x1039.png?accountingTag=RB",
+          "sha256": "3c29232f9a70fc486ba5bb1d6d455bbf9cf870e17631724734ff3fa24e004504",
+          "bytes": 1153429,
+          "local_path": "assets/data/catalog_evidence/images/rad-r04a.png",
+          "location": "Complete card face and blank rules area; no [NO TEXT] literal or other rules text is printed."
+        }
+      ],
+      "enables_runtime_support": false
+    },
+    {
+      "id": "rad-r04a:rules_text",
+      "official_id": "rad-r04a",
+      "name": "Body Rune",
+      "field": "rules_text",
+      "reviewed_on": "2026-10-24",
+      "basis": "confirmed_artwork",
+      "operation": "override",
+      "expected_raw_value": "[NO TEXT]",
+      "raw_source_field": "rules_text",
+      "expected_raw_source_value": "[NO TEXT]",
+      "effective_value": "",
+      "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+      "expected_printing_sha256": "f5975f6d579b3617592b867296e14935225d04dad73c14eca45fde9b2a16190b",
+      "printing_hash_encoding": "UTF-8 JSON sorted keys; ensure_ascii=false; separators=(',', ':')",
+      "reason": "This exact official Rune face has a blank rules area. The literal [NO TEXT] is an unprinted gallery placeholder. Remove only that placeholder; preserve the raw field and the Core-defined Basic Rune abilities.",
+      "evidence": [
+        {
+          "kind": "official_card_image",
+          "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/90b2706af9f1eaf167065087a09a8451f303ffe1-744x1039.png?accountingTag=RB",
+          "sha256": "3c29232f9a70fc486ba5bb1d6d455bbf9cf870e17631724734ff3fa24e004504",
+          "bytes": 1153429,
+          "local_path": "assets/data/catalog_evidence/images/rad-r04a.png",
+          "location": "Complete card face and blank rules area; no [NO TEXT] literal or other rules text is printed."
+        }
+      ],
+      "enables_runtime_support": false
+    },
+    {
+      "id": "rad-r02a:rules_html",
+      "official_id": "rad-r02a",
+      "name": "Calm Rune",
+      "field": "rules_html",
+      "reviewed_on": "2026-10-24",
+      "basis": "confirmed_artwork",
+      "operation": "override",
+      "expected_raw_value": "<p>[NO TEXT]</p>",
+      "raw_source_field": "rules_html",
+      "expected_raw_source_value": "<p>[NO TEXT]</p>",
+      "effective_value": "",
+      "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+      "expected_printing_sha256": "fb1d0449dc7d3fdb91b81cedff0a0d4f3e40cd3cc15907cbca455e17abcd4427",
+      "printing_hash_encoding": "UTF-8 JSON sorted keys; ensure_ascii=false; separators=(',', ':')",
+      "reason": "This exact official Rune face has a blank rules area. The literal [NO TEXT] is an unprinted gallery placeholder. Remove only that placeholder; preserve the raw field and the Core-defined Basic Rune abilities.",
+      "evidence": [
+        {
+          "kind": "official_card_image",
+          "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/34b4e5127ca68f78ad43e824af61728cfc7fbc19-744x1039.png?accountingTag=RB",
+          "sha256": "b7ff80ebfd44ae9c48879315e821efb65da34f8888e66330754025f0a46e1132",
+          "bytes": 1058422,
+          "local_path": "assets/data/catalog_evidence/images/rad-r02a.png",
+          "location": "Complete card face and blank rules area; no [NO TEXT] literal or other rules text is printed."
+        }
+      ],
+      "enables_runtime_support": false
+    },
+    {
+      "id": "rad-r02a:rules_text",
+      "official_id": "rad-r02a",
+      "name": "Calm Rune",
+      "field": "rules_text",
+      "reviewed_on": "2026-10-24",
+      "basis": "confirmed_artwork",
+      "operation": "override",
+      "expected_raw_value": "[NO TEXT]",
+      "raw_source_field": "rules_text",
+      "expected_raw_source_value": "[NO TEXT]",
+      "effective_value": "",
+      "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+      "expected_printing_sha256": "fb1d0449dc7d3fdb91b81cedff0a0d4f3e40cd3cc15907cbca455e17abcd4427",
+      "printing_hash_encoding": "UTF-8 JSON sorted keys; ensure_ascii=false; separators=(',', ':')",
+      "reason": "This exact official Rune face has a blank rules area. The literal [NO TEXT] is an unprinted gallery placeholder. Remove only that placeholder; preserve the raw field and the Core-defined Basic Rune abilities.",
+      "evidence": [
+        {
+          "kind": "official_card_image",
+          "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/34b4e5127ca68f78ad43e824af61728cfc7fbc19-744x1039.png?accountingTag=RB",
+          "sha256": "b7ff80ebfd44ae9c48879315e821efb65da34f8888e66330754025f0a46e1132",
+          "bytes": 1058422,
+          "local_path": "assets/data/catalog_evidence/images/rad-r02a.png",
+          "location": "Complete card face and blank rules area; no [NO TEXT] literal or other rules text is printed."
+        }
+      ],
+      "enables_runtime_support": false
+    },
+    {
+      "id": "rad-r05a:rules_html",
+      "official_id": "rad-r05a",
+      "name": "Chaos Rune",
+      "field": "rules_html",
+      "reviewed_on": "2026-10-24",
+      "basis": "confirmed_artwork",
+      "operation": "override",
+      "expected_raw_value": "<p>[NO TEXT]</p>",
+      "raw_source_field": "rules_html",
+      "expected_raw_source_value": "<p>[NO TEXT]</p>",
+      "effective_value": "",
+      "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+      "expected_printing_sha256": "b8f6554e925738310cc6190558aa70d46235d32ab8fed2fd9b08edd0c74ed47a",
+      "printing_hash_encoding": "UTF-8 JSON sorted keys; ensure_ascii=false; separators=(',', ':')",
+      "reason": "This exact official Rune face has a blank rules area. The literal [NO TEXT] is an unprinted gallery placeholder. Remove only that placeholder; preserve the raw field and the Core-defined Basic Rune abilities.",
+      "evidence": [
+        {
+          "kind": "official_card_image",
+          "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/a8ad4d5345a7316ba76689988bcd211d63f66098-744x1039.png?accountingTag=RB",
+          "sha256": "3e339bfd5ad436b25f074a39c6ef719a23c57ab75bc8506dd2564e456c442699",
+          "bytes": 881423,
+          "local_path": "assets/data/catalog_evidence/images/rad-r05a.png",
+          "location": "Complete card face and blank rules area; no [NO TEXT] literal or other rules text is printed."
+        }
+      ],
+      "enables_runtime_support": false
+    },
+    {
+      "id": "rad-r05a:rules_text",
+      "official_id": "rad-r05a",
+      "name": "Chaos Rune",
+      "field": "rules_text",
+      "reviewed_on": "2026-10-24",
+      "basis": "confirmed_artwork",
+      "operation": "override",
+      "expected_raw_value": "[NO TEXT]",
+      "raw_source_field": "rules_text",
+      "expected_raw_source_value": "[NO TEXT]",
+      "effective_value": "",
+      "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+      "expected_printing_sha256": "b8f6554e925738310cc6190558aa70d46235d32ab8fed2fd9b08edd0c74ed47a",
+      "printing_hash_encoding": "UTF-8 JSON sorted keys; ensure_ascii=false; separators=(',', ':')",
+      "reason": "This exact official Rune face has a blank rules area. The literal [NO TEXT] is an unprinted gallery placeholder. Remove only that placeholder; preserve the raw field and the Core-defined Basic Rune abilities.",
+      "evidence": [
+        {
+          "kind": "official_card_image",
+          "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/a8ad4d5345a7316ba76689988bcd211d63f66098-744x1039.png?accountingTag=RB",
+          "sha256": "3e339bfd5ad436b25f074a39c6ef719a23c57ab75bc8506dd2564e456c442699",
+          "bytes": 881423,
+          "local_path": "assets/data/catalog_evidence/images/rad-r05a.png",
+          "location": "Complete card face and blank rules area; no [NO TEXT] literal or other rules text is printed."
+        }
+      ],
+      "enables_runtime_support": false
+    },
+    {
+      "id": "rad-r01a:rules_html",
+      "official_id": "rad-r01a",
+      "name": "Fury Rune",
+      "field": "rules_html",
+      "reviewed_on": "2026-10-24",
+      "basis": "confirmed_artwork",
+      "operation": "override",
+      "expected_raw_value": "<p>[NO TEXT]</p>",
+      "raw_source_field": "rules_html",
+      "expected_raw_source_value": "<p>[NO TEXT]</p>",
+      "effective_value": "",
+      "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+      "expected_printing_sha256": "3eca4d1dd60b91dc104eb4d0876fc9a3933ec7e725d4f9f19249f2d7b4335378",
+      "printing_hash_encoding": "UTF-8 JSON sorted keys; ensure_ascii=false; separators=(',', ':')",
+      "reason": "This exact official Rune face has a blank rules area. The literal [NO TEXT] is an unprinted gallery placeholder. Remove only that placeholder; preserve the raw field and the Core-defined Basic Rune abilities.",
+      "evidence": [
+        {
+          "kind": "official_card_image",
+          "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/55f5b003c67cd821895bc78a0a0c36322af53e11-744x1039.png?accountingTag=RB",
+          "sha256": "e9dc22612fba730628c05cb8fb6491a9d1c3f3454a603f7b464d0d37c8e54b65",
+          "bytes": 992280,
+          "local_path": "assets/data/catalog_evidence/images/rad-r01a.png",
+          "location": "Complete card face and blank rules area; no [NO TEXT] literal or other rules text is printed."
+        }
+      ],
+      "enables_runtime_support": false
+    },
+    {
+      "id": "rad-r01a:rules_text",
+      "official_id": "rad-r01a",
+      "name": "Fury Rune",
+      "field": "rules_text",
+      "reviewed_on": "2026-10-24",
+      "basis": "confirmed_artwork",
+      "operation": "override",
+      "expected_raw_value": "[NO TEXT]",
+      "raw_source_field": "rules_text",
+      "expected_raw_source_value": "[NO TEXT]",
+      "effective_value": "",
+      "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+      "expected_printing_sha256": "3eca4d1dd60b91dc104eb4d0876fc9a3933ec7e725d4f9f19249f2d7b4335378",
+      "printing_hash_encoding": "UTF-8 JSON sorted keys; ensure_ascii=false; separators=(',', ':')",
+      "reason": "This exact official Rune face has a blank rules area. The literal [NO TEXT] is an unprinted gallery placeholder. Remove only that placeholder; preserve the raw field and the Core-defined Basic Rune abilities.",
+      "evidence": [
+        {
+          "kind": "official_card_image",
+          "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/55f5b003c67cd821895bc78a0a0c36322af53e11-744x1039.png?accountingTag=RB",
+          "sha256": "e9dc22612fba730628c05cb8fb6491a9d1c3f3454a603f7b464d0d37c8e54b65",
+          "bytes": 992280,
+          "local_path": "assets/data/catalog_evidence/images/rad-r01a.png",
+          "location": "Complete card face and blank rules area; no [NO TEXT] literal or other rules text is printed."
+        }
+      ],
+      "enables_runtime_support": false
+    },
+    {
+      "id": "rad-r03a:rules_html",
+      "official_id": "rad-r03a",
+      "name": "Mind Rune",
+      "field": "rules_html",
+      "reviewed_on": "2026-10-24",
+      "basis": "confirmed_artwork",
+      "operation": "override",
+      "expected_raw_value": "<p>[NO TEXT]</p>",
+      "raw_source_field": "rules_html",
+      "expected_raw_source_value": "<p>[NO TEXT]</p>",
+      "effective_value": "",
+      "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+      "expected_printing_sha256": "719ede47fbdaf72eeb49e747f1580506ea0c10bce2f2bc55cd333a62f3c110b5",
+      "printing_hash_encoding": "UTF-8 JSON sorted keys; ensure_ascii=false; separators=(',', ':')",
+      "reason": "This exact official Rune face has a blank rules area. The literal [NO TEXT] is an unprinted gallery placeholder. Remove only that placeholder; preserve the raw field and the Core-defined Basic Rune abilities.",
+      "evidence": [
+        {
+          "kind": "official_card_image",
+          "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/7216a84b4c3c2446e9f96f1dae02cb4fd96283d8-744x1039.png?accountingTag=RB",
+          "sha256": "2f420564a1c35ec6667d4580cfff60cdb0bb38281b90fdd9c41e1ba9c22ca450",
+          "bytes": 1455640,
+          "local_path": "assets/data/catalog_evidence/images/rad-r03a.png",
+          "location": "Complete card face and blank rules area; no [NO TEXT] literal or other rules text is printed."
+        }
+      ],
+      "enables_runtime_support": false
+    },
+    {
+      "id": "rad-r03a:rules_text",
+      "official_id": "rad-r03a",
+      "name": "Mind Rune",
+      "field": "rules_text",
+      "reviewed_on": "2026-10-24",
+      "basis": "confirmed_artwork",
+      "operation": "override",
+      "expected_raw_value": "[NO TEXT]",
+      "raw_source_field": "rules_text",
+      "expected_raw_source_value": "[NO TEXT]",
+      "effective_value": "",
+      "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+      "expected_printing_sha256": "719ede47fbdaf72eeb49e747f1580506ea0c10bce2f2bc55cd333a62f3c110b5",
+      "printing_hash_encoding": "UTF-8 JSON sorted keys; ensure_ascii=false; separators=(',', ':')",
+      "reason": "This exact official Rune face has a blank rules area. The literal [NO TEXT] is an unprinted gallery placeholder. Remove only that placeholder; preserve the raw field and the Core-defined Basic Rune abilities.",
+      "evidence": [
+        {
+          "kind": "official_card_image",
+          "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/7216a84b4c3c2446e9f96f1dae02cb4fd96283d8-744x1039.png?accountingTag=RB",
+          "sha256": "2f420564a1c35ec6667d4580cfff60cdb0bb38281b90fdd9c41e1ba9c22ca450",
+          "bytes": 1455640,
+          "local_path": "assets/data/catalog_evidence/images/rad-r03a.png",
+          "location": "Complete card face and blank rules area; no [NO TEXT] literal or other rules text is printed."
+        }
+      ],
+      "enables_runtime_support": false
+    },
+    {
+      "id": "rad-r06a:rules_html",
+      "official_id": "rad-r06a",
+      "name": "Order Rune",
+      "field": "rules_html",
+      "reviewed_on": "2026-10-24",
+      "basis": "confirmed_artwork",
+      "operation": "override",
+      "expected_raw_value": "<p>[NO TEXT]</p>",
+      "raw_source_field": "rules_html",
+      "expected_raw_source_value": "<p>[NO TEXT]</p>",
+      "effective_value": "",
+      "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+      "expected_printing_sha256": "8a99704e76ed51b3c92b08664ef94864932d4af1e066a4015b3b57ed11019b60",
+      "printing_hash_encoding": "UTF-8 JSON sorted keys; ensure_ascii=false; separators=(',', ':')",
+      "reason": "This exact official Rune face has a blank rules area. The literal [NO TEXT] is an unprinted gallery placeholder. Remove only that placeholder; preserve the raw field and the Core-defined Basic Rune abilities.",
+      "evidence": [
+        {
+          "kind": "official_card_image",
+          "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/689797f63857003c7f21c478e86a811040c463c2-744x1039.png?accountingTag=RB",
+          "sha256": "0f5b3578203bfe9ac6d344cd094b120616e72e2b1b1424ea8fa51884de1040be",
+          "bytes": 784770,
+          "local_path": "assets/data/catalog_evidence/images/rad-r06a.png",
+          "location": "Complete card face and blank rules area; no [NO TEXT] literal or other rules text is printed."
+        }
+      ],
+      "enables_runtime_support": false
+    },
+    {
+      "id": "rad-r06a:rules_text",
+      "official_id": "rad-r06a",
+      "name": "Order Rune",
+      "field": "rules_text",
+      "reviewed_on": "2026-10-24",
+      "basis": "confirmed_artwork",
+      "operation": "override",
+      "expected_raw_value": "[NO TEXT]",
+      "raw_source_field": "rules_text",
+      "expected_raw_source_value": "[NO TEXT]",
+      "effective_value": "",
+      "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+      "expected_printing_sha256": "8a99704e76ed51b3c92b08664ef94864932d4af1e066a4015b3b57ed11019b60",
+      "printing_hash_encoding": "UTF-8 JSON sorted keys; ensure_ascii=false; separators=(',', ':')",
+      "reason": "This exact official Rune face has a blank rules area. The literal [NO TEXT] is an unprinted gallery placeholder. Remove only that placeholder; preserve the raw field and the Core-defined Basic Rune abilities.",
+      "evidence": [
+        {
+          "kind": "official_card_image",
+          "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/689797f63857003c7f21c478e86a811040c463c2-744x1039.png?accountingTag=RB",
+          "sha256": "0f5b3578203bfe9ac6d344cd094b120616e72e2b1b1424ea8fa51884de1040be",
+          "bytes": 784770,
+          "local_path": "assets/data/catalog_evidence/images/rad-r06a.png",
+          "location": "Complete card face and blank rules area; no [NO TEXT] literal or other rules text is printed."
+        }
+      ],
+      "enables_runtime_support": false
     }
   ],
   "unresolved_scope": [
-    "No complete visual audit of every remaining gallery printing is claimed.",
-    "These37 issue groups do not exhaust all possible defective fields.",
-    "Publisher editorial reason for Device and other source defects remains unknown.",
-    "No card-specific erratum is implied; none of these identities has indexed errata in the reviewed snapshot."
+    "Identity-level semantic dispositions are recorded separately in catalog_identity_reviews.json; field corrections do not imply whole-identity equivalence.",
+    "Unreviewed identities and new or changed printings still require explicit source review.",
+    "No source correction enables an unsupported card or proves executable Standard rules parity."
   ],
   "origin_archives": {
     "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9": {

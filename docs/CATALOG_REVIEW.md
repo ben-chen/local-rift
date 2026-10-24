@@ -4,20 +4,20 @@ This is a source-data review, dated **October 24, 2026**. It adds no playable ca
 
 ## What was reviewed
 
-The review covers every group in the catalog's original **37 source-quality issue records**, representing **38 official printings**. Matching official card images corroborate 13 missing-type fallbacks, resolve 23 structured/accessibility type contradictions, and show Might 5 on both printings of Kai'Sa, Rebel. The same images reveal additional domain, tag, and text defects on these records. This is a bounded review of those records, not a complete visual audit of the gallery or a count of every possible source error.
+The first review covers every group in the catalog's original **37 source-quality issue records**, representing **38 official printings**. Matching official card images corroborate 13 missing-type fallbacks, resolve 23 structured/accessibility type contradictions, and show Might 5 on both printings of Kai'Sa, Rebel. The same images reveal additional domain, tag, and text defects on these records. This is a bounded review of those records, not a complete visual audit of the gallery or a count of every possible source error.
 
-The [resolution manifest](../assets/data/catalog_resolutions.json) records **73 field resolutions: 59 effective changes and 14 confirmations**. It retains all 37 historical issue records and all 38 original normalized printings. 69 resolutions are direct artwork observations; four exclusions of an unprinted Device classification are rule-derived and explicitly marked separately.
+The [resolution manifest](../assets/data/catalog_resolutions.json) now records **112 field resolutions across 69 printings: 85 effective changes and 27 confirmations**. The original 73 entries, 38 raw printings, and all 37 historical issue records remain unchanged. A subsequent variant review adds 25 tag observations, one paired Akali punctuation correction, and six paired Rune-placeholder corrections. Of the complete 112 entries, 108 are direct artwork observations; four exclusions of an unprinted Device classification remain explicitly rule-derived. The separate [identity review](VARIANT_REVIEW.md) assesses whole printing groups without rewriting genuine printed text.
 
 | Field | Entries | Review |
 | --- | ---: | --- |
 | Types | 36 | 23 contradictory structured types; 13 corroborated accessibility fallbacks |
 | Domains | 16 | Five incorrect nonempty domains; 11 missing domains |
-| Tags | 15 | 11 printed-tag corrections; four rule-derived Device exclusions |
-| Rules HTML | 2 | One colored activation glyph; one stray suffix |
-| Readable rules | 2 | The same two corrections in readable text |
+| Tags | 40 | Original 15 entries; 12 further missing-tag corrections and 13 confirmations |
+| Rules HTML | 9 | Activation glyph, stray suffix, duplicate Akali period, six Rune placeholders |
+| Readable rules | 9 | The same nine corrections in readable text |
 | Might | 2 | Numbered Kai'Sa 5 confirmed; showcase 4 corrected to 5 |
 
-A confirmation leaves the existing normalized value unchanged while recording why a missing structured source field is acceptable. Empty domain arrays mean incomplete data; they do not make a card colorless. Genuine colorless identities retain an explicit `colorless` value.
+A confirmation leaves the existing normalized value unchanged while recording why it is supported, including corroborated missing-type fallbacks and complete printed tag sets. Empty domain arrays mean incomplete data; they do not make a card colorless. Genuine colorless identities retain an explicit `colorless` value.
 
 ## Raw values and effective facts
 
@@ -29,7 +29,7 @@ Each resolution pins its exact official printing ID, field, typed raw value, ori
 
 ## Evidence retained in the repository
 
-- [Image index](../assets/data/catalog_evidence/images.json): 38 original Riot CDN images, 31,744,181 bytes in total, with exact URLs, file sizes, and SHA-256 values. These are unchanged evidence files, separate from the smaller artwork embedded in the game. Riftbound and this artwork belong to Riot Games; the project is unaffiliated.
+- [Field-resolution image index](../assets/data/catalog_evidence/images.json): 69 original Riot CDN images, 66,207,382 bytes in total, with exact URLs, file sizes, and SHA-256 values. The separate [variant image index](../assets/data/catalog_evidence/variant_images.json) covers all 90 members of 29 complete identity reviews. The indexes share 31 files; together they reference 128 distinct originals. These unchanged evidence files are separate from the smaller artwork embedded in the game. Riftbound and this artwork belong to Riot Games; the project is unaffiliated.
 - [Immutable origin gallery](../assets/data/catalog_evidence/pages/97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9.html.gz): the original gzip bytes. Its decompressed SHA-256 is `97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9`. The importer independently reparses this origin rather than trusting a copied prerequisite in the manifest.
 - [October 9 Core Rules PDF](../assets/data/catalog_evidence/rules/94d41fee86f88b61c4157c0389c0595d990b98e5b42555c99d9f649ee64d1fec.pdf): unchanged official bytes with SHA-256 `94d41fee86f88b61c4157c0389c0595d990b98e5b42555c99d9f649ee64d1fec`. [Official PDF URL](https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/5c7946f7c3b8c6e0faff85ab6dadc6d2e721ea94.pdf).
 
@@ -37,7 +37,7 @@ Every artwork observation matched the printed name and collector number before r
 
 ## Reviewed corrections
 
-The table summarizes the 73 exact manifest entries. A type shown as ∅ means the structured type was absent; the current accessibility-derived type is corroborated. Every image link points to the exact bytes used for review. Complete raw/effective strings and hash prerequisites are in the manifest.
+The table below retains the original 73 manifest entries; the later 39 entries are summarized after it. A type shown as ∅ means the structured type was absent; the current accessibility-derived type is corroborated. Every image link points to the exact bytes used for review. Complete raw/effective strings and hash prerequisites are in the manifest.
 
 | Official printing | Card | Reviewed values | Evidence |
 | --- | --- | --- | --- |
@@ -86,18 +86,30 @@ Hunting Blind, Portable Portal, Bushwhack Trap, and Dockside Lock-Up print Gear 
 
 None of the 37 reviewed identities has an indexed erratum in the archived five errata articles. The dated live Radiance errata check listed Elnuk Herd, Last Caress, Forbidden Technique, and Neeko, Blending In, and did not adjudicate these discrepancies. Future official errata or changed card faces require another review.
 
+## Later field corrections and complete variant review
+
+The subsequent review inspects all **90 printings of 29 already-playable identities**. Its [complete identity manifest](../assets/data/catalog_identity_reviews.json) pins each raw and effective printing, applied field resolutions, exact image, immutable gallery origin, and official Core/errata authority. Its 35 field dispositions cover nine tag differences and 26 rules-text differences: **15 corrected transcriptions, 18 reminder-equivalent cases, and two rule-derived equivalences**. These are explicit identity-specific conclusions, not text-normalization rules. See [Variant review](VARIANT_REVIEW.md) for the full scope and reasoning.
+
+The additional 39 field-resolution entries are:
+
+- **25 tag observations across nine identities:** 12 omissions corrected and 13 existing sets confirmed. Every exact face prints its identity's full tag set. Kennen's selected base record `ven-113-166` omits Ionia even though both Kennen faces print it; the runtime tag metadata now follows that reviewed fact. No union of different printed tag sets is used.
+- **Akali, Deadly Weapon, `ven-021a-166`:** its image has one final period, while the feed has two. Paired HTML/readable corrections remove only that duplicate period. Its real reminder omission remains printed and preserved.
+- **Six Radiance alternate Runes, `rad-r01a` through `rad-r06a`:** their exact faces have blank rules areas. Paired HTML/readable corrections remove the unprinted `[NO TEXT]` feed placeholder. Basic Rune abilities remain supplied by Core 164.2; empty printed text does not remove those abilities.
+
 ## Remaining source review
 
-Alternate printings still show **42 tag-set divergences** and **110 rules-text divergences** in the raw snapshot. These are unreviewed diagnostics, not 110 proven gameplay errors or automatic resolutions. Reminder-text omission, showcase presentation, and real differences must be distinguished individually. Existing reviewed runtime mappings retain their known semantics; this increment does not declare all their alternate printings visually audited. New mappings with unresolved variant differences require explicit review. The [variant compatibility baseline](../assets/data/catalog_variant_baseline.json) pins only existing playable mappings with these diagnostics, their selected runtime source, and every complete normalized printing hash. It preserves compatibility; it does not adjudicate the variant differences. A new mapping or a changed pinned variant must receive explicit review rather than inheriting this exception. The diagnostics remain visible in the generated report, and later complete variant review is still required.
+The raw snapshot still retains **42 tag-set divergences and 110 rules-text divergences across 124 identities**. These counts include reviewed history, not just remaining uncertainty. Of those identities, 29 now have complete evidence-backed reviews. The other **95 remain unreviewed: 94 Standard-legal identities and the auxiliary Gold token**. A detected difference alone is not proof of a gameplay error. Missing reminder text, presentation changes, and actual operative differences must be distinguished individually.
 
-The original 37 issue groups are retained after resolution so a reader can reproduce what the feed said. Their count does not become a claim that all other records are clean. An unreviewed field on another record remains unreviewed, even if that record has no current source-quality flag.
+The former compatibility baseline has been retired. There is no exception admitting a mapped identity with unreviewed variant fields. A new or changed member, raw/effective fact, field resolution, image, Core link, or applicable erratum must pass the review prerequisites. Whole-identity review does not register a card or prove its engine implementation correct.
+
+The original 37 issue groups remain after resolution so a reader can reproduce what the feed said. Their count does not imply that every other record has been visually audited. An unreviewed field on another record remains unreviewed even if it has no current source-quality flag.
 
 ## Offline checks, live checks, and refresh
 
 Run `python3 tools/import_catalog.py --check` to verify archived sources, immutable origin data, complete printing prerequisites, every local evidence hash, and generated catalog/report agreement. A stale candidate printing, changed image URL, missing evidence file, or corrupt bytes fails before generated outputs are replaced.
 
-`--check-live` checks current gallery and legality pages. A markup-only page change can pass when the reviewed complete printing projection is unchanged: the origin page hash identifies historical evidence, not a requirement that the current website retain identical markup. The retained origin still verifies independently. Refresh validates the complete candidate before replacing current source files; it never overwrites the immutable reviewed origin as part of an ordinary refresh.
+`--check-live` checks current gallery, legality and errata pages, and the current Rules Hub Core PDF link. A markup-only page change can pass when the reviewed complete printing projection is unchanged: the origin page hash identifies historical evidence, not a requirement that the current website retain identical markup. The retained origin still verifies independently. Refresh validates the complete candidate before replacing current source files; it never overwrites the immutable reviewed origin as part of an ordinary refresh.
 
-**A live page check does not download the images again.** It verifies the current page's image URLs against the review and rechecks the stored image bytes. The visual review remains dated October 24; it cannot detect a publisher silently replacing bytes at an unchanged remote image URL without a separate image fetch and review.
+**A live page check does not download the images or Core PDF again.** It verifies current image URLs, parsed errata and the Core link against the review, then rechecks stored evidence bytes. The visual/rules review remains dated October 24; it cannot detect silently replaced remote bytes at an unchanged image or PDF URL without a separate fetch and review.
 
 These checks establish traceable source facts and safe metadata admission. They do not establish complete Standard rules parity or make any of the 764 unavailable identities playable.

@@ -243,7 +243,7 @@ class OfficialInventoryTests(unittest.TestCase):
             base = next(c for c in cards if c["id"] == "sfd-057-221")
             alternate = next(c for c in cards if c["id"] != base["id"] and c["name"] == base["name"] and c.get("subtitle") == base.get("subtitle"))
             alternate["cardImage"]["accessibilityText"] = "Riftbound Spell: Irelia, Fervent."
-        with self.assertRaisesRegex(ValueError, "Runtime mapping has unresolved official type conflict"):
+        with self.assertRaisesRegex(ValueError, "Unresolved member gameplay facts"):
             catalog.make_catalog(self.manifest, self.changed_gallery(conflict))
 
     def test_missing_type_requires_explicit_redundant_source(self):

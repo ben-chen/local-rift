@@ -1,0 +1,1735 @@
+{
+  "schema_version": 1,
+  "status": "reviewed",
+  "printing_projection_version": 1,
+  "printing_hash_encoding": "UTF-8 JSON sorted keys; ensure_ascii=false; separators=(',', ':')",
+  "origin_archives": {
+    "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9": {
+      "url": "https://playriftbound.com/en-us/card-gallery/",
+      "archive": "assets/data/catalog_evidence/pages/97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9.html.gz",
+      "sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+      "uncompressed_bytes": 3986973
+    }
+  },
+  "authorities": {
+    "core": {
+      "kind": "official_core_rules",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/5c7946f7c3b8c6e0faff85ab6dadc6d2e721ea94.pdf",
+      "local_path": "assets/data/catalog_evidence/rules/94d41fee86f88b61c4157c0389c0595d990b98e5b42555c99d9f649ee64d1fec.pdf",
+      "sha256": "94d41fee86f88b61c4157c0389c0595d990b98e5b42555c99d9f649ee64d1fec",
+      "bytes": 1612011
+    },
+    "unleashed": {
+      "kind": "official_errata",
+      "url": "https://playriftbound.com/en-us/news/rules-and-releases/unleashed-errata-updates/",
+      "archive": "assets/data/catalog_evidence/pages/8b3cb69fea7c499e435c6af0ac89b5c5013711477a172c6bbed3a782eff7ac7b.html.gz",
+      "sha256": "8b3cb69fea7c499e435c6af0ac89b5c5013711477a172c6bbed3a782eff7ac7b",
+      "uncompressed_bytes": 148046
+    }
+  },
+  "image_index": {
+    "local_path": "assets/data/catalog_evidence/variant_images.json",
+    "sha256": "1826db0a53cbe62eb1a1196d08df1cbef215b9d9e24cc006689559bbc7693b92",
+    "bytes": 91009
+  },
+  "reviews": [
+    {
+      "id": "c7-ogn-007-298",
+      "identity": "ogn-007-298",
+      "name": "Fury Rune",
+      "reviewed_on": "2026-10-24",
+      "status": "complete",
+      "enables_runtime_support": false,
+      "core_authority_id": "core",
+      "members": [
+        {
+          "official_id": "ogn-007-298",
+          "raw_sha256": "91f290b323c25faacd8fd00a8dc10272e94f54f48cf5e2b7e75e61f776fbb581",
+          "effective_sha256": "91f290b323c25faacd8fd00a8dc10272e94f54f48cf5e2b7e75e61f776fbb581",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {},
+          "image_id": "ogn-007-298"
+        },
+        {
+          "official_id": "ogn-007a-298",
+          "raw_sha256": "3039a9c8b1a8be027718ef6c98095a5670644cfdd26d7d2f4151c78dd0b73541",
+          "effective_sha256": "3039a9c8b1a8be027718ef6c98095a5670644cfdd26d7d2f4151c78dd0b73541",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {},
+          "image_id": "ogn-007a-298"
+        },
+        {
+          "official_id": "ven-r01",
+          "raw_sha256": "fd731b83c7d54640ce37750269c5eaf3f514358f188d1316f8fd484bfd09e95e",
+          "effective_sha256": "fd731b83c7d54640ce37750269c5eaf3f514358f188d1316f8fd484bfd09e95e",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {},
+          "image_id": "ven-r01"
+        },
+        {
+          "official_id": "rad-r01",
+          "raw_sha256": "341b8dfd818e5fba923e2aa832ed58a7d510cfb072180631fe15825816ad4bb9",
+          "effective_sha256": "341b8dfd818e5fba923e2aa832ed58a7d510cfb072180631fe15825816ad4bb9",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {},
+          "image_id": "rad-r01"
+        },
+        {
+          "official_id": "rad-r01a",
+          "raw_sha256": "3eca4d1dd60b91dc104eb4d0876fc9a3933ec7e725d4f9f19249f2d7b4335378",
+          "effective_sha256": "01afa8eacebee4e54ee743d8c715e0f03d161c0792b16c760ed09e9cba2c8930",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {
+            "rad-r01a:rules_html": "2b2fb4a79632f5a907db0900ee19d41ca9f709029f3ad1122009e39c4acaa5dd",
+            "rad-r01a:rules_text": "22fee20be7df2dcc74b1bda20530dc6eb02af44f2bf7ca15182208087c48f55b"
+          },
+          "image_id": "rad-r01a"
+        }
+      ],
+      "fields": [
+        {
+          "field": "rules_text",
+          "disposition": "corrected_transcription",
+          "reason": "All five exact faces have a blank rules-text area; none prints the literal [NO TEXT]. Only the RAD alternate feed contains that placeholder. This is a feed transcription/display correction, not reminder-text equivalence. Basic Rune abilities remain supplied by Core 164.2 despite the blank face.",
+          "rules": [
+            "164.1",
+            "164.2",
+            "135.2.e.1"
+          ],
+          "resolution_ids": [
+            "rad-r01a:rules_html",
+            "rad-r01a:rules_text"
+          ]
+        }
+      ],
+      "errata": []
+    },
+    {
+      "id": "c7-ogn-013-298",
+      "identity": "ogn-013-298",
+      "name": "Pouty Poro",
+      "reviewed_on": "2026-10-24",
+      "status": "complete",
+      "enables_runtime_support": false,
+      "core_authority_id": "core",
+      "members": [
+        {
+          "official_id": "ogn-013-298",
+          "raw_sha256": "ab1d9ff98d4b1828bee517a5776c2427a43aec2acd3fad11e01b45865aeb9f33",
+          "effective_sha256": "ab1d9ff98d4b1828bee517a5776c2427a43aec2acd3fad11e01b45865aeb9f33",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {},
+          "image_id": "ogn-013-298"
+        },
+        {
+          "official_id": "unl-220-219",
+          "raw_sha256": "d9677e57e628417a125049319eb8101a431104a2260980afb0835fd88ca42e35",
+          "effective_sha256": "d9677e57e628417a125049319eb8101a431104a2260980afb0835fd88ca42e35",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {},
+          "image_id": "unl-220-219"
+        }
+      ],
+      "fields": [
+        {
+          "field": "rules_text",
+          "disposition": "reminder_equivalent",
+          "reason": "Both faces retain Deflect. OGN 013 prints its italic Any-Power targeting reminder; UNL 220 omits it.",
+          "rules": [
+            "135.2.c.2",
+            "135.2.d.1",
+            "135.2.d.2",
+            "135.2.d.3",
+            "809"
+          ],
+          "resolution_ids": []
+        }
+      ],
+      "errata": []
+    },
+    {
+      "id": "c7-ogn-039-298",
+      "identity": "ogn-039-298",
+      "name": "Kai'Sa, Survivor",
+      "reviewed_on": "2026-10-24",
+      "status": "complete",
+      "enables_runtime_support": false,
+      "core_authority_id": "core",
+      "members": [
+        {
+          "official_id": "ogn-039-298",
+          "raw_sha256": "17bd12f88ac568b353b2134d0bdf8b5d938e705c559eeda3eed343035ffa7ef4",
+          "effective_sha256": "17bd12f88ac568b353b2134d0bdf8b5d938e705c559eeda3eed343035ffa7ef4",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {
+            "ogn-039-298:tags": "aa9cb64bb3a24601ebcc72a058bcb1fda8ffea4800f41087642f2d31efa5bc02"
+          },
+          "image_id": "ogn-039-298"
+        },
+        {
+          "official_id": "ogn-039a-298",
+          "raw_sha256": "60382be7db4a7d8f3b19954dc96cceb33cd68c608fae0da9aac3f376f8fcf19e",
+          "effective_sha256": "60382be7db4a7d8f3b19954dc96cceb33cd68c608fae0da9aac3f376f8fcf19e",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {
+            "ogn-039a-298:tags": "1f93bb41b489d3c7a60372728031f125c9846297fb9cc99068cd654aff938021"
+          },
+          "image_id": "ogn-039a-298"
+        },
+        {
+          "official_id": "ven-sp1-006",
+          "raw_sha256": "6cdc2a45ea94cc4190e6290d4664d2c3750bc54fac80bf67c92a622f230dfaf9",
+          "effective_sha256": "4fb6c47ecda9548537ce45d002632fb9e6ad36b72f6f6c70e613a743192340ce",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {
+            "ven-sp1-006:tags": "4bf5bf6eb885c450bafaae472e8e94bdbe2b8ae76e56d9443c1b976382095dae"
+          },
+          "image_id": "ven-sp1-006"
+        }
+      ],
+      "fields": [
+        {
+          "field": "tags",
+          "disposition": "corrected_transcription",
+          "reason": "Every exact member face prints the same full tag set. The linked per-printing image observations correct feed omissions and corroborate complete records. No tag union, preferred-printing precedence or showcase omission exception is used.",
+          "rules": [
+            "133.8",
+            "143.1"
+          ],
+          "resolution_ids": [
+            "ogn-039-298:tags",
+            "ogn-039a-298:tags",
+            "ven-sp1-006:tags"
+          ]
+        },
+        {
+          "field": "rules_text",
+          "disposition": "reminder_equivalent",
+          "reason": "The promo omits only the Accelerate reminder. All three exact faces retain Accelerate and conquer draw1; Core805.1.b/b.1 supplies1Energy plus matching-domainPower. No keyword cost or entry-ready replacement is removed.",
+          "rules": [
+            "135.2.c.2",
+            "135.2.d.1",
+            "135.2.d.2",
+            "135.2.d.3",
+            "805.1.b",
+            "805.1.b.1",
+            "805.6"
+          ],
+          "resolution_ids": []
+        }
+      ],
+      "errata": []
+    },
+    {
+      "id": "c7-ogn-042-298",
+      "identity": "ogn-042-298",
+      "name": "Calm Rune",
+      "reviewed_on": "2026-10-24",
+      "status": "complete",
+      "enables_runtime_support": false,
+      "core_authority_id": "core",
+      "members": [
+        {
+          "official_id": "ogn-042-298",
+          "raw_sha256": "04153ebc4ab5355af77040f022d1e639fc83a2f55b8339c2b199e193b719530c",
+          "effective_sha256": "04153ebc4ab5355af77040f022d1e639fc83a2f55b8339c2b199e193b719530c",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {},
+          "image_id": "ogn-042-298"
+        },
+        {
+          "official_id": "ogn-042a-298",
+          "raw_sha256": "512f94a7e53ec86dad7f604022ecb6a76c2144af9b807e1aaee9e772c3faf7b2",
+          "effective_sha256": "512f94a7e53ec86dad7f604022ecb6a76c2144af9b807e1aaee9e772c3faf7b2",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {},
+          "image_id": "ogn-042a-298"
+        },
+        {
+          "official_id": "ven-r02",
+          "raw_sha256": "c4e2df2658345533cdb114564cf5fac12f3fca1a1b366696ebc38a007913ab29",
+          "effective_sha256": "c4e2df2658345533cdb114564cf5fac12f3fca1a1b366696ebc38a007913ab29",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {},
+          "image_id": "ven-r02"
+        },
+        {
+          "official_id": "rad-r02",
+          "raw_sha256": "4ad754ce26e54db929c3c930045c6afb327297e94fa0f8d6c07ed94acd27ac1b",
+          "effective_sha256": "4ad754ce26e54db929c3c930045c6afb327297e94fa0f8d6c07ed94acd27ac1b",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {},
+          "image_id": "rad-r02"
+        },
+        {
+          "official_id": "rad-r02a",
+          "raw_sha256": "fb1d0449dc7d3fdb91b81cedff0a0d4f3e40cd3cc15907cbca455e17abcd4427",
+          "effective_sha256": "37d9b7e620cfcb0653d4448ea069f59c59195ea5b7d29d2720ffe0d622bffd37",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {
+            "rad-r02a:rules_html": "400390161d817febd00fd2d21c8e262060bba51f73a6ed99ea0e0bf22f72c148",
+            "rad-r02a:rules_text": "7f75b4b58247d01f860a9ac950bd636be9187109f6354ded7a1ca5bd50cc1688"
+          },
+          "image_id": "rad-r02a"
+        }
+      ],
+      "fields": [
+        {
+          "field": "rules_text",
+          "disposition": "corrected_transcription",
+          "reason": "All five exact faces have a blank rules-text area; none prints the literal [NO TEXT]. Only the RAD alternate feed contains that placeholder. This is a feed transcription/display correction, not reminder-text equivalence. Basic Rune abilities remain supplied by Core 164.2 despite the blank face.",
+          "rules": [
+            "164.1",
+            "164.2",
+            "135.2.e.1"
+          ],
+          "resolution_ids": [
+            "rad-r02a:rules_html",
+            "rad-r02a:rules_text"
+          ]
+        }
+      ],
+      "errata": []
+    },
+    {
+      "id": "c7-ogn-089-298",
+      "identity": "ogn-089-298",
+      "name": "Mind Rune",
+      "reviewed_on": "2026-10-24",
+      "status": "complete",
+      "enables_runtime_support": false,
+      "core_authority_id": "core",
+      "members": [
+        {
+          "official_id": "ogn-089-298",
+          "raw_sha256": "145dd1f400fab0282b58fda39f06997f5d7844cd7f817172ed887c8c4b23f143",
+          "effective_sha256": "145dd1f400fab0282b58fda39f06997f5d7844cd7f817172ed887c8c4b23f143",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {},
+          "image_id": "ogn-089-298"
+        },
+        {
+          "official_id": "ogn-089a-298",
+          "raw_sha256": "2cd987dadc072582b65cbbd90e9793b9922c19251fab63cdab24d304450095ef",
+          "effective_sha256": "2cd987dadc072582b65cbbd90e9793b9922c19251fab63cdab24d304450095ef",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {},
+          "image_id": "ogn-089a-298"
+        },
+        {
+          "official_id": "ven-r03",
+          "raw_sha256": "18ed6653d7846ffc7ed813886f12395c941b280e0ac2d10bae5bb155f9be79a4",
+          "effective_sha256": "18ed6653d7846ffc7ed813886f12395c941b280e0ac2d10bae5bb155f9be79a4",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {},
+          "image_id": "ven-r03"
+        },
+        {
+          "official_id": "rad-r03",
+          "raw_sha256": "5009a38d669c6b9cc633b86b1adc4ad53d5d71eb7b67e610315d805d43fae4f0",
+          "effective_sha256": "5009a38d669c6b9cc633b86b1adc4ad53d5d71eb7b67e610315d805d43fae4f0",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {},
+          "image_id": "rad-r03"
+        },
+        {
+          "official_id": "rad-r03a",
+          "raw_sha256": "719ede47fbdaf72eeb49e747f1580506ea0c10bce2f2bc55cd333a62f3c110b5",
+          "effective_sha256": "f6ae333fa822abdc13cc4ed6c3fd2e331c590bbd4680a5412e2d018ab5efde71",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {
+            "rad-r03a:rules_html": "c8b5b3301615b0aa27377dccdbbd2b516a0930623f062ecae731ec643200d8fe",
+            "rad-r03a:rules_text": "c32d0f1927e58d8754279dfaffaa55f9cd53e4f286885c56b1d449f4c13cbe97"
+          },
+          "image_id": "rad-r03a"
+        }
+      ],
+      "fields": [
+        {
+          "field": "rules_text",
+          "disposition": "corrected_transcription",
+          "reason": "All five exact faces have a blank rules-text area; none prints the literal [NO TEXT]. Only the RAD alternate feed contains that placeholder. This is a feed transcription/display correction, not reminder-text equivalence. Basic Rune abilities remain supplied by Core 164.2 despite the blank face.",
+          "rules": [
+            "164.1",
+            "164.2",
+            "135.2.e.1"
+          ],
+          "resolution_ids": [
+            "rad-r03a:rules_html",
+            "rad-r03a:rules_text"
+          ]
+        }
+      ],
+      "errata": []
+    },
+    {
+      "id": "c7-ogn-117-298",
+      "identity": "ogn-117-298",
+      "name": "Viktor, Innovator",
+      "reviewed_on": "2026-10-24",
+      "status": "complete",
+      "enables_runtime_support": false,
+      "core_authority_id": "core",
+      "members": [
+        {
+          "official_id": "ogn-117-298",
+          "raw_sha256": "a02a5781f84a7e18331d4d5c0433785cdb078e2d523fe672a2eec29d96d00fd6",
+          "effective_sha256": "a02a5781f84a7e18331d4d5c0433785cdb078e2d523fe672a2eec29d96d00fd6",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {
+            "ogn-117-298:tags": "e0b6408953b6141b208b5525c56fa8b2369bbf3711ea3a4a66d07f461f1d6818"
+          },
+          "image_id": "ogn-117-298"
+        },
+        {
+          "official_id": "ogn-117a-298",
+          "raw_sha256": "ba8b35343a2c1cf2238591faae9ebd0e21edd489d3a1acc5ed5c9a2b4b8082e9",
+          "effective_sha256": "ba8b35343a2c1cf2238591faae9ebd0e21edd489d3a1acc5ed5c9a2b4b8082e9",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {
+            "ogn-117a-298:tags": "383af8122919ccba7efbc7744f3631e310dc1ef9f1a420316dd5f83db6b38949"
+          },
+          "image_id": "ogn-117a-298"
+        },
+        {
+          "official_id": "ven-176-166",
+          "raw_sha256": "351f71b50fb8037efb16b8b3f57d899b1a0b9087518c1b7430bf6a694f66ed60",
+          "effective_sha256": "be236a41d535ef8bde6b5050a8542645dae7514e7d624f2b09eb17978694913f",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {
+            "ven-176-166:tags": "d2094e221473ff0e1c1c948f5d1d0037b1a3b1f85a64dcce63e62b50e09c9a50"
+          },
+          "image_id": "ven-176-166"
+        }
+      ],
+      "fields": [
+        {
+          "field": "tags",
+          "disposition": "corrected_transcription",
+          "reason": "Every exact member face prints the same full tag set. The linked per-printing image observations correct feed omissions and corroborate complete records. No tag union, preferred-printing precedence or showcase omission exception is used.",
+          "rules": [
+            "133.8",
+            "143.1"
+          ],
+          "resolution_ids": [
+            "ogn-117-298:tags",
+            "ogn-117a-298:tags",
+            "ven-176-166:tags"
+          ]
+        },
+        {
+          "field": "rules_text",
+          "disposition": "rule_derived_equivalent",
+          "reason": "The two OGN faces genuinely print in your base and the VEN face prints to your base. Both instruct Play of a1Might Recruit with the controller base supplied as the location under185.2.a/420.3.b.1/355.2. Neither is Move of an existing unit under421.1; both use pending-token staging354.3 and normal unit entry185.2.d. Retain all distinct printed wording. This is a bounded general-rule interpretation, not a Viktor-specific FAQ or feed correction.",
+          "rules": [
+            "135.2.b.5",
+            "185.2.a",
+            "185.2.d",
+            "187.1",
+            "420.3.b",
+            "420.3.b.1",
+            "355.2",
+            "354.3",
+            "421.1"
+          ],
+          "resolution_ids": []
+        }
+      ],
+      "errata": []
+    },
+    {
+      "id": "c7-ogn-119-298",
+      "identity": "ogn-119-298",
+      "name": "Ahri, Inquisitive",
+      "reviewed_on": "2026-10-24",
+      "status": "complete",
+      "enables_runtime_support": false,
+      "core_authority_id": "core",
+      "members": [
+        {
+          "official_id": "ogn-119-298",
+          "raw_sha256": "11d16610ede23f4871ac5648f53136da9d414083d27f611d22239aadd8184467",
+          "effective_sha256": "11d16610ede23f4871ac5648f53136da9d414083d27f611d22239aadd8184467",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {
+            "ogn-119-298:tags": "e67f568b53499baa33acfc3a3b84764ddd844bbe1413cabf9ed19616bf27b192"
+          },
+          "image_id": "ogn-119-298"
+        },
+        {
+          "official_id": "ogn-119a-298",
+          "raw_sha256": "ddbaa9a92810e8746d808f255bd6cb3a5089306a673c4bedea920848fcf275a7",
+          "effective_sha256": "ddbaa9a92810e8746d808f255bd6cb3a5089306a673c4bedea920848fcf275a7",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {
+            "ogn-119a-298:tags": "f9797cf8c11165df0a436cca485feca84fdf2c6fb5bbb248b1ac355bee20f43d"
+          },
+          "image_id": "ogn-119a-298"
+        },
+        {
+          "official_id": "sfd-227-221",
+          "raw_sha256": "a8b6b4229a8f5f517ec5ed6356bcd00cc83aa861afdc41b16022395171409ba9",
+          "effective_sha256": "452baa745084ae5c1a8c45f1ff18d2f84bb5ff31815406b0099d1d80c12b4443",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {
+            "sfd-227-221:tags": "124697564e44db704137a0696b07d49913dddf37f92acd08a1107a492f0bf3f1"
+          },
+          "image_id": "sfd-227-221"
+        },
+        {
+          "official_id": "sfd-227-star-221",
+          "raw_sha256": "5b0bef36642884183042d03bf21ab24d4ea1592689c37cef713a04a59e39f2e6",
+          "effective_sha256": "0d28a2e58250fa0ad0d3fdefdb27f16e36f65f101e9201d52dbcead961f74d17",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {
+            "sfd-227-star-221:tags": "91ba13093a523e7495844501eabf6347012ba1bdf7bff3a15754b98251bc90b5"
+          },
+          "image_id": "sfd-227-star-221"
+        },
+        {
+          "official_id": "ven-sp3-006",
+          "raw_sha256": "207f517ae00c4cbad91589a847532a0b97d672a1eabb2283974275148f7ad8d3",
+          "effective_sha256": "207f517ae00c4cbad91589a847532a0b97d672a1eabb2283974275148f7ad8d3",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {
+            "ven-sp3-006:tags": "7a1e992eecd034761c6017fc13b4c032c97d53977ecc5f0658531d6c76308928"
+          },
+          "image_id": "ven-sp3-006"
+        }
+      ],
+      "fields": [
+        {
+          "field": "tags",
+          "disposition": "corrected_transcription",
+          "reason": "Every exact member face prints the same full tag set. The linked per-printing image observations correct feed omissions and corroborate complete records. No tag union, preferred-printing precedence or showcase omission exception is used.",
+          "rules": [
+            "133.8",
+            "143.1"
+          ],
+          "resolution_ids": [
+            "ogn-119-298:tags",
+            "ogn-119a-298:tags",
+            "sfd-227-221:tags",
+            "sfd-227-star-221:tags",
+            "ven-sp3-006:tags"
+          ]
+        }
+      ],
+      "errata": []
+    },
+    {
+      "id": "c7-ogn-126-298",
+      "identity": "ogn-126-298",
+      "name": "Body Rune",
+      "reviewed_on": "2026-10-24",
+      "status": "complete",
+      "enables_runtime_support": false,
+      "core_authority_id": "core",
+      "members": [
+        {
+          "official_id": "ogn-126-298",
+          "raw_sha256": "4e30527a99863c0d17826236bb3837fc9714094198b129654675e88aa0296b8c",
+          "effective_sha256": "4e30527a99863c0d17826236bb3837fc9714094198b129654675e88aa0296b8c",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {},
+          "image_id": "ogn-126-298"
+        },
+        {
+          "official_id": "ogn-126a-298",
+          "raw_sha256": "6a6f986c370aceb55ba0decb4ade01fb58d4495541283b44234fb971ca5a1e95",
+          "effective_sha256": "6a6f986c370aceb55ba0decb4ade01fb58d4495541283b44234fb971ca5a1e95",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {},
+          "image_id": "ogn-126a-298"
+        },
+        {
+          "official_id": "ven-r04",
+          "raw_sha256": "64847a22e4872fe6a5f8ba9621e1b6e7153f12c33a8e670ed32ace2445f78a71",
+          "effective_sha256": "64847a22e4872fe6a5f8ba9621e1b6e7153f12c33a8e670ed32ace2445f78a71",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {},
+          "image_id": "ven-r04"
+        },
+        {
+          "official_id": "rad-r04",
+          "raw_sha256": "8631d9a6b976406fc05c3340bd88aea5739db5c47eedf6958a0effe5c3f6674b",
+          "effective_sha256": "8631d9a6b976406fc05c3340bd88aea5739db5c47eedf6958a0effe5c3f6674b",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {},
+          "image_id": "rad-r04"
+        },
+        {
+          "official_id": "rad-r04a",
+          "raw_sha256": "f5975f6d579b3617592b867296e14935225d04dad73c14eca45fde9b2a16190b",
+          "effective_sha256": "2d2fb19f704a78a80bcf5d26c97248d0a3571762e66f1e09ec718b8c4ba079f8",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {
+            "rad-r04a:rules_html": "fdb0c493e722439e440dd4025e90e130c8de79fbf64d9f4691427f32a98166d3",
+            "rad-r04a:rules_text": "8e2666ed999bde302c89fb60b24fbe3db125d2704e16ba15a660ab6b1a86f3f5"
+          },
+          "image_id": "rad-r04a"
+        }
+      ],
+      "fields": [
+        {
+          "field": "rules_text",
+          "disposition": "corrected_transcription",
+          "reason": "All five exact faces have a blank rules-text area; none prints the literal [NO TEXT]. Only the RAD alternate feed contains that placeholder. This is a feed transcription/display correction, not reminder-text equivalence. Basic Rune abilities remain supplied by Core 164.2 despite the blank face.",
+          "rules": [
+            "164.1",
+            "164.2",
+            "135.2.e.1"
+          ],
+          "resolution_ids": [
+            "rad-r04a:rules_html",
+            "rad-r04a:rules_text"
+          ]
+        }
+      ],
+      "errata": []
+    },
+    {
+      "id": "c7-ogn-166-298",
+      "identity": "ogn-166-298",
+      "name": "Chaos Rune",
+      "reviewed_on": "2026-10-24",
+      "status": "complete",
+      "enables_runtime_support": false,
+      "core_authority_id": "core",
+      "members": [
+        {
+          "official_id": "ogn-166-298",
+          "raw_sha256": "60772ff92da6e4be98696ecdbf154e1b975a6adc1733301c30b7159a888822ee",
+          "effective_sha256": "60772ff92da6e4be98696ecdbf154e1b975a6adc1733301c30b7159a888822ee",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {},
+          "image_id": "ogn-166-298"
+        },
+        {
+          "official_id": "ogn-166a-298",
+          "raw_sha256": "9df227570a331451913a6b2f305d2d68b4d746c980757edc78a34a2443cdc11e",
+          "effective_sha256": "9df227570a331451913a6b2f305d2d68b4d746c980757edc78a34a2443cdc11e",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {},
+          "image_id": "ogn-166a-298"
+        },
+        {
+          "official_id": "ven-r05",
+          "raw_sha256": "320d551ee91bb832b16a0212059cccf1e8ed93ceb58c35a29b5fd91542f2e9f0",
+          "effective_sha256": "320d551ee91bb832b16a0212059cccf1e8ed93ceb58c35a29b5fd91542f2e9f0",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {},
+          "image_id": "ven-r05"
+        },
+        {
+          "official_id": "rad-r05",
+          "raw_sha256": "1970763ef2241d1da6d19b81f34a3faceaa4d60095a9c65d54bc58b8a9857020",
+          "effective_sha256": "1970763ef2241d1da6d19b81f34a3faceaa4d60095a9c65d54bc58b8a9857020",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {},
+          "image_id": "rad-r05"
+        },
+        {
+          "official_id": "rad-r05a",
+          "raw_sha256": "b8f6554e925738310cc6190558aa70d46235d32ab8fed2fd9b08edd0c74ed47a",
+          "effective_sha256": "3dc1937326f996e60d0c7a96035080ca44de713f96006c6fb3281accb207adf9",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {
+            "rad-r05a:rules_html": "0ec283ee168a1d0e644ec482f3075a45b794e677180b03b381e1f6ed5fd135ce",
+            "rad-r05a:rules_text": "0565bf726e44f74e7bb87cdecb750be55b16a3716aa4c27627386507f71c7f6e"
+          },
+          "image_id": "rad-r05a"
+        }
+      ],
+      "fields": [
+        {
+          "field": "rules_text",
+          "disposition": "corrected_transcription",
+          "reason": "All five exact faces have a blank rules-text area; none prints the literal [NO TEXT]. Only the RAD alternate feed contains that placeholder. This is a feed transcription/display correction, not reminder-text equivalence. Basic Rune abilities remain supplied by Core 164.2 despite the blank face.",
+          "rules": [
+            "164.1",
+            "164.2",
+            "135.2.e.1"
+          ],
+          "resolution_ids": [
+            "rad-r05a:rules_html",
+            "rad-r05a:rules_text"
+          ]
+        }
+      ],
+      "errata": []
+    },
+    {
+      "id": "c7-ogn-171-298",
+      "identity": "ogn-171-298",
+      "name": "Mystic Poro",
+      "reviewed_on": "2026-10-24",
+      "status": "complete",
+      "enables_runtime_support": false,
+      "core_authority_id": "core",
+      "members": [
+        {
+          "official_id": "ogn-171-298",
+          "raw_sha256": "26e8cdc8a2c9df58a65e83cc1b6db31d3f82e7f9f71405611c7be5719b8d0fc2",
+          "effective_sha256": "26e8cdc8a2c9df58a65e83cc1b6db31d3f82e7f9f71405611c7be5719b8d0fc2",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {},
+          "image_id": "ogn-171-298"
+        },
+        {
+          "official_id": "unl-224-219",
+          "raw_sha256": "b2e0381253fd4dab66c48f93e0753171ba4a88e967efbdce31a3ff7fb40b5016",
+          "effective_sha256": "b2e0381253fd4dab66c48f93e0753171ba4a88e967efbdce31a3ff7fb40b5016",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {},
+          "image_id": "unl-224-219"
+        }
+      ],
+      "fields": [
+        {
+          "field": "rules_text",
+          "disposition": "reminder_equivalent",
+          "reason": "Both faces retain Vision. OGN 171 prints the italic top-card look/recycle reminder, UNL 224 omits it. Vision’s definition remains authoritative.",
+          "rules": [
+            "135.2.c.2",
+            "135.2.d.1",
+            "135.2.d.2",
+            "135.2.d.3",
+            "817"
+          ],
+          "resolution_ids": []
+        }
+      ],
+      "errata": []
+    },
+    {
+      "id": "c7-ogn-210-298",
+      "identity": "ogn-210-298",
+      "name": "Daring Poro",
+      "reviewed_on": "2026-10-24",
+      "status": "complete",
+      "enables_runtime_support": false,
+      "core_authority_id": "core",
+      "members": [
+        {
+          "official_id": "ogn-210-298",
+          "raw_sha256": "5239ee391145cd211f655db93e000b9bdd4cc603db3bd003450ad79f3376b6f8",
+          "effective_sha256": "5239ee391145cd211f655db93e000b9bdd4cc603db3bd003450ad79f3376b6f8",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {},
+          "image_id": "ogn-210-298"
+        },
+        {
+          "official_id": "unl-225-219",
+          "raw_sha256": "5d1e2a74cc58cc11a65d95f9fd3f353479312bf4fde6870f876453526f15c291",
+          "effective_sha256": "5d1e2a74cc58cc11a65d95f9fd3f353479312bf4fde6870f876453526f15c291",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {},
+          "image_id": "unl-225-219"
+        }
+      ],
+      "fields": [
+        {
+          "field": "rules_text",
+          "disposition": "reminder_equivalent",
+          "reason": "Both faces retain Assault. OGN prints the italic +1 Might attacker reminder; UNL omits it.",
+          "rules": [
+            "135.2.c.2",
+            "135.2.d.1",
+            "135.2.d.2",
+            "135.2.d.3",
+            "807"
+          ],
+          "resolution_ids": []
+        }
+      ],
+      "errata": []
+    },
+    {
+      "id": "c7-ogn-214-298",
+      "identity": "ogn-214-298",
+      "name": "Order Rune",
+      "reviewed_on": "2026-10-24",
+      "status": "complete",
+      "enables_runtime_support": false,
+      "core_authority_id": "core",
+      "members": [
+        {
+          "official_id": "ogn-214-298",
+          "raw_sha256": "296d64a12d650465389c48cb125b506a4b5e17749d3511b2b8c918c367a4651a",
+          "effective_sha256": "296d64a12d650465389c48cb125b506a4b5e17749d3511b2b8c918c367a4651a",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {},
+          "image_id": "ogn-214-298"
+        },
+        {
+          "official_id": "ogn-214a-298",
+          "raw_sha256": "a95501a78e935cabb1f52b188144c682c604c1aab879bfa75a5a186b374c019c",
+          "effective_sha256": "a95501a78e935cabb1f52b188144c682c604c1aab879bfa75a5a186b374c019c",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {},
+          "image_id": "ogn-214a-298"
+        },
+        {
+          "official_id": "ven-r06",
+          "raw_sha256": "d00bdec1e8dfbbcf8d28f99625ef53159391a86d784c369cb2a6f0998ec03a05",
+          "effective_sha256": "d00bdec1e8dfbbcf8d28f99625ef53159391a86d784c369cb2a6f0998ec03a05",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {},
+          "image_id": "ven-r06"
+        },
+        {
+          "official_id": "rad-r06",
+          "raw_sha256": "06852a5ecc5e6db6ffeb15c886acf7ce97e9bc8e5e885db3f5afd7a3d548e897",
+          "effective_sha256": "06852a5ecc5e6db6ffeb15c886acf7ce97e9bc8e5e885db3f5afd7a3d548e897",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {},
+          "image_id": "rad-r06"
+        },
+        {
+          "official_id": "rad-r06a",
+          "raw_sha256": "8a99704e76ed51b3c92b08664ef94864932d4af1e066a4015b3b57ed11019b60",
+          "effective_sha256": "a34196906532a75c5dd2d4451ef3756a5907bfb8963831b1bd5e8c60c2d6dd70",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {
+            "rad-r06a:rules_html": "a247eb2c204ce2547038672d2e6aeee8a9b0510578da2c8bda3f477eed950687",
+            "rad-r06a:rules_text": "fedea1c61d453b4a2e113e98258f7283f6f36e536004d2caef8c9709dd82d2e7"
+          },
+          "image_id": "rad-r06a"
+        }
+      ],
+      "fields": [
+        {
+          "field": "rules_text",
+          "disposition": "corrected_transcription",
+          "reason": "All five exact faces have a blank rules-text area; none prints the literal [NO TEXT]. Only the RAD alternate feed contains that placeholder. This is a feed transcription/display correction, not reminder-text equivalence. Basic Rune abilities remain supplied by Core 164.2 despite the blank face.",
+          "rules": [
+            "164.1",
+            "164.2",
+            "135.2.e.1"
+          ],
+          "resolution_ids": [
+            "rad-r06a:rules_html",
+            "rad-r06a:rules_text"
+          ]
+        }
+      ],
+      "errata": []
+    },
+    {
+      "id": "c7-sfd-036-221",
+      "identity": "sfd-036-221",
+      "name": "Lonely Poro",
+      "reviewed_on": "2026-10-24",
+      "status": "complete",
+      "enables_runtime_support": false,
+      "core_authority_id": "core",
+      "members": [
+        {
+          "official_id": "sfd-036-221",
+          "raw_sha256": "4abc03097e30fcca721ae649804b26a7fcf1f8c0d973b0cc1c1ce959b5bf64d1",
+          "effective_sha256": "4abc03097e30fcca721ae649804b26a7fcf1f8c0d973b0cc1c1ce959b5bf64d1",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {},
+          "image_id": "sfd-036-221"
+        },
+        {
+          "official_id": "unl-221-219",
+          "raw_sha256": "f28d8e8bd425aefb46a308a2c42e2cd9e008e254a0a2da788ff6d45968cfb0c5",
+          "effective_sha256": "f28d8e8bd425aefb46a308a2c42e2cd9e008e254a0a2da788ff6d45968cfb0c5",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {},
+          "image_id": "unl-221-219"
+        }
+      ],
+      "fields": [
+        {
+          "field": "rules_text",
+          "disposition": "rule_derived_equivalent",
+          "reason": "SFD 036 visibly uses an em dash following Deathknell; UNL 221 uses a right-pointing keyword tab/arrow. Both associate exactly “If I died alone, draw 1” with Deathknell. SFD also prints the italic death/alone reminder. Specific keyword-boundary reasoning from Core 808 applies; this is not a general dash/arrow normalization rule. This is a bounded Core-derived interpretation of these exact Deathknell-associated clauses, not an official Poro erratum or a general punctuation-normalization rule. Preserve both printed forms.",
+          "rules": [
+            "135.2.d.1",
+            "135.2.d.2",
+            "135.2.d.3",
+            "135.2.e.7",
+            "808.1.b",
+            "808.1.c"
+          ],
+          "resolution_ids": []
+        }
+      ],
+      "errata": []
+    },
+    {
+      "id": "c7-sfd-057-221",
+      "identity": "sfd-057-221",
+      "name": "Irelia, Fervent",
+      "reviewed_on": "2026-10-24",
+      "status": "complete",
+      "enables_runtime_support": false,
+      "core_authority_id": "core",
+      "members": [
+        {
+          "official_id": "sfd-057-221",
+          "raw_sha256": "d3dd3b82ffb43c0f36e465ce59fbeb872b859027ba51370fe5c990d7b9e0ca11",
+          "effective_sha256": "d3dd3b82ffb43c0f36e465ce59fbeb872b859027ba51370fe5c990d7b9e0ca11",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {},
+          "image_id": "sfd-057-221"
+        },
+        {
+          "official_id": "sfd-057a-221",
+          "raw_sha256": "12bdd499dd18ea4fdb5dc89b806034e95166a4e1f10c1bff8ff77c03e52a796a",
+          "effective_sha256": "12bdd499dd18ea4fdb5dc89b806034e95166a4e1f10c1bff8ff77c03e52a796a",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {},
+          "image_id": "sfd-057a-221"
+        },
+        {
+          "official_id": "sfd-225-221",
+          "raw_sha256": "85926aa032e883450c3f6ec3e12b18a4cc123d29e8b6dd29c3630bba88c840c2",
+          "effective_sha256": "85926aa032e883450c3f6ec3e12b18a4cc123d29e8b6dd29c3630bba88c840c2",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {},
+          "image_id": "sfd-225-221"
+        },
+        {
+          "official_id": "sfd-225-star-221",
+          "raw_sha256": "02218c8afa74736d986e8ead8e6048f38c5cda296b25bc53f7f976785ad2012a",
+          "effective_sha256": "02218c8afa74736d986e8ead8e6048f38c5cda296b25bc53f7f976785ad2012a",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {},
+          "image_id": "sfd-225-star-221"
+        },
+        {
+          "official_id": "ven-174-166",
+          "raw_sha256": "d68205eadb0355b99a778ae84f7ae09f194dbf8af71ebfa303b1aef90d68dd5d",
+          "effective_sha256": "d68205eadb0355b99a778ae84f7ae09f194dbf8af71ebfa303b1aef90d68dd5d",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {},
+          "image_id": "ven-174-166"
+        }
+      ],
+      "fields": [
+        {
+          "field": "rules_text",
+          "disposition": "reminder_equivalent",
+          "reason": "All five faces retain Deflect and the choose-or-ready +1 Might trigger. Four SFD faces print the italic Deflect reminder; VEN 174 omits it. This is not a change to either trigger event.",
+          "rules": [
+            "135.2.c.2",
+            "135.2.d.1",
+            "135.2.d.2",
+            "135.2.d.3",
+            "809"
+          ],
+          "resolution_ids": []
+        }
+      ],
+      "errata": []
+    },
+    {
+      "id": "c7-unl-024-219",
+      "identity": "unl-024-219",
+      "name": "Rengar, Unseen",
+      "reviewed_on": "2026-10-24",
+      "status": "complete",
+      "enables_runtime_support": false,
+      "core_authority_id": "core",
+      "members": [
+        {
+          "official_id": "unl-024-219",
+          "raw_sha256": "ea6f1ea98175184d3490d4d5ea1e6d2f9551b60269156dcdb820bc9f9dbc3075",
+          "effective_sha256": "ea6f1ea98175184d3490d4d5ea1e6d2f9551b60269156dcdb820bc9f9dbc3075",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {},
+          "image_id": "unl-024-219"
+        },
+        {
+          "official_id": "unl-024a-219",
+          "raw_sha256": "a6c90cb7552b59e9cfbdda9e017320b58477ef7f2fad7f1c53678f716ba12ebd",
+          "effective_sha256": "a6c90cb7552b59e9cfbdda9e017320b58477ef7f2fad7f1c53678f716ba12ebd",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {},
+          "image_id": "unl-024a-219"
+        }
+      ],
+      "fields": [
+        {
+          "field": "rules_text",
+          "disposition": "reminder_equivalent",
+          "reason": "Both faces retain Accelerate, Assault 2, Deflect, and Ganking. UNL 024 prints four italic reminders; alternate024a omits them. The printed1 Energy/Fury Accelerate reminder is consistent with Core 805’s1 Energy plus matching-domain Power; omission does not remove its additional cost.",
+          "rules": [
+            "135.2.d.1",
+            "135.2.d.2",
+            "135.2.d.3",
+            "805.1.b",
+            "805.1.b.1",
+            "807",
+            "809",
+            "810"
+          ],
+          "resolution_ids": []
+        }
+      ],
+      "errata": []
+    },
+    {
+      "id": "c7-unl-113-219",
+      "identity": "unl-113-219",
+      "name": "Master Yi, Tempered",
+      "reviewed_on": "2026-10-24",
+      "status": "complete",
+      "enables_runtime_support": false,
+      "core_authority_id": "core",
+      "members": [
+        {
+          "official_id": "unl-113-219",
+          "raw_sha256": "5af1993cf32e969659c40f0a810106ab607a33d0816e562877aa90763fbbfb58",
+          "effective_sha256": "5af1993cf32e969659c40f0a810106ab607a33d0816e562877aa90763fbbfb58",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {},
+          "image_id": "unl-113-219"
+        },
+        {
+          "official_id": "unl-113a-219",
+          "raw_sha256": "a7dcb04564eceb3d0f83befd439fe28a1447e612d2624a0c72315331ac5431f7",
+          "effective_sha256": "a7dcb04564eceb3d0f83befd439fe28a1447e612d2624a0c72315331ac5431f7",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {},
+          "image_id": "unl-113a-219"
+        }
+      ],
+      "fields": [
+        {
+          "field": "rules_text",
+          "disposition": "reminder_equivalent",
+          "reason": "Both faces retain Hunt 2 and the Level 6-associated Deflect/Ganking ability. UNL 113 prints both italic reminders; alternate113a omits both. Keyword values and level threshold remain printed and unchanged.",
+          "rules": [
+            "135.2.d.1",
+            "135.2.d.2",
+            "135.2.d.3",
+            "823",
+            "824",
+            "809",
+            "810"
+          ],
+          "resolution_ids": []
+        }
+      ],
+      "errata": []
+    },
+    {
+      "id": "c7-unl-120-219",
+      "identity": "unl-120-219",
+      "name": "Rengar, Trophy Hunter",
+      "reviewed_on": "2026-10-24",
+      "status": "complete",
+      "enables_runtime_support": false,
+      "core_authority_id": "core",
+      "members": [
+        {
+          "official_id": "unl-120-219",
+          "raw_sha256": "b9af81592b3dbdd4ce030a2467e2bfea685124607259e0d546f4b4d896c8297c",
+          "effective_sha256": "b9af81592b3dbdd4ce030a2467e2bfea685124607259e0d546f4b4d896c8297c",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {},
+          "image_id": "unl-120-219"
+        },
+        {
+          "official_id": "unl-120a-219",
+          "raw_sha256": "4c3361edf061f4c15346567e90feb3aa875ee550221210d6f1c45a2110c94912",
+          "effective_sha256": "4c3361edf061f4c15346567e90feb3aa875ee550221210d6f1c45a2110c94912",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {},
+          "image_id": "unl-120a-219"
+        },
+        {
+          "official_id": "ven-179-166",
+          "raw_sha256": "28d917ebc26e6b9701d9294a124480c4671253c216825e8fa1c1d82c4c0eb872",
+          "effective_sha256": "28d917ebc26e6b9701d9294a124480c4671253c216825e8fa1c1d82c4c0eb872",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {},
+          "image_id": "ven-179-166"
+        }
+      ],
+      "fields": [
+        {
+          "field": "rules_text",
+          "disposition": "reminder_equivalent",
+          "reason": "All three faces retain Ambush and old “I can be played” placement wording. UNL 120 includes both italic Ambush reminder and italic embedded “even if” placement reminder; alternate120a/VEN179 omit both. The old operative sentence itself is superseded by the existing official erratum, which says “I can [Ambush]”. Treat physical variants and current operative authority separately.",
+          "rules": [
+            "135.2.d.1",
+            "135.2.d.2",
+            "135.2.d.3",
+            "822"
+          ],
+          "resolution_ids": []
+        }
+      ],
+      "errata": [
+        {
+          "authority_id": "unleashed",
+          "record": {
+            "article_heading": "Rengar, Trophy Hunter",
+            "text": "[Ambush] (You may play me as a [Reaction] to a battlefield where you have units.)\nI can [Ambush] to a battlefield where there are enemy units, even if you don't have units there.",
+            "source_url": "https://playriftbound.com/en-us/news/rules-and-releases/unleashed-errata-updates/"
+          },
+          "record_sha256": "c65fe47953b9fb24c0312b0b759a27d7186c8f72d92f051c88e95500125993f6",
+          "location": "Rengar, Trophy Hunter — NEW TEXT. Physical OLD TEXT printings retained separately from this current Ambush placement erratum."
+        }
+      ]
+    },
+    {
+      "id": "c7-unl-145-219",
+      "identity": "unl-145-219",
+      "name": "Pyke, Returned",
+      "reviewed_on": "2026-10-24",
+      "status": "complete",
+      "enables_runtime_support": false,
+      "core_authority_id": "core",
+      "members": [
+        {
+          "official_id": "unl-145-219",
+          "raw_sha256": "634673823296a1bceceb01bd4e7727f94ea283ea7238ecb9db88753d129e0d6f",
+          "effective_sha256": "634673823296a1bceceb01bd4e7727f94ea283ea7238ecb9db88753d129e0d6f",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {},
+          "image_id": "unl-145-219"
+        },
+        {
+          "official_id": "unl-145a-219",
+          "raw_sha256": "6b51486cb8d794bee9a4c6ad4d632f54a74890ae4665f65aab3ddec79dff3a4a",
+          "effective_sha256": "6b51486cb8d794bee9a4c6ad4d632f54a74890ae4665f65aab3ddec79dff3a4a",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {},
+          "image_id": "unl-145a-219"
+        }
+      ],
+      "fields": [
+        {
+          "field": "rules_text",
+          "disposition": "reminder_equivalent",
+          "reason": "Both faces retain Hidden, Backline, and the once-each-turn enemy-death trigger that plays a Gold gear token exhausted while Pyke is at a battlefield. UNL 145 prints italic Hidden, Backline, and Gold-token ability reminders; alternate145a omits all three. The Gold text is visibly italic and parenthesized, not an extra activated ability on Pyke.",
+          "rules": [
+            "135.2.d.1",
+            "135.2.d.2",
+            "135.2.d.3",
+            "811",
+            "826"
+          ],
+          "resolution_ids": []
+        }
+      ],
+      "errata": []
+    },
+    {
+      "id": "c7-unl-149-219",
+      "identity": "unl-149-219",
+      "name": "Diana, No Longer Human",
+      "reviewed_on": "2026-10-24",
+      "status": "complete",
+      "enables_runtime_support": false,
+      "core_authority_id": "core",
+      "members": [
+        {
+          "official_id": "unl-149-219",
+          "raw_sha256": "2fec79274a82f928f0734e5d364cfc106e9c5b20a8f430d67e246816a48ed1f4",
+          "effective_sha256": "2fec79274a82f928f0734e5d364cfc106e9c5b20a8f430d67e246816a48ed1f4",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {},
+          "image_id": "unl-149-219"
+        },
+        {
+          "official_id": "unl-149a-219",
+          "raw_sha256": "8ed1689735b535615ddccfc6cfbe63bb8cf3e7e6c0c5f95dbf1b7f744fa5b531",
+          "effective_sha256": "8ed1689735b535615ddccfc6cfbe63bb8cf3e7e6c0c5f95dbf1b7f744fa5b531",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {},
+          "image_id": "unl-149a-219"
+        },
+        {
+          "official_id": "ven-183-166",
+          "raw_sha256": "d68cca6f6067f0b6a5e2d85a90f7aaf450b1adf736dace5a86b73c8c8853473f",
+          "effective_sha256": "d68cca6f6067f0b6a5e2d85a90f7aaf450b1adf736dace5a86b73c8c8853473f",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {},
+          "image_id": "ven-183-166"
+        }
+      ],
+      "fields": [
+        {
+          "field": "rules_text",
+          "disposition": "reminder_equivalent",
+          "reason": "All three faces retain Ambush and the same spell-play trigger granting +2 Might this turn. Only UNL 149 prints the italic Ambush reminder.",
+          "rules": [
+            "135.2.c.2",
+            "135.2.d.1",
+            "135.2.d.2",
+            "135.2.d.3",
+            "822"
+          ],
+          "resolution_ids": []
+        }
+      ],
+      "errata": []
+    },
+    {
+      "id": "c7-unl-150-219",
+      "identity": "unl-150-219",
+      "name": "Vex, Apathetic",
+      "reviewed_on": "2026-10-24",
+      "status": "complete",
+      "enables_runtime_support": false,
+      "core_authority_id": "core",
+      "members": [
+        {
+          "official_id": "unl-150-219",
+          "raw_sha256": "c0ccdad1ff84581ad6ce9ba07d149cade09b166de1a8a078e50fe339eeaea34f",
+          "effective_sha256": "c0ccdad1ff84581ad6ce9ba07d149cade09b166de1a8a078e50fe339eeaea34f",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {},
+          "image_id": "unl-150-219"
+        },
+        {
+          "official_id": "unl-150a-219",
+          "raw_sha256": "b6f12b25a83f11d2d8458c08e4ed2f090a7f8513af44e68ec154b77a1fbc4185",
+          "effective_sha256": "b6f12b25a83f11d2d8458c08e4ed2f090a7f8513af44e68ec154b77a1fbc4185",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {},
+          "image_id": "unl-150a-219"
+        }
+      ],
+      "fields": [
+        {
+          "field": "rules_text",
+          "disposition": "reminder_equivalent",
+          "reason": "Both faces retain Deflect and the enemy-unit-play trigger while Vex is at a battlefield, including Stun and the separate cannot-move-this-turn instruction. UNL 150 prints italic Deflect and Stun reminders; alternate150a omits both. No implication that Stun alone prevents movement.",
+          "rules": [
+            "135.2.d.1",
+            "135.2.d.2",
+            "135.2.d.3",
+            "809",
+            "424"
+          ],
+          "resolution_ids": []
+        }
+      ],
+      "errata": []
+    },
+    {
+      "id": "c7-ven-021-166",
+      "identity": "ven-021-166",
+      "name": "Akali, Deadly Weapon",
+      "reviewed_on": "2026-10-24",
+      "status": "complete",
+      "enables_runtime_support": false,
+      "core_authority_id": "core",
+      "members": [
+        {
+          "official_id": "ven-021-166",
+          "raw_sha256": "ef40e13272d35691880598f2110c82512c0665eeff601bf6361db6ab930a282e",
+          "effective_sha256": "ef40e13272d35691880598f2110c82512c0665eeff601bf6361db6ab930a282e",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {
+            "ven-021-166:tags": "9064079bbf3e326ebb710271034571a0d26b4592d8e21fa0226c79802f2dad40"
+          },
+          "image_id": "ven-021-166"
+        },
+        {
+          "official_id": "ven-021a-166",
+          "raw_sha256": "bee0ba5c1c0df0b2c8f9236c90c6c8e6fb783bf29bbb33c50557977128f4ff98",
+          "effective_sha256": "f027a2c3d0b056fff2baecbc8f53e6c3344230301afee29af0128c380ef4faea",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {
+            "ven-021a-166:tags": "66809fcac625353be658b08d11a52a0fde387cd50697cbfc92cb2006ee601743",
+            "ven-021a-166:rules_html": "2646bdeb6020bb2847efc356ac4bf079668f46be6d165bea48c2a5d1ef22d43b",
+            "ven-021a-166:rules_text": "4da3a65b84ee4714c753b30221191c75db97cc736d341879c0fceccffd32f3a2"
+          },
+          "image_id": "ven-021a-166"
+        }
+      ],
+      "fields": [
+        {
+          "field": "tags",
+          "disposition": "corrected_transcription",
+          "reason": "Every exact member face prints the same full tag set. The linked per-printing image observations correct feed omissions and corroborate complete records. No tag union, preferred-printing precedence or showcase omission exception is used.",
+          "rules": [
+            "133.8",
+            "143.1"
+          ],
+          "resolution_ids": [
+            "ven-021-166:tags",
+            "ven-021a-166:tags"
+          ]
+        },
+        {
+          "field": "rules_text",
+          "disposition": "reminder_equivalent",
+          "reason": "Both exact faces retain Empower 2 Energy/Fury Power, move damage1 with live Empowered damage2, and dependent+1Might. The alternate omits only the italic Empower reminder after its separately corrected duplicate final period. Preserve the distinct reminder presentation.",
+          "rules": [
+            "135.2.c.2",
+            "135.2.d.1",
+            "135.2.d.2",
+            "135.2.d.3",
+            "827.1.c.1",
+            "828.1.b.1"
+          ],
+          "resolution_ids": [
+            "ven-021a-166:rules_html",
+            "ven-021a-166:rules_text"
+          ]
+        }
+      ],
+      "errata": []
+    },
+    {
+      "id": "c7-ven-038-166",
+      "identity": "ven-038-166",
+      "name": "Akali, Silent",
+      "reviewed_on": "2026-10-24",
+      "status": "complete",
+      "enables_runtime_support": false,
+      "core_authority_id": "core",
+      "members": [
+        {
+          "official_id": "ven-038-166",
+          "raw_sha256": "4b9f7bb915a3a18ca635a9578281c17d60f23b393e3e006de86e89194cf90c60",
+          "effective_sha256": "4b9f7bb915a3a18ca635a9578281c17d60f23b393e3e006de86e89194cf90c60",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {
+            "ven-038-166:tags": "4caab8b2d424f3030bee5221410954757248c3dbfd035eebec48b3330e761d5c"
+          },
+          "image_id": "ven-038-166"
+        },
+        {
+          "official_id": "ven-038a-166",
+          "raw_sha256": "1772da85442f4fbf252a0dc3b3a195408cd21af27c467dc19c774049d47a2347",
+          "effective_sha256": "6fbaf95f9b266533a460a322ec75b6d450175d62eb34f891f69ab520308078f2",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {
+            "ven-038a-166:tags": "8e6a71db125521790e61f421c3f79eb9f5c57a855eb2a3cf214e0cad3d4a7a4b"
+          },
+          "image_id": "ven-038a-166"
+        }
+      ],
+      "fields": [
+        {
+          "field": "tags",
+          "disposition": "corrected_transcription",
+          "reason": "Every exact member face prints the same full tag set. The linked per-printing image observations correct feed omissions and corroborate complete records. No tag union, preferred-printing precedence or showcase omission exception is used.",
+          "rules": [
+            "133.8",
+            "143.1"
+          ],
+          "resolution_ids": [
+            "ven-038-166:tags",
+            "ven-038a-166:tags"
+          ]
+        }
+      ],
+      "errata": []
+    },
+    {
+      "id": "c7-ven-042-166",
+      "identity": "ven-042-166",
+      "name": "Shen, Scourge of Shadows",
+      "reviewed_on": "2026-10-24",
+      "status": "complete",
+      "enables_runtime_support": false,
+      "core_authority_id": "core",
+      "members": [
+        {
+          "official_id": "ven-042-166",
+          "raw_sha256": "25b554c55220ce649223d2e1a7824d8401f5edbe4f3307c0e2951752c2b2514d",
+          "effective_sha256": "25b554c55220ce649223d2e1a7824d8401f5edbe4f3307c0e2951752c2b2514d",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {
+            "ven-042-166:tags": "7d4ac5e5f99dcf58d26f33c1f277b4330d171c18eb59baf173c543af42090a7c"
+          },
+          "image_id": "ven-042-166"
+        },
+        {
+          "official_id": "ven-042a-166",
+          "raw_sha256": "0d485a3678539eec6520ec003010b882c616347c22c5ba74d1d2984d049b3020",
+          "effective_sha256": "b8f6f70d009c9a198c4e37e7e111512ccf8d418deefbdaa51ba6cd93b7dc9040",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {
+            "ven-042a-166:tags": "e97f607b3ddb28461e417afe87f5ebb8919376007e4b43e076320a2a9964231c"
+          },
+          "image_id": "ven-042a-166"
+        },
+        {
+          "official_id": "ven-170-166",
+          "raw_sha256": "9a492bc03d91cc0f27663fc1b4d6cbe309038880c9436ef618b81098a5f22c45",
+          "effective_sha256": "3ff99e861e6afe4c86a9f80d4b801b948bae1e0e87e04981abb98f549b423485",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {
+            "ven-170-166:tags": "d03c77666c75f20d6009382a708f22f75e10b8f48a8aaf9b7ca84f040d0a3d45"
+          },
+          "image_id": "ven-170-166"
+        }
+      ],
+      "fields": [
+        {
+          "field": "tags",
+          "disposition": "corrected_transcription",
+          "reason": "Every exact member face prints the same full tag set. The linked per-printing image observations correct feed omissions and corroborate complete records. No tag union, preferred-printing precedence or showcase omission exception is used.",
+          "rules": [
+            "133.8",
+            "143.1"
+          ],
+          "resolution_ids": [
+            "ven-042-166:tags",
+            "ven-042a-166:tags",
+            "ven-170-166:tags"
+          ]
+        }
+      ],
+      "errata": []
+    },
+    {
+      "id": "c7-ven-046-166",
+      "identity": "ven-046-166",
+      "name": "Nasus, Ascended",
+      "reviewed_on": "2026-10-24",
+      "status": "complete",
+      "enables_runtime_support": false,
+      "core_authority_id": "core",
+      "members": [
+        {
+          "official_id": "ven-046-166",
+          "raw_sha256": "42d63ac2d71e27fc1a874d9a023ec5fe358d838a4174d78d4af01b45a0653773",
+          "effective_sha256": "42d63ac2d71e27fc1a874d9a023ec5fe358d838a4174d78d4af01b45a0653773",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {
+            "ven-046-166:tags": "cb16037ef361c64933803b2cccf75df9235d92307cbe77f62cd133fab4701d71"
+          },
+          "image_id": "ven-046-166"
+        },
+        {
+          "official_id": "ven-046a-166",
+          "raw_sha256": "e26962f94a665c0a2b9041da6ab2ccaffa59ab96ec9dc2f1ba10d776ea77da71",
+          "effective_sha256": "bf8b47cc283e4e0152ddb653ed08dd5217b67de0f6d887bf1aac87fb0c795e83",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {
+            "ven-046a-166:tags": "c6f72eea85fde20e590f2cbd05dfb29c8b5942c1e13ea7ff17777ccdffaaadcc"
+          },
+          "image_id": "ven-046a-166"
+        }
+      ],
+      "fields": [
+        {
+          "field": "tags",
+          "disposition": "corrected_transcription",
+          "reason": "Every exact member face prints the same full tag set. The linked per-printing image observations correct feed omissions and corroborate complete records. No tag union, preferred-printing precedence or showcase omission exception is used.",
+          "rules": [
+            "133.8",
+            "143.1"
+          ],
+          "resolution_ids": [
+            "ven-046-166:tags",
+            "ven-046a-166:tags"
+          ]
+        },
+        {
+          "field": "rules_text",
+          "disposition": "reminder_equivalent",
+          "reason": "The alternate omits only Deflect2 and Empower reminders. Both exact faces retain keyword values/costs and the dependent conquer-score1 instruction. Preserve both distinct printed texts.",
+          "rules": [
+            "135.2.c.2",
+            "135.2.d.1",
+            "135.2.d.2",
+            "135.2.d.3",
+            "809.1.c",
+            "809.1.c.1",
+            "827.1.c.1",
+            "828.1"
+          ],
+          "resolution_ids": []
+        }
+      ],
+      "errata": []
+    },
+    {
+      "id": "c7-ven-113-166",
+      "identity": "ven-113-166",
+      "name": "Kennen, Storm of Shuriken",
+      "reviewed_on": "2026-10-24",
+      "status": "complete",
+      "enables_runtime_support": false,
+      "core_authority_id": "core",
+      "members": [
+        {
+          "official_id": "ven-113-166",
+          "raw_sha256": "ba34b565538cd9285b9db505786e346aebbe72913b2bc3e38e53a5facb6f60f9",
+          "effective_sha256": "0dab457ec5cfaf33015d6cae710d1bdcdf873a3830874a493b2bb5ac7c372bca",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {
+            "ven-113-166:tags": "7b495fe6ac05510f2e4bf5011a79f8bb661cb56d6490d54a6423a6a1d5a47609"
+          },
+          "image_id": "ven-113-166"
+        },
+        {
+          "official_id": "ven-113a-166",
+          "raw_sha256": "21311e223e0fe1b607a4b15de4a9dfaf3c919f901dfc5850ec7606f6f0cfa186",
+          "effective_sha256": "21311e223e0fe1b607a4b15de4a9dfaf3c919f901dfc5850ec7606f6f0cfa186",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {
+            "ven-113a-166:tags": "91b1de2c15daeaf83a046cea13ebf4d84874cdce1cb8348e4bd8e0c82d6a2593"
+          },
+          "image_id": "ven-113a-166"
+        }
+      ],
+      "fields": [
+        {
+          "field": "tags",
+          "disposition": "corrected_transcription",
+          "reason": "Every exact member face prints the same full tag set. The linked per-printing image observations correct feed omissions and corroborate complete records. No tag union, preferred-printing precedence or showcase omission exception is used.",
+          "rules": [
+            "133.8",
+            "143.1"
+          ],
+          "resolution_ids": [
+            "ven-113-166:tags",
+            "ven-113a-166:tags"
+          ]
+        },
+        {
+          "field": "rules_text",
+          "disposition": "reminder_equivalent",
+          "reason": "The alternate omits only italic Burn2 and Flow reminders. Both exact faces retain the on-play Burn2 instruction and conquer grant of Flow equal to cost this turn. Core supplies the unchanged keyword actions and replacement. Printed Ionia is an independent field correction.",
+          "rules": [
+            "135.2.c.2",
+            "135.2.d.1",
+            "135.2.d.2",
+            "135.2.d.3",
+            "441.1",
+            "441.2",
+            "829.1.b",
+            "829.1.b.1",
+            "829.1.c.1"
+          ],
+          "resolution_ids": []
+        }
+      ],
+      "errata": []
+    },
+    {
+      "id": "c7-ven-136-166",
+      "identity": "ven-136-166",
+      "name": "Ambessa, Respected and Feared",
+      "reviewed_on": "2026-10-24",
+      "status": "complete",
+      "enables_runtime_support": false,
+      "core_authority_id": "core",
+      "members": [
+        {
+          "official_id": "ven-136-166",
+          "raw_sha256": "f96c49029691113480a641d13cb2af34b0b20fa72d26efb8f784361e44bd3a8d",
+          "effective_sha256": "f96c49029691113480a641d13cb2af34b0b20fa72d26efb8f784361e44bd3a8d",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {
+            "ven-136-166:tags": "9fd32418e665311b20c910bb20beaf3786e1276bcdcceeff7684863ee3a17319"
+          },
+          "image_id": "ven-136-166"
+        },
+        {
+          "official_id": "ven-136a-166",
+          "raw_sha256": "309080078bef0b119d3e4b65a860b4d339cd1914c06d1ebcbdd69d3a8b21e25e",
+          "effective_sha256": "50a0d26e16236d1e3b9d14bb8e0d91b24cfc02c4b13f2f7322e32adb31696a25",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {
+            "ven-136a-166:tags": "5388b708aba440de609ed4142f11f079f2cca9ee2c501894f658005c522920a7"
+          },
+          "image_id": "ven-136a-166"
+        },
+        {
+          "official_id": "ven-187-166",
+          "raw_sha256": "39bb85b798693eafd4e2ccabc3ad6af28b146050bba2754fe1ed8bacbfa47ce5",
+          "effective_sha256": "438803cfef5ce043f185dd0d8361f1efdf9fd3e5453d204d3c4e534c1c44deb1",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {
+            "ven-187-166:tags": "27de4ab3b40e1fbf94dbc673caf3b401841d4fc4da15f2e371245eb47dc0d51c"
+          },
+          "image_id": "ven-187-166"
+        }
+      ],
+      "fields": [
+        {
+          "field": "tags",
+          "disposition": "corrected_transcription",
+          "reason": "Every exact member face prints the same full tag set. The linked per-printing image observations correct feed omissions and corroborate complete records. No tag union, preferred-printing precedence or showcase omission exception is used.",
+          "rules": [
+            "133.8",
+            "143.1"
+          ],
+          "resolution_ids": [
+            "ven-136-166:tags",
+            "ven-136a-166:tags",
+            "ven-187-166:tags"
+          ]
+        },
+        {
+          "field": "rules_text",
+          "disposition": "reminder_equivalent",
+          "reason": "The alternate and showcase omit Empower and Assault italic parentheticals. All three exact faces retain the1Energy/2OrderPower Empower cost, dependent Assault2 and attack-kill instruction. Preserve each printed text.",
+          "rules": [
+            "135.2.c.2",
+            "135.2.d.1",
+            "135.2.d.2",
+            "135.2.d.3",
+            "827.1.c.1",
+            "807.1.c",
+            "828.1.b.1"
+          ],
+          "resolution_ids": []
+        }
+      ],
+      "errata": []
+    },
+    {
+      "id": "c7-ven-138-166",
+      "identity": "ven-138-166",
+      "name": "Shen, Leader of the Kinkou Order",
+      "reviewed_on": "2026-10-24",
+      "status": "complete",
+      "enables_runtime_support": false,
+      "core_authority_id": "core",
+      "members": [
+        {
+          "official_id": "ven-138-166",
+          "raw_sha256": "c5aaaab8b91009e87e6639326345238f803901264b839c5a741210aa63e47bab",
+          "effective_sha256": "c5aaaab8b91009e87e6639326345238f803901264b839c5a741210aa63e47bab",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {},
+          "image_id": "ven-138-166"
+        },
+        {
+          "official_id": "ven-138a-166",
+          "raw_sha256": "840334ec8470b6ff980ce616b385b58a75e6575ec0ef5743320313b146e50bbd",
+          "effective_sha256": "840334ec8470b6ff980ce616b385b58a75e6575ec0ef5743320313b146e50bbd",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {},
+          "image_id": "ven-138a-166"
+        }
+      ],
+      "fields": [
+        {
+          "field": "rules_text",
+          "disposition": "reminder_equivalent",
+          "reason": "Both faces retain Shield and the Hold condition requiring exactly one other friendly unit here before scoring 1 point. VEN 138 prints italic Shield +1 defender reminder; alternate138a omits it.",
+          "rules": [
+            "135.2.d.1",
+            "135.2.d.2",
+            "135.2.d.3",
+            "814"
+          ],
+          "resolution_ids": []
+        }
+      ],
+      "errata": []
+    },
+    {
+      "id": "c7-ven-153-166",
+      "identity": "ven-153-166",
+      "name": "Matriarch of War",
+      "reviewed_on": "2026-10-24",
+      "status": "complete",
+      "enables_runtime_support": false,
+      "core_authority_id": "core",
+      "members": [
+        {
+          "official_id": "ven-153-166",
+          "raw_sha256": "5475d132b33644faad92ce76619670f0fb30c36a50cd16bd8ff89e79f6a76ede",
+          "effective_sha256": "5475d132b33644faad92ce76619670f0fb30c36a50cd16bd8ff89e79f6a76ede",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {},
+          "image_id": "ven-153-166"
+        },
+        {
+          "official_id": "ven-196-166",
+          "raw_sha256": "731252ddc3554f46daf8a60ebc1a00f57c19f47c7d568f7740ea4fd25500e3cb",
+          "effective_sha256": "731252ddc3554f46daf8a60ebc1a00f57c19f47c7d568f7740ea4fd25500e3cb",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {},
+          "image_id": "ven-196-166"
+        },
+        {
+          "official_id": "ven-196-star-166",
+          "raw_sha256": "a0e676b5c092d4a47f5b02bcdbc174d7dbe13dca65b4fedae61dd93f32d56fef",
+          "effective_sha256": "a0e676b5c092d4a47f5b02bcdbc174d7dbe13dca65b4fedae61dd93f32d56fef",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {},
+          "image_id": "ven-196-star-166"
+        }
+      ],
+      "fields": [
+        {
+          "field": "rules_text",
+          "disposition": "reminder_equivalent",
+          "reason": "All faces retain “When you empower something else, empower me” plus Disempower, one Any Power, Exhaust: Ready a unit. VEN 153 alone prints the italic Empower status reminder. Neither version restricts the targeted unit to friendly.",
+          "rules": [
+            "135.2.d.1",
+            "135.2.d.2",
+            "135.2.d.3",
+            "442"
+          ],
+          "resolution_ids": []
+        }
+      ],
+      "errata": []
+    },
+    {
+      "id": "c7-ven-155-166",
+      "identity": "ven-155-166",
+      "name": "Heart of the Tempest",
+      "reviewed_on": "2026-10-24",
+      "status": "complete",
+      "enables_runtime_support": false,
+      "core_authority_id": "core",
+      "members": [
+        {
+          "official_id": "ven-155-166",
+          "raw_sha256": "26366f3e1d95be2bd3b399981d6d04374d9cdff50894934186df92217a45d002",
+          "effective_sha256": "26366f3e1d95be2bd3b399981d6d04374d9cdff50894934186df92217a45d002",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {},
+          "image_id": "ven-155-166"
+        },
+        {
+          "official_id": "ven-197-166",
+          "raw_sha256": "155a84cb1456e81793356d7e161aa1bf8b847939e207748d889d8511607cf683",
+          "effective_sha256": "155a84cb1456e81793356d7e161aa1bf8b847939e207748d889d8511607cf683",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {},
+          "image_id": "ven-197-166"
+        },
+        {
+          "official_id": "ven-197-star-166",
+          "raw_sha256": "5828391ced6417f9bcd3ee058c936abd15c278f35eeb0a923655eda48e34f0b1",
+          "effective_sha256": "5828391ced6417f9bcd3ee058c936abd15c278f35eeb0a923655eda48e34f0b1",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {},
+          "image_id": "ven-197-star-166"
+        }
+      ],
+      "fields": [
+        {
+          "field": "rules_text",
+          "disposition": "reminder_equivalent",
+          "reason": "All faces retain off-hand play Empower trigger and Action-associated Disempower plus Exhaust activation giving a unit Assault 2 this turn. VEN 155 alone prints the italic Assault 2 reminder. No timing, target allegiance, or cost difference is printed.",
+          "rules": [
+            "135.2.d.1",
+            "135.2.d.2",
+            "135.2.d.3",
+            "806",
+            "807",
+            "442"
+          ],
+          "resolution_ids": []
+        }
+      ],
+      "errata": []
+    }
+  ]
+}
