@@ -94,8 +94,9 @@ class C11AdmissionTests(unittest.TestCase):
             (images, 70, 'field_image_index_sha256'),
             (identities['reviews'], 29, 'identity_reviews_sha256'),
         ]:
-            self.assertEqual(len(values), count)
-            self.assertEqual(digest(values), p[key])
+            # Later source-only reviews append records; this admission pins its exact original cohort.
+            self.assertGreaterEqual(len(values), count)
+            self.assertEqual(digest(values[:count]), p[key])
         self.assertEqual(self.proof['pre_admission_counts'], {'main_cards': 345, 'mapped_legal': 370, 'remaining_legal': 709})
 
     def test_heirloom_keeps_raw_stat_and_empty_effect_panel_without_a_source_correction(self):

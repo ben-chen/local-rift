@@ -92,8 +92,9 @@ class C10AdmissionTests(unittest.TestCase):
             (images, 70, 'field_image_index_sha256'),
             (identities['reviews'], 29, 'identity_reviews_sha256'),
         ]:
-            self.assertEqual(len(values), count)
-            self.assertEqual(digest(values), p[key])
+            # Later source-only reviews append records; this admission pins its exact original cohort.
+            self.assertGreaterEqual(len(values), count)
+            self.assertEqual(digest(values[:count]), p[key])
         self.assertEqual(self.proof['pre_admission_counts'], {'main_cards': 334, 'mapped_legal': 359, 'remaining_legal': 720})
 
     def test_importer_rejects_changed_new_card_source_facts(self):

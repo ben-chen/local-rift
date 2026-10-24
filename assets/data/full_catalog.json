@@ -158,9 +158,9 @@
     "unimplemented_legal_identities": 705,
     "errata_entries": 67,
     "identities_with_errata": 67,
-    "source_quality_issues": 39,
-    "reviewed_field_resolutions": 114,
-    "resolved_source_issue_groups": 39,
+    "source_quality_issues": 40,
+    "reviewed_field_resolutions": 115,
+    "resolved_source_issue_groups": 40,
     "unresolved_source_issue_groups": 0,
     "unresolved_gameplay_identities": 0,
     "unreviewed_variant_identities": 95,
@@ -171,7 +171,7 @@
     "pinned_runtime_variant_identities": 0,
     "reviewed_variant_identities": 29,
     "reviewed_variant_printings": 90,
-    "field_reviewed_printings": 70
+    "field_reviewed_printings": 71
   },
   "unimplemented_by_observed_keyword": {
     "ADD": 1,
@@ -22967,8 +22967,10 @@
       "rules_text_status": "official_gallery_printing_text",
       "conflicting_fields": [],
       "source_review": {
-        "status": "no_detected_conflicts",
-        "resolution_ids": [],
+        "status": "reviewed_corrections",
+        "resolution_ids": [
+          "rad-095-167:tags"
+        ],
         "unresolved_gameplay_fields": [],
         "variant_diagnostics": [],
         "reviewed_variant_fields": [],
@@ -71591,13 +71593,18 @@
         "power": null,
         "might": 4,
         "might_bonus": null,
-        "tags": [],
+        "tags": [
+          "Shadow Isles",
+          "Demon"
+        ],
         "rules_html": "<p>[Hidden] (Hide now for :rb_rune_rainbow: to react with later for :rb_energy_0:.)<br />When you play me, if it's not your turn, give me [Temporary]. (Kill me at the start of my controller's Beginning Phase, before scoring.)</p>",
         "rules_text": "[Hidden] (Hide now for [Any Power] to react with later for [0 Energy].)\nWhen you play me, if it's not your turn, give me [Temporary]. (Kill me at the start of my controller's Beginning Phase, before scoring.)",
         "equipment_html": "",
         "equipment_text": ""
       },
-      "resolution_ids": [],
+      "resolution_ids": [
+        "rad-095-167:tags"
+      ],
       "unresolved_gameplay_fields": []
     },
     {
@@ -129786,6 +129793,24 @@
         }
       ],
       "detail": "The exact official face explicitly prints the Bilgewater tag. The archived empty tag array omits that printed tag; no region is inferred from the card name or setting."
+    },
+    {
+      "kind": "official_artwork_field_mismatch",
+      "field": "tags",
+      "official_ids": [
+        "rad-095-167"
+      ],
+      "values": [
+        {
+          "official_id": "rad-095-167",
+          "raw_value": [],
+          "printed_value": [
+            "Shadow Isles",
+            "Demon"
+          ]
+        }
+      ],
+      "detail": "The exact RAD-095/167 official face prints UNIT / SHADOW ISLES / DEMON. The archived empty tag array omits both printed tags; neither is inferred from artwork, name or lore."
     }
   ],
   "source_issue_reviews": [
@@ -130679,6 +130704,34 @@
           }
         ],
         "detail": "The exact official face explicitly prints the Bilgewater tag. The archived empty tag array omits that printed tag; no region is inferred from the card name or setting."
+      }
+    },
+    {
+      "review_issue_id": "momentary-rad-095-167-tags",
+      "official_ids": [
+        "rad-095-167"
+      ],
+      "resolution_ids": [
+        "rad-095-167:tags"
+      ],
+      "status": "resolved_by_review",
+      "raw_issue": {
+        "kind": "official_artwork_field_mismatch",
+        "field": "tags",
+        "official_ids": [
+          "rad-095-167"
+        ],
+        "values": [
+          {
+            "official_id": "rad-095-167",
+            "raw_value": [],
+            "printed_value": [
+              "Shadow Isles",
+              "Demon"
+            ]
+          }
+        ],
+        "detail": "The exact RAD-095/167 official face prints UNIT / SHADOW ISLES / DEMON. The archived empty tag array omits both printed tags; neither is inferred from artwork, name or lore."
       }
     }
   ],
@@ -134435,6 +134488,37 @@
         }
       ],
       "enables_runtime_support": false
+    },
+    {
+      "id": "rad-095-167:tags",
+      "official_id": "rad-095-167",
+      "name": "Momentary Companion",
+      "field": "tags",
+      "reviewed_on": "2026-10-24",
+      "basis": "confirmed_artwork",
+      "operation": "override",
+      "expected_raw_value": [],
+      "raw_source_field": "tags",
+      "expected_raw_source_value": [],
+      "effective_value": [
+        "Shadow Isles",
+        "Demon"
+      ],
+      "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+      "expected_printing_sha256": "c3a2a4f9e90de9439edf1e8ef96a05a29f0c348e67f66816c26936a32fd2df52",
+      "printing_hash_encoding": "UTF-8 JSON sorted keys; ensure_ascii=false; separators=(',', ':')",
+      "reason": "The exact RAD-095/167 official face prints UNIT / SHADOW ISLES / DEMON. The archived empty tag array omits both printed tags; neither is inferred from artwork, name or lore.",
+      "evidence": [
+        {
+          "kind": "official_card_image",
+          "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/aea67209470e47ec876a11ae9b3eacda00df7be1-744x1039.png?accountingTag=RB",
+          "sha256": "55ab5e101b569288674f8aa83d9db4f729274b427b3187b5c1b57efaf9db6950",
+          "bytes": 759278,
+          "local_path": "assets/data/catalog_evidence/images/rad-095-167.png",
+          "location": "Printed UNIT / SHADOW ISLES / DEMON type/tag line directly above card name."
+        }
+      ],
+      "enables_runtime_support": false
     }
   ],
   "review_evidence": {
@@ -134447,10 +134531,10 @@
         "uncompressed_bytes": 3986973
       }
     },
-    "reviewed_printings": 70,
-    "field_resolutions": 114,
-    "historical_issue_groups": 39,
-    "image_evidence": 70,
+    "reviewed_printings": 71,
+    "field_resolutions": 115,
+    "historical_issue_groups": 40,
+    "image_evidence": 71,
     "live_image_bytes_checked": false
   },
   "reviewed_identity_reviews": [

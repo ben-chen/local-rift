@@ -44,11 +44,11 @@ class ArtworkDiscoveryTests(unittest.TestCase):
                          (['fury'], ['Bilgewater']))
         self.assertEqual(printing['resolution_ids'], ['rad-003-167:domains', 'rad-003-167:tags'])
         self.assertEqual((counts['reviewed_field_resolutions'], counts['field_reviewed_printings'],
-                          counts['resolved_source_issue_groups']), (114, 70, 39))
+                          counts['resolved_source_issue_groups']), (115, 71, 40))
         old = result['source_quality_issues'][:37]
         self.assertEqual(hashlib.sha256(catalog.canonical_json(old).encode()).hexdigest(),
                          '923bd9fee267e4e4e2d46301ea30771438e6146d805ab3bb45f177095388afae')
-        self.assertEqual([i['kind'] for i in result['source_quality_issues'][37:]],
+        self.assertEqual([i['kind'] for i in result['source_quality_issues'][37:39]],
                          ['official_artwork_field_mismatch'] * 2)
 
     def test_artwork_observation_cannot_invent_raw_or_printed_values(self):

@@ -1,0 +1,197 @@
+{
+  "schema_version": 1,
+  "status": "reviewed_source_only",
+  "reviewed_on": "2026-10-24",
+  "scope": "One artwork-proven missing-tag correction; no runtime registration or rule implementation.",
+  "enables_runtime_support": false,
+  "official_id": "rad-095-167",
+  "name": "Momentary Companion",
+  "resolution_ids": [
+    "rad-095-167:tags"
+  ],
+  "origin_gallery": {
+    "url": "https://playriftbound.com/en-us/card-gallery/",
+    "archive": "assets/data/catalog_evidence/pages/97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9.html.gz",
+    "sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+    "uncompressed_bytes": 3986973
+  },
+  "raw_printing": {
+    "official_id": "rad-095-167",
+    "public_code": "RAD-095/167",
+    "name": "Momentary Companion",
+    "set": "RAD",
+    "collector_number": 95,
+    "types": [
+      "unit"
+    ],
+    "type_source": "cardType.type",
+    "structured_types": [
+      "unit"
+    ],
+    "accessibility_types": [
+      "unit"
+    ],
+    "type_labels_conflict": false,
+    "super_types": [],
+    "domains": [
+      "chaos"
+    ],
+    "energy": 4,
+    "power": null,
+    "might": 4,
+    "might_bonus": null,
+    "rules_html": "<p>[Hidden] (Hide now for :rb_rune_rainbow: to react with later for :rb_energy_0:.)<br />When you play me, if it's not your turn, give me [Temporary]. (Kill me at the start of my controller's Beginning Phase, before scoring.)</p>",
+    "rules_text": "[Hidden] (Hide now for [Any Power] to react with later for [0 Energy].)\nWhen you play me, if it's not your turn, give me [Temporary]. (Kill me at the start of my controller's Beginning Phase, before scoring.)",
+    "equipment_html": "",
+    "equipment_text": "",
+    "tags": [],
+    "rarity": "common",
+    "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/aea67209470e47ec876a11ae9b3eacda00df7be1-744x1039.png?accountingTag=RB",
+    "image_accessibility_text": "Riftbound Unit: Momentary Companion. [Hidden] (Hide now for [A] to react with later for [0].)\nWhen you play me, if it's not your turn, give me [Temporary]. (Kill me at the start of my controller's Beginning Phase, before scoring.)",
+    "illustrators": [
+      "Kudos Productions"
+    ]
+  },
+  "raw_printing_sha256": "c3a2a4f9e90de9439edf1e8ef96a05a29f0c348e67f66816c26936a32fd2df52",
+  "effective_before": {
+    "types": [
+      "unit"
+    ],
+    "super_types": [],
+    "domains": [
+      "chaos"
+    ],
+    "energy": 4,
+    "power": null,
+    "might": 4,
+    "might_bonus": null,
+    "tags": [],
+    "rules_html": "<p>[Hidden] (Hide now for :rb_rune_rainbow: to react with later for :rb_energy_0:.)<br />When you play me, if it's not your turn, give me [Temporary]. (Kill me at the start of my controller's Beginning Phase, before scoring.)</p>",
+    "rules_text": "[Hidden] (Hide now for [Any Power] to react with later for [0 Energy].)\nWhen you play me, if it's not your turn, give me [Temporary]. (Kill me at the start of my controller's Beginning Phase, before scoring.)",
+    "equipment_html": "",
+    "equipment_text": ""
+  },
+  "effective_after": {
+    "types": [
+      "unit"
+    ],
+    "super_types": [],
+    "domains": [
+      "chaos"
+    ],
+    "energy": 4,
+    "power": null,
+    "might": 4,
+    "might_bonus": null,
+    "tags": [
+      "Shadow Isles",
+      "Demon"
+    ],
+    "rules_html": "<p>[Hidden] (Hide now for :rb_rune_rainbow: to react with later for :rb_energy_0:.)<br />When you play me, if it's not your turn, give me [Temporary]. (Kill me at the start of my controller's Beginning Phase, before scoring.)</p>",
+    "rules_text": "[Hidden] (Hide now for [Any Power] to react with later for [0 Energy].)\nWhen you play me, if it's not your turn, give me [Temporary]. (Kill me at the start of my controller's Beginning Phase, before scoring.)",
+    "equipment_html": "",
+    "equipment_text": ""
+  },
+  "original_image": {
+    "official_id": "rad-095-167",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/aea67209470e47ec876a11ae9b3eacda00df7be1-744x1039.png?accountingTag=RB",
+    "path": "assets/data/catalog_evidence/images/rad-095-167.png",
+    "sha256": "55ab5e101b569288674f8aa83d9db4f729274b427b3187b5c1b57efaf9db6950",
+    "bytes": 759278
+  },
+  "superseded_visual_observation": {
+    "status": "superseded",
+    "reason": "The earlier preliminary review overlooked the two explicit printed tags. The original observation is retained unmodified; it was never a committed source override.",
+    "observation": {
+      "official_id": "rad-095-167",
+      "face_visually_inspected": true,
+      "original_image_sha256": "55ab5e101b569288674f8aa83d9db4f729274b427b3187b5c1b57efaf9db6950",
+      "name": "Momentary Companion",
+      "collector_code": "RAD-095/167",
+      "printed_types": [
+        "unit"
+      ],
+      "printed_supertypes": [],
+      "printed_domains": [
+        "chaos"
+      ],
+      "printed_tags": [],
+      "printed_energy": 4,
+      "printed_power": null,
+      "printed_might": 4,
+      "printed_might_bonus": null,
+      "printed_rules_icons_expanded": "[Hidden] (Hide now for [Any Power] to react with later for [0 Energy].)\nWhen you play me, if it's not your turn, give me [Temporary]. (Kill me at the start of my controller's Beginning Phase, before scoring.)",
+      "printed_equipment_icons_expanded": "",
+      "comparison": "No mismatch found in individually inspected face; icon expansion and line wrapping are presentation only.",
+      "uncertainties": []
+    }
+  },
+  "visual_observation": {
+    "official_id": "rad-095-167",
+    "face_visually_inspected": true,
+    "original_image_sha256": "55ab5e101b569288674f8aa83d9db4f729274b427b3187b5c1b57efaf9db6950",
+    "name": "Momentary Companion",
+    "collector_code": "RAD-095/167",
+    "printed_types": [
+      "unit"
+    ],
+    "printed_supertypes": [],
+    "printed_domains": [
+      "chaos"
+    ],
+    "printed_tags": [
+      "Shadow Isles",
+      "Demon"
+    ],
+    "printed_energy": 4,
+    "printed_power": null,
+    "printed_might": 4,
+    "printed_might_bonus": null,
+    "printed_rules_icons_expanded": "[Hidden] (Hide now for [Any Power] to react with later for [0 Energy].)\nWhen you play me, if it's not your turn, give me [Temporary]. (Kill me at the start of my controller's Beginning Phase, before scoring.)",
+    "printed_equipment_icons_expanded": "",
+    "comparison": "Confirmed new mismatch on direct reinspection: face prints Shadow Isles and Demon; current raw/effective feed tags are empty. The prior observation incorrectly recorded no tags and is retained separately, not silently rewritten.",
+    "uncertainties": []
+  },
+  "preserved_source_cohorts": {
+    "resolutions": {
+      "count": 114,
+      "canonical_sha256": "11423f26e8af15ca8739fd610972f6bebc5c517636d8c462783b3d03d543b21e"
+    },
+    "raw_printings": {
+      "count": 70,
+      "canonical_sha256": "3a3d0a7c28a9e23ed44080991157f1086baccbf67997aba7811d5522f1d99555"
+    },
+    "historical_issues": {
+      "count": 39,
+      "canonical_sha256": "241d9096a7397d1511483f0db7683c11f78163f692ec4157b8b9c14e8515b6dd"
+    }
+  },
+  "preserved_field_image_index": {
+    "count": 70,
+    "canonical_sha256": "20298558b3462cda4a60e0eb232a87967f66959c45c69d06c6a17d71b144115e"
+  },
+  "preserved_variant_review": {
+    "identities": 29,
+    "printings": 90,
+    "manifest_sha256": "e678c7f2f2e1ae70fb6b399ce1b0ab88a314e9018810d1ccadb1759a1f7b5e12",
+    "image_index_sha256": "1826db0a53cbe62eb1a1196d08df1cbef215b9d9e24cc006689559bbc7693b92"
+  },
+  "preserved_runtime_files": {
+    "src/cards.rs": "0cb209733522cbe5eb1fa14a5af6122087c177863d9e68228387432bbf02559d",
+    "src/deck.rs": "ad6b2ad3d5e3e34c99af35eef5a283b615cc813db27cec246fd2f433063ec1e4",
+    "src/legend_catalog.rs": "f9798fca0c7b501a574b4d96f7368d163d78f032dac272f2596630c7d66d4ce0",
+    "assets/data/decks.json": "9013ee44e5a75571b041f2e98233d7c1c7cb1ac73654ee7e7adb69f3b5835619",
+    "assets/data/legends.json": "2b621121a54761ccee91e6d0df7b720e572138e7c2caac2c52abaaabd951b37f",
+    "assets/data/battlefields.json": "6f77a53ab5d187ced72da9b726b1710263d13cdc94e1b98173ed2f477d29acb8"
+  },
+  "unchanged_coverage": {
+    "main_cards": 349,
+    "mapped_legal": 374,
+    "remaining_legal": 705,
+    "standard_legal": 1079
+  },
+  "changed_fields": [
+    "tags"
+  ],
+  "review_limit": "A dated observation of one exact original face, not a new erratum, identity-wide variant ruling, or automatic source-to-runtime admission."
+}
