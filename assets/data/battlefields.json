@@ -1,0 +1,39 @@
+{
+  "checked": "2026-10-24",
+  "battlefields": [
+    {
+      "id": 0,
+      "name": "Sunken Temple",
+      "source_id": "sfd-218-221",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_html": "<p>When you conquer here with one or more [Mighty] units, you may pay :rb_energy_1: to draw 1. (A unit is Mighty while it has 5+ :rb_might:.)</p>",
+      "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/06f6d17929d19000006cf281d013ecbe1543af0e-1039x744.png?accountingTag=RB"
+    },
+    {
+      "id": 1,
+      "name": "Seat of Power",
+      "source_id": "sfd-217-221",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_html": "<p>When you conquer here, draw 1 for each other battlefield you or allies control..</p>",
+      "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/8b9db30f8eedd5e5463a0fceaeaf90069bce39ae-1039x744.png?accountingTag=RB"
+    },
+    {
+      "id": 2,
+      "name": "Minefield",
+      "source_id": "sfd-212-221",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_html": "<p>When you conquer here, put the top 2 cards of your Main Deck into your trash.</p>",
+      "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/46614658b08563f07cc81a4f4fa4ec8a067710b9-1039x744.png?accountingTag=RB"
+    },
+    {
+      "id": 3,
+      "name": "Void Gate",
+      "source_id": "ogn-296-298",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_html": "<p>Spells and abilities affecting units here each deal 1 Bonus Damage. (Each instance of damage the spell deals is increased by 1.)</p>",
+      "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/14a52a367fd41fd84745e050e62d1f281f733467-1038x744.png?accountingTag=RB",
+      "errata_url": "https://riftbound.leagueoflegends.com/en-us/news/rules-and-releases/riftbound-origins-card-errata/",
+      "corrected_text": "Spells and abilities deal 1 Bonus Damage to units here. (Each instance of damage the spell deals to a unit here is increased by 1.)"
+    }
+  ]
+}

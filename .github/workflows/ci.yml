@@ -1,0 +1,42 @@
+name: Rust checks
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install stable Rust and check tools
+        run: |
+          rustup toolchain install stable --profile minimal --component rustfmt --component clippy
+          rustup default stable
+      - name: Install Linux graphics development libraries
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y pkg-config libx11-dev libxi-dev libgl1-mesa-dev xvfb
+      - name: Check formatting
+        run: cargo fmt --all --check
+      - name: Run tests
+        run: cargo test --locked
+      - name: Run Clippy
+        run: cargo clippy --locked --all-targets -- -D warnings
+      - name: Exercise every matchup and starting side
+        run: cargo run --locked --bin simulate -- --seeds 8
+      - name: Build the client and bot tools
+        run: cargo build --locked --release --bins
+      - name: Run the example bot through the JSON protocol
+        run: |
+          python3 examples/random_bot.py --binary target/release/rift-api --seed 42
+          python3 examples/random_bot.py --binary target/release/rift-api --seed 43 --first-player 1
+      - name: Exercise desktop controls at both window sizes
+        env:
+          LIBGL_ALWAYS_SOFTWARE: "1"
+        run: |
+          XDG_DATA_HOME="$RUNNER_TEMP/local-rift-ui" xvfb-run -a ./target/release/local-rift --ui-smoke
+          XDG_DATA_HOME="$RUNNER_TEMP/local-rift-ui-small" xvfb-run -a ./target/release/local-rift --ui-smoke --small

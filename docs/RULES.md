@@ -1,0 +1,127 @@
+# Implemented rules and limitations
+
+**Local Rift is an unofficial, incomplete Riftbound client. This document describes its current behavior, not the complete tabletop game.** Full official card text appears in hover previews and pinned inspectors. All 69 bundled cards have executable printed-effect mappings. An official description in the catalog and a passing simulation are not proof of complete tabletop equivalence.
+
+For physical play, use Riot's [Rules Hub](https://playriftbound.com/en-us/rules-hub/), current errata, and printed card text. The core timing reference used here is the [October 9, 2026 Core Rules](https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/5c7946f7c3b8c6e0faff85ab6dadc6d2e721ea94.pdf). [SOURCES.md](SOURCES.md) records the card and deck sources.
+
+## Setup
+
+Choose any preset for each player. The main list contains 40 cards including a chosen champion. The champion begins in its separate playable zone; the other 39 cards are shuffled and four cards are drawn. You may replace up to two once. Replacements are drawn before the originals return to the bottom of the deck. The AI chooses its own replacements.
+
+Each player has a 12-card rune deck using the preset’s **published domain split**, preserved in the source manifest. Choose whether you or the AI starts. The second player channels an extra rune on their first turn.
+
+Each player brings one battlefield. The client offers four official choices drawn from the source presets; its two battlefield panels display the selected names and effect text. The default follows each player’s chosen deck. There is no sideboarding or deck editor.
+
+## Turns and resources
+
+The start of a turn advances through readying, beginning effects, hold scoring, channeling, and drawing. Trigger chains and choices pause these steps before the next one proceeds. Up to two runes are normally channeled, and you draw one card. The second player channels three runes on their first turn only. Both players draw on their first turn.
+
+Runes supply energy by exhausting and power by recycling to the bottom of the rune deck. Use the rune controls to choose a domain to exhaust or recycle before a play. Exhausting stores energy; recycling stores colored power. A ready rune can supply energy before being recycled for power, so a 10-energy, 4-power cost does not require 14 distinct runes. If you play without preparing resources, automatic payment exhausts runes and recycles matching ones as needed, preserving unused energy from ready runes recycled for power.
+
+Printed costs and all printed domains are retained. For a card with multiple domains, its colored power can come from either printed domain. Generated colored, flexible, and spell-only power have separate pools; the latter only pays spell costs. Energy and power pools empty at the beginning of the main phase and at the end of the turn. The interface distinguishes stored energy from energy available by exhausting ready runes. Ezreal lets you allocate its reduction between energy and power for eligible optional additional costs; it does not discount Equip or Deflect.
+
+## Battlefield choices
+
+| Default preset | Battlefield | Implemented effect |
+|---|---|---|
+| Irelia | Sunken Temple | Conquering with a unit that has at least 5 might offers an optional 1-energy payment to draw a card. |
+| Master Yi | Seat of Power | On conquest, draw one card for each other battlefield you control. |
+| Kennen | Minefield | On conquest, put the top two cards of your main deck into trash. |
+| Kai'Sa | Void Gate | Each instance of damage a spell or ability deals to a unit here gains one bonus damage. Combat damage and damage dealt by units are unaffected. |
+
+Conquest triggers use the chain only when the battlefield scores for that player. Reconquering a field already scored that turn does not repeat those triggers. The final-point replacement draw still counts as scoring and does trigger them. Sunken Temple's optional payment finalizes its draw ability; drawing waits for responses. Seat of Power counts other controlled fields when its ability resolves. Void Gate uses Riot's corrected wording, so a spell targeting several locations only gains damage against units at Void Gate.
+
+Only these four battlefield choices are implemented. The other tournament battlefield cards remain source-list references, including the historical banned Arena's Greatest; they are not selectable. The scenery is artistic presentation, not the printed card artwork.
+
+## Legends
+
+Each preset has its real legend, separate from its chosen champion. Legends ready at the start of their controller's turn.
+
+| Legend | Implemented power |
+|---|---|
+| Irelia | Choosing a friendly unit offers an optional trigger: exhaust the legend and pay one flexible power to ready that unit. Conquest offers a second optional trigger: pay one energy to ready the legend. |
+| Master Yi | A friendly unit defending alone receives +2 might. This is a derived bonus and disappears when the unit attacks, leaves combat, or gains another friendly defender. |
+| Kennen | Playing a card from outside the hand triggers Empower. In an open Action window, disempower and exhaust the legend to give a chosen unit Assault 2 for the turn. The bonus applies while that unit attacks. |
+| Kai'Sa | Exhaust the legend to add one flexible power usable only for playing spells. It cannot pay unit, gear, or ability costs. |
+
+Irelia's optional costs are paid before its triggered ability enters the chain. Declining leaves the original play intact. Kennen's Empower and Assault abilities also use the chain. Kai'Sa's resource ability resolves immediately, does not create a response window, and preserves priority. Supported resource abilities remain available during pending payment choices, such as a spell replay; their normal cost restrictions still apply. Generated resources expire when rune pools empty; they are not extra rune cards.
+
+## Card support and targets
+
+Select a hand card or the champion in its own zone to see available controls. Supported units enter exhausted at base or a battlefield you control, unless an implemented ability says otherwise. They normally ready next turn. The champion pays its normal cost; after defeat it goes to the appropriate zone like another unit, rather than returning automatically to the champion zone.
+
+Hover over a card or unit for its art and complete official text; scroll inside a long preview, or right-click to pin the inspector. Generic “Implemented” labels have been removed. Specific practice notes appear only when there is a documented difference. All bundled cards are playable; unknown or unmapped cards are unavailable. No cards are swapped for stronger or simpler versions.
+
+A targeted card requires legal targets when played. The engine can choose valid targets automatically for the play button; direct targeting selects an eligible unit or chain spell. It validates allegiance, location, and card-specific restrictions. Several effects require multiple targets. Select those units before confirming the play, or let the automatic-target control choose eligible targets. The Repeat target toggle selects a separate group for the repeated effect. Targeted on-play triggers ask for their targets after the permanent enters play. Trash replay choices retain target and destination controls. Explicit target lists preserve an intentional zero-target choice where the card allows it. If responses separate Bellows Breath's targets into different locations, its controller chooses which maximal legal group remains affected. Deflect is charged for each time a unit is chosen, including repeated choices.
+
+## Persistent gear
+
+Gear remains on the board and enters ready at base. Equipment adds its printed might bonus and equipment text to its attached unit. The gear remains a separate object: if the unit leaves, the equipment detaches and remains at base.
+
+Equip is an activated ability with its own power and additional costs. It enters the chain and can be answered. Quick-Draw permits the gear card's reaction timing and creates its free attachment trigger; it does not make an ordinary Equip activation a Reaction. Last Rites asks you to choose two trash cards to recycle for Equip, and its attached unit’s conquest or hold trigger can offer a unit play from trash with normal costs.
+
+The gear implementation includes Boots of Swiftness's might/Ganking, Guardian Angel's heal-and-recall death replacement, the errata-corrected Zhonya's Hourglass replacement, Seal of Discord's generated Chaos power, and expendable Gold tokens that generate flexible power. Temporary gear is removed at the appropriate beginning; attached equipment's own rules text is inactive while attached.
+
+When multiple death replacements apply, the affected unit's controller chooses which one to use, including Guardian Angel, Zhonya's Hourglass, and Smite's banishment. Remaining replacements are checked again if applicable. Last Rites uses a triggered-ability chain before its optional unit choice, and Hourglass can use Hidden. Check the inspector and [errata provenance](SOURCES.md).
+
+## Hidden, trash plays, and optional costs
+
+A card with Hidden can be placed facedown for one flexible power at a battlefield you control during your open main phase. There is one facedown slot per battlefield. Hiding is not playing the card. On a later turn, the card can be played as a Reaction with its base cost waived; additional costs such as Deflect still apply. Losing control reveals the hidden card and puts it in trash.
+
+Hidden plays normally restrict their targets to that battlefield, including when targets are rechecked on resolution. Explicit card exceptions, such as Tideturner's other-location swap, retain their printed permission. Opposing facedown identities remain concealed unless an effect grants access or the card is played. Scuttle Crab’s death trigger reveals the opponent’s hand and grants inspection of their facedown cards until the turn ends.
+
+The client supports Fizz's energy-waived spell replay, Last Rites unit plays from trash, Kennen's temporary Flow grant, and printed Flow conditions and costs. Fizz and Last Rites offer their optional play during trigger finalization; once accepted, a legal available play is required when the ability resolves. If no legal play remains, the choice can finish without playing a card. Trash plays enter the ordinary timing and response system. Matriarch chooses its trash card before its revive ability enters the chain; if that exact card leaves the trash before resolution, the ability cannot revive it. Tornado Warrior similarly chooses its Empower target before opponents respond. Kennen's legend triggers when an actual card is played from a zone other than hand; hiding a card alone does not empower it.
+
+Supported play options include Repeat, Accelerate, Rampage's optional might payment, and eligible units' Empower abilities. Eligible trash plays also expose optional costs: Fizz can Repeat Hard Bargain, a Flow-granted Bellows Breath can Repeat, and Last Rites can Accelerate Kai'Sa. Waiving a base cost does not waive additional costs. Optional costs must be selected and paid before the play is finalized. Up from the Deep asks where to place each Tentacle separately, using your base or a battlefield you control. Empower persists on the object rather than expiring at turn end. Inspect the printed text and current unit state when choosing an option.
+
+## Priority, chains, and showdowns
+
+The turn owner and the player allowed to act are separate. The interface identifies **your priority** or **AI priority**. You can receive priority during the opponent's turn.
+
+During an ordinary open turn, the turn owner can play legal cards and make standard moves. Moving into an uncontrolled battlefield opens a showdown, including when the battlefield is empty. Control and scoring wait for that window to finish.
+
+In an **open showdown**, the player with focus may play a legal Action or Reaction, or pass. Two consecutive passes close the showdown and advance to combat or control. Playing a spell creates a chain; the game is then in a **closed state**, where only legal Reactions can be added.
+
+The newest chain item resolves first after consecutive priority passes. Priority is reassessed between resolutions. A pass is not an irrevocable promise to stop responding: a new play or a resolved item can create another decision. When a chain completes during a showdown, focus returns according to that window's state.
+
+**Pass priority** and `Space` pass within a window. They only end your turn when no chain, showdown, or pending choice remains. A pending choice must be answered first. Implemented counters include countering, returning a spell to hand, and asking the spell's controller to pay additional energy. Predict offers its controller a keep-on-top or recycle-to-bottom choice; it does not itself draw a card, and looking at an empty deck does not cause burnout.
+
+Triggered abilities and turn-start steps pause for choices and response windows. When several triggers are pending, the active player finalizes their triggers first, followed by the other player. Each controller chooses the order of their own triggers; the last placed on the chain resolves first. On-play targeting and optional trigger payments happen during finalization, before the resulting ability can resolve.
+
+## Movement and combat
+
+A standard move exhausts a ready unit. It can move from base to a battlefield, or from a battlefield back to base. Direct battlefield-to-battlefield standard movement is unavailable unless a specifically implemented ability permits movement. A readying effect may enable another move during the same turn.
+
+Use **Group all … ready here** to move several ready units from the selected unit’s location in a single standard move. Shift-click individual units to choose a different group. Official rules also permit units with different origins to move together to one destination; the engine accepts that, while this grouping button selects one origin. Choose the group before entering a showdown: ordinary movement cannot add extra attackers after the response window begins. Cards with legal timing may still change the fight.
+
+After the showdown closes, each player assigns their captured combat might among the opposing units. Exhausted units normally contribute might; stun and combat modifiers may change that total. Assign all damage, respecting Tank first and Backline last, and assign lethal damage before moving to another unit. The UI offers a suggested order and lets you reorder the targets; it assigns lethal damage along that order and puts any excess on the last target. The engine also accepts explicit damage amounts, but the UI does not expose separate amount controls. Both sides finish assigning before damage is dealt simultaneously. If lethal damage creates a replacement choice, the affected units stay visible until their controller makes that choice and cleanup resumes.
+
+A unit with positive damage at least equal to its current might is defeated. A zero-might unit is not defeated merely for having zero might and can conquer or hold an undefended battlefield. Combat cleanup clears damage from **all surviving units**, including those elsewhere on the board. If both sides retain units after combat, surviving attackers return to base, preserving their ready or exhausted state. An empty battlefield becomes unclaimed. End-of-turn cleanup also clears surviving damage and temporary might changes.
+
+## Scoring and victory
+
+A player wins with **at least eight points and more points than the opponent**, checked by game cleanup.
+
+- **Conquer:** gain control of a battlefield with your units there and no enemy unit remaining, after its response window resolves.
+- **Hold:** begin your turn controlling an uncontested battlefield with your units still there.
+- Each battlefield can score once for each player during a turn. Switching control repeatedly does not let the same player score that battlefield again that turn.
+
+Holding can earn the eighth point directly. A conquest earns the eighth point only after the other battlefield has already scored for you that turn. Otherwise it draws a card instead and still uses that battlefield's scoring opportunity. Scoring the other battlefield later that turn can then win.
+
+When drawing or burning requires a card from an empty main deck, the trash is shuffled into a new deck and the opponent scores one point. That burnout point can end the match. If no drawable card becomes available, burnout repeats until someone wins. Predict is not a draw. There is no match timer.
+
+## AI and Mote
+
+**Relaxed** makes simple choices and may accept a poor attack. **Tactical** considers public battlefield strength, useful interaction, resources, and scoring pressure. Both use deterministic heuristics given the same shuffled state. Neither difficulty examines the human's hidden hand or future deck order. The AI handles priority passes and its own pending choices, with a bounded action loop to keep play moving.
+
+Mote's **Beginner** advice explains resources, deployment, scoring, and the current timing window. **Advanced** advice discusses future holds, useful trades, interaction costs, and broad archetype goals. It sees your hand and information available to you, including cards an effect explicitly reveals or lets you inspect. It does not examine the opponent’s private hand, facedown identities, or Predict result. Its small panel is optional and never blocks input.
+
+The deck library includes the real legends and authored strategy notes. The four legend powers execute in matches, while the notes describe strategic goals beyond what the simple AI can teach. Mote and the simulator cannot establish competitive matchup rankings.
+
+## Remaining fidelity limits
+
+Only the four supplied presets and four selected battlefields are available. There is no deck builder, sideboarding, tournament match structure, multiplayer mode, or full card-set coverage. The presets are dated tournament lists, not a ranking of the current metagame.
+
+The desktop combat controls choose a legal lethal-damage order and put excess damage on the last target. The engine and bot API accept other legal explicit damage allocations. Resource payment lets you prepare runes by domain, but consumption among already-generated colored, flexible, and spell-only pools uses an automatic preference order.
+
+Further sequencing and interaction audits are still needed. Tests cover particular official examples and whole-match consistency; they do not establish that every interaction is identical to standard Riftbound. Consult the official reference when preparing for an interaction outside those checked cases.

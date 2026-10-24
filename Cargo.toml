@@ -1,0 +1,20 @@
+[package]
+name = "local-rift"
+version = "0.1.0"
+edition = "2024"
+default-run = "local-rift"
+
+[dependencies]
+macroquad = "0.4.14"
+serde_json = "1"
+
+[[bin]]
+name = "rift-api"
+path = "src/bin/api.rs"
+
+[profile.dev]
+opt-level = 1
+
+[profile.release]
+lto = "thin"
+codegen-units = 1

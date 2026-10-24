@@ -1,0 +1,2256 @@
+{
+  "as_of": "2026-10-24",
+  "notice": "Original published 40-card main-deck counts, including one chosen champion, with published rune splits used at setup. Official card and legend text is factual reference data; implementation support is described by the client. Original tournament battlefields remain provenance metadata; four official fields are selectable. Kai'Sa is historical, and its banned original Arena's Greatest field is not offered.",
+  "decks": [
+    {
+      "name": "Irelia / Blade Dance",
+      "champion": "Irelia, Blade Dancer",
+      "chosen": "Irelia, Fervent",
+      "domains": [
+        "Calm",
+        "Chaos"
+      ],
+      "accent": [
+        105,
+        226,
+        203
+      ],
+      "strategy": "Protect a growing board, ready your units, and contest both battlefields. Published list from Xeno's LA runner-up list.",
+      "difficulty": "Tactical",
+      "source_url": "https://playriftbound.com/en-us/news/organizedplay/los-angeles-top-decks/",
+      "pilot": "Xeno",
+      "event": "Los Angeles Regional Qualifier, September 2026",
+      "placing": 2,
+      "runes": {
+        "Calm": 6,
+        "Chaos": 6
+      },
+      "battlefields": [
+        "Abandoned Hall",
+        "Sunken Temple",
+        "Targon's Peak"
+      ],
+      "cards": [
+        {
+          "id": 0,
+          "name": "Irelia, Fervent",
+          "count": 1
+        },
+        {
+          "id": 1,
+          "name": "Abandon",
+          "count": 1
+        },
+        {
+          "id": 2,
+          "name": "Akali, Silent",
+          "count": 1
+        },
+        {
+          "id": 3,
+          "name": "Boots of Swiftness",
+          "count": 2
+        },
+        {
+          "id": 4,
+          "name": "Charm",
+          "count": 2
+        },
+        {
+          "id": 5,
+          "name": "Defiant Dance",
+          "count": 3
+        },
+        {
+          "id": 6,
+          "name": "Defy",
+          "count": 3
+        },
+        {
+          "id": 7,
+          "name": "Discipline",
+          "count": 3
+        },
+        {
+          "id": 8,
+          "name": "En Garde",
+          "count": 2
+        },
+        {
+          "id": 9,
+          "name": "Flash",
+          "count": 1
+        },
+        {
+          "id": 10,
+          "name": "Guardian Angel",
+          "count": 1
+        },
+        {
+          "id": 11,
+          "name": "Gust",
+          "count": 1
+        },
+        {
+          "id": 12,
+          "name": "Not So Fast",
+          "count": 1
+        },
+        {
+          "id": 13,
+          "name": "Pyke, Returned",
+          "count": 1
+        },
+        {
+          "id": 14,
+          "name": "Ride the Wind",
+          "count": 2
+        },
+        {
+          "id": 15,
+          "name": "Scuttle Crab",
+          "count": 3
+        },
+        {
+          "id": 16,
+          "name": "Star-Crossed",
+          "count": 2
+        },
+        {
+          "id": 17,
+          "name": "Stellacorn Herder",
+          "count": 3
+        },
+        {
+          "id": 18,
+          "name": "Tideturner",
+          "count": 3
+        },
+        {
+          "id": 19,
+          "name": "Twilight Shroud",
+          "count": 1
+        },
+        {
+          "id": 20,
+          "name": "Vex, Apathetic",
+          "count": 1
+        },
+        {
+          "id": 21,
+          "name": "Zhonya's Hourglass",
+          "count": 2
+        }
+      ],
+      "chosen_champion": 0,
+      "legend_name": "Irelia, Blade Dancer",
+      "legend_text": "When you choose a friendly unit, you may exhaust me and pay [Any Power] to ready it.\nWhen you conquer, you may pay [1 Energy] to ready me.",
+      "legend_id": "sfd-195-221",
+      "legend_text_html": "<p>When you choose a friendly unit, you may exhaust me and pay :rb_rune_rainbow: to ready it.<br />When you conquer, you may pay :rb_energy_1: to ready me.</p>",
+      "legend_keywords": [],
+      "learning_notes": "Your legend can ready a friendly unit when you choose it, at the cost of exhausting the legend and paying one power. A conquest can ready the legend for one energy. Irelia, Fervent gains might when chosen or readied. Plan resources for these separate triggers; movement draws from Stellacorn Herder and equipment-granted Ganking can extend a scoring turn."
+    },
+    {
+      "name": "Master Yi / Wuju",
+      "champion": "Master Yi, Wuju Bladesman",
+      "chosen": "Master Yi, Tempered",
+      "domains": [
+        "Calm",
+        "Body"
+      ],
+      "accent": [
+        148,
+        209,
+        115
+      ],
+      "strategy": "Build a sturdy army and strengthen it before committing to combat. Published list from SWAGALISK's LA top-eight list.",
+      "difficulty": "Welcoming",
+      "source_url": "https://playriftbound.com/en-us/news/organizedplay/los-angeles-top-decks/",
+      "pilot": "SWAGALISK",
+      "event": "Los Angeles Regional Qualifier, September 2026",
+      "placing": 6,
+      "runes": {
+        "Body": 7,
+        "Calm": 5
+      },
+      "battlefields": [
+        "Emperor's Dais",
+        "Seat of Power",
+        "Star Spring"
+      ],
+      "cards": [
+        {
+          "id": 22,
+          "name": "Master Yi, Tempered",
+          "count": 1
+        },
+        {
+          "id": 2,
+          "name": "Akali, Silent",
+          "count": 1
+        },
+        {
+          "id": 4,
+          "name": "Charm",
+          "count": 3
+        },
+        {
+          "id": 6,
+          "name": "Defy",
+          "count": 3
+        },
+        {
+          "id": 7,
+          "name": "Discipline",
+          "count": 3
+        },
+        {
+          "id": 8,
+          "name": "En Garde",
+          "count": 2
+        },
+        {
+          "id": 23,
+          "name": "First Mate",
+          "count": 3
+        },
+        {
+          "id": 24,
+          "name": "Legion Marauder",
+          "count": 1
+        },
+        {
+          "id": 25,
+          "name": "Lonely Poro",
+          "count": 2
+        },
+        {
+          "id": 26,
+          "name": "Onslaught",
+          "count": 1
+        },
+        {
+          "id": 27,
+          "name": "Pit Rookie",
+          "count": 3
+        },
+        {
+          "id": 28,
+          "name": "Punch First",
+          "count": 3
+        },
+        {
+          "id": 29,
+          "name": "Rampage",
+          "count": 2
+        },
+        {
+          "id": 30,
+          "name": "Rengar, Trophy Hunter",
+          "count": 3
+        },
+        {
+          "id": 31,
+          "name": "Ruin Runner",
+          "count": 1
+        },
+        {
+          "id": 32,
+          "name": "Sabotage",
+          "count": 3
+        },
+        {
+          "id": 15,
+          "name": "Scuttle Crab",
+          "count": 3
+        },
+        {
+          "id": 21,
+          "name": "Zhonya's Hourglass",
+          "count": 2
+        }
+      ],
+      "chosen_champion": 22,
+      "legend_name": "Master Yi, Wuju Bladesman",
+      "legend_text": "While a friendly unit defends alone, it gets +2 Might.",
+      "legend_id": "ogs-019-024",
+      "legend_text_html": "<p>While a friendly unit defends alone, it gets +2 :rb_might:.</p>",
+      "legend_keywords": [],
+      "learning_notes": "Wuju Bladesman gives a unit defending alone +2 might. Leaving a single defender can therefore be stronger than its printed number suggests. First Mate readies another unit; Punch First and Discipline change combat totals. Keep matching power available for interaction, and count defender bonuses before committing attackers."
+    },
+    {
+      "name": "Kennen / Tempest",
+      "champion": "Kennen, Heart of the Tempest",
+      "chosen": "Kennen, Storm of Shuriken",
+      "domains": [
+        "Chaos",
+        "Order"
+      ],
+      "accent": [
+        179,
+        144,
+        255
+      ],
+      "strategy": "Draw into a flexible army and find openings with repeated moves. Published list from DSG AwesumRosum's LA best-of list.",
+      "difficulty": "Advanced",
+      "source_url": "https://playriftbound.com/en-us/news/organizedplay/los-angeles-top-decks/",
+      "pilot": "DSG AwesumRosum",
+      "event": "Los Angeles Regional Qualifier, September 2026",
+      "placing": 13,
+      "runes": {
+        "Chaos": 9,
+        "Order": 3
+      },
+      "battlefields": [
+        "Minefield",
+        "Shadow Temple",
+        "Zaun Warrens"
+      ],
+      "cards": [
+        {
+          "id": 33,
+          "name": "Kennen, Storm of Shuriken",
+          "count": 1
+        },
+        {
+          "id": 34,
+          "name": "Carrion Dredger",
+          "count": 1
+        },
+        {
+          "id": 35,
+          "name": "Ezreal, Prodigy",
+          "count": 2
+        },
+        {
+          "id": 36,
+          "name": "Fizz, Trickster",
+          "count": 1
+        },
+        {
+          "id": 9,
+          "name": "Flash",
+          "count": 2
+        },
+        {
+          "id": 11,
+          "name": "Gust",
+          "count": 2
+        },
+        {
+          "id": 37,
+          "name": "Hard Bargain",
+          "count": 1
+        },
+        {
+          "id": 38,
+          "name": "Last Rites",
+          "count": 2
+        },
+        {
+          "id": 39,
+          "name": "Lightning Rush",
+          "count": 3
+        },
+        {
+          "id": 40,
+          "name": "Rhasa the Sunderer",
+          "count": 3
+        },
+        {
+          "id": 14,
+          "name": "Ride the Wind",
+          "count": 2
+        },
+        {
+          "id": 41,
+          "name": "Salvage",
+          "count": 1
+        },
+        {
+          "id": 42,
+          "name": "Seal of Discord",
+          "count": 3
+        },
+        {
+          "id": 43,
+          "name": "Shadow Order Disciple",
+          "count": 3
+        },
+        {
+          "id": 16,
+          "name": "Star-Crossed",
+          "count": 1
+        },
+        {
+          "id": 44,
+          "name": "Switcheroo",
+          "count": 2
+        },
+        {
+          "id": 45,
+          "name": "Tail-Cloaked Matriarch",
+          "count": 3
+        },
+        {
+          "id": 18,
+          "name": "Tideturner",
+          "count": 1
+        },
+        {
+          "id": 46,
+          "name": "Tornado Warrior",
+          "count": 2
+        },
+        {
+          "id": 47,
+          "name": "Traveling Merchant",
+          "count": 3
+        },
+        {
+          "id": 48,
+          "name": "Up from the Deep",
+          "count": 1
+        }
+      ],
+      "chosen_champion": 33,
+      "legend_name": "Kennen, Heart of the Tempest",
+      "legend_text": "When you play a card from anywhere other than your hand, empower me.\n[Action] —  Disempower me, [Exhaust]: Give a unit [Assault 2] this turn. (+2 Might while it's an attacker.)",
+      "legend_id": "ven-155-166",
+      "legend_text_html": "<p>When you play a card from anywhere other than your hand, empower me.<br />[Action][&gt;] Disempower me, :rb_exhaust:: Give a unit [Assault 2] this turn. (+2 :rb_might: while it's an attacker.)</p>",
+      "legend_keywords": [
+        "Action",
+        "Assault 2"
+      ],
+      "learning_notes": "Playing from a zone other than your hand empowers the legend; its Action spends empowerment and exhausts it to grant Assault 2 for the turn. Lightning Rush fills the trash, Flow lets spells be played there, and Rhasa becomes cheaper as the trash grows. Order your off-hand plays, attacks, and trash recycling deliberately."
+    },
+    {
+      "name": "Kai'Sa / Void Control",
+      "champion": "Kai'Sa, Daughter of the Void",
+      "chosen": "Kai'Sa, Survivor",
+      "domains": [
+        "Fury",
+        "Mind"
+      ],
+      "accent": [
+        111,
+        177,
+        255
+      ],
+      "strategy": "Control enemy units with damage, then deploy large finishers. Historical published list from Sinzari's Vancouver list (May 2026).",
+      "difficulty": "Balanced",
+      "source_url": "https://playriftbound.com/en-us/news/organizedplay/vancouvers-top-decks/",
+      "pilot": "Sinzari",
+      "event": "Vancouver Regional Qualifier, May 2026 (historical)",
+      "placing": 15,
+      "runes": {
+        "Fury": 7,
+        "Mind": 5
+      },
+      "battlefields": [
+        "Star Spring",
+        "The Arena's Greatest",
+        "Void Gate"
+      ],
+      "cards": [
+        {
+          "id": 49,
+          "name": "Kai'Sa, Survivor",
+          "count": 1
+        },
+        {
+          "id": 50,
+          "name": "Bellows Breath",
+          "count": 1
+        },
+        {
+          "id": 51,
+          "name": "Brynhir Thundersong",
+          "count": 1
+        },
+        {
+          "id": 52,
+          "name": "Eclipse",
+          "count": 2
+        },
+        {
+          "id": 53,
+          "name": "Falling Star",
+          "count": 3
+        },
+        {
+          "id": 54,
+          "name": "Ferrous Forerunner",
+          "count": 3
+        },
+        {
+          "id": 55,
+          "name": "Hextech Ray",
+          "count": 3
+        },
+        {
+          "id": 56,
+          "name": "Inferna",
+          "count": 2
+        },
+        {
+          "id": 57,
+          "name": "Lecturing Yordle",
+          "count": 2
+        },
+        {
+          "id": 58,
+          "name": "Long Sword",
+          "count": 1
+        },
+        {
+          "id": 59,
+          "name": "Noxus Hopeful",
+          "count": 2
+        },
+        {
+          "id": 60,
+          "name": "Ravenbloom Student",
+          "count": 3
+        },
+        {
+          "id": 61,
+          "name": "Singularity",
+          "count": 2
+        },
+        {
+          "id": 62,
+          "name": "Smite",
+          "count": 1
+        },
+        {
+          "id": 63,
+          "name": "Stupefy",
+          "count": 3
+        },
+        {
+          "id": 64,
+          "name": "Thousand-Tailed Watcher",
+          "count": 3
+        },
+        {
+          "id": 65,
+          "name": "Time Warp",
+          "count": 2
+        },
+        {
+          "id": 66,
+          "name": "Turn to Dust",
+          "count": 1
+        },
+        {
+          "id": 67,
+          "name": "Void Seeker",
+          "count": 1
+        },
+        {
+          "id": 68,
+          "name": "Watchful Sentry",
+          "count": 3
+        }
+      ],
+      "chosen_champion": 49,
+      "legend_name": "Kai'Sa, Daughter of the Void",
+      "legend_text": "[Exhaust]: [Reaction] — [Add] [Any Power]. Use only to play spells. (Abilities that add resources can't be reacted to.)",
+      "legend_id": "ogn-247-298",
+      "legend_text_html": "<p>:rb_exhaust:: [Reaction] — [Add] :rb_rune_rainbow:. Use only to play spells. (Abilities that add resources can't be reacted to.)</p>",
+      "legend_keywords": [
+        "Reaction",
+        "Add"
+      ],
+      "learning_notes": "The legend exhausts to add one flexible power usable only for spells. Survivor draws when it conquers, not simply when it attacks. Damage spells can clear a battlefield; Stupefy draws and reduces might, while Watchful Sentry draws on death. Save resources for reactions and avoid treating the historic list as a current metagame recommendation."
+    }
+  ],
+  "cards": [
+    {
+      "id": 0,
+      "name": "Irelia, Fervent",
+      "official_id": "sfd-057-221",
+      "energy": 5,
+      "power": 0,
+      "might": 4,
+      "domains": [
+        "Calm"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/fe05fa55781f8036f8bfc9c10bba94326a0c8cc9-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Deflect] (Opponents must pay [Any Power] to choose me with a spell or ability.)\nWhen you choose or ready me, give me +1 Might this turn.",
+      "official_text_html": "<p>[Deflect] (Opponents must pay :rb_rune_rainbow: to choose me with a spell or ability.)<br />When you choose or ready me, give me +1 :rb_might: this turn.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Deflect"
+      ],
+      "tags": [
+        "Irelia",
+        "Ionia"
+      ]
+    },
+    {
+      "id": 1,
+      "name": "Abandon",
+      "official_id": "unl-131-219",
+      "energy": 2,
+      "power": 0,
+      "might": 0,
+      "domains": [
+        "Chaos"
+      ],
+      "kind": "Spell",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/89929cfa4417c99576477793529c6808af145919-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Reaction] (Play any time, even before spells and abilities resolve.)\nCounter a spell. Return it to its owner's hand instead of putting it in their trash.\n[Predict]. (Look at the top card of your Main Deck. You may recycle it.)",
+      "official_text_html": "<p>[Reaction] (Play any time, even before spells and abilities resolve.)<br />Counter a spell. Return it to its owner's hand instead of putting it in their trash.<br />[Predict]. (Look at the top card of your Main Deck. You may recycle it.)</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Reaction",
+        "Predict"
+      ],
+      "tags": []
+    },
+    {
+      "id": 2,
+      "name": "Akali, Silent",
+      "official_id": "ven-038-166",
+      "energy": 4,
+      "power": 1,
+      "might": 4,
+      "domains": [
+        "Calm"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/f1a4d73853194a3dde02c51b083d197af89d2bda-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "I can't be chosen by enemy spells and abilities unless I'm in combat.\nWhen I move to a battlefield, give me +2 Might this turn.",
+      "official_text_html": "<p>I can't be chosen by enemy spells and abilities unless I'm in combat.<br />When I move to a battlefield, give me +2 :rb_might: this turn.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": [
+        "Ionia",
+        "Akali"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "Boots of Swiftness",
+      "official_id": "sfd-133-221",
+      "energy": 3,
+      "power": 0,
+      "might": 2,
+      "domains": [
+        "Chaos"
+      ],
+      "kind": "Gear",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/a8a8e977f7427227adac69b5d2db07f643d0df09-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Equip] [Chaos Power] ([Chaos Power]: Attach this to a unit you control.)\nAttached unit (+2 Might): [Ganking] (I can move from battlefield to battlefield.)",
+      "official_text_html": "<p>[Equip] :rb_rune_chaos: (:rb_rune_chaos:: Attach this to a unit you control.)</p>",
+      "equipment_effect_html": "<p>[Ganking] (I can move from battlefield to battlefield.)</p>",
+      "equipment_effect": "[Ganking] (I can move from battlefield to battlefield.)",
+      "might_bonus": "+2",
+      "keywords": [
+        "Equip",
+        "Ganking"
+      ],
+      "tags": [
+        "Equipment"
+      ]
+    },
+    {
+      "id": 4,
+      "name": "Charm",
+      "official_id": "ogn-043-298",
+      "energy": 1,
+      "power": 1,
+      "might": 0,
+      "domains": [
+        "Calm"
+      ],
+      "kind": "Spell",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/62ae564505db8fcba70605eac2083ac2d4397b5a-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "Move an enemy unit.",
+      "official_text_html": "<p>Move an enemy unit.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": []
+    },
+    {
+      "id": 5,
+      "name": "Defiant Dance",
+      "official_id": "sfd-196-221",
+      "energy": 1,
+      "power": 1,
+      "might": 0,
+      "domains": [
+        "Calm",
+        "Chaos"
+      ],
+      "kind": "Spell",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/6f5bc5c9e321830337998a2b85e4fec3cd8251c9-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Reaction] (Play any time, even before spells and abilities resolve.)\nGive a unit +2 Might this turn and another unit -2 Might this turn.",
+      "official_text_html": "<p>[Reaction] (Play any time, even before spells and abilities resolve.)<br />Give a unit +2 :rb_might: this turn and another unit -2 :rb_might: this turn.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Reaction"
+      ],
+      "tags": [
+        "Irelia"
+      ]
+    },
+    {
+      "id": 6,
+      "name": "Defy",
+      "official_id": "ogn-045-298",
+      "energy": 1,
+      "power": 1,
+      "might": 0,
+      "domains": [
+        "Calm"
+      ],
+      "kind": "Spell",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/4989bfcc4bd7be77051f0c2c349a981ba9c273e0-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Reaction] (Play any time, even before spells and abilities resolve.)\nCounter a spell that costs no more than [4 Energy] and no more than [Any Power].",
+      "official_text_html": "<p>[Reaction] (Play any time, even before spells and abilities resolve.)<br />Counter a spell that costs no more than :rb_energy_4: and no more than :rb_rune_rainbow:.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Reaction"
+      ],
+      "tags": []
+    },
+    {
+      "id": 7,
+      "name": "Discipline",
+      "official_id": "ogn-058-298",
+      "energy": 2,
+      "power": 0,
+      "might": 0,
+      "domains": [
+        "Calm"
+      ],
+      "kind": "Spell",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/8b9613970b505e3ad6abe2d51d091778314a7d48-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Reaction] (Play any time, even before spells and abilities resolve.)\nGive a unit +2 Might this turn. Draw 1.",
+      "official_text_html": "<p>[Reaction] (Play any time, even before spells and abilities resolve.)<br />Give a unit +2 :rb_might: this turn. Draw 1.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Reaction"
+      ],
+      "tags": []
+    },
+    {
+      "id": 8,
+      "name": "En Garde",
+      "official_id": "ogn-046-298",
+      "energy": 1,
+      "power": 0,
+      "might": 0,
+      "domains": [
+        "Calm"
+      ],
+      "kind": "Spell",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/03c0ec7eaa5957a62869dad2a0ce40913fc874a9-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Reaction] (Play any time, even before spells and abilities resolve.)\nGive a friendly unit +1 Might this turn, then an additional +1 Might this turn if it is the only unit you control there.",
+      "official_text_html": "<p>[Reaction] (Play any time, even before spells and abilities resolve.)<br />Give a friendly unit +1 :rb_might: this turn, then an additional +1 :rb_might: this turn if it is the only unit you control there.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Reaction"
+      ],
+      "tags": []
+    },
+    {
+      "id": 9,
+      "name": "Flash",
+      "official_id": "ogs-011-024",
+      "energy": 2,
+      "power": 0,
+      "might": 0,
+      "domains": [
+        "Chaos"
+      ],
+      "kind": "Spell",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/4d9cc1c13b75933e509e642213f13359350cd3f9-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Reaction] (Play any time, even before spells and abilities resolve.)\nMove up to 2 friendly units to base.",
+      "official_text_html": "<p>[Reaction] (Play any time, even before spells and abilities resolve.)<br />Move up to 2 friendly units to base.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Reaction"
+      ],
+      "tags": []
+    },
+    {
+      "id": 10,
+      "name": "Guardian Angel",
+      "official_id": "sfd-051-221",
+      "energy": 2,
+      "power": 0,
+      "might": 1,
+      "domains": [
+        "Calm"
+      ],
+      "kind": "Gear",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/d09a797345659a1853d6d12910cf3c634990ea0c-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Equip] [Calm Power] ([Calm Power]: Attach this to a unit you control.)\nAttached unit (+1 Might): If I would die, kill Guardian Angel instead. Heal me, exhaust me, and recall me.",
+      "official_text_html": "<p>[Equip] :rb_rune_calm: (:rb_rune_calm:: Attach this to a unit you control.)</p>",
+      "equipment_effect_html": "<p>If I would die, kill Guardian Angel instead. Heal me, exhaust me, and recall me.</p>",
+      "equipment_effect": "If I would die, kill Guardian Angel instead. Heal me, exhaust me, and recall me.",
+      "might_bonus": "+1",
+      "keywords": [
+        "Equip"
+      ],
+      "tags": [
+        "Equipment"
+      ]
+    },
+    {
+      "id": 11,
+      "name": "Gust",
+      "official_id": "ogn-169-298",
+      "energy": 1,
+      "power": 0,
+      "might": 0,
+      "domains": [
+        "Chaos"
+      ],
+      "kind": "Spell",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/dfd3b161ab76ba0c5d503384f1289b3395434b10-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Reaction] (Play any time, even before spells and abilities resolve.)\nReturn a unit at a battlefield with 3 Might or less to its owner's hand.",
+      "official_text_html": "<p>[Reaction] (Play any time, even before spells and abilities resolve.)<br />Return a unit at a battlefield with 3 :rb_might: or less to its owner's hand.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Reaction"
+      ],
+      "tags": []
+    },
+    {
+      "id": 12,
+      "name": "Not So Fast",
+      "official_id": "sfd-045-221",
+      "energy": 2,
+      "power": 1,
+      "might": 0,
+      "domains": [
+        "Calm"
+      ],
+      "kind": "Spell",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/e576fefdce72ad862a7e374bf8c0fd509f359da9-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Reaction] (Play any time, even before spells and abilities resolve.)\nCounter an enemy spell or ability that chooses a friendly unit or gear.",
+      "official_text_html": "<p>[Reaction] (Play any time, even before spells and abilities resolve.)<br />Counter an enemy spell or ability that chooses a friendly unit or gear.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Reaction"
+      ],
+      "tags": []
+    },
+    {
+      "id": 13,
+      "name": "Pyke, Returned",
+      "official_id": "unl-145-219",
+      "energy": 3,
+      "power": 0,
+      "might": 3,
+      "domains": [
+        "Chaos"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/2eaa5396b1cac9b245bde5a56b87314f8ae76a38-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Hidden] (Hide now for [Any Power] to react with later for [0 Energy].)\n[Backline] (I must be assigned combat damage last.)\nOnce each turn, when an enemy unit dies while I'm at a battlefield, play a Gold gear token exhausted. (It has \"[Reaction] —  Kill this, [Exhaust]: [Add] [Any Power].\")",
+      "official_text_html": "<p>[Hidden] (Hide now for :rb_rune_rainbow: to react with later for :rb_energy_0:.)<br />[Backline] (I must be assigned combat damage last.)<br />Once each turn, when an enemy unit dies while I'm at a battlefield, play a Gold gear token exhausted. (It has &quot;[Reaction][&gt;] Kill this, :rb_exhaust:: [Add] :rb_rune_rainbow:.&quot;)</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Hidden",
+        "Backline",
+        "Reaction",
+        "Add"
+      ],
+      "tags": [
+        "Pyke",
+        "Bilgewater"
+      ]
+    },
+    {
+      "id": 14,
+      "name": "Ride the Wind",
+      "official_id": "ogn-173-298",
+      "energy": 2,
+      "power": 1,
+      "might": 0,
+      "domains": [
+        "Chaos"
+      ],
+      "kind": "Spell",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/864d9f8992db7f9a9e795d9438d941ca564ddde7-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Action] (Play on your turn or in showdowns.)\nMove a friendly unit and ready it.",
+      "official_text_html": "<p>[Action] (Play on your turn or in showdowns.)<br />Move a friendly unit and ready it.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Action"
+      ],
+      "tags": []
+    },
+    {
+      "id": 15,
+      "name": "Scuttle Crab",
+      "official_id": "unl-053-219",
+      "energy": 2,
+      "power": 0,
+      "might": 0,
+      "domains": [
+        "Calm"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/8c9a251b2deb21716fba0ac83c6aac96563fa19d-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "(Units with 0 Might can conquer and hold.)\nWhen you play me, draw 1.\n[Deathknell] —  Choose an opponent. They reveal their hand. You can look at their facedown cards this turn. Gain 1 XP. (When I die, get the effects.)",
+      "official_text_html": "<p>(Units with 0 :rb_might: can conquer and hold.)<br />When you play me, draw 1.<br />[Deathknell][&gt;] Choose an opponent. They reveal their hand. You can look at their facedown cards this turn. Gain 1 XP. (When I die, get the effects.)</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Deathknell"
+      ],
+      "tags": [
+        "Bilgewater"
+      ]
+    },
+    {
+      "id": 16,
+      "name": "Star-Crossed",
+      "official_id": "unl-128-219",
+      "energy": 3,
+      "power": 1,
+      "might": 0,
+      "domains": [
+        "Chaos"
+      ],
+      "kind": "Spell",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/0bfa45e6e86dfc256de0163f96273b761e9592fb-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Reaction] (Play any time, even before spells and abilities resolve.)\nReturn a friendly unit and an enemy unit to their owners' hands.",
+      "official_text_html": "<p>[Reaction] (Play any time, even before spells and abilities resolve.)<br />Return a friendly unit and an enemy unit to their owners' hands.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Reaction"
+      ],
+      "tags": []
+    },
+    {
+      "id": 17,
+      "name": "Stellacorn Herder",
+      "official_id": "sfd-048-221",
+      "energy": 4,
+      "power": 0,
+      "might": 3,
+      "domains": [
+        "Calm"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/1e7960a35d45dd55e934260ea23307853aa5afd4-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "When I move, draw 1.",
+      "official_text_html": "<p>When I move, draw 1.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": [
+        "Mount Targon"
+      ]
+    },
+    {
+      "id": 18,
+      "name": "Tideturner",
+      "official_id": "ogn-199-298",
+      "energy": 2,
+      "power": 0,
+      "might": 2,
+      "domains": [
+        "Chaos"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/bad355dba8b32d1fba33dc3924cad6a34b61b5af-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Hidden] (Hide now for [Any Power] to react with later for [0 Energy].)\nWhen you play me, you may choose a unit you control at another location. Move me to its location and it to my original location.",
+      "official_text_html": "<p>[Hidden] (Hide now for :rb_rune_rainbow: to react with later for :rb_energy_0:.)<br />When you play me, you may choose a friendly unit. Move me to its location and it to my original location.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Hidden"
+      ],
+      "tags": [
+        "Bilgewater"
+      ],
+      "errata_source": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/5bcbb23cb6131680ec8d469de6c87a3966a7622d.pdf"
+    },
+    {
+      "id": 19,
+      "name": "Twilight Shroud",
+      "official_id": "ven-031-166",
+      "energy": 1,
+      "power": 0,
+      "might": 0,
+      "domains": [
+        "Calm"
+      ],
+      "kind": "Spell",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/0bd93298503d6b1b2f6faf7e97ab494e6e26db76-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "Give a friendly unit +1 Might this turn. It can't be chosen by enemy spells and abilities this turn.\n[Flow] [2 Energy] (You may play this from your trash for its Flow cost. Then banish it.)",
+      "official_text_html": "<p>Give a friendly unit +1 :rb_might: this turn. It can't be chosen by enemy spells and abilities this turn.<br />[Flow] :rb_energy_2: (You may play this from your trash for its Flow cost. Then banish it.)</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Flow"
+      ],
+      "tags": []
+    },
+    {
+      "id": 20,
+      "name": "Vex, Apathetic",
+      "official_id": "unl-150-219",
+      "energy": 4,
+      "power": 0,
+      "might": 4,
+      "domains": [
+        "Chaos"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/7f13b0216c5d805400bb64cf26cd119acfc6c5ca-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Deflect] (Opponents must pay [Any Power] to choose me with a spell or ability.)\nWhen an opponent plays a unit while I'm at a battlefield, [Stun] it. They can't move it this turn. (It doesn't deal combat damage this turn.)",
+      "official_text_html": "<p>[Deflect] (Opponents must pay :rb_rune_rainbow: to choose me with a spell or ability.)<br />When an opponent plays a unit while I'm at a battlefield, [Stun] it. They can't move it this turn. (It doesn't deal combat damage this turn.)</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Deflect",
+        "Stun"
+      ],
+      "tags": [
+        "Yordle",
+        "Vex",
+        "Shadow Isles"
+      ]
+    },
+    {
+      "id": 21,
+      "name": "Zhonya's Hourglass",
+      "official_id": "ogn-077-298",
+      "energy": 2,
+      "power": 0,
+      "might": 0,
+      "domains": [
+        "Calm"
+      ],
+      "kind": "Gear",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/dc38172c56f838b407fc9f170ba973da32d7cd4d-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Hidden] (Hide now for [Any Power] to react with later for [0 Energy].)\nIf a friendly unit would die, kill this instead. Heal that unit, exhaust it, and recall it.",
+      "official_text_html": "<p>[Hidden] (Hide now for :rb_rune_rainbow: to react with later for :rb_energy_0:.)<br />The next time a friendly unit would die, kill this instead. Recall that unit exhausted. (Send it to base. This isn't a move.)</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Hidden"
+      ],
+      "tags": [],
+      "errata_source": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/5bcbb23cb6131680ec8d469de6c87a3966a7622d.pdf"
+    },
+    {
+      "id": 22,
+      "name": "Master Yi, Tempered",
+      "official_id": "unl-113-219",
+      "energy": 4,
+      "power": 0,
+      "might": 4,
+      "domains": [
+        "Body"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/a21feb3555825392fdb98f868840db3827ad0389-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Hunt 2] (When I conquer or hold, gain 2 XP.)\n[Level 6] —  I have [Deflect] and [Ganking]. (While you have 6+ XP, opponents must pay [Any Power] to choose me with a spell or ability and I can move from battlefield to battlefield.)",
+      "official_text_html": "<p>[Hunt 2] (When I conquer or hold, gain 2 XP.)<br />[Level 6][&gt;] I have [Deflect] and [Ganking]. (While you have 6+ XP, opponents must pay :rb_rune_rainbow: to choose me with a spell or ability and I can move from battlefield to battlefield.)</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Hunt 2",
+        "Level 6",
+        "Deflect",
+        "Ganking"
+      ],
+      "tags": [
+        "Master Yi",
+        "Ionia"
+      ]
+    },
+    {
+      "id": 23,
+      "name": "First Mate",
+      "official_id": "ogn-132-298",
+      "energy": 3,
+      "power": 0,
+      "might": 3,
+      "domains": [
+        "Body"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/85e2b436ea482d53563cc5fa955f2a867ee6c32f-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "When you play me, ready another unit.",
+      "official_text_html": "<p>When you play me, ready another unit.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": [
+        "Pirate",
+        "Bilgewater"
+      ]
+    },
+    {
+      "id": 24,
+      "name": "Legion Marauder",
+      "official_id": "ven-074-166",
+      "energy": 2,
+      "power": 0,
+      "might": 2,
+      "domains": [
+        "Body"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/15ec9e813e58c9ba96f37e78f09faaaa184ecdad-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Empower] — [1 Energy] or [Body Power] (Pay either cost: Empower me. Use only if not Empowered.)\n[Empowered] —  I have +1 Might.",
+      "official_text_html": "<p>[Empower] — :rb_energy_1: or :rb_rune_body: (Pay either cost: Empower me. Use only if not Empowered.)<br />[Empowered][&gt;] I have +1 :rb_might:.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Empower",
+        "Empowered"
+      ],
+      "tags": [
+        "Trifarian",
+        "Noxus"
+      ]
+    },
+    {
+      "id": 25,
+      "name": "Lonely Poro",
+      "official_id": "sfd-036-221",
+      "energy": 2,
+      "power": 0,
+      "might": 2,
+      "domains": [
+        "Calm"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/f5ab933035b7a6d6bb1d35c10c13f58c7fbf3398-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Deathknell] — If I died alone, draw 1. (When I die, get the effect. I'm alone if there are no other friendly units here.)",
+      "official_text_html": "<p>[Deathknell] — If I died alone, draw 1. (When I die, get the effect. I'm alone if there are no other friendly units here.)</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Deathknell"
+      ],
+      "tags": [
+        "Poro",
+        "Freljord"
+      ]
+    },
+    {
+      "id": 26,
+      "name": "Onslaught",
+      "official_id": "ven-081-166",
+      "energy": 4,
+      "power": 0,
+      "might": 0,
+      "domains": [
+        "Body"
+      ],
+      "kind": "Spell",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/6a1ef90c64e07b3f561e34c8d43ff5f64db925d8-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "Give a unit +6 Might this turn.\n[Flow] [4 Energy] (You may play this from your trash for its Flow cost. Then banish it.)",
+      "official_text_html": "<p>Give a unit +6 :rb_might: this turn.<br />[Flow] :rb_energy_4: (You may play this from your trash for its Flow cost. Then banish it.)</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Flow"
+      ],
+      "tags": []
+    },
+    {
+      "id": 27,
+      "name": "Pit Rookie",
+      "official_id": "ogn-136-298",
+      "energy": 2,
+      "power": 0,
+      "might": 2,
+      "domains": [
+        "Body"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/ec19eeaee85c7e5669387a3f6ccb7718f5a0f570-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "When you play me, buff another friendly unit. (If it doesn't have a buff, it gets a +1 Might buff.)",
+      "official_text_html": "<p>When you play me, buff another friendly unit. (If it doesn't have a buff, it gets a +1 :rb_might: buff.)</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": [
+        "Bilgewater"
+      ]
+    },
+    {
+      "id": 28,
+      "name": "Punch First",
+      "official_id": "sfd-097-221",
+      "energy": 1,
+      "power": 2,
+      "might": 0,
+      "domains": [
+        "Body"
+      ],
+      "kind": "Spell",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/d124efad90ff61d4ac29ee69fe71e48a7cd6ece2-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Action] (Play on your turn or in showdowns.)\nGive a unit +5 Might this turn.",
+      "official_text_html": "<p>[Action] (Play on your turn or in showdowns.)<br />Give a unit +5 :rb_might: this turn.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Action"
+      ],
+      "tags": []
+    },
+    {
+      "id": 29,
+      "name": "Rampage",
+      "official_id": "ven-083-166",
+      "energy": 3,
+      "power": 0,
+      "might": 0,
+      "domains": [
+        "Body"
+      ],
+      "kind": "Spell",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/3c85ae2c6bd5b2644651564fad0f86ad19c5709a-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "As you play this, you may pay [Body Power] as an additional cost.\nChoose a friendly unit and an enemy unit. If you paid the additional cost, give the friendly unit +2 Might this turn. They deal damage equal to their Mights to each other.",
+      "official_text_html": "<p>As you play this, you may pay :rb_rune_body: as an additional cost.<br />Choose a friendly unit and an enemy unit. If you paid the additional cost, give the friendly unit +2 :rb_might: this turn. They deal damage equal to their Mights to each other.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": []
+    },
+    {
+      "id": 30,
+      "name": "Rengar, Trophy Hunter",
+      "official_id": "unl-120-219",
+      "energy": 5,
+      "power": 1,
+      "might": 6,
+      "domains": [
+        "Body"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/8e159fd8aa9bb349e32bda6a10b0178cc28ca8dd-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Ambush] (You may play me as a [Reaction] to a battlefield where you have units.)\nI can [Ambush] to a battlefield where there are enemy units, even if you don't have units there.",
+      "official_text_html": "<p>[Ambush] (You may play me as a [Reaction] to a battlefield where you have units.)<br />I can be played to a battlefield where there are enemy units (even if you don't have units there).</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Ambush",
+        "Reaction"
+      ],
+      "tags": [
+        "Cat",
+        "Rengar",
+        "Ixtal"
+      ],
+      "errata_source_url": "https://playriftbound.com/en-us/news/rules-and-releases/unleashed-errata-updates/",
+      "errata_date": "2026-04-03"
+    },
+    {
+      "id": 31,
+      "name": "Ruin Runner",
+      "official_id": "sfd-105-221",
+      "energy": 6,
+      "power": 0,
+      "might": 5,
+      "domains": [
+        "Body"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/08abcf17d3356325b0c1b83a78a87be855e5a71a-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "I can't be chosen by enemy spells and abilities.",
+      "official_text_html": "<p>I can't be chosen by enemy spells and abilities.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": [
+        "Shurima"
+      ]
+    },
+    {
+      "id": 32,
+      "name": "Sabotage",
+      "official_id": "ogn-156-298",
+      "energy": 1,
+      "power": 1,
+      "might": 0,
+      "domains": [
+        "Body"
+      ],
+      "kind": "Spell",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/70f186b85fd224ee23dcf64957f0fab835d28040-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "Choose an opponent. They reveal their hand. Choose a non-unit card from it, and recycle that card.",
+      "official_text_html": "<p>Choose an opponent. They reveal their hand. Choose a non-unit card from it, and recycle that card.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": []
+    },
+    {
+      "id": 33,
+      "name": "Kennen, Storm of Shuriken",
+      "official_id": "ven-113-166",
+      "energy": 3,
+      "power": 1,
+      "might": 4,
+      "domains": [
+        "Chaos"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/2f27c99f3df2940940dddd65105e5e42bbeeab3d-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "When you play me, [Burn 2]. (Put the top 2 cards of your Main Deck into your trash.)\nWhen I conquer, give a spell in your trash [Flow] equal to its cost this turn. (You may play it from your trash for its Flow cost. Then banish it.)",
+      "official_text_html": "<p>When you play me, [Burn 2]. (Put the top 2 cards of your Main Deck into your trash.)<br />When I conquer, give a spell in your trash [Flow] equal to its cost this turn. (You may play it from your trash for its Flow cost. Then banish it.)</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Burn 2",
+        "Flow"
+      ],
+      "tags": [
+        "Yordle",
+        "Kennen"
+      ]
+    },
+    {
+      "id": 34,
+      "name": "Carrion Dredger",
+      "official_id": "unl-153-219",
+      "energy": 2,
+      "power": 0,
+      "might": 1,
+      "domains": [
+        "Order"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/84d8b6d7a9cab2b78a465a8e0caf597f3ef5a175-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Deathknell] —  Play a 1 Might Bird unit token with [Deflect] to your base. (When I die, get the effect. Opponents must pay [Any Power] to choose a [Deflect] unit with a spell or ability.)",
+      "official_text_html": "<p>[Deathknell][&gt;] Play a 1 :rb_might: Bird unit token with [Deflect] to your base. (When I die, get the effect. Opponents must pay :rb_rune_rainbow: to choose a [Deflect] unit with a spell or ability.)</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Deathknell",
+        "Deflect"
+      ],
+      "tags": [
+        "Mech",
+        "Zaun"
+      ]
+    },
+    {
+      "id": 35,
+      "name": "Ezreal, Prodigy",
+      "official_id": "sfd-149-221",
+      "energy": 3,
+      "power": 1,
+      "might": 3,
+      "domains": [
+        "Chaos"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/b48d6242ceb84c3eae7109317d51efaf1e56c9c3-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "When you play me, discard 1, then draw 2.\nOptional additional costs you pay cost [1 Energy] or [Any Power] less.",
+      "official_text_html": "<p>When you play me, discard 1, then draw 2.<br />Optional additional costs you pay cost :rb_energy_1: or :rb_rune_rainbow: less.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": [
+        "Ezreal",
+        "Piltover"
+      ]
+    },
+    {
+      "id": 36,
+      "name": "Fizz, Trickster",
+      "official_id": "sfd-140-221",
+      "energy": 3,
+      "power": 1,
+      "might": 3,
+      "domains": [
+        "Chaos"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/6d1c6615fb6ef5fb520a35b2ce76f8feee9167dc-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "When you play me, you may play a spell from your trash with Energy cost no more than [3 Energy], ignoring its Energy cost. Then recycle it. (You must still pay its Power cost.)",
+      "official_text_html": "<p>When you play me, you may play a spell from your trash with Energy cost no more than :rb_energy_3:, ignoring its Energy cost. Recycle that spell after you play it. (You must still pay its Power cost.)</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": [
+        "Yordle",
+        "Fizz",
+        "Bilgewater"
+      ],
+      "errata_source_url": "https://playriftbound.com/en-us/news/announcements/vendetta-errata-updates/",
+      "errata_date": "2026-07-23"
+    },
+    {
+      "id": 37,
+      "name": "Hard Bargain",
+      "official_id": "sfd-136-221",
+      "energy": 2,
+      "power": 0,
+      "might": 0,
+      "domains": [
+        "Chaos"
+      ],
+      "kind": "Spell",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/2b09887a6e0d2f109aefea62ca6744488794c233-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Reaction] (Play any time, even before spells and abilities resolve.)\n[Repeat] [2 Energy] (You may pay the additional cost to repeat this spell's effect.)\nCounter a spell unless its controller pays [2 Energy].",
+      "official_text_html": "<p>[Reaction] (Play any time, even before spells and abilities resolve.)<br />[Repeat] :rb_energy_2: (You may pay the additional cost to repeat this spell's effect.)<br />Counter a spell unless its controller pays :rb_energy_2:.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Reaction",
+        "Repeat"
+      ],
+      "tags": []
+    },
+    {
+      "id": 38,
+      "name": "Last Rites",
+      "official_id": "sfd-150-221",
+      "energy": 3,
+      "power": 0,
+      "might": 2,
+      "domains": [
+        "Chaos"
+      ],
+      "kind": "Gear",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/6cfab85030bff454262794e4fa12f11b5dc45a74-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Equip] — [Chaos Power], Recycle 2 cards from your trash (Pay the cost: Attach this to a unit you control.)\nAttached unit (+2 Might): When I conquer or hold, you may play a unit from your trash. (You still pay its costs.)",
+      "official_text_html": "<p>[Equip] — :rb_rune_chaos:, Recycle 2 cards from your trash (Pay the cost: Attach this to a unit you control.)</p>",
+      "equipment_effect_html": "<p>When I conquer or hold, you may play a unit from your trash. (You still pay its costs.)</p>",
+      "equipment_effect": "When I conquer or hold, you may play a unit from your trash. (You still pay its costs.)",
+      "might_bonus": "+2",
+      "keywords": [
+        "Equip"
+      ],
+      "tags": [
+        "Equipment"
+      ]
+    },
+    {
+      "id": 39,
+      "name": "Lightning Rush",
+      "official_id": "ven-156-166",
+      "energy": 1,
+      "power": 0,
+      "might": 0,
+      "domains": [
+        "Order",
+        "Chaos"
+      ],
+      "kind": "Spell",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/22375e0d2d1a49cb0eb7e31aebf3e73a2e0bba55-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "Look at the top 3 cards of your Main Deck. You may choose a card from among them and draw it. Put the rest into your trash.\n[Flow] [2 Energy][Any Power] (You may play this from your trash for its Flow cost. Then banish it.)",
+      "official_text_html": "<p>Look at the top 3 cards of your Main Deck. You may choose a card from among them and draw it. Put the rest into your trash.<br />[Flow] :rb_energy_2::rb_rune_rainbow: (You may play this from your trash for its Flow cost. Then banish it.)</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Flow"
+      ],
+      "tags": [
+        "Kennen"
+      ]
+    },
+    {
+      "id": 40,
+      "name": "Rhasa the Sunderer",
+      "official_id": "ogn-195-298",
+      "energy": 10,
+      "power": 1,
+      "might": 6,
+      "domains": [
+        "Chaos"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/e34fe8a9ee533dee99f96b4e6677d1edbd6a262d-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "I cost [1 Energy] less for each card in your trash.",
+      "official_text_html": "<p>I cost :rb_energy_1: less for each card in your trash.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": [
+        "Spirit",
+        "Shadow Isles"
+      ]
+    },
+    {
+      "id": 41,
+      "name": "Salvage",
+      "official_id": "ogn-224-298",
+      "energy": 2,
+      "power": 1,
+      "might": 0,
+      "domains": [
+        "Order"
+      ],
+      "kind": "Spell",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/9bdbac358e7c9415c1354b6d1f6888dcf9c5519b-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Action] (Play on your turn or in showdowns.)\nYou may kill up to one gear. Draw 1.",
+      "official_text_html": "<p>[Action] (Play on your turn or in showdowns.)<br />You may kill a gear. Draw 1.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Action"
+      ],
+      "tags": [],
+      "errata_source": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/5bcbb23cb6131680ec8d469de6c87a3966a7622d.pdf"
+    },
+    {
+      "id": 42,
+      "name": "Seal of Discord",
+      "official_id": "ogn-204-298",
+      "energy": 0,
+      "power": 1,
+      "might": 0,
+      "domains": [
+        "Chaos"
+      ],
+      "kind": "Gear",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/dd8433e77e46ca77aaf0be35d1774218d9a2f037-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Exhaust]: [Reaction] — [Add] [Chaos Power]. (Abilities that add resources can't be reacted to.)",
+      "official_text_html": "<p>:rb_exhaust:: [Reaction] — [Add] :rb_rune_chaos:. (Abilities that add resources can't be reacted to.)</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Reaction",
+        "Add"
+      ],
+      "tags": []
+    },
+    {
+      "id": 43,
+      "name": "Shadow Order Disciple",
+      "official_id": "ven-095-166",
+      "energy": 2,
+      "power": 0,
+      "might": 2,
+      "domains": [
+        "Chaos"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/f85fb8b46a29360f9850826df11202ff8221fec8-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "When I move, you may [Burn 1] to give me +1 Might this turn. (To Burn 1, put the top card of your Main Deck into your trash.)",
+      "official_text_html": "<p>When I move, you may [Burn 1] to give me +1 :rb_might: this turn. (To Burn 1, put the top card of your Main Deck into your trash.)</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Burn 1"
+      ],
+      "tags": [
+        "Ionia"
+      ]
+    },
+    {
+      "id": 44,
+      "name": "Switcheroo",
+      "official_id": "sfd-145-221",
+      "energy": 2,
+      "power": 2,
+      "might": 0,
+      "domains": [
+        "Chaos"
+      ],
+      "kind": "Spell",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/a4338f495feff5eee46d5349b5fded5e35e76176-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Hidden] (Hide now for [Any Power] to react with later for [0 Energy].)\n[Action] (Play on your turn or in showdowns.)\nSwap the Might of two units at the same battlefield this turn.",
+      "official_text_html": "<p>[Hidden] (Hide now for :rb_rune_rainbow: to react with later for :rb_energy_0:.)<br />[Action] (Play on your turn or in showdowns.)<br />Swap the Might of two units at the same battlefield this turn.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Hidden",
+        "Action"
+      ],
+      "tags": []
+    },
+    {
+      "id": 45,
+      "name": "Tail-Cloaked Matriarch",
+      "official_id": "ven-104-166",
+      "energy": 4,
+      "power": 0,
+      "might": 4,
+      "domains": [
+        "Chaos"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/91a04e2131245c81c2eac486e63925592b0e253a-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Empower] [2 Energy][Chaos Power] ([2 Energy][Chaos Power]: Empower me. Use only if not Empowered.)\nWhen I become [Empowered], you may choose a unit in your trash with Energy cost no more than [3 Energy] and Power cost no more than [Any Power]. Play it to your base, ignoring its cost.",
+      "official_text_html": "<p>[Empower] :rb_energy_2::rb_rune_chaos: (:rb_energy_2::rb_rune_chaos:: Empower me. Use only if not Empowered.)<br />When I become [Empowered], you may choose a unit in your trash with Energy cost no more than :rb_energy_3: and Power cost no more than :rb_rune_rainbow:. Play it to your base, ignoring its cost.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Empower",
+        "Empowered"
+      ],
+      "tags": [
+        "Ionia"
+      ]
+    },
+    {
+      "id": 46,
+      "name": "Tornado Warrior",
+      "official_id": "ven-099-166",
+      "energy": 3,
+      "power": 0,
+      "might": 3,
+      "domains": [
+        "Chaos"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/f9b2ffecc997670713bffd3168e5578b5fb7a014-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Hidden] (Hide now for [Any Power] to react with later for [0 Energy].)\nWhen you play me from face down, you may empower something here. Disempower it at end of turn.",
+      "official_text_html": "<p>[Hidden] (Hide now for :rb_rune_rainbow: to react with later for :rb_energy_0:.)<br />When you play me from face down, you may empower something here. Disempower it at end of turn.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Hidden"
+      ],
+      "tags": [
+        "Yordle",
+        "Bandle City"
+      ]
+    },
+    {
+      "id": 47,
+      "name": "Traveling Merchant",
+      "official_id": "ogn-185-298",
+      "energy": 2,
+      "power": 0,
+      "might": 2,
+      "domains": [
+        "Chaos"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/b7dbebe2bf5691391c8e4146e478b8bd2ac40aef-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "When I move, discard 1, then draw 1.",
+      "official_text_html": "<p>When I move, discard 1, then draw 1.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": [
+        "Bilgewater"
+      ]
+    },
+    {
+      "id": 48,
+      "name": "Up from the Deep",
+      "official_id": "ven-100-166",
+      "energy": 3,
+      "power": 0,
+      "might": 0,
+      "domains": [
+        "Chaos"
+      ],
+      "kind": "Spell",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/245942e8b2bf073d5d6d57074474ec273557f4df-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "Play two 1 Might Tentacle unit tokens from Bilgewater.\n[Flow] [3 Energy] (You may play this from your trash for its Flow cost. Then banish it.)",
+      "official_text_html": "<p>Play two 1 :rb_might: Tentacle unit tokens from Bilgewater.<br />[Flow] :rb_energy_3: (You may play this from your trash for its Flow cost. Then banish it.)</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Flow"
+      ],
+      "tags": []
+    },
+    {
+      "id": 49,
+      "name": "Kai'Sa, Survivor",
+      "official_id": "ogn-039-298",
+      "energy": 4,
+      "power": 0,
+      "might": 4,
+      "domains": [
+        "Fury"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/3d942c02ad4e96a36dba14d663c5105bb6614500-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Accelerate] (You may pay [1 Energy][Fury Power] as an additional cost to have me enter ready.)\nWhen I conquer, draw 1.",
+      "official_text_html": "<p>[Accelerate] (You may pay :rb_energy_1::rb_rune_fury: as an additional cost to have me enter ready.)<br />When I conquer, draw 1.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Accelerate"
+      ],
+      "tags": [
+        "Kai'Sa",
+        "The Void"
+      ]
+    },
+    {
+      "id": 50,
+      "name": "Bellows Breath",
+      "official_id": "sfd-080-221",
+      "energy": 1,
+      "power": 1,
+      "might": 0,
+      "domains": [
+        "Mind"
+      ],
+      "kind": "Spell",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/f0ae1c4bb788f6fadc251c9d9b36f3f92eef4c56-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Action] (Play on your turn or in showdowns.)\n[Repeat] [1 Energy][Mind Power] (You may pay the additional cost to repeat this spell's effect.)\nDeal 1 to up to three units at the same location.",
+      "official_text_html": "<p>[Action] (Play on your turn or in showdowns.)<br />[Repeat] :rb_energy_1::rb_rune_mind: (You may pay the additional cost to repeat this spell's effect.)<br />Deal 1 to up to three units at the same location.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Action",
+        "Repeat"
+      ],
+      "tags": []
+    },
+    {
+      "id": 51,
+      "name": "Brynhir Thundersong",
+      "official_id": "ogn-026-298",
+      "energy": 6,
+      "power": 0,
+      "might": 5,
+      "domains": [
+        "Fury"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/44e805aa0f2928acf1156eef692403df319b333a-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "When you play me, opponents can't play cards this turn.",
+      "official_text_html": "<p>When you play me, opponents can't play cards this turn.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": [
+        "Freljord"
+      ]
+    },
+    {
+      "id": 52,
+      "name": "Eclipse",
+      "official_id": "unl-063-219",
+      "energy": 3,
+      "power": 0,
+      "might": 0,
+      "domains": [
+        "Mind"
+      ],
+      "kind": "Spell",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/9fcef3d1d7de3c219aabcab88d0550c9d8cd4311-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Reaction] (Play any time, even before spells and abilities resolve.)\nGive a unit -4 Might this turn.\n[Predict]. (Look at the top card of your Main Deck. You may recycle it.)",
+      "official_text_html": "<p>[Reaction] (Play any time, even before spells and abilities resolve.)<br />Give a unit -4 :rb_might: this turn.<br />[Predict]. (Look at the top card of your Main Deck. You may recycle it.)</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Reaction",
+        "Predict"
+      ],
+      "tags": []
+    },
+    {
+      "id": 53,
+      "name": "Falling Star",
+      "official_id": "ogn-029-298",
+      "energy": 2,
+      "power": 2,
+      "might": 0,
+      "domains": [
+        "Fury"
+      ],
+      "kind": "Spell",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/9cf2d2e59e1bf839cdf5c2a77e95f5d1e871788f-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "Deal 3 to a unit.\nDeal 3 to a unit.",
+      "official_text_html": "<p>Deal 3 to a unit.<br />Deal 3 to a unit.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": []
+    },
+    {
+      "id": 54,
+      "name": "Ferrous Forerunner",
+      "official_id": "sfd-021-221",
+      "energy": 6,
+      "power": 1,
+      "might": 6,
+      "domains": [
+        "Fury"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/b2873a352c0158a677255894cec458d1c17709f7-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Deathknell] — Play two 3 Might Mech unit tokens to your base. (When I die, get the effect.)",
+      "official_text_html": "<p>[Deathknell] — Play two 3 :rb_might: Mech unit tokens to your base. (When I die, get the effect.)</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Deathknell"
+      ],
+      "tags": [
+        "Mech",
+        "Yordle",
+        "Bandle City"
+      ]
+    },
+    {
+      "id": 55,
+      "name": "Hextech Ray",
+      "official_id": "ogn-009-298",
+      "energy": 1,
+      "power": 1,
+      "might": 0,
+      "domains": [
+        "Fury"
+      ],
+      "kind": "Spell",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/1e7d12693822c38377ddc8f15db23e2f9b6d560a-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Action] (Play on your turn or in showdowns.)\nDeal 3 to a unit at a battlefield.",
+      "official_text_html": "<p>[Action] (Play on your turn or in showdowns.)<br />Deal 3 to a unit at a battlefield.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Action"
+      ],
+      "tags": []
+    },
+    {
+      "id": 56,
+      "name": "Inferna",
+      "official_id": "unl-002-219",
+      "energy": 2,
+      "power": 0,
+      "might": 1,
+      "domains": [
+        "Fury"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/5db9d66fc22887e8686a13ffdfe480106cbd3b35-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Ambush] (You may play me as a [Reaction] to a battlefield where you have units.)\n[Assault 2] (+2 Might while I'm an attacker.)",
+      "official_text_html": "<p>[Ambush] (You may play me as a [Reaction] to a battlefield where you have units.)<br />[Assault 2] (+2 :rb_might: while I'm an attacker.)</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Ambush",
+        "Reaction",
+        "Assault 2"
+      ],
+      "tags": [
+        "Bilgewater"
+      ]
+    },
+    {
+      "id": 57,
+      "name": "Lecturing Yordle",
+      "official_id": "ogn-087-298",
+      "energy": 3,
+      "power": 0,
+      "might": 2,
+      "domains": [
+        "Mind"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/62e22370dac35c18de21efbfce9c86ca821e9105-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Tank] (I must be assigned combat damage first.)\nWhen you play me, draw 1.",
+      "official_text_html": "<p>[Tank] (I must be assigned combat damage first.)<br />When you play me, draw 1.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Tank"
+      ],
+      "tags": [
+        "Yordle",
+        "Bandle City"
+      ]
+    },
+    {
+      "id": 58,
+      "name": "Long Sword",
+      "official_id": "sfd-022-221",
+      "energy": 2,
+      "power": 1,
+      "might": 2,
+      "domains": [
+        "Fury"
+      ],
+      "kind": "Gear",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/48d798bf93afd1ef139dcafc6cd8705742b93169-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Quick-Draw] (This has [Reaction]. When you play it, attach it to a unit you control.)\n[Equip] [Fury Power] ([Fury Power]: Attach this to a unit you control.)",
+      "official_text_html": "<p>[Quick-Draw] (This has [Reaction]. When you play it, attach it to a unit you control.)<br />[Equip] :rb_rune_fury: (:rb_rune_fury:: Attach this to a unit you control.)</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": "+2",
+      "keywords": [
+        "Quick-Draw",
+        "Reaction",
+        "Equip"
+      ],
+      "tags": [
+        "Equipment"
+      ]
+    },
+    {
+      "id": 59,
+      "name": "Noxus Hopeful",
+      "official_id": "ogn-012-298",
+      "energy": 4,
+      "power": 0,
+      "might": 4,
+      "domains": [
+        "Fury"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/c3bb6f4cb58feeb50e396d12ec9865c5434025af-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Legion] — I cost [2 Energy] less. (Get the effect if you've played another card this turn.)",
+      "official_text_html": "<p>[Legion] — I cost :rb_energy_2: less. (Get the effect if you've played another card this turn.)</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Legion"
+      ],
+      "tags": [
+        "Trifarian",
+        "Noxus"
+      ]
+    },
+    {
+      "id": 60,
+      "name": "Ravenbloom Student",
+      "official_id": "ogn-103-298",
+      "energy": 2,
+      "power": 0,
+      "might": 2,
+      "domains": [
+        "Mind"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/b98b1ff793b6eb263957258742cc83d50fda6537-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "When you play a spell, give me +1 Might this turn.",
+      "official_text_html": "<p>When you play a spell, give me +1 :rb_might: this turn.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": [
+        "Noxus"
+      ]
+    },
+    {
+      "id": 61,
+      "name": "Singularity",
+      "official_id": "ogn-105-298",
+      "energy": 6,
+      "power": 2,
+      "might": 0,
+      "domains": [
+        "Mind"
+      ],
+      "kind": "Spell",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/792edce1a64d4a92740aa3fa240e21e161513944-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "Deal 6 to each of up to two units.",
+      "official_text_html": "<p>Deal 6 to each of up to two units.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": []
+    },
+    {
+      "id": 62,
+      "name": "Smite",
+      "official_id": "unl-007-219",
+      "energy": 2,
+      "power": 1,
+      "might": 0,
+      "domains": [
+        "Fury"
+      ],
+      "kind": "Spell",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/f46252e8c65a2eb3f476ea51f214af7651d0622d-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Action] (Play on your turn or in showdowns.)\nDeal 3 to a unit at a battlefield. If it would die this turn, banish it instead.",
+      "official_text_html": "<p>[Action] (Play on your turn or in showdowns.)<br />Deal 3 to a unit at a battlefield. If it would die this turn, banish it instead.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Action"
+      ],
+      "tags": []
+    },
+    {
+      "id": 63,
+      "name": "Stupefy",
+      "official_id": "ogn-095-298",
+      "energy": 1,
+      "power": 0,
+      "might": 0,
+      "domains": [
+        "Mind"
+      ],
+      "kind": "Spell",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/837a5976192bbf8bdb4086429802167548ecc119-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Reaction] (Play any time, even before spells and abilities resolve.)\nGive a unit -1 Might this turn, to a minimum of 1 Might. Draw 1.",
+      "official_text_html": "<p>[Reaction] (Play any time, even before spells and abilities resolve.)<br />Give a unit -1 :rb_might: this turn, to a minimum of 1 :rb_might:. Draw 1.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Reaction"
+      ],
+      "tags": []
+    },
+    {
+      "id": 64,
+      "name": "Thousand-Tailed Watcher",
+      "official_id": "ogn-116-298",
+      "energy": 7,
+      "power": 1,
+      "might": 7,
+      "domains": [
+        "Mind"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/b20e5644c33924a58e0497dd9f7db19723147003-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Accelerate] (You may pay [1 Energy][Mind Power] as an additional cost to have me enter ready.)\nWhen you play me, give enemy units -3 Might this turn, to a minimum of 1 Might.",
+      "official_text_html": "<p>[Accelerate] (You may pay :rb_energy_1::rb_rune_mind: as an additional cost to have me enter ready.)<br />When you play me, give enemy units -3 :rb_might: this turn, to a minimum of 1 :rb_might:.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Accelerate"
+      ],
+      "tags": [
+        "Ionia"
+      ]
+    },
+    {
+      "id": 65,
+      "name": "Time Warp",
+      "official_id": "ogn-122-298",
+      "energy": 10,
+      "power": 4,
+      "might": 0,
+      "domains": [
+        "Mind"
+      ],
+      "kind": "Spell",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/b97bbcf3cf6cb6e5f4baaa1bfbb85dc860eb950b-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "Take a turn after this one. Banish this.",
+      "official_text_html": "<p>Take a turn after this one. Banish this.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": []
+    },
+    {
+      "id": 66,
+      "name": "Turn to Dust",
+      "official_id": "unl-070-219",
+      "energy": 2,
+      "power": 0,
+      "might": 0,
+      "domains": [
+        "Mind"
+      ],
+      "kind": "Spell",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/4986c0c2fea96d9a88d736789d604374a64d03fb-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "Give a gear [Temporary]. (Kill it at the start of its controller's Beginning Phase, before scoring.)",
+      "official_text_html": "<p>Give a gear [Temporary]. (Kill it at the start of its controller's Beginning Phase, before scoring.)</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Temporary"
+      ],
+      "tags": []
+    },
+    {
+      "id": 67,
+      "name": "Void Seeker",
+      "official_id": "ogn-024-298",
+      "energy": 3,
+      "power": 1,
+      "might": 0,
+      "domains": [
+        "Fury"
+      ],
+      "kind": "Spell",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/5b64b63c6be58ff3c33c7fb3c2dcb168d64e287e-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Action] (Play on your turn or in showdowns.)\nDeal 4 to a unit at a battlefield. Draw 1.",
+      "official_text_html": "<p>[Action] (Play on your turn or in showdowns.)<br />Deal 4 to a unit at a battlefield. Draw 1.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Action"
+      ],
+      "tags": []
+    },
+    {
+      "id": 68,
+      "name": "Watchful Sentry",
+      "official_id": "ogn-096-298",
+      "energy": 2,
+      "power": 0,
+      "might": 1,
+      "domains": [
+        "Mind"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/d84da2c62b1e218a0a74b227c49ce8a953918ebd-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Deathknell] — Draw 1. (When I die, get the effect.)",
+      "official_text_html": "<p>[Deathknell] — Draw 1. (When I die, get the effect.)</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Deathknell"
+      ],
+      "tags": [
+        "Freljord"
+      ]
+    }
+  ],
+  "official_text_note": "Official card/legend rules text from the Riot Card Gallery, retrieved 2026-10-24 and corrected by cited errata. Resource icon tokens are expanded to readable bracketed names. Raw card and equipment HTML is preserved separately. Official text does not establish full implementation fidelity."
+}

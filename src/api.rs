@@ -1,0 +1,1841 @@
+//! Deterministic, view-filtered API for local bot runners.
+//!
+//! `Session` never lends out its authoritative `Game`. Every mutation is tried
+//! on a clone and committed only on success. Suggestions are convenient engine
+//! candidates, not an exhaustive action space; submit any structured `Action`.
+use crate::battlefields::{BATTLEFIELDS, BattlefieldAbility};
+use crate::cards::{Domain, cards, presets};
+use crate::game::{
+    Action, ChainAbility, Decision, Difficulty, Game, Phase, Target, TriggeredAbility,
+};
+use crate::legends::{LegendAbility, LegendKind, LegendTrigger};
+use serde_json::{Map, Value, json};
+use std::fmt;
+use std::panic::{AssertUnwindSafe, catch_unwind};
+
+pub const PROTOCOL_VERSION: u32 = 1;
+pub const MAX_REQUEST_BYTES: usize = 1_048_576;
+const MAX_ACTION_ITEMS: usize = 1024;
+
+#[derive(Clone, Debug)]
+pub struct ResetOptions {
+    pub decks: [usize; 2],
+    pub seed: u64,
+    pub difficulty: Difficulty,
+    pub first_player: usize,
+    pub battlefields: Option<[usize; 2]>,
+}
+
+impl Default for ResetOptions {
+    fn default() -> Self {
+        Self {
+            decks: [0, 1],
+            seed: 1,
+            difficulty: Difficulty::Tactical,
+            first_player: 0,
+            battlefields: None,
+        }
+    }
+}
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct ApiError {
+    pub code: &'static str,
+    pub message: String,
+}
+
+impl ApiError {
+    fn new(code: &'static str, message: impl Into<String>) -> Self {
+        Self {
+            code,
+            message: message.into(),
+        }
+    }
+    fn invalid(message: impl Into<String>) -> Self {
+        Self::new("invalid_request", message)
+    }
+    fn illegal(message: impl Into<String>) -> Self {
+        Self::new("illegal_action", message)
+    }
+}
+
+impl fmt::Display for ApiError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}: {}", self.code, self.message)
+    }
+}
+impl std::error::Error for ApiError {}
+
+#[derive(Clone, Debug)]
+pub struct ActionSuggestion {
+    pub id: String,
+    pub action: Action,
+}
+
+/// Trusted local match coordinator. A player view is private-information safe;
+/// the coordinator itself may request either seat and must isolate untrusted bots.
+#[derive(Clone)]
+pub struct Session {
+    game: Game,
+    revision: u64,
+}
+
+impl fmt::Debug for Session {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.debug_struct("Session")
+            .field("revision", &self.revision)
+            .field("summary", &self.summary())
+            .finish_non_exhaustive()
+    }
+}
+
+impl Default for Session {
+    fn default() -> Self {
+        Self::new(ResetOptions::default()).expect("valid default match")
+    }
+}
+
+impl Session {
+    pub fn new(options: ResetOptions) -> Result<Self, ApiError> {
+        Ok(Self {
+            game: make_game(options)?,
+            revision: 0,
+        })
+    }
+    pub fn revision(&self) -> u64 {
+        self.revision
+    }
+
+    fn require_revision(&self, revision: u64) -> Result<(), ApiError> {
+        if revision != self.revision {
+            Err(ApiError::new(
+                "stale_revision",
+                format!("Expected revision {}, received {revision}.", self.revision),
+            ))
+        } else {
+            Ok(())
+        }
+    }
+    fn require_actor(&self, player: usize) -> Result<(), ApiError> {
+        valid_player(player)?;
+        if self.game.phase != Phase::Playing {
+            return Err(ApiError::new(
+                "wrong_phase",
+                "Start the match before taking game actions.",
+            ));
+        }
+        if self.game.priority() != player {
+            return Err(ApiError::new(
+                "wrong_player",
+                "This seat does not have priority.",
+            ));
+        }
+        Ok(())
+    }
+    fn commit(&mut self, game: Game) -> Result<(), ApiError> {
+        let next = self
+            .revision
+            .checked_add(1)
+            .ok_or_else(|| ApiError::new("revision_exhausted", "Create a new session."))?;
+        self.game = game;
+        self.revision = next;
+        Ok(())
+    }
+    fn transaction(
+        &mut self,
+        revision: u64,
+        f: impl FnOnce(&mut Game) -> Result<(), String>,
+    ) -> Result<(), ApiError> {
+        self.require_revision(revision)?;
+        let mut candidate = self.game.clone();
+        match catch_unwind(AssertUnwindSafe(|| f(&mut candidate))) {
+            Ok(Ok(())) => self.commit(candidate),
+            Ok(Err(error)) => Err(ApiError::illegal(error)),
+            Err(_) => Err(ApiError::new(
+                "engine_error",
+                "The engine rejected this operation; the live match was preserved.",
+            )),
+        }
+    }
+
+    pub fn reset(&mut self, revision: u64, options: ResetOptions) -> Result<(), ApiError> {
+        self.require_revision(revision)?;
+        self.commit(make_game(options)?)
+    }
+    pub fn mulligan(
+        &mut self,
+        player: usize,
+        revision: u64,
+        indices: &[usize],
+    ) -> Result<(), ApiError> {
+        valid_player(player)?;
+        self.transaction(revision, |game| game.mulligan_player(player, indices))
+    }
+    /// Beginning a match treats each unused mulligan as keeping that hand.
+    pub fn start(&mut self, revision: u64) -> Result<(), ApiError> {
+        self.transaction(revision, Game::start_match)
+    }
+    pub fn apply_action(
+        &mut self,
+        player: usize,
+        revision: u64,
+        action: Action,
+    ) -> Result<(), ApiError> {
+        self.require_revision(revision)?;
+        self.require_actor(player)?;
+        // Apply the same structural bounds to Rust callers as to JSON clients.
+        let checked = parse_action(&action_to_json(&action))?;
+        self.transaction(revision, |game| game.apply(checked))
+    }
+    pub fn validate_action(
+        &self,
+        player: usize,
+        revision: u64,
+        action: Action,
+    ) -> Result<(), ApiError> {
+        self.require_revision(revision)?;
+        self.require_actor(player)?;
+        let checked = parse_action(&action_to_json(&action))?;
+        let mut candidate = self.game.clone();
+        match catch_unwind(AssertUnwindSafe(|| candidate.apply(checked))) {
+            Ok(result) => result.map_err(ApiError::illegal),
+            Err(_) => Err(ApiError::new(
+                "engine_error",
+                "The engine rejected this operation; the live match was preserved.",
+            )),
+        }
+    }
+    pub fn step_ai(&mut self, player: usize, revision: u64) -> Result<(), ApiError> {
+        self.require_revision(revision)?;
+        self.require_actor(player)?;
+        self.transaction(revision, |game| game.step_ai().map(|_| ()))
+    }
+    /// A non-exhaustive collection of legal convenience actions. In particular,
+    /// explicit multi-target, optional-cost and damage choices remain available
+    /// through `apply_action`, even if no suggestion describes them.
+    pub fn suggestions(&self, player: usize) -> Result<Vec<ActionSuggestion>, ApiError> {
+        valid_player(player)?;
+        if self.game.phase != Phase::Playing || self.game.priority() != player {
+            return Ok(Vec::new());
+        }
+        let mut actions = Vec::new();
+        for action in self.game.legal_actions() {
+            if !actions.contains(&action)
+                && self
+                    .validate_action(player, self.revision, action.clone())
+                    .is_ok()
+            {
+                actions.push(action);
+            }
+        }
+        Ok(actions
+            .into_iter()
+            .enumerate()
+            .map(|(index, action)| ActionSuggestion {
+                id: format!("r{}:p{player}:a{index}", self.revision),
+                action,
+            })
+            .collect())
+    }
+    pub fn apply_suggestion(
+        &mut self,
+        player: usize,
+        revision: u64,
+        id: &str,
+    ) -> Result<(), ApiError> {
+        self.require_revision(revision)?;
+        self.require_actor(player)?;
+        let action = self
+            .suggestions(player)?
+            .into_iter()
+            .find(|item| item.id == id)
+            .ok_or_else(|| {
+                ApiError::new(
+                    "unknown_action",
+                    "This action ID is not a suggestion for this seat and revision.",
+                )
+            })?
+            .action;
+        self.apply_action(player, revision, action)
+    }
+
+    fn summary(&self) -> Value {
+        json!({"phase": phase_name(self.game.phase), "turn": self.game.turn,
+            "active": self.game.active, "priority": self.game.priority(), "winner": self.game.winner})
+    }
+
+    pub fn observe(&self, viewer: usize) -> Result<Value, ApiError> {
+        valid_player(viewer)?;
+        let game = &self.game;
+        let players: Vec<_> = game.players.iter().enumerate().map(|(owner, state)| {
+            let public_hand = match &game.decision {
+                Some(Decision::RevealHand { opponent, cards, .. }) if *opponent == owner => Some(cards.clone()),
+                Some(Decision::Sabotage { opponent, .. }) if *opponent == owner => Some(state.hand.clone()),
+                _ => None,
+            };
+            let hand = if owner == viewer { Some(state.hand.clone()) } else { public_hand };
+            let units: Vec<_> = state.units.iter().map(|unit| json!({
+                "id":unit.id, "card_id":unit.card_id, "name":game.unit_name(unit), "token":unit.token,
+                "lane":unit.lane, "ready":unit.ready, "might":game.unit_might(unit), "damage":unit.damage,
+                "buff":unit.buff, "temporary_buff":unit.temporary_buff, "stunned":unit.stunned,
+                "protected":unit.protected, "banish_on_death":unit.banish_on_death,
+                "empowered":game.unit_empowered(unit.id),"movement_locked":game.movement_locked(owner,unit.id)
+            })).collect();
+            let gear: Vec<_> = state.gear.iter().map(|gear| json!({
+                "id":gear.id, "card_id":gear.card_id, "name":game.gear_name(gear), "token":gear.token,
+                "attached_to":gear.attached_to, "lane":game.gear_location(owner,gear.id),
+                "ready":gear.ready, "temporary":gear.temporary
+            })).collect();
+            let hidden: Vec<_> = state.hidden.iter().map(|card| json!({
+                "id":card.id, "lane":card.lane, "hidden_turn":card.hidden_turn,
+                "card_id":game.hidden_visible_card(viewer, owner, card.id)
+            })).collect();
+            let legend = &game.legend[owner];
+            json!({"player":owner, "name":state.name, "preset":game.selected_decks[owner],
+                "hand":hand, "hand_count":state.hand.len(), "deck_count":state.deck.len(),
+                "rune_deck_count":state.rune_deck.len(), "champion":state.champion,
+                "discard":state.discard, "banish":state.banish, "score":state.score,
+                "energy":state.energy, "energy_pool":state.energy_pool, "runes":state.runes,
+                "exhausted_runes":state.exhausted_runes, "power_pool":state.power_pool,
+                "any_power":state.any_power, "xp":state.xp, "units":units, "gear":gear, "hidden":hidden,
+                "cards_played_this_turn":game.cards_played_this_turn(owner),"cannot_play_cards":game.cannot_play_cards(owner),
+                "optional_power_discount":game.optional_power_discount[owner],
+                "granted_flow_indices":game.granted_flow_indices(owner),"queued_extra_turns":game.queued_extra_turns(owner),
+                "submitted_combat_damage":game.submitted_combat_damage(owner),
+                "legend":{"kind":legend_name(legend.kind),"ready":legend.ready,
+                    "empowered":legend.empowered,"spell_power":legend.spell_power,
+                    "assault_grants":legend.assault_grants}})
+        }).collect();
+        let chain: Vec<_> = game.chain.iter().map(|item| json!({
+            "id":item.id,"player":item.player,"card_id":item.card_id,"name":game.chain_name(item),
+            "ability":item.ability.as_ref().map(ability_to_json),"targets":item.targets.iter().map(target_to_json).collect::<Vec<_>>(),
+            "lane":item.lane,"from_hidden":item.from_hidden,"recycle_after":item.recycle_after,
+            "banish_after":item.banish_after,"repeat":item.options.repeat,"accelerate":item.options.accelerate,
+            "bonus":item.options.bonus,"repeat_targets":item.repeat_targets.iter().map(target_to_json).collect::<Vec<_>>()
+        })).collect();
+        Ok(
+            json!({"protocol":PROTOCOL_VERSION,"revision":self.revision,"viewer":viewer,
+            "phase":phase_name(game.phase),"turn":game.turn,"active":game.active,
+            "first_player":game.first_player,"priority":game.priority(),"winner":game.winner,
+            "mulligans_used":game.mulligans_used,"players":players,"battlefields":game.battlefields,
+            "battlefield_owner":game.battlefield_owner,"scored_this_turn":game.player_scored_this_turn,
+            "chain":chain,"decision":game.decision.as_ref().map(|d|decision_to_json(game,d,viewer)),
+            "showdown":game.showdown.as_ref().map(|w|json!({"lane":w.lane,"attacker":w.attacker,
+                "focus":w.focus,"passes":w.passes,"combat":w.combat})),
+            "resource_payment_pending":game.resource_payment_pending(),
+            "required_trash_play":game.required_trash_play,
+            "can_decline_trash_play":game.can_decline_trash_play()}),
+        )
+    }
+
+    /// One request produces one response. Parse errors also preserve revision.
+    pub fn process_line(&mut self, line: &str) -> Value {
+        if line.len() > MAX_REQUEST_BYTES {
+            return self.error_response(
+                ApiError::new("request_too_large", "Maximum request size is 1 MiB."),
+                None,
+            );
+        }
+        match serde_json::from_str(line) {
+            Ok(request) => self.handle(request),
+            Err(_) => self.error_response(
+                ApiError::new("invalid_json", "Expected one JSON object per line."),
+                None,
+            ),
+        }
+    }
+    pub fn handle(&mut self, request: Value) -> Value {
+        let request_id = request.get("id").cloned();
+        match self.handle_inner(&request) {
+            Ok(result) => envelope(true, self.revision, "result", result, request_id),
+            Err(error) => self.error_response(error, request_id),
+        }
+    }
+    fn error_response(&self, error: ApiError, id: Option<Value>) -> Value {
+        envelope(
+            false,
+            self.revision,
+            "error",
+            json!({"code":error.code,"message":error.message}),
+            id,
+        )
+    }
+    fn handle_inner(&mut self, request: &Value) -> Result<Value, ApiError> {
+        let object = object(request)?;
+        let command = string(object, "command")?;
+        match command {
+            "info" => {
+                keys(object, &["command", "id"])?;
+                Ok(
+                    json!({"protocol":PROTOCOL_VERSION,"name":"Local Rift","summary":self.summary(),
+                    "commands":["info","catalog","reset","observe","suggest","validate","apply","mulligan","start","step_ai"],
+                    "suggestions_exhaustive":false,"max_request_bytes":MAX_REQUEST_BYTES}),
+                )
+            }
+            "catalog" => {
+                keys(object, &["command", "id"])?;
+                Ok(catalog())
+            }
+            "observe" => {
+                keys(object, &["command", "id", "player"])?;
+                self.observe(player(object)?)
+            }
+            "suggest" => {
+                keys(object, &["command", "id", "player"])?;
+                let suggestions = self.suggestions(player(object)?)?;
+                Ok(
+                    json!({"exhaustive":false,"actions":suggestions.iter().map(|a|json!({"id":a.id,"action":action_to_json(&a.action)})).collect::<Vec<_>>()}),
+                )
+            }
+            "reset" => {
+                keys(
+                    object,
+                    &[
+                        "command",
+                        "id",
+                        "revision",
+                        "seed",
+                        "decks",
+                        "difficulty",
+                        "first_player",
+                        "battlefields",
+                    ],
+                )?;
+                let defaults = ResetOptions::default();
+                let options = ResetOptions {
+                    seed: optional_unsigned(object, "seed")?.unwrap_or(defaults.seed),
+                    decks: optional_pair(object, "decks")?.unwrap_or(defaults.decks),
+                    difficulty: match optional_string(object, "difficulty")?.unwrap_or("tactical") {
+                        "easy" => Difficulty::Easy,
+                        "tactical" => Difficulty::Tactical,
+                        _ => return Err(ApiError::invalid("difficulty must be easy or tactical.")),
+                    },
+                    first_player: optional_unsigned(object, "first_player")?
+                        .map(to_usize)
+                        .transpose()?
+                        .unwrap_or(0),
+                    battlefields: optional_pair(object, "battlefields")?,
+                };
+                self.reset(unsigned(object, "revision")?, options)?;
+                Ok(self.summary())
+            }
+            "mulligan" => {
+                keys(object, &["command", "id", "revision", "player", "indices"])?;
+                self.mulligan(
+                    player(object)?,
+                    unsigned(object, "revision")?,
+                    &usize_list(object, "indices")?,
+                )?;
+                Ok(self.summary())
+            }
+            "start" => {
+                keys(object, &["command", "id", "revision"])?;
+                self.start(unsigned(object, "revision")?)?;
+                Ok(self.summary())
+            }
+            "step_ai" => {
+                keys(object, &["command", "id", "revision", "player"])?;
+                self.step_ai(player(object)?, unsigned(object, "revision")?)?;
+                Ok(self.summary())
+            }
+            "apply" | "validate" => {
+                keys(
+                    object,
+                    &["command", "id", "revision", "player", "action", "action_id"],
+                )?;
+                let player = player(object)?;
+                let revision = unsigned(object, "revision")?;
+                self.require_revision(revision)?;
+                self.require_actor(player)?;
+                if object.contains_key("action") == object.contains_key("action_id") {
+                    return Err(ApiError::invalid(
+                        "Provide exactly one of action or action_id.",
+                    ));
+                }
+                let action = if let Some(value) = object.get("action") {
+                    parse_action(value)?
+                } else {
+                    let id = string(object, "action_id")?;
+                    self.suggestions(player)?
+                        .into_iter()
+                        .find(|a| a.id == id)
+                        .ok_or_else(|| {
+                            ApiError::new(
+                                "unknown_action",
+                                "No matching action ID for this seat and revision.",
+                            )
+                        })?
+                        .action
+                };
+                if command == "validate" {
+                    self.validate_action(player, revision, action)?;
+                    Ok(json!({"legal":true}))
+                } else {
+                    self.apply_action(player, revision, action)?;
+                    Ok(self.summary())
+                }
+            }
+            _ => Err(ApiError::new(
+                "unknown_command",
+                "Unknown command; use info for the supported commands.",
+            )),
+        }
+    }
+}
+
+fn make_game(options: ResetOptions) -> Result<Game, ApiError> {
+    valid_player(options.first_player)?;
+    if options.decks.iter().any(|&id| id >= presets().len()) {
+        return Err(ApiError::invalid("Deck index is outside the catalog."));
+    }
+    if options
+        .battlefields
+        .is_some_and(|ids| ids.iter().any(|&id| id >= BATTLEFIELDS.len()))
+    {
+        return Err(ApiError::invalid(
+            "Battlefield index is outside the catalog.",
+        ));
+    }
+    let mut game = Game::new_for_agents(
+        options.decks[0],
+        options.decks[1],
+        options.seed,
+        options.difficulty,
+    );
+    game.choose_starting_player(options.first_player)
+        .map_err(ApiError::illegal)?;
+    if let Some(fields) = options.battlefields {
+        for (player, id) in fields.into_iter().enumerate() {
+            game.choose_battlefield(player, id)
+                .map_err(ApiError::illegal)?;
+        }
+    }
+    Ok(game)
+}
+
+fn envelope(ok: bool, revision: u64, field: &str, payload: Value, id: Option<Value>) -> Value {
+    let mut value = json!({"ok":ok,"revision":revision});
+    value[field] = payload;
+    if let Some(id) = id {
+        value["id"] = id;
+    }
+    value
+}
+fn phase_name(phase: Phase) -> &'static str {
+    match phase {
+        Phase::Mulligan => "mulligan",
+        Phase::Playing => "playing",
+        Phase::Finished => "finished",
+    }
+}
+fn legend_name(kind: LegendKind) -> &'static str {
+    match kind {
+        LegendKind::Irelia => "irelia",
+        LegendKind::MasterYi => "master_yi",
+        LegendKind::Kennen => "kennen",
+        LegendKind::KaiSa => "kaisa",
+    }
+}
+
+pub fn catalog() -> Value {
+    json!({"as_of":crate::cards::DATA_AS_OF,
+        "domains":["Fury","Calm","Mind","Body","Chaos","Order"],
+        "cards":cards().iter().map(|c|json!({"id":c.id,"name":c.name,"energy":c.cost,"power":c.power_cost,
+            "might":c.might,"domain":c.domain.name(),"domains":c.domains.iter().map(|d|d.name()).collect::<Vec<_>>(),
+            "kind":c.kind.name(),"official_text":c.official_text,"keywords":c.keywords})).collect::<Vec<_>>(),
+        "presets":presets().iter().enumerate().map(|(id,p)|json!({"id":id,"name":p.name,
+            "legend_name":p.legend_name,"legend_text":p.legend_text,"chosen_champion":p.chosen_champion,
+            "domains":p.domains.map(|d|d.name()),"rune_counts":p.rune_counts,"cards":p.cards,
+            "strategy":p.strategy,"learning_notes":p.learning_notes,"source_url":p.source_url})).collect::<Vec<_>>(),
+        "battlefields":BATTLEFIELDS.iter().map(|b|json!({"id":b.id,"name":b.name,"official_text":b.official_text})).collect::<Vec<_>>()})
+}
+
+pub fn target_to_json(target: &Target) -> Value {
+    match target {
+        Target::Unit { player, unit_id } => {
+            json!({"type":"unit","player":player,"unit_id":unit_id})
+        }
+        Target::Gear { player, gear_id } => {
+            json!({"type":"gear","player":player,"gear_id":gear_id})
+        }
+        Target::Spell { chain_id } => json!({"type":"spell","chain_id":chain_id}),
+    }
+}
+
+pub fn action_to_json(action: &Action) -> Value {
+    let ts = |targets: &[Target]| targets.iter().map(target_to_json).collect::<Vec<_>>();
+    let t = |target: &Option<Target>| target.as_ref().map(target_to_json);
+    match action {
+        Action::PlaceToken { lane } => json!({"type":"place_token","lane":lane}),
+        Action::ChooseResolutionGroup { index } => {
+            json!({"type":"choose_resolution_group","index":index})
+        }
+        Action::SetOptionalDiscount { power } => {
+            json!({"type":"set_optional_discount","power":power})
+        }
+        Action::OrderTrigger { trigger_id } => {
+            json!({"type":"order_trigger","trigger_id":trigger_id})
+        }
+        Action::PlayCard {
+            hand_index,
+            lane,
+            target,
+        } => json!({"type":"play_card","hand_index":hand_index,"lane":lane,"target":t(target)}),
+        Action::PlayChampion { lane, target } => {
+            json!({"type":"play_champion","lane":lane,"target":t(target)})
+        }
+        Action::PlayCardWithTargets {
+            hand_index,
+            lane,
+            targets,
+        } => {
+            json!({"type":"play_card_targets","hand_index":hand_index,"lane":lane,"targets":ts(targets)})
+        }
+        Action::Move { unit_id, lane } => json!({"type":"move","unit_id":unit_id,"lane":lane}),
+        Action::MoveGroup { unit_ids, lane } => {
+            json!({"type":"move_group","unit_ids":unit_ids,"lane":lane})
+        }
+        Action::Attack { lane } => json!({"type":"attack","lane":lane}),
+        Action::Pass => json!({"type":"pass"}),
+        Action::Choose { accept } => json!({"type":"choose","accept":accept}),
+        Action::Equip { gear_id, target } => {
+            json!({"type":"equip","gear_id":gear_id,"target":target_to_json(target)})
+        }
+        Action::EquipWithTrash {
+            gear_id,
+            target,
+            trash_indices,
+        } => {
+            json!({"type":"equip_with_trash","gear_id":gear_id,"target":target_to_json(target),"trash_indices":trash_indices})
+        }
+        Action::ActivateGear { gear_id } => json!({"type":"activate_gear","gear_id":gear_id}),
+        Action::ActivateLegend { target } => json!({"type":"activate_legend","target":t(target)}),
+        Action::ActivateRune { domain, recycle } => {
+            json!({"type":"activate_rune","domain":domain.name(),"recycle":recycle})
+        }
+        Action::SelectCards { indices } => json!({"type":"select_cards","indices":indices}),
+        Action::PlayFromTrash {
+            trash_index,
+            lane,
+            target,
+        } => {
+            json!({"type":"play_from_trash","trash_index":trash_index,"lane":lane,"target":t(target)})
+        }
+        Action::PlayFromTrashWithTargets {
+            trash_index,
+            lane,
+            targets,
+        } => {
+            json!({"type":"play_from_trash_targets","trash_index":trash_index,"lane":lane,"targets":ts(targets)})
+        }
+        Action::PlayFromTrashOptions {
+            trash_index,
+            lane,
+            targets,
+            repeat_targets,
+            repeat,
+            accelerate,
+            bonus,
+        } => {
+            json!({"type":"play_from_trash_options","trash_index":trash_index,"lane":lane,"targets":ts(targets),"repeat_targets":ts(repeat_targets),"repeat":repeat,"accelerate":accelerate,"bonus":bonus})
+        }
+        Action::Hide { hand_index, lane } => {
+            json!({"type":"hide","hand_index":hand_index,"lane":lane})
+        }
+        Action::HideChampion { lane } => json!({"type":"hide_champion","lane":lane}),
+        Action::PlayHidden { hidden_id, targets } => {
+            json!({"type":"play_hidden","hidden_id":hidden_id,"targets":ts(targets)})
+        }
+        Action::PlayCardOptions {
+            hand_index,
+            lane,
+            targets,
+            repeat_targets,
+            repeat,
+            accelerate,
+            bonus,
+        } => {
+            json!({"type":"play_card_options","hand_index":hand_index,"lane":lane,"targets":ts(targets),"repeat_targets":ts(repeat_targets),"repeat":repeat,"accelerate":accelerate,"bonus":bonus})
+        }
+        Action::PlayChampionOptions {
+            lane,
+            target,
+            accelerate,
+        } => {
+            json!({"type":"play_champion_options","lane":lane,"target":t(target),"accelerate":accelerate})
+        }
+        Action::EmpowerUnit { unit_id, pay_power } => {
+            json!({"type":"empower_unit","unit_id":unit_id,"pay_power":pay_power})
+        }
+        Action::ChooseTarget { target } => json!({"type":"choose_target","target":t(target)}),
+        Action::ChooseDeathReplacement { unit_id, gear_id } => {
+            json!({"type":"choose_death_replacement","unit_id":unit_id,"gear_id":gear_id})
+        }
+        Action::AssignDamage { assignments } => {
+            json!({"type":"assign_damage","assignments":assignments})
+        }
+        Action::EndTurn => json!({"type":"end_turn"}),
+    }
+}
+
+fn object(value: &Value) -> Result<&Map<String, Value>, ApiError> {
+    value
+        .as_object()
+        .ok_or_else(|| ApiError::invalid("Expected an object."))
+}
+fn keys(obj: &Map<String, Value>, allowed: &[&str]) -> Result<(), ApiError> {
+    if let Some(key) = obj.keys().find(|key| !allowed.contains(&key.as_str())) {
+        Err(ApiError::invalid(format!("Unknown field: {key}")))
+    } else {
+        Ok(())
+    }
+}
+fn required<'a>(obj: &'a Map<String, Value>, key: &str) -> Result<&'a Value, ApiError> {
+    obj.get(key)
+        .ok_or_else(|| ApiError::invalid(format!("Missing {key}.")))
+}
+fn string<'a>(obj: &'a Map<String, Value>, key: &str) -> Result<&'a str, ApiError> {
+    required(obj, key)?
+        .as_str()
+        .ok_or_else(|| ApiError::invalid(format!("{key} must be a string.")))
+}
+fn optional_string<'a>(
+    obj: &'a Map<String, Value>,
+    key: &str,
+) -> Result<Option<&'a str>, ApiError> {
+    obj.get(key)
+        .map(|v| {
+            v.as_str()
+                .ok_or_else(|| ApiError::invalid(format!("{key} must be a string.")))
+        })
+        .transpose()
+}
+fn unsigned(obj: &Map<String, Value>, key: &str) -> Result<u64, ApiError> {
+    required(obj, key)?
+        .as_u64()
+        .ok_or_else(|| ApiError::invalid(format!("{key} must be a nonnegative integer.")))
+}
+fn optional_unsigned(obj: &Map<String, Value>, key: &str) -> Result<Option<u64>, ApiError> {
+    obj.get(key)
+        .map(|v| {
+            v.as_u64()
+                .ok_or_else(|| ApiError::invalid(format!("{key} must be a nonnegative integer.")))
+        })
+        .transpose()
+}
+fn boolean(obj: &Map<String, Value>, key: &str) -> Result<bool, ApiError> {
+    required(obj, key)?
+        .as_bool()
+        .ok_or_else(|| ApiError::invalid(format!("{key} must be true or false.")))
+}
+fn flag(obj: &Map<String, Value>, key: &str) -> Result<bool, ApiError> {
+    if obj.contains_key(key) {
+        boolean(obj, key)
+    } else {
+        Ok(false)
+    }
+}
+fn to_usize(value: u64) -> Result<usize, ApiError> {
+    usize::try_from(value)
+        .map_err(|_| ApiError::invalid("Integer exceeds this platform's index range."))
+}
+fn index(obj: &Map<String, Value>, key: &str) -> Result<usize, ApiError> {
+    to_usize(unsigned(obj, key)?)
+}
+fn id32(obj: &Map<String, Value>, key: &str) -> Result<u32, ApiError> {
+    u32::try_from(unsigned(obj, key)?).map_err(|_| ApiError::invalid(format!("{key} exceeds u32.")))
+}
+fn valid_player(player: usize) -> Result<(), ApiError> {
+    if player > 1 {
+        Err(ApiError::invalid("player must be 0 or 1."))
+    } else {
+        Ok(())
+    }
+}
+fn player(obj: &Map<String, Value>) -> Result<usize, ApiError> {
+    let p = index(obj, "player")?;
+    valid_player(p)?;
+    Ok(p)
+}
+fn field(obj: &Map<String, Value>, key: &str) -> Result<usize, ApiError> {
+    let value = index(obj, key)?;
+    if value >= 2 {
+        Err(ApiError::invalid(format!(
+            "{key} must be battlefield slot 0 or 1."
+        )))
+    } else {
+        Ok(value)
+    }
+}
+fn lane(obj: &Map<String, Value>) -> Result<Option<usize>, ApiError> {
+    if obj.get("lane").is_none_or(Value::is_null) {
+        Ok(None)
+    } else {
+        field(obj, "lane").map(Some)
+    }
+}
+fn array<'a>(obj: &'a Map<String, Value>, key: &str) -> Result<&'a Vec<Value>, ApiError> {
+    let values = required(obj, key)?
+        .as_array()
+        .ok_or_else(|| ApiError::invalid(format!("{key} must be an array.")))?;
+    if values.len() > MAX_ACTION_ITEMS {
+        return Err(ApiError::invalid("Action array exceeds 1024 entries."));
+    }
+    Ok(values)
+}
+fn usize_list(obj: &Map<String, Value>, key: &str) -> Result<Vec<usize>, ApiError> {
+    array(obj, key)?
+        .iter()
+        .map(|v| {
+            v.as_u64()
+                .ok_or_else(|| {
+                    ApiError::invalid(format!("{key} entries must be nonnegative integers."))
+                })
+                .and_then(to_usize)
+        })
+        .collect()
+}
+fn optional_pair(obj: &Map<String, Value>, key: &str) -> Result<Option<[usize; 2]>, ApiError> {
+    if !obj.contains_key(key) {
+        return Ok(None);
+    }
+    let values = usize_list(obj, key)?;
+    Ok(Some(values.try_into().map_err(|_| {
+        ApiError::invalid(format!("{key} must contain two indices."))
+    })?))
+}
+fn parse_domain(value: &str) -> Result<Domain, ApiError> {
+    match value.to_ascii_lowercase().as_str() {
+        "fury" => Ok(Domain::Fury),
+        "calm" => Ok(Domain::Calm),
+        "mind" => Ok(Domain::Mind),
+        "body" => Ok(Domain::Body),
+        "chaos" => Ok(Domain::Chaos),
+        "order" => Ok(Domain::Order),
+        _ => Err(ApiError::invalid("Unknown domain.")),
+    }
+}
+pub fn parse_target(value: &Value) -> Result<Target, ApiError> {
+    let obj = object(value)?;
+    match string(obj, "type")? {
+        "unit" => {
+            keys(obj, &["type", "player", "unit_id"])?;
+            Ok(Target::Unit {
+                player: player(obj)?,
+                unit_id: id32(obj, "unit_id")?,
+            })
+        }
+        "gear" => {
+            keys(obj, &["type", "player", "gear_id"])?;
+            Ok(Target::Gear {
+                player: player(obj)?,
+                gear_id: id32(obj, "gear_id")?,
+            })
+        }
+        "spell" => {
+            keys(obj, &["type", "chain_id"])?;
+            Ok(Target::Spell {
+                chain_id: id32(obj, "chain_id")?,
+            })
+        }
+        _ => Err(ApiError::invalid(
+            "Target type must be unit, gear, or spell.",
+        )),
+    }
+}
+fn target(obj: &Map<String, Value>) -> Result<Option<Target>, ApiError> {
+    obj.get("target")
+        .filter(|v| !v.is_null())
+        .map(parse_target)
+        .transpose()
+}
+fn targets(obj: &Map<String, Value>, key: &str) -> Result<Vec<Target>, ApiError> {
+    if obj.contains_key(key) {
+        array(obj, key)?.iter().map(parse_target).collect()
+    } else {
+        Ok(Vec::new())
+    }
+}
+
+pub fn parse_action(value: &Value) -> Result<Action, ApiError> {
+    let o = object(value)?;
+    let kind = string(o, "type")?;
+    macro_rules! fields {($($name:literal),* $(,)?)=>{keys(o,&["type",$($name),*])?};}
+    Ok(match kind {
+        "place_token" => {
+            fields!("lane");
+            Action::PlaceToken { lane: lane(o)? }
+        }
+        "choose_resolution_group" => {
+            fields!("index");
+            Action::ChooseResolutionGroup {
+                index: index(o, "index")?,
+            }
+        }
+        "set_optional_discount" => {
+            fields!("power");
+            Action::SetOptionalDiscount {
+                power: u8::try_from(unsigned(o, "power")?)
+                    .map_err(|_| ApiError::invalid("power exceeds u8."))?,
+            }
+        }
+        "order_trigger" => {
+            fields!("trigger_id");
+            Action::OrderTrigger {
+                trigger_id: id32(o, "trigger_id")?,
+            }
+        }
+        "play_card" => {
+            fields!("hand_index", "lane", "target");
+            Action::PlayCard {
+                hand_index: index(o, "hand_index")?,
+                lane: lane(o)?,
+                target: target(o)?,
+            }
+        }
+        "play_champion" => {
+            fields!("lane", "target");
+            Action::PlayChampion {
+                lane: lane(o)?,
+                target: target(o)?,
+            }
+        }
+        "play_card_targets" => {
+            fields!("hand_index", "lane", "targets");
+            Action::PlayCardWithTargets {
+                hand_index: index(o, "hand_index")?,
+                lane: lane(o)?,
+                targets: targets(o, "targets")?,
+            }
+        }
+        "move" => {
+            fields!("unit_id", "lane");
+            Action::Move {
+                unit_id: id32(o, "unit_id")?,
+                lane: lane(o)?,
+            }
+        }
+        "move_group" => {
+            fields!("unit_ids", "lane");
+            Action::MoveGroup {
+                unit_ids: usize_list(o, "unit_ids")?
+                    .into_iter()
+                    .map(|v| {
+                        u32::try_from(v).map_err(|_| ApiError::invalid("Unit ID exceeds u32."))
+                    })
+                    .collect::<Result<_, _>>()?,
+                lane: lane(o)?,
+            }
+        }
+        "attack" => {
+            fields!("lane");
+            Action::Attack {
+                lane: field(o, "lane")?,
+            }
+        }
+        "pass" => {
+            fields!();
+            Action::Pass
+        }
+        "choose" => {
+            fields!("accept");
+            Action::Choose {
+                accept: boolean(o, "accept")?,
+            }
+        }
+        "equip" => {
+            fields!("gear_id", "target");
+            Action::Equip {
+                gear_id: id32(o, "gear_id")?,
+                target: parse_target(required(o, "target")?)?,
+            }
+        }
+        "equip_with_trash" => {
+            fields!("gear_id", "target", "trash_indices");
+            Action::EquipWithTrash {
+                gear_id: id32(o, "gear_id")?,
+                target: parse_target(required(o, "target")?)?,
+                trash_indices: usize_list(o, "trash_indices")?,
+            }
+        }
+        "activate_gear" => {
+            fields!("gear_id");
+            Action::ActivateGear {
+                gear_id: id32(o, "gear_id")?,
+            }
+        }
+        "activate_legend" => {
+            fields!("target");
+            Action::ActivateLegend { target: target(o)? }
+        }
+        "activate_rune" => {
+            fields!("domain", "recycle");
+            Action::ActivateRune {
+                domain: parse_domain(string(o, "domain")?)?,
+                recycle: boolean(o, "recycle")?,
+            }
+        }
+        "select_cards" => {
+            fields!("indices");
+            Action::SelectCards {
+                indices: usize_list(o, "indices")?,
+            }
+        }
+        "play_from_trash" => {
+            fields!("trash_index", "lane", "target");
+            Action::PlayFromTrash {
+                trash_index: index(o, "trash_index")?,
+                lane: lane(o)?,
+                target: target(o)?,
+            }
+        }
+        "play_from_trash_targets" => {
+            fields!("trash_index", "lane", "targets");
+            Action::PlayFromTrashWithTargets {
+                trash_index: index(o, "trash_index")?,
+                lane: lane(o)?,
+                targets: targets(o, "targets")?,
+            }
+        }
+        "play_from_trash_options" => {
+            fields!(
+                "trash_index",
+                "lane",
+                "targets",
+                "repeat_targets",
+                "repeat",
+                "accelerate",
+                "bonus"
+            );
+            Action::PlayFromTrashOptions {
+                trash_index: index(o, "trash_index")?,
+                lane: lane(o)?,
+                targets: targets(o, "targets")?,
+                repeat_targets: targets(o, "repeat_targets")?,
+                repeat: flag(o, "repeat")?,
+                accelerate: flag(o, "accelerate")?,
+                bonus: flag(o, "bonus")?,
+            }
+        }
+        "hide" => {
+            fields!("hand_index", "lane");
+            Action::Hide {
+                hand_index: index(o, "hand_index")?,
+                lane: field(o, "lane")?,
+            }
+        }
+        "hide_champion" => {
+            fields!("lane");
+            Action::HideChampion {
+                lane: field(o, "lane")?,
+            }
+        }
+        "play_hidden" => {
+            fields!("hidden_id", "targets");
+            Action::PlayHidden {
+                hidden_id: id32(o, "hidden_id")?,
+                targets: targets(o, "targets")?,
+            }
+        }
+        "play_card_options" => {
+            fields!(
+                "hand_index",
+                "lane",
+                "targets",
+                "repeat_targets",
+                "repeat",
+                "accelerate",
+                "bonus"
+            );
+            Action::PlayCardOptions {
+                hand_index: index(o, "hand_index")?,
+                lane: lane(o)?,
+                targets: targets(o, "targets")?,
+                repeat_targets: targets(o, "repeat_targets")?,
+                repeat: flag(o, "repeat")?,
+                accelerate: flag(o, "accelerate")?,
+                bonus: flag(o, "bonus")?,
+            }
+        }
+        "play_champion_options" => {
+            fields!("lane", "target", "accelerate");
+            Action::PlayChampionOptions {
+                lane: lane(o)?,
+                target: target(o)?,
+                accelerate: flag(o, "accelerate")?,
+            }
+        }
+        "empower_unit" => {
+            fields!("unit_id", "pay_power");
+            Action::EmpowerUnit {
+                unit_id: id32(o, "unit_id")?,
+                pay_power: flag(o, "pay_power")?,
+            }
+        }
+        "choose_target" => {
+            fields!("target");
+            Action::ChooseTarget { target: target(o)? }
+        }
+        "choose_death_replacement" => {
+            fields!("unit_id", "gear_id");
+            Action::ChooseDeathReplacement {
+                unit_id: id32(o, "unit_id")?,
+                gear_id: if o.get("gear_id").is_none_or(Value::is_null) {
+                    None
+                } else {
+                    Some(id32(o, "gear_id")?)
+                },
+            }
+        }
+        "assign_damage" => {
+            fields!("assignments");
+            let assignments = array(o, "assignments")?
+                .iter()
+                .map(|v| {
+                    let pair = v.as_array().filter(|p| p.len() == 2).ok_or_else(|| {
+                        ApiError::invalid("Each assignment must be [unit_id, damage].")
+                    })?;
+                    let id = pair[0]
+                        .as_u64()
+                        .and_then(|v| u32::try_from(v).ok())
+                        .ok_or_else(|| ApiError::invalid("Invalid assignment unit ID."))?;
+                    let amount = pair[1]
+                        .as_u64()
+                        .and_then(|v| u16::try_from(v).ok())
+                        .ok_or_else(|| ApiError::invalid("Invalid damage amount."))?;
+                    Ok((id, amount))
+                })
+                .collect::<Result<_, ApiError>>()?;
+            Action::AssignDamage { assignments }
+        }
+        "end_turn" => {
+            fields!();
+            Action::EndTurn
+        }
+        _ => return Err(ApiError::invalid("Unknown action type.")),
+    })
+}
+
+fn legend_trigger(trigger: LegendTrigger) -> Value {
+    match trigger {
+        LegendTrigger::IreliaChoose { unit_id } => {
+            json!({"type":"irelia_choose","unit_id":unit_id})
+        }
+        LegendTrigger::IreliaConquer => json!({"type":"irelia_conquer"}),
+    }
+}
+
+fn decision_to_json(game: &Game, decision: &Decision, viewer: usize) -> Value {
+    let player = decision.player();
+    let mut out = match decision {
+        Decision::OptionalPlay {
+            card_id, gear_id, ..
+        } => json!({"type":"optional_play","card_id":card_id,"gear_id":gear_id}),
+        Decision::TokenPlacement {
+            card_id, remaining, ..
+        } => json!({"type":"token_placement","card_id":card_id,"remaining":remaining}),
+        Decision::ResolutionTargets {
+            card_id,
+            groups,
+            repeated,
+            ..
+        } => {
+            json!({"type":"resolution_targets","card_id":card_id,"groups":groups.iter().map(|group|group.iter().map(target_to_json).collect::<Vec<_>>()).collect::<Vec<_>>(),"repeated":repeated})
+        }
+        Decision::OrderTriggers { options, .. } => {
+            json!({"type":"order_triggers","options":options.iter().map(|option|json!({"id":option.id,"card_id":option.card_id,"label":option.label})).collect::<Vec<_>>()})
+        }
+        Decision::OnPlayTarget {
+            card_id,
+            source_id,
+            lane,
+            ..
+        } => json!({"type":"on_play_target","card_id":card_id,"source_id":source_id,"lane":lane}),
+        Decision::DeathReplacement { options, .. } => {
+            json!({"type":"death_replacement","options":options.iter().map(|option|json!({"unit_id":option.unit_id,"gear_id":option.gear_id})).collect::<Vec<_>>()})
+        }
+        Decision::CombatDamage { lane, total, .. } => {
+            json!({"type":"combat_damage","lane":lane,"total":total})
+        }
+        Decision::RevealHand {
+            opponent, cards, ..
+        } => json!({"type":"reveal_hand","opponent":opponent,"cards":cards}),
+        Decision::Battlefield { lane, .. } => json!({"type":"battlefield","lane":lane}),
+        Decision::ReviveUnit { .. } => json!({"type":"revive_unit"}),
+        Decision::SwapUnit { unit_id, .. } => json!({"type":"swap_unit","unit_id":unit_id}),
+        Decision::EmpowerHere { lane, .. } => json!({"type":"empower_here","lane":lane}),
+        Decision::Legend { trigger, .. } => {
+            json!({"type":"legend","trigger":legend_trigger(*trigger)})
+        }
+        Decision::LastRites { gear_id, .. } => json!({"type":"last_rites","gear_id":gear_id}),
+        Decision::ReplaySpell { .. } => json!({"type":"replay_spell"}),
+        Decision::GrantFlow { .. } => json!({"type":"grant_flow"}),
+        Decision::Discard {
+            count, draw_after, ..
+        } => json!({"type":"discard","count":count,"draw_after":draw_after}),
+        Decision::TopThree { cards, .. } => {
+            if player == viewer {
+                json!({"type":"top_three","cards":cards})
+            } else {
+                json!({"type":"top_three"})
+            }
+        }
+        Decision::Sabotage { opponent, .. } => {
+            json!({"type":"sabotage","opponent":opponent,"cards":game.players[*opponent].hand})
+        }
+        Decision::BurnForMight { unit_id, .. } => {
+            json!({"type":"burn_for_might","unit_id":unit_id})
+        }
+        Decision::Predict { card_id, .. } => {
+            if player == viewer {
+                json!({"type":"predict","card_id":card_id})
+            } else {
+                json!({"type":"predict"})
+            }
+        }
+        Decision::CounterTax { chain_id, cost, .. } => {
+            json!({"type":"counter_tax","chain_id":chain_id,"cost":cost})
+        }
+    };
+    out["player"] = json!(player);
+    out
+}
+
+fn ability_to_json(ability: &ChainAbility) -> Value {
+    match ability {
+        ChainAbility::OptionalPlay { gear_id } => json!({"type":"optional_play","gear_id":gear_id}),
+        ChainAbility::ReviveChosen {
+            trash_index,
+            card_id,
+        } => {
+            json!({"type":"revive_chosen","trash_index":if *trash_index==usize::MAX {None} else {Some(*trash_index)},"card_id":card_id})
+        }
+        ChainAbility::EmpowerObject {
+            player,
+            object_id,
+            lane,
+        } => json!({"type":"empower_object","player":player,"object_id":object_id,"lane":lane}),
+        ChainAbility::Equip { gear_id, target } => {
+            json!({"type":"equip","gear_id":gear_id,"target":target_to_json(target)})
+        }
+        ChainAbility::Empower { unit_id } => json!({"type":"empower","unit_id":unit_id}),
+        ChainAbility::Swap { unit_id, target } => {
+            json!({"type":"swap","unit_id":unit_id,"target":target_to_json(target)})
+        }
+        ChainAbility::CardEffect { entering } => json!({"type":"card_effect","entering":entering}),
+        ChainAbility::Legend(ability) => match ability {
+            LegendAbility::IreliaReady { unit_id } => {
+                json!({"type":"irelia_ready","unit_id":unit_id})
+            }
+            LegendAbility::IreliaRefresh => json!({"type":"irelia_refresh"}),
+            LegendAbility::KennenEmpower => json!({"type":"kennen_empower"}),
+            LegendAbility::KennenAssault { target } => {
+                json!({"type":"kennen_assault","target":target_to_json(target)})
+            }
+        },
+        ChainAbility::Battlefield(ability) => json!({"type":match ability{
+        BattlefieldAbility::TempleDraw{..}=>"temple_draw",BattlefieldAbility::SeatDraw{..}=>"seat_draw",BattlefieldAbility::MinefieldBurn{..}=>"minefield_burn"
+    },"lane":ability.lane()}),
+        ChainAbility::Triggered(ability) => match ability {
+            TriggeredAbility::DestroyGear { gear_id } => {
+                json!({"type":"destroy_gear","gear_id":gear_id})
+            }
+            TriggeredAbility::Draw(n) => json!({"type":"draw","count":n}),
+            TriggeredAbility::Might { unit_id, amount } => {
+                json!({"type":"might","unit_id":unit_id,"amount":amount})
+            }
+            TriggeredAbility::Stun { player, unit_id } => {
+                json!({"type":"stun","player":player,"unit_id":unit_id})
+            }
+            TriggeredAbility::Gold => json!({"type":"gold"}),
+            TriggeredAbility::Tokens { count, might } => {
+                json!({"type":"tokens","count":count,"might":might})
+            }
+            TriggeredAbility::Xp(n) => json!({"type":"xp","amount":n}),
+            TriggeredAbility::RevealHandXp => json!({"type":"reveal_hand_xp"}),
+            TriggeredAbility::GrantFlow => json!({"type":"grant_flow"}),
+            TriggeredAbility::Loot { count, draw } => {
+                json!({"type":"loot","discard":count,"draw":draw})
+            }
+            TriggeredAbility::BurnForMight { unit_id } => {
+                json!({"type":"burn_for_might","unit_id":unit_id})
+            }
+            TriggeredAbility::LastRites { gear_id } => {
+                json!({"type":"last_rites","gear_id":gear_id})
+            }
+            TriggeredAbility::SwapChoice { unit_id } => {
+                json!({"type":"swap_choice","unit_id":unit_id})
+            }
+            TriggeredAbility::EmpowerHere { lane } => json!({"type":"empower_here","lane":lane}),
+        },
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::game::{Unit, domain_index};
+    use crate::hidden::HiddenCard;
+
+    fn playing() -> Session {
+        let mut session = Session::new(ResetOptions {
+            decks: [3, 3],
+            ..ResetOptions::default()
+        })
+        .unwrap();
+        session.start(0).unwrap();
+        session
+    }
+    fn unit(id: u32, lane: Option<usize>, might: u8) -> Unit {
+        Unit {
+            id,
+            card_id: 25,
+            lane,
+            ready: true,
+            damage: 0,
+            buff: might,
+            temporary_buff: 0,
+            token: true,
+            protected: false,
+            stunned: false,
+            banish_on_death: false,
+        }
+    }
+    fn submit(session: &mut Session, action: Action) {
+        let response = session.handle(json!({"command":"apply","revision":session.revision(),
+            "player":session.game.priority(),"action":action_to_json(&action)}));
+        assert_eq!(response["ok"], true, "{response}");
+    }
+    fn pass_twice(session: &mut Session) {
+        submit(session, Action::Pass);
+        submit(session, Action::Pass);
+    }
+
+    #[test]
+    fn all_structured_actions_round_trip_without_losing_choices() {
+        let unit = Target::Unit {
+            player: 1,
+            unit_id: 12,
+        };
+        let gear = Target::Gear {
+            player: 0,
+            gear_id: 6,
+        };
+        let spell = Target::Spell { chain_id: 3 };
+        let actions = vec![
+            Action::PlayCard {
+                hand_index: 2,
+                lane: Some(1),
+                target: Some(unit),
+            },
+            Action::PlayChampion {
+                lane: None,
+                target: None,
+            },
+            Action::PlayCardWithTargets {
+                hand_index: 1,
+                lane: None,
+                targets: vec![unit, gear, spell],
+            },
+            Action::Move {
+                unit_id: 4,
+                lane: None,
+            },
+            Action::MoveGroup {
+                unit_ids: vec![1, 4],
+                lane: Some(0),
+            },
+            Action::Attack { lane: 1 },
+            Action::Pass,
+            Action::Choose { accept: false },
+            Action::Equip {
+                gear_id: 9,
+                target: unit,
+            },
+            Action::EquipWithTrash {
+                gear_id: 9,
+                target: unit,
+                trash_indices: vec![4, 2],
+            },
+            Action::ActivateGear { gear_id: 3 },
+            Action::ActivateLegend { target: Some(unit) },
+            Action::ActivateRune {
+                domain: Domain::Chaos,
+                recycle: true,
+            },
+            Action::SelectCards {
+                indices: vec![4, 1],
+            },
+            Action::PlayFromTrash {
+                trash_index: 3,
+                lane: Some(1),
+                target: None,
+            },
+            Action::PlayFromTrashWithTargets {
+                trash_index: 3,
+                lane: None,
+                targets: vec![unit, unit],
+            },
+            Action::Hide {
+                hand_index: 0,
+                lane: 1,
+            },
+            Action::HideChampion { lane: 0 },
+            Action::PlayHidden {
+                hidden_id: 8,
+                targets: vec![unit],
+            },
+            Action::PlayFromTrashOptions {
+                trash_index: 2,
+                lane: Some(1),
+                targets: vec![unit],
+                repeat_targets: vec![gear],
+                repeat: true,
+                accelerate: false,
+                bonus: false,
+            },
+            Action::PlayCardOptions {
+                hand_index: 1,
+                lane: None,
+                targets: vec![unit],
+                repeat_targets: vec![gear],
+                repeat: true,
+                accelerate: false,
+                bonus: false,
+            },
+            Action::PlayChampionOptions {
+                lane: Some(1),
+                target: Some(unit),
+                accelerate: true,
+            },
+            Action::EmpowerUnit {
+                unit_id: 8,
+                pay_power: true,
+            },
+            Action::ChooseTarget { target: None },
+            Action::ChooseDeathReplacement {
+                unit_id: 2,
+                gear_id: Some(5),
+            },
+            Action::ChooseDeathReplacement {
+                unit_id: 2,
+                gear_id: None,
+            },
+            Action::OrderTrigger { trigger_id: 8 },
+            Action::ChooseResolutionGroup { index: 1 },
+            Action::PlaceToken { lane: Some(1) },
+            Action::PlaceToken { lane: None },
+            Action::SetOptionalDiscount { power: 2 },
+            Action::AssignDamage {
+                assignments: vec![(9, 2), (3, 4)],
+            },
+            Action::EndTurn,
+        ];
+        for action in actions {
+            assert_eq!(parse_action(&action_to_json(&action)).unwrap(), action);
+        }
+    }
+
+    #[test]
+    fn malformed_stale_illegal_and_wrong_seat_commands_are_atomic() {
+        let mut session = playing();
+        let before = format!("{:?}", session.game);
+        let revision = session.revision();
+        let requests = vec![
+            json!({"command":"apply","revision":revision-1,"player":0,"action":{"type":"end_turn"}}),
+            json!({"command":"apply","revision":revision,"player":1,"action":{"type":"end_turn"}}),
+            json!({"command":"apply","revision":revision,"player":0,"action":{"type":"play_card","hand_index":99999}}),
+            json!({"command":"apply","revision":revision,"player":0,"action":{"type":"move","unit_id":888,"lane":0}}),
+            json!({"command":"apply","revision":revision,"player":0,"action":{"type":"play_card","hand_index":0,"target":{"type":"unit","player":2,"unit_id":1}}}),
+            json!({"command":"apply","revision":revision,"player":0,"action":{"type":"attack","lane":99}}),
+            json!({"command":"apply","revision":revision,"player":0,"action":{"type":"choose","accept":"false"}}),
+            json!({"command":"apply","revision":revision,"player":0,"action":{"type":"end_turn","typo":1}}),
+            json!({"command":"reset","revision":revision,"decks":[0,99]}),
+            json!({"command":"reset","revision":revision,"first_player":2}),
+            json!({"command":"unknown"}),
+            json!([]),
+        ];
+        for request in requests {
+            let result = session.handle(request);
+            assert_eq!(result["ok"], false, "{result}");
+            assert_eq!(session.revision(), revision);
+            assert_eq!(format!("{:?}", session.game), before);
+        }
+        assert_eq!(
+            session.process_line("{broken")["error"]["code"],
+            "invalid_json"
+        );
+        assert_eq!(format!("{:?}", session.game), before);
+    }
+
+    #[test]
+    fn revision_bound_suggestions_expire_and_validation_never_advances() {
+        let mut session = playing();
+        let action = session
+            .suggestions(0)
+            .unwrap()
+            .into_iter()
+            .find(|s| s.action == Action::EndTurn)
+            .unwrap();
+        let revision = session.revision();
+        session
+            .validate_action(0, revision, action.action.clone())
+            .unwrap();
+        assert_eq!(session.revision(), revision);
+        session.apply_suggestion(0, revision, &action.id).unwrap();
+        assert_eq!(session.revision(), revision + 1);
+        assert_eq!(
+            session
+                .apply_suggestion(0, revision, &action.id)
+                .unwrap_err()
+                .code,
+            "stale_revision"
+        );
+        assert_eq!(
+            session
+                .apply_suggestion(1, session.revision(), &action.id)
+                .unwrap_err()
+                .code,
+            "unknown_action"
+        );
+    }
+
+    #[test]
+    fn both_agents_choose_their_own_mulligan_and_setup_is_validated() {
+        let mut session = Session::new(ResetOptions {
+            first_player: 1,
+            battlefields: Some([3, 2]),
+            ..ResetOptions::default()
+        })
+        .unwrap();
+        let original = session.game.players[0].hand.clone();
+        session.mulligan(1, 0, &[0, 2]).unwrap();
+        assert_eq!(session.game.players[0].hand, original);
+        assert_eq!(session.game.players[1].hand.len(), 4);
+        assert_eq!(session.game.mulligans_used, [false, true]);
+        assert!(session.mulligan(1, 1, &[]).is_err());
+        assert_eq!(session.revision(), 1);
+        session.mulligan(0, 1, &[]).unwrap();
+        session.start(2).unwrap();
+        assert_eq!(session.game.active, 1);
+        assert_eq!(session.game.players[1].total_runes(), 2);
+        assert_eq!(session.game.battlefields, [3, 2]);
+    }
+
+    #[test]
+    fn observations_hide_hands_future_decks_and_private_decisions() {
+        let mut first = playing();
+        first.game.players[1].hand = vec![65, 65];
+        first.game.players[1].hidden.push(HiddenCard {
+            id: 100,
+            card_id: 46,
+            lane: 1,
+            hidden_turn: 1,
+            revealed: false,
+        });
+        let mut second = first.clone();
+        second.game.players[1].hand = vec![1, 1];
+        second.game.players[0].deck.reverse();
+        second.game.players[1].deck.reverse();
+        second.game.players[0].rune_deck.reverse();
+        second.game.players[1].rune_deck.reverse();
+        second.game.players[1].hidden[0].card_id = 16;
+        second
+            .game
+            .log
+            .push("private diagnostic that must never be exported".into());
+        assert_eq!(format!("{first:?}"), format!("{second:?}"));
+        assert_eq!(first.observe(0).unwrap(), second.observe(0).unwrap());
+        assert_ne!(first.observe(1).unwrap(), second.observe(1).unwrap());
+        first.game.decision = Some(Decision::Predict {
+            player: 1,
+            card_id: 65,
+        });
+        second.game.decision = Some(Decision::Predict {
+            player: 1,
+            card_id: 1,
+        });
+        assert_eq!(first.observe(0).unwrap(), second.observe(0).unwrap());
+        assert!(first.suggestions(0).unwrap().is_empty());
+        first.game.decision = Some(Decision::TopThree {
+            player: 1,
+            cards: vec![65, 65],
+        });
+        second.game.decision = Some(Decision::TopThree {
+            player: 1,
+            cards: vec![1, 1],
+        });
+        assert_eq!(first.observe(0).unwrap(), second.observe(0).unwrap());
+        assert_eq!(first.observe(0).unwrap()["players"][1]["hand"], Value::Null);
+        assert_eq!(
+            first.observe(0).unwrap()["players"][1]["hidden"][0]["card_id"],
+            Value::Null
+        );
+    }
+
+    #[test]
+    fn legitimate_reveal_and_temporary_hidden_permission_are_visible_only_as_allowed() {
+        let mut session = playing();
+        session.game.players[1].hand = vec![65, 1];
+        session.game.players[1].hidden.push(HiddenCard {
+            id: 100,
+            card_id: 46,
+            lane: 1,
+            hidden_turn: 1,
+            revealed: false,
+        });
+        session.game.decision = Some(Decision::RevealHand {
+            player: 0,
+            opponent: 1,
+            cards: vec![65, 1],
+        });
+        session.game.hidden_view[0] = true;
+        let observed = session.observe(0).unwrap();
+        assert_eq!(observed["players"][1]["hand"], json!([65, 1]));
+        assert_eq!(observed["players"][1]["hidden"][0]["card_id"], 46);
+        session.game.hidden_view[0] = false;
+        session.game.decision = None;
+        let observed = session.observe(0).unwrap();
+        assert!(observed["players"][1]["hand"].is_null());
+        assert!(observed["players"][1]["hidden"][0]["card_id"].is_null());
+    }
+
+    #[test]
+    fn both_views_show_attachment_identity_location_and_symmetric_resources() {
+        let mut session = playing();
+        session.game.players[0].units = vec![unit(700, Some(1), 2)];
+        session.game.players[0].gear.push(crate::gear::GearState {
+            id: 701,
+            card_id: 3,
+            attached_to: Some(700),
+            ready: true,
+            temporary: false,
+            token: false,
+        });
+        session.game.players[1].energy_pool = 2;
+        session.game.players[1].energy = 2;
+        session.game.players[1].power_pool = [0, 1, 0, 0, 0, 0];
+        session.game.legend[1].spell_power = 1;
+        for viewer in 0..2 {
+            let observed = session.observe(viewer).unwrap();
+            let gear = &observed["players"][0]["gear"][0];
+            assert_eq!(gear["id"], 701);
+            assert_eq!(gear["card_id"], 3);
+            assert_eq!(gear["attached_to"], 700);
+            assert_eq!(gear["lane"], 1);
+            assert_eq!(observed["players"][1]["energy_pool"], 2);
+            assert_eq!(
+                observed["players"][1]["power_pool"],
+                json!([0, 1, 0, 0, 0, 0])
+            );
+            assert_eq!(observed["players"][1]["legend"]["spell_power"], 1);
+        }
+        session.game.players[0].units[0].lane = None;
+        let observed = session.observe(1).unwrap();
+        assert_eq!(observed["players"][0]["gear"][0]["attached_to"], 700);
+        assert!(observed["players"][0]["gear"][0]["lane"].is_null());
+    }
+
+    #[test]
+    fn bots_can_submit_explicit_targets_and_grouped_destinations() {
+        let mut session = playing();
+        session.game.battlefields = [0, 1];
+        session.game.players[0].hand = vec![53];
+        session.game.players[0].runes = [0; 6];
+        session.game.players[0].runes[domain_index(Domain::Fury)] = 5;
+        session.game.players[0].exhausted_runes = [0; 6];
+        session.game.players[0].energy = 5;
+        session.game.players[1].units = vec![unit(100, None, 4), unit(101, None, 4)];
+        let targets = vec![
+            Target::Unit {
+                player: 1,
+                unit_id: 101,
+            },
+            Target::Unit {
+                player: 1,
+                unit_id: 100,
+            },
+        ];
+        submit(
+            &mut session,
+            Action::PlayCardWithTargets {
+                hand_index: 0,
+                lane: None,
+                targets: targets.clone(),
+            },
+        );
+        assert_eq!(session.game.chain.last().unwrap().targets, targets);
+        pass_twice(&mut session);
+        assert_eq!(
+            session.game.players[1]
+                .units
+                .iter()
+                .map(|u| u.damage)
+                .collect::<Vec<_>>(),
+            vec![3, 3]
+        );
+        session.game.players[0].units = vec![unit(200, None, 2), unit(201, None, 2)];
+        submit(
+            &mut session,
+            Action::MoveGroup {
+                unit_ids: vec![201, 200],
+                lane: Some(1),
+            },
+        );
+        assert!(
+            session.game.players[0]
+                .units
+                .iter()
+                .all(|u| u.lane == Some(1) && !u.ready)
+        );
+        assert_eq!(session.game.showdown.as_ref().unwrap().lane, 1);
+    }
+
+    #[test]
+    fn fizz_replay_options_pay_repeat_only_and_preserve_explicit_counter_targets() {
+        let mut session = playing();
+        session.game.players[0].hand = vec![48];
+        session.game.players[0].discard = vec![37];
+        session.game.players[0].runes = [0; 6];
+        session.game.players[0].runes[domain_index(Domain::Chaos)] = 4;
+        session.game.players[0].exhausted_runes = [0; 6];
+        session.game.players[0].energy = 4;
+        session.game.players[0].energy_pool = 0;
+        submit(
+            &mut session,
+            Action::PlayCard {
+                hand_index: 0,
+                lane: None,
+                target: None,
+            },
+        );
+        let chain_id = session.game.chain.last().unwrap().id;
+        // A resolved Fizz trigger can permit a counterspell while another spell
+        // remains on the chain. The spell's base energy is waived, not Repeat.
+        session.game.decision = Some(Decision::ReplaySpell { player: 0 });
+        let action = json!({"type":"play_from_trash_options","trash_index":0,
+            "lane":null,"targets":[{"type":"spell","chain_id":chain_id}],
+            "repeat_targets":[{"type":"spell","chain_id":chain_id}],
+            "repeat":true,"accelerate":false,"bonus":false});
+        let before = session.observe(0).unwrap();
+        let rejected = session.handle(json!({"command":"apply","revision":session.revision(),
+            "player":0,"action":action}));
+        assert_eq!(rejected["error"]["code"], "illegal_action");
+        assert_eq!(session.observe(0).unwrap(), before);
+
+        session.game.players[0].energy_pool = 2;
+        session.game.players[0].energy += 2;
+        let accepted = session.handle(json!({"command":"apply","revision":session.revision(),
+            "player":0,"action":action}));
+        assert_eq!(accepted["ok"], true, "{accepted}");
+        assert_eq!(session.game.players[0].energy, 1);
+        let observation = session.observe(0).unwrap();
+        let cast = observation["chain"].as_array().unwrap().last().unwrap();
+        assert_eq!(cast["card_id"], 37);
+        assert_eq!(cast["repeat"], true);
+        assert_eq!(cast["recycle_after"], true);
+        assert_eq!(cast["targets"], action["targets"]);
+        assert_eq!(cast["repeat_targets"], action["repeat_targets"]);
+    }
+
+    #[test]
+    fn bots_can_choose_combat_order_and_invalid_allocation_is_atomic() {
+        let mut session = playing();
+        session.game.battlefields = [0, 1];
+        session.game.players[0].units = vec![unit(100, None, 4)];
+        session.game.players[1].units = vec![unit(200, Some(0), 2), unit(201, Some(0), 2)];
+        session.game.battlefield_owner[0] = Some(1);
+        submit(
+            &mut session,
+            Action::Move {
+                unit_id: 100,
+                lane: Some(0),
+            },
+        );
+        pass_twice(&mut session);
+        assert!(matches!(
+            session.game.decision,
+            Some(Decision::CombatDamage {
+                player: 0,
+                total: 4,
+                ..
+            })
+        ));
+        let before = session.observe(0).unwrap();
+        assert!(
+            session
+                .apply_action(
+                    0,
+                    session.revision(),
+                    Action::AssignDamage {
+                        assignments: vec![(201, 1), (200, 3)]
+                    }
+                )
+                .is_err()
+        );
+        assert_eq!(session.observe(0).unwrap(), before);
+        submit(
+            &mut session,
+            Action::AssignDamage {
+                assignments: vec![(201, 2), (200, 2)],
+            },
+        );
+        assert_eq!(
+            session.game.submitted_combat_damage(0),
+            Some([(201, 2), (200, 2)].as_slice())
+        );
+        assert_eq!(
+            session.observe(1).unwrap()["players"][0]["submitted_combat_damage"],
+            json!([[201, 2], [200, 2]])
+        );
+    }
+
+    #[test]
+    fn deterministic_structured_replay_runs_a_complete_agent_match() {
+        let mut first = playing();
+        let mut second = first.clone();
+        let mut random = 918273u64;
+        for _ in 0..5000 {
+            assert_eq!(first.observe(0).unwrap(), second.observe(0).unwrap());
+            assert_eq!(first.observe(1).unwrap(), second.observe(1).unwrap());
+            if first.game.phase == Phase::Finished {
+                return;
+            }
+            let player = first.game.priority();
+            let suggestions = first.suggestions(player).unwrap();
+            assert!(!suggestions.is_empty());
+            random ^= random << 13;
+            random ^= random >> 7;
+            random ^= random << 17;
+            let action = &suggestions[random as usize % suggestions.len()].action;
+            let request = json!({"command":"apply","revision":first.revision(),"player":player,"action":action_to_json(action)});
+            assert_eq!(first.handle(request.clone()), second.handle(request));
+        }
+        panic!("custom legal-action bot match did not terminate");
+    }
+
+    #[test]
+    fn api_builtin_steps_finish_every_preset_pairing() {
+        for own in 0..4 {
+            for opposing in 0..4 {
+                let mut session = Session::new(ResetOptions {
+                    decks: [own, opposing],
+                    seed: 72 + own as u64,
+                    first_player: (own + opposing) % 2,
+                    ..ResetOptions::default()
+                })
+                .unwrap();
+                session.start(0).unwrap();
+                for _ in 0..5000 {
+                    if session.game.phase == Phase::Finished {
+                        break;
+                    }
+                    session
+                        .step_ai(session.game.priority(), session.revision())
+                        .unwrap();
+                }
+                assert_eq!(session.game.phase, Phase::Finished, "pair {own}/{opposing}");
+            }
+        }
+    }
+}
