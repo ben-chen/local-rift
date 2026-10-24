@@ -148,14 +148,14 @@
       "gear": 55,
       "legend": 8,
       "rune": 6,
-      "spell": 69,
-      "unit": 166
+      "spell": 79,
+      "unit": 174
     },
-    "implemented_main_cards": 290,
+    "implemented_main_cards": 308,
     "implemented_legends": 8,
     "implemented_battlefields": 11,
-    "implemented_legal_identities": 315,
-    "unimplemented_legal_identities": 764,
+    "implemented_legal_identities": 333,
+    "unimplemented_legal_identities": 746,
     "errata_entries": 67,
     "identities_with_errata": 67,
     "source_quality_issues": 37,
@@ -176,13 +176,13 @@
   "unimplemented_by_observed_keyword": {
     "ADD": 1,
     "Accelerate": 20,
-    "Action": 75,
+    "Action": 71,
     "Add": 24,
     "Ambush": 11,
-    "Assault": 17,
+    "Assault": 15,
     "Backline": 2,
     "Buff": 12,
-    "Deathknell": 18,
+    "Deathknell": 15,
     "Deflect": 28,
     "Deploy": 24,
     "Disarm": 6,
@@ -197,12 +197,12 @@
     "Mighty": 10,
     "Predict": 5,
     "Quick-Draw": 3,
-    "Reaction": 80,
+    "Reaction": 79,
     "Repeat": 11,
-    "Shield": 15,
+    "Shield": 14,
     "Show Off": 6,
     "Stun": 16,
-    "Tank": 25,
+    "Tank": 23,
     "Temporary": 22,
     "Unique": 3,
     "Vision": 7,
@@ -2315,8 +2315,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 298,
+        "official_id": "rad-079-167",
+        "playable_in_client": true
       }
     },
     {
@@ -3487,8 +3489,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 301,
+        "official_id": "unl-152-219",
+        "playable_in_client": true
       }
     },
     {
@@ -3756,8 +3760,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 296,
+        "official_id": "ogs-012-024",
+        "playable_in_client": true
       }
     },
     {
@@ -5452,8 +5458,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 306,
+        "official_id": "ogn-015-298",
+        "playable_in_client": true
       }
     },
     {
@@ -6153,8 +6161,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 293,
+        "official_id": "ogn-004-298",
+        "playable_in_client": true
       }
     },
     {
@@ -7110,8 +7120,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 304,
+        "official_id": "unl-154-219",
+        "playable_in_client": true
       }
     },
     {
@@ -9779,8 +9791,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 303,
+        "official_id": "unl-062-219",
+        "playable_in_client": true
       }
     },
     {
@@ -12239,8 +12253,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 290,
+        "official_id": "ogs-022-024",
+        "playable_in_client": true
       }
     },
     {
@@ -12520,8 +12536,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 299,
+        "official_id": "ogs-002-024",
+        "playable_in_client": true
       }
     },
     {
@@ -12695,8 +12713,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 297,
+        "official_id": "ogn-133-298",
+        "playable_in_client": true
       }
     },
     {
@@ -30213,8 +30233,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 292,
+        "official_id": "ogn-050-298",
+        "playable_in_client": true
       }
     },
     {
@@ -33387,8 +33409,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 300,
+        "official_id": "ogn-216-298",
+        "playable_in_client": true
       }
     },
     {
@@ -33660,8 +33684,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 295,
+        "official_id": "unl-159-219",
+        "playable_in_client": true
       }
     },
     {
@@ -35135,8 +35161,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 302,
+        "official_id": "ogn-137-298",
+        "playable_in_client": true
       }
     },
     {
@@ -35529,8 +35557,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 291,
+        "official_id": "rad-059-167",
+        "playable_in_client": true
       }
     },
     {
@@ -35961,8 +35991,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 307,
+        "official_id": "ogn-074-298",
+        "playable_in_client": true
       }
     },
     {
@@ -38939,8 +38971,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 294,
+        "official_id": "ogn-229-298",
+        "playable_in_client": true
       }
     },
     {
@@ -40397,8 +40431,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 305,
+        "official_id": "ogn-055-298",
+        "playable_in_client": true
       }
     },
     {

@@ -4,7 +4,7 @@
 //! every described operation. The engine must gate unsupported requirements.
 //! An unavailable official operation must never be replaced by an invented effect.
 
-use crate::cards::Domain;
+use crate::cards::{CardId, Domain};
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum CounterKind {
@@ -29,6 +29,28 @@ pub enum SpellDamage {
     Attacking { base: u8, conditional: u8 },
 }
 
+/// Programmatically selected recipients are not individual targets.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum AreaSelector {
+    AllBattlefields,
+    AllBases,
+    EnemyAtTargetBattlefield,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum PlayTargetKind {
+    Unit,
+    Gear,
+    Spell,
+    Battlefield,
+}
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct PlayTargetSpec {
+    pub kind: Option<PlayTargetKind>,
+    pub maximum: usize,
+    pub required: usize,
+}
+
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum OfficialEffect {
     /// No immediate spell/on-play operation. Check triggers and requirements.
@@ -41,6 +63,16 @@ pub enum OfficialEffect {
         battlefield_only: bool,
         draw: u8,
         banish_on_death: bool,
+    },
+    Kill {
+        battlefield_only: bool,
+        max_might: Option<u8>,
+    },
+    Stun,
+    GrantAssault(u8),
+    AreaDamage {
+        amount: u8,
+        selector: AreaSelector,
     },
     ModifyMight {
         amount: i8,
@@ -152,6 +184,32 @@ pub struct Targeting {
 pub fn effect(id: usize) -> OfficialEffect {
     use OfficialEffect::*;
     match id {
+        290 | 291 => Damage {
+            amount: if id == 290 { 8 } else { 10 },
+            targets: 1,
+            battlefield_only: false,
+            draw: if id == 291 { 2 } else { 0 },
+            banish_on_death: false,
+        },
+        292 => Stun,
+        293 => GrantAssault(3),
+        294..=296 => Kill {
+            battlefield_only: id != 294,
+            max_might: if id == 295 { Some(3) } else { Option::None },
+        },
+        297 => AreaDamage {
+            amount: 1,
+            selector: AreaSelector::AllBattlefields,
+        },
+        298 => AreaDamage {
+            amount: 3,
+            selector: AreaSelector::AllBases,
+        },
+        299 => AreaDamage {
+            amount: 3,
+            selector: AreaSelector::EnemyAtTargetBattlefield,
+        },
+        300..=307 => None,
         // These permanents have reviewed activated abilities in activated.rs,
         // not automatic effects when the card is played.
         230..=253 => None,
@@ -457,6 +515,7 @@ pub fn effect(id: usize) -> OfficialEffect {
 pub fn targeting(id: usize) -> Targeting {
     use Allegiance::*;
     let allegiance = match id {
+        290..=296 => Any,
         4 | 32 | 144 | 145 => Enemy,
         8 | 9 | 14 | 19 | 27 | 85 | 137 | 228 => Friendly,
         16 | 29 | 82 | 217 | 218 => Mixed,
@@ -483,6 +542,13 @@ pub fn target_bounds(id: usize) -> (usize, usize) {
         return (2, 2);
     }
     match effect(id) {
+        AreaDamage {
+            selector: AreaSelector::EnemyAtTargetBattlefield,
+            ..
+        }
+        | Kill { .. }
+        | Stun
+        | GrantAssault(_) => (1, 1),
         Damage { targets, .. } => (
             targets as usize,
             if matches!(id, 50 | 61) {
@@ -503,6 +569,34 @@ pub fn target_bounds(id: usize) -> (usize, usize) {
         | ReadyAnother
         | BuffAnother => (1, 1),
         _ => (0, 0),
+    }
+}
+
+/// Targets chosen while finalizing the card itself, not later on-play triggers.
+pub fn play_target_spec(id: CardId) -> PlayTargetSpec {
+    use PlayTargetKind::*;
+    let (kind, maximum, required) =
+        if on_play_requires_target(id) || equipment(id).is_some_and(|g| g.quick_draw) {
+            (None, 0, 0)
+        } else {
+            match effect(id) {
+                OfficialEffect::Counter(_) => (Some(Spell), 1, 1),
+                OfficialEffect::DestroyGearAndDraw => (Some(Gear), 1, 0),
+                OfficialEffect::TemporaryGear => (Some(Gear), 1, 1),
+                OfficialEffect::AreaDamage {
+                    selector: AreaSelector::EnemyAtTargetBattlefield,
+                    ..
+                } => (Some(Battlefield), 1, 1),
+                _ => {
+                    let (max, required) = target_bounds(id);
+                    (if max > 0 { Some(Unit) } else { None }, max, required)
+                }
+            }
+        };
+    PlayTargetSpec {
+        kind,
+        maximum,
+        required,
     }
 }
 
@@ -776,6 +870,11 @@ pub enum Mechanic {
 pub fn requirements(id: usize) -> &'static [Mechanic] {
     use Mechanic::*;
     match id {
+        290..=291 | 294..=299 => &[Chain],
+        292 => &[Chain, Stun],
+        293 => &[Chain, Assault],
+        300..=303 => &[Chain],
+        304..=307 => &[Chain],
         272..=289 => &[ActivatedAbilities, Empower, Chain],
         254 => &[Gear, Chain, ActivatedAbilities, Legion, DelayedPlayGrants],
         255 => &[
@@ -1121,6 +1220,9 @@ pub enum StaticAbility {
 pub fn static_abilities(id: usize) -> &'static [StaticAbility] {
     use StaticAbility::*;
     match id {
+        301 => &[Assault(1)],
+        302 => &[Tank],
+        307 => &[Shield(1), Tank],
         273 => &[Deflect(1)],
         287 => &[Deflect(2)],
         262 => &[Hidden],
@@ -1484,7 +1586,7 @@ mod tests {
     #[test]
     fn all_catalog_entries_have_official_classification() {
         let cards = cards();
-        assert_eq!(cards.len(), 290);
+        assert_eq!(cards.len(), 308);
         for card in cards {
             assert_ne!(
                 effect(card.id),
@@ -1494,7 +1596,7 @@ mod tests {
             );
             assert_ne!(support_status(card.id), SupportStatus::UnknownCard);
         }
-        assert_eq!(effect(290), OfficialEffect::Unsupported);
+        assert_eq!(effect(308), OfficialEffect::Unsupported);
     }
 
     #[test]

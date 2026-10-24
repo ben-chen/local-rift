@@ -23,7 +23,7 @@ Replace `choose_action(view, suggestions, rng)` in that example with your policy
 
 The initial session is in `mulligan` phase, with decks `[0,1]`, seed `1`, Tactical AI, and player `0` going first. `info` reports protocol version `1`; `catalog` reports separate preset, legend, card, domain, and battlefield IDs.
 
-The repository's `assets/data/full_catalog.json` is a separate inventory with schema version `2`; it is not the bot protocol or the playable `catalog` response. It preserves raw printing fields and adds reviewed `effective` facts, resolution references, and unresolved-field diagnostics. Deck validation uses those effective facts and rejects unresolved gameplay fields, including conflicts on alternate printings. The source review changes neither protocol version `1` nor existing playable IDs, eligible-card lists, presets, or training decks. See [the inventory review contract](CATALOG_REVIEW.md) for evidence and remaining variant-review limits.
+The repository's `assets/data/full_catalog.json` is a separate inventory with schema version `2`; it is not the bot protocol or the playable `catalog` response. It preserves raw printing fields and adds reviewed `effective` facts, resolution references, and unresolved-field diagnostics. Deck validation uses those effective facts and rejects unresolved gameplay or variant fields, including conflicts on alternate printings. Source review alone never registers a playable card. The current expansion appends main-card IDs 290–307, while preserving existing IDs, presets, and training decks. The additive battlefield target and `play_targets` metadata retain protocol version `1`. See [the inventory review contract](CATALOG_REVIEW.md) for evidence and remaining variant-review limits.
 
 ```json
 {"id":"hello","command":"info"}
@@ -87,6 +87,15 @@ Targets have exactly one of these forms:
 {"type":"unit","player":1,"unit_id":7}
 {"type":"gear","player":0,"gear_id":12}
 {"type":"spell","chain_id":5}
+{"type":"battlefield","lane":1}
+```
+
+A battlefield target identifies physical slot `0` or `1`, independently of its controller or catalog definition. Two slots using the same battlefield card are distinct targets. It has no `player` or `battlefield_id` field, and cannot select a base. A spell's battlefield target belongs in `targets`; the action's outer `lane` keeps its existing deployment/movement meaning and is not an alias.
+
+Each playable card's `play_targets` reports `{kind, maximum, required}`. `kind` is `unit`, `gear`, `spell`, `battlefield`, or `null`. This describes choices made while playing that card; delayed on-play triggers retain their own later decisions. It does not replace card-specific allegiance, location, timing, or payment validation. Firestorm requires exactly one battlefield target, including an empty field. Flurry of Blades and Avalanche have no targets; the units they damage are not individually chosen and do not add Deflect costs. Use `validate` for the complete action.
+
+```json
+{"type":"play_card_targets","hand_index":0,"targets":[{"type":"battlefield","lane":1}]}
 ```
 
 | Action `type` | Fields | Purpose |
@@ -165,7 +174,9 @@ Resource actions may be available while a payment decision is pending. For examp
 
 ## Empowered state, conditional effects, and Predict
 
-`catalog.cards[].passive_rules` describes the supported live passives with `rule_index`, `condition` (`always`, `empowered`, `not_empowered`), `recipients` (`self_unit`, `friendly_units`, `friendly_empowered_units`), and a typed `effect`. An effect is either `{type:"might",amount}` or `{type:"keyword",keyword,amount?}`. Ganking has no numeric amount. Observed units retain authoritative `might`, `keywords`, and `empowered`; their additional `passive_contributions` list reports each physical source, card/rule identity, active flag, and effect. Inactive conditional benefits are explanations, not current keywords or Buff counters. Two copies have separate source IDs and can contribute separately.
+`catalog.cards[].passive_rules` describes the supported live passives with `rule_index`, `condition` (`always`, `empowered`, `not_empowered`, `attacking_with_another`, `combat_alone`), `recipients` (`self_unit`, `friendly_units`, `friendly_empowered_units`, `other_friendly_units_here`), and a typed `effect`. An effect is either `{type:"might",amount}` or `{type:"keyword",keyword,amount?}`. Ganking has no numeric amount. Observed units retain authoritative `might`, `keywords`, and `empowered`; their additional `passive_contributions` list reports each physical source, card/rule identity, active flag, and effect. Inactive conditional benefits are explanations, not current keywords or Buff counters. Two copies have separate source IDs and can contribute separately.
+
+Combat conditions require an actual attacker or defender, rather than merely occupying an open showdown. Alone/with-another checks include every other friendly unit at that location, including tokens, stunned or exhausted units, and units with zero Might. Local recipients share the source's controller and current location, exclude the source itself, and distinguish the two players' bases. Moving or removing a source changes its live contributions; an Assault or Shield grant still applies its Might bonus only in its proper combat role.
 
 Activated abilities retain nominal `energy` and `power`. Their `cost_modifiers` describe `energy_per_controlled_rune` with `amount`, or `energy_if_runes_at_most` with `maximum` and `amount`. Use `cost_plan` for the evaluated obligation, including Risen Altar and discount ordering. Controlled rune counts include exhausted runes but exclude the rune deck. Once `begin_payment` fixes a cost, recycling a rune does not reprice that pending activation.
 
@@ -192,6 +203,8 @@ Wrap the action in `with_play_choices`. Its `choices` accepts:
 - `cost_order`: an ordered array of `{modifier_id, use_power, power_allocations}`. `use_power` selects Power for a modifier that explicitly allows Energy or Power; otherwise it must be false. `power_allocations` contains `{component_id, amount}` entries to distribute that modifier's usable Power reduction across eligible components.
 
 Missing arrays are empty. Declining Repeat still consumes a next-spell grant when the spell's play begins. Do not combine canonical Repeat selections with the legacy `repeat:true` adapter. `begin_payment` can contain a `with_play_choices` action so the selected costs and grants remain fixed while resources are generated. `with_power_payment` around the chosen action selects the actual payment sources; this is separate from choosing which cost a discount reduces.
+
+Field-targeting spells use the same per-execution target arrays. For example, Firestorm's base play can target slot `0`, one paid Repeat slot `1`, and another slot `0`. Every execution derives its affected enemy units from the current board. Payment, Flow, and chain observations preserve those distinct field choices. An explicitly empty array does not choose a field automatically; the legacy `play_card` default-target action remains available when automatic selection is desired.
 
 `cost_plan` accepts selected card plays and supported Equip, Empower, or registered ability actions. It returns nominal `components`, applicable `modifiers`, the actual `applied_order`, and final `energy` and `power`. Each Power obligation retains its allowed domains and `spell_eligible` flag; totals alone cannot represent different colored costs. Modifier scope is either `total` or `component` with a `component_id`. Cost increases apply before discounts. Component discounts precede total discounts; explicit cross-stage reversal is rejected. Within a stage, the player may order reductions, including reductions with a local minimum. A minimum applies only to that discount, not as a permanent floor on the resulting cost. An omitted order uses a deterministic legal order.
 

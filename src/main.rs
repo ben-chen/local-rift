@@ -1223,6 +1223,9 @@ impl App {
                 if self.ability_target_candidate(Target::Unit {
                     player: owner,
                     unit_id: *id,
+                }) || self.card_target_candidate(Target::Unit {
+                    player: owner,
+                    unit_id: *id,
                 }) {
                     self.ui.border(
                         Rect::new(
@@ -1312,6 +1315,7 @@ impl App {
                         }
                     }
                     if self.ui.primary_pressed()
+                        && !self.targeting_battlefield()
                         && self.game.priority() == 0
                         && self.game.phase == Phase::Playing
                     {
@@ -1327,7 +1331,7 @@ impl App {
                         if matches!(self.selection, Some(Selection::Ability(_, Some(_))))
                             || matches!(self.game.decision, Some(Decision::TriggerTargets { .. }))
                         {
-                            self.toggle_unit_target(Target::Unit {
+                            self.toggle_target(Target::Unit {
                                 player: owner,
                                 unit_id: *id,
                             });
@@ -1352,7 +1356,7 @@ impl App {
                                         player: owner,
                                         unit_id: *id,
                                     };
-                                    self.toggle_unit_target(target);
+                                    self.toggle_target(target);
                                 }
                                 _ if owner == 0
                                     && (is_key_down(KeyCode::LeftShift)
@@ -1413,7 +1417,7 @@ impl App {
             }
         }
         for (i, r) in hits.battlefields.iter().enumerate() {
-            if !hit_unit
+            if (!hit_unit || self.targeting_battlefield())
                 && r.contains(mouse)
                 && mouse.y > r.y + 63.0 * self.ui.scale
                 && self.ui.enabled
@@ -1422,7 +1426,9 @@ impl App {
                 && self.game.priority() == 0
                 && self.game.phase == Phase::Playing
             {
-                if let Some(Selection::Unit(id)) = self.selection {
+                if self.targeting_battlefield() {
+                    self.toggle_target(Target::Battlefield { lane: i });
+                } else if let Some(Selection::Unit(id)) = self.selection {
                     self.move_selection(id, Some(i));
                 } else if let Some(Selection::Hand(index)) = self.selection {
                     if self.game.catalog[self.game.players[0].hand[index]].kind == CardKind::Unit {
@@ -1521,6 +1527,7 @@ impl App {
                 TEXT,
                 2,
             );
+            let fields = chain_field_targets(&item);
             if let Some(progress) = self
                 .game
                 .resolution_progress()
@@ -1528,14 +1535,34 @@ impl App {
             {
                 self.ui.text(
                     &format!(
-                        "Resolving execution {} / {}",
+                        "Resolving {} / {}{}",
                         progress.execution + 1,
-                        progress.executions
+                        progress.executions,
+                        fields
+                            .get(progress.execution)
+                            .map(|lane| format!(" · Field {}", lane + 1))
+                            .unwrap_or_default()
                     ),
                     1178.0,
                     300.0,
                     9.0,
                     TEAL,
+                );
+            } else if !fields.is_empty() {
+                self.ui.ellipsis(
+                    &format!(
+                        "Targets: {}",
+                        fields
+                            .iter()
+                            .map(|lane| format!("Field {}", lane + 1))
+                            .collect::<Vec<_>>()
+                            .join(" > ")
+                    ),
+                    1178.0,
+                    300.0,
+                    212.0,
+                    9.0,
+                    GOLD,
                 );
             } else if item.executions.len() > 1 {
                 self.ui.text(
@@ -1588,15 +1615,13 @@ impl App {
                 Rect::new(1244.0, 307.0, 146.0, 26.0),
                 "Choose spell",
                 false,
-                self.selection.is_some() && self.game.priority() == 0,
+                self.game.priority() == 0
+                    && (self
+                        .current_targets()
+                        .contains(&Target::Spell { chain_id: item.id })
+                        || self.card_target_candidate(Target::Spell { chain_id: item.id })),
             ) {
-                let target = Target::Spell { chain_id: item.id };
-                let targets = self.current_targets_mut();
-                if targets.contains(&target) {
-                    targets.clear();
-                } else {
-                    *targets = vec![target];
-                }
+                self.toggle_target(Target::Spell { chain_id: item.id });
             }
         } else if let Some(showdown) = &self.game.showdown {
             self.ui.text(
@@ -2274,7 +2299,7 @@ impl App {
             _ => None,
         }
     }
-    fn toggle_unit_target(&mut self, target: Target) {
+    fn toggle_target(&mut self, target: Target) {
         if let Some(Selection::Ability(source, Some(index))) = self.selection {
             if let Some(position) = self
                 .ability_targets
@@ -2318,53 +2343,85 @@ impl App {
         }
         let chosen = self.current_targets();
         if let Some(index) = chosen.iter().position(|existing| *existing == target) {
-            self.current_targets_mut().remove(index);
+            // Later slots can depend on earlier choices; undo them together.
+            self.current_targets_mut().truncate(index);
             return;
         }
         let maximum = self
             .selected_card_id()
-            .map_or(1, |id| local_rift::rules::target_bounds(id).0);
-        if chosen.len() >= maximum {
-            self.notify(format!(
-                "This choice allows at most {maximum} unit target(s)."
-            ));
+            .map_or(1, |id| local_rift::rules::play_target_spec(id).maximum);
+        if self.selected_card_id().is_some() && !self.card_target_candidate(target) {
+            self.notify("This target does not meet the card's requirements.");
             return;
         }
-        if let Some(id) = self.selected_card_id()
-            && !self
-                .game
-                .valid_card_target(0, id, self.destination, target, chosen)
-        {
-            self.notify("This unit does not meet the card's target requirements.");
-            return;
+        if chosen.len() >= maximum {
+            if maximum == 1 {
+                self.current_targets_mut().clear();
+            } else {
+                self.notify(format!("This choice allows at most {maximum} target(s). Click a chosen target to undo it."));
+                return;
+            }
         }
         self.current_targets_mut().push(target);
+        if matches!(target, Target::Battlefield { .. }) {
+            self.destination = None;
+        }
         self.toast_until = 0.0;
     }
-    fn target_hint(&self, card_id: usize) -> String {
-        use local_rift::rules::{Allegiance, OfficialEffect, target_bounds, targeting};
-        if matches!(
-            local_rift::rules::effect(card_id),
-            OfficialEffect::Counter(_)
-        ) {
-            return "Choose a pending spell above.".into();
-        }
-        let (maximum, required) = target_bounds(card_id);
-        if maximum == 0 {
-            return "No unit targets needed.".into();
-        }
-        let count = self.current_targets().len();
-        let restriction = match targeting(card_id).allegiance {
-            Allegiance::Friendly => "friendly units",
-            Allegiance::Enemy => "enemy units",
-            Allegiance::Mixed => "friendly, then enemy",
-            _ => "units",
+    fn targeting_battlefield(&self) -> bool {
+        self.selected_card_id().is_some_and(|id| {
+            local_rift::rules::play_target_spec(id).kind
+                == Some(local_rift::rules::PlayTargetKind::Battlefield)
+        })
+    }
+    fn card_target_candidate(&self, target: Target) -> bool {
+        let Some(card_id) = self.selected_card_id() else {
+            return false;
         };
-        format!(
-            "{}{} {restriction} · {count}/{maximum}",
-            if required == 0 { "Up to " } else { "Choose " },
-            maximum
-        )
+        let prior = self.current_targets();
+        let prior = if local_rift::rules::play_target_spec(card_id).maximum == 1 {
+            &[]
+        } else {
+            prior
+        };
+        self.game
+            .card_target_candidates(0, card_id, self.destination, prior)
+            .contains(&target)
+    }
+    fn target_hint(&self, card_id: usize) -> String {
+        use local_rift::rules::{Allegiance, PlayTargetKind, play_target_spec, targeting};
+        let spec = play_target_spec(card_id);
+        let count = self.current_targets().len();
+        match spec.kind {
+            Some(PlayTargetKind::Battlefield) => self
+                .current_targets()
+                .first()
+                .map(|target| format!("Target: {}", target_label(&self.game, *target)))
+                .unwrap_or_else(|| "Choose either battlefield, even an empty one.".into()),
+            Some(PlayTargetKind::Spell) => "Choose a pending spell above.".into(),
+            Some(PlayTargetKind::Gear) => {
+                format!("Choose gear in Loadout · {count}/{}", spec.maximum)
+            }
+            Some(PlayTargetKind::Unit) => {
+                let restriction = match targeting(card_id).allegiance {
+                    Allegiance::Friendly => "friendly units",
+                    Allegiance::Enemy => "enemy units",
+                    Allegiance::Mixed => "friendly, then enemy",
+                    _ => "units",
+                };
+                format!(
+                    "{}{} {restriction} · {count}/{}",
+                    if spec.required == 0 {
+                        "Up to "
+                    } else {
+                        "Choose "
+                    },
+                    spec.maximum,
+                    spec.maximum
+                )
+            }
+            None => "No targets needed.".into(),
+        }
     }
     fn targeting_selection(&self) -> bool {
         match self.selection {
@@ -2540,13 +2597,13 @@ impl App {
                 if matches!(self.selection, Some(Selection::Ability(_, Some(_))))
                     || matches!(self.game.decision, Some(Decision::TriggerTargets { .. }))
                 {
-                    self.toggle_unit_target(target);
+                    self.toggle_target(target);
                 } else if self.game.decision.is_some() {
                     self.action(Action::ChooseTarget {
                         target: Some(target),
                     });
                 } else if self.targeting_selection() {
-                    self.toggle_unit_target(target);
+                    self.toggle_target(target);
                 } else if *owner == 0 {
                     let ids = if self.group.contains(&unit.id) {
                         self.group.clone()
@@ -2776,7 +2833,7 @@ impl App {
                     player: owner,
                     gear_id: gear.id,
                 };
-                if self.ability_target_candidate(target) {
+                if self.ability_target_candidate(target) || self.card_target_candidate(target) {
                     self.ui.border(r, TEAL);
                     self.ui.pill(
                         r.x + 8.0,
@@ -2804,20 +2861,13 @@ impl App {
                     self.open_abilities(source);
                 }
                 if self.ui.clicked(r) && !ability_button {
-                    if matches!(self.selection, Some(Selection::Ability(..)))
-                        && self.targeting_selection()
+                    if self.targeting_selection()
+                        && !matches!(self.selection, Some(Selection::Gear(_)))
                     {
-                        self.toggle_unit_target(Target::Gear {
+                        self.toggle_target(Target::Gear {
                             player: owner,
                             gear_id: gear.id,
                         });
-                    } else if self.targeting_selection()
-                        && !matches!(self.selection, Some(Selection::Gear(_)))
-                    {
-                        self.targets = vec![Target::Gear {
-                            player: owner,
-                            gear_id: gear.id,
-                        }];
                     } else if owner == 0 {
                         self.remember_resource_draft();
                         self.selection = Some(Selection::Gear(gear.id));
@@ -3712,12 +3762,42 @@ impl App {
                     None => LINE,
                 },
             );
-            self.ui.bold(
-                &format!("{} · {}", lane + 1, field.name),
+            let target = Target::Battlefield { lane };
+            let pending = !self.targeting_battlefield()
+                && self
+                    .game
+                    .chain
+                    .iter()
+                    .rev()
+                    .nth(self.chain_cursor)
+                    .is_some_and(|item| chain_field_targets(item).contains(&lane));
+            let selected = pending
+                || (self.targeting_battlefield() && self.current_targets().contains(&target));
+            let candidate = self.targeting_battlefield() && self.card_target_candidate(target);
+            if self.in_match && (selected || candidate) {
+                self.ui.border(
+                    Rect::new(r.x - 2.0, r.y - 2.0, r.w + 4.0, r.h + 4.0),
+                    if selected { GOLD } else { TEAL },
+                );
+            }
+            self.ui.ellipsis(
+                &format!(
+                    "{} · {}{}",
+                    lane + 1,
+                    field.name,
+                    if pending {
+                        " · PENDING"
+                    } else if selected {
+                        " · TARGET"
+                    } else {
+                        ""
+                    }
+                ),
                 r.x + 12.0,
                 r.y + 19.0,
+                r.w - 88.0,
                 13.0,
-                TEXT,
+                if selected { GOLD } else { TEXT },
             );
             self.ui.wrapped_lines(
                 field
@@ -4197,10 +4277,24 @@ impl App {
                 use local_rift::rules::OfficialEffect as E;
                 let card = self.game.catalog[*card_id];
                 let effect = local_rift::rules::effect(*card_id);
-                let maximum = local_rift::rules::target_bounds(*card_id).0;
+                let spec = local_rift::rules::play_target_spec(*card_id);
+                let maximum = spec.maximum;
+                let field_target =
+                    spec.kind == Some(local_rift::rules::PlayTargetKind::Battlefield);
                 let movement = matches!(effect, E::MoveEnemy | E::MoveFriendlyAndReady);
                 let mut targets = self.targets.clone();
                 match zone {
+                    DropZone::Battlefield(lane) if field_target => {
+                        targets = vec![Target::Battlefield { lane }];
+                    }
+                    DropZone::Unit(_, _) if field_target && lane.is_some() => {
+                        targets = vec![Target::Battlefield {
+                            lane: lane.unwrap(),
+                        }];
+                    }
+                    _ if field_target => {
+                        return Err("Choose a battlefield. Your base is not a battlefield.".into());
+                    }
                     DropZone::Unit(player, unit_id)
                         if maximum > 0 || card.kind == CardKind::Gear =>
                     {
@@ -4218,7 +4312,7 @@ impl App {
                     _ => {}
                 }
                 if maximum > 0 && targets.is_empty() && card.kind == CardKind::Spell {
-                    return Err("Drop this spell on a unit to choose its target.".into());
+                    return Err("Drop this spell on an eligible target.".into());
                 }
                 if matches!(effect, E::Counter(_)) && !matches!(zone, DropZone::Chain(_)) {
                     return Err("Drop a counterspell on the pending spell above the board.".into());
@@ -4234,8 +4328,11 @@ impl App {
                 } else {
                     None
                 };
-                let confirm =
-                    maximum > 1 || movement || self.options.repeat || self.play_draft.is_some();
+                let confirm = field_target
+                    || maximum > 1
+                    || movement
+                    || self.options.repeat
+                    || self.play_draft.is_some();
                 (
                     Action::PlayCardOptions {
                         hand_index: *index,
@@ -4260,12 +4357,12 @@ impl App {
         {
             let card_id = self.game.players[0].hand[hand_index];
             for (index, target) in targets.iter().enumerate() {
-                if matches!(target, Target::Unit { .. })
-                    && !self
-                        .game
-                        .valid_card_target(0, card_id, lane, *target, &targets[..index])
+                if !self
+                    .game
+                    .card_target_candidates(0, card_id, lane, &targets[..index])
+                    .contains(target)
                 {
-                    return Err("This unit is not a legal target for that card.".into());
+                    return Err("This target is not legal for that card.".into());
                 }
             }
             if !targets.is_empty() {
@@ -4367,7 +4464,11 @@ impl App {
                     self.drag = None;
                     self.selection = Some(Selection::Hand(hand_index));
                     self.destination = lane;
-                    self.targets = targets;
+                    if self.targeting_battlefield() {
+                        *self.current_targets_mut() = targets;
+                    } else {
+                        self.targets = targets;
+                    }
                     self.repeat_targets = repeat_targets;
                     self.options = PlayOptions {
                         repeat,
@@ -5585,11 +5686,7 @@ impl App {
                         }
                         if self.options.repeat
                             && local_rift::rules::repeat_cost(card_id).is_some()
-                            && (local_rift::rules::target_bounds(card_id).0 > 0
-                                || matches!(
-                                    local_rift::rules::effect(card_id),
-                                    local_rift::rules::OfficialEffect::Counter(_)
-                                ))
+                            && local_rift::rules::play_target_spec(card_id).maximum > 0
                             && self.ui.button(
                                 Rect::new(1288.0, 454.0, 102.0, 28.0),
                                 if self.editing_repeat {
@@ -5802,8 +5899,15 @@ impl App {
                             }
                         }
                     } else if card.kind != CardKind::Unit {
-                        self.ui
-                            .text(&self.target_hint(card_id), 1178.0, 548.0, 9.0, TEAL);
+                        self.ui.wrapped_lines(
+                            &self.target_hint(card_id),
+                            1178.0,
+                            542.0,
+                            212.0,
+                            10.0,
+                            TEAL,
+                            2,
+                        );
                     }
                 } else {
                     self.selection = None;
@@ -6302,6 +6406,8 @@ impl App {
                     "Your tokens are ready to enter."
                 } else if payment_waiting {
                     "A resource choice is waiting."
+                } else if self.game.in_window() {
+                    "A response window is open."
                 } else {
                     "An empty hand. A board full of possibility."
                 },
@@ -6317,6 +6423,10 @@ impl App {
                     "Use Board or Loadout for Add abilities, then finish the payment or conversion."
                 } else if payment_waiting {
                     "Your opponent is choosing resources. Play continues when the payment is finished."
+                } else if self.game.in_window() && self.game.priority() == 0 {
+                    "Use an available response, or pass priority when you're ready."
+                } else if self.game.in_window() {
+                    "Your opponent has priority. You can respond when priority returns."
                 } else {
                     "Move your ready units, or end your turn to draw."
                 },
@@ -6928,6 +7038,55 @@ impl App {
         }
     }
 }
+fn chain_field_targets(item: &local_rift::game::ChainItem) -> Vec<usize> {
+    item.executions
+        .iter()
+        .filter_map(|execution| {
+            execution.targets.iter().find_map(|target| {
+                if let Target::Battlefield { lane } = target {
+                    Some(*lane)
+                } else {
+                    None
+                }
+            })
+        })
+        .collect()
+}
+
+fn target_label(game: &Game, target: Target) -> String {
+    match target {
+        Target::Battlefield { lane } => game
+            .battlefields
+            .get(lane)
+            .map(|id| {
+                format!(
+                    "Field {} · {}",
+                    lane + 1,
+                    local_rift::battlefields::battlefield(*id).name
+                )
+            })
+            .unwrap_or_else(|| "Unavailable battlefield".into()),
+        Target::Unit { player, unit_id } => game
+            .players
+            .get(player)
+            .and_then(|state| state.units.iter().find(|unit| unit.id == unit_id))
+            .map(|unit| game.unit_name(unit))
+            .unwrap_or_else(|| "Unit left play".into()),
+        Target::Gear { player, gear_id } => game
+            .players
+            .get(player)
+            .and_then(|state| state.gear.iter().find(|gear| gear.id == gear_id))
+            .map(|gear| game.gear_name(gear).to_owned())
+            .unwrap_or_else(|| "Gear left play".into()),
+        Target::Spell { chain_id } => game
+            .chain
+            .iter()
+            .find(|item| item.id == chain_id)
+            .map(|item| game.chain_name(item))
+            .unwrap_or_else(|| "Spell left chain".into()),
+    }
+}
+
 fn card_brief(game: &Game, id: usize) -> String {
     use local_rift::rules::OfficialEffect::*;
     match local_rift::rules::effect(id) {
@@ -6943,6 +7102,31 @@ fn card_brief(game: &Game, id: usize) -> String {
         ModifyMight { amount, draw, .. } => {
             format!("{amount:+} might{}", if draw > 0 { " · draw" } else { "" })
         }
+        Stun => "Stun a unit this turn".into(),
+        GrantAssault(amount) => format!("Grant Assault {amount} this turn"),
+        Kill {
+            battlefield_only,
+            max_might,
+        } => format!(
+            "Kill {}{}",
+            if battlefield_only {
+                "a battlefield unit"
+            } else {
+                "a unit"
+            },
+            max_might
+                .map(|might| format!(" · might {might} or less"))
+                .unwrap_or_default()
+        ),
+        AreaDamage { amount, selector } => format!(
+            "Deal {amount} · {}",
+            match selector {
+                local_rift::rules::AreaSelector::AllBattlefields => "all units at battlefields",
+                local_rift::rules::AreaSelector::AllBases => "all units at bases",
+                local_rift::rules::AreaSelector::EnemyAtTargetBattlefield =>
+                    "enemies at chosen field",
+            }
+        ),
         Draw(n) => format!("Draw {n}"),
         Counter(_) => "Counter a spell".into(),
         DualMight => "+2 / -2 might".into(),
@@ -7125,8 +7309,26 @@ fn live_unit_description(game: &Game, owner: usize, unit_id: u32) -> Option<Stri
             PassiveEffect::Keyword(PassiveKeyword::Deflect(amount)) => format!("Deflect {amount}"),
             PassiveEffect::Keyword(PassiveKeyword::Ganking) => "Ganking".into(),
         };
+        let requirement = local_rift::continuous::passive_rules(contribution.card_id)
+            .get(contribution.rule_index)
+            .map(|rule| {
+                use local_rift::continuous::{Recipients, SourceCondition};
+                match rule.condition {
+                    SourceCondition::AttackingWithAnother => " · while attacking with another unit",
+                    SourceCondition::CombatAlone => " · while attacking or defending alone",
+                    SourceCondition::Empowered => " · while source is Empowered",
+                    SourceCondition::NotEmpowered => " · while source is not Empowered",
+                    SourceCondition::Always
+                        if rule.recipients == Recipients::OtherFriendlyUnitsHere =>
+                    {
+                        " · other friendly units at the source's location"
+                    }
+                    SourceCondition::Always => "",
+                }
+            })
+            .unwrap_or("");
         lines.push(format!(
-            "{} · {}: {}{}",
+            "{} · {}: {}{}{}",
             if contribution.active {
                 "ACTIVE"
             } else {
@@ -7134,6 +7336,7 @@ fn live_unit_description(game: &Game, owner: usize, unit_id: u32) -> Option<Stri
             },
             game.catalog[contribution.card_id].name,
             effect,
+            requirement,
             if contribution.active {
                 " (included in current values when applicable)"
             } else {
@@ -7455,6 +7658,75 @@ mod live_preview_tests {
         assert!(text.contains("Assault 2") && text.contains("while attacking"));
         assert!(text.contains("Deflect 1") && text.contains("Ganking"));
         assert!(text.contains("Accelerate, when played") && text.contains("Fury power"));
+    }
+
+    #[test]
+    fn battlefield_target_labels_distinguish_duplicate_definitions() {
+        let mut game = Game::new(3, 2, 7, Difficulty::Easy);
+        game.battlefields = [0, 0];
+        let left = target_label(&game, Target::Battlefield { lane: 0 });
+        let right = target_label(&game, Target::Battlefield { lane: 1 });
+        assert!(left.starts_with("Field 1 · ") && right.starts_with("Field 2 · "));
+        assert_ne!(left, right);
+        assert_eq!(
+            target_label(&game, Target::Battlefield { lane: usize::MAX }),
+            "Unavailable battlefield"
+        );
+    }
+
+    #[test]
+    fn local_aura_preview_follows_source_location_and_excludes_self() {
+        let mut game = Game::new(3, 2, 7, Difficulty::Easy);
+        let mut bearer = unit(100, 110);
+        bearer.lane = Some(0);
+        let mut taric = unit(101, 307);
+        taric.lane = Some(0);
+        game.players[0].units = vec![bearer, taric];
+        let together = live_unit_description(&game, 0, 100).unwrap();
+        assert!(together.contains("ACTIVE · Taric, Protector: Shield 1"));
+        assert!(together.contains("source's location"));
+        assert!(
+            !live_unit_description(&game, 0, 101)
+                .unwrap()
+                .contains("ACTIVE · Taric")
+        );
+        game.players[0].units[1].lane = Some(1);
+        assert!(
+            !live_unit_description(&game, 0, 100)
+                .unwrap()
+                .contains("ACTIVE · Taric")
+        );
+    }
+
+    #[test]
+    fn conditional_might_preview_names_live_combat_requirement() {
+        let mut game = Game::new(3, 2, 7, Difficulty::Easy);
+        let mut pigeons = unit(100, 304);
+        pigeons.lane = Some(0);
+        let mut ally = unit(101, 110);
+        ally.lane = Some(0);
+        game.players[0].units = vec![pigeons, ally];
+        let before = live_unit_description(&game, 0, 100).unwrap();
+        assert!(before.contains("INACTIVE · Crimson Pigeons: +2 might"));
+        assert!(before.contains("while attacking with another unit"));
+        game.showdown = Some(local_rift::game::Showdown {
+            lane: 0,
+            attacker: 0,
+            focus: 0,
+            passes: 0,
+            combat: true,
+        });
+        let during = live_unit_description(&game, 0, 100).unwrap();
+        assert!(
+            during.contains("5 current might")
+                && during.contains("ACTIVE · Crimson Pigeons: +2 might")
+        );
+        game.players[0].units.pop();
+        assert!(
+            live_unit_description(&game, 0, 100)
+                .unwrap()
+                .contains("INACTIVE · Crimson Pigeons")
+        );
     }
 
     #[test]

@@ -1,0 +1,2193 @@
+{
+  "schema_version": 1,
+  "reviewed_on": "2026-10-24",
+  "purpose": "Specific C8 card admission source evidence; runtime behavior is tested separately. This is not an additional blanket catalog review or equivalence policy.",
+  "pre_admission_catalog_sha256": "709d7c7541c22cba365c4a52c4d064df8553b1c6821d26796d04b931ed53fed9",
+  "origin_gallery": {
+    "url": "https://playriftbound.com/en-us/card-gallery/",
+    "archive": "assets/data/catalog_sources/gallery.html.gz",
+    "uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9"
+  },
+  "printing_projection_version": 1,
+  "records": [
+    {
+      "runtime_id": 290,
+      "official_id": "ogs-022-024",
+      "name": "Final Spark, Lux",
+      "raw_printing": {
+        "official_id": "ogs-022-024",
+        "public_code": "OGS-022/024",
+        "name": "Final Spark, Lux",
+        "set": "OGS",
+        "collector_number": 22,
+        "types": [
+          "spell"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "spell"
+        ],
+        "accessibility_types": [
+          "spell"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [
+          "signature"
+        ],
+        "domains": [
+          "mind",
+          "order"
+        ],
+        "energy": 8,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "rules_html": "<p>[Action] (Play on your turn or in showdowns.)<br />Deal 8 to a unit.</p>",
+        "rules_text": "[Action] (Play on your turn or in showdowns.)\nDeal 8 to a unit.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [
+          "Lux"
+        ],
+        "rarity": "epic",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/4558a2dc1bb1f1b8a73ec0d82244654e84b12687-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Spell: Final Spark. [Action] (Play on your turn or in showdowns.)\nDeal 8 to a unit.",
+        "illustrators": [
+          "Kudos Productions"
+        ]
+      },
+      "raw_printing_sha256": "b8cd2a441b0bed8dbb46959ccd255a1158eda4f64d41e1373bc415da603f0d7f",
+      "effective": {
+        "types": [
+          "spell"
+        ],
+        "super_types": [
+          "signature"
+        ],
+        "domains": [
+          "mind",
+          "order"
+        ],
+        "energy": 8,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "tags": [
+          "Lux"
+        ],
+        "rules_html": "<p>[Action] (Play on your turn or in showdowns.)<br />Deal 8 to a unit.</p>",
+        "rules_text": "[Action] (Play on your turn or in showdowns.)\nDeal 8 to a unit.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "existing_field_resolution_ids": [],
+      "original_image": {
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/4558a2dc1bb1f1b8a73ec0d82244654e84b12687-744x1039.png?accountingTag=RB",
+        "path": "assets/data/card_admissions/c8/images/ogs-022-024.png",
+        "sha256": "2e51daffaa18beeea2a75d30c9f135567d1fdb99d4efeaa4d69e9a4b220a572f",
+        "bytes": 921754
+      },
+      "runtime_image": {
+        "runtime_id": 290,
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/4558a2dc1bb1f1b8a73ec0d82244654e84b12687-744x1039.png?w=360&q=80&fm=png",
+        "path": "assets/art/card_290.png",
+        "bytes": 297975,
+        "sha256": "b1980ea457009eb09c465e566d70ec189255a98946f2adcc49a43dfddc9ca160",
+        "width": 360
+      },
+      "visual_observation": {
+        "official_id": "ogs-022-024",
+        "image_sha256": "2e51daffaa18beeea2a75d30c9f135567d1fdb99d4efeaa4d69e9a4b220a572f",
+        "raw_printing_sha256": "b8cd2a441b0bed8dbb46959ccd255a1158eda4f64d41e1373bc415da603f0d7f",
+        "inspection": "manual_visual_exact_original_PNG",
+        "reviewed_on": "2026-10-24",
+        "printed_name": "Final Spark",
+        "printed_type_tag_line": "SIGNATURE SPELL · LUX",
+        "printed_energy": 8,
+        "printed_power_count": 0,
+        "printed_might": null,
+        "printed_domains": [
+          "mind",
+          "order"
+        ],
+        "printed_types": [
+          "spell"
+        ],
+        "printed_super_types": [
+          "signature"
+        ],
+        "printed_tags_in_face_order": [
+          "Lux"
+        ],
+        "printed_rules_readable": "[Action] (Play on your turn or in showdowns.)\nDeal 8 to a unit.",
+        "comparison_to_effective": {
+          "collector_identity": true,
+          "energy": true,
+          "power": true,
+          "might": true,
+          "domains": true,
+          "type": true,
+          "super_types": true,
+          "tags": true,
+          "rules_text": true
+        },
+        "findings": "All printed gameplay facts agree with the selected effective projection. No new unresolved source discrepancy observed. The visible name is Final Spark; Lux appears on the Signature Spell type/tag line. Gallery composite name remains Final Spark, Lux. Only supported Lux legend 6 is a legal signature home.",
+        "required_behavior": "Existing targeted Damage 8; Action; Lux signature legality.",
+        "source_uncertainties": []
+      },
+      "legal_legend_ids": [
+        6
+      ]
+    },
+    {
+      "runtime_id": 291,
+      "official_id": "rad-059-167",
+      "name": "Supernova",
+      "raw_printing": {
+        "official_id": "rad-059-167",
+        "public_code": "RAD-059/167",
+        "name": "Supernova",
+        "set": "RAD",
+        "collector_number": 59,
+        "types": [
+          "unit"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "unit"
+        ],
+        "accessibility_types": [
+          "spell"
+        ],
+        "type_labels_conflict": true,
+        "super_types": [],
+        "domains": [
+          "order"
+        ],
+        "energy": 9,
+        "power": 1,
+        "might": null,
+        "might_bonus": null,
+        "rules_html": "<p>Deal 10 to a unit. Draw 2.</p>",
+        "rules_text": "Deal 10 to a unit. Draw 2.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [],
+        "rarity": "uncommon",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/bea8e402f99b0afb5af1b19c0ee8ea34052e736f-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Spell: Supernova. Deal 10 to a unit. Draw 2.",
+        "illustrators": [
+          "Kudos Productions"
+        ]
+      },
+      "raw_printing_sha256": "8746e48ca05f6dc965714cbdf9bbb1a9072406e65fd29cb03ba83f4adfc8ac9a",
+      "effective": {
+        "types": [
+          "spell"
+        ],
+        "super_types": [],
+        "domains": [
+          "mind"
+        ],
+        "energy": 9,
+        "power": 1,
+        "might": null,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>Deal 10 to a unit. Draw 2.</p>",
+        "rules_text": "Deal 10 to a unit. Draw 2.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "existing_field_resolution_ids": [
+        "rad-059-167:domains",
+        "rad-059-167:types"
+      ],
+      "original_image": {
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/bea8e402f99b0afb5af1b19c0ee8ea34052e736f-744x1039.png?accountingTag=RB",
+        "path": "assets/data/catalog_evidence/images/rad-059-167.png",
+        "sha256": "e13818035cf55c287d5402fb1f2ebe4c25883a6a0ad4c20861e83e84fe77efe1",
+        "bytes": 702116
+      },
+      "runtime_image": {
+        "runtime_id": 291,
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/bea8e402f99b0afb5af1b19c0ee8ea34052e736f-744x1039.png?w=360&q=80&fm=png",
+        "path": "assets/art/card_291.png",
+        "bytes": 250414,
+        "sha256": "622769a97d847cf5f9c54ff5c131223771f691f08fb9ac3feab9fc951af5c4fd",
+        "width": 360
+      },
+      "visual_observation": {
+        "official_id": "rad-059-167",
+        "image_sha256": "e13818035cf55c287d5402fb1f2ebe4c25883a6a0ad4c20861e83e84fe77efe1",
+        "raw_printing_sha256": "8746e48ca05f6dc965714cbdf9bbb1a9072406e65fd29cb03ba83f4adfc8ac9a",
+        "inspection": "manual_visual_exact_original_PNG",
+        "reviewed_on": "2026-10-24",
+        "printed_name": "Supernova",
+        "printed_type_tag_line": "SPELL",
+        "printed_energy": 9,
+        "printed_power_count": 1,
+        "printed_might": null,
+        "printed_domains": [
+          "mind"
+        ],
+        "printed_types": [
+          "spell"
+        ],
+        "printed_super_types": [],
+        "printed_tags_in_face_order": [],
+        "printed_rules_readable": "Deal 10 to a unit. Draw 2.",
+        "comparison_to_effective": {
+          "collector_identity": true,
+          "energy": true,
+          "power": true,
+          "might": true,
+          "domains": true,
+          "type": true,
+          "super_types": true,
+          "tags": true,
+          "rules_text": true
+        },
+        "findings": "The face visibly says SPELL and displays Mind on its cost/namebar/footer. This independently reconfirms the existing C6 type/domain correction. Raw Unit/Order values remain untouched; no new correction is proposed.",
+        "required_behavior": "Existing Damage 10 followed by Draw 2; use reviewed effective Spell/Mind facts, not raw Unit/Order.",
+        "source_uncertainties": []
+      },
+      "legal_legend_ids": [
+        3,
+        5,
+        6
+      ]
+    },
+    {
+      "runtime_id": 292,
+      "official_id": "ogn-050-298",
+      "name": "Rune Prison",
+      "raw_printing": {
+        "official_id": "ogn-050-298",
+        "public_code": "OGN-050/298",
+        "name": "Rune Prison",
+        "set": "OGN",
+        "collector_number": 50,
+        "types": [
+          "spell"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "spell"
+        ],
+        "accessibility_types": [
+          "spell"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "calm"
+        ],
+        "energy": 2,
+        "power": 1,
+        "might": null,
+        "might_bonus": null,
+        "rules_html": "<p>[Action] (Play on your turn or in showdowns.)<br />Stun a unit. (It doesn't deal combat damage this turn.)</p>",
+        "rules_text": "[Action] (Play on your turn or in showdowns.)\nStun a unit. (It doesn't deal combat damage this turn.)",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [],
+        "rarity": "common",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/21867baeaced3c22cda5f40f6b6c9a8dad4b7042-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Spell: Rune Prison. [Action] (Play on your turn or in showdowns.)\nStun a unit. (It doesn't deal combat damage this turn.)",
+        "illustrators": [
+          "Kudos Productions"
+        ]
+      },
+      "raw_printing_sha256": "fb87e0af20b34340f323b9712edd6590d100fc9c537309093e1bddf6e66e3d31",
+      "effective": {
+        "types": [
+          "spell"
+        ],
+        "super_types": [],
+        "domains": [
+          "calm"
+        ],
+        "energy": 2,
+        "power": 1,
+        "might": null,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>[Action] (Play on your turn or in showdowns.)<br />Stun a unit. (It doesn't deal combat damage this turn.)</p>",
+        "rules_text": "[Action] (Play on your turn or in showdowns.)\nStun a unit. (It doesn't deal combat damage this turn.)",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "existing_field_resolution_ids": [],
+      "original_image": {
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/21867baeaced3c22cda5f40f6b6c9a8dad4b7042-744x1039.png?accountingTag=RB",
+        "path": "assets/data/card_admissions/c8/images/ogn-050-298.png",
+        "sha256": "f0c4ab3a0bc075137f282fc246ce3787b28a6516c77ca55cbedd35d058747c34",
+        "bytes": 693117
+      },
+      "runtime_image": {
+        "runtime_id": 292,
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/21867baeaced3c22cda5f40f6b6c9a8dad4b7042-744x1039.png?w=360&q=80&fm=png",
+        "path": "assets/art/card_292.png",
+        "bytes": 247250,
+        "sha256": "804e7f097e8122bb425712e120122b638e48d8be95652b64ec46edad58e06f2b",
+        "width": 360
+      },
+      "visual_observation": {
+        "official_id": "ogn-050-298",
+        "image_sha256": "f0c4ab3a0bc075137f282fc246ce3787b28a6516c77ca55cbedd35d058747c34",
+        "raw_printing_sha256": "fb87e0af20b34340f323b9712edd6590d100fc9c537309093e1bddf6e66e3d31",
+        "inspection": "manual_visual_exact_original_PNG",
+        "reviewed_on": "2026-10-24",
+        "printed_name": "Rune Prison",
+        "printed_type_tag_line": "SPELL",
+        "printed_energy": 2,
+        "printed_power_count": 1,
+        "printed_might": null,
+        "printed_domains": [
+          "calm"
+        ],
+        "printed_types": [
+          "spell"
+        ],
+        "printed_super_types": [],
+        "printed_tags_in_face_order": [],
+        "printed_rules_readable": "[Action] (Play on your turn or in showdowns.)\nStun a unit. (It doesn't deal combat damage this turn.)",
+        "comparison_to_effective": {
+          "collector_identity": true,
+          "energy": true,
+          "power": true,
+          "might": true,
+          "domains": true,
+          "type": true,
+          "super_types": true,
+          "tags": true,
+          "rules_text": true
+        },
+        "findings": "All printed gameplay facts agree with the selected effective projection. No new unresolved source discrepancy observed.",
+        "required_behavior": "Explicit immediate single-target Stun; Action; not Exhaust and not a movement prohibition.",
+        "source_uncertainties": []
+      },
+      "legal_legend_ids": [
+        0,
+        1
+      ]
+    },
+    {
+      "runtime_id": 293,
+      "official_id": "ogn-004-298",
+      "name": "Cleave",
+      "raw_printing": {
+        "official_id": "ogn-004-298",
+        "public_code": "OGN-004/298",
+        "name": "Cleave",
+        "set": "OGN",
+        "collector_number": 4,
+        "types": [
+          "spell"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "spell"
+        ],
+        "accessibility_types": [
+          "spell"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "fury"
+        ],
+        "energy": 1,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "rules_html": "<p>[Action] (Play on your turn or in showdowns.)<br />Give a unit [Assault 3] this turn. (+3 :rb_might: while it's an attacker.)</p>",
+        "rules_text": "[Action] (Play on your turn or in showdowns.)\nGive a unit [Assault 3] this turn. (+3 Might while it's an attacker.)",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [],
+        "rarity": "common",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/95d476a1e88ff547fb846149619177bc7e3cea9f-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Spell: Cleave. [Action] (Play on your turn or in showdowns.)\nGive a unit [Assault 3] this turn. (+3 [S] while it's an attacker.)",
+        "illustrators": [
+          "Kudos Productions"
+        ]
+      },
+      "raw_printing_sha256": "20bab323e724dea4255c210edf5022dc00df8a35bc36bd1cf931c2ff78de22a4",
+      "effective": {
+        "types": [
+          "spell"
+        ],
+        "super_types": [],
+        "domains": [
+          "fury"
+        ],
+        "energy": 1,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>[Action] (Play on your turn or in showdowns.)<br />Give a unit [Assault 3] this turn. (+3 :rb_might: while it's an attacker.)</p>",
+        "rules_text": "[Action] (Play on your turn or in showdowns.)\nGive a unit [Assault 3] this turn. (+3 Might while it's an attacker.)",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "existing_field_resolution_ids": [],
+      "original_image": {
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/95d476a1e88ff547fb846149619177bc7e3cea9f-744x1039.png?accountingTag=RB",
+        "path": "assets/data/card_admissions/c8/images/ogn-004-298.png",
+        "sha256": "e3bced44dfd99515c6c914b81a2bf605df141afbdfe3c72cff23f7f9fb148a18",
+        "bytes": 774977
+      },
+      "runtime_image": {
+        "runtime_id": 293,
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/95d476a1e88ff547fb846149619177bc7e3cea9f-744x1039.png?w=360&q=80&fm=png",
+        "path": "assets/art/card_293.png",
+        "bytes": 254177,
+        "sha256": "5b2c92c7c2815aeda97d30526905c81b30d38f39e51b95b2a44eab5a248e8da2",
+        "width": 360
+      },
+      "visual_observation": {
+        "official_id": "ogn-004-298",
+        "image_sha256": "e3bced44dfd99515c6c914b81a2bf605df141afbdfe3c72cff23f7f9fb148a18",
+        "raw_printing_sha256": "20bab323e724dea4255c210edf5022dc00df8a35bc36bd1cf931c2ff78de22a4",
+        "inspection": "manual_visual_exact_original_PNG",
+        "reviewed_on": "2026-10-24",
+        "printed_name": "Cleave",
+        "printed_type_tag_line": "SPELL",
+        "printed_energy": 1,
+        "printed_power_count": 0,
+        "printed_might": null,
+        "printed_domains": [
+          "fury"
+        ],
+        "printed_types": [
+          "spell"
+        ],
+        "printed_super_types": [],
+        "printed_tags_in_face_order": [],
+        "printed_rules_readable": "[Action] (Play on your turn or in showdowns.)\nGive a unit [Assault 3] this turn. (+3 Might while it's an attacker.)",
+        "comparison_to_effective": {
+          "collector_identity": true,
+          "energy": true,
+          "power": true,
+          "might": true,
+          "domains": true,
+          "type": true,
+          "super_types": true,
+          "tags": true,
+          "rules_text": true
+        },
+        "findings": "All printed gameplay facts agree with the selected effective projection. No new unresolved source discrepancy observed.",
+        "required_behavior": "Explicit temporary Assault 3 grant through end of turn; Action; attacker-only Might.",
+        "source_uncertainties": []
+      },
+      "legal_legend_ids": [
+        3,
+        4
+      ]
+    },
+    {
+      "runtime_id": 294,
+      "official_id": "ogn-229-298",
+      "name": "Vengeance",
+      "raw_printing": {
+        "official_id": "ogn-229-298",
+        "public_code": "OGN-229/298",
+        "name": "Vengeance",
+        "set": "OGN",
+        "collector_number": 229,
+        "types": [
+          "spell"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "spell"
+        ],
+        "accessibility_types": [
+          "spell"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "order"
+        ],
+        "energy": 4,
+        "power": 2,
+        "might": null,
+        "might_bonus": null,
+        "rules_html": "<p>Kill a unit.</p>",
+        "rules_text": "Kill a unit.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [],
+        "rarity": "uncommon",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/a21e2ffee47ecdd1575bf48edb8c2a84722cc6b9-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Spell: Vengeance. Kill a unit.",
+        "illustrators": [
+          "Max Grecke"
+        ]
+      },
+      "raw_printing_sha256": "1f8edb2df629ae0240b3a8f5e11577306ae2fe9d24a0b775f4f7a6a442db8ff5",
+      "effective": {
+        "types": [
+          "spell"
+        ],
+        "super_types": [],
+        "domains": [
+          "order"
+        ],
+        "energy": 4,
+        "power": 2,
+        "might": null,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>Kill a unit.</p>",
+        "rules_text": "Kill a unit.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "existing_field_resolution_ids": [],
+      "original_image": {
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/a21e2ffee47ecdd1575bf48edb8c2a84722cc6b9-744x1039.png?accountingTag=RB",
+        "path": "assets/data/card_admissions/c8/images/ogn-229-298.png",
+        "sha256": "e3091d50433bd3815e413d538127a2775efbec5b00e66a1f261d3a6b2e6bf078",
+        "bytes": 771022
+      },
+      "runtime_image": {
+        "runtime_id": 294,
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/a21e2ffee47ecdd1575bf48edb8c2a84722cc6b9-744x1039.png?w=360&q=80&fm=png",
+        "path": "assets/art/card_294.png",
+        "bytes": 241856,
+        "sha256": "02ba384064beb6363c272bca6ce56e70a8a04f93ac56f596b8a7712b6bd1654c",
+        "width": 360
+      },
+      "visual_observation": {
+        "official_id": "ogn-229-298",
+        "image_sha256": "e3091d50433bd3815e413d538127a2775efbec5b00e66a1f261d3a6b2e6bf078",
+        "raw_printing_sha256": "1f8edb2df629ae0240b3a8f5e11577306ae2fe9d24a0b775f4f7a6a442db8ff5",
+        "inspection": "manual_visual_exact_original_PNG",
+        "reviewed_on": "2026-10-24",
+        "printed_name": "Vengeance",
+        "printed_type_tag_line": "SPELL",
+        "printed_energy": 4,
+        "printed_power_count": 2,
+        "printed_might": null,
+        "printed_domains": [
+          "order"
+        ],
+        "printed_types": [
+          "spell"
+        ],
+        "printed_super_types": [],
+        "printed_tags_in_face_order": [],
+        "printed_rules_readable": "Kill a unit.",
+        "comparison_to_effective": {
+          "collector_identity": true,
+          "energy": true,
+          "power": true,
+          "might": true,
+          "domains": true,
+          "type": true,
+          "super_types": true,
+          "tags": true,
+          "rules_text": true
+        },
+        "findings": "All printed gameplay facts agree with the selected effective projection. No new unresolved source discrepancy observed.",
+        "required_behavior": "Explicit direct Kill; ordinary spell timing; use death replacement and death-trigger paths.",
+        "source_uncertainties": []
+      },
+      "legal_legend_ids": [
+        2,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "runtime_id": 295,
+      "official_id": "unl-159-219",
+      "name": "Soul Harvest",
+      "raw_printing": {
+        "official_id": "unl-159-219",
+        "public_code": "UNL-159/219",
+        "name": "Soul Harvest",
+        "set": "UNL",
+        "collector_number": 159,
+        "types": [
+          "spell"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "spell"
+        ],
+        "accessibility_types": [
+          "spell"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "order"
+        ],
+        "energy": 2,
+        "power": 1,
+        "might": null,
+        "might_bonus": null,
+        "rules_html": "<p>Kill a unit at a battlefield with 3 :rb_might: or less.</p>",
+        "rules_text": "Kill a unit at a battlefield with 3 Might or less.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [],
+        "rarity": "common",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/baee7644d00219dfa4160d59e6f6e78e55f5e619-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Spell: Soul Harvest. Kill a unit at a battlefield with 3 [S] or less.",
+        "illustrators": [
+          "Kudos Productions"
+        ]
+      },
+      "raw_printing_sha256": "3389aebfb4d84410c58be238f324d7887d4029dfbce4a640b0f3a9b79abd00eb",
+      "effective": {
+        "types": [
+          "spell"
+        ],
+        "super_types": [],
+        "domains": [
+          "order"
+        ],
+        "energy": 2,
+        "power": 1,
+        "might": null,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>Kill a unit at a battlefield with 3 :rb_might: or less.</p>",
+        "rules_text": "Kill a unit at a battlefield with 3 Might or less.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "existing_field_resolution_ids": [],
+      "original_image": {
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/baee7644d00219dfa4160d59e6f6e78e55f5e619-744x1039.png?accountingTag=RB",
+        "path": "assets/data/card_admissions/c8/images/unl-159-219.png",
+        "sha256": "115973aed01b9f831ef6ddada547f47819f3271bbbb08547058eb9b7994ae9cb",
+        "bytes": 735383
+      },
+      "runtime_image": {
+        "runtime_id": 295,
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/baee7644d00219dfa4160d59e6f6e78e55f5e619-744x1039.png?w=360&q=80&fm=png",
+        "path": "assets/art/card_295.png",
+        "bytes": 271313,
+        "sha256": "ccfe5b6a0bcb946b929e872518e11c36e97ffa221d1ee49a3d3ddbea54474b30",
+        "width": 360
+      },
+      "visual_observation": {
+        "official_id": "unl-159-219",
+        "image_sha256": "115973aed01b9f831ef6ddada547f47819f3271bbbb08547058eb9b7994ae9cb",
+        "raw_printing_sha256": "3389aebfb4d84410c58be238f324d7887d4029dfbce4a640b0f3a9b79abd00eb",
+        "inspection": "manual_visual_exact_original_PNG",
+        "reviewed_on": "2026-10-24",
+        "printed_name": "Soul Harvest",
+        "printed_type_tag_line": "SPELL",
+        "printed_energy": 2,
+        "printed_power_count": 1,
+        "printed_might": null,
+        "printed_domains": [
+          "order"
+        ],
+        "printed_types": [
+          "spell"
+        ],
+        "printed_super_types": [],
+        "printed_tags_in_face_order": [],
+        "printed_rules_readable": "Kill a unit at a battlefield with 3 Might or less.",
+        "comparison_to_effective": {
+          "collector_identity": true,
+          "energy": true,
+          "power": true,
+          "might": true,
+          "domains": true,
+          "type": true,
+          "super_types": true,
+          "tags": true,
+          "rules_text": true
+        },
+        "findings": "All printed gameplay facts agree with the selected effective projection. No new unresolved source discrepancy observed.",
+        "required_behavior": "Explicit direct Kill of current battlefield unit with current Might <= 3; recheck target restrictions.",
+        "source_uncertainties": []
+      },
+      "legal_legend_ids": [
+        2,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "runtime_id": 296,
+      "official_id": "ogs-012-024",
+      "name": "Blast of Power",
+      "raw_printing": {
+        "official_id": "ogs-012-024",
+        "public_code": "OGS-012/024",
+        "name": "Blast of Power",
+        "set": "OGS",
+        "collector_number": 12,
+        "types": [
+          "spell"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "spell"
+        ],
+        "accessibility_types": [
+          "spell"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "order"
+        ],
+        "energy": 6,
+        "power": 1,
+        "might": null,
+        "might_bonus": null,
+        "rules_html": "<p>[Action] (Play on your turn or in showdowns.)<br />Kill a unit at a battlefield.</p>",
+        "rules_text": "[Action] (Play on your turn or in showdowns.)\nKill a unit at a battlefield.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [],
+        "rarity": "common",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/026f851a703601fce4142c0791e913377c170b47-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Spell: Blast of Power. [Action] (Play on your turn or in showdowns.)\nKill a unit at a battlefield.",
+        "illustrators": [
+          "Kudos Productions"
+        ]
+      },
+      "raw_printing_sha256": "10eecb00ca3f62ed55c7ab9fec69d0ed6bebec34a18bf0d8188dca662c6f358b",
+      "effective": {
+        "types": [
+          "spell"
+        ],
+        "super_types": [],
+        "domains": [
+          "order"
+        ],
+        "energy": 6,
+        "power": 1,
+        "might": null,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>[Action] (Play on your turn or in showdowns.)<br />Kill a unit at a battlefield.</p>",
+        "rules_text": "[Action] (Play on your turn or in showdowns.)\nKill a unit at a battlefield.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "existing_field_resolution_ids": [],
+      "original_image": {
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/026f851a703601fce4142c0791e913377c170b47-744x1039.png?accountingTag=RB",
+        "path": "assets/data/card_admissions/c8/images/ogs-012-024.png",
+        "sha256": "75164c2b3c74fb48236d66a69e5f8237079068cadf60c0092379421c174ac7c3",
+        "bytes": 788988
+      },
+      "runtime_image": {
+        "runtime_id": 296,
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/026f851a703601fce4142c0791e913377c170b47-744x1039.png?w=360&q=80&fm=png",
+        "path": "assets/art/card_296.png",
+        "bytes": 274034,
+        "sha256": "601c1d374bff50aa4ca9797f6b7d3ef93ff92304963aced81ac5b0953905551a",
+        "width": 360
+      },
+      "visual_observation": {
+        "official_id": "ogs-012-024",
+        "image_sha256": "75164c2b3c74fb48236d66a69e5f8237079068cadf60c0092379421c174ac7c3",
+        "raw_printing_sha256": "10eecb00ca3f62ed55c7ab9fec69d0ed6bebec34a18bf0d8188dca662c6f358b",
+        "inspection": "manual_visual_exact_original_PNG",
+        "reviewed_on": "2026-10-24",
+        "printed_name": "Blast of Power",
+        "printed_type_tag_line": "SPELL",
+        "printed_energy": 6,
+        "printed_power_count": 1,
+        "printed_might": null,
+        "printed_domains": [
+          "order"
+        ],
+        "printed_types": [
+          "spell"
+        ],
+        "printed_super_types": [],
+        "printed_tags_in_face_order": [],
+        "printed_rules_readable": "[Action] (Play on your turn or in showdowns.)\nKill a unit at a battlefield.",
+        "comparison_to_effective": {
+          "collector_identity": true,
+          "energy": true,
+          "power": true,
+          "might": true,
+          "domains": true,
+          "type": true,
+          "super_types": true,
+          "tags": true,
+          "rules_text": true
+        },
+        "findings": "All printed gameplay facts agree with the selected effective projection. No new unresolved source discrepancy observed.",
+        "required_behavior": "Explicit direct Kill of battlefield unit; Action; recheck location.",
+        "source_uncertainties": []
+      },
+      "legal_legend_ids": [
+        2,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "runtime_id": 297,
+      "official_id": "ogn-133-298",
+      "name": "Flurry of Blades",
+      "raw_printing": {
+        "official_id": "ogn-133-298",
+        "public_code": "OGN-133/298",
+        "name": "Flurry of Blades",
+        "set": "OGN",
+        "collector_number": 133,
+        "types": [
+          "spell"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "spell"
+        ],
+        "accessibility_types": [
+          "spell"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "body"
+        ],
+        "energy": 1,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "rules_html": "<p>[Reaction] (Play any time, even before spells and abilities resolve.)<br />Deal 1 to all units at battlefields.</p>",
+        "rules_text": "[Reaction] (Play any time, even before spells and abilities resolve.)\nDeal 1 to all units at battlefields.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [],
+        "rarity": "common",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/c72f872e7e71b55b2074c5be4f2d7a44fa6fafca-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Spell: Flurry of Blades. [Reaction] (Play any time, even before spells and abilities resolve.)\nDeal 1 to all units at battlefields.",
+        "illustrators": [
+          "Rafael Zanchetin"
+        ]
+      },
+      "raw_printing_sha256": "24b51fafea87f3bbb5ebbeae1c2fa218a72676ee61c5d6d18281d38d94443c7d",
+      "effective": {
+        "types": [
+          "spell"
+        ],
+        "super_types": [],
+        "domains": [
+          "body"
+        ],
+        "energy": 1,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>[Reaction] (Play any time, even before spells and abilities resolve.)<br />Deal 1 to all units at battlefields.</p>",
+        "rules_text": "[Reaction] (Play any time, even before spells and abilities resolve.)\nDeal 1 to all units at battlefields.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "existing_field_resolution_ids": [],
+      "original_image": {
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/c72f872e7e71b55b2074c5be4f2d7a44fa6fafca-744x1039.png?accountingTag=RB",
+        "path": "assets/data/card_admissions/c8/images/ogn-133-298.png",
+        "sha256": "98aab6d19c13a35d6642492be24a10558544ae117fc4ed7f62e3ea3eb599c336",
+        "bytes": 790092
+      },
+      "runtime_image": {
+        "runtime_id": 297,
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/c72f872e7e71b55b2074c5be4f2d7a44fa6fafca-744x1039.png?w=360&q=80&fm=png",
+        "path": "assets/art/card_297.png",
+        "bytes": 266461,
+        "sha256": "492ddfe5ca065ca1284aa0b4ded104cc354ee966c1f41d6d47420c9c71d3966e",
+        "width": 360
+      },
+      "visual_observation": {
+        "official_id": "ogn-133-298",
+        "image_sha256": "98aab6d19c13a35d6642492be24a10558544ae117fc4ed7f62e3ea3eb599c336",
+        "raw_printing_sha256": "24b51fafea87f3bbb5ebbeae1c2fa218a72676ee61c5d6d18281d38d94443c7d",
+        "inspection": "manual_visual_exact_original_PNG",
+        "reviewed_on": "2026-10-24",
+        "printed_name": "Flurry of Blades",
+        "printed_type_tag_line": "SPELL",
+        "printed_energy": 1,
+        "printed_power_count": 0,
+        "printed_might": null,
+        "printed_domains": [
+          "body"
+        ],
+        "printed_types": [
+          "spell"
+        ],
+        "printed_super_types": [],
+        "printed_tags_in_face_order": [],
+        "printed_rules_readable": "[Reaction] (Play any time, even before spells and abilities resolve.)\nDeal 1 to all units at battlefields.",
+        "comparison_to_effective": {
+          "collector_identity": true,
+          "energy": true,
+          "power": true,
+          "might": true,
+          "domains": true,
+          "type": true,
+          "super_types": true,
+          "tags": true,
+          "rules_text": true
+        },
+        "findings": "All printed gameplay facts agree with the selected effective projection. No new unresolved source discrepancy observed.",
+        "required_behavior": "Area Damage 1 to both owners at all battlefields; Reaction; affected units are not individually chosen targets.",
+        "source_uncertainties": []
+      },
+      "legal_legend_ids": [
+        1,
+        7
+      ]
+    },
+    {
+      "runtime_id": 298,
+      "official_id": "rad-079-167",
+      "name": "Avalanche",
+      "raw_printing": {
+        "official_id": "rad-079-167",
+        "public_code": "RAD-079/167",
+        "name": "Avalanche",
+        "set": "RAD",
+        "collector_number": 79,
+        "types": [
+          "spell"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "spell"
+        ],
+        "accessibility_types": [
+          "spell"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "body"
+        ],
+        "energy": 5,
+        "power": 2,
+        "might": null,
+        "might_bonus": null,
+        "rules_html": "<p>Deal 3 to all units in bases.</p>",
+        "rules_text": "Deal 3 to all units in bases.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [],
+        "rarity": "uncommon",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/7b2103352935061e19cf90036a6aa4cd35ad5922-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Spell: Avalanche. Deal 3 to all units in bases.",
+        "illustrators": [
+          "Six More Vodka"
+        ]
+      },
+      "raw_printing_sha256": "0692aef9f3ad70de8651e3c8ec403d609704026e410b390aae465b05fb56955d",
+      "effective": {
+        "types": [
+          "spell"
+        ],
+        "super_types": [],
+        "domains": [
+          "body"
+        ],
+        "energy": 5,
+        "power": 2,
+        "might": null,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>Deal 3 to all units in bases.</p>",
+        "rules_text": "Deal 3 to all units in bases.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "existing_field_resolution_ids": [],
+      "original_image": {
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/7b2103352935061e19cf90036a6aa4cd35ad5922-744x1039.png?accountingTag=RB",
+        "path": "assets/data/card_admissions/c8/images/rad-079-167.png",
+        "sha256": "7c49a9e8ea465d35cdd7f2f6c12926d099ca724e14a50a8c26434377a5957283",
+        "bytes": 618779
+      },
+      "runtime_image": {
+        "runtime_id": 298,
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/7b2103352935061e19cf90036a6aa4cd35ad5922-744x1039.png?w=360&q=80&fm=png",
+        "path": "assets/art/card_298.png",
+        "bytes": 196061,
+        "sha256": "fe111bd220c086e8cd5ecde914f0cbaef9b362876fc7ca80825d52991083b7e4",
+        "width": 360
+      },
+      "visual_observation": {
+        "official_id": "rad-079-167",
+        "image_sha256": "7c49a9e8ea465d35cdd7f2f6c12926d099ca724e14a50a8c26434377a5957283",
+        "raw_printing_sha256": "0692aef9f3ad70de8651e3c8ec403d609704026e410b390aae465b05fb56955d",
+        "inspection": "manual_visual_exact_original_PNG",
+        "reviewed_on": "2026-10-24",
+        "printed_name": "Avalanche",
+        "printed_type_tag_line": "SPELL",
+        "printed_energy": 5,
+        "printed_power_count": 2,
+        "printed_might": null,
+        "printed_domains": [
+          "body"
+        ],
+        "printed_types": [
+          "spell"
+        ],
+        "printed_super_types": [],
+        "printed_tags_in_face_order": [],
+        "printed_rules_readable": "Deal 3 to all units in bases.",
+        "comparison_to_effective": {
+          "collector_identity": true,
+          "energy": true,
+          "power": true,
+          "might": true,
+          "domains": true,
+          "type": true,
+          "super_types": true,
+          "tags": true,
+          "rules_text": true
+        },
+        "findings": "All printed gameplay facts agree with the selected effective projection. No new unresolved source discrepancy observed.",
+        "required_behavior": "Area Damage 3 to both owners in bases; ordinary timing.",
+        "source_uncertainties": []
+      },
+      "legal_legend_ids": [
+        1,
+        7
+      ]
+    },
+    {
+      "runtime_id": 299,
+      "official_id": "ogs-002-024",
+      "name": "Firestorm",
+      "raw_printing": {
+        "official_id": "ogs-002-024",
+        "public_code": "OGS-002/024",
+        "name": "Firestorm",
+        "set": "OGS",
+        "collector_number": 2,
+        "types": [
+          "spell"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "spell"
+        ],
+        "accessibility_types": [
+          "spell"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "fury"
+        ],
+        "energy": 6,
+        "power": 1,
+        "might": null,
+        "might_bonus": null,
+        "rules_html": "<p>Deal 3 to all enemy units at a battlefield.</p>",
+        "rules_text": "Deal 3 to all enemy units at a battlefield.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [],
+        "rarity": "uncommon",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/a7a34129e64f0296bf2da166c2b06ed156d568db-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Spell: Firestorm. Deal 3 to all enemy units at a battlefield.",
+        "illustrators": [
+          "Kudos Productions"
+        ]
+      },
+      "raw_printing_sha256": "9166dad551021c24a15e937b8cce9f07142ddd521a8fdc53f4be34322a2ba730",
+      "effective": {
+        "types": [
+          "spell"
+        ],
+        "super_types": [],
+        "domains": [
+          "fury"
+        ],
+        "energy": 6,
+        "power": 1,
+        "might": null,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>Deal 3 to all enemy units at a battlefield.</p>",
+        "rules_text": "Deal 3 to all enemy units at a battlefield.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "existing_field_resolution_ids": [],
+      "original_image": {
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/a7a34129e64f0296bf2da166c2b06ed156d568db-744x1039.png?accountingTag=RB",
+        "path": "assets/data/card_admissions/c8/images/ogs-002-024.png",
+        "sha256": "1f525ca2fccb97710b467bc792429b51cb05cd1fb8b89ccf4d497c81f2fa5b44",
+        "bytes": 749980
+      },
+      "runtime_image": {
+        "runtime_id": 299,
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/a7a34129e64f0296bf2da166c2b06ed156d568db-744x1039.png?w=360&q=80&fm=png",
+        "path": "assets/art/card_299.png",
+        "bytes": 256088,
+        "sha256": "304690d1186f55eb4332c0ba676e5756167e57008fd67abc989685ab13f4dc6e",
+        "width": 360
+      },
+      "visual_observation": {
+        "official_id": "ogs-002-024",
+        "image_sha256": "1f525ca2fccb97710b467bc792429b51cb05cd1fb8b89ccf4d497c81f2fa5b44",
+        "raw_printing_sha256": "9166dad551021c24a15e937b8cce9f07142ddd521a8fdc53f4be34322a2ba730",
+        "inspection": "manual_visual_exact_original_PNG",
+        "reviewed_on": "2026-10-24",
+        "printed_name": "Firestorm",
+        "printed_type_tag_line": "SPELL",
+        "printed_energy": 6,
+        "printed_power_count": 1,
+        "printed_might": null,
+        "printed_domains": [
+          "fury"
+        ],
+        "printed_types": [
+          "spell"
+        ],
+        "printed_super_types": [],
+        "printed_tags_in_face_order": [],
+        "printed_rules_readable": "Deal 3 to all enemy units at a battlefield.",
+        "comparison_to_effective": {
+          "collector_identity": true,
+          "energy": true,
+          "power": true,
+          "might": true,
+          "domains": true,
+          "type": true,
+          "super_types": true,
+          "tags": true,
+          "rules_text": true
+        },
+        "findings": "All printed gameplay facts agree with the selected effective projection. No new unresolved source discrepancy observed.",
+        "required_behavior": "Area Damage 3 to enemy units currently at one chosen battlefield; ordinary timing.",
+        "source_uncertainties": []
+      },
+      "legal_legend_ids": [
+        3,
+        4
+      ]
+    },
+    {
+      "runtime_id": 300,
+      "official_id": "ogn-216-298",
+      "name": "Soaring Scout",
+      "raw_printing": {
+        "official_id": "ogn-216-298",
+        "public_code": "OGN-216/298",
+        "name": "Soaring Scout",
+        "set": "OGN",
+        "collector_number": 216,
+        "types": [
+          "unit"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "unit"
+        ],
+        "accessibility_types": [
+          "unit"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "order"
+        ],
+        "energy": 2,
+        "power": null,
+        "might": 1,
+        "might_bonus": null,
+        "rules_html": "<p>[Deathknell] — Channel 1 rune exhausted. (When I die, get the effect.)</p>",
+        "rules_text": "[Deathknell] — Channel 1 rune exhausted. (When I die, get the effect.)",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [
+          "Bird",
+          "Freljord"
+        ],
+        "rarity": "common",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/75b6ce420888035b566c3795cabe0999a9a918b0-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Unit: Soaring Scout. [Deathknell] — Channel 1 rune exhausted. (When I die, get the effect.)",
+        "illustrators": [
+          "Six More Vodka"
+        ]
+      },
+      "raw_printing_sha256": "c08894ef82bae72e8cccbf49a84b377ab86d160f255452e112b6406ad774e192",
+      "effective": {
+        "types": [
+          "unit"
+        ],
+        "super_types": [],
+        "domains": [
+          "order"
+        ],
+        "energy": 2,
+        "power": null,
+        "might": 1,
+        "might_bonus": null,
+        "tags": [
+          "Bird",
+          "Freljord"
+        ],
+        "rules_html": "<p>[Deathknell] — Channel 1 rune exhausted. (When I die, get the effect.)</p>",
+        "rules_text": "[Deathknell] — Channel 1 rune exhausted. (When I die, get the effect.)",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "existing_field_resolution_ids": [],
+      "original_image": {
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/75b6ce420888035b566c3795cabe0999a9a918b0-744x1039.png?accountingTag=RB",
+        "path": "assets/data/card_admissions/c8/images/ogn-216-298.png",
+        "sha256": "8aa595ac8b5400a6b84c61f58a578f8a2823108ee76ead8d164ab7a29c100fcb",
+        "bytes": 843012
+      },
+      "runtime_image": {
+        "runtime_id": 300,
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/75b6ce420888035b566c3795cabe0999a9a918b0-744x1039.png?w=360&q=80&fm=png",
+        "path": "assets/art/card_300.png",
+        "bytes": 268263,
+        "sha256": "55c7d26ecba9642a5174a93d954473b12a6a098fd5d7f145430d928890b8562b",
+        "width": 360
+      },
+      "visual_observation": {
+        "official_id": "ogn-216-298",
+        "image_sha256": "8aa595ac8b5400a6b84c61f58a578f8a2823108ee76ead8d164ab7a29c100fcb",
+        "raw_printing_sha256": "c08894ef82bae72e8cccbf49a84b377ab86d160f255452e112b6406ad774e192",
+        "inspection": "manual_visual_exact_original_PNG",
+        "reviewed_on": "2026-10-24",
+        "printed_name": "Soaring Scout",
+        "printed_type_tag_line": "UNIT / FRELJORD / BIRD",
+        "printed_energy": 2,
+        "printed_power_count": 0,
+        "printed_might": 1,
+        "printed_domains": [
+          "order"
+        ],
+        "printed_types": [
+          "unit"
+        ],
+        "printed_super_types": [],
+        "printed_tags_in_face_order": [
+          "Freljord",
+          "Bird"
+        ],
+        "printed_rules_readable": "[Deathknell] — Channel 1 rune exhausted. (When I die, get the effect.)",
+        "comparison_to_effective": {
+          "collector_identity": true,
+          "energy": true,
+          "power": true,
+          "might": true,
+          "domains": true,
+          "type": true,
+          "super_types": true,
+          "tags": true,
+          "rules_text": true
+        },
+        "findings": "All printed gameplay facts agree with the selected effective projection. No new unresolved source discrepancy observed.",
+        "required_behavior": "SelfDeath trigger, Channel 1 rune exhausted.",
+        "source_uncertainties": []
+      },
+      "legal_legend_ids": [
+        2,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "runtime_id": 301,
+      "official_id": "unl-152-219",
+      "name": "Black Rose Dignitary",
+      "raw_printing": {
+        "official_id": "unl-152-219",
+        "public_code": "UNL-152/219",
+        "name": "Black Rose Dignitary",
+        "set": "UNL",
+        "collector_number": 152,
+        "types": [
+          "unit"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "unit"
+        ],
+        "accessibility_types": [
+          "unit"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "order"
+        ],
+        "energy": 3,
+        "power": null,
+        "might": 2,
+        "might_bonus": null,
+        "rules_html": "<p>[Assault] (+1 :rb_might: while I'm an attacker.)<br />[Deathknell][&gt;] Channel 1 rune exhausted. (When I die, get the effect.)</p>",
+        "rules_text": "[Assault] (+1 Might while I'm an attacker.)\n[Deathknell][>] Channel 1 rune exhausted. (When I die, get the effect.)",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [
+          "Noxus"
+        ],
+        "rarity": "common",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/b63912e07914c3ef7e2bcdb95d5521fc26c880f2-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Unit: Black Rose Dignitary. [Assault] (+1 [S] while I'm an attacker.)\n[Deathknell][>] Channel 1 rune exhausted. (When I die, get the effect.)",
+        "illustrators": [
+          "Grafit Studio"
+        ]
+      },
+      "raw_printing_sha256": "cf9490323577b344175035e432e548b626983a87a96db83f28c4018e4c439637",
+      "effective": {
+        "types": [
+          "unit"
+        ],
+        "super_types": [],
+        "domains": [
+          "order"
+        ],
+        "energy": 3,
+        "power": null,
+        "might": 2,
+        "might_bonus": null,
+        "tags": [
+          "Noxus"
+        ],
+        "rules_html": "<p>[Assault] (+1 :rb_might: while I'm an attacker.)<br />[Deathknell][&gt;] Channel 1 rune exhausted. (When I die, get the effect.)</p>",
+        "rules_text": "[Assault] (+1 Might while I'm an attacker.)\n[Deathknell][>] Channel 1 rune exhausted. (When I die, get the effect.)",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "existing_field_resolution_ids": [],
+      "original_image": {
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/b63912e07914c3ef7e2bcdb95d5521fc26c880f2-744x1039.png?accountingTag=RB",
+        "path": "assets/data/card_admissions/c8/images/unl-152-219.png",
+        "sha256": "3141e33dfc9526c521d0242a0906c26359f08af5554b36be4211f1de36359898",
+        "bytes": 812387
+      },
+      "runtime_image": {
+        "runtime_id": 301,
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/b63912e07914c3ef7e2bcdb95d5521fc26c880f2-744x1039.png?w=360&q=80&fm=png",
+        "path": "assets/art/card_301.png",
+        "bytes": 275711,
+        "sha256": "3ff4643a74324744cd5142cbcd6b2b4a47d7f423fcde8a750d0a61beec24cc29",
+        "width": 360
+      },
+      "visual_observation": {
+        "official_id": "unl-152-219",
+        "image_sha256": "3141e33dfc9526c521d0242a0906c26359f08af5554b36be4211f1de36359898",
+        "raw_printing_sha256": "cf9490323577b344175035e432e548b626983a87a96db83f28c4018e4c439637",
+        "inspection": "manual_visual_exact_original_PNG",
+        "reviewed_on": "2026-10-24",
+        "printed_name": "Black Rose Dignitary",
+        "printed_type_tag_line": "UNIT / NOXUS",
+        "printed_energy": 3,
+        "printed_power_count": 0,
+        "printed_might": 2,
+        "printed_domains": [
+          "order"
+        ],
+        "printed_types": [
+          "unit"
+        ],
+        "printed_super_types": [],
+        "printed_tags_in_face_order": [
+          "Noxus"
+        ],
+        "printed_rules_readable": "[Assault] (+1 Might while I'm an attacker.)\n[Deathknell][>] Channel 1 rune exhausted. (When I die, get the effect.)",
+        "comparison_to_effective": {
+          "collector_identity": true,
+          "energy": true,
+          "power": true,
+          "might": true,
+          "domains": true,
+          "type": true,
+          "super_types": true,
+          "tags": true,
+          "rules_text": true
+        },
+        "findings": "All printed gameplay facts agree with the selected effective projection. No new unresolved source discrepancy observed.",
+        "required_behavior": "Printed Assault 1 and SelfDeath trigger, Channel 1 rune exhausted.",
+        "source_uncertainties": []
+      },
+      "legal_legend_ids": [
+        2,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "runtime_id": 302,
+      "official_id": "ogn-137-298",
+      "name": "Stormclaw Ursine",
+      "raw_printing": {
+        "official_id": "ogn-137-298",
+        "public_code": "OGN-137/298",
+        "name": "Stormclaw Ursine",
+        "set": "OGN",
+        "collector_number": 137,
+        "types": [
+          "unit"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "unit"
+        ],
+        "accessibility_types": [
+          "unit"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "body"
+        ],
+        "energy": 7,
+        "power": null,
+        "might": 6,
+        "might_bonus": null,
+        "rules_html": "<p>[Tank] (I must be assigned combat damage first.)<br />When you play me, channel 1 rune exhausted.</p>",
+        "rules_text": "[Tank] (I must be assigned combat damage first.)\nWhen you play me, channel 1 rune exhausted.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [
+          "Freljord"
+        ],
+        "rarity": "common",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/137e5a1faec1c8b26a5a0abc7802f6461cc725c8-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Unit: Stormclaw Ursine. [Tank] (I must be assigned combat damage first.)\nWhen you play me, channel 1 rune exhausted.",
+        "illustrators": [
+          "Kudos Productions"
+        ]
+      },
+      "raw_printing_sha256": "828d8b9c9e2296cef81625d76fac3708cbd5f5d78feec753ce19e53893b7923e",
+      "effective": {
+        "types": [
+          "unit"
+        ],
+        "super_types": [],
+        "domains": [
+          "body"
+        ],
+        "energy": 7,
+        "power": null,
+        "might": 6,
+        "might_bonus": null,
+        "tags": [
+          "Freljord"
+        ],
+        "rules_html": "<p>[Tank] (I must be assigned combat damage first.)<br />When you play me, channel 1 rune exhausted.</p>",
+        "rules_text": "[Tank] (I must be assigned combat damage first.)\nWhen you play me, channel 1 rune exhausted.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "existing_field_resolution_ids": [],
+      "original_image": {
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/137e5a1faec1c8b26a5a0abc7802f6461cc725c8-744x1039.png?accountingTag=RB",
+        "path": "assets/data/card_admissions/c8/images/ogn-137-298.png",
+        "sha256": "646ca6764c623ff245a8b3012dabd44c7da8ed24ce0aa6e8627f327efe72c27a",
+        "bytes": 853410
+      },
+      "runtime_image": {
+        "runtime_id": 302,
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/137e5a1faec1c8b26a5a0abc7802f6461cc725c8-744x1039.png?w=360&q=80&fm=png",
+        "path": "assets/art/card_302.png",
+        "bytes": 289211,
+        "sha256": "77b31ba69a7c5b5dcbc6625a4c25b73c07461c26a3faaa1cf2f827479613c85a",
+        "width": 360
+      },
+      "visual_observation": {
+        "official_id": "ogn-137-298",
+        "image_sha256": "646ca6764c623ff245a8b3012dabd44c7da8ed24ce0aa6e8627f327efe72c27a",
+        "raw_printing_sha256": "828d8b9c9e2296cef81625d76fac3708cbd5f5d78feec753ce19e53893b7923e",
+        "inspection": "manual_visual_exact_original_PNG",
+        "reviewed_on": "2026-10-24",
+        "printed_name": "Stormclaw Ursine",
+        "printed_type_tag_line": "UNIT / FRELJORD",
+        "printed_energy": 7,
+        "printed_power_count": 0,
+        "printed_might": 6,
+        "printed_domains": [
+          "body"
+        ],
+        "printed_types": [
+          "unit"
+        ],
+        "printed_super_types": [],
+        "printed_tags_in_face_order": [
+          "Freljord"
+        ],
+        "printed_rules_readable": "[Tank] (I must be assigned combat damage first.)\nWhen you play me, channel 1 rune exhausted.",
+        "comparison_to_effective": {
+          "collector_identity": true,
+          "energy": true,
+          "power": true,
+          "might": true,
+          "domains": true,
+          "type": true,
+          "super_types": true,
+          "tags": true,
+          "rules_text": true
+        },
+        "findings": "All printed gameplay facts agree with the selected effective projection. No new unresolved source discrepancy observed.",
+        "required_behavior": "Printed Tank and completed SelfPlayed trigger, Channel 1 rune exhausted.",
+        "source_uncertainties": []
+      },
+      "legal_legend_ids": [
+        1,
+        7
+      ]
+    },
+    {
+      "runtime_id": 303,
+      "official_id": "unl-062-219",
+      "name": "Dramatic Visionary",
+      "raw_printing": {
+        "official_id": "unl-062-219",
+        "public_code": "UNL-062/219",
+        "name": "Dramatic Visionary",
+        "set": "UNL",
+        "collector_number": 62,
+        "types": [
+          "unit"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "unit"
+        ],
+        "accessibility_types": [
+          "unit"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "mind"
+        ],
+        "energy": 4,
+        "power": null,
+        "might": 4,
+        "might_bonus": null,
+        "rules_html": "<p>[Deathknell][&gt;] [Predict 2]. (When I die, look at the top two cards of your Main Deck. Recycle any of them and put the rest back in any order.)</p>",
+        "rules_text": "[Deathknell][>] [Predict 2]. (When I die, look at the top two cards of your Main Deck. Recycle any of them and put the rest back in any order.)",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [
+          "Ionia"
+        ],
+        "rarity": "common",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/3153c05a8c3fb4d8f945a95fad54ea25e087ad47-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Unit: Dramatic Visionary. [Deathknell][>] [Predict 2]. (When I die, look at the top two cards of your Main Deck. Recycle any of them and put the rest back in any order.)",
+        "illustrators": [
+          "Envar Studio"
+        ]
+      },
+      "raw_printing_sha256": "24ed20d9f33c9895810c2f9010fa46b7c9bf4fefed6bf1b41b12f1a166b1ce8a",
+      "effective": {
+        "types": [
+          "unit"
+        ],
+        "super_types": [],
+        "domains": [
+          "mind"
+        ],
+        "energy": 4,
+        "power": null,
+        "might": 4,
+        "might_bonus": null,
+        "tags": [
+          "Ionia"
+        ],
+        "rules_html": "<p>[Deathknell][&gt;] [Predict 2]. (When I die, look at the top two cards of your Main Deck. Recycle any of them and put the rest back in any order.)</p>",
+        "rules_text": "[Deathknell][>] [Predict 2]. (When I die, look at the top two cards of your Main Deck. Recycle any of them and put the rest back in any order.)",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "existing_field_resolution_ids": [],
+      "original_image": {
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/3153c05a8c3fb4d8f945a95fad54ea25e087ad47-744x1039.png?accountingTag=RB",
+        "path": "assets/data/card_admissions/c8/images/unl-062-219.png",
+        "sha256": "ea694efad71db3ed37f1e59938fd12b5e7c4624f71fb1765ec41b58e26f543f0",
+        "bytes": 819904
+      },
+      "runtime_image": {
+        "runtime_id": 303,
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/3153c05a8c3fb4d8f945a95fad54ea25e087ad47-744x1039.png?w=360&q=80&fm=png",
+        "path": "assets/art/card_303.png",
+        "bytes": 280004,
+        "sha256": "bce8bba3416392d0010d253051860cff2f346a9e9eaed4987d4ba1f4464a0fb2",
+        "width": 360
+      },
+      "visual_observation": {
+        "official_id": "unl-062-219",
+        "image_sha256": "ea694efad71db3ed37f1e59938fd12b5e7c4624f71fb1765ec41b58e26f543f0",
+        "raw_printing_sha256": "24ed20d9f33c9895810c2f9010fa46b7c9bf4fefed6bf1b41b12f1a166b1ce8a",
+        "inspection": "manual_visual_exact_original_PNG",
+        "reviewed_on": "2026-10-24",
+        "printed_name": "Dramatic Visionary",
+        "printed_type_tag_line": "UNIT / IONIA",
+        "printed_energy": 4,
+        "printed_power_count": 0,
+        "printed_might": 4,
+        "printed_domains": [
+          "mind"
+        ],
+        "printed_types": [
+          "unit"
+        ],
+        "printed_super_types": [],
+        "printed_tags_in_face_order": [
+          "Ionia"
+        ],
+        "printed_rules_readable": "[Deathknell][>] [Predict 2]. (When I die, look at the top two cards of your Main Deck. Recycle any of them and put the rest back in any order.)",
+        "comparison_to_effective": {
+          "collector_identity": true,
+          "energy": true,
+          "power": true,
+          "might": true,
+          "domains": true,
+          "type": true,
+          "super_types": true,
+          "tags": true,
+          "rules_text": true
+        },
+        "findings": "All printed gameplay facts agree with the selected effective projection. No new unresolved source discrepancy observed.",
+        "required_behavior": "SelfDeath trigger, private Predict 2 subset/order choice.",
+        "source_uncertainties": []
+      },
+      "legal_legend_ids": [
+        3,
+        5,
+        6
+      ]
+    },
+    {
+      "runtime_id": 304,
+      "official_id": "unl-154-219",
+      "name": "Crimson Pigeons",
+      "raw_printing": {
+        "official_id": "unl-154-219",
+        "public_code": "UNL-154/219",
+        "name": "Crimson Pigeons",
+        "set": "UNL",
+        "collector_number": 154,
+        "types": [
+          "unit"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "unit"
+        ],
+        "accessibility_types": [
+          "unit"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "order"
+        ],
+        "energy": 3,
+        "power": null,
+        "might": 3,
+        "might_bonus": null,
+        "rules_html": "<p>I have +2 :rb_might: while I'm attacking with another unit.</p>",
+        "rules_text": "I have +2 Might while I'm attacking with another unit.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [
+          "Bird",
+          "Noxus"
+        ],
+        "rarity": "common",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/68786cd39a886a586b401d6bf818a80bf9f9e2cd-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Unit: Crimson Pigeons. I have +2 [S] while I'm attacking with another unit.",
+        "illustrators": [
+          "Kudos Productions"
+        ]
+      },
+      "raw_printing_sha256": "c58d0b3bbd56f38f62491d61e8bae37a1e6a98e4fbea20231bf7338644e36acc",
+      "effective": {
+        "types": [
+          "unit"
+        ],
+        "super_types": [],
+        "domains": [
+          "order"
+        ],
+        "energy": 3,
+        "power": null,
+        "might": 3,
+        "might_bonus": null,
+        "tags": [
+          "Bird",
+          "Noxus"
+        ],
+        "rules_html": "<p>I have +2 :rb_might: while I'm attacking with another unit.</p>",
+        "rules_text": "I have +2 Might while I'm attacking with another unit.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "existing_field_resolution_ids": [],
+      "original_image": {
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/68786cd39a886a586b401d6bf818a80bf9f9e2cd-744x1039.png?accountingTag=RB",
+        "path": "assets/data/card_admissions/c8/images/unl-154-219.png",
+        "sha256": "1c5369e63e4e75e3ea1f347c1ad67e06d2222d5cf75d2a37917b4f6275ae8d6b",
+        "bytes": 731663
+      },
+      "runtime_image": {
+        "runtime_id": 304,
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/68786cd39a886a586b401d6bf818a80bf9f9e2cd-744x1039.png?w=360&q=80&fm=png",
+        "path": "assets/art/card_304.png",
+        "bytes": 242741,
+        "sha256": "823a1a362ca68d45a9643c834bdfb6579ed87a13c99263726a2831eedf52987e",
+        "width": 360
+      },
+      "visual_observation": {
+        "official_id": "unl-154-219",
+        "image_sha256": "1c5369e63e4e75e3ea1f347c1ad67e06d2222d5cf75d2a37917b4f6275ae8d6b",
+        "raw_printing_sha256": "c58d0b3bbd56f38f62491d61e8bae37a1e6a98e4fbea20231bf7338644e36acc",
+        "inspection": "manual_visual_exact_original_PNG",
+        "reviewed_on": "2026-10-24",
+        "printed_name": "Crimson Pigeons",
+        "printed_type_tag_line": "UNIT / NOXUS / BIRD",
+        "printed_energy": 3,
+        "printed_power_count": 0,
+        "printed_might": 3,
+        "printed_domains": [
+          "order"
+        ],
+        "printed_types": [
+          "unit"
+        ],
+        "printed_super_types": [],
+        "printed_tags_in_face_order": [
+          "Noxus",
+          "Bird"
+        ],
+        "printed_rules_readable": "I have +2 Might while I'm attacking with another unit.",
+        "comparison_to_effective": {
+          "collector_identity": true,
+          "energy": true,
+          "power": true,
+          "might": true,
+          "domains": true,
+          "type": true,
+          "super_types": true,
+          "tags": true,
+          "rules_text": true
+        },
+        "findings": "All printed gameplay facts agree with the selected effective projection. No new unresolved source discrepancy observed.",
+        "required_behavior": "Live self Might +2 only while attacking with another unit.",
+        "source_uncertainties": []
+      },
+      "legal_legend_ids": [
+        2,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "runtime_id": 305,
+      "official_id": "ogn-055-298",
+      "name": "Wielder of Water",
+      "raw_printing": {
+        "official_id": "ogn-055-298",
+        "public_code": "OGN-055/298",
+        "name": "Wielder of Water",
+        "set": "OGN",
+        "collector_number": 55,
+        "types": [
+          "unit"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "unit"
+        ],
+        "accessibility_types": [
+          "unit"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "calm"
+        ],
+        "energy": 3,
+        "power": null,
+        "might": 2,
+        "might_bonus": null,
+        "rules_html": "<p>While I'm attacking or defending alone, I have +2 :rb_might:.</p>",
+        "rules_text": "While I'm attacking or defending alone, I have +2 Might.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [
+          "Ionia"
+        ],
+        "rarity": "common",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/5b38a7758705bd739caf07b5c0c49482a4a23015-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Unit: Wielder of Water. While I'm attacking or defending alone, I have +2 [S].",
+        "illustrators": [
+          "Six More Vodka"
+        ]
+      },
+      "raw_printing_sha256": "603cd3f6469edafa65a58eb2bc41f6688f0f52b7bc7c55e6ba6147f980b3da22",
+      "effective": {
+        "types": [
+          "unit"
+        ],
+        "super_types": [],
+        "domains": [
+          "calm"
+        ],
+        "energy": 3,
+        "power": null,
+        "might": 2,
+        "might_bonus": null,
+        "tags": [
+          "Ionia"
+        ],
+        "rules_html": "<p>While I'm attacking or defending alone, I have +2 :rb_might:.</p>",
+        "rules_text": "While I'm attacking or defending alone, I have +2 Might.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "existing_field_resolution_ids": [],
+      "original_image": {
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/5b38a7758705bd739caf07b5c0c49482a4a23015-744x1039.png?accountingTag=RB",
+        "path": "assets/data/card_admissions/c8/images/ogn-055-298.png",
+        "sha256": "bbc7a6bc9201042b2eeb0d834a94d7fbaaa79c1bf5b3d988282123d16dc4c6ae",
+        "bytes": 842346
+      },
+      "runtime_image": {
+        "runtime_id": 305,
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/5b38a7758705bd739caf07b5c0c49482a4a23015-744x1039.png?w=360&q=80&fm=png",
+        "path": "assets/art/card_305.png",
+        "bytes": 282892,
+        "sha256": "b577e2a8e23729790e36ea70c3885e6c2996ca30c8a96c059a5f420aca4e96c3",
+        "width": 360
+      },
+      "visual_observation": {
+        "official_id": "ogn-055-298",
+        "image_sha256": "bbc7a6bc9201042b2eeb0d834a94d7fbaaa79c1bf5b3d988282123d16dc4c6ae",
+        "raw_printing_sha256": "603cd3f6469edafa65a58eb2bc41f6688f0f52b7bc7c55e6ba6147f980b3da22",
+        "inspection": "manual_visual_exact_original_PNG",
+        "reviewed_on": "2026-10-24",
+        "printed_name": "Wielder of Water",
+        "printed_type_tag_line": "UNIT / IONIA",
+        "printed_energy": 3,
+        "printed_power_count": 0,
+        "printed_might": 2,
+        "printed_domains": [
+          "calm"
+        ],
+        "printed_types": [
+          "unit"
+        ],
+        "printed_super_types": [],
+        "printed_tags_in_face_order": [
+          "Ionia"
+        ],
+        "printed_rules_readable": "While I'm attacking or defending alone, I have +2 Might.",
+        "comparison_to_effective": {
+          "collector_identity": true,
+          "energy": true,
+          "power": true,
+          "might": true,
+          "domains": true,
+          "type": true,
+          "super_types": true,
+          "tags": true,
+          "rules_text": true
+        },
+        "findings": "All printed gameplay facts agree with the selected effective projection. No new unresolved source discrepancy observed.",
+        "required_behavior": "Live self Might +2 only while attacking or defending alone.",
+        "source_uncertainties": []
+      },
+      "legal_legend_ids": [
+        0,
+        1
+      ]
+    },
+    {
+      "runtime_id": 306,
+      "official_id": "ogn-015-298",
+      "name": "Captain Farron",
+      "raw_printing": {
+        "official_id": "ogn-015-298",
+        "public_code": "OGN-015/298",
+        "name": "Captain Farron",
+        "set": "OGN",
+        "collector_number": 15,
+        "types": [
+          "unit"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "unit"
+        ],
+        "accessibility_types": [
+          "unit"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "fury"
+        ],
+        "energy": 4,
+        "power": 1,
+        "might": 5,
+        "might_bonus": null,
+        "rules_html": "<p>Other friendly units here have [Assault]. (+1 :rb_might: while they're attackers.)</p>",
+        "rules_text": "Other friendly units here have [Assault]. (+1 Might while they're attackers.)",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [
+          "Trifarian",
+          "Noxus"
+        ],
+        "rarity": "uncommon",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/4c65e2cae6748590f589ad8b26bc5a20c0d770c2-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Unit: Captain Farron. Other friendly units here have [Assault]. (+1 [S] while they're attackers.)",
+        "illustrators": [
+          "Six More Vodka"
+        ]
+      },
+      "raw_printing_sha256": "370db6623ed59b4dcedaa512d1693fa9b0724db2fb481788051ab21f7d0a3a44",
+      "effective": {
+        "types": [
+          "unit"
+        ],
+        "super_types": [],
+        "domains": [
+          "fury"
+        ],
+        "energy": 4,
+        "power": 1,
+        "might": 5,
+        "might_bonus": null,
+        "tags": [
+          "Trifarian",
+          "Noxus"
+        ],
+        "rules_html": "<p>Other friendly units here have [Assault]. (+1 :rb_might: while they're attackers.)</p>",
+        "rules_text": "Other friendly units here have [Assault]. (+1 Might while they're attackers.)",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "existing_field_resolution_ids": [],
+      "original_image": {
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/4c65e2cae6748590f589ad8b26bc5a20c0d770c2-744x1039.png?accountingTag=RB",
+        "path": "assets/data/card_admissions/c8/images/ogn-015-298.png",
+        "sha256": "1ab4bca70248c01348cfb8377e64f0223dcd2cd5818fe5d72401126d8f31dd61",
+        "bytes": 819443
+      },
+      "runtime_image": {
+        "runtime_id": 306,
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/4c65e2cae6748590f589ad8b26bc5a20c0d770c2-744x1039.png?w=360&q=80&fm=png",
+        "path": "assets/art/card_306.png",
+        "bytes": 248933,
+        "sha256": "38bd1d9e1990c3b728847fc16dc17184aa1d756dff579634ad63c67cd04ff06f",
+        "width": 360
+      },
+      "visual_observation": {
+        "official_id": "ogn-015-298",
+        "image_sha256": "1ab4bca70248c01348cfb8377e64f0223dcd2cd5818fe5d72401126d8f31dd61",
+        "raw_printing_sha256": "370db6623ed59b4dcedaa512d1693fa9b0724db2fb481788051ab21f7d0a3a44",
+        "inspection": "manual_visual_exact_original_PNG",
+        "reviewed_on": "2026-10-24",
+        "printed_name": "Captain Farron",
+        "printed_type_tag_line": "UNIT / NOXUS / TRIFARIAN",
+        "printed_energy": 4,
+        "printed_power_count": 1,
+        "printed_might": 5,
+        "printed_domains": [
+          "fury"
+        ],
+        "printed_types": [
+          "unit"
+        ],
+        "printed_super_types": [],
+        "printed_tags_in_face_order": [
+          "Noxus",
+          "Trifarian"
+        ],
+        "printed_rules_readable": "Other friendly units here have [Assault]. (+1 Might while they're attackers.)",
+        "comparison_to_effective": {
+          "collector_identity": true,
+          "energy": true,
+          "power": true,
+          "might": true,
+          "domains": true,
+          "type": true,
+          "super_types": true,
+          "tags": true,
+          "rules_text": true
+        },
+        "findings": "All printed gameplay facts agree with the selected effective projection. No new unresolved source discrepancy observed.",
+        "required_behavior": "Live local other-friendly Assault 1 aura, without granting itself Assault.",
+        "source_uncertainties": []
+      },
+      "legal_legend_ids": [
+        3,
+        4
+      ]
+    },
+    {
+      "runtime_id": 307,
+      "official_id": "ogn-074-298",
+      "name": "Taric, Protector",
+      "raw_printing": {
+        "official_id": "ogn-074-298",
+        "public_code": "OGN-074/298",
+        "name": "Taric, Protector",
+        "set": "OGN",
+        "collector_number": 74,
+        "types": [
+          "unit"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "unit"
+        ],
+        "accessibility_types": [
+          "unit"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [
+          "champion"
+        ],
+        "domains": [
+          "calm"
+        ],
+        "energy": 4,
+        "power": 1,
+        "might": 4,
+        "might_bonus": null,
+        "rules_html": "<p>[Shield] (+1 :rb_might: while I'm a defender.)<br />[Tank] (I must be assigned combat damage first.)<br />Other friendly units here have [Shield].</p>",
+        "rules_text": "[Shield] (+1 Might while I'm a defender.)\n[Tank] (I must be assigned combat damage first.)\nOther friendly units here have [Shield].",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [
+          "Taric",
+          "Mount Targon"
+        ],
+        "rarity": "rare",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/7d08e3f64401cb87b8a0564a1cbe6fc94aee03a7-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Unit: Taric, Protector. [Shield] (+1 [S] while I'm a defender.)\n[Tank] (I must be assigned combat damage first.)\nOther friendly units here have [Shield].",
+        "illustrators": [
+          "Six More Vodka"
+        ]
+      },
+      "raw_printing_sha256": "6925f393db2cbb60f385fa29ee08a9811dac34d75565625ec870dfb7ae2c128f",
+      "effective": {
+        "types": [
+          "unit"
+        ],
+        "super_types": [
+          "champion"
+        ],
+        "domains": [
+          "calm"
+        ],
+        "energy": 4,
+        "power": 1,
+        "might": 4,
+        "might_bonus": null,
+        "tags": [
+          "Taric",
+          "Mount Targon"
+        ],
+        "rules_html": "<p>[Shield] (+1 :rb_might: while I'm a defender.)<br />[Tank] (I must be assigned combat damage first.)<br />Other friendly units here have [Shield].</p>",
+        "rules_text": "[Shield] (+1 Might while I'm a defender.)\n[Tank] (I must be assigned combat damage first.)\nOther friendly units here have [Shield].",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "existing_field_resolution_ids": [],
+      "original_image": {
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/7d08e3f64401cb87b8a0564a1cbe6fc94aee03a7-744x1039.png?accountingTag=RB",
+        "path": "assets/data/card_admissions/c8/images/ogn-074-298.png",
+        "sha256": "579f542f945c5c5af9638c192ee36f3aaf1e48f85e7a0a794899f40b2d05bf96",
+        "bytes": 876411
+      },
+      "runtime_image": {
+        "runtime_id": 307,
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/7d08e3f64401cb87b8a0564a1cbe6fc94aee03a7-744x1039.png?w=360&q=80&fm=png",
+        "path": "assets/art/card_307.png",
+        "bytes": 296612,
+        "sha256": "e39abbb123fe54eab15b65756c9ebebb148ee6a434d17bad4f4945259d57ea09",
+        "width": 360
+      },
+      "visual_observation": {
+        "official_id": "ogn-074-298",
+        "image_sha256": "579f542f945c5c5af9638c192ee36f3aaf1e48f85e7a0a794899f40b2d05bf96",
+        "raw_printing_sha256": "6925f393db2cbb60f385fa29ee08a9811dac34d75565625ec870dfb7ae2c128f",
+        "inspection": "manual_visual_exact_original_PNG",
+        "reviewed_on": "2026-10-24",
+        "printed_name": "Taric / PROTECTOR",
+        "printed_type_tag_line": "CHAMPION UNIT / TARIC / MOUNT TARGON",
+        "printed_energy": 4,
+        "printed_power_count": 1,
+        "printed_might": 4,
+        "printed_domains": [
+          "calm"
+        ],
+        "printed_types": [
+          "unit"
+        ],
+        "printed_super_types": [
+          "champion"
+        ],
+        "printed_tags_in_face_order": [
+          "Taric",
+          "Mount Targon"
+        ],
+        "printed_rules_readable": "[Shield] (+1 Might while I'm a defender.)\n[Tank] (I must be assigned combat damage first.)\nOther friendly units here have [Shield].",
+        "comparison_to_effective": {
+          "collector_identity": true,
+          "energy": true,
+          "power": true,
+          "might": true,
+          "domains": true,
+          "type": true,
+          "super_types": true,
+          "tags": true,
+          "rules_text": true
+        },
+        "findings": "All printed gameplay facts agree with the selected effective projection. No new unresolved source discrepancy observed. Taric / Protector is a Champion Unit tagged Taric and Mount Targon. It can be a regular main-deck card under the two compatible Calm legends, but it cannot be their chosen champion.",
+        "required_behavior": "Printed Shield 1 and Tank; live local other-friendly Shield 1 aura; Champion tag does not grant a matching legend.",
+        "source_uncertainties": []
+      },
+      "legal_legend_ids": [
+        0,
+        1
+      ]
+    }
+  ],
+  "preserved_runtime_prefix": {
+    "card_count": 290,
+    "cards_sha256": "ee3e1ee79f7d6f9a728ce48a24580ea86220471a657d6c427c0e400c53c7637a",
+    "presets_sha256": "d6e64ebf3f8921686682dacd87d4b2b4baec5754dbd284c6d60bf3fb324571e2",
+    "legends_manifest_sha256": "2b621121a54761ccee91e6d0df7b720e572138e7c2caac2c52abaaabd951b37f"
+  }
+}

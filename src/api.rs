@@ -23,6 +23,7 @@ use std::panic::{AssertUnwindSafe, catch_unwind};
 
 mod empowered;
 mod play_choices;
+mod targeting;
 
 pub const PROTOCOL_VERSION: u32 = 1;
 pub const MAX_REQUEST_BYTES: usize = 1_048_576;
@@ -711,6 +712,7 @@ pub fn catalog() -> Value {
         "cards":cards().iter().map(|c|json!({"id":c.id,"official_id":c.official_id,"name":c.name,"energy":c.cost,"power":c.power_cost,
             "might":c.might,"domain":c.domain.name(),"domains":c.domains.iter().map(|d|d.name()).collect::<Vec<_>>(),
             "kind":c.kind.name(),"official_text":c.official_text,"keywords":c.keywords,"tags":c.tags,
+            "play_targets":targeting::play_targets_to_json(c.id),
             "passive_rules":crate::continuous::passive_rules(c.id).iter().enumerate().map(|(index,rule)|empowered::passive_rule_to_json(index,rule)).collect::<Vec<_>>(),
             "activated_abilities":activated_rules(c.id).iter().enumerate().map(|(index,rule)|activated_rule_to_json(index,rule)).collect::<Vec<_>>()})).collect::<Vec<_>>(),
         "legends":legends().iter().map(|definition|json!({"id":definition.id,
@@ -766,6 +768,7 @@ pub fn target_to_json(target: &Target) -> Value {
             json!({"type":"gear","player":player,"gear_id":gear_id})
         }
         Target::Spell { chain_id } => json!({"type":"spell","chain_id":chain_id}),
+        Target::Battlefield { lane } => json!({"type":"battlefield","lane":lane}),
     }
 }
 
@@ -1130,8 +1133,14 @@ pub fn parse_target(value: &Value) -> Result<Target, ApiError> {
                 chain_id: id32(obj, "chain_id")?,
             })
         }
+        "battlefield" => {
+            keys(obj, &["type", "lane"])?;
+            Ok(Target::Battlefield {
+                lane: field(obj, "lane")?,
+            })
+        }
         _ => Err(ApiError::invalid(
-            "Target type must be unit, gear, or spell.",
+            "Target type must be unit, gear, spell, or battlefield.",
         )),
     }
 }

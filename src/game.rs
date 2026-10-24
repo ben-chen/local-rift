@@ -53,6 +53,7 @@ pub enum Target {
     Unit { player: usize, unit_id: u32 },
     Spell { chain_id: u32 },
     Gear { player: usize, gear_id: u32 },
+    Battlefield { lane: usize },
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -790,6 +791,8 @@ pub struct Game {
     pub battlefields: [usize; 2],
     pub empowered_units: Vec<u32>,
     instructed_kills: Vec<u32>,
+    /// Original simultaneous lethal events survive ordered replacements (CR373).
+    pending_cleanup_deaths: Option<Vec<(usize, u32)>>,
     pub buffed_units: Vec<u32>,
     pub optional_power_discount: [u8; 2],
     pub required_trash_play: bool,
@@ -1023,6 +1026,7 @@ impl Game {
                 .map_or_else(||default_battlefield(selected_decks[player]),|deck|deck.battlefield)),
             empowered_units: Vec::new(),
             instructed_kills: Vec::new(),
+            pending_cleanup_deaths: None,
             buffed_units: Vec::new(),
             optional_power_discount: [0;2],
             required_trash_play:false,
@@ -4472,7 +4476,7 @@ impl Game {
             return Vec::new();
         };
         let card = self.catalog[card_id];
-        let (_, mut required) = rules::target_bounds(card_id);
+        let mut required = rules::play_target_spec(card_id).required;
         if card.kind != CardKind::Spell {
             required = 0;
         }
@@ -4487,38 +4491,7 @@ impl Game {
             for _ in 0..required {
                 let mut next = Vec::new();
                 for group in groups {
-                    let choices: Vec<Target> = if self.is_counter(card_id) {
-                        self.chain
-                            .iter()
-                            .filter(|item| self.counter_target_valid(player, card_id, item.id))
-                            .map(|item| Target::Spell { chain_id: item.id })
-                            .collect()
-                    } else if matches!(rules::effect(card_id), OfficialEffect::TemporaryGear) {
-                        self.players
-                            .iter()
-                            .enumerate()
-                            .flat_map(|(player, state)| {
-                                state.gear.iter().map(move |gear| Target::Gear {
-                                    player,
-                                    gear_id: gear.id,
-                                })
-                            })
-                            .collect()
-                    } else {
-                        self.players
-                            .iter()
-                            .enumerate()
-                            .flat_map(|(player, state)| {
-                                state.units.iter().map(move |unit| Target::Unit {
-                                    player,
-                                    unit_id: unit.id,
-                                })
-                            })
-                            .filter(|&target| {
-                                self.valid_card_target(player, card_id, lane, target, &group)
-                            })
-                            .collect()
-                    };
+                    let choices = self.card_target_candidates(player, card_id, lane, &group);
                     for target in choices {
                         let mut chosen = group.clone();
                         chosen.push(target);
@@ -5257,6 +5230,17 @@ impl Game {
         }
         let mut actions = self.rune_actions(self.priority());
         for (hand_index, &id) in self.players[self.priority()].hand.iter().enumerate() {
+            if rules::play_target_spec(id).kind == Some(rules::PlayTargetKind::Battlefield) {
+                actions.extend(
+                    self.card_target_candidates(self.priority(), id, None, &[])
+                        .into_iter()
+                        .map(|target| Action::PlayCardWithTargets {
+                            hand_index,
+                            lane: None,
+                            targets: vec![target],
+                        }),
+                );
+            }
             if self.validate_play(id, None, None).is_ok() {
                 actions.push(Action::PlayCard {
                     hand_index,
@@ -5294,6 +5278,18 @@ impl Game {
         }
         actions.extend(self.legend_actions(self.priority()));
         for trash_index in 0..self.players[self.priority()].discard.len() {
+            let id = self.players[self.priority()].discard[trash_index];
+            if rules::play_target_spec(id).kind == Some(rules::PlayTargetKind::Battlefield) {
+                actions.extend(
+                    self.card_target_candidates(self.priority(), id, None, &[])
+                        .into_iter()
+                        .map(|target| Action::PlayFromTrashWithTargets {
+                            trash_index,
+                            lane: None,
+                            targets: vec![target],
+                        }),
+                );
+            }
             let action = Action::PlayFromTrash {
                 trash_index,
                 lane: None,
@@ -5654,7 +5650,7 @@ impl Game {
         for &target in provided {
             if !self.official_target_valid(actor, id, lane, target, targets.len()) {
                 return Err(
-                    "This unit does not meet the card's printed targeting restrictions.".into(),
+                    "This target does not meet the card's printed targeting restrictions.".into(),
                 );
             }
             if rules::targeting(id).distinct && targets.contains(&target) {
@@ -5678,53 +5674,47 @@ impl Game {
         };
         while targets.len() < desired {
             let mut candidates = Vec::new();
-            for owner in 0..2 {
-                for unit in &self.players[owner].units {
-                    let target = Target::Unit {
-                        player: owner,
-                        unit_id: unit.id,
-                    };
-                    if !self.official_target_valid(actor, id, lane, target, targets.len()) {
-                        continue;
-                    }
-                    if rules::targeting(id).distinct && targets.contains(&target) {
-                        continue;
-                    }
-                    if rules::targeting(id).same_location
-                        && targets.first().is_some_and(|&first| {
-                            self.target_location(first) != self.target_location(target)
-                        })
-                    {
-                        continue;
-                    }
-                    let hostile = matches!(
-                        effect,
-                        OfficialEffect::Damage { .. }
-                            | OfficialEffect::ContextualDamage(_)
-                            | OfficialEffect::DamageAndGold { .. }
-                            | OfficialEffect::Bounce { .. }
-                            | OfficialEffect::MoveEnemy
-                    ) || matches!(effect, OfficialEffect::ModifyMight { amount, .. } if amount < 0)
-                        || matches!(effect, OfficialEffect::ContextualMight(rules::SpellMight::OwnExhausted { per_unit }) if per_unit < 0)
-                        || (effect == OfficialEffect::DualMight && targets.len() == 1);
-                    if hostile && owner == actor && targets.len() >= required {
-                        continue;
-                    }
-                    let preferred = if hostile {
-                        owner != actor
-                    } else {
-                        owner == actor
-                    };
-                    let rank = if preferred { 1000 } else { 0 }
-                        + if effect == OfficialEffect::ReadyAnother && !unit.ready {
-                            200
-                        } else {
-                            0
-                        }
-                        + if unit.lane.is_some() { 50 } else { 0 }
-                        + self.unit_might(unit) as i32;
-                    candidates.push((rank, target));
+            for target in self.card_target_candidates(actor, id, lane, &targets) {
+                if let Target::Battlefield { lane } = target {
+                    let value = self.area_damage_score(actor, id, &[target]);
+                    candidates.push((value * 100 - lane as i32, target));
+                    continue;
                 }
+                let Some(unit) = self.unit_ref(target) else {
+                    continue;
+                };
+                let Target::Unit { player: owner, .. } = target else {
+                    continue;
+                };
+                let hostile = matches!(
+                    effect,
+                    OfficialEffect::Damage { .. }
+                        | OfficialEffect::ContextualDamage(_)
+                        | OfficialEffect::DamageAndGold { .. }
+                        | OfficialEffect::Bounce { .. }
+                        | OfficialEffect::MoveEnemy
+                        | OfficialEffect::Kill { .. }
+                        | OfficialEffect::Stun
+                ) || matches!(effect, OfficialEffect::ModifyMight { amount, .. } if amount < 0)
+                    || matches!(effect, OfficialEffect::ContextualMight(rules::SpellMight::OwnExhausted { per_unit }) if per_unit < 0)
+                    || (effect == OfficialEffect::DualMight && targets.len() == 1);
+                if hostile && owner == actor && targets.len() >= required {
+                    continue;
+                }
+                let preferred = if hostile {
+                    owner != actor
+                } else {
+                    owner == actor
+                };
+                let rank = if preferred { 1000 } else { 0 }
+                    + if effect == OfficialEffect::ReadyAnother && !unit.ready {
+                        200
+                    } else {
+                        0
+                    }
+                    + if unit.lane.is_some() { 50 } else { 0 }
+                    + self.unit_might(unit) as i32;
+                candidates.push((rank, target));
             }
             let Some((_, target)) = candidates.into_iter().max_by_key(|(rank, _)| *rank) else {
                 break;
@@ -5749,6 +5739,59 @@ impl Game {
             .lane
     }
 
+    /// Complete structural next-target candidates; no resource or timing check.
+    pub fn card_target_candidates(
+        &self,
+        player: usize,
+        card_id: CardId,
+        lane: Option<usize>,
+        prior: &[Target],
+    ) -> Vec<Target> {
+        if player >= self.players.len()
+            || card_id >= self.catalog.len()
+            || lane.is_some_and(|l| l >= BATTLEFIELDS)
+        {
+            return vec![];
+        }
+        let targets: Vec<_> = match rules::play_target_spec(card_id).kind {
+            Some(rules::PlayTargetKind::Battlefield) => (0..BATTLEFIELDS)
+                .map(|lane| Target::Battlefield { lane })
+                .collect(),
+            Some(rules::PlayTargetKind::Spell) => self
+                .chain
+                .iter()
+                .map(|item| Target::Spell { chain_id: item.id })
+                .collect(),
+            Some(rules::PlayTargetKind::Gear) => self
+                .players
+                .iter()
+                .enumerate()
+                .flat_map(|(player, p)| {
+                    p.gear.iter().map(move |g| Target::Gear {
+                        player,
+                        gear_id: g.id,
+                    })
+                })
+                .collect(),
+            Some(rules::PlayTargetKind::Unit) => self
+                .players
+                .iter()
+                .enumerate()
+                .flat_map(|(player, p)| {
+                    p.units.iter().map(move |u| Target::Unit {
+                        player,
+                        unit_id: u.id,
+                    })
+                })
+                .collect(),
+            None => vec![],
+        };
+        targets
+            .into_iter()
+            .filter(|&t| self.valid_card_target(player, card_id, lane, t, prior))
+            .collect()
+    }
+
     pub fn valid_card_target(
         &self,
         player: usize,
@@ -5757,9 +5800,29 @@ impl Game {
         target: Target,
         prior: &[Target],
     ) -> bool {
-        if card_id >= self.catalog.len() || player > 1 {
+        if card_id >= self.catalog.len()
+            || player >= self.players.len()
+            || lane.is_some_and(|l| l >= BATTLEFIELDS)
+            || prior.len() >= rules::play_target_spec(card_id).maximum
+        {
             return false;
         }
+        for (i, &earlier) in prior.iter().enumerate() {
+            if !self.target_append_valid(player, card_id, lane, earlier, &prior[..i]) {
+                return false;
+            }
+        }
+        self.target_append_valid(player, card_id, lane, target, prior)
+    }
+
+    fn target_append_valid(
+        &self,
+        player: usize,
+        card_id: CardId,
+        lane: Option<usize>,
+        target: Target,
+        prior: &[Target],
+    ) -> bool {
         self.official_target_valid(player, card_id, lane, target, prior.len())
             && (!rules::targeting(card_id).distinct || !prior.contains(&target))
             && (!rules::targeting(card_id).same_location
@@ -5798,6 +5861,27 @@ impl Game {
         target: Target,
         slot: usize,
     ) -> bool {
+        if actor >= self.players.len()
+            || id >= self.catalog.len()
+            || destination.is_some_and(|lane| lane >= BATTLEFIELDS)
+        {
+            return false;
+        }
+        match rules::effect(id) {
+            OfficialEffect::AreaDamage {
+                selector: rules::AreaSelector::EnemyAtTargetBattlefield,
+                ..
+            } => {
+                return matches!(target, Target::Battlefield { lane } if lane < BATTLEFIELDS);
+            }
+            OfficialEffect::Counter(_) => {
+                return matches!(target, Target::Spell { chain_id } if self.counter_target_valid(actor, id, chain_id));
+            }
+            OfficialEffect::DestroyGearAndDraw | OfficialEffect::TemporaryGear => {
+                return matches!(target, Target::Gear { player, gear_id } if self.players.get(player).is_some_and(|p| p.gear.iter().any(|g| g.id == gear_id)));
+            }
+            _ => {}
+        }
         let Target::Unit { player, unit_id } = target else {
             return false;
         };
@@ -5818,6 +5902,13 @@ impl Game {
             _ => {}
         }
         match rules::effect(id) {
+            OfficialEffect::Kill {
+                battlefield_only,
+                max_might,
+            } => {
+                (!battlefield_only || unit.lane.is_some())
+                    && max_might.is_none_or(|limit| self.unit_might(unit) <= limit)
+            }
             OfficialEffect::ContextualDamage(_) | OfficialEffect::DamageAndGold { .. } => {
                 unit.lane.is_some()
             }
@@ -6098,6 +6189,70 @@ impl Game {
         }
     }
 
+    fn area_damage_targets(
+        &self,
+        player: usize,
+        selector: rules::AreaSelector,
+        targets: &[Target],
+    ) -> Vec<Target> {
+        let selected_lane = targets.first().and_then(|t| {
+            if let Target::Battlefield { lane } = t {
+                Some(*lane)
+            } else {
+                None
+            }
+        });
+        self.players
+            .iter()
+            .enumerate()
+            .flat_map(|(owner, state)| {
+                state
+                    .units
+                    .iter()
+                    .filter(move |unit| match selector {
+                        rules::AreaSelector::AllBattlefields => unit.lane.is_some(),
+                        rules::AreaSelector::AllBases => unit.lane.is_none(),
+                        rules::AreaSelector::EnemyAtTargetBattlefield => {
+                            owner != player
+                                && selected_lane.is_some_and(|lane| unit.lane == Some(lane))
+                        }
+                    })
+                    .map(move |u| Target::Unit {
+                        player: owner,
+                        unit_id: u.id,
+                    })
+            })
+            .collect()
+    }
+
+    fn area_damage_score(&self, player: usize, id: CardId, targets: &[Target]) -> i32 {
+        let OfficialEffect::AreaDamage { amount, selector } = rules::effect(id) else {
+            return 0;
+        };
+        let context = damage::DamageContext {
+            player,
+            bonus_damage: 0,
+            dealer: damage::DamageDealer::Spell { card_id: id },
+        };
+        self.area_damage_targets(player, selector, targets)
+            .iter()
+            .map(|&target| {
+                let unit = self.unit_ref(target).unwrap();
+                let Target::Unit { player: owner, .. } = target else {
+                    unreachable!()
+                };
+                let amount = self.damage_amount(context, target, amount);
+                let value =
+                    if amount > 0 && unit.damage.saturating_add(amount) >= self.unit_might(unit) {
+                        40 + i32::from(self.unit_might(unit)) * 4
+                    } else {
+                        i32::from(amount) * 4
+                    };
+                if owner == player { -value } else { value }
+            })
+            .sum()
+    }
+
     fn resolve_operation(
         &mut self,
         player: usize,
@@ -6172,6 +6327,45 @@ impl Game {
             valid.retain(|&target| self.target_location(target) == location);
         }
         match rules::effect(id) {
+            OfficialEffect::Kill { .. } => {
+                if let Some(&target) = valid.first() {
+                    self.kill_unit(target);
+                }
+            }
+            OfficialEffect::Stun => {
+                for target in valid {
+                    if let Some(unit) = self.unit_mut(target) {
+                        unit.stunned = true;
+                    }
+                }
+            }
+            OfficialEffect::GrantAssault(amount) => {
+                for target in valid {
+                    if let Target::Unit { unit_id, .. } = target {
+                        self.legend[player].assault_grants.push((unit_id, amount));
+                    }
+                }
+            }
+            OfficialEffect::AreaDamage { amount, selector } => {
+                let context = self
+                    .current_damage_context()
+                    .unwrap_or(damage::DamageContext {
+                        player,
+                        bonus_damage: 0,
+                        dealer: damage::DamageDealer::Ability,
+                    });
+                // One Deal action: freeze recipients and amounts before any marks.
+                let packets: Vec<_> = self
+                    .area_damage_targets(player, selector, &valid)
+                    .into_iter()
+                    .map(|target| (target, self.damage_amount(context, target, amount)))
+                    .collect();
+                for (target, amount) in packets {
+                    if let Some(unit) = self.unit_mut(target) {
+                        unit.damage = unit.damage.saturating_add(amount);
+                    }
+                }
+            }
             effect @ (OfficialEffect::EmpoweredFight { .. }
             | OfficialEffect::DamageAndGold { .. }
             | OfficialEffect::ContextualMight(_)
@@ -6938,8 +7132,13 @@ impl Game {
     fn death_replacements(&self, player: usize) -> Vec<DeathReplacement> {
         let mut choices = Vec::new();
         for unit in self.players[player].units.iter().filter(|u| {
-            self.instructed_kills.contains(&u.id)
-                || (u.damage > 0 && u.damage >= self.unit_might(u))
+            self.pending_cleanup_deaths.as_ref().map_or_else(
+                || {
+                    self.instructed_kills.contains(&u.id)
+                        || (u.damage > 0 && u.damage >= self.unit_might(u))
+                },
+                |events| events.contains(&(player, u.id)),
+            )
         }) {
             for gear in &self.players[player].gear {
                 if !gear.token
@@ -6964,6 +7163,9 @@ impl Game {
 
     fn apply_death_replacement(&mut self, player: usize, choice: DeathReplacement) {
         self.instructed_kills.retain(|id| *id != choice.unit_id);
+        if let Some(events) = self.pending_cleanup_deaths.as_mut() {
+            events.retain(|(_, id)| *id != choice.unit_id);
+        }
         if let Some(gear_id) = choice.gear_id {
             self.gear_replace_death(player, choice.unit_id, gear_id);
         } else if let Some(index) = self.players[player]
@@ -7036,6 +7238,29 @@ impl Game {
             if matches!(self.decision, Some(Decision::DeathReplacement { .. })) {
                 return;
             }
+            if self.pending_cleanup_deaths.is_none() {
+                let events: Vec<_> = self
+                    .players
+                    .iter()
+                    .enumerate()
+                    .flat_map(|(player, state)| {
+                        state
+                            .units
+                            .iter()
+                            .filter(|u| {
+                                self.instructed_kills.contains(&u.id)
+                                    || (u.damage > 0 && u.damage >= self.unit_might(u))
+                            })
+                            .map(move |unit| (player, unit.id))
+                    })
+                    .collect();
+                if events.is_empty() {
+                    break;
+                }
+                self.pending_cleanup_deaths = Some(events);
+            }
+            // Each replacement acts on an original event. Recalling a local aura
+            // can create new lethal damage, but that is the NEXT cleanup (CR322).
             for player in [self.active, 1 - self.active] {
                 loop {
                     let options = self.death_replacements(player);
@@ -7053,29 +7278,24 @@ impl Game {
                     }
                 }
             }
-            // One immutable simultaneous set per cleanup pass. An aura lost in
-            // this pass can cause a separate death set in the next pass (CR322).
-            let doomed: Vec<_> = self
-                .players
-                .iter()
-                .enumerate()
-                .flat_map(|(p, state)| {
-                    state
+            let doomed = self
+                .pending_cleanup_deaths
+                .take()
+                .unwrap()
+                .into_iter()
+                .filter_map(|(player, id)| {
+                    self.players[player]
                         .units
                         .iter()
-                        .filter(|u| {
-                            self.instructed_kills.contains(&u.id)
-                                || (u.damage > 0 && u.damage >= self.unit_might(u))
-                        })
+                        .find(|u| u.id == id)
                         .cloned()
-                        .map(move |u| (p, u))
+                        .map(|u| (player, u))
                 })
-                .collect();
-            if doomed.is_empty() {
-                break;
+                .collect::<Vec<_>>();
+            if !doomed.is_empty() {
+                self.remove_death_set(doomed);
+                self.trigger_batch += 1;
             }
-            self.remove_death_set(doomed);
-            self.trigger_batch += 1;
         }
     }
     fn remove_death_set(&mut self, doomed: Vec<(usize, Unit)>) {
@@ -7651,6 +7871,38 @@ impl Game {
             .prepare_targets(actor, id, None, &[])
             .unwrap_or_default();
         match rules::effect(id) {
+            OfficialEffect::AreaDamage { .. } => self.area_damage_score(actor, id, &targets).max(0),
+            OfficialEffect::Kill { .. } => {
+                if targets
+                    .iter()
+                    .any(|t| matches!(t, Target::Unit { player, .. } if *player != actor))
+                {
+                    100
+                } else {
+                    0
+                }
+            }
+            OfficialEffect::Stun => {
+                if in_combat
+                    && targets.iter().any(|t| {
+                        matches!(t, Target::Unit { player, .. } if *player != actor)
+                            && self.unit_ref(*t).is_some_and(|u| {
+                                !u.stunned && u.lane == self.showdown.as_ref().map(|w| w.lane)
+                            })
+                    })
+                {
+                    80
+                } else {
+                    0
+                }
+            }
+            OfficialEffect::GrantAssault(_) => {
+                if in_combat && self.showdown.as_ref().is_some_and(|w| w.attacker == actor) {
+                    80
+                } else {
+                    0
+                }
+            }
             effect @ (OfficialEffect::Damage { .. }
             | OfficialEffect::ContextualDamage(_)
             | OfficialEffect::DamageAndGold { .. }) => {

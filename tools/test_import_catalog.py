@@ -37,14 +37,59 @@ class OfficialInventoryTests(unittest.TestCase):
     def test_exact_published_scope_and_runtime_gap(self):
         counts = self.snapshot["counts"]
         self.assertEqual((counts["gallery_printings"], counts["unique_gallery_identities"], counts["standard_legal_identities"]), (1408, 1103, 1079))
-        self.assertEqual(counts["implemented_main_cards"], 290)
+        self.assertEqual(counts["implemented_main_cards"], 308)
         self.assertEqual(counts["implemented_legends"], 8)
         self.assertEqual(counts["implemented_battlefields"], 11)
-        self.assertEqual(counts["implemented_legal_identities"], 315)
-        self.assertEqual(counts["unimplemented_legal_identities"], 764)
+        self.assertEqual(counts["implemented_legal_identities"], 333)
+        self.assertEqual(counts["unimplemented_legal_identities"], 746)
         for card in self.snapshot["cards"]:
             if card["implementation"]["status"] == "not_implemented":
                 self.assertFalse(card["implementation"]["playable_in_client"])
+
+    def test_c8_admissions_preserve_exact_visual_proofs_and_prior_registrations(self):
+        from catalog_review import printing_sha256
+        root = catalog.ROOT
+        proof = json.loads((root / "assets/data/card_admissions/c8/admissions.json").read_text())
+        runtime = json.loads((root / "assets/data/decks.json").read_text())
+        self.assertEqual(len(proof["records"]), 18)
+        preserved = proof["preserved_runtime_prefix"]
+        digest = lambda value: catalog.sha(catalog.canonical_json(value).encode())
+        self.assertEqual(digest(runtime["cards"][:290]), preserved["cards_sha256"])
+        self.assertEqual(digest(runtime["decks"]), preserved["presets_sha256"])
+        self.assertEqual(catalog.sha((root / "assets/data/legends.json").read_bytes()), preserved["legends_manifest_sha256"])
+        self.assertEqual(catalog.sha(self.data["gallery"]), proof["origin_gallery"]["uncompressed_sha256"])
+        raw = {p["official_id"]: p for p in catalog.project_gallery(self.data["gallery"])[0]}
+        printings = {p["official_id"]: p for p in self.snapshot["printings"]}
+        resolutions = json.loads((root / "assets/data/catalog_resolutions.json").read_text())["resolutions"]
+        for index, entry in enumerate(proof["records"], 290):
+            with self.subTest(official_id=entry["official_id"]):
+                official_id = entry["official_id"]
+                self.assertEqual(entry["runtime_id"], index)
+                self.assertEqual(entry["raw_printing"], raw[official_id])
+                self.assertEqual(printing_sha256(raw[official_id]), entry["raw_printing_sha256"])
+                self.assertEqual(entry["effective"], printings[official_id]["effective"])
+                self.assertEqual(entry["existing_field_resolution_ids"], [r["id"] for r in resolutions if r["official_id"] == official_id])
+                identity = next(c for c in self.snapshot["cards"] if c["identity"] == official_id)
+                self.assertEqual(identity["official_ids"], [official_id])
+                self.assertTrue(identity["standard_legal"])
+                self.assertEqual(identity["errata"], [])
+                self.assertEqual(identity["source_review"]["unresolved_variant_fields"], [])
+                self.assertEqual(identity["implementation"]["runtime_id"], index)
+                for kind in ["original_image", "runtime_image"]:
+                    image = entry[kind]
+                    payload = (root / image["path"]).read_bytes()
+                    self.assertEqual(catalog.sha(payload), image["sha256"])
+                    self.assertEqual(len(payload), image["bytes"])
+                    self.assertTrue(payload.startswith(b"\x89PNG\r\n\x1a\n"))
+                self.assertEqual(entry["original_image"]["url"], raw[official_id]["image_url"])
+                self.assertEqual(entry["runtime_image"]["url"], runtime["cards"][index]["art_url"])
+                self.assertEqual(entry["visual_observation"]["printed_rules_readable"], runtime["cards"][index]["official_text"])
+                self.assertTrue(all(entry["visual_observation"]["comparison_to_effective"].values()))
+        # The new mapping consumes C6's correction; it does not rewrite raw facts.
+        self.assertEqual(raw["rad-059-167"]["types"], ["unit"])
+        self.assertEqual(raw["rad-059-167"]["domains"], ["order"])
+        self.assertEqual(runtime["cards"][291]["kind"], "Spell")
+        self.assertEqual(runtime["cards"][291]["domains"], ["Mind"])
 
     def test_empowered_board_batch_and_ambessa_use_clean_official_sources(self):
         runtime = json.loads((catalog.ROOT / "assets/data/decks.json").read_text())["cards"]
@@ -219,7 +264,11 @@ class OfficialInventoryTests(unittest.TestCase):
         self.assertTrue(printing["type_labels_conflict"])
         identity = next(c for c in self.snapshot["cards"] if c["identity"] == "rad-059-167")
         self.assertIn("types", identity["conflicting_fields"])
-        self.assertFalse(identity["implementation"]["playable_in_client"])
+        # C8 separately implements Supernova using its existing C6 correction.
+        self.assertTrue(identity["implementation"]["playable_in_client"])
+        self.assertEqual(identity["implementation"]["runtime_id"], 291)
+        self.assertEqual(printing["effective"]["types"], ["spell"])
+        self.assertEqual(printing["effective"]["domains"], ["mind"])
         issues = [i for i in self.snapshot["source_quality_issues"] if i["kind"] == "conflicting_type_labels"]
         self.assertEqual(len(issues), 23)
         self.assertTrue(all(i["official_ids"][0].startswith("rad-") for i in issues))

@@ -660,6 +660,27 @@ impl Game {
     pub fn play_choices(&self, action: &Action) -> Result<PlayChoiceView, String> {
         Self::validate_choice_nesting(action)?;
         let intent = self.card_intent(action)?;
+        // Previews accept incomplete drafts, not malformed choices. Keep this on
+        // the live board: only cost facts use the frozen/post-departure snapshot.
+        if intent.lane.is_some_and(|lane| lane >= BATTLEFIELDS) {
+            return Err("Choose a battlefield on this board.".into());
+        }
+        for group in std::iter::once(&intent.targets)
+            .chain(intent.legacy.repeats.iter().map(|r| &r.choices.targets))
+        {
+            for (slot, &target) in group.iter().enumerate() {
+                if !self.valid_card_target(
+                    self.priority(),
+                    intent.id,
+                    intent.lane,
+                    target,
+                    &group[..slot],
+                ) || matches!(intent.origin, PlayOrigin::Hidden { lane } if !self.hidden_target_allowed(intent.id, lane, target))
+                {
+                    return Err("A supplied target does not meet this play's restrictions.".into());
+                }
+            }
+        }
         let grants = self.intent_grants(&intent);
         let repeats = self.repeat_options(&intent, &grants);
         let accelerate = self.accelerate_option(&intent, &grants);
@@ -1835,13 +1856,53 @@ impl Game {
                 });
             }
         }
+        let intents: Vec<_> = intents
+            .into_iter()
+            .flat_map(|action| {
+                if self.card_intent(&action).ok().is_some_and(|intent| {
+                    rules::play_target_spec(intent.id).kind
+                        == Some(rules::PlayTargetKind::Battlefield)
+                }) {
+                    (0..BATTLEFIELDS)
+                        .map(|lane| {
+                            let mut targeted = action.clone();
+                            match &mut targeted {
+                                Action::PlayCard { target, .. }
+                                | Action::PlayChampion { target, .. }
+                                | Action::PlayFromTrash { target, .. } => {
+                                    *target = Some(Target::Battlefield { lane })
+                                }
+                                _ => {}
+                            }
+                            targeted
+                        })
+                        .collect::<Vec<_>>()
+                } else {
+                    vec![action]
+                }
+            })
+            .collect();
         let mut result = Vec::new();
         for action in intents {
             let Ok(view) = self.play_choices(&action) else {
                 continue;
             };
-            let Ok(targets) = self.prepare_targets(p, view.card_id, None, &[]) else {
+            let initial = self
+                .card_intent(&action)
+                .map(|intent| intent.targets)
+                .unwrap_or_default();
+            let Ok(targets) = self.prepare_targets(p, view.card_id, None, &initial) else {
                 continue;
+            };
+            let repeat_targets: Vec<Vec<Target>> = if rules::play_target_spec(view.card_id).kind
+                == Some(rules::PlayTargetKind::Battlefield)
+            {
+                self.card_target_candidates(p, view.card_id, None, &[])
+                    .into_iter()
+                    .map(|target| vec![target])
+                    .collect()
+            } else {
+                vec![targets.clone()]
             };
             let mut choices = vec![PlayChoices::default()];
             if view.accelerate.is_some() {
@@ -1857,16 +1918,18 @@ impl Game {
                 });
             }
             for r in view.repeats.iter().take(3) {
-                choices.push(PlayChoices {
-                    repeats: vec![RepeatSelection {
-                        option_id: r.id,
-                        choices: ExecutionChoices {
-                            targets: targets.clone(),
-                            mode: None,
-                        },
-                    }],
-                    ..Default::default()
-                });
+                for selected in &repeat_targets {
+                    choices.push(PlayChoices {
+                        repeats: vec![RepeatSelection {
+                            option_id: r.id,
+                            choices: ExecutionChoices {
+                                targets: selected.clone(),
+                                mode: None,
+                            },
+                        }],
+                        ..Default::default()
+                    });
+                }
             }
             if view.repeats.len() > 1 {
                 choices.push(PlayChoices {
@@ -1907,7 +1970,18 @@ impl Game {
         let extras = intent.legacy.repeats.len() as i32 * 5
             + i32::from(intent.legacy.accelerate) * 15
             + i32::from(intent.legacy.bonus) * 5;
-        self.ai_card_score(intent.id) + extras
+        let score = if matches!(rules::effect(intent.id), OfficialEffect::AreaDamage { .. }) {
+            let base = self.area_damage_score(self.priority(), intent.id, &intent.targets);
+            base + intent
+                .legacy
+                .repeats
+                .iter()
+                .map(|r| self.area_damage_score(self.priority(), intent.id, &r.choices.targets))
+                .sum::<i32>()
+        } else {
+            self.ai_card_score(intent.id)
+        };
+        score + extras
     }
 }
 

@@ -194,6 +194,45 @@ pub fn trigger_rules(card_id: usize) -> &'static [TriggerRule] {
     use Operand::*;
     use TokenPlacement::*;
     match card_id {
+        300 | 301 => {
+            const {
+                &[rule(
+                    SelfDeath,
+                    &[],
+                    false,
+                    TargetRule::NONE,
+                    &[Channel {
+                        count: 1,
+                        exhausted: true,
+                    }],
+                )]
+            }
+        }
+        302 => {
+            const {
+                &[rule(
+                    SelfPlayed,
+                    &[],
+                    false,
+                    TargetRule::NONE,
+                    &[Channel {
+                        count: 1,
+                        exhausted: true,
+                    }],
+                )]
+            }
+        }
+        303 => {
+            const {
+                &[rule(
+                    SelfDeath,
+                    &[],
+                    false,
+                    TargetRule::NONE,
+                    &[PredictMany(2)],
+                )]
+            }
+        }
         283 => {
             const {
                 &[rule(

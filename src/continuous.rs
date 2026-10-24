@@ -9,12 +9,15 @@ pub enum SourceCondition {
     Always,
     Empowered,
     NotEmpowered,
+    AttackingWithAnother,
+    CombatAlone,
 }
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Recipients {
     SelfUnit,
     FriendlyUnits,
     FriendlyEmpoweredUnits,
+    OtherFriendlyUnitsHere,
 }
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum PassiveKeyword {
@@ -53,6 +56,42 @@ pub fn passive_rules(id: CardId) -> &'static [PassiveRule] {
     use PassiveEffect::*;
     use PassiveKeyword::*;
     match id {
+        304 => {
+            const {
+                &[PassiveRule {
+                    condition: SourceCondition::AttackingWithAnother,
+                    recipients: Recipients::SelfUnit,
+                    effect: Might(2),
+                }]
+            }
+        }
+        305 => {
+            const {
+                &[PassiveRule {
+                    condition: SourceCondition::CombatAlone,
+                    recipients: Recipients::SelfUnit,
+                    effect: Might(2),
+                }]
+            }
+        }
+        306 => {
+            const {
+                &[PassiveRule {
+                    condition: SourceCondition::Always,
+                    recipients: Recipients::OtherFriendlyUnitsHere,
+                    effect: Keyword(Assault(1)),
+                }]
+            }
+        }
+        307 => {
+            const {
+                &[PassiveRule {
+                    condition: SourceCondition::Always,
+                    recipients: Recipients::OtherFriendlyUnitsHere,
+                    effect: Keyword(Shield(1)),
+                }]
+            }
+        }
         24 | 283 | 288 => const { &[own(Might(1))] },
         272 => const { &[own(Keyword(Assault(3)))] },
         273 => const { &[own(Might(7))] },
@@ -138,6 +177,26 @@ impl Game {
                 for (rule_index, rule) in passive_rules(card_id).iter().enumerate() {
                     let recipient = match rule.recipients {
                         Recipients::SelfUnit => source == target,
+                        Recipients::OtherFriendlyUnitsHere => {
+                            owner == player
+                                && source != target
+                                && match source {
+                                    BoardObject::Unit {
+                                        unit_id: source_id, ..
+                                    } => self.players[owner]
+                                        .units
+                                        .iter()
+                                        .find(|u| u.id == source_id)
+                                        .zip(
+                                            self.players[player]
+                                                .units
+                                                .iter()
+                                                .find(|u| u.id == unit_id),
+                                        )
+                                        .is_some_and(|(a, b)| a.lane == b.lane),
+                                    BoardObject::Gear { .. } | BoardObject::Legend { .. } => false,
+                                }
+                        }
                         _ => owner == player,
                     };
                     if !recipient {
@@ -147,6 +206,39 @@ impl Game {
                         SourceCondition::Always => true,
                         SourceCondition::Empowered => self.object_empowered(source),
                         SourceCondition::NotEmpowered => !self.object_empowered(source),
+                        SourceCondition::AttackingWithAnother | SourceCondition::CombatAlone => {
+                            match source {
+                                BoardObject::Unit { unit_id, .. } => self.players[owner]
+                                    .units
+                                    .iter()
+                                    .find(|u| u.id == unit_id)
+                                    .is_some_and(|u| {
+                                        self.showdown.as_ref().is_some_and(|w| {
+                                            w.combat
+                                                && u.lane == Some(w.lane)
+                                                && if rule.condition
+                                                    == SourceCondition::AttackingWithAnother
+                                                {
+                                                    w.attacker == owner
+                                                        && self.players[owner]
+                                                            .units
+                                                            .iter()
+                                                            .filter(|v| v.lane == u.lane)
+                                                            .count()
+                                                            > 1
+                                                } else {
+                                                    self.players[owner]
+                                                        .units
+                                                        .iter()
+                                                        .filter(|v| v.lane == u.lane)
+                                                        .count()
+                                                        == 1
+                                                }
+                                        })
+                                    }),
+                                BoardObject::Gear { .. } | BoardObject::Legend { .. } => false,
+                            }
+                        }
                     };
                     let active = source_active
                         && (rule.recipients != Recipients::FriendlyEmpoweredUnits

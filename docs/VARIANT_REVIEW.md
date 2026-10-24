@@ -1,6 +1,6 @@
 # Complete alternate-printing reviews
 
-Reviewed **October 24, 2026**. This source review covers **29 existing playable identities and every one of their 90 gallery printings**. It adds no playable identity or card mechanic: coverage remains **315 of 1,079 Standard-legal identities**, with 764 unavailable. “Complete” means complete membership and coverage of the detected tag/text differences in these exact groups; it is not a complete visual audit of every statistic or proof of engine conformance.
+Reviewed **October 24, 2026**. This source review covers **29 existing playable identities and every one of their 90 gallery printings**. It adds no playable identity or card mechanic: at C7 publication, coverage remained **315 of 1,079 Standard-legal identities**, with 764 unavailable. Later runtime admissions are reported in [Card coverage](CARD_COVERAGE.md), separately from this dated review. “Complete” means complete membership and coverage of the detected tag/text differences in these exact groups; it is not a complete visual audit of every statistic or proof of engine conformance.
 
 The [identity-review manifest](../assets/data/catalog_identity_reviews.json) replaces the former temporary compatibility baseline. Each identity has an explicit disposition for every field in the union of its raw and effective tag/rules/equipment-text differences. The validator does not choose the newest or numbered face, strip parentheticals, union tags, or normalize punctuation to manufacture agreement.
 

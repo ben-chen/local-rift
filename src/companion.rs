@@ -108,6 +108,7 @@ fn fingerprint(game: &Game) -> u64 {
             Some(Target::Unit { player, unit_id }) => (0_u8, player, unit_id).hash(&mut hash),
             Some(Target::Spell { chain_id }) => (1_u8, 0_usize, chain_id).hash(&mut hash),
             Some(Target::Gear { player, gear_id }) => (3_u8, player, gear_id).hash(&mut hash),
+            Some(Target::Battlefield { lane }) => (4_u8, lane, 0_u32).hash(&mut hash),
             None => (2_u8, 0_usize, 0_u32).hash(&mut hash),
         }
         for target in item.targets.iter().chain(&item.repeat_targets) {
@@ -115,6 +116,7 @@ fn fingerprint(game: &Game) -> u64 {
                 Target::Unit { player, unit_id } => (0_u8, *player, *unit_id).hash(&mut hash),
                 Target::Spell { chain_id } => (1_u8, 0_usize, *chain_id).hash(&mut hash),
                 Target::Gear { player, gear_id } => (3_u8, *player, *gear_id).hash(&mut hash),
+                Target::Battlefield { lane } => (4_u8, *lane, 0_u32).hash(&mut hash),
             }
         }
         format!("{:?}", item.executions).hash(&mut hash);
@@ -406,6 +408,16 @@ fn advice(game: &Game, level: AdviceLevel) -> Vec<&'static str> {
             "Energy isn't the whole cost. Power needs matching or flexible power; recycling a matching rune is one way to supply it."
         } else {
             "Power is your bottleneck. Check matching runes and generated power before committing; spare energy cannot replace a power cost."
+        });
+    }
+    if human.hand.iter().any(|&id| {
+        local_rift::rules::play_target_spec(id).kind
+            == Some(local_rift::rules::PlayTargetKind::Battlefield)
+    }) {
+        tips.push(if beginner {
+            "This spell chooses a battlefield, not its units. Click either field, even an empty one; enemies there when it resolves receive the effect."
+        } else {
+            "Field targets stay fixed through responses, but their occupants can change. Each Repeat can choose its own field; check where enemies may move."
         });
     }
     if affordable_unit {
@@ -983,6 +995,52 @@ mod tests {
             !advice(&game, AdviceLevel::Beginner)
                 .iter()
                 .any(|tip| tip.contains("Nami's waiting effect"))
+        );
+    }
+
+    #[test]
+    fn battlefield_spell_advice_uses_public_targets_without_opponent_hand_access() {
+        let mut game = game();
+        game.start_match().unwrap();
+        game.players[0].hand = vec![299];
+        let beginner = advice(&game, AdviceLevel::Beginner);
+        let advanced = advice(&game, AdviceLevel::Advanced);
+        assert!(
+            beginner
+                .iter()
+                .any(|tip| tip.contains("chooses a battlefield, not its units"))
+        );
+        assert!(
+            advanced
+                .iter()
+                .any(|tip| tip.contains("Each Repeat can choose its own field"))
+        );
+        let original = fingerprint(&game);
+        game.players[1].hand.fill(299);
+        game.players[1].deck.reverse();
+        assert_eq!(original, fingerprint(&game));
+        assert_eq!(beginner, advice(&game, AdviceLevel::Beginner));
+        game.players[0].energy_pool = 20;
+        game.players[0].energy = 22;
+        game.players[0].any_power = 10;
+        game.apply(local_rift::game::Action::PlayCardWithTargets {
+            hand_index: 0,
+            lane: None,
+            targets: vec![Target::Battlefield { lane: 0 }],
+        })
+        .unwrap();
+        let first = fingerprint(&game);
+        let spell = game
+            .chain
+            .iter_mut()
+            .find(|item| item.card_id == 299 && item.ability.is_none())
+            .unwrap();
+        spell.target = Some(Target::Battlefield { lane: 1 });
+        spell.targets = vec![Target::Battlefield { lane: 1 }];
+        assert_ne!(
+            first,
+            fingerprint(&game),
+            "public battlefield target changes refresh advice"
         );
     }
 

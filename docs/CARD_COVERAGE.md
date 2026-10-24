@@ -2,7 +2,7 @@
 
 Snapshot checked **2026-10-24**. The official gallery contains **1,408 printing records** grouped into **1,103 distinct full-name identities**. After excluding **12 auxiliary token/tracker identities** and **12 banned identities**, **1,079 identities are legal in Standard/1v1 Constructed**. The separate 2v2 list leaves **1,078**.
 
-**This client does not yet implement every legal card.** It currently maps **290 main-deck cards, 8 independently registered legends, 11 battlefields, and 6 rune resource types** (315 legal identities). **764 legal identities remain unimplemented and are not playable.** Importing this snapshot does not register cards with the engine. Full inventory coverage is not full rules support.
+**This client does not yet implement every legal card.** It currently maps **308 main-deck cards, 8 independently registered legends, 11 battlefields, and 6 rune resource types** (333 legal identities). **746 legal identities remain unimplemented and are not playable.** Importing this snapshot does not register cards with the engine. Full inventory coverage is not full rules support.
 
 ## Scope and authority
 
@@ -29,8 +29,8 @@ Numbered positions include token slots where the publisher numbers them within a
 | Gear | 131 | 55 | 76 |
 | Legend | 58 | 8 | 50 |
 | Rune | 6 | 6 | 0 |
-| Spell | 268 | 69 | 199 |
-| Unit | 547 | 166 | 381 |
+| Spell | 268 | 79 | 189 |
+| Unit | 547 | 174 | 373 |
 
 Implemented mapping means the existing engine/preset/field/resource implementation, not a claim that every interaction has been formally proven. See `docs/RULES.md` for engine limits. Every unimplemented identity has `implementation.status: not_implemented` and `playable_in_client: false`. Printed keywords are recorded per card and counted under `unimplemented_by_observed_keyword` as discovery hints only; shared keywords do not imply shared effect semantics or completed implementation. Each unimplemented card still requires its specific effect, targets, timing, costs, continuous/replacement effects, and interaction tests to be reviewed and implemented.
 
@@ -420,6 +420,24 @@ Current pages are archived under `assets/data/catalog_sources/`; immutable revie
 | 287 | Nasus, Ascended | `ven-046-166` |
 | 288 | Akali, Deadly Weapon | `ven-021-166` |
 | 289 | Ambessa, Respected and Feared | `ven-136-166` |
+| 290 | Final Spark, Lux | `ogs-022-024` |
+| 291 | Supernova | `rad-059-167` |
+| 292 | Rune Prison | `ogn-050-298` |
+| 293 | Cleave | `ogn-004-298` |
+| 294 | Vengeance | `ogn-229-298` |
+| 295 | Soul Harvest | `unl-159-219` |
+| 296 | Blast of Power | `ogs-012-024` |
+| 297 | Flurry of Blades | `ogn-133-298` |
+| 298 | Avalanche | `rad-079-167` |
+| 299 | Firestorm | `ogs-002-024` |
+| 300 | Soaring Scout | `ogn-216-298` |
+| 301 | Black Rose Dignitary | `unl-152-219` |
+| 302 | Stormclaw Ursine | `ogn-137-298` |
+| 303 | Dramatic Visionary | `unl-062-219` |
+| 304 | Crimson Pigeons | `unl-154-219` |
+| 305 | Wielder of Water | `ogn-055-298` |
+| 306 | Captain Farron | `ogn-015-298` |
+| 307 | Taric, Protector | `ogn-074-298` |
 
 ## Implemented legend ID mapping
 

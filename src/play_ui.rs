@@ -463,11 +463,24 @@ impl App {
         let count = draft.choices.repeats.len() + 1;
         let first = (draft.execution / 3) * 3;
         for execution in first..count.min(first + 3) {
-            let label = if execution == 0 {
+            let mut label = if execution == 0 {
                 "Original".into()
             } else {
                 format!("Repeat {execution}")
             };
+            if local_rift::rules::play_target_spec(view.card_id).kind
+                == Some(local_rift::rules::PlayTargetKind::Battlefield)
+            {
+                let targets = if execution == 0 {
+                    &self.targets
+                } else {
+                    &draft.choices.repeats[execution - 1].choices.targets
+                };
+                label.push_str(&match targets.first() {
+                    Some(Target::Battlefield { lane }) => format!(" · F{}", lane + 1),
+                    _ => " · ?".into(),
+                });
+            }
             if self.ui.button(
                 Rect::new(
                     695.0 + (execution - first) as f32 * 104.0,
@@ -501,7 +514,31 @@ impl App {
         } else {
             &draft.choices.repeats[draft.execution - 1].choices.targets
         };
-        self.ui.wrapped_lines(&format!("{} target(s). Choose units on the mat or a pending spell. Each Repeat keeps its own choices.", targets.len()),695.0,766.0,414.0,11.0,MUTED,2);
+        let hint = if targets.is_empty() {
+            match local_rift::rules::play_target_spec(view.card_id).kind {
+                Some(local_rift::rules::PlayTargetKind::Battlefield) => {
+                    "Choose either battlefield on the mat, even if empty.".into()
+                }
+                Some(local_rift::rules::PlayTargetKind::Spell) => {
+                    "Choose a pending spell above the board.".into()
+                }
+                Some(local_rift::rules::PlayTargetKind::Gear) => {
+                    "Choose gear in either player's Loadout.".into()
+                }
+                Some(local_rift::rules::PlayTargetKind::Unit) => {
+                    "Choose eligible units on the mat.".into()
+                }
+                None => "This execution needs no targets.".into(),
+            }
+        } else {
+            targets
+                .iter()
+                .map(|target| target_label(&self.game, *target))
+                .collect::<Vec<_>>()
+                .join(" · ")
+        };
+        self.ui
+            .wrapped_lines(&hint, 695.0, 766.0, 414.0, 11.0, TEXT, 2);
         if draft.execution > 0
             && self.ui.button(
                 Rect::new(695.0, 802.0, 198.0, 25.0),

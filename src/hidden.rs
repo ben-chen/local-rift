@@ -153,7 +153,7 @@ impl Game {
                 .get(player)
                 .and_then(|state| state.gear.iter().find(|gear| gear.id == gear_id))
                 .map(|_| self.gear_location(player, gear_id)),
-            Target::Spell { .. } => return false,
+            Target::Spell { .. } | Target::Battlefield { .. } => return false,
         };
         // Tideturner's explicit 'another location' can never choose here, so
         // CR811.1.d3 permits its target outside the hidden battlefield.

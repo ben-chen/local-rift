@@ -116,6 +116,35 @@ fn click_unit(app: &mut App, selected: u32) {
     click(app, r.x + r.w / 2.0, r.y + r.h / 2.0);
 }
 
+fn click_field(app: &mut App, lane: usize) {
+    let r = app
+        .drop_zones
+        .iter()
+        .find_map(|(zone, r)| {
+            matches!(zone, super::DropZone::Battlefield(index) if *index == lane).then_some(*r)
+        })
+        .expect("battlefield surface");
+    click(app, r.x + r.w * 0.8, r.y + r.h * 0.72);
+}
+
+fn capture_unit(app: &mut App, id: u32, variable: &str) {
+    let card = app.game.players[0]
+        .units
+        .iter()
+        .find(|unit| unit.id == id)
+        .unwrap()
+        .card_id;
+    app.hover_card = Some(card);
+    app.hover_object = Some((0, id));
+    app.hover_since = get_time() - 1.0;
+    if let Ok(path) = std::env::var(variable) {
+        let rect = unit_rect(app, id);
+        app.ui.input_override = Some((rect.center(), false, false));
+        app.draw();
+        get_screen_data().export_png(&path);
+    }
+}
+
 fn flow_fixture(app: &mut App, granted: bool) {
     app.game = Game::new(2, 1, 42, Difficulty::Easy);
     app.game.start_match().unwrap();
@@ -5879,15 +5908,336 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
             app.reset();
             assert_eq!(app.game.legend_id(0), 7);
             assert_eq!(app.game.players[0].champion, Some(289));
+        }
+        598 => {
+            expansion_fixture(app, 299);
+            app.game.battlefields = [0, 0];
+            app.game.players[0].units.clear();
+            app.game.players[1].units.clear();
+            save_state(app);
+            click(app, 315.0, 760.0);
+        }
+        599 => {
+            assert!(app.targeting_battlefield());
+            assert_eq!(
+                app.game.card_target_candidates(0, 299, None, &[]),
+                vec![
+                    Target::Battlefield { lane: 0 },
+                    Target::Battlefield { lane: 1 }
+                ]
+            );
+            let mut automatic = app.game.clone();
+            automatic
+                .apply(Action::PlayCard {
+                    hand_index: 0,
+                    lane: None,
+                    target: None,
+                })
+                .unwrap();
+            assert!(matches!(
+                automatic.chain.last().unwrap().targets.as_slice(),
+                [Target::Battlefield { .. }]
+            ));
+            assert!(automatic.chain.last().unwrap().lane.is_none());
+            let mut poor = app.game.clone();
+            poor.players[0].runes = [0; 6];
+            poor.players[0].energy = 0;
+            assert_eq!(
+                poor.card_target_candidates(0, 299, None, &[]).len(),
+                2,
+                "target choice is independent of affordability"
+            );
+            click(app, 600.0, 540.0);
+        }
+        600 => {
+            assert!(
+                app.targets.is_empty() && app.destination.is_none(),
+                "base is not a battlefield target"
+            );
+            assert_same_state(app);
+            click_field(app, 0);
+        }
+        601 => {
+            assert_eq!(app.targets, vec![Target::Battlefield { lane: 0 }]);
+            assert!(app.destination.is_none());
+            assert!(app.target_hint(299).contains("Field 1"));
+            click_field(app, 1);
+        }
+        602 => {
+            assert_eq!(app.targets, vec![Target::Battlefield { lane: 1 }]);
+            assert!(app.target_hint(299).contains("Field 2"));
+            assert_same_state(app);
+            capture(app, "RIFT_SMOKE_C8_FIELD_SCREENSHOT");
+            click_field(app, 1);
+        }
+        603 => {
+            assert!(app.targets.is_empty());
+            assert!(
+                app.game
+                    .apply(Action::PlayCardWithTargets {
+                        hand_index: 0,
+                        lane: None,
+                        targets: vec![]
+                    })
+                    .is_err()
+            );
+            assert_same_state(app);
+            click_field(app, 1);
+        }
+        604 => {
+            click(app, 1090.0, 274.0);
+        }
+        605 => {
+            assert_eq!(app.field_inspect, Some(0));
+            assert_eq!(app.targets, vec![Target::Battlefield { lane: 1 }]);
+            click(app, 690.0, 503.0);
+        }
+        606 => {
+            assert!(app.field_inspect.is_none());
+            assert_same_state(app);
+            app.prefs.exact_payment = true;
+            click(app, 1285.0, 508.0);
+        }
+        607 => {
+            assert!(app.payment_draft.is_some());
+            assert_same_state(app);
+            click(app, 470.0, 709.0);
+        }
+        608 => {
+            assert!(app.payment_draft.is_none());
+            assert_eq!(app.targets, vec![Target::Battlefield { lane: 1 }]);
+            assert_same_state(app);
+            click(app, 1285.0, 508.0);
+        }
+        609 => {
+            assert!(app.payment_draft.is_some());
+            click(app, 935.0, 709.0);
+        }
+        610 => {
+            let spell = app
+                .game
+                .chain
+                .iter()
+                .find(|item| item.card_id == 299 && item.ability.is_none())
+                .unwrap();
+            assert_eq!(spell.targets, vec![Target::Battlefield { lane: 1 }]);
+            assert!(spell.lane.is_none());
+            finish_chain_until_choice(app);
+            assert!(app.game.players[0].discard.contains(&299));
+            expansion_fixture(app, 299);
+            app.game.battlefields = [0, 0];
+            app.game.players[0].any_power = 4;
+            app.game.players[0].gear.push(GearState {
+                id: 9950,
+                card_id: 256,
+                attached_to: None,
+                ready: true,
+                temporary: false,
+                token: false,
+            });
+            app.game
+                .apply(Action::ActivateAbility {
+                    source: local_rift::activated::AbilitySource::Gear {
+                        player: 0,
+                        gear_id: 9950,
+                    },
+                    ability_index: 0,
+                    targets: vec![],
+                })
+                .unwrap();
+            finish_chain_until_choice(app);
+            assert_eq!(app.game.play_grants.len(), 1);
+            app.game.players[1].units = vec![
+                public_unit(9951, 110, Some(0)),
+                public_unit(9952, 110, Some(1)),
+            ];
+            app.game.battlefield_owner = [Some(1), Some(1)];
+            save_state(app);
+            click(app, 315.0, 760.0);
+        }
+        611 => {
+            assert!(app.selection == Some(Selection::Hand(0)));
+            click_field(app, 0);
+        }
+        612 => {
+            assert!(app.play_draft.is_some());
+            assert_eq!(app.targets, vec![Target::Battlefield { lane: 0 }]);
+            click(app, 1285.0, 468.0);
+        }
+        613 => {
+            assert!(app.play_draft.as_ref().unwrap().open);
+            click(app, 450.0, 739.0);
+        }
+        614 => {
+            assert_eq!(app.play_draft.as_ref().unwrap().choices.repeats.len(), 1);
+            click_unit(app, 9952);
+        }
+        615 => {
+            assert_eq!(
+                app.current_targets(),
+                &[Target::Battlefield { lane: 1 }],
+                "clicking an occupant chooses its field, not that unit"
+            );
+            assert_eq!(app.targets, vec![Target::Battlefield { lane: 0 }]);
+            assert_same_state(app);
+            capture(app, "RIFT_SMOKE_C8_REPEAT_SCREENSHOT");
+            click(app, 1035.0, 701.0);
+        }
+        616 => {
+            assert!(app.cost_editor.is_some());
+            click(app, 420.0, 752.0);
+        }
+        617 => {
+            assert!(app.cost_editor.is_none());
+            assert_eq!(app.current_targets(), &[Target::Battlefield { lane: 1 }]);
+            assert_same_state(app);
+            click(app, 744.0, 731.0);
+        }
+        618 => {
+            assert_eq!(app.current_targets(), &[Target::Battlefield { lane: 0 }]);
+            click(app, 845.0, 731.0);
+        }
+        619 => {
+            assert_eq!(app.current_targets(), &[Target::Battlefield { lane: 1 }]);
+            app.prefs.exact_payment = true;
+            click(app, 1285.0, 508.0);
+        }
+        620 => {
+            assert!(app.payment_draft.is_some());
+            assert_same_state(app);
+            click(app, 470.0, 709.0);
+        }
+        621 => {
+            assert!(app.payment_draft.is_none());
+            assert_eq!(app.current_targets(), &[Target::Battlefield { lane: 1 }]);
+            assert_same_state(app);
+            click(app, 1285.0, 508.0);
+        }
+        622 => {
+            assert!(app.payment_draft.is_some());
+            click(app, 935.0, 709.0);
+        }
+        623 => {
+            let spell = app
+                .game
+                .chain
+                .iter()
+                .find(|item| item.card_id == 299 && item.ability.is_none())
+                .unwrap();
+            assert_eq!(spell.executions.len(), 2);
+            assert_eq!(
+                spell.executions[0].targets,
+                vec![Target::Battlefield { lane: 0 }]
+            );
+            assert_eq!(
+                spell.executions[1].targets,
+                vec![Target::Battlefield { lane: 1 }]
+            );
+            assert!(spell.lane.is_none());
+            assert_eq!(super::chain_field_targets(spell), vec![0, 1]);
+            capture(app, "RIFT_SMOKE_C8_CHAIN_SCREENSHOT");
+            finish_chain_until_choice(app);
+            assert!(
+                app.game.players[1].units.is_empty(),
+                "independent executions reach both fields"
+            );
+            expansion_fixture(app, 299);
+            save_state(app);
+            click(app, 315.0, 760.0);
+            app.ui.pointer_override = Some((true, false));
+        }
+        624 | 625 => {
+            assert!(app.drag.is_some());
+            let rect = app
+                .drop_zones
+                .iter()
+                .find_map(|(zone, rect)| {
+                    matches!(zone, super::DropZone::Battlefield(0)).then_some(*rect)
+                })
+                .unwrap();
+            app.ui.input_override = Some((
+                vec2(rect.x + rect.w * 0.8, rect.y + rect.h * 0.72),
+                false,
+                false,
+            ));
+            app.ui.pointer_override = Some((frame == 624, frame == 625));
+        }
+        626 => {
+            assert!(app.drag.is_none());
+            assert_eq!(app.targets, vec![Target::Battlefield { lane: 0 }]);
+            assert!(app.destination.is_none());
+            assert_same_state(app);
+            click(app, 315.0, 760.0);
+            app.ui.pointer_override = Some((true, false));
+        }
+        627 | 628 => {
+            assert!(app.drag.is_some());
+            app.ui.input_override = Some((vec2(600.0, 540.0), false, false));
+            app.ui.pointer_override = Some((frame == 627, frame == 628));
+        }
+        629 => {
+            assert!(app.drag.is_none());
+            assert_same_state(app);
+            expansion_fixture(app, 299);
+            app.game.players[0].units = vec![
+                public_unit(9961, 304, None),
+                public_unit(9962, 306, None),
+                public_unit(9963, 307, None),
+            ];
+            app.game.players[1].units = vec![public_unit(9964, 110, Some(0))];
+            app.game.battlefield_owner[0] = Some(1);
+            assert!(
+                super::live_unit_description(&app.game, 0, 9961)
+                    .unwrap()
+                    .contains("INACTIVE · Crimson Pigeons")
+            );
+            app.game
+                .apply(Action::MoveGroup {
+                    unit_ids: vec![9961, 9962, 9963],
+                    lane: Some(0),
+                })
+                .unwrap();
+            assert!(app.game.in_combat(0));
+        }
+        630 => {
+            let text = super::live_unit_description(&app.game, 0, 9961).unwrap();
+            assert!(text.contains("6 current might"));
+            assert!(text.contains("ACTIVE · Crimson Pigeons: +2 might"));
+            assert!(text.contains("ACTIVE · Captain Farron: Assault 1"));
+            assert!(text.contains("ACTIVE · Taric, Protector: Shield 1"));
+            assert!(text.contains("source's location"));
+            capture_unit(app, 9961, "RIFT_SMOKE_C8_PASSIVE_SCREENSHOT");
+        }
+        631 => {
+            expansion_fixture(app, 299);
+            app.game.players[0].units = vec![public_unit(9971, 305, None)];
+            app.game.players[1].units = vec![public_unit(9972, 110, Some(1))];
+            app.game.battlefield_owner[1] = Some(1);
+            app.game
+                .apply(Action::Move {
+                    unit_id: 9971,
+                    lane: Some(1),
+                })
+                .unwrap();
+            assert!(app.game.in_combat(1));
+            let text = super::live_unit_description(&app.game, 0, 9971).unwrap();
+            assert!(
+                text.contains("4 current might")
+                    && text.contains("ACTIVE · Wielder of Water: +2 might")
+            );
+            assert!(text.contains("while attacking or defending alone"));
+            capture_unit(app, 9971, "RIFT_SMOKE_C8_ALONE_SCREENSHOT");
+        }
+        632 => {
             app.ui.input_override = None;
             app.ui.pointer_override = None;
             app.ui.wheel_override = None;
             println!(
-                "PASS: 598 native UI frames including private Predict partitions/order, atomic reset and stale-choice rejection, live Empowered stats, effective ability costs, Ambessa training/targeted activation and all previous mat/resource/gear controls."
+                "PASS: 633 native UI frames including explicit empty/occupied battlefield targets, independent Repeat fields, exact-payment and cost-review cancellation, field drag validation, live local auras and combat conditions, and all previous mat/resource/gear controls."
             );
             return true;
         }
-        _ => panic!("UI smoke runner exceeded its 598-frame script"),
+        _ => panic!("UI smoke runner exceeded its 633-frame script"),
     }
     false
 }

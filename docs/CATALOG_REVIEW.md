@@ -1,6 +1,6 @@
 # Reviewed catalog evidence
 
-This is a source-data review, dated **October 24, 2026**. It adds no playable cards or rule implementations. The client still maps **315 of 1,079 Standard-legal identities**, including 290 main-deck cards, eight legends, eleven battlefields, and six rune types. The other **764 identities remain unavailable**. Presets, training recipes, stable IDs, and eligibility for existing runtime cards are unchanged.
+This is a source-data review, dated **October 24, 2026**. It adds no playable cards or rule implementations. At C7 publication, the client mapped **315 of 1,079 Standard-legal identities**, including 290 main-deck cards, eight legends, eleven battlefields, and six rune types; 764 identities were unavailable. Those are historical review-checkpoint counts. Later runtime admissions are tracked in [Card coverage](CARD_COVERAGE.md); the source review itself does not register cards or change presets, training recipes, stable IDs, or existing eligibility.
 
 ## What was reviewed
 
@@ -112,4 +112,4 @@ Run `python3 tools/import_catalog.py --check` to verify archived sources, immuta
 
 **A live page check does not download the images or Core PDF again.** It verifies current image URLs, parsed errata and the Core link against the review, then rechecks stored evidence bytes. The visual/rules review remains dated October 24; it cannot detect silently replaced remote bytes at an unchanged image or PDF URL without a separate fetch and review.
 
-These checks establish traceable source facts and safe metadata admission. They do not establish complete Standard rules parity or make any of the 764 unavailable identities playable.
+These checks establish traceable source facts and safe metadata admission. They do not establish complete Standard rules parity or make an unavailable identity playable without a separate runtime implementation.

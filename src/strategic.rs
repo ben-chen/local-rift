@@ -172,22 +172,6 @@ impl Game {
             ) && !matches!(action,Action::ActivateLegend{target} if self.legend_ai_score(actor,*target).is_none())
         }));
         if self.decision.is_none() {
-            let targets: Vec<_> = self
-                .players
-                .iter()
-                .enumerate()
-                .flat_map(|(player, state)| {
-                    state.units.iter().map(move |unit| Target::Unit {
-                        player,
-                        unit_id: unit.id,
-                    })
-                })
-                .chain(
-                    self.chain
-                        .iter()
-                        .map(|item| Target::Spell { chain_id: item.id }),
-                )
-                .collect();
             for (hand_index, &id) in self.players[actor].hand.iter().enumerate() {
                 for lane in [None, Some(0), Some(1)] {
                     if self.validate_play_structure(id, lane).is_err() {
@@ -199,10 +183,9 @@ impl Game {
                         target: None,
                     });
                     let (_, required) = rules::target_bounds(id);
-                    let valid: Vec<_> = targets
-                        .iter()
-                        .copied()
-                        .filter(|&target| self.valid_card_target(actor, id, lane, target, &[]))
+                    let valid: Vec<_> = self
+                        .card_target_candidates(actor, id, lane, &[])
+                        .into_iter()
                         .take(8)
                         .collect();
                     let mut target_sets = Vec::new();
@@ -213,12 +196,8 @@ impl Game {
                         if required <= 1 {
                             target_sets.push(vec![target]);
                         } else {
-                            for &other in &targets {
-                                if target != other
-                                    && self.valid_card_target(actor, id, lane, other, &[target])
-                                {
-                                    target_sets.push(vec![target, other]);
-                                }
+                            for other in self.card_target_candidates(actor, id, lane, &[target]) {
+                                target_sets.push(vec![target, other]);
                             }
                         }
                     }
