@@ -2,7 +2,7 @@
 
 Snapshot checked **2026-10-24**. The official gallery contains **1,408 printing records** grouped into **1,103 distinct full-name identities**. After excluding **12 auxiliary token/tracker identities** and **12 banned identities**, **1,079 identities are legal in Standard/1v1 Constructed**. The separate 2v2 list leaves **1,078**.
 
-**This client does not yet implement every legal card.** It currently maps **81 main-deck cards, 4 preset legends, 4 battlefields, and 6 rune resource types** (95 legal identities). **984 legal identities remain unimplemented and are not playable.** Importing this snapshot does not register cards with the engine. Full inventory coverage is not full rules support.
+**This client does not yet implement every legal card.** It currently maps **103 main-deck cards, 4 preset legends, 4 battlefields, and 6 rune resource types** (117 legal identities). **962 legal identities remain unimplemented and are not playable.** Importing this snapshot does not register cards with the engine. Full inventory coverage is not full rules support.
 
 ## Scope and authority
 
@@ -23,14 +23,16 @@ Numbered positions include token slots where the publisher numbers them within a
 
 ## Runtime gap by card kind
 
+**The by-kind counts below are provisional:** 23 identities have contradictory official structured types and accessibility labels. The table retains structured types without adjudicating them; total identities and legality counts are unaffected. None of these unresolved identities is mapped to the runtime.
+
 | Kind | Standard legal | Implemented mapping | Not implemented |
 | --- | ---: | ---: | ---: |
 | Battlefield | 69 | 4 | 65 |
 | Gear | 127 | 6 | 121 |
 | Legend | 58 | 4 | 54 |
 | Rune | 6 | 6 | 0 |
-| Spell | 269 | 38 | 231 |
-| Unit | 550 | 37 | 513 |
+| Spell | 269 | 45 | 224 |
+| Unit | 550 | 52 | 498 |
 
 Implemented mapping means the existing engine/preset/field/resource implementation, not a claim that every interaction has been formally proven. See `docs/RULES.md` for engine limits. Every unimplemented identity has `implementation.status: not_implemented` and `playable_in_client: false`. Printed keywords are recorded per card and counted under `unimplemented_by_observed_keyword` as discovery hints only; shared keywords do not imply shared effect semantics or completed implementation. Each unimplemented card still requires its specific effect, targets, timing, costs, continuous/replacement effects, and interaction tests to be reviewed and implemented.
 
@@ -65,6 +67,34 @@ The snapshot preserves printed rules HTML, readable rules, equipment text, exact
 
 **13 Radiance records have an empty structured type field.** Their type is taken from the same record’s explicit official image accessibility label and marked `type_source: cardImage.accessibilityText`. The archived record preserves the missing field.
 
+**23 records have contradictory structured and accessibility type labels.** `structured_types`, `accessibility_types`, and `type_labels_conflict` preserve both claims. Each affected identity lists `types` under `conflicting_fields`; the importer rejects any runtime mapping to such an identity, even when another printing is selected. No source label is silently preferred as the correct answer.
+
+| Official ID | Card | Structured type | Accessibility type |
+| --- | --- | --- | --- |
+| `rad-007-167` | Rally for War | gear | spell |
+| `rad-012-167` | Runeblade Anvil | unit | gear |
+| `rad-016-167` | Coalesced Energy | spell | unit |
+| `rad-025-167` | Consult the Heavens | unit | spell |
+| `rad-033-167` | Command: Attack | gear | spell |
+| `rad-035-167` | Invigorating Bloom | unit | gear |
+| `rad-039-167` | Ephemeral Ward | unit | gear |
+| `rad-044-167` | Hunting Blind | unit | gear |
+| `rad-046-167` | Resplendent Rostrum | spell | gear |
+| `rad-056-167` | Improvised Projectile | gear | spell |
+| `rad-059-167` | Supernova | unit | spell |
+| `rad-064-167` | Scrutinizing Scope | spell | gear |
+| `rad-069-167` | Zero Point Inflection | spell | gear |
+| `rad-072-167` | Overloaded Traveler | spell | unit |
+| `rad-087-167` | Portable Portal | unit | gear |
+| `rad-097-167` | Siren of the Shallows | spell | unit |
+| `rad-101-167` | An Offer You Can't Refuse | gear | spell |
+| `rad-108-167` | Bushwhack Trap | unit | gear |
+| `rad-120-167` | Meticulous Restorationist | gear | unit |
+| `rad-124-167` | Burn Away | gear | spell |
+| `rad-130-167` | Battlefield Armorer | spell | unit |
+| `rad-131-167` | Demacian Illuminators | spell | unit |
+| `rad-136-167` | Dockside Lock-Up | unit | gear |
+
 **Unresolved official stat conflict:** Kai'Sa, Rebel, `might`: `rad-063-167` = 5; `rad-sp4-005` = 4. Both values are retained. The numbered base card is the inventory representative, not a ruling that resolves this discrepancy.
 
 Gallery text may contain editorial errors (for example Rousing Display ends with `instead.disa`); source text is preserved rather than silently repaired. The gallery’s auxiliary entries are also incomplete as a complete token catalog: official rules/card text mentions additional tokens such as Tentacle, Mech, and Bomb. Tokens cannot be included in legal constructed decks and are excluded from the 1,079 denominator; a future full engine still needs every rules-created token and marker.
@@ -79,7 +109,7 @@ python3 -m unittest discover -s tools -p 'test_*.py'
 cargo test --test catalog_coverage
 ```
 
-The offline check verifies every archived source SHA-256, reparses gallery and legality, checks every official printing ID and all numbered base positions, rejects unknown sets/unresolved bans or errata, remaps the runtime manifests by official ID, and requires the generated snapshot and report to match byte for byte. It fails on truncated sources, missing records, stale implementation mappings, or unreviewed set changes.
+The offline check verifies every archived source SHA-256, reparses gallery and legality, checks every official printing ID and all numbered base positions, rejects unknown sets/unresolved bans or errata, remaps the runtime manifests by official ID, and requires the generated snapshot and report to match byte for byte. It fails on truncated sources, missing records, stale implementation mappings, mapped identities with unresolved type conflicts, or unreviewed set changes.
 
 ```sh
 # Compare live official source data without changing the committed snapshot.
@@ -177,5 +207,27 @@ Source pages are archived as deterministic gzip files under `assets/data/catalog
 | 78 | Premonition | `sfd-087-221` |
 | 79 | Moonlight Affliction | `unl-066-219` |
 | 80 | Rebuke | `ogn-172-298` |
+| 81 | Smoke Screen | `ogn-093-298` |
+| 82 | Challenge | `ogn-128-298` |
+| 83 | Clash of Giants | `unl-110-219` |
+| 84 | Lunar Boon | `unl-125-219` |
+| 85 | Back to Back | `ogn-206-298` |
+| 86 | Wind Wall | `ogn-064-298` |
+| 87 | Recruit the Vanguard | `ogs-015-024` |
+| 88 | Daring Poro | `ogn-210-298` |
+| 89 | Laurent Duelist | `sfd-156-221` |
+| 90 | Petty Officer | `ogn-215-298` |
+| 91 | Horns of the Dragon | `ven-118-166` |
+| 92 | Navori Scout | `sfd-037-221` |
+| 93 | Pouty Poro | `ogn-013-298` |
+| 94 | Soulspinner | `ven-123-166` |
+| 95 | Blazing Scorcher | `ogn-001-298` |
+| 96 | Legion Rearguard | `ogn-010-298` |
+| 97 | Sharkling | `unl-006-219` |
+| 98 | Rengar, Unseen | `unl-024-219` |
+| 99 | Dangerous Duo | `ogn-016-298` |
+| 100 | Scrapyard Champion | `ogn-020-298` |
+| 101 | Trifarian Gloryseeker | `ogn-217-298` |
+| 102 | Vanguard Captain | `ogn-218-298` |
 
 Card names, rules, and images are Riot Games intellectual property. This noncommercial, unofficial project includes source references for verification and does not claim Riot affiliation.

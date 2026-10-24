@@ -211,6 +211,88 @@ fn staged_battlefield_fixture(app: &mut App) {
     app.prefs.exact_payment = false;
 }
 
+fn expansion_fixture(app: &mut App, card_id: usize) {
+    use local_rift::deck::{CustomDeck, eligible_cards};
+    let legend = [3, 1, 2, 0]
+        .into_iter()
+        .find(|legend| eligible_cards(*legend).contains(&card_id))
+        .unwrap();
+    let mut deck = CustomDeck::from_preset(legend).unwrap();
+    if !deck.cards.iter().any(|(id, _)| *id == card_id) {
+        deck.cards.push((card_id, 1));
+    }
+    app.game = Game::new_with_custom(
+        [legend, 3],
+        [Some(deck), None],
+        1717,
+        Difficulty::Easy,
+        true,
+    )
+    .unwrap();
+    app.game.start_match().unwrap();
+    app.player_deck = legend;
+    app.opponent_deck = 3;
+    app.fields = app.game.battlefields;
+    app.screen = Screen::Practice;
+    app.in_match = true;
+    let name = app.game.catalog[card_id].name;
+    hand_card(app, name);
+    let extra = app.game.players[0].hand.drain(1..).collect::<Vec<_>>();
+    app.game.players[0].deck.extend(extra);
+    app.game.players[0].runes = [0; 6];
+    app.game.players[0].runes[domain_index(app.game.catalog[card_id].domain)] = 12;
+    app.game.players[0].exhausted_runes = [0; 6];
+    app.game.players[0].energy = 12;
+    app.game.players[0].energy_pool = 0;
+    app.game.players[0].rune_deck.clear();
+    app.selection = None;
+    app.targets.clear();
+    app.repeat_targets.clear();
+    app.group.clear();
+    app.choices.clear();
+    app.options = Default::default();
+    app.flow_source = None;
+    app.destination = None;
+    app.tray = super::Tray::Hand;
+    app.gear_owner = 0;
+    app.hand_scroll = 0;
+    app.hover_card = None;
+    app.hover_rect = None;
+    app.hover_unit = None;
+    app.hover_token = None;
+    app.hover_unit_candidate = None;
+    app.toast_until = 0.0;
+    app.payment_draft = None;
+    app.prefs.exact_payment = false;
+    app.drag = None;
+    app.damage_amounts = None;
+    app.damage_editor = None;
+}
+fn public_unit(id: u32, card_id: usize, lane: Option<usize>) -> Unit {
+    Unit {
+        id,
+        card_id,
+        lane,
+        ready: true,
+        damage: 0,
+        buff: 0,
+        temporary_buff: 0,
+        token: false,
+        protected: false,
+        stunned: false,
+        banish_on_death: false,
+    }
+}
+fn finish_chain_until_choice(app: &mut App) {
+    for _ in 0..60 {
+        if app.game.decision.is_some() || app.game.chain.is_empty() {
+            return;
+        }
+        app.game.apply(Action::Pass).unwrap();
+    }
+    panic!("fixture chain failed to settle");
+}
+
 /// Returns true after all assertions pass. Use an isolated XDG_DATA_HOME because
 /// the settings controls intentionally exercise the normal persistence path.
 pub fn run_frame(app: &mut App, frame: u32) -> bool {
@@ -1966,15 +2048,442 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
                 "additional card actually deploys through native controls"
             );
             assert_eq!(app.game.catalog[72].name, "Shipyard Skulker");
+        }
+        167 => {
+            expansion_fixture(app, 85);
+            app.game.players[0].units =
+                vec![public_unit(100, 71, None), public_unit(101, 71, None)];
+            app.game.players[1].units = vec![public_unit(200, 69, None)];
+            click(app, 315.0, 760.0);
+        }
+        168 => {
+            assert!(app.target_hint(85).contains("friendly"));
+            click_unit(app, 200);
+        }
+        169 => {
+            assert!(app.targets.is_empty(), "enemy is not a Back to Back target");
+            click_unit(app, 100);
+        }
+        170 => {
+            assert_eq!(app.targets.len(), 1);
+            COMBAT_SNAPSHOT
+                .with(|snapshot| *snapshot.borrow_mut() = Some(format!("{:?}", app.game)));
+            click(app, 1285.0, 510.0);
+        }
+        171 => {
+            COMBAT_SNAPSHOT.with(|snapshot| {
+                assert_eq!(
+                    snapshot.borrow().as_deref(),
+                    Some(format!("{:?}", app.game).as_str()),
+                    "partial required target selection is atomic"
+                )
+            });
+            click_unit(app, 101);
+        }
+        172 => {
+            assert_eq!(app.targets.len(), 2);
+            click(app, 1285.0, 510.0);
+        }
+        173 => {
+            assert!(
+                app.game
+                    .chain
+                    .iter()
+                    .any(|item| item.card_id == 85 && item.targets.len() == 2)
+            );
+            finish_chain_until_choice(app);
+            assert!(
+                app.game.players[0]
+                    .units
+                    .iter()
+                    .all(|unit| app.game.unit_might(unit) == 7)
+            );
+        }
+        174 => {
+            expansion_fixture(app, 83);
+            app.game.players[0].units =
+                vec![public_unit(100, 70, None), public_unit(101, 70, None)];
+            click(app, 315.0, 760.0);
+        }
+        175 => {
+            click_unit(app, 100);
+        }
+        176 => {
+            click_unit(app, 101);
+        }
+        177 => {
+            assert_eq!(app.targets.len(), 2, "Clash can choose two friendly units");
+            click(app, 1285.0, 510.0);
+        }
+        178 => {
+            assert!(app.game.chain.iter().any(|item| {
+                item.card_id == 83
+                    && item
+                        .targets
+                        .iter()
+                        .all(|target| matches!(target, Target::Unit { player: 0, .. }))
+            }));
+            finish_chain_until_choice(app);
+            assert!(
+                app.game.players[0].units.is_empty(),
+                "both chosen units deal their actual might"
+            );
+        }
+        179 => {
+            expansion_fixture(app, 87);
+            app.game.players[0].units =
+                vec![public_unit(100, 72, Some(0)), public_unit(101, 73, Some(1))];
+            app.game.battlefield_owner = [Some(0), Some(0)];
+            click(app, 315.0, 760.0);
+        }
+        180 => {
+            click(app, 1285.0, 510.0);
+        }
+        181 => {
+            finish_chain_until_choice(app);
+            assert!(matches!(
+                app.game.decision,
+                Some(Decision::TokenPlacement {
+                    remaining: 4,
+                    card_id: 87,
+                    ..
+                })
+            ));
+            assert!(app.game.players[0].discard.contains(&87));
+            assert!(!app.game.chain.iter().any(|item| item.card_id == 87));
+            assert!(!app.game.players[0].units.iter().any(|unit| unit.token));
+        }
+        182 => {
+            click(app, 1285.0, 470.0);
+        }
+        183 => {
+            assert!(matches!(
+                app.game.decision,
+                Some(Decision::TokenPlacement { remaining: 3, .. })
+            ));
+            assert_eq!(
+                app.game.players[0]
+                    .units
+                    .iter()
+                    .filter(|unit| unit.token)
+                    .count(),
+                1,
+                "the first token enters before the next placement choice"
+            );
+            click(app, 1285.0, 505.0);
+        }
+        184 => {
+            assert!(matches!(
+                app.game.decision,
+                Some(Decision::TokenPlacement { remaining: 2, .. })
+            ));
+            assert_eq!(
+                app.game.players[0]
+                    .units
+                    .iter()
+                    .filter(|unit| unit.token)
+                    .count(),
+                2
+            );
+            click(app, 1285.0, 540.0);
+        }
+        185 => {
+            assert!(matches!(
+                app.game.decision,
+                Some(Decision::TokenPlacement { remaining: 1, .. })
+            ));
+            assert_eq!(
+                app.game.players[0]
+                    .units
+                    .iter()
+                    .filter(|unit| unit.token)
+                    .count(),
+                3
+            );
+            click(app, 1285.0, 470.0);
+        }
+        186 => {
+            let recruits = app.game.players[0]
+                .units
+                .iter()
+                .filter(|unit| unit.token)
+                .collect::<Vec<_>>();
+            assert_eq!(recruits.len(), 4);
+            assert!(
+                recruits
+                    .iter()
+                    .all(|unit| app.game.unit_name(unit) == "Recruit token")
+            );
+            assert_eq!(
+                recruits.iter().filter(|unit| unit.lane.is_none()).count(),
+                2
+            );
+            assert_eq!(
+                recruits.iter().filter(|unit| unit.lane == Some(0)).count(),
+                1
+            );
+            assert_eq!(
+                recruits.iter().filter(|unit| unit.lane == Some(1)).count(),
+                1
+            );
+            finish_chain_until_choice(app);
+            assert!(app.game.decision.is_none());
+        }
+        187 => {
+            expansion_fixture(app, 84);
+            let extra = app.game.players[0].deck.pop().unwrap();
+            app.game.players[0].hand.push(extra);
+            click(app, 315.0, 760.0);
+        }
+        188 => {
+            click(app, 1285.0, 510.0);
+        }
+        189 => {
+            finish_chain_until_choice(app);
+            assert!(matches!(
+                app.game.decision,
+                Some(Decision::Discard {
+                    count: 1,
+                    draw_after: 2,
+                    ..
+                })
+            ));
+            assert!(
+                app.game.chain.iter().any(|item| item.card_id == 84),
+                "resolving Loot keeps physical spell on chain"
+            );
+            click(app, 315.0, 760.0);
+        }
+        190 => {
+            click(app, 1285.0, 510.0);
+        }
+        191 => {
+            assert_eq!(app.game.players[0].hand.len(), 2);
+            assert!(app.game.decision.is_none());
+            finish_chain_until_choice(app);
+            assert!(app.game.players[0].discard.contains(&84));
+        }
+        192 => {
+            expansion_fixture(app, 98);
+            click(app, 315.0, 760.0);
+        }
+        193 => {
+            click(app, 1229.0, 468.0);
+        }
+        194 => {
+            assert!(app.options.accelerate, "new metadata exposes Accelerate");
+            click(app, 1285.0, 510.0);
+        }
+        195 => {
+            let unit = app.game.players[0]
+                .units
+                .iter()
+                .find(|unit| unit.card_id == 98)
+                .unwrap();
+            assert!(unit.ready);
+            assert_eq!(
+                app.game.players[0].energy,
+                12 - app.game.catalog[98].cost - 1
+            );
+        }
+        196 => {
+            let unit_id = app.game.players[0]
+                .units
+                .iter()
+                .find(|unit| unit.card_id == 98)
+                .unwrap()
+                .id;
+            click_unit(app, unit_id);
+            let position = app.ui.mouse();
+            app.ui.input_override = Some((position, false, false));
+            app.hover_card = Some(98);
+            app.hover_unit = Some((0, unit_id));
+            app.hover_since = -1.0;
+            app.hover_rect = None;
+        }
+        197 => {
+            let unit_id = app.game.players[0]
+                .units
+                .iter()
+                .find(|unit| unit.card_id == 98)
+                .unwrap()
+                .id;
+            assert_eq!(app.hover_unit, Some((0, unit_id)));
+            let panel = app.hover_rect.expect("live keyword hover appears");
+            let text = super::live_unit_description(&app.game, 0, unit_id).unwrap();
+            assert!(
+                text.contains("Assault 2")
+                    && text.contains("Deflect 1")
+                    && text.contains("Ganking")
+                    && text.contains("Accelerate, when played")
+            );
+            app.ui.input_override = Some((vec2(panel.x + 40.0, panel.y + 240.0), false, false));
+            if let Ok(path) = std::env::var("RIFT_SMOKE_KEYWORDS_SCREENSHOT") {
+                app.draw();
+                get_screen_data().export_png(&path);
+            }
+            app.ui.wheel_override = Some(-12.0);
+        }
+        198 => {
+            assert!(
+                app.hover_scroll > 0,
+                "full keyword and printed text remain scrollable"
+            );
+            expansion_fixture(app, 96);
+            let id = app.game.players[0].hand.remove(0);
+            app.game.players[0].discard.push(id);
+            app.game.players[0].units = vec![public_unit(300, 45, None)];
+            app.game.players[0].power_pool[domain_index(Domain::Chaos)] = 1;
+            app.game
+                .apply(Action::EmpowerUnit {
+                    unit_id: 300,
+                    pay_power: false,
+                })
+                .unwrap();
+            finish_chain_until_choice(app);
+            assert!(matches!(
+                app.game.decision,
+                Some(Decision::ReviveUnit { player: 0 })
+            ));
+            click(app, 315.0, 760.0);
+        }
+        199 => {
+            assert!(app.selection == Some(Selection::Trash(0)));
+            click(app, 1229.0, 468.0);
+        }
+        200 => {
+            assert!(
+                !app.options.accelerate,
+                "additional cost is not chosen before revival resolves"
+            );
+            click(app, 1285.0, 510.0);
+        }
+        201 => {
+            assert!(app.game.chain.iter().any(|item| matches!(
+                item.ability,
+                Some(local_rift::game::ChainAbility::ReviveChosen { .. })
+            )));
+            finish_chain_until_choice(app);
+            assert!(matches!(
+                app.game.decision,
+                Some(Decision::RevivePlay {
+                    trash_index: 0,
+                    card_id: 96,
+                    ..
+                })
+            ));
+        }
+        202 => {
+            assert!(
+                app.selection == Some(Selection::Trash(0)),
+                "chosen revival is selected automatically"
+            );
+            click(app, 1229.0, 468.0);
+        }
+        203 => {
+            assert!(app.options.accelerate);
+            click(app, 1285.0, 510.0);
+        }
+        204 => {
+            let unit = app.game.players[0]
+                .units
+                .iter()
+                .find(|unit| unit.card_id == 96)
+                .unwrap();
+            assert!(unit.ready && unit.lane.is_none());
+            assert_eq!(
+                app.game.players[0].energy, 9,
+                "Matriarch2 + Accelerate1; base unit cost waived"
+            );
+            assert!(app.game.decision.is_none());
+        }
+        205 => {
+            expansion_fixture(app, 50);
+            app.game.players[1].units = (0..4).map(|i| public_unit(300 + i, 69, None)).collect();
+            click(app, 315.0, 760.0);
+        }
+        206 => {
+            click_unit(app, 300);
+        }
+        207 => {
+            click_unit(app, 301);
+        }
+        208 => {
+            click_unit(app, 302);
+        }
+        209 => {
+            click_unit(app, 303);
+        }
+        210 => {
+            assert_eq!(
+                app.targets.len(),
+                3,
+                "shared metadata rejects a fourth Bellows target"
+            );
+            click(app, 1285.0, 510.0);
+        }
+        211 => {
+            assert!(
+                app.game
+                    .chain
+                    .iter()
+                    .any(|item| item.card_id == 50 && item.targets.len() == 3)
+            );
+        }
+        212 => {
+            expansion_fixture(app, 99);
+            app.game.players[0].hand.push(69);
+            app.game
+                .apply(Action::PlayCard {
+                    hand_index: 1,
+                    lane: None,
+                    target: None,
+                })
+                .unwrap();
+            finish_chain_until_choice(app);
+            assert_eq!(app.game.cards_played_this_turn(0), 1);
+            click(app, 315.0, 760.0);
+        }
+        213 => {
+            click(app, 1285.0, 510.0);
+        }
+        214 => {
+            assert!(
+                matches!(
+                    app.game.decision,
+                    Some(Decision::OnPlayTarget { card_id: 99, .. })
+                ),
+                "Legion target is chosen after unit enters"
+            );
+            let unit_id = app.game.players[0]
+                .units
+                .iter()
+                .find(|unit| unit.card_id == 69)
+                .unwrap()
+                .id;
+            click_unit(app, unit_id);
+        }
+        215 => {
+            finish_chain_until_choice(app);
+            let unit = app.game.players[0]
+                .units
+                .iter()
+                .find(|unit| unit.card_id == 69)
+                .unwrap();
+            assert_eq!(
+                app.game.unit_might(unit),
+                10,
+                "new Legion target resolves through native choice"
+            );
             app.ui.input_override = None;
             app.ui.pointer_override = None;
             app.ui.wheel_override = None;
             println!(
-                "PASS: 167 native UI frames including exact combat/resources, both Flow costs, staged battlefield order, and validated saved custom decks with a new card deployed."
+                "PASS: 216 native UI frames including new spell targeting, four Recruit placements, Loot, Accelerate/revival costs, live keywords, and Legion targets."
             );
             return true;
         }
-        _ => panic!("UI smoke runner exceeded its 167-frame script"),
+        _ => panic!("UI smoke runner exceeded its 216-frame script"),
     }
     false
 }

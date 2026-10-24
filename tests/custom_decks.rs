@@ -219,7 +219,7 @@ fn chosen_champion_must_be_present_and_its_copies_count_toward_three() {
 
 #[test]
 fn unavailable_cards_zero_counts_duplicate_rows_and_excess_copies_are_rejected() {
-    for row in [(81, 1), (usize::MAX, 1), (69, 0), (69, 4)] {
+    for row in [(cards::cards().len(), 1), (usize::MAX, 1), (69, 0), (69, 4)] {
         let mut deck = CustomDeck::from_preset(3).unwrap();
         deck.cards.push(row);
         assert!(deck.validate().is_err(), "row {row:?}");

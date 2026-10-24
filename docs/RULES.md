@@ -1,6 +1,6 @@
 # Implemented rules and limitations
 
-**Local Rift is an unofficial, incomplete Riftbound client. This document describes its current behavior, not the complete tabletop game.** Full official card text appears in hover previews and pinned inspectors. All 81 bundled cards have executable printed-effect mappings. An official description in the catalog and a passing simulation are not proof of complete tabletop equivalence.
+**Local Rift is an unofficial, incomplete Riftbound client. This document describes its current behavior, not the complete tabletop game.** Full official card text appears in hover previews and pinned inspectors. All 103 bundled cards have executable printed-effect mappings. An official description in the catalog and a passing simulation are not proof of complete tabletop equivalence.
 
 For physical play, use Riot's [Rules Hub](https://playriftbound.com/en-us/rules-hub/), current errata, and printed card text. The core timing reference used here is the [October 9, 2026 Core Rules](https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/5c7946f7c3b8c6e0faff85ab6dadc6d2e721ea94.pdf). [SOURCES.md](SOURCES.md) records the card and deck sources.
 
@@ -76,7 +76,9 @@ The client supports Fizz's energy-waived spell replay, Last Rites unit plays fro
 
 When a trash spell has both printed and temporarily granted Flow, you can select either available cost. Normal timing and additional costs still apply; an explicit unaffordable choice is rejected without substituting the other cost. Kennen’s grant expires at the appropriate turn end.
 
-Supported play options include Repeat, Accelerate, Rampage's optional might payment, and eligible units' Empower abilities. Eligible trash plays also expose optional costs: Fizz can Repeat Hard Bargain, a Flow-granted Bellows Breath can Repeat, and Last Rites can Accelerate Kai'Sa. Waiving a base cost does not waive additional costs. Optional costs must be selected and paid before the play is finalized. Up from the Deep asks where to place each Tentacle separately, using your base or a battlefield you control. Empower persists on the object rather than expiring at turn end. Inspect the printed text and current unit state when choosing an option.
+Supported play options include Repeat, Accelerate, Rampage's optional might payment, and eligible units' Empower abilities. Eligible trash plays also expose optional costs: Fizz can Repeat Hard Bargain, a Flow-granted Bellows Breath can Repeat, and Last Rites can Accelerate Kai'Sa. Matriarch chooses its eligible trash unit before responses, then offers Accelerate when that specific unit is actually played. Waiving a base cost does not waive additional costs. Optional costs must be selected and paid before the play is finalized. Up from the Deep and Recruit the Vanguard ask where to place each token separately, using your base or a battlefield you control. Vanguard Captain's tokens instead use its current location when the trigger resolves; a source that has left the board has no location. Empower persists on the object rather than expiring at turn end. Inspect the printed text and current unit state when choosing an option.
+
+The expanded unit pool includes explicit Assault, Tank, Deflect, Ganking, Ambush, Accelerate, and Legion behavior. Legion play triggers capture whether another card was played that turn, then enter the ordinary response system. Discard-and-draw effects keep their resolving chain item in place until the discard choice and draws finish. Lunar Boon therefore cannot recycle itself into its own draw during burnout. Wind Wall counters a spell of any cost, including its controller's spell, but cannot counter a triggered ability.
 
 ## Priority, chains, and showdowns
 
@@ -126,7 +128,7 @@ The deck library includes the real legends and authored strategy notes. The four
 
 ## Remaining fidelity limits
 
-Four supported legends, four battlefield choices, and 81 main-deck cards are available through the four supplied presets and custom deck editor. There is no sideboarding, tournament match structure, multiplayer mode, or full card-set coverage. The presets are dated tournament lists, not a ranking of the current metagame.
+Four supported legends, four battlefield choices, and 103 main-deck cards are available through the four supplied presets and custom deck editor. There is no sideboarding, tournament match structure, multiplayer mode, or full card-set coverage. The presets are dated tournament lists, not a ranking of the current metagame.
 
 The desktop and bot API expose exact damage allocations and power-source payments. The default automatic payment remains available; energy can be prepared by exhausting chosen rune domains before a play. These controls share engine validation, but broader card and interaction coverage is still required.
 

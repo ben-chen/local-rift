@@ -191,6 +191,8 @@ struct App {
     hover_token_candidate: Option<TokenPreview>,
     hover_token: Option<TokenPreview>,
     hover_card: Option<usize>,
+    hover_unit_candidate: Option<(usize, u32)>,
+    hover_unit: Option<(usize, u32)>,
     hover_since: f64,
     hover_rect: Option<Rect>,
     hover_scroll: usize,
@@ -308,6 +310,8 @@ impl App {
             hover_token_candidate: None,
             hover_token: None,
             hover_card: None,
+            hover_unit_candidate: None,
+            hover_unit: None,
             hover_since: 0.0,
             hover_rect: None,
             hover_scroll: 0,
@@ -580,6 +584,7 @@ impl App {
         self.ui.rect(Rect::new(0.0, 0.0, 1440.0, 900.0), BG);
         self.field_hover = None;
         self.hover_candidate = None;
+        self.hover_unit_candidate = None;
         self.hover_token_candidate = None;
         self.drop_zones.clear();
         if self.hover_rect.is_some_and(|r| r.contains(self.ui.mouse()))
@@ -931,11 +936,14 @@ impl App {
                 }
                 if self.ui.hover(card_rect) {
                     self.hover_candidate = Some(card_id);
+                    self.hover_unit_candidate = Some((owner, *id));
                     if token {
                         self.hover_token_candidate = Some(TokenPreview {
                             name: unit_name.clone(),
                             might: self.game.unit_might(unit),
-                            rules: if card_id == 34 {
+                            rules: if local_rift::rules::token_spec(card_id)
+                                .is_some_and(|spec| spec.deflect)
+                            {
                                 "Deflect: an opponent must pay 1 extra power to choose this Bird with a spell or ability.".into()
                             } else {
                                 "This created unit has no printed abilities.".into()
@@ -951,7 +959,7 @@ impl App {
                     hit_unit = true;
                     if self.ui.secondary_pressed() {
                         if token {
-                            self.notify(format!("{unit_name}: a created unit. Its current might is shown on the board.{}",if card_id==34 {" This Bird has Deflect."}else{""}));
+                            self.notify(format!("{unit_name}: a created unit. Its current might is shown on the board.{}",if local_rift::rules::token_spec(card_id).is_some_and(|spec| spec.deflect) {" This Bird has Deflect."}else{""}));
                         } else {
                             self.inspect = Some(card_id);
                         }
@@ -990,25 +998,7 @@ impl App {
                                         player: owner,
                                         unit_id: *id,
                                     };
-                                    let targets = if self.editing_repeat {
-                                        &mut self.repeat_targets
-                                    } else {
-                                        &mut self.targets
-                                    };
-                                    if let Some(pos) = targets.iter().position(|t| *t == target) {
-                                        targets.remove(pos);
-                                    } else if targets.len() < 3 {
-                                        targets.push(target);
-                                    }
-                                    let count = targets.len();
-                                    self.notify(format!(
-                                        "{count} target(s) chosen for {}. Confirm with Play.",
-                                        if self.editing_repeat {
-                                            "the repeat"
-                                        } else {
-                                            "the first effect"
-                                        }
-                                    ));
+                                    self.toggle_unit_target(target);
                                 }
                                 _ if owner == 0
                                     && (is_key_down(KeyCode::LeftShift)
@@ -1378,9 +1368,10 @@ impl App {
                 .unit_might(unit)
                 .saturating_sub(unit.damage)
                 .max(1);
-            let role = if !unit.token && unit.card_id == 57 {
+            let keywords = self.game.unit_keywords(unit);
+            let role = if keywords.tank {
                 " · TANK"
-            } else if !unit.token && unit.card_id == 13 {
+            } else if keywords.backline {
                 " · BACKLINE"
             } else {
                 ""
@@ -1464,6 +1455,7 @@ impl App {
             }
             if self.ui.hover(card_face) {
                 self.hover_candidate = Some(unit.card_id);
+                self.hover_unit_candidate = Some((1, unit.id));
             }
             if self.ui.hover(card_face) && self.ui.secondary_pressed() {
                 self.inspect = Some(unit.card_id);
@@ -1479,6 +1471,17 @@ impl App {
         if self.game.resource_payment_pending()
             && matches!(self.selection, Some(Selection::Gear(_) | Selection::Legend))
         {
+            self.selection_panel();
+            return;
+        }
+        if let Decision::RevivePlay { trash_index, .. } = decision {
+            if self.selection != Some(Selection::Trash(trash_index)) {
+                self.selection = Some(Selection::Trash(trash_index));
+                self.options = PlayOptions::default();
+                self.flow_source = None;
+                self.targets.clear();
+                self.destination = None;
+            }
             self.selection_panel();
             return;
         }
@@ -1511,8 +1514,13 @@ impl App {
             }
             return;
         }
-        if let Decision::TokenPlacement { remaining, .. } = decision {
-            self.ui.title("Place a Tentacle", 1178.0, 366.0, 21.0, TEXT);
+        if let Decision::TokenPlacement {
+            card_id, remaining, ..
+        } = decision
+        {
+            let name = local_rift::rules::token_spec(card_id).map_or("token", |spec| spec.name);
+            self.ui
+                .title(&format!("Place a {name}"), 1178.0, 366.0, 21.0, TEXT);
             self.ui.wrapped(
                 &format!("{remaining} remaining. Choose your base or a battlefield you control."),
                 1178.0,
@@ -1595,7 +1603,7 @@ impl App {
             return;
         }
         let (title,body)=match &decision{
-            Decision::CombatDamage{..}|Decision::TokenPlacement{..}|Decision::BattlefieldOrder{..}=>unreachable!(),
+            Decision::CombatDamage{..}|Decision::TokenPlacement{..}|Decision::BattlefieldOrder{..}|Decision::RevivePlay{..}=>unreachable!(),
             Decision::OptionalPlay{card_id,..}=>("Use this triggered ability?",format!("{} offers a play from your trash. Accept to put the ability on the chain, or decline now. After accepting, choose a legal payable card when it resolves.",self.game.catalog[*card_id].name)),
             Decision::ResolutionTargets{..}=>("Choose the location", "Responses separated your targets. Choose which legal group below this spell should affect.".into()),
             Decision::OrderTriggers{..}=>("Order your triggers", "Choose which ability to put on the chain next. The last ability placed will resolve first. Pending triggers cannot be countered yet.".into()),
@@ -1603,7 +1611,7 @@ impl App {
             Decision::DeathReplacement{..}=>("Choose what saves them", "Choose a unit and replacement from the cards below. This decides which gear or banishment changes the death.".into()),
             Decision::RevealHand{..}=>("Scuttle Crab's discovery","The opponent's hand is revealed below. You can also inspect their hidden cards in the Hidden tab until this turn ends.".into()),
             Decision::Battlefield{..}=>("Sunken Temple","You conquered with a Mighty unit. Pay 1 energy to draw a card?".into()),
-            Decision::ReviveUnit{..}=>("Return to the fight","Choose a unit from your trash with printed might 4 or less. Play it at base for free, or skip.".into()),
+            Decision::ReviveUnit{..}=>("Return to the fight","Choose a unit costing at most 3 energy and 1 power from your trash, or skip. The ability plays it at base when it resolves.".into()),
             Decision::SwapUnit{..}=>("Tideturner","Click another friendly unit at a different location to swap places, or skip. This movement does not exhaust either unit.".into()),
             Decision::EmpowerHere{..}=>("Scrapheap's gift","Click a unit at Scrapheap's location to empower it, empower your legend, or skip.".into()),
             Decision::Predict{card_id,..}=>("Predict",format!("Top card: {}. Recycle it to the bottom, or keep it on top?",self.game.catalog[*card_id].name)),
@@ -1729,6 +1737,86 @@ impl App {
             }
         }
     }
+    fn selected_card_id(&self) -> Option<usize> {
+        match self.selection {
+            Some(Selection::Hand(index)) => self.game.players[0].hand.get(index).copied(),
+            Some(Selection::Trash(index)) => self.game.players[0].discard.get(index).copied(),
+            Some(Selection::Champion) => self.game.players[0].champion,
+            Some(Selection::Hidden(id)) => self.game.players[0]
+                .hidden
+                .iter()
+                .find(|card| card.id == id)
+                .map(|card| card.card_id),
+            _ => None,
+        }
+    }
+    fn toggle_unit_target(&mut self, target: Target) {
+        let chosen = if self.editing_repeat {
+            &self.repeat_targets
+        } else {
+            &self.targets
+        };
+        if let Some(index) = chosen.iter().position(|existing| *existing == target) {
+            if self.editing_repeat {
+                self.repeat_targets.remove(index);
+            } else {
+                self.targets.remove(index);
+            }
+            return;
+        }
+        let maximum = self
+            .selected_card_id()
+            .map_or(1, |id| local_rift::rules::target_bounds(id).0);
+        if chosen.len() >= maximum {
+            self.notify(format!(
+                "This choice allows at most {maximum} unit target(s)."
+            ));
+            return;
+        }
+        if let Some(id) = self.selected_card_id()
+            && !self
+                .game
+                .valid_card_target(0, id, self.destination, target, chosen)
+        {
+            self.notify("This unit does not meet the card's target requirements.");
+            return;
+        }
+        if self.editing_repeat {
+            self.repeat_targets.push(target);
+        } else {
+            self.targets.push(target);
+        }
+        self.toast_until = 0.0;
+    }
+    fn target_hint(&self, card_id: usize) -> String {
+        use local_rift::rules::{Allegiance, OfficialEffect, target_bounds, targeting};
+        if matches!(
+            local_rift::rules::effect(card_id),
+            OfficialEffect::Counter(_)
+        ) {
+            return "Choose a pending spell above.".into();
+        }
+        let (maximum, required) = target_bounds(card_id);
+        if maximum == 0 {
+            return "No unit targets needed.".into();
+        }
+        let count = if self.editing_repeat {
+            self.repeat_targets.len()
+        } else {
+            self.targets.len()
+        };
+        let restriction = match targeting(card_id).allegiance {
+            Allegiance::Friendly => "friendly units",
+            Allegiance::Enemy => "enemy units",
+            Allegiance::Mixed => "friendly, then enemy",
+            _ => "units",
+        };
+        format!(
+            "{}{} {restriction} · {count}/{maximum}",
+            if required == 0 { "Up to " } else { "Choose " },
+            maximum
+        )
+    }
     fn targeting_selection(&self) -> bool {
         match self.selection {
             Some(Selection::Hand(i)) => self.game.players[0]
@@ -1828,11 +1916,14 @@ impl App {
             );
             if self.ui.hover(r) {
                 self.hover_candidate = Some(unit.card_id);
+                self.hover_unit_candidate = Some((*owner, unit.id));
                 if unit.token {
                     self.hover_token_candidate = Some(TokenPreview {
                         name: self.game.unit_name(unit),
                         might: self.game.unit_might(unit),
-                        rules: if unit.card_id == 34 {
+                        rules: if local_rift::rules::token_spec(unit.card_id)
+                            .is_some_and(|spec| spec.deflect)
+                        {
                             "Deflect: an opponent pays 1 extra power to choose this Bird with a spell or ability.".into()
                         } else {
                             "This created unit has no printed abilities.".into()
@@ -1854,11 +1945,7 @@ impl App {
                         target: Some(target),
                     });
                 } else if self.targeting_selection() {
-                    if let Some(index) = self.targets.iter().position(|t| *t == target) {
-                        self.targets.remove(index);
-                    } else {
-                        self.targets.push(target);
-                    }
+                    self.toggle_unit_target(target);
                 } else if *owner == 0 {
                     let ids = if self.group.contains(&unit.id) {
                         self.group.clone()
@@ -2251,6 +2338,73 @@ impl App {
                 }
             }
             self.tray_scroll(options.len(), 6);
+            return true;
+        }
+        if matches!(
+            decision,
+            Decision::ReviveUnit { .. } | Decision::RevivePlay { .. }
+        ) {
+            let choices: Vec<_> = self.game.players[0]
+                .discard
+                .iter()
+                .copied()
+                .enumerate()
+                .filter(|(index, id)| match decision {
+                    Decision::RevivePlay {
+                        trash_index,
+                        card_id,
+                        ..
+                    } => *index == trash_index && *id == card_id,
+                    _ => {
+                        let card = self.game.catalog[*id];
+                        card.kind == CardKind::Unit && card.cost <= 3 && card.power_cost <= 1
+                    }
+                })
+                .collect();
+            self.ui.text(
+                if matches!(decision, Decision::RevivePlay { .. }) {
+                    "Play the chosen unit"
+                } else {
+                    "Choose a unit to revive"
+                },
+                780.0,
+                671.0,
+                9.0,
+                GOLD,
+            );
+            self.hand_scroll = self.hand_scroll.min(choices.len().saturating_sub(6));
+            for (slot, (index, id)) in choices.iter().skip(self.hand_scroll).take(6).enumerate() {
+                let r = self.tile(
+                    *id,
+                    slot,
+                    self.game.catalog[*id].name,
+                    self.selection == Some(Selection::Trash(*index)),
+                );
+                if self.ui.clicked(r) && self.selection != Some(Selection::Trash(*index)) {
+                    self.selection = Some(Selection::Trash(*index));
+                    self.options = PlayOptions::default();
+                    self.flow_source = None;
+                    self.targets.clear();
+                    self.repeat_targets.clear();
+                    self.destination = None;
+                }
+                if self.ui.hover(r) {
+                    self.hover_candidate = Some(*id);
+                    if self.ui.secondary_pressed() {
+                        self.inspect = Some(*id);
+                    }
+                }
+            }
+            self.tray_scroll(choices.len(), 6);
+            if choices.is_empty() {
+                self.ui.title(
+                    "No eligible units in your trash.",
+                    270.0,
+                    757.0,
+                    23.0,
+                    MUTED,
+                );
+            }
             return true;
         }
         let cards = match &decision {
@@ -2753,6 +2907,7 @@ impl App {
             if self.ui.hover(chip) {
                 self.hover_candidate = Some(gear.card_id);
                 self.hover_token_candidate = None;
+                self.hover_unit_candidate = None;
                 hovered = true;
             }
             if self.ui.clicked(chip) || (self.ui.hover(chip) && self.ui.secondary_pressed()) {
@@ -2930,18 +3085,7 @@ impl App {
                 use local_rift::rules::OfficialEffect as E;
                 let card = self.game.catalog[*card_id];
                 let effect = local_rift::rules::effect(*card_id);
-                let maximum = match effect {
-                    E::Damage { targets, .. } => targets as usize,
-                    E::DualMight | E::BounceBoth | E::SwapMight | E::Fight { .. } => 2,
-                    E::MoveFriendlyToBase { up_to } => up_to as usize,
-                    E::ModifyMight { .. }
-                    | E::Bounce { .. }
-                    | E::MoveEnemy
-                    | E::MoveFriendlyAndReady
-                    | E::ReadyAnother
-                    | E::BuffAnother => 1,
-                    _ => 0,
-                };
+                let maximum = local_rift::rules::target_bounds(*card_id).0;
                 let movement = matches!(effect, E::MoveEnemy | E::MoveFriendlyAndReady);
                 let mut targets = self.targets.clone();
                 match zone {
@@ -3177,10 +3321,12 @@ impl App {
         let inside = self.hover_rect.is_some_and(|r| r.contains(self.ui.mouse()));
         if !inside
             && (self.hover_candidate != self.hover_card
-                || self.hover_token_candidate != self.hover_token)
+                || self.hover_token_candidate != self.hover_token
+                || self.hover_unit_candidate != self.hover_unit)
         {
             self.hover_card = self.hover_candidate;
             self.hover_token = self.hover_token_candidate.clone();
+            self.hover_unit = self.hover_unit_candidate;
             self.hover_since = get_time();
             self.hover_scroll = 0;
             self.hover_rect = None;
@@ -3221,13 +3367,15 @@ impl App {
                 11.0,
                 GOLD,
             );
-            self.ui.wrapped(
-                &token.rules,
-                r.x + 18.0,
-                r.y + 211.0,
-                r.w - 36.0,
-                13.0,
-                TEXT,
+            let live = self
+                .hover_unit
+                .and_then(|(owner, unit_id)| live_unit_description(&self.game, owner, unit_id))
+                .unwrap_or_else(|| token.rules.clone());
+            self.ui.scroll_text(
+                &live,
+                Rect::new(r.x + 18.0, r.y + 203.0, r.w - 36.0, 205.0),
+                12.0,
+                &mut self.hover_scroll,
             );
             self.ui.text(
                 "Tokens are represented by their own rules.",
@@ -3279,7 +3427,7 @@ impl App {
                 card.cost,
                 card.power_cost,
                 if card.kind == CardKind::Unit {
-                    format!(" · {} might", card.might)
+                    format!(" · {} printed might", card.might)
                 } else {
                     String::new()
                 }
@@ -3290,10 +3438,25 @@ impl App {
             MUTED,
         );
         let notes = self.game.effect_description(id);
-        let text = if notes.is_empty() {
+        let printed = if notes.is_empty() {
             card.official_text.to_owned()
         } else {
             format!("{}\n\nPractice note\n{}", card.official_text, notes)
+        };
+        let text = if let Some(live) = self
+            .hover_unit
+            .and_then(|(owner, unit_id)| live_unit_description(&self.game, owner, unit_id))
+        {
+            format!(
+                "{live}\n\nPRINTED RULES\n{}",
+                if printed.is_empty() {
+                    "No printed abilities."
+                } else {
+                    &printed
+                }
+            )
+        } else {
+            printed
         };
         let max = self.ui.scroll_text(
             &text,
@@ -4083,7 +4246,13 @@ impl App {
                     let selected_flow = flows
                         .iter()
                         .find(|flow| Some(flow.source) == self.flow_source);
-                    let cost_text = if let Some(flow) = selected_flow {
+                    let selecting_revive =
+                        matches!(self.game.decision, Some(Decision::ReviveUnit { .. }));
+                    let resolving_revive =
+                        matches!(self.game.decision, Some(Decision::RevivePlay { .. }));
+                    let cost_text = if resolving_revive || selecting_revive {
+                        "Base cost waived · extra costs still apply".into()
+                    } else if let Some(flow) = selected_flow {
                         let power = if flow.power == 0 {
                             String::new()
                         } else if flow.colored {
@@ -4142,7 +4311,10 @@ impl App {
                         .filter(|unit| unit.card_id == 35 && !unit.token)
                         .count()
                         .min(255) as u8;
-                    if discounts > 0 && matches!(card_id, 29 | 37 | 49 | 50 | 64) {
+                    if discounts > 0
+                        && (matches!(card_id, 29 | 37 | 50)
+                            || local_rift::rules::accelerate_cost(card_id).is_some())
+                    {
                         let r = Rect::new(1178.0, 432.0, 212.0, 18.0);
                         let power = self.game.optional_power_discount[0].min(discounts);
                         self.ui.border(r, LINE);
@@ -4186,7 +4358,8 @@ impl App {
                         {
                             self.editing_repeat = !self.editing_repeat;
                         }
-                        if matches!(card_id, 49 | 64)
+                        if !selecting_revive
+                            && local_rift::rules::accelerate_cost(card_id).is_some()
                             && self.ui.button(
                                 Rect::new(1178.0, 454.0, 102.0, 28.0),
                                 "Accelerate",
@@ -4235,7 +4408,9 @@ impl App {
                     let affordable = (from_trash || self.game.can_afford(0, &card))
                         && self.game.card_supported(card_id)
                         && (flows.len() < 2 || self.flow_source.is_some());
-                    let label = if card.kind == CardKind::Unit {
+                    let label = if selecting_revive {
+                        "Choose this unit to revive"
+                    } else if card.kind == CardKind::Unit {
                         "Deploy to base"
                     } else {
                         if self.targets.is_empty() {
@@ -4294,7 +4469,8 @@ impl App {
                             9.0,
                             GOLD,
                         );
-                    } else if card.kind == CardKind::Unit {
+                    } else if card.kind == CardKind::Unit && !selecting_revive && !resolving_revive
+                    {
                         for lane in 0..2 {
                             let action = if champion {
                                 Action::PlayChampionOptions {
@@ -4339,17 +4515,8 @@ impl App {
                             }
                         }
                     } else if card.kind != CardKind::Unit {
-                        self.ui.text(
-                            &format!(
-                                "Targets {} · repeat {} · click units",
-                                self.targets.len(),
-                                self.repeat_targets.len()
-                            ),
-                            1178.0,
-                            548.0,
-                            9.0,
-                            TEAL,
-                        );
+                        self.ui
+                            .text(&self.target_hint(card_id), 1178.0, 548.0, 9.0, TEAL);
                     }
                 } else {
                     self.selection = None;
@@ -5093,10 +5260,25 @@ impl App {
         }
         self.ui.bold("CARD TEXT", 764.0, 405.0, 11.0, TEAL);
         let notes = self.game.effect_description(id);
-        let text = if notes.is_empty() {
+        let printed = if notes.is_empty() {
             card.official_text.to_owned()
         } else {
             format!("{}\n\nPractice note\n{}", card.official_text, notes)
+        };
+        let text = if let Some(live) = self
+            .hover_unit
+            .and_then(|(owner, unit_id)| live_unit_description(&self.game, owner, unit_id))
+        {
+            format!(
+                "{live}\n\nPRINTED RULES\n{}",
+                if printed.is_empty() {
+                    "No printed abilities."
+                } else {
+                    &printed
+                }
+            )
+        } else {
+            printed
         };
         let max = self.ui.scroll_text(
             &text,
@@ -5308,6 +5490,140 @@ fn card_brief(game: &Game, id: usize) -> String {
         }
     }
 }
+fn live_unit_description(game: &Game, owner: usize, unit_id: u32) -> Option<String> {
+    let unit = game
+        .players
+        .get(owner)?
+        .units
+        .iter()
+        .find(|unit| unit.id == unit_id)?;
+    let keywords = game.unit_keywords(unit);
+    let mut lines = vec![
+        format!(
+            "ON BOARD · {} · {}",
+            if owner == 0 {
+                "Your unit"
+            } else {
+                "Opponent's unit"
+            },
+            if unit.ready { "Ready" } else { "Exhausted" }
+        ),
+        format!(
+            "{} current might · {} damage",
+            game.unit_might(unit),
+            unit.damage
+        ),
+    ];
+    if unit.stunned {
+        lines.push("Stunned: contributes no might to combat damage this turn; still needs lethal damage equal to its full might.".into());
+    }
+    if unit.protected {
+        lines.push("Protected from being chosen by enemy spells and abilities this turn.".into());
+    }
+    if keywords.assault > 0 {
+        lines.push(format!(
+            "Assault {}: +{} might while attacking; already included above while this unit is attacking.",
+            keywords.assault, keywords.assault
+        ));
+    }
+    if keywords.tank {
+        lines.push("Tank: must be assigned combat damage before units without Tank.".into());
+    }
+    if keywords.backline {
+        lines.push("Backline: assigned combat damage after units without Backline.".into());
+    }
+    if keywords.deflect > 0 {
+        lines.push(format!("Deflect {}: opponents pay {} extra Any power to choose this unit with a spell or ability.", keywords.deflect, keywords.deflect));
+    }
+    if keywords.ganking {
+        lines.push("Ganking: can move from one battlefield to another.".into());
+    }
+    if keywords.ambush {
+        lines.push(
+            "Ambush, when played: may play as a Reaction at a battlefield where you have a unit."
+                .into(),
+        );
+    }
+    if let Some(cost) = keywords.accelerate {
+        lines.push(format!(
+            "Accelerate, when played: +{} energy and {} {} power to enter ready.",
+            cost.energy,
+            cost.power,
+            cost.domain.name()
+        ));
+    }
+    Some(lines.join("\n"))
+}
+
+#[cfg(test)]
+mod live_preview_tests {
+    use super::*;
+    use local_rift::{game::Unit, gear::GearState};
+    fn unit(id: u32, card_id: usize) -> Unit {
+        Unit {
+            id,
+            card_id,
+            lane: None,
+            ready: true,
+            damage: 0,
+            buff: 0,
+            temporary_buff: 0,
+            token: false,
+            protected: false,
+            stunned: false,
+            banish_on_death: false,
+        }
+    }
+    #[test]
+    fn live_preview_distinguishes_instances_and_granted_keywords() {
+        let mut game = Game::new(3, 2, 7, Difficulty::Easy);
+        game.players[0].units = vec![unit(100, 69), unit(101, 69)];
+        game.players[0].units[1].buff = 1;
+        game.players[0].units[1].ready = false;
+        game.players[0].gear.push(GearState {
+            id: 200,
+            card_id: 3,
+            ready: true,
+            attached_to: Some(101),
+            temporary: false,
+            token: false,
+        });
+        let first = live_unit_description(&game, 0, 100).unwrap();
+        let second = live_unit_description(&game, 0, 101).unwrap();
+        assert!(first.contains("8 current might") && first.contains("Ready"));
+        assert!(!first.contains("Ganking"));
+        assert!(
+            second.contains("11 current might")
+                && second.contains("Exhausted")
+                && second.contains("Ganking")
+        );
+    }
+    #[test]
+    fn stunned_preview_explains_combat_contribution_without_reducing_lethal() {
+        let mut game = Game::new(3, 2, 7, Difficulty::Easy);
+        let mut stunned = unit(100, 69);
+        stunned.stunned = true;
+        game.players[0].units = vec![stunned];
+        let text = live_unit_description(&game, 0, 100).unwrap();
+        assert!(
+            text.contains("8 current might")
+                && text.contains("contributes no might to combat damage this turn")
+        );
+        assert!(text.contains("lethal damage equal to its full might"));
+        assert!(!text.contains("next ready"));
+    }
+
+    #[test]
+    fn keyword_preview_separates_attack_bonus_and_play_cost() {
+        let mut game = Game::new(3, 2, 7, Difficulty::Easy);
+        game.players[0].units = vec![unit(100, 98)];
+        let text = live_unit_description(&game, 0, 100).unwrap();
+        assert!(text.contains("Assault 2") && text.contains("while attacking"));
+        assert!(text.contains("Deflect 1") && text.contains("Ganking"));
+        assert!(text.contains("Accelerate, when played") && text.contains("Fury power"));
+    }
+}
+
 fn window_conf() -> Conf {
     let small = std::env::args().any(|a| a == "--small");
     Conf {

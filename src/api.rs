@@ -295,13 +295,19 @@ impl Session {
                 _ => None,
             };
             let hand = if owner == viewer { Some(state.hand.clone()) } else { public_hand };
-            let units: Vec<_> = state.units.iter().map(|unit| json!({
+            let units: Vec<_> = state.units.iter().map(|unit| {
+                let keywords = game.unit_keywords(unit);
+                json!({
                 "id":unit.id, "card_id":unit.card_id, "name":game.unit_name(unit), "token":unit.token,
                 "lane":unit.lane, "ready":unit.ready, "might":game.unit_might(unit), "damage":unit.damage,
                 "buff":unit.buff, "temporary_buff":unit.temporary_buff, "stunned":unit.stunned,
                 "protected":unit.protected, "banish_on_death":unit.banish_on_death,
-                "empowered":game.unit_empowered(unit.id),"movement_locked":game.movement_locked(owner,unit.id)
-            })).collect();
+                "empowered":game.unit_empowered(unit.id),"movement_locked":game.movement_locked(owner,unit.id),
+                "keywords":{"assault":keywords.assault,"tank":keywords.tank,"backline":keywords.backline,
+                    "deflect":keywords.deflect,"ganking":keywords.ganking,"ambush":keywords.ambush,
+                    "accelerate":keywords.accelerate.map(|cost|json!({"energy":cost.energy,"power":cost.power,"domain":cost.domain.name()}))},
+                "damage_priority":game.damage_priority(unit)
+            })}).collect();
             let gear: Vec<_> = state.gear.iter().map(|gear| json!({
                 "id":gear.id, "card_id":gear.card_id, "name":game.gear_name(gear), "token":gear.token,
                 "attached_to":gear.attached_to, "lane":game.gear_location(owner,gear.id),
@@ -348,6 +354,13 @@ impl Session {
             "mulligans_used":game.mulligans_used,"players":players,"battlefields":game.battlefields,
             "battlefield_owner":game.battlefield_owner,"scored_this_turn":game.player_scored_this_turn,
             "chain":chain,"decision":game.decision.as_ref().map(|d|decision_to_json(game,d,viewer)),
+            "pending_token_plays":game.pending_tokens().iter().map(|token|json!({
+                "id":token.id,"player":token.player,"card_id":token.card_id,"might":token.might,"gear":token.gear,
+                "destination":match token.location {
+                    None => json!({"mode":"choose"}),
+                    Some(lane) => json!({"mode":"fixed","lane":lane}),
+                }
+            })).collect::<Vec<_>>(),
             "showdown":game.showdown.as_ref().map(|w|json!({"lane":w.lane,"attacker":w.attacker,
                 "focus":w.focus,"passes":w.passes,"combat":w.combat})),
             "resource_payment_pending":game.resource_payment_pending(),
@@ -1314,6 +1327,11 @@ fn decision_to_json(game: &Game, decision: &Decision, viewer: usize) -> Value {
         } => json!({"type":"reveal_hand","opponent":opponent,"cards":cards}),
         Decision::Battlefield { lane, .. } => json!({"type":"battlefield","lane":lane}),
         Decision::ReviveUnit { .. } => json!({"type":"revive_unit"}),
+        Decision::RevivePlay {
+            trash_index,
+            card_id,
+            ..
+        } => json!({"type":"revive_play","trash_index":trash_index,"card_id":card_id}),
         Decision::SwapUnit { unit_id, .. } => json!({"type":"swap_unit","unit_id":unit_id}),
         Decision::EmpowerHere { lane, .. } => json!({"type":"empower_here","lane":lane}),
         Decision::Legend { trigger, .. } => {
@@ -1856,6 +1874,139 @@ mod tests {
         let observed = session.observe(1).unwrap();
         assert_eq!(observed["players"][0]["gear"][0]["attached_to"], 700);
         assert!(observed["players"][0]["gear"][0]["lane"].is_null());
+    }
+
+    #[test]
+    fn public_unit_keywords_follow_equipment_grants_level_and_token_identity() {
+        let mut session = playing();
+        let mut yi = unit(700, None, 0);
+        yi.card_id = 22;
+        yi.token = false;
+        let mut assault = unit(701, None, 0);
+        assault.card_id = 97; // Sharkling: Assault4 and Accelerate.
+        assault.token = false;
+        let mut bird = unit(702, None, 1);
+        bird.card_id = 34;
+        session.game.players[0].units = vec![yi, assault, bird];
+        session.game.players[0].gear.push(crate::gear::GearState {
+            id: 703,
+            card_id: 3,
+            attached_to: Some(701),
+            ready: true,
+            temporary: false,
+            token: false,
+        });
+        session.game.legend[0].assault_grants.push((701, 2));
+        for viewer in 0..2 {
+            let observed = session.observe(viewer).unwrap();
+            let units = &observed["players"][0]["units"];
+            assert_eq!(units[0]["keywords"]["deflect"], 0);
+            assert_eq!(units[0]["keywords"]["ganking"], false);
+            assert_eq!(units[1]["keywords"]["assault"], 6);
+            assert_eq!(units[1]["keywords"]["ganking"], true);
+            assert!(units[1]["keywords"]["accelerate"].is_object());
+            assert_eq!(units[1]["might"], 3); // 1 printed + Boots2; no attack bonus at base.
+            assert_eq!(units[2]["keywords"]["deflect"], 1);
+            assert!(units[2]["keywords"]["accelerate"].is_null());
+            assert_eq!(units[2]["damage_priority"], 1);
+        }
+        session.game.players[0].xp = 6;
+        session.game.players[0].gear[0].attached_to = None;
+        session.game.legend[0].assault_grants.clear();
+        let observed = session.observe(1).unwrap();
+        let units = &observed["players"][0]["units"];
+        assert_eq!(units[0]["keywords"]["deflect"], 1);
+        assert_eq!(units[0]["keywords"]["ganking"], true);
+        assert_eq!(units[1]["keywords"]["assault"], 4);
+        assert_eq!(units[1]["keywords"]["ganking"], false);
+    }
+
+    #[test]
+    fn revive_play_observation_is_public_fixed_and_not_declineable() {
+        let mut session = playing();
+        session.game.players[0].discard = vec![96];
+        session.game.decision = Some(Decision::RevivePlay {
+            player: 0,
+            trash_index: 0,
+            card_id: 96,
+        });
+        for viewer in 0..2 {
+            let view = session.observe(viewer).unwrap();
+            assert_eq!(
+                view["decision"],
+                json!({"type":"revive_play","player":0,"trash_index":0,"card_id":96})
+            );
+            assert_eq!(view["can_decline_trash_play"], false);
+        }
+        let before = session.observe(0).unwrap();
+        let result = session.handle(
+            json!({"command":"apply","revision":session.revision(),"player":0,
+            "action":{"type":"choose","accept":false}}),
+        );
+        assert_eq!(result["ok"], false);
+        assert_eq!(session.observe(0).unwrap(), before);
+        submit(
+            &mut session,
+            Action::PlayFromTrashOptions {
+                trash_index: 0,
+                lane: None,
+                targets: vec![],
+                repeat_targets: vec![],
+                repeat: false,
+                accelerate: false,
+                bonus: false,
+                flow: None,
+            },
+        );
+        assert!(session.game.decision.is_none());
+        assert!(session.game.players[0].discard.is_empty());
+        assert_eq!(session.game.players[0].units[0].card_id, 96);
+        assert!(!session.game.players[0].units[0].ready);
+    }
+
+    #[test]
+    fn token_observation_tracks_pending_plays_and_each_finalized_unit() {
+        let mut session = playing();
+        session.game.players[0].hand = vec![87];
+        session.game.players[0].energy_pool = 6;
+        session.game.players[0].energy = 6;
+        session.game.players[0].runes = [0; 6];
+        session.game.players[0].exhausted_runes = [0; 6];
+        submit(
+            &mut session,
+            Action::PlayCardWithTargets {
+                hand_index: 0,
+                lane: None,
+                targets: vec![],
+            },
+        );
+        pass_twice(&mut session);
+        let mut previous_id = 0;
+        for entered in 0..4 {
+            let own = session.observe(0).unwrap();
+            let other = session.observe(1).unwrap();
+            assert_eq!(own["pending_token_plays"], other["pending_token_plays"]);
+            let pending = own["pending_token_plays"].as_array().unwrap();
+            assert_eq!(pending.len(), 4 - entered);
+            assert_eq!(
+                own["players"][0]["units"].as_array().unwrap().len(),
+                entered
+            );
+            assert_eq!(own["chain"], json!([]));
+            assert_eq!(own["players"][0]["discard"], json!([87]));
+            let id = pending[0]["id"].as_u64().unwrap();
+            assert!(id > previous_id);
+            previous_id = id;
+            assert_eq!(pending[0]["card_id"], 87);
+            assert_eq!(pending[0]["might"], 1);
+            assert_eq!(pending[0]["gear"], false);
+            assert_eq!(pending[0]["destination"], json!({"mode":"choose"}));
+            submit(&mut session, Action::PlaceToken { lane: None });
+        }
+        let view = session.observe(1).unwrap();
+        assert_eq!(view["pending_token_plays"], json!([]));
+        assert_eq!(view["players"][0]["units"].as_array().unwrap().len(), 4);
+        assert!(view["decision"].is_null());
     }
 
     #[test]

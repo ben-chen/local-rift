@@ -12,6 +12,7 @@ pub enum CounterKind {
     Defy,
     NotSoFast,
     HardBargain,
+    Unconditional,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -75,6 +76,8 @@ pub enum OfficialEffect {
     /// Pit Rookie: another friendly unit gets its persistent +1 buff only if
     /// it does not already have a buff. This is not a temporary might increase.
     BuffAnother,
+    /// Give the source unit its standard persistent +1 buff, if it has none.
+    BuffSelf,
     Burn(u8),
     WeakenEnemies {
         amount: u8,
@@ -277,6 +280,32 @@ pub fn effect(id: usize) -> OfficialEffect {
             max_might: Option::None,
             battlefield_only: true,
         },
+        81 => ModifyMight {
+            amount: -4,
+            minimum: 1,
+            draw: 0,
+            alone_bonus: 0,
+        },
+        82 | 83 => Fight { optional_buff: 0 },
+        84 => Loot {
+            discard: 1,
+            draw: 2,
+        },
+        85 | 99 => ModifyMight {
+            amount: 2,
+            minimum: 0,
+            draw: 0,
+            alone_bonus: 0,
+        },
+        86 => Counter(CounterKind::Unconditional),
+        87 => Tokens { count: 4, might: 1 },
+        88..=98 => None,
+        100 => Loot {
+            discard: 2,
+            draw: 2,
+        },
+        101 => BuffSelf,
+        102 => Tokens { count: 2, might: 1 },
         _ => Unsupported,
     }
 }
@@ -285,16 +314,44 @@ pub fn targeting(id: usize) -> Targeting {
     use Allegiance::*;
     let allegiance = match id {
         4 | 32 => Enemy,
-        8 | 9 | 14 | 19 | 27 => Friendly,
-        16 | 29 => Mixed,
+        8 | 9 | 14 | 19 | 27 | 85 => Friendly,
+        16 | 29 | 82 => Mixed,
         5 | 7 | 11 | 23 | 26 | 28 | 41 | 44 | 50 | 52 | 53 | 55 | 61 | 62 | 63 | 66 | 67 | 74
-        | 75 | 76 | 79 | 80 => Any,
+        | 75 | 76 | 79 | 80 | 81 | 83 | 99 => Any,
         _ => None,
     };
     Targeting {
         allegiance,
-        distinct: matches!(id, 5 | 9 | 16 | 44 | 50 | 61),
+        distinct: matches!(id, 5 | 9 | 16 | 44 | 50 | 61 | 82 | 83 | 85),
         same_location: matches!(id, 44 | 50),
+    }
+}
+
+/// Number of target choices accepted by the card: (maximum, required).
+/// Location/allegiance restrictions remain in `targeting` and engine validation.
+pub fn target_bounds(id: usize) -> (usize, usize) {
+    use OfficialEffect::*;
+    if id == 85 {
+        return (2, 2);
+    }
+    match effect(id) {
+        Damage { targets, .. } => (
+            targets as usize,
+            if matches!(id, 50 | 61) {
+                0
+            } else {
+                targets as usize
+            },
+        ),
+        DualMight | BounceBoth | SwapMight | Fight { .. } => (2, 2),
+        MoveFriendlyToBase { up_to } => (up_to as usize, 0),
+        ModifyMight { .. }
+        | Bounce { .. }
+        | MoveEnemy
+        | MoveFriendlyAndReady
+        | ReadyAnother
+        | BuffAnother => (1, 1),
+        _ => (0, 0),
     }
 }
 
@@ -319,6 +376,8 @@ pub enum TriggerEffect {
     Draw(u8),
     Loot { discard: u8, draw: u8 },
     BuffSelfForTurn(i8),
+    GiveUnitMightForTurn(i8),
+    BuffSelf,
     ReadyAnother,
     BuffAnother,
     Burn(u8),
@@ -348,6 +407,8 @@ pub enum Condition {
     /// Additionally limited to once per turn for this source.
     ThisAtBattlefieldOncePerTurn,
     PlayedFromFacedown,
+    /// Another card was already played this turn when this card was played.
+    Legion,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -452,6 +513,29 @@ pub fn triggers(id: usize) -> &'static [Trigger] {
             },
         )],
         68 => &[trigger!(Died, TriggerEffect::Draw(1))],
+        99 => &[Trigger {
+            event: Played,
+            condition: Condition::Legion,
+            effect: TriggerEffect::GiveUnitMightForTurn(2),
+        }],
+        100 => &[Trigger {
+            event: Played,
+            condition: Condition::Legion,
+            effect: TriggerEffect::Loot {
+                discard: 2,
+                draw: 2,
+            },
+        }],
+        101 => &[Trigger {
+            event: Played,
+            condition: Condition::Legion,
+            effect: TriggerEffect::BuffSelf,
+        }],
+        102 => &[Trigger {
+            event: Played,
+            condition: Condition::Legion,
+            effect: TriggerEffect::Tokens { count: 2, might: 1 },
+        }],
         _ => &[],
     }
 }
@@ -497,6 +581,7 @@ pub enum Mechanic {
     Temporary,
     SpellTriggers,
     BanishOnDeath,
+    Legion,
 }
 
 /// Additional systems that must work before the complete card can be advertised
@@ -570,6 +655,22 @@ pub fn requirements(id: usize) -> &'static [Mechanic] {
         74 | 75 | 76 | 78 => &[Chain],
         79 => &[Chain, NegativeMight],
         80 => &[Chain, Bounce],
+        81 => &[Chain, NegativeMight],
+        82 => &[Chain, Fight, MultipleTargets],
+        83 => &[Fight, MultipleTargets],
+        84 => &[Chain],
+        85 => &[Chain, MultipleTargets],
+        86 => &[Chain, Counterspell],
+        87 => &[Chain, Tokens],
+        88..=90 => &[Assault],
+        91 => &[Tank],
+        92 | 93 => &[Deflect],
+        94 => &[Ambush],
+        95 | 96 => &[Accelerate, OptionalCosts],
+        97 => &[Accelerate, OptionalCosts, Assault],
+        98 => &[Accelerate, OptionalCosts, Assault, Deflect, Move],
+        99..=101 => &[Legion],
+        102 => &[Legion, Tokens],
         _ => &[],
     }
 }
@@ -636,7 +737,9 @@ pub fn equipment(id: usize) -> Option<EquipmentRule> {
 /// operation. These must not be silently discarded for a "base-stats" unit.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum StaticAbility {
-    Deflect,
+    Deflect(u8),
+    Ganking,
+    LegionOnPlay,
     UnchoosableByEnemies {
         except_in_combat: bool,
     },
@@ -672,7 +775,7 @@ pub enum StaticAbility {
 pub fn static_abilities(id: usize) -> &'static [StaticAbility] {
     use StaticAbility::*;
     match id {
-        0 | 20 => &[Deflect],
+        0 | 20 => &[Deflect(1)],
         2 => &[UnchoosableByEnemies {
             except_in_combat: true,
         }],
@@ -714,8 +817,61 @@ pub fn static_abilities(id: usize) -> &'static [StaticAbility] {
             power: 1,
             domain: Domain::Mind,
         }],
+        88 | 90 => &[Assault(1)],
+        89 => &[Assault(2)],
+        91 => &[Tank],
+        92 | 93 => &[Deflect(1)],
+        94 => &[Ambush],
+        95 | 96 => &[Accelerate {
+            energy: 1,
+            power: 1,
+            domain: Domain::Fury,
+        }],
+        97 => &[
+            Accelerate {
+                energy: 1,
+                power: 1,
+                domain: Domain::Fury,
+            },
+            Assault(4),
+        ],
+        98 => &[
+            Accelerate {
+                energy: 1,
+                power: 1,
+                domain: Domain::Fury,
+            },
+            Assault(2),
+            Deflect(1),
+            Ganking,
+        ],
+        99..=102 => &[LegionOnPlay],
         _ => &[],
     }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct AccelerateCost {
+    pub energy: u8,
+    pub power: u8,
+    pub domain: Domain,
+}
+
+pub fn accelerate_cost(id: usize) -> Option<AccelerateCost> {
+    static_abilities(id)
+        .iter()
+        .find_map(|ability| match *ability {
+            StaticAbility::Accelerate {
+                energy,
+                power,
+                domain,
+            } => Some(AccelerateCost {
+                energy,
+                power,
+                domain,
+            }),
+            _ => None,
+        })
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -813,7 +969,7 @@ pub fn token_spec(id: usize) -> Option<TokenSpec> {
             count: 1,
             is_gear: false,
             deflect: true,
-            tag: None,
+            tag: Some("Bird"),
         }),
         48 => Some(TokenSpec {
             name: "Tentacle",
@@ -829,7 +985,15 @@ pub fn token_spec(id: usize) -> Option<TokenSpec> {
             count: 2,
             is_gear: false,
             deflect: false,
-            tag: None,
+            tag: Some("Mech"),
+        }),
+        87 | 102 => Some(TokenSpec {
+            name: "Recruit",
+            might: 1,
+            count: if id == 87 { 4 } else { 2 },
+            is_gear: false,
+            deflect: false,
+            tag: Some("Recruit"),
         }),
         _ => None,
     }
@@ -841,9 +1005,30 @@ mod tests {
     use crate::cards::cards;
 
     #[test]
+    fn token_tags_and_characteristics_follow_core_rule_187() {
+        // Core Rules 187.1, .4, .7 and .10 define these intrinsic token tags;
+        // they are not inferred from the card that creates the token.
+        for (id, name, might, tag, deflect) in [
+            (34, "Bird", 1, "Bird", true),
+            (48, "Tentacle", 1, "Bilgewater", false),
+            (54, "Mech", 3, "Mech", false),
+            (87, "Recruit", 1, "Recruit", false),
+            (102, "Recruit", 1, "Recruit", false),
+        ] {
+            let token = token_spec(id).unwrap();
+            assert_eq!(token.name, name);
+            assert_eq!(token.might, might);
+            assert_eq!(token.tag, Some(tag));
+            assert_eq!(token.deflect, deflect);
+            assert!(!token.is_gear);
+        }
+        assert_eq!(token_spec(13).unwrap().tag, None);
+    }
+
+    #[test]
     fn all_catalog_entries_have_official_classification() {
         let cards = cards();
-        assert_eq!(cards.len(), 81);
+        assert_eq!(cards.len(), 103);
         for card in cards {
             assert_ne!(
                 effect(card.id),
@@ -853,7 +1038,7 @@ mod tests {
             );
             assert_ne!(support_status(card.id), SupportStatus::UnknownCard);
         }
-        assert_eq!(effect(81), OfficialEffect::Unsupported);
+        assert_eq!(effect(103), OfficialEffect::Unsupported);
     }
 
     #[test]

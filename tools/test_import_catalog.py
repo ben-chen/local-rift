@@ -36,8 +36,8 @@ class OfficialInventoryTests(unittest.TestCase):
     def test_exact_published_scope_and_runtime_gap(self):
         counts = self.snapshot["counts"]
         self.assertEqual((counts["gallery_printings"], counts["unique_gallery_identities"], counts["standard_legal_identities"]), (1408, 1103, 1079))
-        self.assertEqual(counts["implemented_main_cards"], 81)
-        self.assertEqual(counts["unimplemented_legal_identities"], 984)
+        self.assertEqual(counts["implemented_main_cards"], 103)
+        self.assertEqual(counts["unimplemented_legal_identities"], 962)
         for card in self.snapshot["cards"]:
             if card["implementation"]["status"] == "not_implemented":
                 self.assertFalse(card["implementation"]["playable_in_client"])
@@ -80,6 +80,39 @@ class OfficialInventoryTests(unittest.TestCase):
         abandon = next(p for p in self.snapshot["printings"] if p["official_id"] == "unl-131-219")
         self.assertIsNone(abandon["power"])
         self.assertIsNone(abandon["might"])
+
+    def test_conflicting_type_labels_are_preserved_and_counted_as_provisional(self):
+        printing = next(p for p in self.snapshot["printings"] if p["official_id"] == "rad-059-167")
+        self.assertEqual(printing["types"], ["unit"])
+        self.assertEqual(printing["structured_types"], ["unit"])
+        self.assertEqual(printing["accessibility_types"], ["spell"])
+        self.assertEqual(printing["type_source"], "cardType.type")
+        self.assertTrue(printing["type_labels_conflict"])
+        identity = next(c for c in self.snapshot["cards"] if c["identity"] == "rad-059-167")
+        self.assertIn("types", identity["conflicting_fields"])
+        self.assertFalse(identity["implementation"]["playable_in_client"])
+        issues = [i for i in self.snapshot["source_quality_issues"] if i["kind"] == "conflicting_type_labels"]
+        self.assertEqual(len(issues), 23)
+        self.assertTrue(all(i["official_ids"][0].startswith("rad-") for i in issues))
+        self.assertEqual(self.snapshot["counts"]["source_quality_issues"], 37)
+        self.assertTrue(self.snapshot["counts"]["standard_legal_by_kind_provisional"])
+        self.assertEqual(self.snapshot["counts"]["unresolved_type_conflict_identities"], 23)
+        self.assertIn("by-kind counts below are provisional", catalog.report(self.snapshot))
+
+    def test_mapped_type_conflict_is_rejected(self):
+        def conflict(cards):
+            card = next(c for c in cards if c["id"] == "ogn-093-298")
+            card["cardImage"]["accessibilityText"] = "Riftbound Unit: Smoke Screen."
+        with self.assertRaisesRegex(ValueError, "Runtime mapping has unresolved official type conflict"):
+            catalog.make_catalog(self.manifest, self.changed_gallery(conflict))
+
+    def test_conflicting_alternate_printing_also_blocks_mapped_identity(self):
+        def conflict(cards):
+            base = next(c for c in cards if c["id"] == "sfd-057-221")
+            alternate = next(c for c in cards if c["id"] != base["id"] and c["name"] == base["name"] and c.get("subtitle") == base.get("subtitle"))
+            alternate["cardImage"]["accessibilityText"] = "Riftbound Spell: Irelia, Fervent."
+        with self.assertRaisesRegex(ValueError, "Runtime mapping has unresolved official type conflict"):
+            catalog.make_catalog(self.manifest, self.changed_gallery(conflict))
 
     def test_missing_type_requires_explicit_redundant_source(self):
         def remove_type(cards):

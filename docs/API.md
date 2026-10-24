@@ -118,7 +118,7 @@ Targets have exactly one of these forms:
 | `choose_battlefield` | `lane` | Choose which eligible staged battlefield opens next |
 | `choose_resolution_group` | `index` | Select a listed legal target group when a resolving spell requires that choice |
 | `set_optional_discount` | `power` | Set how many friendly Ezreal discounts reduce power; remaining discounts reduce energy |
-| `place_token` | optional `lane` | Place the next Up from the Deep Tentacle at base or a battlefield you control |
+| `place_token` | optional `lane` | Finalize the next Tentacle from Up from the Deep or Recruit from Recruit the Vanguard at base or a battlefield you control |
 
 For `play_from_trash_options`, `flow:"printed"` or `flow:"granted"` selects that exact available Flow instance. Omission or `null` uses an available payable instance. Explicit selection never falls back to another cost. A Flow choice cannot override an instructed Fizz/Last Rites replay and does not change the spell’s normal timing. Observed `flow_costs` lists trash indices with each instance’s source, energy, power, and whether power is colored. Quote and exact-payment commands preserve the selected instance.
 
@@ -160,6 +160,8 @@ Both seats expose the same public resource and equipment fields. A gear object's
 
 A unit's observed `might` is its current total, including equipment and currently applicable combat bonuses. Printed might remains in the catalog. Do not add an equipment bonus to the observed total again.
 
+Each unit also exposes `keywords`: numeric `assault` and `deflect`, Boolean `tank`, `backline`, `ganking`, and `ambush`, plus optional printed `accelerate:{energy,power,domain}`. These values account for token identity, current equipment, level requirements, and granted abilities. Assault is its keyword value even outside combat; apply no extra bonus to observed `might`. Accelerate describes a play option, not an action that readies a unit already on the board. `damage_priority` is `0` for Tank, `1` for ordinary units, and `2` for Backline, matching the engine's combat-assignment ordering.
+
 For token units and Gold, `token:true` distinguishes the generated object from a physical deck card. Its `card_id` is an engine source/reference identity, so use the observed `name` and `might` for the token instead of assuming that catalog entry's printed card kind or stats describe it.
 
 A player object identifies its `legend_id`, `custom` flag, and `preset` (`null` for custom decks). `custom_deck` contains the saved list only for its owner; opposing observations always omit that list even when a hand reveal is active. The declared deck name and public legend/champion remain visible.
@@ -179,6 +181,7 @@ The viewer sees their own hand as card IDs. The opposing hand is `null` except w
 | `grant_flow` | `select_cards` indexes an eligible spell in your trash; an empty selection is legal only when no eligible spell exists |
 | `optional_play` | `card_id`, optional `gear_id`; accept or decline Fizz/Last Rites before its optional play ability enters the chain |
 | `replay_spell`, `last_rites`, `revive_unit` | `play_from_trash`, `play_from_trash_targets`, or `play_from_trash_options` for eligible optional costs; `last_rites` also includes `gear_id`; decline only when `can_decline_trash_play` allows it |
+| `revive_play` | `trash_index`, `card_id`; Matriarch's selected unit is now being played. Submit `play_from_trash_options` for that fixed card, with optional `accelerate`; its base cost is waived but additional costs are paid now. It cannot be declined or changed to another card. |
 | `swap_unit` | `unit_id`; select another unit with `choose_target`, or decline |
 | `empower_here` | `lane`; choose an eligible unit with `choose_target` |
 | `on_play_target` | `card_id`, `source_id`, `lane`; select the unit/gear required by the finalized on-play ability |
@@ -193,6 +196,8 @@ The viewer sees their own hand as card IDs. The opposing hand is `null` except w
 | `token_placement` | `card_id`, `remaining`; use `place_token` separately for each remaining token |
 
 For each decision, `suggest` supplies legal convenience responses, while structured actions allow alternate legal choices. Opposing observations omit private Predict and Top Three identities. Public replay/trigger/target decisions remain observable. Pending triggers are distinct from the public chain and cannot be targeted by counterspells until finalized.
+
+Token plays created by a resolving effect wait until that effect finishes. `pending_token_plays` exposes their public pending IDs, controller, source `card_id`, Might, and `gear` flag in finalization order. `destination:{mode:"choose"}` permits the normal base/controlled-field choice; `{mode:"fixed",lane:null}` fixes base and a numeric lane fixes a battlefield. Pending IDs identify chain objects, not selectable board units. Placement choices finalize one token at a time; earlier tokens can be on the board while later placements remain pending. These choices do not grant a response window between token plays.
 
 A `revive_chosen` chain ability identifies the previously selected trash card. Its `trash_index` becomes `null` if that card has left the trash before resolution. An `empower_object` ability exposes its selected `player`, `object_id`, and `lane`; `object_id:null` means that player's legend at base.
 

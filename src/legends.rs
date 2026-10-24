@@ -95,11 +95,8 @@ impl Game {
                 0
             }
         } else {
-            self.legend
-                .iter()
-                .flat_map(|legend| legend.assault_grants.iter())
-                .filter(|(id, _)| *id == unit.id)
-                .fold(0u8, |total, (_, might)| total.saturating_add(*might))
+            // Granted Assault is combined with printed Assault by unit_keywords.
+            0
         }
     }
 
@@ -420,9 +417,15 @@ mod tests {
             passes: 0,
             combat: false,
         });
-        assert_eq!(game.legend_might_bonus(&game.players[0].units[0]), 0);
+        assert_eq!(
+            game.unit_might(&game.players[0].units[0]),
+            game.catalog[25].might
+        );
         game.showdown.as_mut().unwrap().combat = true;
-        assert_eq!(game.legend_might_bonus(&game.players[0].units[0]), 2);
+        assert_eq!(
+            game.unit_might(&game.players[0].units[0]),
+            game.catalog[25].might + 2
+        );
     }
 
     #[test]
@@ -559,7 +562,10 @@ mod tests {
             game.chain.last().unwrap().ability,
             Some(ChainAbility::Legend(LegendAbility::KennenAssault { .. }))
         ));
-        assert_eq!(game.legend_might_bonus(&game.players[0].units[0]), 0);
+        assert_eq!(
+            game.unit_might(&game.players[0].units[0]),
+            game.catalog[25].might
+        );
         settle(&mut game);
         game.showdown = Some(Showdown {
             combat: true,
@@ -568,9 +574,15 @@ mod tests {
             focus: 0,
             passes: 0,
         });
-        assert_eq!(game.legend_might_bonus(&game.players[0].units[0]), 2);
+        assert_eq!(
+            game.unit_might(&game.players[0].units[0]),
+            game.catalog[25].might + 2
+        );
         game.showdown.as_mut().unwrap().attacker = 1;
-        assert_eq!(game.legend_might_bonus(&game.players[0].units[0]), 0);
+        assert_eq!(
+            game.unit_might(&game.players[0].units[0]),
+            game.catalog[25].might
+        );
         game.legend_end_turn();
         assert!(game.legend[0].assault_grants.is_empty());
     }

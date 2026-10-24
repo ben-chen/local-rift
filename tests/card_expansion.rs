@@ -93,7 +93,7 @@ fn settle(game: &mut Game) {
 #[test]
 fn append_only_ids_have_official_facts_and_explicit_support() {
     let catalog = cards::cards();
-    assert_eq!(catalog.len(), 81);
+    assert!(catalog.len() >= 81);
     assert_eq!(catalog[0].official_id, "sfd-057-221");
     assert_eq!(catalog[68].official_id, "ogn-096-298");
     for (offset, official_id) in EXPANSION.iter().enumerate() {
@@ -104,15 +104,16 @@ fn append_only_ids_have_official_facts_and_explicit_support() {
         assert!(rules::triggers(card.id).is_empty());
         assert!(rules::static_abilities(card.id).is_empty());
     }
-    assert_eq!(rules::effect(81), OfficialEffect::Unsupported);
+    let unknown = catalog.len();
+    assert_eq!(rules::effect(unknown), OfficialEffect::Unsupported);
     assert_eq!(rules::effect(usize::MAX), OfficialEffect::Unsupported);
     let mut game = position();
     let mut unmapped = game.catalog[69];
-    unmapped.id = 81;
+    unmapped.id = unknown;
     game.catalog.push(unmapped);
-    game.players[0].hand = vec![81];
-    assert!(!game.card_supported(81));
-    assert!(cast(&mut game, 81, vec![]).is_err());
+    game.players[0].hand = vec![unknown];
+    assert!(!game.card_supported(unknown));
+    assert!(cast(&mut game, unknown, vec![]).is_err());
 }
 
 #[test]

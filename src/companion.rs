@@ -437,7 +437,7 @@ fn response_window_advice(game: &Game, beginner: bool) -> Option<Vec<&'static st
                 "Check the trash and your available resources before accepting. Declining here keeps the ability off the chain.",
             ],
             Decision::TokenPlacement { .. } => vec![
-                "Place each Tentacle at your base or a battlefield you control. A unit at a field can help defend the next hold.",
+                "Place each unit token at your base or a battlefield you control. A unit at a field can help defend the next hold.",
                 "Choose each location separately. Reinforce the field that matters, or keep a unit at base for a later movement.",
             ],
             Decision::ResolutionTargets { .. } => vec![
@@ -523,8 +523,12 @@ fn response_window_advice(game: &Game, beginner: bool) -> Option<Vec<&'static st
                 "Sunken Temple offers a card after conquering with a Mighty unit. Pay 1 energy to put its draw ability on the chain, or decline.",
                 "Compare an extra card with keeping energy for the next response. A battlefield's optional trigger is a choice, not an obligation.",
             ],
+            Decision::RevivePlay { .. } => vec![
+                "Play the selected unit at base. Its base cost is waived; optional costs such as Accelerate are chosen and paid now.",
+                "Accelerate can give this revived unit an immediate move. Compare that tempo with keeping the additional energy and power for a response.",
+            ],
             Decision::ReviveUnit { .. } => vec![
-                "Matriarch may play a unit with printed might 4 or less from your trash for free. Choose a useful unit for this board, or decline.",
+                "Matriarch may choose a unit costing at most 3 energy and 1 power from your trash. Choose it now; the ability will play it at base when it resolves.",
                 "A useful revival improves the board you have now. The largest unit is not always the best next defender or attacker.",
             ],
             Decision::SwapUnit { .. } => vec![
@@ -1107,6 +1111,11 @@ mod tests {
                 Decision::GrantFlow { player },
                 Decision::Battlefield { player, lane: 0 },
                 Decision::ReviveUnit { player },
+                Decision::RevivePlay {
+                    player,
+                    trash_index: 0,
+                    card_id: 96,
+                },
                 Decision::SwapUnit { player, unit_id: 1 },
                 Decision::EmpowerHere {
                     player,
