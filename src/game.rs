@@ -233,6 +233,11 @@ pub enum ChainAbility {
         gear_id: u32,
         target: Target,
     },
+    /// Quick-Draw grants a triggered attachment, not a use of Equip.
+    QuickDrawAttach {
+        gear_id: u32,
+        target: Target,
+    },
     Legend(LegendAbility),
     Battlefield(BattlefieldAbility),
     Empower {
@@ -2185,6 +2190,13 @@ impl Game {
                     }
                 }
                 ChainAbility::Equip { gear_id, target } => {
+                    self.gear_resolve_equip(item.player, gear_id, target);
+                    // Using an activated ability is observed at resolution,
+                    // even when its attachment instruction is negated
+                    // (CR377.2.a and CR359.3.e.1).
+                    self.gear_ability_used(item.player);
+                }
+                ChainAbility::QuickDrawAttach { gear_id, target } => {
                     self.gear_resolve_equip(item.player, gear_id, target)
                 }
                 ChainAbility::Battlefield(ability) => {
@@ -2994,7 +3006,7 @@ impl Game {
                 self.spend_deflect(player, false, &[target])?;
                 self.decision = None;
                 let ability = if rules::equipment(card_id).is_some_and(|gear| gear.quick_draw) {
-                    ChainAbility::Equip {
+                    ChainAbility::QuickDrawAttach {
                         gear_id: source_id,
                         target,
                     }

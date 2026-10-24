@@ -1497,6 +1497,9 @@ fn ability_to_json(ability: &ChainAbility) -> Value {
         ChainAbility::Equip { gear_id, target } => {
             json!({"type":"equip","gear_id":gear_id,"target":target_to_json(target)})
         }
+        ChainAbility::QuickDrawAttach { gear_id, target } => {
+            json!({"type":"quick_draw_attach","gear_id":gear_id,"target":target_to_json(target)})
+        }
         ChainAbility::Empower { unit_id } => json!({"type":"empower","unit_id":unit_id}),
         ChainAbility::Swap { unit_id, target } => {
             json!({"type":"swap","unit_id":unit_id,"target":target_to_json(target)})
@@ -1595,6 +1598,20 @@ mod tests {
     fn pass_twice(session: &mut Session) {
         submit(session, Action::Pass);
         submit(session, Action::Pass);
+    }
+
+    #[test]
+    fn attachment_observations_distinguish_activated_equip_from_quick_draw() {
+        let target = Target::Unit {
+            player: 0,
+            unit_id: 12,
+        };
+        let equip = ability_to_json(&ChainAbility::Equip { gear_id: 7, target });
+        let triggered = ability_to_json(&ChainAbility::QuickDrawAttach { gear_id: 7, target });
+        assert_eq!(equip["type"], "equip");
+        assert_eq!(triggered["type"], "quick_draw_attach");
+        assert_eq!(equip["gear_id"], triggered["gear_id"]);
+        assert_eq!(equip["target"], triggered["target"]);
     }
 
     #[test]

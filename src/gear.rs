@@ -226,7 +226,6 @@ impl Game {
             vec![target],
             ChainAbility::Equip { gear_id, target },
         );
-        self.gear_ability_used(player);
         Ok(())
     }
 
