@@ -512,6 +512,23 @@ fn c17_pending(app: &mut App, spell: usize, lane: Option<usize>) {
     ));
 }
 
+fn c18_offer(app: &mut App, card: usize) {
+    c17_fixture(app, 384);
+    app.game.players[0].units[0].card_id = 384;
+    app.game.players[0].units[0].damage = 8;
+    app.game.players[0].deck = vec![70, 71, card];
+    app.game.players[0].hand = vec![133];
+    app.game
+        .apply(Action::PlayCardWithTargets {
+            hand_index: 0,
+            lane: None,
+            targets: vec![],
+        })
+        .unwrap();
+    finish_chain_until_choice(app);
+    assert!(matches!(app.game.decision,Some(Decision::BanishPlay{card_id,..}) if card_id==card));
+}
+
 /// Returns true after all assertions pass. Use an isolated XDG_DATA_HOME because
 /// the settings controls intentionally exercise the normal persistence path.
 pub fn run_frame(app: &mut App, frame: u32) -> bool {
@@ -8704,15 +8721,115 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
                     "Unavailable destination must not mutate the game"
                 )
             });
+        }
+        863 => {
+            c17_fixture(app, 384);
+            app.game.players[0].deck = vec![70, 71, 72];
+            click(app, 315.0, 760.0);
+        }
+        864 => {
+            click(app, 1285.0, 510.0);
+        }
+        865 => {
+            finish_chain_until_choice(app);
+            assert!(
+                matches!(app.game.decision,Some(Decision::PredictCards{ref cards,..}) if cards.len()==3)
+            );
+            app.sync_predict_draft();
+            capture(app, "RIFT_SMOKE_C18_PREDICT_SCREENSHOT");
+        }
+        866 => {
+            click(app, 905.0, 822.0);
+        }
+        867 => {
+            assert_eq!(app.predict_draft.as_ref().unwrap().top_order, vec![0, 2, 1]);
+            assert_eq!(app.game.players[0].deck, vec![70, 71, 72]);
+            click(app, 905.0, 822.0);
+        }
+        868 => {
+            assert_eq!(app.predict_draft.as_ref().unwrap().top_order, vec![2, 0, 1]);
+            assert_eq!(app.game.players[0].deck, vec![70, 71, 72]);
+            capture(app, "RIFT_SMOKE_C18_PREDICT_ORDER_SCREENSHOT");
+        }
+        869 => {
+            click(app, 1285.0, 510.0);
+        }
+        870 => {
+            assert!(app.game.decision.is_none());
+            assert_eq!(app.game.players[0].deck, vec![71, 72, 70]);
+            c18_offer(app, 70);
+        }
+        871 => {
+            capture(app, "RIFT_SMOKE_C18_BANISH_OFFER_SCREENSHOT");
+            app.ui.input_override = Some((vec2(315.0, 760.0), false, true));
+        }
+        872 => {
+            assert_eq!(app.inspect, Some(70));
+            capture(app, "RIFT_SMOKE_C18_BANISH_HOVER_SCREENSHOT");
+            app.inspect = None;
+            click(app, 1285.0, 506.0);
+        }
+        873 => {
+            assert!(matches!(
+                app.game.decision,
+                Some(Decision::PendingPlay { card_id: 70, .. })
+            ));
+            capture(app, "RIFT_SMOKE_C18_PENDING_UNIT_SCREENSHOT");
+            click(app, 1285.0, 510.0);
+        }
+        874 => {
+            assert!(app.game.players[0].units.iter().any(|u| u.card_id == 70));
+            assert!(app.game.pending_cards().is_empty());
+            c18_offer(app, 145);
+        }
+        875 => {
+            capture(app, "RIFT_SMOKE_C18_DECLINE_SCREENSHOT");
+            click(app, 1285.0, 546.0);
+        }
+        876 => {
+            assert!(app.game.decision.is_none());
+            assert_eq!(app.game.players[0].banish, vec![145]);
+            c18_offer(app, 133);
+        }
+        877 => {
+            click(app, 1285.0, 506.0);
+        }
+        878 => {
+            assert!(matches!(
+                app.game.decision,
+                Some(Decision::PendingPlay { card_id: 133, .. })
+            ));
+            capture(app, "RIFT_SMOKE_C18_PENDING_SPELL_SCREENSHOT");
+            click(app, 1285.0, 510.0);
+        }
+        879 => {
+            assert!(app.game.pending_cards().is_empty());
+            assert!(
+                app.game
+                    .chain
+                    .iter()
+                    .filter(|i| i.card_id == 133 && i.ability.is_none())
+                    .all(|i| !i.recycle_after)
+            );
+            finish_chain_until_choice(app);
+            assert_eq!(
+                app.game.players[0]
+                    .discard
+                    .iter()
+                    .filter(|&&id| id == 133)
+                    .count(),
+                2
+            );
+            capture(app, "RIFT_SMOKE_C18_SPELL_RESOLVED_SCREENSHOT");
             app.ui.input_override = None;
             app.ui.pointer_override = None;
             app.ui.wheel_override = None;
             println!(
-                "PASS: 863 native UI frames including Banish targets, prescribed replay destinations, fresh units, Rengar after replay, Arcane Shift parent completion, unobscured unavailable-play guidance, and all previous 841 controls."
+                "PASS: 880 native UI frames including Clocktower Predict3, inspected Banish offers, optional decline, unit and spell finalization with Energy waived, and all previous 863 controls."
             );
             return true;
         }
-        _ => panic!("UI smoke runner exceeded its 863-frame script"),
+        _ => panic!("UI smoke runner exceeded its 880-frame script"),
     }
     false
 }

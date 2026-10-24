@@ -5858,6 +5858,21 @@ pub fn cards() -> Vec<CardDef> {
             tags: &["Ezreal"],
             art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/a5d1d26dee01db24f32a1432639478753d22aa92-744x1039.png?w=280&q=80&fm=png",
         },
+        CardDef {
+            id: 384,
+            official_id: "rad-067-167",
+            name: "Clocktower Guardian",
+            cost: 8,
+            power_cost: 2,
+            might: 8,
+            domain: Domain::Mind,
+            domains: &[Domain::Mind],
+            kind: CardKind::Unit,
+            official_text: "When you play me or when I hold, [Predict 3].\n[Deathknell][>] Banish the top card of your Main Deck. You may play it, ignoring its Energy cost.",
+            keywords: &["Deathknell"],
+            tags: &["Shurima"],
+            art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/b846d604eee450a4ab8f457f2738b0596e7b361e-744x1039.png?w=280&q=80&fm=png",
+        },
     ]
 }
 
@@ -6022,7 +6037,7 @@ mod tests {
     #[test]
     fn presets_are_complete_and_references_are_consistent() {
         let catalog = cards();
-        assert_eq!(catalog.len(), 384);
+        assert_eq!(catalog.len(), 385);
         for (index, card) in catalog.iter().enumerate() {
             assert_eq!(index, card.id);
             assert!(!card.official_id.is_empty());

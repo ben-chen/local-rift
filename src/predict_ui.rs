@@ -31,6 +31,19 @@ impl PredictDraft {
             top_order: self.top_order.clone(),
         }
     }
+    fn move_kept(&mut self, index: usize, later: bool) {
+        let Some(position) = self.top_order.iter().position(|&i| i == index) else {
+            return;
+        };
+        let other = if later {
+            position.checked_add(1)
+        } else {
+            position.checked_sub(1)
+        };
+        if let Some(other) = other.filter(|&i| i < self.top_order.len()) {
+            self.top_order.swap(position, other);
+        }
+    }
 }
 impl App {
     pub(super) fn sync_predict_draft(&mut self) {
@@ -157,6 +170,27 @@ impl App {
                 11.0,
                 if recycled { MUTED } else { GOLD },
             );
+            if cards.len() > 2 {
+                let position = draft.top_order.iter().position(|&i| i == index);
+                for (later, offset, label, enabled) in [
+                    (false, 156.0, "<", position.is_some_and(|p| p > 0)),
+                    (
+                        true,
+                        188.0,
+                        ">",
+                        position.is_some_and(|p| p + 1 < draft.top_order.len()),
+                    ),
+                ] {
+                    if self.ui.button(
+                        Rect::new(x + offset, 809.0, 28.0, 26.0),
+                        label,
+                        false,
+                        enabled,
+                    ) {
+                        self.predict_draft.as_mut().unwrap().move_kept(index, later);
+                    }
+                }
+            }
             if self.ui.button(
                 Rect::new(x, 843.0, 220.0, 31.0),
                 if recycled {
@@ -175,6 +209,14 @@ impl App {
             if self.ui.hover(r) && self.ui.secondary_pressed() {
                 self.inspect = Some(*card_id);
             }
+        }
+        if cards.len() > 2 {
+            self.ui.title("Draw order", 977.0, 724.0, 17.0, TEXT);
+            self.ui.wrapped_lines(
+                "1 is your next draw. Use each card's arrows to move it earlier or later. Recycled cards go to the bottom in random order.",
+                977.0, 750.0, 144.0, 12.0, MUTED, 7,
+            );
+            return;
         }
         self.ui.title("Kept-card order", 770.0, 724.0, 18.0, TEXT);
         self.ui.wrapped_lines(
@@ -211,5 +253,24 @@ mod tests {
         draft.toggle(0);
         assert!(draft.top_order.is_empty());
         assert_eq!(draft.recycle, vec![1, 0]);
+    }
+    #[test]
+    fn three_occurrences_can_reach_every_draw_order_without_recycling() {
+        let mut seen = std::collections::BTreeSet::new();
+        let mut pending = vec![PredictDraft::new(18, 3)];
+        while let Some(draft) = pending.pop() {
+            if !seen.insert(draft.top_order.clone()) {
+                continue;
+            }
+            assert!(draft.recycle.is_empty());
+            for index in 0..3 {
+                for later in [false, true] {
+                    let mut next = draft.clone();
+                    next.move_kept(index, later);
+                    pending.push(next);
+                }
+            }
+        }
+        assert_eq!(seen.len(), 6);
     }
 }

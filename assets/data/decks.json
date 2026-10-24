@@ -9868,6 +9868,31 @@
       "tags": [
         "Ezreal"
       ]
+    },
+    {
+      "id": 384,
+      "name": "Clocktower Guardian",
+      "official_id": "rad-067-167",
+      "energy": 8,
+      "power": 2,
+      "might": 8,
+      "domains": [
+        "Mind"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/b846d604eee450a4ab8f457f2738b0596e7b361e-744x1039.png?w=280&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "When you play me or when I hold, [Predict 3].\n[Deathknell][>] Banish the top card of your Main Deck. You may play it, ignoring its Energy cost.",
+      "official_text_html": "<p>When you play me or when I hold, [Predict 3].<br />[Deathknell][&gt;] Banish the top card of your Main Deck. You may play it, ignoring its Energy cost.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Deathknell"
+      ],
+      "tags": [
+        "Shurima"
+      ]
     }
   ],
   "official_text_note": "Official card/legend rules text from the Riot Card Gallery, retrieved 2026-10-24 and corrected by cited errata. Resource icon tokens are expanded to readable bracketed names. Raw card and equipment HTML is preserved separately. Official text does not establish full implementation fidelity."

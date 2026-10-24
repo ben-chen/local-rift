@@ -256,6 +256,7 @@ pub fn effect(id: usize) -> OfficialEffect {
         381 => BanishReplay(crate::game::InstructedPlayKind::TemporalBreach),
         382 => BanishReplay(crate::game::InstructedPlayKind::ThrillOfTheHunt),
         383 => ArcaneShift,
+        384 => None,
         362 | 364 => KillGear {
             controller_draw: if id == 362 { 2 } else { 0 },
         },
@@ -1027,6 +1028,7 @@ pub fn requirements(id: usize) -> &'static [Mechanic] {
         380 | 382 => &[Chain, Banish],
         381 => &[Chain, Banish, Hidden],
         383 => &[Chain, Banish, MultipleTargets],
+        384 => &[Chain, Banish, Predict, DeathTriggers, ConquerHoldTriggers],
         362 | 363 | 365 | 366 | 367 => &[Chain, Gear],
         364 => &[Chain, Gear, Flow],
         368 | 369 => &[Chain, Gear, ConquerHoldTriggers],
@@ -1892,7 +1894,7 @@ mod tests {
     #[test]
     fn all_catalog_entries_have_official_classification() {
         let cards = cards();
-        assert_eq!(cards.len(), 384);
+        assert_eq!(cards.len(), 385);
         for card in cards {
             assert_ne!(
                 effect(card.id),
@@ -1902,7 +1904,7 @@ mod tests {
             );
             assert_ne!(support_status(card.id), SupportStatus::UnknownCard);
         }
-        assert_eq!(effect(384), OfficialEffect::Unsupported);
+        assert_eq!(effect(385), OfficialEffect::Unsupported);
     }
 
     #[test]

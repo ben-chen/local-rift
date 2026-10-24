@@ -53,7 +53,7 @@ impl InstructedPlayKind {
         use BaseCostWaiver::{All, Energy, None};
         use PlayDestination::{AnyBattlefield, Base, Exact, Normal};
         let (cost, destination) = match self {
-            Self::Fizz => (Energy, Normal),
+            Self::Fizz | Self::ClocktowerGuardian => (Energy, Normal),
             Self::LastRites => (None, Normal),
             Self::Matriarch | Self::PortalRescue => (All, Base),
             Self::TemporalBreach => (All, Exact(previous_location)),
@@ -87,6 +87,44 @@ impl PlayInstruction {
 }
 
 impl Game {
+    /// Looking/banishing is not drawing: an empty deck does not burn out.
+    pub(crate) fn clocktower_deathknell(&mut self, player: usize) {
+        let Some(card_id) = self.players[player].deck.pop() else {
+            return;
+        };
+        let banish_index = self.players[player].banish.len();
+        self.players[player].banish.push(card_id);
+        self.push_log(format!(
+            "Clocktower Guardian banishes {} from {}'s deck.",
+            self.catalog[card_id].name, self.players[player].name
+        ));
+        self.enqueue_decision(Decision::BanishPlay {
+            player,
+            banish_index,
+            card_id,
+            kind: InstructedPlayKind::ClocktowerGuardian,
+        });
+    }
+
+    pub(super) fn queue_banish_play(
+        &mut self,
+        player: usize,
+        index: usize,
+        kind: InstructedPlayKind,
+        previous_location: Option<usize>,
+    ) {
+        let card_id = self.players[player].banish.remove(index);
+        let id = self.next_chain_id;
+        self.next_chain_id += 1;
+        self.queue_pending_card(PendingCard {
+            id,
+            player,
+            card_id,
+            kind,
+            instruction: kind.instruction(previous_location),
+            origin: PendingOrigin::Banish { index },
+        });
+    }
     pub(crate) fn replay_target_score(&self, actor: usize, target: Target) -> Result<i128, String> {
         let Some(unit) = self.unit_ref(target) else {
             return Ok(0);
@@ -139,17 +177,7 @@ impl Game {
             // never a substitute for the vanished object (CR108.4/420.3.c).
             if !token && !self.silenced[owner] {
                 let index = self.players[owner].banish.len() - 1;
-                let card_id = self.players[owner].banish.remove(index);
-                let id = self.next_chain_id;
-                self.next_chain_id += 1;
-                self.queue_pending_card(PendingCard {
-                    id,
-                    player: owner,
-                    card_id,
-                    kind,
-                    instruction: kind.instruction(location),
-                    origin: PendingOrigin::Banish { index },
-                });
+                self.queue_banish_play(owner, index, kind, location);
             }
         }
     }
@@ -170,3 +198,7 @@ impl Game {
         self.trigger_batch += 1;
     }
 }
+
+#[cfg(test)]
+#[path = "instructed_play_tests.rs"]
+mod tests;

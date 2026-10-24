@@ -1057,6 +1057,7 @@ impl Game {
         let targets = selected;
         for effect in rule.effects {
             match *effect {
+                Effect::ClocktowerDeathknell => self.clocktower_deathknell(player),
                 Effect::KillGear {
                     buff_source_if_killed,
                 } => {

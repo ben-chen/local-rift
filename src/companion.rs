@@ -904,6 +904,9 @@ fn response_window_advice(
             ],
             Decision::PendingPlay { kind, .. } => vec![
                 match kind {
+                    local_rift::game::InstructedPlayKind::ClocktowerGuardian => {
+                        "Finalize the banished card. Its base energy cost is waived, but power and additional costs still apply. Spells go to your trash after resolving normally."
+                    }
                     local_rift::game::InstructedPlayKind::Fizz => {
                         "Finalize the chosen spell: base energy is waived, but power and additional costs still apply. It recycles after resolving."
                     }
@@ -929,6 +932,10 @@ fn response_window_advice(
             Decision::ReplaySpell { .. } => vec![
                 "Fizz offers a spell from your trash with energy cost 3 or less. Ignore its energy cost, pay its power, then recycle the played spell.",
                 "Look for a useful legal target before replaying. A free energy cost does not make an effect useful by itself.",
+            ],
+            Decision::BanishPlay { .. } => vec![
+                "Clocktower Guardian has banished your top card. You may play it now with its base energy cost waived. Power and additional costs still apply; declining leaves it in Banish.",
+                "Check legal targets and available power before accepting. Predict can set up this Deathknell, but opponents can respond to the trigger before you see the top card.",
             ],
             Decision::GrantFlow { .. } => vec![
                 "Choose a spell in your trash to give Flow this turn. You may later pay its Flow cost to play it from trash, then banish it; this choice doesn't cast it.",

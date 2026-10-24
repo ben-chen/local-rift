@@ -59,7 +59,7 @@ class MomentarySourceReviewTests(unittest.TestCase):
                           counts['unimplemented_legal_identities']), (349, 374, 705))
         self.assertEqual((counts['reviewed_field_resolutions'], counts['field_reviewed_printings'],
                           counts['source_quality_issues'], counts['resolved_source_issue_groups']),
-                         (118, 74, 43, 43))
+                         (120, 75, 45, 45))
         self.assertFalse(self.proof['enables_runtime_support'])
         self.assertFalse(self.resolution(self.manifest)['enables_runtime_support'])
         self.assertNotIn(pid, {c['official_id'] for c in self.historical_runtime['cards']})

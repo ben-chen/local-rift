@@ -129,6 +129,7 @@ pub enum Amount {
 }
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Effect {
+    ClocktowerDeathknell,
     KillUnitOrGear,
     ReturnUnitsAtMost(u8),
     KillGear {
@@ -244,6 +245,20 @@ pub fn trigger_rules(card_id: usize) -> &'static [TriggerRule] {
     use Operand::*;
     use TokenPlacement::*;
     match card_id {
+        384 => {
+            const RULES: &[TriggerRule] = &[
+                rule(SelfPlayed, &[], false, TargetRule::NONE, &[PredictMany(3)]),
+                rule(SelfHold, &[], false, TargetRule::NONE, &[PredictMany(3)]),
+                rule(
+                    SelfDeath,
+                    &[],
+                    false,
+                    TargetRule::NONE,
+                    &[ClocktowerDeathknell],
+                ),
+            ];
+            RULES
+        }
         376 => {
             const RULES: &[TriggerRule] = &[rule(
                 SelfPlayed,

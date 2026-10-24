@@ -1,0 +1,169 @@
+{
+  "schema_version": 1,
+  "status": "reviewed_source_only",
+  "reviewed_on": "2026-10-24",
+  "scope": "Clocktower Guardian exact-face domain and tag corrections. Source review alone admits no gameplay card.",
+  "enables_runtime_support": false,
+  "baseline_commit": "9887ba702409bdd5f6a7ebe691493a81d0ab391d",
+  "baseline_counts": {
+    "main": 384,
+    "mapped_legal": 411,
+    "unavailable": 668
+  },
+  "official_id": "rad-067-167",
+  "name": "Clocktower Guardian",
+  "resolution_ids": [
+    "rad-067-167:domains",
+    "rad-067-167:tags"
+  ],
+  "raw_printing": {
+    "domains": [
+      "fury"
+    ],
+    "collector_number": 67,
+    "equipment_text": "",
+    "name": "Clocktower Guardian",
+    "illustrators": [
+      "Polar Engine Studio"
+    ],
+    "public_code": "RAD-067/167",
+    "rarity": "epic",
+    "official_id": "rad-067-167",
+    "super_types": [],
+    "structured_types": [
+      "unit"
+    ],
+    "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/b846d604eee450a4ab8f457f2738b0596e7b361e-744x1039.png?accountingTag=RB",
+    "type_source": "cardType.type",
+    "power": 2,
+    "equipment_html": "",
+    "tags": [
+      "Mech"
+    ],
+    "might": 8,
+    "types": [
+      "unit"
+    ],
+    "set": "RAD",
+    "accessibility_types": [
+      "unit"
+    ],
+    "rules_text": "When you play me or when I hold, [Predict 3].\n[Deathknell][>] Banish the top card of your Main Deck. You may play it, ignoring its Energy cost.",
+    "energy": 8,
+    "rules_html": "<p>When you play me or when I hold, [Predict 3].<br />[Deathknell][&gt;] Banish the top card of your Main Deck. You may play it, ignoring its Energy cost.</p>",
+    "image_accessibility_text": "Riftbound Unit: Clocktower Guardian. When you play me or when I hold, [Predict 3].\n[Deathknell][>] Banish the top card of your Main Deck. You may play it, ignoring its Energy cost.",
+    "might_bonus": null,
+    "type_labels_conflict": false
+  },
+  "raw_printing_sha256": "cd045ceae012f7d50d3f37feb860c08e0d13dcf075a929aa4357062ae3b99607",
+  "effective_before": {
+    "types": [
+      "unit"
+    ],
+    "super_types": [],
+    "domains": [
+      "fury"
+    ],
+    "energy": 8,
+    "power": 2,
+    "might": 8,
+    "might_bonus": null,
+    "tags": [
+      "Mech"
+    ],
+    "rules_html": "<p>When you play me or when I hold, [Predict 3].<br />[Deathknell][&gt;] Banish the top card of your Main Deck. You may play it, ignoring its Energy cost.</p>",
+    "rules_text": "When you play me or when I hold, [Predict 3].\n[Deathknell][>] Banish the top card of your Main Deck. You may play it, ignoring its Energy cost.",
+    "equipment_html": "",
+    "equipment_text": ""
+  },
+  "effective_after": {
+    "types": [
+      "unit"
+    ],
+    "super_types": [],
+    "domains": [
+      "mind"
+    ],
+    "energy": 8,
+    "power": 2,
+    "might": 8,
+    "might_bonus": null,
+    "tags": [
+      "Shurima"
+    ],
+    "rules_html": "<p>When you play me or when I hold, [Predict 3].<br />[Deathknell][&gt;] Banish the top card of your Main Deck. You may play it, ignoring its Energy cost.</p>",
+    "rules_text": "When you play me or when I hold, [Predict 3].\n[Deathknell][>] Banish the top card of your Main Deck. You may play it, ignoring its Energy cost.",
+    "equipment_html": "",
+    "equipment_text": ""
+  },
+  "original_image": {
+    "official_id": "rad-067-167",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/b846d604eee450a4ab8f457f2738b0596e7b361e-744x1039.png?accountingTag=RB",
+    "path": "assets/data/catalog_evidence/images/rad-067-167.png",
+    "sha256": "3dbf3e11af22df0e5ec2d4572e52cb6f2af087aa05aa062cfcf008b5ce99387a",
+    "bytes": 1108541
+  },
+  "visual_observation": {
+    "printed_types": [
+      "unit"
+    ],
+    "printed_supertypes": [],
+    "printed_domains": [
+      "mind"
+    ],
+    "printed_tags": [
+      "Shurima"
+    ],
+    "printed_energy": 8,
+    "printed_power": 2,
+    "printed_might": 8,
+    "printed_might_bonus": null,
+    "printed_equipment_icons_expanded": "",
+    "name": "Clocktower Guardian",
+    "collector_code": "RAD-067/167",
+    "official_id": "rad-067-167",
+    "original_image_sha256": "3dbf3e11af22df0e5ec2d4572e52cb6f2af087aa05aa062cfcf008b5ce99387a",
+    "face_visually_inspected": true,
+    "reviewed_on": "2026-10-24",
+    "printed_rules_icons_expanded": "When you play me or when I hold, [Predict 3].\n[Deathknell] Banish the top card of your Main Deck. You may play it, ignoring its Energy cost.",
+    "uncertainties": [],
+    "domain_reference": "assets/data/catalog_evidence/images/ogn-089-298.png: matching Mind rune symbol, independently viewed on 2026-10-24."
+  },
+  "rules_text_comparison": "The face prints the Deathknell keyword directly before its sentence. Gallery [>] punctuation is a textual separator; the executable words are unchanged.",
+  "origin_gallery": {
+    "url": "https://playriftbound.com/en-us/card-gallery/",
+    "archive": "assets/data/catalog_evidence/pages/97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9.html.gz",
+    "sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+    "uncompressed_bytes": 3986973
+  },
+  "preserved_source_cohorts": {
+    "resolutions": {
+      "count": 118,
+      "canonical_sha256": "6d26453f64145ecf376b54d93633c9f0436ac57f10ee0335a8a9f4089de71da9"
+    },
+    "raw_printings": {
+      "count": 74,
+      "canonical_sha256": "70a2bb884e9646fc7cbf59c08f11be0e8a5dc21852db91ecdc2bc69b9e2bb246"
+    },
+    "historical_issues": {
+      "count": 43,
+      "canonical_sha256": "0ca85c7748d2a5c102b90c3efa3e7f9c84daf82e9383ce3ef9db33ba0b682240"
+    }
+  },
+  "preserved_field_image_index": {
+    "count": 74,
+    "canonical_sha256": "070f50c15f90491ad2a481be73375b325b53d45a8ca28ee5f68b1bf00bf071e3"
+  },
+  "preserved_variant_review": {
+    "identities": 29,
+    "printings": 90,
+    "manifest_sha256": "e678c7f2f2e1ae70fb6b399ce1b0ab88a314e9018810d1ccadb1759a1f7b5e12",
+    "image_index_sha256": "1826db0a53cbe62eb1a1196d08df1cbef215b9d9e24cc006689559bbc7693b92"
+  },
+  "preserved_runtime": {
+    "cards_sha256": "c6d5de1b46b09e03948b7dc88c38676f0aeaa7bea441019adde6779f28185dca",
+    "presets_sha256": "d6e64ebf3f8921686682dacd87d4b2b4baec5754dbd284c6d60bf3fb324571e2",
+    "legends_manifest_sha256": "a31bb93c27588bd4759985e9a4083372d5afae59d22b9ac9d48c54946e5474fe",
+    "training_recipe_source_sha256": "dc498f4f98cec6421dade7e01ead261693ed5f70d30d4d2c808da4a1bcb5b706"
+  }
+}

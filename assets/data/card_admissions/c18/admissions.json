@@ -1,0 +1,143 @@
+{
+  "schema_version": 1,
+  "draft_not_for_import": false,
+  "reviewed_on": "2026-10-24",
+  "origin_gallery": {
+    "url": "https://playriftbound.com/en-us/card-gallery/",
+    "uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+    "archive": "assets/data/catalog_sources/gallery.html.gz"
+  },
+  "pre_admission_catalog_sha256": "cf40f3e17835d21a349feb8e1faed89272a6fce1282575be5028d8cda9dd2415",
+  "preserved_runtime_prefix": {
+    "card_count": 384,
+    "cards_sha256": "c6d5de1b46b09e03948b7dc88c38676f0aeaa7bea441019adde6779f28185dca",
+    "presets_sha256": "d6e64ebf3f8921686682dacd87d4b2b4baec5754dbd284c6d60bf3fb324571e2",
+    "legends_manifest_sha256": "a31bb93c27588bd4759985e9a4083372d5afae59d22b9ac9d48c54946e5474fe",
+    "training_recipe_source_sha256": "dc498f4f98cec6421dade7e01ead261693ed5f70d30d4d2c808da4a1bcb5b706"
+  },
+  "preserved_source_reviews": {
+    "field_resolutions_sha256": "09a8e5a40da3bf0016d5a2b9f5f8dc31213d4d6641608a1b9704c4fa319db8c4",
+    "raw_printings_sha256": "e0f8bc7fc0f5d513f9f361596e7d7472e4e63900bbf67f6de1664cdccf855cc3",
+    "historical_issues_sha256": "5016c1d2afa72e7c82ca2634689d1cbcc12e993f4996e91ea3371b2c5fcfde3e",
+    "field_image_index_sha256": "1bd536ff0843cf750c7802f6884b89bb3e41bce4dff88c005acdccf314134890",
+    "identity_reviews_sha256": "c61c191636c74795ec15c4149805d994c76c020093c98592a489766f30f54ad3"
+  },
+  "pre_admission_counts": {
+    "main_cards": 384,
+    "mapped_legal": 411,
+    "remaining_legal": 668
+  },
+  "scope": "Clocktower Guardian only. Corrected Mind/Shurima facts are preserved separately from the raw gallery. Original Deathknell label formatting is preserved independently. Gameplay admission is separate from source review.",
+  "records": [
+    {
+      "official_id": "rad-067-167",
+      "name": "Clocktower Guardian",
+      "runtime_id": 384,
+      "raw_printing": {
+        "domains": [
+          "fury"
+        ],
+        "collector_number": 67,
+        "equipment_text": "",
+        "name": "Clocktower Guardian",
+        "illustrators": [
+          "Polar Engine Studio"
+        ],
+        "public_code": "RAD-067/167",
+        "rarity": "epic",
+        "official_id": "rad-067-167",
+        "super_types": [],
+        "structured_types": [
+          "unit"
+        ],
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/b846d604eee450a4ab8f457f2738b0596e7b361e-744x1039.png?accountingTag=RB",
+        "type_source": "cardType.type",
+        "power": 2,
+        "equipment_html": "",
+        "tags": [
+          "Mech"
+        ],
+        "might": 8,
+        "types": [
+          "unit"
+        ],
+        "set": "RAD",
+        "accessibility_types": [
+          "unit"
+        ],
+        "rules_text": "When you play me or when I hold, [Predict 3].\n[Deathknell][>] Banish the top card of your Main Deck. You may play it, ignoring its Energy cost.",
+        "energy": 8,
+        "rules_html": "<p>When you play me or when I hold, [Predict 3].<br />[Deathknell][&gt;] Banish the top card of your Main Deck. You may play it, ignoring its Energy cost.</p>",
+        "image_accessibility_text": "Riftbound Unit: Clocktower Guardian. When you play me or when I hold, [Predict 3].\n[Deathknell][>] Banish the top card of your Main Deck. You may play it, ignoring its Energy cost.",
+        "might_bonus": null,
+        "type_labels_conflict": false
+      },
+      "raw_printing_sha256": "cd045ceae012f7d50d3f37feb860c08e0d13dcf075a929aa4357062ae3b99607",
+      "effective": {
+        "types": [
+          "unit"
+        ],
+        "super_types": [],
+        "domains": [
+          "mind"
+        ],
+        "energy": 8,
+        "power": 2,
+        "might": 8,
+        "might_bonus": null,
+        "tags": [
+          "Shurima"
+        ],
+        "rules_html": "<p>When you play me or when I hold, [Predict 3].<br />[Deathknell][&gt;] Banish the top card of your Main Deck. You may play it, ignoring its Energy cost.</p>",
+        "rules_text": "When you play me or when I hold, [Predict 3].\n[Deathknell][>] Banish the top card of your Main Deck. You may play it, ignoring its Energy cost.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "existing_field_resolution_ids": [
+        "rad-067-167:domains",
+        "rad-067-167:tags"
+      ],
+      "errata": [],
+      "visual_observation": {
+        "printed_types": [
+          "unit"
+        ],
+        "printed_supertypes": [],
+        "printed_domains": [
+          "mind"
+        ],
+        "printed_tags": [
+          "Shurima"
+        ],
+        "printed_energy": 8,
+        "printed_power": 2,
+        "printed_might": 8,
+        "printed_might_bonus": null,
+        "printed_equipment_icons_expanded": "",
+        "name": "Clocktower Guardian",
+        "collector_code": "RAD-067/167",
+        "official_id": "rad-067-167",
+        "original_image_sha256": "3dbf3e11af22df0e5ec2d4572e52cb6f2af087aa05aa062cfcf008b5ce99387a",
+        "face_visually_inspected": true,
+        "reviewed_on": "2026-10-24",
+        "printed_rules_icons_expanded": "When you play me or when I hold, [Predict 3].\n[Deathknell] Banish the top card of your Main Deck. You may play it, ignoring its Energy cost.",
+        "uncertainties": [],
+        "domain_reference": "assets/data/catalog_evidence/images/ogn-089-298.png: matching Mind rune symbol, independently viewed on 2026-10-24."
+      },
+      "original_image": {
+        "official_id": "rad-067-167",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/b846d604eee450a4ab8f457f2738b0596e7b361e-744x1039.png?accountingTag=RB",
+        "path": "assets/data/catalog_evidence/images/rad-067-167.png",
+        "sha256": "3dbf3e11af22df0e5ec2d4572e52cb6f2af087aa05aa062cfcf008b5ce99387a",
+        "bytes": 1108541
+      },
+      "runtime_image": {
+        "path": "assets/art/card_384.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/b846d604eee450a4ab8f457f2738b0596e7b361e-744x1039.png?w=280&q=80&fm=png",
+        "bytes": 239200,
+        "sha256": "10b4e8af426c253d1d394e8e44eab13624940244f22864c7d507180ee6d8c978"
+      },
+      "formatting_observation": "The gallery renders [Deathknell][>] where the printed face has the Deathknell label without a separately printed arrow. Both source texts are preserved; this does not change the effect."
+    }
+  ]
+}

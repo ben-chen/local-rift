@@ -2397,6 +2397,7 @@ impl App {
             return Ok(());
         }
         let (title,body)=match &decision{
+            Decision::BanishPlay{card_id,..}=>("Play from Banish",format!("Play {} now? Base energy is waived; power and extra costs still apply. Declining leaves it in Banish.",self.game.catalog[*card_id].name)),
             Decision::PredictCards{..}|Decision::Payment{..}|Decision::ResourceConversion{..}|Decision::TriggerTargets{..}|Decision::LegendTargets{..}|Decision::CombatDamage{..}|Decision::TokenPlacement{..}|Decision::TokenPlay{..}|Decision::BattlefieldOrder{..}|Decision::RevivePlay{..}|Decision::PendingPlay{..}=>unreachable!(),
             Decision::TrashTarget{..}=>("Choose a trash target","Choose an eligible card below before this ability enters the chain. Opponents may respond before the chosen card is played.".into()),
             Decision::OptionalPlay{card_id,..}=>("Use this triggered ability?",format!("{} offers a play from your trash. Accept and choose the ability's target, or decline now. Choose the card's own targets and costs after the ability resolves.",self.game.catalog[*card_id].name)),
@@ -2435,6 +2436,7 @@ impl App {
         let simple = matches!(
             decision,
             Decision::RevealHand { .. }
+                | Decision::BanishPlay { .. }
                 | Decision::OptionalPlay { .. }
                 | Decision::Battlefield { .. }
                 | Decision::Predict { .. }
@@ -2459,13 +2461,20 @@ impl App {
                     "Continue"
                 } else if matches!(decision, Decision::OptionalPlay { .. }) {
                     "Use this ability"
+                } else if matches!(decision, Decision::BanishPlay { .. }) {
+                    "Play this card"
                 } else if matches!(decision, Decision::Predict { .. }) {
                     "Recycle to bottom"
                 } else {
                     "Yes · pay the cost"
                 },
                 true,
-                true,
+                !matches!(decision, Decision::BanishPlay { .. })
+                    || self
+                        .game
+                        .clone()
+                        .apply(Action::Choose { accept: true })
+                        .is_ok(),
             ) {
                 self.action(Action::Choose { accept: true });
             }
@@ -2473,6 +2482,8 @@ impl App {
                 Rect::new(1178.0, 531.0, 212.0, 31.0),
                 if matches!(decision, Decision::Predict { .. }) {
                     "Keep on top"
+                } else if matches!(decision, Decision::BanishPlay { .. }) {
+                    "Leave in Banish"
                 } else {
                     "No · decline"
                 },
@@ -3497,6 +3508,23 @@ impl App {
                 }
             }
             self.tray_scroll(options.len(), 6);
+            return Ok(true);
+        }
+        if let Decision::BanishPlay { card_id, .. } = decision {
+            self.ui.text(
+                "Banished card · inspect before choosing",
+                780.0,
+                671.0,
+                9.0,
+                GOLD,
+            );
+            let r = self.tile(card_id, 0, self.game.catalog[card_id].name, false);
+            if self.ui.hover(r) {
+                self.hover_candidate = Some(card_id);
+                if self.ui.secondary_pressed() {
+                    self.inspect = Some(card_id);
+                }
+            }
             return Ok(true);
         }
         if let Decision::PendingPlay {
@@ -5971,10 +5999,9 @@ impl App {
                         }) || matches!(self.game.decision, Some(Decision::RevivePlay { .. }));
                     let cost_text = if resolving_revive || selecting_revive {
                         "Base cost waived · extra costs still apply".into()
-                    } else if pending
-                        .as_ref()
-                        .is_some_and(|card| card.kind == local_rift::game::InstructedPlayKind::Fizz)
-                    {
+                    } else if pending.as_ref().is_some_and(|card| {
+                        card.instruction.cost == local_rift::game::BaseCostWaiver::Energy
+                    }) {
                         "Base energy waived · pay power and extras".into()
                     } else if let Some(flow) = selected_flow {
                         let power = if flow.power == 0 {

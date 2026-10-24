@@ -429,6 +429,14 @@ pub struct Showdown {
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Decision {
+    /// The top card is already public in Banish. Choosing to play it happens
+    /// during its parent effect; finalization follows after the parent ends.
+    BanishPlay {
+        player: usize,
+        banish_index: usize,
+        card_id: CardId,
+        kind: InstructedPlayKind,
+    },
     PredictCards {
         player: usize,
         choice_id: u32,
@@ -601,6 +609,7 @@ enum PendingTriggerEffect {
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum InstructedPlayKind {
+    ClocktowerGuardian,
     Fizz,
     LastRites,
     Matriarch,
@@ -658,7 +667,8 @@ pub enum CardSupport {
 impl Decision {
     pub fn player(&self) -> usize {
         match self {
-            Self::TokenPlay { player, .. }
+            Self::BanishPlay { player, .. }
+            | Self::TokenPlay { player, .. }
             | Self::Payment { player }
             | Self::ResourceConversion { player, .. }
             | Self::TriggerTargets { player, .. }
@@ -2912,6 +2922,22 @@ impl Game {
         }
         self.decision = None;
         match decision {
+            Decision::BanishPlay {
+                player,
+                banish_index,
+                card_id,
+                kind,
+            } => {
+                if accept {
+                    if self.silenced[player] {
+                        return Err("You cannot play cards this turn.".into());
+                    }
+                    if self.players[player].banish.get(banish_index) != Some(&card_id) {
+                        return Err("The offered card is no longer at its Banish position.".into());
+                    }
+                    self.queue_banish_play(player, banish_index, kind, None);
+                }
+            }
             Decision::OptionalPlay {
                 player,
                 card_id,
@@ -4864,6 +4890,7 @@ impl Game {
             Some(Decision::PendingPlay { .. })
                 if pending.as_ref().is_some_and(|p| match p.kind {
                     InstructedPlayKind::Fizz => card.kind == CardKind::Spell && card.cost <= 3,
+                    InstructedPlayKind::ClocktowerGuardian => true,
                     _ => card.kind == CardKind::Unit,
                 }) => {}
             Some(Decision::LastRites { .. }) if card.kind == CardKind::Unit => {}
@@ -4977,7 +5004,12 @@ impl Game {
                     item.player == player && item.card_id == id && item.ability.is_none()
                 })
             {
-                item.recycle_after = free_energy;
+                // An Energy waiver is not a recycle instruction. Only Fizz
+                // supplies the linked recycle; Clocktower spells go to Trash.
+                item.recycle_after = pending
+                    .as_ref()
+                    .is_some_and(|p| p.kind == InstructedPlayKind::Fizz)
+                    || matches!(decision, Some(Decision::ReplaySpell { .. }));
                 item.banish_after = flow.is_some();
                 if self.active_play.is_none() {
                     item.options = options;
@@ -8373,6 +8405,7 @@ impl Game {
                         accept: self.players[*player].energy >= (*cost).into(),
                     }),
                     Decision::OptionalPlay { .. }
+                    | Decision::BanishPlay { .. }
                     | Decision::Legend { .. }
                     | Decision::BurnForMight { .. } => Some(Action::Choose { accept: true }),
                     _ => None,

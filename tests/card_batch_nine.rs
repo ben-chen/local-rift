@@ -135,7 +135,7 @@ fn eighteen_appended_cards_preserve_clean_source_facts_and_art() {
         );
     }
     // The C6 review preserves raw issue history while resolving effective facts.
-    assert_eq!(source["counts"]["source_quality_issues"], 43);
+    assert_eq!(source["counts"]["source_quality_issues"], 45);
     assert_eq!(
         source["source_quality_issues"]
             .as_array()

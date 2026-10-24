@@ -1687,6 +1687,7 @@ fn pending_card_to_json(card: &crate::game::PendingCard) -> Value {
 
 fn instructed_kind(kind: InstructedPlayKind) -> &'static str {
     match kind {
+        InstructedPlayKind::ClocktowerGuardian => "clocktower_guardian",
         InstructedPlayKind::Fizz => "fizz",
         InstructedPlayKind::LastRites => "last_rites",
         InstructedPlayKind::Matriarch => "matriarch",
@@ -1700,6 +1701,16 @@ fn instructed_kind(kind: InstructedPlayKind) -> &'static str {
 fn decision_to_json(game: &Game, decision: &Decision, viewer: usize) -> Result<Value, ApiError> {
     let player = decision.player();
     let mut out = match decision {
+        Decision::BanishPlay {
+            banish_index,
+            card_id,
+            kind,
+            ..
+        } => json!({
+            "type":"banish_play", "banish_index":banish_index, "card_id":card_id,
+            "kind":instructed_kind(*kind), "origin":{"type":"banish"}, "optional":true,
+            "base_cost_waiver":"energy"
+        }),
         Decision::Payment { .. } => json!({"type":"payment",
             "can_cancel":game.can_cancel_payment().map_err(ApiError::illegal)?}),
         Decision::ResourceConversion {
@@ -4148,3 +4159,6 @@ mod c16;
 
 #[cfg(test)]
 mod c17;
+
+#[cfg(test)]
+mod c18;

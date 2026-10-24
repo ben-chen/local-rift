@@ -36,8 +36,8 @@ fn reviewed_facts_are_effective_while_original_evidence_stays_intact() {
         .collect();
     assert_eq!(manifest["status"], "reviewed");
     assert_eq!(manifest["printing_projection_version"], 1);
-    assert_eq!(manifest["resolutions"].as_array().unwrap().len(), 118);
-    assert_eq!(manifest["raw_printings"].as_array().unwrap().len(), 74);
+    assert_eq!(manifest["resolutions"].as_array().unwrap().len(), 120);
+    assert_eq!(manifest["raw_printings"].as_array().unwrap().len(), 75);
     for raw in manifest["raw_printings"].as_array().unwrap() {
         let id = raw["official_id"].as_str().unwrap();
         for (field, value) in raw.as_object().unwrap() {
@@ -74,7 +74,7 @@ fn reviewed_facts_are_effective_while_original_evidence_stays_intact() {
         .map(|issue| issue["raw_issue"].clone())
         .collect();
     assert_eq!(data["source_quality_issues"], json!(historical));
-    assert_eq!(historical.len(), 43);
+    assert_eq!(historical.len(), 45);
 }
 
 #[test]
@@ -144,9 +144,9 @@ fn reviewed_dual_type_stays_unavailable_and_goatherd_uses_later_admission() {
         );
     }
     assert_eq!(data["counts"]["standard_legal_by_kind"]["gear+unit"], 1);
-    assert_eq!(data["counts"]["implemented_main_cards"], 384);
-    assert_eq!(data["counts"]["implemented_legal_identities"], 411);
-    assert_eq!(data["counts"]["unimplemented_legal_identities"], 668);
+    assert_eq!(data["counts"]["implemented_main_cards"], 385);
+    assert_eq!(data["counts"]["implemented_legal_identities"], 412);
+    assert_eq!(data["counts"]["unimplemented_legal_identities"], 667);
 }
 
 #[test]
@@ -290,8 +290,8 @@ fn source_review_never_admits_inventory_only_or_unresolved_identities() {
             );
         }
     }
-    assert_eq!(data["counts"]["implemented_legal_identities"], 411);
-    assert_eq!(data["counts"]["unimplemented_legal_identities"], 668);
+    assert_eq!(data["counts"]["implemented_legal_identities"], 412);
+    assert_eq!(data["counts"]["unimplemented_legal_identities"], 667);
 }
 
 #[test]
@@ -337,7 +337,7 @@ fn completed_variant_reviews_cover_every_member_without_compatibility_exceptions
     assert_eq!(reviewed_printings.len(), 90);
     assert_eq!((unresolved_identities, unresolved_legal), (95, 94));
     assert_eq!(unresolved_auxiliary, vec!["Gold"]);
-    assert_eq!(data["counts"]["implemented_legal_identities"], 411);
+    assert_eq!(data["counts"]["implemented_legal_identities"], 412);
 }
 
 #[test]
