@@ -55,7 +55,7 @@ class GearSourceReviewTests(unittest.TestCase):
         self.assertEqual((c['implemented_main_cards'], c['implemented_legal_identities'],
                           c['unimplemented_legal_identities']), (362, 387, 692))
         self.assertEqual((c['reviewed_field_resolutions'], c['field_reviewed_printings'],
-                          c['source_quality_issues'], c['resolved_source_issue_groups']), (117, 73, 42, 42))
+                          c['source_quality_issues'], c['resolved_source_issue_groups']), (118, 74, 43, 43))
         self.assertFalse(self.proof['enables_runtime_support'])
 
     def test_compound_type_is_one_inventory_identity_with_both_types(self):
@@ -108,11 +108,12 @@ class GearSourceReviewTests(unittest.TestCase):
     def test_all_previous_reviews_runtime_lists_and_variant_evidence_are_unchanged(self):
         digest = lambda value: catalog.sha(review.canonical_bytes(value))
         for key, saved in self.proof['preserved_source_cohorts'].items():
-            self.assertEqual(len(self.manifest[key]), saved['count'] + 2)
+            # Subsequent reviews append evidence; the original cohort stays pinned.
+            self.assertGreaterEqual(len(self.manifest[key]), saved['count'] + 2)
             self.assertEqual(digest(self.manifest[key][:saved['count']]), saved['canonical_sha256'])
         images = json.loads((catalog.ROOT / 'assets/data/catalog_evidence/images.json').read_text())
         saved = self.proof['preserved_field_image_index']
-        self.assertEqual(len(images), saved['count'] + 2)
+        self.assertGreaterEqual(len(images), saved['count'] + 2)
         self.assertEqual(digest(images[:saved['count']]), saved['canonical_sha256'])
         for path, sha in self.proof['preserved_files'].items():
             payload = (catalog.ROOT / path).read_bytes()

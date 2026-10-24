@@ -1,0 +1,174 @@
+{
+  "schema_version": 1,
+  "status": "reviewed_source_only",
+  "reviewed_on": "2026-10-24",
+  "scope": "One exact-face missing-tag correction; no runtime card admission.",
+  "enables_runtime_support": false,
+  "baseline_commit": "0ee1408e9db82ac96ad0c05776c14516cb13418b",
+  "official_id": "rad-126-167",
+  "name": "Mournful Spirit",
+  "resolution_ids": [
+    "rad-126-167:tags"
+  ],
+  "raw_printing": {
+    "official_id": "rad-126-167",
+    "public_code": "RAD-126/167",
+    "name": "Mournful Spirit",
+    "set": "RAD",
+    "collector_number": 126,
+    "types": [
+      "unit"
+    ],
+    "type_source": "cardType.type",
+    "structured_types": [
+      "unit"
+    ],
+    "accessibility_types": [
+      "unit"
+    ],
+    "type_labels_conflict": false,
+    "super_types": [],
+    "domains": [
+      "order"
+    ],
+    "energy": 4,
+    "power": null,
+    "might": 1,
+    "might_bonus": null,
+    "rules_html": "<p>[Deathknell][&gt;] You may kill a unit or gear here. (When I die, get the effect.)</p>",
+    "rules_text": "[Deathknell][>] You may kill a unit or gear here. (When I die, get the effect.)",
+    "equipment_html": "",
+    "equipment_text": "",
+    "tags": [
+      "Spirit"
+    ],
+    "rarity": "uncommon",
+    "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/6d8500ac7efc5382985f566212d88ac8f41c135d-744x1039.png?accountingTag=RB",
+    "image_accessibility_text": "Riftbound Unit: Mournful Spirit. [Deathknell][>] You may kill a unit or gear here. (When I die, get the effect.)",
+    "illustrators": [
+      "Six More Vodka"
+    ]
+  },
+  "raw_printing_sha256": "017049815c54a0a8775aefdbe8e281a784096d376cfa9de41c36d11681e3d362",
+  "effective_before": {
+    "types": [
+      "unit"
+    ],
+    "super_types": [],
+    "domains": [
+      "order"
+    ],
+    "energy": 4,
+    "power": null,
+    "might": 1,
+    "might_bonus": null,
+    "tags": [
+      "Spirit"
+    ],
+    "rules_html": "<p>[Deathknell][&gt;] You may kill a unit or gear here. (When I die, get the effect.)</p>",
+    "rules_text": "[Deathknell][>] You may kill a unit or gear here. (When I die, get the effect.)",
+    "equipment_html": "",
+    "equipment_text": ""
+  },
+  "effective_after": {
+    "types": [
+      "unit"
+    ],
+    "super_types": [],
+    "domains": [
+      "order"
+    ],
+    "energy": 4,
+    "power": null,
+    "might": 1,
+    "might_bonus": null,
+    "tags": [
+      "Shadow Isles",
+      "Spirit"
+    ],
+    "rules_html": "<p>[Deathknell][&gt;] You may kill a unit or gear here. (When I die, get the effect.)</p>",
+    "rules_text": "[Deathknell][>] You may kill a unit or gear here. (When I die, get the effect.)",
+    "equipment_html": "",
+    "equipment_text": ""
+  },
+  "original_image": {
+    "official_id": "rad-126-167",
+    "path": "assets/data/catalog_evidence/images/rad-126-167.png",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/6d8500ac7efc5382985f566212d88ac8f41c135d-744x1039.png?accountingTag=RB",
+    "bytes": 661398,
+    "sha256": "a226ad34dfd407100505cbee32c1b2e8da134e9971a2fadeb50a99d0667d754e"
+  },
+  "visual_observation": {
+    "face_visually_inspected": true,
+    "reviewed_on": "2026-10-24",
+    "official_id": "rad-126-167",
+    "original_image_sha256": "a226ad34dfd407100505cbee32c1b2e8da134e9971a2fadeb50a99d0667d754e",
+    "name": "Mournful Spirit",
+    "collector_code": "RAD-126/167",
+    "printed_types": [
+      "unit"
+    ],
+    "printed_supertypes": [],
+    "printed_domains": [
+      "order"
+    ],
+    "printed_tags": [
+      "Shadow Isles",
+      "Spirit"
+    ],
+    "printed_energy": 4,
+    "printed_power": null,
+    "printed_might": 1,
+    "printed_might_bonus": null,
+    "printed_rules_icons_expanded": "[Deathknell][>] You may kill a unit or gear here. (When I die, get the effect.)",
+    "printed_equipment_icons_expanded": "",
+    "uncertainties": []
+  },
+  "origin_gallery": {
+    "url": "https://playriftbound.com/en-us/card-gallery/",
+    "archive": "assets/data/catalog_evidence/pages/97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9.html.gz",
+    "sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+    "uncompressed_bytes": 3986973
+  },
+  "preserved_source_cohorts": {
+    "resolutions": {
+      "count": 117,
+      "canonical_sha256": "dd4e64077c9df5d6f5ec2e3eee43fb9ce8f7881d393546f6d707dd1036818761"
+    },
+    "raw_printings": {
+      "count": 73,
+      "canonical_sha256": "fa4e450d6c74652ddb25110805c7c41c1bdb12381cf139726112564024933d3b"
+    },
+    "historical_issues": {
+      "count": 42,
+      "canonical_sha256": "ad98fe95f92e687a1b632578d66329b281407374be0dd7dce240ca3aa8b9d512"
+    }
+  },
+  "preserved_field_image_index": {
+    "count": 73,
+    "canonical_sha256": "e7bceb6589f9d4a795d3d97bd9d2284971c212c9365d7cdeaffeb8cc28635724"
+  },
+  "preserved_variant_review": {
+    "identities": 29,
+    "printings": 90,
+    "manifest_sha256": "e678c7f2f2e1ae70fb6b399ce1b0ab88a314e9018810d1ccadb1759a1f7b5e12",
+    "image_index_sha256": "1826db0a53cbe62eb1a1196d08df1cbef215b9d9e24cc006689559bbc7693b92"
+  },
+  "preserved_runtime": {
+    "card_count": 372,
+    "cards_sha256": "f9586a5dc789338932f3073a55665125b74f2b0101e6e8703e088709b95db4a5",
+    "presets_sha256": "d6e64ebf3f8921686682dacd87d4b2b4baec5754dbd284c6d60bf3fb324571e2",
+    "legends_manifest_sha256": "2b621121a54761ccee91e6d0df7b720e572138e7c2caac2c52abaaabd951b37f",
+    "training_recipe_source_sha256": "ad6b2ad3d5e3e34c99af35eef5a283b615cc813db27cec246fd2f433063ec1e4"
+  },
+  "unchanged_coverage": {
+    "main_cards": 372,
+    "mapped_legal": 397,
+    "remaining_legal": 682,
+    "standard_legal": 1079
+  },
+  "changed_fields": [
+    "tags"
+  ],
+  "review_limit": "A dated observation of one exact original face, not an erratum or executable rules implementation."
+}

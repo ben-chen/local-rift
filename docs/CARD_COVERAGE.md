@@ -66,7 +66,7 @@ The snapshot preserves printed rules HTML, readable rules, equipment text, exact
 - [Vendetta Errata](https://playriftbound.com/en-us/news/announcements/vendetta-errata-updates/)
 - [Radiance Errata](https://playriftbound.com/en-us/news/announcements/radiance-errata-updates/)
 
-**42 historical issue groups are preserved; 42 have evidence-backed resolutions and 0 remain unresolved.** The reviewed manifest contains 117 field corrections or confirmations across 73 printings. It preserves original gallery values, both type labels, original HTML, and the original issue records. The generated `effective` object applies only explicitly reviewed fields. This is a targeted review, not a complete visual audit of the gallery.
+**43 historical issue groups are preserved; 43 have evidence-backed resolutions and 0 remain unresolved.** The reviewed manifest contains 118 field corrections or confirmations across 74 printings. It preserves original gallery values, both type labels, original HTML, and the original issue records. The generated `effective` object applies only explicitly reviewed fields. This is a targeted review, not a complete visual audit of the gallery.
 
 **13 Radiance records have an empty structured type field.** Their raw normalized type still records the accessibility-label fallback. Matching card images corroborate the effective types; no structured source value was overwritten.
 
@@ -100,7 +100,7 @@ The snapshot preserves printed rules HTML, readable rules, equipment text, exact
 
 **Historical official stat conflict:** Kai'Sa, Rebel, `might`: `rad-063-167` = 5; `rad-sp4-005` = 4. The source values remain unchanged. Reviewed effective values: `rad-063-167` = 5; `rad-sp4-005` = 5.
 
-The original 37 parser issue groups remain unchanged. Another 5 issues were discovered by reading exact official card faces, then validated against the raw printing and linked field resolutions before being appended to the history. Bilgewater Tracker's raw Body domain and empty tags remain visible; its effective Fury domain and Bilgewater tag match the printed glyph and type/tag line. These are explicit visual observations, not additional discrepancies detected by the feed parser.
+The original 37 parser issue groups remain unchanged. Another 6 issues were discovered by reading exact official card faces, then validated against the raw printing and linked field resolutions before being appended to the history. Bilgewater Tracker's raw Body domain and empty tags remain visible; its effective Fury domain and Bilgewater tag match the printed glyph and type/tag line. These are explicit visual observations, not additional discrepancies detected by the feed parser.
 
 The same reviewed evidence corrects missing/wrong domains, printed tags, Runeblade Anvil's activation power glyph, and Rousing Display's trailing editorial text. Four Device-tag exclusions are explicitly rule-derived and retain their Core Rules evidence. Every resolution names exact raw prerequisites, its immutable origin gallery, complete printing hash, and local official image evidence. A changed printing or corrupted evidence fails validation; publisher fixes require a deliberate review update. See [the review contract and evidence](CATALOG_REVIEW.md).
 

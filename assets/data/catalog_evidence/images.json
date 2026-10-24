@@ -509,5 +509,12 @@
     "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/7667d7e0c902782c38221e9326d1bb98181ec17f-744x1039.png?accountingTag=RB",
     "bytes": 751918,
     "sha256": "83b7edbd3de3c8067e3ed6477df417c1f90f6a1dea00b2f1b89f6f1e9976b42a"
+  },
+  {
+    "official_id": "rad-126-167",
+    "path": "assets/data/catalog_evidence/images/rad-126-167.png",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/6d8500ac7efc5382985f566212d88ac8f41c135d-744x1039.png?accountingTag=RB",
+    "bytes": 661398,
+    "sha256": "a226ad34dfd407100505cbee32c1b2e8da134e9971a2fadeb50a99d0667d754e"
   }
 ]

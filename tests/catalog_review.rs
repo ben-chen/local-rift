@@ -36,8 +36,8 @@ fn reviewed_facts_are_effective_while_original_evidence_stays_intact() {
         .collect();
     assert_eq!(manifest["status"], "reviewed");
     assert_eq!(manifest["printing_projection_version"], 1);
-    assert_eq!(manifest["resolutions"].as_array().unwrap().len(), 117);
-    assert_eq!(manifest["raw_printings"].as_array().unwrap().len(), 73);
+    assert_eq!(manifest["resolutions"].as_array().unwrap().len(), 118);
+    assert_eq!(manifest["raw_printings"].as_array().unwrap().len(), 74);
     for raw in manifest["raw_printings"].as_array().unwrap() {
         let id = raw["official_id"].as_str().unwrap();
         for (field, value) in raw.as_object().unwrap() {
@@ -74,7 +74,37 @@ fn reviewed_facts_are_effective_while_original_evidence_stays_intact() {
         .map(|issue| issue["raw_issue"].clone())
         .collect();
     assert_eq!(data["source_quality_issues"], json!(historical));
-    assert_eq!(historical.len(), 42);
+    assert_eq!(historical.len(), 43);
+}
+
+#[test]
+fn mournful_spirit_keeps_raw_tags_and_exposes_the_complete_printed_set() {
+    let data = catalog();
+    let printing = data["printings"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|p| p["official_id"] == "rad-126-167")
+        .unwrap();
+    assert_eq!(printing["tags"], json!(["Spirit"]));
+    assert_eq!(
+        printing["effective"]["tags"],
+        json!(["Shadow Isles", "Spirit"])
+    );
+    assert_eq!(printing["resolution_ids"], json!(["rad-126-167:tags"]));
+    let source = resolutions();
+    let resolution = source["resolutions"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|r| r["id"] == "rad-126-167:tags")
+        .unwrap();
+    assert_eq!(resolution["enables_runtime_support"], false);
+    assert!(
+        cards::cards()[..372]
+            .iter()
+            .all(|c| c.official_id != "rad-126-167")
+    );
 }
 
 #[test]

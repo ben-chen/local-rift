@@ -40,7 +40,7 @@ class CatalogPipelineTests(unittest.TestCase):
     def test_resolved_history_is_separate_from_remaining_variant_reviews(self):
         counts = self.snapshot['counts']
         self.assertEqual((counts['reviewed_field_resolutions'], counts['resolved_source_issue_groups'],
-                          counts['unresolved_source_issue_groups']), (117, 42, 0))
+                          counts['unresolved_source_issue_groups']), (118, 43, 0))
         self.assertEqual(counts['unresolved_gameplay_identities'], 0)
         self.assertEqual(counts['unreviewed_variant_identities'], 95)
         self.assertEqual(counts['unreviewed_variants_by_field'], {'tags': 33, 'rules_text': 84})
@@ -50,7 +50,7 @@ class CatalogPipelineTests(unittest.TestCase):
         self.assertTrue(all(r['status'] == 'resolved_by_review' for r in self.snapshot['source_issue_reviews']))
         self.assertEqual(counts['reviewed_variant_identities'], 29)
         self.assertEqual(counts['reviewed_variant_printings'], 90)
-        self.assertEqual(counts['field_reviewed_printings'], 73)
+        self.assertEqual(counts['field_reviewed_printings'], 74)
         for card in self.snapshot['cards']:
             if card['implementation']['playable_in_client']:
                 self.assertEqual(card['source_review']['unresolved_variant_fields'], [])

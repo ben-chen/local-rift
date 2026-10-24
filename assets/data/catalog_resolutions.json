@@ -2,7 +2,7 @@
   "schema_version": 1,
   "status": "reviewed",
   "prepared_on": "2026-10-24",
-  "scope": "Earlier reviews preserved, plus two artwork-proven corrections: Stalwart Goatherd tags and Patched Porobot dual type. Source review alone enables no runtime card.",
+  "scope": "Earlier source cohorts preserved, plus Mournful Spirit’s artwork-proven missing Shadow Isles tag. Source review alone enables no runtime card.",
   "baseline": {
     "main_cards": 290,
     "legends": 8,
@@ -63,7 +63,7 @@
     }
   },
   "evidence_manifest_path": "assets/data/catalog_evidence/images.json",
-  "evidence_manifest_sha256": "8a02f46f3b8c8152d7384cdeecbed455780c82c4a06493b1dea1cbbb284806ba",
+  "evidence_manifest_sha256": "1e24f318246bdcbd08a25629d6e58bc25c53c12453e789d51112d5f55a727c84",
   "evidence_checks": {
     "historical_c6_review": {
       "all8_archives_verified": true,
@@ -72,12 +72,12 @@
       "artwork_review": "Dated visual review of the matching official card images, documented in docs/CATALOG_REVIEW.md. No automatic preference for accessibility labels or new inferred source values."
     },
     "current_field_review": {
-      "reviewed_printings": 73,
+      "reviewed_printings": 74,
       "all_image_hashes_verified": true,
       "all_image_urls_match_pinned_raw_printings": true,
       "all_raw_projection_and_origin_checks_pass": true,
       "visual_review_date": "2026-10-24",
-      "note": "The original 71 field-reviewed printings are preserved; Stalwart Goatherd and Patched Porobot add two individually inspected corrections. The 29 complete identity reviews and their 90-printing evidence remain unchanged."
+      "note": "The preceding 73 field-reviewed printings are preserved. Mournful Spirit adds one individually inspected tag correction. The 29 complete identity reviews and all 90 variant printings are unchanged."
     }
   },
   "preservation_contract": [
@@ -92,12 +92,12 @@
     "Live page checks fetch current gallery and legality pages but do not freshly download image evidence; the stored visual review remains dated."
   ],
   "stats": {
-    "historical_issue_groups": 42,
-    "reviewed_printings": 73,
-    "field_resolutions": 117,
-    "overrides": 90,
+    "historical_issue_groups": 43,
+    "reviewed_printings": 74,
+    "field_resolutions": 118,
+    "overrides": 91,
     "confirmations": 27,
-    "artwork_confirmed": 113,
+    "artwork_confirmed": 114,
     "rule_derived": 4,
     "c7_new_field_resolutions": 39,
     "c7_new_printings": 31,
@@ -106,7 +106,9 @@
     "momentary_new_field_resolutions": 1,
     "momentary_new_printings": 1,
     "gear_review_new_field_resolutions": 2,
-    "gear_review_new_printings": 2
+    "gear_review_new_printings": 2,
+    "mournful_new_field_resolutions": 1,
+    "mournful_new_printings": 1
   },
   "historical_issues": [
     {
@@ -1132,6 +1134,39 @@
       ],
       "resolution_ids": [
         "ven-058-166:types"
+      ],
+      "proposed_status": "reviewed",
+      "runtime_support": "source_review_only",
+      "discovery_basis": "confirmed_artwork",
+      "discovered_on": "2026-10-24"
+    },
+    {
+      "review_issue_id": "mournful-rad-126-167-tags",
+      "raw_issue": {
+        "kind": "official_artwork_field_mismatch",
+        "field": "tags",
+        "official_ids": [
+          "rad-126-167"
+        ],
+        "values": [
+          {
+            "official_id": "rad-126-167",
+            "raw_value": [
+              "Spirit"
+            ],
+            "printed_value": [
+              "Shadow Isles",
+              "Spirit"
+            ]
+          }
+        ],
+        "detail": "The exact RAD-126/167 official face prints UNIT / SHADOW ISLES / SPIRIT. The structured feed retains Spirit but omits Shadow Isles. Only the effective tag set is corrected from the printed type/tag line; no region is inferred from the name or illustration."
+      },
+      "printing_ids": [
+        "rad-126-167"
+      ],
+      "resolution_ids": [
+        "rad-126-167:tags"
       ],
       "proposed_status": "reviewed",
       "runtime_support": "source_review_only",
@@ -3996,6 +4031,46 @@
         "Six More Vodka"
       ],
       "review_draft_sha256": "f5d83d7d6da13d31f20cd060a872518d582443e6c4844de99bdf6855bbd7ca89"
+    },
+    {
+      "official_id": "rad-126-167",
+      "public_code": "RAD-126/167",
+      "name": "Mournful Spirit",
+      "set": "RAD",
+      "collector_number": 126,
+      "types": [
+        "unit"
+      ],
+      "type_source": "cardType.type",
+      "structured_types": [
+        "unit"
+      ],
+      "accessibility_types": [
+        "unit"
+      ],
+      "type_labels_conflict": false,
+      "super_types": [],
+      "domains": [
+        "order"
+      ],
+      "energy": 4,
+      "power": null,
+      "might": 1,
+      "might_bonus": null,
+      "rules_html": "<p>[Deathknell][&gt;] You may kill a unit or gear here. (When I die, get the effect.)</p>",
+      "rules_text": "[Deathknell][>] You may kill a unit or gear here. (When I die, get the effect.)",
+      "equipment_html": "",
+      "equipment_text": "",
+      "tags": [
+        "Spirit"
+      ],
+      "rarity": "uncommon",
+      "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/6d8500ac7efc5382985f566212d88ac8f41c135d-744x1039.png?accountingTag=RB",
+      "image_accessibility_text": "Riftbound Unit: Mournful Spirit. [Deathknell][>] You may kill a unit or gear here. (When I die, get the effect.)",
+      "illustrators": [
+        "Six More Vodka"
+      ],
+      "review_draft_sha256": "017049815c54a0a8775aefdbe8e281a784096d376cfa9de41c36d11681e3d362"
     }
   ],
   "resolutions": [
@@ -7844,6 +7919,41 @@
           "bytes": 751918,
           "local_path": "assets/data/catalog_evidence/images/ven-058-166.png",
           "location": "Printed type/tag line directly above the name; type icons on its left."
+        }
+      ],
+      "enables_runtime_support": false
+    },
+    {
+      "id": "rad-126-167:tags",
+      "official_id": "rad-126-167",
+      "name": "Mournful Spirit",
+      "field": "tags",
+      "reviewed_on": "2026-10-24",
+      "basis": "confirmed_artwork",
+      "operation": "override",
+      "expected_raw_value": [
+        "Spirit"
+      ],
+      "raw_source_field": "tags",
+      "expected_raw_source_value": [
+        "Spirit"
+      ],
+      "effective_value": [
+        "Shadow Isles",
+        "Spirit"
+      ],
+      "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+      "expected_printing_sha256": "017049815c54a0a8775aefdbe8e281a784096d376cfa9de41c36d11681e3d362",
+      "printing_hash_encoding": "UTF-8 JSON sorted keys; ensure_ascii=false; separators=(',', ':')",
+      "reason": "The exact RAD-126/167 official face prints UNIT / SHADOW ISLES / SPIRIT. The structured feed retains Spirit but omits Shadow Isles. Only the effective tag set is corrected from the printed type/tag line; no region is inferred from the name or illustration.",
+      "evidence": [
+        {
+          "kind": "official_card_image",
+          "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/6d8500ac7efc5382985f566212d88ac8f41c135d-744x1039.png?accountingTag=RB",
+          "sha256": "a226ad34dfd407100505cbee32c1b2e8da134e9971a2fadeb50a99d0667d754e",
+          "bytes": 661398,
+          "local_path": "assets/data/catalog_evidence/images/rad-126-167.png",
+          "location": "Printed type/tag line directly above the card name."
         }
       ],
       "enables_runtime_support": false

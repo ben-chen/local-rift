@@ -159,9 +159,9 @@
     "unimplemented_legal_identities": 682,
     "errata_entries": 67,
     "identities_with_errata": 67,
-    "source_quality_issues": 42,
-    "reviewed_field_resolutions": 117,
-    "resolved_source_issue_groups": 42,
+    "source_quality_issues": 43,
+    "reviewed_field_resolutions": 118,
+    "resolved_source_issue_groups": 43,
     "unresolved_source_issue_groups": 0,
     "unresolved_gameplay_identities": 0,
     "unreviewed_variant_identities": 95,
@@ -172,7 +172,7 @@
     "pinned_runtime_variant_identities": 0,
     "reviewed_variant_identities": 29,
     "reviewed_variant_printings": 90,
-    "field_reviewed_printings": 73
+    "field_reviewed_printings": 74
   },
   "unimplemented_by_observed_keyword": {
     "ADD": 1,
@@ -23459,8 +23459,10 @@
       "rules_text_status": "official_gallery_printing_text",
       "conflicting_fields": [],
       "source_review": {
-        "status": "no_detected_conflicts",
-        "resolution_ids": [],
+        "status": "reviewed_corrections",
+        "resolution_ids": [
+          "rad-126-167:tags"
+        ],
         "unresolved_gameplay_fields": [],
         "variant_diagnostics": [],
         "reviewed_variant_fields": [],
@@ -73689,6 +73691,7 @@
         "might": 1,
         "might_bonus": null,
         "tags": [
+          "Shadow Isles",
           "Spirit"
         ],
         "rules_html": "<p>[Deathknell][&gt;] You may kill a unit or gear here. (When I die, get the effect.)</p>",
@@ -73696,7 +73699,9 @@
         "equipment_html": "",
         "equipment_text": ""
       },
-      "resolution_ids": [],
+      "resolution_ids": [
+        "rad-126-167:tags"
+      ],
       "unresolved_gameplay_fields": []
     },
     {
@@ -129906,6 +129911,26 @@
         }
       ],
       "detail": "The exact VEN-058/166 official face prints UNIT GEAR, with both type icons. The structured feed projects only unit. The preserved accessibility string also says Unit, Gear, but projection v1 does not parse the compound label. This is one object with both types, not a choice between them."
+    },
+    {
+      "kind": "official_artwork_field_mismatch",
+      "field": "tags",
+      "official_ids": [
+        "rad-126-167"
+      ],
+      "values": [
+        {
+          "official_id": "rad-126-167",
+          "raw_value": [
+            "Spirit"
+          ],
+          "printed_value": [
+            "Shadow Isles",
+            "Spirit"
+          ]
+        }
+      ],
+      "detail": "The exact RAD-126/167 official face prints UNIT / SHADOW ISLES / SPIRIT. The structured feed retains Spirit but omits Shadow Isles. Only the effective tag set is corrected from the printed type/tag line; no region is inferred from the name or illustration."
     }
   ],
   "source_issue_reviews": [
@@ -130884,6 +130909,36 @@
           }
         ],
         "detail": "The exact VEN-058/166 official face prints UNIT GEAR, with both type icons. The structured feed projects only unit. The preserved accessibility string also says Unit, Gear, but projection v1 does not parse the compound label. This is one object with both types, not a choice between them."
+      }
+    },
+    {
+      "review_issue_id": "mournful-rad-126-167-tags",
+      "official_ids": [
+        "rad-126-167"
+      ],
+      "resolution_ids": [
+        "rad-126-167:tags"
+      ],
+      "status": "resolved_by_review",
+      "raw_issue": {
+        "kind": "official_artwork_field_mismatch",
+        "field": "tags",
+        "official_ids": [
+          "rad-126-167"
+        ],
+        "values": [
+          {
+            "official_id": "rad-126-167",
+            "raw_value": [
+              "Spirit"
+            ],
+            "printed_value": [
+              "Shadow Isles",
+              "Spirit"
+            ]
+          }
+        ],
+        "detail": "The exact RAD-126/167 official face prints UNIT / SHADOW ISLES / SPIRIT. The structured feed retains Spirit but omits Shadow Isles. Only the effective tag set is corrected from the printed type/tag line; no region is inferred from the name or illustration."
       }
     }
   ],
@@ -134736,6 +134791,41 @@
         }
       ],
       "enables_runtime_support": false
+    },
+    {
+      "id": "rad-126-167:tags",
+      "official_id": "rad-126-167",
+      "name": "Mournful Spirit",
+      "field": "tags",
+      "reviewed_on": "2026-10-24",
+      "basis": "confirmed_artwork",
+      "operation": "override",
+      "expected_raw_value": [
+        "Spirit"
+      ],
+      "raw_source_field": "tags",
+      "expected_raw_source_value": [
+        "Spirit"
+      ],
+      "effective_value": [
+        "Shadow Isles",
+        "Spirit"
+      ],
+      "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+      "expected_printing_sha256": "017049815c54a0a8775aefdbe8e281a784096d376cfa9de41c36d11681e3d362",
+      "printing_hash_encoding": "UTF-8 JSON sorted keys; ensure_ascii=false; separators=(',', ':')",
+      "reason": "The exact RAD-126/167 official face prints UNIT / SHADOW ISLES / SPIRIT. The structured feed retains Spirit but omits Shadow Isles. Only the effective tag set is corrected from the printed type/tag line; no region is inferred from the name or illustration.",
+      "evidence": [
+        {
+          "kind": "official_card_image",
+          "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/6d8500ac7efc5382985f566212d88ac8f41c135d-744x1039.png?accountingTag=RB",
+          "sha256": "a226ad34dfd407100505cbee32c1b2e8da134e9971a2fadeb50a99d0667d754e",
+          "bytes": 661398,
+          "local_path": "assets/data/catalog_evidence/images/rad-126-167.png",
+          "location": "Printed type/tag line directly above the card name."
+        }
+      ],
+      "enables_runtime_support": false
     }
   ],
   "review_evidence": {
@@ -134748,10 +134838,10 @@
         "uncompressed_bytes": 3986973
       }
     },
-    "reviewed_printings": 73,
-    "field_resolutions": 117,
-    "historical_issue_groups": 42,
-    "image_evidence": 73,
+    "reviewed_printings": 74,
+    "field_resolutions": 118,
+    "historical_issue_groups": 43,
+    "image_evidence": 74,
     "live_image_bytes_checked": false
   },
   "reviewed_identity_reviews": [

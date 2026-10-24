@@ -345,9 +345,9 @@ class CommittedReviewIntegrationTests(unittest.TestCase):
         result = review.apply_reviews(printings, root=catalog.ROOT,
                                       project_gallery=lambda raw: catalog.project_gallery(raw)[0], plain=catalog.plain)
         self.assertEqual(printings, before)
-        self.assertEqual(len(result["resolutions"]), 117)
-        self.assertEqual(len(result["historical_issues"]), 42)
-        self.assertEqual(result["evidence_summary"]["reviewed_printings"], 73)
+        self.assertEqual(len(result["resolutions"]), 118)
+        self.assertEqual(len(result["historical_issues"]), 43)
+        self.assertEqual(result["evidence_summary"]["reviewed_printings"], 74)
         self.assertEqual(len(result["printings"]), 1408)
         self.assertFalse(any(p["unresolved_gameplay_fields"] for p in result["printings"]))
         by_id = {p["official_id"]: p for p in result["printings"]}
