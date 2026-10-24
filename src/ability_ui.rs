@@ -74,7 +74,12 @@ impl App {
             .game
             .decision
             .as_ref()
-            .filter(|decision| matches!(decision, Decision::TriggerTargets { .. }))
+            .filter(|decision| {
+                matches!(
+                    decision,
+                    Decision::TriggerTargets { .. } | Decision::LegendTargets { .. }
+                )
+            })
             .map(|decision| format!("{decision:?}"));
     }
     pub(super) fn remember_resource_draft(&mut self) {

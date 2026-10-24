@@ -764,6 +764,10 @@ fn response_window_advice(
                 "Choose how much to convert. The gear is already exhausted. Zero finishes without adding resources; your original payment stays waiting.",
                 "Other Add abilities can supply this payment. Keep the energy and colored power needed for the original action, not just the conversion.",
             ],
+            Decision::LegendTargets { .. } => vec![
+                "Rengar must give one unit +1 Might this turn. Choose a highlighted unit, then confirm. You may choose the unit you just played.",
+                "Put the extra Might where it changes a combat or makes a response less effective. Tokens also trigger Rengar when played; the bonus ends this turn.",
+            ],
             Decision::TriggerTargets { card_id: 376, .. } => vec![
                 "Apothecary can return one friendly unit at any battlefield, including itself. Choose a highlighted unit or decline; a returned token disappears.",
                 "Returning a unit can save its card from a response, but removes its board presence. Attached gear stays on the board and detaches. This does not trigger Deathknell.",
@@ -1033,6 +1037,12 @@ fn response_window_advice(
 fn archetype_tip(game: &Game) -> &'static str {
     use local_rift::legends::LegendKind;
     match game.legend[0].kind {
+        LegendKind::Rengar => {
+            "Each unit you play gives a unit +1 Might this turn. Spread your units across locations while concentrating bonuses where they change combat."
+        }
+        LegendKind::Ezreal => {
+            "After choosing enemy units or gear twice this turn with spells or unit abilities, exhaust your legend to draw. Gear and legend abilities do not advance this requirement."
+        }
         LegendKind::Ambessa => {
             "When you Empower any other object, Ambessa triggers her own Empower. Spend her state, ready status and 1 Any power to ready a unit during your open Main Phase."
         }

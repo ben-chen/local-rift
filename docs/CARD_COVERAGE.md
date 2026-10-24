@@ -2,7 +2,7 @@
 
 Snapshot checked **2026-10-24**. The official gallery contains **1,408 printing records** grouped into **1,103 distinct full-name identities**. After excluding **12 auxiliary token/tracker identities** and **12 banned identities**, **1,079 identities are legal in Standard/1v1 Constructed**. The separate 2v2 list leaves **1,078**.
 
-**This client does not yet implement every legal card.** It currently maps **379 main-deck cards, 8 independently registered legends, 11 battlefields, and 6 rune resource types** (404 legal identities). **675 legal identities remain unimplemented and are not playable.** Importing this snapshot does not register cards with the engine. Full inventory coverage is not full rules support.
+**This client does not yet implement every legal card.** It currently maps **379 main-deck cards, 10 independently registered legends, 11 battlefields, and 6 rune resource types** (406 legal identities). **673 legal identities remain unimplemented and are not playable.** Importing this snapshot does not register cards with the engine. Full inventory coverage is not full rules support.
 
 ## Scope and authority
 
@@ -28,7 +28,7 @@ Numbered positions include token slots where the publisher numbers them within a
 | Battlefield | 69 | 11 | 58 |
 | Gear | 131 | 63 | 68 |
 | Gear + Unit | 1 | 0 | 1 |
-| Legend | 58 | 8 | 50 |
+| Legend | 58 | 10 | 48 |
 | Rune | 6 | 6 | 0 |
 | Spell | 268 | 102 | 166 |
 | Unit | 546 | 214 | 332 |
@@ -529,5 +529,7 @@ Registry IDs are independent of the four sourced tournament presets. The origina
 | 5 | Herald of the Arcane | `ogn-265-298` |
 | 6 | Lady of Luminosity, Starter | `ogs-021-024` |
 | 7 | Matriarch of War | `ven-153-166` |
+| 8 | Pridestalker | `unl-183-219` |
+| 9 | Prodigal Explorer | `sfd-199-221` |
 
 Card names, rules, and images are Riot Games intellectual property. This noncommercial, unofficial project includes source references for verification and does not claim Riot affiliation.

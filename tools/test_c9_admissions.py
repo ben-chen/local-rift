@@ -4,6 +4,7 @@ import unittest
 
 import catalog_review as review
 import import_catalog as catalog
+import admission_history as history
 
 
 class C9AdmissionTests(unittest.TestCase):
@@ -68,7 +69,7 @@ class C9AdmissionTests(unittest.TestCase):
         self.assertEqual(preserved['card_count'], 308)
         self.assertEqual(digest(runtime['cards'][:308]), preserved['cards_sha256'])
         self.assertEqual(digest(runtime['decks']), preserved['presets_sha256'])
-        self.assertEqual(catalog.sha((root / 'assets/data/legends.json').read_bytes()),
+        self.assertEqual(catalog.sha(history.legacy_legend_manifest_bytes()),
                          preserved['legends_manifest_sha256'])
         p = self.proof['preserved_source_reviews']
         resolutions = json.loads((root / 'assets/data/catalog_resolutions.json').read_text())

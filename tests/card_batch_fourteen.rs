@@ -71,7 +71,10 @@ fn every_card_has_legal_homes_and_never_changes_authored_recipes_or_champions() 
     for legend in legends() {
         let original = CustomDeck::from_legend(legend.id).unwrap();
         assert_eq!(original.card_count(), 40);
-        assert!(original.cards.iter().all(|(id, _)| *id < 290));
+        if legend.id < 8 {
+            // This checkpoint preserves the original eight training recipes.
+            assert!(original.cards.iter().all(|(id, _)| *id < 290));
+        }
         let mut expanded = original.clone();
         for card in &cards[349..362] {
             let compatible = card.domains.iter().all(|d| legend.domains.contains(d));

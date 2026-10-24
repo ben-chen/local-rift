@@ -64,17 +64,24 @@ fn every_card_has_legal_homes_and_never_changes_authored_recipes_or_champions() 
     for legend in legends() {
         let original = CustomDeck::from_legend(legend.id).unwrap();
         assert_eq!(original.card_count(), 40);
-        assert!(original.cards.iter().all(|(id, _)| *id < 290));
+        if legend.id < 8 {
+            // This checkpoint preserves the original eight training recipes.
+            assert!(original.cards.iter().all(|(id, _)| *id < 290));
+        }
         let mut expanded = original.clone();
         for card in &cards[372..376] {
             let compatible = card.domains.iter().all(|d| legend.domains.contains(d));
             assert_eq!(eligible_cards(legend.id).contains(&card.id), compatible);
             assert!(!eligible_champions(legend.id).contains(&card.id));
             let mut one = original.clone();
-            one.cards.push((card.id, 1));
+            if !one.cards.iter().any(|(id, _)| *id == card.id) {
+                one.cards.push((card.id, 1));
+            }
             assert_eq!(one.validate().is_ok(), compatible);
             if compatible {
-                expanded.cards.push((card.id, 1));
+                if !expanded.cards.iter().any(|(id, _)| *id == card.id) {
+                    expanded.cards.push((card.id, 1));
+                }
                 covered.insert(card.id);
             }
         }

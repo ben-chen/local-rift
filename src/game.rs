@@ -452,6 +452,9 @@ pub enum Decision {
         rule_index: usize,
         context: TriggerContext,
     },
+    LegendTargets {
+        player: usize,
+    },
     TrashTarget {
         player: usize,
         source_card_id: CardId,
@@ -652,6 +655,7 @@ impl Decision {
             | Self::Payment { player }
             | Self::ResourceConversion { player, .. }
             | Self::TriggerTargets { player, .. }
+            | Self::LegendTargets { player }
             | Self::BattlefieldOrder { player, .. }
             | Self::TrashTarget { player, .. }
             | Self::PendingPlay { player, .. }
@@ -1972,9 +1976,11 @@ impl Game {
                         })?;
                 }
                 for r in &a.choices.repeats {
+                    self.record_spell_or_unit_choices(player, &r.choices.targets);
                     self.trigger_chosen(player, &r.choices.targets);
                 }
             }
+            self.record_spell_or_unit_choices(player, &chosen_targets);
             self.trigger_chosen(player, &chosen_targets);
         }
 
@@ -1998,6 +2004,7 @@ impl Game {
                     | Decision::CounterTax { .. }
                     | Decision::OnPlayTarget { .. }
                     | Decision::TriggerTargets { .. }
+                    | Decision::LegendTargets { .. }
                     | Decision::TokenPlay { .. }
             )
         )
@@ -2533,7 +2540,9 @@ impl Game {
                 ChainAbility::Swap { unit_id, target } => {
                     self.resolve_swap(item.player, unit_id, target)?
                 }
-                ChainAbility::Legend(ability) => self.resolve_legend_ability(item.player, ability),
+                ChainAbility::Legend(ability) => {
+                    self.resolve_legend_ability(item.player, ability)?
+                }
                 ChainAbility::CardEffect { entering } => {
                     // "Here" is the source's current location, not the location
                     // where its trigger happened (CR359.3.e.12 / 359.3.f.2).
@@ -2791,7 +2800,10 @@ impl Game {
                 self.resolve_conversion(0)
             };
         }
-        if matches!(decision, Decision::TriggerTargets { .. }) {
+        if matches!(
+            decision,
+            Decision::TriggerTargets { .. } | Decision::LegendTargets { .. }
+        ) {
             if accept {
                 return Err("Choose the required targets before finalizing this ability.".into());
             }
@@ -2906,6 +2918,7 @@ impl Game {
             | Decision::Payment { .. }
             | Decision::ResourceConversion { .. }
             | Decision::TriggerTargets { .. }
+            | Decision::LegendTargets { .. }
             | Decision::BattlefieldOrder { .. }
             | Decision::TrashTarget { .. }
             | Decision::PendingPlay { .. }
@@ -3209,6 +3222,7 @@ impl Game {
             unit.ready = true;
         }
         if options.repeat {
+            self.record_spell_or_unit_choices(player, &repeated);
             self.trigger_chosen(player, &repeated);
         }
         if hand_index.is_none()
@@ -4039,7 +4053,9 @@ impl Game {
                 "{} optional trigger",
                 crate::battlefields::battlefield(self.battlefields[*lane]).name
             ),
-            Decision::Legend { .. } => format!("{} legend", self.legend_def(player).name),
+            Decision::Legend { .. } | Decision::LegendTargets { .. } => {
+                format!("{} legend", self.legend_def(player).name)
+            }
             _ => self.catalog[card_id].name.into(),
         };
         self.pending_triggers.push(PendingTrigger {
@@ -4271,6 +4287,9 @@ impl Game {
         targets: Vec<Target>,
         ability: ChainAbility,
     ) {
+        if self.ability_chooses_as_unit(card_id, &ability) {
+            self.record_spell_or_unit_choices(player, &targets);
+        }
         if matches!(
             ability,
             ChainAbility::Equip { .. }
@@ -4959,6 +4978,7 @@ impl Game {
                 }
             }
             if options.repeat {
+                self.record_spell_or_unit_choices(player, &repeated);
                 self.trigger_chosen(player, &repeated);
             }
         } else {
@@ -5151,7 +5171,9 @@ impl Game {
                         }
                         out
                     }
-                    Decision::TriggerTargets { .. } => self.trigger_target_actions()?,
+                    Decision::TriggerTargets { .. } | Decision::LegendTargets { .. } => {
+                        self.trigger_target_actions()?
+                    }
                     Decision::TrashTarget {
                         player,
                         source_card_id,
@@ -8114,6 +8136,25 @@ impl Game {
                     return Ok(first.clone());
                 }
                 let preferred = match decision {
+                    Decision::LegendTargets { player } => {
+                        let mut scored = Vec::new();
+                        for action in &actions {
+                            if let Action::ChooseTriggerTargets { targets } = action
+                                && let Some(&target) = targets.first()
+                                && let Some(unit) = self.unit_ref(target)
+                            {
+                                let value = i128::from(self.unit_might(unit)?)
+                                    + if unit.ready { 4 } else { 0 }
+                                    + if unit.lane.is_some() { 6 } else { 0 };
+                                let friendly = matches!(target, Target::Unit { player: owner, .. } if owner == *player);
+                                scored.push((if friendly { 100 + value } else { -value }, action));
+                            }
+                        }
+                        scored
+                            .into_iter()
+                            .max_by_key(|(score, _)| *score)
+                            .map(|(_, action)| action.clone())
+                    }
                     Decision::TriggerTargets {
                         player,
                         card_id: 376,

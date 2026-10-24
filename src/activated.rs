@@ -1420,6 +1420,7 @@ impl Game {
                     Decision::CounterTax { .. } => "CounterTax",
                     Decision::PendingPlay { .. } => "PendingPlay",
                     Decision::TriggerTargets { .. } => "TriggerTargets",
+                    Decision::LegendTargets { .. } => "LegendTargets",
                     Decision::OnPlayTarget { .. } => "OnPlayTarget",
                     Decision::Legend { .. } => "Legend",
                     Decision::Battlefield { .. } => "Battlefield",

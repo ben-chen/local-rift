@@ -7,6 +7,7 @@ from unittest.mock import patch
 
 import catalog_review as review
 import import_catalog as catalog
+import admission_history as history
 
 
 class MomentarySourceReviewTests(unittest.TestCase):
@@ -18,7 +19,7 @@ class MomentarySourceReviewTests(unittest.TestCase):
         cls.raw = catalog.project_gallery(cls.data['gallery'])[0]
         cls.historical_runtime = copy.deepcopy(catalog.load_runtime_manifest())
         cls.historical_runtime["cards"] = cls.historical_runtime["cards"][:349]
-        with patch.object(catalog, "load_runtime_manifest", return_value=cls.historical_runtime):
+        with patch.object(catalog, "load_runtime_manifest", return_value=cls.historical_runtime), patch.object(catalog, "load_legend_manifest", return_value=history.legacy_legends()):
             cls.snapshot = catalog.make_catalog(cls.archive_manifest, cls.data)
 
     def apply(self, manifest=None, raw=None):

@@ -114,6 +114,28 @@ const LEGENDS: &[LegendDef] = &[
         accent: [219, 158, 106],
         art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/49e81916d7ae72b24de845223e1798652d26e789-744x1039.png?accountingTag=RB",
     },
+    LegendDef {
+        id: 8,
+        official_id: "unl-183-219",
+        name: "Pridestalker",
+        champion: "Rengar",
+        domains: [Domain::Fury, Domain::Body],
+        text: "When you play a unit, give a unit +1 Might this turn.",
+        default_champion: 30,
+        accent: [216, 158, 102],
+        art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/b3d3085f62aee993b9f5b80d4659a88439da83be-744x1039.png?accountingTag=RB",
+    },
+    LegendDef {
+        id: 9,
+        official_id: "sfd-199-221",
+        name: "Prodigal Explorer",
+        champion: "Ezreal",
+        domains: [Domain::Mind, Domain::Chaos],
+        text: "[Exhaust]: [Reaction] — Draw 1. Use only if you've chosen enemy units and/or gear twice this turn with spells or unit abilities.",
+        default_champion: 35,
+        accent: [99, 185, 227],
+        art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/d0e143d9edbc14971b2a7b463b3c25b2b6a0c098-744x1039.png?accountingTag=RB",
+    },
 ];
 
 #[cfg(test)]
@@ -130,7 +152,7 @@ mod tests {
         let catalog: Value =
             serde_json::from_str(include_str!("../assets/data/full_catalog.json")).unwrap();
         let main_cards = cards();
-        assert_eq!(legends().len(), 8);
+        assert_eq!(legends().len(), 10);
         assert_eq!(
             manifest["legends"].as_array().unwrap().len(),
             legends().len()

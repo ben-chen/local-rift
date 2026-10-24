@@ -146,7 +146,7 @@ fn supernova_uses_reviewed_mind_spell_without_rewriting_the_raw_source() {
     for legend in legends() {
         assert_eq!(
             eligible_cards(legend.id).contains(&291),
-            [3, 5, 6].contains(&legend.id)
+            legend.domains.contains(&Domain::Mind)
         );
     }
 }
@@ -157,7 +157,7 @@ fn lux_signature_and_taric_champion_identity_do_not_leak_into_other_decks() {
         assert_eq!(eligible_cards(legend.id).contains(&290), legend.id == 6);
         assert_eq!(
             eligible_cards(legend.id).contains(&307),
-            [0, 1].contains(&legend.id)
+            legend.domains.contains(&Domain::Calm)
         );
         assert!(!eligible_champions(legend.id).contains(&307));
     }
@@ -190,7 +190,10 @@ fn every_new_identity_has_a_legal_custom_deck_home_without_changing_training_rec
     for legend in legends() {
         let original = CustomDeck::from_legend(legend.id).unwrap();
         assert_eq!(original.card_count(), 40);
-        assert!(original.cards.iter().all(|(id, _)| *id < 290));
+        if legend.id < 8 {
+            // This checkpoint preserves the original eight training recipes.
+            assert!(original.cards.iter().all(|(id, _)| *id < 290));
+        }
         let mut deck = original.clone();
         for id in eligible_cards(legend.id)
             .into_iter()

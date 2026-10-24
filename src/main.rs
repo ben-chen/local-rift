@@ -590,7 +590,10 @@ impl App {
                     return;
                 }
                 if adding_resource
-                    && matches!(self.game.decision, Some(Decision::TriggerTargets { .. }))
+                    && matches!(
+                        self.game.decision,
+                        Some(Decision::TriggerTargets { .. } | Decision::LegendTargets { .. })
+                    )
                 {
                     self.selection = None;
                     self.tray = Tray::Board;
@@ -830,7 +833,12 @@ impl App {
             .game
             .decision
             .as_ref()
-            .filter(|decision| matches!(decision, Decision::TriggerTargets { .. }))
+            .filter(|decision| {
+                matches!(
+                    decision,
+                    Decision::TriggerTargets { .. } | Decision::LegendTargets { .. }
+                )
+            })
             .map(|decision| format!("{decision:?}"));
         if trigger_key != self.trigger_choice_key {
             if trigger_key.is_some() {
@@ -1415,7 +1423,13 @@ impl App {
                             self.arm_drag(DragSource::Units { ids, card_id });
                         }
                         if matches!(self.selection, Some(Selection::Ability(_, Some(_))))
-                            || matches!(self.game.decision, Some(Decision::TriggerTargets { .. }))
+                            || matches!(
+                                self.game.decision,
+                                Some(
+                                    Decision::TriggerTargets { .. }
+                                        | Decision::LegendTargets { .. }
+                                )
+                            )
                         {
                             self.toggle_target(Target::Unit {
                                 player: owner,
@@ -2049,18 +2063,20 @@ impl App {
             self.selection_panel()?;
             return Ok(());
         }
-        if let Decision::TriggerTargets { card_id, .. } = decision {
+        if matches!(
+            decision,
+            Decision::TriggerTargets { .. } | Decision::LegendTargets { .. }
+        ) {
+            let source_name = match decision {
+                Decision::TriggerTargets { card_id, .. } => self.game.catalog[card_id].name,
+                Decision::LegendTargets { player } => self.game.legend_def(player).name,
+                _ => unreachable!(),
+            };
             let (maximum, required) = self.game.trigger_target_bounds().unwrap();
             self.ui
                 .title("Choose ability targets", 1178.0, 366.0, 20.0, TEXT);
-            self.ui.ellipsis(
-                self.game.catalog[card_id].name,
-                1178.0,
-                392.0,
-                212.0,
-                12.0,
-                GOLD,
-            );
+            self.ui
+                .ellipsis(source_name, 1178.0, 392.0, 212.0, 12.0, GOLD);
             self.ui.wrapped_lines(
                 &format!("{} / {maximum} selected. Choose highlighted {} in order, then confirm. Click a chosen target to undo.{}", self.targets.len(),
                     match self.game.trigger_target_rule().map(|r|r.kind) {
@@ -2360,7 +2376,7 @@ impl App {
             return Ok(());
         }
         let (title,body)=match &decision{
-            Decision::PredictCards{..}|Decision::Payment{..}|Decision::ResourceConversion{..}|Decision::TriggerTargets{..}|Decision::CombatDamage{..}|Decision::TokenPlacement{..}|Decision::TokenPlay{..}|Decision::BattlefieldOrder{..}|Decision::RevivePlay{..}|Decision::PendingPlay{..}=>unreachable!(),
+            Decision::PredictCards{..}|Decision::Payment{..}|Decision::ResourceConversion{..}|Decision::TriggerTargets{..}|Decision::LegendTargets{..}|Decision::CombatDamage{..}|Decision::TokenPlacement{..}|Decision::TokenPlay{..}|Decision::BattlefieldOrder{..}|Decision::RevivePlay{..}|Decision::PendingPlay{..}=>unreachable!(),
             Decision::TrashTarget{..}=>("Choose a trash target","Choose an eligible card below before this ability enters the chain. Opponents may respond before the chosen card is played.".into()),
             Decision::OptionalPlay{card_id,..}=>("Use this triggered ability?",format!("{} offers a play from your trash. Accept and choose the ability's target, or decline now. Choose the card's own targets and costs after the ability resolves.",self.game.catalog[*card_id].name)),
             Decision::ResolutionTargets{..}=>("Choose the location", "Responses separated your targets. Choose which legal group below this spell should affect.".into()),
@@ -2840,7 +2856,10 @@ impl App {
                     unit_id: unit.id,
                 };
                 if matches!(self.selection, Some(Selection::Ability(_, Some(_))))
-                    || matches!(self.game.decision, Some(Decision::TriggerTargets { .. }))
+                    || matches!(
+                        self.game.decision,
+                        Some(Decision::TriggerTargets { .. } | Decision::LegendTargets { .. })
+                    )
                 {
                     self.toggle_target(target);
                 } else if self.game.decision.is_some() {
@@ -3297,7 +3316,10 @@ impl App {
             }
             return Ok(false);
         }
-        if matches!(decision, Decision::TriggerTargets { .. }) {
+        if matches!(
+            decision,
+            Decision::TriggerTargets { .. } | Decision::LegendTargets { .. }
+        ) {
             if self.tray == Tray::Loadout {
                 self.other_tray()?;
             } else {
@@ -6401,6 +6423,17 @@ impl App {
                             11.0,
                             TEXT,
                         );
+                    } else if legend.kind == local_rift::legends::LegendKind::Ezreal {
+                        self.ui.text(
+                            &format!(
+                                "Enemy targets: {} / 2 this turn",
+                                self.game.ezreal_progress(0)
+                            ),
+                            1178.0,
+                            467.0,
+                            11.0,
+                            TEXT,
+                        );
                     }
                 }
                 if self.ui.button(
@@ -6653,7 +6686,10 @@ impl App {
                                 && !matches!(tray, Tray::Board | Tray::Loadout | Tray::Trash))
                     {
                         self.selection = None;
-                        if !matches!(self.game.decision, Some(Decision::TriggerTargets { .. })) {
+                        if !matches!(
+                            self.game.decision,
+                            Some(Decision::TriggerTargets { .. } | Decision::LegendTargets { .. })
+                        ) {
                             self.targets.clear();
                         }
                     }
@@ -7659,11 +7695,18 @@ fn legend_activation_label(id: usize) -> &'static str {
         4 => "Exhaust · Legion: +1 energy",
         5 => "Pay 1 energy · create Recruit",
         7 => "Pay & ready a unit",
+        9 => "Exhaust · draw 1",
         _ => "Passive / triggered ability",
     }
 }
 fn legend_practice_tip(id: usize) -> &'static str {
     match id {
+        8 => {
+            "Every unit play, including a token, triggers Rengar. Choose a unit for +1 Might until this turn ends. Concentrate bonuses where they change a combat."
+        }
+        9 => {
+            "Choose enemy units or gear twice this turn with spells or unit abilities, then exhaust Ezreal to draw. Repeat can supply separate choices. Gear and legend abilities do not count."
+        }
         7 => {
             "When you Empower any other object, Ambessa triggers her own Empower. Her ready ability spends Empowered, exhausts her and costs 1 Any power; choose a useful unit before committing."
         }

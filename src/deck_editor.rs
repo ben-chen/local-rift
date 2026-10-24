@@ -709,7 +709,15 @@ impl App {
             12.0,
             MUTED,
         );
-        for (row, legend) in local_rift::legend_catalog::legends().iter().enumerate() {
+        const PAGE_SIZE: usize = 8;
+        let page = selected / PAGE_SIZE;
+        let legends = local_rift::legend_catalog::legends();
+        for (row, legend) in legends
+            .iter()
+            .skip(page * PAGE_SIZE)
+            .take(PAGE_SIZE)
+            .enumerate()
+        {
             if self.ui.button(
                 Rect::new(340.0, 233.0 + row as f32 * 53.0, 214.0, 43.0),
                 legend.champion,
@@ -717,6 +725,24 @@ impl App {
                 true,
             ) {
                 self.legend_picker = Some(legend.id);
+            }
+        }
+        if legends.len() > PAGE_SIZE {
+            if self.ui.button(
+                Rect::new(340.0, 650.0, 102.0, 23.0),
+                "Previous",
+                false,
+                page > 0,
+            ) {
+                self.legend_picker = Some((page - 1) * PAGE_SIZE);
+            }
+            if self.ui.button(
+                Rect::new(452.0, 650.0, 102.0, 23.0),
+                "Next",
+                false,
+                (page + 1) * PAGE_SIZE < legends.len(),
+            ) {
+                self.legend_picker = Some((page + 1) * PAGE_SIZE);
             }
         }
         self.ui.ellipsis(

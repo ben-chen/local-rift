@@ -1,0 +1,604 @@
+{
+  "scope": "Two reviewed legend identities and every printing. IDs8/9 preserve the preceding registry. Source review does not certify runtime behavior.",
+  "records": [
+    {
+      "identity": {
+        "identity": "unl-183-219",
+        "name": "Pridestalker",
+        "kind": "legend",
+        "source_kind": "legend",
+        "auxiliary": false,
+        "preferred_printing": "unl-183-219",
+        "official_ids": [
+          "unl-183-219",
+          "unl-227-219",
+          "unl-227-star-219"
+        ],
+        "standard_legal": true,
+        "two_v_two_legal": true,
+        "exclusion": null,
+        "keywords_observed": [],
+        "effective_keywords_observed": [],
+        "errata": [],
+        "rules_text_status": "official_gallery_printing_text",
+        "conflicting_fields": [],
+        "source_review": {
+          "status": "no_detected_conflicts",
+          "resolution_ids": [],
+          "unresolved_gameplay_fields": [],
+          "variant_diagnostics": [],
+          "reviewed_variant_fields": [],
+          "unresolved_variant_fields": []
+        },
+        "implementation": {
+          "status": "not_implemented",
+          "playable_in_client": false
+        }
+      },
+      "members": [
+        {
+          "printing": {
+            "official_id": "unl-183-219",
+            "public_code": "UNL-183/219",
+            "name": "Pridestalker",
+            "set": "UNL",
+            "collector_number": 183,
+            "types": [
+              "legend"
+            ],
+            "type_source": "cardType.type",
+            "structured_types": [
+              "legend"
+            ],
+            "accessibility_types": [
+              "legend"
+            ],
+            "type_labels_conflict": false,
+            "super_types": [],
+            "domains": [
+              "fury",
+              "body"
+            ],
+            "energy": null,
+            "power": null,
+            "might": null,
+            "might_bonus": null,
+            "rules_html": "<p>When you play a unit, give a unit +1 :rb_might: this turn.</p>",
+            "rules_text": "When you play a unit, give a unit +1 Might this turn.",
+            "equipment_html": "",
+            "equipment_text": "",
+            "tags": [
+              "Rengar"
+            ],
+            "rarity": "rare",
+            "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/b3d3085f62aee993b9f5b80d4659a88439da83be-744x1039.png?accountingTag=RB",
+            "image_accessibility_text": "Riftbound Legend: Pridestalker. When you play a unit, give a unit +1 [S] this turn.",
+            "illustrators": [
+              "Envar Studio"
+            ],
+            "effective": {
+              "types": [
+                "legend"
+              ],
+              "super_types": [],
+              "domains": [
+                "fury",
+                "body"
+              ],
+              "energy": null,
+              "power": null,
+              "might": null,
+              "might_bonus": null,
+              "tags": [
+                "Rengar"
+              ],
+              "rules_html": "<p>When you play a unit, give a unit +1 :rb_might: this turn.</p>",
+              "rules_text": "When you play a unit, give a unit +1 Might this turn.",
+              "equipment_html": "",
+              "equipment_text": ""
+            },
+            "resolution_ids": [],
+            "unresolved_gameplay_fields": []
+          },
+          "original_image": {
+            "path": "assets/data/card_admissions/c16/originals/unl-183-219.png",
+            "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/b3d3085f62aee993b9f5b80d4659a88439da83be-744x1039.png?accountingTag=RB",
+            "bytes": 1247634,
+            "sha256": "566a95e822fe477d95100239e2d09b676481a0cfab760161b907b48b4eb78652"
+          },
+          "visual_review_pending": false,
+          "visual_observation": {
+            "name": "Pridestalker",
+            "collector_code": "UNL-183/219",
+            "printed_types": [
+              "legend"
+            ],
+            "printed_supertypes": [],
+            "printed_domains": [
+              "fury",
+              "body"
+            ],
+            "printed_tags": [
+              "Rengar"
+            ],
+            "printed_energy": null,
+            "printed_power": null,
+            "printed_might": null,
+            "printed_might_bonus": null,
+            "printed_rules_icons_expanded": "When you play a unit, give a unit +1 Might this turn.",
+            "printed_equipment_icons_expanded": "",
+            "face_visually_inspected": true,
+            "reviewed_on": "2026-10-24",
+            "official_id": "unl-183-219",
+            "original_image_sha256": "566a95e822fe477d95100239e2d09b676481a0cfab760161b907b48b4eb78652",
+            "uncertainties": []
+          }
+        },
+        {
+          "printing": {
+            "official_id": "unl-227-219",
+            "public_code": "UNL-227/219",
+            "name": "Pridestalker",
+            "set": "UNL",
+            "collector_number": 227,
+            "types": [
+              "legend"
+            ],
+            "type_source": "cardType.type",
+            "structured_types": [
+              "legend"
+            ],
+            "accessibility_types": [
+              "legend"
+            ],
+            "type_labels_conflict": false,
+            "super_types": [],
+            "domains": [
+              "fury",
+              "body"
+            ],
+            "energy": null,
+            "power": null,
+            "might": null,
+            "might_bonus": null,
+            "rules_html": "<p>When you play a unit, give a unit +1 :rb_might: this turn.</p>",
+            "rules_text": "When you play a unit, give a unit +1 Might this turn.",
+            "equipment_html": "",
+            "equipment_text": "",
+            "tags": [
+              "Rengar"
+            ],
+            "rarity": "rare",
+            "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/1f80a016015ebc77bd3d23ce471e364d70698279-744x1039.png?accountingTag=RB",
+            "image_accessibility_text": "Riftbound Legend: Pridestalker. When you play a unit, give a unit +1 [S] this turn.",
+            "illustrators": [
+              "Duy Nguyen"
+            ],
+            "effective": {
+              "types": [
+                "legend"
+              ],
+              "super_types": [],
+              "domains": [
+                "fury",
+                "body"
+              ],
+              "energy": null,
+              "power": null,
+              "might": null,
+              "might_bonus": null,
+              "tags": [
+                "Rengar"
+              ],
+              "rules_html": "<p>When you play a unit, give a unit +1 :rb_might: this turn.</p>",
+              "rules_text": "When you play a unit, give a unit +1 Might this turn.",
+              "equipment_html": "",
+              "equipment_text": ""
+            },
+            "resolution_ids": [],
+            "unresolved_gameplay_fields": []
+          },
+          "original_image": {
+            "path": "assets/data/card_admissions/c16/originals/unl-227-219.png",
+            "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/1f80a016015ebc77bd3d23ce471e364d70698279-744x1039.png?accountingTag=RB",
+            "bytes": 1619708,
+            "sha256": "3781386237f378314f90c79a8e61c6ff8271633e04a1cf3a039ffebf3c93bc79"
+          },
+          "visual_review_pending": false,
+          "visual_observation": {
+            "name": "Pridestalker",
+            "collector_code": "UNL-227/219",
+            "printed_types": [
+              "legend"
+            ],
+            "printed_supertypes": [],
+            "printed_domains": [
+              "fury",
+              "body"
+            ],
+            "printed_tags": [
+              "Rengar"
+            ],
+            "printed_energy": null,
+            "printed_power": null,
+            "printed_might": null,
+            "printed_might_bonus": null,
+            "printed_rules_icons_expanded": "When you play a unit, give a unit +1 Might this turn.",
+            "printed_equipment_icons_expanded": "",
+            "face_visually_inspected": true,
+            "reviewed_on": "2026-10-24",
+            "official_id": "unl-227-219",
+            "original_image_sha256": "3781386237f378314f90c79a8e61c6ff8271633e04a1cf3a039ffebf3c93bc79",
+            "uncertainties": []
+          }
+        },
+        {
+          "printing": {
+            "official_id": "unl-227-star-219",
+            "public_code": "UNL-227*/219",
+            "name": "Pridestalker",
+            "set": "UNL",
+            "collector_number": 227,
+            "types": [
+              "legend"
+            ],
+            "type_source": "cardType.type",
+            "structured_types": [
+              "legend"
+            ],
+            "accessibility_types": [
+              "legend"
+            ],
+            "type_labels_conflict": false,
+            "super_types": [],
+            "domains": [
+              "fury",
+              "body"
+            ],
+            "energy": null,
+            "power": null,
+            "might": null,
+            "might_bonus": null,
+            "rules_html": "<p>When you play a unit, give a unit +1 :rb_might: this turn.</p>",
+            "rules_text": "When you play a unit, give a unit +1 Might this turn.",
+            "equipment_html": "",
+            "equipment_text": "",
+            "tags": [
+              "Rengar"
+            ],
+            "rarity": "rare",
+            "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/9bfffdcab9899c4b0d94ab31d138edd7d2f8e4f1-744x1039.png?accountingTag=RB",
+            "image_accessibility_text": "Riftbound Legend: Pridestalker. When you play a unit, give a unit +1 [S] this turn.",
+            "illustrators": [
+              "Duy Nguyen"
+            ],
+            "effective": {
+              "types": [
+                "legend"
+              ],
+              "super_types": [],
+              "domains": [
+                "fury",
+                "body"
+              ],
+              "energy": null,
+              "power": null,
+              "might": null,
+              "might_bonus": null,
+              "tags": [
+                "Rengar"
+              ],
+              "rules_html": "<p>When you play a unit, give a unit +1 :rb_might: this turn.</p>",
+              "rules_text": "When you play a unit, give a unit +1 Might this turn.",
+              "equipment_html": "",
+              "equipment_text": ""
+            },
+            "resolution_ids": [],
+            "unresolved_gameplay_fields": []
+          },
+          "original_image": {
+            "path": "assets/data/card_admissions/c16/originals/unl-227-star-219.png",
+            "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/9bfffdcab9899c4b0d94ab31d138edd7d2f8e4f1-744x1039.png?accountingTag=RB",
+            "bytes": 1636672,
+            "sha256": "1dcffd70eae8419c862cb5239f6fe9ddc51a873091b5af882df6bf4503156964"
+          },
+          "visual_review_pending": false,
+          "visual_observation": {
+            "name": "Pridestalker",
+            "collector_code": "UNL-227*/219",
+            "printed_types": [
+              "legend"
+            ],
+            "printed_supertypes": [],
+            "printed_domains": [
+              "fury",
+              "body"
+            ],
+            "printed_tags": [
+              "Rengar"
+            ],
+            "printed_energy": null,
+            "printed_power": null,
+            "printed_might": null,
+            "printed_might_bonus": null,
+            "printed_rules_icons_expanded": "When you play a unit, give a unit +1 Might this turn.",
+            "printed_equipment_icons_expanded": "",
+            "face_visually_inspected": true,
+            "reviewed_on": "2026-10-24",
+            "official_id": "unl-227-star-219",
+            "original_image_sha256": "1dcffd70eae8419c862cb5239f6fe9ddc51a873091b5af882df6bf4503156964",
+            "uncertainties": []
+          }
+        }
+      ],
+      "scope": "Complete original/alternate face review; gameplay acceptance is separately required.",
+      "legend_id": 8,
+      "runtime_image": {
+        "path": "assets/art/legend_8.png",
+        "sha256": "566a95e822fe477d95100239e2d09b676481a0cfab760161b907b48b4eb78652",
+        "bytes": 1247634,
+        "note": "Exact preferred official PNG, copied without altering artwork."
+      }
+    },
+    {
+      "identity": {
+        "identity": "sfd-199-221",
+        "name": "Prodigal Explorer",
+        "kind": "legend",
+        "source_kind": "legend",
+        "auxiliary": false,
+        "preferred_printing": "sfd-199-221",
+        "official_ids": [
+          "sfd-199-221",
+          "sfd-248-221"
+        ],
+        "standard_legal": true,
+        "two_v_two_legal": true,
+        "exclusion": null,
+        "keywords_observed": [
+          "Reaction"
+        ],
+        "effective_keywords_observed": [
+          "Reaction"
+        ],
+        "errata": [],
+        "rules_text_status": "official_gallery_printing_text",
+        "conflicting_fields": [],
+        "source_review": {
+          "status": "no_detected_conflicts",
+          "resolution_ids": [],
+          "unresolved_gameplay_fields": [],
+          "variant_diagnostics": [],
+          "reviewed_variant_fields": [],
+          "unresolved_variant_fields": []
+        },
+        "implementation": {
+          "status": "not_implemented",
+          "playable_in_client": false
+        }
+      },
+      "members": [
+        {
+          "printing": {
+            "official_id": "sfd-199-221",
+            "public_code": "SFD-199/221",
+            "name": "Prodigal Explorer",
+            "set": "SFD",
+            "collector_number": 199,
+            "types": [
+              "legend"
+            ],
+            "type_source": "cardType.type",
+            "structured_types": [
+              "legend"
+            ],
+            "accessibility_types": [
+              "legend"
+            ],
+            "type_labels_conflict": false,
+            "super_types": [],
+            "domains": [
+              "mind",
+              "chaos"
+            ],
+            "energy": null,
+            "power": null,
+            "might": null,
+            "might_bonus": null,
+            "rules_html": "<p>:rb_exhaust:: [Reaction] — Draw 1. Use only if you've chosen enemy units and/or gear twice this turn with spells or unit abilities.</p>",
+            "rules_text": "[Exhaust]: [Reaction] — Draw 1. Use only if you've chosen enemy units and/or gear twice this turn with spells or unit abilities.",
+            "equipment_html": "",
+            "equipment_text": "",
+            "tags": [
+              "Ezreal"
+            ],
+            "rarity": "rare",
+            "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/d0e143d9edbc14971b2a7b463b3c25b2b6a0c098-744x1039.png?accountingTag=RB",
+            "image_accessibility_text": "Riftbound Legend: Prodigal Explorer. [T]: [Reaction] — Draw 1. Use only if you've chosen enemy units and/or gear twice this turn with spells or unit abilities.",
+            "illustrators": [
+              "Pandart Studio"
+            ],
+            "effective": {
+              "types": [
+                "legend"
+              ],
+              "super_types": [],
+              "domains": [
+                "mind",
+                "chaos"
+              ],
+              "energy": null,
+              "power": null,
+              "might": null,
+              "might_bonus": null,
+              "tags": [
+                "Ezreal"
+              ],
+              "rules_html": "<p>:rb_exhaust:: [Reaction] — Draw 1. Use only if you've chosen enemy units and/or gear twice this turn with spells or unit abilities.</p>",
+              "rules_text": "[Exhaust]: [Reaction] — Draw 1. Use only if you've chosen enemy units and/or gear twice this turn with spells or unit abilities.",
+              "equipment_html": "",
+              "equipment_text": ""
+            },
+            "resolution_ids": [],
+            "unresolved_gameplay_fields": []
+          },
+          "original_image": {
+            "path": "assets/data/card_admissions/c16/originals/sfd-199-221.png",
+            "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/d0e143d9edbc14971b2a7b463b3c25b2b6a0c098-744x1039.png?accountingTag=RB",
+            "bytes": 1292656,
+            "sha256": "631fc6a135cc262afbed1d1d4e2367e7e42869d8b385f5ac21f9c0cc69949b34"
+          },
+          "visual_review_pending": false,
+          "visual_observation": {
+            "name": "Prodigal Explorer",
+            "collector_code": "SFD-199/221",
+            "printed_types": [
+              "legend"
+            ],
+            "printed_supertypes": [],
+            "printed_domains": [
+              "mind",
+              "chaos"
+            ],
+            "printed_tags": [
+              "Ezreal"
+            ],
+            "printed_energy": null,
+            "printed_power": null,
+            "printed_might": null,
+            "printed_might_bonus": null,
+            "printed_rules_icons_expanded": "[Exhaust]: [Reaction] — Draw 1. Use only if you've chosen enemy units and/or gear twice this turn with spells or unit abilities.",
+            "printed_equipment_icons_expanded": "",
+            "face_visually_inspected": true,
+            "reviewed_on": "2026-10-24",
+            "official_id": "sfd-199-221",
+            "original_image_sha256": "631fc6a135cc262afbed1d1d4e2367e7e42869d8b385f5ac21f9c0cc69949b34",
+            "uncertainties": []
+          }
+        },
+        {
+          "printing": {
+            "official_id": "sfd-248-221",
+            "public_code": "SFD-248/221",
+            "name": "Prodigal Explorer",
+            "set": "SFD",
+            "collector_number": 248,
+            "types": [
+              "legend"
+            ],
+            "type_source": "cardType.type",
+            "structured_types": [
+              "legend"
+            ],
+            "accessibility_types": [
+              "legend"
+            ],
+            "type_labels_conflict": false,
+            "super_types": [],
+            "domains": [
+              "mind",
+              "chaos"
+            ],
+            "energy": null,
+            "power": null,
+            "might": null,
+            "might_bonus": null,
+            "rules_html": "<p>:rb_exhaust:: [Reaction] — Draw 1. Use only if you've chosen enemy units and/or gear twice this turn with spells or unit abilities.</p>",
+            "rules_text": "[Exhaust]: [Reaction] — Draw 1. Use only if you've chosen enemy units and/or gear twice this turn with spells or unit abilities.",
+            "equipment_html": "",
+            "equipment_text": "",
+            "tags": [
+              "Ezreal"
+            ],
+            "rarity": "showcase",
+            "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/3ba4f1d3d61d80e7becc9d046e1974f17bff4b10-744x1039.png?accountingTag=RB",
+            "image_accessibility_text": "Riftbound Legend: Prodigal Explorer. [T]: [Reaction] — Draw 1. Use only if you've chosen enemy units and/or gear twice this turn with spells or unit abilities.",
+            "illustrators": [
+              "Grafit Studio"
+            ],
+            "effective": {
+              "types": [
+                "legend"
+              ],
+              "super_types": [],
+              "domains": [
+                "mind",
+                "chaos"
+              ],
+              "energy": null,
+              "power": null,
+              "might": null,
+              "might_bonus": null,
+              "tags": [
+                "Ezreal"
+              ],
+              "rules_html": "<p>:rb_exhaust:: [Reaction] — Draw 1. Use only if you've chosen enemy units and/or gear twice this turn with spells or unit abilities.</p>",
+              "rules_text": "[Exhaust]: [Reaction] — Draw 1. Use only if you've chosen enemy units and/or gear twice this turn with spells or unit abilities.",
+              "equipment_html": "",
+              "equipment_text": ""
+            },
+            "resolution_ids": [],
+            "unresolved_gameplay_fields": []
+          },
+          "original_image": {
+            "path": "assets/data/card_admissions/c16/originals/sfd-248-221.png",
+            "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/3ba4f1d3d61d80e7becc9d046e1974f17bff4b10-744x1039.png?accountingTag=RB",
+            "bytes": 1497913,
+            "sha256": "cda0d8f649b8649f0fbaf0383077c79abb970a3c7759f6ed57f36bd57c5e9883"
+          },
+          "visual_review_pending": false,
+          "visual_observation": {
+            "name": "Prodigal Explorer",
+            "collector_code": "SFD-248/221",
+            "printed_types": [
+              "legend"
+            ],
+            "printed_supertypes": [],
+            "printed_domains": [
+              "mind",
+              "chaos"
+            ],
+            "printed_tags": [
+              "Ezreal"
+            ],
+            "printed_energy": null,
+            "printed_power": null,
+            "printed_might": null,
+            "printed_might_bonus": null,
+            "printed_rules_icons_expanded": "[Exhaust]: [Reaction] — Draw 1. Use only if you've chosen enemy units and/or gear twice this turn with spells or unit abilities.",
+            "printed_equipment_icons_expanded": "",
+            "face_visually_inspected": true,
+            "reviewed_on": "2026-10-24",
+            "official_id": "sfd-248-221",
+            "original_image_sha256": "cda0d8f649b8649f0fbaf0383077c79abb970a3c7759f6ed57f36bd57c5e9883",
+            "uncertainties": []
+          }
+        }
+      ],
+      "scope": "Complete original/alternate face review; gameplay acceptance is separately required.",
+      "legend_id": 9,
+      "runtime_image": {
+        "path": "assets/art/legend_9.png",
+        "sha256": "631fc6a135cc262afbed1d1d4e2367e7e42869d8b385f5ac21f9c0cc69949b34",
+        "bytes": 1292656,
+        "note": "Exact preferred official PNG, copied without altering artwork."
+      }
+    }
+  ],
+  "predecessor_commit": "689bbd902418c13055eb706c27ab2e6ef4b51067",
+  "preserved": {
+    "legends.json": {
+      "path": "assets/data/card_admissions/c16/predecessor/legends.json",
+      "sha256": "2b621121a54761ccee91e6d0df7b720e572138e7c2caac2c52abaaabd951b37f"
+    },
+    "deck.rs": {
+      "path": "assets/data/card_admissions/c16/predecessor/deck.rs",
+      "sha256": "ad6b2ad3d5e3e34c99af35eef5a283b615cc813db27cec246fd2f433063ec1e4"
+    },
+    "training_decks.json": {
+      "path": "assets/data/card_admissions/c16/predecessor/training_decks.json",
+      "sha256": "c25be3e5fe600ac4f95e9a7e509e8e19a23db2910b9e812cd2385605e3c35102",
+      "source": "Published C15 rift-api catalog; binary SHA256 00d24241c8c3fc78989e2592cbd459f58e513365c92735998ddfc1372d8dc148"
+    }
+  }
+}

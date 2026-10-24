@@ -1,6 +1,6 @@
 # Implemented rules and limitations
 
-**Local Rift is an unofficial, incomplete Riftbound client. This document describes its current behavior, not the complete tabletop game.** Full official card text appears in hover previews and pinned inspectors. All 345 bundled main-deck cards have executable printed-effect mappings. An official description in the catalog and a passing simulation are not proof of complete tabletop equivalence.
+**Local Rift is an unofficial, incomplete Riftbound client. This document describes its current behavior, not the complete tabletop game.** Full official card text appears in hover previews and pinned inspectors. All 379 bundled main-deck cards have executable printed-effect mappings. An official description in the catalog and a passing simulation are not proof of complete tabletop equivalence.
 
 For physical play, use Riot's [Rules Hub](https://playriftbound.com/en-us/rules-hub/), current errata, and printed card text. The core timing reference used here is the [October 9, 2026 Core Rules](https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/5c7946f7c3b8c6e0faff85ab6dadc6d2e721ea94.pdf). [SOURCES.md](SOURCES.md) records the card and deck sources.
 
@@ -20,7 +20,7 @@ Runes supply energy by exhausting and power by recycling to the bottom of the ru
 
 The optional **Power: choose sources** mode lets you spend exact amounts of generated colored, flexible, and spell-only power, and choose rune domains to recycle. Its quote includes base costs, selected additional costs, and Deflect. It rejects unavailable, mismatched, insufficient, or excess sources without changing the match. The API exposes the same quote and payment action.
 
-Printed costs and all printed domains are retained. For a card with multiple domains, its colored power can come from either printed domain. Generated colored, flexible, and spell-only power have separate pools; the latter only pays spell costs. Energy and power pools empty at the beginning of the main phase and at the end of the turn. The interface distinguishes stored energy from energy available by exhausting ready runes. Ezreal lets you allocate its reduction between energy and power for eligible optional additional costs; it does not discount Equip or Deflect.
+Printed costs and all printed domains are retained. For a card with multiple domains, its colored power can come from either printed domain. Generated colored, flexible, and spell-only power have separate pools; the latter only pays spell costs. Energy and power pools empty at the beginning of the main phase and at the end of the turn. The interface distinguishes stored energy from energy available by exhausting ready runes. Ezreal, Prodigy lets you allocate its reduction between energy and power for eligible optional additional costs; it does not discount Equip or Deflect.
 
 ## Battlefield choices
 
@@ -46,7 +46,7 @@ Other tournament battlefields remain source-list references, including the histo
 
 ## Legends
 
-Each deck has its registered legend, independent of preset selection and chosen-champion variant. Eight legends are available, with the original four preset identities preserved. Legends ready at the start of their controller's turn.
+Each deck has its registered legend, independent of preset selection and chosen-champion variant. Ten legends are available, with the original four preset identities preserved. Legends ready at the start of their controller's turn.
 
 | Legend | Implemented power |
 |---|---|
@@ -58,6 +58,15 @@ Each deck has its registered legend, independent of preset selection and chosen-
 | Viktor | In an open own main phase, pay one energy and exhaust to queue a Recruit ability. Opponents may respond. After it resolves, choose base or a controlled battlefield for the pending 1 Might Recruit. |
 | Lux | Completing a spell with printed Energy cost at least five triggers a separate draw-one ability. Discounts do not change that printed threshold; countered spells do not trigger it. |
 | Ambessa / Matriarch of War | Empowering another object triggers a separate ability to Empower the legend, even if the affected object belongs to the opponent. In the controller's open main phase, Disempower, pay one Any Power, and exhaust to Ready a chosen unit on resolution. Enemy Deflect adds its normal cost. |
+
+Rengar and Ezreal add the following powers:
+
+| Legend | Implemented power |
+|---|---|
+| Rengar / Pridestalker | Completing a unit play, including a token, triggers a required choice of one unit. The triggered ability enters the chain and gives that unit +1 Might for the current turn on resolution. Enemy targets pay Deflect and respect untargetability. |
+| Ezreal / Prodigal Explorer | After choosing enemy units or gear at least twice this turn with spells or unit abilities, exhaust the legend as a Reaction to queue a draw-one ability. Choosing happens during finalization, so countering the spell does not erase it. Gear, legend and battlefield abilities do not count. Progress resets at each turn boundary for both seats. |
+
+Rengar's triggered choice can select the newly played unit. Moving the target preserves its identity; leaving play makes the bonus mistarget. A mandatory trigger with no finalizable legal target is removed under the same trigger rules as other abilities. Ezreal's draw uses the ordinary response chain and cannot interrupt a pending payment as though it were an Add ability. Its visible progress is capped at the required two choices, not a count of all choices made.
 
 Irelia's optional costs are paid before its triggered ability enters the chain. Declining leaves the original play intact. Kennen's Empower and Assault abilities also use the chain. Kai'Sa's resource ability resolves immediately, does not create a response window, and preserves priority. Supported resource abilities remain available during pending payment choices, such as a spell replay; their normal cost restrictions still apply. Generated resources expire when rune pools empty; they are not extra rune cards.
 
@@ -220,7 +229,7 @@ When drawing or burning requires a card from an empty main deck, the trash is sh
 
 Mote's **Beginner** advice explains resources, deployment, scoring, and the current timing window. **Advanced** advice discusses future holds, useful trades, interaction costs, and broad archetype goals. It sees your hand and information available to you, including cards an effect explicitly reveals or lets you inspect. It does not examine the opponent’s private hand, facedown identities, or Predict result. Its small panel is optional and never blocks input.
 
-The deck library includes the real legends and authored strategy notes. All eight registered legend powers execute in matches, while the notes describe strategic goals beyond what the simple AI can teach. Mote and the simulator cannot establish competitive matchup rankings.
+The deck library includes the real legends and authored strategy notes. All ten registered legend powers execute in matches, while the notes describe strategic goals beyond what the simple AI can teach. Mote and the simulator cannot establish competitive matchup rankings.
 
 ## Temporary and Sprite interactions
 
@@ -236,7 +245,7 @@ These interactions have focused runtime/API tests and complete legal-home AI gam
 
 ## Remaining fidelity limits
 
-Eight supported legends, eleven battlefield choices, and 379 main-deck cards are available through the four supplied presets and custom deck editor. The additional cards preserve all preset and training recipes; add them through the custom deck editor where eligible. There is no sideboarding, tournament match structure, multiplayer mode, or full card-set coverage. The presets are dated tournament lists, not a ranking of the current metagame.
+Ten supported legends, eleven battlefield choices, and 379 main-deck cards are available through the four supplied presets and custom deck editor. The additional cards preserve all preset and training recipes; add them through the custom deck editor where eligible. There is no sideboarding, tournament match structure, multiplayer mode, or full card-set coverage. The presets are dated tournament lists, not a ranking of the current metagame.
 
 The desktop and bot API expose exact damage allocations and power-source payments. The default automatic payment remains available; energy can be prepared by exhausting chosen rune domains before a play. These controls share engine validation, but broader card and interaction coverage is still required.
 

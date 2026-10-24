@@ -338,6 +338,9 @@ impl Game {
         }
     }
     pub(super) fn emit_event(&mut self, event: EventSnapshot) {
+        if event.kind == Occurrence::UnitPlayed {
+            self.legend_on_unit_completed(event.player);
+        }
         if self.trigger_state.completed_cards[event.player] == 1
             && !event.token
             && matches!(
@@ -752,6 +755,15 @@ impl Game {
         })
     }
     pub fn trigger_target_rule(&self) -> Option<&'static metadata::TargetRule> {
+        if matches!(self.decision, Some(Decision::LegendTargets { .. })) {
+            const TARGET: metadata::TargetRule = metadata::TargetRule {
+                min: 1,
+                max: 1,
+                allegiance: rules::Allegiance::Any,
+                ..metadata::TargetRule::NONE
+            };
+            return Some(&TARGET);
+        }
         let Decision::TriggerTargets {
             card_id,
             rule_index,
@@ -784,6 +796,9 @@ impl Game {
         self.trigger_here_location(self.trigger_target_rule()?, *context)
     }
     pub fn trigger_target_bounds(&self) -> Option<(usize, usize)> {
+        if matches!(self.decision, Some(Decision::LegendTargets { .. })) {
+            return Some((1, 1));
+        }
         let Decision::TriggerTargets {
             card_id,
             rule_index,
@@ -812,6 +827,13 @@ impl Game {
         prior: &[Target],
         costs: bool,
     ) -> Result<bool, String> {
+        if let Some(Decision::LegendTargets { player }) = self.decision {
+            return Ok(prior.is_empty()
+                && self.legend_target_valid(player, target)
+                && (!costs
+                    || self.available_power(player, None)
+                        >= self.deflect_cost(player, &[target])?.into()));
+        }
         Ok({
             let Some(Decision::TriggerTargets {
                 card_id,
@@ -908,6 +930,9 @@ impl Game {
         })
     }
     pub(super) fn choose_trigger_targets(&mut self, targets: Vec<Target>) -> Result<(), String> {
+        if let Some(Decision::LegendTargets { player }) = self.decision {
+            return self.choose_legend_targets(player, &targets);
+        }
         let Some(Decision::TriggerTargets {
             player,
             card_id,
@@ -944,7 +969,10 @@ impl Game {
         Ok(())
     }
     pub(super) fn discard_unfinalizable_trigger(&mut self) -> Result<(), String> {
-        if !matches!(self.decision, Some(Decision::TriggerTargets { .. })) {
+        if !matches!(
+            self.decision,
+            Some(Decision::TriggerTargets { .. } | Decision::LegendTargets { .. })
+        ) {
             return Ok(());
         }
         let mut payable = false;

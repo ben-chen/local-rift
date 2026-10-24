@@ -139,13 +139,13 @@ fn play_choices_finish_all_legend_pairings_fields_levels_and_starting_seats() {
             for first in 0..legends().len() {
                 for second in 0..legends().len() {
                     let fields = [
-                        (first * legends().len() + second + starting * 3 + level) % 11,
-                        (second * legends().len() + first + starting * 5 + level * 3) % 11,
+                        (first * 8 + second + starting * 3 + level) % 11,
+                        (second * 8 + first + starting * 5 + level * 3) % 11,
                     ];
                     let decks = [expanded(first, fields[0]), expanded(second, fields[1])];
                     seen_fields.extend(fields);
-                    let seed = 44000
-                        + (level * 1000 + starting * 100 + first * legends().len() + second) as u64;
+                    // Preserve the original eight-legend seeds as the matrix grows.
+                    let seed = 44000 + (level * 1000 + starting * 100 + first * 8 + second) as u64;
                     let mut game = Game::new_with_custom(
                         [0, 3],
                         [Some(decks[0].clone()), Some(decks[1].clone())],

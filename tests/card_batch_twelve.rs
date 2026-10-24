@@ -130,7 +130,10 @@ fn all_eleven_have_legal_homes_without_changing_recipes_or_published_lists() {
     for legend in legends() {
         let original = CustomDeck::from_legend(legend.id).unwrap();
         assert_eq!(original.card_count(), 40);
-        assert!(original.cards.iter().all(|(id, _)| *id < 290));
+        if legend.id < 8 {
+            // This checkpoint preserves the original eight training recipes.
+            assert!(original.cards.iter().all(|(id, _)| *id < 290));
+        }
         let mut expanded = original.clone();
         for id in eligible_cards(legend.id)
             .into_iter()

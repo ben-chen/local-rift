@@ -94,7 +94,7 @@ pub(super) fn legend_activation_to_json(activation: LegendActivation) -> Value {
         "energy":activation.energy,"power":activation.power,"power_domain":activation.domain.map(|domain|domain.name()),
         "exhaust":activation.exhaust,"disempower":activation.disempower,"targets":targets_to_json(activation.targets),
         "effect":match activation.effect {LegendActivationEffect::SpellPower=>"spell_power",LegendActivationEffect::Assault=>"assault",
-            LegendActivationEffect::LegionEnergy=>"legion_energy",LegendActivationEffect::Recruit=>"recruit",LegendActivationEffect::Ready=>"ready"}})
+            LegendActivationEffect::LegionEnergy=>"legion_energy",LegendActivationEffect::Recruit=>"recruit",LegendActivationEffect::Ready=>"ready",LegendActivationEffect::Draw=>"draw"}})
 }
 
 #[cfg(test)]

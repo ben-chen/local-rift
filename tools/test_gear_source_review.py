@@ -7,6 +7,7 @@ from unittest.mock import patch
 
 import catalog_review as review
 import import_catalog as catalog
+import admission_history as history
 
 
 class GearSourceReviewTests(unittest.TestCase):
@@ -19,7 +20,7 @@ class GearSourceReviewTests(unittest.TestCase):
         # Reconstruct the runtime at the source-only review; later admission is separate.
         cls.historical_runtime = copy.deepcopy(catalog.load_runtime_manifest())
         cls.historical_runtime['cards'] = cls.historical_runtime['cards'][:362]
-        with patch.object(catalog, 'load_runtime_manifest', return_value=cls.historical_runtime):
+        with patch.object(catalog, 'load_runtime_manifest', return_value=cls.historical_runtime), patch.object(catalog, "load_legend_manifest", return_value=history.legacy_legends()):
             cls.snapshot = catalog.make_catalog(cls.archive_manifest, cls.data)
 
     def apply(self, manifest=None, raw=None):
@@ -119,6 +120,10 @@ class GearSourceReviewTests(unittest.TestCase):
             payload = (catalog.ROOT / path).read_bytes()
             if path == 'assets/data/decks.json':
                 payload = (json.dumps(self.historical_runtime, ensure_ascii=False, indent=2) + '\n').encode()
+            elif path == 'assets/data/legends.json':
+                payload = history.legacy_legend_manifest_bytes()
+            elif path == 'src/deck.rs':
+                payload = history.legacy_recipe_source_bytes()
             self.assertEqual(catalog.sha(payload), sha, path)
 
     def test_porobot_cannot_be_registered_as_an_ordinary_unit_or_gear(self):
@@ -134,7 +139,7 @@ class GearSourceReviewTests(unittest.TestCase):
                                  official_text=facts['rules_text'], official_text_html=facts['rules_html'],
                                  equipment_effect_html='', art_url=record['original_image']['url'])
                 runtime['cards'].append(candidate)
-                with patch.object(catalog, 'load_runtime_manifest', return_value=runtime):
+                with patch.object(catalog, 'load_runtime_manifest', return_value=runtime), patch.object(catalog, "load_legend_manifest", return_value=history.legacy_legends()):
                     with self.assertRaisesRegex(ValueError, 'Runtime main-card kind mismatch: ven-058-166'):
                         catalog.make_catalog(self.archive_manifest, self.data)
 

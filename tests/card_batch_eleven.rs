@@ -175,7 +175,7 @@ fn tracker_uses_reviewed_fury_and_bilgewater_without_rewriting_raw_facts() {
         "When you play me, deal 1 to each of up to 2 units."
     );
     for legend in legends() {
-        let legal = [3, 4].contains(&legend.id);
+        let legal = legend.domains.contains(&Domain::Fury);
         assert_eq!(eligible_cards(legend.id).contains(&333), legal);
         assert!(!eligible_champions(legend.id).contains(&333));
         let mut deck = CustomDeck::from_legend(legend.id).unwrap();
@@ -214,7 +214,10 @@ fn all_twenty_six_have_legal_homes_without_changing_existing_training_lists() {
     for legend in legends() {
         let original = CustomDeck::from_legend(legend.id).unwrap();
         assert_eq!(original.card_count(), 40);
-        assert!(original.cards.iter().all(|(id, _)| *id < 290));
+        if legend.id < 8 {
+            // This checkpoint preserves the original eight training recipes.
+            assert!(original.cards.iter().all(|(id, _)| *id < 290));
+        }
         let mut expanded = original.clone();
         for id in eligible_cards(legend.id)
             .into_iter()

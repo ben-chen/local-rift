@@ -6,6 +6,7 @@ from unittest.mock import patch
 
 import catalog_review as review
 import import_catalog as catalog
+import admission_history as history
 
 
 class C11AdmissionTests(unittest.TestCase):
@@ -81,8 +82,8 @@ class C11AdmissionTests(unittest.TestCase):
         self.assertEqual(preserved['card_count'], 345)
         self.assertEqual(digest(runtime['cards'][:345]), preserved['cards_sha256'])
         self.assertEqual(digest(runtime['decks']), preserved['presets_sha256'])
-        self.assertEqual(catalog.sha((root / 'assets/data/legends.json').read_bytes()), preserved['legends_manifest_sha256'])
-        self.assertEqual(catalog.sha((root / 'src/deck.rs').read_bytes()), preserved['training_recipe_source_sha256'])
+        self.assertEqual(catalog.sha(history.legacy_legend_manifest_bytes()), preserved['legends_manifest_sha256'])
+        self.assertEqual(catalog.sha(history.legacy_recipe_source_bytes()), preserved['training_recipe_source_sha256'])
         p = self.proof['preserved_source_reviews']
         resolutions = json.loads((root / 'assets/data/catalog_resolutions.json').read_text())
         identities = json.loads((root / 'assets/data/catalog_identity_reviews.json').read_text())

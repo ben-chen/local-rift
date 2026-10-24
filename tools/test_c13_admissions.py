@@ -6,6 +6,7 @@ from unittest.mock import patch
 
 import catalog_review as review
 import import_catalog as catalog
+import admission_history as history
 
 ORDER = ['sfd-005-221', 'ogn-022-298', 'ven-003-166', 'ven-131-166', 'sfd-032-221', 'rad-083-167', 'ven-080-166', 'ogn-056-298', 'sfd-072-221', 'sfd-076-221']
 BASE = 362
@@ -17,7 +18,8 @@ class C13AdmissionTests(unittest.TestCase):
         cls.manifest, cls.data = catalog.read_archives()
         runtime = copy.deepcopy(catalog.load_runtime_manifest())
         runtime['cards'] = runtime['cards'][:372]
-        with patch.object(catalog, 'load_runtime_manifest', return_value=runtime):
+        with patch.object(catalog, 'load_runtime_manifest', return_value=runtime), \
+                patch.object(catalog, 'load_legend_manifest', return_value=history.legacy_legends()):
             cls.snapshot = catalog.make_catalog(cls.manifest, cls.data)
         cls.proof = json.loads((catalog.ROOT / 'assets/data/card_admissions/c13/admissions.json').read_text())
 
@@ -86,8 +88,8 @@ class C13AdmissionTests(unittest.TestCase):
         self.assertEqual(p['card_count'], BASE)
         self.assertEqual(digest(runtime['cards'][:BASE]), p['cards_sha256'])
         self.assertEqual(digest(runtime['decks']), p['presets_sha256'])
-        self.assertEqual(catalog.sha((root / 'assets/data/legends.json').read_bytes()), p['legends_manifest_sha256'])
-        self.assertEqual(catalog.sha((root / 'src/deck.rs').read_bytes()), p['training_recipe_source_sha256'])
+        self.assertEqual(catalog.sha(history.legacy_legend_manifest_bytes()), p['legends_manifest_sha256'])
+        self.assertEqual(catalog.sha(history.legacy_recipe_source_bytes()), p['training_recipe_source_sha256'])
         p = self.proof['preserved_source_reviews']
         r = json.loads((root / 'assets/data/catalog_resolutions.json').read_text())
         identities = json.loads((root / 'assets/data/catalog_identity_reviews.json').read_text())
@@ -108,7 +110,7 @@ class C13AdmissionTests(unittest.TestCase):
 
 
     def test_every_new_card_has_legal_existing_homes_without_champion_eligibility(self):
-        legends = json.loads((catalog.ROOT / 'assets/data/legends.json').read_text())['legends']
+        legends = history.legacy_legends()
         for record in self.proof['records']:
             e = record['effective']
             self.assertNotIn('champion', [s.lower() for s in e['super_types']])

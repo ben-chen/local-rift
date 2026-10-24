@@ -144,6 +144,8 @@ pub struct PlayGrant {
 }
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct PlayHistory {
+    /// Ezreal's qualifying-target progress, capped at its printed threshold 2.
+    pub ezreal_progress: [u8; 2],
     pub non_token_gears: [u16; 2],
     pub gear_activations: [u16; 2],
     pub units_or_gears_here: [[u16; 2]; 2], // [player][physical lane]

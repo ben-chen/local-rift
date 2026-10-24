@@ -145,8 +145,8 @@ fn gear_interaction_cards_finish_legal_homes_against_anchors_at_all_levels() {
             for first in 0..legends().len() {
                 for second in [0, 3] {
                     let decks = [expanded(first), expanded(second)];
-                    let seed = 171000
-                        + (level * 1000 + starting * 100 + first * legends().len() + second) as u64;
+                    // Preserve the original eight-legend seeds as the matrix grows.
+                    let seed = 171000 + (level * 1000 + starting * 100 + first * 8 + second) as u64;
                     let mut game = Game::new_with_custom(
                         [0, 3],
                         [Some(decks[0].clone()), Some(decks[1].clone())],

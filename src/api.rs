@@ -360,12 +360,15 @@ impl Session {
             })).collect();
             let legend = &game.legend[owner];
             let definition = game.legend_def(owner);
-            let legend_observation = json!({"id":definition.id,"official_id":definition.official_id,
+            let mut legend_observation = json!({"id":definition.id,"official_id":definition.official_id,
                 "name":definition.name,"champion":definition.champion,
                 "domains":definition.domains.map(|domain|domain.name()),
                 "kind":legend_name(legend.kind),"ready":legend.ready,
                 "empowered":legend.empowered,"spell_power":legend.spell_power,
                 "assault_grants":legend.assault_grants});
+            if legend.kind == LegendKind::Ezreal {
+                legend_observation["targeting_progress"] = json!({"completed":game.ezreal_progress(owner),"required":2});
+            }
             let activated_observation: Vec<_> = game.activated_options(owner).iter().map(|option|json!({
                 "source":ability_source_to_json(option.source),"card_id":option.card_id,
                 "ability_index":option.ability_index})).collect();
@@ -723,6 +726,8 @@ fn legend_name(kind: LegendKind) -> &'static str {
         LegendKind::Viktor => "viktor",
         LegendKind::Lux => "lux",
         LegendKind::Ambessa => "ambessa",
+        LegendKind::Rengar => "rengar",
+        LegendKind::Ezreal => "ezreal",
     }
 }
 
@@ -1682,6 +1687,11 @@ fn decision_to_json(game: &Game, decision: &Decision, viewer: usize) -> Result<V
             "type":"resource_conversion","source":ability_source_to_json(*source),
             "card_id":card_id,"ability_index":ability_index,"direction":conversion_direction_name(*direction),
             "available":game.conversion_available()}),
+        Decision::LegendTargets { player } => json!({
+            "type":"legend_targets", "source":{"type":"legend","player":player,"legend_id":game.legend_id(*player)},
+            "maximum":1, "required":1, "target_rule":{"kind":"unit","allegiance":"any","battlefield":false},
+            "candidates":game.trigger_target_candidates().map_err(ApiError::illegal)?.iter().map(target_to_json).collect::<Vec<_>>()
+        }),
         Decision::TriggerTargets {
             card_id,
             rule_index,
@@ -1902,6 +1912,10 @@ fn ability_to_json(ability: &ChainAbility) -> Value {
             }
             LegendAbility::ViktorRecruit => json!({"type":"viktor_recruit"}),
             LegendAbility::LuxDraw => json!({"type":"lux_draw"}),
+            LegendAbility::EzrealDraw => json!({"type":"ezreal_draw"}),
+            LegendAbility::RengarMight { target } => {
+                json!({"type":"rengar_might","target":target_to_json(target)})
+            }
             LegendAbility::MatriarchEmpower => json!({"type":"matriarch_empower"}),
             LegendAbility::MatriarchReady { target } => {
                 json!({"type":"matriarch_ready","target":target_to_json(target)})
@@ -4099,3 +4113,6 @@ mod tests {
         );
     }
 }
+
+#[cfg(test)]
+mod c16;

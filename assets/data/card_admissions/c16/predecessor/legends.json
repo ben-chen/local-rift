@@ -1,0 +1,232 @@
+{
+  "as_of": "2026-10-24",
+  "notice": "Reviewed playable legend identities independent of tournament presets. Registry IDs are stable; source facts alone do not establish runtime conformance. The four published lists remain unchanged.",
+  "source_url": "https://playriftbound.com/en-us/card-gallery/",
+  "legends": [
+    {
+      "id": 0,
+      "official_id": "sfd-195-221",
+      "name": "Blade Dancer",
+      "champion": "Irelia",
+      "domains": [
+        "Calm",
+        "Chaos"
+      ],
+      "text": "When you choose a friendly unit, you may exhaust me and pay [Any Power] to ready it.\nWhen you conquer, you may pay [1 Energy] to ready me.",
+      "rules_html": "<p>When you choose a friendly unit, you may exhaust me and pay :rb_rune_rainbow: to ready it.<br />When you conquer, you may pay :rb_energy_1: to ready me.</p>",
+      "default_champion": 0,
+      "default_champion_official_id": "sfd-057-221",
+      "accent": [
+        105,
+        226,
+        203
+      ],
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/656ef2d1724b818e9e737ec5dcce923de067a316-744x1039.png?accountingTag=RB",
+      "art_path": "assets/art/legend_0.png",
+      "tags": [
+        "Irelia"
+      ],
+      "illustrators": [
+        "Pandart Studio"
+      ],
+      "preset_index": 0
+    },
+    {
+      "id": 1,
+      "official_id": "ogs-019-024",
+      "name": "Wuju Bladesman, Starter",
+      "champion": "Master Yi",
+      "domains": [
+        "Calm",
+        "Body"
+      ],
+      "text": "While a friendly unit defends alone, it gets +2 Might.",
+      "rules_html": "<p>While a friendly unit defends alone, it gets +2 :rb_might:.</p>",
+      "default_champion": 22,
+      "default_champion_official_id": "unl-113-219",
+      "accent": [
+        148,
+        209,
+        115
+      ],
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/8231ced23eaf22ca3bf62ec8cb86b83a3e222da6-744x1039.png?accountingTag=RB",
+      "art_path": "assets/art/legend_1.png",
+      "tags": [
+        "Master Yi"
+      ],
+      "illustrators": [
+        "Grafit Studio/Quy Ho"
+      ],
+      "preset_index": 1
+    },
+    {
+      "id": 2,
+      "official_id": "ven-155-166",
+      "name": "Heart of the Tempest",
+      "champion": "Kennen",
+      "domains": [
+        "Chaos",
+        "Order"
+      ],
+      "text": "When you play a card from anywhere other than your hand, empower me.\n[Action][>] Disempower me, [Exhaust]: Give a unit [Assault 2] this turn. (+2 Might while it's an attacker.)",
+      "rules_html": "<p>When you play a card from anywhere other than your hand, empower me.<br />[Action][&gt;] Disempower me, :rb_exhaust:: Give a unit [Assault 2] this turn. (+2 :rb_might: while it's an attacker.)</p>",
+      "default_champion": 33,
+      "default_champion_official_id": "ven-113-166",
+      "accent": [
+        179,
+        144,
+        255
+      ],
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/0eab83392b310417d2630d50a3bfee3dd02b31c4-744x1039.png?accountingTag=RB",
+      "art_path": "assets/art/legend_2.png",
+      "tags": [
+        "Yordle",
+        "Kennen"
+      ],
+      "illustrators": [
+        "Envar Studio"
+      ],
+      "preset_index": 2
+    },
+    {
+      "id": 3,
+      "official_id": "ogn-247-298",
+      "name": "Daughter of the Void",
+      "champion": "Kai'Sa",
+      "domains": [
+        "Fury",
+        "Mind"
+      ],
+      "text": "[Exhaust]: [Reaction] — [Add] [Any Power]. Use only to play spells. (Abilities that add resources can't be reacted to.)",
+      "rules_html": "<p>:rb_exhaust:: [Reaction] — [Add] :rb_rune_rainbow:. Use only to play spells. (Abilities that add resources can't be reacted to.)</p>",
+      "default_champion": 49,
+      "default_champion_official_id": "ogn-039-298",
+      "accent": [
+        111,
+        177,
+        255
+      ],
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/3ea826277086945a2cdfda4e41b771075aa8b15b-744x1039.png?accountingTag=RB",
+      "art_path": "assets/art/legend_3.png",
+      "tags": [
+        "Kai'Sa"
+      ],
+      "illustrators": [
+        "Kudos Productions"
+      ],
+      "preset_index": 3
+    },
+    {
+      "id": 4,
+      "official_id": "ogn-253-298",
+      "name": "Hand of Noxus",
+      "champion": "Darius",
+      "domains": [
+        "Fury",
+        "Order"
+      ],
+      "text": "[Exhaust]: [Reaction], [Legion] — [Add] [1 Energy]. (Abilities that add resources can't be reacted to. Get the effect if you've played a card this turn.)",
+      "rules_html": "<p>:rb_exhaust:: [Reaction], [Legion] — [Add] :rb_energy_1:. (Abilities that add resources can't be reacted to. Get the effect if you've played a card this turn.)</p>",
+      "default_champion": 183,
+      "default_champion_official_id": "ogn-027-298",
+      "accent": [
+        224,
+        104,
+        99
+      ],
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/5b9a904048b7fb936377844ec2d31564b7fedf81-744x1039.png?accountingTag=RB",
+      "art_path": "assets/art/legend_4.png",
+      "tags": [
+        "Darius"
+      ],
+      "illustrators": [
+        "Six More Vodka"
+      ],
+      "preset_index": null
+    },
+    {
+      "id": 5,
+      "official_id": "ogn-265-298",
+      "name": "Herald of the Arcane",
+      "champion": "Viktor",
+      "domains": [
+        "Mind",
+        "Order"
+      ],
+      "text": "[1 Energy], [Exhaust]: Play a 1 Might Recruit unit token.",
+      "rules_html": "<p>:rb_energy_1:, :rb_exhaust:: Play a 1 :rb_might: Recruit unit token.</p>",
+      "default_champion": 175,
+      "default_champion_official_id": "ogn-117-298",
+      "accent": [
+        113,
+        193,
+        182
+      ],
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/913236dabf1e4f71650bbba46870fff8163e2eff-744x1039.png?accountingTag=RB",
+      "art_path": "assets/art/legend_5.png",
+      "tags": [
+        "Viktor"
+      ],
+      "illustrators": [
+        "Fortiche Production"
+      ],
+      "preset_index": null
+    },
+    {
+      "id": 6,
+      "official_id": "ogs-021-024",
+      "name": "Lady of Luminosity, Starter",
+      "champion": "Lux",
+      "domains": [
+        "Mind",
+        "Order"
+      ],
+      "text": "When you play a spell that costs [5 Energy] or more, draw 1.",
+      "rules_html": "<p>When you play a spell that costs :rb_energy_5: or more, draw 1.</p>",
+      "default_champion": 182,
+      "default_champion_official_id": "ogs-006-024",
+      "accent": [
+        235,
+        214,
+        132
+      ],
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/44885d811b70621b188d9813b2b10b5cff1b81e6-744x1039.png?accountingTag=RB",
+      "art_path": "assets/art/legend_6.png",
+      "tags": [
+        "Lux"
+      ],
+      "illustrators": [
+        "Grafit Studio/Maki Planas Mata"
+      ],
+      "preset_index": null
+    },
+    {
+      "id": 7,
+      "official_id": "ven-153-166",
+      "name": "Matriarch of War",
+      "champion": "Ambessa",
+      "domains": [
+        "Body",
+        "Order"
+      ],
+      "text": "When you empower something else, empower me. (I become Empowered if I'm not already.)\nDisempower me, [Any Power], [Exhaust]: Ready a unit.",
+      "rules_html": "<p>When you empower something else, empower me. (I become Empowered if I'm not already.)<br />Disempower me, :rb_rune_rainbow:, :rb_exhaust:: Ready a unit.</p>",
+      "default_champion": 289,
+      "default_champion_official_id": "ven-136-166",
+      "accent": [
+        219,
+        158,
+        106
+      ],
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/49e81916d7ae72b24de845223e1798652d26e789-744x1039.png?accountingTag=RB",
+      "art_path": "assets/art/legend_7.png",
+      "tags": [
+        "Ambessa"
+      ],
+      "illustrators": [
+        "Envar Studio"
+      ],
+      "preset_index": null
+    }
+  ]
+}

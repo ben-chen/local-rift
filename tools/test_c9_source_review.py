@@ -7,6 +7,7 @@ from unittest.mock import patch
 
 import catalog_review as review
 import import_catalog as catalog
+import admission_history as history
 
 
 class ArtworkDiscoveryTests(unittest.TestCase):
@@ -31,7 +32,7 @@ class ArtworkDiscoveryTests(unittest.TestCase):
     def test_source_only_correction_does_not_add_runtime_support(self):
         runtime = copy.deepcopy(catalog.load_runtime_manifest())
         runtime['cards'] = runtime['cards'][:308]
-        with patch.object(catalog, 'load_runtime_manifest', return_value=runtime):
+        with patch.object(catalog, 'load_runtime_manifest', return_value=runtime), patch.object(catalog, "load_legend_manifest", return_value=history.legacy_legends()):
             result = catalog.make_catalog(self.manifest, self.data)
         counts = result['counts']
         self.assertEqual((counts['implemented_main_cards'], counts['implemented_legal_identities'],

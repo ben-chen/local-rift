@@ -433,6 +433,48 @@ impl CustomDeck {
                 ],
                 [5, 7],
             ),
+            // Cheap units and token plays create separate Rengar Might triggers.
+            8 => (
+                &[
+                    (30, 3),
+                    (98, 3),
+                    (56, 3),
+                    (96, 3),
+                    (27, 3),
+                    (99, 3),
+                    (143, 3),
+                    (174, 3),
+                    (74, 3),
+                    (82, 3),
+                    (216, 2),
+                    (228, 2),
+                    (58, 2),
+                    (127, 2),
+                    (128, 2),
+                ],
+                [6, 6],
+            ),
+            // Unit abilities, separate spell targets and Repeat teach Ezreal's requirement.
+            9 => (
+                &[
+                    (35, 3),
+                    (57, 3),
+                    (60, 3),
+                    (68, 3),
+                    (146, 3),
+                    (188, 3),
+                    (37, 3),
+                    (50, 3),
+                    (52, 3),
+                    (63, 3),
+                    (133, 2),
+                    (136, 2),
+                    (372, 2),
+                    (126, 2),
+                    (42, 2),
+                ],
+                [7, 5],
+            ),
             _ => return Err("No authored training list is available for this legend.".into()),
         };
         let mut runes = [0; 6];

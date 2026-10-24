@@ -16,6 +16,8 @@ pub enum LegendKind {
     Viktor,
     Lux,
     Ambessa,
+    Rengar,
+    Ezreal,
 }
 
 impl LegendKind {
@@ -29,6 +31,8 @@ impl LegendKind {
             Self::Viktor => 5,
             Self::Lux => 6,
             Self::Ambessa => 7,
+            Self::Rengar => 8,
+            Self::Ezreal => 9,
         }
     }
 
@@ -42,6 +46,8 @@ impl LegendKind {
             5 => Self::Viktor,
             6 => Self::Lux,
             7 => Self::Ambessa,
+            8 => Self::Rengar,
+            9 => Self::Ezreal,
             _ => return None,
         })
     }
@@ -68,6 +74,7 @@ pub enum LegendActivationEffect {
     LegionEnergy,
     Recruit,
     Ready,
+    Draw,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -109,6 +116,12 @@ pub fn legend_activation(kind: LegendKind) -> Option<LegendActivation> {
             LegendActivationEffect::Recruit,
         ),
         LegendKind::Ambessa => (LegendTiming::Main, 0, true, LegendActivationEffect::Ready),
+        LegendKind::Ezreal => (
+            LegendTiming::Reaction,
+            0,
+            false,
+            LegendActivationEffect::Draw,
+        ),
         _ => return None,
     };
     Some(LegendActivation {
@@ -184,6 +197,8 @@ pub enum LegendAbility {
     KennenAssault { target: Target },
     ViktorRecruit,
     LuxDraw,
+    EzrealDraw,
+    RengarMight { target: Target },
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -193,6 +208,94 @@ pub enum LegendTrigger {
 }
 
 impl Game {
+    /// Progress toward Ezreal's two qualifying choices, deliberately capped at
+    /// the printed threshold. This is not a total targeting-event counter.
+    pub fn ezreal_progress(&self, player: usize) -> u8 {
+        self.play_history
+            .ezreal_progress
+            .get(player)
+            .copied()
+            .unwrap_or(0)
+    }
+
+    pub(crate) fn record_spell_or_unit_choices(&mut self, player: usize, targets: &[Target]) {
+        for &target in targets {
+            let enemy = match target {
+                Target::Unit { player: owner, .. } => {
+                    owner != player && self.unit_ref(target).is_some()
+                }
+                Target::Gear {
+                    player: owner,
+                    gear_id,
+                } => {
+                    owner != player
+                        && self.players[owner]
+                            .gear
+                            .iter()
+                            .any(|gear| gear.id == gear_id)
+                }
+                _ => false,
+            };
+            if enemy {
+                self.play_history.ezreal_progress[player] =
+                    (self.play_history.ezreal_progress[player] + 1).min(2);
+            }
+        }
+    }
+
+    pub(crate) fn ability_chooses_as_unit(&self, card_id: usize, ability: &ChainAbility) -> bool {
+        use crate::activated::AbilitySource;
+        match ability {
+            ChainAbility::Activated { source, .. } | ChainAbility::Hunt { source, .. } => {
+                matches!(source, AbilitySource::Unit { .. })
+            }
+            // An equipment's granted ability belongs to its bearer, even after
+            // the equipment detaches or that unit leaves the board.
+            ChainAbility::CardTrigger { context, .. } => context.source.unit_id.is_some(),
+            ChainAbility::Temporary { source, .. } => {
+                matches!(source, crate::empower::BoardObject::Unit { .. })
+            }
+            ChainAbility::Legend(_)
+            | ChainAbility::Battlefield(_)
+            | ChainAbility::Equip { .. }
+            | ChainAbility::QuickDrawAttach { .. } => false,
+            _ => self.catalog[card_id].kind == crate::cards::CardKind::Unit,
+        }
+    }
+
+    pub(crate) fn legend_on_unit_completed(&mut self, player: usize) {
+        if self.legend[player].kind == LegendKind::Rengar {
+            self.queue_trigger_choice(
+                player,
+                self.legend_def(player).default_champion,
+                crate::game::Decision::LegendTargets { player },
+            );
+        }
+    }
+
+    pub(crate) fn choose_legend_targets(
+        &mut self,
+        player: usize,
+        targets: &[Target],
+    ) -> Result<(), String> {
+        if self.legend[player].kind != LegendKind::Rengar || targets.len() != 1 {
+            return Err("Rengar must choose one unit for the Might bonus.".into());
+        }
+        let target = targets[0];
+        if !self.legend_target_valid(player, target) {
+            return Err("That unit cannot be chosen by this legend ability.".into());
+        }
+        self.spend_deflect(player, false, targets)?;
+        self.decision = None;
+        self.queue_ability(
+            player,
+            self.legend_def(player).default_champion,
+            targets.to_vec(),
+            ChainAbility::Legend(LegendAbility::RengarMight { target }),
+        );
+        Ok(())
+    }
+
     pub(crate) fn legend_on_spell_completed(&mut self, player: usize, card_id: usize) {
         if self.legend[player].kind == LegendKind::Lux && self.catalog[card_id].cost >= 5 {
             self.queue_ability(
@@ -328,6 +431,9 @@ impl Game {
         if activation.disempower && !self.legend[player].empowered {
             return Err("Your legend must be empowered to pay this activation cost.".into());
         }
+        if self.legend[player].kind == LegendKind::Ezreal && self.ezreal_progress(player) < 2 {
+            return Err("Choose enemy units or gear twice this turn with spells or unit abilities before using Ezreal.".into());
+        }
         let allowed = match activation.timing {
             LegendTiming::Main => {
                 self.is_main_phase()
@@ -379,6 +485,14 @@ impl Game {
             self.disempower_by(player, crate::empower::BoardObject::Legend { player });
         }
         match activation.effect {
+            LegendActivationEffect::Draw => {
+                self.queue_ability(
+                    player,
+                    self.legend_def(player).default_champion,
+                    Vec::new(),
+                    ChainAbility::Legend(LegendAbility::EzrealDraw),
+                );
+            }
             LegendActivationEffect::Ready => {
                 let target = target.expect("validated target");
                 self.queue_ability(
@@ -546,7 +660,11 @@ impl Game {
         Ok(())
     }
 
-    pub(crate) fn resolve_legend_ability(&mut self, player: usize, ability: LegendAbility) {
+    pub(crate) fn resolve_legend_ability(
+        &mut self,
+        player: usize,
+        ability: LegendAbility,
+    ) -> Result<(), String> {
         match ability {
             LegendAbility::IreliaReady { unit_id } => {
                 self.ready_unit(player, unit_id);
@@ -572,13 +690,19 @@ impl Game {
                     self.legend[player].assault_grants.push((unit_id, 2));
                 }
             }
-            LegendAbility::LuxDraw => self.draw(player, 1),
+            LegendAbility::LuxDraw | LegendAbility::EzrealDraw => self.draw(player, 1),
+            LegendAbility::RengarMight { target } => {
+                if self.legend_target_valid(player, target) {
+                    self.modify_might(target, 1, 0)?;
+                }
+            }
             LegendAbility::ViktorRecruit => {
                 // Stable Recruit token-characteristics reference, independent
                 // of this legend's chosen champion or presentation artwork.
                 self.queue_token_play(player, 87, 1, None, false);
             }
         }
+        Ok(())
     }
 }
 

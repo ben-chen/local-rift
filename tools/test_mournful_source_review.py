@@ -7,6 +7,7 @@ from unittest.mock import patch
 
 import catalog_review as review
 import import_catalog as catalog
+import admission_history as history
 
 
 class MournfulSourceReviewTests(unittest.TestCase):
@@ -18,7 +19,7 @@ class MournfulSourceReviewTests(unittest.TestCase):
         cls.proof = json.loads((catalog.ROOT / 'assets/data/catalog_evidence/reviews/mournful-spirit.json').read_text())
         cls.runtime = copy.deepcopy(catalog.load_runtime_manifest())
         cls.runtime['cards'] = cls.runtime['cards'][:372]
-        with patch.object(catalog, 'load_runtime_manifest', return_value=cls.runtime):
+        with patch.object(catalog, 'load_runtime_manifest', return_value=cls.runtime), patch.object(catalog, "load_legend_manifest", return_value=history.legacy_legends()):
             cls.snapshot = catalog.make_catalog(cls.origin, cls.archives)
 
     def apply(self, manifest=None, raw=None):
@@ -82,8 +83,8 @@ class MournfulSourceReviewTests(unittest.TestCase):
         r = p['preserved_runtime']
         self.assertEqual(digest(self.runtime['cards']), r['cards_sha256'])
         self.assertEqual(digest(self.runtime['decks']), r['presets_sha256'])
-        self.assertEqual(catalog.sha((catalog.ROOT / 'assets/data/legends.json').read_bytes()), r['legends_manifest_sha256'])
-        self.assertEqual(catalog.sha((catalog.ROOT / 'src/deck.rs').read_bytes()), r['training_recipe_source_sha256'])
+        self.assertEqual(catalog.sha(history.legacy_legend_manifest_bytes()), r['legends_manifest_sha256'])
+        self.assertEqual(catalog.sha(history.legacy_recipe_source_bytes()), r['training_recipe_source_sha256'])
 
     def test_changed_raw_prerequisites_fail_closed(self):
         for field, value in [('tags', ['Shadow Isles', 'Spirit']), ('might', 2), ('domains', ['chaos'])]:

@@ -8365,15 +8365,187 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
             capture(app, "RIFT_SMOKE_C15_RETREAT_RUNES_SCREENSHOT");
         }
         823 => {
+            app.in_match = false;
+            app.screen = Screen::Decks;
+            app.legend_picker = Some(0);
+            app.selection = None;
+            app.inspect = None;
+            click(app, 502.0, 661.0);
+        }
+        824 => {
+            assert_eq!(app.legend_picker, Some(8));
+            capture(app, "RIFT_SMOKE_C16_RENGAR_PICKER_SCREENSHOT");
+            click(app, 447.0, 307.0);
+        }
+        825 => {
+            assert_eq!(app.legend_picker, Some(9));
+            capture(app, "RIFT_SMOKE_C16_EZREAL_PICKER_SCREENSHOT");
+            click(app, 390.0, 661.0);
+        }
+        826 => {
+            assert_eq!(app.legend_picker, Some(0));
+            click(app, 502.0, 661.0);
+        }
+        827 => {
+            assert_eq!(app.legend_picker, Some(8));
+            click(app, 840.0, 700.0);
+        }
+        828 => {
+            let deck = &app.deck_editor.as_ref().unwrap().deck;
+            assert_eq!(
+                (deck.legend, deck.chosen_champion, deck.card_count()),
+                (8, 30, 40)
+            );
+            assert!(deck.validate().is_ok());
+            click(app, 328.0, 771.0);
+        }
+        829 => {
+            assert_eq!(app.custom_decks[0].as_ref().unwrap().legend, 8);
+            app.reset();
+            app.game.start_match().unwrap();
+            app.in_match = true;
+            app.screen = Screen::Practice;
+            app.tray = super::Tray::Board;
+            for p in &mut app.game.players {
+                p.units.clear();
+                p.gear.clear();
+                p.hand.clear();
+            }
+            fixture_resources(app, Domain::Fury);
+            app.game.players[0].hand = vec![72];
+            app.game.players[1].units = vec![public_unit(15001, 72, None)];
+            app.game
+                .apply(Action::PlayCardWithTargets {
+                    hand_index: 0,
+                    lane: None,
+                    targets: vec![],
+                })
+                .unwrap();
+            assert!(matches!(
+                app.game.decision,
+                Some(Decision::LegendTargets { player: 0 })
+            ));
+        }
+        830 => {
+            capture(app, "RIFT_SMOKE_C16_RENGAR_CHOICE_SCREENSHOT");
+            click_unit(app, 15001);
+        }
+        831 => {
+            assert_eq!(
+                app.targets,
+                vec![Target::Unit {
+                    player: 1,
+                    unit_id: 15001
+                }]
+            );
+            capture(app, "RIFT_SMOKE_C16_RENGAR_TARGET_SCREENSHOT");
+            click(app, 1285.0, 510.0);
+        }
+        832 => {
+            assert!(app.game.decision.is_none());
+            assert_eq!(
+                app.game.chain_source(&app.game.chain[0]),
+                local_rift::game::ChainSource::Legend {
+                    player: 0,
+                    legend_id: 8
+                }
+            );
+            assert_eq!(app.game.players[1].units[0].temporary_buff, 0);
+            finish_chain_until_choice(app);
+            assert_eq!(app.game.players[1].units[0].temporary_buff, 1);
+            capture(app, "RIFT_SMOKE_C16_RENGAR_MIGHT_SCREENSHOT");
+        }
+        833 => {
+            app.custom_decks[0] = Some(local_rift::deck::CustomDeck::from_legend(9).unwrap());
+            app.reset();
+            app.game.start_match().unwrap();
+            app.in_match = true;
+            app.screen = Screen::Practice;
+            app.tray = super::Tray::Loadout;
+            app.gear_owner = 0;
+            for p in &mut app.game.players {
+                p.units.clear();
+                p.gear.clear();
+                p.hand.clear();
+            }
+            fixture_resources(app, Domain::Mind);
+            app.game.players[1].units = vec![public_unit(15002, 72, None)];
+            app.game.players[0].hand = vec![63, 63];
+            click(app, 315.0, 760.0);
+        }
+        834 => {
+            assert!(matches!(app.selection, Some(Selection::Legend)));
+            assert_eq!(app.game.ezreal_progress(0), 0);
+            capture(app, "RIFT_SMOKE_C16_EZREAL_ZERO_SCREENSHOT");
+            save_state(app);
+            click(app, 1285.0, 548.0);
+        }
+        835 => {
+            assert_same_state(app);
+            app.game
+                .apply(Action::PlayCardWithTargets {
+                    hand_index: 0,
+                    lane: None,
+                    targets: vec![Target::Unit {
+                        player: 1,
+                        unit_id: 15002,
+                    }],
+                })
+                .unwrap();
+            finish_chain_until_choice(app);
+            assert_eq!(app.game.ezreal_progress(0), 1);
+            capture(app, "RIFT_SMOKE_C16_EZREAL_ONE_SCREENSHOT");
+            save_state(app);
+            click(app, 1285.0, 548.0);
+        }
+        836 => {
+            assert_same_state(app);
+            assert_eq!(app.game.players[0].hand[0], 63);
+            app.game
+                .apply(Action::PlayCardWithTargets {
+                    hand_index: 0,
+                    lane: None,
+                    targets: vec![Target::Unit {
+                        player: 1,
+                        unit_id: 15002,
+                    }],
+                })
+                .unwrap();
+            finish_chain_until_choice(app);
+        }
+        837 => {
+            assert_eq!(app.game.ezreal_progress(0), 2);
+            capture(app, "RIFT_SMOKE_C16_EZREAL_READY_SCREENSHOT");
+            click(app, 1285.0, 548.0);
+        }
+        838 => {
+            assert!(!app.game.legend[0].ready);
+            assert_eq!(
+                app.game.chain_source(&app.game.chain[0]),
+                local_rift::game::ChainSource::Legend {
+                    player: 0,
+                    legend_id: 9
+                }
+            );
+            capture(app, "RIFT_SMOKE_C16_EZREAL_CHAIN_SCREENSHOT");
+            let count = app.game.players[0].hand.len();
+            finish_chain_until_choice(app);
+            assert_eq!(app.game.players[0].hand.len(), count + 1);
+        }
+        839 => {
+            assert!(app.game.chain.is_empty());
+            assert!(!app.game.legend[0].ready);
+        }
+        840 => {
             app.ui.input_override = None;
             app.ui.pointer_override = None;
             app.ui.wheel_override = None;
             println!(
-                "PASS: 824 native UI frames including direct Banish without death replacement, both Banish browsers and card inspection, Apothecary self-return, Retreat exhausted Channel, and all previous 811 controls including side victory tracks and mixed unit/gear choices."
+                "PASS: 841 native UI frames including paginated legend selection, Rengar mandatory targets, Ezreal public targeting progress and reaction draw, and all previous 824 controls including side victory tracks, Banish browsing, and rune/equipment inspection."
             );
             return true;
         }
-        _ => panic!("UI smoke runner exceeded its 824-frame script"),
+        _ => panic!("UI smoke runner exceeded its 841-frame script"),
     }
     false
 }
