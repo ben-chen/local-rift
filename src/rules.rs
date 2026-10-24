@@ -66,6 +66,12 @@ pub struct PlayTargetSpec {
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum OfficialEffect {
+    BanishSmallOrGear {
+        maximum: u8,
+        burn: u8,
+    },
+    BanishReplay(crate::game::InstructedPlayKind),
+    ArcaneShift,
     ReturnGear,
     ReturnAllBoard,
     ReturnAndChannel,
@@ -242,6 +248,14 @@ pub fn effect(id: usize) -> OfficialEffect {
         374..=376 => None,
         377 => ReturnAndChannel,
         378 => BanishSmallOrReturn { maximum: 3 },
+        379 => BanishSmallOrGear {
+            maximum: 3,
+            burn: 2,
+        },
+        380 => BanishReplay(crate::game::InstructedPlayKind::PortalRescue),
+        381 => BanishReplay(crate::game::InstructedPlayKind::TemporalBreach),
+        382 => BanishReplay(crate::game::InstructedPlayKind::ThrillOfTheHunt),
+        383 => ArcaneShift,
         362 | 364 => KillGear {
             controller_draw: if id == 362 { 2 } else { 0 },
         },
@@ -615,9 +629,9 @@ pub fn targeting(id: usize) -> Targeting {
     let allegiance = match id {
         290..=296 | 335 | 349 => Any,
         4 | 32 | 144 | 145 | 365 => Enemy,
-        362 | 364 | 372 | 378 => Any,
-        8 | 9 | 14 | 19 | 27 | 85 | 137 | 228 | 350 | 353 | 354 | 377 => Friendly,
-        16 | 29 | 82 | 217 | 218 => Mixed,
+        362 | 364 | 372 | 378 | 379 | 381 => Any,
+        8 | 9 | 14 | 19 | 27 | 85 | 137 | 228 | 350 | 353 | 354 | 377 | 380 | 382 => Friendly,
+        16 | 29 | 82 | 217 | 218 | 383 => Mixed,
         5 | 7 | 11 | 23 | 26 | 28 | 41 | 44 | 50 | 52 | 53 | 55 | 61 | 62 | 63 | 66 | 67 | 74
         | 75 | 76 | 79 | 80 | 81 | 83 | 99 | 135 | 136 | 141 | 142 | 143 | 146 | 216 | 219
         | 221 | 222 | 223 | 226 | 227 | 229 | 260 => Any,
@@ -652,6 +666,8 @@ pub fn target_bounds(id: usize) -> (usize, usize) {
         | ReturnGear
         | ReturnAndChannel
         | BanishSmallOrReturn { .. }
+        | BanishSmallOrGear { .. }
+        | BanishReplay(_)
         | KillEnemyDomain { .. }
         | Stun
         | GrantAssault(_) => (1, 1),
@@ -663,7 +679,9 @@ pub fn target_bounds(id: usize) -> (usize, usize) {
                 targets as usize
             },
         ),
-        DualMight | BounceBoth | SwapMight | Fight { .. } | EmpoweredFight { .. } => (2, 2),
+        DualMight | BounceBoth | SwapMight | Fight { .. } | EmpoweredFight { .. } | ArcaneShift => {
+            (2, 2)
+        }
         MoveFriendlyToBase { up_to } => (up_to as usize, 0),
         ModifyMight { .. }
         | ContextualMight(_)
@@ -690,7 +708,8 @@ pub fn play_target_spec(id: CardId) -> PlayTargetSpec {
         } else {
             match effect(id) {
                 OfficialEffect::KillGear { .. } | OfficialEffect::ReturnGear => (Some(Gear), 1, 1),
-                OfficialEffect::KillEnemyDomain { .. } => (Some(UnitOrGear), 1, 1),
+                OfficialEffect::KillEnemyDomain { .. }
+                | OfficialEffect::BanishSmallOrGear { .. } => (Some(UnitOrGear), 1, 1),
                 OfficialEffect::Counter(_) => (Some(Spell), 1, 1),
                 OfficialEffect::DestroyGearAndDraw => (Some(Gear), 1, 0),
                 OfficialEffect::TemporaryGear => (Some(Gear), 1, 1),
@@ -1004,6 +1023,10 @@ pub fn requirements(id: usize) -> &'static [Mechanic] {
         376 => &[Chain, Bounce, Ambush],
         377 => &[Chain, Bounce, Channel],
         378 => &[Chain, Bounce, Banish],
+        379 => &[Chain, Banish, Gear, Burn],
+        380 | 382 => &[Chain, Banish],
+        381 => &[Chain, Banish, Hidden],
+        383 => &[Chain, Banish, MultipleTargets],
         362 | 363 | 365 | 366 | 367 => &[Chain, Gear],
         364 => &[Chain, Gear, Flow],
         368 | 369 => &[Chain, Gear, ConquerHoldTriggers],
@@ -1869,7 +1892,7 @@ mod tests {
     #[test]
     fn all_catalog_entries_have_official_classification() {
         let cards = cards();
-        assert_eq!(cards.len(), 379);
+        assert_eq!(cards.len(), 384);
         for card in cards {
             assert_ne!(
                 effect(card.id),
@@ -1879,7 +1902,7 @@ mod tests {
             );
             assert_ne!(support_status(card.id), SupportStatus::UnknownCard);
         }
-        assert_eq!(effect(379), OfficialEffect::Unsupported);
+        assert_eq!(effect(384), OfficialEffect::Unsupported);
     }
 
     #[test]

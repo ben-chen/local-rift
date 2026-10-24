@@ -273,6 +273,12 @@ pub(super) fn target_view_hint(game: &Game, view: &PlayTargetView) -> String {
         {
             "an enemy Chaos unit (base or field), or gear in Loadout"
         }
+        Some(local_rift::rules::PlayTargetKind::UnitOrGear) if view.card_id == 379 => {
+            "a unit with 3 Might or less (base or field), or gear in Loadout"
+        }
+        Some(local_rift::rules::PlayTargetKind::Unit) if view.card_id == 383 && slot.index == 1 => {
+            "an enemy unit at a battlefield for 3 damage"
+        }
         Some(local_rift::rules::PlayTargetKind::UnitOrGear) => {
             "a battlefield unit, or gear in Loadout"
         }

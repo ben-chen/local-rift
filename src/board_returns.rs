@@ -20,6 +20,29 @@ impl Game {
         self.depart_unit_without_kill(target, UnitDestination::Banish)
     }
 
+    pub(crate) fn banish_gear_directly(&mut self, target: Target) {
+        let Target::Gear { player, gear_id } = target else {
+            return;
+        };
+        let Some(state) = self.players.get_mut(player) else {
+            return;
+        };
+        let Some(index) = state.gear.iter().position(|gear| gear.id == gear_id) else {
+            return;
+        };
+        let gear = state.gear.remove(index);
+        self.granted_temporary_gear.retain(|&id| id != gear_id);
+        self.empowered_units.retain(|&id| id != gear_id);
+        if !gear.token {
+            state.banish.push(gear.card_id);
+        }
+        self.push_log(if gear.token {
+            "A gear token is banished and ceases to exist.".into()
+        } else {
+            format!("{} is banished.", self.catalog[gear.card_id].name)
+        });
+    }
+
     fn depart_unit_without_kill(
         &mut self,
         target: Target,

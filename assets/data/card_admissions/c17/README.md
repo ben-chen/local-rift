@@ -1,0 +1,9 @@
+# C17 Banish and instructed replay: five source admissions
+
+Reviewed October 24, 2026. Runtime IDs 379–383 are Burn Away, Portal Rescue, Temporal Breach, Thrill of the Hunt and Arcane Shift. All five are single-print Standard-legal spell identities. The last two retain their Rengar and Ezreal Signature restrictions, whose legends were admitted in C16.
+
+`admissions.json` pins complete raw/effective printing facts, independent face observations, the original images and official CDN thumbnails. Burn Away reuses its exact original from the earlier source review and the reviewed Spell/Order corrections; the wrong original gallery fields are preserved. Portal Rescue keeps the original face and HTML separately from its official erratum: the unit’s **owner** plays it to **their base**. Source evidence is separate from gameplay verification.
+
+The previous 379 main cards, ten legends, all ten teaching recipes, four sourced presets, 118 field resolutions, 74 archived field-review printings/images, 43 historical issue groups and 29 complete identity reviews remain unchanged. This batch maps 411 of the dated inventory’s 1,079 legal identities; 668 remain unavailable. The inventory does not certify universal rules conformance.
+
+The shared instructed-play path now preserves Trash or Banish origin, a printed-cost waiver and destination constraints. The parent completes before finalization of the child. Failed child finalization restores only that physical card to its original zone. Tokens disappear, unit identities refresh, gear detaches, and original Trash Flow/index restoration remains separately checked. Arcane Shift ends its resolution when it banishes itself, including when Repeat was granted. Tests cover specific behavior and end-to-end consistency; full Standard fidelity remains an active project goal.

@@ -50,6 +50,7 @@ pub(super) fn origin_to_json(origin: PlayOrigin) -> Value {
         PlayOrigin::Hand => json!({"type":"hand"}),
         PlayOrigin::Champion => json!({"type":"champion"}),
         PlayOrigin::Trash => json!({"type":"trash"}),
+        PlayOrigin::Banish => json!({"type":"banish"}),
         PlayOrigin::Hidden { lane } => json!({"type":"hidden","lane":lane}),
         PlayOrigin::Token => json!({"type":"token"}),
     }

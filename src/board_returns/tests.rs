@@ -459,3 +459,6 @@ fn a_replaced_spirit_death_never_creates_its_deathknell() {
 
 #[path = "c15.rs"]
 mod c15;
+
+#[path = "c17.rs"]
+mod c17;

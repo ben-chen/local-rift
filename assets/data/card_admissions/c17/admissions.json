@@ -1,0 +1,562 @@
+{
+  "schema_version": 1,
+  "draft_not_for_import": false,
+  "reviewed_on": "2026-10-24",
+  "origin_gallery": {
+    "url": "https://playriftbound.com/en-us/card-gallery/",
+    "uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+    "archive": "assets/data/catalog_sources/gallery.html.gz"
+  },
+  "pre_admission_catalog_sha256": "0befb5a34c98a778503b98999617efb7a51cae0d3859ec72e6fe9646abd193d4",
+  "preserved_runtime_prefix": {
+    "card_count": 379,
+    "cards_sha256": "cd8efddf315fa42c157e42ba7e8fb1486f3d9c2d1badfbd59a51c4b4afeb2023",
+    "presets_sha256": "d6e64ebf3f8921686682dacd87d4b2b4baec5754dbd284c6d60bf3fb324571e2",
+    "legends_manifest_sha256": "a31bb93c27588bd4759985e9a4083372d5afae59d22b9ac9d48c54946e5474fe",
+    "training_recipe_source_sha256": "dc498f4f98cec6421dade7e01ead261693ed5f70d30d4d2c808da4a1bcb5b706"
+  },
+  "preserved_source_reviews": {
+    "field_resolutions_sha256": "6d26453f64145ecf376b54d93633c9f0436ac57f10ee0335a8a9f4089de71da9",
+    "raw_printings_sha256": "70a2bb884e9646fc7cbf59c08f11be0e8a5dc21852db91ecdc2bc69b9e2bb246",
+    "historical_issues_sha256": "0ca85c7748d2a5c102b90c3efa3e7f9c84daf82e9383ce3ef9db33ba0b682240",
+    "field_image_index_sha256": "070f50c15f90491ad2a481be73375b325b53d45a8ca28ee5f68b1bf00bf071e3",
+    "identity_reviews_sha256": "c61c191636c74795ec15c4149805d994c76c020093c98592a489766f30f54ad3"
+  },
+  "pre_admission_counts": {
+    "main_cards": 379,
+    "mapped_legal": 406,
+    "remaining_legal": 673
+  },
+  "scope": "Complete original faces, raw and effective official facts, existing Burn Away field corrections and separate Portal Rescue owner erratum. Gameplay verification is separate.",
+  "records": [
+    {
+      "official_id": "rad-124-167",
+      "name": "Burn Away",
+      "runtime_id": 379,
+      "raw_printing": {
+        "official_id": "rad-124-167",
+        "public_code": "RAD-124/167",
+        "name": "Burn Away",
+        "set": "RAD",
+        "collector_number": 124,
+        "types": [
+          "gear"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "gear"
+        ],
+        "accessibility_types": [
+          "spell"
+        ],
+        "type_labels_conflict": true,
+        "super_types": [],
+        "domains": [
+          "body"
+        ],
+        "energy": 3,
+        "power": 1,
+        "might": null,
+        "might_bonus": null,
+        "rules_html": "<p>Banish a unit with 3 :rb_might: or less or a gear. [Burn 2]. (Put the top 2 cards of your Main Deck into your trash.)</p>",
+        "rules_text": "Banish a unit with 3 Might or less or a gear. [Burn 2]. (Put the top 2 cards of your Main Deck into your trash.)",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [],
+        "rarity": "uncommon",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/751629a34ee6ba6476ce2f0a821b9f84b5562acd-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Spell: Burn Away. Banish a unit with 3 [S] or less or a gear. [Burn 2]. (Put the top 2 cards of your Main Deck into your trash.)",
+        "illustrators": [
+          "Michal Ivan"
+        ]
+      },
+      "raw_printing_sha256": "9b30a6ea1a5fa706a29b3cc89d078a7cad2d1d9ab201393f022ec70120fa14cd",
+      "effective": {
+        "types": [
+          "spell"
+        ],
+        "super_types": [],
+        "domains": [
+          "order"
+        ],
+        "energy": 3,
+        "power": 1,
+        "might": null,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>Banish a unit with 3 :rb_might: or less or a gear. [Burn 2]. (Put the top 2 cards of your Main Deck into your trash.)</p>",
+        "rules_text": "Banish a unit with 3 Might or less or a gear. [Burn 2]. (Put the top 2 cards of your Main Deck into your trash.)",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "existing_field_resolution_ids": [
+        "rad-124-167:types",
+        "rad-124-167:domains"
+      ],
+      "errata": [],
+      "visual_observation": {
+        "name": "Burn Away",
+        "collector_code": "RAD-124/167",
+        "printed_types": [
+          "spell"
+        ],
+        "printed_supertypes": [],
+        "printed_domains": [
+          "order"
+        ],
+        "printed_tags": [],
+        "printed_energy": 3,
+        "printed_power": 1,
+        "printed_might": null,
+        "printed_might_bonus": null,
+        "printed_rules_icons_expanded": "Banish a unit with 3 Might or less or a gear. [Burn 2]. (Put the top 2 cards of your Main Deck into your trash.)",
+        "printed_equipment_icons_expanded": "",
+        "face_visually_inspected": true,
+        "reviewed_on": "2026-10-24",
+        "official_id": "rad-124-167",
+        "original_image_sha256": "06e041970d02ac880d51f2f0ba94585a2b6d7ec83e32f07bfa84054fef80b52d",
+        "uncertainties": []
+      },
+      "original_image": {
+        "path": "assets/data/catalog_evidence/images/rad-124-167.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/751629a34ee6ba6476ce2f0a821b9f84b5562acd-744x1039.png?accountingTag=RB",
+        "bytes": 789804,
+        "sha256": "06e041970d02ac880d51f2f0ba94585a2b6d7ec83e32f07bfa84054fef80b52d"
+      },
+      "runtime_image": {
+        "path": "assets/art/card_379.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/751629a34ee6ba6476ce2f0a821b9f84b5562acd-744x1039.png?w=360&q=80&fm=png",
+        "bytes": 269491,
+        "sha256": "42d7beefc0d513be1c82cb62f578472bf0e064072c19f5b503e33bde6ff6be36"
+      }
+    },
+    {
+      "official_id": "ogn-102-298",
+      "name": "Portal Rescue",
+      "runtime_id": 380,
+      "raw_printing": {
+        "official_id": "ogn-102-298",
+        "public_code": "OGN-102/298",
+        "name": "Portal Rescue",
+        "set": "OGN",
+        "collector_number": 102,
+        "types": [
+          "spell"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "spell"
+        ],
+        "accessibility_types": [
+          "spell"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "mind"
+        ],
+        "energy": 3,
+        "power": 1,
+        "might": null,
+        "might_bonus": null,
+        "rules_html": "<p>[Action] (Play on your turn or in showdowns.)<br />Banish a friendly unit, then play it to base, ignoring its cost.</p>",
+        "rules_text": "[Action] (Play on your turn or in showdowns.)\nBanish a friendly unit, then play it to base, ignoring its cost.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [],
+        "rarity": "uncommon",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/bafb4c68fa9a3eb71fecd0cdffb9e20b9f68d532-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Spell: Portal Rescue. [Action] (Play on your turn or in showdowns.)\nBanish a friendly unit, then play it to base, ignoring its cost.",
+        "illustrators": [
+          "Kudos Productions"
+        ]
+      },
+      "raw_printing_sha256": "a8c1b077141f9b4a5772e8eeee79ce212b577a438d1c4d421a7fa7316b007344",
+      "effective": {
+        "types": [
+          "spell"
+        ],
+        "super_types": [],
+        "domains": [
+          "mind"
+        ],
+        "energy": 3,
+        "power": 1,
+        "might": null,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>[Action] (Play on your turn or in showdowns.)<br />Banish a friendly unit, then play it to base, ignoring its cost.</p>",
+        "rules_text": "[Action] (Play on your turn or in showdowns.)\nBanish a friendly unit, then play it to base, ignoring its cost.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "existing_field_resolution_ids": [],
+      "errata": [
+        {
+          "article_heading": "Portal Rescue",
+          "text": "[Action] (Play on your turn or in showdowns.)\nBanish a friendly unit, then its owner plays it to their base, ignoring its cost.",
+          "source_url": "https://playriftbound.com/en-us/news/rules-and-releases/riftbound-origins-card-errata/"
+        }
+      ],
+      "visual_observation": {
+        "name": "Portal Rescue",
+        "collector_code": "OGN-102/298",
+        "printed_types": [
+          "spell"
+        ],
+        "printed_supertypes": [],
+        "printed_domains": [
+          "mind"
+        ],
+        "printed_tags": [],
+        "printed_energy": 3,
+        "printed_power": 1,
+        "printed_might": null,
+        "printed_might_bonus": null,
+        "printed_rules_icons_expanded": "[Action] (Play on your turn or in showdowns.)\nBanish a friendly unit, then play it to base, ignoring its cost.",
+        "printed_equipment_icons_expanded": "",
+        "face_visually_inspected": true,
+        "reviewed_on": "2026-10-24",
+        "official_id": "ogn-102-298",
+        "original_image_sha256": "6b33a9068248e8958f71f642f8bb1e80178f9ea73edf4e150433a4169ed04885",
+        "uncertainties": []
+      },
+      "original_image": {
+        "path": "assets/data/card_admissions/c17/originals/ogn-102-298.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/bafb4c68fa9a3eb71fecd0cdffb9e20b9f68d532-744x1039.png?accountingTag=RB",
+        "bytes": 800285,
+        "sha256": "6b33a9068248e8958f71f642f8bb1e80178f9ea73edf4e150433a4169ed04885"
+      },
+      "runtime_image": {
+        "path": "assets/art/card_380.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/bafb4c68fa9a3eb71fecd0cdffb9e20b9f68d532-744x1039.png?w=360&q=80&fm=png",
+        "bytes": 263847,
+        "sha256": "85eb52be3015c7fa8e7acad06ba662a8aefba42a2d25263972701cb0b267547e"
+      }
+    },
+    {
+      "official_id": "ven-066-166",
+      "name": "Temporal Breach",
+      "runtime_id": 381,
+      "raw_printing": {
+        "official_id": "ven-066-166",
+        "public_code": "VEN-066/166",
+        "name": "Temporal Breach",
+        "set": "VEN",
+        "collector_number": 66,
+        "types": [
+          "spell"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "spell"
+        ],
+        "accessibility_types": [
+          "spell"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "mind"
+        ],
+        "energy": 2,
+        "power": 1,
+        "might": null,
+        "might_bonus": null,
+        "rules_html": "<p>[Hidden] (Hide now for :rb_rune_rainbow: to react with later for :rb_energy_0:.)<br />Banish a unit, then its owner plays it to the same location, ignoring its cost.</p>",
+        "rules_text": "[Hidden] (Hide now for [Any Power] to react with later for [0 Energy].)\nBanish a unit, then its owner plays it to the same location, ignoring its cost.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [],
+        "rarity": "rare",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/7c670dc3d997c52b90d67043989b53c67a72f4c4-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Spell: Temporal Breach. [Hidden] (Hide now for [A] to react with later for [0].)\nBanish a unit, then its owner plays it to the same location, ignoring its cost.",
+        "illustrators": [
+          "Kudos Productions"
+        ]
+      },
+      "raw_printing_sha256": "91c1c27e4f5139464b7e4cf0a7f9c4b8d1c96ce6098a10f3f40f5fe422a41b8e",
+      "effective": {
+        "types": [
+          "spell"
+        ],
+        "super_types": [],
+        "domains": [
+          "mind"
+        ],
+        "energy": 2,
+        "power": 1,
+        "might": null,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>[Hidden] (Hide now for :rb_rune_rainbow: to react with later for :rb_energy_0:.)<br />Banish a unit, then its owner plays it to the same location, ignoring its cost.</p>",
+        "rules_text": "[Hidden] (Hide now for [Any Power] to react with later for [0 Energy].)\nBanish a unit, then its owner plays it to the same location, ignoring its cost.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "existing_field_resolution_ids": [],
+      "errata": [],
+      "visual_observation": {
+        "name": "Temporal Breach",
+        "collector_code": "VEN-066/166",
+        "printed_types": [
+          "spell"
+        ],
+        "printed_supertypes": [],
+        "printed_domains": [
+          "mind"
+        ],
+        "printed_tags": [],
+        "printed_energy": 2,
+        "printed_power": 1,
+        "printed_might": null,
+        "printed_might_bonus": null,
+        "printed_rules_icons_expanded": "[Hidden] (Hide now for [Any Power] to react with later for [0 Energy].)\nBanish a unit, then its owner plays it to the same location, ignoring its cost.",
+        "printed_equipment_icons_expanded": "",
+        "face_visually_inspected": true,
+        "reviewed_on": "2026-10-24",
+        "official_id": "ven-066-166",
+        "original_image_sha256": "741b3e4ee3eaf417f7b32e975ff73b49da229dc47672f179f61355b4f3722e67",
+        "uncertainties": []
+      },
+      "original_image": {
+        "path": "assets/data/card_admissions/c17/originals/ven-066-166.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/7c670dc3d997c52b90d67043989b53c67a72f4c4-744x1039.png?accountingTag=RB",
+        "bytes": 785967,
+        "sha256": "741b3e4ee3eaf417f7b32e975ff73b49da229dc47672f179f61355b4f3722e67"
+      },
+      "runtime_image": {
+        "path": "assets/art/card_381.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/7c670dc3d997c52b90d67043989b53c67a72f4c4-744x1039.png?w=360&q=80&fm=png",
+        "bytes": 290776,
+        "sha256": "23b171e5e93ef5f4d7cfbbc685df709b6c624fe2c2ac47095048b058355a5e4a"
+      }
+    },
+    {
+      "official_id": "unl-184-219",
+      "name": "Thrill of the Hunt",
+      "runtime_id": 382,
+      "raw_printing": {
+        "official_id": "unl-184-219",
+        "public_code": "UNL-184/219",
+        "name": "Thrill of the Hunt",
+        "set": "UNL",
+        "collector_number": 184,
+        "types": [
+          "spell"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "spell"
+        ],
+        "accessibility_types": [
+          "spell"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [
+          "signature"
+        ],
+        "domains": [
+          "fury",
+          "body"
+        ],
+        "energy": 2,
+        "power": 1,
+        "might": null,
+        "might_bonus": null,
+        "rules_html": "<p>[Reaction] (Play any time, even before spells and abilities resolve.)<br />Banish a friendly unit, then its owner plays it to any battlefield, ignoring its cost.</p>",
+        "rules_text": "[Reaction] (Play any time, even before spells and abilities resolve.)\nBanish a friendly unit, then its owner plays it to any battlefield, ignoring its cost.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [
+          "Rengar"
+        ],
+        "rarity": "epic",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/2753c2b3ea4fd55e5225a4451a29736b5c3434a8-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Spell: Thrill of the Hunt. [Reaction] (Play any time, even before spells and abilities resolve.)\nBanish a friendly unit, then its owner plays it to any battlefield, ignoring its cost.",
+        "illustrators": [
+          "华锐"
+        ]
+      },
+      "raw_printing_sha256": "921306d34bee3fa5fb22f49de54b435f4c6d0f5a0501af0e988b799a151644c5",
+      "effective": {
+        "types": [
+          "spell"
+        ],
+        "super_types": [
+          "signature"
+        ],
+        "domains": [
+          "fury",
+          "body"
+        ],
+        "energy": 2,
+        "power": 1,
+        "might": null,
+        "might_bonus": null,
+        "tags": [
+          "Rengar"
+        ],
+        "rules_html": "<p>[Reaction] (Play any time, even before spells and abilities resolve.)<br />Banish a friendly unit, then its owner plays it to any battlefield, ignoring its cost.</p>",
+        "rules_text": "[Reaction] (Play any time, even before spells and abilities resolve.)\nBanish a friendly unit, then its owner plays it to any battlefield, ignoring its cost.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "existing_field_resolution_ids": [],
+      "errata": [],
+      "visual_observation": {
+        "name": "Thrill of the Hunt",
+        "collector_code": "UNL-184/219",
+        "printed_types": [
+          "spell"
+        ],
+        "printed_supertypes": [
+          "signature"
+        ],
+        "printed_domains": [
+          "fury",
+          "body"
+        ],
+        "printed_tags": [
+          "Rengar"
+        ],
+        "printed_energy": 2,
+        "printed_power": 1,
+        "printed_might": null,
+        "printed_might_bonus": null,
+        "printed_rules_icons_expanded": "[Reaction] (Play any time, even before spells and abilities resolve.)\nBanish a friendly unit, then its owner plays it to any battlefield, ignoring its cost.",
+        "printed_equipment_icons_expanded": "",
+        "face_visually_inspected": true,
+        "reviewed_on": "2026-10-24",
+        "official_id": "unl-184-219",
+        "original_image_sha256": "e2b9ef9a1a6b9c3f6b2584911a58ee292fa18a651d8b546431cb283daa798ad6",
+        "uncertainties": []
+      },
+      "original_image": {
+        "path": "assets/data/card_admissions/c17/originals/unl-184-219.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/2753c2b3ea4fd55e5225a4451a29736b5c3434a8-744x1039.png?accountingTag=RB",
+        "bytes": 1035434,
+        "sha256": "e2b9ef9a1a6b9c3f6b2584911a58ee292fa18a651d8b546431cb283daa798ad6"
+      },
+      "runtime_image": {
+        "path": "assets/art/card_382.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/2753c2b3ea4fd55e5225a4451a29736b5c3434a8-744x1039.png?w=320&q=80&fm=png",
+        "bytes": 281941,
+        "sha256": "8008ea740193b39df109ef0b0abc234b4881b30f3bb72e0aa74800e148e06278"
+      }
+    },
+    {
+      "official_id": "sfd-200-221",
+      "name": "Arcane Shift",
+      "runtime_id": 383,
+      "raw_printing": {
+        "official_id": "sfd-200-221",
+        "public_code": "SFD-200/221",
+        "name": "Arcane Shift",
+        "set": "SFD",
+        "collector_number": 200,
+        "types": [
+          "spell"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "spell"
+        ],
+        "accessibility_types": [
+          "spell"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [
+          "signature"
+        ],
+        "domains": [
+          "mind",
+          "chaos"
+        ],
+        "energy": 3,
+        "power": 1,
+        "might": null,
+        "might_bonus": null,
+        "rules_html": "<p>[Action] (Play on your turn or in showdowns.)<br />Banish a friendly unit, then its owner plays it, ignoring its cost. Deal 3 to an enemy unit at a battlefield. Banish this.</p>",
+        "rules_text": "[Action] (Play on your turn or in showdowns.)\nBanish a friendly unit, then its owner plays it, ignoring its cost. Deal 3 to an enemy unit at a battlefield. Banish this.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [
+          "Ezreal"
+        ],
+        "rarity": "epic",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/a5d1d26dee01db24f32a1432639478753d22aa92-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Spell: Arcane Shift. [Action] (Play on your turn or in showdowns.)\nBanish a friendly unit, then its owner plays it, ignoring its cost. Deal 3 to an enemy unit at a battlefield. Banish this.",
+        "illustrators": [
+          "Original Force"
+        ]
+      },
+      "raw_printing_sha256": "233ddf0b760e703dd315a5a4bf6023512475ab4fd48c411cfec0b29f1c51b97a",
+      "effective": {
+        "types": [
+          "spell"
+        ],
+        "super_types": [
+          "signature"
+        ],
+        "domains": [
+          "mind",
+          "chaos"
+        ],
+        "energy": 3,
+        "power": 1,
+        "might": null,
+        "might_bonus": null,
+        "tags": [
+          "Ezreal"
+        ],
+        "rules_html": "<p>[Action] (Play on your turn or in showdowns.)<br />Banish a friendly unit, then its owner plays it, ignoring its cost. Deal 3 to an enemy unit at a battlefield. Banish this.</p>",
+        "rules_text": "[Action] (Play on your turn or in showdowns.)\nBanish a friendly unit, then its owner plays it, ignoring its cost. Deal 3 to an enemy unit at a battlefield. Banish this.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "existing_field_resolution_ids": [],
+      "errata": [],
+      "visual_observation": {
+        "name": "Arcane Shift",
+        "collector_code": "SFD-200/221",
+        "printed_types": [
+          "spell"
+        ],
+        "printed_supertypes": [
+          "signature"
+        ],
+        "printed_domains": [
+          "mind",
+          "chaos"
+        ],
+        "printed_tags": [
+          "Ezreal"
+        ],
+        "printed_energy": 3,
+        "printed_power": 1,
+        "printed_might": null,
+        "printed_might_bonus": null,
+        "printed_rules_icons_expanded": "[Action] (Play on your turn or in showdowns.)\nBanish a friendly unit, then its owner plays it, ignoring its cost. Deal 3 to an enemy unit at a battlefield. Banish this.",
+        "printed_equipment_icons_expanded": "",
+        "face_visually_inspected": true,
+        "reviewed_on": "2026-10-24",
+        "official_id": "sfd-200-221",
+        "original_image_sha256": "0336ea80520120fc29da97eff0bcda5aef1cc0b5dca3f28173068f50cb72b7b9",
+        "uncertainties": []
+      },
+      "original_image": {
+        "path": "assets/data/card_admissions/c17/originals/sfd-200-221.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/a5d1d26dee01db24f32a1432639478753d22aa92-744x1039.png?accountingTag=RB",
+        "bytes": 1155624,
+        "sha256": "0336ea80520120fc29da97eff0bcda5aef1cc0b5dca3f28173068f50cb72b7b9"
+      },
+      "runtime_image": {
+        "path": "assets/art/card_383.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/a5d1d26dee01db24f32a1432639478753d22aa92-744x1039.png?w=280&q=80&fm=png",
+        "bytes": 265450,
+        "sha256": "ff42d00cd732cd03f740772e7d4f66b7e4ff7b43ffabf1dddad1daa9bf5435bd"
+      }
+    }
+  ]
+}

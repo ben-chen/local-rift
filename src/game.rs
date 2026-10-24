@@ -16,6 +16,10 @@ use std::collections::VecDeque;
 
 #[path = "board_returns.rs"]
 mod board_returns;
+#[path = "instructed_play.rs"]
+mod instructed_play;
+use instructed_play::PendingOrigin;
+pub use instructed_play::{BaseCostWaiver, PlayDestination, PlayInstruction};
 #[path = "board_targets.rs"]
 pub mod board_targets;
 #[path = "damage.rs"]
@@ -600,6 +604,10 @@ pub enum InstructedPlayKind {
     Fizz,
     LastRites,
     Matriarch,
+    PortalRescue,
+    TemporalBreach,
+    ThrillOfTheHunt,
+    ArcaneShift,
 }
 
 /// A real card moved to the chain by an instruction, awaiting finalization.
@@ -609,9 +617,8 @@ pub struct PendingCard {
     pub player: usize,
     pub card_id: CardId,
     pub kind: InstructedPlayKind,
-    origin_index: usize,
-    origin_flow: bool,
-    origin_targets: Vec<u32>,
+    pub instruction: PlayInstruction,
+    origin: PendingOrigin,
 }
 
 /// Tokens created on the chain await finalization after their parent effect.
@@ -2616,7 +2623,8 @@ impl Game {
                     self.players[item.player].name, self.catalog[item.card_id].name
                 ));
                 self.resolve_operation(item.player, item.card_id, item.lane, targets, None)?;
-                if item.options.repeat {
+                if item.options.repeat && rules::effect(item.card_id) != OfficialEffect::ArcaneShift
+                {
                     self.resolve_operation(
                         item.player,
                         item.card_id,
@@ -2628,7 +2636,10 @@ impl Game {
             }
             // A physical spell stays out of trash until every repeated
             // instruction finishes, including draws that may cause burnout.
-            if matches!(rules::effect(item.card_id), OfficialEffect::ExtraTurn) {
+            if matches!(
+                rules::effect(item.card_id),
+                OfficialEffect::ExtraTurn | OfficialEffect::ArcaneShift
+            ) {
                 self.players[item.player].banish.push(item.card_id);
             } else {
                 self.players[item.player].discard.push(item.card_id);
@@ -2820,7 +2831,7 @@ impl Game {
                 .take()
                 .ok_or("The pending card is missing.")?;
             // CR358.5 undoes a play that cannot finalize, including its move
-            // out of the originating trash. No completed-play trigger occurs.
+            // out of its origin. No completed-play trigger occurs.
             self.restore_reserved_grants(card.id);
             self.restore_failed_card(card);
             self.decision = None;
@@ -3875,9 +3886,12 @@ impl Game {
             player,
             card_id,
             kind: InstructedPlayKind::Fizz,
-            origin_index: index,
-            origin_flow,
-            origin_targets,
+            instruction: InstructedPlayKind::Fizz.instruction(None),
+            origin: PendingOrigin::Trash {
+                index,
+                flow: origin_flow,
+                target_chain_ids: origin_targets,
+            },
         })
     }
 
@@ -3911,36 +3925,36 @@ impl Game {
             })
             .collect();
         let card_id = self.remove_from_trash(player, trash_index);
-        self.trigger_batch += 1;
         let id = self.next_chain_id;
         self.next_chain_id += 1;
-        self.reserve_play_grants(player, self.catalog[card_id].kind, id, false);
-        let card = PendingCard {
+        self.queue_pending_card(PendingCard {
             id,
             player,
             card_id,
             kind,
-            origin_index: trash_index,
-            origin_flow,
-            origin_targets,
-        };
-        self.pending_triggers.push(PendingTrigger {
-            batch: self.trigger_batch,
-            option: TriggerOption {
-                id,
-                card_id,
-                label: "Pending instructed card play".into(),
+            instruction: kind.instruction(None),
+            origin: PendingOrigin::Trash {
+                index: trash_index,
+                flow: origin_flow,
+                target_chain_ids: origin_targets,
             },
-            player,
-            effect: PendingTriggerEffect::Card(card),
         });
-        self.trigger_batch += 1;
     }
 
     fn restore_failed_card(&mut self, card: PendingCard) {
-        let index = card
-            .origin_index
-            .min(self.players[card.player].discard.len());
+        let (origin_index, origin_flow, origin_targets) = match card.origin {
+            PendingOrigin::Banish { index } => {
+                let zone = &mut self.players[card.player].banish;
+                zone.insert(index.min(zone.len()), card.card_id);
+                return;
+            }
+            PendingOrigin::Trash {
+                index,
+                flow,
+                target_chain_ids,
+            } => (index, flow, target_chain_ids),
+        };
+        let index = origin_index.min(self.players[card.player].discard.len());
         for item in &mut self.chain {
             if item.player == card.player
                 && let Some(
@@ -3949,7 +3963,7 @@ impl Game {
                     | ChainAbility::GrantFlowChosen { trash_index, .. },
                 ) = &mut item.ability
             {
-                if card.origin_targets.contains(&item.id) {
+                if origin_targets.contains(&item.id) {
                     *trash_index = index;
                 } else if *trash_index != usize::MAX && *trash_index >= index {
                     *trash_index += 1;
@@ -3961,7 +3975,7 @@ impl Game {
                 *selected += 1;
             }
         }
-        if card.origin_flow {
+        if origin_flow {
             self.temporary_flow[card.player].push(index);
         }
         self.players[card.player]
@@ -4816,28 +4830,16 @@ impl Game {
                 .ok_or("Choose a card in your trash.")?
         };
         let card = self.catalog[id];
-        let decision = pending.as_ref().map_or_else(
-            || self.decision.clone(),
-            |card| {
-                Some(match card.kind {
-                    InstructedPlayKind::Fizz => Decision::ReplaySpell { player },
-                    InstructedPlayKind::LastRites => Decision::LastRites { player, gear_id: 0 },
-                    InstructedPlayKind::Matriarch => Decision::RevivePlay {
-                        player,
-                        trash_index,
-                        card_id: id,
-                    },
-                })
-            },
-        );
-        let free_energy = matches!(decision, Some(Decision::ReplaySpell { .. }));
+        let decision = self.decision.clone();
+        let instruction = self.current_play_instruction();
+        let free_energy = instruction.is_some_and(|i| i.cost == BaseCostWaiver::Energy);
         let selecting_revive = matches!(decision, Some(Decision::ReviveUnit { .. }));
-        let free_all = selecting_revive || matches!(decision, Some(Decision::RevivePlay { .. }));
+        let free_all = instruction.is_some_and(|i| i.cost == BaseCostWaiver::All);
         if selecting_revive && options != PlayOptions::default() {
             return Err("Choose Matriarch's unit now; its optional play costs are chosen when the ability resolves.".into());
         }
-        if free_all && lane.is_some() {
-            return Err("Matriarch plays the unit at your base.".into());
+        if let Some(instruction) = instruction {
+            instruction.validate_destination(lane)?;
         }
         let flows = self.flow_costs(player, trash_index);
         if flow_source.is_some() && decision.is_some() {
@@ -4859,6 +4861,11 @@ impl Game {
         };
         let flow = chosen_flow.map(|f| (f.energy, f.power, f.colored));
         match decision {
+            Some(Decision::PendingPlay { .. })
+                if pending.as_ref().is_some_and(|p| match p.kind {
+                    InstructedPlayKind::Fizz => card.kind == CardKind::Spell && card.cost <= 3,
+                    _ => card.kind == CardKind::Unit,
+                }) => {}
             Some(Decision::LastRites { .. }) if card.kind == CardKind::Unit => {}
             Some(Decision::ReplaySpell { .. })
                 if card.kind == CardKind::Spell && card.cost <= 3 => {}
@@ -4904,7 +4911,7 @@ impl Game {
         }
         probe.catalog[id].cost = 0;
         probe.catalog[id].power_cost = 0;
-        probe.validate_play_structure(id, lane)?;
+        probe.validate_play_structure_with_instruction(id, lane, instruction)?;
         // Bypassing timing must not erase the spells that a replayed counter can target.
         probe.chain = original_chain;
         let targets = probe.prepare_targets_mode(player, id, lane, &provided, automatic)?;
@@ -5657,6 +5664,15 @@ impl Game {
     }
 
     fn validate_play_structure(&self, id: CardId, lane: Option<usize>) -> Result<(), String> {
+        self.validate_play_structure_with_instruction(id, lane, None)
+    }
+
+    fn validate_play_structure_with_instruction(
+        &self,
+        id: CardId,
+        lane: Option<usize>,
+        instruction: Option<PlayInstruction>,
+    ) -> Result<(), String> {
         let card = self.catalog.get(id).ok_or("Unknown card.")?;
         let actor = self.priority();
         if !self.card_supported(id) {
@@ -5699,7 +5715,12 @@ impl Game {
             );
             let legal_unit_location = lane < BATTLEFIELDS
                 && card.kind == CardKind::Unit
-                && (self.battlefield_owner[lane] == Some(actor)
+                && (instruction.is_some_and(|i| {
+                    matches!(
+                        i.destination,
+                        PlayDestination::Exact(_) | PlayDestination::AnyBattlefield
+                    )
+                }) || self.battlefield_owner[lane] == Some(actor)
                     || (ambush && self.lane_count(actor, lane) > 0)
                     || (enemy_field && self.lane_count(1 - actor, lane) > 0));
             if lane >= BATTLEFIELDS || (!movement_spell && !legal_unit_location) {
@@ -5885,6 +5906,12 @@ impl Game {
                 let Target::Unit { player: owner, .. } = target else {
                     continue;
                 };
+                if matches!(effect, OfficialEffect::BanishReplay(_))
+                    || (effect == OfficialEffect::ArcaneShift && targets.is_empty())
+                {
+                    candidates.push((self.replay_target_score(actor, target)?, target));
+                    continue;
+                }
                 if effect == OfficialEffect::ReturnAndChannel {
                     candidates.push((self.friendly_return_score(actor, target)?, target));
                     continue;
@@ -5895,7 +5922,9 @@ impl Game {
                 }
                 let hostile = matches!(
                     effect,
-                    OfficialEffect::GiveTemporary
+                    OfficialEffect::BanishSmallOrGear { .. }
+                        | OfficialEffect::ArcaneShift
+                        | OfficialEffect::GiveTemporary
                         | OfficialEffect::Damage { .. }
                         | OfficialEffect::ContextualDamage(_)
                         | OfficialEffect::DamageAndGold { .. }
@@ -6107,6 +6136,18 @@ impl Game {
                 return Ok(false);
             }
             match rules::effect(id) {
+                OfficialEffect::BanishSmallOrGear { maximum, .. } => {
+                    let eligible = match target {
+                        Target::Gear { .. } => true,
+                        Target::Unit { .. } => self
+                            .unit_ref(target)
+                            .map(|u| self.unit_might(u))
+                            .transpose()?
+                            .is_some_and(|m| m <= u64::from(maximum)),
+                        _ => false,
+                    };
+                    return Ok(eligible && self.can_choose_board_target(actor, target));
+                }
                 OfficialEffect::KillGear { .. } | OfficialEffect::ReturnGear => {
                     return Ok(matches!(target, Target::Gear { .. })
                         && self.can_choose_board_target(actor, target));
@@ -6167,6 +6208,7 @@ impl Game {
             }
             match rules::effect(id) {
                 OfficialEffect::BanishSmallOrReturn { .. } => unit.lane.is_some(),
+                OfficialEffect::ArcaneShift => slot == 0 || unit.lane.is_some(),
                 OfficialEffect::GiveTemporary => unit.lane.is_some(),
                 OfficialEffect::Kill {
                     battlefield_only,
@@ -6650,6 +6692,42 @@ impl Game {
             valid.retain(|&target| self.target_location(target) == location);
         }
         match rules::effect(id) {
+            OfficialEffect::BanishSmallOrGear { burn, .. } => {
+                if let Some(&target) = valid.first() {
+                    match target {
+                        Target::Unit { .. } => {
+                            self.banish_unit_directly(target);
+                        }
+                        Target::Gear { .. } => self.banish_gear_directly(target),
+                        _ => {}
+                    }
+                }
+                // Separate instruction: a mistarget does not prevent Burn.
+                self.burn(player, burn);
+            }
+            OfficialEffect::BanishReplay(kind) => {
+                if let Some(&target) = valid.first() {
+                    self.banish_and_replay(target, kind);
+                }
+            }
+            OfficialEffect::ArcaneShift => {
+                // Preserve the heterogeneous slots when one target mistargets.
+                if let Some(&target) = targets.first().filter(|t| valid.contains(t)) {
+                    self.banish_and_replay(target, InstructedPlayKind::ArcaneShift);
+                }
+                if let Some(&target) = targets.get(1).filter(|t| valid.contains(t)) {
+                    let context = self
+                        .current_damage_context()
+                        .unwrap_or(damage::DamageContext {
+                            player,
+                            bonus_damage: 0,
+                            dealer: damage::DamageDealer::Ability,
+                        });
+                    self.deal_damage(context, target, 3)?;
+                }
+                // The resolving spell leaves the chain in resolve_spell_executions,
+                // immediately after these instructions and before another Repeat.
+            }
             OfficialEffect::ReturnAndChannel => {
                 if let Some(&target) = valid.first()
                     && let Some(owner) = self.return_unit_to_hand(target)
@@ -8585,6 +8663,24 @@ impl Game {
                 .prepare_targets(actor, id, None, &[])
                 .unwrap_or_default();
             match rules::effect(id) {
+                OfficialEffect::BanishReplay(_) => targets
+                    .first()
+                    .map_or(Ok(0), |&t| self.replay_target_score(actor, t))?
+                    .max(0),
+                OfficialEffect::ArcaneShift => {
+                    targets
+                        .first()
+                        .map_or(Ok(0), |&t| self.replay_target_score(actor, t))?
+                        .max(0)
+                        + 45
+                }
+                OfficialEffect::BanishSmallOrGear { .. } => {
+                    targets
+                        .first()
+                        .map_or(Ok(0), |&t| self.return_target_score(actor, t))?
+                        .max(0)
+                        + 25
+                }
                 OfficialEffect::ReturnAndChannel => targets
                     .first()
                     .map_or(Ok::<_, String>(0), |&target| {

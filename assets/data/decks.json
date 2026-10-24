@@ -9749,6 +9749,125 @@
         "Action"
       ],
       "tags": []
+    },
+    {
+      "id": 379,
+      "name": "Burn Away",
+      "official_id": "rad-124-167",
+      "energy": 3,
+      "power": 1,
+      "might": 0,
+      "domains": [
+        "Order"
+      ],
+      "kind": "Spell",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/751629a34ee6ba6476ce2f0a821b9f84b5562acd-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "Banish a unit with 3 Might or less or a gear. [Burn 2]. (Put the top 2 cards of your Main Deck into your trash.)",
+      "official_text_html": "<p>Banish a unit with 3 :rb_might: or less or a gear. [Burn 2]. (Put the top 2 cards of your Main Deck into your trash.)</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": []
+    },
+    {
+      "id": 380,
+      "name": "Portal Rescue",
+      "official_id": "ogn-102-298",
+      "energy": 3,
+      "power": 1,
+      "might": 0,
+      "domains": [
+        "Mind"
+      ],
+      "kind": "Spell",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/bafb4c68fa9a3eb71fecd0cdffb9e20b9f68d532-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Action] (Play on your turn or in showdowns.)\nBanish a friendly unit, then its owner plays it to their base, ignoring its cost.",
+      "official_text_html": "<p>[Action] (Play on your turn or in showdowns.)<br />Banish a friendly unit, then play it to base, ignoring its cost.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Action"
+      ],
+      "tags": []
+    },
+    {
+      "id": 381,
+      "name": "Temporal Breach",
+      "official_id": "ven-066-166",
+      "energy": 2,
+      "power": 1,
+      "might": 0,
+      "domains": [
+        "Mind"
+      ],
+      "kind": "Spell",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/7c670dc3d997c52b90d67043989b53c67a72f4c4-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Hidden] (Hide now for [Any Power] to react with later for [0 Energy].)\nBanish a unit, then its owner plays it to the same location, ignoring its cost.",
+      "official_text_html": "<p>[Hidden] (Hide now for :rb_rune_rainbow: to react with later for :rb_energy_0:.)<br />Banish a unit, then its owner plays it to the same location, ignoring its cost.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Hidden"
+      ],
+      "tags": []
+    },
+    {
+      "id": 382,
+      "name": "Thrill of the Hunt",
+      "official_id": "unl-184-219",
+      "energy": 2,
+      "power": 1,
+      "might": 0,
+      "domains": [
+        "Fury",
+        "Body"
+      ],
+      "kind": "Spell",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/2753c2b3ea4fd55e5225a4451a29736b5c3434a8-744x1039.png?w=320&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Reaction] (Play any time, even before spells and abilities resolve.)\nBanish a friendly unit, then its owner plays it to any battlefield, ignoring its cost.",
+      "official_text_html": "<p>[Reaction] (Play any time, even before spells and abilities resolve.)<br />Banish a friendly unit, then its owner plays it to any battlefield, ignoring its cost.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Reaction"
+      ],
+      "tags": [
+        "Rengar"
+      ]
+    },
+    {
+      "id": 383,
+      "name": "Arcane Shift",
+      "official_id": "sfd-200-221",
+      "energy": 3,
+      "power": 1,
+      "might": 0,
+      "domains": [
+        "Mind",
+        "Chaos"
+      ],
+      "kind": "Spell",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/a5d1d26dee01db24f32a1432639478753d22aa92-744x1039.png?w=280&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Action] (Play on your turn or in showdowns.)\nBanish a friendly unit, then its owner plays it, ignoring its cost. Deal 3 to an enemy unit at a battlefield. Banish this.",
+      "official_text_html": "<p>[Action] (Play on your turn or in showdowns.)<br />Banish a friendly unit, then its owner plays it, ignoring its cost. Deal 3 to an enemy unit at a battlefield. Banish this.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Action"
+      ],
+      "tags": [
+        "Ezreal"
+      ]
     }
   ],
   "official_text_note": "Official card/legend rules text from the Riot Card Gallery, retrieved 2026-10-24 and corrected by cited errata. Resource icon tokens are expanded to readable bracketed names. Raw card and equipment HTML is preserved separately. Official text does not establish full implementation fidelity."

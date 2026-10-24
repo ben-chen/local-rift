@@ -910,11 +910,21 @@ fn response_window_advice(
                     local_rift::game::InstructedPlayKind::LastRites => {
                         "Finalize the chosen unit, paying its costs. Choose its destination and any optional costs now, after Last Rites has resolved."
                     }
-                    local_rift::game::InstructedPlayKind::Matriarch => {
+                    local_rift::game::InstructedPlayKind::Matriarch
+                    | local_rift::game::InstructedPlayKind::PortalRescue => {
                         "Play the chosen unit at base. Its base cost is waived; optional costs such as Accelerate are chosen and paid now."
                     }
+                    local_rift::game::InstructedPlayKind::TemporalBreach => {
+                        "Play the unit where it was banished from. Its base cost is waived; additional costs still apply. It enters as a new unit, without its old damage or equipment."
+                    }
+                    local_rift::game::InstructedPlayKind::ThrillOfTheHunt => {
+                        "Play the unit at either battlefield, even one an opponent controls. Its base cost is waived; additional costs still apply. Choose the field that best advances your next point."
+                    }
+                    local_rift::game::InstructedPlayKind::ArcaneShift => {
+                        "Play the unit at base or another location where it can normally enter. Its base cost is waived; additional costs still apply. Arcane Shift has finished dealing damage and banished itself."
+                    }
                 },
-                "This card has left the trash and is pending. Add resources if needed; finish its choices and payment before ordinary priority resumes.",
+                "The card is pending on the chain. Add resources if needed; finish its choices and payment before ordinary priority resumes.",
             ],
             Decision::ReplaySpell { .. } => vec![
                 "Fizz offers a spell from your trash with energy cost 3 or less. Ignore its energy cost, pay its power, then recycle the played spell.",

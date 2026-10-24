@@ -461,6 +461,57 @@ fn finish_chain_until_choice(app: &mut App) {
     panic!("fixture chain failed to settle");
 }
 
+fn c17_fixture(app: &mut App, spell: usize) {
+    expansion_fixture(app, 380);
+    let legend = (0..local_rift::legend_catalog::legends().len())
+        .find(|&id| local_rift::deck::eligible_cards(id).contains(&spell))
+        .unwrap();
+    let mut deck = local_rift::deck::CustomDeck::from_legend(legend).unwrap();
+    deck.cards.push((spell, 1));
+    app.game =
+        Game::new_with_custom([0, 3], [Some(deck), None], 171700, Difficulty::Easy, false).unwrap();
+    app.game.start_match().unwrap();
+    app.game.battlefields = [7, 9];
+    app.game.battlefield_owner = [None; 2];
+    app.fields = app.game.battlefields;
+    for p in &mut app.game.players {
+        p.hand.clear();
+        p.units.clear();
+        p.gear.clear();
+        p.hidden.clear();
+        p.discard.clear();
+        p.banish.clear();
+        p.runes = [0; 6];
+        p.exhausted_runes = [0; 6];
+        p.energy = 30;
+        p.energy_pool = 30;
+        p.power_pool = [5; 6];
+    }
+    app.game.players[0].hand = vec![spell];
+    app.game.players[0].units = vec![public_unit(17001, 71, None)];
+    app.game.players[1].units = vec![public_unit(17002, 70, Some(1))];
+    app.game.legend[0].ready = false;
+}
+fn c17_pending(app: &mut App, spell: usize, lane: Option<usize>) {
+    c17_fixture(app, spell);
+    app.game.players[0].units[0].lane = lane;
+    app.game
+        .apply(Action::PlayCardWithTargets {
+            hand_index: 0,
+            lane: None,
+            targets: vec![Target::Unit {
+                player: 0,
+                unit_id: 17001,
+            }],
+        })
+        .unwrap();
+    finish_chain_until_choice(app);
+    assert!(matches!(
+        app.game.decision,
+        Some(Decision::PendingPlay { .. })
+    ));
+}
+
 /// Returns true after all assertions pass. Use an isolated XDG_DATA_HOME because
 /// the settings controls intentionally exercise the normal persistence path.
 pub fn run_frame(app: &mut App, frame: u32) -> bool {
@@ -8537,15 +8588,131 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
             assert!(!app.game.legend[0].ready);
         }
         840 => {
+            c17_fixture(app, 379);
+            app.game.players[1].units[0].card_id = 72;
+            click(app, 315.0, 760.0);
+        }
+        841 => {
+            click_unit(app, 17002);
+        }
+        842 => {
+            capture(app, "RIFT_SMOKE_C17_BURN_TARGET_SCREENSHOT");
+            click(app, 1285.0, 510.0);
+        }
+        843 => {
+            finish_chain_until_choice(app);
+            assert!(app.game.players[1].units.is_empty());
+            assert_eq!(app.game.players[1].banish, vec![72]);
+        }
+        844 => {
+            c17_pending(app, 380, Some(0));
+        }
+        845 => {
+            assert_eq!(app.destination, None);
+            capture(app, "RIFT_SMOKE_C17_PORTAL_PENDING_SCREENSHOT");
+            click(app, 1285.0, 510.0);
+        }
+        846 => {
+            assert!(app.game.pending_cards().is_empty());
+            assert_eq!(app.game.players[0].units[0].lane, None);
+            assert_ne!(app.game.players[0].units[0].id, 17001);
+        }
+        847 => {
+            c17_pending(app, 381, Some(1));
+        }
+        848 => {
+            assert_eq!(app.destination, Some(1));
+            capture(app, "RIFT_SMOKE_C17_TEMPORAL_PENDING_SCREENSHOT");
+            click(app, 1285.0, 510.0);
+        }
+        849 => {
+            assert!(app.game.pending_cards().is_empty());
+            assert_eq!(app.game.players[0].units[0].lane, Some(1));
+        }
+        850 => {
+            c17_pending(app, 382, None);
+        }
+        851 => {
+            assert_eq!(app.destination, Some(0));
+            capture(app, "RIFT_SMOKE_C17_THRILL_PENDING_SCREENSHOT");
+            click(app, 1338.0, 546.0);
+        }
+        852 => {
+            assert!(app.game.pending_cards().is_empty());
+            assert_eq!(app.game.players[0].units[0].lane, Some(1));
+            assert!(matches!(
+                app.game.decision,
+                Some(Decision::LegendTargets { .. })
+            ));
+            capture(app, "RIFT_SMOKE_C17_RENGAR_AFTER_REPLAY_SCREENSHOT");
+        }
+        853 => {
+            c17_fixture(app, 383);
+            click(app, 315.0, 760.0);
+        }
+        854 => {
+            click_unit(app, 17001);
+        }
+        855 => {
+            click_unit(app, 17002);
+        }
+        856 => {
+            assert_eq!(app.targets.len(), 2);
+            capture(app, "RIFT_SMOKE_C17_ARCANE_TARGETS_SCREENSHOT");
+            click(app, 1285.0, 510.0);
+        }
+        857 => {
+            finish_chain_until_choice(app);
+            assert!(matches!(
+                app.game.decision,
+                Some(Decision::PendingPlay { .. })
+            ));
+        }
+        858 => {
+            assert_eq!(app.game.players[0].banish, vec![383]);
+            assert_eq!(app.game.players[1].units[0].damage, 3);
+            capture(app, "RIFT_SMOKE_C17_ARCANE_PENDING_SCREENSHOT");
+            click(app, 1285.0, 510.0);
+        }
+        859 => {
+            assert!(app.game.pending_cards().is_empty());
+            assert_eq!(app.game.players[0].units[0].lane, None);
+            assert_ne!(app.game.players[0].units[0].id, 17001);
+            capture(app, "RIFT_SMOKE_C17_ARCANE_RETURN_SCREENSHOT");
+        }
+        860 => {
+            c17_fixture(app, 379);
+            app.game.players[0].hand = vec![70];
+            app.game.players[0].energy = 0;
+            app.game.players[0].energy_pool = 0;
+            app.game.players[0].power_pool = [0; 6];
+            app.game.players[0].any_power = 0;
+            click(app, 315.0, 760.0);
+        }
+        861 => {
+            assert!(app.selection == Some(Selection::Hand(0)));
+            capture(app, "RIFT_SMOKE_C17_UNAFFORDABLE_SCREENSHOT");
+            COMBAT_SNAPSHOT
+                .with(|snapshot| *snapshot.borrow_mut() = Some(format!("{:?}", app.game)));
+            click(app, 1338.0, 546.0);
+        }
+        862 => {
+            COMBAT_SNAPSHOT.with(|snapshot| {
+                assert_eq!(
+                    snapshot.borrow().as_deref(),
+                    Some(format!("{:?}", app.game).as_str()),
+                    "Unavailable destination must not mutate the game"
+                )
+            });
             app.ui.input_override = None;
             app.ui.pointer_override = None;
             app.ui.wheel_override = None;
             println!(
-                "PASS: 841 native UI frames including paginated legend selection, Rengar mandatory targets, Ezreal public targeting progress and reaction draw, and all previous 824 controls including side victory tracks, Banish browsing, and rune/equipment inspection."
+                "PASS: 863 native UI frames including Banish targets, prescribed replay destinations, fresh units, Rengar after replay, Arcane Shift parent completion, unobscured unavailable-play guidance, and all previous 841 controls."
             );
             return true;
         }
-        _ => panic!("UI smoke runner exceeded its 841-frame script"),
+        _ => panic!("UI smoke runner exceeded its 863-frame script"),
     }
     false
 }

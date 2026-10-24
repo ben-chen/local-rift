@@ -425,7 +425,7 @@ impl Session {
             "resolution_progress":game.resolution_progress().map(|progress|json!({"chain_id":progress.chain_id,
                 "execution":progress.execution,"executions":progress.executions})),
             "chain":chain,"decision":game.decision.as_ref().map(|d|decision_to_json(game,d,viewer)).transpose()?,
-            "pending_card_plays":game.pending_cards().iter().map(|card|json!({"id":card.id,"player":card.player,"card_id":card.card_id,"kind":instructed_kind(card.kind)})).collect::<Vec<_>>(),
+            "pending_card_plays":game.pending_cards().iter().map(pending_card_to_json).collect::<Vec<_>>(),
             "pending_token_plays":game.pending_tokens().iter().map(|token|json!({
                 "id":token.id,"player":token.player,"card_id":token.card_id,"might":token.might,"gear":token.gear,"entry_ready":token.entry_ready,
                 "token_identity":temporary::token_identity_to_json(token.card_id),
@@ -1664,11 +1664,36 @@ fn legend_trigger(trigger: LegendTrigger) -> Value {
     }
 }
 
+fn pending_instruction_to_json(card: &crate::game::PendingCard, value: &mut Value) {
+    use crate::game::{BaseCostWaiver, PlayDestination};
+    if card.play_origin() == crate::game::play::PlayOrigin::Banish {
+        value["origin"] = play_choices::origin_to_json(card.play_origin());
+        value["instruction"] = json!({
+            "base_cost_waiver": match card.instruction.cost { BaseCostWaiver::None=>"none", BaseCostWaiver::Energy=>"energy", BaseCostWaiver::All=>"all" },
+            "destination": match card.instruction.destination {
+                PlayDestination::Normal=>json!({"mode":"normal"}),
+                PlayDestination::Base=>json!({"mode":"base"}),
+                PlayDestination::Exact(lane)=>json!({"mode":"fixed","lane":lane}),
+                PlayDestination::AnyBattlefield=>json!({"mode":"any_battlefield"}),
+            }
+        });
+    }
+}
+fn pending_card_to_json(card: &crate::game::PendingCard) -> Value {
+    let mut value = json!({"id":card.id,"player":card.player,"card_id":card.card_id,"kind":instructed_kind(card.kind)});
+    pending_instruction_to_json(card, &mut value);
+    value
+}
+
 fn instructed_kind(kind: InstructedPlayKind) -> &'static str {
     match kind {
         InstructedPlayKind::Fizz => "fizz",
         InstructedPlayKind::LastRites => "last_rites",
         InstructedPlayKind::Matriarch => "matriarch",
+        InstructedPlayKind::PortalRescue => "portal_rescue",
+        InstructedPlayKind::TemporalBreach => "temporal_breach",
+        InstructedPlayKind::ThrillOfTheHunt => "thrill_of_the_hunt",
+        InstructedPlayKind::ArcaneShift => "arcane_shift",
     }
 }
 
@@ -1725,7 +1750,11 @@ fn decision_to_json(game: &Game, decision: &Decision, viewer: usize) -> Result<V
             kind,
             ..
         } => {
-            json!({"type":"pending_play","pending_id":pending_id,"card_id":card_id,"kind":instructed_kind(*kind)})
+            let mut value = json!({"type":"pending_play","pending_id":pending_id,"card_id":card_id,"kind":instructed_kind(*kind)});
+            if let Some(card) = game.pending_cards().iter().find(|c| c.id == *pending_id) {
+                pending_instruction_to_json(card, &mut value);
+            }
+            value
         }
         Decision::BattlefieldOrder { lanes, combat, .. } => {
             json!({"type":"battlefield_order","lanes":lanes,"combat":combat})
@@ -4116,3 +4145,6 @@ mod tests {
 
 #[cfg(test)]
 mod c16;
+
+#[cfg(test)]
+mod c17;

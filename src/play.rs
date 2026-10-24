@@ -6,6 +6,7 @@ pub enum PlayOrigin {
     Hand,
     Champion,
     Trash,
+    Banish,
     Hidden { lane: usize },
     Token,
 }
@@ -248,7 +249,7 @@ impl Game {
         }
         let reserved = match intent.origin {
             PlayOrigin::Token => self.pending_token.as_ref().map(|p| p.id),
-            PlayOrigin::Trash => self.pending_card.as_ref().map(|p| p.id),
+            PlayOrigin::Trash | PlayOrigin::Banish => self.pending_card.as_ref().map(|p| p.id),
             _ => None,
         };
         if let Some(id) = reserved
@@ -436,13 +437,10 @@ impl Game {
                 accelerate,
                 bonus,
             } => {
-                let id = self
-                    .pending_card
-                    .as_ref()
-                    .ok_or("No pending card.")?
-                    .card_id;
+                let pending = self.pending_card.as_ref().ok_or("No pending card.")?;
+                let id = pending.card_id;
                 legacy = self.legacy_choices(id, *repeat, *accelerate, *bonus, repeat_targets);
-                (id, PlayOrigin::Trash, *lane, targets.clone())
+                (id, pending.play_origin(), *lane, targets.clone())
             }
             Action::PlaceToken { lane } | Action::FinalizeTokenPlay { lane, .. } => {
                 let t = self.pending_token.as_ref().ok_or("No pending token.")?;
@@ -473,20 +471,16 @@ impl Game {
             base.energy = 0;
             base.power = 0;
         }
-        if origin == PlayOrigin::Trash {
-            let kind = self.pending_card.as_ref().map(|c| c.kind);
-            if matches!(kind, Some(InstructedPlayKind::Fizz))
-                || matches!(self.decision, Some(Decision::ReplaySpell { .. }))
-            {
-                base.energy = 0;
-            } else if matches!(kind, Some(InstructedPlayKind::Matriarch))
-                || matches!(
-                    self.decision,
-                    Some(Decision::RevivePlay { .. } | Decision::ReviveUnit { .. })
-                )
-            {
-                base.energy = 0;
-                base.power = 0;
+        if matches!(origin, PlayOrigin::Trash | PlayOrigin::Banish) {
+            if let Some(instruction) = self.current_play_instruction() {
+                match instruction.cost {
+                    BaseCostWaiver::None => {}
+                    BaseCostWaiver::Energy => base.energy = 0,
+                    BaseCostWaiver::All => {
+                        base.energy = 0;
+                        base.power = 0;
+                    }
+                }
             } else if self.decision.is_none() {
                 let (index, source) = match action {
                     Action::PlayFromTrashOptions {
@@ -512,7 +506,7 @@ impl Game {
             || self
                 .pending_card
                 .as_ref()
-                .is_some_and(|p| p.card_id == id && p.origin_flow)
+                .is_some_and(|p| p.card_id == id && p.had_granted_flow())
             || match action {
                 Action::PlayFromTrash { trash_index, .. }
                 | Action::PlayFromTrashWithTargets { trash_index, .. }
@@ -1710,6 +1704,27 @@ impl Game {
                     self.modify_might(target, 2, 0)?;
                 }
                 self.resolve_operation(item.player, item.card_id, item.lane, item.targets, None)?;
+            }
+            // CR359.3.e.15: Arcane Shift's final instruction banishes the
+            // physical resolving spell. It cannot execute any later Repeat.
+            if rules::effect(item.card_id) == OfficialEffect::ArcaneShift {
+                let index = self
+                    .chain
+                    .iter()
+                    .position(|i| i.id == frame.chain_id)
+                    .ok_or("Resolving spell is missing.")?;
+                let item = self.chain.remove(index);
+                self.players[item.player].banish.push(item.card_id);
+                self.resolution_frame = None;
+                self.damage_context = None;
+                self.after_spell_played(
+                    item.player,
+                    item.card_id,
+                    item.from_hidden || item.recycle_after || item.banish_after,
+                    item.from_hidden,
+                );
+                self.after_resolution()?;
+                return Ok(());
             }
             self.damage_context = None;
         }

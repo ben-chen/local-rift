@@ -2156,13 +2156,34 @@ impl App {
                 self.targets.clear();
                 self.repeat_targets.clear();
                 self.editing_repeat = false;
-                self.destination = None;
+                self.destination = self
+                    .game
+                    .pending_cards()
+                    .iter()
+                    .find(|c| c.id == pending_id)
+                    .and_then(|c| match c.instruction.destination {
+                        local_rift::game::PlayDestination::Exact(lane) => lane,
+                        local_rift::game::PlayDestination::AnyBattlefield => Some(0),
+                        _ => None,
+                    });
             }
             self.selection_panel()?;
             if self.game.can_decline_trash_play()?
                 && self.ui.button(
                     Rect::new(1178.0, 562.0, 212.0, 26.0),
-                    "Cannot play · return to trash",
+                    if self
+                        .game
+                        .pending_cards()
+                        .iter()
+                        .find(|c| c.id == pending_id)
+                        .is_some_and(|c| {
+                            c.play_origin() == local_rift::game::play::PlayOrigin::Banish
+                        })
+                    {
+                        "Cannot play · remains banished"
+                    } else {
+                        "Cannot play · return to trash"
+                    },
                     false,
                     true,
                 )
@@ -2650,7 +2671,9 @@ impl App {
                 format!("Choose gear in Loadout · {count}/{}", spec.maximum)
             }
             Some(PlayTargetKind::UnitOrGear) => {
-                if matches!(
+                if card_id == 379 {
+                    "Choose a unit with 3 Might or less (base or field), or gear in Loadout.".into()
+                } else if matches!(
                     local_rift::rules::effect(card_id),
                     local_rift::rules::OfficialEffect::KillEnemyDomain { .. }
                 ) {
@@ -5660,10 +5683,7 @@ impl App {
             self.selection_panel()?;
         }
         if self.game.phase == Phase::Playing
-            && !matches!(
-                self.game.decision,
-                Some(Decision::Payment { .. } | Decision::ResourceConversion { .. })
-            )
+            && self.game.decision.is_none()
             && self.ui.button(
                 Rect::new(1178.0, 574.0, 212.0, 44.0),
                 if self.game.chain.is_empty() && self.game.showdown.is_none() {
@@ -5939,8 +5959,16 @@ impl App {
                     let resolving_revive =
                         matches!(self.game.decision, Some(Decision::RevivePlay { .. }))
                             || pending.as_ref().is_some_and(|card| {
-                                card.kind == local_rift::game::InstructedPlayKind::Matriarch
+                                card.instruction.cost == local_rift::game::BaseCostWaiver::All
                             });
+                    let fixed_location =
+                        pending.as_ref().is_some_and(|c| {
+                            matches!(
+                                c.instruction.destination,
+                                local_rift::game::PlayDestination::Base
+                                    | local_rift::game::PlayDestination::Exact(_)
+                            )
+                        }) || matches!(self.game.decision, Some(Decision::RevivePlay { .. }));
                     let cost_text = if resolving_revive || selecting_revive {
                         "Base cost waived · extra costs still apply".into()
                     } else if pending
@@ -6184,7 +6212,11 @@ impl App {
                     let label = if selecting_revive {
                         "Choose this unit to revive"
                     } else if card.kind == CardKind::Unit {
-                        "Deploy to base"
+                        match self.destination {
+                            Some(0) => "Deploy to field 1",
+                            Some(_) => "Deploy to field 2",
+                            None => "Deploy to base",
+                        }
                     } else {
                         if self.targets.is_empty() {
                             "Play card"
@@ -6208,33 +6240,8 @@ impl App {
                             self.action(action);
                         }
                     }
-                    if !affordable {
-                        let target_help = self.target_hint(card_id);
-                        self.ui.wrapped_lines(
-                            if !self.game.card_supported(card_id) {
-                                "This card's effect is not implemented."
-                            } else if flows.len() > 1 && self.flow_source.is_none() {
-                                "Choose which Flow cost to pay."
-                            } else if self.current_targets().len()
-                                < local_rift::rules::play_target_spec(card_id).required
-                            {
-                                &target_help
-                            } else {
-                                validation
-                                    .as_ref()
-                                    .err()
-                                    .map(String::as_str)
-                                    .unwrap_or("Complete the play choices first.")
-                            },
-                            1178.0,
-                            546.0,
-                            212.0,
-                            9.0,
-                            GOLD,
-                            2,
-                        );
-                    } else if card.kind == CardKind::Unit && !selecting_revive && !resolving_revive
-                    {
+                    let mut field_actions = Vec::new();
+                    if card.kind == CardKind::Unit && !selecting_revive && !fixed_location {
                         for lane in 0..2 {
                             let action = if pending.is_some() {
                                 Action::FinalizePendingPlay {
@@ -6273,6 +6280,47 @@ impl App {
                                     bonus: self.options.bonus,
                                 }
                             };
+                            let action = self.canonical_action(action);
+                            let ready = self.game.clone().apply(action.clone()).is_ok();
+                            let can_pay = !ready && self.can_begin_payment(&action);
+                            field_actions.push((lane, action, ready, can_pay));
+                        }
+                    }
+                    // Keep explanations and destination buttons in separate states.
+                    // A legal field play remains available even if the base play fails.
+                    let show_fields = !field_actions.is_empty()
+                        && (affordable
+                            || field_actions
+                                .iter()
+                                .any(|(_, _, ready, pay)| *ready || *pay));
+                    if !affordable && !show_fields {
+                        let target_help = self.target_hint(card_id);
+                        self.ui.wrapped_lines(
+                            if !self.game.card_supported(card_id) {
+                                "This card's effect is not implemented."
+                            } else if flows.len() > 1 && self.flow_source.is_none() {
+                                "Choose which Flow cost to pay."
+                            } else if self.current_targets().len()
+                                < local_rift::rules::play_target_spec(card_id).required
+                            {
+                                &target_help
+                            } else {
+                                validation
+                                    .as_ref()
+                                    .err()
+                                    .map(String::as_str)
+                                    .unwrap_or("Complete the play choices first.")
+                            },
+                            1178.0,
+                            546.0,
+                            212.0,
+                            9.0,
+                            GOLD,
+                            2,
+                        );
+                    }
+                    if show_fields {
+                        for (lane, action, ready, can_pay) in field_actions {
                             if self.ui.button(
                                 Rect::new(1178.0 + lane as f32 * 110.0, 534.0, 102.0, 27.0),
                                 if lane == 0 {
@@ -6281,13 +6329,16 @@ impl App {
                                     "To field 2"
                                 },
                                 false,
-                                self.game.battlefield_owner[lane] == Some(0)
-                                    || card.official_text.contains("[Ambush]"),
+                                ready || can_pay,
                             ) {
-                                self.action(action);
+                                if can_pay {
+                                    self.begin_ui_payment(action);
+                                } else {
+                                    self.action(action);
+                                }
                             }
                         }
-                    } else if card.kind != CardKind::Unit {
+                    } else if affordable && card.kind != CardKind::Unit {
                         self.ui.wrapped_lines(
                             &self.target_hint(card_id),
                             1178.0,

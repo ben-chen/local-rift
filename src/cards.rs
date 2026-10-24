@@ -5783,6 +5783,81 @@ pub fn cards() -> Vec<CardDef> {
             tags: &[],
             art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/ef118660422af84f6183d375b68ce1872acb1e2e-744x1039.png?w=360&q=80&fm=png",
         },
+        CardDef {
+            id: 379,
+            official_id: "rad-124-167",
+            name: "Burn Away",
+            cost: 3,
+            power_cost: 1,
+            might: 0,
+            domain: Domain::Order,
+            domains: &[Domain::Order],
+            kind: CardKind::Spell,
+            official_text: "Banish a unit with 3 Might or less or a gear. [Burn 2]. (Put the top 2 cards of your Main Deck into your trash.)",
+            keywords: &[],
+            tags: &[],
+            art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/751629a34ee6ba6476ce2f0a821b9f84b5562acd-744x1039.png?w=360&q=80&fm=png",
+        },
+        CardDef {
+            id: 380,
+            official_id: "ogn-102-298",
+            name: "Portal Rescue",
+            cost: 3,
+            power_cost: 1,
+            might: 0,
+            domain: Domain::Mind,
+            domains: &[Domain::Mind],
+            kind: CardKind::Spell,
+            official_text: "[Action] (Play on your turn or in showdowns.)\nBanish a friendly unit, then its owner plays it to their base, ignoring its cost.",
+            keywords: &["Action"],
+            tags: &[],
+            art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/bafb4c68fa9a3eb71fecd0cdffb9e20b9f68d532-744x1039.png?w=360&q=80&fm=png",
+        },
+        CardDef {
+            id: 381,
+            official_id: "ven-066-166",
+            name: "Temporal Breach",
+            cost: 2,
+            power_cost: 1,
+            might: 0,
+            domain: Domain::Mind,
+            domains: &[Domain::Mind],
+            kind: CardKind::Spell,
+            official_text: "[Hidden] (Hide now for [Any Power] to react with later for [0 Energy].)\nBanish a unit, then its owner plays it to the same location, ignoring its cost.",
+            keywords: &["Hidden"],
+            tags: &[],
+            art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/7c670dc3d997c52b90d67043989b53c67a72f4c4-744x1039.png?w=360&q=80&fm=png",
+        },
+        CardDef {
+            id: 382,
+            official_id: "unl-184-219",
+            name: "Thrill of the Hunt",
+            cost: 2,
+            power_cost: 1,
+            might: 0,
+            domain: Domain::Fury,
+            domains: &[Domain::Fury, Domain::Body],
+            kind: CardKind::Spell,
+            official_text: "[Reaction] (Play any time, even before spells and abilities resolve.)\nBanish a friendly unit, then its owner plays it to any battlefield, ignoring its cost.",
+            keywords: &["Reaction"],
+            tags: &["Rengar"],
+            art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/2753c2b3ea4fd55e5225a4451a29736b5c3434a8-744x1039.png?w=320&q=80&fm=png",
+        },
+        CardDef {
+            id: 383,
+            official_id: "sfd-200-221",
+            name: "Arcane Shift",
+            cost: 3,
+            power_cost: 1,
+            might: 0,
+            domain: Domain::Mind,
+            domains: &[Domain::Mind, Domain::Chaos],
+            kind: CardKind::Spell,
+            official_text: "[Action] (Play on your turn or in showdowns.)\nBanish a friendly unit, then its owner plays it, ignoring its cost. Deal 3 to an enemy unit at a battlefield. Banish this.",
+            keywords: &["Action"],
+            tags: &["Ezreal"],
+            art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/a5d1d26dee01db24f32a1432639478753d22aa92-744x1039.png?w=280&q=80&fm=png",
+        },
     ]
 }
 
@@ -5947,7 +6022,7 @@ mod tests {
     #[test]
     fn presets_are_complete_and_references_are_consistent() {
         let catalog = cards();
-        assert_eq!(catalog.len(), 379);
+        assert_eq!(catalog.len(), 384);
         for (index, card) in catalog.iter().enumerate() {
             assert_eq!(index, card.id);
             assert!(!card.official_id.is_empty());
