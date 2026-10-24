@@ -325,6 +325,14 @@ fn checked_advice(game: &Game, level: AdviceLevel) -> Result<Vec<&'static str>, 
         }
     }
 
+    if human.hand.iter().any(|id| matches!(id, 372 | 373 | 375)) {
+        tips.push(if beginner {
+            "Return to hand does not kill, so Deathknell does not trigger. Tokens disappear; gear detaches when its unit leaves. Recall instead moves a unit to base."
+        } else {
+            "Returns buy time, but cards can be played again. Downwell also returns your board; Angler Beast checks current Might when its ability resolves. Compare both sides first."
+        });
+    }
+
     let contested = (0..2).find(|&lane| game.contested(lane));
     if let Some(lane) = contested {
         if beginner {
@@ -748,6 +756,10 @@ fn response_window_advice(
             Decision::ResourceConversion { .. } => vec![
                 "Choose how much to convert. The gear is already exhausted. Zero finishes without adding resources; your original payment stays waiting.",
                 "Other Add abilities can supply this payment. Keep the energy and colored power needed for the original action, not just the conversion.",
+            ],
+            Decision::TriggerTargets { card_id: 374, .. } => vec![
+                "Mournful Spirit remembers where it died. Choose a highlighted unit on the Board or gear in a Loadout at that location, then confirm. You may decline.",
+                "The target must still be at the death location when the ability resolves. Check unit Deflect costs and death replacements; attached gear is a separate target.",
             ],
             Decision::TriggerTargets {
                 card_id: 366..=369, ..
@@ -2036,6 +2048,7 @@ mod tests {
                     card_id: 188,
                     rule_index: 0,
                     context: local_rift::game::TriggerContext {
+                        departure_location: None,
                         movement: None,
                         source: local_rift::game::TriggerSource {
                             player,

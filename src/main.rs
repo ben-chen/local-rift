@@ -844,6 +844,12 @@ impl App {
                 {
                     self.tray = Tray::Loadout;
                     self.gear_owner = 1;
+                } else if self
+                    .game
+                    .trigger_target_rule()
+                    .is_some_and(|rule| rule.kind == local_rift::rules::PlayTargetKind::UnitOrGear)
+                {
+                    self.tray = Tray::Board;
                 }
             }
             self.trigger_choice_key = trigger_key;
@@ -2055,12 +2061,24 @@ impl App {
             );
             self.ui.wrapped_lines(
                 &format!("{} / {maximum} selected. Choose highlighted {} in order, then confirm. Click a chosen target to undo.{}", self.targets.len(),
-                    if self.game.trigger_target_rule().is_some_and(|r|r.kind==local_rift::rules::PlayTargetKind::Gear) { "gear in either Loadout" } else { "units" },
+                    match self.game.trigger_target_rule().map(|r|r.kind) {
+                        Some(local_rift::rules::PlayTargetKind::Gear) => "gear in either Loadout",
+                        Some(local_rift::rules::PlayTargetKind::UnitOrGear) => "units or Loadout gear here",
+                        _ => "units",
+                    },
                     if required == 0 { " Choosing none declines." } else { " Choose all required targets." }),
                 1178.0, 416.0, 209.0, 11.0, TEXT, 4,
             );
             if let Some(rule) = self.game.trigger_target_rule() {
-                let limit = if let Some(energy) = rule.max_energy {
+                let limit = if let Some(location) = self.game.trigger_target_location() {
+                    use local_rift::game::board_targets::BoardLocation;
+                    let place = match location {
+                        BoardLocation::Base { player: 0 } => "your base".to_owned(),
+                        BoardLocation::Base { .. } => "opponent's base".to_owned(),
+                        BoardLocation::Battlefield { lane } => format!("battlefield {}", lane + 1),
+                    };
+                    format!("Here: {place}")
+                } else if let Some(energy) = rule.max_energy {
                     format!("Printed Energy: {energy} or less")
                 } else if rule.relative_energy
                     == local_rift::trigger_rules::RelativeEnergyConstraint::AtMostSourceMight

@@ -236,7 +236,7 @@ These interactions have focused runtime/API tests and complete legal-home AI gam
 
 ## Remaining fidelity limits
 
-Eight supported legends, eleven battlefield choices, and 372 main-deck cards are available through the four supplied presets and custom deck editor. The additional cards preserve all preset and training recipes; add them through the custom deck editor where eligible. There is no sideboarding, tournament match structure, multiplayer mode, or full card-set coverage. The presets are dated tournament lists, not a ranking of the current metagame.
+Eight supported legends, eleven battlefield choices, and 376 main-deck cards are available through the four supplied presets and custom deck editor. The additional cards preserve all preset and training recipes; add them through the custom deck editor where eligible. There is no sideboarding, tournament match structure, multiplayer mode, or full card-set coverage. The presets are dated tournament lists, not a ranking of the current metagame.
 
 The desktop and bot API expose exact damage allocations and power-source payments. The default automatic payment remains available; energy can be prepared by exhausting chosen rune domains before a play. These controls share engine validation, but broader card and interaction coverage is still required.
 
@@ -254,3 +254,12 @@ Detonate and Brittle Steel choose one physical gear, including attached gear and
 Decree of Unity targets an enemy Chaos unit or gear, including a unit in base. Ordinary unit death replacements still apply. Disarming Rake and Stalwart Goatherd offer optional gear choices on play; Goatherd uses printed Energy up to four. Noxian Demolitionist compares printed Energy to its live Might, including revalidation on resolution. A departed source has no Might; a negative referenced Might is zero. Adaptatron's Conquer ability buffs its original source only after an actual gear kill.
 
 Dropboarder checks control of two gear at its play event and emits a real Ready event when its ability resolves. Production Surge uses the actual Mech tag for its two-Energy reduction; its token cannot reduce its own parent. The parent draws before the fixed-base 3-Might Mech child is finalized. Each Repeat makes a separate child. Brittle Steel can use its printed four-Energy, one-Fury Flow cost.
+
+
+## Return to hand and remembered death locations
+
+Factory Recall returns one gear, including attached equipment, to hand. Returning a unit detaches its gear and preserves that gear’s ready state. Downwell returns the original set of all units and gear once. Tokens disappear when returned. These effects do not kill and do not trigger Deathknell; Recall instead moves a unit to base and keeps its attachments.
+
+Angler Beast returns all units with current Might of two or less when its play ability resolves. It checks the complete set before any returned aura can change another unit’s Might. Targeting protection and Deflect do not apply because this effect does not choose targets.
+
+Mournful Spirit records where it actually died, then offers an optional unit-or-gear target at that location. Either base remains distinct from the other base. Its own detached gear is now in base, which can change its eligibility. The target must still be at the recorded location when the ability resolves. Unit protection, Deflect and death replacements remain applicable; gear is a separate target. The Board and Loadout tabs retain the choice, and the companion explains the location rule.

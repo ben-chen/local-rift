@@ -23,6 +23,7 @@ pub struct TriggerContext {
     pub source: TriggerSource,
     pub subject: Option<Target>,
     pub movement: Option<MoveFacts>,
+    pub departure_location: Option<board_targets::BoardLocation>,
 }
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct TriggerState {
@@ -391,6 +392,7 @@ impl Game {
                     TriggerContext {
                         source,
                         subject,
+                        departure_location: None,
                         movement: (event.kind == Occurrence::Moved).then(|| MoveFacts {
                             origin: event.origin,
                             destination: event.unit.as_ref().and_then(|u| u.lane),
@@ -415,6 +417,9 @@ impl Game {
                         TriggerContext {
                             source,
                             movement: None,
+                            departure_location: Some(board_targets::BoardLocation::from_lane(
+                                *player, unit.lane,
+                            )),
                             subject: Some(Target::Unit {
                                 player: *player,
                                 unit_id: unit.id,
@@ -449,6 +454,9 @@ impl Game {
                         source,
                         subject: Some(Target::Gear { player, gear_id }),
                         movement: None,
+                        departure_location: self
+                            .board_target_facts(Target::Gear { player, gear_id })
+                            .map(|facts| facts.location),
                     },
                 );
             }
@@ -701,7 +709,7 @@ impl Game {
                 return Ok(false);
             }
             if rule.targets.here
-                && self.source_location(context.source) != self.target_location(target)
+                && self.trigger_here_location(&rule.targets, context) != Some(facts.location)
             {
                 return Ok(false);
             }
@@ -753,6 +761,27 @@ impl Game {
             return None;
         };
         Some(&metadata::trigger_rules(*card_id).get(*rule_index)?.targets)
+    }
+    fn trigger_here_location(
+        &self,
+        rule: &metadata::TargetRule,
+        context: TriggerContext,
+    ) -> Option<board_targets::BoardLocation> {
+        if !rule.here {
+            return None;
+        }
+        match rule.here_basis {
+            metadata::HereLocationBasis::SourceDeparture => context.departure_location,
+            metadata::HereLocationBasis::LiveSource => self
+                .source_location(context.source)
+                .map(|(lane, player)| board_targets::BoardLocation::from_lane(player, lane)),
+        }
+    }
+    pub fn trigger_target_location(&self) -> Option<board_targets::BoardLocation> {
+        let Decision::TriggerTargets { context, .. } = self.decision.as_ref()? else {
+            return None;
+        };
+        self.trigger_here_location(self.trigger_target_rule()?, *context)
     }
     pub fn trigger_target_bounds(&self) -> Option<(usize, usize)> {
         let Decision::TriggerTargets {
@@ -1085,6 +1114,23 @@ impl Game {
                 Effect::Bounce => {
                     for &target in &targets {
                         self.bounce(target);
+                    }
+                }
+                Effect::ReturnUnitsAtMost(maximum) => {
+                    let targets = self.units_at_most(maximum)?;
+                    self.return_board_targets(&targets);
+                }
+                Effect::KillUnitOrGear => {
+                    // This descriptor admits exactly one target; unit replacements
+                    // and gear Deathknell each retain their canonical kill path.
+                    if let Some(&target) = targets.first() {
+                        match target {
+                            Target::Unit { .. } => self.kill_unit(target)?,
+                            Target::Gear { .. } => {
+                                self.kill_gear_target(target);
+                            }
+                            _ => {}
+                        }
                     }
                 }
                 Effect::FightSource => {

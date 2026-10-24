@@ -5678,6 +5678,66 @@ pub fn cards() -> Vec<CardDef> {
             tags: &[],
             art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/78783854dd9372138e599affbe96a269d8908c29-744x1039.png?w=360&q=80&fm=png",
         },
+        CardDef {
+            id: 372,
+            official_id: "sfd-135-221",
+            name: "Factory Recall",
+            cost: 1,
+            power_cost: 0,
+            might: 0,
+            domain: Domain::Chaos,
+            domains: &[Domain::Chaos],
+            kind: CardKind::Spell,
+            official_text: "[Action] (Play on your turn or in showdowns.)\nReturn a gear to its owner's hand.",
+            keywords: &["Action"],
+            tags: &[],
+            art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/86bd2be6d0750e3444355bce229f83930825e968-744x1039.png?w=360&q=80&fm=png",
+        },
+        CardDef {
+            id: 373,
+            official_id: "sfd-147-221",
+            name: "Downwell",
+            cost: 8,
+            power_cost: 2,
+            might: 0,
+            domain: Domain::Chaos,
+            domains: &[Domain::Chaos],
+            kind: CardKind::Spell,
+            official_text: "Return all units and gear to their owners' hands.",
+            keywords: &[],
+            tags: &[],
+            art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/950eff0d07ef1e25be46fdb340fe8510c551c159-744x1039.png?w=320&q=80&fm=png",
+        },
+        CardDef {
+            id: 374,
+            official_id: "rad-126-167",
+            name: "Mournful Spirit",
+            cost: 4,
+            power_cost: 0,
+            might: 1,
+            domain: Domain::Order,
+            domains: &[Domain::Order],
+            kind: CardKind::Unit,
+            official_text: "[Deathknell][>] You may kill a unit or gear here. (When I die, get the effect.)",
+            keywords: &["Deathknell"],
+            tags: &["Shadow Isles", "Spirit"],
+            art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/6d8500ac7efc5382985f566212d88ac8f41c135d-744x1039.png?w=360&q=80&fm=png",
+        },
+        CardDef {
+            id: 375,
+            official_id: "unl-132-219",
+            name: "Angler Beast",
+            cost: 5,
+            power_cost: 1,
+            might: 5,
+            domain: Domain::Chaos,
+            domains: &[Domain::Chaos],
+            kind: CardKind::Unit,
+            official_text: "When you play me, return all units with 2 Might or less to their owners' hands.",
+            keywords: &[],
+            tags: &["Bilgewater"],
+            art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/68872e2119146768f8fa113376876fa64699297d-744x1039.png?w=360&q=80&fm=png",
+        },
     ]
 }
 
@@ -5842,7 +5902,7 @@ mod tests {
     #[test]
     fn presets_are_complete_and_references_are_consistent() {
         let catalog = cards();
-        assert_eq!(catalog.len(), 372);
+        assert_eq!(catalog.len(), 376);
         for (index, card) in catalog.iter().enumerate() {
             assert_eq!(index, card.id);
             assert!(!card.official_id.is_empty());

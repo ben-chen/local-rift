@@ -1,0 +1,446 @@
+{
+  "schema_version": 1,
+  "draft_not_for_import": false,
+  "origin_gallery": {
+    "url": "https://playriftbound.com/en-us/card-gallery/",
+    "uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+    "archive": "assets/data/catalog_sources/gallery.html.gz"
+  },
+  "pre_admission_catalog_sha256": "d7ccc0d1c6084a240db6b84f4e4e1dbb1e0d7a912a296f5a1ce97a3ef6df0c9c",
+  "preserved_runtime_prefix": {
+    "card_count": 372,
+    "cards_sha256": "f9586a5dc789338932f3073a55665125b74f2b0101e6e8703e088709b95db4a5",
+    "presets_sha256": "d6e64ebf3f8921686682dacd87d4b2b4baec5754dbd284c6d60bf3fb324571e2",
+    "legends_manifest_sha256": "2b621121a54761ccee91e6d0df7b720e572138e7c2caac2c52abaaabd951b37f",
+    "training_recipe_source_sha256": "ad6b2ad3d5e3e34c99af35eef5a283b615cc813db27cec246fd2f433063ec1e4",
+    "manifest_ascii_escaped": false
+  },
+  "preserved_source_reviews": {
+    "field_resolutions_sha256": "6d26453f64145ecf376b54d93633c9f0436ac57f10ee0335a8a9f4089de71da9",
+    "raw_printings_sha256": "70a2bb884e9646fc7cbf59c08f11be0e8a5dc21852db91ecdc2bc69b9e2bb246",
+    "historical_issues_sha256": "0ca85c7748d2a5c102b90c3efa3e7f9c84daf82e9383ce3ef9db33ba0b682240",
+    "field_image_index_sha256": "070f50c15f90491ad2a481be73375b325b53d45a8ca28ee5f68b1bf00bf071e3",
+    "identity_reviews_sha256": "c61c191636c74795ec15c4149805d994c76c020093c98592a489766f30f54ad3"
+  },
+  "pre_admission_counts": {
+    "main_cards": 372,
+    "mapped_legal": 397,
+    "remaining_legal": 682
+  },
+  "reviewed_on": "2026-10-24",
+  "scope": "Four single-print cards with explicit return-to-hand transitions and captured Deathknell locations. Source facts are separately pinned; runtime verification is maintained in tests and project validation notes.",
+  "records": [
+    {
+      "official_id": "sfd-135-221",
+      "name": "Factory Recall",
+      "raw_printing": {
+        "official_id": "sfd-135-221",
+        "public_code": "SFD-135/221",
+        "name": "Factory Recall",
+        "set": "SFD",
+        "collector_number": 135,
+        "types": [
+          "spell"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "spell"
+        ],
+        "accessibility_types": [
+          "spell"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "chaos"
+        ],
+        "energy": 1,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "rules_html": "<p>[Action] (Play on your turn or in showdowns.)<br />Return a gear to its owner's hand.</p>",
+        "rules_text": "[Action] (Play on your turn or in showdowns.)\nReturn a gear to its owner's hand.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [],
+        "rarity": "uncommon",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/86bd2be6d0750e3444355bce229f83930825e968-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Spell: Factory Recall. [Action] (Play on your turn or in showdowns.)\nReturn a gear to its owner's hand.",
+        "illustrators": [
+          "Kudos Productions"
+        ]
+      },
+      "raw_printing_sha256": "d17ed83a3019dcf878bfb1aff23f200d7f0ceb703c8bbb472cafbf9a1613efdf",
+      "effective": {
+        "types": [
+          "spell"
+        ],
+        "super_types": [],
+        "domains": [
+          "chaos"
+        ],
+        "energy": 1,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>[Action] (Play on your turn or in showdowns.)<br />Return a gear to its owner's hand.</p>",
+        "rules_text": "[Action] (Play on your turn or in showdowns.)\nReturn a gear to its owner's hand.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "existing_field_resolution_ids": [],
+      "visual_observation": {
+        "face_visually_inspected": true,
+        "reviewed_on": "2026-10-24",
+        "official_id": "sfd-135-221",
+        "original_image_sha256": "b34421bb1724c7a60e82ac414398e08bd6255f5f926788e6b00ff184a4028b3a",
+        "name": "Factory Recall",
+        "collector_code": "SFD-135/221",
+        "printed_types": [
+          "spell"
+        ],
+        "printed_supertypes": [],
+        "printed_domains": [
+          "chaos"
+        ],
+        "printed_tags": [],
+        "printed_energy": 1,
+        "printed_power": null,
+        "printed_might": null,
+        "printed_might_bonus": null,
+        "printed_rules_icons_expanded": "[Action] (Play on your turn or in showdowns.)\nReturn a gear to its owner's hand.",
+        "printed_equipment_icons_expanded": "",
+        "uncertainties": []
+      },
+      "original_image": {
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/86bd2be6d0750e3444355bce229f83930825e968-744x1039.png?accountingTag=RB",
+        "path": "assets/data/card_admissions/c14/originals/sfd-135-221.png",
+        "bytes": 704917,
+        "sha256": "b34421bb1724c7a60e82ac414398e08bd6255f5f926788e6b00ff184a4028b3a"
+      },
+      "runtime_id": 372,
+      "append_offset": 0,
+      "interpretation_note": "Choose one live gear, including attached equipment. Return it to hand without Deathknell; tokens cease to exist. Revalidate physical identity on resolution and Repeat.",
+      "runtime_image": {
+        "path": "assets/art/card_372.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/86bd2be6d0750e3444355bce229f83930825e968-744x1039.png?w=360&q=80&fm=png",
+        "bytes": 215218,
+        "sha256": "17f84f94e948f9f18c448e4ce2920cfccaeb2b6da61e1f780d600370e1cc8106"
+      }
+    },
+    {
+      "official_id": "sfd-147-221",
+      "name": "Downwell",
+      "raw_printing": {
+        "official_id": "sfd-147-221",
+        "public_code": "SFD-147/221",
+        "name": "Downwell",
+        "set": "SFD",
+        "collector_number": 147,
+        "types": [
+          "spell"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "spell"
+        ],
+        "accessibility_types": [
+          "spell"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "chaos"
+        ],
+        "energy": 8,
+        "power": 2,
+        "might": null,
+        "might_bonus": null,
+        "rules_html": "<p>Return all units and gear to their owners' hands.</p>",
+        "rules_text": "Return all units and gear to their owners' hands.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [],
+        "rarity": "epic",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/950eff0d07ef1e25be46fdb340fe8510c551c159-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Spell: Downwell. Return all units and gear to their owners' hands.",
+        "illustrators": [
+          "Kudos Productions"
+        ]
+      },
+      "raw_printing_sha256": "fc2c46aa92b95365b8aaf783f6016631771b9f4277933f56634e3dfa185713fd",
+      "effective": {
+        "types": [
+          "spell"
+        ],
+        "super_types": [],
+        "domains": [
+          "chaos"
+        ],
+        "energy": 8,
+        "power": 2,
+        "might": null,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>Return all units and gear to their owners' hands.</p>",
+        "rules_text": "Return all units and gear to their owners' hands.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "existing_field_resolution_ids": [],
+      "visual_observation": {
+        "face_visually_inspected": true,
+        "reviewed_on": "2026-10-24",
+        "official_id": "sfd-147-221",
+        "original_image_sha256": "487af2a4cb0a873bf8bbaf2cd178a202c0f3e368e1d15a311ca4eda4a7e56448",
+        "name": "Downwell",
+        "collector_code": "SFD-147/221",
+        "printed_types": [
+          "spell"
+        ],
+        "printed_supertypes": [],
+        "printed_domains": [
+          "chaos"
+        ],
+        "printed_tags": [],
+        "printed_energy": 8,
+        "printed_power": 2,
+        "printed_might": null,
+        "printed_might_bonus": null,
+        "printed_rules_icons_expanded": "Return all units and gear to their owners' hands.",
+        "printed_equipment_icons_expanded": "",
+        "uncertainties": []
+      },
+      "original_image": {
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/950eff0d07ef1e25be46fdb340fe8510c551c159-744x1039.png?accountingTag=RB",
+        "path": "assets/data/card_admissions/c14/originals/sfd-147-221.png",
+        "bytes": 901895,
+        "sha256": "487af2a4cb0a873bf8bbaf2cd178a202c0f3e368e1d15a311ca4eda4a7e56448"
+      },
+      "runtime_id": 373,
+      "append_offset": 1,
+      "interpretation_note": "Fix the complete physical unit/gear set, return it once without Kill or Recall, and defer cleanup until the instruction completes.",
+      "runtime_image": {
+        "path": "assets/art/card_373.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/950eff0d07ef1e25be46fdb340fe8510c551c159-744x1039.png?w=320&q=80&fm=png",
+        "bytes": 253626,
+        "sha256": "e6e04bd7a984a2bc784e4f736f222a7df82e5e889187ceaf59711f05ce7f16d4"
+      }
+    },
+    {
+      "official_id": "rad-126-167",
+      "name": "Mournful Spirit",
+      "raw_printing": {
+        "official_id": "rad-126-167",
+        "public_code": "RAD-126/167",
+        "name": "Mournful Spirit",
+        "set": "RAD",
+        "collector_number": 126,
+        "types": [
+          "unit"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "unit"
+        ],
+        "accessibility_types": [
+          "unit"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "order"
+        ],
+        "energy": 4,
+        "power": null,
+        "might": 1,
+        "might_bonus": null,
+        "rules_html": "<p>[Deathknell][&gt;] You may kill a unit or gear here. (When I die, get the effect.)</p>",
+        "rules_text": "[Deathknell][>] You may kill a unit or gear here. (When I die, get the effect.)",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [
+          "Spirit"
+        ],
+        "rarity": "uncommon",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/6d8500ac7efc5382985f566212d88ac8f41c135d-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Unit: Mournful Spirit. [Deathknell][>] You may kill a unit or gear here. (When I die, get the effect.)",
+        "illustrators": [
+          "Six More Vodka"
+        ]
+      },
+      "raw_printing_sha256": "017049815c54a0a8775aefdbe8e281a784096d376cfa9de41c36d11681e3d362",
+      "effective": {
+        "types": [
+          "unit"
+        ],
+        "super_types": [],
+        "domains": [
+          "order"
+        ],
+        "energy": 4,
+        "power": null,
+        "might": 1,
+        "might_bonus": null,
+        "tags": [
+          "Shadow Isles",
+          "Spirit"
+        ],
+        "rules_html": "<p>[Deathknell][&gt;] You may kill a unit or gear here. (When I die, get the effect.)</p>",
+        "rules_text": "[Deathknell][>] You may kill a unit or gear here. (When I die, get the effect.)",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "existing_field_resolution_ids": [
+        "rad-126-167:tags"
+      ],
+      "visual_observation": {
+        "face_visually_inspected": true,
+        "reviewed_on": "2026-10-24",
+        "official_id": "rad-126-167",
+        "original_image_sha256": "a226ad34dfd407100505cbee32c1b2e8da134e9971a2fadeb50a99d0667d754e",
+        "name": "Mournful Spirit",
+        "collector_code": "RAD-126/167",
+        "printed_types": [
+          "unit"
+        ],
+        "printed_supertypes": [],
+        "printed_domains": [
+          "order"
+        ],
+        "printed_tags": [
+          "Shadow Isles",
+          "Spirit"
+        ],
+        "printed_energy": 4,
+        "printed_power": null,
+        "printed_might": 1,
+        "printed_might_bonus": null,
+        "printed_rules_icons_expanded": "[Deathknell][>] You may kill a unit or gear here. (When I die, get the effect.)",
+        "printed_equipment_icons_expanded": "",
+        "uncertainties": []
+      },
+      "original_image": {
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/6d8500ac7efc5382985f566212d88ac8f41c135d-744x1039.png?accountingTag=RB",
+        "path": "assets/data/catalog_evidence/images/rad-126-167.png",
+        "bytes": 661398,
+        "sha256": "a226ad34dfd407100505cbee32c1b2e8da134e9971a2fadeb50a99d0667d754e"
+      },
+      "runtime_id": 374,
+      "append_offset": 2,
+      "interpretation_note": "Reuse the separately corrected Shadow Isles / Spirit tags. Capture actual death location before departure; optionally choose one unit or gear still there, preserving unit protection, Deflect and death replacements.",
+      "runtime_image": {
+        "path": "assets/art/card_374.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/6d8500ac7efc5382985f566212d88ac8f41c135d-744x1039.png?w=360&q=80&fm=png",
+        "bytes": 217190,
+        "sha256": "9731e0285534703aa25966ce7681516cc492a3bf97eecb66bfbfb4cee4104d1d"
+      }
+    },
+    {
+      "official_id": "unl-132-219",
+      "name": "Angler Beast",
+      "raw_printing": {
+        "official_id": "unl-132-219",
+        "public_code": "UNL-132/219",
+        "name": "Angler Beast",
+        "set": "UNL",
+        "collector_number": 132,
+        "types": [
+          "unit"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "unit"
+        ],
+        "accessibility_types": [
+          "unit"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "chaos"
+        ],
+        "energy": 5,
+        "power": 1,
+        "might": 5,
+        "might_bonus": null,
+        "rules_html": "<p>When you play me, return all units with 2 :rb_might: or less to their owners' hands.</p>",
+        "rules_text": "When you play me, return all units with 2 Might or less to their owners' hands.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [
+          "Bilgewater"
+        ],
+        "rarity": "uncommon",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/68872e2119146768f8fa113376876fa64699297d-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Unit: Angler Beast. When you play me, return all units with 2 [S] or less to their owners' hands.",
+        "illustrators": [
+          "Kudos Productions"
+        ]
+      },
+      "raw_printing_sha256": "dac650df13a48d66fdc32e46adbe6582ba53c8bf356d997f7f549a8a7326a159",
+      "effective": {
+        "types": [
+          "unit"
+        ],
+        "super_types": [],
+        "domains": [
+          "chaos"
+        ],
+        "energy": 5,
+        "power": 1,
+        "might": 5,
+        "might_bonus": null,
+        "tags": [
+          "Bilgewater"
+        ],
+        "rules_html": "<p>When you play me, return all units with 2 :rb_might: or less to their owners' hands.</p>",
+        "rules_text": "When you play me, return all units with 2 Might or less to their owners' hands.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "existing_field_resolution_ids": [],
+      "visual_observation": {
+        "face_visually_inspected": true,
+        "reviewed_on": "2026-10-24",
+        "official_id": "unl-132-219",
+        "original_image_sha256": "aaf3e009a13abb21d82ecd21ed3c068a106d9b41c884ecda53b15d1d01e809d2",
+        "name": "Angler Beast",
+        "collector_code": "UNL-132/219",
+        "printed_types": [
+          "unit"
+        ],
+        "printed_supertypes": [],
+        "printed_domains": [
+          "chaos"
+        ],
+        "printed_tags": [
+          "Bilgewater"
+        ],
+        "printed_energy": 5,
+        "printed_power": 1,
+        "printed_might": 5,
+        "printed_might_bonus": null,
+        "printed_rules_icons_expanded": "When you play me, return all units with 2 Might or less to their owners' hands.",
+        "printed_equipment_icons_expanded": "",
+        "uncertainties": []
+      },
+      "original_image": {
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/68872e2119146768f8fa113376876fa64699297d-744x1039.png?accountingTag=RB",
+        "path": "assets/data/card_admissions/c14/originals/unl-132-219.png",
+        "bytes": 846540,
+        "sha256": "aaf3e009a13abb21d82ecd21ed3c068a106d9b41c884ecda53b15d1d01e809d2"
+      },
+      "runtime_id": 375,
+      "append_offset": 3,
+      "interpretation_note": "Queue a targetless on-play ability. At resolution, fix all units with current referenced Might at most two before any departure changes auras; return that set without Deathknell.",
+      "runtime_image": {
+        "path": "assets/art/card_375.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/68872e2119146768f8fa113376876fa64699297d-744x1039.png?w=360&q=80&fm=png",
+        "bytes": 265646,
+        "sha256": "2fb926a0ab77a61a8a8fd2b7069ac107db51bed2284906d0df27a22d61fe8186"
+      }
+    }
+  ]
+}

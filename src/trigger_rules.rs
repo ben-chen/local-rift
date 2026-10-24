@@ -70,6 +70,13 @@ pub enum RelativeEnergyConstraint {
     None,
     AtMostSourceMight,
 }
+/// Ordinary Here follows the live source. Deathknell may explicitly refer to
+/// the location recorded before its source left the board (Core 808.1.d.3).
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum HereLocationBasis {
+    LiveSource,
+    SourceDeparture,
+}
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct TargetRule {
     pub kind: PlayTargetKind,
@@ -79,6 +86,7 @@ pub struct TargetRule {
     pub another: bool,
     pub battlefield: bool,
     pub here: bool,
+    pub here_basis: HereLocationBasis,
     pub max_might: Option<u8>,
     pub max_energy: Option<u8>,
     pub tag: Option<&'static str>,
@@ -96,6 +104,7 @@ impl TargetRule {
         another: false,
         battlefield: false,
         here: false,
+        here_basis: HereLocationBasis::LiveSource,
         max_might: None,
         max_energy: None,
         tag: None,
@@ -120,6 +129,8 @@ pub enum Amount {
 }
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Effect {
+    KillUnitOrGear,
+    ReturnUnitsAtMost(u8),
     KillGear {
         buff_source_if_killed: bool,
     },
@@ -233,6 +244,31 @@ pub fn trigger_rules(card_id: usize) -> &'static [TriggerRule] {
     use Operand::*;
     use TokenPlacement::*;
     match card_id {
+        374 => {
+            const RULES: &[TriggerRule] = &[rule(
+                SelfDeath,
+                &[],
+                true,
+                TargetRule {
+                    kind: PlayTargetKind::UnitOrGear,
+                    here: true,
+                    here_basis: HereLocationBasis::SourceDeparture,
+                    ..ANY
+                },
+                &[KillUnitOrGear],
+            )];
+            RULES
+        }
+        375 => {
+            const RULES: &[TriggerRule] = &[rule(
+                SelfPlayed,
+                &[],
+                false,
+                TargetRule::NONE,
+                &[ReturnUnitsAtMost(2)],
+            )];
+            RULES
+        }
         366..=369 => {
             const RAKE: TriggerRule = rule(
                 SelfPlayed,

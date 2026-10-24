@@ -1695,6 +1695,11 @@ fn decision_to_json(game: &Game, decision: &Decision, viewer: usize) -> Result<V
                 "target_rule":rule.map(|r|json!({"kind":targeting::target_kind(r.kind),
                     "allegiance":format!("{:?}",r.allegiance).to_lowercase(),
                     "maximum_printed_energy":r.max_energy,
+                    "here_basis":if r.here { Some(match r.here_basis {
+                        crate::trigger_rules::HereLocationBasis::LiveSource => "live_source",
+                        crate::trigger_rules::HereLocationBasis::SourceDeparture => "source_departure",
+                    }) } else { None },
+                    "location":game.trigger_target_location().map(board_location_to_json),
                     "energy_at_most_live_source_might":r.relative_energy==crate::trigger_rules::RelativeEnergyConstraint::AtMostSourceMight})),
                 "candidates":game.trigger_target_candidates().map_err(ApiError::illegal)?.iter().map(target_to_json).collect::<Vec<_>>()})
         }
@@ -1948,10 +1953,18 @@ fn ability_to_json(ability: &ChainAbility) -> Value {
     }
 }
 
+fn board_location_to_json(location: crate::game::board_targets::BoardLocation) -> Value {
+    use crate::game::board_targets::BoardLocation;
+    match location {
+        BoardLocation::Base { player } => json!({"type":"base","player":player}),
+        BoardLocation::Battlefield { lane } => json!({"type":"battlefield","lane":lane}),
+    }
+}
 fn trigger_context_to_json(context: &TriggerContext) -> Value {
     json!({"source":{"player":context.source.player,"unit_id":context.source.unit_id,
         "gear_id":context.source.gear_id},"subject":context.subject.as_ref().map(target_to_json),
-        "movement":context.movement.map(|movement|json!({"origin":movement.origin,"destination":movement.destination}))})
+        "movement":context.movement.map(|movement|json!({"origin":movement.origin,"destination":movement.destination})),
+        "departure_location":context.departure_location.map(board_location_to_json)})
 }
 
 #[cfg(test)]
@@ -3647,6 +3660,7 @@ mod tests {
         session.game.players[0].units = vec![unit(100, None, 5), unit(101, None, 3)];
         session.game.players[1].units = vec![unit(102, None, 3)];
         let context = TriggerContext {
+            departure_location: None,
             movement: None,
             source: crate::game::TriggerSource {
                 player: 0,
@@ -3726,6 +3740,7 @@ mod tests {
             card_id: 188,
             rule_index: 0,
             context: TriggerContext {
+                departure_location: None,
                 movement: None,
                 source: crate::game::TriggerSource {
                     player: 0,
@@ -3794,6 +3809,129 @@ mod tests {
     }
 
     #[test]
+    fn factory_recall_api_queries_quotes_and_returns_the_exact_gear_without_death() {
+        let mut session = ability_position();
+        session.game.players[0].hand = vec![372];
+        session.game.players[0].energy = 10;
+        session.game.players[0].energy_pool = 10;
+        session.game.players[0].power_pool = [3; 6];
+        add_api_gear(&mut session, 700, 3);
+        let action = json!({"type":"play_card_targets","hand_index":0,"targets":[{"type":"gear","player":0,"gear_id":700}]});
+        let before = session.observe(0).unwrap();
+        let revision = session.revision();
+        let query = session.handle(
+            json!({"command":"target_candidates","revision":revision,"player":0,
+            "action":{"type":"play_card_targets","hand_index":0,"targets":[]},"execution":0}),
+        );
+        assert_eq!(query["ok"], true, "{query}");
+        assert_eq!(query["result"]["spec"]["kind"], "gear");
+        assert!(
+            query["result"]["candidates"]
+                .as_array()
+                .unwrap()
+                .contains(&action["targets"][0])
+        );
+        for invalid in [
+            json!({"type":"play_card_targets","hand_index":0,"targets":[{"type":"unit","player":0,"unit_id":700}]}),
+            json!({"type":"play_card_targets","hand_index":0,"targets":[{"type":"gear","player":0,"gear_id":701}]}),
+            json!({"type":"play_card_targets","hand_index":0,"targets":[{"type":"gear","player":0,"gear_id":700,"unit_id":700}]}),
+        ] {
+            let response = session
+                .handle(json!({"command":"apply","revision":revision,"player":0,"action":invalid}));
+            assert_eq!(response["ok"], false);
+            assert_eq!(session.observe(0).unwrap(), before);
+            assert_eq!(session.revision(), revision);
+        }
+        let quote = session.handle(
+            json!({"command":"quote_payment","revision":revision,"player":0,"action":action}),
+        );
+        assert_eq!(quote["ok"], true, "{quote}");
+        assert_eq!(session.observe(0).unwrap(), before);
+        let response = session.handle(json!({"command":"apply","revision":revision,"player":0,
+            "action":{"type":"with_power_payment","action":action,"payment":quote["result"]["suggested"]}}));
+        assert_eq!(response["ok"], true, "{response}");
+        pass_twice(&mut session);
+        assert!(session.game.players[0].gear.is_empty());
+        assert_eq!(session.game.players[0].hand, vec![3]);
+        assert!(!session.game.players[0].discard.contains(&3));
+    }
+
+    #[test]
+    fn mournful_api_exposes_captured_location_and_mixed_targets_after_source_departs() {
+        use crate::game::board_targets::BoardLocation;
+        for take_gear in [false, true] {
+            let mut session = ability_position();
+            session.game.players[0].units = vec![unit(100, Some(1), 5)];
+            session.game.players[1].units = vec![unit(101, Some(0), 5)];
+            add_api_gear(&mut session, 700, 3);
+            session.game.players[0].gear[0].attached_to = Some(100);
+            session.game.decision = Some(Decision::TriggerTargets {
+                player: 0,
+                card_id: 374,
+                rule_index: 0,
+                context: TriggerContext {
+                    source: crate::game::TriggerSource {
+                        player: 0,
+                        unit_id: Some(99),
+                        gear_id: None,
+                    },
+                    subject: Some(Target::Unit {
+                        player: 0,
+                        unit_id: 99,
+                    }),
+                    movement: None,
+                    departure_location: Some(BoardLocation::Battlefield { lane: 1 }),
+                },
+            });
+            let unit_target = json!({"type":"unit","player":0,"unit_id":100});
+            let gear_target = json!({"type":"gear","player":0,"gear_id":700});
+            for viewer in 0..2 {
+                let observed = session.observe(viewer).unwrap();
+                let d = &observed["decision"];
+                assert_eq!(d["required"], 0);
+                assert_eq!(d["target_rule"]["kind"], "unit_or_gear");
+                assert_eq!(d["target_rule"]["here_basis"], "source_departure");
+                assert_eq!(
+                    d["target_rule"]["location"],
+                    json!({"type":"battlefield","lane":1})
+                );
+                assert_eq!(
+                    d["context"]["departure_location"],
+                    d["target_rule"]["location"]
+                );
+                // The existing candidate list enumerates physical objects of the
+                // right type; metadata and atomic validate enforce location.
+                assert_eq!(
+                    d["candidates"],
+                    json!([unit_target, gear_target,
+                    {"type":"unit","player":1,"unit_id":101}])
+                );
+            }
+            let before = session.observe(0).unwrap();
+            let revision = session.revision();
+            let invalid = session.handle(json!({"command":"apply","player":0,"revision":revision,
+                "action":{"type":"choose_trigger_targets","targets":[{"type":"unit","player":1,"unit_id":101}]}}));
+            assert_eq!(invalid["ok"], false);
+            assert_eq!(session.revision(), revision);
+            assert_eq!(session.observe(0).unwrap(), before);
+            let target = if take_gear { gear_target } else { unit_target };
+            let response = session.handle(json!({"command":"apply","player":0,"revision":revision,
+                "action":{"type":"choose_trigger_targets","targets":[target]}}));
+            assert_eq!(response["ok"], true, "{response}");
+            let chain = &session.observe(0).unwrap()["chain"][0];
+            assert_eq!(chain["targets"], json!([target]));
+            assert_eq!(
+                chain["ability"]["context"]["departure_location"],
+                json!({"type":"battlefield","lane":1})
+            );
+            pass_twice(&mut session);
+            assert_eq!(session.game.players[0].gear.is_empty(), take_gear);
+            assert_eq!(session.game.players[0].units.is_empty(), !take_gear);
+            assert_eq!(session.game.players[1].units.len(), 1);
+        }
+    }
+
+    #[test]
     fn gear_trigger_api_exposes_energy_bounds_and_preserves_exact_gear_choice() {
         for card_id in [366, 367, 368, 369] {
             let mut session = ability_position();
@@ -3808,6 +3946,7 @@ mod tests {
                 card_id,
                 rule_index: 0,
                 context: TriggerContext {
+                    departure_location: None,
                     movement: None,
                     source: crate::game::TriggerSource {
                         player: 0,

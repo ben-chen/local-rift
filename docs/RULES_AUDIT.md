@@ -286,6 +286,14 @@ Thermo Beam fixes one simultaneous gear set and captures all gear Deathknells be
 
 [Focused board tests](../src/board_targets/tests.rs), [protocol tests](../src/api.rs), [source/deck tests](../tests/card_batch_fifteen.rs), and [complete legal-home games](../tests/c13_matches.rs) exercise this family. Native checks cover optional attached-gear selection, retained choices across Loadouts, the printed Energy limit and declining. Patched Porobot remains unavailable because its reviewed combined Unit/Gear type needs a complete physical-object model under Core 178. These bounded checks do not establish complete Standard parity.
 
+### Return to hand and Deathknell location
+
+IDs 372–375 add Factory Recall, Downwell, Mournful Spirit and Angler Beast. Return to hand is a zone transition, separate from Kill and Recall. Tokens disappear outside the board/chain (Core 186); physical cards enter hand. A returned unit detaches equipment without changing its ready state. Downwell captures the physical Unit+Gear set before departures, then completes that instruction before lethal cleanup or child resolution. Angler captures qualifying recipients using current referenced Might at ability resolution, so losing an aura during that instruction does not add a new recipient (143.2.c, 359.3.f, 370.1).
+
+Mournful Spirit uses the location recorded before its actual death under Core 383.2.c.3 and 808.1.d.3. A narrow descriptor selects that snapshot; ordinary Here still requires the live source. Either player's base and missing location are distinct. Attached gear follows its live bearer, including equipment that detached when Spirit died. Unit targets retain existing targeting protection, Deflect and death replacements; gear remains a separate object. A moved or replaced target is rechecked at resolution.
+
+[Return regression tests](../src/board_returns/tests.rs), [public API tests](../src/api.rs), [reviewed facts](../tests/card_batch_sixteen.rs), and [C14 complete games](../tests/c14_matches.rs) cover the bounded family. Current supported cards do not transfer control of physical cards between players; the seat storing a card is still its owner. Future control-changing admissions require explicit ownership semantics before being enabled.
+
 ## Open questions and next audit targets
 
 These items are **not resolved by the passing examples**:

@@ -15,7 +15,10 @@ class C13AdmissionTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.manifest, cls.data = catalog.read_archives()
-        cls.snapshot = catalog.make_catalog(cls.manifest, cls.data)
+        runtime = copy.deepcopy(catalog.load_runtime_manifest())
+        runtime['cards'] = runtime['cards'][:372]
+        with patch.object(catalog, 'load_runtime_manifest', return_value=runtime):
+            cls.snapshot = catalog.make_catalog(cls.manifest, cls.data)
         cls.proof = json.loads((catalog.ROOT / 'assets/data/card_admissions/c13/admissions.json').read_text())
 
     def test_complete_raw_effective_runtime_and_original_face_facts(self):

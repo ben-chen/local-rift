@@ -9584,6 +9584,99 @@
       "might_bonus": null,
       "keywords": [],
       "tags": []
+    },
+    {
+      "id": 372,
+      "name": "Factory Recall",
+      "official_id": "sfd-135-221",
+      "energy": 1,
+      "power": 0,
+      "might": 0,
+      "domains": [
+        "Chaos"
+      ],
+      "kind": "Spell",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/86bd2be6d0750e3444355bce229f83930825e968-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Action] (Play on your turn or in showdowns.)\nReturn a gear to its owner's hand.",
+      "official_text_html": "<p>[Action] (Play on your turn or in showdowns.)<br />Return a gear to its owner's hand.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Action"
+      ],
+      "tags": []
+    },
+    {
+      "id": 373,
+      "name": "Downwell",
+      "official_id": "sfd-147-221",
+      "energy": 8,
+      "power": 2,
+      "might": 0,
+      "domains": [
+        "Chaos"
+      ],
+      "kind": "Spell",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/950eff0d07ef1e25be46fdb340fe8510c551c159-744x1039.png?w=320&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "Return all units and gear to their owners' hands.",
+      "official_text_html": "<p>Return all units and gear to their owners' hands.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": []
+    },
+    {
+      "id": 374,
+      "name": "Mournful Spirit",
+      "official_id": "rad-126-167",
+      "energy": 4,
+      "power": 0,
+      "might": 1,
+      "domains": [
+        "Order"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/6d8500ac7efc5382985f566212d88ac8f41c135d-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Deathknell][>] You may kill a unit or gear here. (When I die, get the effect.)",
+      "official_text_html": "<p>[Deathknell][&gt;] You may kill a unit or gear here. (When I die, get the effect.)</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Deathknell"
+      ],
+      "tags": [
+        "Shadow Isles",
+        "Spirit"
+      ]
+    },
+    {
+      "id": 375,
+      "name": "Angler Beast",
+      "official_id": "unl-132-219",
+      "energy": 5,
+      "power": 1,
+      "might": 5,
+      "domains": [
+        "Chaos"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/68872e2119146768f8fa113376876fa64699297d-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "When you play me, return all units with 2 Might or less to their owners' hands.",
+      "official_text_html": "<p>When you play me, return all units with 2 :rb_might: or less to their owners' hands.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": [
+        "Bilgewater"
+      ]
     }
   ],
   "official_text_note": "Official card/legend rules text from the Riot Card Gallery, retrieved 2026-10-24 and corrected by cited errata. Resource icon tokens are expanded to readable bracketed names. Raw card and equipment HTML is preserved separately. Official text does not establish full implementation fidelity."

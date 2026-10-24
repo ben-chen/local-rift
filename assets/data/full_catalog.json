@@ -149,14 +149,14 @@
       "gear": 63,
       "legend": 8,
       "rune": 6,
-      "spell": 98,
-      "unit": 211
+      "spell": 100,
+      "unit": 213
     },
-    "implemented_main_cards": 372,
+    "implemented_main_cards": 376,
     "implemented_legends": 8,
     "implemented_battlefields": 11,
-    "implemented_legal_identities": 397,
-    "unimplemented_legal_identities": 682,
+    "implemented_legal_identities": 401,
+    "unimplemented_legal_identities": 678,
     "errata_entries": 67,
     "identities_with_errata": 67,
     "source_quality_issues": 43,
@@ -177,13 +177,13 @@
   "unimplemented_by_observed_keyword": {
     "ADD": 1,
     "Accelerate": 17,
-    "Action": 66,
+    "Action": 65,
     "Add": 23,
     "Ambush": 11,
     "Assault": 15,
     "Backline": 2,
     "Buff": 10,
-    "Deathknell": 12,
+    "Deathknell": 11,
     "Deflect": 26,
     "Deploy": 24,
     "Disarm": 6,
@@ -1425,8 +1425,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 375,
+        "official_id": "unl-132-219",
+        "playable_in_client": true
       }
     },
     {
@@ -9549,8 +9551,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 373,
+        "official_id": "sfd-147-221",
+        "playable_in_client": true
       }
     },
     {
@@ -11806,8 +11810,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 372,
+        "official_id": "sfd-135-221",
+        "playable_in_client": true
       }
     },
     {
@@ -23469,8 +23475,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 374,
+        "official_id": "rad-126-167",
+        "playable_in_client": true
       }
     },
     {

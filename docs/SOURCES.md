@@ -101,7 +101,7 @@ The visual review is dated October 24, 2026. The [field image index](../assets/d
 
 ## Official rules and interaction reference
 
-All 372 runtime cards now include **`official_text`**, extracted from the same official gallery snapshot. Both the primary ability panel and the separate equipment-effect panel are included. Resource icons are expanded into readable names such as `[2 Energy]`, `[Body Power]`, `[Any Power]`, and `[Exhaust]`; these expansions change presentation, not card instructions. Bracketed keyword annotations are also available in `CardDef.keywords`.
+All 376 runtime cards now include **`official_text`**, extracted from the same official gallery snapshot. Both the primary ability panel and the separate equipment-effect panel are included. Resource icons are expanded into readable names such as `[2 Energy]`, `[Body Power]`, `[Any Power]`, and `[Exhaust]`; these expansions change presentation, not card instructions. Bracketed keyword annotations are also available in `CardDef.keywords`.
 
 The gallery snapshot contains some older printed wording. The runtime and manifest apply the [official October 21, 2025 card errata](https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/5bcbb23cb6131680ec8d469de6c87a3966a7622d.pdf) for three cards in these lists: Zhonya's Hourglass heals the saved unit before recalling it exhausted; Tideturner chooses a controlled unit at another location; and Salvage may kill up to one gear before drawing. The original artwork can still show pre-errata wording. The erratum takes precedence.
 
@@ -138,3 +138,6 @@ The authoritative rules are the [official Rules Hub](https://playriftbound.com/e
 
 
 Runtime IDs 362–371 add the ten single-type cards in the [C13 admission record](../assets/data/card_admissions/c13/README.md). Ten original faces total 8,216,520 bytes; Goatherd reuses its separately reviewed tag correction and original image. Raw source fields, prior gameplay entries, lists, legends, 117 field resolutions / 73 printings / 42 issue groups, and all 29 identity reviews are preserved. Coverage becomes 372 main cards / 397 legal mappings / 682 unavailable. Patched Porobot's reviewed Unit/Gear type remains outside runtime support.
+
+
+Runtime IDs 372–375 add Factory Recall, Downwell, Mournful Spirit and Angler Beast with [C14 source evidence](../assets/data/card_admissions/c14/README.md). The four original faces total 3,114,750 bytes; Spirit reuses its preserved source correction. All preceding runtime entries and source-review cohorts remain unchanged. Coverage becomes 376 main cards / 401 mapped legal identities / 678 unavailable.

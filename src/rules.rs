@@ -66,6 +66,8 @@ pub struct PlayTargetSpec {
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum OfficialEffect {
+    ReturnGear,
+    ReturnAllBoard,
     KillGear {
         controller_draw: u8,
     },
@@ -231,6 +233,9 @@ pub struct Targeting {
 pub fn effect(id: usize) -> OfficialEffect {
     use OfficialEffect::*;
     match id {
+        372 => ReturnGear,
+        373 => ReturnAllBoard,
+        374 | 375 => None,
         362 | 364 => KillGear {
             controller_draw: if id == 362 { 2 } else { 0 },
         },
@@ -604,7 +609,7 @@ pub fn targeting(id: usize) -> Targeting {
     let allegiance = match id {
         290..=296 | 335 | 349 => Any,
         4 | 32 | 144 | 145 | 365 => Enemy,
-        362 | 364 => Any,
+        362 | 364 | 372 => Any,
         8 | 9 | 14 | 19 | 27 | 85 | 137 | 228 | 350 | 353 | 354 => Friendly,
         16 | 29 | 82 | 217 | 218 => Mixed,
         5 | 7 | 11 | 23 | 26 | 28 | 41 | 44 | 50 | 52 | 53 | 55 | 61 | 62 | 63 | 66 | 67 | 74
@@ -638,6 +643,7 @@ pub fn target_bounds(id: usize) -> (usize, usize) {
         }
         | Kill { .. }
         | KillGear { .. }
+        | ReturnGear
         | KillEnemyDomain { .. }
         | Stun
         | GrantAssault(_) => (1, 1),
@@ -675,7 +681,7 @@ pub fn play_target_spec(id: CardId) -> PlayTargetSpec {
             (None, 0, 0)
         } else {
             match effect(id) {
-                OfficialEffect::KillGear { .. } => (Some(Gear), 1, 1),
+                OfficialEffect::KillGear { .. } | OfficialEffect::ReturnGear => (Some(Gear), 1, 1),
                 OfficialEffect::KillEnemyDomain { .. } => (Some(UnitOrGear), 1, 1),
                 OfficialEffect::Counter(_) => (Some(Spell), 1, 1),
                 OfficialEffect::DestroyGearAndDraw => (Some(Gear), 1, 0),
@@ -982,6 +988,9 @@ pub enum Mechanic {
 pub fn requirements(id: usize) -> &'static [Mechanic] {
     use Mechanic::*;
     match id {
+        372 | 373 => &[Chain, Gear, Bounce],
+        374 => &[Chain, Gear, DeathTriggers],
+        375 => &[Chain, Bounce],
         362 | 363 | 365 | 366 | 367 => &[Chain, Gear],
         364 => &[Chain, Gear, Flow],
         368 | 369 => &[Chain, Gear, ConquerHoldTriggers],
@@ -1846,7 +1855,7 @@ mod tests {
     #[test]
     fn all_catalog_entries_have_official_classification() {
         let cards = cards();
-        assert_eq!(cards.len(), 372);
+        assert_eq!(cards.len(), 376);
         for card in cards {
             assert_ne!(
                 effect(card.id),
@@ -1856,7 +1865,7 @@ mod tests {
             );
             assert_ne!(support_status(card.id), SupportStatus::UnknownCard);
         }
-        assert_eq!(effect(372), OfficialEffect::Unsupported);
+        assert_eq!(effect(376), OfficialEffect::Unsupported);
     }
 
     #[test]

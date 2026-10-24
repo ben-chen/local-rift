@@ -14,6 +14,8 @@ use crate::legends::{LegendAbility, LegendState, LegendTrigger};
 use crate::rules::{self, Allegiance, CounterKind, OfficialEffect, StaticAbility};
 use std::collections::VecDeque;
 
+#[path = "board_returns.rs"]
+mod board_returns;
 #[path = "board_targets.rs"]
 pub mod board_targets;
 #[path = "damage.rs"]
@@ -5845,7 +5847,14 @@ impl Game {
                     continue;
                 }
                 if let Target::Gear { player: owner, .. } = target {
-                    candidates.push((if owner != actor { 1500 } else { 0 }, target));
+                    let value = if effect == OfficialEffect::ReturnGear {
+                        self.return_target_score(actor, target)? * 100
+                    } else if owner != actor {
+                        1500
+                    } else {
+                        0
+                    };
+                    candidates.push((value, target));
                     continue;
                 }
                 let Some(unit) = self.unit_ref(target) else {
@@ -6068,7 +6077,7 @@ impl Game {
                 return Ok(false);
             }
             match rules::effect(id) {
-                OfficialEffect::KillGear { .. } => {
+                OfficialEffect::KillGear { .. } | OfficialEffect::ReturnGear => {
                     return Ok(matches!(target, Target::Gear { .. })
                         && self.can_choose_board_target(actor, target));
                 }
@@ -6629,6 +6638,11 @@ impl Game {
             valid.retain(|&target| self.target_location(target) == location);
         }
         match rules::effect(id) {
+            OfficialEffect::ReturnGear => self.return_board_targets(&valid),
+            OfficialEffect::ReturnAllBoard => {
+                let targets = self.board_objects();
+                self.return_board_targets(&targets);
+            }
             OfficialEffect::KillGear { controller_draw } => {
                 if let Some(&target) = valid.first()
                     && let board_targets::GearKillResult::Resolved { controller, .. } =
@@ -8109,6 +8123,37 @@ impl Game {
                         .map(|(_, action)| action.clone()),
                     Decision::TriggerTargets {
                         player,
+                        card_id: 374,
+                        ..
+                    } => {
+                        let mut scored = Vec::new();
+                        for action in &actions {
+                            let Action::ChooseTriggerTargets { targets } = action else {
+                                continue;
+                            };
+                            let mut value = 0_i128;
+                            for &target in targets {
+                                value += if let Some(unit) = self.unit_ref(target) {
+                                    let strength = 30 + i128::from(self.unit_might(unit)?) * 5;
+                                    if matches!(target, Target::Unit { player: owner, .. } if owner == *player)
+                                    {
+                                        -strength
+                                    } else {
+                                        strength
+                                    }
+                                } else {
+                                    self.gear_kill_score(*player, target)
+                                };
+                            }
+                            scored.push((value, action));
+                        }
+                        scored
+                            .into_iter()
+                            .max_by_key(|(value, _)| *value)
+                            .map(|(_, action)| action.clone())
+                    }
+                    Decision::TriggerTargets {
+                        player,
                         card_id: 333,
                         ..
                     } => {
@@ -8438,7 +8483,18 @@ impl Game {
                 );
             }
             if card.kind == CardKind::Unit {
-                return Ok(50 + card.might as i128 * 4
+                let on_play = if id == 375 {
+                    self.units_at_most(2)?
+                        .iter()
+                        .try_fold(0_i128, |sum, &target| {
+                            Ok::<_, String>(
+                                sum + self.return_target_score(self.priority(), target)?,
+                            )
+                        })?
+                } else {
+                    0
+                };
+                return Ok(on_play + 50 + card.might as i128 * 4
                     - if tactical {
                         card.power_cost as i128 * 3
                     } else {
@@ -8457,6 +8513,16 @@ impl Game {
                 .prepare_targets(actor, id, None, &[])
                 .unwrap_or_default();
             match rules::effect(id) {
+                OfficialEffect::ReturnGear => targets
+                    .first()
+                    .map_or(Ok(0), |&target| self.return_target_score(actor, target))?,
+                OfficialEffect::ReturnAllBoard => self
+                    .board_objects()
+                    .iter()
+                    .try_fold(0_i128, |sum, &target| {
+                        Ok::<_, String>(sum + self.return_target_score(actor, target)?)
+                    })?
+                    .max(0),
                 OfficialEffect::KillGear { controller_draw } => {
                     targets.first().map_or(0, |&target| {
                         let draw = i128::from(controller_draw) * 10;

@@ -230,6 +230,7 @@ fn catalog_describes_nominal_discounted_costs_and_targeted_legend_activation() {
 #[test]
 fn movement_event_context_preserves_base_and_battlefield_without_source_liveness() {
     let context = TriggerContext {
+        departure_location: None,
         source: crate::game::TriggerSource {
             player: 0,
             unit_id: Some(900),

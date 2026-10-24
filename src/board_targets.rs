@@ -18,7 +18,7 @@ impl BoardLocation {
             Self::Battlefield { lane } => Some(lane),
         }
     }
-    fn from_lane(player: usize, lane: Option<usize>) -> Self {
+    pub(crate) fn from_lane(player: usize, lane: Option<usize>) -> Self {
         match lane {
             Some(lane) => Self::Battlefield { lane },
             None => Self::Base { player },

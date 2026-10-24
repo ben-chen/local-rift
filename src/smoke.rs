@@ -8146,15 +8146,107 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
             capture(app, "RIFT_SMOKE_VICTORY_TRACK_AI_SCREENSHOT");
         }
         799 => {
+            expansion_fixture(app, 74);
+            app.game.players[0].units = vec![public_unit(13000, 374, Some(1))];
+            app.game.players[1].units = vec![public_unit(13001, 375, Some(1))];
+            app.game.players[1].gear = vec![GearState {
+                id: 13002,
+                card_id: 3,
+                attached_to: Some(13001),
+                ready: true,
+                temporary: false,
+                token: false,
+            }];
+            app.game
+                .apply(Action::PlayCardWithTargets {
+                    hand_index: 0,
+                    lane: None,
+                    targets: vec![Target::Unit {
+                        player: 0,
+                        unit_id: 13000,
+                    }],
+                })
+                .unwrap();
+            finish_chain_until_choice(app);
+            assert!(matches!(
+                app.game.decision,
+                Some(Decision::TriggerTargets { card_id: 374, .. })
+            ));
+        }
+        800 => {
+            assert_eq!(
+                app.game.trigger_target_location(),
+                Some(local_rift::game::board_targets::BoardLocation::Battlefield { lane: 1 })
+            );
+            capture(app, "RIFT_SMOKE_C14_DEATH_LOCATION_SCREENSHOT");
+            click(app, 710.0, 663.0); // Board
+        }
+        801 => {
+            click(app, 315.0, 760.0);
+        }
+        802 => {
+            assert_eq!(
+                app.targets,
+                vec![Target::Unit {
+                    player: 1,
+                    unit_id: 13001
+                }]
+            );
+            capture(app, "RIFT_SMOKE_C14_UNIT_CHOICE_SCREENSHOT");
+            click(app, 400.0, 663.0); // Loadout
+        }
+        803 => {
+            assert_eq!(
+                app.targets,
+                vec![Target::Unit {
+                    player: 1,
+                    unit_id: 13001
+                }]
+            );
+            click(app, 855.0, 663.0); // Opponent
+        }
+        804 => {
+            assert_eq!(app.gear_owner, 1);
+            capture(app, "RIFT_SMOKE_C14_RETAINED_CHOICE_SCREENSHOT");
+            click(app, 710.0, 663.0);
+        }
+        805 => {
+            click(app, 315.0, 760.0);
+        } // Undo unit choice.
+        806 => {
+            assert!(app.targets.is_empty());
+            click(app, 400.0, 663.0);
+        }
+        807 => {
+            click(app, 615.0, 760.0);
+        }
+        808 => {
+            assert_eq!(
+                app.targets,
+                vec![Target::Gear {
+                    player: 1,
+                    gear_id: 13002
+                }]
+            );
+            capture(app, "RIFT_SMOKE_C14_GEAR_CHOICE_SCREENSHOT");
+            click(app, 1285.0, 510.0);
+        }
+        809 => {
+            finish_chain_until_choice(app);
+            assert!(app.game.players[1].gear.is_empty());
+            assert!(app.game.players[1].units.iter().any(|u| u.id == 13001));
+            capture(app, "RIFT_SMOKE_C14_RESOLVED_SCREENSHOT");
+        }
+        810 => {
             app.ui.input_override = None;
             app.ui.pointer_override = None;
             app.ui.wheel_override = None;
             println!(
-                "PASS: 800 native UI frames including side victory tracks at zero, midgame, last-point pressure and eight for both seats, optional gear triggers, attached targets, retained choices across Loadouts, printed Energy limits, and mixed gear/unit targets, ordered Hidden targets and prefix editing, distinct Sprite child drafts, live Temporary and Petal previews, simultaneous Beginning expiry and new-token survival, plus all previous 765 controls."
+                "PASS: 811 native UI frames including captured death-location choices, mixed unit/gear draft retention, and side victory tracks at zero, midgame, last-point pressure and eight for both seats, optional gear triggers, attached targets, retained choices across Loadouts, printed Energy limits, and mixed gear/unit targets, ordered Hidden targets and prefix editing, distinct Sprite child drafts, live Temporary and Petal previews, simultaneous Beginning expiry and new-token survival, plus all previous 765 controls."
             );
             return true;
         }
-        _ => panic!("UI smoke runner exceeded its 800-frame script"),
+        _ => panic!("UI smoke runner exceeded its 811-frame script"),
     }
     false
 }
