@@ -203,7 +203,7 @@ fn target_metadata_candidates_and_bad_explicit_fields_are_consistent() {
     assert_eq!(rules::play_target_spec(41).required, 0);
     assert_eq!(rules::play_target_spec(23).maximum, 0);
     assert_eq!(
-        g.card_target_candidates(0, 299, None, &[]),
+        g.card_target_candidates(0, 299, None, &[]).unwrap(),
         vec![
             Target::Battlefield { lane: 0 },
             Target::Battlefield { lane: 1 }
@@ -211,14 +211,24 @@ fn target_metadata_candidates_and_bad_explicit_fields_are_consistent() {
     );
     assert!(
         g.card_target_candidates(0, 299, None, &[Target::Battlefield { lane: 0 }])
+            .unwrap()
             .is_empty()
     );
-    assert!(g.card_target_candidates(5, 299, None, &[]).is_empty());
+    assert!(
+        g.card_target_candidates(5, 299, None, &[])
+            .unwrap()
+            .is_empty()
+    );
     assert!(
         g.card_target_candidates(0, usize::MAX, None, &[])
+            .unwrap()
             .is_empty()
     );
-    assert!(g.card_target_candidates(0, 299, Some(9), &[]).is_empty());
+    assert!(
+        g.card_target_candidates(0, 299, Some(9), &[])
+            .unwrap()
+            .is_empty()
+    );
     let target = unit(&mut g, 0, 1000, 69, None);
     g.players[0].hand.push(299);
     for targets in [
@@ -339,8 +349,11 @@ fn rune_prison_stuns_without_exhausting_or_locking_movement() {
         lane: Some(0),
     })
     .unwrap();
-    assert_eq!(g.lane_might(0, 0), 0);
-    assert_eq!(g.unit_might(u(&g, target)), g.catalog[69].might);
+    assert_eq!(g.lane_might(0, 0).unwrap(), 0);
+    assert_eq!(
+        g.unit_might(u(&g, target)).unwrap(),
+        u64::from(g.catalog[69].might)
+    );
 }
 #[test]
 fn cleave_is_temporary_stacking_assault_not_a_base_buff() {
@@ -348,18 +361,18 @@ fn cleave_is_temporary_stacking_assault_not_a_base_buff() {
     let target = unit(&mut g, 0, 1000, 301, None);
     cast(&mut g, 293, vec![target]);
     resolve(&mut g);
-    assert_eq!(g.unit_keywords(u(&g, target)).assault, 4);
-    assert_eq!(g.unit_might(u(&g, target)), 2);
+    assert_eq!(g.unit_keywords(u(&g, target)).unwrap().assault, 4);
+    assert_eq!(g.unit_might(u(&g, target)).unwrap(), 2);
     um(&mut g, target).lane = Some(0);
     combat(&mut g, 0, 0);
-    assert_eq!(g.unit_might(u(&g, target)), 6);
+    assert_eq!(g.unit_might(u(&g, target)).unwrap(), 6);
     g.showdown.as_mut().unwrap().attacker = 1;
-    assert_eq!(g.unit_might(u(&g, target)), 2);
+    assert_eq!(g.unit_might(u(&g, target)).unwrap(), 2);
     g.showdown = None;
     um(&mut g, target).lane = None;
     g.apply(Action::EndTurn).unwrap();
     drain(&mut g);
-    assert_eq!(g.unit_keywords(u(&g, target)).assault, 1);
+    assert_eq!(g.unit_keywords(u(&g, target)).unwrap().assault, 1);
 }
 #[test]
 fn soul_harvest_rechecks_might_and_battlefield_at_resolution() {
@@ -370,7 +383,7 @@ fn soul_harvest_rechecks_might_and_battlefield_at_resolution() {
     cast(&mut g, 7, vec![target]);
     resolve(&mut g);
     resolve(&mut g);
-    assert_eq!(g.unit_might(u(&g, target)), 4);
+    assert_eq!(g.unit_might(u(&g, target)).unwrap(), 4);
     assert!(!g.players[1].discard.contains(&301));
     let mut g = game();
     let target = unit(&mut g, 1, 1000, 301, Some(0));
@@ -628,8 +641,8 @@ fn replacement_choice_keeps_original_victim_even_when_recall_raises_its_might() 
     gear(&mut g, 1, 1002, 10, Some(1000));
     gear(&mut g, 1, 1003, 10, Some(1000));
     combat(&mut g, 0, 0);
-    assert_eq!(g.unit_might(u(&g, taric)), 7);
-    assert_eq!(g.unit_might(u(&g, water)), 3);
+    assert_eq!(g.unit_might(u(&g, taric)).unwrap(), 7);
+    assert_eq!(g.unit_might(u(&g, water)).unwrap(), 3);
     um(&mut g, taric).damage = 6;
     um(&mut g, water).damage = 2;
     cast(&mut g, 297, vec![]);
@@ -663,22 +676,22 @@ fn live_combat_group_predicates_count_noncontributors_and_exclude_neutral_showdo
     um(&mut g, other).stunned = true;
     um(&mut g, other).ready = false;
     combat(&mut g, 0, 0);
-    assert_eq!(g.unit_might(u(&g, pigeons)), 5);
+    assert_eq!(g.unit_might(u(&g, pigeons)).unwrap(), 5);
     g.showdown.as_mut().unwrap().attacker = 1;
-    assert_eq!(g.unit_might(u(&g, pigeons)), 3);
+    assert_eq!(g.unit_might(u(&g, pigeons)).unwrap(), 3);
     g.showdown.as_mut().unwrap().combat = false;
-    assert_eq!(g.unit_might(u(&g, pigeons)), 3);
+    assert_eq!(g.unit_might(u(&g, pigeons)).unwrap(), 3);
     let mut g = game();
     let water = unit(&mut g, 0, 1000, 305, Some(0));
     combat(&mut g, 0, 1);
-    assert_eq!(g.unit_might(u(&g, water)), 4);
+    assert_eq!(g.unit_might(u(&g, water)).unwrap(), 4);
     let other = unit(&mut g, 0, 1001, 15, Some(0));
     um(&mut g, other).stunned = true;
-    assert_eq!(g.unit_might(u(&g, water)), 2);
+    assert_eq!(g.unit_might(u(&g, water)).unwrap(), 2);
     um(&mut g, other).lane = None;
-    assert_eq!(g.unit_might(u(&g, water)), 4);
+    assert_eq!(g.unit_might(u(&g, water)).unwrap(), 4);
     g.showdown.as_mut().unwrap().combat = false;
-    assert_eq!(g.unit_might(u(&g, water)), 2);
+    assert_eq!(g.unit_might(u(&g, water)).unwrap(), 2);
 }
 #[test]
 fn local_aura_sources_exclude_self_stack_and_keep_opponents_bases_distinct() {
@@ -687,10 +700,10 @@ fn local_aura_sources_exclude_self_stack_and_keep_opponents_bases_distinct() {
         let a = unit(&mut g, 0, 1000, card, None);
         let b = unit(&mut g, 0, 1001, card, None);
         let enemy = unit(&mut g, 1, 1002, 69, None);
-        assert_eq!(g.unit_keywords(u(&g, a)).assault, assault);
-        assert_eq!(g.unit_keywords(u(&g, a)).shield, shield);
-        assert_eq!(g.unit_keywords(u(&g, enemy)).assault, 0);
-        assert_eq!(g.unit_keywords(u(&g, enemy)).shield, 0);
+        assert_eq!(g.unit_keywords(u(&g, a)).unwrap().assault, assault);
+        assert_eq!(g.unit_keywords(u(&g, a)).unwrap().shield, shield);
+        assert_eq!(g.unit_keywords(u(&g, enemy)).unwrap().assault, 0);
+        assert_eq!(g.unit_keywords(u(&g, enemy)).unwrap().shield, 0);
         let contributions = g.passive_contributions(BoardObject::Unit {
             player: 0,
             unit_id: 1000,
@@ -704,8 +717,11 @@ fn local_aura_sources_exclude_self_stack_and_keep_opponents_bases_distinct() {
             }
         );
         um(&mut g, b).lane = Some(0);
-        assert_eq!(g.unit_keywords(u(&g, a)).assault, 0);
-        assert_eq!(g.unit_keywords(u(&g, a)).shield, u8::from(card == 307));
+        assert_eq!(g.unit_keywords(u(&g, a)).unwrap().assault, 0);
+        assert_eq!(
+            g.unit_keywords(u(&g, a)).unwrap().shield,
+            u64::from(card == 307)
+        );
     }
 }
 #[test]
@@ -735,7 +751,7 @@ fn legal_actions_exposes_both_field_slots_even_after_the_policy_candidate_cap() 
     // Enough earlier plays to fill the bounded optional-cost policy candidates.
     g.players[0].hand = vec![4; 30];
     g.players[0].hand.push(299);
-    let actions = g.legal_actions();
+    let actions = g.legal_actions().unwrap();
     for lane in 0..2 {
         assert!(actions.iter().any(|action| matches!(action,
             Action::PlayCardWithTargets { hand_index: 30, lane: None, targets }
@@ -748,6 +764,7 @@ fn legal_actions_exposes_both_field_slots_even_after_the_policy_candidate_cap() 
     assert!(
         !affordable
             .legal_actions()
+            .unwrap()
             .iter()
             .any(|action| matches!(action,
         Action::PlayCardWithTargets { targets, .. }

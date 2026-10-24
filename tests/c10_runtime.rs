@@ -234,15 +234,18 @@ fn live_level_passives_follow_exact_thresholds_and_fall_when_xp_falls() {
         let mut g = game();
         let t = unit(&mut g, 0, 1000, card, None);
         g.players[0].xp = threshold - 1;
-        assert_eq!(g.unit_might(u(&g, t)), base);
-        assert!(!g.unit_keywords(u(&g, t)).ganking);
-        assert_eq!(g.unit_keywords(u(&g, t)).deflect, 0);
+        assert_eq!(g.unit_might(u(&g, t)).unwrap(), base);
+        assert!(!g.unit_keywords(u(&g, t)).unwrap().ganking);
+        assert_eq!(g.unit_keywords(u(&g, t)).unwrap().deflect, 0);
         g.players[0].xp = threshold;
-        assert_eq!(g.unit_might(u(&g, t)), base + 1);
-        assert_eq!(g.unit_keywords(u(&g, t)).ganking, card == 338);
-        assert_eq!(g.unit_keywords(u(&g, t)).deflect, u8::from(card == 339));
+        assert_eq!(g.unit_might(u(&g, t)).unwrap(), base + 1);
+        assert_eq!(g.unit_keywords(u(&g, t)).unwrap().ganking, card == 338);
+        assert_eq!(
+            g.unit_keywords(u(&g, t)).unwrap().deflect,
+            u8::from(card == 339)
+        );
         g.players[0].xp = 0; // controlled live-passive fixture
-        assert_eq!(g.unit_might(u(&g, t)), base);
+        assert_eq!(g.unit_might(u(&g, t)).unwrap(), base);
     }
 }
 #[test]
@@ -310,15 +313,15 @@ fn wily_uses_actual_gain_history_before_or_after_entry_and_resets_each_turn() {
                 .unwrap()
                 .id,
         };
-        assert_eq!(g.unit_might(u(&g, t)), 5);
-        assert!(g.unit_keywords(u(&g, t)).ganking);
+        assert_eq!(g.unit_might(u(&g, t)).unwrap(), 5);
+        assert!(g.unit_keywords(u(&g, t)).unwrap().ganking);
         g.players[0].xp = 0; // balance reduction does not erase an already recorded event
         assert!(g.gained_xp_this_turn(0));
-        assert_eq!(g.unit_might(u(&g, t)), 5);
+        assert_eq!(g.unit_might(u(&g, t)).unwrap(), 5);
         g.apply(Action::EndTurn).unwrap();
         assert!(!g.gained_xp_this_turn(0));
-        assert_eq!(g.unit_might(u(&g, t)), 4);
-        assert!(!g.unit_keywords(u(&g, t)).ganking);
+        assert_eq!(g.unit_might(u(&g, t)).unwrap(), 4);
+        assert!(!g.unit_keywords(u(&g, t)).unwrap().ganking);
     }
 }
 #[test]
@@ -537,7 +540,7 @@ fn payment_complete_and_rollback_restore_outer_transaction_protection() {
             g.apply(Action::CompletePayment).unwrap();
             resolve(&mut g);
         } else {
-            assert!(g.can_cancel_payment());
+            assert!(g.can_cancel_payment().unwrap());
             g.apply(Action::Choose { accept: false }).unwrap();
         }
         g.players[0].energy = 50;

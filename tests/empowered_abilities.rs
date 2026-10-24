@@ -251,7 +251,7 @@ fn disempower_draw_and_mech_costs_are_paid_before_response_and_do_not_need_sourc
                 assert_eq!(g.players[0].hand.len(), hand + 1);
             } else {
                 let token = g.players[0].units.iter().find(|u| u.token).unwrap();
-                assert_eq!(g.unit_might(token), 3);
+                assert_eq!(g.unit_might(token).unwrap(), 3);
                 assert_eq!(token.lane, None);
                 assert_eq!(
                     local_rift::rules::token_spec(token.card_id).unwrap().tag,
@@ -478,7 +478,7 @@ fn avian_can_choose_self_and_pays_enemy_deflect_without_counting_token_might_as_
     g.apply(ability(third, 0, vec![token])).unwrap();
     resolve(&mut g);
     let t = g.players[0].units.iter().find(|u| u.id == 904).unwrap();
-    assert_eq!(g.unit_might(t), 2);
+    assert_eq!(g.unit_might(t).unwrap(), 2);
     assert_eq!(t.temporary_buff, 0);
     assert!(g.buffed_units.contains(&904));
 }
@@ -526,8 +526,8 @@ fn ultrasoft_restricts_activation_not_later_effect_and_birds_finalize_after_pare
     let birds: Vec<_> = g.players[0].units.iter().filter(|u| u.token).collect();
     assert_eq!(birds.len(), 2);
     for bird in birds {
-        assert_eq!(g.unit_might(bird), 1);
-        assert_eq!(g.unit_keywords(bird).deflect, 1);
+        assert_eq!(g.unit_might(bird).unwrap(), 1);
+        assert_eq!(g.unit_keywords(bird).unwrap().deflect, 1);
         assert_eq!(
             local_rift::rules::token_spec(bird.card_id).unwrap().tag,
             Some("Bird")

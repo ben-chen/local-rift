@@ -141,7 +141,7 @@ fn gentlemens_duel_buffs_before_damage_and_keeps_buff_if_enemy_leaves() {
             game.players[1].units.clear();
         }
         settle(&mut game);
-        assert_eq!(game.unit_might(&game.players[0].units[0]), 6);
+        assert_eq!(game.unit_might(&game.players[0].units[0]).unwrap(), 6);
         assert_eq!(
             game.players[0].units[0].damage,
             if remove_enemy { 0 } else { 4 }
@@ -210,7 +210,7 @@ fn desert_call_repeats_as_two_independently_placed_sand_soldiers() {
     );
     for token in tokens {
         assert_eq!(game.unit_name(token), "Sand Soldier token");
-        assert_eq!(game.unit_might(token), 2);
+        assert_eq!(game.unit_might(token).unwrap(), 2);
         assert!(!token.ready);
     }
 }
@@ -396,14 +396,22 @@ fn against_odds_requires_a_friendly_field_target_and_counts_only_enemies_there()
     let mut game = position();
     game.players[0].hand = vec![228];
     game.players[0].units.push(unit(100, 70, None));
-    assert!(!game.valid_card_target(0, 228, None, t(0, 100), &[]));
+    assert!(
+        !game
+            .valid_card_target(0, 228, None, t(0, 100), &[])
+            .unwrap()
+    );
     game.players[0].units[0].lane = Some(0);
     game.players[1].units = vec![
         unit(101, 70, Some(0)),
         unit(102, 70, Some(0)),
         unit(103, 70, Some(1)),
     ];
-    assert!(!game.valid_card_target(0, 228, None, t(1, 101), &[]));
+    assert!(
+        !game
+            .valid_card_target(0, 228, None, t(1, 101), &[])
+            .unwrap()
+    );
     cast(&mut game, 228, vec![t(0, 100)]);
     game.players[1].units[1].lane = Some(1);
     game.apply(Action::Pass).unwrap();
@@ -423,7 +431,7 @@ fn high_note_counts_exhausted_units_at_resolution_and_has_no_might_floor() {
     }
     settle(&mut game);
     assert_eq!(game.players[1].units[0].temporary_buff, -4);
-    assert_eq!(game.unit_might(&game.players[1].units[0]), 0);
+    assert_eq!(game.unit_might(&game.players[1].units[0]).unwrap(), 0);
 }
 
 #[test]

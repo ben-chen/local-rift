@@ -75,7 +75,7 @@ pub struct CostModifier {
     pub id: u64,
     pub label: String,
     pub source: ChainSource,
-    pub energy: u16,
+    pub energy: u64,
     pub power: u16,
     pub minimum_energy: u16,
     pub choose_energy_or_power: bool,
@@ -683,7 +683,7 @@ impl Game {
                     intent.lane,
                     target,
                     &group[..slot],
-                ) || matches!(intent.origin, PlayOrigin::Hidden { lane } if !self.hidden_target_allowed(intent.id, lane, target))
+                )? || matches!(intent.origin, PlayOrigin::Hidden { lane } if !self.hidden_target_allowed(intent.id, lane, target))
                 {
                     return Err("A supplied target does not meet this play's restrictions.".into());
                 }
@@ -812,7 +812,7 @@ impl Game {
         for r in &choices.repeats {
             all_targets.extend(&r.choices.targets);
         }
-        let deflect = self.deflect_cost(p, &all_targets);
+        let deflect = self.deflect_cost(p, &all_targets)?;
         if deflect > 0 {
             components.push(CostComponent {
                 id: 4,
@@ -835,7 +835,9 @@ impl Game {
                         self.players[p]
                             .units
                             .iter()
-                            .map(|u| u16::from(self.unit_might(u)))
+                            .map(|u| self.unit_might(u))
+                            .collect::<Result<Vec<_>, String>>()?
+                            .into_iter()
                             .max()
                             .unwrap_or(0),
                         0,
@@ -843,10 +845,7 @@ impl Game {
                     StaticAbility::EmpoweredEnergyDiscount(n) if self.controls_empowered(p) => {
                         (n.into(), 0)
                     }
-                    StaticAbility::TrashEnergyDiscount => (
-                        self.players[p].discard.len().min(u16::MAX as usize) as u16,
-                        0,
-                    ),
+                    StaticAbility::TrashEnergyDiscount => (self.players[p].discard.len() as u64, 0),
                     StaticAbility::LegionEnergyDiscount(n) if self.cards_played[p] > 0 => {
                         (n.into(), 0)
                     }
@@ -858,10 +857,10 @@ impl Game {
                         else {
                             continue;
                         };
-                        (tier.energy, 0)
+                        (u64::from(tier.energy), 0)
                     }
                     StaticAbility::PerCardEnergyDiscount { amount, minimum } => (
-                        self.cards_played[p].saturating_mul(amount.into()),
+                        u64::from(self.cards_played[p]) * u64::from(amount),
                         minimum.into(),
                     ),
                     _ => continue,
@@ -889,7 +888,7 @@ impl Game {
                 3_000_000 + u64::from(g.id),
                 "Delayed play modifier",
                 g.source,
-                energy,
+                energy.into(),
                 power,
                 0,
                 false,
@@ -1172,7 +1171,7 @@ fn modifier(
     id: u64,
     label: &str,
     source: ChainSource,
-    energy: u16,
+    energy: u64,
     power: u16,
     minimum_energy: u16,
     choose: bool,
@@ -1348,7 +1347,8 @@ pub(crate) fn solve_cost_plan(
                 optional: false,
                 cost: CostValue {
                     xp: 0,
-                    energy,
+                    energy: u16::try_from(energy)
+                        .map_err(|_| crate::numeric::capacity("increased component Energy cost"))?,
                     power,
                     domains: ALL_DOMAINS.to_vec(),
                 },
@@ -1365,9 +1365,9 @@ pub(crate) fn solve_cost_plan(
             .map(|&i| u32::from(work[i].cost.energy))
             .sum();
         let mut remaining =
-            u32::from(energy).min(total.saturating_sub(u32::from(m.minimum_energy)));
+            energy.min(u64::from(total.saturating_sub(u32::from(m.minimum_energy))));
         for &i in &indices {
-            let n = remaining.min(u32::from(work[i].cost.energy));
+            let n = remaining.min(u64::from(work[i].cost.energy));
             work[i].cost.energy -= n as u16;
             remaining -= n;
         }
@@ -1538,7 +1538,7 @@ impl Game {
                     item.from_hidden || item.recycle_after || item.banish_after,
                     item.from_hidden,
                 );
-                self.after_resolution();
+                self.after_resolution()?;
                 return Ok(());
             }
             let mut item = self.chain[index].clone();
@@ -1552,7 +1552,7 @@ impl Game {
                 item.target = item.targets.first().copied();
             }
             let groups =
-                self.resolution_groups(item.player, item.card_id, item.lane, &item.targets);
+                self.resolution_groups(item.player, item.card_id, item.lane, &item.targets)?;
             if rules::targeting(item.card_id).same_location && groups.len() > 1 {
                 self.decision = Some(Decision::ResolutionTargets {
                     player: item.player,
@@ -1578,9 +1578,9 @@ impl Game {
                     && item.card_id == 29
                     && let Some(&target) = item.targets.first()
                 {
-                    self.modify_might(target, 2, 0);
+                    self.modify_might(target, 2, 0)?;
                 }
-                self.resolve_operation(item.player, item.card_id, item.lane, item.targets, None);
+                self.resolve_operation(item.player, item.card_id, item.lane, item.targets, None)?;
             }
             self.damage_context = None;
         }
@@ -1620,7 +1620,7 @@ impl Game {
                 },
                 optional: false,
             }];
-            let deflect = self.deflect_cost(player, &target.iter().copied().collect::<Vec<_>>());
+            let deflect = self.deflect_cost(player, &target.iter().copied().collect::<Vec<_>>())?;
             if deflect > 0 {
                 components.push(CostComponent {
                     id: 4,
@@ -1753,7 +1753,7 @@ impl Game {
             },
             optional: false,
         }];
-        let deflect = self.deflect_cost(player, &targets);
+        let deflect = self.deflect_cost(player, &targets)?;
         if deflect > 0 {
             components.push(CostComponent {
                 id: 4,
@@ -1820,7 +1820,7 @@ impl Game {
                         | index as u64,
                     "Printed Empower discount",
                     ChainSource::Card { card_id },
-                    energy,
+                    energy.into(),
                     0,
                     0,
                     false,
@@ -1870,160 +1870,166 @@ impl Game {
 
 impl Game {
     /// Bounded positive policy candidates; this is not a rules-legality oracle.
-    pub(crate) fn canonical_play_candidates(&self, limit: usize) -> Vec<Action> {
-        if self.decision.is_some() {
-            return vec![];
-        }
-        let p = self.priority();
-        let mut intents = Vec::new();
-        for hand_index in 0..self.players[p].hand.len() {
-            intents.push(Action::PlayCard {
-                hand_index,
-                lane: None,
-                target: None,
-            });
-        }
-        if self.players[p].champion.is_some() {
-            intents.push(Action::PlayChampion {
-                lane: None,
-                target: None,
-            });
-        }
-        for trash_index in 0..self.players[p].discard.len() {
-            if !self.flow_costs(p, trash_index).is_empty() {
-                intents.push(Action::PlayFromTrash {
-                    trash_index,
+    pub(crate) fn canonical_play_candidates(&self, limit: usize) -> Result<Vec<Action>, String> {
+        Ok({
+            if self.decision.is_some() {
+                return Ok(vec![]);
+            }
+            let p = self.priority();
+            let mut intents = Vec::new();
+            for hand_index in 0..self.players[p].hand.len() {
+                intents.push(Action::PlayCard {
+                    hand_index,
                     lane: None,
                     target: None,
                 });
             }
-        }
-        let intents: Vec<_> = intents
-            .into_iter()
-            .flat_map(|action| {
-                if self.card_intent(&action).ok().is_some_and(|intent| {
-                    rules::play_target_spec(intent.id).kind
-                        == Some(rules::PlayTargetKind::Battlefield)
-                }) {
-                    (0..BATTLEFIELDS)
-                        .map(|lane| {
-                            let mut targeted = action.clone();
-                            match &mut targeted {
-                                Action::PlayCard { target, .. }
-                                | Action::PlayChampion { target, .. }
-                                | Action::PlayFromTrash { target, .. } => {
-                                    *target = Some(Target::Battlefield { lane })
-                                }
-                                _ => {}
-                            }
-                            targeted
-                        })
-                        .collect::<Vec<_>>()
-                } else {
-                    vec![action]
-                }
-            })
-            .collect();
-        let mut result = Vec::new();
-        for action in intents {
-            let Ok(view) = self.play_choices(&action) else {
-                continue;
-            };
-            let initial = self
-                .card_intent(&action)
-                .map(|intent| intent.targets)
-                .unwrap_or_default();
-            let Ok(targets) = self.prepare_targets(p, view.card_id, None, &initial) else {
-                continue;
-            };
-            let repeat_targets: Vec<Vec<Target>> = if rules::play_target_spec(view.card_id).kind
-                == Some(rules::PlayTargetKind::Battlefield)
-            {
-                self.card_target_candidates(p, view.card_id, None, &[])
-                    .into_iter()
-                    .map(|target| vec![target])
-                    .collect()
-            } else {
-                vec![targets.clone()]
-            };
-            let mut choices = vec![PlayChoices::default()];
-            if view.accelerate.is_some() {
-                choices.push(PlayChoices {
-                    accelerate: true,
-                    ..Default::default()
+            if self.players[p].champion.is_some() {
+                intents.push(Action::PlayChampion {
+                    lane: None,
+                    target: None,
                 });
             }
-            if view.bonus.is_some() {
-                choices.push(PlayChoices {
-                    bonus: true,
-                    ..Default::default()
-                });
-            }
-            for r in view.repeats.iter().take(3) {
-                for selected in &repeat_targets {
-                    choices.push(PlayChoices {
-                        repeats: vec![RepeatSelection {
-                            option_id: r.id,
-                            choices: ExecutionChoices {
-                                targets: selected.clone(),
-                                mode: None,
-                            },
-                        }],
-                        ..Default::default()
+            for trash_index in 0..self.players[p].discard.len() {
+                if !self.flow_costs(p, trash_index).is_empty() {
+                    intents.push(Action::PlayFromTrash {
+                        trash_index,
+                        lane: None,
+                        target: None,
                     });
                 }
             }
-            if view.repeats.len() > 1 {
-                choices.push(PlayChoices {
-                    repeats: view
-                        .repeats
-                        .iter()
-                        .take(4)
-                        .map(|r| RepeatSelection {
-                            option_id: r.id,
-                            choices: ExecutionChoices {
-                                targets: targets.clone(),
-                                mode: None,
-                            },
-                        })
-                        .collect(),
-                    ..Default::default()
-                });
-            }
-            for choice in choices {
-                let candidate = Action::WithPlayChoices {
-                    action: Box::new(action.clone()),
-                    choices: choice,
+            let intents: Vec<_> = intents
+                .into_iter()
+                .flat_map(|action| {
+                    if self.card_intent(&action).ok().is_some_and(|intent| {
+                        rules::play_target_spec(intent.id).kind
+                            == Some(rules::PlayTargetKind::Battlefield)
+                    }) {
+                        (0..BATTLEFIELDS)
+                            .map(|lane| {
+                                let mut targeted = action.clone();
+                                match &mut targeted {
+                                    Action::PlayCard { target, .. }
+                                    | Action::PlayChampion { target, .. }
+                                    | Action::PlayFromTrash { target, .. } => {
+                                        *target = Some(Target::Battlefield { lane })
+                                    }
+                                    _ => {}
+                                }
+                                targeted
+                            })
+                            .collect::<Vec<_>>()
+                    } else {
+                        vec![action]
+                    }
+                })
+                .collect();
+            let mut result = Vec::new();
+            for action in intents {
+                let Ok(view) = self.play_choices(&action) else {
+                    continue;
                 };
-                if self.clone().apply(candidate.clone()).is_ok() {
-                    result.push(candidate);
-                    if result.len() >= limit {
-                        return result;
+                let initial = self
+                    .card_intent(&action)
+                    .map(|intent| intent.targets)
+                    .unwrap_or_default();
+                let Ok(targets) = self.prepare_targets(p, view.card_id, None, &initial) else {
+                    continue;
+                };
+                let repeat_targets: Vec<Vec<Target>> = if rules::play_target_spec(view.card_id).kind
+                    == Some(rules::PlayTargetKind::Battlefield)
+                {
+                    self.card_target_candidates(p, view.card_id, None, &[])?
+                        .into_iter()
+                        .map(|target| vec![target])
+                        .collect()
+                } else {
+                    vec![targets.clone()]
+                };
+                let mut choices = vec![PlayChoices::default()];
+                if view.accelerate.is_some() {
+                    choices.push(PlayChoices {
+                        accelerate: true,
+                        ..Default::default()
+                    });
+                }
+                if view.bonus.is_some() {
+                    choices.push(PlayChoices {
+                        bonus: true,
+                        ..Default::default()
+                    });
+                }
+                for r in view.repeats.iter().take(3) {
+                    for selected in &repeat_targets {
+                        choices.push(PlayChoices {
+                            repeats: vec![RepeatSelection {
+                                option_id: r.id,
+                                choices: ExecutionChoices {
+                                    targets: selected.clone(),
+                                    mode: None,
+                                },
+                            }],
+                            ..Default::default()
+                        });
+                    }
+                }
+                if view.repeats.len() > 1 {
+                    choices.push(PlayChoices {
+                        repeats: view
+                            .repeats
+                            .iter()
+                            .take(4)
+                            .map(|r| RepeatSelection {
+                                option_id: r.id,
+                                choices: ExecutionChoices {
+                                    targets: targets.clone(),
+                                    mode: None,
+                                },
+                            })
+                            .collect(),
+                        ..Default::default()
+                    });
+                }
+                for choice in choices {
+                    let candidate = Action::WithPlayChoices {
+                        action: Box::new(action.clone()),
+                        choices: choice,
+                    };
+                    if self.clone().apply(candidate.clone()).is_ok() {
+                        result.push(candidate);
+                        if result.len() >= limit {
+                            return Ok(result);
+                        }
                     }
                 }
             }
-        }
-        result
+            result
+        })
     }
-    pub(crate) fn canonical_action_score(&self, action: &Action) -> i32 {
-        let Ok(intent) = self.card_intent(action) else {
-            return 0;
-        };
-        let extras = intent.legacy.repeats.len() as i32 * 5
-            + i32::from(intent.legacy.accelerate) * 15
-            + i32::from(intent.legacy.bonus) * 5;
-        let score = if matches!(rules::effect(intent.id), OfficialEffect::AreaDamage { .. }) {
-            let base = self.area_damage_score(self.priority(), intent.id, &intent.targets);
-            base + intent
-                .legacy
-                .repeats
-                .iter()
-                .map(|r| self.area_damage_score(self.priority(), intent.id, &r.choices.targets))
-                .sum::<i32>()
-        } else {
-            self.ai_card_score(intent.id)
-        };
-        score + extras
+    pub(crate) fn canonical_action_score(&self, action: &Action) -> Result<i128, String> {
+        Ok({
+            let Ok(intent) = self.card_intent(action) else {
+                return Ok(0);
+            };
+            let extras = intent.legacy.repeats.len() as i128 * 5
+                + i128::from(intent.legacy.accelerate) * 15
+                + i128::from(intent.legacy.bonus) * 5;
+            let score = if matches!(rules::effect(intent.id), OfficialEffect::AreaDamage { .. }) {
+                let base = self.area_damage_score(self.priority(), intent.id, &intent.targets)?;
+                base + intent
+                    .legacy
+                    .repeats
+                    .iter()
+                    .map(|r| self.area_damage_score(self.priority(), intent.id, &r.choices.targets))
+                    .collect::<Result<Vec<_>, String>>()?
+                    .into_iter()
+                    .sum::<i128>()
+            } else {
+                self.ai_card_score(intent.id)?
+            };
+            score + extras
+        })
     }
 }
 

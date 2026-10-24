@@ -191,7 +191,8 @@ fn public_passive_sources_distinguish_copies_and_do_not_change_printed_might() {
         for (gear_id, amount) in [(901, 1), (902, 2)] {
             assert!(effects.iter().any(|e| e["active"] == true
                 && e["source"]["gear_id"] == gear_id
-                && e["effect"] == json!({"type":"might","amount":amount})));
+                && e["effect"]
+                    == json!({"type":"might","amount":amount,"amount_exact":amount.to_string()})));
         }
         assert!(effects.iter().any(|e| e["active"] == false
             && e["source"]["unit_id"] == 900

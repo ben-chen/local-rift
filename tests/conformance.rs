@@ -283,7 +283,7 @@ fn mandatory_on_play_target_does_not_stall_when_deflect_cannot_be_paid() {
     })
     .unwrap();
     assert!(
-        !game.legal_actions().is_empty(),
+        !game.legal_actions().unwrap().is_empty(),
         "An unpayable mandatory trigger must not leave the match without a legal action."
     );
 }

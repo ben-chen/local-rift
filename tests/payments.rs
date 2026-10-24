@@ -329,7 +329,7 @@ fn quoted_defaults_reproduce_automatic_payment_through_live_games() {
             if game.winner.is_some() {
                 break;
             }
-            for action in game.legal_actions().into_iter().take(8) {
+            for action in game.legal_actions().unwrap().into_iter().take(8) {
                 let Ok(quote) = game.quote_power_payment(&action) else {
                     continue;
                 };

@@ -93,7 +93,10 @@ fn unit_rect(app: &mut App, selected: u32) -> Rect {
             owner,
             location: unit.lane.map_or(0, |lane| lane + 1),
             ready: unit.ready,
-            might: app.game.unit_might(unit),
+            might: app
+                .game
+                .unit_might(unit)
+                .expect("valid numeric smoke fixture"),
             accent: app.game.legend_def(owner).accent,
         })
         .collect();
@@ -1172,9 +1175,15 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
                 let action = app
                     .game
                     .legal_actions()
+                    .expect("valid numeric smoke fixture")
                     .into_iter()
                     .find(|a| matches!(a, Action::Pass))
-                    .unwrap_or_else(|| app.game.legal_actions().remove(0));
+                    .unwrap_or_else(|| {
+                        app.game
+                            .legal_actions()
+                            .expect("valid numeric smoke fixture")
+                            .remove(0)
+                    });
                 app.game.apply(action).unwrap();
             }
             let card_id = *app.game.players[0]
@@ -1511,17 +1520,23 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
         }
         107 => {
             assert_eq!(app.damage_amounts, Some(vec![(80_002, 2), (80_003, 1)]));
-            app.damage_editor = Some((80_002, "65536".into()));
+            app.damage_editor = Some((80_002, "18446744073709551616".into()));
             assert!(
                 app.commit_damage_editor().is_err(),
                 "out-of-range input is rejected without wrapping"
             );
-            assert_eq!(app.damage_assignment(0, 3), vec![(80_002, 2), (80_003, 1)]);
-            app.damage_editor = Some((80_002, "65535".into()));
+            assert_eq!(
+                app.damage_assignment(0, 3)
+                    .expect("valid numeric smoke fixture"),
+                vec![(80_002, 2), (80_003, 1)]
+            );
+            app.damage_editor = Some((80_002, "18446744073709551615".into()));
             app.commit_damage_editor().unwrap();
             assert_eq!(
-                app.damage_assignment(0, 3)[0].1,
-                65535,
+                app.damage_assignment(0, 3)
+                    .expect("valid numeric smoke fixture")[0]
+                    .1,
+                u64::MAX,
                 "typed amounts are not silently clamped"
             );
             assert!(app.damage_validation(0, 3).is_err());
@@ -1529,7 +1544,11 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
             click(app, 266.0, 845.0); // Reduce first target below lethal.
         }
         108 => {
-            assert_eq!(app.damage_assignment(0, 3), vec![(80_002, 1), (80_003, 1)]);
+            assert_eq!(
+                app.damage_assignment(0, 3)
+                    .expect("valid numeric smoke fixture"),
+                vec![(80_002, 1), (80_003, 1)]
+            );
             COMBAT_SNAPSHOT
                 .with(|snapshot| *snapshot.borrow_mut() = Some(format!("{:?}", app.game)));
             click(app, 1285.0, 510.0); // Incomplete allocation must not commit.
@@ -1546,7 +1565,11 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
             click(app, 514.0, 845.0); // 1 + 2 is complete, but wrong lethal order.
         }
         110 => {
-            assert_eq!(app.damage_assignment(0, 3), vec![(80_002, 1), (80_003, 2)]);
+            assert_eq!(
+                app.damage_assignment(0, 3)
+                    .expect("valid numeric smoke fixture"),
+                vec![(80_002, 1), (80_003, 2)]
+            );
             assert!(app.damage_validation(0, 3).unwrap_err().contains("lethal"));
             COMBAT_SNAPSHOT
                 .with(|snapshot| *snapshot.borrow_mut() = Some(format!("{:?}", app.game)));
@@ -1564,11 +1587,18 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
             click(app, 315.0, 750.0); // Move first target last, retaining explicit amounts.
         }
         112 => {
-            assert_eq!(app.damage_assignment(0, 3), vec![(80_003, 2), (80_002, 1)]);
+            assert_eq!(
+                app.damage_assignment(0, 3)
+                    .expect("valid numeric smoke fixture"),
+                vec![(80_003, 2), (80_002, 1)]
+            );
             assert!(app.damage_validation(0, 3).is_ok());
             assert_ne!(
-                app.damage_assignment(0, 3),
-                app.game.automatic_damage_assignment(0, 0, 3)
+                app.damage_assignment(0, 3)
+                    .expect("valid numeric smoke fixture"),
+                app.game
+                    .automatic_damage_assignment(0, 0, 3)
+                    .expect("valid numeric smoke fixture")
             );
             if let Ok(path) = std::env::var("RIFT_SMOKE_COMBAT_SCREENSHOT") {
                 app.ui.input_override = Some((vec2(-100.0, -100.0), false, false));
@@ -2249,12 +2279,12 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
                     .any(|item| item.card_id == 85 && item.targets.len() == 2)
             );
             finish_chain_until_choice(app);
-            assert!(
-                app.game.players[0]
-                    .units
-                    .iter()
-                    .all(|unit| app.game.unit_might(unit) == 7)
-            );
+            assert!(app.game.players[0].units.iter().all(|unit| {
+                app.game
+                    .unit_might(unit)
+                    .expect("valid numeric smoke fixture")
+                    == 7
+            }));
         }
         174 => {
             expansion_fixture(app, 83);
@@ -2630,7 +2660,9 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
                 .find(|unit| unit.card_id == 69)
                 .unwrap();
             assert_eq!(
-                app.game.unit_might(unit),
+                app.game
+                    .unit_might(unit)
+                    .expect("valid numeric smoke fixture"),
                 10,
                 "new Legion target resolves through native choice"
             );
@@ -2854,12 +2886,12 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
             );
             assert_eq!(app.game.players[0].energy, 8);
             finish_chain_until_choice(app);
-            assert!(
-                app.game.players[0]
-                    .units
-                    .iter()
-                    .all(|unit| app.game.unit_might(unit) == 4)
-            );
+            assert!(app.game.players[0].units.iter().all(|unit| {
+                app.game
+                    .unit_might(unit)
+                    .expect("valid numeric smoke fixture")
+                    == 4
+            }));
         }
         243 => {
             expansion_fixture(app, 133);
@@ -2916,7 +2948,10 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
             finish_chain_until_choice(app);
             assert_eq!(app.game.players[0].gear[0].attached_to, Some(100));
             assert_eq!(
-                app.game.unit_keywords(&app.game.players[0].units[0]).shield,
+                app.game
+                    .unit_keywords(&app.game.players[0].units[0])
+                    .expect("valid numeric smoke fixture")
+                    .shield,
                 2
             );
         }
@@ -2999,7 +3034,11 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
         }
         256 => {
             assert!(matches!(app.selection, Some(Selection::Pending(_))));
-            assert!(!app.game.can_decline_trash_play());
+            assert!(
+                !app.game
+                    .can_decline_trash_play()
+                    .expect("valid numeric smoke fixture")
+            );
             click(app, 1229.0, 468.0);
         }
         257 => {
@@ -3029,23 +3068,27 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
             );
             finish_chain_until_choice(app);
             assert_eq!(
-                app.game.unit_might(
-                    app.game.players[0]
-                        .units
-                        .iter()
-                        .find(|unit| unit.id == 100)
-                        .unwrap()
-                ),
+                app.game
+                    .unit_might(
+                        app.game.players[0]
+                            .units
+                            .iter()
+                            .find(|unit| unit.id == 100)
+                            .unwrap()
+                    )
+                    .expect("valid numeric smoke fixture"),
                 4
             );
             assert_eq!(
-                app.game.unit_might(
-                    app.game.players[0]
-                        .units
-                        .iter()
-                        .find(|unit| unit.id == 101)
-                        .unwrap()
-                ),
+                app.game
+                    .unit_might(
+                        app.game.players[0]
+                            .units
+                            .iter()
+                            .find(|unit| unit.id == 101)
+                            .unwrap()
+                    )
+                    .expect("valid numeric smoke fixture"),
                 4
             );
         }
@@ -4190,14 +4233,16 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
         }
         382 => {
             assert_eq!(
-                app.damage_assignment(0, 8),
+                app.damage_assignment(0, 8)
+                    .expect("valid numeric smoke fixture"),
                 vec![(9002, 4), (9003, 2), (9004, 2)]
             );
             click(app, 315.0, 750.0);
         }
         383 => {
             assert_eq!(
-                app.damage_assignment(0, 8),
+                app.damage_assignment(0, 8)
+                    .expect("valid numeric smoke fixture"),
                 vec![(9003, 2), (9004, 2), (9002, 4)]
             );
             assert!(
@@ -4222,7 +4267,10 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
             };
             app.game
                 .apply(Action::AssignDamage {
-                    assignments: app.game.automatic_damage_assignment(player, lane, total),
+                    assignments: app
+                        .game
+                        .automatic_damage_assignment(player, lane, total)
+                        .expect("valid numeric smoke fixture"),
                 })
                 .unwrap();
             assert!(app.game.players[1].units.is_empty());
@@ -4351,7 +4399,12 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
                 .iter()
                 .find(|u| u.token && u.card_id == 241)
                 .unwrap();
-            assert_eq!(app.game.unit_might(mech), 3);
+            assert_eq!(
+                app.game
+                    .unit_might(mech)
+                    .expect("valid numeric smoke fixture"),
+                3
+            );
             assert_eq!(mech.lane, None);
             assert!(!mech.ready);
             played_gear_fixture(app, 242);
@@ -4574,7 +4627,7 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
             let before = format!("{:?}", app.game);
             app.conversion_editor = Some("-1".into());
             assert!(app.commit_conversion_editor().is_err());
-            app.conversion_editor = Some("65536".into());
+            app.conversion_editor = Some("18446744073709551616".into());
             assert!(app.commit_conversion_editor().is_err());
             assert_eq!(
                 format!("{:?}", app.game),
@@ -4667,7 +4720,9 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
                 Some(Decision::Payment { player: 0 })
             ));
             assert!(
-                !app.game.can_cancel_payment(),
+                !app.game
+                    .can_cancel_payment()
+                    .expect("valid numeric smoke fixture"),
                 "a legal begun payment must complete"
             );
             click(app, 1285.0, 510.0);
@@ -4707,7 +4762,11 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
                 app.game.decision,
                 Some(Decision::Payment { player: 0 })
             ));
-            assert!(app.game.can_cancel_payment());
+            assert!(
+                app.game
+                    .can_cancel_payment()
+                    .expect("valid numeric smoke fixture")
+            );
             click(app, 615.0, 760.0);
         }
         451 => {
@@ -4730,7 +4789,11 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
                 app.game.decision,
                 Some(Decision::Payment { player: 0 })
             ));
-            assert!(app.game.can_cancel_payment());
+            assert!(
+                app.game
+                    .can_cancel_payment()
+                    .expect("valid numeric smoke fixture")
+            );
             assert!(!app.game.players[0].gear[0].ready);
             click(app, 1285.0, 548.0);
         }
@@ -4894,7 +4957,12 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
                 .find(|unit| unit.token)
                 .unwrap();
             assert_eq!(app.game.unit_name(mech), "Mech token");
-            assert_eq!(app.game.unit_might(mech), 3);
+            assert_eq!(
+                app.game
+                    .unit_might(mech)
+                    .expect("valid numeric smoke fixture"),
+                3
+            );
             assert_eq!(mech.lane, None);
             played_gear_fixture(app, 253);
             app.game.players[0].units = vec![public_unit(9901, 18, None)];
@@ -5177,8 +5245,19 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
             assert_eq!(birds[1].lane, Some(0));
             for bird in birds {
                 assert_eq!(app.game.unit_name(bird), "Bird token");
-                assert_eq!(app.game.unit_might(bird), 1);
-                assert_eq!(app.game.unit_keywords(bird).deflect, 1);
+                assert_eq!(
+                    app.game
+                        .unit_might(bird)
+                        .expect("valid numeric smoke fixture"),
+                    1
+                );
+                assert_eq!(
+                    app.game
+                        .unit_keywords(bird)
+                        .expect("valid numeric smoke fixture")
+                        .deflect,
+                    1
+                );
             }
             played_gear_fixture(app, 250);
             app.game
@@ -5944,7 +6023,9 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
         599 => {
             assert!(app.targeting_battlefield());
             assert_eq!(
-                app.game.card_target_candidates(0, 299, None, &[]),
+                app.game
+                    .card_target_candidates(0, 299, None, &[])
+                    .expect("valid numeric smoke fixture"),
                 vec![
                     Target::Battlefield { lane: 0 },
                     Target::Battlefield { lane: 1 }
@@ -5967,7 +6048,9 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
             poor.players[0].runes = [0; 6];
             poor.players[0].energy = 0;
             assert_eq!(
-                poor.card_target_candidates(0, 299, None, &[]).len(),
+                poor.card_target_candidates(0, 299, None, &[])
+                    .expect("valid numeric smoke fixture")
+                    .len(),
                 2,
                 "target choice is independent of affordability"
             );
@@ -6298,7 +6381,10 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
                     .all(|gear| gear.attached_to == Some(9980))
             );
             assert_eq!(
-                app.game.unit_keywords(&app.game.players[0].units[0]).hunt,
+                app.game
+                    .unit_keywords(&app.game.players[0].units[0])
+                    .expect("valid numeric smoke fixture")
+                    .hunt,
                 4
             );
             let text = super::live_unit_description(&app.game, 0, 9980).unwrap();
@@ -6362,7 +6448,12 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
                     .contains("INACTIVE · Soul Sword")
             );
             app.game.players[0].xp = 3;
-            assert_eq!(app.game.unit_might(&app.game.players[0].units[0]), 4);
+            assert_eq!(
+                app.game
+                    .unit_might(&app.game.players[0].units[0])
+                    .expect("valid numeric smoke fixture"),
+                4
+            );
             capture_gear(app, 9982, "RIFT_SMOKE_C9_LEVEL_SCREENSHOT");
         }
         641 => {
@@ -6375,7 +6466,12 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
             app.game.players[0].exhausted_runes[calm] = 1;
             app.game.players[0].energy = 7;
             app.game.players[0].rune_deck = vec![Domain::Calm; 4];
-            assert_eq!(app.game.unit_might(&app.game.players[0].units[0]), 8);
+            assert_eq!(
+                app.game
+                    .unit_might(&app.game.players[0].units[0])
+                    .expect("valid numeric smoke fixture"),
+                8
+            );
             capture_unit(app, 9983, "RIFT_SMOKE_C9_RUNES_SCREENSHOT");
         }
         642 => {
@@ -6390,7 +6486,12 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
         644 => {
             assert!(app.rune_menu.is_none());
             assert_eq!(app.game.players[0].runes.iter().sum::<u8>(), 7);
-            assert_eq!(app.game.unit_might(&app.game.players[0].units[0]), 4);
+            assert_eq!(
+                app.game
+                    .unit_might(&app.game.players[0].units[0])
+                    .expect("valid numeric smoke fixture"),
+                4
+            );
             let text = super::live_unit_description(&app.game, 0, 9983).unwrap();
             assert!(text.contains("INACTIVE · Master Yi") && text.contains("currently 7;"));
             capture_unit(app, 9983, "RIFT_SMOKE_C9_RECYCLED_SCREENSHOT");
@@ -6485,6 +6586,7 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
             assert_eq!(
                 app.game
                     .unit_keywords(&app.game.players[0].units[0])
+                    .expect("valid numeric smoke fixture")
                     .deflect,
                 1
             );
@@ -6512,6 +6614,7 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
             assert_eq!(
                 app.game
                     .unit_keywords(&app.game.players[0].units[0])
+                    .expect("valid numeric smoke fixture")
                     .deflect,
                 0
             );
@@ -6659,7 +6762,12 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
                 .iter()
                 .find(|unit| unit.id == 9993)
                 .unwrap();
-            assert!(app.game.unit_keywords(bully).ganking);
+            assert!(
+                app.game
+                    .unit_keywords(bully)
+                    .expect("valid numeric smoke fixture")
+                    .ganking
+            );
             let text = super::live_unit_description(&app.game, 0, 9993).unwrap();
             assert!(
                 text.contains("BUFFED ·") && text.contains("ACTIVE · Bilgewater Bully: Ganking")
@@ -6836,6 +6944,7 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
             assert!(
                 !app.game
                     .unit_keywords(&app.game.players[0].units[0])
+                    .expect("valid numeric smoke fixture")
                     .ganking
             );
             click_unit(app, 10010);
@@ -6901,6 +7010,7 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
                             .find(|unit| unit.id == 10010)
                             .unwrap()
                     )
+                    .expect("valid numeric smoke fixture")
                     .ganking
             );
             capture_unit(app, 10010, "RIFT_SMOKE_C10_HISTORY_RESET_SCREENSHOT");
@@ -7038,7 +7148,12 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
                 .find(|unit| unit.card_id == 340)
                 .unwrap();
             assert!(unit.ready);
-            assert_eq!(app.game.unit_might(unit), 4);
+            assert_eq!(
+                app.game
+                    .unit_might(unit)
+                    .expect("valid numeric smoke fixture"),
+                4
+            );
             capture_unit(app, unit.id, "RIFT_SMOKE_C10_READY_ENTRY_SCREENSHOT");
         }
         705 => {
@@ -7093,7 +7208,8 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
             app.game.players[0].units.push(damaged);
             assert_eq!(
                 app.game
-                    .unit_might(app.game.players[0].units.last().unwrap()),
+                    .unit_might(app.game.players[0].units.last().unwrap())
+                    .expect("valid numeric smoke fixture"),
                 4
             );
             app.game.players[0].gear = vec![GearState {
@@ -7151,6 +7267,7 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
                             .find(|unit| unit.id == 10023)
                             .unwrap()
                     )
+                    .expect("valid numeric smoke fixture")
                     .ganking,
                 "spending XP does not erase Wily's real gain history"
             );
@@ -7183,7 +7300,11 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
                 app.game.players[0].xp, 1,
                 "recording an obligation does not spend unavailable XP"
             );
-            assert!(app.game.can_cancel_payment());
+            assert!(
+                app.game
+                    .can_cancel_payment()
+                    .expect("valid numeric smoke fixture")
+            );
             capture(app, "RIFT_SMOKE_C11_LOCKED_XP_SCREENSHOT");
             click(app, 400.0, 662.0);
         }
@@ -7366,7 +7487,12 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
             assert!(app.game.gained_xp_this_turn(0));
             finish_chain_until_choice(app);
             assert_eq!(app.game.players[0].gear[0].attached_to, Some(10024));
-            assert_eq!(app.game.unit_might(&app.game.players[0].units[0]), 4);
+            assert_eq!(
+                app.game
+                    .unit_might(&app.game.players[0].units[0])
+                    .expect("valid numeric smoke fixture"),
+                4
+            );
             assert_eq!(
                 app.game.players[0].xp, 0,
                 "attachment does not repeat the own-play XP trigger"
@@ -7434,15 +7560,234 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
             );
         }
         747 => {
+            expansion_fixture(app, 226);
+            app.game = Game::new(3, 3, 1818, Difficulty::Easy);
+            app.game.start_match().unwrap();
+            app.game.battlefields = [3, 3];
+            app.fields = [3, 3];
+            app.player_deck = 3;
+            app.opponent_deck = 3;
+            let exact = 9_007_199_254_740_993;
+            let mut attacker = public_unit(10031, 69, None);
+            attacker.buff = exact - 8;
+            let mut first = public_unit(10032, 69, Some(0));
+            first.buff = exact + 100 - 8;
+            first.damage = 100;
+            let mut second = public_unit(10033, 69, Some(0));
+            second.buff = exact + 5 - 8;
+            second.damage = 5;
+            app.game.players[0].units = vec![attacker];
+            app.game.players[1].units = vec![first, second];
+            app.game.battlefield_owner = [Some(1), None];
+            app.damage_order.clear();
+            app.game
+                .apply(Action::Move {
+                    unit_id: 10031,
+                    lane: Some(0),
+                })
+                .unwrap();
+            app.game.apply(Action::Pass).unwrap();
+            app.game.apply(Action::Pass).unwrap();
+            assert!(matches!(
+                app.game.decision,
+                Some(Decision::CombatDamage {
+                    player: 0,
+                    total: 9_007_199_254_740_993,
+                    ..
+                })
+            ));
+            save_state(app);
+            click(app, 865.0, 663.0);
+        }
+        748 => {
+            assert_eq!(
+                app.damage_amounts,
+                Some(vec![(10032, 9_007_199_254_740_993)])
+            );
+            click(app, 315.0, 845.0);
+        }
+        749 => {
+            assert_eq!(app.damage_editor, Some((10032, String::new())));
+            app.damage_editor.as_mut().unwrap().1 = "18446744073709551616".into();
+            assert!(app.commit_damage_editor().is_err());
+            assert!(app.damage_editor.is_some(), "invalid input stays editable");
+            assert_eq!(
+                app.damage_amounts,
+                Some(vec![(10032, 9_007_199_254_740_993)])
+            );
+            assert_same_state(app);
+            app.damage_editor.as_mut().unwrap().1 = u64::MAX.to_string();
+            capture(app, "RIFT_SMOKE_NUMERIC_INPUT_SCREENSHOT");
+            click(app, 1285.0, 510.0);
+        }
+        750 => {
+            assert_same_state(app);
+            assert_eq!(app.damage_amounts, Some(vec![(10032, u64::MAX)]));
+            assert!(app.damage_validation(0, 9_007_199_254_740_993).is_err());
+            click(app, 465.0, 845.0);
+        }
+        751 => {
+            assert_eq!(app.damage_editor, Some((10033, String::new())));
+            app.damage_editor.as_mut().unwrap().1 = u64::MAX.to_string();
+            app.commit_damage_editor().unwrap();
+            capture(app, "RIFT_SMOKE_NUMERIC_INVALID_SCREENSHOT");
+            click(app, 1285.0, 510.0);
+        }
+        752 => {
+            assert_same_state(app);
+            let sum: u128 = app
+                .damage_amounts
+                .as_ref()
+                .unwrap()
+                .iter()
+                .map(|(_, n)| u128::from(*n))
+                .sum();
+            assert_eq!(
+                sum,
+                u128::from(u64::MAX) * 2,
+                "invalid aggregate is displayed without wrapping"
+            );
+            click(app, 315.0, 845.0);
+        }
+        753 => {
+            app.damage_editor.as_mut().unwrap().1 = "0".into();
+            app.commit_damage_editor().unwrap();
+            click(app, 465.0, 845.0);
+        }
+        754 => {
+            app.damage_editor.as_mut().unwrap().1 = "9007199254740993".into();
+            capture(app, "RIFT_SMOKE_NUMERIC_EXACT_SCREENSHOT");
+            click(app, 1285.0, 510.0);
+        }
+        755 => {
+            assert!(matches!(
+                app.game.decision,
+                Some(Decision::CombatDamage { player: 1, .. })
+            ));
+            assert_eq!(app.game.players[1].units[0].damage, 100);
+            assert_eq!(
+                app.game.players[1].units[1].damage, 5,
+                "both assignments precede damage"
+            );
+            let Decision::CombatDamage {
+                player,
+                lane,
+                total,
+            } = app.game.decision.clone().unwrap()
+            else {
+                unreachable!()
+            };
+            let assignments = app
+                .game
+                .automatic_damage_assignment(player, lane, total)
+                .unwrap();
+            app.game
+                .apply(Action::AssignDamage { assignments })
+                .unwrap();
+            assert!(
+                app.game.players[1]
+                    .units
+                    .iter()
+                    .any(|unit| unit.id == 10032)
+            );
+            assert!(
+                !app.game.players[1]
+                    .units
+                    .iter()
+                    .any(|unit| unit.id == 10033),
+                "exact alternate allocation defeats the chosen unit"
+            );
+            assert!(app.game.players[0].units.is_empty());
+            expansion_fixture(app, 226);
+            let mut unit = public_unit(10034, 69, Some(0));
+            unit.buff = 9_007_199_254_740_993 - 8;
+            unit.damage = 9_007_199_254_740_992;
+            app.game.players[0].units = vec![unit];
+            app.game.battlefield_owner[0] = Some(0);
+            capture_unit(app, 10034, "RIFT_SMOKE_NUMERIC_MIGHT_SCREENSHOT");
+        }
+        756 => {
+            app.game.players[0].units[0].buff = 0;
+            app.game.players[0].units[0].damage = 0;
+            app.game.players[0].units[0].temporary_buff = -11;
+            let text = super::live_unit_description(&app.game, 0, 10034).unwrap();
+            assert!(text.contains("Calculated might: -3"));
+            capture_unit(app, 10034, "RIFT_SMOKE_NUMERIC_NEGATIVE_SCREENSHOT");
+        }
+        757 => {
+            app.hover_card = None;
+            app.hover_rect = None;
+            app.game.players[0].units[0].temporary_buff = 0;
+            app.game.players[0].units[0].buff = u64::MAX;
+            assert!(
+                app.game
+                    .validate_numeric_state()
+                    .unwrap_err()
+                    .starts_with("engine_capacity:")
+            );
+            save_state(app);
+            app.update();
+            assert_same_state(app);
+            app.companion.observe(&app.game);
+            assert!(app.companion.message().contains("numeric limit"));
+            capture(app, "RIFT_SMOKE_NUMERIC_ERROR_SCREENSHOT");
+            assert_same_state(app);
+        }
+        758 => {
+            expansion_fixture(app, 226);
+            let mut unit = public_unit(10035, 69, Some(0));
+            unit.buff = 9_007_199_254_740_993 - 8;
+            app.game.players[0].units = vec![unit];
+            app.game.players[1].units = vec![public_unit(10036, 69, Some(1))];
+            app.game.battlefield_owner = [Some(0), Some(1)];
+            click(app, 315.0, 760.0);
+        }
+        759 => click_unit(app, 10036),
+        760 => {
+            let plan = app
+                .game
+                .cost_plan(&app.canonical_action(app.selected_play_action().unwrap()))
+                .unwrap();
+            assert_eq!(plan.energy, 0);
+            assert!(
+                plan.modifiers
+                    .iter()
+                    .any(|modifier| modifier.energy == 9_007_199_254_740_993)
+            );
+            save_state(app);
+            click(app, 1285.0, 468.0);
+        }
+        761 => {
+            assert!(app.play_draft.as_ref().is_some_and(|draft| draft.open));
+            click(app, 900.0, 851.0);
+        }
+        762 => {
+            assert!(app.cost_editor.is_some());
+            capture(app, "RIFT_SMOKE_NUMERIC_COST_SCREENSHOT");
+            click(app, 420.0, 752.0);
+        }
+        763 => {
+            assert!(app.cost_editor.is_none());
+            assert_same_state(app);
+            assert!(matches!(app.selection, Some(Selection::Hand(0))));
+            assert_eq!(
+                app.targets,
+                vec![Target::Unit {
+                    player: 1,
+                    unit_id: 10036
+                }]
+            );
+        }
+        764 => {
             app.ui.input_override = None;
             app.ui.pointer_override = None;
             app.ui.wheel_override = None;
             println!(
-                "PASS: 748 native UI frames including both XP self-Buff abilities, before-response Level-loss cleanup, gain-history preservation, insufficient-XP payment and resource rollback, both Honeyfruit outputs and Level availability, real Heirloom play XP and XP-only Equip, Reaction Add during tax, and all previous 709 mat/resource/gear/field controls."
+                "PASS: 765 native UI frames including exact wide damage input and alternate combat allocation, invalid-input and over-total atomicity, full large and signed stats, numeric-error pause, exact highest-Might discount and draft cancellation, plus all previous 748 controls."
             );
             return true;
         }
-        _ => panic!("UI smoke runner exceeded its 748-frame script"),
+        _ => panic!("UI smoke runner exceeded its 765-frame script"),
     }
     false
 }

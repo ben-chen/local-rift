@@ -110,7 +110,7 @@ fn fizz_selects_trash_before_responses_then_finalizes_selected_pending_spell() {
             ..
         })
     ));
-    assert!(!g.can_decline_trash_play());
+    assert!(!g.can_decline_trash_play().unwrap());
     assert!(g.apply(Action::Choose { accept: false }).is_err());
     let fizz = g.players[0].units[0].id;
     let energy = g.players[0].energy;
@@ -161,7 +161,7 @@ fn fizz_can_target_an_unpayable_spell_but_failed_finalization_returns_it() {
     g.legend[0].ready = false;
     resolve(&mut g);
     assert_eq!(g.pending_cards().len(), 1);
-    assert!(g.can_decline_trash_play());
+    assert!(g.can_decline_trash_play().unwrap());
     assert!(
         g.apply(finalize(vec![Target::Unit {
             player: 0,
@@ -194,7 +194,7 @@ fn pending_spell_can_generate_matching_power_without_losing_its_identity() {
     });
     resolve(&mut g);
     let pending = g.pending_cards();
-    assert!(!g.can_decline_trash_play());
+    assert!(!g.can_decline_trash_play().unwrap());
     g.apply(Action::ActivateGear { gear_id: 101 }).unwrap();
     assert_eq!(g.pending_cards(), pending);
     g.apply(finalize(vec![Target::Unit {
@@ -269,8 +269,8 @@ fn pending_cancellation_checks_payable_explicit_targets_not_only_preferred_enemy
     g.players[0].energy = 0;
     g.legend[0].ready = false;
     resolve(&mut g);
-    assert!(!g.can_decline_trash_play());
-    let legal = g.legal_actions();
+    assert!(!g.can_decline_trash_play().unwrap());
+    let legal = g.legal_actions().unwrap();
     assert!(legal.contains(&finalize(vec![Target::Unit {
         player: 0,
         unit_id: 100
@@ -289,8 +289,8 @@ fn optional_zero_target_pending_spell_is_a_legal_mandatory_completion() {
     g.players[0].discard = vec![9];
     fizz_target(&mut g, 0);
     resolve(&mut g);
-    assert!(!g.can_decline_trash_play());
-    assert!(g.legal_actions().contains(&finalize(vec![])));
+    assert!(!g.can_decline_trash_play().unwrap());
+    assert!(g.legal_actions().unwrap().contains(&finalize(vec![])));
     g.apply(finalize(vec![])).unwrap();
 }
 

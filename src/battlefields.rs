@@ -139,17 +139,24 @@ impl Game {
 
     /// The caller invokes this only when the battlefield scores via conquest.
     /// A final-point replacement draw still scores; repeat control changes do not.
-    pub(crate) fn battlefield_on_conquer(&mut self, player: usize, lane: usize) {
+    pub(crate) fn battlefield_on_conquer(
+        &mut self,
+        player: usize,
+        lane: usize,
+    ) -> Result<(), String> {
         if self.winner.is_some() {
-            return;
+            return Ok(());
         }
         let id = self.battlefields[lane];
         match id {
             0 => {
-                let mighty = self.players[player]
-                    .units
-                    .iter()
-                    .any(|unit| unit.lane == Some(lane) && self.unit_might(unit) >= 5);
+                let mut mighty = false;
+                for unit in &self.players[player].units {
+                    if unit.lane == Some(lane) && self.unit_might(unit)? >= 5 {
+                        mighty = true;
+                        break;
+                    }
+                }
                 if mighty {
                     self.queue_trigger_choice(player, 0, Decision::Battlefield { player, lane });
                 }
@@ -170,6 +177,8 @@ impl Game {
             3 | 4 | 6..=10 => {}
             _ => unreachable!("validated battlefield selection"),
         }
+
+        Ok(())
     }
 
     /// Holding scores before channel/draw; its ability must remain respondable.
@@ -328,18 +337,18 @@ impl Game {
 
     /// Use only for damage dealt by a spell or ability, not by a unit as an
     /// instruction's consequence (for example Rampage), and never combat damage.
-    pub(crate) fn battlefield_damage(&self, target: Target, amount: u8) -> u8 {
+    pub(crate) fn battlefield_damage(&self, target: Target, amount: u64) -> Result<u64, String> {
         if amount == 0 {
-            return 0;
+            return Ok(0);
         }
         if self
             .unit_ref(target)
             .and_then(|unit| unit.lane)
             .is_some_and(|lane| self.battlefields[lane] == 3)
         {
-            amount.saturating_add(1)
+            crate::numeric::add_u64(amount, 1, "battlefield damage")
         } else {
-            amount
+            Ok(amount)
         }
     }
 }
@@ -362,7 +371,7 @@ mod tests {
             lane,
             ready: true,
             damage: 0,
-            buff: might,
+            buff: u64::from(might),
             temporary_buff: 0,
             token: true,
             protected: false,
@@ -372,7 +381,7 @@ mod tests {
     }
 
     fn settle(game: &mut Game) {
-        game.after_resolution();
+        game.after_resolution().unwrap();
         for _ in 0..30 {
             if game.decision.is_some() {
                 let action = if let Some(Decision::CombatDamage {
@@ -382,7 +391,9 @@ mod tests {
                 }) = game.decision
                 {
                     Action::AssignDamage {
-                        assignments: game.automatic_damage_assignment(player, lane, total),
+                        assignments: game
+                            .automatic_damage_assignment(player, lane, total)
+                            .unwrap(),
                     }
                 } else {
                     Action::Choose { accept: false }
@@ -416,12 +427,12 @@ mod tests {
         let mut game = game();
         game.battlefields[0] = 0;
         game.players[0].units.push(unit(100, Some(0), 4));
-        game.battlefield_on_conquer(0, 0);
-        game.after_resolution();
+        game.battlefield_on_conquer(0, 0).unwrap();
+        game.after_resolution().unwrap();
         assert!(game.decision.is_none());
         game.players[0].units[0].buff = 5;
-        game.battlefield_on_conquer(0, 0);
-        game.after_resolution();
+        game.battlefield_on_conquer(0, 0).unwrap();
+        game.after_resolution().unwrap();
         assert!(matches!(
             game.decision,
             Some(Decision::Battlefield { player: 0, lane: 0 })
@@ -452,13 +463,13 @@ mod tests {
         game.battlefields[0] = 1;
         game.battlefield_owner = [Some(0), Some(0)];
         let hand = game.players[0].hand.len();
-        game.battlefield_on_conquer(0, 0);
+        game.battlefield_on_conquer(0, 0).unwrap();
         assert_eq!(game.players[0].hand.len(), hand);
         game.battlefield_owner[1] = None;
         settle(&mut game);
         assert_eq!(game.players[0].hand.len(), hand);
         game.battlefield_owner[1] = Some(0);
-        game.battlefield_on_conquer(0, 0);
+        game.battlefield_on_conquer(0, 0).unwrap();
         settle(&mut game);
         assert_eq!(game.players[0].hand.len(), hand + 1);
     }
@@ -529,7 +540,8 @@ mod tests {
                     unit_id: 100
                 },
                 3
-            ),
+            )
+            .unwrap(),
             4
         );
         assert_eq!(
@@ -539,7 +551,8 @@ mod tests {
                     unit_id: 101
                 },
                 3
-            ),
+            )
+            .unwrap(),
             3
         );
         assert_eq!(
@@ -549,7 +562,8 @@ mod tests {
                     unit_id: 102
                 },
                 3
-            ),
+            )
+            .unwrap(),
             3
         );
         assert_eq!(
@@ -559,10 +573,11 @@ mod tests {
                     unit_id: 100
                 },
                 0
-            ),
+            )
+            .unwrap(),
             0
         );
-        assert_eq!(game.unit_might(&game.players[0].units[0]), 6);
+        assert_eq!(game.unit_might(&game.players[0].units[0]).unwrap(), 6);
     }
 
     #[test]

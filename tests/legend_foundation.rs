@@ -259,7 +259,7 @@ fn viktor_pays_energy_before_a_respondable_ability_then_finalizes_its_recruit() 
     game.apply(Action::PlaceToken { lane: Some(1) }).unwrap();
     let recruit = game.players[0].units.iter().find(|u| u.token).unwrap();
     assert_eq!(game.unit_name(recruit), "Recruit token");
-    assert_eq!(game.unit_might(recruit), 1);
+    assert_eq!(game.unit_might(recruit).unwrap(), 1);
     assert_eq!(recruit.lane, Some(1));
     assert!(!recruit.ready);
     assert_eq!(game.cards_played_this_turn(0), 0);

@@ -130,7 +130,7 @@ fn five_vanilla_units_keep_empty_text_and_enter_exhausted_without_fake_triggers(
         assert_eq!(entered.card_id, id);
         assert_eq!(entered.lane, None);
         assert!(!entered.ready);
-        assert_eq!(game.unit_might(entered), card.might);
+        assert_eq!(game.unit_might(entered).unwrap(), u64::from(card.might));
         assert_eq!(game.players[0].energy, 24 - u16::from(card.cost));
         assert!(game.chain.is_empty());
         assert!(game.decision.is_none());
@@ -368,14 +368,17 @@ fn might_spells_allow_both_sides_at_base_and_expire_at_end_of_turn() {
             game.players[owner].units.push(unit(100, 70, None));
             cast(&mut game, spell, vec![target(owner, 100)]).unwrap();
             settle(&mut game);
-            assert_eq!(game.unit_might(&game.players[owner].units[0]), expected);
+            assert_eq!(
+                game.unit_might(&game.players[owner].units[0]).unwrap(),
+                expected
+            );
             assert_eq!(
                 game.players[owner].units.len(),
                 1,
                 "Zero might alone does not kill a unit"
             );
             game.apply(Action::EndTurn).unwrap();
-            assert_eq!(game.unit_might(&game.players[owner].units[0]), 10);
+            assert_eq!(game.unit_might(&game.players[owner].units[0]).unwrap(), 10);
         }
     }
 }

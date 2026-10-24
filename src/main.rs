@@ -14,6 +14,7 @@ use local_rift::{
     game::{
         Action, Decision, Difficulty, FlowSource, Game, Phase, PlayOptions, Target, domain_index,
     },
+    numeric::{DamageAmount, Might},
     payment::{POWER_DOMAINS, PaymentQuote, PowerPayment},
 };
 use macroquad::prelude::*;
@@ -54,7 +55,7 @@ enum Tray {
 #[derive(Clone, PartialEq)]
 struct TokenPreview {
     name: String,
-    might: u8,
+    might: Might,
     gear: bool,
     rules: String,
 }
@@ -232,7 +233,7 @@ struct App {
     journal_page: usize,
     chain_cursor: usize,
     damage_order: Vec<u32>,
-    damage_amounts: Option<Vec<(u32, u16)>>,
+    damage_amounts: Option<Vec<(u32, DamageAmount)>>,
     damage_editor: Option<(u32, String)>,
     payment_draft: Option<PaymentDraft>,
     confirm_restart: bool,
@@ -259,6 +260,26 @@ struct App {
     equipment_scroll: usize,
     trigger_choice_key: Option<String>,
 }
+fn optional_query<T>(result: Result<T, String>) -> Result<Option<T>, String> {
+    match result {
+        Ok(value) => Ok(Some(value)),
+        Err(error) if error.starts_with("engine_capacity:") => Err(error),
+        Err(_) => Ok(None),
+    }
+}
+
+fn parse_damage_amount(value: &str) -> Result<DamageAmount, String> {
+    if value.is_empty()
+        || !value.bytes().all(|byte| byte.is_ascii_digit())
+        || (value.len() > 1 && value.starts_with('0'))
+    {
+        return Err("Enter a whole damage amount without spaces or leading zeros.".into());
+    }
+    value
+        .parse()
+        .map_err(|_| "Damage must be from 0 to 18446744073709551615.".into())
+}
+
 fn seed() -> u64 {
     std::time::SystemTime::now()
         .duration_since(std::time::UNIX_EPOCH)
@@ -473,12 +494,28 @@ impl App {
     }
     fn action(&mut self, a: Action) {
         let a = self.canonical_action(a);
-        if self.maybe_review_cost(&a) {
-            return;
+        match self.maybe_review_cost(&a) {
+            Ok(true) => return,
+            Ok(false) => {}
+            Err(error) => {
+                self.notify(error);
+                return;
+            }
         }
-        if !self.suspended_payments.is_empty() && !self.resource_visit_action_allowed(&a) {
-            self.notify("Resume or cancel your saved payment before taking another action.");
-            return;
+        if !self.suspended_payments.is_empty() {
+            match self.resource_visit_action_allowed(&a) {
+                Ok(true) => {}
+                Ok(false) => {
+                    self.notify(
+                        "Resume or cancel your saved payment before taking another action.",
+                    );
+                    return;
+                }
+                Err(error) => {
+                    self.notify(error);
+                    return;
+                }
+            }
         }
         if self.prefs.exact_payment
             && self.game.priority() == 0
@@ -577,6 +614,9 @@ impl App {
     }
     fn update(&mut self) {
         self.ui.resize();
+        if self.game.validate_numeric_state().is_err() {
+            return;
+        }
         if self.show_play_effects {
             if is_key_pressed(KeyCode::Escape) {
                 self.show_play_effects = false;
@@ -637,9 +677,7 @@ impl App {
             while let Some(character) = get_char_pressed() {
                 if character.is_ascii_digit() {
                     let (_, value) = self.damage_editor.as_mut().unwrap();
-                    if value.len() < 5 {
-                        value.push(character);
-                    }
+                    value.push(character);
                 }
             }
             if is_key_pressed(KeyCode::Backspace) {
@@ -752,8 +790,36 @@ impl App {
         }
     }
     fn draw(&mut self) {
+        if let Err(error) = self.draw_checked() {
+            self.numeric_error_view(&error);
+        }
+    }
+    fn numeric_error_view(&mut self, error: &str) {
+        clear_background(BG);
+        self.ui.enabled = true;
+        self.ui.rect(Rect::new(0.0, 0.0, 1440.0, 900.0), BG);
+        self.ui.title(
+            "This position cannot be calculated",
+            285.0,
+            290.0,
+            30.0,
+            TEXT,
+        );
+        self.ui.wrapped("A numeric limit was reached. The game is paused; no replacement stats or damage amounts are being shown.", 285.0, 335.0, 820.0, 16.0, MUTED);
+        self.ui.wrapped(error, 285.0, 405.0, 820.0, 14.0, GOLD);
+        if self.ui.button(
+            Rect::new(285.0, 555.0, 240.0, 42.0),
+            "Start a new practice match",
+            false,
+            true,
+        ) {
+            self.reset();
+        }
+    }
+    fn draw_checked(&mut self) -> Result<(), String> {
+        self.game.validate_numeric_state()?;
         self.sync_predict_draft();
-        self.sync_play_draft();
+        self.sync_play_draft()?;
         let trigger_key = self
             .game
             .decision
@@ -800,7 +866,7 @@ impl App {
             && !self.hover_rect.is_some_and(|r| r.contains(self.ui.mouse()));
         self.sidebar();
         match self.screen {
-            Screen::Practice => self.practice(),
+            Screen::Practice => self.practice()?,
             Screen::Decks => self.decks(),
             Screen::DeckEditor => self.draw_deck_editor(),
             Screen::Guide => self.guide(),
@@ -838,7 +904,7 @@ impl App {
         self.rune_popover();
         self.battlefield_help();
         self.equipment_help();
-        self.suspended_payment_banner();
+        self.suspended_payment_banner()?;
         self.payment_editor();
         self.legend_tooltip();
         self.draw_legend_picker();
@@ -847,6 +913,7 @@ impl App {
         self.draw_play_effects();
         self.saved_deck_notice();
         self.ui.enabled = true;
+        Ok(())
     }
     fn sidebar(&mut self) {
         let u = &self.ui;
@@ -1074,7 +1141,7 @@ impl App {
                 .diamond(vec2(r.x + r.w / 2.0, r.y + r.h / 2.0), r.h * 0.3, GOLD);
         }
     }
-    fn practice(&mut self) {
+    fn practice(&mut self) -> Result<(), String> {
         self.header(
             if self.in_match {
                 "A little closer to mastery."
@@ -1119,7 +1186,7 @@ impl App {
                     owner: player,
                     location: unit.lane.map(|i| i + 1).unwrap_or(0),
                     ready: unit.ready,
-                    might: self.game.unit_might(unit),
+                    might: self.game.unit_might(unit)?,
                     accent: self.game.legend_def(player).accent,
                 });
             }
@@ -1165,7 +1232,7 @@ impl App {
             self.drop_zones
                 .push((DropZone::Battlefield(lane), self.ui.logical(*rect)));
         }
-        self.draw_playmat(&hits);
+        self.draw_playmat(&hits)?;
         let mouse = self.ui.offset + self.ui.mouse() * self.ui.scale;
         let mut hit_unit = false;
         let top_unit = hits
@@ -1205,7 +1272,7 @@ impl App {
                     owner,
                     unit.ready,
                     self.game.unit_empowered(unit.id),
-                    self.game.unit_might(unit),
+                    self.game.unit_might(unit)?,
                     unit.damage,
                     token,
                     &unit_name,
@@ -1226,7 +1293,7 @@ impl App {
                 }) || self.card_target_candidate(Target::Unit {
                     player: owner,
                     unit_id: *id,
-                }) {
+                })? {
                     self.ui.border(
                         Rect::new(
                             card_rect.x - 3.0,
@@ -1244,7 +1311,7 @@ impl App {
                             unit_id: *id,
                         },
                         &self.targets,
-                    )
+                    )?
                 {
                     self.ui.border(
                         Rect::new(
@@ -1271,7 +1338,7 @@ impl App {
                             player: owner,
                             unit_id: *id,
                         },
-                    )
+                    )?
                 {
                     self.ui.border(
                         Rect::new(
@@ -1289,7 +1356,7 @@ impl App {
                     if token {
                         self.hover_token_candidate = Some(TokenPreview {
                             name: unit_name.clone(),
-                            might: self.game.unit_might(unit),
+                            might: self.game.unit_might(unit)?,
                             gear: false,
                             rules: if local_rift::rules::token_spec(card_id)
                                 .is_some_and(|spec| spec.deflect)
@@ -1407,7 +1474,7 @@ impl App {
                     index,
                     true,
                     false,
-                    card.might,
+                    Might::from(card.might),
                     0,
                     false,
                     card.name,
@@ -1467,8 +1534,8 @@ impl App {
             }
         }
         if self.in_match {
-            self.match_panel();
-            self.hand();
+            self.match_panel()?;
+            self.hand()?;
         } else {
             self.setup_panel();
             self.matchup();
@@ -1476,6 +1543,7 @@ impl App {
         if self.in_match && self.game.winner.is_some() {
             self.victory();
         }
+        Ok(())
     }
     fn pass_or_end(&mut self) {
         if self.game.decision.is_some() {
@@ -1499,7 +1567,7 @@ impl App {
             self.action(Action::Move { unit_id: id, lane });
         }
     }
-    fn response_ribbon(&mut self) {
+    fn response_ribbon(&mut self) -> Result<(), String> {
         self.ui.rect(Rect::new(1170.0, 232.0, 228.0, 108.0), BG);
         self.chain_cursor = self
             .chain_cursor
@@ -1598,7 +1666,7 @@ impl App {
                             if unit.token {
                                 self.hover_token_candidate = Some(TokenPreview {
                                     name: self.game.unit_name(unit),
-                                    might: self.game.unit_might(unit),
+                                    might: self.game.unit_might(unit)?,
                                     gear: false,
                                     rules: "This created unit uses its own current abilities."
                                         .into(),
@@ -1647,7 +1715,7 @@ impl App {
                     && (self
                         .current_targets()
                         .contains(&Target::Spell { chain_id: item.id })
-                        || self.card_target_candidate(Target::Spell { chain_id: item.id })),
+                        || self.card_target_candidate(Target::Spell { chain_id: item.id })?),
             ) {
                 self.toggle_target(Target::Spell { chain_id: item.id });
             }
@@ -1680,17 +1748,22 @@ impl App {
                 MUTED,
             );
         }
+        Ok(())
     }
 
-    fn damage_assignment(&self, lane: usize, total: u16) -> Vec<(u32, u16)> {
+    fn damage_assignment(
+        &self,
+        lane: usize,
+        total: DamageAmount,
+    ) -> Result<Vec<(u32, DamageAmount)>, String> {
         if let Some(amounts) = &self.damage_amounts {
-            return amounts
+            return Ok(amounts
                 .iter()
                 .copied()
                 .filter(|(_, amount)| *amount > 0)
-                .collect();
+                .collect());
         }
-        let suggested = self.game.automatic_damage_assignment(0, lane, total);
+        let suggested = self.game.automatic_damage_assignment(0, lane, total)?;
         let mut order = self.damage_order.clone();
         for (id, _) in &suggested {
             if !order.contains(id) {
@@ -1710,9 +1783,9 @@ impl App {
             {
                 let lethal = self
                     .game
-                    .unit_might(unit)
+                    .unit_might(unit)?
                     .saturating_sub(unit.damage)
-                    .max(1) as u16;
+                    .max(1);
                 let amount = if i + 1 == order.len() {
                     left
                 } else {
@@ -1724,9 +1797,9 @@ impl App {
                 }
             }
         }
-        allocation
+        Ok(allocation)
     }
-    fn set_damage_amount(&mut self, id: u32, amount: u16) {
+    fn set_damage_amount(&mut self, id: u32, amount: DamageAmount) {
         if let Some(amounts) = &mut self.damage_amounts {
             self.toast_until = 0.0;
             if let Some((_, current)) = amounts.iter_mut().find(|(unit, _)| *unit == id) {
@@ -1737,32 +1810,29 @@ impl App {
         }
     }
     fn commit_damage_editor(&mut self) -> Result<(), String> {
-        if let Some((id, value)) = self.damage_editor.take() {
-            let amount = value
-                .parse::<u16>()
-                .map_err(|_| "Enter a damage amount from 0 to 65535.")?;
-            self.set_damage_amount(id, amount);
+        if let Some((id, value)) = &self.damage_editor {
+            let amount = parse_damage_amount(value)?;
+            self.set_damage_amount(*id, amount);
+            self.damage_editor = None;
         }
         Ok(())
     }
-    fn damage_validation(&self, lane: usize, total: u16) -> Result<(), String> {
+    fn damage_validation(&self, lane: usize, total: DamageAmount) -> Result<(), String> {
         self.game.clone().apply(Action::AssignDamage {
-            assignments: self.damage_assignment(lane, total),
+            assignments: self.damage_assignment(lane, total)?,
         })
     }
-    fn confirm_damage(&mut self, lane: usize, total: u16) {
-        if let Err(error) = self
+    fn confirm_damage(&mut self, lane: usize, total: DamageAmount) {
+        let result = self
             .commit_damage_editor()
             .and_then(|_| self.damage_validation(lane, total))
-        {
-            self.notify(error);
-            return;
+            .and_then(|_| self.damage_assignment(lane, total));
+        match result {
+            Ok(assignments) => self.action(Action::AssignDamage { assignments }),
+            Err(error) => self.notify(error),
         }
-        self.action(Action::AssignDamage {
-            assignments: self.damage_assignment(lane, total),
-        });
     }
-    fn combat_tray(&mut self, lane: usize, total: u16) {
+    fn combat_tray(&mut self, lane: usize, total: DamageAmount) -> Result<(), String> {
         let units = self.game.players[1]
             .units
             .iter()
@@ -1783,11 +1853,11 @@ impl App {
             self.damage_amounts = if manual {
                 None
             } else {
-                Some(self.damage_assignment(lane, total))
+                Some(self.damage_assignment(lane, total)?)
             };
             self.damage_editor = None;
         }
-        let allocation = self.damage_assignment(lane, total);
+        let allocation = self.damage_assignment(lane, total)?;
         self.hand_scroll = self.hand_scroll.min(units.len().saturating_sub(6));
         for (slot, unit) in units.iter().skip(self.hand_scroll).take(6).enumerate() {
             let r = self.tile(
@@ -1811,10 +1881,10 @@ impl App {
                 .map_or(0, |(_, n)| *n);
             let lethal = self
                 .game
-                .unit_might(unit)
+                .unit_might(unit)?
                 .saturating_sub(unit.damage)
                 .max(1);
-            let keywords = self.game.unit_keywords(unit);
+            let keywords = self.game.unit_keywords(unit)?;
             let role = if keywords.tank && keywords.backline {
                 " · FIRST / LAST"
             } else if keywords.tank {
@@ -1831,22 +1901,32 @@ impl App {
                 .unwrap_or_default();
             self.ui
                 .rect(Rect::new(r.x + 2.0, r.y + 68.0, 136.0, 28.0), PANEL);
-            self.ui.text(
-                &format!("{order}{amount} DAMAGE"),
-                r.x + 10.0,
-                r.y + 87.0,
-                10.0,
-                GOLD,
-            );
+            if amount > 999_999 {
+                self.ui
+                    .text(&format!("{order}DAMAGE"), r.x + 9.0, r.y + 78.0, 8.0, GOLD);
+                self.ui
+                    .text(&amount.to_string(), r.x + 9.0, r.y + 91.0, 9.0, GOLD);
+            } else {
+                self.ui.text(
+                    &format!("{order}{amount} DAMAGE"),
+                    r.x + 10.0,
+                    r.y + 87.0,
+                    10.0,
+                    GOLD,
+                );
+            }
             self.ui
                 .rect(Rect::new(r.x + 2.0, r.y + 124.0, 136.0, 53.0), PANEL);
-            self.ui.text(
-                &format!("Lethal: {lethal}{role}"),
-                r.x + 9.0,
-                r.y + 136.0,
-                9.0,
-                TEXT,
-            );
+            let lethal_label = format!("Lethal: {lethal}{role}");
+            if self.ui.width(&lethal_label, 9.0) > 122.0 {
+                self.ui
+                    .text(&format!("LETHAL{role}"), r.x + 9.0, r.y + 129.0, 7.0, TEXT);
+                self.ui
+                    .text(&lethal.to_string(), r.x + 9.0, r.y + 141.0, 9.0, TEXT);
+            } else {
+                self.ui
+                    .text(&lethal_label, r.x + 9.0, r.y + 136.0, 9.0, TEXT);
+            }
             if manual {
                 let step = if is_key_down(KeyCode::LeftShift) || is_key_down(KeyCode::RightShift) {
                     10
@@ -1863,9 +1943,13 @@ impl App {
                     self.set_damage_amount(unit.id, amount.saturating_sub(step));
                 }
                 let editing = self.damage_editor.as_ref().filter(|(id, _)| *id == unit.id);
-                let value = editing
-                    .map(|(_, value)| format!("{value}|"))
-                    .unwrap_or_else(|| amount.to_string());
+                let value = if editing.is_some() {
+                    "Typing…".into()
+                } else if self.ui.width(&amount.to_string(), 12.0) > 48.0 {
+                    "Edit…".into()
+                } else {
+                    amount.to_string()
+                };
                 if self.ui.button(
                     Rect::new(r.x + 40.0, r.y + 143.0, 60.0, 28.0),
                     &value,
@@ -1910,15 +1994,16 @@ impl App {
             }
         }
         self.tray_scroll(units.len(), 6);
+        Ok(())
     }
-    fn decision_panel(&mut self) {
+    fn decision_panel(&mut self) -> Result<(), String> {
         use local_rift::legends::LegendTrigger;
         let Some(decision) = self.game.decision.clone() else {
-            return;
+            return Ok(());
         };
         if matches!(decision, Decision::PredictCards { player: 0, .. }) {
             self.predict_panel();
-            return;
+            return Ok(());
         }
         if self.game.resource_payment_pending()
             && matches!(
@@ -1931,8 +2016,8 @@ impl App {
                 )
             )
         {
-            self.selection_panel();
-            return;
+            self.selection_panel()?;
+            return Ok(());
         }
         if let Decision::TriggerTargets { card_id, .. } = decision {
             let (maximum, required) = self.game.trigger_target_bounds().unwrap();
@@ -1978,18 +2063,18 @@ impl App {
                     self.targets.clear();
                 }
             }
-            return;
+            return Ok(());
         }
         if matches!(decision, Decision::Payment { .. }) {
-            self.locked_payment_panel();
-            return;
+            self.locked_payment_panel()?;
+            return Ok(());
         }
         if let Decision::ResourceConversion {
             card_id, direction, ..
         } = decision
         {
             self.conversion_panel(card_id, direction);
-            return;
+            return Ok(());
         }
         if let Decision::PendingPlay { pending_id, .. } = decision {
             if self.selection != Some(Selection::Pending(pending_id)) {
@@ -2001,8 +2086,8 @@ impl App {
                 self.editing_repeat = false;
                 self.destination = None;
             }
-            self.selection_panel();
-            if self.game.can_decline_trash_play()
+            self.selection_panel()?;
+            if self.game.can_decline_trash_play()?
                 && self.ui.button(
                     Rect::new(1178.0, 562.0, 212.0, 26.0),
                     "Cannot play · return to trash",
@@ -2012,7 +2097,7 @@ impl App {
             {
                 self.action(Action::Choose { accept: false });
             }
-            return;
+            return Ok(());
         }
         if let Decision::RevivePlay { trash_index, .. } = decision {
             if self.selection != Some(Selection::Trash(trash_index)) {
@@ -2022,16 +2107,16 @@ impl App {
                 self.targets.clear();
                 self.destination = None;
             }
-            self.selection_panel();
-            return;
+            self.selection_panel()?;
+            return Ok(());
         }
         if matches!(
             decision,
             Decision::LastRites { .. } | Decision::ReplaySpell { .. } | Decision::ReviveUnit { .. }
         ) && matches!(self.selection, Some(Selection::Trash(_)))
         {
-            self.selection_panel();
-            return;
+            self.selection_panel()?;
+            return Ok(());
         }
         if let Decision::BattlefieldOrder { lanes, combat, .. } = &decision {
             self.ui
@@ -2052,7 +2137,7 @@ impl App {
                     self.action(Action::ChooseBattlefield { lane: *lane });
                 }
             }
-            return;
+            return Ok(());
         }
         if let Decision::TokenPlay {
             card_id,
@@ -2061,8 +2146,8 @@ impl App {
             ..
         } = decision
         {
-            self.token_play_panel(card_id, remaining, fixed_lane);
-            return;
+            self.token_play_panel(card_id, remaining, fixed_lane)?;
+            return Ok(());
         }
         if let Decision::TokenPlacement {
             card_id, remaining, ..
@@ -2091,57 +2176,100 @@ impl App {
                     self.action(Action::PlaceToken { lane });
                 }
             }
-            return;
+            return Ok(());
         }
         if let Decision::CombatDamage { lane, total, .. } = decision {
             self.ui
                 .title("Assign combat damage", 1178.0, 366.0, 20.0, TEXT);
-            let assigned: u32 = self
-                .damage_assignment(lane, total)
+            let allocation = self.damage_assignment(lane, total)?;
+            let assigned: u128 = allocation
                 .iter()
-                .map(|(_, n)| *n as u32)
+                .map(|(_, amount)| u128::from(*amount))
                 .sum();
-            let remaining = if assigned > total as u32 {
-                format!("{} over", assigned - total as u32)
+            let remainder = if assigned > u128::from(total) {
+                format!("{} over", assigned - u128::from(total))
             } else {
-                format!("{} remaining", total as u32 - assigned)
+                format!("{} remaining", u128::from(total) - assigned)
             };
-            self.ui.bold(
-                &format!("{assigned} / {total} · {remaining}"),
-                1178.0,
-                393.0,
-                12.0,
-                GOLD,
-            );
+            let compact = format!("{assigned} / {total} · {remainder}");
+            let wide = self.ui.width(&compact, 12.0) > 212.0;
+            if wide {
+                for (line, text) in [
+                    format!("Total: {total}"),
+                    format!("Assigned: {assigned}"),
+                    remainder,
+                ]
+                .iter()
+                .enumerate()
+                {
+                    self.ui
+                        .text(text, 1178.0, 389.0 + line as f32 * 15.0, 11.0, GOLD);
+                }
+            } else {
+                self.ui.bold(&compact, 1178.0, 393.0, 12.0, GOLD);
+            }
             let validation = self.damage_validation(lane, total);
-            let dual_rank = self.game.players[1]
+            let mut dual_rank = false;
+            for unit in self.game.players[1]
                 .units
                 .iter()
                 .filter(|unit| unit.lane == Some(lane))
-                .any(|unit| {
-                    let keywords = self.game.unit_keywords(unit);
-                    keywords.tank && keywords.backline
-                });
-            let guidance = if self.damage_editor.is_some() {
-                "Type the amount. Enter sets it; Escape cancels. Shift +/- changes ten. Click art to move that unit last in the order.".to_owned()
-            } else if let Err(error) = &validation {
-                format!("{error} Edit the amounts below; confirming keeps an invalid draft here.")
-            } else if dual_rank {
-                "Tank + Backline: you choose first or last for that unit. Click its art to change order; assign lethal before moving on.".to_owned()
-            } else if self.damage_amounts.is_some() {
-                "Legal allocation. Tank first, Backline last; lethal before the next unit. Click a number to type, or art to move it last.".to_owned()
+            {
+                let keywords = self.game.unit_keywords(unit)?;
+                dual_rank |= keywords.tank && keywords.backline;
+            }
+            if let Some((id, value)) = &self.damage_editor {
+                let name = self.game.players[1]
+                    .units
+                    .iter()
+                    .find(|unit| unit.id == *id)
+                    .map(|unit| self.game.unit_name(unit))
+                    .unwrap_or_else(|| "Selected unit".into());
+                self.ui.ellipsis(
+                    &format!("Damage to {name}"),
+                    1178.0,
+                    439.0,
+                    212.0,
+                    10.0,
+                    TEXT,
+                );
+                let input = Rect::new(1178.0, 447.0, 212.0, 29.0);
+                self.ui.rect(input, BG);
+                self.ui.border(input, TEAL);
+                let text = format!("{value}|");
+                // The full u64 range fits; excessive input is visibly invalid, never truncated on commit.
+                self.ui.ellipsis(
+                    &text,
+                    input.x + 6.0,
+                    input.y + 20.0,
+                    input.w - 12.0,
+                    12.0,
+                    TEXT,
+                );
+                self.ui
+                    .text("Enter: set · Escape: cancel", 1178.0, 487.0, 9.0, MUTED);
             } else {
-                "Suggested amounts follow your card order. Tank first, Backline last; lethal before the next unit. Both sides deal damage together.".to_owned()
-            };
-            self.ui.wrapped_lines(
-                &guidance,
-                1178.0,
-                417.0,
-                209.0,
-                11.0,
-                if validation.is_err() { GOLD } else { MUTED },
-                4,
-            );
+                let guidance = if let Err(error) = &validation {
+                    format!(
+                        "{error} Edit the amounts below; confirming keeps an invalid draft here."
+                    )
+                } else if dual_rank {
+                    "Tank + Backline: choose first or last for that unit. Click art to change order; lethal before the next unit.".to_owned()
+                } else if self.damage_amounts.is_some() {
+                    "Legal allocation. Tank first, Backline last; lethal before the next unit. Click a number to type, or art to move it last.".to_owned()
+                } else {
+                    "Suggested amounts follow card order. Tank first, Backline last; lethal before the next unit. Both sides deal damage together.".to_owned()
+                };
+                self.ui.wrapped_lines(
+                    &guidance,
+                    1178.0,
+                    if wide { 441.0 } else { 417.0 },
+                    209.0,
+                    11.0,
+                    if validation.is_err() { GOLD } else { MUTED },
+                    if wide { 3 } else { 4 },
+                );
+            }
             if self.ui.button(
                 Rect::new(1178.0, 493.0, 212.0, 34.0),
                 "Confirm damage",
@@ -2160,7 +2288,7 @@ impl App {
                 self.damage_amounts = None;
                 self.damage_editor = None;
             }
-            return;
+            return Ok(());
         }
         let (title,body)=match &decision{
             Decision::PredictCards{..}|Decision::Payment{..}|Decision::ResourceConversion{..}|Decision::TriggerTargets{..}|Decision::CombatDamage{..}|Decision::TokenPlacement{..}|Decision::TokenPlay{..}|Decision::BattlefieldOrder{..}|Decision::RevivePlay{..}|Decision::PendingPlay{..}=>unreachable!(),
@@ -2196,7 +2324,7 @@ impl App {
                 | Decision::OrderTriggers { .. }
                 | Decision::ResolutionTargets { .. }
         ) {
-            return;
+            return Ok(());
         }
         let simple = matches!(
             decision,
@@ -2278,7 +2406,7 @@ impl App {
                         .iter()
                         .any(|id| self.game.catalog[*id].kind != CardKind::Unit),
                     Decision::LastRites { .. } | Decision::ReplaySpell { .. } => {
-                        self.game.can_decline_trash_play()
+                        self.game.can_decline_trash_play()?
                     }
                     Decision::GrantFlow { .. } => !self.game.players[0]
                         .discard
@@ -2307,6 +2435,7 @@ impl App {
                 }
             }
         }
+        Ok(())
     }
     fn selected_card_id(&self) -> Option<usize> {
         match self.selection {
@@ -2328,6 +2457,11 @@ impl App {
         }
     }
     fn toggle_target(&mut self, target: Target) {
+        if let Err(error) = self.try_toggle_target(target) {
+            self.notify(error);
+        }
+    }
+    fn try_toggle_target(&mut self, target: Target) -> Result<(), String> {
         if let Some(Selection::Ability(source, Some(index))) = self.selection {
             if let Some(position) = self
                 .ability_targets
@@ -2347,7 +2481,7 @@ impl App {
             } else {
                 self.notify("Choose a highlighted unit that meets this ability's requirements.");
             }
-            return;
+            return Ok(());
         }
         if let Some((maximum, _)) = self.game.trigger_target_bounds() {
             if let Some(index) = self.targets.iter().position(|chosen| *chosen == target) {
@@ -2355,7 +2489,7 @@ impl App {
                 self.targets.truncate(index);
             } else if self.targets.len() >= maximum {
                 self.notify("All target slots are filled. Click a chosen unit to undo it.");
-            } else if self.game.valid_trigger_target(target, &self.targets) {
+            } else if self.game.valid_trigger_target(target, &self.targets)? {
                 self.targets.push(target);
                 self.toast_until = 0.0;
             } else {
@@ -2363,31 +2497,31 @@ impl App {
                     "Choose a highlighted unit for this target slot. Check any Deflect cost.",
                 );
             }
-            return;
+            return Ok(());
         }
         if self.selection == Some(Selection::Legend) && !self.game.legend_target_valid(0, target) {
             self.notify("Choose a highlighted unit that this legend can target.");
-            return;
+            return Ok(());
         }
         let chosen = self.current_targets();
         if let Some(index) = chosen.iter().position(|existing| *existing == target) {
             // Later slots can depend on earlier choices; undo them together.
             self.current_targets_mut().truncate(index);
-            return;
+            return Ok(());
         }
         let maximum = self
             .selected_card_id()
             .map_or(1, |id| local_rift::rules::play_target_spec(id).maximum);
-        if self.selected_card_id().is_some() && !self.card_target_candidate(target) {
+        if self.selected_card_id().is_some() && !self.card_target_candidate(target)? {
             self.notify("This target does not meet the card's requirements.");
-            return;
+            return Ok(());
         }
         if chosen.len() >= maximum {
             if maximum == 1 {
                 self.current_targets_mut().clear();
             } else {
                 self.notify(format!("This choice allows at most {maximum} target(s). Click a chosen target to undo it."));
-                return;
+                return Ok(());
             }
         }
         self.current_targets_mut().push(target);
@@ -2395,6 +2529,7 @@ impl App {
             self.destination = None;
         }
         self.toast_until = 0.0;
+        Ok(())
     }
     fn targeting_battlefield(&self) -> bool {
         self.selected_card_id().is_some_and(|id| {
@@ -2402,9 +2537,9 @@ impl App {
                 == Some(local_rift::rules::PlayTargetKind::Battlefield)
         })
     }
-    fn card_target_candidate(&self, target: Target) -> bool {
+    fn card_target_candidate(&self, target: Target) -> Result<bool, String> {
         let Some(card_id) = self.selected_card_id() else {
-            return false;
+            return Ok(false);
         };
         let prior = self.current_targets();
         let prior = if local_rift::rules::play_target_spec(card_id).maximum == 1 {
@@ -2412,9 +2547,10 @@ impl App {
         } else {
             prior
         };
-        self.game
-            .card_target_candidates(0, card_id, self.destination, prior)
-            .contains(&target)
+        Ok(self
+            .game
+            .card_target_candidates(0, card_id, self.destination, prior)?
+            .contains(&target))
     }
     fn target_hint(&self, card_id: usize) -> String {
         use local_rift::rules::{Allegiance, PlayTargetKind, play_target_spec, targeting};
@@ -2511,7 +2647,7 @@ impl App {
         self.ui.border(r, if selected { GOLD } else { LINE });
         r
     }
-    fn board_tray(&mut self) {
+    fn board_tray(&mut self) -> Result<(), String> {
         let units: Vec<_> = self
             .game
             .players
@@ -2539,7 +2675,7 @@ impl App {
                         unit_id: unit.id,
                     },
                     &self.targets,
-                )
+                )?
             {
                 self.ui.border(r, TEAL);
                 self.ui.pill(r.x + 7.0, r.y + 7.0, "CHOOSE", TEAL);
@@ -2564,24 +2700,31 @@ impl App {
                 9.0,
                 if *owner == 0 { TEAL } else { GOLD },
             );
-            self.ui.text(
-                &format!(
-                    "{} might · {}",
-                    self.game.unit_might(unit),
-                    if unit.ready { "ready" } else { "exhausted" }
-                ),
-                r.x + 9.0,
-                r.y + 166.0,
-                9.0,
-                MUTED,
+            let might = self.game.unit_might(unit)?;
+            let label = format!(
+                "{might} might · {}",
+                if unit.ready { "ready" } else { "exhausted" }
             );
+            if self.ui.width(&label, 9.0) > 122.0 {
+                self.ui.text(
+                    &format!("MIGHT · {}", if unit.ready { "ready" } else { "exhausted" }),
+                    r.x + 9.0,
+                    r.y + 154.0,
+                    8.0,
+                    MUTED,
+                );
+                self.ui
+                    .text(&might.to_string(), r.x + 9.0, r.y + 169.0, 9.0, TEXT);
+            } else {
+                self.ui.text(&label, r.x + 9.0, r.y + 166.0, 9.0, MUTED);
+            }
             if self.ui.hover(r) {
                 self.hover_candidate = Some(unit.card_id);
                 self.hover_object_candidate = Some((*owner, unit.id));
                 if unit.token {
                     self.hover_token_candidate = Some(TokenPreview {
                         name: self.game.unit_name(unit),
-                        might: self.game.unit_might(unit),
+                        might: self.game.unit_might(unit)?,
                         gear: false,
                         rules: if local_rift::rules::token_spec(unit.card_id)
                             .is_some_and(|spec| spec.deflect)
@@ -2651,14 +2794,15 @@ impl App {
             self.ui
                 .title("No units on the board yet.", 270.0, 757.0, 23.0, MUTED);
         }
+        Ok(())
     }
-    fn other_tray(&mut self) {
+    fn other_tray(&mut self) -> Result<(), String> {
         if self.ability_cost_tray() {
-            return;
+            return Ok(());
         }
         if self.tray == Tray::Board {
-            self.board_tray();
-            return;
+            self.board_tray()?;
+            return Ok(());
         }
         if self.tray == Tray::Hidden {
             let cards = self.game.players[0].hidden.clone();
@@ -2706,7 +2850,7 @@ impl App {
                     .title("A secret for another turn.", 270.0, 757.0, 23.0, MUTED);
                 self.ui.text("Hide a card at a controlled battlefield for 1 power. Reveal it on a later turn.",270.0,790.0,12.0,MUTED);
             }
-            return;
+            return Ok(());
         }
 
         if self.tray == Tray::Loadout {
@@ -2867,7 +3011,7 @@ impl App {
                     player: owner,
                     gear_id: gear.id,
                 };
-                if self.ability_target_candidate(target) || self.card_target_candidate(target) {
+                if self.ability_target_candidate(target) || self.card_target_candidate(target)? {
                     self.ui.border(r, TEAL);
                     self.ui.pill(
                         r.x + 8.0,
@@ -3001,6 +3145,7 @@ impl App {
                 );
             }
         }
+        Ok(())
     }
     fn tray_scroll(&mut self, len: usize, visible: usize) {
         self.ui
@@ -3022,15 +3167,15 @@ impl App {
             self.hand_scroll += 1;
         }
     }
-    fn choice_tray(&mut self) -> bool {
+    fn choice_tray(&mut self) -> Result<bool, String> {
         let Some(decision) = self.game.decision.clone() else {
-            return false;
+            return Ok(false);
         };
         if let Decision::PredictCards { player, cards, .. } = &decision {
             if *player == 0 {
                 self.predict_tray(cards);
             }
-            return true;
+            return Ok(true);
         }
         if matches!(
             decision,
@@ -3051,17 +3196,17 @@ impl App {
                 if self.ui.hover(r) && self.ui.secondary_pressed() {
                     self.inspect = Some(card_id);
                 }
-                return true;
+                return Ok(true);
             }
-            return false;
+            return Ok(false);
         }
         if matches!(decision, Decision::TriggerTargets { .. }) {
-            self.board_tray();
-            return true;
+            self.board_tray()?;
+            return Ok(true);
         }
         if let Decision::CombatDamage { lane, total, .. } = decision {
-            self.combat_tray(lane, total);
-            return true;
+            self.combat_tray(lane, total)?;
+            return Ok(true);
         }
         if let Decision::ResolutionTargets {
             card_id, groups, ..
@@ -3111,7 +3256,7 @@ impl App {
                 }
             }
             self.tray_scroll(groups.len(), 6);
-            return true;
+            return Ok(true);
         }
         if let Decision::OrderTriggers { options, .. } = decision {
             self.ui.text("Choose next trigger", 780.0, 671.0, 9.0, GOLD);
@@ -3137,7 +3282,7 @@ impl App {
                 }
             }
             self.tray_scroll(options.len(), 6);
-            return true;
+            return Ok(true);
         }
         if let Decision::DeathReplacement { player, options } = decision {
             self.ui
@@ -3173,7 +3318,7 @@ impl App {
                         "{} · {} might",
                         unit.lane
                             .map_or("Base".into(), |lane| format!("Field {}", lane + 1)),
-                        self.game.unit_might(unit)
+                        self.game.unit_might(unit)?
                     ),
                     r.x + 9.0,
                     r.y + 174.0,
@@ -3193,7 +3338,7 @@ impl App {
                 }
             }
             self.tray_scroll(options.len(), 6);
-            return true;
+            return Ok(true);
         }
         if let Decision::PendingPlay {
             pending_id,
@@ -3213,7 +3358,7 @@ impl App {
                     self.inspect = Some(card_id);
                 }
             }
-            return true;
+            return Ok(true);
         }
         if let Decision::TrashTarget {
             player,
@@ -3257,7 +3402,7 @@ impl App {
                 );
             }
             self.tray_scroll(choices.len(), 6);
-            return true;
+            return Ok(true);
         }
         if matches!(
             decision,
@@ -3324,7 +3469,7 @@ impl App {
                     MUTED,
                 );
             }
-            return true;
+            return Ok(true);
         }
         let cards = match &decision {
             Decision::Discard { .. } => self.game.players[0].hand.clone(),
@@ -3334,7 +3479,7 @@ impl App {
             | Decision::GrantFlow { .. }
             | Decision::LastRites { .. }
             | Decision::ReplaySpell { .. } => self.game.players[0].discard.clone(),
-            _ => return false,
+            _ => return Ok(false),
         };
         self.ui.text("Choose a card below", 780.0, 671.0, 9.0, GOLD);
         self.hand_scroll = self.hand_scroll.min(cards.len().saturating_sub(6));
@@ -3385,7 +3530,7 @@ impl App {
             }
         }
         self.tray_scroll(cards.len(), 6);
-        true
+        Ok(true)
     }
     fn legend_lesson(&mut self, id: usize) {
         let definition = local_rift::legend_catalog::legend(id).expect("registered legend");
@@ -3738,7 +3883,7 @@ impl App {
             self.field_picker = Some(picker);
         }
     }
-    fn draw_playmat(&mut self, hits: &scene::SceneHits) {
+    fn draw_playmat(&mut self, hits: &scene::SceneHits) -> Result<(), String> {
         for owner in 0..2 {
             let rail = Rect::new(245.0, if owner == 1 { 110.0 } else { 571.0 }, 883.0, 66.0);
             self.ui.rune_rail(
@@ -3821,7 +3966,7 @@ impl App {
                     .is_some_and(|item| chain_field_targets(item).contains(&lane));
             let selected = pending
                 || (self.targeting_battlefield() && self.current_targets().contains(&target));
-            let candidate = self.targeting_battlefield() && self.card_target_candidate(target);
+            let candidate = self.targeting_battlefield() && self.card_target_candidate(target)?;
             if self.in_match && (selected || candidate) {
                 self.ui.border(
                     Rect::new(r.x - 2.0, r.y - 2.0, r.w + 4.0, r.h + 4.0),
@@ -3905,6 +4050,7 @@ impl App {
                 }
             }
         }
+        Ok(())
     }
     fn battlefield_help(&mut self) {
         let pinned = self.field_inspect.is_some();
@@ -4158,8 +4304,8 @@ impl App {
         owner: usize,
         ready: bool,
         empowered: bool,
-        might: u8,
-        damage: u8,
+        might: Might,
+        damage: DamageAmount,
         token: bool,
         name: &str,
         selected: bool,
@@ -4196,29 +4342,59 @@ impl App {
         }
         self.ui
             .rect(Rect::new(r.x + 2.0, r.y + 3.0, r.w - 4.0, 3.0), color);
-        self.ui
-            .rect(Rect::new(r.x + 3.0, r.y + 8.0, 18.0, 19.0), BG);
-        self.ui
-            .bold(&might.to_string(), r.x + 7.0, r.y + 22.0, 13.0, TEXT);
+        let expanded_stats = might > 99 || damage > 99;
+        if expanded_stats {
+            let line = format!("M {might}");
+            self.ui
+                .rect(Rect::new(r.x + 3.0, r.y + 8.0, r.w - 20.0, 16.0), BG);
+            self.ui
+                .ellipsis(&line, r.x + 6.0, r.y + 20.0, r.w - 26.0, 9.0, TEXT);
+            if damage > 0 {
+                self.ui
+                    .rect(Rect::new(r.x + 3.0, r.y + 25.0, r.w - 20.0, 15.0), BG);
+                self.ui.ellipsis(
+                    &format!("D {damage}"),
+                    r.x + 6.0,
+                    r.y + 36.0,
+                    r.w - 26.0,
+                    9.0,
+                    Color::new(0.93, 0.43, 0.38, 1.0),
+                );
+            }
+        } else {
+            self.ui
+                .rect(Rect::new(r.x + 3.0, r.y + 8.0, 22.0, 19.0), BG);
+            self.ui
+                .bold(&might.to_string(), r.x + 7.0, r.y + 22.0, 13.0, TEXT);
+            if damage > 0 {
+                self.ui.pill(
+                    r.x + r.w - 31.0,
+                    r.y + 9.0,
+                    &format!("-{damage}"),
+                    Color::new(0.93, 0.43, 0.38, 1.0),
+                );
+            }
+        }
         if empowered {
-            let (label, width) = if r.w >= 108.0 {
+            let (label, width) = if !expanded_stats && r.w >= 108.0 {
                 ("EMP", 32.0)
             } else {
                 ("E", 14.0)
             };
-            let badge = Rect::new(r.x + 25.0, r.y + 8.0, width, 16.0);
+            let badge = Rect::new(
+                if expanded_stats {
+                    r.x + r.w - 17.0
+                } else {
+                    r.x + 29.0
+                },
+                r.y + if expanded_stats { 27.0 } else { 8.0 },
+                width,
+                16.0,
+            );
             self.ui.rect(badge, BG);
             self.ui.border(badge, GOLD);
             self.ui
                 .bold(label, badge.x + 3.0, badge.y + 12.0, 9.0, GOLD);
-        }
-        if damage > 0 {
-            self.ui.pill(
-                r.x + r.w - 27.0,
-                r.y + 9.0,
-                &format!("-{damage}"),
-                Color::new(0.93, 0.43, 0.38, 1.0),
-            );
         }
         self.ui.ellipsis(
             name.split(',').next().unwrap_or(name),
@@ -4407,7 +4583,7 @@ impl App {
             for (index, target) in targets.iter().enumerate() {
                 if !self
                     .game
-                    .card_target_candidates(0, card_id, lane, &targets[..index])
+                    .card_target_candidates(0, card_id, lane, &targets[..index])?
                     .contains(target)
                 {
                     return Err("This target is not legal for that card.".into());
@@ -5223,7 +5399,7 @@ impl App {
             TEAL,
         );
     }
-    fn match_panel(&mut self) {
+    fn match_panel(&mut self) -> Result<(), String> {
         self.ui.rect(Rect::new(1158.0, 108.0, 252.0, 770.0), PANEL);
         self.ui.border(Rect::new(1158.0, 108.0, 252.0, 770.0), LINE);
         self.ui.text(
@@ -5259,7 +5435,7 @@ impl App {
         self.ui
             .line(vec2(1178.0, 225.0), vec2(1390.0, 225.0), 1.0, LINE);
         if self.game.in_window() {
-            self.response_ribbon();
+            self.response_ribbon()?;
         } else {
             self.ui.text("YOUR LEGEND", 1178.0, 245.0, 9.0, GOLD);
             self.ui.ellipsis(
@@ -5334,9 +5510,9 @@ impl App {
                 );
             }
         } else if self.game.decision.is_some() {
-            self.decision_panel();
+            self.decision_panel()?;
         } else {
-            self.selection_panel();
+            self.selection_panel()?;
         }
         if self.game.phase == Phase::Playing
             && !matches!(
@@ -5425,10 +5601,11 @@ impl App {
             9.0,
             MUTED,
         );
+        Ok(())
     }
-    fn selection_panel(&mut self) {
+    fn selection_panel(&mut self) -> Result<(), String> {
         match self.selection {
-            Some(Selection::Ability(source, index)) => self.ability_panel(source, index),
+            Some(Selection::Ability(source, index)) => self.ability_panel(source, index)?,
             Some(Selection::Unit(id)) => {
                 let source = AbilitySource::Unit {
                     player: 0,
@@ -5436,14 +5613,14 @@ impl App {
                 };
                 if self.game.resource_payment_pending() && !self.source_abilities(source).is_empty()
                 {
-                    self.ability_panel(source, None);
-                    return;
+                    self.ability_panel(source, None)?;
+                    return Ok(());
                 }
                 if let Some(unit) = self.game.players[0].units.iter().find(|u| u.id == id) {
                     let card_id = unit.card_id;
                     let ready = unit.ready;
                     let lane = unit.lane;
-                    let ganking = self.game.unit_keywords(unit).ganking;
+                    let ganking = self.game.unit_keywords(unit)?.ganking;
                     self.ui
                         .ellipsis(&self.game.unit_name(unit), 1178.0, 359.0, 212.0, 16.0, TEXT);
                     self.ui.text(
@@ -5640,11 +5817,16 @@ impl App {
                     } else {
                         format!("{} ENERGY · {} POWER", card.cost, card.power_cost)
                     };
-                    let cost_text = self
+                    let plan = self
                         .play_draft
                         .as_ref()
                         .and_then(|_| self.selected_play_action())
-                        .and_then(|action| self.game.cost_plan(&self.canonical_action(action)).ok())
+                        .map(|action| {
+                            optional_query(self.game.cost_plan(&self.canonical_action(action)))
+                        })
+                        .transpose()?
+                        .flatten();
+                    let cost_text = plan
                         .map(|plan| {
                             format!(
                                 "TOTAL: {} energy · {} power",
@@ -5729,7 +5911,7 @@ impl App {
                             });
                         }
                     }
-                    if !self.play_choices_button() {
+                    if !self.play_choices_button()? {
                         if local_rift::rules::repeat_cost(card_id).is_some()
                             && self.ui.button(
                                 Rect::new(1178.0, 454.0, 102.0, 28.0),
@@ -5994,7 +6176,7 @@ impl App {
                         MUTED,
                         7,
                     );
-                    self.play_choices_button();
+                    self.play_choices_button()?;
                     let action = self.canonical_action(Action::PlayHidden {
                         hidden_id: id,
                         targets: self.targets.clone(),
@@ -6046,11 +6228,9 @@ impl App {
                             .copied()
                             .filter(|_| ability.targets.max > 0),
                     };
-                    let resources = self
-                        .game
-                        .cost_plan(&action)
+                    let resources = optional_query(self.game.cost_plan(&action))?
                         .map(|plan| play_ui::total_label(&plan))
-                        .unwrap_or_else(|_| {
+                        .unwrap_or_else(|| {
                             format!(
                                 "Pay {} energy + {} {} power",
                                 ability.energy,
@@ -6127,8 +6307,8 @@ impl App {
                     gear_id: id,
                 };
                 if !self.source_abilities(source).is_empty() {
-                    self.ability_panel(source, None);
-                    return;
+                    self.ability_panel(source, None)?;
+                    return Ok(());
                 }
                 if let Some(gear) = self.game.players[0]
                     .gear
@@ -6177,7 +6357,9 @@ impl App {
                         });
                         let cost = action
                             .as_ref()
-                            .and_then(|action| self.game.cost_plan(action).ok())
+                            .map(|action| optional_query(self.game.cost_plan(action)))
+                            .transpose()?
+                            .flatten()
                             .map(|plan| play_ui::total_label(&plan))
                             .unwrap_or_else(|| equipment_cost_label(&rule));
                         self.ui.ellipsis(
@@ -6295,10 +6477,11 @@ impl App {
                 }
             }
         }
+        Ok(())
     }
-    fn hand(&mut self) {
-        if self.draw_play_choices_tray() {
-            return;
+    fn hand(&mut self) -> Result<(), String> {
+        if self.draw_play_choices_tray()? {
+            return Ok(());
         }
         if self.game.phase != Phase::Mulligan {
             for (i, (label, tray)) in [
@@ -6346,13 +6529,13 @@ impl App {
                 && self.game.priority() == 0
                 && !(matches!(self.tray, Tray::Loadout | Tray::Board)
                     && self.game.resource_payment_pending())
-                && self.choice_tray()
+                && self.choice_tray()?
             {
-                return;
+                return Ok(());
             }
             if self.tray != Tray::Hand {
-                self.other_tray();
-                return;
+                self.other_tray()?;
+                return Ok(());
             }
         }
 
@@ -6402,7 +6585,7 @@ impl App {
             let y = if selected { 688.0 } else { 697.0 };
             let r = Rect::new(x, y, 140.0, 179.0);
             let c = self.game.catalog[id];
-            let can = self.game.can_afford(0, &c) && self.game.card_supported(id);
+            let can = self.game.can_afford(0, &c)? && self.game.card_supported(id);
             let active = self.game.phase == Phase::Mulligan || self.game.priority() == 0;
             self.ui.rect(r, PANEL);
             if let Some(tex) = &self.art[id] {
@@ -6533,6 +6716,7 @@ impl App {
                 MUTED,
             );
         }
+        Ok(())
     }
     fn decks(&mut self) {
         self.header(
@@ -7571,7 +7755,11 @@ fn live_unit_description(game: &Game, owner: usize, unit_id: u32) -> Option<Stri
         .units
         .iter()
         .find(|unit| unit.id == unit_id)?;
-    let keywords = game.unit_keywords(unit);
+    let stats = match game.try_unit_stats(unit) {
+        Ok(stats) => stats,
+        Err(error) => return Some(format!("Cannot calculate this unit's stats: {error}")),
+    };
+    let keywords = stats.keywords;
     let mut lines = vec![
         format!(
             "ON BOARD · {} · {}",
@@ -7582,17 +7770,26 @@ fn live_unit_description(game: &Game, owner: usize, unit_id: u32) -> Option<Stri
             },
             if unit.ready { "Ready" } else { "Exhausted" }
         ),
-        format!(
-            "{} current might · {} damage",
-            game.unit_might(unit),
-            unit.damage
-        ),
+        if stats.might <= 999_999 && unit.damage <= 999_999 {
+            format!("{} current might · {} damage", stats.might, unit.damage)
+        } else {
+            format!(
+                "Current might: {}\nMarked damage: {}",
+                stats.might, unit.damage
+            )
+        },
         if game.unit_empowered(unit.id) {
             "EMPOWERED · current might and keywords include active effects.".into()
         } else {
             "Not Empowered.".into()
         },
     ];
+    if stats.signed_might < 0 {
+        lines.push(format!(
+            "Calculated might: {}. Rules that reference Might use 0 while it is negative.",
+            stats.signed_might
+        ));
+    }
     if game.buffed_units.contains(&unit_id) {
         lines.push("BUFFED · has a Buff counter. Its +1 might is included above; temporary might and Empowered are separate.".into());
     }
@@ -7783,6 +7980,57 @@ mod live_preview_tests {
             temporary: false,
             token: false,
         }
+    }
+    #[test]
+    fn exact_damage_input_accepts_full_integer_range_without_float_rounding() {
+        for value in [0, 65_536, 9_007_199_254_740_993, u64::MAX] {
+            assert_eq!(parse_damage_amount(&value.to_string()).unwrap(), value);
+        }
+        for value in [
+            "",
+            "00",
+            "01",
+            "-1",
+            "+1",
+            " 1",
+            "1 ",
+            "1.0",
+            "1e3",
+            "18446744073709551616",
+        ] {
+            assert!(parse_damage_amount(value).is_err(), "accepted {value:?}");
+        }
+    }
+    #[test]
+    fn live_preview_preserves_large_might_damage_and_negative_calculation() {
+        let mut game = Game::new(3, 3, 7, Difficulty::Easy);
+        let exact = 9_007_199_254_740_993;
+        let mut large = unit(100, 69);
+        large.buff = exact - u64::from(game.catalog[69].might);
+        large.damage = exact - 1;
+        game.players[0].units = vec![large];
+        let text = live_unit_description(&game, 0, 100).unwrap();
+        assert!(text.contains("Current might: 9007199254740993"));
+        assert!(text.contains("Marked damage: 9007199254740992"));
+        game.players[0].units[0].buff = 0;
+        game.players[0].units[0].damage = 0;
+        game.players[0].units[0].temporary_buff = -11;
+        let text = live_unit_description(&game, 0, 100).unwrap();
+        assert!(text.contains("0 current might"));
+        assert!(text.contains("Calculated might: -3"));
+        assert!(text.contains("Rules that reference Might use 0"));
+    }
+    #[test]
+    fn invalid_live_stats_have_error_copy_instead_of_a_fabricated_stat() {
+        let mut game = Game::new(3, 3, 7, Difficulty::Easy);
+        let mut invalid = unit(100, 69);
+        invalid.buff = u64::MAX;
+        game.players[0].units = vec![invalid];
+        let before = format!("{game:?}");
+        let text = live_unit_description(&game, 0, 100).unwrap();
+        assert!(text.starts_with("Cannot calculate this unit's stats: engine_capacity:"));
+        assert!(!text.contains("0 current might"));
+        assert_eq!(format!("{game:?}"), before);
     }
     #[test]
     fn xp_activation_preview_tracks_real_payment_and_level_loss() {

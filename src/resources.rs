@@ -50,7 +50,10 @@ impl Game {
                     ability_index: option.ability_index,
                     targets: Vec::new(),
                 };
-                if self.clone().apply(action.clone()).is_ok() {
+                if match self.clone().apply(action.clone()) {
+                    Ok(()) => true,
+                    Err(e) => crate::numeric::is_capacity(&e),
+                } {
                     result.push(action);
                 }
             }
@@ -81,7 +84,10 @@ impl Game {
                     exhausted: false,
                 },
             ] {
-                if self.clone().apply(action.clone()).is_ok() {
+                if match self.clone().apply(action.clone()) {
+                    Ok(()) => true,
+                    Err(e) => crate::numeric::is_capacity(&e),
+                } {
                     result.push(action);
                 }
             }
@@ -152,21 +158,39 @@ impl Game {
 
     /// Freeze the chosen intent before generating resources, so consuming an
     /// Empowered Gold or a Might source cannot recalculate a variable discount.
-    pub(crate) fn funded_action_witness(&self, action: &Action) -> Option<Vec<Action>> {
-        if self.clone().apply(action.clone()).is_ok() {
-            return Some(vec![action.clone()]);
+    pub(crate) fn funded_action_witness(
+        &self,
+        action: &Action,
+    ) -> Result<Option<Vec<Action>>, String> {
+        self.validate_numeric_state()?;
+        let mut direct = self.clone();
+        let initial = crate::numeric::legal_result(
+            direct
+                .apply(action.clone())
+                .and_then(|()| direct.validate_numeric_state()),
+        );
+        if initial.as_ref().is_ok_and(|v| *v) {
+            return Ok(Some(vec![action.clone()]));
         }
         let mut prepared = self.clone();
-        prepared.begin_payment(action.clone()).ok()?;
+        match prepared.begin_payment(action.clone()) {
+            Ok(()) => {}
+            Err(e) if crate::numeric::is_capacity(&e) => return Err(e),
+            Err(_) => return initial.map(|_| None),
+        }
         let player = prepared.priority();
+        let Some(path) = prepared.resource_witness(player, |state| {
+            crate::numeric::legal_result(state.clone().complete_payment())
+        })?
+        else {
+            return initial.map(|_| None);
+        };
         let mut witness = vec![Action::BeginPayment {
             action: Box::new(action.clone()),
         }];
-        witness.extend(
-            prepared.resource_witness(player, |state| state.clone().complete_payment().is_ok())?,
-        );
+        witness.extend(path);
         witness.push(Action::CompletePayment);
-        Some(witness)
+        Ok(Some(witness))
     }
 
     // Positive-only AI suggestions. Exhaustion of this budget means Unknown,
@@ -426,78 +450,114 @@ impl Game {
         result
     }
 
-    pub(crate) fn resource_completion_step(&self) -> Option<Action> {
+    pub(crate) fn resource_completion_step(&self) -> Result<Option<Action>, String> {
+        self.validate_numeric_state()?;
         let player = self.priority();
         let payment = self.payment_plan.is_some();
         let tax = self
             .resource_frames
             .iter()
-            .filter_map(|frame| frame.suspended.as_ref())
-            .find_map(|decision| {
-                if let Decision::CounterTax { player, cost, .. } = decision {
+            .filter_map(|f| f.suspended.as_ref())
+            .find_map(|d| {
+                if let Decision::CounterTax { player, cost, .. } = d {
                     Some((*player, *cost))
                 } else {
                     None
                 }
             });
-        let goal = |state: &Game| {
+        let goal = |state: &Game| -> Result<bool, String> {
             if payment {
-                state.clone().complete_payment().is_ok()
+                crate::numeric::legal_result(state.clone().complete_payment())
             } else if let Some((owner, cost)) = tax {
-                matches!(state.decision, Some(Decision::CounterTax { .. }))
-                    && state.players[owner].energy >= u16::from(cost)
+                Ok(matches!(state.decision, Some(Decision::CounterTax { .. }))
+                    && state.players[owner].energy >= u16::from(cost))
             } else {
-                !matches!(state.decision, Some(Decision::ResourceConversion { .. }))
+                Ok(!matches!(
+                    state.decision,
+                    Some(Decision::ResourceConversion { .. })
+                ))
             }
         };
-        if goal(self) {
-            return payment.then_some(Action::CompletePayment);
+        if goal(self).unwrap_or(false) {
+            return Ok(payment.then_some(Action::CompletePayment));
         }
-        self.resource_suggestion_witness(player, goal, 48)
-            // Once an intent is suspended, an Unknown suggestion must not be
-            // mistaken for inability to finish it. Keep the exact fallback.
-            .or_else(|| self.resource_witness(player, goal))
-            .and_then(|path| path.into_iter().next())
+        // Bounded positive search may skip a capacity-limited hypothetical branch.
+        // An absent witness is Unknown and always falls through to the exact proof.
+        if let Some(path) =
+            self.resource_suggestion_witness(player, |s| goal(s).unwrap_or(false), 48)
+        {
+            return Ok(path.into_iter().next());
+        }
+        Ok(self
+            .resource_witness(player, goal)?
+            .and_then(|path| path.into_iter().next()))
     }
 
-    /// A successful result is an executable sequence. None exhausts the finite
-    /// resource state graph; it never means a heuristic budget was reached.
+    /// None is a complete negative proof. A capacity-limited branch makes the
+    /// negative outcome unresolved; another executable positive witness may win.
     pub(crate) fn resource_witness(
         &self,
         player: usize,
-        goal: impl Fn(&Game) -> bool,
-    ) -> Option<Vec<Action>> {
+        goal: impl Fn(&Game) -> Result<bool, String>,
+    ) -> Result<Option<Vec<Action>>, String> {
         fn visit(
             game: &Game,
             player: usize,
-            goal: &impl Fn(&Game) -> bool,
+            goal: &impl Fn(&Game) -> Result<bool, String>,
             seen: &mut HashSet<String>,
             path: &mut Vec<Action>,
-        ) -> bool {
-            if goal(game) {
-                return true;
+            capacity: &mut Option<String>,
+        ) -> Result<bool, String> {
+            match goal(game) {
+                Ok(true) => return Ok(true),
+                Ok(false) => {}
+                Err(e) if crate::numeric::is_capacity(&e) => *capacity = Some(e),
+                Err(e) => return Err(e),
             }
             if !seen.insert(game.resource_state_key(player)) {
-                return false;
+                return Ok(false);
             }
             for action in game.resource_actions(player) {
                 let mut next = game.clone();
-                if next.apply(action.clone()).is_err() {
-                    continue;
+                match next
+                    .apply(action.clone())
+                    .and_then(|()| next.validate_numeric_state())
+                {
+                    Ok(()) => {}
+                    Err(e) if crate::numeric::is_capacity(&e) => {
+                        *capacity = Some(e);
+                        continue;
+                    }
+                    Err(_) => continue,
                 }
                 path.push(action);
-                if visit(&next, player, goal, seen, path) {
-                    return true;
+                if visit(&next, player, goal, seen, path, capacity)? {
+                    return Ok(true);
                 }
                 path.pop();
             }
-            false
+            Ok(false)
         }
         if player >= self.players.len() {
-            return None;
+            return Ok(None);
         }
+        self.validate_numeric_state()?;
         let mut path = Vec::new();
-        visit(self, player, &goal, &mut HashSet::new(), &mut path).then_some(path)
+        let mut capacity = None;
+        if visit(
+            self,
+            player,
+            &goal,
+            &mut HashSet::new(),
+            &mut path,
+            &mut capacity,
+        )? {
+            Ok(Some(path))
+        } else if let Some(e) = capacity {
+            Err(e)
+        } else {
+            Ok(None)
+        }
     }
 }
 
@@ -552,11 +612,12 @@ mod tests {
         g.players[0].energy = 3;
         g.players[0].energy_pool = 3;
         // Heart needs3energy+1power. Henge cannot spend the same energy twice.
-        assert!(g.funded_action_witness(&heart()).is_none());
+        assert!(g.funded_action_witness(&heart()).unwrap().is_none());
         g.players[0].energy = 4;
         g.players[0].energy_pool = 4;
         let witness = g
             .funded_action_witness(&heart())
+            .unwrap()
             .expect("Convert one and retain three");
         for step in witness {
             g.apply(step).unwrap();
@@ -587,6 +648,7 @@ mod tests {
         });
         let witness = g
             .funded_action_witness(&heart())
+            .unwrap()
             .expect("Sage supplies the fourth combined resource");
         for step in witness {
             g.apply(step).unwrap();
@@ -635,6 +697,7 @@ mod tests {
         g.players[0].energy_pool = 1;
         let witness = g
             .funded_action_witness(&heart())
+            .unwrap()
             .expect("Spend Calm for energy, keep Fury");
         assert!(witness.iter().any(|a|matches!(a,Action::WithPowerPayment{payment,..} if payment.colored[1]>0 && payment.colored[0]==0)));
         for step in witness {
@@ -648,7 +711,7 @@ mod tests {
         add_gear(&mut g, 807, 244);
         add_gear(&mut g, 808, 245);
         g.players[0].hand = vec![230];
-        assert!(g.funded_action_witness(&heart()).is_none());
+        assert!(g.funded_action_witness(&heart()).unwrap().is_none());
     }
     #[test]
     fn triggered_deflect_feasibility_can_use_sage_then_henge() {
@@ -692,7 +755,7 @@ mod tests {
                 unit_id: 811,
             }),
         };
-        let witness = g.funded_action_witness(&action).unwrap();
+        let witness = g.funded_action_witness(&action).unwrap().unwrap();
         for step in witness {
             g.apply(step).unwrap();
         }
@@ -707,7 +770,7 @@ mod tests {
         g.players[0].energy_pool = 4;
         assert!(g.funded_suggestion_witness(&heart(), 0).is_none());
         assert!(g.funded_suggestion_witness(&heart(), 1).is_none());
-        let path = g.funded_action_witness(&heart()).unwrap();
+        let path = g.funded_action_witness(&heart()).unwrap().unwrap();
         for action in path {
             g.apply(action).unwrap();
         }
@@ -833,7 +896,7 @@ mod tests {
             g.players[0].hand = vec![230];
             g.players[0].energy = 2;
             g.players[0].energy_pool = 2;
-            let witness = g.funded_action_witness(&heart());
+            let witness = g.funded_action_witness(&heart()).unwrap();
             assert_eq!(
                 witness.is_some(),
                 empowered,
@@ -860,7 +923,7 @@ mod tests {
             ability_index: 0,
             targets: vec![],
         };
-        assert!(g.funded_action_witness(&action).is_none());
+        assert!(g.funded_action_witness(&action).unwrap().is_none());
         g.players[0].units.push(Unit {
             id: 822,
             card_id: 236,
@@ -874,7 +937,7 @@ mod tests {
             stunned: false,
             banish_on_death: false,
         });
-        let path = g.funded_action_witness(&action).unwrap();
+        let path = g.funded_action_witness(&action).unwrap().unwrap();
         for action in path {
             g.apply(action).unwrap();
         }
@@ -903,5 +966,34 @@ mod tests {
         assert_eq!(g.decision, other.decision);
         assert_eq!(g.players[0].energy, other.players[0].energy);
         assert_eq!(g.players[0].gear, other.players[0].gear);
+    }
+    #[test]
+    fn exact_resource_proof_preserves_capacity_without_hiding_a_positive_alternative() {
+        let mut game = fixture();
+        let before = format!("{game:?}");
+        assert!(game.resource_witness(0, |_| Ok(false)).unwrap().is_none());
+        let error = game
+            .resource_witness(0, |_| Err(crate::numeric::capacity("probe")))
+            .unwrap_err();
+        assert!(error.starts_with("engine_capacity:"));
+        assert_eq!(format!("{game:?}"), before);
+        // A bounded suggestion can decline a hypothetical branch, but only an
+        // exact search establishes impossibility. A legal Add can still yield
+        // a complete executable witness after the initial goal is unresolved.
+        game.players[0].runes[0] = 1;
+        let path = game
+            .resource_witness(0, |state| {
+                if state.players[0].energy > 0 {
+                    Ok(true)
+                } else {
+                    Err(crate::numeric::capacity("unresolved completion"))
+                }
+            })
+            .unwrap()
+            .expect("the rune is a positive witness");
+        for action in path {
+            game.apply(action).unwrap();
+        }
+        assert_eq!(game.players[0].energy, 1);
     }
 }

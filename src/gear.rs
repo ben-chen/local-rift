@@ -125,7 +125,7 @@ impl Game {
             if ready { "ready" } else { "exhausted" }
         ));
         if rules::equipment(card_id).is_some_and(|rule| rule.quick_draw) {
-            self.request_on_play_target(player, card_id, id, None);
+            self.request_on_play_target(player, card_id, id, None)?;
         }
         self.gear_play_completed(player, card_id, id, false);
         Ok(())
@@ -370,7 +370,7 @@ impl Game {
 
     /// Only attached equipment contributes its effect-panel keywords. The
     /// equipment's own rules panel (including Quick-Draw) remains inactive.
-    pub fn gear_keywords(&self, unit_id: u32) -> UnitKeywords {
+    pub fn gear_keywords(&self, unit_id: u32) -> Result<UnitKeywords, String> {
         let mut keywords = UnitKeywords::default();
         for rule in self
             .players
@@ -385,10 +385,12 @@ impl Game {
                         keywords.hunt = keywords.hunt.saturating_add(amount)
                     }
                     StaticAbility::Assault(amount) => {
-                        keywords.assault = keywords.assault.saturating_add(amount)
+                        keywords.assault =
+                            crate::numeric::add_u64(keywords.assault, u64::from(amount), "assault")?
                     }
                     StaticAbility::Shield(amount) => {
-                        keywords.shield = keywords.shield.saturating_add(amount)
+                        keywords.shield =
+                            crate::numeric::add_u64(keywords.shield, u64::from(amount), "shield")?
                     }
                     StaticAbility::Deflect(amount) => {
                         keywords.deflect = keywords.deflect.saturating_add(amount)
@@ -400,20 +402,27 @@ impl Game {
                 }
             }
         }
-        keywords
+        Ok(keywords)
     }
 
-    pub fn gear_might_bonus(&self, unit_id: u32) -> u8 {
+    pub fn gear_might_bonus(&self, unit_id: u32) -> Result<u64, String> {
         self.players
             .iter()
             .flat_map(|player| &player.gear)
             .filter(|gear| gear.attached_to == Some(unit_id) && !gear.token)
             .filter_map(|gear| rules::equipment(gear.card_id))
-            .fold(0_u8, |total, rule| total.saturating_add(rule.might))
+            .try_fold(0_u64, |total, rule| {
+                crate::numeric::add_u64(total, u64::from(rule.might), "equipment Might")
+            })
     }
 
     pub fn gear_grants_ganking(&self, unit_id: u32) -> bool {
-        self.gear_keywords(unit_id).ganking
+        self.players
+            .iter()
+            .flat_map(|p| &p.gear)
+            .filter(|g| !g.token && g.attached_to == Some(unit_id))
+            .filter_map(|g| rules::equipment(g.card_id))
+            .any(|r| r.grants.contains(&StaticAbility::Ganking))
     }
 
     /// One replacement applies to a death. Prefer an attached Guardian Angel
@@ -540,7 +549,7 @@ impl Game {
     pub(crate) fn gear_begin_turn(&mut self, player: usize) {
         self.gear_awaken(player);
         self.gear_beginning(player);
-        self.after_resolution();
+        self.after_resolution().unwrap();
     }
 
     pub(crate) fn gear_conquer_hold(&mut self, player: usize, unit_id: u32) {
@@ -662,7 +671,7 @@ mod tests {
     }
 
     fn resolve_chain(game: &mut Game) {
-        game.after_resolution();
+        game.after_resolution().unwrap();
         if matches!(game.decision, Some(Decision::OptionalPlay { .. })) {
             game.apply(Action::Choose { accept: true }).unwrap();
         }
@@ -687,11 +696,11 @@ mod tests {
             target,
         })
         .unwrap();
-        assert_eq!(game.gear_might_bonus(id(target)), 0);
+        assert_eq!(game.gear_might_bonus(id(target)).unwrap(), 0);
         assert_eq!(game.players[0].runes[domain_index(Domain::Chaos)], 0);
         assert_eq!(game.chain.len(), 1);
         resolve_chain(&mut game);
-        assert_eq!(game.gear_might_bonus(id(target)), 2);
+        assert_eq!(game.gear_might_bonus(id(target)).unwrap(), 2);
         assert!(game.gear_grants_ganking(id(target)));
         assert_eq!(game.players[0].gear[0].attached_to, Some(id(target)));
         assert!(game.players[0].discard.is_empty());
@@ -722,16 +731,16 @@ mod tests {
         let target = unit(&mut game, 0, None);
         give_power(&mut game, 0, Domain::Fury, 0);
         game.gear_play(0, 58, Some(target)).unwrap();
-        game.after_resolution();
+        game.after_resolution().unwrap();
         assert!(matches!(game.decision, Some(Decision::OnPlayTarget { .. })));
         game.apply(Action::ChooseTarget {
             target: Some(target),
         })
         .unwrap();
         assert_eq!(game.chain.len(), 1);
-        assert_eq!(game.gear_might_bonus(id(target)), 0);
+        assert_eq!(game.gear_might_bonus(id(target)).unwrap(), 0);
         resolve_chain(&mut game);
-        assert_eq!(game.gear_might_bonus(id(target)), 2);
+        assert_eq!(game.gear_might_bonus(id(target)).unwrap(), 2);
         assert_eq!(game.players[0].total_runes(), 0);
     }
 
@@ -755,7 +764,7 @@ mod tests {
         let guardian = gear(&mut game, 0, 10);
         game.gear_resolve_equip(0, guardian, target);
         game.players[0].units[0].damage = 9;
-        game.remove_defeated();
+        game.remove_defeated().unwrap();
         assert_eq!(game.players[0].units.len(), 1);
         let survivor = &game.players[0].units[0];
         assert_eq!(
@@ -772,7 +781,7 @@ mod tests {
         unit(&mut game, 0, Some(0));
         gear(&mut game, 0, 21);
         game.players[0].units[0].damage = 9;
-        game.remove_defeated();
+        game.remove_defeated().unwrap();
         assert_eq!(game.players[0].units.len(), 1);
         assert_eq!(game.players[0].units[0].damage, 0);
         assert_eq!(game.players[0].units[0].lane, None);
@@ -804,7 +813,7 @@ mod tests {
         assert_eq!(game.players[0].gear[0].attached_to, None);
         assert!(!game.players[0].gear[0].ready);
         assert_eq!(game.gear_location(0, boots), None);
-        assert_eq!(game.gear_might_bonus(id(target)), 0);
+        assert_eq!(game.gear_might_bonus(id(target)).unwrap(), 0);
         assert!(game.players[0].discard.is_empty());
     }
 
@@ -976,7 +985,7 @@ mod tests {
         assert_eq!(game.players[0].discard, vec![11]);
         assert_eq!(game.players[0].deck.len(), deck_len + 2);
         resolve_chain(&mut game);
-        assert_eq!(game.gear_might_bonus(id(target)), 2);
+        assert_eq!(game.gear_might_bonus(id(target)).unwrap(), 2);
     }
 
     #[test]
@@ -1033,7 +1042,7 @@ mod tests {
         let boots = gear(&mut game, 1, 3);
         game.gear_resolve_equip(1, boots, target);
         game.players[1].units[0].damage = 2;
-        assert!(game.unit_might(&game.players[1].units[0]) > 2);
+        assert!(game.unit_might(&game.players[1].units[0]).unwrap() > 2);
         game.players[0].hand = vec![41];
         let domain = game.catalog[41].domain;
         give_power(&mut game, 0, domain, 6);
@@ -1203,10 +1212,10 @@ mod tests {
         .unwrap();
         assert_eq!(game.players[0].energy, 0);
         assert_eq!(game.players[0].power_pool[domain_index(Domain::Order)], 1);
-        assert_eq!(game.gear_keywords(id(target)).shield, 0);
+        assert_eq!(game.gear_keywords(id(target)).unwrap().shield, 0);
         resolve_chain(&mut game);
-        assert_eq!(game.gear_keywords(id(target)).shield, 2);
-        assert_eq!(game.gear_might_bonus(id(target)), 0);
+        assert_eq!(game.gear_keywords(id(target)).unwrap().shield, 2);
+        assert_eq!(game.gear_might_bonus(id(target)).unwrap(), 0);
     }
 
     #[test]
@@ -1224,19 +1233,30 @@ mod tests {
                 token: false,
             });
         }
-        assert_eq!(game.gear_keywords(id(target)), UnitKeywords::default());
+        assert_eq!(
+            game.gear_keywords(id(target)).unwrap(),
+            UnitKeywords::default()
+        );
         for item in &mut game.players[0].gear {
             item.attached_to = Some(id(target));
         }
-        let keywords = game.unit_keywords(&game.players[0].units[0]);
+        let keywords = game.unit_keywords(&game.players[0].units[0]).unwrap();
         assert_eq!(keywords.assault, 4);
         assert_eq!(keywords.shield, 6);
         assert_eq!(keywords.deflect, 2);
         assert!(keywords.tank && keywords.ganking);
         assert!(!keywords.ambush);
-        assert_eq!(game.gear_might_bonus(id(target)), 5); // Boots2 + Shield1 + Hexdrinkers2.
+        assert_eq!(game.gear_might_bonus(id(target)).unwrap(), 5); // Boots2 + Shield1 + Hexdrinkers2.
         game.gear_unit_left_board(0, id(target));
-        assert_eq!(game.gear_keywords(id(target)), UnitKeywords::default());
-        assert_eq!(game.unit_keywords(&game.players[0].units[0]).shield, 2);
+        assert_eq!(
+            game.gear_keywords(id(target)).unwrap(),
+            UnitKeywords::default()
+        );
+        assert_eq!(
+            game.unit_keywords(&game.players[0].units[0])
+                .unwrap()
+                .shield,
+            2
+        );
     }
 }

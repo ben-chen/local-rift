@@ -121,6 +121,7 @@ fn drain(g: &mut Game) {
             }
             Some(Decision::TriggerTargets { .. }) => g
                 .legal_actions()
+                .unwrap()
                 .into_iter()
                 .find(|a| matches!(a, Action::ChooseTriggerTargets { .. }))
                 .unwrap(),
@@ -400,7 +401,7 @@ fn dragon_kill_survives_source_departure_and_sandshifter_rechecks_live_bound() {
     cast(&mut g, 7, vec![enemy]);
     resolve(&mut g);
     resolve(&mut g);
-    assert_eq!(g.unit_might(u(&g, enemy)), 4);
+    assert_eq!(g.unit_might(u(&g, enemy)).unwrap(), 4);
 }
 #[test]
 fn targeted_kill_trigger_can_be_countered_with_not_so_fast() {
@@ -442,8 +443,8 @@ fn tracker_optional_distinct_any_targets_and_two_packet_damage() {
         );
         trigger_targets(&mut g, vec![a, b][..count].to_vec());
         resolve(&mut g);
-        assert_eq!(u(&g, a).damage, u8::from(count >= 1));
-        assert_eq!(u(&g, b).damage, u8::from(count == 2));
+        assert_eq!(u(&g, a).damage, u64::from(count >= 1));
+        assert_eq!(u(&g, b).damage, u64::from(count == 2));
     }
 }
 #[test]
@@ -463,7 +464,7 @@ fn ready_mech_enters_without_ready_event_ordinary_mech_enters_exhausted() {
         resolve(&mut g);
         let token = g.players[0].units.iter().find(|u| u.token).unwrap();
         assert_eq!(token.ready, card == 319);
-        assert_eq!(g.unit_might(token), 3);
+        assert_eq!(g.unit_might(token).unwrap(), 3);
         assert_eq!(token.lane, None);
         assert_eq!(u(&g, observer).temporary_buff, before);
         assert!(g.chain.is_empty());
@@ -532,11 +533,11 @@ fn buff_counter_live_predicates_ignore_temporary_might_empower_and_token_base() 
     let bully = unit(&mut g, 0, 1001, 322, None);
     um(&mut g, elder).temporary_buff = 2;
     g.empowered_units.push(1000);
-    assert_eq!(g.unit_might(u(&g, elder)), 6);
-    assert!(!g.unit_keywords(u(&g, bully)).ganking);
+    assert_eq!(g.unit_might(u(&g, elder)).unwrap(), 6);
+    assert!(!g.unit_keywords(u(&g, bully)).unwrap().ganking);
     cast(&mut g, 28, vec![bully]);
     resolve(&mut g);
-    assert!(!g.unit_keywords(u(&g, bully)).ganking);
+    assert!(!g.unit_keywords(u(&g, bully)).unwrap().ganking);
     g.players[0].hand.push(27);
     g.apply(Action::PlayCardWithTargets {
         hand_index: 0,
@@ -549,13 +550,13 @@ fn buff_counter_live_predicates_ignore_temporary_might_empower_and_token_base() 
     })
     .unwrap();
     resolve(&mut g);
-    assert_eq!(g.unit_might(u(&g, elder)), 8);
+    assert_eq!(g.unit_might(u(&g, elder)).unwrap(), 8);
     g.buffed_units.push(1001);
     um(&mut g, bully).buff = 1;
-    assert!(g.unit_keywords(u(&g, bully)).ganking);
+    assert!(g.unit_keywords(u(&g, bully)).unwrap().ganking);
     g.buffed_units.retain(|&id| id != 1001);
     um(&mut g, bully).buff = 0;
-    assert!(!g.unit_keywords(u(&g, bully)).ganking);
+    assert!(!g.unit_keywords(u(&g, bully)).unwrap().ganking);
 }
 #[test]
 fn local_and_token_auras_use_real_location_and_token_identity() {
@@ -564,19 +565,22 @@ fn local_and_token_auras_use_real_location_and_token_identity() {
     let hound = unit(&mut g, 0, 1001, 323, None);
     let enemy = unit(&mut g, 1, 1002, 69, None);
     let lone = unit(&mut g, 0, 1003, 323, Some(1));
-    assert_eq!(g.unit_might(u(&g, garen)), 5);
-    assert_eq!(g.unit_might(u(&g, hound)), 4);
-    assert_eq!(g.unit_might(u(&g, lone)), 2);
-    assert_eq!(g.unit_might(u(&g, enemy)), g.catalog[69].might);
+    assert_eq!(g.unit_might(u(&g, garen)).unwrap(), 5);
+    assert_eq!(g.unit_might(u(&g, hound)).unwrap(), 4);
+    assert_eq!(g.unit_might(u(&g, lone)).unwrap(), 2);
+    assert_eq!(
+        g.unit_might(u(&g, enemy)).unwrap(),
+        u64::from(g.catalog[69].might)
+    );
     let shepherd = unit(&mut g, 0, 1004, 324, None);
     let token = unit(&mut g, 0, 1005, 48, Some(0));
     um(&mut g, token).token = true;
     um(&mut g, token).buff = 1;
-    assert_eq!(g.unit_might(u(&g, token)), 2);
-    assert_eq!(g.unit_might(u(&g, shepherd)), 4);
+    assert_eq!(g.unit_might(u(&g, token)).unwrap(), 2);
+    assert_eq!(g.unit_might(u(&g, shepherd)).unwrap(), 4);
     gear(&mut g, 0, 2000, 13, None);
     g.players[0].gear.last_mut().unwrap().token = true;
-    assert_eq!(g.unit_might(u(&g, token)), 2);
+    assert_eq!(g.unit_might(u(&g, token)).unwrap(), 2);
 }
 #[test]
 fn rune_and_level_thresholds_are_live_with_exhausted_runes_and_attached_sword() {
@@ -586,14 +590,14 @@ fn rune_and_level_thresholds_are_live_with_exhausted_runes_and_attached_sword() 
     g.players[0].runes = [7, 0, 0, 0, 0, 0];
     g.players[0].exhausted_runes = [7, 0, 0, 0, 0, 0];
     g.players[0].rune_deck = vec![Domain::Body];
-    assert_eq!(g.unit_might(u(&g, yi)), 4);
+    assert_eq!(g.unit_might(u(&g, yi)).unwrap(), 4);
     cast(&mut g, 309, vec![]);
     resolve(&mut g);
-    assert_eq!(g.unit_might(u(&g, yi)), 8);
+    assert_eq!(g.unit_might(u(&g, yi)).unwrap(), 8);
     g.players[0].xp = 10;
-    assert_eq!(g.unit_might(u(&g, seer)), 6);
+    assert_eq!(g.unit_might(u(&g, seer)).unwrap(), 6);
     g.players[0].xp = 11;
-    assert_eq!(g.unit_might(u(&g, seer)), 10);
+    assert_eq!(g.unit_might(u(&g, seer)).unwrap(), 10);
     gear(&mut g, 0, 2000, 330, None);
     g.players[0].xp = 2;
     g.apply(Action::Equip {
@@ -602,11 +606,11 @@ fn rune_and_level_thresholds_are_live_with_exhausted_runes_and_attached_sword() 
     })
     .unwrap();
     resolve(&mut g);
-    assert_eq!(g.unit_might(u(&g, yi)), 9);
+    assert_eq!(g.unit_might(u(&g, yi)).unwrap(), 9);
     g.players[0].xp = 3;
-    assert_eq!(g.unit_might(u(&g, yi)), 10);
+    assert_eq!(g.unit_might(u(&g, yi)).unwrap(), 10);
     g.players[0].gear[0].attached_to = None;
-    assert_eq!(g.unit_might(u(&g, yi)), 8);
+    assert_eq!(g.unit_might(u(&g, yi)).unwrap(), 8);
 }
 fn conquer(g: &mut Game, id: u32) {
     g.apply(Action::Move {
@@ -627,7 +631,7 @@ fn hunt_is_one_captured_sum_and_preserves_all_legacy_hunt_values() {
         let target = unit(&mut g, 0, 1000, card, None);
         gear(&mut g, 0, 2000, 328, Some(1000));
         gear(&mut g, 0, 2001, 328, Some(1000));
-        assert_eq!(g.unit_keywords(u(&g, target)).hunt, base + 2);
+        assert_eq!(g.unit_keywords(u(&g, target)).unwrap().hunt, base + 2);
         conquer(&mut g, 1000);
         let hunts: Vec<_> = g
             .chain
@@ -707,8 +711,11 @@ fn protector_quick_draw_is_free_attach_then_equip_costs_one_energy() {
     let energy = g.players[0].energy;
     resolve(&mut g);
     assert_eq!(g.players[0].energy, energy);
-    assert!(g.unit_keywords(u(&g, t)).tank);
-    assert_eq!(g.unit_might(u(&g, t)), g.catalog[69].might + 1);
+    assert!(g.unit_keywords(u(&g, t)).unwrap().tank);
+    assert_eq!(
+        g.unit_might(u(&g, t)).unwrap(),
+        u64::from(g.catalog[69].might) + 1
+    );
     let id = g.players[0].gear[0].id;
     g.players[0].gear[0].attached_to = None;
     let power = g.players[0].power_pool;
@@ -726,7 +733,7 @@ fn monument_intrinsic_temporary_deflect_stacks_and_expiry_precedes_hold() {
     let enemy = unit(&mut g, 1, 1000, 92, Some(0));
     gear(&mut g, 1, 2000, 331, None);
     gear(&mut g, 1, 2001, 331, None);
-    assert_eq!(g.unit_keywords(u(&g, enemy)).deflect, 3);
+    assert_eq!(g.unit_keywords(u(&g, enemy)).unwrap().deflect, 3);
     g.players[0].hand.push(7);
     let quote = g
         .cost_plan(&Action::PlayCardWithTargets {
@@ -845,14 +852,14 @@ fn rune_might_loss_during_payment_defers_cleanup_and_failed_payment_rolls_back()
             exhausted: true,
         })
         .unwrap();
-        assert_eq!(g.unit_might(u(&g, yi)), 4);
+        assert_eq!(g.unit_might(u(&g, yi)).unwrap(), 4);
         assert_eq!(u(&g, yi).damage, 5);
         assert!(g.players[0].units.iter().any(|u| u.id == 1000));
         if rollback {
-            assert!(g.can_cancel_payment());
+            assert!(g.can_cancel_payment().unwrap());
             g.apply(Action::Choose { accept: false }).unwrap();
             assert_eq!(g.players[0].runes, before);
-            assert_eq!(g.unit_might(u(&g, yi)), 8);
+            assert_eq!(g.unit_might(u(&g, yi)).unwrap(), 8);
             assert_eq!(g.players[0].hand, vec![7]);
         } else {
             g.apply(Action::CompletePayment).unwrap();
@@ -919,7 +926,7 @@ fn original_explicit_kill_victims_stay_fixed_across_multiple_recall_choices() {
     let b = unit(&mut g, 1, 1001, 323, None);
     gear(&mut g, 1, 2000, 10, Some(1000));
     gear(&mut g, 1, 2001, 21, None);
-    assert_eq!(g.unit_might(u(&g, b)), 4);
+    assert_eq!(g.unit_might(u(&g, b)).unwrap(), 4);
     cast(&mut g, 308, vec![]);
     resolve(&mut g);
     g.apply(Action::ChooseDeathReplacement {

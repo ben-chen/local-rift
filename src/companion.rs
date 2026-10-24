@@ -261,6 +261,16 @@ fn fingerprint(game: &Game) -> u64 {
 }
 
 fn advice(game: &Game, level: AdviceLevel) -> Vec<&'static str> {
+    match checked_advice(game, level) {
+        Ok(tips) => tips,
+        Err(_) => vec![
+            "This position reached a numeric limit. I'll pause tactical advice until its stats can be calculated accurately.",
+        ],
+    }
+}
+
+fn checked_advice(game: &Game, level: AdviceLevel) -> Result<Vec<&'static str>, String> {
+    game.validate_numeric_state()?;
     let beginner = level == AdviceLevel::Beginner;
     let mut tips = Vec::new();
     let human = &game.players[0];
@@ -273,7 +283,7 @@ fn advice(game: &Game, level: AdviceLevel) -> Vec<&'static str> {
             "Every match leaves a clue. Try spotting the first battlefield you could have protected or contested. I'll be here for the next one."
         });
         tips.push("Try this matchup from the other side next. Seeing both hands in separate games can help you recognize each deck's plan.");
-        return tips;
+        return Ok(tips);
     }
 
     if game.phase == Phase::Mulligan {
@@ -285,11 +295,11 @@ fn advice(game: &Game, level: AdviceLevel) -> Vec<&'static str> {
         tips.push("Your chosen champion is available in its own zone. You don't need to find that copy in your opening hand.");
         tips.push("Hover over a card to read its full rules. You can keep a preview open with a right-click while planning your first plays.");
         tips.push(archetype_tip(game));
-        return tips;
+        return Ok(tips);
     }
 
-    if let Some(window_tips) = response_window_advice(game, beginner) {
-        return window_tips;
+    if let Some(window_tips) = response_window_advice(game, beginner)? {
+        return Ok(window_tips);
     }
 
     // High stakes scoring and visible threats come before routine suggestions.
@@ -313,7 +323,7 @@ fn advice(game: &Game, level: AdviceLevel) -> Vec<&'static str> {
     if let Some(lane) = contested {
         if beginner {
             tips.push("Both sides have units here. Check might totals and legal responses before resolving, then choose your combat damage order.");
-        } else if game.lane_might(0, lane) <= game.lane_might(1, lane) {
+        } else if game.lane_might(0, lane)? <= game.lane_might(1, lane)? {
             tips.push("This trade looks costly on raw might. Check your legal responses before committing; printed reactions can change real games.");
         } else {
             tips.push("You lead on raw might. Consider what survives, how damage can be assigned, and whether the survivor can hold the next point.");
@@ -328,7 +338,7 @@ fn advice(game: &Game, level: AdviceLevel) -> Vec<&'static str> {
         });
         tips.push("Action and reaction timing matter. You can receive priority during their turn; supported responses appear when a window opens.");
         tips.push(archetype_tip(game));
-        return tips;
+        return Ok(tips);
     }
 
     // Brief feedback on a resolved event, always phrased in terms the client
@@ -375,6 +385,11 @@ fn advice(game: &Game, level: AdviceLevel) -> Vec<&'static str> {
         });
     }
 
+    let human_stats = human
+        .units
+        .iter()
+        .map(|unit| game.try_unit_stats(unit).map(|stats| (unit, stats)))
+        .collect::<Result<Vec<_>, _>>()?;
     let ready_at_base = human.units.iter().any(|u| u.ready && u.lane.is_none());
     if ready_at_base {
         for (lane, field) in game.battlefields.iter().enumerate() {
@@ -382,7 +397,7 @@ fn advice(game: &Game, level: AdviceLevel) -> Vec<&'static str> {
                 continue;
             }
             match field {
-                0 if human.units.iter().any(|unit| unit.ready && unit.lane.is_none() && game.unit_might(unit) >= 5) => {
+                0 if human_stats.iter().any(|(unit, stats)| unit.ready && unit.lane.is_none() && stats.might >= 5) => {
                     tips.push("A Mighty unit can unlock Sunken Temple's conquest draw. Keep 1 energy if that extra card is part of your plan.");
                 }
                 1 if game.battlefield_owner.iter().enumerate().any(|(other, owner)| other != lane && *owner == Some(0)) => {
@@ -410,14 +425,14 @@ fn advice(game: &Game, level: AdviceLevel) -> Vec<&'static str> {
         });
     }
 
-    let affordable_unit = human.hand.iter().any(|&id| {
+    let mut affordable_unit = false;
+    let mut power_shortage = false;
+    for &id in &human.hand {
         let card = &game.catalog[id];
-        card.kind == CardKind::Unit && game.can_afford(0, card)
-    });
-    let power_shortage = human.hand.iter().any(|&id| {
-        let card = &game.catalog[id];
-        u16::from(card.cost) <= human.energy && !game.can_afford(0, card)
-    });
+        let affordable = game.can_afford(0, card)?;
+        affordable_unit |= card.kind == CardKind::Unit && affordable;
+        power_shortage |= u16::from(card.cost) <= human.energy && !affordable;
+    }
     if power_shortage {
         tips.push(if beginner {
             "Energy isn't the whole cost. Power needs matching or flexible power; recycling a matching rune is one way to supply it."
@@ -581,11 +596,7 @@ fn advice(game: &Game, level: AdviceLevel) -> Vec<&'static str> {
             "XP can improve several Level units or bearers at once. Inspect their live thresholds before planning the next scoring trade."
         });
     }
-    if human
-        .units
-        .iter()
-        .any(|unit| game.unit_keywords(unit).hunt > 0)
-    {
+    if human_stats.iter().any(|(_, stats)| stats.keywords.hunt > 0) {
         tips.push(if beginner {
             "Hunt gains XP when its unit conquers or holds. Printed Hunt and equipped Hunt add together into one ability; the preview shows the total."
         } else {
@@ -669,18 +680,31 @@ fn advice(game: &Game, level: AdviceLevel) -> Vec<&'static str> {
         tips.push("Real matchups depend on printed timing, legends, and keywords. Practice results here are not a ranking of the tournament decks.");
     }
     tips.push(archetype_tip(game));
-    tips
+    Ok(tips)
 }
-
-fn response_window_advice(game: &Game, beginner: bool) -> Option<Vec<&'static str>> {
+fn response_window_advice(
+    game: &Game,
+    beginner: bool,
+) -> Result<Option<Vec<&'static str>>, String> {
     if let Some(decision) = &game.decision {
         if decision.player() != 0 {
-            return Some(vec![
+            return Ok(Some(vec![
                 "Your opponent is making a choice. I'll watch the public board while we wait, then help when priority returns.",
                 "Use this pause to identify the unit or spell that matters most to the next point. A response is useful when it changes that outcome.",
-            ]);
+            ]));
         }
-        return Some(match decision {
+        let mut dual_rank = false;
+        if let Decision::CombatDamage { player, lane, .. } = decision {
+            for unit in game.players[1 - *player]
+                .units
+                .iter()
+                .filter(|unit| unit.lane == Some(*lane))
+            {
+                let keywords = game.unit_keywords(unit)?;
+                dual_rank |= keywords.tank && keywords.backline;
+            }
+        }
+        return Ok(Some(match decision {
             Decision::PredictCards { .. } => vec![
                 "Predict looks at cards without drawing them. Choose any to recycle, then set the kept cards in the order you want to draw them.",
                 "Keep the next draw that serves your plan. Recycling all is allowed; recycled cards go to the bottom in random order. Confirm only after checking the order.",
@@ -756,16 +780,7 @@ fn response_window_advice(game: &Game, beginner: bool) -> Option<Vec<&'static st
                 },
                 "Consider which field's score or triggers will affect the next fight. Choosing a field opens its normal response window.",
             ],
-            Decision::CombatDamage { player, lane, .. }
-                if game.players[1 - *player]
-                    .units
-                    .iter()
-                    .filter(|unit| unit.lane == Some(*lane))
-                    .any(|unit| {
-                        let keywords = game.unit_keywords(unit);
-                        keywords.tank && keywords.backline
-                    }) =>
-            {
+            Decision::CombatDamage { .. } if dual_rank => {
                 vec![
                     "A unit has both Tank and Backline. You choose first or last for that unit, never the middle group. Deal lethal before assigning to the next unit.",
                     "Both players assign before damage is dealt simultaneously. Use exact amounts and click a card's art to change its order.",
@@ -885,7 +900,7 @@ fn response_window_advice(game: &Game, beginner: bool) -> Option<Vec<&'static st
                 "This optional Burn cost trades cards from the top of your deck for might. Check whether the extra strength changes a fight or a point.",
                 "Burning moves cards to trash. Think about future deck access as well as the immediate combat bonus.",
             ],
-        });
+        }));
     }
     if !game.chain.is_empty() {
         let mut tips = vec![];
@@ -923,7 +938,7 @@ fn response_window_advice(game: &Game, beginner: bool) -> Option<Vec<&'static st
         } else {
             "A pass is not a promise to stop interacting forever. Reassess after each play or resolution, and preserve resources for the decisive effect."
         });
-        return Some(tips);
+        return Ok(Some(tips));
     }
     if let Some(showdown) = &game.showdown {
         let mut tips = vec![];
@@ -950,9 +965,9 @@ fn response_window_advice(game: &Game, beginner: bool) -> Option<Vec<&'static st
         }
         tips.push("An open showdown allows correctly timed Actions and Reactions. Once a spell is on the chain, only legal Reactions can respond.");
         tips.push("The last ability added to the chain resolves first. When several of your triggers are waiting, choose their order with that in mind.");
-        return Some(tips);
+        return Ok(Some(tips));
     }
-    None
+    Ok(None)
 }
 
 fn archetype_tip(game: &Game) -> &'static str {
@@ -1115,6 +1130,33 @@ mod tests {
         Game::new(0, 1, 72, Difficulty::Easy)
     }
 
+    #[test]
+    fn invalid_numeric_state_pauses_tactical_advice_without_hidden_information() {
+        let mut game = game();
+        game.start_match().unwrap();
+        game.players[0].units = vec![Unit {
+            id: 999,
+            card_id: 69,
+            lane: None,
+            ready: true,
+            damage: 0,
+            buff: u64::MAX,
+            temporary_buff: 0,
+            token: false,
+            protected: false,
+            stunned: false,
+            banish_on_death: false,
+        }];
+        for level in [AdviceLevel::Beginner, AdviceLevel::Advanced] {
+            let tips = advice(&game, level);
+            assert_eq!(tips.len(), 1);
+            assert!(tips[0].contains("pause tactical advice"));
+            let mut hidden = game.clone();
+            hidden.players[1].hand.reverse();
+            hidden.players[1].deck.reverse();
+            assert_eq!(tips, advice(&hidden, level));
+        }
+    }
     #[test]
     fn xp_entry_discount_and_history_advice_uses_public_events_and_stays_private() {
         use local_rift::game::Action;

@@ -106,12 +106,14 @@ fn printed_assault_values_apply_only_to_actual_attackers_and_stack_with_grants()
         let mut game = position();
         game.players[0].units.push(unit(1000, card, Some(0)));
         game.legend[0].assault_grants.push((1000, 2));
-        let printed = game.catalog[card].might;
+        let printed = u64::from(game.catalog[card].might);
         assert_eq!(
-            game.unit_keywords(&game.players[0].units[0]).assault,
+            game.unit_keywords(&game.players[0].units[0])
+                .unwrap()
+                .assault,
             assault + 2
         );
-        assert_eq!(game.unit_might(&game.players[0].units[0]), printed);
+        assert_eq!(game.unit_might(&game.players[0].units[0]).unwrap(), printed);
         game.showdown = Some(Showdown {
             lane: 0,
             attacker: 0,
@@ -120,20 +122,20 @@ fn printed_assault_values_apply_only_to_actual_attackers_and_stack_with_grants()
             combat: false,
         });
         assert_eq!(
-            game.unit_might(&game.players[0].units[0]),
+            game.unit_might(&game.players[0].units[0]).unwrap(),
             printed,
             "neutral showdown isn't combat"
         );
         game.showdown.as_mut().unwrap().combat = true;
         assert_eq!(
-            game.unit_might(&game.players[0].units[0]),
+            game.unit_might(&game.players[0].units[0]).unwrap(),
             printed + assault + 2
         );
         game.showdown.as_mut().unwrap().attacker = 1;
-        assert_eq!(game.unit_might(&game.players[0].units[0]), printed);
+        assert_eq!(game.unit_might(&game.players[0].units[0]).unwrap(), printed);
         game.players[0].units[0].lane = None;
         game.showdown.as_mut().unwrap().attacker = 0;
-        assert_eq!(game.unit_might(&game.players[0].units[0]), printed);
+        assert_eq!(game.unit_might(&game.players[0].units[0]).unwrap(), printed);
     }
 }
 
@@ -146,7 +148,7 @@ fn tank_and_backline_constrain_manual_and_automatic_damage_order() {
         unit(1002, 88, Some(0)),
     ];
     assert_eq!(
-        game.automatic_damage_assignment(0, 0, 8),
+        game.automatic_damage_assignment(0, 0, 8).unwrap(),
         vec![(1001, 6), (1002, 2)]
     );
     game.decision = Some(Decision::CombatDamage {
@@ -162,8 +164,8 @@ fn tank_and_backline_constrain_manual_and_automatic_damage_order() {
         .is_err()
     );
     assert_eq!(game.players, before);
-    assert_eq!(game.damage_priority(&game.players[1].units[0]), 2);
-    assert_eq!(game.damage_priority(&game.players[1].units[1]), 0);
+    assert_eq!(game.damage_priority(&game.players[1].units[0]).unwrap(), 2);
+    assert_eq!(game.damage_priority(&game.players[1].units[1]).unwrap(), 0);
 }
 
 #[test]
@@ -192,15 +194,34 @@ fn token_abilities_do_not_inherit_the_creating_card_keywords_and_yi_still_levels
     fake_recruit.token = true;
     fake_recruit.buff = 1;
     game.players[0].units = vec![bird, fake_recruit, unit(1002, 22, None)];
-    assert_eq!(game.unit_keywords(&game.players[0].units[0]).deflect, 1);
     assert_eq!(
-        game.unit_keywords(&game.players[0].units[1]),
+        game.unit_keywords(&game.players[0].units[0])
+            .unwrap()
+            .deflect,
+        1
+    );
+    assert_eq!(
+        game.unit_keywords(&game.players[0].units[1]).unwrap(),
         Default::default()
     );
-    assert!(!game.unit_keywords(&game.players[0].units[2]).ganking);
+    assert!(
+        !game
+            .unit_keywords(&game.players[0].units[2])
+            .unwrap()
+            .ganking
+    );
     game.players[0].xp = 6;
-    assert!(game.unit_keywords(&game.players[0].units[2]).ganking);
-    assert_eq!(game.unit_keywords(&game.players[0].units[2]).deflect, 1);
+    assert!(
+        game.unit_keywords(&game.players[0].units[2])
+            .unwrap()
+            .ganking
+    );
+    assert_eq!(
+        game.unit_keywords(&game.players[0].units[2])
+            .unwrap()
+            .deflect,
+        1
+    );
 }
 
 #[test]
@@ -215,7 +236,7 @@ fn rengar_unseen_ganks_and_exhausts_but_a_normal_unit_cannot() {
         })
         .is_err()
     );
-    assert!(game.legal_actions().contains(&Action::Move {
+    assert!(game.legal_actions().unwrap().contains(&Action::Move {
         unit_id: 1000,
         lane: Some(1)
     }));

@@ -358,7 +358,7 @@ impl Game {
                 return Err("That unit cannot be chosen by this legend ability.".into());
             }
             if self.available_power(player, None)
-                < u16::from(activation.power) + u16::from(self.deflect_cost(player, &[target]))
+                < u16::from(activation.power) + u16::from(self.deflect_cost(player, &[target])?)
             {
                 return Err("Choosing that unit requires additional power for Deflect.".into());
             }
@@ -629,7 +629,9 @@ mod tests {
             }) = game.decision
             {
                 game.apply(Action::AssignDamage {
-                    assignments: game.automatic_damage_assignment(player, lane, total),
+                    assignments: game
+                        .automatic_damage_assignment(player, lane, total)
+                        .unwrap(),
                 })
                 .unwrap();
             } else if game.decision.is_some() {
@@ -654,15 +656,18 @@ mod tests {
             focus: 1,
             passes: 0,
         });
-        let printed = game.catalog[25].might;
-        assert_eq!(game.unit_might(&game.players[0].units[0]), printed + 2);
+        let printed = u64::from(game.catalog[25].might);
+        assert_eq!(
+            game.unit_might(&game.players[0].units[0]).unwrap(),
+            printed + 2
+        );
         game.players[0].units.push(unit(101, Some(0)));
-        assert_eq!(game.unit_might(&game.players[0].units[0]), printed);
+        assert_eq!(game.unit_might(&game.players[0].units[0]).unwrap(), printed);
         game.players[0].units.pop();
         game.showdown.as_mut().unwrap().attacker = 0;
-        assert_eq!(game.unit_might(&game.players[0].units[0]), printed);
+        assert_eq!(game.unit_might(&game.players[0].units[0]).unwrap(), printed);
         game.showdown = None;
-        assert_eq!(game.unit_might(&game.players[0].units[0]), printed);
+        assert_eq!(game.unit_might(&game.players[0].units[0]).unwrap(), printed);
     }
 
     #[test]
@@ -678,13 +683,13 @@ mod tests {
             combat: false,
         });
         assert_eq!(
-            game.unit_might(&game.players[0].units[0]),
-            game.catalog[25].might
+            game.unit_might(&game.players[0].units[0]).unwrap(),
+            u64::from(game.catalog[25].might)
         );
         game.showdown.as_mut().unwrap().combat = true;
         assert_eq!(
-            game.unit_might(&game.players[0].units[0]),
-            game.catalog[25].might + 2
+            game.unit_might(&game.players[0].units[0]).unwrap(),
+            u64::from(game.catalog[25].might) + 2
         );
     }
 
@@ -708,11 +713,11 @@ mod tests {
         state.any_power = 0;
         assert_eq!(game.catalog[55].kind, CardKind::Spell);
         assert!(
-            game.can_afford(0, &game.catalog[55]),
+            game.can_afford(0, &game.catalog[55]).unwrap(),
             "spell can use Kai'Sa flexible power"
         );
         assert!(
-            !game.can_afford(0, &game.catalog[54]),
+            !game.can_afford(0, &game.catalog[54]).unwrap(),
             "unit cannot use spell-only power"
         );
         game.legend_end_turn();
@@ -823,8 +828,8 @@ mod tests {
             Some(ChainAbility::Legend(LegendAbility::KennenAssault { .. }))
         ));
         assert_eq!(
-            game.unit_might(&game.players[0].units[0]),
-            game.catalog[25].might
+            game.unit_might(&game.players[0].units[0]).unwrap(),
+            u64::from(game.catalog[25].might)
         );
         settle(&mut game);
         game.showdown = Some(Showdown {
@@ -835,13 +840,13 @@ mod tests {
             passes: 0,
         });
         assert_eq!(
-            game.unit_might(&game.players[0].units[0]),
-            game.catalog[25].might + 2
+            game.unit_might(&game.players[0].units[0]).unwrap(),
+            u64::from(game.catalog[25].might) + 2
         );
         game.showdown.as_mut().unwrap().attacker = 1;
         assert_eq!(
-            game.unit_might(&game.players[0].units[0]),
-            game.catalog[25].might
+            game.unit_might(&game.players[0].units[0]).unwrap(),
+            u64::from(game.catalog[25].might)
         );
         game.legend_end_turn();
         assert!(game.legend[0].assault_grants.is_empty());
@@ -978,7 +983,7 @@ mod tests {
         .unwrap();
         assert!(game.players[0].champion.is_none());
         while matches!(game.decision, Some(Decision::OrderTriggers { .. })) {
-            let action = game.legal_actions()[0].clone();
+            let action = game.legal_actions().unwrap()[0].clone();
             game.apply(action).unwrap();
         }
         assert!(game.chain.iter().any(|item| matches!(

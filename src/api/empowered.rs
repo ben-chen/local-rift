@@ -22,9 +22,19 @@ fn board_object_to_json(source: BoardObject) -> Value {
 }
 
 pub(super) fn contribution_to_json(contribution: &PassiveContribution) -> Value {
+    let mut effect = effect_to_json(contribution.effect);
+    match contribution.effect {
+        PassiveEffect::Might(amount) => effect["amount_exact"] = json!(amount.to_string()),
+        PassiveEffect::Keyword(
+            PassiveKeyword::Assault(amount) | PassiveKeyword::Shield(amount),
+        ) => {
+            effect["amount_exact"] = json!(amount.to_string());
+        }
+        _ => {}
+    }
     json!({"source":board_object_to_json(contribution.source),"card_id":contribution.card_id,
         "rule_index":contribution.rule_index,"active":contribution.active,
-        "effect":effect_to_json(contribution.effect)})
+        "effect":effect})
 }
 
 fn effect_to_json(effect: PassiveEffect) -> Value {

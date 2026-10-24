@@ -89,6 +89,7 @@ fn settle(g: &mut Game) {
             },
             Some(Decision::TriggerTargets { .. }) => g
                 .legal_actions()
+                .unwrap()
                 .into_iter()
                 .find(|a| matches!(a,Action::ChooseTriggerTargets{targets}if !targets.is_empty()))
                 .unwrap_or(Action::ChooseTriggerTargets { targets: vec![] }),
@@ -429,7 +430,7 @@ fn on_play_targets_enforce_mech_another_and_optional_decline() {
     let mech = unit(&mut g, 0, 100, 54, None, false);
     let other = unit(&mut g, 0, 101, 72, None, false);
     play(&mut g, 165);
-    assert!(!g.valid_trigger_target(other, &[]));
+    assert!(!g.valid_trigger_target(other, &[]).unwrap());
     g.apply(Action::ChooseTriggerTargets {
         targets: vec![mech],
     })
@@ -487,7 +488,7 @@ fn implicit_source_fights_and_stun_does_not_invent_vex_movement_lock() {
     g.battlefield_owner[0] = Some(1);
     play(&mut g, 191);
     let source = g.players[0].units[0].id;
-    let might = g.unit_might(&g.players[0].units[0]);
+    let might = g.unit_might(&g.players[0].units[0]).unwrap();
     g.apply(Action::ChooseTriggerTargets {
         targets: vec![enemy],
     })
@@ -528,13 +529,13 @@ fn opponent_bird_and_here_sand_soldier_preserve_owner_and_characteristics() {
     ));
     g.apply(Action::PlaceToken { lane: None }).unwrap();
     let bird = g.players[1].units.iter().find(|u| u.token).unwrap();
-    assert_eq!(g.unit_might(bird), 1);
-    assert_eq!(g.unit_keywords(bird).deflect, 1);
+    assert_eq!(g.unit_might(bird).unwrap(), 1);
+    assert_eq!(g.unit_keywords(bird).unwrap().deflect, 1);
     let mut g = game();
     play(&mut g, 178);
     settle(&mut g);
     let soldier = g.players[0].units.iter().find(|u| u.token).unwrap();
-    assert_eq!(g.unit_might(soldier), 2);
+    assert_eq!(g.unit_might(soldier).unwrap(), 2);
     assert_eq!(soldier.lane, None);
 }
 #[test]
@@ -750,7 +751,7 @@ fn hidden_optional_target_rechecks_source_existence_before_bouncing() {
         targets: vec![],
     })
     .unwrap();
-    assert!(!g.valid_trigger_target(outside, &[]));
+    assert!(!g.valid_trigger_target(outside, &[]).unwrap());
     g.apply(Action::ChooseTriggerTargets {
         targets: vec![friend],
     })

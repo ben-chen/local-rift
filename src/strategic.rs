@@ -11,72 +11,80 @@ const FOLLOWUP_LIMIT: usize = 10;
 const SETTLE_LIMIT: usize = 48;
 
 impl Game {
-    pub(super) fn choose_strategic_action(&self) -> Action {
-        // A suspended transaction retains its rollback snapshot. Follow the
-        // public-resource witness rather than resampling only half that state.
-        if self.payment_plan.is_some() || !self.resource_frames.is_empty() {
-            return self.choose_heuristic_action();
-        }
-        if self.ai_steps_this_turn >= 160 && !self.in_window() && self.decision.is_none() {
-            return Action::EndTurn;
-        }
-        let actor = self.priority();
-        let belief = self.strategic_belief(actor);
-        let mut choices: Vec<_> = belief
-            .strategic_candidates(ROOT_LIMIT)
-            .into_iter()
-            .filter_map(|action| {
-                let mut result = belief.clone();
-                result.apply(action.clone()).ok()?;
-                result.strategic_settle(belief.turn);
-                // Compare EndTurn at the same horizon as other actions. Letting
-                // only this candidate include the opponent's next Hold would
-                // reward pointless actions merely for postponing those points.
-                let score = if action == Action::EndTurn {
-                    belief.strategic_value(actor)
-                } else {
-                    result.strategic_value(actor)
-                } - action_penalty(&action);
-                Some((score, action, result))
-            })
-            .collect();
-        choices.sort_by_key(|choice| std::cmp::Reverse(choice.0));
-        // A second own action catches sequences such as ready-then-attack or
-        // resource-ability-then-play. The small beam bounds UI work per choice.
-        for choice in choices.iter_mut().take(2) {
-            let state = &choice.2;
-            if state.winner.is_none()
-                && state.turn == belief.turn
-                && state.priority() == actor
-                && state.decision.is_none()
-                && !state.in_window()
-            {
-                let mut best = choice.0;
-                for next in state.strategic_candidates(FOLLOWUP_LIMIT) {
-                    let mut result = state.clone();
-                    if result.apply(next.clone()).is_ok() {
-                        result.strategic_settle(belief.turn);
-                        best = best.max(
-                            (if next == Action::EndTurn {
-                                state.strategic_value(actor)
-                            } else {
-                                result.strategic_value(actor)
-                            }) - action_penalty(&choice.1)
-                                - action_penalty(&next),
-                        );
-                    }
-                }
-                choice.0 = (choice.0 * 2 + best) / 3;
+    pub(super) fn choose_strategic_action(&self) -> Result<Action, String> {
+        Ok({
+            // A suspended transaction retains its rollback snapshot. Follow the
+            // public-resource witness rather than resampling only half that state.
+            if self.payment_plan.is_some() || !self.resource_frames.is_empty() {
+                return self.choose_heuristic_action();
             }
-        }
-        choices.sort_by_key(|choice| std::cmp::Reverse(choice.0));
-        choices
-            .into_iter()
-            .map(|(_, action, _)| action)
-            // The belief state is hypothetical; the final action still goes
-            // through the exact engine's legality checks on the live position.
-            .find(|action| self.clone().apply(action.clone()).is_ok())
-            .unwrap_or_else(|| self.choose_heuristic_action())
+            if self.ai_steps_this_turn >= 160 && !self.in_window() && self.decision.is_none() {
+                return Ok(Action::EndTurn);
+            }
+            let actor = self.priority();
+            let belief = self.strategic_belief(actor);
+            let mut choices: Vec<_> = belief
+                .strategic_candidates(ROOT_LIMIT)?
+                .into_iter()
+                .filter_map(|action| {
+                    let mut result = belief.clone();
+                    result.apply(action.clone()).ok()?;
+                    result.strategic_settle(belief.turn).ok()?;
+                    // Compare EndTurn at the same horizon as other actions. Letting
+                    // only this candidate include the opponent's next Hold would
+                    // reward pointless actions merely for postponing those points.
+                    let score = if action == Action::EndTurn {
+                        belief.strategic_value(actor).ok()?
+                    } else {
+                        result.strategic_value(actor).ok()?
+                    } - action_penalty(&action);
+                    Some((score, action, result))
+                })
+                .collect();
+            choices.sort_by_key(|choice| std::cmp::Reverse(choice.0));
+            // A second own action catches sequences such as ready-then-attack or
+            // resource-ability-then-play. The small beam bounds UI work per choice.
+            for choice in choices.iter_mut().take(2) {
+                let state = &choice.2;
+                if state.winner.is_none()
+                    && state.turn == belief.turn
+                    && state.priority() == actor
+                    && state.decision.is_none()
+                    && !state.in_window()
+                {
+                    let mut best = choice.0;
+                    for next in state.strategic_candidates(FOLLOWUP_LIMIT)? {
+                        let mut result = state.clone();
+                        if result.apply(next.clone()).is_ok() {
+                            if result.strategic_settle(belief.turn).is_err() {
+                                continue;
+                            }
+                            best = best.max(
+                                (if next == Action::EndTurn {
+                                    state.strategic_value(actor)?
+                                } else {
+                                    match result.strategic_value(actor) {
+                                        Ok(value) => value,
+                                        Err(_) => continue,
+                                    }
+                                }) - action_penalty(&choice.1)
+                                    - action_penalty(&next),
+                            );
+                        }
+                    }
+                    choice.0 = (choice.0 * 2 + best) / 3;
+                }
+            }
+            choices.sort_by_key(|choice| std::cmp::Reverse(choice.0));
+            choices
+                .into_iter()
+                .map(|(_, action, _)| action)
+                // The belief state is hypothetical; the final action still goes
+                // through the exact engine's legality checks on the live position.
+                .find(|action| self.clone().apply(action.clone()).is_ok())
+                .map(Ok)
+                .unwrap_or_else(|| self.choose_heuristic_action())?
+        })
     }
 
     fn strategic_belief(&self, actor: usize) -> Self {
@@ -162,197 +170,224 @@ impl Game {
         state
     }
 
-    fn strategic_candidates(&self, limit: usize) -> Vec<Action> {
-        let actor = self.priority();
-        let mut candidates = vec![self.choose_heuristic_action()];
-        candidates.extend(self.legal_actions().into_iter().filter(|action| {
+    fn strategic_candidates(&self, limit: usize) -> Result<Vec<Action>, String> {
+        Ok({
+            let actor = self.priority();
+            let mut candidates = vec![self.choose_heuristic_action()?];
+            candidates.extend(self.legal_actions()?.into_iter().filter(|action| {
             !matches!(
                 action,
                 Action::ActivateRune { .. } | Action::RecycleRune { .. }
             ) && !matches!(action,Action::ActivateLegend{target} if self.legend_ai_score(actor,*target).is_none())
         }));
-        if self.decision.is_none() {
-            for (hand_index, &id) in self.players[actor].hand.iter().enumerate() {
-                for lane in [None, Some(0), Some(1)] {
-                    if self.validate_play_structure(id, lane).is_err() {
-                        continue;
-                    }
-                    candidates.push(Action::PlayCard {
-                        hand_index,
-                        lane,
-                        target: None,
-                    });
-                    let (_, required) = rules::target_bounds(id);
-                    let valid: Vec<_> = self
-                        .card_target_candidates(actor, id, lane, &[])
-                        .into_iter()
-                        .take(8)
-                        .collect();
-                    let mut target_sets = Vec::new();
-                    if let Ok(default) = self.prepare_targets(actor, id, lane, &[]) {
-                        target_sets.push(default);
-                    }
-                    for &target in &valid {
-                        if required <= 1 {
-                            target_sets.push(vec![target]);
-                        } else {
-                            for other in self.card_target_candidates(actor, id, lane, &[target]) {
-                                target_sets.push(vec![target, other]);
+            if self.decision.is_none() {
+                for (hand_index, &id) in self.players[actor].hand.iter().enumerate() {
+                    for lane in [None, Some(0), Some(1)] {
+                        if self.validate_play_structure(id, lane).is_err() {
+                            continue;
+                        }
+                        candidates.push(Action::PlayCard {
+                            hand_index,
+                            lane,
+                            target: None,
+                        });
+                        let (_, required) = rules::target_bounds(id);
+                        let valid: Vec<_> = self
+                            .card_target_candidates(actor, id, lane, &[])?
+                            .into_iter()
+                            .take(8)
+                            .collect();
+                        let mut target_sets = Vec::new();
+                        if let Ok(default) = self.prepare_targets(actor, id, lane, &[]) {
+                            target_sets.push(default);
+                        }
+                        for &target in &valid {
+                            if required <= 1 {
+                                target_sets.push(vec![target]);
+                            } else {
+                                for other in
+                                    self.card_target_candidates(actor, id, lane, &[target])?
+                                {
+                                    target_sets.push(vec![target, other]);
+                                }
+                            }
+                        }
+                        target_sets.dedup();
+                        target_sets.truncate(12);
+                        for selected in &target_sets {
+                            candidates.push(Action::PlayCardWithTargets {
+                                hand_index,
+                                lane,
+                                targets: selected.clone(),
+                            });
+                            if rules::accelerate_cost(id).is_some()
+                                || rules::repeat_cost(id).is_some()
+                                || id == 29
+                            {
+                                let repeated = if rules::repeat_cost(id).is_some() {
+                                    // Repeating on the same object can flip a fight;
+                                    // separate targets can save or remove two units.
+                                    std::iter::once(selected.clone())
+                                        .chain(
+                                            target_sets
+                                                .iter()
+                                                .filter(|other| *other != selected)
+                                                .take(2)
+                                                .cloned(),
+                                        )
+                                        .collect::<Vec<_>>()
+                                } else {
+                                    vec![Vec::new()]
+                                };
+                                for repeat_targets in repeated {
+                                    candidates.push(Action::PlayCardOptions {
+                                        hand_index,
+                                        lane,
+                                        targets: selected.clone(),
+                                        repeat_targets,
+                                        repeat: rules::repeat_cost(id).is_some(),
+                                        accelerate: rules::accelerate_cost(id).is_some(),
+                                        bonus: id == 29,
+                                    });
+                                }
                             }
                         }
                     }
-                    target_sets.dedup();
-                    target_sets.truncate(12);
-                    for selected in &target_sets {
-                        candidates.push(Action::PlayCardWithTargets {
-                            hand_index,
-                            lane,
-                            targets: selected.clone(),
-                        });
-                        if rules::accelerate_cost(id).is_some()
-                            || rules::repeat_cost(id).is_some()
-                            || id == 29
-                        {
-                            let repeated = if rules::repeat_cost(id).is_some() {
-                                // Repeating on the same object can flip a fight;
-                                // separate targets can save or remove two units.
-                                std::iter::once(selected.clone())
-                                    .chain(
-                                        target_sets
-                                            .iter()
-                                            .filter(|other| *other != selected)
-                                            .take(2)
-                                            .cloned(),
-                                    )
-                                    .collect::<Vec<_>>()
-                            } else {
-                                vec![Vec::new()]
-                            };
-                            for repeat_targets in repeated {
-                                candidates.push(Action::PlayCardOptions {
-                                    hand_index,
-                                    lane,
-                                    targets: selected.clone(),
-                                    repeat_targets,
-                                    repeat: rules::repeat_cost(id).is_some(),
-                                    accelerate: rules::accelerate_cost(id).is_some(),
-                                    bonus: id == 29,
+                }
+                if !self.in_window() {
+                    let mut ready: Vec<_> = self.players[actor]
+                        .units
+                        .iter()
+                        .filter(|unit| {
+                            unit.ready
+                                && unit.lane.is_none()
+                                && !self.movement_locks.contains(&(actor, unit.id))
+                        })
+                        .collect();
+                    let mut keyed = ready
+                        .iter()
+                        .map(|&u| Ok((self.unit_might(u)?, u.id, u)))
+                        .collect::<Result<Vec<_>, String>>()?;
+                    keyed.sort_by_key(|&(might, id, _)| (might, id));
+                    ready = keyed.into_iter().map(|(_, _, u)| u).collect();
+                    for lane in 0..BATTLEFIELDS {
+                        for count in 2..=ready.len().min(8) {
+                            for group in [&ready[..count], &ready[ready.len() - count..]] {
+                                candidates.push(Action::MoveGroup {
+                                    unit_ids: group.iter().map(|unit| unit.id).collect(),
+                                    lane: Some(lane),
                                 });
                             }
                         }
                     }
                 }
             }
-            if !self.in_window() {
-                let mut ready: Vec<_> = self.players[actor]
-                    .units
-                    .iter()
-                    .filter(|unit| {
-                        unit.ready
-                            && unit.lane.is_none()
-                            && !self.movement_locks.contains(&(actor, unit.id))
-                    })
-                    .collect();
-                ready.sort_by_key(|unit| (self.unit_might(unit), unit.id));
-                for lane in 0..BATTLEFIELDS {
-                    for count in 2..=ready.len().min(8) {
-                        for group in [&ready[..count], &ready[ready.len() - count..]] {
-                            candidates.push(Action::MoveGroup {
-                                unit_ids: group.iter().map(|unit| unit.id).collect(),
-                                lane: Some(lane),
-                            });
+            candidates.extend(self.canonical_play_candidates(32)?);
+            let mut unique = Vec::new();
+            for action in candidates {
+                if !unique.contains(&action) && self.clone().apply(action.clone()).is_ok() {
+                    unique.push(action);
+                }
+            }
+            // Rank cheaply before deeper resolution, retaining pass/end-turn as
+            // meaningful choices even when many spell target combinations exist.
+            let mut ranked = unique
+                .into_iter()
+                .map(|action| {
+                    let score = match &action {
+                        Action::WithPlayChoices { .. } => self.canonical_action_score(&action)?,
+                        Action::Move { .. } | Action::MoveGroup { .. } => 150,
+                        Action::EndTurn | Action::Pass => 145,
+                        Action::PlayCard { hand_index, .. }
+                        | Action::PlayCardWithTargets { hand_index, .. }
+                        | Action::PlayCardOptions { hand_index, .. } => {
+                            self.ai_card_score(self.players[actor].hand[*hand_index])?
                         }
-                    }
-                }
-            }
-        }
-        candidates.extend(self.canonical_play_candidates(32));
-        let mut unique = Vec::new();
-        for action in candidates {
-            if !unique.contains(&action) && self.clone().apply(action.clone()).is_ok() {
-                unique.push(action);
-            }
-        }
-        // Rank cheaply before deeper resolution, retaining pass/end-turn as
-        // meaningful choices even when many spell target combinations exist.
-        unique.sort_by_key(|action| {
-            std::cmp::Reverse(match action {
-                Action::WithPlayChoices { .. } => self.canonical_action_score(action),
-                Action::Move { .. } | Action::MoveGroup { .. } => 150,
-                Action::EndTurn | Action::Pass => 145,
-                Action::PlayCard { hand_index, .. }
-                | Action::PlayCardWithTargets { hand_index, .. }
-                | Action::PlayCardOptions { hand_index, .. } => {
-                    self.ai_card_score(self.players[actor].hand[*hand_index])
-                }
-                _ => 110,
-            })
-        });
-        unique.truncate(limit);
-        unique
+                        _ => 110,
+                    };
+                    Ok((score, action))
+                })
+                .collect::<Result<Vec<_>, String>>()?;
+            ranked.sort_by_key(|(score, _)| std::cmp::Reverse(*score));
+            let mut unique: Vec<_> = ranked.into_iter().map(|(_, a)| a).collect();
+            unique.truncate(limit);
+            unique
+        })
     }
 
-    fn strategic_settle(&mut self, starting_turn: u32) {
+    fn strategic_settle(&mut self, starting_turn: u32) -> Result<(), String> {
         for _ in 0..SETTLE_LIMIT {
             if self.winner.is_some() || self.turn != starting_turn {
                 break;
             }
             let action = if self.decision.is_some() {
-                self.choose_heuristic_action()
+                self.choose_heuristic_action()?
             } else if self.in_window() {
                 Action::Pass
             } else {
                 break;
             };
-            if self.apply(action).is_err() {
+            if let Err(error) = self.apply(action) {
+                // This is a disposable rollout, but a capacity-limited branch
+                // must be discarded rather than scored as a settled position.
+                if crate::numeric::is_capacity(&error) {
+                    return Err(error);
+                }
                 break;
             }
         }
+
+        Ok(())
     }
 
-    fn strategic_value(&self, actor: usize) -> i32 {
-        if let Some(winner) = self.winner {
-            return if winner == actor {
-                1_000_000
-            } else {
-                -1_000_000
-            };
-        }
-        let side = |owner: usize| {
-            let player = &self.players[owner];
-            let mut value = player.score as i32 * 1200
-                + player.hand.len().min(9) as i32 * 30
-                + player.total_runes() as i32 * 24
-                + player.energy as i32 * 2;
-            for unit in &player.units {
-                let might = self.unit_might(unit) as i32;
-                value += 34 + might * 14 + i32::from(unit.ready) * 12 - unit.damage as i32 * 3;
-                // Temporary Might only earns its full value when it changes a
-                // resolved fight; otherwise it will expire without lasting gain.
-                let mut lasting = unit.clone();
-                lasting.temporary_buff = 0;
-                value -= (might - self.unit_might(&lasting) as i32) * 13;
+    fn strategic_value(&self, actor: usize) -> Result<i128, String> {
+        Ok({
+            if let Some(winner) = self.winner {
+                return Ok(if winner == actor {
+                    1_000_000
+                } else {
+                    -1_000_000
+                });
             }
-            for gear in &player.gear {
-                value += 22
-                    + self.catalog[gear.card_id].cost as i32 * 5
-                    + i32::from(gear.attached_to.is_some()) * 8;
-            }
-            for lane in 0..BATTLEFIELDS {
-                if self.battlefield_owner[lane] == Some(owner) && self.lane_count(owner, lane) > 0 {
-                    let defending = self.lane_might(owner, lane) as i32;
-                    let threat: i32 = self.players[1 - owner]
-                        .units
-                        .iter()
-                        .filter(|unit| unit.lane.is_none() || self.unit_keywords(unit).ganking)
-                        .map(|unit| self.unit_might(unit) as i32)
-                        .sum();
-                    value += 260 + (defending - threat).clamp(-10, 10) * 8;
+            let side = |owner: usize| -> Result<i128, String> {
+                let player = &self.players[owner];
+                let mut value = player.score as i128 * 1200
+                    + player.hand.len().min(9) as i128 * 30
+                    + player.total_runes() as i128 * 24
+                    + player.energy as i128 * 2;
+                for unit in &player.units {
+                    let might = self.unit_might(unit)? as i128;
+                    value +=
+                        34 + might * 14 + i128::from(unit.ready) * 12 - unit.damage as i128 * 3;
+                    // Temporary Might only earns its full value when it changes a
+                    // resolved fight; otherwise it will expire without lasting gain.
+                    let mut lasting = unit.clone();
+                    lasting.temporary_buff = 0;
+                    value -= (might - self.unit_might(&lasting)? as i128) * 13;
                 }
-            }
-            value
-        };
-        side(actor) - side(1 - actor)
+                for gear in &player.gear {
+                    value += 22
+                        + self.catalog[gear.card_id].cost as i128 * 5
+                        + i128::from(gear.attached_to.is_some()) * 8;
+                }
+                for lane in 0..BATTLEFIELDS {
+                    if self.battlefield_owner[lane] == Some(owner)
+                        && self.lane_count(owner, lane) > 0
+                    {
+                        let defending = self.lane_might(owner, lane)? as i128;
+                        let mut threat = 0_i128;
+                        for unit in &self.players[1 - owner].units {
+                            if unit.lane.is_none() || self.unit_keywords(unit)?.ganking {
+                                threat += i128::from(self.unit_might(unit)?);
+                            }
+                        }
+                        value += 260 + (defending - threat).clamp(-10, 10) * 8;
+                    }
+                }
+                Ok(value)
+            };
+            side(actor)? - side(1 - actor)?
+        })
     }
 }
 
@@ -390,7 +425,7 @@ fn scrub_queued_look(decision: &mut Decision, players: &[PlayerState; 2]) {
     }
 }
 
-fn action_penalty(action: &Action) -> i32 {
+fn action_penalty(action: &Action) -> i128 {
     match action {
         Action::Pass | Action::EndTurn => 0,
         Action::ActivateGear { .. }
@@ -432,8 +467,8 @@ mod tests {
         second.players[1].rune_deck.reverse();
         second.rng = Rng::new(987654);
         assert_eq!(
-            first.choose_strategic_action(),
-            second.choose_strategic_action()
+            first.choose_strategic_action().unwrap(),
+            second.choose_strategic_action().unwrap()
         );
     }
 
@@ -445,7 +480,7 @@ mod tests {
         game.scored_this_turn[1] = true;
         let id = game.create_unit(0, 2, false, 0);
         game.players[0].units[0].ready = true;
-        let action = game.choose_strategic_action();
+        let action = game.choose_strategic_action().unwrap();
         assert_eq!(
             action,
             Action::Move {
@@ -454,7 +489,7 @@ mod tests {
             }
         );
         game.apply(action).unwrap();
-        game.strategic_settle(game.turn);
+        game.strategic_settle(game.turn).unwrap();
         assert_eq!(game.winner, Some(0));
     }
 
@@ -468,7 +503,7 @@ mod tests {
             game.players[1].units[lane].lane = Some(lane);
             game.battlefield_owner[lane] = Some(1);
         }
-        assert_eq!(game.choose_strategic_action(), Action::EndTurn);
+        assert_eq!(game.choose_strategic_action().unwrap(), Action::EndTurn);
     }
 
     #[test]
@@ -479,7 +514,7 @@ mod tests {
         game.players[0].energy_pool = 8;
         game.create_unit(0, 72, false, 0);
         game.create_unit(1, 72, false, 0);
-        assert_eq!(game.choose_strategic_action(), Action::EndTurn);
+        assert_eq!(game.choose_strategic_action().unwrap(), Action::EndTurn);
     }
 
     #[test]
@@ -498,7 +533,7 @@ mod tests {
             lane: Some(0),
         })
         .unwrap();
-        let action = game.choose_strategic_action();
+        let action = game.choose_strategic_action().unwrap();
         assert!(
             matches!(
                 action,
@@ -507,7 +542,7 @@ mod tests {
             "{action:?}"
         );
         game.apply(action).unwrap();
-        game.strategic_settle(game.turn);
+        game.strategic_settle(game.turn).unwrap();
         assert!(game.players[1].units.is_empty());
         assert_eq!(game.players[0].units.len(), 1);
         assert_eq!(game.battlefield_owner[0], Some(0));
@@ -529,14 +564,14 @@ mod tests {
             lane: Some(0),
         })
         .unwrap();
-        let action = game.choose_strategic_action();
+        let action = game.choose_strategic_action().unwrap();
         assert!(
             matches!(&action, Action::PlayCardOptions { repeat: true, .. })
                 || matches!(&action, Action::WithPlayChoices { choices, .. } if !choices.repeats.is_empty()),
             "{action:?}"
         );
         game.apply(action).unwrap();
-        game.strategic_settle(game.turn);
+        game.strategic_settle(game.turn).unwrap();
         assert!(game.players[1].units.is_empty());
         assert_eq!(game.players[0].units.len(), 1);
         assert_eq!(game.battlefield_owner[0], Some(0));
@@ -598,8 +633,8 @@ mod tests {
             format!("{:?}", b.pending_triggers)
         );
         assert_eq!(
-            first.choose_strategic_action(),
-            second.choose_strategic_action()
+            first.choose_strategic_action().unwrap(),
+            second.choose_strategic_action().unwrap()
         );
     }
 

@@ -300,7 +300,7 @@ fn repeated_token_instructions_finish_the_physical_spell_before_any_token_enters
         game.players[0]
             .units
             .iter()
-            .all(|u| u.token && game.unit_might(u) == 2)
+            .all(|u| u.token && game.unit_might(u).unwrap() == 2)
     );
 }
 

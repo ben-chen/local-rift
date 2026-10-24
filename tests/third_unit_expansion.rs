@@ -77,11 +77,14 @@ fn shield_is_defender_might_and_does_not_change_assignment_priority() {
     ] {
         let mut g = position();
         g.players[0].units.push(unit(100, id, Some(0)));
-        let base = g.catalog[id].might;
-        assert_eq!(g.unit_might(&g.players[0].units[0]), base);
-        assert_eq!(g.unit_keywords(&g.players[0].units[0]).shield, shield);
+        let base = u64::from(g.catalog[id].might);
+        assert_eq!(g.unit_might(&g.players[0].units[0]).unwrap(), base);
         assert_eq!(
-            g.damage_priority(&g.players[0].units[0]),
+            g.unit_keywords(&g.players[0].units[0]).unwrap().shield,
+            shield
+        );
+        assert_eq!(
+            g.damage_priority(&g.players[0].units[0]).unwrap(),
             if tank { 0 } else { 1 }
         );
         g.showdown = Some(Showdown {
@@ -92,16 +95,16 @@ fn shield_is_defender_might_and_does_not_change_assignment_priority() {
             combat: false,
         });
         assert_eq!(
-            g.unit_might(&g.players[0].units[0]),
+            g.unit_might(&g.players[0].units[0]).unwrap(),
             base,
             "neutral showdown isn't defense"
         );
         g.showdown.as_mut().unwrap().combat = true;
-        assert_eq!(g.unit_might(&g.players[0].units[0]), base + shield);
+        assert_eq!(g.unit_might(&g.players[0].units[0]).unwrap(), base + shield);
         g.showdown.as_mut().unwrap().attacker = 0;
         assert_eq!(
-            g.unit_might(&g.players[0].units[0]),
-            base + g.unit_keywords(&g.players[0].units[0]).assault
+            g.unit_might(&g.players[0].units[0]).unwrap(),
+            base + g.unit_keywords(&g.players[0].units[0]).unwrap().assault
         );
     }
 }
@@ -118,7 +121,7 @@ fn shield_counts_toward_lethal_damage_assignment() {
         passes: 0,
         combat: true,
     });
-    g.players[0].units[0].temporary_buff = 4 - g.catalog[72].might as i16;
+    g.players[0].units[0].temporary_buff = 4 - i64::from(g.catalog[72].might);
     resolve(&mut g);
     assert!(matches!(
         g.decision,
@@ -203,8 +206,8 @@ fn appended_targeted_play_triggers_choose_after_entry_and_allow_self() {
         assert_eq!(g.players[0].units[0].temporary_buff, 0);
         resolve(&mut g);
         let expected =
-            (g.catalog[id].might as i16 + amount).max(if id == 146 { 1 } else { 0 }) as u8;
-        assert_eq!(g.unit_might(&g.players[0].units[0]), expected);
+            (g.catalog[id].might as i16 + amount).max(if id == 146 { 1 } else { 0 }) as u64;
+        assert_eq!(g.unit_might(&g.players[0].units[0]).unwrap(), expected);
     }
 }
 
@@ -299,7 +302,7 @@ fn appended_here_tokens_follow_live_source_and_keep_distinct_token_identity() {
         assert_eq!(token.lane, Some(0));
         assert_eq!(token.card_id, id);
         assert_eq!(
-            g.unit_keywords(token).deflect,
+            g.unit_keywords(token).unwrap().deflect,
             if id == 148 { 1 } else { 0 }
         );
         assert!(g.players[0].units.iter().any(|u| u.id == source));
@@ -357,7 +360,7 @@ fn appended_deathknells_use_pending_gold_and_bird_factories() {
         } else {
             let bird = &g.players[0].units[0];
             assert!(bird.token && bird.lane.is_none());
-            assert_eq!(g.unit_keywords(bird).deflect, 1);
+            assert_eq!(g.unit_keywords(bird).unwrap().deflect, 1);
         }
     }
 }

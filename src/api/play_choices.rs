@@ -81,7 +81,7 @@ pub(super) fn plan_to_json(plan: &CostPlanView) -> Value {
     json!({"components":plan.components.iter().map(|component|json!({"id":component.id.to_string(),
         "label":component.label,"cost":cost_to_json(&component.cost),"optional":component.optional})).collect::<Vec<_>>(),
         "modifiers":plan.modifiers.iter().map(|modifier|json!({"id":modifier.id.to_string(),"label":modifier.label,
-            "source":chain_source_to_json(modifier.source),"energy":modifier.energy,
+            "source":chain_source_to_json(modifier.source),"energy":modifier.energy,"energy_exact":modifier.energy.to_string(),
             "power":modifier.power,"minimum_energy":modifier.minimum_energy,
             "choose_energy_or_power":modifier.choose_energy_or_power,"increase":modifier.increase,
             "scope":match &modifier.scope {CostScope::Total=>json!({"type":"total"}),

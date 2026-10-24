@@ -120,7 +120,7 @@ fn switcheroo_uses_actual_negative_might_when_computing_its_modifiers() {
     })
     .unwrap();
     finish_chain(&mut game);
-    assert_eq!(game.unit_might(&game.players[0].units[0]), 0); // Actual -7.
+    assert_eq!(game.unit_might(&game.players[0].units[0]).unwrap(), 0); // Actual -7.
     game.apply(Action::PlayCardWithTargets {
         hand_index: 0,
         lane: None,
@@ -137,8 +137,8 @@ fn switcheroo_uses_actual_negative_might_when_computing_its_modifiers() {
     })
     .unwrap();
     finish_chain(&mut game);
-    assert_eq!(game.unit_might(&game.players[0].units[0]), 10);
-    assert_eq!(game.unit_might(&game.players[0].units[1]), 0); // Actual -7 now.
+    assert_eq!(game.unit_might(&game.players[0].units[0]).unwrap(), 10);
+    assert_eq!(game.unit_might(&game.players[0].units[1]).unwrap(), 0); // Actual -7 now.
     game.apply(Action::PlayCardWithTargets {
         hand_index: 0,
         lane: None,
@@ -150,7 +150,7 @@ fn switcheroo_uses_actual_negative_might_when_computing_its_modifiers() {
     .unwrap();
     finish_chain(&mut game);
     assert_eq!(
-        game.unit_might(&game.players[0].units[1]),
+        game.unit_might(&game.players[0].units[1]).unwrap(),
         0,
         "+7 must only erase the -7 deficit"
     );

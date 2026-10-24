@@ -144,7 +144,7 @@ fn consumed_chosen_gold_cannot_be_retargeted_and_failed_payment_rolls_back() {
     let pending = format!("{game:?}");
     assert!(game.apply(Action::CompletePayment).is_err());
     assert_eq!(format!("{game:?}"), pending, "failed completion is atomic");
-    assert!(game.can_cancel_payment());
+    assert!(game.can_cancel_payment().unwrap());
     game.apply(Action::Choose { accept: false }).unwrap();
     assert_eq!(
         format!("{game:?}"),
@@ -174,7 +174,7 @@ fn failed_attempt_restores_original_mandatory_choice_and_in_payment_sources() {
     game.apply(Action::ActivateGear { gear_id: 901 }).unwrap();
     assert_eq!(game.players[0].energy, 1);
     assert!(game.apply(Action::CompletePayment).is_err());
-    assert!(game.can_cancel_payment());
+    assert!(game.can_cancel_payment().unwrap());
     game.apply(Action::Choose { accept: false }).unwrap();
     assert_eq!(format!("{game:?}"), before);
     assert!(matches!(game.decision, Some(Decision::CounterTax { .. })));
@@ -211,7 +211,7 @@ fn malformed_begin_and_exact_budget_errors_preserve_the_whole_transaction() {
     assert!(complete_with_any(&mut game, 2).is_err());
     assert_eq!(format!("{game:?}"), funded);
     assert!(
-        !game.can_cancel_payment(),
+        !game.can_cancel_payment().unwrap(),
         "a fully payable selected action must finish"
     );
     complete_with_any(&mut game, 1).unwrap();
@@ -377,7 +377,7 @@ fn trash_variable_discount_is_fixed_after_the_card_leaves_its_source() {
         u32::from(game.catalog[40].cost - 2),
         "Rhasa does not discount itself in trash"
     );
-    assert!(game.can_cancel_payment());
+    assert!(game.can_cancel_payment().unwrap());
     game.apply(Action::Choose { accept: false }).unwrap();
     assert_eq!(format!("{game:?}"), before);
 }

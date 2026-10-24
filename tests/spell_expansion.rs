@@ -79,12 +79,12 @@ fn smoke_screen_reduces_might_to_one_and_expires_at_turn_end() {
     game.players[0].hand = vec![81];
     game.players[1].units.push(unit(100, 72, None)); // 3 Might.
     cast(&mut game, 81, vec![target(1, 100)]).unwrap();
-    assert_eq!(game.unit_might(&game.players[1].units[0]), 3);
+    assert_eq!(game.unit_might(&game.players[1].units[0]).unwrap(), 3);
     settle(&mut game);
-    assert_eq!(game.unit_might(&game.players[1].units[0]), 1);
+    assert_eq!(game.unit_might(&game.players[1].units[0]).unwrap(), 1);
     assert_eq!(game.players[1].units[0].temporary_buff, -2);
     game.apply(Action::EndTurn).unwrap();
-    assert_eq!(game.unit_might(&game.players[1].units[0]), 3);
+    assert_eq!(game.unit_might(&game.players[1].units[0]).unwrap(), 3);
 }
 
 #[test]
@@ -184,7 +184,7 @@ fn back_to_back_requires_two_friendly_targets_and_resolves_surviving_target() {
     cast(&mut game, 11, vec![target(0, 100)]).unwrap();
     settle(&mut game);
     assert_eq!(game.players[0].units.len(), 1);
-    assert_eq!(game.unit_might(&game.players[0].units[0]), 12);
+    assert_eq!(game.unit_might(&game.players[0].units[0]).unwrap(), 12);
 }
 
 #[test]
@@ -328,7 +328,11 @@ fn recruit_vanguard_chooses_four_legal_locations_then_plays_exhausted_one_might_
     let tokens: Vec<_> = game.players[0].units.iter().filter(|u| u.token).collect();
     assert_eq!(tokens.len(), 4);
     assert_eq!(tokens.iter().filter(|u| u.lane == Some(0)).count(), 2);
-    assert!(tokens.iter().all(|u| !u.ready && game.unit_might(u) == 1));
+    assert!(
+        tokens
+            .iter()
+            .all(|u| !u.ready && game.unit_might(u).unwrap() == 1)
+    );
     assert!(tokens.iter().all(|u| game.unit_name(u) == "Recruit token"));
     assert_eq!(game.players[0].discard, vec![87]);
 }

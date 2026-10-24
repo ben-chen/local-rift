@@ -146,7 +146,7 @@ fn both_seats_observe_live_rune_xp_and_distinct_attached_sword_contributions() {
             assert!(yi["passive_contributions"].as_array().unwrap().iter().any(
                 |effect| effect["source"] == json!({"type":"gear","player":0,"gear_id":id})
                     && effect["active"] == true
-                    && effect["effect"] == json!({"type":"might","amount":1})
+                    && effect["effect"] == json!({"type":"might","amount":1,"amount_exact":"1"})
             ));
         }
         assert_eq!(view["players"][0]["units"][1]["might"], 6);
@@ -203,7 +203,7 @@ fn hunt_observations_capture_one_sum_and_a_truthful_bearer_source() {
         let mut session = position();
         let mut bearer = unit(900, card_id, None);
         bearer.token = token;
-        bearer.buff = u8::from(token);
+        bearer.buff = u64::from(token);
         session.game.players[0].units.push(bearer);
         for index in 0..copies {
             session.game.players[0]

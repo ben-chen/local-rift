@@ -310,7 +310,7 @@ fn failed_instructed_play_restores_a_reserved_next_spell_grant() {
         g.play_grants.is_empty(),
         "The grant is reserved by the pending spell"
     );
-    assert!(g.can_decline_trash_play());
+    assert!(g.can_decline_trash_play().unwrap());
     g.apply(Action::Choose { accept: false }).unwrap();
     assert_eq!(g.players[0].discard, vec![67]);
     assert_eq!(

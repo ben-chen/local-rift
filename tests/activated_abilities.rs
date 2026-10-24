@@ -165,7 +165,7 @@ fn orb_floor_is_a_resolution_snapshot_not_a_persistent_minimum_or_heal() {
     let orb = gear(&mut g, 100, 231);
     g.apply(ability(orb, 0, vec![target])).unwrap();
     resolve(&mut g);
-    assert_eq!(g.unit_might(&g.players[1].units[0]), 0);
+    assert_eq!(g.unit_might(&g.players[1].units[0]).unwrap(), 0);
     assert_eq!(g.players[1].units[0].temporary_buff, 0);
 }
 
@@ -322,7 +322,7 @@ fn caitlyn_reads_live_might_and_location_condition_is_not_a_resolution_gate() {
         let mut g = position();
         let caitlyn = unit(&mut g, 0, 100, 238, Some(0));
         let target = unit(&mut g, 1, 200, 69, Some(1));
-        assert!(g.unit_keywords(&g.players[0].units[0]).backline);
+        assert!(g.unit_keywords(&g.players[0].units[0]).unwrap().backline);
         g.apply(ability(source(caitlyn), 0, vec![target])).unwrap();
         cast(&mut g, if recall { 9 } else { 7 }, vec![caitlyn]);
         resolve(&mut g);
@@ -462,9 +462,13 @@ fn last_rites_pending_child_cannot_cancel_when_sage_can_fund_its_energy() {
     g.legend[0].ready = false;
     resolve(&mut g);
     assert!(matches!(g.decision, Some(Decision::PendingPlay { .. })));
-    assert!(!g.can_decline_trash_play());
+    assert!(!g.can_decline_trash_play().unwrap());
     rejected(&mut g, Action::Choose { accept: false });
-    assert!(g.legal_actions().contains(&ability(sage, 0, vec![])));
+    assert!(
+        g.legal_actions()
+            .unwrap()
+            .contains(&ability(sage, 0, vec![]))
+    );
     g.apply(ability(sage, 0, vec![])).unwrap();
     g.apply(finalize()).unwrap();
     assert_eq!(g.players[0].energy, 0);
@@ -566,7 +570,7 @@ fn simple_ai_preserves_kingpin_movement_and_avoids_useless_sage_conversion() {
 fn conflicted_combat(two_caitlyns: bool, power: u8) -> Game {
     let mut g = position();
     unit(&mut g, 0, 100, 69, None);
-    g.players[0].units[0].temporary_buff = i16::from(power) - 8;
+    g.players[0].units[0].temporary_buff = i64::from(power) - 8;
     unit(&mut g, 1, 200, 238, Some(0));
     unit(&mut g, 1, 201, 72, Some(0));
     unit(&mut g, 1, 202, if two_caitlyns { 238 } else { 72 }, Some(0));

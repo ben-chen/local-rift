@@ -11,7 +11,7 @@ pub struct SceneUnit {
     /// 0 is the owner's base; 1 and 2 are the two battlefields.
     pub location: usize,
     pub ready: bool,
-    pub might: u8,
+    pub might: local_rift::numeric::Might,
     pub accent: [u8; 3],
 }
 

@@ -102,10 +102,10 @@ fn repeated_buffs_can_choose_different_targets_and_expire() {
     game.apply(cast(true, vec![target(0, 100)], vec![target(0, 101)]))
         .unwrap();
     settle(&mut game);
-    assert_eq!(game.unit_might(&game.players[0].units[0]), 5);
-    assert_eq!(game.unit_might(&game.players[0].units[1]), 5);
+    assert_eq!(game.unit_might(&game.players[0].units[0]).unwrap(), 5);
+    assert_eq!(game.unit_might(&game.players[0].units[1]).unwrap(), 5);
     game.apply(Action::EndTurn).unwrap();
-    assert_eq!(game.unit_might(&game.players[0].units[0]), 3);
+    assert_eq!(game.unit_might(&game.players[0].units[0]).unwrap(), 3);
 }
 
 #[test]
@@ -116,7 +116,7 @@ fn repeated_reduction_has_no_one_might_floor() {
     game.apply(cast(true, vec![target(1, 100)], vec![target(1, 100)]))
         .unwrap();
     settle(&mut game);
-    assert_eq!(game.unit_might(&game.players[1].units[0]), 0);
+    assert_eq!(game.unit_might(&game.players[1].units[0]).unwrap(), 0);
     assert_eq!(game.players[1].units[0].temporary_buff, -4);
 }
 
@@ -146,7 +146,7 @@ fn bonds_requires_two_distinct_friendly_targets_for_each_iteration() {
         game.players[0]
             .units
             .iter()
-            .map(|u| game.unit_might(u))
+            .map(|u| game.unit_might(u).unwrap())
             .collect::<Vec<_>>(),
         vec![4, 5, 4]
     );
@@ -211,5 +211,5 @@ fn iterative_design_flow_requires_mind_and_creates_a_pending_mech() {
     assert!(game.players[0].units.is_empty());
     game.apply(Action::PlaceToken { lane: None }).unwrap();
     assert_eq!(game.unit_name(&game.players[0].units[0]), "Mech token");
-    assert_eq!(game.unit_might(&game.players[0].units[0]), 3);
+    assert_eq!(game.unit_might(&game.players[0].units[0]).unwrap(), 3);
 }

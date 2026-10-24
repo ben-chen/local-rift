@@ -269,7 +269,7 @@ fn shortage_can_be_staged_but_not_paid_and_undo_restores_everything() {
     assert_eq!(g.payment_plan_view(1).unwrap().xp, 2);
     assert!(g.payment_plan_view(1).unwrap().action.is_none());
     rejected(&mut g, Action::CompletePayment);
-    assert!(g.can_cancel_payment());
+    assert!(g.can_cancel_payment().unwrap());
     g.apply(Action::Choose { accept: false }).unwrap();
     assert_eq!(format!("{g:?}"), original);
 }
@@ -349,7 +349,7 @@ fn xp_cost_buff_obeys_ordinary_timing_and_cleanup_after_payment() {
     let t = unit(&mut g, 0, 1000, 345, None);
     unit(&mut g, 0, 1001, 339, None);
     g.players[0].units[1].damage = 3;
-    assert_eq!(g.unit_might(&g.players[0].units[1]), 4);
+    assert_eq!(g.unit_might(&g.players[0].units[1]).unwrap(), 4);
     g.apply(ability(source(t), 0)).unwrap();
     assert_eq!(g.players[0].xp, 1);
     assert!(!g.players[0].units.iter().any(|u| u.id == 1001));
@@ -575,16 +575,16 @@ fn heirloom_play_trigger_uses_exact_gear_identity_then_pays_one_xp_to_equip() {
     };
     let plan = g.cost_plan(&a).unwrap();
     assert_eq!((plan.xp, plan.energy, plan.power.len()), (1, 0, 0));
-    let might = g.unit_might(u(&g, t));
+    let might = g.unit_might(u(&g, t)).unwrap();
     g.apply(Action::WithPowerPayment {
         action: Box::new(a),
         payment: PowerPayment::default(),
     })
     .unwrap();
     assert_eq!(g.players[0].xp, 0);
-    assert_eq!(g.unit_might(u(&g, t)), might);
+    assert_eq!(g.unit_might(u(&g, t)).unwrap(), might);
     resolve(&mut g);
-    assert_eq!(g.unit_might(u(&g, t)), might + 2);
+    assert_eq!(g.unit_might(u(&g, t)).unwrap(), might + 2);
     assert!(g.chain.is_empty());
     assert_eq!(
         g.players[0].xp, 0,

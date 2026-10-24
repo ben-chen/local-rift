@@ -194,7 +194,7 @@ fn conditional_keywords_are_live_and_never_invent_buff_counters() {
         let mut g = position();
         unit(&mut g, 0, 900, card, None);
         let printed = g.catalog[card].might;
-        let before = g.unit_keywords(&g.players[0].units[0]);
+        let before = g.unit_keywords(&g.players[0].units[0]).unwrap();
         assert_eq!(before.assault, 0);
         assert_eq!(before.shield, 0);
         assert!(!before.ganking);
@@ -218,12 +218,12 @@ fn conditional_keywords_are_live_and_never_invent_buff_counters() {
         );
         settle(&mut g);
         let u = &g.players[0].units[0];
-        let k = g.unit_keywords(u);
+        let k = g.unit_keywords(u).unwrap();
         assert_eq!(
             (k.assault, k.shield, k.deflect, k.ganking),
             (assault, shield, deflect, ganking)
         );
-        assert_eq!(g.unit_might(u), printed + bonus);
+        assert_eq!(g.unit_might(u).unwrap(), u64::from(printed + bonus));
         assert_eq!((u.buff, u.temporary_buff), (0, 0));
     }
 }
@@ -242,7 +242,7 @@ fn aura_loss_repeats_simultaneous_cleanup_before_deathknell_finalization() {
     g.players[0].units[1].damage = 4;
     g.players[0].units[2].damage = 3;
     for u in &g.players[0].units {
-        assert!(u.damage < g.unit_might(u));
+        assert!(u.damage < g.unit_might(u).unwrap());
     }
     cast(
         &mut g,
@@ -473,8 +473,8 @@ fn akali_keeps_event_battlefield_after_returning_to_base_and_leaving_board() {
             lane: None,
         })
         .unwrap();
-        assert!(g.valid_trigger_target(victim, &[]));
-        assert!(!g.valid_trigger_target(other, &[]));
+        assert!(g.valid_trigger_target(victim, &[]).unwrap());
+        assert!(!g.valid_trigger_target(other, &[]).unwrap());
         g.apply(Action::ChooseTriggerTargets {
             targets: vec![victim],
         })

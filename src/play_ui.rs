@@ -237,7 +237,7 @@ impl App {
                 .iter()
                 .any(|modifier| !matches!(modifier.source, ChainSource::Card { card_id: 35 }))
     }
-    pub(super) fn sync_play_draft(&mut self) {
+    pub(super) fn sync_play_draft(&mut self) -> Result<(), String> {
         let key = self.selection.zip(self.selected_card_id());
         if self
             .play_draft
@@ -248,11 +248,12 @@ impl App {
         }
         if self.play_draft.is_none()
             && let (Some(key), Some(action)) = (key, self.selected_play_action())
-            && let Ok(view) = self.game.play_choices(&action)
+            && let Some(view) = super::optional_query(self.game.play_choices(&action))?
             && self.extended_choices(&view)
         {
             self.start_play_draft(key, &view);
         }
+        Ok(())
     }
     fn start_play_draft(&mut self, key: (Selection, usize), view: &PlayChoiceView) {
         let mut choices = PlayChoices {
@@ -336,8 +337,8 @@ impl App {
             &mut self.targets
         }
     }
-    pub(super) fn play_choices_button(&mut self) -> bool {
-        self.sync_play_draft();
+    pub(super) fn play_choices_button(&mut self) -> Result<bool, String> {
+        self.sync_play_draft()?;
         if let Some(draft) = &mut self.play_draft {
             let count = draft.choices.repeats.len();
             if self.ui.button(
@@ -357,23 +358,23 @@ impl App {
                 self.hover_card = None;
                 self.hover_rect = None;
             }
-            return true;
+            return Ok(true);
         }
-        false
+        Ok(false)
     }
-    pub(super) fn draw_play_choices_tray(&mut self) -> bool {
+    pub(super) fn draw_play_choices_tray(&mut self) -> Result<bool, String> {
         let Some(mut draft) = self.play_draft.clone().filter(|draft| draft.open) else {
-            return false;
+            return Ok(false);
         };
         let Some(action) = self.selected_play_action() else {
-            return false;
+            return Ok(false);
         };
         let action = Action::WithPlayChoices {
             action: Box::new(strip_options(action)),
             choices: draft.choices.clone(),
         };
-        let Ok(view) = self.game.play_choices(&action) else {
-            return false;
+        let Some(view) = super::optional_query(self.game.play_choices(&action))? else {
+            return Ok(false);
         };
         self.ui.rect(Rect::new(245.0, 687.0, 883.0, 202.0), PANEL);
         self.ui.border(Rect::new(245.0, 687.0, 883.0, 202.0), LINE);
@@ -642,9 +643,9 @@ impl App {
             });
         }
         self.play_draft = Some(draft);
-        true
+        Ok(true)
     }
-    pub(super) fn maybe_review_cost(&mut self, action: &Action) -> bool {
+    pub(super) fn maybe_review_cost(&mut self, action: &Action) -> Result<bool, String> {
         let (base, choices) = match action {
             Action::WithPlayChoices { action, choices } if choices.cost_order.is_empty() => {
                 (action.as_ref().clone(), choices.clone())
@@ -684,7 +685,7 @@ impl App {
                     ..Default::default()
                 };
                 if repeat
-                    && let Ok(view) = self.game.play_choices(action)
+                    && let Some(view) = super::optional_query(self.game.play_choices(action))?
                     && let Some(option) = view.repeats.iter().find(|option| {
                         option.source
                             == (ChainSource::Card {
@@ -702,9 +703,9 @@ impl App {
                 }
                 (strip_options(action.clone()), choices)
             }
-            _ => return false,
+            _ => return Ok(false),
         };
-        if let Ok(plan) = self.game.cost_plan(action)
+        if let Some(plan) = super::optional_query(self.game.cost_plan(action))?
             && (plan
                 .modifiers
                 .iter()
@@ -740,9 +741,9 @@ impl App {
             });
             self.hover_card = None;
             self.hover_rect = None;
-            return true;
+            return Ok(true);
         }
-        false
+        Ok(false)
     }
     pub(super) fn draw_cost_editor(&mut self) {
         let Some(mut editor) = self.cost_editor.take() else {
@@ -887,12 +888,12 @@ impl App {
                 format!("Adds {} energy / {} power", modifier.energy, modifier.power)
             } else if modifier.choose_energy_or_power {
                 format!(
-                    "{scope}: reduce {} energy OR {} power",
+                    "Reduce {} energy OR {} power · {scope}",
                     modifier.energy, modifier.power
                 )
             } else {
                 format!(
-                    "{scope}: reduce {} energy + {} power · min {} energy",
+                    "Reduce {} energy + {} power · min {} energy · {scope}",
                     modifier.energy, modifier.power, modifier.minimum_energy
                 )
             };
@@ -1133,7 +1134,7 @@ impl App {
         card_id: usize,
         remaining: u8,
         fixed_lane: Option<Option<usize>>,
-    ) {
+    ) -> Result<(), String> {
         let name = local_rift::rules::token_spec(card_id).map_or("token", |spec| spec.name);
         let entry_ready = self
             .game
@@ -1145,11 +1146,8 @@ impl App {
             lane: fixed_lane.flatten(),
             accelerate: self.options.accelerate,
         };
-        let accelerate = self
-            .game
-            .play_choices(&base)
-            .ok()
-            .and_then(|view| view.accelerate);
+        let accelerate =
+            super::optional_query(self.game.play_choices(&base))?.and_then(|view| view.accelerate);
         let location = match fixed_lane {
             Some(Some(lane)) => format!("Fixed at field {}.", lane + 1),
             Some(None) => "Fixed at your base.".into(),
@@ -1214,6 +1212,7 @@ impl App {
                 }
             }
         }
+        Ok(())
     }
     pub(super) fn draw_play_effects(&mut self) {
         if !self.show_play_effects {

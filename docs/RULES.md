@@ -224,9 +224,11 @@ The deck library includes the real legends and authored strategy notes. All eigh
 
 ## Remaining fidelity limits
 
-Eight supported legends, eleven battlefield choices, and 334 main-deck cards are available through the four supplied presets and custom deck editor. The latest twenty-six-card expansion preserves all preset and training recipes; add its cards through the custom deck editor where eligible. There is no sideboarding, tournament match structure, multiplayer mode, or full card-set coverage. The presets are dated tournament lists, not a ranking of the current metagame.
+Eight supported legends, eleven battlefield choices, and 349 main-deck cards are available through the four supplied presets and custom deck editor. The additional cards preserve all preset and training recipes; add them through the custom deck editor where eligible. There is no sideboarding, tournament match structure, multiplayer mode, or full card-set coverage. The presets are dated tournament lists, not a ranking of the current metagame.
 
 The desktop and bot API expose exact damage allocations and power-source payments. The default automatic payment remains available; energy can be prepared by exhausting chosen rune domains before a play. These controls share engine validation, but broader card and interaction coverage is still required.
+
+Dynamic Might and damage no longer stop at the previous eight-/sixteen-bit limits. Signed Might and temporary modifiers use signed 64-bit storage; damage and combat pools use unsigned 64-bit storage. References treat negative Might as zero, while calculations retain the signed value. A computation beyond the host's representation returns a capacity error and preserves the attempted action's state. These are finite implementation bounds, not official game-rule maxima. The API supplies exact decimal strings, and the combat editor accepts exact decimal allocations.
 
 Further sequencing and interaction audits are still needed. Tests cover particular official examples and whole-match consistency; they do not establish that every interaction is identical to standard Riftbound. Consult the official reference when preparing for an interaction outside those checked cases.
 

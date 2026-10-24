@@ -469,25 +469,28 @@ impl Game {
             })
             .unwrap_or_default()
     }
-    pub(crate) fn continuous_might_bonus(&self, u: &Unit) -> i16 {
+    pub(crate) fn continuous_might_bonus(&self, u: &Unit) -> Result<i128, String> {
         self.unit_passives(u)
             .iter()
             .filter(|p| p.active)
             .map(|p| match p.effect {
-                PassiveEffect::Might(n) => n,
+                PassiveEffect::Might(n) => i128::from(n),
                 _ => 0,
             })
-            .sum()
+            .try_fold(0_i128, |sum, n| {
+                sum.checked_add(n)
+                    .ok_or_else(|| crate::numeric::capacity("continuous Might"))
+            })
     }
-    pub(crate) fn continuous_keywords(&self, u: &Unit) -> UnitKeywords {
+    pub(crate) fn continuous_keywords(&self, u: &Unit) -> Result<UnitKeywords, String> {
         let mut out = UnitKeywords::default();
         for p in self.unit_passives(u).into_iter().filter(|p| p.active) {
             match p.effect {
                 PassiveEffect::Keyword(PassiveKeyword::Assault(n)) => {
-                    out.assault = out.assault.saturating_add(n)
+                    out.assault = crate::numeric::add_u64(out.assault, u64::from(n), "assault")?
                 }
                 PassiveEffect::Keyword(PassiveKeyword::Shield(n)) => {
-                    out.shield = out.shield.saturating_add(n)
+                    out.shield = crate::numeric::add_u64(out.shield, u64::from(n), "shield")?
                 }
                 PassiveEffect::Keyword(PassiveKeyword::Deflect(n)) => {
                     out.deflect = out.deflect.saturating_add(n)
@@ -496,6 +499,6 @@ impl Game {
                 _ => {}
             }
         }
-        out
+        Ok(out)
     }
 }

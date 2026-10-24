@@ -1,3 +1,4 @@
+#![deny(unused_must_use)]
 pub mod activated;
 pub mod api;
 pub mod battlefields;
@@ -22,3 +23,6 @@ pub use game::play;
 
 pub mod continuous;
 pub use game::empower;
+
+pub mod numeric;
+pub use numeric::{DamageAmount, Might, SignedMight, UnitStats};

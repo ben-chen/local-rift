@@ -233,7 +233,7 @@ pub enum Action {
         target: Option<Target>,
     },
     AssignDamage {
-        assignments: Vec<(u32, u16)>,
+        assignments: Vec<(u32, u64)>,
     },
     EndTurn,
 }
@@ -391,7 +391,7 @@ pub struct ChainItem {
     pub repeat_targets: Vec<Target>,
     pub executions: Vec<ExecutionChoices>,
     pub play_origin: Option<PlayOrigin>,
-    pub bonus_damage: u16,
+    pub bonus_damage: u64,
 }
 
 /// Canonical definition source, independent of legacy main-card art references.
@@ -491,7 +491,7 @@ pub enum Decision {
     CombatDamage {
         player: usize,
         lane: usize,
-        total: u16,
+        total: u64,
     },
     RevealHand {
         player: usize,
@@ -679,10 +679,10 @@ pub struct Unit {
     /// `None` is this unit's owner's base; `Some(0..2)` is a battlefield.
     pub lane: Option<usize>,
     pub ready: bool,
-    pub damage: u8,
+    pub damage: u64,
     /// Permanent extra might; for a token, this is its base might as well.
-    pub buff: u8,
-    pub temporary_buff: i16,
+    pub buff: u64,
+    pub temporary_buff: i64,
     pub token: bool,
     pub protected: bool,
     pub stunned: bool,
@@ -694,8 +694,8 @@ pub struct Unit {
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub struct UnitKeywords {
     pub hunt: u8,
-    pub assault: u8,
-    pub shield: u8,
+    pub assault: u64,
+    pub shield: u64,
     pub tank: bool,
     pub backline: bool,
     pub deflect: u8,
@@ -758,8 +758,8 @@ enum StartStage {
 struct PendingCombat {
     lane: usize,
     attacker: usize,
-    powers: [u16; 2],
-    assignments: [Option<Vec<(u32, u16)>>; 2],
+    powers: [u64; 2],
+    assignments: [Option<Vec<(u32, u64)>>; 2],
 }
 
 #[derive(Clone, Debug)]
@@ -1208,55 +1208,63 @@ impl Game {
         String::new()
     }
 
-    fn effective_cost(&self, player: usize, card: &CardDef) -> u8 {
+    fn effective_cost(&self, player: usize, card: &CardDef) -> Result<u8, String> {
         self.discounted_energy(player, card.id, card.cost)
     }
 
     // Base replacements and additional costs have already been applied (CR356).
-    fn discounted_energy(&self, player: usize, card_id: CardId, mut cost: u8) -> u8 {
-        if let Some(original) = self.payment_frozen_source() {
-            return original.discounted_energy(player, card_id, cost);
-        }
-        for ability in rules::static_abilities(card_id) {
-            match *ability {
-                StaticAbility::HighestMightEnergyDiscount => {
-                    let highest = self.players[player]
-                        .units
-                        .iter()
-                        .map(|unit| self.unit_might(unit))
-                        .max()
-                        .unwrap_or(0);
-                    cost = cost.saturating_sub(highest);
-                }
-                StaticAbility::EmpoweredEnergyDiscount(amount)
-                    if self.controls_empowered(player) =>
-                {
-                    cost = cost.saturating_sub(amount);
-                }
-                StaticAbility::TrashEnergyDiscount => {
-                    cost = cost.saturating_sub(self.players[player].discard.len().min(255) as u8);
-                }
-                StaticAbility::LegionEnergyDiscount(amount) if self.cards_played[player] > 0 => {
-                    cost = cost.saturating_sub(amount);
-                }
-                StaticAbility::XpEnergyDiscount { tiers } => {
-                    let reduction = tiers
-                        .iter()
-                        .rev()
-                        .find(|t| self.players[player].xp >= u64::from(t.minimum_xp))
-                        .map_or(0, |t| t.energy);
-                    cost = u16::from(cost).saturating_sub(reduction) as u8;
-                }
-                StaticAbility::PerCardEnergyDiscount { amount, minimum } => {
-                    let discount = self.cards_played[player]
-                        .saturating_mul(amount as u16)
-                        .min(255) as u8;
-                    cost = cost.saturating_sub(discount).max(minimum.min(cost));
-                }
-                _ => {}
+    fn discounted_energy(
+        &self,
+        player: usize,
+        card_id: CardId,
+        mut cost: u8,
+    ) -> Result<u8, String> {
+        Ok({
+            if let Some(original) = self.payment_frozen_source() {
+                return original.discounted_energy(player, card_id, cost);
             }
-        }
-        cost
+            for ability in rules::static_abilities(card_id) {
+                match *ability {
+                    StaticAbility::HighestMightEnergyDiscount => {
+                        let mut highest = 0;
+                        for unit in &self.players[player].units {
+                            highest = highest.max(self.unit_might(unit)?);
+                        }
+                        cost = u64::from(cost).saturating_sub(highest) as u8;
+                    }
+                    StaticAbility::EmpoweredEnergyDiscount(amount)
+                        if self.controls_empowered(player) =>
+                    {
+                        cost = cost.saturating_sub(amount);
+                    }
+                    StaticAbility::TrashEnergyDiscount => {
+                        cost =
+                            cost.saturating_sub(self.players[player].discard.len().min(255) as u8);
+                    }
+                    StaticAbility::LegionEnergyDiscount(amount)
+                        if self.cards_played[player] > 0 =>
+                    {
+                        cost = cost.saturating_sub(amount);
+                    }
+                    StaticAbility::XpEnergyDiscount { tiers } => {
+                        let reduction = tiers
+                            .iter()
+                            .rev()
+                            .find(|t| self.players[player].xp >= u64::from(t.minimum_xp))
+                            .map_or(0, |t| t.energy);
+                        cost = u16::from(cost).saturating_sub(reduction) as u8;
+                    }
+                    StaticAbility::PerCardEnergyDiscount { amount, minimum } => {
+                        let discount = self.cards_played[player]
+                            .saturating_mul(amount as u16)
+                            .min(255) as u8;
+                        cost = cost.saturating_sub(discount).max(minimum.min(cost));
+                    }
+                    _ => {}
+                }
+            }
+            cost
+        })
     }
 
     pub fn movement_locked(&self, player: usize, unit_id: u32) -> bool {
@@ -1274,7 +1282,7 @@ impl Game {
     pub fn queued_extra_turns(&self, player: usize) -> u8 {
         self.extra_turns[player]
     }
-    pub fn submitted_combat_damage(&self, player: usize) -> Option<&[(u32, u16)]> {
+    pub fn submitted_combat_damage(&self, player: usize) -> Option<&[(u32, u64)]> {
         self.pending_combat.as_ref()?.assignments[player].as_deref()
     }
 
@@ -1332,141 +1340,19 @@ impl Game {
         if self.phase != Phase::Mulligan {
             return Err("The match has already begun.".into());
         }
+        self.validate_numeric_state()?;
+        let original = self.clone();
         self.mulligan_used = true;
         self.mulligans_used = [true; 2];
         self.phase = Phase::Playing;
-        self.start_turn();
-        Ok(())
-    }
-
-    pub fn unit_might(&self, unit: &Unit) -> u8 {
-        self.actual_unit_might(unit).clamp(0, 255) as u8
-    }
-
-    pub fn unit_keywords(&self, unit: &Unit) -> UnitKeywords {
-        let mut keywords = UnitKeywords::default();
-        let owner = self
-            .players
-            .iter()
-            .position(|p| p.units.iter().any(|u| u.id == unit.id));
-        if unit.token {
-            keywords.deflect = rules::token_spec(unit.card_id).is_some_and(|s| s.deflect) as u8;
-        } else {
-            for ability in rules::static_abilities(unit.card_id) {
-                match *ability {
-                    StaticAbility::Hunt(value) => {
-                        keywords.hunt = keywords.hunt.saturating_add(value)
-                    }
-                    StaticAbility::Assault(value) => {
-                        keywords.assault = keywords.assault.saturating_add(value)
-                    }
-                    StaticAbility::Shield(value) => {
-                        keywords.shield = keywords.shield.saturating_add(value)
-                    }
-                    StaticAbility::Deflect(value) => {
-                        keywords.deflect = keywords.deflect.saturating_add(value)
-                    }
-                    StaticAbility::Tank => keywords.tank = true,
-                    StaticAbility::Backline => keywords.backline = true,
-                    StaticAbility::Ganking => keywords.ganking = true,
-                    StaticAbility::Ambush => keywords.ambush = true,
-                    StaticAbility::LevelSixDeflectAndGanking
-                        if owner.is_some_and(|p| self.players[p].xp >= 6) =>
-                    {
-                        keywords.deflect = keywords.deflect.saturating_add(1);
-                        keywords.ganking = true;
-                    }
-                    _ => {}
-                }
-            }
-            keywords.accelerate = rules::accelerate_cost(unit.card_id);
-        }
-        let conditional = self.continuous_keywords(unit);
-        keywords.assault = keywords.assault.saturating_add(conditional.assault);
-        keywords.shield = keywords.shield.saturating_add(conditional.shield);
-        keywords.deflect = keywords.deflect.saturating_add(conditional.deflect);
-        keywords.ganking |= conditional.ganking;
-        let gear = self.gear_keywords(unit.id);
-        keywords.hunt = keywords.hunt.saturating_add(gear.hunt);
-        keywords.assault = keywords.assault.saturating_add(gear.assault);
-        keywords.shield = keywords.shield.saturating_add(gear.shield);
-        keywords.deflect = keywords.deflect.saturating_add(gear.deflect);
-        keywords.tank |= gear.tank;
-        keywords.backline |= gear.backline;
-        keywords.ganking |= gear.ganking;
-        for (_, value) in self
-            .legend
-            .iter()
-            .flat_map(|l| &l.assault_grants)
-            .filter(|(id, _)| *id == unit.id)
+        if let Err(error) = self
+            .start_turn()
+            .and_then(|()| self.validate_numeric_state())
         {
-            keywords.assault = keywords.assault.saturating_add(*value);
+            *self = original;
+            return Err(error);
         }
-        keywords
-    }
-
-    /// The default automatic ordering. A unit with both Tank and Backline may
-    /// instead be assigned last under CR467.2.c.8; explicit validation permits both.
-    pub fn damage_priority(&self, unit: &Unit) -> u8 {
-        let keywords = self.unit_keywords(unit);
-        if keywords.tank {
-            0
-        } else if keywords.backline {
-            2
-        } else {
-            1
-        }
-    }
-
-    // CR143.2.c.1: references treat negative Might as zero, but calculations
-    // of increases/decreases (including Swap) use the actual signed value.
-    fn actual_unit_might(&self, unit: &Unit) -> i16 {
-        let base = if unit.token {
-            0
-        } else {
-            self.catalog[unit.card_id].might
-        };
-        let assault = if self.showdown.as_ref().is_some_and(|w| {
-            unit.lane == Some(w.lane)
-                && w.combat
-                && self.players[w.attacker]
-                    .units
-                    .iter()
-                    .any(|u| u.id == unit.id)
-        }) {
-            self.unit_keywords(unit).assault as i16
-        } else {
-            0
-        };
-        let shield = if self.showdown.as_ref().is_some_and(|w| {
-            unit.lane == Some(w.lane)
-                && w.combat
-                && self.players[1 - w.attacker]
-                    .units
-                    .iter()
-                    .any(|u| u.id == unit.id)
-        }) {
-            self.unit_keywords(unit).shield as i16
-        } else {
-            0
-        };
-        base as i16
-            + unit.buff as i16
-            + unit.temporary_buff
-            + assault
-            + shield
-            + self.continuous_might_bonus(unit)
-            + self.gear_might_bonus(unit.id) as i16
-            + self.legend_might_bonus(unit) as i16
-    }
-
-    pub fn lane_might(&self, player: usize, lane: usize) -> u16 {
-        self.players[player]
-            .units
-            .iter()
-            .filter(|u| u.lane == Some(lane) && !u.stunned)
-            .map(|u| self.unit_might(u) as u16)
-            .sum()
+        Ok(())
     }
 
     pub fn lane_count(&self, player: usize, lane: usize) -> usize {
@@ -1487,17 +1373,19 @@ impl Game {
         lane < BATTLEFIELDS && self.lane_count(0, lane) > 0 && self.lane_count(1, lane) > 0
     }
 
-    pub fn can_afford(&self, player: usize, card: &CardDef) -> bool {
-        if let Some(a) = self
-            .active_play
-            .as_ref()
-            .filter(|a| a.player == player && a.card_id == card.id)
-        {
-            return a.costs.energy <= u32::from(self.payment_energy_available(player));
-        }
-        self.payment_energy_available(player) >= self.effective_cost(player, card).into()
-            && self.power_available(player, card.domains, card.kind == CardKind::Spell)
-                >= card.power_cost.into()
+    pub fn can_afford(&self, player: usize, card: &CardDef) -> Result<bool, String> {
+        Ok({
+            if let Some(a) = self
+                .active_play
+                .as_ref()
+                .filter(|a| a.player == player && a.card_id == card.id)
+            {
+                return Ok(a.costs.energy <= u32::from(self.payment_energy_available(player)));
+            }
+            self.payment_energy_available(player) >= self.effective_cost(player, card)?.into()
+                && self.power_available(player, card.domains, card.kind == CardKind::Spell)
+                    >= card.power_cost.into()
+        })
     }
 
     /// An entire command is atomic, including checked capacity errors during
@@ -1506,9 +1394,12 @@ impl Game {
         if self.applying_action {
             return self.apply_inner(action);
         }
+        self.validate_numeric_state()?;
         let original = self.clone();
         self.applying_action = true;
-        let result = self.apply_inner(action);
+        let result = self
+            .apply_inner(action)
+            .and_then(|()| self.validate_numeric_state());
         if result.is_err() {
             *self = original;
         } else {
@@ -1711,7 +1602,7 @@ impl Game {
                 self.validate_play_cost(player, id, &targets)?;
                 self.spend_play_cost(player, id, &targets)?;
                 self.players[player].hand.remove(hand_index);
-                self.play_or_queue_targets(player, id, lane, targets);
+                self.play_or_queue_targets(player, id, lane, targets)?;
             }
             Action::PlayCardWithTargets {
                 hand_index,
@@ -1727,7 +1618,7 @@ impl Game {
                 self.validate_play_cost(player, id, &targets)?;
                 self.spend_play_cost(player, id, &targets)?;
                 self.players[player].hand.remove(hand_index);
-                self.play_or_queue_targets(player, id, lane, targets);
+                self.play_or_queue_targets(player, id, lane, targets)?;
             }
             Action::PlayChampion { lane, target } => {
                 let id = self.players[player]
@@ -1743,7 +1634,7 @@ impl Game {
                 self.validate_play_cost(player, id, &targets)?;
                 self.spend_play_cost(player, id, &targets)?;
                 self.players[player].champion = None;
-                self.play_or_queue_targets(player, id, lane, targets);
+                self.play_or_queue_targets(player, id, lane, targets)?;
                 if let Some(ability) = self.legend_on_offhand_play(player) {
                     self.queue_ability(player, id, Vec::new(), ChainAbility::Legend(ability));
                 }
@@ -1769,7 +1660,7 @@ impl Game {
                     }
                     self.pass()?;
                 } else if self.contested(lane) {
-                    self.resolve_combat(lane, self.active);
+                    self.resolve_combat(lane, self.active)?;
                 } else {
                     return Err("There is no showdown at that battlefield.".into());
                 }
@@ -1852,7 +1743,7 @@ impl Game {
                 // also resolves any staged battles, so the game cannot stall.
                 for lane in 0..BATTLEFIELDS {
                     if self.contested(lane) {
-                        self.resolve_combat(lane, self.active);
+                        self.resolve_combat(lane, self.active)?;
                         return Ok(());
                     }
                     if self.phase == Phase::Finished {
@@ -1863,9 +1754,9 @@ impl Game {
             }
         }
         if cleanup {
-            self.after_resolution();
+            self.after_resolution()?;
         } else {
-            self.advance_triggers();
+            self.advance_triggers()?;
         }
         Ok(())
     }
@@ -1898,7 +1789,7 @@ impl Game {
             if unit.lane == lane {
                 return Err("A selected unit is already at the destination.".into());
             }
-            if unit.lane.is_some() && lane.is_some() && !self.unit_keywords(unit).ganking {
+            if unit.lane.is_some() && lane.is_some() && !self.unit_keywords(unit)?.ganking {
                 return Err("Only a unit with Ganking may move between battlefields.".into());
             }
             indices.push(index);
@@ -1932,7 +1823,7 @@ impl Game {
         }
         self.trigger_batch += 1;
         for old in origins {
-            self.refresh_control(old);
+            self.refresh_control(old)?;
         }
         if let Some(destination) = lane
             && (self.battlefield_owner[destination] != Some(player) || self.contested(destination))
@@ -1950,7 +1841,7 @@ impl Game {
         id: CardId,
         lane: Option<usize>,
         targets: Vec<Target>,
-    ) {
+    ) -> Result<(), String> {
         let target = targets.first().copied();
         let chosen_targets = targets.clone();
         self.cards_played[player] += 1;
@@ -2002,7 +1893,7 @@ impl Game {
             // Permanents finalize and resolve immediately, but playing one is
             // still an intervening chain item: previous passes no longer count.
             self.chain_passes = 0;
-            self.resolve_play(player, id, lane, targets);
+            self.resolve_play(player, id, lane, targets)?;
         }
         if self.catalog[id].kind == CardKind::Spell {
             if let Some(a) = self.active_play.clone() {
@@ -2034,12 +1925,14 @@ impl Game {
                         .iter()
                         .filter_map(|g| {
                             if let PlayGrantKind::BonusNextSpell(n) = g.kind {
-                                Some(u16::from(n))
+                                Some(u64::from(n))
                             } else {
                                 None
                             }
                         })
-                        .sum();
+                        .try_fold(0_u64, |sum, n| {
+                            crate::numeric::add_u64(sum, n, "captured spell damage bonus")
+                        })?;
                 }
                 for r in &a.choices.repeats {
                     self.trigger_chosen(player, &r.choices.targets);
@@ -2047,6 +1940,8 @@ impl Game {
             }
             self.trigger_chosen(player, &chosen_targets);
         }
+
+        Ok(())
     }
 
     /// Add-resource abilities are legal while an instructed payment is pending.
@@ -2152,7 +2047,7 @@ impl Game {
         }
     }
 
-    fn open_showdown(&mut self, lane: usize, attacker: usize) {
+    fn open_showdown(&mut self, lane: usize, attacker: usize) -> Result<(), String> {
         self.pending_entries.retain(|&(field, _)| field != lane);
         self.trigger_state.combat_seen.clear();
         self.showdown = Some(Showdown {
@@ -2163,9 +2058,11 @@ impl Game {
             combat: self.contested(lane),
         });
         self.sync_combat_triggers();
-        self.advance_triggers();
+        self.advance_triggers()?;
         self.priority_player = self.chain.last().map_or(attacker, |item| item.player);
         self.push_log(format!("Battlefield {} showdown opens. Action and Reaction cards are legal; both players must pass to continue.", lane + 1));
+
+        Ok(())
     }
 
     // Contested belongs to the first entering player, independently of the
@@ -2194,37 +2091,39 @@ impl Game {
         }
     }
 
-    fn open_staged_battlefield(&mut self) -> bool {
-        self.reconcile_staged_battlefields();
-        // A non-combat showdown is selected before any staged combat. Within
-        // either class the turn player chooses, not the Contested applier.
-        for combat in [false, true] {
-            let mut lanes: Vec<_> = self
-                .pending_entries
-                .iter()
-                .filter_map(|&(lane, _)| (self.contested(lane) == combat).then_some(lane))
-                .collect();
-            lanes.sort_unstable();
-            if lanes.len() > 1 {
-                self.decision = Some(Decision::BattlefieldOrder {
-                    player: self.active,
-                    lanes,
-                    combat,
-                });
-                return true;
-            }
-            if let Some(&lane) = lanes.first() {
-                let (_, contender) = self
+    fn open_staged_battlefield(&mut self) -> Result<bool, String> {
+        Ok({
+            self.reconcile_staged_battlefields();
+            // A non-combat showdown is selected before any staged combat. Within
+            // either class the turn player chooses, not the Contested applier.
+            for combat in [false, true] {
+                let mut lanes: Vec<_> = self
                     .pending_entries
                     .iter()
-                    .find(|&&(field, _)| field == lane)
-                    .copied()
-                    .unwrap();
-                self.open_showdown(lane, contender);
-                return true;
+                    .filter_map(|&(lane, _)| (self.contested(lane) == combat).then_some(lane))
+                    .collect();
+                lanes.sort_unstable();
+                if lanes.len() > 1 {
+                    self.decision = Some(Decision::BattlefieldOrder {
+                        player: self.active,
+                        lanes,
+                        combat,
+                    });
+                    return Ok(true);
+                }
+                if let Some(&lane) = lanes.first() {
+                    let (_, contender) = self
+                        .pending_entries
+                        .iter()
+                        .find(|&&(field, _)| field == lane)
+                        .copied()
+                        .unwrap();
+                    self.open_showdown(lane, contender)?;
+                    return Ok(true);
+                }
             }
-        }
-        false
+            false
+        })
     }
 
     fn choose_battlefield_order(&mut self, lane: usize) -> Result<(), String> {
@@ -2240,7 +2139,7 @@ impl Game {
             .find_map(|&(field, player)| (field == lane).then_some(player))
             .ok_or("That battlefield is no longer staged.")?;
         self.decision = None;
-        self.open_showdown(lane, contender);
+        self.open_showdown(lane, contender)?;
         Ok(())
     }
 
@@ -2279,14 +2178,14 @@ impl Game {
             }
             let window = self.showdown.take().unwrap();
             if window.combat || self.contested(window.lane) {
-                self.resolve_combat(window.lane, window.attacker);
+                self.resolve_combat(window.lane, window.attacker)?;
                 return Ok(());
             } else {
-                self.refresh_control(window.lane);
+                self.refresh_control(window.lane)?;
             }
             self.priority_player = self.active;
             self.push_log("The showdown closes; the turn player's main phase resumes.".into());
-            self.after_resolution();
+            self.after_resolution()?;
             return Ok(());
         }
         Err("There is no response window. End your turn when finished.".into())
@@ -2298,23 +2197,25 @@ impl Game {
         card_id: CardId,
         lane: Option<usize>,
         targets: &[Target],
-    ) -> Vec<Vec<Target>> {
-        let mut groups: Vec<Vec<Target>> = Vec::new();
-        for (slot, &target) in targets.iter().enumerate() {
-            if !self.official_target_valid(player, card_id, lane, target, slot) {
-                continue;
+    ) -> Result<Vec<Vec<Target>>, String> {
+        Ok({
+            let mut groups: Vec<Vec<Target>> = Vec::new();
+            for (slot, &target) in targets.iter().enumerate() {
+                if !self.official_target_valid(player, card_id, lane, target, slot)? {
+                    continue;
+                }
+                let location = self.target_location(target);
+                if let Some(group) = groups
+                    .iter_mut()
+                    .find(|group| self.target_location(group[0]) == location)
+                {
+                    group.push(target);
+                } else {
+                    groups.push(vec![target]);
+                }
             }
-            let location = self.target_location(target);
-            if let Some(group) = groups
-                .iter_mut()
-                .find(|group| self.target_location(group[0]) == location)
-            {
-                group.push(target);
-            } else {
-                groups.push(vec![target]);
-            }
-        }
-        groups
+            groups
+        })
     }
 
     fn choose_resolution_group(&mut self, index: usize) -> Result<(), String> {
@@ -2377,7 +2278,7 @@ impl Game {
             .ok_or("The pending token is missing.")?;
         self.decision = None;
         self.finish_token_play(token, lane);
-        self.after_resolution();
+        self.after_resolution()?;
         Ok(())
     }
 
@@ -2422,7 +2323,8 @@ impl Game {
                 } else {
                     &item.targets
                 };
-                let groups = self.resolution_groups(item.player, item.card_id, item.lane, targets);
+                let groups =
+                    self.resolution_groups(item.player, item.card_id, item.lane, targets)?;
                 if groups.len() > 1 {
                     self.decision = Some(Decision::ResolutionTargets {
                         player: item.player,
@@ -2539,7 +2441,7 @@ impl Game {
                         .is_none()
                     }) {
                         self.damage_context = None;
-                        self.after_resolution();
+                        self.after_resolution()?;
                         return Ok(());
                     }
                     let valid = if let Some(id) = object_id {
@@ -2547,13 +2449,12 @@ impl Game {
                             player,
                             unit_id: id,
                         };
-                        self.unit_ref(target).is_some_and(|unit| {
-                            unit.lane == lane
-                                && self.official_target_valid(item.player, 7, None, target, 0)
-                        }) || self.players[player]
-                            .gear
-                            .iter()
-                            .any(|gear| gear.id == id && self.gear_location(player, id) == lane)
+                        (self.unit_ref(target).is_some_and(|unit| unit.lane == lane)
+                            && self.official_target_valid(item.player, 7, None, target, 0)?)
+                            || self.players[player]
+                                .gear
+                                .iter()
+                                .any(|gear| gear.id == id && self.gear_location(player, id) == lane)
                     } else {
                         lane.is_none()
                     };
@@ -2578,7 +2479,7 @@ impl Game {
                     card_id,
                     ability_index,
                 } => {
-                    self.resolve_activated(source, card_id, ability_index, &item.targets);
+                    self.resolve_activated(source, card_id, ability_index, &item.targets)?;
                 }
                 ChainAbility::QuickDrawAttach { gear_id, target } => {
                     self.gear_resolve_equip(item.player, gear_id, target)
@@ -2590,7 +2491,7 @@ impl Game {
                     self.empower_now(item.player, Some(unit_id), None)
                 }
                 ChainAbility::Swap { unit_id, target } => {
-                    self.resolve_swap(item.player, unit_id, target)
+                    self.resolve_swap(item.player, unit_id, target)?
                 }
                 ChainAbility::Legend(ability) => self.resolve_legend_ability(item.player, ability),
                 ChainAbility::CardEffect { entering } => {
@@ -2623,7 +2524,7 @@ impl Game {
                         } else {
                             item.targets.clone()
                         };
-                        self.resolve_operation(item.player, item.card_id, lane, targets, entering);
+                        self.resolve_operation(item.player, item.card_id, lane, targets, entering)?;
                     }
                 }
                 ChainAbility::Triggered(ability) => {
@@ -2658,14 +2559,14 @@ impl Game {
                 && item.card_id == 29
                 && let Some(&target) = targets.first()
             {
-                self.modify_might(target, 2, 0);
+                self.modify_might(target, 2, 0)?;
             }
             if !loot_finished {
                 self.push_log(format!(
                     "{} resolves {}.",
                     self.players[item.player].name, self.catalog[item.card_id].name
                 ));
-                self.resolve_operation(item.player, item.card_id, item.lane, targets, None);
+                self.resolve_operation(item.player, item.card_id, item.lane, targets, None)?;
                 if item.options.repeat {
                     self.resolve_operation(
                         item.player,
@@ -2673,7 +2574,7 @@ impl Game {
                         item.lane,
                         item.repeat_targets.clone(),
                         None,
-                    );
+                    )?;
                 }
             }
             // A physical spell stays out of trash until every repeated
@@ -2706,15 +2607,15 @@ impl Game {
                 self.players[item.player].deck.insert(0, item.card_id);
             }
         }
-        self.after_resolution();
+        self.after_resolution()?;
         Ok(())
     }
 
-    pub(crate) fn after_resolution(&mut self) {
+    pub(crate) fn after_resolution(&mut self) -> Result<(), String> {
         if self.pending_instruction_deaths.is_some() {
-            self.finish_instruction_deaths();
+            self.finish_instruction_deaths()?;
             if self.pending_instruction_deaths.is_some() {
-                return;
+                return Ok(());
             }
         }
         if self.resolution_frame.is_some() {
@@ -2722,28 +2623,28 @@ impl Game {
                 && !self.payment_blocks_cleanup()
                 && self.resource_frames.is_empty()
             {
-                let _ = self.resolve_spell_executions();
+                self.resolve_spell_executions()?;
             }
-            return;
+            return Ok(());
         }
         if self.payment_blocks_cleanup() || !self.resource_frames.is_empty() {
-            return;
+            return Ok(());
         }
         for player in [self.active, 1 - self.active] {
             self.check_winner(player);
         }
         if self.winner.is_some() {
-            return;
+            return Ok(());
         }
-        self.remove_defeated();
+        self.remove_defeated()?;
         if matches!(self.decision, Some(Decision::DeathReplacement { .. })) {
-            return;
+            return Ok(());
         }
         self.sync_combat_triggers();
         self.reconcile_staged_battlefields();
         if self.pending_combat_cleanup.is_some() {
-            self.finish_combat_cleanup();
-            return;
+            self.finish_combat_cleanup()?;
+            return Ok(());
         }
         if self.decision.is_none() {
             while let Some(decision) = self.pending_decisions.pop_front() {
@@ -2756,16 +2657,16 @@ impl Game {
             }
         }
         if self.decision.is_some() {
-            return;
+            return Ok(());
         }
-        self.advance_triggers();
+        self.advance_triggers()?;
         if self.decision.is_some() {
-            return;
+            return Ok(());
         }
         self.chain_passes = 0;
         if let Some(item) = self.chain.last() {
             self.priority_player = item.player;
-            return;
+            return Ok(());
         }
         // CR323.5–6: staged fields do not retain an absent controller in an
         // open state. Only an ongoing showdown/combat preserves that control.
@@ -2790,8 +2691,8 @@ impl Game {
             self.showdown.as_mut().unwrap().combat = true;
             self.sync_combat_triggers();
             if !self.pending_triggers.is_empty() {
-                self.after_resolution();
-                return;
+                self.after_resolution()?;
+                return Ok(());
             }
         }
         if let Some(showdown) = &mut self.showdown {
@@ -2813,21 +2714,23 @@ impl Game {
                     self.stage_entry(lane, contender);
                 }
             }
-            if self.open_staged_battlefield() {
-                return;
+            if self.open_staged_battlefield()? {
+                return Ok(());
             }
             for lane in 0..BATTLEFIELDS {
-                self.refresh_control(lane);
+                self.refresh_control(lane)?;
             }
-            self.advance_triggers();
+            self.advance_triggers()?;
             if self.chain.is_empty() && self.decision.is_none() && self.winner.is_none() {
                 if self.ending_turn {
-                    self.finish_ending();
+                    self.finish_ending()?;
                 } else if self.pending_start.is_some() {
-                    self.advance_start_turn();
+                    self.advance_start_turn()?;
                 }
             }
         }
+
+        Ok(())
     }
 
     fn choose(&mut self, accept: bool) -> Result<(), String> {
@@ -2853,11 +2756,11 @@ impl Game {
                 return Err("Choose the required targets before finalizing this ability.".into());
             }
             self.choose_trigger_targets(Vec::new())?;
-            self.after_resolution();
+            self.after_resolution()?;
             return Ok(());
         }
         if matches!(decision, Decision::PendingPlay { .. }) {
-            if accept || !self.can_decline_trash_play() {
+            if accept || !self.can_decline_trash_play()? {
                 return Err("Finalize the pending card with legal choices and payment.".into());
             }
             let card = self
@@ -2869,7 +2772,7 @@ impl Game {
             self.restore_reserved_grants(card.id);
             self.restore_failed_card(card);
             self.decision = None;
-            self.after_resolution();
+            self.after_resolution()?;
             return Ok(());
         }
         if let Decision::CounterTax { player, cost, .. } = decision
@@ -2934,7 +2837,7 @@ impl Game {
                 decision,
                 Decision::ReplaySpell { .. } | Decision::LastRites { .. }
             )
-            && !self.can_decline_trash_play()
+            && !self.can_decline_trash_play()?
         {
             return Err("This accepted trigger must play an eligible card if possible.".into());
         }
@@ -3031,7 +2934,7 @@ impl Game {
                 }
             }
         }
-        self.after_resolution();
+        self.after_resolution()?;
         Ok(())
     }
 
@@ -3245,7 +3148,7 @@ impl Game {
             self.players[player].champion = None;
         }
         let entering_id = self.next_unit_id;
-        self.play_or_queue_targets(player, id, lane, targets);
+        self.play_or_queue_targets(player, id, lane, targets)?;
         if original.kind == CardKind::Spell {
             if let Some(item) = self
                 .chain
@@ -3328,30 +3231,34 @@ impl Game {
         source_id: u32,
         lane: Option<usize>,
         target: Target,
-    ) -> bool {
-        if let Some(origin) = self.hidden_play_origin(source_id)
-            && (self
-                .unit_ref(Target::Unit {
-                    player,
-                    unit_id: source_id,
-                })
-                .is_none()
-                || !self.hidden_target_allowed(card_id, origin, target))
-        {
-            return false;
-        }
-        if card_id == 261 {
-            return matches!(target,Target::Unit{player:owner,..} if owner!=player)
-                && self.official_target_valid(player, 7, lane, target, 0);
-        }
-        if rules::equipment(card_id).is_some_and(|gear| gear.quick_draw) {
-            matches!(target,Target::Unit{player:owner,..} if owner==player)
-                && self.unit_ref(target).is_some()
-        } else {
-            self.unit_ref(target)
-                .is_some_and(|u| !matches!(card_id, 23 | 27) || u.id != source_id)
-                && self.official_target_valid(player, card_id, lane, target, 0)
-        }
+    ) -> Result<bool, String> {
+        Ok({
+            if let Some(origin) = self.hidden_play_origin(source_id)
+                && (self
+                    .unit_ref(Target::Unit {
+                        player,
+                        unit_id: source_id,
+                    })
+                    .is_none()
+                    || !self.hidden_target_allowed(card_id, origin, target))
+            {
+                return Ok(false);
+            }
+            if card_id == 261 {
+                return Ok(
+                    matches!(target,Target::Unit{player:owner,..} if owner!=player)
+                        && self.official_target_valid(player, 7, lane, target, 0)?,
+                );
+            }
+            if rules::equipment(card_id).is_some_and(|gear| gear.quick_draw) {
+                matches!(target,Target::Unit{player:owner,..} if owner==player)
+                    && self.unit_ref(target).is_some()
+            } else {
+                self.unit_ref(target)
+                    .is_some_and(|u| !matches!(card_id, 23 | 27) || u.id != source_id)
+                    && self.official_target_valid(player, card_id, lane, target, 0)?
+            }
+        })
     }
 
     pub(crate) fn request_on_play_target(
@@ -3360,15 +3267,17 @@ impl Game {
         card_id: CardId,
         source_id: u32,
         lane: Option<usize>,
-    ) {
-        let exists = self.players.iter().enumerate().any(|(owner, state)| {
-            state.units.iter().any(|unit| {
+    ) -> Result<(), String> {
+        let mut exists = false;
+        let mut capacity = None;
+        for (owner, state) in self.players.iter().enumerate() {
+            for unit in &state.units {
                 let target = Target::Unit {
                     player: owner,
                     unit_id: unit.id,
                 };
-                if !self.on_play_target_valid(player, card_id, source_id, lane, target) {
-                    return false;
+                if !self.on_play_target_valid(player, card_id, source_id, lane, target)? {
+                    continue;
                 }
                 let mut probe = self.clone();
                 probe.decision = Some(Decision::OnPlayTarget {
@@ -3377,13 +3286,25 @@ impl Game {
                     source_id,
                     lane,
                 });
-                probe
-                    .funded_action_witness(&Action::ChooseTarget {
-                        target: Some(target),
-                    })
-                    .is_some()
-            })
-        });
+                match probe.funded_action_witness(&Action::ChooseTarget {
+                    target: Some(target),
+                }) {
+                    Ok(Some(_)) => {
+                        exists = true;
+                        break;
+                    }
+                    Ok(None) => {}
+                    Err(error) if crate::numeric::is_capacity(&error) => capacity = Some(error),
+                    Err(error) => return Err(error),
+                }
+            }
+            if exists {
+                break;
+            }
+        }
+        if !exists && let Some(error) = capacity {
+            return Err(error);
+        }
         if exists {
             self.queue_trigger_choice(
                 player,
@@ -3396,6 +3317,8 @@ impl Game {
                 },
             );
         }
+
+        Ok(())
     }
 
     fn choose_target(&mut self, target: Option<Target>) -> Result<(), String> {
@@ -3411,7 +3334,7 @@ impl Game {
                 lane,
             } => {
                 let target = target.ok_or("Choose a target for this triggered ability.")?;
-                if !self.on_play_target_valid(player, card_id, source_id, lane, target) {
+                if !self.on_play_target_valid(player, card_id, source_id, lane, target)? {
                     return Err("Choose an eligible unit for this triggered ability.".into());
                 }
                 self.spend_deflect(player, false, &[target])?;
@@ -3433,7 +3356,7 @@ impl Game {
                 if let Some(target) = target {
                     let Some(source) = self.unit_ref(Target::Unit { player, unit_id }) else {
                         self.decision = None;
-                        self.after_resolution();
+                        self.after_resolution()?;
                         return Ok(());
                     };
                     let source_lane = source.lane;
@@ -3466,7 +3389,7 @@ impl Game {
                     .is_none()
                 }) {
                     self.decision = None;
-                    self.after_resolution();
+                    self.after_resolution()?;
                     return Ok(());
                 }
                 let (owner, unit) = if let Some(target) = target {
@@ -3505,7 +3428,7 @@ impl Game {
                 };
                 if let Some(target) = target {
                     if matches!(target, Target::Unit { .. })
-                        && !self.official_target_valid(player, 7, None, target, 0)
+                        && !self.official_target_valid(player, 7, None, target, 0)?
                     {
                         return Err("That unit cannot be chosen by this ability.".into());
                     }
@@ -3526,32 +3449,32 @@ impl Game {
             }
             _ => return Err("This choice does not choose a board target.".into()),
         }
-        self.after_resolution();
+        self.after_resolution()?;
         Ok(())
     }
 
-    fn resolve_swap(&mut self, player: usize, unit_id: u32, target: Target) {
+    fn resolve_swap(&mut self, player: usize, unit_id: u32, target: Target) -> Result<(), String> {
         let source = Target::Unit { player, unit_id };
         let Some((a, b)) = self
             .unit_ref(source)
             .zip(self.unit_ref(target))
             .map(|(a, b)| (a.lane, b.lane))
         else {
-            return;
+            return Ok(());
         };
         let Target::Unit {
             player: owner,
             unit_id: other,
         } = target
         else {
-            return;
+            return Ok(());
         };
         if a == b
             || owner != player
             || self.movement_locks.contains(&(player, unit_id))
             || self.movement_locks.contains(&(player, other))
         {
-            return;
+            return Ok(());
         }
         self.unit_mut(source).unwrap().lane = b;
         self.unit_mut(target).unwrap().lane = a;
@@ -3562,8 +3485,10 @@ impl Game {
             self.stage_entry(lane, player);
         }
         for lane in [a, b].into_iter().flatten() {
-            self.refresh_control(lane);
+            self.refresh_control(lane)?;
         }
+
+        Ok(())
     }
 
     pub(crate) fn spend_deflect(
@@ -3572,7 +3497,7 @@ impl Game {
         is_spell: bool,
         targets: &[Target],
     ) -> Result<(), String> {
-        let tax = self.deflect_cost(player, targets);
+        let tax = self.deflect_cost(player, targets)?;
         self.consume_power(player, &ALL_DOMAINS, tax.into(), is_spell)
     }
 
@@ -3587,7 +3512,7 @@ impl Game {
             return Err("You cannot play cards for the rest of this turn.".into());
         }
         let targets = self.prepare_targets(player, id, None, targets)?;
-        let tax = self.deflect_cost(player, &targets);
+        let tax = self.deflect_cost(player, &targets)?;
         if self.active_play.is_none()
             && self.power_available(
                 player,
@@ -3609,13 +3534,13 @@ impl Game {
         id: CardId,
         lane: usize,
         targets: Vec<Target>,
-    ) {
+    ) -> Result<(), String> {
         let source_id = self.next_unit_id;
         if self.catalog[id].kind == CardKind::Unit {
             self.hidden_play_origins.push((self.next_unit_id, lane));
         }
         self.trigger_state.hidden_play = true;
-        self.play_or_queue_targets(player, id, Some(lane), targets);
+        self.play_or_queue_targets(player, id, Some(lane), targets)?;
         self.trigger_state.hidden_play = false;
         if self.catalog[id].kind == CardKind::Spell {
             if let Some(item) = self
@@ -3642,7 +3567,9 @@ impl Game {
         {
             self.queue_ability(player, id, Vec::new(), ChainAbility::Legend(ability));
         }
-        self.after_resolution();
+        self.after_resolution()?;
+
+        Ok(())
     }
 
     pub fn hidden_play_origin(&self, unit_id: u32) -> Option<usize> {
@@ -3651,20 +3578,22 @@ impl Game {
             .find_map(|&(id, lane)| (id == unit_id).then_some(lane))
     }
 
-    pub(crate) fn deflect_cost(&self, actor: usize, targets: &[Target]) -> u8 {
-        if let Some(original) = self.payment_frozen_source() {
-            return original.deflect_cost(actor, targets);
-        }
-        let mut cost: u8 = 0;
-        for &target in targets {
-            if let Target::Unit { player, .. } = target
-                && player != actor
-                && let Some(unit) = self.unit_ref(target)
-            {
-                cost = cost.saturating_add(self.unit_keywords(unit).deflect);
+    pub(crate) fn deflect_cost(&self, actor: usize, targets: &[Target]) -> Result<u8, String> {
+        Ok({
+            if let Some(original) = self.payment_frozen_source() {
+                return original.deflect_cost(actor, targets);
             }
-        }
-        cost
+            let mut cost: u8 = 0;
+            for &target in targets {
+                if let Target::Unit { player, .. } = target
+                    && player != actor
+                    && let Some(unit) = self.unit_ref(target)
+                {
+                    cost = cost.saturating_add(self.unit_keywords(unit)?.deflect);
+                }
+            }
+            cost
+        })
     }
 
     fn validate_play_cost(
@@ -3673,7 +3602,7 @@ impl Game {
         id: CardId,
         targets: &[Target],
     ) -> Result<(), String> {
-        if !self.can_afford(player, &self.catalog[id]) {
+        if !self.can_afford(player, &self.catalog[id])? {
             return Err("Not enough energy or matching power.".into());
         }
         let mut probe = self.clone();
@@ -4077,9 +4006,9 @@ impl Game {
         });
     }
 
-    fn advance_triggers(&mut self) {
+    fn advance_triggers(&mut self) -> Result<(), String> {
         if self.payment_blocks_cleanup() || !self.resource_frames.is_empty() {
-            return;
+            return Ok(());
         }
         while self.decision.is_none() && !self.pending_triggers.is_empty() {
             // Finalize the oldest pending group before triggers generated
@@ -4103,13 +4032,15 @@ impl Game {
                 .collect();
             if options.len() > 1 {
                 self.decision = Some(Decision::OrderTriggers { player, options });
-                return;
+                return Ok(());
             }
-            self.finalize_trigger(options[0].id);
+            self.finalize_trigger(options[0].id)?;
         }
+
+        Ok(())
     }
 
-    fn finalize_trigger(&mut self, trigger_id: u32) {
+    fn finalize_trigger(&mut self, trigger_id: u32) -> Result<(), String> {
         let index = self
             .pending_triggers
             .iter()
@@ -4129,7 +4060,7 @@ impl Game {
             }
             PendingTriggerEffect::Choice(choice) => {
                 self.enqueue_decision(choice);
-                self.discard_unfinalizable_trigger();
+                self.discard_unfinalizable_trigger()?;
             }
             PendingTriggerEffect::Token(token) => {
                 self.priority_player = token.player;
@@ -4190,6 +4121,8 @@ impl Game {
                 self.chain.last_mut().unwrap().lane = lane;
             }
         }
+
+        Ok(())
     }
 
     fn order_trigger(&mut self, trigger_id: u32) -> Result<(), String> {
@@ -4200,8 +4133,8 @@ impl Game {
             return Err("Choose one of these pending triggers.".into());
         }
         self.decision = None;
-        self.finalize_trigger(trigger_id);
-        self.advance_triggers();
+        self.finalize_trigger(trigger_id)?;
+        self.advance_triggers()?;
         Ok(())
     }
 
@@ -4541,124 +4474,157 @@ impl Game {
             }
             _ => return Err("This choice does not select cards.".into()),
         }
-        self.after_resolution();
+        self.after_resolution()?;
         Ok(())
     }
 
     // Cancellation depends on existence of a legal explicit choice, never the
     // heuristic preferred target (which may have unaffordable Deflect).
-    fn pending_play_actions(&self, limit: usize) -> Vec<Action> {
+    fn pending_play_actions(&self, limit: usize) -> Result<Vec<Action>, String> {
         self.pending_play_actions_mode(limit, false)
     }
 
-    fn pending_play_actions_mode(&self, limit: usize, prepare: bool) -> Vec<Action> {
-        let Some(Decision::PendingPlay {
-            player, card_id, ..
-        }) = self.decision
-        else {
-            return Vec::new();
-        };
-        let card = self.catalog[card_id];
-        let mut required = rules::play_target_spec(card_id).required;
-        if card.kind != CardKind::Spell {
-            required = 0;
-        }
-        if self.is_counter(card_id)
-            || matches!(rules::effect(card_id), OfficialEffect::TemporaryGear)
-        {
-            required = 1;
-        }
-        let mut actions = Vec::new();
-        for lane in [None, Some(0), Some(1)] {
-            let mut groups = vec![Vec::new()];
-            for _ in 0..required {
-                let mut next = Vec::new();
-                for group in groups {
-                    let choices = self.card_target_candidates(player, card_id, lane, &group);
-                    for target in choices {
-                        let mut chosen = group.clone();
-                        chosen.push(target);
-                        next.push(chosen);
-                    }
-                }
-                groups = next;
+    fn pending_play_actions_mode(
+        &self,
+        limit: usize,
+        prepare: bool,
+    ) -> Result<Vec<Action>, String> {
+        Ok({
+            let Some(Decision::PendingPlay {
+                player, card_id, ..
+            }) = self.decision
+            else {
+                return Ok(Vec::new());
+            };
+            let card = self.catalog[card_id];
+            let mut required = rules::play_target_spec(card_id).required;
+            if card.kind != CardKind::Spell {
+                required = 0;
             }
-            if let Ok(preferred) = self.prepare_targets(player, card_id, lane, &[])
-                && !groups.contains(&preferred)
+            if self.is_counter(card_id)
+                || matches!(rules::effect(card_id), OfficialEffect::TemporaryGear)
             {
-                groups.insert(0, preferred);
+                required = 1;
             }
-            for targets in groups {
-                for options in [
-                    PlayOptions::default(),
-                    PlayOptions {
-                        accelerate: true,
-                        ..Default::default()
-                    },
-                    PlayOptions {
-                        repeat: true,
-                        ..Default::default()
-                    },
-                    PlayOptions {
-                        bonus: true,
-                        ..Default::default()
-                    },
-                ] {
-                    let action = Action::FinalizePendingPlay {
-                        lane,
-                        repeat_targets: if options.repeat {
-                            targets.clone()
-                        } else {
-                            Vec::new()
+            let mut actions = Vec::new();
+            let mut capacity = None;
+            for lane in [None, Some(0), Some(1)] {
+                let mut groups = vec![Vec::new()];
+                for _ in 0..required {
+                    let mut next = Vec::new();
+                    for group in groups {
+                        let choices = self.card_target_candidates(player, card_id, lane, &group)?;
+                        for target in choices {
+                            let mut chosen = group.clone();
+                            chosen.push(target);
+                            next.push(chosen);
+                        }
+                    }
+                    groups = next;
+                }
+                if let Ok(preferred) = self.prepare_targets(player, card_id, lane, &[])
+                    && !groups.contains(&preferred)
+                {
+                    groups.insert(0, preferred);
+                }
+                for targets in groups {
+                    for options in [
+                        PlayOptions::default(),
+                        PlayOptions {
+                            accelerate: true,
+                            ..Default::default()
                         },
-                        targets: targets.clone(),
-                        repeat: options.repeat,
-                        accelerate: options.accelerate,
-                        bonus: options.bonus,
-                    };
-                    let legal = if prepare {
-                        self.clone().begin_payment(action.clone()).is_ok()
-                    } else {
-                        self.clone().apply(action.clone()).is_ok()
-                    };
-                    if legal {
-                        actions.push(action);
-                        if actions.len() >= limit {
-                            return actions;
+                        PlayOptions {
+                            repeat: true,
+                            ..Default::default()
+                        },
+                        PlayOptions {
+                            bonus: true,
+                            ..Default::default()
+                        },
+                    ] {
+                        let action = Action::FinalizePendingPlay {
+                            lane,
+                            repeat_targets: if options.repeat {
+                                targets.clone()
+                            } else {
+                                Vec::new()
+                            },
+                            targets: targets.clone(),
+                            repeat: options.repeat,
+                            accelerate: options.accelerate,
+                            bonus: options.bonus,
+                        };
+                        let result = if prepare {
+                            self.clone().begin_payment(action.clone())
+                        } else {
+                            self.probe_action(&action)
+                        };
+                        let legal = match result {
+                            Ok(()) => true,
+                            Err(error) if crate::numeric::is_capacity(&error) => {
+                                capacity = Some(error);
+                                prepare
+                            }
+                            Err(_) => false,
+                        };
+                        if legal {
+                            actions.push(action);
+                            if actions.len() >= limit {
+                                return Ok(actions);
+                            }
                         }
                     }
                 }
             }
-        }
-        actions
+            if actions.is_empty()
+                && let Some(error) = capacity
+            {
+                return Err(error);
+            }
+            actions
+        })
     }
 
-    pub fn can_decline_trash_play(&self) -> bool {
-        if matches!(self.decision, Some(Decision::PendingPlay { .. })) {
-            return !self
-                .pending_play_actions_mode(usize::MAX, true)
-                .iter()
-                .any(|action| self.funded_action_witness(action).is_some());
-        }
-        if matches!(self.decision, Some(Decision::RevivePlay { .. })) {
-            return false;
-        }
-        if !self.required_trash_play
-            || !matches!(
-                self.decision,
-                Some(Decision::ReplaySpell { .. } | Decision::LastRites { .. })
-            )
-        {
-            return true;
-        }
-        for index in 0..self.players[self.priority()].discard.len() {
-            for lane in [None, Some(0), Some(1)] {
-                if self.clone().play_from_trash(index, lane, None).is_ok() {
-                    return false;
+    pub fn can_decline_trash_play(&self) -> Result<bool, String> {
+        Ok({
+            if matches!(self.decision, Some(Decision::PendingPlay { .. })) {
+                let mut capacity = None;
+                for action in self.pending_play_actions_mode(usize::MAX, true)? {
+                    match self.funded_action_witness(&action) {
+                        Ok(Some(_)) => return Ok(false),
+                        Ok(None) => {}
+                        Err(e) if crate::numeric::is_capacity(&e) => capacity = Some(e),
+                        Err(e) => return Err(e),
+                    }
+                }
+                if let Some(e) = capacity {
+                    return Err(e);
+                }
+                return Ok(true);
+            }
+            if matches!(self.decision, Some(Decision::RevivePlay { .. })) {
+                return Ok(false);
+            }
+            if !self.required_trash_play
+                || !matches!(
+                    self.decision,
+                    Some(Decision::ReplaySpell { .. } | Decision::LastRites { .. })
+                )
+            {
+                return Ok(true);
+            }
+            for index in 0..self.players[self.priority()].discard.len() {
+                for lane in [None, Some(0), Some(1)] {
+                    if crate::numeric::legal_result(
+                        self.clone().play_from_trash(index, lane, None),
+                    )? {
+                        return Ok(false);
+                    }
                 }
             }
-        }
-        true
+            true
+        })
     }
 
     fn play_from_trash(
@@ -4735,7 +4701,7 @@ impl Game {
             return result;
         }
         let card = self.catalog[id];
-        let energy = self.discounted_energy(player, id, base.0.saturating_add(extra.0));
+        let energy = self.discounted_energy(player, id, base.0.saturating_add(extra.0))?;
         if self.payment_energy_available(player) < energy.into() {
             return Err("Not enough energy for the base and additional costs.".into());
         }
@@ -4744,7 +4710,7 @@ impl Game {
         for (amount, colored) in [
             (extra.1, true),
             (base.1, base.2),
-            (self.deflect_cost(player, targets), false),
+            (self.deflect_cost(player, targets)?, false),
         ] {
             let domains = if colored { card.domains } else { &ALL_DOMAINS };
             self.consume_power(player, domains, amount.into(), card.kind == CardKind::Spell)?;
@@ -4855,7 +4821,7 @@ impl Game {
                     card_id: id,
                 },
             );
-            self.after_resolution();
+            self.after_resolution()?;
             return Ok(());
         }
         let mut probe = self.clone();
@@ -4932,7 +4898,7 @@ impl Game {
         self.pay_trash_cost(player, id, base, extra, &all_targets)
             .expect("validated trash costs");
         let entering = self.next_unit_id;
-        self.play_or_queue_targets(player, id, lane, targets);
+        self.play_or_queue_targets(player, id, lane, targets)?;
         if card.kind == CardKind::Spell {
             if let Some(item) =
                 self.chain.iter_mut().rev().find(|item| {
@@ -4962,7 +4928,7 @@ impl Game {
                 self.queue_ability(player, id, Vec::new(), ChainAbility::Legend(ability));
             }
         }
-        self.after_resolution();
+        self.after_resolution()?;
         Ok(())
     }
 
@@ -5043,7 +5009,7 @@ impl Game {
             cards.len(),
             recycle.len()
         ));
-        self.after_resolution();
+        self.after_resolution()?;
         Ok(())
     }
 
@@ -5091,337 +5057,382 @@ impl Game {
             .collect()
     }
 
-    pub fn legal_actions(&self) -> Vec<Action> {
-        if self.phase != Phase::Playing {
-            return Vec::new();
-        }
-        if let Some(decision) = &self.decision {
-            let player = decision.player();
-            let mut actions = match decision {
-                Decision::Payment { .. } => {
-                    vec![Action::CompletePayment, Action::Choose { accept: false }]
-                }
-                Decision::ResourceConversion { .. } => {
-                    (0..=self.conversion_available().unwrap_or(0))
-                        .map(|amount| Action::ResolveConversion { amount })
-                        .collect()
-                }
-                Decision::PredictCards {
-                    choice_id, cards, ..
-                } => {
-                    let n = cards.len();
-                    let mut out = Vec::new();
-                    for mask in 0..(1usize << n) {
-                        let recycle: Vec<_> = (0..n).filter(|i| mask & (1 << i) != 0).collect();
-                        let keep: Vec<_> = (0..n).filter(|i| mask & (1 << i) == 0).collect();
-                        out.push(Action::ResolvePredict {
-                            choice_id: *choice_id,
-                            recycle: recycle.clone(),
-                            top_order: keep.clone(),
-                        });
-                        if keep.len() > 1 {
+    /// Probe a complete command on a disposable state. A nested caller can
+    /// inherit the outer transaction flag, so validate the finished probe too.
+    pub(crate) fn probe_action(&self, action: &Action) -> Result<(), String> {
+        let mut probe = self.clone();
+        probe.apply(action.clone())?;
+        probe.validate_numeric_state()
+    }
+
+    pub fn legal_actions(&self) -> Result<Vec<Action>, String> {
+        self.validate_numeric_state()?;
+        Ok({
+            if self.phase != Phase::Playing {
+                return Ok(Vec::new());
+            }
+            if let Some(decision) = &self.decision {
+                let player = decision.player();
+                let mut actions = match decision {
+                    Decision::Payment { .. } => {
+                        vec![Action::CompletePayment, Action::Choose { accept: false }]
+                    }
+                    Decision::ResourceConversion { .. } => {
+                        (0..=self.conversion_available().unwrap_or(0))
+                            .map(|amount| Action::ResolveConversion { amount })
+                            .collect()
+                    }
+                    Decision::PredictCards {
+                        choice_id, cards, ..
+                    } => {
+                        let n = cards.len();
+                        let mut out = Vec::new();
+                        for mask in 0..(1usize << n) {
+                            let recycle: Vec<_> = (0..n).filter(|i| mask & (1 << i) != 0).collect();
+                            let keep: Vec<_> = (0..n).filter(|i| mask & (1 << i) == 0).collect();
                             out.push(Action::ResolvePredict {
                                 choice_id: *choice_id,
-                                recycle,
-                                top_order: keep.into_iter().rev().collect(),
+                                recycle: recycle.clone(),
+                                top_order: keep.clone(),
                             });
-                        }
-                    }
-                    out
-                }
-                Decision::TriggerTargets { .. } => self.trigger_target_actions(),
-                Decision::TrashTarget {
-                    player,
-                    source_card_id,
-                    ..
-                } => {
-                    let mut choices: Vec<_> = (0..self.players[*player].discard.len())
-                        .filter(|&i| self.trash_target_valid(*player, *source_card_id, i))
-                        .map(|i| Action::SelectCards { indices: vec![i] })
-                        .collect();
-                    if choices.is_empty() {
-                        choices.push(Action::SelectCards {
-                            indices: Vec::new(),
-                        });
-                    }
-                    choices
-                }
-                Decision::PendingPlay { .. } => {
-                    let mut choices = self.pending_play_actions(32);
-                    if choices.is_empty() {
-                        for intent in self.pending_play_actions_mode(usize::MAX, true) {
-                            if let Some(witness) = self.funded_action_witness(&intent) {
-                                if let Some(first) = witness.first() {
-                                    choices.push(first.clone());
-                                }
-                                break;
+                            if keep.len() > 1 {
+                                out.push(Action::ResolvePredict {
+                                    choice_id: *choice_id,
+                                    recycle,
+                                    top_order: keep.into_iter().rev().collect(),
+                                });
                             }
                         }
+                        out
                     }
-                    choices.push(Action::Choose { accept: false });
-                    choices
-                }
-                Decision::BattlefieldOrder { lanes, .. } => lanes
-                    .iter()
-                    .map(|&lane| Action::ChooseBattlefield { lane })
-                    .collect(),
-                Decision::TokenPlay { fixed_lane, .. } => {
-                    let lanes = if let Some(lane) = fixed_lane {
-                        vec![*lane]
-                    } else {
-                        std::iter::once(None)
+                    Decision::TriggerTargets { .. } => self.trigger_target_actions()?,
+                    Decision::TrashTarget {
+                        player,
+                        source_card_id,
+                        ..
+                    } => {
+                        let mut choices: Vec<_> = (0..self.players[*player].discard.len())
+                            .filter(|&i| self.trash_target_valid(*player, *source_card_id, i))
+                            .map(|i| Action::SelectCards { indices: vec![i] })
+                            .collect();
+                        if choices.is_empty() {
+                            choices.push(Action::SelectCards {
+                                indices: Vec::new(),
+                            });
+                        }
+                        choices
+                    }
+                    Decision::PendingPlay { .. } => {
+                        let mut capacity = None;
+                        let mut choices = match self.pending_play_actions(32) {
+                            Ok(actions) => actions,
+                            Err(error) if crate::numeric::is_capacity(&error) => {
+                                capacity = Some(error);
+                                Vec::new()
+                            }
+                            Err(error) => return Err(error),
+                        };
+                        if choices.is_empty() {
+                            for intent in self.pending_play_actions_mode(usize::MAX, true)? {
+                                match self.funded_action_witness(&intent) {
+                                    Ok(Some(witness)) => {
+                                        if let Some(first) = witness.first() {
+                                            choices.push(first.clone());
+                                        }
+                                        break;
+                                    }
+                                    Ok(None) => {}
+                                    Err(error) if crate::numeric::is_capacity(&error) => {
+                                        capacity = Some(error)
+                                    }
+                                    Err(error) => return Err(error),
+                                }
+                            }
+                        }
+                        if choices.is_empty()
+                            && let Some(error) = capacity
+                        {
+                            return Err(error);
+                        }
+                        choices.push(Action::Choose { accept: false });
+                        choices
+                    }
+                    Decision::BattlefieldOrder { lanes, .. } => lanes
+                        .iter()
+                        .map(|&lane| Action::ChooseBattlefield { lane })
+                        .collect(),
+                    Decision::TokenPlay { fixed_lane, .. } => {
+                        let lanes = if let Some(lane) = fixed_lane {
+                            vec![*lane]
+                        } else {
+                            std::iter::once(None)
+                                .chain(
+                                    (0..BATTLEFIELDS)
+                                        .filter(|&l| self.battlefield_owner[l] == Some(player))
+                                        .map(Some),
+                                )
+                                .collect()
+                        };
+                        lanes
+                            .into_iter()
+                            .flat_map(|lane| {
+                                [true, false].into_iter().map(move |accelerate| {
+                                    Action::FinalizeTokenPlay { lane, accelerate }
+                                })
+                            })
+                            .collect()
+                    }
+                    Decision::TokenPlacement { player, .. } => {
+                        std::iter::once(Action::PlaceToken { lane: None })
                             .chain(
                                 (0..BATTLEFIELDS)
-                                    .filter(|&l| self.battlefield_owner[l] == Some(player))
-                                    .map(Some),
+                                    .filter(|&lane| self.battlefield_owner[lane] == Some(*player))
+                                    .map(|lane| Action::PlaceToken { lane: Some(lane) }),
                             )
                             .collect()
-                    };
-                    lanes
-                        .into_iter()
-                        .flat_map(|lane| {
-                            [true, false].into_iter().map(move |accelerate| {
-                                Action::FinalizeTokenPlay { lane, accelerate }
+                    }
+                    Decision::ResolutionTargets { groups, .. } => (0..groups.len())
+                        .map(|index| Action::ChooseResolutionGroup { index })
+                        .collect(),
+                    Decision::OrderTriggers { options, .. } => options
+                        .iter()
+                        .map(|o| Action::OrderTrigger { trigger_id: o.id })
+                        .collect(),
+                    Decision::OnPlayTarget { .. } => self
+                        .players
+                        .iter()
+                        .enumerate()
+                        .flat_map(|(owner, state)| {
+                            state.units.iter().map(move |u| Action::ChooseTarget {
+                                target: Some(Target::Unit {
+                                    player: owner,
+                                    unit_id: u.id,
+                                }),
                             })
                         })
-                        .filter(|a| self.clone().apply(a.clone()).is_ok())
-                        .collect()
-                }
-                Decision::TokenPlacement { player, .. } => {
-                    std::iter::once(Action::PlaceToken { lane: None })
-                        .chain(
-                            (0..BATTLEFIELDS)
-                                .filter(|&lane| self.battlefield_owner[lane] == Some(*player))
-                                .map(|lane| Action::PlaceToken { lane: Some(lane) }),
-                        )
-                        .collect()
-                }
-                Decision::ResolutionTargets { groups, .. } => (0..groups.len())
-                    .map(|index| Action::ChooseResolutionGroup { index })
-                    .collect(),
-                Decision::OrderTriggers { options, .. } => options
-                    .iter()
-                    .map(|o| Action::OrderTrigger { trigger_id: o.id })
-                    .collect(),
-                Decision::OnPlayTarget { .. } => self
-                    .players
-                    .iter()
-                    .enumerate()
-                    .flat_map(|(owner, state)| {
-                        state.units.iter().map(move |u| Action::ChooseTarget {
+                        .collect(),
+                    Decision::DeathReplacement { options, .. } => options
+                        .iter()
+                        .map(|choice| Action::ChooseDeathReplacement {
+                            unit_id: choice.unit_id,
+                            gear_id: choice.gear_id,
+                        })
+                        .collect(),
+                    Decision::CombatDamage {
+                        player,
+                        lane,
+                        total,
+                    } => vec![Action::AssignDamage {
+                        assignments: self.automatic_damage_assignment(*player, *lane, *total)?,
+                    }],
+                    Decision::Discard { count, .. } => {
+                        let needed = (*count as usize).min(self.players[player].hand.len());
+                        if needed == 1 {
+                            (0..self.players[player].hand.len())
+                                .map(|i| Action::SelectCards { indices: vec![i] })
+                                .collect()
+                        } else {
+                            vec![Action::SelectCards {
+                                indices: (0..needed).collect(),
+                            }]
+                        }
+                    }
+                    Decision::TopThree { cards, .. } => (0..cards.len())
+                        .map(|i| Action::SelectCards { indices: vec![i] })
+                        .chain(std::iter::once(Action::SelectCards {
+                            indices: Vec::new(),
+                        }))
+                        .collect(),
+                    Decision::Sabotage { opponent, .. } => (0..self.players[*opponent].hand.len())
+                        .map(|i| Action::SelectCards { indices: vec![i] })
+                        .chain(std::iter::once(Action::SelectCards {
+                            indices: Vec::new(),
+                        }))
+                        .collect(),
+                    Decision::GrantFlow { .. } => (0..self.players[player].discard.len())
+                        .map(|i| Action::SelectCards { indices: vec![i] })
+                        .chain(std::iter::once(Action::SelectCards {
+                            indices: Vec::new(),
+                        }))
+                        .collect(),
+                    Decision::LastRites { .. }
+                    | Decision::ReplaySpell { .. }
+                    | Decision::ReviveUnit { .. } => (0..self.players[player].discard.len())
+                        .flat_map(|trash_index| {
+                            [None, Some(0), Some(1)].map(move |lane| Action::PlayFromTrash {
+                                trash_index,
+                                lane,
+                                target: None,
+                            })
+                        })
+                        .chain(std::iter::once(Action::Choose { accept: false }))
+                        .collect(),
+                    Decision::RevivePlay { trash_index, .. } => [false, true]
+                        .into_iter()
+                        .map(|accelerate| Action::PlayFromTrashOptions {
+                            trash_index: *trash_index,
+                            lane: None,
+                            targets: Vec::new(),
+                            repeat_targets: Vec::new(),
+                            repeat: false,
+                            accelerate,
+                            bonus: false,
+                            flow: None,
+                        })
+                        .collect(),
+                    Decision::SwapUnit { .. } | Decision::EmpowerHere { .. } => self.players
+                        [player]
+                        .units
+                        .iter()
+                        .map(|u| Action::ChooseTarget {
                             target: Some(Target::Unit {
-                                player: owner,
+                                player,
                                 unit_id: u.id,
                             }),
                         })
-                    })
-                    .collect(),
-                Decision::DeathReplacement { options, .. } => options
-                    .iter()
-                    .map(|choice| Action::ChooseDeathReplacement {
-                        unit_id: choice.unit_id,
-                        gear_id: choice.gear_id,
-                    })
-                    .collect(),
-                Decision::CombatDamage {
-                    player,
-                    lane,
-                    total,
-                } => vec![Action::AssignDamage {
-                    assignments: self.automatic_damage_assignment(*player, *lane, *total),
-                }],
-                Decision::Discard { count, .. } => {
-                    let needed = (*count as usize).min(self.players[player].hand.len());
-                    if needed == 1 {
-                        (0..self.players[player].hand.len())
-                            .map(|i| Action::SelectCards { indices: vec![i] })
-                            .collect()
-                    } else {
-                        vec![Action::SelectCards {
-                            indices: (0..needed).collect(),
-                        }]
-                    }
+                        .chain(std::iter::once(Action::ChooseTarget { target: None }))
+                        .chain(std::iter::once(Action::Choose { accept: false }))
+                        .collect(),
+                    _ => vec![
+                        Action::Choose { accept: false },
+                        Action::Choose { accept: true },
+                    ],
+                };
+                if self.resource_payment_pending() {
+                    actions.extend(self.ability_actions(player));
+                    actions.extend(self.gear_actions(player));
+                    actions.extend(self.legend_actions(player));
+                    actions.extend(self.rune_actions(player));
                 }
-                Decision::TopThree { cards, .. } => (0..cards.len())
-                    .map(|i| Action::SelectCards { indices: vec![i] })
-                    .chain(std::iter::once(Action::SelectCards {
-                        indices: Vec::new(),
-                    }))
-                    .collect(),
-                Decision::Sabotage { opponent, .. } => (0..self.players[*opponent].hand.len())
-                    .map(|i| Action::SelectCards { indices: vec![i] })
-                    .chain(std::iter::once(Action::SelectCards {
-                        indices: Vec::new(),
-                    }))
-                    .collect(),
-                Decision::GrantFlow { .. } => (0..self.players[player].discard.len())
-                    .map(|i| Action::SelectCards { indices: vec![i] })
-                    .chain(std::iter::once(Action::SelectCards {
-                        indices: Vec::new(),
-                    }))
-                    .collect(),
-                Decision::LastRites { .. }
-                | Decision::ReplaySpell { .. }
-                | Decision::ReviveUnit { .. } => (0..self.players[player].discard.len())
-                    .flat_map(|trash_index| {
-                        [None, Some(0), Some(1)].map(move |lane| Action::PlayFromTrash {
-                            trash_index,
-                            lane,
-                            target: None,
-                        })
-                    })
-                    .chain(std::iter::once(Action::Choose { accept: false }))
-                    .collect(),
-                Decision::RevivePlay { trash_index, .. } => [false, true]
-                    .into_iter()
-                    .map(|accelerate| Action::PlayFromTrashOptions {
-                        trash_index: *trash_index,
+                let mut capacity = None;
+                actions.retain(|action| match self.probe_action(action) {
+                    Ok(()) => true,
+                    Err(error) => {
+                        if crate::numeric::is_capacity(&error) {
+                            capacity = Some(error);
+                        }
+                        false
+                    }
+                });
+                if actions.is_empty()
+                    && let Some(error) = capacity
+                {
+                    return Err(error);
+                }
+                return Ok(actions);
+            }
+            let mut actions = self.rune_actions(self.priority());
+            for (hand_index, &id) in self.players[self.priority()].hand.iter().enumerate() {
+                if rules::play_target_spec(id).kind == Some(rules::PlayTargetKind::Battlefield) {
+                    actions.extend(
+                        self.card_target_candidates(self.priority(), id, None, &[])?
+                            .into_iter()
+                            .map(|target| Action::PlayCardWithTargets {
+                                hand_index,
+                                lane: None,
+                                targets: vec![target],
+                            }),
+                    );
+                }
+                if self.validate_play(id, None, None).is_ok() {
+                    actions.push(Action::PlayCard {
+                        hand_index,
                         lane: None,
-                        targets: Vec::new(),
-                        repeat_targets: Vec::new(),
-                        repeat: false,
-                        accelerate,
-                        bonus: false,
-                        flow: None,
-                    })
-                    .collect(),
-                Decision::SwapUnit { .. } | Decision::EmpowerHere { .. } => self.players[player]
-                    .units
-                    .iter()
-                    .map(|u| Action::ChooseTarget {
-                        target: Some(Target::Unit {
-                            player,
-                            unit_id: u.id,
-                        }),
-                    })
-                    .chain(std::iter::once(Action::ChooseTarget { target: None }))
-                    .chain(std::iter::once(Action::Choose { accept: false }))
-                    .collect(),
-                _ => vec![
-                    Action::Choose { accept: false },
-                    Action::Choose { accept: true },
-                ],
-            };
-            if self.resource_payment_pending() {
-                actions.extend(self.ability_actions(player));
-                actions.extend(self.gear_actions(player));
-                actions.extend(self.legend_actions(player));
-                actions.extend(self.rune_actions(player));
+                        target: None,
+                    });
+                }
             }
-            actions.retain(|action| self.clone().apply(action.clone()).is_ok());
-            return actions;
-        }
-        let mut actions = self.rune_actions(self.priority());
-        for (hand_index, &id) in self.players[self.priority()].hand.iter().enumerate() {
-            if rules::play_target_spec(id).kind == Some(rules::PlayTargetKind::Battlefield) {
-                actions.extend(
-                    self.card_target_candidates(self.priority(), id, None, &[])
-                        .into_iter()
-                        .map(|target| Action::PlayCardWithTargets {
-                            hand_index,
-                            lane: None,
-                            targets: vec![target],
-                        }),
-                );
-            }
-            if self.validate_play(id, None, None).is_ok() {
-                actions.push(Action::PlayCard {
-                    hand_index,
+            if self.players[self.priority()]
+                .champion
+                .is_some_and(|id| self.validate_play(id, None, None).is_ok())
+            {
+                actions.push(Action::PlayChampion {
                     lane: None,
                     target: None,
                 });
             }
-        }
-        if self.players[self.priority()]
-            .champion
-            .is_some_and(|id| self.validate_play(id, None, None).is_ok())
-        {
-            actions.push(Action::PlayChampion {
-                lane: None,
-                target: None,
-            });
-        }
-        actions.extend(self.canonical_play_candidates(24));
-        actions.extend(self.conversion_play_actions());
-        actions.extend(self.gear_actions(self.priority()));
-        actions.extend(self.ability_actions(self.priority()));
-        actions.extend(self.hidden_actions(self.priority()));
-        for unit in &self.players[self.priority()].units {
-            if matches!(unit.card_id, 24 | 45) && !unit.token {
-                for pay_power in [false, true] {
-                    let action = Action::EmpowerUnit {
-                        unit_id: unit.id,
-                        pay_power,
-                    };
-                    if self.clone().apply(action.clone()).is_ok() {
-                        actions.push(action);
-                    }
-                }
-            }
-        }
-        actions.extend(self.legend_actions(self.priority()));
-        for trash_index in 0..self.players[self.priority()].discard.len() {
-            let id = self.players[self.priority()].discard[trash_index];
-            if rules::play_target_spec(id).kind == Some(rules::PlayTargetKind::Battlefield) {
-                actions.extend(
-                    self.card_target_candidates(self.priority(), id, None, &[])
-                        .into_iter()
-                        .map(|target| Action::PlayFromTrashWithTargets {
-                            trash_index,
-                            lane: None,
-                            targets: vec![target],
-                        }),
-                );
-            }
-            let action = Action::PlayFromTrash {
-                trash_index,
-                lane: None,
-                target: None,
-            };
-            if self.clone().apply(action.clone()).is_ok() {
-                actions.push(action);
-            }
-        }
-        actions.retain(|action| self.clone().apply(action.clone()).is_ok());
-        if self.in_window() {
-            actions.push(Action::Pass);
-            return actions;
-        }
-        for unit in &self.players[self.priority()].units {
-            if !unit.ready || self.movement_locks.contains(&(self.priority(), unit.id)) {
-                continue;
-            }
-            if unit.lane.is_none() {
-                for lane in 0..BATTLEFIELDS {
-                    actions.push(Action::Move {
-                        unit_id: unit.id,
-                        lane: Some(lane),
-                    });
-                }
-            } else {
-                actions.push(Action::Move {
-                    unit_id: unit.id,
-                    lane: None,
-                });
-                if self.unit_keywords(unit).ganking {
-                    for lane in 0..BATTLEFIELDS {
-                        if unit.lane != Some(lane) {
-                            actions.push(Action::Move {
-                                unit_id: unit.id,
-                                lane: Some(lane),
-                            });
+            actions.extend(self.canonical_play_candidates(24)?);
+            actions.extend(self.conversion_play_actions());
+            actions.extend(self.gear_actions(self.priority()));
+            actions.extend(self.ability_actions(self.priority()));
+            actions.extend(self.hidden_actions(self.priority()));
+            for unit in &self.players[self.priority()].units {
+                if matches!(unit.card_id, 24 | 45) && !unit.token {
+                    for pay_power in [false, true] {
+                        let action = Action::EmpowerUnit {
+                            unit_id: unit.id,
+                            pay_power,
+                        };
+                        if self.clone().apply(action.clone()).is_ok() {
+                            actions.push(action);
                         }
                     }
                 }
             }
-        }
-        for lane in 0..BATTLEFIELDS {
-            if self.contested(lane) {
-                actions.push(Action::Attack { lane });
+            actions.extend(self.legend_actions(self.priority()));
+            for trash_index in 0..self.players[self.priority()].discard.len() {
+                let id = self.players[self.priority()].discard[trash_index];
+                if rules::play_target_spec(id).kind == Some(rules::PlayTargetKind::Battlefield) {
+                    actions.extend(
+                        self.card_target_candidates(self.priority(), id, None, &[])?
+                            .into_iter()
+                            .map(|target| Action::PlayFromTrashWithTargets {
+                                trash_index,
+                                lane: None,
+                                targets: vec![target],
+                            }),
+                    );
+                }
+                let action = Action::PlayFromTrash {
+                    trash_index,
+                    lane: None,
+                    target: None,
+                };
+                if self.clone().apply(action.clone()).is_ok() {
+                    actions.push(action);
+                }
             }
-        }
-        actions.push(Action::EndTurn);
-        actions
+            actions.retain(|action| self.clone().apply(action.clone()).is_ok());
+            if self.in_window() {
+                actions.push(Action::Pass);
+                return Ok(actions);
+            }
+            for unit in &self.players[self.priority()].units {
+                if !unit.ready || self.movement_locks.contains(&(self.priority(), unit.id)) {
+                    continue;
+                }
+                if unit.lane.is_none() {
+                    for lane in 0..BATTLEFIELDS {
+                        actions.push(Action::Move {
+                            unit_id: unit.id,
+                            lane: Some(lane),
+                        });
+                    }
+                } else {
+                    actions.push(Action::Move {
+                        unit_id: unit.id,
+                        lane: None,
+                    });
+                    if self.unit_keywords(unit)?.ganking {
+                        for lane in 0..BATTLEFIELDS {
+                            if unit.lane != Some(lane) {
+                                actions.push(Action::Move {
+                                    unit_id: unit.id,
+                                    lane: Some(lane),
+                                });
+                            }
+                        }
+                    }
+                }
+            }
+            for lane in 0..BATTLEFIELDS {
+                if self.contested(lane) {
+                    actions.push(Action::Attack { lane });
+                }
+            }
+            actions.push(Action::EndTurn);
+            actions
+        })
     }
 
     /// Executes exactly one action for the active player. The renderer owns the
@@ -5430,9 +5441,13 @@ impl Game {
         if self.applying_action {
             return self.step_ai_inner();
         }
+        self.validate_numeric_state()?;
         let original = self.clone();
         self.applying_action = true;
-        let result = self.step_ai_inner();
+        let result = self.step_ai_inner().and_then(|changed| {
+            self.validate_numeric_state()?;
+            Ok(changed)
+        });
         if result.is_err() {
             *self = original;
         } else {
@@ -5461,11 +5476,11 @@ impl Game {
             action
         } else {
             self.ai_resource_witness = None;
-            self.choose_ai_action()
+            self.choose_ai_action()?
         };
         let witness = if let Action::BeginPayment { action: intent } = &action {
             if self.decision.is_some() {
-                self.funded_action_witness(intent)
+                self.funded_action_witness(intent)?
             } else {
                 self.funded_suggestion_witness(intent, 48)
             }
@@ -5623,7 +5638,7 @@ impl Game {
                 return Err("Deploy a unit at your base or a battlefield you control.".into());
             }
         }
-        if !self.can_afford(self.priority(), card) {
+        if !self.can_afford(self.priority(), card)? {
             return Err(format!(
                 "Need {} energy and {} {:?} power. Power recycles a matching rune.",
                 card.cost, card.power_cost, card.domain
@@ -5746,7 +5761,7 @@ impl Game {
         }
         let mut targets = Vec::new();
         for &target in provided {
-            if !self.official_target_valid(actor, id, lane, target, targets.len()) {
+            if !self.official_target_valid(actor, id, lane, target, targets.len())? {
                 return Err(
                     "This target does not meet the card's printed targeting restrictions.".into(),
                 );
@@ -5772,10 +5787,10 @@ impl Game {
         };
         while targets.len() < desired {
             let mut candidates = Vec::new();
-            for target in self.card_target_candidates(actor, id, lane, &targets) {
+            for target in self.card_target_candidates(actor, id, lane, &targets)? {
                 if let Target::Battlefield { lane } = target {
-                    let value = self.area_damage_score(actor, id, &[target]);
-                    candidates.push((value * 100 - lane as i32, target));
+                    let value = self.area_damage_score(actor, id, &[target])?;
+                    candidates.push((value * 100 - lane as i128, target));
                     continue;
                 }
                 let Some(unit) = self.unit_ref(target) else {
@@ -5811,7 +5826,7 @@ impl Game {
                         0
                     }
                     + if unit.lane.is_some() { 50 } else { 0 }
-                    + self.unit_might(unit) as i32;
+                    + i128::from(self.unit_might(unit)?);
                 candidates.push((rank, target));
             }
             let Some((_, target)) = candidates.into_iter().max_by_key(|(rank, _)| *rank) else {
@@ -5844,50 +5859,55 @@ impl Game {
         card_id: CardId,
         lane: Option<usize>,
         prior: &[Target],
-    ) -> Vec<Target> {
-        if player >= self.players.len()
-            || card_id >= self.catalog.len()
-            || lane.is_some_and(|l| l >= BATTLEFIELDS)
-        {
-            return vec![];
-        }
-        let targets: Vec<_> = match rules::play_target_spec(card_id).kind {
-            Some(rules::PlayTargetKind::Battlefield) => (0..BATTLEFIELDS)
-                .map(|lane| Target::Battlefield { lane })
-                .collect(),
-            Some(rules::PlayTargetKind::Spell) => self
-                .chain
-                .iter()
-                .map(|item| Target::Spell { chain_id: item.id })
-                .collect(),
-            Some(rules::PlayTargetKind::Gear) => self
-                .players
-                .iter()
-                .enumerate()
-                .flat_map(|(player, p)| {
-                    p.gear.iter().map(move |g| Target::Gear {
-                        player,
-                        gear_id: g.id,
+    ) -> Result<Vec<Target>, String> {
+        Ok({
+            if player >= self.players.len()
+                || card_id >= self.catalog.len()
+                || lane.is_some_and(|l| l >= BATTLEFIELDS)
+            {
+                return Ok(vec![]);
+            }
+            let targets: Vec<_> = match rules::play_target_spec(card_id).kind {
+                Some(rules::PlayTargetKind::Battlefield) => (0..BATTLEFIELDS)
+                    .map(|lane| Target::Battlefield { lane })
+                    .collect(),
+                Some(rules::PlayTargetKind::Spell) => self
+                    .chain
+                    .iter()
+                    .map(|item| Target::Spell { chain_id: item.id })
+                    .collect(),
+                Some(rules::PlayTargetKind::Gear) => self
+                    .players
+                    .iter()
+                    .enumerate()
+                    .flat_map(|(player, p)| {
+                        p.gear.iter().map(move |g| Target::Gear {
+                            player,
+                            gear_id: g.id,
+                        })
                     })
-                })
-                .collect(),
-            Some(rules::PlayTargetKind::Unit) => self
-                .players
-                .iter()
-                .enumerate()
-                .flat_map(|(player, p)| {
-                    p.units.iter().map(move |u| Target::Unit {
-                        player,
-                        unit_id: u.id,
+                    .collect(),
+                Some(rules::PlayTargetKind::Unit) => self
+                    .players
+                    .iter()
+                    .enumerate()
+                    .flat_map(|(player, p)| {
+                        p.units.iter().map(move |u| Target::Unit {
+                            player,
+                            unit_id: u.id,
+                        })
                     })
-                })
-                .collect(),
-            None => vec![],
-        };
-        targets
-            .into_iter()
-            .filter(|&t| self.valid_card_target(player, card_id, lane, t, prior))
-            .collect()
+                    .collect(),
+                None => vec![],
+            };
+            let mut valid = Vec::new();
+            for t in targets {
+                if self.valid_card_target(player, card_id, lane, t, prior)? {
+                    valid.push(t);
+                }
+            }
+            valid
+        })
     }
 
     pub fn valid_card_target(
@@ -5897,20 +5917,22 @@ impl Game {
         lane: Option<usize>,
         target: Target,
         prior: &[Target],
-    ) -> bool {
-        if card_id >= self.catalog.len()
-            || player >= self.players.len()
-            || lane.is_some_and(|l| l >= BATTLEFIELDS)
-            || prior.len() >= rules::play_target_spec(card_id).maximum
-        {
-            return false;
-        }
-        for (i, &earlier) in prior.iter().enumerate() {
-            if !self.target_append_valid(player, card_id, lane, earlier, &prior[..i]) {
-                return false;
+    ) -> Result<bool, String> {
+        Ok({
+            if card_id >= self.catalog.len()
+                || player >= self.players.len()
+                || lane.is_some_and(|l| l >= BATTLEFIELDS)
+                || prior.len() >= rules::play_target_spec(card_id).maximum
+            {
+                return Ok(false);
             }
-        }
-        self.target_append_valid(player, card_id, lane, target, prior)
+            for (i, &earlier) in prior.iter().enumerate() {
+                if !self.target_append_valid(player, card_id, lane, earlier, &prior[..i])? {
+                    return Ok(false);
+                }
+            }
+            self.target_append_valid(player, card_id, lane, target, prior)?
+        })
     }
 
     fn target_append_valid(
@@ -5920,13 +5942,15 @@ impl Game {
         lane: Option<usize>,
         target: Target,
         prior: &[Target],
-    ) -> bool {
-        self.official_target_valid(player, card_id, lane, target, prior.len())
-            && (!rules::targeting(card_id).distinct || !prior.contains(&target))
-            && (!rules::targeting(card_id).same_location
-                || prior.first().is_none_or(|&first| {
-                    self.target_location(first) == self.target_location(target)
-                }))
+    ) -> Result<bool, String> {
+        Ok({
+            self.official_target_valid(player, card_id, lane, target, prior.len())?
+                && (!rules::targeting(card_id).distinct || !prior.contains(&target))
+                && (!rules::targeting(card_id).same_location
+                    || prior.first().is_none_or(|&first| {
+                        self.target_location(first) == self.target_location(target)
+                    }))
+        })
     }
 
     /// Target prohibitions shared by spells and chosen activated abilities.
@@ -5958,86 +5982,100 @@ impl Game {
         destination: Option<usize>,
         target: Target,
         slot: usize,
-    ) -> bool {
-        if actor >= self.players.len()
-            || id >= self.catalog.len()
-            || destination.is_some_and(|lane| lane >= BATTLEFIELDS)
-        {
-            return false;
-        }
-        match rules::effect(id) {
-            OfficialEffect::AreaDamage {
-                selector: rules::AreaSelector::EnemyAtTargetBattlefield,
-                ..
-            } => {
-                return matches!(target, Target::Battlefield { lane } if lane < BATTLEFIELDS);
+    ) -> Result<bool, String> {
+        Ok({
+            if actor >= self.players.len()
+                || id >= self.catalog.len()
+                || destination.is_some_and(|lane| lane >= BATTLEFIELDS)
+            {
+                return Ok(false);
             }
-            OfficialEffect::Counter(_) => {
-                return matches!(target, Target::Spell { chain_id } if self.counter_target_valid(actor, id, chain_id));
+            match rules::effect(id) {
+                OfficialEffect::AreaDamage {
+                    selector: rules::AreaSelector::EnemyAtTargetBattlefield,
+                    ..
+                } => {
+                    return Ok(
+                        matches!(target, Target::Battlefield { lane } if lane < BATTLEFIELDS),
+                    );
+                }
+                OfficialEffect::Counter(_) => {
+                    return Ok(
+                        matches!(target, Target::Spell { chain_id } if self.counter_target_valid(actor, id, chain_id)),
+                    );
+                }
+                OfficialEffect::DestroyGearAndDraw | OfficialEffect::TemporaryGear => {
+                    return Ok(
+                        matches!(target, Target::Gear { player, gear_id } if self.players.get(player).is_some_and(|p| p.gear.iter().any(|g| g.id == gear_id))),
+                    );
+                }
+                _ => {}
             }
-            OfficialEffect::DestroyGearAndDraw | OfficialEffect::TemporaryGear => {
-                return matches!(target, Target::Gear { player, gear_id } if self.players.get(player).is_some_and(|p| p.gear.iter().any(|g| g.id == gear_id)));
+            let Target::Unit { player, unit_id } = target else {
+                return Ok(false);
+            };
+            let Some(unit) = self
+                .players
+                .get(player)
+                .and_then(|p| p.units.iter().find(|u| u.id == unit_id))
+            else {
+                return Ok(false);
+            };
+            if !self.can_choose_unit(actor, target) {
+                return Ok(false);
             }
-            _ => {}
-        }
-        let Target::Unit { player, unit_id } = target else {
-            return false;
-        };
-        let Some(unit) = self
-            .players
-            .get(player)
-            .and_then(|p| p.units.iter().find(|u| u.id == unit_id))
-        else {
-            return false;
-        };
-        if !self.can_choose_unit(actor, target) {
-            return false;
-        }
-        match rules::targeting(id).allegiance {
-            Allegiance::Friendly if player != actor => return false,
-            Allegiance::Enemy if player == actor => return false,
-            Allegiance::Mixed if (slot == 0) != (player == actor) => return false,
-            _ => {}
-        }
-        match rules::effect(id) {
-            OfficialEffect::Kill {
-                battlefield_only,
-                max_might,
-            } => {
-                (!battlefield_only || unit.lane.is_some())
-                    && max_might.is_none_or(|limit| self.unit_might(unit) <= limit)
+            match rules::targeting(id).allegiance {
+                Allegiance::Friendly if player != actor => return Ok(false),
+                Allegiance::Enemy if player == actor => return Ok(false),
+                Allegiance::Mixed if (slot == 0) != (player == actor) => return Ok(false),
+                _ => {}
             }
-            OfficialEffect::ContextualDamage(_) | OfficialEffect::DamageAndGold { .. } => {
-                unit.lane.is_some()
+            match rules::effect(id) {
+                OfficialEffect::Kill {
+                    battlefield_only,
+                    max_might,
+                } => {
+                    (!battlefield_only || unit.lane.is_some())
+                        && match max_might {
+                            None => true,
+                            Some(limit) => self.unit_might(unit)? <= u64::from(limit),
+                        }
+                }
+                OfficialEffect::ContextualDamage(_) | OfficialEffect::DamageAndGold { .. } => {
+                    unit.lane.is_some()
+                }
+                OfficialEffect::ContextualMight(rules::SpellMight::EnemiesHere { .. }) => {
+                    unit.lane.is_some()
+                }
+                OfficialEffect::Fight { .. } if id == 217 && slot == 1 => unit.lane.is_some(),
+                OfficialEffect::Damage {
+                    battlefield_only, ..
+                } => !battlefield_only || unit.lane.is_some(),
+                OfficialEffect::Bounce {
+                    max_might,
+                    battlefield_only,
+                } => {
+                    (!battlefield_only || unit.lane.is_some())
+                        && match max_might {
+                            None => true,
+                            Some(limit) => self.unit_might(unit)? <= u64::from(limit),
+                        }
+                }
+                OfficialEffect::MoveFriendlyToBase { .. } => unit.lane.is_some(),
+                OfficialEffect::MoveEnemy | OfficialEffect::MoveFriendlyAndReady => {
+                    unit.lane != destination && destination.is_none_or(|l| l < BATTLEFIELDS)
+                }
+                OfficialEffect::SwapMight => unit.lane.is_some(),
+                OfficialEffect::ReadyAnother => true,
+                OfficialEffect::BuffAnother => player == actor,
+                _ => true,
             }
-            OfficialEffect::ContextualMight(rules::SpellMight::EnemiesHere { .. }) => {
-                unit.lane.is_some()
-            }
-            OfficialEffect::Fight { .. } if id == 217 && slot == 1 => unit.lane.is_some(),
-            OfficialEffect::Damage {
-                battlefield_only, ..
-            } => !battlefield_only || unit.lane.is_some(),
-            OfficialEffect::Bounce {
-                max_might,
-                battlefield_only,
-            } => {
-                (!battlefield_only || unit.lane.is_some())
-                    && max_might.is_none_or(|max| self.unit_might(unit) <= max)
-            }
-            OfficialEffect::MoveFriendlyToBase { .. } => unit.lane.is_some(),
-            OfficialEffect::MoveEnemy | OfficialEffect::MoveFriendlyAndReady => {
-                unit.lane != destination && destination.is_none_or(|l| l < BATTLEFIELDS)
-            }
-            OfficialEffect::SwapMight => unit.lane.is_some(),
-            OfficialEffect::ReadyAnother => true,
-            OfficialEffect::BuffAnother => player == actor,
-            _ => true,
-        }
+        })
     }
 
     pub(crate) fn spend(&mut self, player: usize, id: CardId) -> Result<(), String> {
         let card = self.catalog[id];
-        let energy = self.effective_cost(player, &card);
+        let energy = self.effective_cost(player, &card)?;
         if self.payment_bypasses_cost_checks(player) {
             self.pay_energy(player, energy.into());
             return self.consume_power(
@@ -6089,19 +6127,25 @@ impl Game {
             .find(|unit| unit.id == unit_id)
     }
 
-    pub(crate) fn modify_might(&mut self, target: Target, amount: i16, minimum: u8) {
+    pub(crate) fn modify_might(
+        &mut self,
+        target: Target,
+        amount: i128,
+        minimum: u64,
+    ) -> Result<(), String> {
         let Some(unit) = self.unit_ref(target) else {
-            return;
+            return Ok(());
         };
-        let before = self.unit_might(unit) as i16;
+        let before = i128::from(self.unit_might(unit)?);
         let delta = if amount < 0 && minimum > 0 {
-            amount.max(minimum.min(before as u8) as i16 - before)
+            amount.max(i128::from(minimum).min(before) - before)
         } else {
             amount
         };
-        if let Some(unit) = self.unit_mut(target) {
-            unit.temporary_buff += delta;
-        }
+        let result =
+            crate::numeric::signed(i128::from(unit.temporary_buff) + delta, "temporary Might")?;
+        self.unit_mut(target).unwrap().temporary_buff = result;
+        Ok(())
     }
 
     pub(crate) fn move_effect(
@@ -6110,26 +6154,26 @@ impl Game {
         target: Target,
         destination: Option<usize>,
         ready: bool,
-    ) {
+    ) -> Result<(), String> {
         let Target::Unit { player, unit_id } = target else {
-            return;
+            return Ok(());
         };
         let Some(index) = self.players[player]
             .units
             .iter()
             .position(|u| u.id == unit_id)
         else {
-            return;
+            return Ok(());
         };
         let old = self.players[player].units[index].lane;
         if actor == player && self.movement_locks.contains(&(player, unit_id)) {
             if ready {
                 self.ready_unit(player, unit_id);
             }
-            return;
+            return Ok(());
         }
         if old == destination {
-            return;
+            return Ok(());
         }
         self.players[player].units[index].lane = destination;
         self.on_move(player, unit_id, old, destination);
@@ -6141,8 +6185,10 @@ impl Game {
             self.stage_entry(lane, player);
         }
         if let Some(old) = old {
-            self.refresh_control(old);
+            self.refresh_control(old)?;
         }
+
+        Ok(())
     }
 
     fn on_move(
@@ -6212,12 +6258,12 @@ impl Game {
         id: CardId,
         lane: Option<usize>,
         targets: Vec<Target>,
-    ) {
+    ) -> Result<(), String> {
         let card = self.catalog[id];
         if card.kind == CardKind::Gear {
             self.gear_play(player, id, targets.first().copied())
                 .expect("validated gear play");
-            return;
+            return Ok(());
         }
         self.push_log(format!(
             "{} resolves {}.",
@@ -6229,7 +6275,7 @@ impl Game {
             let legion_active = !rules::static_abilities(id).contains(&StaticAbility::LegionOnPlay)
                 || self.cards_played[player] >= 2;
             if legion_active && rules::on_play_requires_target(id) {
-                self.request_on_play_target(player, id, entering, lane);
+                self.request_on_play_target(player, id, entering, lane)?;
             } else if legion_active
                 && rules::effect(id) != OfficialEffect::None
                 && rules::effect(id) != OfficialEffect::Unsupported
@@ -6264,7 +6310,7 @@ impl Game {
                 );
             }
             if id == 261 && self.active_play.as_ref().is_some_and(|a| a.choices.bonus) {
-                self.request_on_play_target(player, id, entering, lane);
+                self.request_on_play_target(player, id, entering, lane)?;
             }
             if id == 18 {
                 self.queue_trigger_choice(
@@ -6277,14 +6323,16 @@ impl Game {
                 );
             }
             self.on_unit_played(player, entering);
-            return;
+            return Ok(());
         }
-        self.resolve_operation(player, id, lane, targets, None);
+        self.resolve_operation(player, id, lane, targets, None)?;
         if matches!(rules::effect(id), OfficialEffect::ExtraTurn) {
             self.players[player].banish.push(id);
         } else {
             self.players[player].discard.push(id);
         }
+
+        Ok(())
     }
 
     pub(crate) fn channel_runes(&mut self, player: usize, count: u8, exhausted: bool) -> u8 {
@@ -6311,7 +6359,7 @@ impl Game {
         amount: u8,
         selector: rules::AreaSelector,
         targets: &[Target],
-    ) {
+    ) -> Result<(), String> {
         let context = self
             .current_damage_context()
             .unwrap_or(damage::DamageContext {
@@ -6322,13 +6370,15 @@ impl Game {
         let packets: Vec<_> = self
             .area_damage_targets(player, selector, targets)
             .into_iter()
-            .map(|t| (t, self.damage_amount(context, t, amount)))
-            .collect();
+            .map(|t| Ok((t, self.damage_amount(context, t, amount.into())?)))
+            .collect::<Result<Vec<_>, String>>()?;
         for (target, amount) in packets {
             if let Some(unit) = self.unit_mut(target) {
-                unit.damage = unit.damage.saturating_add(amount);
+                unit.damage = crate::numeric::add_u64(unit.damage, amount, "marked damage")?;
             }
         }
+
+        Ok(())
     }
 
     fn area_damage_targets(
@@ -6367,34 +6417,44 @@ impl Game {
             .collect()
     }
 
-    fn area_damage_score(&self, player: usize, id: CardId, targets: &[Target]) -> i32 {
-        let (amount, selector) = match rules::effect(id) {
-            OfficialEffect::AreaDamage { amount, selector }
-            | OfficialEffect::ExhaustFriendlyAndDamage { amount, selector } => (amount, selector),
-            _ => return 0,
-        };
-        let context = damage::DamageContext {
-            player,
-            bonus_damage: 0,
-            dealer: damage::DamageDealer::Spell { card_id: id },
-        };
-        self.area_damage_targets(player, selector, targets)
-            .iter()
-            .map(|&target| {
+    fn area_damage_score(
+        &self,
+        player: usize,
+        id: CardId,
+        targets: &[Target],
+    ) -> Result<i128, String> {
+        Ok({
+            let (amount, selector) = match rules::effect(id) {
+                OfficialEffect::AreaDamage { amount, selector }
+                | OfficialEffect::ExhaustFriendlyAndDamage { amount, selector } => {
+                    (amount, selector)
+                }
+                _ => return Ok(0),
+            };
+            let context = damage::DamageContext {
+                player,
+                bonus_damage: 0,
+                dealer: damage::DamageDealer::Spell { card_id: id },
+            };
+            let mut score = 0_i128;
+            for target in self.area_damage_targets(player, selector, targets) {
                 let unit = self.unit_ref(target).unwrap();
                 let Target::Unit { player: owner, .. } = target else {
                     unreachable!()
                 };
-                let amount = self.damage_amount(context, target, amount);
-                let value =
-                    if amount > 0 && unit.damage.saturating_add(amount) >= self.unit_might(unit) {
-                        40 + i32::from(self.unit_might(unit)) * 4
-                    } else {
-                        i32::from(amount) * 4
-                    };
-                if owner == player { -value } else { value }
-            })
-            .sum()
+                let amount = self.damage_amount(context, target, amount.into())?;
+                let value = if amount > 0
+                    && u128::from(unit.damage) + u128::from(amount)
+                        >= u128::from(self.unit_might(unit)?)
+                {
+                    40 + i128::from(self.unit_might(unit)?) * 4
+                } else {
+                    i128::from(amount) * 4
+                };
+                score += if owner == player { -value } else { value };
+            }
+            score
+        })
     }
 
     fn resolve_operation(
@@ -6404,7 +6464,7 @@ impl Game {
         lane: Option<usize>,
         targets: Vec<Target>,
         entering: Option<u32>,
-    ) {
+    ) -> Result<(), String> {
         if id == 257 {
             self.grant_play(
                 player,
@@ -6414,7 +6474,7 @@ impl Game {
                     power: 0,
                 },
             );
-            return;
+            return Ok(());
         }
         if id == 258 {
             self.grant_play(
@@ -6425,7 +6485,7 @@ impl Game {
                     power: 2,
                 },
             );
-            return;
+            return Ok(());
         }
         if id == 261 {
             if entering.is_none() {
@@ -6436,7 +6496,7 @@ impl Game {
                 );
             } else if let Some(&target) = targets.first() {
                 if matches!(target,Target::Unit{player:owner,..}if owner!=player)
-                    && self.official_target_valid(player, 7, None, target, 0)
+                    && self.official_target_valid(player, 7, None, target, 0)?
                     && let Some(unit) = self.unit_mut(target)
                 {
                     unit.stunned = true;
@@ -6444,9 +6504,9 @@ impl Game {
             } else if let Some(unit_id) = entering {
                 let target = Target::Unit { player, unit_id };
                 self.ready_unit_by(player, player, unit_id);
-                self.buff_unit_by(player, target);
+                self.buff_unit_by(player, target)?;
             }
-            return;
+            return Ok(());
         }
         if id == 262 || id == 263 {
             self.grant_play(
@@ -6458,14 +6518,12 @@ impl Game {
                 self.queue_token_play(player, id, 0, Some(None), true);
             }
         }
-        let mut valid: Vec<Target> = targets
-            .iter()
-            .enumerate()
-            .filter_map(|(slot, &target)| {
-                self.official_target_valid(player, id, lane, target, slot)
-                    .then_some(target)
-            })
-            .collect();
+        let mut valid = Vec::new();
+        for (slot, &target) in targets.iter().enumerate() {
+            if self.official_target_valid(player, id, lane, target, slot)? {
+                valid.push(target);
+            }
+        }
         if rules::targeting(id).same_location && valid.len() > 1 {
             let location = self.target_location(valid[0]);
             valid.retain(|&target| self.target_location(target) == location);
@@ -6473,7 +6531,7 @@ impl Game {
         match rules::effect(id) {
             OfficialEffect::Kill { .. } => {
                 if let Some(&target) = valid.first() {
-                    self.kill_unit(target);
+                    self.kill_unit(target)?;
                 }
             }
             OfficialEffect::Stun => {
@@ -6491,7 +6549,7 @@ impl Game {
                 }
             }
             OfficialEffect::AreaDamage { amount, selector } => {
-                self.deal_area_damage(player, amount, selector, &valid)
+                self.deal_area_damage(player, amount, selector, &valid)?
             }
             OfficialEffect::KillAllUnits => {
                 let targets: Vec<_> = self
@@ -6505,7 +6563,7 @@ impl Game {
                         })
                     })
                     .collect();
-                self.kill_units(&targets);
+                self.kill_units(&targets)?;
             }
             OfficialEffect::Channel {
                 count,
@@ -6526,7 +6584,7 @@ impl Game {
                     self.trigger_batch += 1;
                 }
                 for unit_id in ids {
-                    self.modify_might(Target::Unit { player, unit_id }, i16::from(amount), 0);
+                    self.modify_might(Target::Unit { player, unit_id }, i128::from(amount), 0)?;
                 }
             }
             OfficialEffect::ExhaustFriendlyAndDamage { amount, selector } => {
@@ -6535,7 +6593,7 @@ impl Game {
                     self.exhaust_unit(player, unit_id);
                 }
                 self.trigger_batch += 1;
-                self.deal_area_damage(player, amount, selector, &[]);
+                self.deal_area_damage(player, amount, selector, &[])?;
             }
             effect @ (OfficialEffect::EmpoweredFight { .. }
             | OfficialEffect::DamageAndGold { .. }
@@ -6543,7 +6601,7 @@ impl Game {
             | OfficialEffect::ContextualDamage(_)
             | OfficialEffect::DrawForBattlefields { .. }
             | OfficialEffect::DrawForMighty) => {
-                self.resolve_scalar_spell(player, id, effect, &valid);
+                self.resolve_scalar_spell(player, id, effect, &valid)?;
             }
             OfficialEffect::DisruptHand => {
                 self.enqueue_decision(Decision::Sabotage {
@@ -6606,10 +6664,11 @@ impl Game {
                                 dealer: damage::DamageDealer::Ability,
                             }),
                         target,
-                        amount,
-                    );
+                        amount.into(),
+                    )?;
                     if let Some(unit) = self.unit_mut(target) {
-                        unit.damage = unit.damage.saturating_add(damage_amount);
+                        unit.damage =
+                            crate::numeric::add_u64(unit.damage, damage_amount, "marked damage")?;
                         unit.banish_on_death |= banish_on_death;
                     }
                 }
@@ -6653,7 +6712,11 @@ impl Game {
                     } else {
                         0
                     };
-                    self.modify_might(target, amount as i16 + bonus as i16, minimum);
+                    self.modify_might(
+                        target,
+                        i128::from(amount) + i128::from(bonus),
+                        minimum.into(),
+                    )?;
                     if id == 19
                         && let Some(unit) = self.unit_mut(target)
                     {
@@ -6669,8 +6732,8 @@ impl Game {
             }
             OfficialEffect::DualMight => {
                 for (slot, &target) in targets.iter().enumerate() {
-                    if self.official_target_valid(player, id, lane, target, slot) {
-                        self.modify_might(target, if slot == 0 { 2 } else { -2 }, 0);
+                    if self.official_target_valid(player, id, lane, target, slot)? {
+                        self.modify_might(target, if slot == 0 { 2 } else { -2 }, 0)?;
                     }
                 }
             }
@@ -6681,41 +6744,33 @@ impl Game {
             }
             OfficialEffect::MoveFriendlyToBase { .. } => {
                 for target in valid {
-                    self.move_effect(player, target, None, false);
+                    self.move_effect(player, target, None, false)?;
                 }
             }
             OfficialEffect::MoveEnemy => {
                 for target in valid {
-                    self.move_effect(player, target, lane, false);
+                    self.move_effect(player, target, lane, false)?;
                 }
             }
             OfficialEffect::MoveFriendlyAndReady => {
                 for target in valid {
-                    self.move_effect(player, target, lane, true);
+                    self.move_effect(player, target, lane, true)?;
                 }
             }
             OfficialEffect::SwapMight => {
                 if valid.len() == 2 && self.target_lane(valid[0]) == self.target_lane(valid[1]) {
-                    let first = self.actual_unit_might(self.unit_ref(valid[0]).unwrap());
-                    let second = self.actual_unit_might(self.unit_ref(valid[1]).unwrap());
-                    self.modify_might(valid[0], second - first, 0);
-                    self.modify_might(valid[1], first - second, 0);
+                    let first = self.actual_unit_might(self.unit_ref(valid[0]).unwrap())?;
+                    let second = self.actual_unit_might(self.unit_ref(valid[1]).unwrap())?;
+                    self.modify_might(valid[0], i128::from(second) - i128::from(first), 0)?;
+                    self.modify_might(valid[1], i128::from(first) - i128::from(second), 0)?;
                 }
             }
             OfficialEffect::Fight { .. } => {
                 if valid.len() == 2 {
-                    let first = self.unit_might(self.unit_ref(valid[0]).unwrap());
-                    let second = self.unit_might(self.unit_ref(valid[1]).unwrap());
-                    self.unit_mut(valid[0]).unwrap().damage = self
-                        .unit_ref(valid[0])
-                        .unwrap()
-                        .damage
-                        .saturating_add(second);
-                    self.unit_mut(valid[1]).unwrap().damage = self
-                        .unit_ref(valid[1])
-                        .unwrap()
-                        .damage
-                        .saturating_add(first);
+                    let first = self.unit_might(self.unit_ref(valid[0]).unwrap())?;
+                    let second = self.unit_might(self.unit_ref(valid[1]).unwrap())?;
+                    self.mark_damage(valid[0], second)?;
+                    self.mark_damage(valid[1], first)?;
                 }
             }
             OfficialEffect::ReadyAnother => {
@@ -6736,7 +6791,7 @@ impl Game {
                 {
                     let id = unit.id;
                     let _ = id;
-                    self.buff_unit(target);
+                    self.buff_unit(target)?;
                 }
             }
             OfficialEffect::BuffSelf => {
@@ -6744,7 +6799,7 @@ impl Game {
                     && self.unit_ref(Target::Unit { player, unit_id }).is_some()
                     && !self.buffed_units.contains(&unit_id)
                 {
-                    self.buff_unit(Target::Unit { player, unit_id });
+                    self.buff_unit(Target::Unit { player, unit_id })?;
                 }
             }
             OfficialEffect::Tokens { count, might } => {
@@ -6773,7 +6828,7 @@ impl Game {
                     })
                     .collect();
                 for target in enemy_targets {
-                    self.modify_might(target, -(amount as i16), minimum);
+                    self.modify_might(target, -i128::from(amount), minimum.into())?;
                 }
             }
             OfficialEffect::SilenceOpponentsForTurn => self.silenced[1 - player] = true,
@@ -6790,6 +6845,8 @@ impl Game {
             | OfficialEffect::PreventNextDeathRecall => {}
         }
         // Cleanup waits until the whole chain item, including Repeat, finishes.
+
+        Ok(())
     }
 
     fn resolve_trigger(
@@ -6827,7 +6884,7 @@ impl Game {
             }
             TriggeredAbility::Draw(count) => self.draw(player, count),
             TriggeredAbility::Might { unit_id, amount } => {
-                self.modify_might(Target::Unit { player, unit_id }, amount, 0)
+                self.modify_might(Target::Unit { player, unit_id }, i128::from(amount), 0)?
             }
             TriggeredAbility::Stun {
                 player: owner,
@@ -6867,7 +6924,7 @@ impl Game {
                 self.enqueue_decision(Decision::LastRites { player, gear_id })
             }
         }
-        self.remove_defeated();
+        self.remove_defeated()?;
         Ok(())
     }
 
@@ -6885,7 +6942,7 @@ impl Game {
             ready: (!token && self.printed_entry_ready(player, card_id))
                 || self.play_enters_ready(player, card_id, token),
             damage: 0,
-            buff,
+            buff: u64::from(buff),
             temporary_buff: 0,
             token,
             protected: false,
@@ -6907,7 +6964,7 @@ impl Game {
         }
     }
 
-    fn finish_ending(&mut self) {
+    fn finish_ending(&mut self) -> Result<(), String> {
         self.play_grants.clear();
         // CR317.2: the ending triggers finish before the expiration cleanup.
         // Heal first, then end this-turn effects together, then clear pools.
@@ -6940,12 +6997,14 @@ impl Game {
         } else {
             self.active = 1 - self.active;
         }
-        self.start_turn();
+        self.start_turn()?;
+
+        Ok(())
     }
 
-    fn start_turn(&mut self) {
+    fn start_turn(&mut self) -> Result<(), String> {
         if self.winner.is_some() {
-            return;
+            return Ok(());
         }
         self.priority_player = self.active;
         self.turn += 1;
@@ -6973,12 +7032,14 @@ impl Game {
             self.ready_unit(player, id);
         }
         // Awaken triggers finish before Beginning, Hold, Channel and Draw.
-        self.after_resolution();
+        self.after_resolution()?;
+
+        Ok(())
     }
 
-    fn advance_start_turn(&mut self) {
+    fn advance_start_turn(&mut self) -> Result<(), String> {
         let Some(stage) = self.pending_start.take() else {
-            return;
+            return Ok(());
         };
         let player = self.active;
         match stage {
@@ -6993,8 +7054,8 @@ impl Game {
                         && self.lane_count(player, lane) > 0
                         && !self.contested(lane)
                     {
-                        self.score_battlefield(player, lane, true);
-                        self.score_triggers(player, lane, true);
+                        self.score_battlefield(player, lane, true)?;
+                        self.score_triggers(player, lane, true)?;
                         self.battlefield_on_hold(player, lane);
                     }
                 }
@@ -7041,8 +7102,10 @@ impl Game {
             }
         }
         if self.winner.is_none() {
-            self.after_resolution();
+            self.after_resolution()?;
         }
+
+        Ok(())
     }
 
     pub(crate) fn draw(&mut self, player: usize, count: u8) {
@@ -7103,43 +7166,45 @@ impl Game {
         &self,
         player: usize,
         lane: usize,
-        total: u16,
-    ) -> Vec<(u32, u16)> {
-        if player > 1 || lane >= BATTLEFIELDS {
-            return Vec::new();
-        }
-        let mut order: Vec<_> = self.players[1 - player]
-            .units
-            .iter()
-            .filter(|u| u.lane == Some(lane))
-            .map(|u| {
-                (
-                    u.id,
-                    self.unit_might(u).saturating_sub(u.damage).max(1) as u16,
-                    self.damage_priority(u),
-                )
-            })
-            .collect();
-        order.sort_unstable_by_key(|&(id, lethal, priority)| (priority, lethal, id));
-        let mut remaining = total;
-        let mut result = Vec::new();
-        let count = order.len();
-        for (index, (id, lethal, _)) in order.into_iter().enumerate() {
-            if remaining == 0 {
-                break;
+        total: u64,
+    ) -> Result<Vec<(u32, u64)>, String> {
+        Ok({
+            if player > 1 || lane >= BATTLEFIELDS {
+                return Ok(Vec::new());
             }
-            let amount = if index + 1 == count {
-                remaining
-            } else {
-                remaining.min(lethal)
-            };
-            result.push((id, amount));
-            remaining -= amount;
-        }
-        result
+            let mut order: Vec<_> = self.players[1 - player]
+                .units
+                .iter()
+                .filter(|u| u.lane == Some(lane))
+                .map(|u| {
+                    Ok((
+                        u.id,
+                        self.unit_might(u)?.saturating_sub(u.damage).max(1),
+                        self.damage_priority(u)?,
+                    ))
+                })
+                .collect::<Result<Vec<_>, String>>()?;
+            order.sort_unstable_by_key(|&(id, lethal, priority)| (priority, lethal, id));
+            let mut remaining = total;
+            let mut result = Vec::new();
+            let count = order.len();
+            for (index, (id, lethal, _)) in order.into_iter().enumerate() {
+                if remaining == 0 {
+                    break;
+                }
+                let amount = if index + 1 == count {
+                    remaining
+                } else {
+                    remaining.min(lethal)
+                };
+                result.push((id, amount));
+                remaining -= amount;
+            }
+            result
+        })
     }
 
-    fn resolve_combat(&mut self, lane: usize, attacker: usize) {
+    fn resolve_combat(&mut self, lane: usize, attacker: usize) -> Result<(), String> {
         self.showdown = Some(Showdown {
             lane,
             attacker,
@@ -7147,7 +7212,7 @@ impl Game {
             passes: 2,
             combat: true,
         });
-        let powers = [self.lane_might(0, lane), self.lane_might(1, lane)];
+        let powers = [self.lane_might(0, lane)?, self.lane_might(1, lane)?];
         self.push_log(format!(
             "Battlefield {} combat: {} might vs {} might. Assign damage before either side is hit.",
             lane + 1,
@@ -7164,10 +7229,12 @@ impl Game {
             self.pending_combat.as_mut().unwrap().assignments =
                 [Some(Vec::new()), Some(Vec::new())];
         }
-        self.advance_combat_assignment();
+        self.advance_combat_assignment()?;
+
+        Ok(())
     }
 
-    fn advance_combat_assignment(&mut self) {
+    fn advance_combat_assignment(&mut self) -> Result<(), String> {
         let combat = self.pending_combat.as_mut().expect("active combat");
         for player in [combat.attacker, 1 - combat.attacker] {
             if combat.assignments[player].is_none() {
@@ -7180,13 +7247,15 @@ impl Game {
                     lane: combat.lane,
                     total: combat.powers[player],
                 });
-                return;
+                return Ok(());
             }
         }
-        self.finish_combat();
+        self.finish_combat()?;
+
+        Ok(())
     }
 
-    fn assign_combat_damage(&mut self, assignments: Vec<(u32, u16)>) -> Result<(), String> {
+    fn assign_combat_damage(&mut self, assignments: Vec<(u32, u64)>) -> Result<(), String> {
         let Some(Decision::CombatDamage {
             player,
             lane,
@@ -7200,8 +7269,11 @@ impl Game {
             .iter()
             .filter(|u| u.lane == Some(lane))
             .collect();
-        let sum: u32 = assignments.iter().map(|(_, amount)| *amount as u32).sum();
-        if sum != total as u32 {
+        let sum: u128 = assignments
+            .iter()
+            .map(|(_, amount)| u128::from(*amount))
+            .sum();
+        if sum != u128::from(total) {
             return Err(format!("Assign all {total} damage exactly."));
         }
         let mut previous_priority = 0;
@@ -7215,17 +7287,17 @@ impl Game {
                 );
             };
             let unit = remaining[position];
-            let keywords = self.unit_keywords(unit);
+            let keywords = self.unit_keywords(unit)?;
             let priority = if keywords.tank && keywords.backline {
                 if previous_priority == 0 { 0 } else { 2 }
             } else {
-                self.damage_priority(unit)
+                self.damage_priority(unit)?
             };
             if priority < previous_priority {
                 return Err("Assign to Tank units first and Backline units last; a unit with both may use either priority.".into());
             }
             previous_priority = priority;
-            let lethal = self.unit_might(unit).saturating_sub(unit.damage).max(1) as u16;
+            let lethal = self.unit_might(unit)?.saturating_sub(unit.damage).max(1);
             if amount < lethal && index + 1 < assignments.len() {
                 return Err(
                     "Assign lethal damage to a unit before assigning damage to the next.".into(),
@@ -7236,30 +7308,27 @@ impl Game {
             }
             remaining.remove(position);
         }
-        if remaining.iter().any(|unit| {
-            let keywords = self.unit_keywords(unit);
+        for unit in remaining {
+            let keywords = self.unit_keywords(unit)?;
             let last_possible = if keywords.backline {
                 2
             } else {
-                self.damage_priority(unit)
+                self.damage_priority(unit)?
             };
-            last_possible < previous_priority
-        }) {
-            return Err(
-                "Earlier-priority units must receive lethal damage before later-priority units."
-                    .into(),
-            );
+            if last_possible < previous_priority {
+                return Err("Earlier-priority units must receive lethal damage before later-priority units.".into());
+            }
         }
         self.pending_combat
             .as_mut()
             .ok_or("No combat is active.")?
             .assignments[player] = Some(assignments);
         self.decision = None;
-        self.advance_combat_assignment();
+        self.advance_combat_assignment()?;
         Ok(())
     }
 
-    fn finish_combat(&mut self) {
+    fn finish_combat(&mut self) -> Result<(), String> {
         let combat = self.pending_combat.take().expect("completed assignments");
         for player in 0..2 {
             for &(id, amount) in combat.assignments[player]
@@ -7271,15 +7340,17 @@ impl Game {
                     .iter_mut()
                     .find(|u| u.id == id)
                 {
-                    unit.damage = unit.damage.saturating_add(amount.min(u8::MAX as u16) as u8);
+                    unit.damage = crate::numeric::add_u64(unit.damage, amount, "combat damage")?;
                 }
             }
         }
         self.pending_combat_cleanup = Some((combat.lane, combat.attacker));
-        self.after_resolution();
+        self.after_resolution()?;
+
+        Ok(())
     }
 
-    fn finish_combat_cleanup(&mut self) {
+    fn finish_combat_cleanup(&mut self) -> Result<(), String> {
         let (lane, attacker) = self
             .pending_combat_cleanup
             .take()
@@ -7300,44 +7371,50 @@ impl Game {
         }
         self.showdown = None;
         self.priority_player = self.active;
-        self.refresh_control(lane);
+        self.refresh_control(lane)?;
         self.push_log("The showdown closes; the turn player's main phase resumes.".into());
-        self.after_resolution();
+        self.after_resolution()?;
+
+        Ok(())
     }
 
-    fn death_replacements(&self, player: usize) -> Vec<DeathReplacement> {
-        let mut choices = Vec::new();
-        for unit in self.players[player].units.iter().filter(|u| {
-            self.pending_instruction_deaths
-                .as_ref()
-                .or(self.pending_cleanup_deaths.as_ref())
-                .map_or_else(
-                    || {
-                        self.instructed_kills.contains(&u.id)
-                            || (u.damage > 0 && u.damage >= self.unit_might(u))
-                    },
-                    |events| events.contains(&(player, u.id)),
-                )
-        }) {
-            for gear in &self.players[player].gear {
-                if !gear.token
-                    && ((gear.card_id == 10 && gear.attached_to == Some(unit.id))
-                        || (gear.card_id == 21 && gear.attached_to.is_none()))
+    fn death_replacements(&self, player: usize) -> Result<Vec<DeathReplacement>, String> {
+        Ok({
+            let mut choices = Vec::new();
+            for unit in &self.players[player].units {
+                let dying = if let Some(events) = self
+                    .pending_instruction_deaths
+                    .as_ref()
+                    .or(self.pending_cleanup_deaths.as_ref())
                 {
+                    events.contains(&(player, unit.id))
+                } else {
+                    self.instructed_kills.contains(&unit.id)
+                        || (unit.damage > 0 && unit.damage >= self.unit_might(unit)?)
+                };
+                if !dying {
+                    continue;
+                }
+                for gear in &self.players[player].gear {
+                    if !gear.token
+                        && ((gear.card_id == 10 && gear.attached_to == Some(unit.id))
+                            || (gear.card_id == 21 && gear.attached_to.is_none()))
+                    {
+                        choices.push(DeathReplacement {
+                            unit_id: unit.id,
+                            gear_id: Some(gear.id),
+                        });
+                    }
+                }
+                if unit.banish_on_death {
                     choices.push(DeathReplacement {
                         unit_id: unit.id,
-                        gear_id: Some(gear.id),
+                        gear_id: None,
                     });
                 }
             }
-            if unit.banish_on_death {
-                choices.push(DeathReplacement {
-                    unit_id: unit.id,
-                    gear_id: None,
-                });
-            }
-        }
-        choices
+            choices
+        })
     }
 
     fn apply_death_replacement(&mut self, player: usize, choice: DeathReplacement) {
@@ -7386,17 +7463,19 @@ impl Game {
         }
         self.decision = None;
         self.apply_death_replacement(player, choice);
-        self.after_resolution();
+        self.after_resolution()?;
         Ok(())
     }
 
-    fn kill_unit(&mut self, target: Target) {
-        self.kill_units(&[target]);
+    fn kill_unit(&mut self, target: Target) -> Result<(), String> {
+        self.kill_units(&[target])?;
+
+        Ok(())
     }
 
     /// One instruction produces one fixed simultaneous death action (CR370.1).
     /// Replacement actions complete before the remaining original victims die.
-    fn kill_units(&mut self, targets: &[Target]) {
+    fn kill_units(&mut self, targets: &[Target]) -> Result<(), String> {
         debug_assert!(self.pending_instruction_deaths.is_none());
         let mut events = Vec::new();
         for &target in targets {
@@ -7408,25 +7487,27 @@ impl Game {
             }
         }
         if events.is_empty() {
-            return;
+            return Ok(());
         }
         self.pending_instruction_deaths = Some(events);
-        self.finish_instruction_deaths();
+        self.finish_instruction_deaths()?;
+
+        Ok(())
     }
 
-    fn finish_instruction_deaths(&mut self) {
+    fn finish_instruction_deaths(&mut self) -> Result<(), String> {
         if matches!(self.decision, Some(Decision::DeathReplacement { .. })) {
-            return;
+            return Ok(());
         }
         for player in [self.active, 1 - self.active] {
             loop {
-                let options = self.death_replacements(player);
+                let options = self.death_replacements(player)?;
                 if options.len() > 1 {
                     if let Some(old) = self.decision.take() {
                         self.pending_decisions.push_front(old);
                     }
                     self.decision = Some(Decision::DeathReplacement { player, options });
-                    return;
+                    return Ok(());
                 }
                 if let Some(&choice) = options.first() {
                     self.apply_death_replacement(player, choice);
@@ -7453,29 +7534,26 @@ impl Game {
             self.remove_death_set(doomed);
             self.trigger_batch += 1;
         }
+
+        Ok(())
     }
 
-    pub(crate) fn remove_defeated(&mut self) {
+    pub(crate) fn remove_defeated(&mut self) -> Result<(), String> {
         loop {
             if matches!(self.decision, Some(Decision::DeathReplacement { .. })) {
-                return;
+                return Ok(());
             }
             if self.pending_cleanup_deaths.is_none() {
-                let events: Vec<_> = self
-                    .players
-                    .iter()
-                    .enumerate()
-                    .flat_map(|(player, state)| {
-                        state
-                            .units
-                            .iter()
-                            .filter(|u| {
-                                self.instructed_kills.contains(&u.id)
-                                    || (u.damage > 0 && u.damage >= self.unit_might(u))
-                            })
-                            .map(move |unit| (player, unit.id))
-                    })
-                    .collect();
+                let mut events = Vec::new();
+                for (player, state) in self.players.iter().enumerate() {
+                    for u in &state.units {
+                        if self.instructed_kills.contains(&u.id)
+                            || (u.damage > 0 && u.damage >= self.unit_might(u)?)
+                        {
+                            events.push((player, u.id));
+                        }
+                    }
+                }
                 if events.is_empty() {
                     break;
                 }
@@ -7485,13 +7563,13 @@ impl Game {
             // can create new lethal damage, but that is the NEXT cleanup (CR322).
             for player in [self.active, 1 - self.active] {
                 loop {
-                    let options = self.death_replacements(player);
+                    let options = self.death_replacements(player)?;
                     if options.len() > 1 {
                         if let Some(old) = self.decision.take() {
                             self.pending_decisions.push_front(old);
                         }
                         self.decision = Some(Decision::DeathReplacement { player, options });
-                        return;
+                        return Ok(());
                     }
                     if let Some(&choice) = options.first() {
                         self.apply_death_replacement(player, choice);
@@ -7519,6 +7597,8 @@ impl Game {
                 self.trigger_batch += 1;
             }
         }
+
+        Ok(())
     }
     fn remove_death_set(&mut self, doomed: Vec<(usize, Unit)>) {
         let dying: Vec<_> = doomed
@@ -7631,7 +7711,7 @@ impl Game {
         }
     }
 
-    pub(crate) fn refresh_control(&mut self, lane: usize) {
+    pub(crate) fn refresh_control(&mut self, lane: usize) -> Result<(), String> {
         if self.showdown.as_ref().is_some_and(|w| w.lane == lane)
             || !self.chain.is_empty()
             || self
@@ -7639,36 +7719,45 @@ impl Game {
                 .iter()
                 .any(|(pending, _)| *pending == lane)
         {
-            return;
+            return Ok(());
         }
         match (self.lane_count(0, lane) > 0, self.lane_count(1, lane) > 0) {
-            (true, false) => self.claim_lane(0, lane),
-            (false, true) => self.claim_lane(1, lane),
+            (true, false) => self.claim_lane(0, lane)?,
+            (false, true) => self.claim_lane(1, lane)?,
             (false, false) => {
                 self.battlefield_owner[lane] = None;
                 self.cleanup_lost_hidden();
             }
             (true, true) => {} // Defender keeps control until the battle resolves.
         }
+
+        Ok(())
     }
 
-    fn claim_lane(&mut self, player: usize, lane: usize) {
+    fn claim_lane(&mut self, player: usize, lane: usize) -> Result<(), String> {
         if self.battlefield_owner[lane] == Some(player) {
-            return;
+            return Ok(());
         }
         self.battlefield_owner[lane] = Some(player);
         let scoring = !self.player_scored_this_turn[player][lane];
-        self.score_battlefield(player, lane, false);
+        self.score_battlefield(player, lane, false)?;
         if scoring && self.winner.is_none() {
-            self.score_triggers(player, lane, false);
-            self.battlefield_on_conquer(player, lane);
+            self.score_triggers(player, lane, false)?;
+            self.battlefield_on_conquer(player, lane)?;
         }
         self.cleanup_lost_hidden();
+
+        Ok(())
     }
 
-    fn score_battlefield(&mut self, player: usize, lane: usize, holding: bool) {
+    fn score_battlefield(
+        &mut self,
+        player: usize,
+        lane: usize,
+        holding: bool,
+    ) -> Result<(), String> {
         if self.player_scored_this_turn[player][lane] || self.winner.is_some() {
-            return;
+            return Ok(());
         }
         let all_other_scored = (0..BATTLEFIELDS)
             .filter(|&l| l != lane)
@@ -7680,7 +7769,7 @@ impl Game {
         if !holding && self.players[player].score >= VICTORY_SCORE - 1 && !all_other_scored {
             self.push_log(format!("Final-point rule: {} draws instead. Hold a battlefield or score the other battlefield this turn to win.", self.players[player].name));
             self.draw(player, 1);
-            return;
+            return Ok(());
         }
         self.players[player].score += 1;
         self.push_log(format!(
@@ -7697,9 +7786,11 @@ impl Game {
         if !holding {
             self.check_winner(player);
         }
+
+        Ok(())
     }
 
-    fn score_triggers(&mut self, player: usize, lane: usize, holding: bool) {
+    fn score_triggers(&mut self, player: usize, lane: usize, holding: bool) -> Result<(), String> {
         let cards: Vec<_> = self.players[player]
             .units
             .iter()
@@ -7714,7 +7805,7 @@ impl Game {
             .collect();
         for id in ids {
             if let Some(unit) = self.players[player].units.iter().find(|unit| unit.id == id) {
-                let amount = self.unit_keywords(unit).hunt;
+                let amount = self.unit_keywords(unit)?.hunt;
                 if amount > 0 {
                     let card_id = unit.card_id;
                     let source_name = self.unit_name(unit);
@@ -7765,6 +7856,8 @@ impl Game {
                 self.queue_ability(player, card, Vec::new(), ChainAbility::Triggered(effect));
             }
         }
+
+        Ok(())
     }
 
     fn check_winner(&mut self, player: usize) {
@@ -7785,53 +7878,62 @@ impl Game {
         }
     }
 
-    fn choose_ai_action(&self) -> Action {
-        if self.difficulty == Difficulty::Strategic {
-            self.choose_strategic_action()
-        } else {
-            self.choose_heuristic_action()
-        }
+    fn choose_ai_action(&self) -> Result<Action, String> {
+        Ok({
+            if self.difficulty == Difficulty::Strategic {
+                self.choose_strategic_action()?
+            } else {
+                self.choose_heuristic_action()?
+            }
+        })
     }
 
-    fn choose_heuristic_action(&self) -> Action {
-        let player = self.priority();
-        let enemy = 1 - player;
-        if let Some(decision) = &self.decision {
-            if matches!(
-                decision,
-                Decision::Payment { .. } | Decision::ResourceConversion { .. }
-            ) && let Some(action) = self.resource_completion_step()
-            {
-                return action;
-            }
-            let actions = self.legal_actions();
-            if matches!(decision, Decision::CounterTax { .. })
-                && self.clone().apply(Action::Choose { accept: true }).is_err()
-                && let Some(witness) = self.resource_witness(player, |state| {
-                    matches!(state.decision, Some(Decision::CounterTax { .. }))
-                        && state.clone().apply(Action::Choose { accept: true }).is_ok()
-                })
-                && let Some(first) = witness.first()
-            {
-                return first.clone();
-            }
-            let preferred = match decision {
-                Decision::TriggerTargets {
-                    player,
-                    card_id: 333,
-                    ..
-                } => actions
-                    .iter()
-                    .filter_map(|action| {
-                        let Action::ChooseTriggerTargets { targets } = action else {
-                            return None;
-                        };
-                        let value: i32 = targets
-                            .iter()
-                            .filter_map(|&target| {
-                                let unit = self.unit_ref(target)?;
+    fn choose_heuristic_action(&self) -> Result<Action, String> {
+        Ok({
+            let player = self.priority();
+            let enemy = 1 - player;
+            if let Some(decision) = &self.decision {
+                if matches!(
+                    decision,
+                    Decision::Payment { .. } | Decision::ResourceConversion { .. }
+                ) && let Some(action) = self.resource_completion_step()?
+                {
+                    return Ok(action);
+                }
+                let actions = self.legal_actions()?;
+                if matches!(decision, Decision::CounterTax { .. })
+                    && self.clone().apply(Action::Choose { accept: true }).is_err()
+                    && let Some(witness) = self.resource_witness(player, |state| {
+                        if matches!(state.decision, Some(Decision::CounterTax { .. })) {
+                            crate::numeric::legal_result(
+                                state.clone().apply(Action::Choose { accept: true }),
+                            )
+                        } else {
+                            Ok(false)
+                        }
+                    })?
+                    && let Some(first) = witness.first()
+                {
+                    return Ok(first.clone());
+                }
+                let preferred = match decision {
+                    Decision::TriggerTargets {
+                        player,
+                        card_id: 333,
+                        ..
+                    } => {
+                        let mut scored = Vec::new();
+                        for action in &actions {
+                            let Action::ChooseTriggerTargets { targets } = action else {
+                                continue;
+                            };
+                            let mut value = 0_i128;
+                            for &target in targets {
+                                let Some(unit) = self.unit_ref(target) else {
+                                    continue;
+                                };
                                 let Target::Unit { player: owner, .. } = target else {
-                                    return None;
+                                    continue;
                                 };
                                 let amount = self.damage_amount(
                                     damage::DamageContext {
@@ -7841,231 +7943,242 @@ impl Game {
                                     },
                                     target,
                                     1,
-                                );
-                                let value = i32::from(amount) * 4
+                                )?;
+                                let v = i128::from(amount) * 4
                                     + if amount > 0
-                                        && unit.damage.saturating_add(amount)
-                                            >= self.unit_might(unit)
+                                        && u128::from(unit.damage) + u128::from(amount)
+                                            >= u128::from(self.unit_might(unit)?)
                                     {
                                         30
                                     } else {
                                         0
                                     };
-                                Some(if owner == *player { -value } else { value })
+                                value += if owner == *player { -v } else { v };
+                            }
+                            scored.push((value, action));
+                        }
+                        scored
+                            .into_iter()
+                            .max_by_key(|(value, _)| *value)
+                            .map(|(_, a)| a.clone())
+                    }
+                    Decision::PredictCards {
+                        player,
+                        choice_id,
+                        cards,
+                    } => {
+                        let mut keep: Vec<_> = (0..cards.len())
+                            .filter(|&i| {
+                                self.catalog[cards[i]].cost as u16
+                                    <= self.players[*player].energy + 2
                             })
-                            .sum();
-                        Some((value, action))
-                    })
-                    .max_by_key(|(value, _)| *value)
-                    .map(|(_, action)| action.clone()),
-                Decision::PredictCards {
-                    player,
-                    choice_id,
-                    cards,
-                } => {
-                    let mut keep: Vec<_> = (0..cards.len())
-                        .filter(|&i| {
-                            self.catalog[cards[i]].cost as u16 <= self.players[*player].energy + 2
+                            .collect();
+                        keep.sort_by_key(|&i| std::cmp::Reverse(self.catalog[cards[i]].cost));
+                        Some(Action::ResolvePredict {
+                            choice_id: *choice_id,
+                            recycle: (0..cards.len()).filter(|i| !keep.contains(i)).collect(),
+                            top_order: keep,
                         })
-                        .collect();
-                    keep.sort_by_key(|&i| std::cmp::Reverse(self.catalog[cards[i]].cost));
-                    Some(Action::ResolvePredict {
-                        choice_id: *choice_id,
-                        recycle: (0..cards.len()).filter(|i| !keep.contains(i)).collect(),
-                        top_order: keep,
-                    })
-                }
-                Decision::Predict { player, card_id } => Some(Action::Choose {
-                    accept: self.catalog[*card_id].cost > self.players[*player].total_runes() + 2,
-                }),
-                Decision::CounterTax { player, cost, .. } => Some(Action::Choose {
-                    accept: self.players[*player].energy >= (*cost).into(),
-                }),
-                Decision::OptionalPlay { .. }
-                | Decision::Legend { .. }
-                | Decision::BurnForMight { .. } => Some(Action::Choose { accept: true }),
-                _ => None,
-            };
-            if let Some(action) = preferred
-                && actions.contains(&action)
-            {
-                return action;
-            }
-            return actions
-                .first()
-                .cloned()
-                .unwrap_or(Action::Choose { accept: false });
-        }
-        if self.ai_steps_this_turn >= 160 && !self.in_window() {
-            return Action::EndTurn;
-        }
-
-        // Only the active player's hand is read. The opponent contributes its
-        // public units and score, never its hand or deck order.
-        let mut plays: Vec<(i32, Action)> = Vec::new();
-        for action in self.canonical_play_candidates(24) {
-            plays.push((self.canonical_action_score(&action), action));
-        }
-        for action in self.conversion_play_actions() {
-            if let Action::BeginPayment { action: intent } = &action
-                && let Action::PlayCard { hand_index, .. } = **intent
-            {
-                plays.push((
-                    self.ai_card_score(self.players[player].hand[hand_index]),
-                    action,
-                ));
-            }
-        }
-
-        for action in self.hidden_actions(player) {
-            match &action {
-                Action::PlayHidden { .. } => {
-                    plays.push((if self.showdown.is_some() { 95 } else { 25 }, action))
-                }
-                Action::Hide { hand_index, .. } => {
-                    let id = self.players[player].hand[*hand_index];
-                    if self.catalog[id].cost >= 3
-                        || self.players[player].energy < self.catalog[id].cost.into()
-                    {
-                        plays.push((85, action));
                     }
-                }
-                _ => {}
-            }
-        }
-        for unit in &self.players[player].units {
-            if matches!(unit.card_id, 24 | 45) && !unit.token {
-                let action = Action::EmpowerUnit {
-                    unit_id: unit.id,
-                    pay_power: false,
+                    Decision::Predict { player, card_id } => Some(Action::Choose {
+                        accept: self.catalog[*card_id].cost
+                            > self.players[*player].total_runes() + 2,
+                    }),
+                    Decision::CounterTax { player, cost, .. } => Some(Action::Choose {
+                        accept: self.players[*player].energy >= (*cost).into(),
+                    }),
+                    Decision::OptionalPlay { .. }
+                    | Decision::Legend { .. }
+                    | Decision::BurnForMight { .. } => Some(Action::Choose { accept: true }),
+                    _ => None,
                 };
-                if self.clone().apply(action.clone()).is_ok() {
-                    plays.push((40, action));
+                if let Some(action) = preferred
+                    && actions.contains(&action)
+                {
+                    return Ok(action);
                 }
+                return Ok(actions
+                    .first()
+                    .cloned()
+                    .unwrap_or(Action::Choose { accept: false }));
             }
-        }
-        for action in self.legend_actions(player) {
-            if let Action::ActivateLegend { target } = action
-                && let Some(score) = self.legend_ai_score(player, target)
-            {
-                plays.push((score, action));
+            if self.ai_steps_this_turn >= 160 && !self.in_window() {
+                return Ok(Action::EndTurn);
             }
-        }
-        for action in self.gear_actions(player) {
-            plays.push((25, action));
-        }
-        for action in self.ability_actions(player) {
-            if let Action::ActivateAbility {
-                source,
-                ability_index,
-                targets,
+
+            // Only the active player's hand is read. The opponent contributes its
+            // public units and score, never its hand or deck order.
+            let mut plays: Vec<(i128, Action)> = Vec::new();
+            for action in self.canonical_play_candidates(24)? {
+                plays.push((self.canonical_action_score(&action)?, action));
             }
-            | Action::ActivateAbilityWithCosts {
-                source,
-                ability_index,
-                targets,
-                ..
-            } = &action
-                && let Some(score) = self.ability_ai_score(*source, *ability_index, targets)
-            {
-                plays.push((score, action));
-            }
-        }
-        for trash_index in 0..self.players[player].discard.len() {
-            let action = Action::PlayFromTrash {
-                trash_index,
-                lane: None,
-                target: None,
-            };
-            if self.clone().apply(action.clone()).is_ok() {
-                plays.push((
-                    self.ai_card_score(self.players[player].discard[trash_index]),
-                    action,
-                ));
-            }
-        }
-        for (hand_index, &id) in self.players[player].hand.iter().enumerate() {
-            if rules::accelerate_cost(id).is_some() || rules::repeat_cost(id).is_some() || id == 29
-            {
-                let action = Action::PlayCardOptions {
-                    hand_index,
-                    lane: None,
-                    targets: Vec::new(),
-                    repeat_targets: Vec::new(),
-                    repeat: rules::repeat_cost(id).is_some(),
-                    accelerate: rules::accelerate_cost(id).is_some(),
-                    bonus: id == 29,
-                };
-                if self.clone().apply(action.clone()).is_ok() {
-                    let score = self.ai_card_score(id);
-                    if score > 0 {
-                        plays.push((score + 12, action));
-                    }
-                }
-            }
-            if self.validate_play(id, None, None).is_ok() {
-                let score = self.ai_card_score(id);
-                if score > 0 {
+            for action in self.conversion_play_actions() {
+                if let Action::BeginPayment { action: intent } = &action
+                    && let Action::PlayCard { hand_index, .. } = **intent
+                {
                     plays.push((
-                        score,
-                        Action::PlayCard {
-                            hand_index,
-                            lane: None,
-                            target: None,
-                        },
+                        self.ai_card_score(self.players[player].hand[hand_index])?,
+                        action,
                     ));
                 }
             }
-        }
-        if let Some(id) = self.players[player].champion
-            && self.validate_play(id, None, None).is_ok()
-        {
-            plays.push((
-                self.ai_card_score(id) + 1,
-                Action::PlayChampion {
+
+            for action in self.hidden_actions(player) {
+                match &action {
+                    Action::PlayHidden { .. } => {
+                        plays.push((if self.showdown.is_some() { 95 } else { 25 }, action))
+                    }
+                    Action::Hide { hand_index, .. } => {
+                        let id = self.players[player].hand[*hand_index];
+                        if self.catalog[id].cost >= 3
+                            || self.players[player].energy < self.catalog[id].cost.into()
+                        {
+                            plays.push((85, action));
+                        }
+                    }
+                    _ => {}
+                }
+            }
+            for unit in &self.players[player].units {
+                if matches!(unit.card_id, 24 | 45) && !unit.token {
+                    let action = Action::EmpowerUnit {
+                        unit_id: unit.id,
+                        pay_power: false,
+                    };
+                    if self.clone().apply(action.clone()).is_ok() {
+                        plays.push((40, action));
+                    }
+                }
+            }
+            for action in self.legend_actions(player) {
+                if let Action::ActivateLegend { target } = action
+                    && let Some(score) = self.legend_ai_score(player, target)
+                {
+                    plays.push((i128::from(score), action));
+                }
+            }
+            for action in self.gear_actions(player) {
+                plays.push((25, action));
+            }
+            for action in self.ability_actions(player) {
+                if let Action::ActivateAbility {
+                    source,
+                    ability_index,
+                    targets,
+                }
+                | Action::ActivateAbilityWithCosts {
+                    source,
+                    ability_index,
+                    targets,
+                    ..
+                } = &action
+                    && let Some(score) = self.ability_ai_score(*source, *ability_index, targets)?
+                {
+                    plays.push((i128::from(score), action));
+                }
+            }
+            for trash_index in 0..self.players[player].discard.len() {
+                let action = Action::PlayFromTrash {
+                    trash_index,
                     lane: None,
                     target: None,
-                },
-            ));
-        }
-        if let Some((_, action)) = plays
-            .into_iter()
-            .filter(|(_, action)| self.clone().apply(action.clone()).is_ok())
-            .max_by_key(|(score, _)| *score)
-        {
-            return action;
-        }
+                };
+                if self.clone().apply(action.clone()).is_ok() {
+                    plays.push((
+                        self.ai_card_score(self.players[player].discard[trash_index])?,
+                        action,
+                    ));
+                }
+            }
+            for (hand_index, &id) in self.players[player].hand.iter().enumerate() {
+                if rules::accelerate_cost(id).is_some()
+                    || rules::repeat_cost(id).is_some()
+                    || id == 29
+                {
+                    let action = Action::PlayCardOptions {
+                        hand_index,
+                        lane: None,
+                        targets: Vec::new(),
+                        repeat_targets: Vec::new(),
+                        repeat: rules::repeat_cost(id).is_some(),
+                        accelerate: rules::accelerate_cost(id).is_some(),
+                        bonus: id == 29,
+                    };
+                    if self.clone().apply(action.clone()).is_ok() {
+                        let score = self.ai_card_score(id)?;
+                        if score > 0 {
+                            plays.push((score + 12, action));
+                        }
+                    }
+                }
+                if self.validate_play(id, None, None).is_ok() {
+                    let score = self.ai_card_score(id)?;
+                    if score > 0 {
+                        plays.push((
+                            score,
+                            Action::PlayCard {
+                                hand_index,
+                                lane: None,
+                                target: None,
+                            },
+                        ));
+                    }
+                }
+            }
+            if let Some(id) = self.players[player].champion
+                && self.validate_play(id, None, None).is_ok()
+            {
+                plays.push((
+                    self.ai_card_score(id)? + 1,
+                    Action::PlayChampion {
+                        lane: None,
+                        target: None,
+                    },
+                ));
+            }
+            if let Some((_, action)) = plays
+                .into_iter()
+                .filter(|(_, action)| self.clone().apply(action.clone()).is_ok())
+                .max_by_key(|(score, _)| *score)
+            {
+                return Ok(action);
+            }
 
-        if self.in_window() {
-            return Action::Pass;
-        }
-        let ready_base: Vec<&Unit> = self.players[player]
-            .units
-            .iter()
-            .filter(|u| {
-                u.ready && !self.movement_locks.contains(&(player, u.id)) && u.lane.is_none()
-            })
-            .collect();
-        let base_power: u16 = ready_base.iter().map(|u| self.unit_might(u) as u16).sum();
-        if !ready_base.is_empty() {
-            let mut targets: Vec<(i32, usize)> = (0..BATTLEFIELDS)
-                .filter_map(|lane| {
-                    let friendly = self.lane_might(player, lane);
-                    let opposing = self.lane_might(enemy, lane);
+            if self.in_window() {
+                return Ok(Action::Pass);
+            }
+            let ready_base: Vec<&Unit> = self.players[player]
+                .units
+                .iter()
+                .filter(|u| {
+                    u.ready && !self.movement_locks.contains(&(player, u.id)) && u.lane.is_none()
+                })
+                .collect();
+            let ready_values: Vec<_> = ready_base
+                .iter()
+                .map(|u| Ok((self.unit_might(u)?, *u)))
+                .collect::<Result<_, String>>()?;
+            let base_power: u128 = ready_values.iter().map(|(n, _)| u128::from(*n)).sum();
+            if !ready_base.is_empty() {
+                let mut targets: Vec<(i128, usize)> = Vec::new();
+                for lane in 0..BATTLEFIELDS {
+                    let friendly = self.lane_might(player, lane)?;
+                    let opposing = self.lane_might(enemy, lane)?;
                     let ours = self.lane_count(player, lane);
                     let theirs = self.lane_count(enemy, lane);
-                    let can_win = theirs == 0 || friendly + base_power > opposing;
+                    let can_win =
+                        theirs == 0 || u128::from(friendly) + base_power > u128::from(opposing);
                     if self.difficulty != Difficulty::Easy && !can_win {
-                        return None;
+                        continue;
                     }
                     let score = if theirs == 0 && ours == 0 {
                         120
                     } else if theirs > 0 && can_win {
-                        100 + opposing as i32
+                        100 + i128::from(opposing)
                     } else if theirs > 0 {
-                        10 - opposing as i32
+                        10 - i128::from(opposing)
                     } else {
-                        20 - friendly as i32
+                        20 - i128::from(friendly)
                     };
                     let fresh_score = !self.player_scored_this_turn[player][lane]
                         && self.battlefield_owner[lane] != Some(player);
@@ -8075,152 +8188,151 @@ impl Game {
                         && (0..BATTLEFIELDS).all(|other| {
                             other == lane || self.player_scored_this_turn[player][other]
                         });
-                    let score = score
-                        + if wins {
-                            500
-                        } else if fresh_score {
-                            10
-                        } else {
-                            0
-                        };
-                    Some((score, lane))
-                })
-                .collect();
-            targets.sort_by_key(|&(score, lane)| (score, std::cmp::Reverse(lane)));
-            if let Some(&(_, lane)) = targets.last() {
-                // A small unit claims an empty field; strong units lead battles.
-                let unit =
-                    if self.lane_count(enemy, lane) == 0 && self.lane_count(player, lane) == 0 {
-                        ready_base
-                            .iter()
-                            .min_by_key(|u| self.unit_might(u))
-                            .unwrap()
-                    } else {
-                        ready_base
-                            .iter()
-                            .max_by_key(|u| self.unit_might(u))
-                            .unwrap()
-                    };
-                if self.lane_count(enemy, lane) > 0 {
-                    return Action::MoveGroup {
-                        unit_ids: ready_base.iter().map(|u| u.id).collect(),
-                        lane: Some(lane),
-                    };
+                    targets.push((
+                        score
+                            + if wins {
+                                500
+                            } else if fresh_score {
+                                10
+                            } else {
+                                0
+                            },
+                        lane,
+                    ));
                 }
-                return Action::Move {
-                    unit_id: unit.id,
-                    lane: Some(lane),
-                };
+                targets.sort_by_key(|&(score, lane)| (score, std::cmp::Reverse(lane)));
+                if let Some(&(_, lane)) = targets.last() {
+                    // A small unit claims an empty field; strong units lead battles.
+                    let unit = if self.lane_count(enemy, lane) == 0
+                        && self.lane_count(player, lane) == 0
+                    {
+                        ready_values.iter().min_by_key(|(n, _)| *n).unwrap().1
+                    } else {
+                        ready_values.iter().max_by_key(|(n, _)| *n).unwrap().1
+                    };
+                    if self.lane_count(enemy, lane) > 0 {
+                        return Ok(Action::MoveGroup {
+                            unit_ids: ready_base.iter().map(|u| u.id).collect(),
+                            lane: Some(lane),
+                        });
+                    }
+                    return Ok(Action::Move {
+                        unit_id: unit.id,
+                        lane: Some(lane),
+                    });
+                }
             }
-        }
-        for lane in 0..BATTLEFIELDS {
-            if self.contested(lane) {
-                return Action::Attack { lane };
+            for lane in 0..BATTLEFIELDS {
+                if self.contested(lane) {
+                    return Ok(Action::Attack { lane });
+                }
             }
-        }
-        Action::EndTurn
+            Action::EndTurn
+        })
     }
 
-    fn ai_card_score(&self, id: CardId) -> i32 {
-        let card = self.catalog[id];
-        let tactical = self.difficulty != Difficulty::Easy;
-        if self.is_counter(id) {
-            return if self.chain.iter().any(|item| {
-                item.player != self.priority()
-                    && self.counter_target_valid(self.priority(), id, item.id)
-            }) {
-                105
-            } else {
-                0
-            };
-        }
-        if card.kind == CardKind::Unit {
-            return 50 + card.might as i32 * 4
-                - if tactical {
-                    card.power_cost as i32 * 3
-                } else {
-                    card.cost as i32
-                };
-        }
-        if card.kind == CardKind::Gear {
-            return 35;
-        }
-        let actor = self.priority();
-        let in_combat = self
-            .showdown
-            .as_ref()
-            .is_some_and(|w| self.contested(w.lane));
-        let targets = self
-            .prepare_targets(actor, id, None, &[])
-            .unwrap_or_default();
-        match rules::effect(id) {
-            OfficialEffect::KillAllUnits => {
-                let value = |p: usize| {
-                    self.players[p]
-                        .units
+    fn ai_card_score(&self, id: CardId) -> Result<i128, String> {
+        Ok({
+            let card = self.catalog[id];
+            let tactical = self.difficulty != Difficulty::Easy;
+            if self.is_counter(id) {
+                return Ok(
+                    if self.chain.iter().any(|item| {
+                        item.player != self.priority()
+                            && self.counter_target_valid(self.priority(), id, item.id)
+                    }) {
+                        105
+                    } else {
+                        0
+                    },
+                );
+            }
+            if card.kind == CardKind::Unit {
+                return Ok(50 + card.might as i128 * 4
+                    - if tactical {
+                        card.power_cost as i128 * 3
+                    } else {
+                        card.cost as i128
+                    });
+            }
+            if card.kind == CardKind::Gear {
+                return Ok(35);
+            }
+            let actor = self.priority();
+            let in_combat = self
+                .showdown
+                .as_ref()
+                .is_some_and(|w| self.contested(w.lane));
+            let targets = self
+                .prepare_targets(actor, id, None, &[])
+                .unwrap_or_default();
+            match rules::effect(id) {
+                OfficialEffect::KillAllUnits => {
+                    let value = |p: usize| -> Result<i128, String> {
+                        self.players[p].units.iter().try_fold(0_i128, |sum, u| {
+                            Ok(sum + 25 + i128::from(self.unit_might(u)?) * 4)
+                        })
+                    };
+                    (value(1 - actor)? - value(actor)?).max(0)
+                }
+                OfficialEffect::Channel { .. } => 30,
+                OfficialEffect::FriendlyMight(_) => {
+                    if in_combat {
+                        70
+                    } else {
+                        0
+                    }
+                }
+                OfficialEffect::ReadyFriendlyAndMight(_) => {
+                    if in_combat || self.players[actor].units.iter().any(|u| !u.ready) {
+                        70
+                    } else {
+                        0
+                    }
+                }
+                OfficialEffect::ExhaustFriendlyAndDamage { .. } => (self
+                    .area_damage_score(actor, id, &targets)?
+                    - self.players[actor].units.iter().filter(|u| u.ready).count() as i128 * 8)
+                    .max(0),
+                OfficialEffect::AreaDamage { .. } => {
+                    self.area_damage_score(actor, id, &targets)?.max(0)
+                }
+                OfficialEffect::Kill { .. } => {
+                    if targets
                         .iter()
-                        .map(|u| 25 + i32::from(self.unit_might(u)) * 4)
-                        .sum::<i32>()
-                };
-                (value(1 - actor) - value(actor)).max(0)
-            }
-            OfficialEffect::Channel { .. } => 30,
-            OfficialEffect::FriendlyMight(_) => {
-                if in_combat {
-                    70
-                } else {
-                    0
+                        .any(|t| matches!(t, Target::Unit { player, .. } if *player != actor))
+                    {
+                        100
+                    } else {
+                        0
+                    }
                 }
-            }
-            OfficialEffect::ReadyFriendlyAndMight(_) => {
-                if in_combat || self.players[actor].units.iter().any(|u| !u.ready) {
-                    70
-                } else {
-                    0
+                OfficialEffect::Stun => {
+                    if in_combat
+                        && targets.iter().any(|t| {
+                            matches!(t, Target::Unit { player, .. } if *player != actor)
+                                && self.unit_ref(*t).is_some_and(|u| {
+                                    !u.stunned && u.lane == self.showdown.as_ref().map(|w| w.lane)
+                                })
+                        })
+                    {
+                        80
+                    } else {
+                        0
+                    }
                 }
-            }
-            OfficialEffect::ExhaustFriendlyAndDamage { .. } => (self
-                .area_damage_score(actor, id, &targets)
-                - self.players[actor].units.iter().filter(|u| u.ready).count() as i32 * 8)
-                .max(0),
-            OfficialEffect::AreaDamage { .. } => self.area_damage_score(actor, id, &targets).max(0),
-            OfficialEffect::Kill { .. } => {
-                if targets
-                    .iter()
-                    .any(|t| matches!(t, Target::Unit { player, .. } if *player != actor))
-                {
-                    100
-                } else {
-                    0
+                OfficialEffect::GrantAssault(_) => {
+                    if in_combat && self.showdown.as_ref().is_some_and(|w| w.attacker == actor) {
+                        80
+                    } else {
+                        0
+                    }
                 }
-            }
-            OfficialEffect::Stun => {
-                if in_combat
-                    && targets.iter().any(|t| {
-                        matches!(t, Target::Unit { player, .. } if *player != actor)
-                            && self.unit_ref(*t).is_some_and(|u| {
-                                !u.stunned && u.lane == self.showdown.as_ref().map(|w| w.lane)
-                            })
-                    })
-                {
-                    80
-                } else {
-                    0
-                }
-            }
-            OfficialEffect::GrantAssault(_) => {
-                if in_combat && self.showdown.as_ref().is_some_and(|w| w.attacker == actor) {
-                    80
-                } else {
-                    0
-                }
-            }
-            effect @ (OfficialEffect::Damage { .. }
-            | OfficialEffect::ContextualDamage(_)
-            | OfficialEffect::DamageAndGold { .. }) => {
-                let lethal = targets
-                    .iter()
-                    .filter(|&&target| {
+                effect @ (OfficialEffect::Damage { .. }
+                | OfficialEffect::ContextualDamage(_)
+                | OfficialEffect::DamageAndGold { .. }) => {
+                    let mut lethal = 0;
+                    for &target in &targets {
                         let amount = match effect {
                             OfficialEffect::Damage { amount, .. }
                             | OfficialEffect::DamageAndGold { amount } => amount,
@@ -8229,141 +8341,147 @@ impl Game {
                             }
                             _ => unreachable!(),
                         };
-                        self.unit_ref(target).is_some_and(|unit| {
-                            unit.damage
-                                .saturating_add(self.battlefield_damage(target, amount))
-                                >= self.unit_might(unit)
-                        })
-                    })
-                    .count();
-                if lethal > 0 {
-                    100 + lethal as i32 * 5
-                } else if in_combat || !tactical {
-                    20
-                } else {
-                    0
+                        if let Some(unit) = self.unit_ref(target)
+                            && u128::from(unit.damage)
+                                + u128::from(self.battlefield_damage(target, amount.into())?)
+                                >= u128::from(self.unit_might(unit)?)
+                        {
+                            lethal += 1;
+                        }
+                    }
+                    if lethal > 0 {
+                        100 + lethal as i128 * 5
+                    } else if in_combat || !tactical {
+                        20
+                    } else {
+                        0
+                    }
                 }
-            }
-            OfficialEffect::ModifyMight { amount, .. } if amount < 0 => {
-                if in_combat {
-                    85
-                } else {
-                    0
+                OfficialEffect::ModifyMight { amount, .. } if amount < 0 => {
+                    if in_combat {
+                        85
+                    } else {
+                        0
+                    }
                 }
-            }
-            OfficialEffect::ContextualMight(rules::SpellMight::OwnExhausted { .. })
-                if self.players[actor].units.iter().all(|unit| unit.ready) =>
-            {
-                0
-            }
-            OfficialEffect::ModifyMight { .. }
-            | OfficialEffect::ContextualMight(_)
-            | OfficialEffect::DualMight
-            | OfficialEffect::SwapMight => {
-                if in_combat {
-                    80
-                } else {
-                    0
-                }
-            }
-            OfficialEffect::Bounce { .. } | OfficialEffect::BounceBoth => {
-                if in_combat {
-                    90
-                } else if self.players[1 - actor]
-                    .units
-                    .iter()
-                    .any(|u| u.lane.is_some())
+                OfficialEffect::ContextualMight(rules::SpellMight::OwnExhausted { .. })
+                    if self.players[actor].units.iter().all(|unit| unit.ready) =>
                 {
-                    55
-                } else {
                     0
                 }
-            }
-            OfficialEffect::MoveEnemy => {
-                if in_combat {
-                    95
-                } else {
-                    0
+                OfficialEffect::ModifyMight { .. }
+                | OfficialEffect::ContextualMight(_)
+                | OfficialEffect::DualMight
+                | OfficialEffect::SwapMight => {
+                    if in_combat {
+                        80
+                    } else {
+                        0
+                    }
                 }
-            }
-            OfficialEffect::MoveFriendlyAndReady => {
-                if in_combat {
-                    30
-                } else {
-                    0
+                OfficialEffect::Bounce { .. } | OfficialEffect::BounceBoth => {
+                    if in_combat {
+                        90
+                    } else if self.players[1 - actor]
+                        .units
+                        .iter()
+                        .any(|u| u.lane.is_some())
+                    {
+                        55
+                    } else {
+                        0
+                    }
                 }
-            }
-            OfficialEffect::MoveFriendlyToBase { .. } => {
-                if in_combat {
-                    10
-                } else {
-                    0
+                OfficialEffect::MoveEnemy => {
+                    if in_combat {
+                        95
+                    } else {
+                        0
+                    }
                 }
-            }
-            effect @ (OfficialEffect::Fight { .. } | OfficialEffect::EmpoweredFight { .. }) => {
-                let bonus = match effect {
-                    OfficialEffect::EmpoweredFight { amount } => amount.max(0) as u8,
-                    _ => 0,
-                };
-                if targets.len() == 2
-                    && self
-                        .unit_ref(targets[0])
-                        .zip(self.unit_ref(targets[1]))
-                        .is_some_and(|(a, b)| {
-                            self.unit_might(a).saturating_add(bonus) > self.unit_might(b)
-                        })
+                OfficialEffect::MoveFriendlyAndReady => {
+                    if in_combat {
+                        30
+                    } else {
+                        0
+                    }
+                }
+                OfficialEffect::MoveFriendlyToBase { .. } => {
+                    if in_combat {
+                        10
+                    } else {
+                        0
+                    }
+                }
+                effect @ (OfficialEffect::Fight { .. } | OfficialEffect::EmpoweredFight { .. }) => {
+                    let bonus = match effect {
+                        OfficialEffect::EmpoweredFight { amount } => amount.max(0) as u8,
+                        _ => 0,
+                    };
+                    if targets.len() == 2
+                        && match self.unit_ref(targets[0]).zip(self.unit_ref(targets[1])) {
+                            Some((a, b)) => {
+                                u128::from(self.unit_might(a)?) + u128::from(bonus)
+                                    > u128::from(self.unit_might(b)?)
+                            }
+                            None => false,
+                        }
+                    {
+                        70
+                    } else {
+                        0
+                    }
+                }
+                OfficialEffect::Tokens { count, might } => 45 + count as i128 * might as i128 * 4,
+                OfficialEffect::ReadyAnother => {
+                    if targets.iter().any(|&target| {
+                        matches!(target, Target::Unit { player, .. } if player == actor)
+                            && self.unit_ref(target).is_some_and(|unit| !unit.ready)
+                    }) {
+                        35
+                    } else {
+                        0
+                    }
+                }
+                OfficialEffect::DrawForMighty
+                    if self.players[actor]
+                        .units
+                        .iter()
+                        .map(|u| self.unit_might(u))
+                        .collect::<Result<Vec<_>, String>>()?
+                        .into_iter()
+                        .all(|m| m < 5) =>
                 {
-                    70
-                } else {
                     0
                 }
-            }
-            OfficialEffect::Tokens { count, might } => 45 + count as i32 * might as i32 * 4,
-            OfficialEffect::ReadyAnother => {
-                if targets.iter().any(|&target| {
-                    matches!(target, Target::Unit { player, .. } if player == actor)
-                        && self.unit_ref(target).is_some_and(|unit| !unit.ready)
-                }) {
-                    35
-                } else {
-                    0
+                OfficialEffect::Draw(_)
+                | OfficialEffect::ChooseTopThreeBurnRest
+                | OfficialEffect::DrawForBattlefields { .. }
+                | OfficialEffect::DrawForMighty => {
+                    if self.players[actor].hand.len() < 5 {
+                        15
+                    } else {
+                        0
+                    }
                 }
-            }
-            OfficialEffect::DrawForMighty
-                if self.players[actor]
-                    .units
-                    .iter()
-                    .all(|unit| self.unit_might(unit) < 5) =>
-            {
-                0
-            }
-            OfficialEffect::Draw(_)
-            | OfficialEffect::ChooseTopThreeBurnRest
-            | OfficialEffect::DrawForBattlefields { .. }
-            | OfficialEffect::DrawForMighty => {
-                if self.players[actor].hand.len() < 5 {
-                    15
-                } else {
-                    0
+                OfficialEffect::DisruptHand => {
+                    if !self.players[1 - actor].hand.is_empty() {
+                        30
+                    } else {
+                        0
+                    }
                 }
-            }
-            OfficialEffect::DisruptHand => {
-                if !self.players[1 - actor].hand.is_empty() {
-                    30
-                } else {
-                    0
+                OfficialEffect::DestroyGearAndDraw | OfficialEffect::TemporaryGear => {
+                    if self.players[1 - actor].gear.is_empty() {
+                        0
+                    } else {
+                        40
+                    }
                 }
+                OfficialEffect::ExtraTurn => 65,
+                _ => 0,
             }
-            OfficialEffect::DestroyGearAndDraw | OfficialEffect::TemporaryGear => {
-                if self.players[1 - actor].gear.is_empty() {
-                    0
-                } else {
-                    40
-                }
-            }
-            OfficialEffect::ExtraTurn => 65,
-            _ => 0,
-        }
+        })
     }
 }
 
@@ -8402,10 +8520,12 @@ mod tests {
                 }) = game.decision
                 {
                     Action::AssignDamage {
-                        assignments: game.automatic_damage_assignment(player, lane, total),
+                        assignments: game
+                            .automatic_damage_assignment(player, lane, total)
+                            .unwrap(),
                     }
                 } else {
-                    let choices = game.legal_actions();
+                    let choices = game.legal_actions().unwrap();
                     choices
                         .iter()
                         .find(|a| **a == Action::Choose { accept: false })
@@ -8677,12 +8797,12 @@ mod tests {
     #[test]
     fn conquest_history_is_per_player_even_on_opponents_turn() {
         let mut game = game();
-        game.claim_lane(0, 0);
-        game.claim_lane(1, 0);
+        game.claim_lane(0, 0).unwrap();
+        game.claim_lane(1, 0).unwrap();
         assert_eq!(game.players[0].score, 1);
         assert_eq!(game.players[1].score, 1);
-        game.claim_lane(0, 0);
-        game.claim_lane(1, 0);
+        game.claim_lane(0, 0).unwrap();
+        game.claim_lane(1, 0).unwrap();
         assert_eq!(game.players[0].score, 1);
         assert_eq!(game.players[1].score, 1);
     }
@@ -8806,7 +8926,10 @@ mod tests {
         let mut second = first.clone();
         second.players[1].hand = vec![0; 50];
         second.players[1].deck.reverse();
-        assert_eq!(first.choose_ai_action(), second.choose_ai_action());
+        assert_eq!(
+            first.choose_ai_action().unwrap(),
+            second.choose_ai_action().unwrap()
+        );
     }
 
     #[test]
@@ -9110,10 +9233,10 @@ mod tests {
             player: 0,
             unit_id: id,
         };
-        game.modify_might(target, -4, 0);
-        assert_eq!(game.unit_might(game.unit_ref(target).unwrap()), 0);
-        game.modify_might(target, 3, 0);
-        assert_eq!(game.unit_might(game.unit_ref(target).unwrap()), 1);
+        game.modify_might(target, -4, 0).unwrap();
+        assert_eq!(game.unit_might(game.unit_ref(target).unwrap()).unwrap(), 0);
+        game.modify_might(target, 3, 0).unwrap();
+        assert_eq!(game.unit_might(game.unit_ref(target).unwrap()).unwrap(), 1);
     }
 
     #[test]
@@ -9170,7 +9293,8 @@ mod tests {
                 },
             ],
             None,
-        );
+        )
+        .unwrap();
         assert!(game.players[1].units.iter().all(|u| u.damage == 1));
         for u in &mut game.players[1].units {
             u.damage = 0;
@@ -9190,10 +9314,10 @@ mod tests {
                 unit_id: c,
             },
         ];
-        let groups = game.resolution_groups(0, 50, None, &all);
+        let groups = game.resolution_groups(0, 50, None, &all).unwrap();
         assert_eq!(groups.len(), 2);
         let selected = groups.into_iter().find(|group| group.len() == 2).unwrap();
-        game.resolve_operation(0, 50, None, selected, None);
+        game.resolve_operation(0, 50, None, selected, None).unwrap();
         assert_eq!(game.players[1].units[0].damage, 0);
         assert_eq!(game.players[1].units[1].damage, 1);
         assert_eq!(game.players[1].units[2].damage, 1);
@@ -9212,7 +9336,7 @@ mod tests {
             player: 1,
             unit_id: victim,
         };
-        assert_eq!(game.deflect_cost(0, &[target, target]), 2);
+        assert_eq!(game.deflect_cost(0, &[target, target]).unwrap(), 2);
         let required = game.catalog[55].power_cost;
         game.players[0].runes = [0; 6];
         game.players[0].exhausted_runes = [0; 6];
@@ -9257,7 +9381,7 @@ mod tests {
             game.players[0]
                 .units
                 .iter()
-                .all(|u| u.token && game.unit_might(u) == 1)
+                .all(|u| u.token && game.unit_might(u).unwrap() == 1)
         );
         assert_eq!(game.players[0].banish, vec![48]);
     }
@@ -9307,7 +9431,8 @@ mod tests {
         let mut game = game();
         game.players[0].deck = vec![25, 27];
         let score = game.players[1].score;
-        game.resolve_operation(0, 39, None, Vec::new(), None);
+        game.resolve_operation(0, 39, None, Vec::new(), None)
+            .unwrap();
         assert!(
             matches!(&game.decision,Some(Decision::TopThree{cards,..}) if cards == &vec![27,25])
         );
@@ -9323,7 +9448,8 @@ mod tests {
     fn sabotage_recycles_the_selected_revealed_nonunit() {
         let mut game = game();
         game.players[1].hand = vec![25, 7, 8];
-        game.resolve_operation(0, 32, None, Vec::new(), None);
+        game.resolve_operation(0, 32, None, Vec::new(), None)
+            .unwrap();
         let before = game.players.clone();
         assert!(
             game.apply(Action::SelectCards { indices: vec![0] })
@@ -9342,7 +9468,7 @@ mod tests {
         let id = game.create_unit(0, 56, false, 0);
         game.players[0].units[0].lane = Some(0);
         let enemy = unit(&mut game, 1, 1, Some(0), false);
-        game.open_showdown(0, 0);
+        game.open_showdown(0, 0).unwrap();
         assert!(game.in_combat(0));
         game.unit_mut(Target::Unit {
             player: 0,
@@ -9363,7 +9489,7 @@ mod tests {
             })
             .unwrap();
         assert_eq!(survivor.damage, 0);
-        assert_eq!(game.unit_might(survivor), 1);
+        assert_eq!(game.unit_might(survivor).unwrap(), 1);
     }
     #[test]
     fn accelerate_pays_actual_additional_cost_and_unit_enters_ready() {
@@ -9474,7 +9600,7 @@ mod tests {
         assert_eq!(game.players[0].energy, 2);
         finish_windows(&mut game);
         assert!(game.unit_empowered(id));
-        assert_eq!(game.unit_might(&game.players[0].units[0]), 3);
+        assert_eq!(game.unit_might(&game.players[0].units[0]).unwrap(), 3);
         let before = game.players.clone();
         assert!(
             game.apply(Action::EmpowerUnit {
@@ -9598,8 +9724,8 @@ mod tests {
         let id = game.create_unit(0, 15, false, 0);
         game.players[0].units.last_mut().unwrap().damage = 1;
         let opponent_hand = game.players[1].hand.clone();
-        game.remove_defeated();
-        game.after_resolution();
+        game.remove_defeated().unwrap();
+        game.after_resolution().unwrap();
         assert!(
             game.unit_ref(Target::Unit {
                 player: 0,
@@ -9772,12 +9898,12 @@ mod tests {
             })
             .is_err()
         );
-        let assignments = game.automatic_damage_assignment(0, 0, 20);
+        let assignments = game.automatic_damage_assignment(0, 0, 20).unwrap();
         assert_eq!(
             assignments.iter().map(|a| a.0).collect::<Vec<_>>(),
             vec![tank, normal, back]
         );
-        assert_eq!(assignments.iter().map(|a| a.1).sum::<u16>(), 20);
+        assert_eq!(assignments.iter().map(|a| a.1).sum::<u64>(), 20);
         game.apply(Action::AssignDamage { assignments }).unwrap();
     }
 
@@ -9798,7 +9924,7 @@ mod tests {
         assert!(game.chain[0].ability.is_none());
         let id = game.chain[0].id;
         game.counter_spell(id, false);
-        game.after_resolution();
+        game.after_resolution().unwrap();
         assert!(game.chain.is_empty());
         assert!(!game.legend[0].empowered);
         assert_eq!(game.players[0].units[0].temporary_buff, 0);
@@ -9854,7 +9980,7 @@ mod tests {
             player: 0,
             unit_id: id,
         };
-        game.move_effect(0, target, None, false);
+        game.move_effect(0, target, None, false).unwrap();
         assert_eq!(game.unit_ref(target).unwrap().lane, Some(0));
         assert!(
             game.apply(Action::Move {
@@ -9863,7 +9989,7 @@ mod tests {
             })
             .is_err()
         );
-        game.move_effect(1, target, Some(1), false);
+        game.move_effect(1, target, Some(1), false).unwrap();
         assert_eq!(game.unit_ref(target).unwrap().lane, Some(1));
     }
 
@@ -9875,7 +10001,7 @@ mod tests {
         game.players[1].units[0].lane = Some(0);
         game.resolve_trigger(0, 34, TriggeredAbility::Tokens { might: 1, count: 1 })
             .unwrap();
-        game.after_resolution();
+        game.after_resolution().unwrap();
         assert_eq!(game.chain.len(), 1);
         assert!(matches!(
             game.chain[0].ability,
@@ -9899,7 +10025,7 @@ mod tests {
         game.battlefield_owner[0] = Some(0);
         give_runes(&mut game, 0, Domain::Calm, 2);
         let hand = game.players[0].hand.len();
-        game.start_turn();
+        game.start_turn().unwrap();
         assert_eq!(game.players[0].score, 0);
         assert_eq!(game.players[0].total_runes(), 2);
         assert_eq!(game.players[0].hand.len(), hand);
@@ -9959,7 +10085,7 @@ mod tests {
         game.players[0].units[0].lane = Some(0);
         game.battlefield_owner[0] = Some(0);
         give_runes(&mut game, 0, Domain::Fury, 4);
-        game.start_turn();
+        game.start_turn().unwrap();
         assert!(!game.chain.is_empty());
         game.pay_energy(0, 2);
         finish_windows(&mut game);
@@ -9986,7 +10112,7 @@ mod tests {
         .unwrap();
         finish_windows(&mut game);
         assert_eq!(game.players[0].score, 1);
-        assert_eq!(game.lane_might(0, 0), 0);
+        assert_eq!(game.lane_might(0, 0).unwrap(), 0);
     }
 
     #[test]
@@ -10027,7 +10153,8 @@ mod tests {
             },
             Some(1),
             true,
-        );
+        )
+        .unwrap();
         let unit = game
             .unit_ref(Target::Unit {
                 player: 0,
@@ -10036,7 +10163,7 @@ mod tests {
             .unwrap();
         assert_eq!(unit.lane, Some(0));
         assert!(unit.ready);
-        game.after_resolution();
+        game.after_resolution().unwrap();
         assert!(matches!(
             game.chain.last().unwrap().ability,
             Some(ChainAbility::Triggered(TriggeredAbility::Might { .. }))
@@ -10176,7 +10303,7 @@ mod tests {
         for u in &mut g.players[0].units {
             u.damage = 9;
         }
-        g.after_resolution();
+        g.after_resolution().unwrap();
         assert!(
             matches!(g.decision,Some(Decision::DeathReplacement{ref options,..}) if options.len()==2)
         );
@@ -10219,7 +10346,7 @@ mod tests {
         );
         g.players[0].units[0].damage = 9;
         g.players[0].units[0].banish_on_death = true;
-        g.after_resolution();
+        g.after_resolution().unwrap();
         assert!(
             matches!(g.decision,Some(Decision::DeathReplacement{ref options,..}) if options.len()==2)
         );
@@ -10241,10 +10368,12 @@ mod tests {
             player: 0,
             unit_id: token,
         };
-        g.resolve_operation(0, 27, None, vec![target], Some(999));
-        assert_eq!(g.unit_might(g.unit_ref(target).unwrap()), 2);
-        g.resolve_operation(0, 27, None, vec![target], Some(998));
-        assert_eq!(g.unit_might(g.unit_ref(target).unwrap()), 2);
+        g.resolve_operation(0, 27, None, vec![target], Some(999))
+            .unwrap();
+        assert_eq!(g.unit_might(g.unit_ref(target).unwrap()).unwrap(), 2);
+        g.resolve_operation(0, 27, None, vec![target], Some(998))
+            .unwrap();
+        assert_eq!(g.unit_might(g.unit_ref(target).unwrap()).unwrap(), 2);
     }
 
     #[test]
@@ -10272,7 +10401,7 @@ mod tests {
             g.chain.is_empty(),
             "pending triggers are not finalized counter targets"
         );
-        g.after_resolution();
+        g.after_resolution().unwrap();
         let Some(Decision::OrderTriggers {
             player,
             ref options,
@@ -10402,7 +10531,7 @@ mod tests {
         assert!(g.players[0].discard.is_empty());
         assert_eq!(g.players[0].deck.len(), 2);
         assert_eq!(g.players[0].hand.len(), hand.len() + 1);
-        g.after_resolution();
+        g.after_resolution().unwrap();
         assert_eq!(g.winner, Some(1));
     }
 
@@ -10519,7 +10648,7 @@ mod tests {
         give_runes(&mut g, 0, Domain::Chaos, 6);
         g.players[0].discard = vec![48];
         g.queue_ability(0, 36, vec![], ChainAbility::CardEffect { entering: None });
-        g.after_resolution();
+        g.after_resolution().unwrap();
         assert!(g.chain.is_empty());
         assert!(matches!(
             g.decision,
@@ -10543,7 +10672,7 @@ mod tests {
         g.apply(Action::Pass).unwrap();
         g.apply(Action::Pass).unwrap();
         assert!(matches!(g.decision, Some(Decision::PendingPlay { .. })));
-        assert!(!g.can_decline_trash_play());
+        assert!(!g.can_decline_trash_play().unwrap());
         assert!(g.apply(Action::Choose { accept: false }).is_err());
         g.apply(Action::FinalizePendingPlay {
             lane: None,
@@ -10570,7 +10699,7 @@ mod tests {
         g.gear_resolve_equip(0, gear, target);
         g.unit_mut(target).unwrap().damage = 20;
         g.unit_mut(target).unwrap().banish_on_death = true;
-        g.after_resolution();
+        g.after_resolution().unwrap();
         g.apply(Action::ChooseDeathReplacement {
             unit_id: id,
             gear_id: Some(gear),
@@ -10578,7 +10707,7 @@ mod tests {
         .unwrap();
         assert!(g.unit_ref(target).unwrap().banish_on_death);
         g.unit_mut(target).unwrap().damage = 20;
-        g.after_resolution();
+        g.after_resolution().unwrap();
         assert!(g.unit_ref(target).is_none());
         assert_eq!(g.players[0].banish, vec![25]);
     }

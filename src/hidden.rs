@@ -260,7 +260,7 @@ impl Game {
             self.catalog[card_id].name,
             card.lane + 1
         ));
-        self.queue_hidden_card(player, card_id, card.lane, resolved);
+        self.queue_hidden_card(player, card_id, card.lane, resolved)?;
         Ok(())
     }
 

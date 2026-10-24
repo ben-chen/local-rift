@@ -67,7 +67,7 @@ fn resolve_top(game: &mut Game) {
     game.apply(Action::Pass).unwrap();
 }
 
-fn prize_buff(game: &Game) -> i16 {
+fn prize_buff(game: &Game) -> i64 {
     game.players[0]
         .units
         .iter()

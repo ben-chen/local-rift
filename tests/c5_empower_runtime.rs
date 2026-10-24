@@ -190,10 +190,10 @@ fn conditional_keywords_might_and_aura_replacement_are_live() {
         let t = unit(&mut g, 0, 1000, card, None);
         g.apply(ability(source(t), 0, vec![])).unwrap();
         settle(&mut g);
-        let k = g.unit_keywords(u(&g, t));
+        let k = g.unit_keywords(u(&g, t)).unwrap();
         assert_eq!(
             (
-                g.unit_might(u(&g, t)),
+                g.unit_might(u(&g, t)).unwrap(),
                 k.assault,
                 k.shield,
                 k.deflect,
@@ -209,10 +209,16 @@ fn conditional_keywords_might_and_aura_replacement_are_live() {
     let mut g = position();
     let target = unit(&mut g, 0, 1000, 72, None);
     let rage = gear(&mut g, 1001, 281);
-    assert_eq!(g.unit_might(u(&g, target)), g.catalog[72].might + 1);
+    assert_eq!(
+        g.unit_might(u(&g, target)).unwrap(),
+        u64::from(g.catalog[72].might) + 1
+    );
     g.apply(ability(rage, 0, vec![])).unwrap();
     settle(&mut g);
-    assert_eq!(g.unit_might(u(&g, target)), g.catalog[72].might + 2);
+    assert_eq!(
+        g.unit_might(u(&g, target)).unwrap(),
+        u64::from(g.catalog[72].might) + 2
+    );
     let contributions = g.passive_contributions(object(target));
     assert_eq!(contributions.iter().filter(|c| c.active).count(), 1);
 }
@@ -230,10 +236,13 @@ fn aurok_stacks_on_empowered_friends_including_tokens_but_not_unempowered_units(
         g.apply(ability(source(t), 0, vec![])).unwrap();
         settle(&mut g);
     }
-    assert_eq!(g.unit_might(u(&g, a)), 9);
-    assert_eq!(g.unit_might(u(&g, b)), 9);
-    assert_eq!(g.unit_might(u(&g, normal)), g.catalog[72].might);
-    assert_eq!(g.unit_might(u(&g, token)), 5);
+    assert_eq!(g.unit_might(u(&g, a)).unwrap(), 9);
+    assert_eq!(g.unit_might(u(&g, b)).unwrap(), 9);
+    assert_eq!(
+        g.unit_might(u(&g, normal)).unwrap(),
+        u64::from(g.catalog[72].might)
+    );
+    assert_eq!(g.unit_might(u(&g, token)).unwrap(), 5);
 }
 #[test]
 fn matriarch_observes_actor_empowering_enemy_gear_and_readies_enemy_unit_with_exact_costs() {
@@ -416,7 +425,7 @@ fn aura_loss_causes_a_second_death_pass_and_captures_empowered_deathknell_once()
     g.empowered_units.extend([1000, 1001]);
     g.players[0].units[0].damage = 1;
     g.players[0].units[1].damage = 3;
-    assert_eq!(g.unit_might(u(&g, emissary)), 4);
+    assert_eq!(g.unit_might(u(&g, emissary)).unwrap(), 4);
     cast(&mut g, 61, vec![aurok]);
     resolve(&mut g);
     assert!(g.players[0].units.is_empty());
@@ -531,7 +540,7 @@ fn akali_empowered_damage_is_live_and_origin_field_is_eligible() {
         lane: Some(1),
     })
     .unwrap();
-    assert!(g.valid_trigger_target(target, &[]));
+    assert!(g.valid_trigger_target(target, &[]).unwrap());
     g.apply(Action::ChooseTriggerTargets {
         targets: vec![target],
     })
@@ -571,7 +580,7 @@ fn ambessa_attack_kill_compares_live_assault_might_and_revalidates_here() {
             lane: Some(0),
         })
         .unwrap();
-        assert!(g.valid_trigger_target(enemy, &[]));
+        assert!(g.valid_trigger_target(enemy, &[]).unwrap());
         g.apply(Action::ChooseTriggerTargets {
             targets: vec![enemy],
         })

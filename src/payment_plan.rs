@@ -465,24 +465,32 @@ impl Game {
         }
         candidate.apply(intent)?;
         candidate.payment_plan = None;
-        candidate.remove_defeated();
-        candidate.after_resolution();
+        candidate.remove_defeated()?;
+        candidate.after_resolution()?;
+        candidate.validate_numeric_state()?;
         *self = candidate;
         Ok(())
     }
 
     /// A failed attempt may be undone, restoring even the Add abilities used
     /// during it. A mandatory original choice is restored, never skipped.
-    pub fn can_cancel_payment(&self) -> bool {
-        self.payment_plan
+    pub fn can_cancel_payment(&self) -> Result<bool, String> {
+        self.validate_numeric_state()?;
+        if !self
+            .payment_plan
             .as_ref()
-            .is_some_and(|plan| plan.mode == Mode::Pending)
-            && self.resource_frames.is_empty()
-            && self.clone().complete_payment().is_err()
+            .is_some_and(|p| p.mode == Mode::Pending)
+            || !self.resource_frames.is_empty()
+        {
+            return Ok(false);
+        }
+        Ok(!crate::numeric::legal_result(
+            self.clone().complete_payment(),
+        )?)
     }
 
     pub(crate) fn cancel_payment(&mut self) -> Result<(), String> {
-        if !self.can_cancel_payment() {
+        if !self.can_cancel_payment()? {
             return Err(
                 "This payment can complete; complete it or finish the nested resource instruction."
                     .into(),

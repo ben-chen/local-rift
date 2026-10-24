@@ -115,10 +115,10 @@ impl App {
         }
         false
     }
-    pub(super) fn resource_visit_action_allowed(&self, action: &Action) -> bool {
-        match action {
+    pub(super) fn resource_visit_action_allowed(&self, action: &Action) -> Result<bool, String> {
+        Ok(match action {
             Action::WithPowerPayment { action, .. } | Action::WithPlayChoices { action, .. } => {
-                self.resource_visit_action_allowed(action)
+                self.resource_visit_action_allowed(action)?
             }
             Action::ActivateRune { .. }
             | Action::RecycleRune { .. }
@@ -143,13 +143,13 @@ impl App {
             Action::Choose { accept: false }
                 if matches!(self.game.decision, Some(Decision::Payment { .. })) =>
             {
-                self.game.can_cancel_payment()
+                self.game.can_cancel_payment()?
             }
             _ => self
                 .suspended_payments
                 .last()
                 .is_some_and(|saved| saved.decision != self.decision_key()),
-        }
+        })
     }
     pub(super) fn can_begin_payment(&self, action: &Action) -> bool {
         self.game.payment_plan_view(0).is_none()
@@ -163,8 +163,13 @@ impl App {
     }
     pub(super) fn begin_ui_payment(&mut self, action: Action) -> bool {
         let action = self.canonical_action(action);
-        if self.maybe_review_cost(&action) {
-            return false;
+        match self.maybe_review_cost(&action) {
+            Ok(true) => return false,
+            Ok(false) => {}
+            Err(error) => {
+                self.notify(error);
+                return false;
+            }
         }
         let original = self.ui_draft();
         match self.game.apply(Action::BeginPayment {
@@ -245,12 +250,12 @@ impl App {
         self.hover_card = None;
         self.hover_rect = None;
     }
-    pub(super) fn suspended_payment_banner(&mut self) {
+    pub(super) fn suspended_payment_banner(&mut self) -> Result<(), String> {
         let Some(saved) = self.suspended_payments.last().cloned() else {
-            return;
+            return Ok(());
         };
         if self.payment_draft.is_some() || self.screen != Screen::Practice {
-            return;
+            return Ok(());
         }
         let ready = saved.decision == self.decision_key();
         self.ui.rect(Rect::new(244.0, 86.0, 886.0, 40.0), PANEL);
@@ -286,7 +291,7 @@ impl App {
                 "Cancel draft"
             },
             false,
-            ready && (!saved.owns_plan || self.game.can_cancel_payment()),
+            ready && (!saved.owns_plan || self.game.can_cancel_payment()?),
         ) {
             if saved.owns_plan {
                 self.apply_action(Action::Choose { accept: false });
@@ -295,6 +300,7 @@ impl App {
                 self.restore_ui_draft(saved.ui);
             }
         }
+        Ok(())
     }
 }
 
@@ -574,9 +580,9 @@ impl App {
         }
         true
     }
-    pub(super) fn locked_payment_panel(&mut self) {
+    pub(super) fn locked_payment_panel(&mut self) -> Result<(), String> {
         let Some(plan) = self.game.payment_plan_view(0) else {
-            return;
+            return Ok(());
         };
         self.ui.title("Finish payment", 1178.0, 366.0, 22.0, TEXT);
         let name = self.payment_action_name(&Action::CompletePayment);
@@ -603,11 +609,12 @@ impl App {
             Rect::new(1178.0, 534.0, 212.0, 27.0),
             "Undo unsuccessful attempt",
             false,
-            self.game.can_cancel_payment(),
+            self.game.can_cancel_payment()?,
         ) {
             self.action(Action::Choose { accept: false });
         }
         self.ui.wrapped_lines("Board / Loadout: use Add abilities. Costs stay fixed. Undo restores resource steps only if this attempt cannot complete.",1178.0,580.0,212.0,10.0,MUTED,4);
+        Ok(())
     }
     pub(super) fn commit_conversion_editor(&mut self) -> Result<(), String> {
         let Some(value) = self.conversion_editor.as_ref() else {
@@ -765,7 +772,11 @@ impl App {
                 .ellipsis(&format!("Then: {waiting}"), 1178.0, 629.0, 212.0, 9.0, GOLD);
         }
     }
-    pub(super) fn ability_panel(&mut self, source: AbilitySource, index: Option<usize>) {
+    pub(super) fn ability_panel(
+        &mut self,
+        source: AbilitySource,
+        index: Option<usize>,
+    ) -> Result<(), String> {
         self.ui.ellipsis(
             &source_state(&self.game, source),
             1178.0,
@@ -785,7 +796,7 @@ impl App {
                 13.0,
                 MUTED,
             );
-            return;
+            return Ok(());
         };
         self.ui.ellipsis(
             self.game.catalog[card_id].name,
@@ -798,7 +809,7 @@ impl App {
         if let Some(index) = index {
             let Some((_, rule)) = self.ability_rule(source, index) else {
                 self.selection = None;
-                return;
+                return Ok(());
             };
             self.ui
                 .wrapped_lines(rule.label, 1178.0, 385.0, 212.0, 11.0, GOLD, 2);
@@ -816,21 +827,23 @@ impl App {
                     targets: self.ability_targets.clone(),
                 }
             };
-            let cost_plan = self.game.cost_plan(&action).ok();
-            let deflect: u16 = self
-                .ability_targets
-                .iter()
-                .filter_map(|target| match target {
-                    Target::Unit { player, unit_id } if *player != source.player() => {
-                        self.game.players[*player]
-                            .units
-                            .iter()
-                            .find(|unit| unit.id == *unit_id)
-                            .map(|unit| u16::from(self.game.unit_keywords(unit).deflect))
-                    }
-                    _ => None,
-                })
-                .sum();
+            let cost_plan = super::optional_query(self.game.cost_plan(&action))?;
+            let mut deflect = 0_u16;
+            for target in &self.ability_targets {
+                if let Target::Unit { player, unit_id } = target
+                    && *player != source.player()
+                    && let Some(unit) = self.game.players[*player]
+                        .units
+                        .iter()
+                        .find(|unit| unit.id == *unit_id)
+                {
+                    deflect = deflect
+                        .checked_add(u16::from(self.game.unit_keywords(unit)?.deflect))
+                        .ok_or_else(|| {
+                            "engine_capacity: Deflect total exceeds supported power.".to_owned()
+                        })?;
+                }
+            }
             let cost = if let Some(plan) = &cost_plan {
                 effective_cost_label(rule, plan)
             } else if deflect > 0 {
@@ -1064,6 +1077,7 @@ impl App {
                 self.ability_targets.clear();
             }
         }
+        Ok(())
     }
 }
 

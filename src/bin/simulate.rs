@@ -132,7 +132,7 @@ fn check_invariants(game: &Game) -> Result<(), String> {
             // including Predict and repeated instructions. Lethal units also
             // remain visible during a cleanup's death-replacement choice.
             if unit.damage > 0
-                && unit.damage >= game.unit_might(unit)
+                && unit.damage >= game.unit_might(unit)?
                 && game.resolution_progress().is_none()
                 && !matches!(
                     game.decision,
@@ -144,7 +144,7 @@ fn check_invariants(game: &Game) -> Result<(), String> {
                     unit.id,
                     game.unit_name(unit),
                     unit.damage,
-                    game.unit_might(unit),
+                    game.unit_might(unit)?,
                     unit.lane,
                     game.log
                         .iter()

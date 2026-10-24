@@ -472,21 +472,24 @@ impl Game {
         self.emit_event(EventSnapshot::simple(Occurrence::GearActivated, player));
         self.trigger_batch += 1;
     }
-    pub(crate) fn buff_unit(&mut self, target: Target) {
+    pub(crate) fn buff_unit(&mut self, target: Target) -> Result<(), String> {
         let Target::Unit { player, .. } = target else {
-            return;
+            return Ok(());
         };
-        self.buff_unit_by(player, target);
+        self.buff_unit_by(player, target)?;
+
+        Ok(())
     }
-    pub(crate) fn buff_unit_by(&mut self, actor: usize, target: Target) {
+    pub(crate) fn buff_unit_by(&mut self, actor: usize, target: Target) -> Result<(), String> {
         let Target::Unit { player, unit_id } = target else {
-            return;
+            return Ok(());
         };
         if self.unit_ref(target).is_none() || self.buffed_units.contains(&unit_id) {
-            return;
+            return Ok(());
         }
         self.buffed_units.push(unit_id);
-        self.unit_mut(target).unwrap().buff += 1;
+        let unit = self.unit_mut(target).unwrap();
+        unit.buff = crate::numeric::add_u64(unit.buff, 1, "Buff counter")?;
         let mut event = EventSnapshot::unit(
             Occurrence::Buffed,
             actor,
@@ -494,6 +497,8 @@ impl Game {
         );
         event.subject_player = player;
         self.emit_event(event);
+
+        Ok(())
     }
     pub(crate) fn exhaust_unit(&mut self, player: usize, unit_id: u32) {
         let Some(unit) = self.unit_mut(Target::Unit { player, unit_id }) else {
@@ -540,16 +545,18 @@ impl Game {
         event.subject_player = owner;
         self.emit_event(event);
     }
-    pub(crate) fn fight_units(&mut self, a: Target, b: Target) {
-        let Some((am, bm)) = self
-            .unit_ref(a)
-            .zip(self.unit_ref(b))
-            .map(|(a, b)| (self.unit_might(a), self.unit_might(b)))
-        else {
-            return;
+    pub(crate) fn fight_units(&mut self, a: Target, b: Target) -> Result<(), String> {
+        let Some((first, second)) = self.unit_ref(a).zip(self.unit_ref(b)) else {
+            return Ok(());
         };
-        self.unit_mut(a).unwrap().damage = self.unit_ref(a).unwrap().damage.saturating_add(bm);
-        self.unit_mut(b).unwrap().damage = self.unit_ref(b).unwrap().damage.saturating_add(am);
+        let am = self.unit_might(first)?;
+        let bm = self.unit_might(second)?;
+        // Snapshot both dealers before marking either packet; cleanup waits for the instruction.
+        let ad = crate::numeric::add_u64(first.damage, bm, "Fight damage")?;
+        let bd = crate::numeric::add_u64(second.damage, am, "Fight damage")?;
+        self.unit_mut(a).unwrap().damage = ad;
+        self.unit_mut(b).unwrap().damage = bd;
+        Ok(())
     }
     pub(super) fn sync_combat_triggers(&mut self) {
         let Some(window) = self.showdown.as_ref().filter(|w| w.combat) else {
@@ -589,78 +596,80 @@ impl Game {
         context: TriggerContext,
         target: Target,
         slot: usize,
-    ) -> bool {
-        let rule = &metadata::trigger_rules(card_id)[index];
-        let Target::Unit { player, unit_id } = target else {
-            return false;
-        };
-        let Some(unit) = self.unit_ref(target) else {
-            return false;
-        };
-        let actor = context.source.player;
-        // Shared target prohibitions are independent of the operation itself.
-        if !self.official_target_valid(actor, 7, None, target, slot) {
-            return false;
-        }
-        match rule.targets.allegiance {
-            Allegiance::Friendly if player != actor => return false,
-            Allegiance::Enemy if player == actor => return false,
-            Allegiance::Mixed if (slot == 0) != (player == actor) => return false,
-            _ => {}
-        }
-        if rule.targets.event_locations
-            == metadata::EventLocationConstraint::MovedToOrFromBattlefield
-            && !context.movement.is_some_and(|m| {
-                unit.lane.is_some() && (unit.lane == m.origin || unit.lane == m.destination)
-            })
-        {
-            return false;
-        }
-        if rule.targets.relative_might == metadata::RelativeMightConstraint::LessThanSource
-            && !Self::source_target(context.source)
-                .and_then(|t| self.unit_ref(t))
-                .is_some_and(|source| self.unit_might(unit) < self.unit_might(source))
-        {
-            return false;
-        }
-        if rule.targets.another && context.source.unit_id == Some(unit_id) {
-            return false;
-        }
-        if rule.targets.battlefield && unit.lane.is_none() {
-            return false;
-        }
-        if rule.targets.here && self.source_location(context.source) != self.target_location(target)
-        {
-            return false;
-        }
-        if rule
-            .targets
-            .max_might
-            .is_some_and(|n| self.unit_might(unit) > n)
-        {
-            return false;
-        }
-        if rule
-            .targets
-            .tag
-            .is_some_and(|tag| !self.unit_has_tag(unit, tag))
-        {
-            return false;
-        }
-        if rule.event == Event::SelfPlayed
-            && let Some(source) = context.source.unit_id
-            && let Some(lane) = self.hidden_play_origin(source)
-            && (self
-                .unit_ref(Target::Unit {
-                    player: actor,
-                    unit_id: source,
+    ) -> Result<bool, String> {
+        Ok({
+            let rule = &metadata::trigger_rules(card_id)[index];
+            let Target::Unit { player, unit_id } = target else {
+                return Ok(false);
+            };
+            let Some(unit) = self.unit_ref(target) else {
+                return Ok(false);
+            };
+            let actor = context.source.player;
+            // Shared target prohibitions are independent of the operation itself.
+            if !self.official_target_valid(actor, 7, None, target, slot)? {
+                return Ok(false);
+            }
+            match rule.targets.allegiance {
+                Allegiance::Friendly if player != actor => return Ok(false),
+                Allegiance::Enemy if player == actor => return Ok(false),
+                Allegiance::Mixed if (slot == 0) != (player == actor) => return Ok(false),
+                _ => {}
+            }
+            if rule.targets.event_locations
+                == metadata::EventLocationConstraint::MovedToOrFromBattlefield
+                && !context.movement.is_some_and(|m| {
+                    unit.lane.is_some() && (unit.lane == m.origin || unit.lane == m.destination)
                 })
-                .is_none()
-                || unit.lane != Some(lane))
-        {
-            return false;
-        }
-        true
+            {
+                return Ok(false);
+            }
+            if rule.targets.relative_might == metadata::RelativeMightConstraint::LessThanSource
+                && !(match Self::source_target(context.source).and_then(|t| self.unit_ref(t)) {
+                    Some(source) => self.unit_might(unit)? < self.unit_might(source)?,
+                    None => false,
+                })
+            {
+                return Ok(false);
+            }
+            if rule.targets.another && context.source.unit_id == Some(unit_id) {
+                return Ok(false);
+            }
+            if rule.targets.battlefield && unit.lane.is_none() {
+                return Ok(false);
+            }
+            if rule.targets.here
+                && self.source_location(context.source) != self.target_location(target)
+            {
+                return Ok(false);
+            }
+            if let Some(n) = rule.targets.max_might
+                && self.unit_might(unit)? > u64::from(n)
+            {
+                return Ok(false);
+            }
+            if rule
+                .targets
+                .tag
+                .is_some_and(|tag| !self.unit_has_tag(unit, tag))
+            {
+                return Ok(false);
+            }
+            if rule.event == Event::SelfPlayed
+                && let Some(source) = context.source.unit_id
+                && let Some(lane) = self.hidden_play_origin(source)
+                && (self
+                    .unit_ref(Target::Unit {
+                        player: actor,
+                        unit_id: source,
+                    })
+                    .is_none()
+                    || unit.lane != Some(lane))
+            {
+                return Ok(false);
+            }
+            true
+        })
     }
     pub fn trigger_target_bounds(&self) -> Option<(usize, usize)> {
         let Decision::TriggerTargets {
@@ -681,79 +690,96 @@ impl Game {
             },
         ))
     }
-    pub fn valid_trigger_target(&self, target: Target, prior: &[Target]) -> bool {
+    pub fn valid_trigger_target(&self, target: Target, prior: &[Target]) -> Result<bool, String> {
         self.valid_trigger_target_mode(target, prior, true)
     }
 
-    fn valid_trigger_target_mode(&self, target: Target, prior: &[Target], costs: bool) -> bool {
-        let Some(Decision::TriggerTargets {
-            card_id,
-            rule_index,
-            context,
-            ..
-        }) = self.decision.as_ref()
-        else {
-            return false;
-        };
-        let rule = &metadata::trigger_rules(*card_id)[*rule_index];
-        if prior.len() >= rule.targets.max as usize
-            || (rule.targets.distinct && prior.contains(&target))
-        {
-            return false;
-        }
-        if !self.trigger_rule_target_valid(*card_id, *rule_index, *context, target, prior.len()) {
-            return false;
-        }
-        let mut targets = prior.to_vec();
-        targets.push(target);
-        !costs
-            || self.available_power(context.source.player, None)
-                >= self.deflect_cost(context.source.player, &targets).into()
+    fn valid_trigger_target_mode(
+        &self,
+        target: Target,
+        prior: &[Target],
+        costs: bool,
+    ) -> Result<bool, String> {
+        Ok({
+            let Some(Decision::TriggerTargets {
+                card_id,
+                rule_index,
+                context,
+                ..
+            }) = self.decision.as_ref()
+            else {
+                return Ok(false);
+            };
+            let rule = &metadata::trigger_rules(*card_id)[*rule_index];
+            if prior.len() >= rule.targets.max as usize
+                || (rule.targets.distinct && prior.contains(&target))
+            {
+                return Ok(false);
+            }
+            if !self.trigger_rule_target_valid(
+                *card_id,
+                *rule_index,
+                *context,
+                target,
+                prior.len(),
+            )? {
+                return Ok(false);
+            }
+            let mut targets = prior.to_vec();
+            targets.push(target);
+            !costs
+                || self.available_power(context.source.player, None)
+                    >= self.deflect_cost(context.source.player, &targets)?.into()
+        })
     }
-    pub fn trigger_target_candidates(&self) -> Vec<Target> {
-        self.players
-            .iter()
-            .enumerate()
-            .flat_map(|(player, p)| {
-                p.units.iter().map(move |u| Target::Unit {
-                    player,
-                    unit_id: u.id,
+    pub fn trigger_target_candidates(&self) -> Result<Vec<Target>, String> {
+        Ok({
+            self.players
+                .iter()
+                .enumerate()
+                .flat_map(|(player, p)| {
+                    p.units.iter().map(move |u| Target::Unit {
+                        player,
+                        unit_id: u.id,
+                    })
                 })
-            })
-            .collect()
+                .collect()
+        })
     }
-    pub(super) fn trigger_target_actions(&self) -> Vec<Action> {
+    pub(super) fn trigger_target_actions(&self) -> Result<Vec<Action>, String> {
         self.trigger_target_actions_mode(true)
     }
 
-    fn trigger_target_actions_mode(&self, costs: bool) -> Vec<Action> {
-        let Some((max, min)) = self.trigger_target_bounds() else {
-            return Vec::new();
-        };
-        let mut sets = vec![Vec::new()];
-        let mut actions = Vec::new();
-        let candidates = self.trigger_target_candidates();
-        for count in 0..=max {
-            if count >= min {
-                actions.extend(
-                    sets.iter()
-                        .cloned()
-                        .map(|targets| Action::ChooseTriggerTargets { targets }),
-                );
-            }
-            let mut next = Vec::new();
-            for prior in &sets {
-                for &target in &candidates {
-                    if self.valid_trigger_target_mode(target, prior, costs) {
-                        let mut v = prior.clone();
-                        v.push(target);
-                        next.push(v);
+    fn trigger_target_actions_mode(&self, costs: bool) -> Result<Vec<Action>, String> {
+        Ok({
+            let Some((max, min)) = self.trigger_target_bounds() else {
+                return Ok(Vec::new());
+            };
+            let mut sets = vec![Vec::new()];
+            let mut actions = Vec::new();
+            let candidates = self.trigger_target_candidates()?;
+            for count in 0..=max {
+                if count >= min {
+                    actions.extend(
+                        sets.iter()
+                            .cloned()
+                            .map(|targets| Action::ChooseTriggerTargets { targets }),
+                    );
+                }
+                let mut next = Vec::new();
+                for prior in &sets {
+                    for &target in &candidates {
+                        if self.valid_trigger_target_mode(target, prior, costs)? {
+                            let mut v = prior.clone();
+                            v.push(target);
+                            next.push(v);
+                        }
                     }
                 }
+                sets = next;
             }
-            sets = next;
-        }
-        actions
+            actions
+        })
     }
     pub(super) fn choose_trigger_targets(&mut self, targets: Vec<Target>) -> Result<(), String> {
         let Some(Decision::TriggerTargets {
@@ -774,7 +800,7 @@ impl Game {
             return Err("Choose the required number of targets.".into());
         }
         for (index, &target) in targets.iter().enumerate() {
-            if !self.valid_trigger_target(target, &targets[..index]) {
+            if !self.valid_trigger_target(target, &targets[..index])? {
                 return Err("That target is not legal or its Deflect cannot be paid.".into());
             }
         }
@@ -791,21 +817,35 @@ impl Game {
         );
         Ok(())
     }
-    pub(super) fn discard_unfinalizable_trigger(&mut self) {
+    pub(super) fn discard_unfinalizable_trigger(&mut self) -> Result<(), String> {
         if !matches!(self.decision, Some(Decision::TriggerTargets { .. })) {
-            return;
+            return Ok(());
         }
-        if !self
-            .trigger_target_actions_mode(false)
-            .iter()
-            .any(|action| self.funded_action_witness(action).is_some())
-        {
+        let mut payable = false;
+        let mut capacity = None;
+        for action in self.trigger_target_actions_mode(false)? {
+            match self.funded_action_witness(&action) {
+                Ok(Some(_)) => {
+                    payable = true;
+                    break;
+                }
+                Ok(None) => {}
+                Err(e) if crate::numeric::is_capacity(&e) => capacity = Some(e),
+                Err(e) => return Err(e),
+            }
+        }
+        if !payable {
+            if let Some(e) = capacity {
+                return Err(e);
+            }
             self.decision = None;
             self.push_log(
                 "A triggered ability cannot finalize because no payable legal targets remain."
                     .into(),
             );
         }
+
+        Ok(())
     }
     pub(super) fn trigger_loot(card_id: CardId, index: usize) -> Option<(u8, u8)> {
         metadata::trigger_rules(card_id)
@@ -854,14 +894,13 @@ impl Game {
         targets: &[Target],
     ) -> Result<(), String> {
         let rule = &metadata::trigger_rules(card_id)[index];
-        let targets: Vec<_> = targets
-            .iter()
-            .enumerate()
-            .filter_map(|(slot, &target)| {
-                self.trigger_rule_target_valid(card_id, index, context, target, slot)
-                    .then_some(target)
-            })
-            .collect();
+        let mut selected = Vec::new();
+        for (slot, &target) in targets.iter().enumerate() {
+            if self.trigger_rule_target_valid(card_id, index, context, target, slot)? {
+                selected.push(target);
+            }
+        }
+        let targets = selected;
         for effect in rule.effects {
             match *effect {
                 Effect::Xp(amount) => {
@@ -887,7 +926,7 @@ impl Game {
                     minimum,
                 } => {
                     for target in self.trigger_operands(context, who, &targets) {
-                        self.modify_might(target, amount as i16, minimum);
+                        self.modify_might(target, i128::from(amount), minimum.into())?;
                     }
                 }
                 Effect::Ready(who) => {
@@ -903,7 +942,7 @@ impl Game {
                 }
                 Effect::Buff(who) => {
                     for target in self.trigger_operands(context, who, &targets) {
-                        self.buff_unit_by(player, target);
+                        self.buff_unit_by(player, target)?;
                     }
                 }
                 Effect::Damage(amount) => {
@@ -914,11 +953,14 @@ impl Game {
                     };
                     let packets: Vec<_> = targets
                         .iter()
-                        .map(|&target| (target, self.damage_amount(context, target, amount)))
-                        .collect();
+                        .map(|&target| {
+                            Ok((target, self.damage_amount(context, target, amount.into())?))
+                        })
+                        .collect::<Result<Vec<_>, String>>()?;
                     for (target, amount) in packets {
                         if let Some(unit) = self.unit_mut(target) {
-                            unit.damage = unit.damage.saturating_add(amount);
+                            unit.damage =
+                                crate::numeric::add_u64(unit.damage, amount, "marked damage")?;
                         }
                     }
                 }
@@ -931,7 +973,7 @@ impl Game {
                     if let (Some(source), Some(&target)) =
                         (Self::source_target(context.source), targets.first())
                     {
-                        self.fight_units(source, target);
+                        self.fight_units(source, target)?;
                     }
                 }
                 Effect::Stun => {
@@ -946,7 +988,7 @@ impl Game {
                 Effect::Channel { count, exhausted } => {
                     self.channel_runes(player, count, exhausted);
                 }
-                Effect::KillTargets => self.kill_units(&targets),
+                Effect::KillTargets => self.kill_units(&targets)?,
                 Effect::DamageIfSourceEmpowered { base, empowered } => {
                     let amount = if Self::source_target(context.source)
                         .and_then(|t| self.unit_ref(t))
@@ -964,8 +1006,8 @@ impl Game {
                                 dealer: crate::game::damage::DamageDealer::Ability,
                             },
                             target,
-                            amount,
-                        );
+                            amount.into(),
+                        )?;
                     }
                 }
                 Effect::Tokens {
@@ -1021,8 +1063,8 @@ mod tests {
             player: 1,
             unit_id: id,
         };
-        game.buff_unit_by(0, target);
-        game.after_resolution();
+        game.buff_unit_by(0, target).unwrap();
+        game.after_resolution().unwrap();
         assert_eq!(game.unit_ref(target).unwrap().buff, 1);
         assert!(!game.unit_ref(target).unwrap().ready);
         assert!(game.chain.is_empty());

@@ -151,7 +151,7 @@ fn assembly_recycles_only_a_unit_and_pays_both_resources_before_mech_entry() {
     let mech = &g.players[0].units[0];
     assert!(mech.token);
     assert_eq!(mech.lane, None);
-    assert_eq!(g.unit_might(mech), 3);
+    assert_eq!(g.unit_might(mech).unwrap(), 3);
 }
 #[test]
 fn shells_vision_uses_the_entering_gear_identity_only() {
@@ -185,12 +185,12 @@ fn shells_sacrifices_itself_as_cost_and_its_fixed_effect_survives() {
     let mut g = position();
     let source = gear(&mut g, 903, 242);
     let target = unit(&mut g, 0, 904, 69, None);
-    let might = g.unit_might(g.players[0].units.last().unwrap());
+    let might = g.unit_might(g.players[0].units.last().unwrap()).unwrap();
     g.apply(ability(source, 0, vec![target])).unwrap();
     assert!(g.players[0].gear.is_empty());
     assert!(g.players[0].discard.contains(&242));
     resolve(&mut g);
-    assert_eq!(g.unit_might(&g.players[0].units[0]), might + 2);
+    assert_eq!(g.unit_might(&g.players[0].units[0]).unwrap(), might + 2);
 }
 #[test]
 fn formula_enters_exhausted_and_can_empower_enemy_attached_gear_but_not_itself() {

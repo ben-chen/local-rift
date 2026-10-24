@@ -23,7 +23,7 @@ impl Game {
         card_id: usize,
         effect: OfficialEffect,
         valid: &[Target],
-    ) {
+    ) -> Result<(), String> {
         match effect {
             OfficialEffect::EmpoweredFight { amount } => {
                 // Losing one target does not erase the independent Might
@@ -31,17 +31,17 @@ impl Game {
                 if let Some(&friendly) = valid.iter().find(|target| {
                     matches!(target, Target::Unit { player: owner, .. } if *owner == player)
                 }) {
-                    self.modify_might(friendly, i16::from(amount), 0);
+                    self.modify_might(friendly, i128::from(amount), 0)?;
                     if let Some(&enemy) = valid.iter().find(|target| {
                         matches!(target, Target::Unit { player: owner, .. } if *owner != player)
                     }) {
-                        self.fight_units(friendly, enemy);
+                        self.fight_units(friendly, enemy)?;
                     }
                 }
             }
             OfficialEffect::DamageAndGold { amount } => {
                 for &target in valid {
-                    self.spell_damage(player, target, amount);
+                    self.spell_damage(player, target, amount)?;
                 }
                 // A failed damage target does not stop the next instruction.
                 // The token waits until the parent spell completes.
@@ -50,7 +50,7 @@ impl Game {
             OfficialEffect::ContextualDamage(condition) => {
                 for &target in valid {
                     let amount = self.contextual_damage(player, target, condition);
-                    self.spell_damage(player, target, amount);
+                    self.spell_damage(player, target, amount)?;
                 }
             }
             OfficialEffect::ContextualMight(condition) => {
@@ -60,7 +60,7 @@ impl Game {
                             minimum_xp,
                             below,
                             at_least,
-                        } => i16::from(if self.players[player].xp >= u64::from(minimum_xp) {
+                        } => i128::from(if self.players[player].xp >= u64::from(minimum_xp) {
                             at_least
                         } else {
                             below
@@ -70,9 +70,9 @@ impl Game {
                                 .unit_ref(target)
                                 .is_some_and(|u| self.unit_empowered(u.id))
                             {
-                                i16::from(empowered)
+                                i128::from(empowered)
                             } else {
-                                i16::from(base)
+                                i128::from(base)
                             }
                         }
                         SpellMight::EnemiesHere { per_enemy } => {
@@ -82,7 +82,7 @@ impl Game {
                                 .iter()
                                 .filter(|unit| unit.lane == lane)
                                 .count();
-                            scaled_count(enemies, per_enemy)
+                            scaled_count(enemies, per_enemy)?
                         }
                         SpellMight::OwnExhausted { per_unit } => scaled_count(
                             self.players[player]
@@ -91,9 +91,9 @@ impl Game {
                                 .filter(|unit| !unit.ready)
                                 .count(),
                             per_unit,
-                        ),
+                        )?,
                     };
-                    self.modify_might(target, amount, 0);
+                    self.modify_might(target, amount, 0)?;
                 }
             }
             OfficialEffect::DrawForBattlefields { base } => {
@@ -106,15 +106,19 @@ impl Game {
                 self.draw_count(player, count);
             }
             OfficialEffect::DrawForMighty => {
-                let count = self.players[player]
-                    .units
-                    .iter()
-                    .filter(|unit| self.unit_might(unit) >= 5)
-                    .count();
+                // A numeric failure is not a unit failing the printed test.
+                // Determine the whole count before drawing any cards.
+                let mut count = 0;
+                for unit in &self.players[player].units {
+                    if self.unit_might(unit)? >= 5 {
+                        count += 1;
+                    }
+                }
                 self.draw_count(player, count);
             }
             _ => unreachable!("only contextual spell effects reach this resolver"),
         }
+        Ok(())
     }
 
     pub(super) fn contextual_damage(
@@ -142,13 +146,13 @@ impl Game {
         }
     }
 
-    fn spell_damage(&mut self, player: usize, target: Target, amount: u8) {
+    fn spell_damage(&mut self, player: usize, target: Target, amount: u8) -> Result<(), String> {
         let context = self.current_damage_context().unwrap_or(DamageContext {
             player,
             bonus_damage: 0,
             dealer: DamageDealer::Ability,
         });
-        self.deal_damage(context, target, amount);
+        self.deal_damage(context, target, u64::from(amount))
     }
 
     fn draw_count(&mut self, player: usize, count: usize) {
@@ -161,9 +165,28 @@ impl Game {
     }
 }
 
-fn scaled_count(count: usize, per_unit: i8) -> i16 {
-    let magnitude = count
-        .saturating_mul(per_unit.unsigned_abs() as usize)
-        .min(i16::MAX as usize) as i16;
-    if per_unit < 0 { -magnitude } else { magnitude }
+fn scaled_count(count: usize, per_unit: i8) -> Result<i128, String> {
+    // Keep the full intermediate until modify_might checks the resulting
+    // aggregate. Large opposite-signed contributions may cancel legally.
+    i128::try_from(count)
+        .ok()
+        .and_then(|count| count.checked_mul(i128::from(per_unit)))
+        .ok_or_else(|| crate::numeric::capacity("count-based Might change"))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::scaled_count;
+
+    #[test]
+    fn count_changes_have_no_byte_or_signed_sixteen_bit_cap() {
+        for count in [255, 256, 32767, 32768, 65535, 65536, usize::MAX] {
+            for per_unit in [i8::MIN, -2, -1, 0, 1, 2, i8::MAX] {
+                assert_eq!(
+                    scaled_count(count, per_unit).unwrap(),
+                    (count as i128) * i128::from(per_unit)
+                );
+            }
+        }
+    }
 }

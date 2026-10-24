@@ -22,6 +22,7 @@ use std::fmt;
 use std::panic::{AssertUnwindSafe, catch_unwind};
 
 mod empowered;
+mod numeric;
 mod play_choices;
 mod progression;
 mod targeting;
@@ -158,6 +159,7 @@ impl Session {
         Ok(())
     }
     fn commit(&mut self, game: Game) -> Result<(), ApiError> {
+        game.validate_numeric_state().map_err(ApiError::illegal)?;
         let next = self
             .revision
             .checked_add(1)
@@ -260,14 +262,18 @@ impl Session {
         if self.game.phase != Phase::Playing || self.game.priority() != player {
             return Ok(Vec::new());
         }
+        self.game
+            .validate_numeric_state()
+            .map_err(ApiError::illegal)?;
         let mut actions = Vec::new();
-        for action in self.game.legal_actions() {
-            if !actions.contains(&action)
-                && self
-                    .validate_action(player, self.revision, action.clone())
-                    .is_ok()
-            {
-                actions.push(action);
+        for action in self.game.legal_actions().map_err(ApiError::illegal)? {
+            if actions.contains(&action) {
+                continue;
+            }
+            match self.validate_action(player, self.revision, action.clone()) {
+                Ok(()) => actions.push(action),
+                Err(error) if error.code == "engine_capacity" => return Err(error),
+                Err(_) => {}
             }
         }
         Ok(actions
@@ -309,6 +315,7 @@ impl Session {
     pub fn observe(&self, viewer: usize) -> Result<Value, ApiError> {
         valid_player(viewer)?;
         let game = &self.game;
+        game.validate_numeric_state().map_err(ApiError::illegal)?;
         let players: Vec<_> = game.players.iter().enumerate().map(|(owner, state)| {
             let public_hand = match &game.decision {
                 Some(Decision::RevealHand { opponent, cards, .. }) if *opponent == owner => Some(cards.clone()),
@@ -317,23 +324,28 @@ impl Session {
             };
             let hand = if owner == viewer { Some(state.hand.clone()) } else { public_hand };
             let units: Vec<_> = state.units.iter().map(|unit| {
-                let keywords = game.unit_keywords(unit);
+                let stats = game.try_unit_stats(unit).map_err(ApiError::illegal)?;
+                let keywords = stats.keywords;
                 let tags = if unit.token {
                     crate::rules::token_spec(unit.card_id).and_then(|spec|spec.tag).into_iter().collect::<Vec<_>>()
                 } else { game.catalog[unit.card_id].tags.to_vec() };
-                json!({
+                Ok(json!({
                 "id":unit.id, "card_id":unit.card_id, "name":game.unit_name(unit), "token":unit.token,
                 "tags":tags,
-                "lane":unit.lane, "ready":unit.ready, "might":game.unit_might(unit), "damage":unit.damage,
-                "buff":unit.buff, "temporary_buff":unit.temporary_buff, "stunned":unit.stunned,
+                "lane":unit.lane, "ready":unit.ready, "might":stats.might, "might_exact":stats.might.to_string(),
+                "signed_might":stats.signed_might,"signed_might_exact":stats.signed_might.to_string(),
+                "damage":unit.damage,"damage_exact":unit.damage.to_string(),
+                "buff":unit.buff,"buff_exact":unit.buff.to_string(), "temporary_buff":unit.temporary_buff,
+                "temporary_buff_exact":unit.temporary_buff.to_string(), "stunned":unit.stunned,
                 "protected":unit.protected, "banish_on_death":unit.banish_on_death,
                 "empowered":game.unit_empowered(unit.id),"hidden_play_origin":game.hidden_play_origin(unit.id),"movement_locked":game.movement_locked(owner,unit.id),
-                "keywords":{"assault":keywords.assault,"shield":keywords.shield,"tank":keywords.tank,"backline":keywords.backline,
+                "keywords":{"assault":keywords.assault,"assault_exact":keywords.assault.to_string(),
+                    "shield":keywords.shield,"shield_exact":keywords.shield.to_string(),"tank":keywords.tank,"backline":keywords.backline,
                     "deflect":keywords.deflect,"ganking":keywords.ganking,"ambush":keywords.ambush,"hunt":keywords.hunt,
                     "accelerate":keywords.accelerate.map(|cost|json!({"energy":cost.energy,"power":cost.power,"domain":cost.domain.name()}))},
-                "damage_priority":game.damage_priority(unit),
+                "damage_priority":game.damage_priority(unit).map_err(ApiError::illegal)?,
                 "passive_contributions":game.passive_contributions(crate::empower::BoardObject::Unit {player:owner,unit_id:unit.id}).iter().map(empowered::contribution_to_json).collect::<Vec<_>>()
-            })}).collect();
+            }))}).collect::<Result<Vec<_>,ApiError>>()?;
             let gear: Vec<_> = state.gear.iter().map(|gear| json!({
                 "id":gear.id, "card_id":gear.card_id, "name":game.gear_name(gear), "token":gear.token,
                 "attached_to":gear.attached_to, "lane":game.gear_location(owner,gear.id),
@@ -377,11 +389,12 @@ impl Session {
                         "energy":flow.energy,"power":flow.power,"colored":flow.colored})).collect::<Vec<_>>()
                 })).filter(|row|!row["costs"].as_array().unwrap().is_empty()).collect::<Vec<_>>(),"queued_extra_turns":game.queued_extra_turns(owner),
                 "submitted_combat_damage":game.submitted_combat_damage(owner),
+                "submitted_combat_damage_exact":numeric::exact_assignments(game.submitted_combat_damage(owner)),
                 "legend":legend_observation});
             observed["xp_exact"] = json!(state.xp.to_string());
             observed["xp_gained_this_turn"] = json!(game.gained_xp_this_turn(owner));
-            observed
-        }).collect();
+            Ok(observed)
+        }).collect::<Result<Vec<_>,ApiError>>()?;
         let chain: Vec<_> = game.chain.iter().map(|item| json!({
             "id":item.id,"player":item.player,"card_id":item.card_id,"name":game.chain_name(item),
             "source":chain_source_to_json(game.chain_source(item)),
@@ -390,7 +403,8 @@ impl Session {
             "banish_after":item.banish_after,"repeat":item.options.repeat,"accelerate":item.options.accelerate,
             "bonus":item.options.bonus,"repeat_targets":item.repeat_targets.iter().map(target_to_json).collect::<Vec<_>>(),
             "executions":item.executions.iter().map(play_choices::execution_to_json).collect::<Vec<_>>(),
-            "play_origin":item.play_origin.map(play_choices::origin_to_json),"bonus_damage":item.bonus_damage
+            "play_origin":item.play_origin.map(play_choices::origin_to_json),"bonus_damage":item.bonus_damage,
+            "bonus_damage_exact":item.bonus_damage.to_string()
         })).collect();
         Ok(
             json!({"protocol":PROTOCOL_VERSION,"revision":self.revision,"viewer":viewer,
@@ -406,7 +420,7 @@ impl Session {
                 "units_or_gears_here":game.play_history.units_or_gears_here},
             "resolution_progress":game.resolution_progress().map(|progress|json!({"chain_id":progress.chain_id,
                 "execution":progress.execution,"executions":progress.executions})),
-            "chain":chain,"decision":game.decision.as_ref().map(|d|decision_to_json(game,d,viewer)),
+            "chain":chain,"decision":game.decision.as_ref().map(|d|decision_to_json(game,d,viewer)).transpose()?,
             "pending_card_plays":game.pending_cards().iter().map(|card|json!({"id":card.id,"player":card.player,"card_id":card.card_id,"kind":instructed_kind(card.kind)})).collect::<Vec<_>>(),
             "pending_token_plays":game.pending_tokens().iter().map(|token|json!({
                 "id":token.id,"player":token.player,"card_id":token.card_id,"might":token.might,"gear":token.gear,"entry_ready":token.entry_ready,
@@ -424,7 +438,7 @@ impl Session {
                 "power":plan.power.iter().map(power_cost_to_json).collect::<Vec<_>>(),
                 "action":plan.action.as_ref().map(action_to_json)})),
             "required_trash_play":game.required_trash_play,
-            "can_decline_trash_play":game.can_decline_trash_play()}),
+            "can_decline_trash_play":game.can_decline_trash_play().map_err(ApiError::illegal)?}),
         )
     }
 
@@ -967,9 +981,7 @@ fn action_json_at_depth(action: &Action, depth: usize) -> Value {
         Action::ChooseDeathReplacement { unit_id, gear_id } => {
             json!({"type":"choose_death_replacement","unit_id":unit_id,"gear_id":gear_id})
         }
-        Action::AssignDamage { assignments } => {
-            json!({"type":"assign_damage","assignments":assignments})
-        }
+        Action::AssignDamage { assignments } => numeric::assignment_action(assignments),
         Action::EndTurn => json!({"type":"end_turn"}),
     }
 }
@@ -1585,10 +1597,7 @@ fn parse_action_at_depth(value: &Value, depth: usize) -> Result<Action, ApiError
                         .as_u64()
                         .and_then(|v| u32::try_from(v).ok())
                         .ok_or_else(|| ApiError::invalid("Invalid assignment unit ID."))?;
-                    let amount = pair[1]
-                        .as_u64()
-                        .and_then(|v| u16::try_from(v).ok())
-                        .ok_or_else(|| ApiError::invalid("Invalid damage amount."))?;
+                    let amount = numeric::parse_damage(&pair[1])?;
                     Ok((id, amount))
                 })
                 .collect::<Result<_, ApiError>>()?;
@@ -1638,11 +1647,11 @@ fn instructed_kind(kind: InstructedPlayKind) -> &'static str {
     }
 }
 
-fn decision_to_json(game: &Game, decision: &Decision, viewer: usize) -> Value {
+fn decision_to_json(game: &Game, decision: &Decision, viewer: usize) -> Result<Value, ApiError> {
     let player = decision.player();
     let mut out = match decision {
         Decision::Payment { .. } => json!({"type":"payment",
-            "can_cancel":game.can_cancel_payment()}),
+            "can_cancel":game.can_cancel_payment().map_err(ApiError::illegal)?}),
         Decision::ResourceConversion {
             source,
             card_id,
@@ -1662,7 +1671,7 @@ fn decision_to_json(game: &Game, decision: &Decision, viewer: usize) -> Value {
             let (maximum, required) = game.trigger_target_bounds().unwrap_or((0, 0));
             json!({"type":"trigger_targets","card_id":card_id,"rule_index":rule_index,
                 "context":trigger_context_to_json(context),"maximum":maximum,"required":required,
-                "candidates":game.trigger_target_candidates().iter().map(target_to_json).collect::<Vec<_>>()})
+                "candidates":game.trigger_target_candidates().map_err(ApiError::illegal)?.iter().map(target_to_json).collect::<Vec<_>>()})
         }
         Decision::TrashTarget {
             source_card_id,
@@ -1716,7 +1725,7 @@ fn decision_to_json(game: &Game, decision: &Decision, viewer: usize) -> Value {
             json!({"type":"death_replacement","options":options.iter().map(|option|json!({"unit_id":option.unit_id,"gear_id":option.gear_id})).collect::<Vec<_>>()})
         }
         Decision::CombatDamage { lane, total, .. } => {
-            json!({"type":"combat_damage","lane":lane,"total":total})
+            json!({"type":"combat_damage","lane":lane,"total":total,"total_exact":total.to_string()})
         }
         Decision::RevealHand {
             opponent, cards, ..
@@ -1776,7 +1785,7 @@ fn decision_to_json(game: &Game, decision: &Decision, viewer: usize) -> Value {
         }
     };
     out["player"] = json!(player);
-    out
+    Ok(out)
 }
 
 fn ability_to_json(ability: &ChainAbility) -> Value {
@@ -1934,7 +1943,7 @@ mod tests {
             lane,
             ready: true,
             damage: 0,
-            buff: might,
+            buff: u64::from(might),
             temporary_buff: 0,
             token: true,
             protected: false,
@@ -2805,7 +2814,7 @@ mod tests {
         );
         submit(&mut session, Action::ActivateGear { gear_id: 700 });
         rejected_wire_action(&mut session, json!({"type":"complete_payment"}));
-        assert!(session.game.can_cancel_payment());
+        assert!(session.game.can_cancel_payment().unwrap());
         let pending = format!("{:?}", session.game);
         let revision = session.revision();
         let quote = session.handle(json!({"command":"quote_payment","revision":revision,

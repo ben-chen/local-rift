@@ -109,7 +109,7 @@ fn turn_player_chooses_between_two_staged_combats() {
     );
     assert_eq!(game.priority(), 0);
     assert_eq!(
-        game.legal_actions(),
+        game.legal_actions().unwrap(),
         vec![
             Action::ChooseBattlefield { lane: 0 },
             Action::ChooseBattlefield { lane: 1 }

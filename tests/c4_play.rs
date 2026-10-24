@@ -716,7 +716,7 @@ fn ai_candidates_obey_current_unit_surcharge() {
         expires_turn: g.turn,
         kind: local_rift::play::PlayGrantKind::UnitSurchargeThisTurn(1),
     });
-    for action in g.legal_actions() {
+    for action in g.legal_actions().unwrap() {
         assert!(g.clone().apply(action.clone()).is_ok(), "{action:?}");
     }
     g.step_ai().unwrap();
@@ -794,7 +794,7 @@ fn eclipse_predict_defers_lethal_cleanup_until_the_physical_spell_finishes() {
     ));
     assert!(g.resolution_progress().is_some());
     let lethal = g.players[0].units.iter().find(|u| u.id == 991).unwrap();
-    assert!(lethal.damage >= g.unit_might(lethal));
+    assert!(lethal.damage >= g.unit_might(lethal).unwrap());
     assert!(g.chain.iter().any(|i| i.card_id == 52));
     assert!(!g.players[0].discard.contains(&52));
     g.apply(Action::Choose { accept: false }).unwrap();
@@ -867,7 +867,7 @@ fn strategic_seed117_cleans_lethal_vex_after_pending_eclipse_predict() {
     let vex = g.players[0].units.iter().find(|u| u.id == 2).unwrap();
     assert_eq!(vex.card_id, 20);
     assert_eq!(vex.damage, 4);
-    assert_eq!(g.unit_might(vex), 2);
+    assert_eq!(g.unit_might(vex).unwrap(), 2);
     g.step_ai().unwrap();
     assert!(g.resolution_progress().is_none());
     assert!(!g.players[0].units.iter().any(|u| u.id == 2));

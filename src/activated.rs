@@ -1150,7 +1150,7 @@ impl Game {
             if matches!(source, AbilitySource::Gear { .. }) {
                 self.play_history.gear_activations[player] += 1;
             }
-            self.resolve_activated(source, card_id, ability_index, &targets);
+            self.resolve_activated(source, card_id, ability_index, &targets)?;
         } else {
             self.queue_ability(
                 player,
@@ -1165,7 +1165,7 @@ impl Game {
             // Finalization can change a Level-dependent board state through
             // its paid XP cost. Cleanup precedes the response window (319.4),
             // but remains deferred while a frozen payment is still replaying.
-            self.after_resolution();
+            self.after_resolution()?;
         }
         Ok(())
     }
@@ -1176,9 +1176,9 @@ impl Game {
         card_id: CardId,
         ability_index: usize,
         targets: &[Target],
-    ) {
+    ) -> Result<(), String> {
         let Some(rule) = activated_rules(card_id).get(ability_index) else {
-            return;
+            return Ok(());
         };
         let player = source.player();
         let valid: Vec<_> = targets
@@ -1201,7 +1201,7 @@ impl Game {
             }
             AbilityEffect::Might { amount, minimum } => {
                 for target in valid {
-                    self.modify_might(target, amount, minimum);
+                    self.modify_might(target, i128::from(amount), minimum.into())?;
                 }
             }
             AbilityEffect::BuffSource => {
@@ -1216,7 +1216,7 @@ impl Game {
                             player: owner,
                             unit_id,
                         },
-                    );
+                    )?;
                 }
             }
             AbilityEffect::Add(output) => {
@@ -1239,16 +1239,17 @@ impl Game {
             }
             AbilityEffect::Buff => {
                 for target in valid {
-                    self.buff_unit_by(player, target);
+                    self.buff_unit_by(player, target)?;
                 }
             }
             AbilityEffect::Damage(_) | AbilityEffect::SourceMightDamage => {
                 let amount = match rule.effect {
-                    AbilityEffect::Damage(amount) => Some(amount),
+                    AbilityEffect::Damage(amount) => Some(u64::from(amount)),
                     _ => match source {
                         AbilitySource::Unit { player, unit_id } => self
                             .unit_ref(Target::Unit { player, unit_id })
-                            .map(|u| self.unit_might(u)),
+                            .map(|u| self.unit_might(u))
+                            .transpose()?,
                         AbilitySource::Gear { .. } => None,
                     },
                 };
@@ -1262,9 +1263,10 @@ impl Game {
                             },
                             target,
                             amount,
-                        );
+                        )?;
                         if let Some(unit) = self.unit_mut(target) {
-                            unit.damage = unit.damage.saturating_add(amount);
+                            unit.damage =
+                                crate::numeric::add_u64(unit.damage, amount, "marked damage")?;
                         }
                     }
                 }
@@ -1276,7 +1278,7 @@ impl Game {
                         crate::rules::TokenPlacement::Base => Some(None),
                         crate::rules::TokenPlacement::Here => {
                             if self.ability_source_state(source).is_none() {
-                                return;
+                                return Ok(());
                             }
                             Some(match source {
                                 AbilitySource::Unit { player, unit_id } => {
@@ -1314,15 +1316,15 @@ impl Game {
                         .unit_ref(target)
                         .is_some_and(|unit| self.buffed_units.contains(&unit.id))
                     {
-                        self.modify_might(target, i16::from(amount), 0);
+                        self.modify_might(target, i128::from(amount), 0)?;
                     } else {
-                        self.buff_unit_by(player, target);
+                        self.buff_unit_by(player, target)?;
                     }
                 }
             }
             AbilityEffect::MoveTargetToBase => {
                 for target in valid {
-                    self.move_effect(player, target, None, false);
+                    self.move_effect(player, target, None, false)?;
                 }
             }
             AbilityEffect::MightIfSourceEmpowered { base, empowered } => {
@@ -1332,7 +1334,7 @@ impl Game {
                     base
                 };
                 for target in valid {
-                    self.modify_might(target, amount, 0);
+                    self.modify_might(target, i128::from(amount), 0)?;
                 }
             }
             AbilityEffect::EmpowerGear => {
@@ -1353,7 +1355,7 @@ impl Game {
                     ability_index,
                     direction,
                 });
-                return;
+                return Ok(());
             }
             AbilityEffect::Draw(count) => self.draw(player, count),
             AbilityEffect::Points(count) => {
@@ -1385,6 +1387,8 @@ impl Game {
             "{} resolves {}: {}.",
             self.players[player].name, self.catalog[card_id].name, rule.label
         ));
+
+        Ok(())
     }
 
     /// Immediate resources only; future Add effects remain separate actions.
@@ -1496,31 +1500,39 @@ impl Game {
         source: AbilitySource,
         index: usize,
         targets: &[Target],
-    ) -> Option<i32> {
-        let player = source.player();
-        let (card_id, ..) = self.ability_source_state(source)?;
-        let rule = activated_rules(card_id).get(index)?;
-        let target = targets.first().copied();
-        let unit = target.and_then(|target| self.unit_ref(target));
-        let enemy_target =
-            matches!(target, Some(Target::Unit { player: owner, .. }) if owner != player);
-        match rule.effect {
+    ) -> Result<Option<i32>, String> {
+        Ok({
+            let player = source.player();
+            let Some((card_id, ..)) = self.ability_source_state(source) else {
+                return Ok(None);
+            };
+            let Some(rule) = activated_rules(card_id).get(index) else {
+                return Ok(None);
+            };
+            let target = targets.first().copied();
+            let unit = target.and_then(|target| self.unit_ref(target));
+            let enemy_target =
+                matches!(target, Some(Target::Unit { player: owner, .. }) if owner != player);
+            match rule.effect {
             AbilityEffect::BuffSource => {
-                let AbilitySource::Unit { unit_id, .. } = source else { return None; };
-                let unit = self.unit_ref(Target::Unit { player, unit_id })?;
-                if self.buffed_units.contains(&unit.id) { return None; }
+                let AbilitySource::Unit { unit_id, .. } = source else { return Ok(None); };
+                let Some(unit) = self.unit_ref(Target::Unit { player, unit_id }) else { return Ok(None); };
+                if self.buffed_units.contains(&unit.id) { return Ok(None); }
                 let mut paid = self.clone();
-                paid.spend_xp(player, rule.xp_cost).ok()?;
+                if paid.spend_xp(player, rule.xp_cost).is_err() { return Ok(None); }
                 // Do not lose a damaged Level unit just to add a single buff.
-                (!paid.players[player].units.iter().any(|u| u.damage > 0 && u.damage >= paid.unit_might(u))).then_some(65)
+                let mut lethal = false;
+                for u in &paid.players[player].units { if u.damage > 0 && u.damage >= paid.unit_might(u)? { lethal=true; break; } }
+                (!lethal).then_some(65)
             }
             AbilityEffect::Points(amount) => Some(if self.players[player].score.saturating_add(amount) >= 8 { 1000 } else { 120 }),
             AbilityEffect::Tokens => Some(90),
             AbilityEffect::EmpowerSource => Some(if rule.exhaust { 16 } else { 24 }),
-            AbilityEffect::MoveTargetToBase => unit.filter(|_| !enemy_target).and_then(|unit| {
-                let origin = unit.lane?;
-                if !unit.ready || self.unit_keywords(unit).ganking || self.movement_locked(player, unit.id) {
-                    return None;
+            AbilityEffect::MoveTargetToBase => {
+                let Some(unit) = unit.filter(|_| !enemy_target) else { return Ok(None); };
+                let Some(origin) = unit.lane else { return Ok(None); };
+                if !unit.ready || self.unit_keywords(unit)?.ganking || self.movement_locked(player, unit.id) {
+                    return Ok(None);
                 }
                 let another_mover = self.players[player].units.iter().any(|u| u.lane.is_none() && u.ready);
                 let destination = (0..2).any(|lane| lane != origin
@@ -1530,7 +1542,7 @@ impl Game {
                 let retains_hold = self.players[player].units.iter().any(|u| u.id != unit.id && u.lane == Some(origin));
                 (destination && !another_mover && (retains_hold || self.player_scored_this_turn[player][origin]))
                     .then_some(if self.players[player].score >= 7 && self.player_scored_this_turn[player][origin] { 1000 } else { 70 })
-            }),
+            },
             AbilityEffect::EmpowerGear => targets.first().and_then(|target| match target {
                 Target::Gear { player: owner, gear_id } if *owner == player && !self.unit_empowered(*gear_id) => Some(35),
                 _ => None,
@@ -1543,21 +1555,28 @@ impl Game {
                 !matches!(source, AbilitySource::Unit { unit_id, .. } if self.unit_ref(Target::Unit { player, unit_id }).is_some_and(|u| u.lane.is_none()))
                     || !(0..2).any(|lane| self.battlefield_owner[lane] != Some(player) && self.players[1-player].units.iter().all(|u| u.lane != Some(lane)))
             }).map(|_| 65),
-            AbilityEffect::Damage(amount) => unit.filter(|_| enemy_target).map(|unit| {
-                if unit.damage.saturating_add(self.battlefield_damage(target.unwrap(), amount)) >= self.unit_might(unit) { 150 } else { 40 }
-            }),
+            AbilityEffect::Damage(amount) => {
+                let Some(unit) = unit.filter(|_| enemy_target) else { return Ok(None); };
+                let damage = self.battlefield_damage(target.unwrap(), u64::from(amount))?;
+                Some(if u128::from(unit.damage)+u128::from(damage) >= u128::from(self.unit_might(unit)?) {150} else {40})
+            },
             AbilityEffect::SourceMightDamage => {
-                let AbilitySource::Unit { unit_id, .. } = source else { return None; };
-                let amount = self.unit_might(self.unit_ref(Target::Unit { player, unit_id })?);
-                unit.filter(|_| enemy_target && amount > 0).map(|unit| {
-                    if unit.damage.saturating_add(self.battlefield_damage(target.unwrap(), amount)) >= self.unit_might(unit) { 150 } else { 35 }
-                })
-            }
-            AbilityEffect::Might { amount, minimum } if amount < 0 => unit.filter(|unit| enemy_target && self.unit_might(unit) > minimum).and_then(|unit| {
-                let reduced = self.unit_might(unit).saturating_sub(amount.unsigned_abs() as u8).max(minimum);
-                if unit.damage > 0 && unit.damage >= reduced { Some(140) }
-                else { unit.lane.filter(|&lane| self.players[player].units.iter().any(|u| u.lane == Some(lane) || (u.lane.is_none() && u.ready))).map(|_| 40) }
-            }),
+                let AbilitySource::Unit { unit_id, .. } = source else { return Ok(None); };
+                let Some(source) = self.unit_ref(Target::Unit {player,unit_id}) else {return Ok(None);};
+                let amount = self.unit_might(source)?;
+                let Some(unit) = unit.filter(|_| enemy_target && amount > 0) else {return Ok(None);};
+                let damage = self.battlefield_damage(target.unwrap(),amount)?;
+                Some(if u128::from(unit.damage)+u128::from(damage) >= u128::from(self.unit_might(unit)?) {150} else {35})
+            },
+            AbilityEffect::Might { amount, minimum } if amount < 0 => {
+                let Some(unit) = unit.filter(|_|enemy_target) else {return Ok(None);};
+                let might = self.unit_might(unit)?;
+                if might <= u64::from(minimum) {return Ok(None);}
+                let reduced=might.saturating_sub(u64::from(amount.unsigned_abs())).max(u64::from(minimum));
+                if unit.damage > 0 && unit.damage >= reduced {Some(140)} else {
+                    unit.lane.filter(|&lane| self.players[player].units.iter().any(|u|u.lane==Some(lane)||(u.lane.is_none()&&u.ready))).map(|_|40)
+                }
+            },
             AbilityEffect::Might { .. } | AbilityEffect::MightIfSourceEmpowered { .. } => unit.filter(|_| !enemy_target).and_then(|unit| {
                 // Do not exhaust a ready mover merely to increase its Might,
                 // or spend a temporary boost on an uncontested empty field.
@@ -1575,12 +1594,13 @@ impl Game {
             AbilityEffect::PlayGrant(_) => self.players[player].hand.iter().any(|&id|self.catalog[id].kind==crate::cards::CardKind::Spell).then_some(60),
             AbilityEffect::Add(_) | AbilityEffect::AddEnergy(_) | AbilityEffect::AddEnergyIfSourceEmpowered { .. } => {
                 let mut probe = self.clone();
-                probe.activate_ability(source, index, Vec::new()).ok()?;
+                if probe.activate_ability(source, index, Vec::new()).is_err() {return Ok(None);}
                 let opens_play = self.players[player].hand.iter().any(|&id| {
                     self.validate_play(id, None, None).is_err() && probe.validate_play(id, None, None).is_ok()
                 }) || self.players[player].champion.is_some_and(|id| self.validate_play(id, None, None).is_err() && probe.validate_play(id, None, None).is_ok());
                 opens_play.then_some(80)
             }
         }
+        })
     }
 }
