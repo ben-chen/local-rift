@@ -66,6 +66,7 @@ pub struct PlayTargetSpec {
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum OfficialEffect {
+    DrawLook,
     DeckLookPlay,
     BanishSmallOrGear {
         maximum: u8,
@@ -259,6 +260,8 @@ pub fn effect(id: usize) -> OfficialEffect {
         383 => ArcaneShift,
         384..=386 => None,
         387 | 388 => DeckLookPlay,
+        389 => DrawLook,
+        390..=394 => None,
         362 | 364 => KillGear {
             controller_draw: if id == 362 { 2 } else { 0 },
         },
@@ -1035,6 +1038,9 @@ pub fn requirements(id: usize) -> &'static [Mechanic] {
         386 => &[Gear, Chain, Banish],
         387 => &[Chain, Banish, CostReduction],
         388 => &[Chain, Banish, CostReduction, Empower],
+        389 => &[Chain, OptionalCosts],
+        390 | 391 => &[Chain],
+        392..=394 => &[Chain, MoveTriggers],
         362 | 363 | 365 | 366 | 367 => &[Chain, Gear],
         364 => &[Chain, Gear, Flow],
         368 | 369 => &[Chain, Gear, ConquerHoldTriggers],
@@ -1749,7 +1755,7 @@ pub fn repeat_cost(id: usize) -> Option<RepeatCost> {
             power: 0,
             domain: None,
         }),
-        37 | 133 | 135 | 136 | 137 | 216 | 220 => Some(RepeatCost {
+        37 | 133 | 135 | 136 | 137 | 216 | 220 | 389 => Some(RepeatCost {
             energy: 2,
             power: 0,
             domain: None,
@@ -1900,7 +1906,7 @@ mod tests {
     #[test]
     fn all_catalog_entries_have_official_classification() {
         let cards = cards();
-        assert_eq!(cards.len(), 389);
+        assert_eq!(cards.len(), 395);
         for card in cards {
             assert_ne!(
                 effect(card.id),
@@ -1910,7 +1916,7 @@ mod tests {
             );
             assert_ne!(support_status(card.id), SupportStatus::UnknownCard);
         }
-        assert_eq!(effect(389), OfficialEffect::Unsupported);
+        assert_eq!(effect(395), OfficialEffect::Unsupported);
     }
 
     #[test]

@@ -298,12 +298,18 @@ impl App {
             Decision::DeckLookPlay {
                 player: 0, cards, ..
             } => (cards.clone(), true),
+            Decision::DrawLook {
+                player: 0, cards, ..
+            } => (cards.clone(), true),
             Decision::RevealedDeck { cards, .. } => (cards.clone(), false),
+            Decision::RevealedCard { card_id, .. } => (vec![*card_id], false),
             _ => return false,
         };
         self.ui.text(
             if private {
                 "PRIVATE · TOP CARD FIRST · CONFIRM AFTER CHOOSING"
+            } else if matches!(decision, Decision::RevealedCard { .. }) {
+                "PUBLIC REVEAL · COMPLETED RESULT · INSPECT CARD"
             } else {
                 "PUBLIC REVEAL · READ ONLY · TOP CARD FIRST"
             },
@@ -339,14 +345,31 @@ impl App {
                         ineligible_hint(*kind, &card, *killed_might)
                     },
                 )
+            } else if let Decision::DrawLook { eligible, kind, .. } = &decision {
+                let allowed = eligible.contains(&index);
+                (
+                    allowed,
+                    if allowed {
+                        "Eligible · reveal and draw"
+                    } else {
+                        draw_look_ui::ineligible_hint(*kind, &card)
+                    },
+                )
             } else {
                 (true, "Revealed · inspect rules")
             };
             let selected = private
-                && self
-                    .deck_look_draft
-                    .as_ref()
-                    .is_some_and(|draft| draft.selection == Some(Some(index)));
+                && match &decision {
+                    Decision::DeckLookPlay { .. } => self
+                        .deck_look_draft
+                        .as_ref()
+                        .is_some_and(|draft| draft.selection == Some(Some(index))),
+                    Decision::DrawLook { .. } => self
+                        .draw_look_draft
+                        .as_ref()
+                        .is_some_and(|draft| draft.selection == Some(Some(index))),
+                    _ => false,
+                };
             self.ui.rect(rect, PANEL);
             if let Some(texture) = &self.art[card_id] {
                 let bounds = Rect::new(
@@ -418,20 +441,26 @@ impl App {
                     LINE
                 },
             );
-            if private
-                && self.ui.clicked(rect)
-                && let Decision::DeckLookPlay { eligible, .. } = &decision
-            {
-                self.deck_look_draft
-                    .as_mut()
-                    .unwrap()
-                    .select(index, eligible);
+            if private && self.ui.clicked(rect) {
+                match &decision {
+                    Decision::DeckLookPlay { eligible, .. } => self
+                        .deck_look_draft
+                        .as_mut()
+                        .unwrap()
+                        .select(index, eligible),
+                    Decision::DrawLook { eligible, .. } => self
+                        .draw_look_draft
+                        .as_mut()
+                        .unwrap()
+                        .select(index, eligible),
+                    _ => {}
+                }
             }
             if self.ui.hover(rect) {
                 self.hover_candidate = Some(card_id);
             }
             if self.ui.hover(rect) && self.ui.secondary_pressed() {
-                self.inspect = Some(card_id);
+                self.inspect_printed_card(card_id);
             }
         }
         for (x, label, enabled, forward) in [

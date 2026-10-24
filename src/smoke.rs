@@ -15,6 +15,7 @@ thread_local! {
     static SAVED_DECK_SNAPSHOT: std::cell::RefCell<Option<Vec<u8>>> = const { std::cell::RefCell::new(None) };
     static COMBAT_SNAPSHOT: std::cell::RefCell<Option<String>> = const { std::cell::RefCell::new(None) };
     static PREDICT_CHOICE: std::cell::Cell<u32> = const { std::cell::Cell::new(0) };
+    static C20_SCORES: std::cell::Cell<[u8; 2]> = const { std::cell::Cell::new([0; 2]) };
     static DIFFICULTY_SNAPSHOT: std::cell::RefCell<Option<String>> = const { std::cell::RefCell::new(None) };
 }
 
@@ -585,6 +586,58 @@ fn c19_hook(app: &mut App) {
     ));
 }
 
+fn c20_look(app: &mut App, source: usize, top_first: &[usize], player: usize, repeat: bool) {
+    c17_fixture(app, source);
+    // The existing enemy at field 1 already controls it; do not stage an
+    // unrelated conquest when the tested spell finishes resolving.
+    app.game.battlefield_owner[1] = Some(1);
+    app.draw_look_draft = None;
+    if player == 1 {
+        app.game.players[0].hand.clear();
+        app.game.apply(Action::EndTurn).unwrap();
+        finish_chain_until_choice(app);
+        app.game.players[1].hand = vec![source];
+        app.game.players[1].power_pool = [5; 6];
+        app.game.players[1].energy = 30;
+        app.game.players[1].energy_pool =
+            30 - u16::from(app.game.players[1].runes.iter().sum::<u8>());
+    }
+    app.game.players[player].deck = top_first.iter().rev().copied().collect();
+    app.game
+        .apply(Action::PlayCardOptions {
+            hand_index: 0,
+            lane: None,
+            targets: vec![],
+            repeat_targets: vec![],
+            repeat,
+            accelerate: false,
+            bonus: false,
+        })
+        .unwrap();
+    finish_chain_until_choice(app);
+    assert!(
+        matches!(app.game.decision, Some(Decision::DrawLook { player: owner, .. }) if owner == player)
+    );
+}
+
+fn c20_move(app: &mut App, source: usize, top: Option<usize>) {
+    c17_fixture(app, source);
+    app.game.players[0].hand.clear();
+    app.game.players[0].units[0].card_id = source;
+    app.game.players[0]
+        .units
+        .push(public_unit(20002, 96, Some(0)));
+    app.game.battlefield_owner[0] = Some(0);
+    app.game.players[0].deck = top.map_or_else(Vec::new, |card| vec![69, card]);
+    app.game
+        .apply(Action::Move {
+            unit_id: 17001,
+            lane: Some(0),
+        })
+        .unwrap();
+    finish_chain_until_choice(app);
+}
+
 /// Returns true after all assertions pass. Use an isolated XDG_DATA_HOME because
 /// the settings controls intentionally exercise the normal persistence path.
 pub fn run_frame(app: &mut App, frame: u32) -> bool {
@@ -738,10 +791,15 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
                 app.game.players[0].score > 0,
                 "conquest scores after showdown"
             );
+            app.hover_object = Some((0, app.game.players[0].units[0].id));
             app.ui.input_override = Some((vec2(315.0, 760.0), false, true));
         }
         19 => {
             assert!(app.inspect.is_some(), "right-click inspector");
+            assert!(
+                app.hover_object.is_none(),
+                "hand inspection is printed-only"
+            );
             click(app, 960.0, 704.0);
         }
         20 => {
@@ -858,10 +916,15 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
                 app.selection == Some(Selection::Trash(0)),
                 "trash selection"
             );
+            app.hover_object = Some((0, 50_001));
             app.ui.input_override = Some((vec2(315.0, 760.0), false, true));
         }
         40 => {
             assert!(app.inspect.is_some(), "trash inspector");
+            assert!(
+                app.hover_object.is_none(),
+                "trash inspection is printed-only"
+            );
             click(app, 960.0, 704.0);
         }
         41 => {
@@ -1156,6 +1219,15 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
                 Some(&60_006),
                 "native combat target order"
             );
+            app.hover_object = Some((1, 60_005));
+            app.ui.input_override = Some((vec2(465.0, 760.0), false, true));
+            app.draw();
+            assert_eq!(app.hover_object, Some((1, 60_006)));
+            assert_eq!(app.inspect, Some(25));
+            assert_eq!(app.damage_order.first(), Some(&60_006));
+            click(app, 960.0, 704.0);
+            app.draw();
+            assert!(app.inspect.is_none());
             click(app, 1285.0, 510.0);
         }
         63 => {
@@ -9229,16 +9301,513 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
                 })
             ));
         }
-        923 => {
+        923 => {}
+        924 => {
+            c20_look(app, 389, &[394, 3, 394], 0, false);
+            let live = app.game.players[0]
+                .units
+                .iter_mut()
+                .find(|unit| unit.id == 17001)
+                .unwrap();
+            live.card_id = 394;
+            live.temporary_buff = 2;
+        }
+        925 => {
+            assert!(
+                matches!(&app.game.decision,Some(Decision::DrawLook{cards,eligible,..}) if cards == &[394,3,394] && eligible == &[0,2])
+            );
+            assert_eq!(app.draw_look_draft.as_ref().unwrap().selection, None);
+            save_state(app);
+            capture(app, "RIFT_SMOKE_C20_DOUBLE_LOOK_SCREENSHOT");
+            click(app, 501.0, 760.0);
+        }
+        926 => {
+            assert_same_state(app);
+            assert_eq!(app.draw_look_draft.as_ref().unwrap().selection, None);
+            // Actually hover a different physical copy before inspecting this looked copy.
+            app.ui.input_override = Some((unit_rect(app, 17001).center(), false, false));
+            app.draw();
+            assert_eq!(app.hover_object, Some((0, 17001)));
+            assert!(
+                super::live_object_description(&app.game, 0, 17001, 394)
+                    .unwrap()
+                    .contains("6 current might")
+            );
+            app.ui.input_override = Some((vec2(677.0, 760.0), false, true));
+        }
+        927 => {
+            assert_eq!(app.inspect, Some(394));
+            assert!(
+                app.hover_object.is_none(),
+                "nonlive copy must not inherit the board copy's current stats"
+            );
+            assert_eq!(app.game.catalog[394].might, 4);
+            capture(app, "RIFT_SMOKE_C20_LOOK_INSPECT_SCREENSHOT");
+            click(app, 960.0, 704.0);
+        }
+        928 => {
+            assert!(app.inspect.is_none());
+            assert_same_state(app);
+            click(app, 677.0, 760.0);
+        }
+        929 => {
+            assert_eq!(
+                app.draw_look_draft.as_ref().unwrap().selection,
+                Some(Some(2))
+            );
+            assert_same_state(app);
+            capture(app, "RIFT_SMOKE_C20_DUPLICATE_CHOSEN_SCREENSHOT");
+            click(app, 1285.0, 578.0);
+        }
+        930 => {
+            assert_eq!(app.draw_look_draft.as_ref().unwrap().selection, None);
+            assert_same_state(app);
+            click(app, 677.0, 760.0);
+        }
+        931 => {
+            assert_same_state(app);
+            click(app, 1285.0, 510.0);
+        }
+        932 => {
+            assert!(matches!(
+                app.game.decision,
+                Some(Decision::RevealedCard {
+                    player: 0,
+                    card_id: 394,
+                    outcome: local_rift::game::RevealOutcome::Draw,
+                    ..
+                })
+            ));
+            assert_eq!(app.game.players[0].hand, vec![394]);
+            assert_eq!(app.game.players[0].deck.len(), 2);
+            save_state(app);
+            capture(app, "RIFT_SMOKE_C20_DRAW_RESULT_SCREENSHOT");
+            app.ui.input_override = Some((unit_rect(app, 17001).center(), false, false));
+            app.draw();
+            assert_eq!(app.hover_object, Some((0, 17001)));
+            click(app, 1285.0, 548.0);
+        }
+        933 => {
+            // The public-result frame has rendered and synchronized away the private draft.
+            assert!(app.draw_look_draft.is_none());
+            assert_eq!(app.inspect, Some(394));
+            assert!(
+                app.hover_object.is_none(),
+                "nonlive copy must not inherit the board copy's current stats"
+            );
+            assert_eq!(app.game.catalog[394].might, 4);
+            assert_same_state(app);
+            capture(app, "RIFT_SMOKE_C20_DRAW_INSPECT_SCREENSHOT");
+            click(app, 960.0, 704.0);
+        }
+        934 => {
+            assert!(app.inspect.is_none());
+            assert_same_state(app);
+            click(app, 1285.0, 510.0);
+        }
+        935 => {
+            assert!(app.game.decision.is_none());
+            assert_eq!(app.game.players[0].hand, vec![394]);
+            assert!(app.game.players[0].discard.contains(&389));
+        }
+        936 => c20_look(app, 390, &[26, 67, 17, 117], 0, false),
+        937 => {
+            assert!(
+                matches!(&app.game.decision,Some(Decision::DrawLook{eligible,..}) if eligible==&[0])
+            );
+            capture(app, "RIFT_SMOKE_C20_FATE_LOOK_SCREENSHOT");
+            click(app, 325.0, 760.0);
+        }
+        938 => {
+            assert_eq!(
+                app.draw_look_draft.as_ref().unwrap().selection,
+                Some(Some(0))
+            );
+            click(app, 1285.0, 510.0);
+        }
+        939 => {
+            assert!(matches!(
+                app.game.decision,
+                Some(Decision::RevealedCard { card_id: 26, .. })
+            ));
+            assert_eq!(app.game.players[0].hand, vec![26]);
+            capture(app, "RIFT_SMOKE_C20_FATE_DRAW_SCREENSHOT");
+            click(app, 1285.0, 510.0);
+        }
+        940 => {
+            assert!(app.game.decision.is_none());
+            c20_look(app, 391, &[230, 119, 117, 16], 0, false);
+        }
+        941 => {
+            assert!(
+                matches!(&app.game.decision,Some(Decision::DrawLook{eligible,..}) if eligible==&[0])
+            );
+            save_state(app);
+            capture(app, "RIFT_SMOKE_C20_CAPTAIN_LIMITS_SCREENSHOT");
+            click(app, 501.0, 760.0);
+        }
+        942 => {
+            assert_same_state(app);
+            assert_eq!(app.draw_look_draft.as_ref().unwrap().selection, None);
+            click(app, 325.0, 760.0);
+        }
+        943 => {
+            assert_same_state(app);
+            assert_eq!(
+                app.draw_look_draft.as_ref().unwrap().selection,
+                Some(Some(0))
+            );
+            click(app, 1285.0, 510.0);
+        }
+        944 => {
+            assert!(matches!(
+                app.game.decision,
+                Some(Decision::RevealedCard { card_id: 230, .. })
+            ));
+            assert_eq!(app.game.players[0].hand, vec![230]);
+            capture(app, "RIFT_SMOKE_C20_CAPTAIN_GEAR_DRAW_SCREENSHOT");
+            click(app, 1285.0, 510.0);
+        }
+        945 => {
+            assert!(app.game.decision.is_none());
+            c20_look(app, 389, &[96, 3, 96], 0, false);
+        }
+        946 => {
+            save_state(app);
+            click(app, 1285.0, 548.0);
+        }
+        947 => {
+            assert_same_state(app);
+            assert_eq!(app.draw_look_draft.as_ref().unwrap().selection, Some(None));
+            capture(app, "RIFT_SMOKE_C20_DECLINE_SCREENSHOT");
+            click(app, 1285.0, 578.0);
+        }
+        948 => {
+            assert_same_state(app);
+            assert_eq!(app.draw_look_draft.as_ref().unwrap().selection, None);
+            click(app, 1285.0, 548.0);
+        }
+        949 => {
+            assert_same_state(app);
+            click(app, 1285.0, 510.0);
+        }
+        950 => {
+            assert!(app.game.decision.is_none());
+            assert!(app.game.players[0].hand.is_empty());
+            assert_eq!(app.game.players[0].deck.len(), 3);
+            assert!(app.game.players[0].discard.contains(&389));
+        }
+        951 => c20_move(app, 392, Some(3)),
+        952 => {
+            assert!(matches!(
+                app.game.decision,
+                Some(Decision::RevealedCard {
+                    card_id: 3,
+                    outcome: local_rift::game::RevealOutcome::Draw,
+                    ..
+                })
+            ));
+            assert_eq!(app.game.players[0].hand, vec![3]);
+            capture(app, "RIFT_SMOKE_C20_SMITH_DRAW_SCREENSHOT");
+            click(app, 1285.0, 510.0);
+        }
+        953 => {
+            assert!(app.game.decision.is_none());
+            c20_move(app, 392, Some(70));
+        }
+        954 => {
+            assert!(matches!(
+                app.game.decision,
+                Some(Decision::RevealedCard {
+                    card_id: 70,
+                    outcome: local_rift::game::RevealOutcome::Recycle,
+                    ..
+                })
+            ));
+            assert_eq!(app.game.players[0].deck, vec![70, 69]);
+            assert!(app.game.players[0].hand.is_empty());
+            capture(app, "RIFT_SMOKE_C20_SMITH_RECYCLE_SCREENSHOT");
+            click(app, 1285.0, 510.0);
+        }
+        955 => {
+            assert!(app.game.decision.is_none());
+            c20_move(app, 393, Some(71));
+        }
+        956 => {
+            assert!(matches!(
+                app.game.decision,
+                Some(Decision::RevealedCard {
+                    card_id: 71,
+                    outcome: local_rift::game::RevealOutcome::Draw,
+                    ..
+                })
+            ));
+            capture(app, "RIFT_SMOKE_C20_WITNESS_DRAW_SCREENSHOT");
+            click(app, 1285.0, 510.0);
+        }
+        957 => {
+            assert!(app.game.decision.is_none());
+            c20_move(app, 393, Some(92));
+        }
+        958 => {
+            assert!(matches!(
+                app.game.decision,
+                Some(Decision::RevealedCard {
+                    card_id: 92,
+                    outcome: local_rift::game::RevealOutcome::Recycle,
+                    ..
+                })
+            ));
+            capture(app, "RIFT_SMOKE_C20_WITNESS_RECYCLE_SCREENSHOT");
+            click(app, 1285.0, 510.0);
+        }
+        959 => {
+            assert!(app.game.decision.is_none());
+            c20_move(app, 394, Some(96));
+        }
+        960 => {
+            assert!(matches!(
+                app.game.decision,
+                Some(Decision::RevealedCard {
+                    card_id: 96,
+                    outcome: local_rift::game::RevealOutcome::Draw,
+                    ..
+                })
+            ));
+            capture(app, "RIFT_SMOKE_C20_PAKAA_DRAW_SCREENSHOT");
+            click(app, 1285.0, 510.0);
+        }
+        961 => {
+            assert!(app.game.decision.is_none());
+            c20_move(app, 394, Some(7));
+        }
+        962 => {
+            assert!(matches!(
+                app.game.decision,
+                Some(Decision::RevealedCard {
+                    card_id: 7,
+                    outcome: local_rift::game::RevealOutcome::Trash,
+                    ..
+                })
+            ));
+            assert!(app.game.players[0].discard.contains(&7));
+            assert_eq!(
+                app.game.players[0]
+                    .units
+                    .iter()
+                    .find(|u| u.id == 17001)
+                    .unwrap()
+                    .temporary_buff,
+                2
+            );
+            capture(app, "RIFT_SMOKE_C20_PAKAA_TRASH_SCREENSHOT");
+            save_state(app);
+            click(app, 1285.0, 548.0);
+        }
+        963 => {
+            assert_eq!(app.inspect, Some(7));
+            assert_same_state(app);
+            click(app, 960.0, 704.0);
+        }
+        964 => {
+            assert_same_state(app);
+            click(app, 1285.0, 510.0);
+        }
+        965 => {
+            assert!(app.game.decision.is_none());
+            // A direct click must replace stale hover identity, even when both
+            // physical units share the same printed card and have different stats.
+            app.game.players[0]
+                .units
+                .iter_mut()
+                .find(|unit| unit.id == 20002)
+                .unwrap()
+                .card_id = 394;
+            app.hover_object = Some((0, 20002));
+            app.hover_card = Some(394);
+            assert!(
+                super::live_object_description(&app.game, 0, 20002, 394)
+                    .unwrap()
+                    .contains("4 current might")
+            );
+            save_state(app);
+            let previous_tray = app.tray;
+            app.tray = super::Tray::Board;
+            app.ui.input_override = Some((vec2(315.0, 760.0), false, true));
+            app.draw();
+            assert_eq!(app.inspect, Some(394));
+            assert_eq!(
+                app.hover_object,
+                Some((0, 17001)),
+                "Board tray latches the exact copy"
+            );
+            assert_same_state(app);
+            click(app, 960.0, 704.0);
+            app.draw();
+            assert!(app.inspect.is_none());
+            app.tray = previous_tray;
+            app.hover_object = Some((0, 20002));
+            let rect = unit_rect(app, 17001);
+            app.ui.input_override = Some((rect.center(), false, true));
+        }
+        966 => {
+            assert_eq!(app.inspect, Some(394));
+            assert_eq!(app.hover_object, Some((0, 17001)));
+            assert_eq!(app.game.catalog[394].might, 4);
+            assert!(
+                super::live_object_description(&app.game, 0, 17001, 394)
+                    .unwrap()
+                    .contains("6 current might")
+            );
+            assert_same_state(app);
+            capture(app, "RIFT_SMOKE_C20_PAKAA_LIVE_SCREENSHOT");
+            click(app, 960.0, 704.0);
+        }
+        967 => {
+            assert!(app.inspect.is_none());
+            c20_look(app, 389, &[], 0, false);
+        }
+        968 => {
+            assert!(
+                matches!(&app.game.decision,Some(Decision::DrawLook{cards,eligible,..}) if cards.is_empty()&&eligible.is_empty())
+            );
+            C20_SCORES
+                .with(|scores| scores.set([app.game.players[0].score, app.game.players[1].score]));
+            capture(app, "RIFT_SMOKE_C20_EMPTY_LOOK_SCREENSHOT");
+            click(app, 1285.0, 548.0);
+        }
+        969 => click(app, 1285.0, 510.0),
+        970 => {
+            assert!(app.game.decision.is_none());
+            assert!(app.game.players[0].hand.is_empty());
+            assert!(app.game.players[0].deck.is_empty());
+            C20_SCORES.with(|scores| {
+                assert_eq!(
+                    [app.game.players[0].score, app.game.players[1].score],
+                    scores.get(),
+                    "an empty look does not cause Burn Out"
+                )
+            });
+        }
+        971 => c20_look(app, 389, &[96, 3, 96], 1, false),
+        972 => {
+            assert!(app.draw_look_draft.is_none());
+            assert!(!app.deck_look_tray());
+            capture(app, "RIFT_SMOKE_C20_OPPONENT_PRIVATE_SCREENSHOT");
+            let Some(Decision::DrawLook { choice_id, .. }) = app.game.decision else {
+                panic!("private look")
+            };
+            app.game
+                .apply(Action::ResolveDrawLook {
+                    choice_id,
+                    index: Some(0),
+                })
+                .unwrap();
+        }
+        973 => {
+            assert!(matches!(
+                app.game.decision,
+                Some(Decision::RevealedCard {
+                    player: 1,
+                    card_id: 96,
+                    ..
+                })
+            ));
+            save_state(app);
+            app.next_ai = 0.0;
+            app.update();
+            assert_same_state(app);
+            app.next_ai = f64::INFINITY;
+            capture(app, "RIFT_SMOKE_C20_OPPONENT_PUBLIC_SCREENSHOT");
+            click(app, 1285.0, 548.0);
+        }
+        974 => {
+            assert_eq!(app.inspect, Some(96));
+            capture(app, "RIFT_SMOKE_C20_OPPONENT_INSPECT_SCREENSHOT");
+            click(app, 960.0, 704.0);
+        }
+        975 => {
+            assert_same_state(app);
+            click(app, 1285.0, 510.0);
+        }
+        976 => {
+            assert!(app.game.decision.is_none());
+            assert_eq!(app.game.players[1].hand, vec![96]);
+        }
+        977 => c20_look(app, 389, &[96, 96, 96], 0, true),
+        978 => {
+            let Some(Decision::DrawLook { choice_id, .. }) = app.game.decision else {
+                panic!("first Repeat look")
+            };
+            PREDICT_CHOICE.with(|slot| slot.set(choice_id));
+            click(app, 325.0, 760.0);
+        }
+        979 => click(app, 1285.0, 510.0),
+        980 => {
+            assert!(matches!(
+                app.game.decision,
+                Some(Decision::RevealedCard { .. })
+            ));
+            click(app, 1285.0, 510.0);
+        }
+        981 => {
+            let Some(Decision::DrawLook { choice_id, .. }) = app.game.decision else {
+                panic!("second Repeat look")
+            };
+            PREDICT_CHOICE.with(|slot| assert_ne!(slot.get(), choice_id));
+            // Render the newly reached private choice before checking its reset draft.
+            app.draw();
+            assert_eq!(app.draw_look_draft.as_ref().unwrap().choice_id, choice_id);
+            assert_eq!(app.draw_look_draft.as_ref().unwrap().selection, None);
+            capture(app, "RIFT_SMOKE_C20_REPEAT_NEXT_LOOK_SCREENSHOT");
+            click(app, 1285.0, 548.0);
+        }
+        982 => click(app, 1285.0, 510.0),
+        983 => {
+            assert!(app.game.decision.is_none());
+            assert_eq!(app.game.players[0].hand, vec![96]);
+            assert_eq!(
+                app.game.players[0]
+                    .discard
+                    .iter()
+                    .filter(|&&id| id == 389)
+                    .count(),
+                1
+            );
+        }
+        984 => {
+            expansion_fixture(app, 367);
+            app.game.players[0].score = 4;
+            app.game.players[1].score = 7;
+            save_state(app);
+            capture(app, "RIFT_SMOKE_C20_SCORE_RAILS_SCREENSHOT");
+            click(app, 229.0, 400.0);
+        }
+        985 => {
+            assert_same_state(app);
+            assert!(
+                app.selection.is_none(),
+                "score rails do not select board objects"
+            );
+            click(app, 1143.0, 230.0);
+        }
+        986 => {
+            assert_same_state(app);
+            assert!(
+                app.selection.is_none(),
+                "opponent score rail has no input overlap"
+            );
+        }
+        987 => {
             app.ui.input_override = None;
             app.ui.pointer_override = None;
             app.ui.wheel_override = None;
             println!(
-                "PASS: 924 native UI frames including private deck-look occurrence selection, explicit recycle confirmation, reduced child costs, fixed-object Empower responses, persistent public opponent reveals, and all previous 880 controls."
+                "PASS: 988 native UI frames including private draw-look occurrence choices, printed eligibility limits, staged decline, public completed outcomes, all six Move reveal branches, Repeat draft reset, and all previous 924 controls."
             );
             return true;
         }
-        _ => panic!("UI smoke runner exceeded its 924-frame script"),
+        _ => panic!("UI smoke runner exceeded its 988-frame script"),
     }
     false
 }

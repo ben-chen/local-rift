@@ -16,6 +16,8 @@ use std::collections::VecDeque;
 
 #[path = "board_returns.rs"]
 mod board_returns;
+#[path = "deck_draws.rs"]
+mod deck_draws;
 #[path = "deck_plays.rs"]
 mod deck_plays;
 use deck_plays::DeckKillContinuation;
@@ -71,6 +73,10 @@ pub enum Target {
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Action {
+    ResolveDrawLook {
+        choice_id: u32,
+        index: Option<usize>,
+    },
     ResolveDeckLook {
         choice_id: u32,
         index: Option<usize>,
@@ -437,8 +443,35 @@ pub struct Showdown {
     pub combat: bool,
 }
 
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum DrawLookKind {
+    DoubleTrouble,
+    FateWeaver,
+    TrifarianCaptain,
+}
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum RevealOutcome {
+    Draw,
+    Recycle,
+    Trash,
+}
+
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Decision {
+    DrawLook {
+        player: usize,
+        choice_id: u32,
+        source_card_id: CardId,
+        cards: Vec<CardId>,
+        eligible: Vec<usize>,
+        kind: DrawLookKind,
+    },
+    RevealedCard {
+        player: usize,
+        source_card_id: CardId,
+        card_id: CardId,
+        outcome: RevealOutcome,
+    },
     DeckLookPlay {
         player: usize,
         choice_id: u32,
@@ -701,7 +734,9 @@ pub enum CardSupport {
 impl Decision {
     pub fn player(&self) -> usize {
         match self {
-            Self::DeckLookPlay { player, .. }
+            Self::DrawLook { player, .. }
+            | Self::RevealedCard { player, .. }
+            | Self::DeckLookPlay { player, .. }
             | Self::RevealedDeck { player, .. }
             | Self::EmpowerPlayed { player, .. }
             | Self::BanishPlay { player, .. }
@@ -1540,6 +1575,7 @@ impl Game {
                 action,
                 Action::ResolveConversion { .. }
                     | Action::ResolveDeckLook { .. }
+                    | Action::ResolveDrawLook { .. }
                     | Action::ResolvePredict { .. }
                     | Action::ChooseTriggerTargets { .. }
                     | Action::Choose { .. }
@@ -1824,6 +1860,9 @@ impl Game {
             } => self.play_from_trash(trash_index, lane, target)?,
             Action::AssignDamage { assignments } => self.assign_combat_damage(assignments)?,
             Action::Pass => self.pass()?,
+            Action::ResolveDrawLook { choice_id, index } => {
+                self.resolve_draw_look(choice_id, index)?
+            }
             Action::ResolveDeckLook { choice_id, index } => {
                 self.resolve_deck_look(choice_id, index)?
             }
@@ -2735,7 +2774,14 @@ impl Game {
         self.finish_deck_kill();
         // The parent still owes Banish/play/recycle while a private selection
         // is pending. Cleanup cannot remove other damaged units mid-effect.
-        if matches!(self.decision, Some(Decision::DeckLookPlay { .. })) {
+        if matches!(
+            self.decision,
+            Some(
+                Decision::DeckLookPlay { .. }
+                    | Decision::DrawLook { .. }
+                    | Decision::RevealedCard { .. }
+            )
+        ) {
             return Ok(());
         }
         if self.resolution_frame.is_some() {
@@ -2908,7 +2954,8 @@ impl Game {
         }
         if matches!(
             decision,
-            Decision::DeckLookPlay { .. }
+            Decision::DrawLook { .. }
+                | Decision::DeckLookPlay { .. }
                 | Decision::BattlefieldOrder { .. }
                 | Decision::PredictCards { .. }
                 | Decision::TrashTarget { .. }
@@ -2935,7 +2982,7 @@ impl Game {
         }
         if matches!(decision, Decision::TopThree { .. }) {
             if accept {
-                return Err("Choose a revealed card, or decline to draw one.".into());
+                return Err("Choose an inspected card, or decline to draw one.".into());
             }
             return self.select_cards(&[]);
         }
@@ -2973,7 +3020,7 @@ impl Game {
         }
         self.decision = None;
         match decision {
-            Decision::RevealedDeck { .. } => {
+            Decision::RevealedDeck { .. } | Decision::RevealedCard { .. } => {
                 if !accept {
                     return Err("Continue after inspecting the revealed cards.".into());
                 }
@@ -3064,7 +3111,8 @@ impl Game {
                     }
                 }
             }
-            Decision::DeckLookPlay { .. }
+            Decision::DrawLook { .. }
+            | Decision::DeckLookPlay { .. }
             | Decision::Discard { .. }
             | Decision::Sabotage { .. }
             | Decision::TopThree { .. }
@@ -4605,21 +4653,35 @@ impl Game {
             }
             Decision::TopThree { player, cards } => {
                 if indices.len() > 1 || indices.first().is_some_and(|&i| i >= cards.len()) {
-                    return Err("Choose up to one of the revealed cards.".into());
+                    return Err("Choose up to one of the inspected cards.".into());
                 }
                 self.decision = None;
-                // Looking does not move cards or burn out. Moving only the cards
-                // actually seen cannot overdraw an exhausted deck.
-                for (index, &card) in cards.iter().enumerate() {
-                    if self.players[player].deck.pop() != Some(card) {
-                        return Err("The inspected cards changed unexpectedly.".into());
-                    }
-                    if indices.first() == Some(&index) {
-                        self.players[player].hand.push(card);
-                    } else {
-                        self.players[player].discard.push(card);
-                    }
+                let len = self.players[player].deck.len();
+                if self.players[player]
+                    .deck
+                    .iter()
+                    .rev()
+                    .take(cards.len())
+                    .copied()
+                    .collect::<Vec<_>>()
+                    != cards
+                {
+                    return Err("The inspected cards changed unexpectedly.".into());
                 }
+                // Draw the specified occurrence before the separate remainder
+                // instruction. The selected last card cannot cause Burn Out.
+                if let Some(&index) = indices.first() {
+                    let card = self.players[player].deck.remove(len - 1 - index);
+                    self.draw_exact_card(player, card);
+                }
+                self.players[player].deck.truncate(len - cards.len());
+                self.players[player].discard.extend(
+                    cards
+                        .iter()
+                        .enumerate()
+                        .filter(|(i, _)| indices.first() != Some(i))
+                        .map(|(_, &id)| id),
+                );
                 self.push_log(format!(
                     "{} finishes looking at the top cards.",
                     self.players[player].name
@@ -5257,6 +5319,22 @@ impl Game {
             if let Some(decision) = &self.decision {
                 let player = decision.player();
                 let mut actions = match decision {
+                    Decision::DrawLook {
+                        choice_id,
+                        eligible,
+                        ..
+                    } => eligible
+                        .iter()
+                        .copied()
+                        .map(|i| Action::ResolveDrawLook {
+                            choice_id: *choice_id,
+                            index: Some(i),
+                        })
+                        .chain(std::iter::once(Action::ResolveDrawLook {
+                            choice_id: *choice_id,
+                            index: None,
+                        }))
+                        .collect(),
                     Decision::DeckLookPlay {
                         choice_id,
                         eligible,
@@ -5273,7 +5351,9 @@ impl Game {
                             index: None,
                         }))
                         .collect(),
-                    Decision::RevealedDeck { .. } => vec![Action::Choose { accept: true }],
+                    Decision::RevealedDeck { .. } | Decision::RevealedCard { .. } => {
+                        vec![Action::Choose { accept: true }]
+                    }
                     Decision::Payment { .. } => {
                         vec![Action::CompletePayment, Action::Choose { accept: false }]
                     }
@@ -7060,6 +7140,7 @@ impl Game {
                     self.gear_make_temporary(player, id, target);
                 }
             }
+            OfficialEffect::DrawLook => self.look_to_draw(player, id, DrawLookKind::DoubleTrouble),
             OfficialEffect::DeckLookPlay => {
                 let kind = if id == 387 {
                     InstructedPlayKind::Reinforce
@@ -7546,6 +7627,16 @@ impl Game {
         self.move_top_cards(player, count, true);
     }
 
+    /// Complete a successful Draw after its specified physical card has been
+    /// removed from its source zone (Core414.1.a). This must not draw another
+    /// top card or burn out when the specified card was the last one.
+    fn draw_exact_card(&mut self, player: usize, card: CardId) {
+        self.players[player].hand.push(card);
+        self.trigger_state.draws[player] += 1;
+        self.emit_event(EventSnapshot::simple(Occurrence::Draw, player));
+        self.trigger_batch += 1;
+    }
+
     fn move_top_cards(&mut self, player: usize, count: u8, drawing: bool) {
         for _ in 0..count {
             let mut consecutive_burnouts = 0;
@@ -7584,10 +7675,7 @@ impl Game {
             }
             if let Some(id) = self.players[player].deck.pop() {
                 if drawing {
-                    self.players[player].hand.push(id);
-                    self.trigger_state.draws[player] += 1;
-                    self.emit_event(EventSnapshot::simple(Occurrence::Draw, player));
-                    self.trigger_batch += 1;
+                    self.draw_exact_card(player, id);
                 } else {
                     self.players[player].discard.push(id);
                 }
@@ -8521,6 +8609,32 @@ impl Game {
                             top_order: keep,
                         })
                     }
+                    Decision::DrawLook {
+                        player,
+                        choice_id,
+                        cards,
+                        eligible,
+                        ..
+                    } => {
+                        let available = self.players[*player].energy;
+                        let best = eligible.iter().copied().max_by_key(|&i| {
+                            let c = self.catalog[cards[i]];
+                            (
+                                i32::from(c.might) * 3
+                                    + i32::from(c.cost)
+                                    + if u16::from(c.cost) <= available.saturating_add(2) {
+                                        8
+                                    } else {
+                                        0
+                                    },
+                                std::cmp::Reverse(i),
+                            )
+                        });
+                        Some(Action::ResolveDrawLook {
+                            choice_id: *choice_id,
+                            index: best,
+                        })
+                    }
                     Decision::DeckLookPlay {
                         choice_id,
                         cards,
@@ -9107,6 +9221,7 @@ impl Game {
                 }
                 OfficialEffect::Draw(_)
                 | OfficialEffect::ChooseTopThreeBurnRest
+                | OfficialEffect::DrawLook
                 | OfficialEffect::DrawForBattlefields { .. }
                 | OfficialEffect::DrawForMighty => {
                     if self.players[actor].hand.len() < 5 {

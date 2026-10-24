@@ -148,7 +148,8 @@ impl Game {
             Some(
                 Decision::TopThree { player, cards }
                 | Decision::PredictCards { player, cards, .. }
-                | Decision::DeckLookPlay { player, cards, .. },
+                | Decision::DeckLookPlay { player, cards, .. }
+                | Decision::DrawLook { player, cards, .. },
             ) if *player == actor => {
                 for (slot, &id) in state.players[actor].deck.iter_mut().rev().zip(cards) {
                     *slot = id;
@@ -395,6 +396,22 @@ impl Game {
 
 fn scrub_queued_look(decision: &mut Decision, players: &[PlayerState; 2], catalog: &[CardDef]) {
     match decision {
+        Decision::DrawLook {
+            player,
+            cards,
+            eligible,
+            kind,
+            ..
+        } => {
+            *cards = players[*player]
+                .deck
+                .iter()
+                .rev()
+                .take(cards.len())
+                .copied()
+                .collect();
+            *eligible = Game::draw_look_eligible(cards, *kind, catalog);
+        }
         Decision::DeckLookPlay {
             player,
             cards,
@@ -777,5 +794,262 @@ mod tests {
             }
             assert!(game.winner.is_some(), "Strategic match stalled: {pair:?}");
         }
+    }
+}
+
+#[cfg(test)]
+mod c20_draw_privacy_tests {
+    use super::*;
+
+    fn fixture(actor: usize) -> Game {
+        let mut game = Game::new_for_agents(0, 0, 20021, Difficulty::Strategic);
+        game.choose_starting_player(actor).unwrap();
+        game.start_match().unwrap();
+        game.battlefield_owner = [None; 2];
+        for player in &mut game.players {
+            player.hand.clear();
+            player.units.clear();
+            player.gear.clear();
+            player.hidden.clear();
+            player.champion = None;
+            player.runes = [0; 6];
+            player.exhausted_runes = [0; 6];
+            player.energy = 20;
+            player.energy_pool = 20;
+            player.power_pool = [4; 6];
+        }
+        for legend in &mut game.legend {
+            legend.ready = false;
+        }
+        game
+    }
+
+    fn real_draw_look(actor: usize) -> Game {
+        let mut game = fixture(actor);
+        game.players[actor].hand = vec![389];
+        game.players[actor].deck = vec![70, 69, 96, 3];
+        game.players[1 - actor].hand = vec![9, 86];
+        game.apply(Action::PlayCardWithTargets {
+            hand_index: 0,
+            lane: None,
+            targets: vec![],
+        })
+        .unwrap();
+        for _ in 0..8 {
+            if game.decision.is_some() {
+                break;
+            }
+            game.apply(Action::Pass).unwrap();
+        }
+        assert!(matches!(game.decision, Some(Decision::DrawLook { .. })));
+        game
+    }
+
+    #[test]
+    fn c20_active_draw_look_keeps_known_occurrences_and_ignores_other_hidden_data() {
+        for actor in 0..2 {
+            let first = real_draw_look(actor);
+            let Some(Decision::DrawLook {
+                cards, eligible, ..
+            }) = &first.decision
+            else {
+                unreachable!()
+            };
+            assert_eq!(cards, &[3, 96, 69]);
+            assert_eq!(eligible, &[1, 2]);
+            let belief = first.strategic_belief(actor);
+            assert_eq!(belief.decision, first.decision);
+            assert_eq!(
+                belief.players[actor]
+                    .deck
+                    .iter()
+                    .rev()
+                    .take(3)
+                    .copied()
+                    .collect::<Vec<_>>(),
+                *cards
+            );
+
+            let mut second = first.clone();
+            second.players[actor].deck[0] = 52; // Outside the actual inspected three.
+            second.players[1 - actor].deck.fill(74);
+            second.players[1 - actor].hand = vec![67, 52];
+            second.players[0].rune_deck.reverse();
+            second.players[1].rune_deck.reverse();
+            second.rng = Rng::new(77_777);
+            let sampled_second = second.strategic_belief(actor);
+            assert_eq!(
+                belief.players[actor].deck,
+                sampled_second.players[actor].deck
+            );
+            assert_eq!(
+                belief.players[1 - actor].deck,
+                sampled_second.players[1 - actor].deck
+            );
+            assert_eq!(
+                belief.players[1 - actor].hand,
+                sampled_second.players[1 - actor].hand
+            );
+            let action = first.choose_strategic_action().unwrap();
+            assert_eq!(action, second.choose_strategic_action().unwrap());
+            assert!(matches!(action, Action::ResolveDrawLook { .. }));
+            first.clone().apply(action.clone()).unwrap();
+            second.apply(action).unwrap();
+        }
+    }
+
+    fn assert_sampled_draw_look(decision: &Decision, game: &Game) {
+        let Decision::DrawLook {
+            player,
+            cards,
+            eligible,
+            kind,
+            ..
+        } = decision
+        else {
+            panic!("expected queued DrawLook");
+        };
+        assert_eq!(
+            *cards,
+            game.players[*player]
+                .deck
+                .iter()
+                .rev()
+                .take(cards.len())
+                .copied()
+                .collect::<Vec<_>>()
+        );
+        let expected: Vec<_> = cards
+            .iter()
+            .enumerate()
+            .filter_map(|(index, &id)| {
+                let card = game.catalog[id];
+                let valid = match kind {
+                    DrawLookKind::DoubleTrouble => card.kind == CardKind::Unit,
+                    DrawLookKind::FateWeaver => card.kind == CardKind::Spell && card.cost >= 4,
+                    DrawLookKind::TrifarianCaptain => {
+                        matches!(card.kind, CardKind::Unit | CardKind::Gear)
+                            && card.cost <= 3
+                            && card.power_cost <= 1
+                    }
+                };
+                valid.then_some(index)
+            })
+            .collect();
+        assert_eq!(*eligible, expected);
+    }
+
+    #[test]
+    fn c20_queued_draw_looks_scrub_cards_and_eligibility_in_both_pending_channels() {
+        let mut first = fixture(0);
+        let kinds = [
+            DrawLookKind::DoubleTrouble,
+            DrawLookKind::FateWeaver,
+            DrawLookKind::TrifarianCaptain,
+        ];
+        for owner in 0..2 {
+            for (offset, kind) in kinds.iter().copied().enumerate() {
+                let cards = if kind == DrawLookKind::DoubleTrouble {
+                    vec![70, 69, 96]
+                } else {
+                    vec![70, 69, 96, 71]
+                };
+                let decision = Decision::DrawLook {
+                    player: owner,
+                    choice_id: 300 + (owner * 10 + offset) as u32,
+                    source_card_id: 389 + offset,
+                    eligible: Game::draw_look_eligible(&cards, kind, &first.catalog),
+                    cards,
+                    kind,
+                };
+                first.pending_decisions.push_back(decision.clone());
+                first.queue_trigger_choice(owner, 389 + offset, decision);
+            }
+        }
+        let mut second = first.clone();
+        second.players[0].deck.fill(7);
+        second.players[1].deck.fill(26);
+        let alter = |decision: &mut Decision| {
+            if let Decision::DrawLook {
+                cards,
+                eligible,
+                kind,
+                ..
+            } = decision
+            {
+                *cards = if *kind == DrawLookKind::DoubleTrouble {
+                    vec![7, 26, 67]
+                } else {
+                    vec![7, 26, 67, 132]
+                };
+                *eligible = Game::draw_look_eligible(cards, *kind, &first.catalog);
+            }
+        };
+        for decision in &mut second.pending_decisions {
+            alter(decision);
+        }
+        for trigger in &mut second.pending_triggers {
+            if let PendingTriggerEffect::Choice(decision) = &mut trigger.effect {
+                alter(decision);
+            }
+        }
+        let a = first.strategic_belief(0);
+        let b = second.strategic_belief(0);
+        assert_eq!(a.pending_decisions, b.pending_decisions);
+        assert_eq!(
+            format!("{:?}", a.pending_triggers),
+            format!("{:?}", b.pending_triggers)
+        );
+        for decision in &a.pending_decisions {
+            assert_sampled_draw_look(decision, &a);
+        }
+        for trigger in &a.pending_triggers {
+            if let PendingTriggerEffect::Choice(decision) = &trigger.effect {
+                assert_sampled_draw_look(decision, &a);
+            }
+        }
+        assert_eq!(
+            first.choose_strategic_action().unwrap(),
+            second.choose_strategic_action().unwrap()
+        );
+    }
+
+    #[test]
+    fn c20_public_revealed_card_is_preserved_in_current_and_queued_beliefs() {
+        let mut game = real_draw_look(0);
+        let Some(Decision::DrawLook { choice_id, .. }) = game.decision else {
+            unreachable!()
+        };
+        game.apply(Action::ResolveDrawLook {
+            choice_id,
+            index: Some(1),
+        })
+        .unwrap();
+        let reveal = game.decision.clone().unwrap();
+        assert!(matches!(
+            reveal,
+            Decision::RevealedCard {
+                card_id: 96,
+                outcome: RevealOutcome::Draw,
+                ..
+            }
+        ));
+        game.pending_decisions.push_back(reveal.clone());
+        game.queue_trigger_choice(0, 389, reveal.clone());
+        for viewer in 0..2 {
+            let belief = game.strategic_belief(viewer);
+            assert_eq!(belief.decision, Some(reveal.clone()));
+            assert_eq!(belief.pending_decisions.back(), Some(&reveal));
+            assert!(
+                belief
+                    .pending_triggers
+                    .iter()
+                    .any(|t| matches!(&t.effect, PendingTriggerEffect::Choice(d) if *d == reveal))
+            );
+        }
+        assert_eq!(
+            game.choose_strategic_action().unwrap(),
+            Action::Choose { accept: true }
+        );
     }
 }

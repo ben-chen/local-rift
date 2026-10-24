@@ -2,7 +2,7 @@
   "schema_version": 1,
   "status": "reviewed",
   "prepared_on": "2026-10-24",
-  "scope": "Earlier source cohorts preserved, plus Clocktower Guardian\u2019s artwork-proven Mind domain and Shurima tag. Source review alone enables no runtime card.",
+  "scope": "Earlier source cohorts preserved, plus artwork-proven printed tags omitted by the gallery for Trifarian Captain and Raving Witness. Source review alone enables no runtime card.",
   "baseline": {
     "main_cards": 290,
     "legends": 8,
@@ -63,7 +63,7 @@
     }
   },
   "evidence_manifest_path": "assets/data/catalog_evidence/images.json",
-  "evidence_manifest_sha256": "b4628db6d0987b02a3af53586ad9110c00c8065deaf5704de8976749f0e73b11",
+  "evidence_manifest_sha256": "61b4e633cff15c61e762119c848b1f0e52cb111e1d7b5799ee4bd04548229f25",
   "evidence_checks": {
     "historical_c6_review": {
       "all8_archives_verified": true,
@@ -72,12 +72,12 @@
       "artwork_review": "Dated visual review of the matching official card images, documented in docs/CATALOG_REVIEW.md. No automatic preference for accessibility labels or new inferred source values."
     },
     "current_field_review": {
-      "reviewed_printings": 75,
+      "reviewed_printings": 77,
       "all_image_hashes_verified": true,
       "all_image_urls_match_pinned_raw_printings": true,
       "all_raw_projection_and_origin_checks_pass": true,
       "visual_review_date": "2026-10-24",
-      "note": "The preceding 74 field-reviewed printings and 118 resolutions are preserved. Clocktower Guardian adds one exact original face and two independently inspected corrections. The 29 complete identity reviews and all 90 variant printings are unchanged."
+      "note": "All preceding 75 field-reviewed printings and 120 field resolutions are preserved. Trifarian Captain and Raving Witness add two exact original faces and two printed-tag corrections. The 29 complete identity reviews and 90 variant members remain unchanged."
     }
   },
   "preservation_contract": [
@@ -92,12 +92,12 @@
     "Live page checks fetch current gallery and legality pages but do not freshly download image evidence; the stored visual review remains dated."
   ],
   "stats": {
-    "historical_issue_groups": 43,
-    "reviewed_printings": 74,
-    "field_resolutions": 118,
-    "overrides": 91,
+    "historical_issue_groups": 47,
+    "reviewed_printings": 77,
+    "field_resolutions": 122,
+    "overrides": 95,
     "confirmations": 27,
-    "artwork_confirmed": 114,
+    "artwork_confirmed": 118,
     "rule_derived": 4,
     "c7_new_field_resolutions": 39,
     "c7_new_printings": 31,
@@ -108,7 +108,9 @@
     "gear_review_new_field_resolutions": 2,
     "gear_review_new_printings": 2,
     "mournful_new_field_resolutions": 1,
-    "mournful_new_printings": 1
+    "mournful_new_printings": 1,
+    "c20_new_field_resolutions": 2,
+    "c20_new_printings": 2
   },
   "historical_issues": [
     {
@@ -1231,6 +1233,67 @@
       ],
       "resolution_ids": [
         "rad-067-167:tags"
+      ],
+      "proposed_status": "reviewed",
+      "runtime_support": "source_review_only",
+      "discovery_basis": "confirmed_artwork",
+      "discovered_on": "2026-10-24"
+    },
+    {
+      "review_issue_id": "rad-129-167-tags",
+      "raw_issue": {
+        "kind": "official_artwork_field_mismatch",
+        "field": "tags",
+        "official_ids": [
+          "rad-129-167"
+        ],
+        "values": [
+          {
+            "official_id": "rad-129-167",
+            "raw_value": [],
+            "printed_value": [
+              "Noxus",
+              "Trifarian"
+            ]
+          }
+        ],
+        "detail": "The exact RAD-129/167 official face prints UNIT / NOXUS / TRIFARIAN. The structured gallery omits all printed tags. Only the effective tag set is corrected from the explicit printed type/tag line; no tag is inferred from the name or illustration."
+      },
+      "printing_ids": [
+        "rad-129-167"
+      ],
+      "resolution_ids": [
+        "rad-129-167:tags"
+      ],
+      "proposed_status": "reviewed",
+      "runtime_support": "source_review_only",
+      "discovery_basis": "confirmed_artwork",
+      "discovered_on": "2026-10-24"
+    },
+    {
+      "review_issue_id": "rad-074-167-tags",
+      "raw_issue": {
+        "kind": "official_artwork_field_mismatch",
+        "field": "tags",
+        "official_ids": [
+          "rad-074-167"
+        ],
+        "values": [
+          {
+            "official_id": "rad-074-167",
+            "raw_value": [],
+            "printed_value": [
+              "Freljord"
+            ]
+          }
+        ],
+        "detail": "The exact RAD-074/167 official face prints UNIT / FRELJORD. The structured gallery omits all printed tags. Only the effective tag set is corrected from the explicit printed type/tag line; no tag is inferred from the name or illustration."
+      },
+      "printing_ids": [
+        "rad-074-167"
+      ],
+      "resolution_ids": [
+        "rad-074-167:tags"
       ],
       "proposed_status": "reviewed",
       "runtime_support": "source_review_only",
@@ -4175,6 +4238,82 @@
       "might_bonus": null,
       "type_labels_conflict": false,
       "review_draft_sha256": "cd045ceae012f7d50d3f37feb860c08e0d13dcf075a929aa4357062ae3b99607"
+    },
+    {
+      "official_id": "rad-129-167",
+      "public_code": "RAD-129/167",
+      "name": "Trifarian Captain",
+      "set": "RAD",
+      "collector_number": 129,
+      "types": [
+        "unit"
+      ],
+      "type_source": "cardType.type",
+      "structured_types": [
+        "unit"
+      ],
+      "accessibility_types": [
+        "unit"
+      ],
+      "type_labels_conflict": false,
+      "super_types": [],
+      "domains": [
+        "order"
+      ],
+      "energy": 2,
+      "power": null,
+      "might": 1,
+      "might_bonus": null,
+      "rules_html": "<p>When you play me, look at the top 4 cards of your Main Deck. You may reveal from among them a unit or gear with Energy cost no more than :rb_energy_3: and with Power cost no more than :rb_rune_rainbow: and draw it. Recycle the rest.</p>",
+      "rules_text": "When you play me, look at the top 4 cards of your Main Deck. You may reveal from among them a unit or gear with Energy cost no more than [3 Energy] and with Power cost no more than [Any Power] and draw it. Recycle the rest.",
+      "equipment_html": "",
+      "equipment_text": "",
+      "tags": [],
+      "rarity": "uncommon",
+      "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/914ced10400826a878ed5cf7294207a4e7b542b1-744x1039.png?accountingTag=RB",
+      "image_accessibility_text": "Riftbound Unit: Trifarian Captain. When you play me, look at the top 4 cards of your Main Deck. You may reveal from among them a unit or gear with Energy cost no more than [3] and with Power cost no more than [A] and draw it. Recycle the rest.",
+      "illustrators": [
+        "Six More Vodka"
+      ],
+      "review_draft_sha256": "60f78e5af8ae989d65e11dad2117b763d4da41b350625176cb40f6a7c1d37dc6"
+    },
+    {
+      "official_id": "rad-074-167",
+      "public_code": "RAD-074/167",
+      "name": "Raving Witness",
+      "set": "RAD",
+      "collector_number": 74,
+      "types": [
+        "unit"
+      ],
+      "type_source": "cardType.type",
+      "structured_types": [
+        "unit"
+      ],
+      "accessibility_types": [
+        "unit"
+      ],
+      "type_labels_conflict": false,
+      "super_types": [],
+      "domains": [
+        "body"
+      ],
+      "energy": 3,
+      "power": null,
+      "might": 3,
+      "might_bonus": null,
+      "rules_html": "<p>When I move, reveal the top card of your Main Deck. If it's [Mighty], draw it. Otherwise, recycle it. (A unit is Mighty while it has 5+ :rb_might:.)</p>",
+      "rules_text": "When I move, reveal the top card of your Main Deck. If it's [Mighty], draw it. Otherwise, recycle it. (A unit is Mighty while it has 5+ Might.)",
+      "equipment_html": "",
+      "equipment_text": "",
+      "tags": [],
+      "rarity": "common",
+      "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/778e70b353d7f28eae9b54b1a37af3853238ba04-744x1039.png?accountingTag=RB",
+      "image_accessibility_text": "Riftbound Unit: Raving Witness. When I move, reveal the top card of your Main Deck. If it's [Mighty], draw it. Otherwise, recycle it. (A unit is Mighty while it has 5+ [S].)",
+      "illustrators": [
+        "Six More Vodka"
+      ],
+      "review_draft_sha256": "8392220539ccd517ddc5eeaca1bc976e5416af6d4a035793c0fb6966938a594b"
     }
   ],
   "resolutions": [
@@ -8126,6 +8265,67 @@
           "bytes": 1108541,
           "local_path": "assets/data/catalog_evidence/images/rad-067-167.png",
           "location": "Printed type/tag line directly above the name."
+        }
+      ],
+      "enables_runtime_support": false
+    },
+    {
+      "id": "rad-129-167:tags",
+      "official_id": "rad-129-167",
+      "name": "Trifarian Captain",
+      "field": "tags",
+      "reviewed_on": "2026-10-24",
+      "basis": "confirmed_artwork",
+      "operation": "override",
+      "expected_raw_value": [],
+      "raw_source_field": "tags",
+      "expected_raw_source_value": [],
+      "effective_value": [
+        "Noxus",
+        "Trifarian"
+      ],
+      "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+      "expected_printing_sha256": "60f78e5af8ae989d65e11dad2117b763d4da41b350625176cb40f6a7c1d37dc6",
+      "printing_hash_encoding": "UTF-8 JSON sorted keys; ensure_ascii=false; separators=(',', ':')",
+      "reason": "The exact RAD-129/167 official face prints UNIT / NOXUS / TRIFARIAN. The structured gallery omits all printed tags. Only the effective tag set is corrected from the explicit printed type/tag line; no tag is inferred from the name or illustration.",
+      "evidence": [
+        {
+          "kind": "official_card_image",
+          "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/914ced10400826a878ed5cf7294207a4e7b542b1-744x1039.png?accountingTag=RB",
+          "sha256": "6965e01684626f32de65ca732995acf11ee8a5a47977baa7026bd9b9d72e63c0",
+          "bytes": 775913,
+          "local_path": "assets/data/catalog_evidence/images/rad-129-167.png",
+          "location": "Printed type/tag line directly above the card name."
+        }
+      ],
+      "enables_runtime_support": false
+    },
+    {
+      "id": "rad-074-167:tags",
+      "official_id": "rad-074-167",
+      "name": "Raving Witness",
+      "field": "tags",
+      "reviewed_on": "2026-10-24",
+      "basis": "confirmed_artwork",
+      "operation": "override",
+      "expected_raw_value": [],
+      "raw_source_field": "tags",
+      "expected_raw_source_value": [],
+      "effective_value": [
+        "Freljord"
+      ],
+      "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+      "expected_printing_sha256": "8392220539ccd517ddc5eeaca1bc976e5416af6d4a035793c0fb6966938a594b",
+      "printing_hash_encoding": "UTF-8 JSON sorted keys; ensure_ascii=false; separators=(',', ':')",
+      "reason": "The exact RAD-074/167 official face prints UNIT / FRELJORD. The structured gallery omits all printed tags. Only the effective tag set is corrected from the explicit printed type/tag line; no tag is inferred from the name or illustration.",
+      "evidence": [
+        {
+          "kind": "official_card_image",
+          "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/778e70b353d7f28eae9b54b1a37af3853238ba04-744x1039.png?accountingTag=RB",
+          "sha256": "154a6e8a93a6496123fc26e4fdfeba40c843e8c5ccfb7b47db5ffc7babfeb624",
+          "bytes": 818463,
+          "local_path": "assets/data/catalog_evidence/images/rad-074-167.png",
+          "location": "Printed type/tag line directly above the card name."
         }
       ],
       "enables_runtime_support": false

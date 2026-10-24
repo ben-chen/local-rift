@@ -130,6 +130,8 @@ pub enum Amount {
 }
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Effect {
+    DrawLook(crate::game::DrawLookKind),
+    RevealMovedTop,
     ClocktowerDeathknell,
     DazzlingAurora,
     KillUnitOrGear,
@@ -247,6 +249,39 @@ pub fn trigger_rules(card_id: usize) -> &'static [TriggerRule] {
     use Operand::*;
     use TokenPlacement::*;
     match card_id {
+        390 => {
+            const {
+                &[rule(
+                    SelfPlayed,
+                    &[],
+                    false,
+                    TargetRule::NONE,
+                    &[DrawLook(crate::game::DrawLookKind::FateWeaver)],
+                )]
+            }
+        }
+        391 => {
+            const {
+                &[rule(
+                    SelfPlayed,
+                    &[],
+                    false,
+                    TargetRule::NONE,
+                    &[DrawLook(crate::game::DrawLookKind::TrifarianCaptain)],
+                )]
+            }
+        }
+        392..=394 => {
+            const {
+                &[rule(
+                    SelfMoved,
+                    &[],
+                    false,
+                    TargetRule::NONE,
+                    &[RevealMovedTop],
+                )]
+            }
+        }
         386 => {
             const {
                 &[rule(

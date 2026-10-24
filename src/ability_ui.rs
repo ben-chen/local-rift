@@ -570,7 +570,7 @@ impl App {
                 self.hover_candidate = Some(*id);
             }
             if self.ui.hover(r) && self.ui.secondary_pressed() {
-                self.inspect = Some(*id);
+                self.inspect_printed_card(*id);
             }
         }
         self.tray_scroll(cards.len(), 6);

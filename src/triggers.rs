@@ -1059,6 +1059,10 @@ impl Game {
         let targets = selected;
         for effect in rule.effects {
             match *effect {
+                Effect::DrawLook(kind) => self.look_to_draw(player, card_id, kind),
+                Effect::RevealMovedTop => {
+                    self.reveal_moved_top(player, card_id, Self::source_target(context.source))?
+                }
                 Effect::DazzlingAurora => self.reveal_aurora(player),
                 Effect::ClocktowerDeathknell => self.clocktower_deathknell(player),
                 Effect::KillGear {

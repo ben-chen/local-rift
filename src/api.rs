@@ -11,8 +11,8 @@ use crate::battlefields::{BATTLEFIELDS, BattlefieldAbility};
 use crate::cards::{Domain, cards, presets};
 use crate::deck::CustomDeck;
 use crate::game::{
-    Action, ChainAbility, ChainSource, Decision, Difficulty, FlowSource, Game, InstructedPlayKind,
-    Phase, Target, TriggerContext, TriggeredAbility,
+    Action, ChainAbility, ChainSource, Decision, Difficulty, DrawLookKind, FlowSource, Game,
+    InstructedPlayKind, Phase, RevealOutcome, Target, TriggerContext, TriggeredAbility,
 };
 use crate::legend_catalog::legends;
 use crate::legends::{LegendAbility, LegendKind, LegendTrigger};
@@ -895,6 +895,9 @@ fn action_json_at_depth(action: &Action, depth: usize) -> Value {
         Action::Attack { lane } => json!({"type":"attack","lane":lane}),
         Action::Pass => json!({"type":"pass"}),
         Action::Choose { accept } => json!({"type":"choose","accept":accept}),
+        Action::ResolveDrawLook { choice_id, index } => {
+            json!({"type":"resolve_draw_look","choice_id":choice_id,"index":index})
+        }
         Action::ResolveDeckLook { choice_id, index } => {
             json!({"type":"resolve_deck_look","choice_id":choice_id,"index":index})
         }
@@ -1402,6 +1405,22 @@ fn parse_action_at_depth(value: &Value, depth: usize) -> Result<Action, ApiError
                 accept: boolean(o, "accept")?,
             }
         }
+        "resolve_draw_look" => {
+            fields!("choice_id", "index");
+            Action::ResolveDrawLook {
+                choice_id: id32(o, "choice_id")?,
+                index: match required(o, "index")? {
+                    Value::Null => None,
+                    v => Some(
+                        v.as_u64()
+                            .and_then(|n| usize::try_from(n).ok())
+                            .ok_or_else(|| {
+                                ApiError::invalid("index must be a non-negative integer or null.")
+                            })?,
+                    ),
+                },
+            }
+        }
         "resolve_deck_look" => {
             fields!("choice_id", "index");
             Action::ResolveDeckLook {
@@ -1727,6 +1746,39 @@ fn instructed_kind(kind: InstructedPlayKind) -> &'static str {
 fn decision_to_json(game: &Game, decision: &Decision, viewer: usize) -> Result<Value, ApiError> {
     let player = decision.player();
     let mut out = match decision {
+        Decision::DrawLook {
+            choice_id,
+            source_card_id,
+            cards,
+            eligible,
+            kind,
+            ..
+        } => {
+            let kind = match kind {
+                DrawLookKind::DoubleTrouble => "double_trouble",
+                DrawLookKind::FateWeaver => "fate_weaver",
+                DrawLookKind::TrifarianCaptain => "trifarian_captain",
+            };
+            let mut view = json!({"type":"draw_look","choice_id":choice_id,"source_card_id":source_card_id,"kind":kind,"count":cards.len(),"optional":true});
+            if player == viewer {
+                view["cards"] = json!(cards);
+                view["eligible"] = json!(eligible);
+            }
+            view
+        }
+        Decision::RevealedCard {
+            source_card_id,
+            card_id,
+            outcome,
+            ..
+        } => {
+            let outcome = match outcome {
+                RevealOutcome::Draw => "draw",
+                RevealOutcome::Recycle => "recycle",
+                RevealOutcome::Trash => "trash",
+            };
+            json!({"type":"revealed_card","source_card_id":source_card_id,"card_id":card_id,"outcome":outcome})
+        }
         Decision::DeckLookPlay {
             choice_id,
             source_card_id,
@@ -4223,3 +4275,6 @@ mod c18;
 
 #[cfg(test)]
 mod c19;
+
+#[cfg(test)]
+mod c20;

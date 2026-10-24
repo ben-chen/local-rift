@@ -381,7 +381,7 @@ impl App {
         if self.ui.hover(Rect::new(265.0, 402.0, 220.0, 42.0)) {
             self.hover_candidate = Some(champion.id);
             if self.ui.secondary_pressed() {
-                self.inspect = Some(champion.id);
+                self.inspect_printed_card(champion.id);
             }
         }
         let rune_count: usize = editor.deck.runes.iter().map(|&n| usize::from(n)).sum();
@@ -632,7 +632,7 @@ impl App {
             if self.ui.hover(preview) {
                 self.hover_candidate = Some(id);
                 if self.ui.primary_pressed() || self.ui.secondary_pressed() {
-                    self.inspect = Some(id);
+                    self.inspect_printed_card(id);
                     editor.input = None;
                 }
             }

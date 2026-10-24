@@ -129,6 +129,7 @@ Each playable card's `play_targets` reports `{kind, maximum, required}`. `kind` 
 | `play_hidden` | `hidden_id`, optional `targets` | Play an eligible hidden card; an empty target list uses the engine's default targets |
 | `choose` | `accept` | Accept/decline a binary decision; Predict accepts recycling the top card |
 | `resolve_predict` | `choice_id`, `recycle`, `top_order` | Complete a multi-card Predict; the two index arrays partition the looked-at occurrences, with `top_order[0]` drawn next |
+| `resolve_draw_look` | `choice_id`, `index` | Reveal and draw one eligible inspected occurrence, or use explicit `index:null` to recycle all |
 | `choose_target` | optional `target` | Select a pending unit/gear target; during Tornado Warrior's base choice, `null` chooses the legend |
 | `choose_trigger_targets` | `targets` | Finalize an ordered target array for a `trigger_targets` decision; an empty array declines an optional trigger |
 | `select_cards` | `indices` | Select exact indices for discard, Top Three, Sabotage, or a granted Flow choice from trash |
@@ -302,6 +303,8 @@ The viewer sees their own hand as card IDs. The opposing hand is `null` except w
 | Decision | Data and response |
 | --- | --- |
 | `predict` | Owner sees `card_id`; `choose` recycles it when true, keeps it on top when false |
+| `draw_look` | Public source, kind, choice ID and count; only the owner sees top-first `cards` and eligible occurrence indices. Use `resolve_draw_look`. |
+| `revealed_card` | Public source, card ID and completed `outcome` (`draw`, `recycle`, or `trash`); acknowledge with `choose` and `accept:true`. This record is not a card zone. |
 | `predict_cards` | Public `choice_id` and actual `count`; only owner sees `cards`. Submit the exact index partition and kept order with `resolve_predict`. |
 | `counter_tax` | `chain_id`, energy `cost`; `choose`, with resource actions allowed before payment |
 | `discard` | `count`, `draw_after`; `select_cards` indexes your current hand |
@@ -444,3 +447,13 @@ Selection banishes the exact occurrence, moves a permitted child play to Pending
 Aurora emits `revealed_deck`, with public `source_card_id` and `cards`. Its first revealed unit has already moved to Banish/Pending, and the other cards have recycled; the array is an inspection record, not an additional zone. `choose` with `accept:true` continues. An empty deck causes no draw, burnout, or reveal acknowledgement.
 
 Wild Claw emits `empower_played` after the child finalizes. Both observers receive the source, pending link, and fixed `target` (Unit/Gear, or null if no child entered). `choose` accepts or declines the separate reflexive ability. Acceptance creates `empower_linked` on the chain, allowing normal responses. It does not choose a new target; its physical object link survives movement but cannot follow a card that leaves the board. Empower is permanent unless another effect removes it.
+
+## Inspected draws and Move reveals
+
+Double Trouble, Fate Weaver and Trifarian Captain produce `draw_look`, with `kind` respectively `double_trouble`, `fate_weaver` or `trifarian_captain`. Both seats receive `player`, `choice_id`, `source_card_id`, actual `count` and `optional:true`; only the owner receives `cards` and `eligible`. Cards are still in the deck while inspected. Duplicate IDs have separate zero-based occurrence indices. Send `{"type":"resolve_draw_look","choice_id":123,"index":1}` to select that eligible occurrence, or `index:null` to decline and recycle all. Omitted, invalid, ineligible, stale or wrong-player selections reject atomically. Fate Weaver and Captain have mandatory on-play triggers; the draw choice is optional only when those triggers resolve.
+
+Selecting an occurrence publicly reveals it, draws that exact card, and recycles the other inspected cards together in random order. It then produces `revealed_card`, exposing only the selected identity. The card is already in hand; count it there once, not again in the decision. Acknowledgement finishes this execution before a paid Repeat begins a fresh look. Declining never reveals the private remainder or creates a Draw event. A short or empty look does not burn out.
+
+Apprentice Smith, Raving Witness and Pakaa Protector reveal the current top card when their Move trigger resolves. Their `revealed_card` record has already completed its reported movement. Smith draws Gear and otherwise recycles; Witness draws Units with printed Might at least five and otherwise recycles; Pakaa draws Units and otherwise trashes the card and gives its surviving source +2 Might this turn. An empty deck creates no reveal record, Draw, burnout or Pakaa bonus. These effects follow actual Move events, not entry, Ready or Recall.
+
+`choose` with `accept:true` acknowledges a public `revealed_card`; false is invalid. No response window is added by this inspection step. The desktop pauses either seat's public reveal for the human to inspect, while private opponent choices remain hidden. Lightning Rush retains its existing `top_three`/`select_cards` protocol and does not reveal its chosen card; its selected Draw now notifies ordinary Draw observers before the other inspected cards are trashed.

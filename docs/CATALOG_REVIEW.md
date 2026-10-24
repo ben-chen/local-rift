@@ -6,13 +6,13 @@ This is a source-data review, dated **October 24, 2026**. It adds no playable ca
 
 The first review covers every group in the catalog's original **37 source-quality issue records**, representing **38 official printings**. Matching official card images corroborate 13 missing-type fallbacks, resolve 23 structured/accessibility type contradictions, and show Might 5 on both printings of Kai'Sa, Rebel. The same images reveal additional domain, tag, and text defects on these records. This is a bounded review of those records, not a complete visual audit of the gallery or a count of every possible source error.
 
-The [resolution manifest](../assets/data/catalog_resolutions.json) now records **120 field resolutions across 75 printings: 93 effective changes and 27 confirmations**. The original 73 entries, 38 raw printings, and all 37 historical issue records remain unchanged. A subsequent variant review adds 25 tag observations, one paired Akali punctuation correction, and six paired Rune-placeholder corrections. Two subsequent artwork discoveries correct Bilgewater Tracker’s domain and tag; one further discovery corrects Momentary Companion’s missing tags. Two more observations correct Stalwart Goatherd’s missing Mount Targon tag and Patched Porobot’s incomplete type. Mournful Spirit’s omitted Shadow Isles tag is also corrected from its exact face. Clocktower Guardian’s domain and region are also corrected from its original face. Of the complete 120 entries, 116 are direct artwork observations; four exclusions of an unprinted Device classification remain explicitly rule-derived. The separate [identity review](VARIANT_REVIEW.md) assesses whole printing groups without rewriting genuine printed text.
+The [resolution manifest](../assets/data/catalog_resolutions.json) now records **122 field resolutions across 77 printings: 95 effective changes and 27 confirmations**. The original 73 entries, 38 raw printings, and all 37 historical issue records remain unchanged. A subsequent variant review adds 25 tag observations, one paired Akali punctuation correction, and six paired Rune-placeholder corrections. Two subsequent artwork discoveries correct Bilgewater Tracker’s domain and tag; one further discovery corrects Momentary Companion’s missing tags. Two more observations correct Stalwart Goatherd’s missing Mount Targon tag and Patched Porobot’s incomplete type. Mournful Spirit’s omitted Shadow Isles tag is also corrected from its exact face. Clocktower Guardian’s domain and region are also corrected from its original face. Trifarian Captain’s missing Noxus/Trifarian tags and Raving Witness’s missing Freljord tag are now corrected from their exact faces. Of the complete 122 entries, 118 are direct artwork observations; four exclusions of an unprinted Device classification remain explicitly rule-derived. The separate [identity review](VARIANT_REVIEW.md) assesses whole printing groups without rewriting genuine printed text.
 
 | Field | Entries | Review |
 | --- | ---: | --- |
 | Types | 37 | 23 contradictory structured types; 13 corroborated accessibility fallbacks; one incomplete dual type |
-| Domains | 17 | Six incorrect nonempty domains, including Tracker; 11 missing domains |
-| Tags | 44 | Original 15 entries; 16 further missing-tag corrections and 13 confirmations |
+| Domains | 18 | Seven incorrect nonempty domains, including Tracker and Clocktower Guardian; 11 missing domains |
+| Tags | 47 | Original 15 entries; 19 further tag corrections and 13 confirmations |
 | Rules HTML | 9 | Activation glyph, stray suffix, duplicate Akali period, six Rune placeholders |
 | Readable rules | 9 | The same nine corrections in readable text |
 | Might | 2 | Numbered Kai'Sa 5 confirmed; showcase 4 corrected to 5 |
@@ -29,7 +29,7 @@ Each resolution pins its exact official printing ID, field, typed raw value, ori
 
 ## Evidence retained in the repository
 
-- [Field-resolution image index](../assets/data/catalog_evidence/images.json): 75 original Riot CDN images, 71,114,922 bytes in total, with exact URLs, file sizes, and SHA-256 values. The separate [variant image index](../assets/data/catalog_evidence/variant_images.json) covers all 90 members of 29 complete identity reviews. The indexes share 31 files; together they reference 134 distinct originals. These unchanged evidence files are separate from the smaller artwork embedded in the game. Riftbound and this artwork belong to Riot Games; the project is unaffiliated.
+- [Field-resolution image index](../assets/data/catalog_evidence/images.json): 77 original Riot CDN images, 72,709,298 bytes in total, with exact URLs, file sizes, and SHA-256 values. The separate [variant image index](../assets/data/catalog_evidence/variant_images.json) covers all 90 members of 29 complete identity reviews. The indexes share 31 files; together they reference 136 distinct originals. These unchanged evidence files are separate from the smaller artwork embedded in the game. Riftbound and this artwork belong to Riot Games; the project is unaffiliated.
 - [Immutable origin gallery](../assets/data/catalog_evidence/pages/97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9.html.gz): the original gzip bytes. Its decompressed SHA-256 is `97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9`. The importer independently reparses this origin rather than trusting a copied prerequisite in the manifest.
 - [October 9 Core Rules PDF](../assets/data/catalog_evidence/rules/94d41fee86f88b61c4157c0389c0595d990b98e5b42555c99d9f649ee64d1fec.pdf): unchanged official bytes with SHA-256 `94d41fee86f88b61c4157c0389c0595d990b98e5b42555c99d9f649ee64d1fec`. [Official PDF URL](https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/5c7946f7c3b8c6e0faff85ab6dadc6d2e721ea94.pdf).
 
@@ -37,7 +37,7 @@ Every artwork observation matched the printed name and collector number before r
 
 ## Reviewed corrections
 
-The table below retains the original 73 manifest entries; the later 45 entries are summarized after it. A type shown as ∅ means the structured type was absent; the current accessibility-derived type is corroborated. Every image link points to the exact bytes used for review. Complete raw/effective strings and hash prerequisites are in the manifest.
+The table below retains the original 73 manifest entries; the later 49 entries are summarized after it. A type shown as ∅ means the structured type was absent; the current accessibility-derived type is corroborated. Every image link points to the exact bytes used for review. Complete raw/effective strings and hash prerequisites are in the manifest.
 
 | Official printing | Card | Reviewed values | Evidence |
 | --- | --- | --- | --- |
@@ -149,3 +149,10 @@ The [review proof](../assets/data/catalog_evidence/reviews/mournful-spirit.json)
 ### Clocktower Guardian: exact-face domain and tag correction
 
 The official RAD-067/167 face prints Mind Power and the Shurima tag; its gallery metadata instead says Fury and Mech. The two new reviewed entries preserve that raw record, its immutable origin and both incorrect raw fields, then correct only the effective domain and tag. The [review proof](../assets/data/catalog_evidence/reviews/clocktower-guardian.json) records the full face observations and exact image bytes/hash. The original Deathknell wording remains separate from the gallery’s textual `[>]` separator. At the source-only checkpoint the card is unavailable and the 384 / 411 / 668 gameplay totals are unchanged. All earlier source-review cohorts are pinned without rewriting their history.
+
+
+## Trifarian Captain and Raving Witness tag corrections
+
+The C20 review checks the complete [RAD-129/167 Captain face](../assets/data/catalog_evidence/images/rad-129-167.png) and [RAD-074/167 Witness face](../assets/data/catalog_evidence/images/rad-074-167.png). Captain prints **Noxus / Trifarian**; Witness prints **Freljord**. Both raw gallery tag arrays are empty and remain preserved. Their reviewed effective tag sets now match the printed type lines. No domain, statistic, type, text or other card changes in this source correction.
+
+The [separate review proof](../assets/data/catalog_evidence/reviews/c20-tags.json) pins original bytes, source URLs, hashes, visual observations and all preceding 120 field resolutions / 75 reviewed printings / 45 historical issue groups. Regeneration before admission retained 389 main cards / 416 mapped identities / 663 unavailable. The full source cohort is now 122 / 77 / 47; complete alternate-printing reviews remain 29 identities / 90 printings. The later [C20 gameplay admission](../assets/data/card_admissions/c20/README.md) is a separate step with executable mechanics and tests.

@@ -1,0 +1,291 @@
+{
+  "schema_version": 1,
+  "reviewed_on": "2026-10-24",
+  "enables_runtime_support": false,
+  "scope": "Two exact original faces establish omitted printed tags; raw gallery records and old review cohorts remain unchanged. Source review alone admits no card.",
+  "origin_gallery": {
+    "url": "https://playriftbound.com/en-us/card-gallery/",
+    "archive": "assets/data/catalog_evidence/pages/97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9.html.gz",
+    "sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+    "uncompressed_bytes": 3986973
+  },
+  "preserved_source_cohorts": {
+    "resolutions": {
+      "count": 120,
+      "canonical_sha256": "09a8e5a40da3bf0016d5a2b9f5f8dc31213d4d6641608a1b9704c4fa319db8c4"
+    },
+    "raw_printings": {
+      "count": 75,
+      "canonical_sha256": "e0f8bc7fc0f5d513f9f361596e7d7472e4e63900bbf67f6de1664cdccf855cc3"
+    },
+    "historical_issues": {
+      "count": 45,
+      "canonical_sha256": "5016c1d2afa72e7c82ca2634689d1cbcc12e993f4996e91ea3371b2c5fcfde3e"
+    }
+  },
+  "preserved_field_image_index": {
+    "count": 75,
+    "canonical_sha256": "1bd536ff0843cf750c7802f6884b89bb3e41bce4dff88c005acdccf314134890"
+  },
+  "preserved_variant_review": {
+    "identities": 29,
+    "printings": 90,
+    "manifest_sha256": "e678c7f2f2e1ae70fb6b399ce1b0ab88a314e9018810d1ccadb1759a1f7b5e12",
+    "image_index_sha256": "1826db0a53cbe62eb1a1196d08df1cbef215b9d9e24cc006689559bbc7693b92"
+  },
+  "preserved_runtime": {
+    "card_count": 389,
+    "cards_sha256": "6927a4ab27ab621dbd74f34edbe9d781dda86b10b7cc8c0714f4f7a9161d1be1",
+    "presets_sha256": "d6e64ebf3f8921686682dacd87d4b2b4baec5754dbd284c6d60bf3fb324571e2",
+    "legends_manifest_sha256": "a31bb93c27588bd4759985e9a4083372d5afae59d22b9ac9d48c54946e5474fe",
+    "training_recipe_source_sha256": "dc498f4f98cec6421dade7e01ead261693ed5f70d30d4d2c808da4a1bcb5b706"
+  },
+  "records": [
+    {
+      "official_id": "rad-129-167",
+      "name": "Trifarian Captain",
+      "raw_printing": {
+        "official_id": "rad-129-167",
+        "public_code": "RAD-129/167",
+        "name": "Trifarian Captain",
+        "set": "RAD",
+        "collector_number": 129,
+        "types": [
+          "unit"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "unit"
+        ],
+        "accessibility_types": [
+          "unit"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "order"
+        ],
+        "energy": 2,
+        "power": null,
+        "might": 1,
+        "might_bonus": null,
+        "rules_html": "<p>When you play me, look at the top 4 cards of your Main Deck. You may reveal from among them a unit or gear with Energy cost no more than :rb_energy_3: and with Power cost no more than :rb_rune_rainbow: and draw it. Recycle the rest.</p>",
+        "rules_text": "When you play me, look at the top 4 cards of your Main Deck. You may reveal from among them a unit or gear with Energy cost no more than [3 Energy] and with Power cost no more than [Any Power] and draw it. Recycle the rest.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [],
+        "rarity": "uncommon",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/914ced10400826a878ed5cf7294207a4e7b542b1-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Unit: Trifarian Captain. When you play me, look at the top 4 cards of your Main Deck. You may reveal from among them a unit or gear with Energy cost no more than [3] and with Power cost no more than [A] and draw it. Recycle the rest.",
+        "illustrators": [
+          "Six More Vodka"
+        ]
+      },
+      "raw_printing_sha256": "60f78e5af8ae989d65e11dad2117b763d4da41b350625176cb40f6a7c1d37dc6",
+      "effective_before": {
+        "types": [
+          "unit"
+        ],
+        "super_types": [],
+        "domains": [
+          "order"
+        ],
+        "energy": 2,
+        "power": null,
+        "might": 1,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>When you play me, look at the top 4 cards of your Main Deck. You may reveal from among them a unit or gear with Energy cost no more than :rb_energy_3: and with Power cost no more than :rb_rune_rainbow: and draw it. Recycle the rest.</p>",
+        "rules_text": "When you play me, look at the top 4 cards of your Main Deck. You may reveal from among them a unit or gear with Energy cost no more than [3 Energy] and with Power cost no more than [Any Power] and draw it. Recycle the rest.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "effective_after": {
+        "types": [
+          "unit"
+        ],
+        "super_types": [],
+        "domains": [
+          "order"
+        ],
+        "energy": 2,
+        "power": null,
+        "might": 1,
+        "might_bonus": null,
+        "tags": [
+          "Noxus",
+          "Trifarian"
+        ],
+        "rules_html": "<p>When you play me, look at the top 4 cards of your Main Deck. You may reveal from among them a unit or gear with Energy cost no more than :rb_energy_3: and with Power cost no more than :rb_rune_rainbow: and draw it. Recycle the rest.</p>",
+        "rules_text": "When you play me, look at the top 4 cards of your Main Deck. You may reveal from among them a unit or gear with Energy cost no more than [3 Energy] and with Power cost no more than [Any Power] and draw it. Recycle the rest.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "original_image": {
+        "official_id": "rad-129-167",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/914ced10400826a878ed5cf7294207a4e7b542b1-744x1039.png?accountingTag=RB",
+        "path": "assets/data/catalog_evidence/images/rad-129-167.png",
+        "sha256": "6965e01684626f32de65ca732995acf11ee8a5a47977baa7026bd9b9d72e63c0",
+        "bytes": 775913
+      },
+      "visual_observation": {
+        "face_visually_inspected": true,
+        "independently_reinspected_on": "2026-10-24",
+        "official_id": "rad-129-167",
+        "name": "Trifarian Captain",
+        "collector_code": "RAD-129/167",
+        "original_image_sha256": "6965e01684626f32de65ca732995acf11ee8a5a47977baa7026bd9b9d72e63c0",
+        "printed_type_tag_line": "UNIT / NOXUS / TRIFARIAN",
+        "printed_types": [
+          "unit"
+        ],
+        "printed_supertypes": [],
+        "printed_domains": [
+          "order"
+        ],
+        "printed_energy": 2,
+        "printed_power": null,
+        "printed_might": 1,
+        "printed_might_bonus": null,
+        "printed_tags": [
+          "Noxus",
+          "Trifarian"
+        ],
+        "printed_rules_icons_expanded": "When you play me, look at the top 4 cards of your Main Deck. You may reveal from among them a unit or gear with Energy cost no more than [3 Energy] and with Power cost no more than [Any Power] and draw it. Recycle the rest.",
+        "printed_equipment_icons_expanded": "",
+        "uncertainties": []
+      },
+      "resolution_ids": [
+        "rad-129-167:tags"
+      ]
+    },
+    {
+      "official_id": "rad-074-167",
+      "name": "Raving Witness",
+      "raw_printing": {
+        "official_id": "rad-074-167",
+        "public_code": "RAD-074/167",
+        "name": "Raving Witness",
+        "set": "RAD",
+        "collector_number": 74,
+        "types": [
+          "unit"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "unit"
+        ],
+        "accessibility_types": [
+          "unit"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "body"
+        ],
+        "energy": 3,
+        "power": null,
+        "might": 3,
+        "might_bonus": null,
+        "rules_html": "<p>When I move, reveal the top card of your Main Deck. If it's [Mighty], draw it. Otherwise, recycle it. (A unit is Mighty while it has 5+ :rb_might:.)</p>",
+        "rules_text": "When I move, reveal the top card of your Main Deck. If it's [Mighty], draw it. Otherwise, recycle it. (A unit is Mighty while it has 5+ Might.)",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [],
+        "rarity": "common",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/778e70b353d7f28eae9b54b1a37af3853238ba04-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Unit: Raving Witness. When I move, reveal the top card of your Main Deck. If it's [Mighty], draw it. Otherwise, recycle it. (A unit is Mighty while it has 5+ [S].)",
+        "illustrators": [
+          "Six More Vodka"
+        ]
+      },
+      "raw_printing_sha256": "8392220539ccd517ddc5eeaca1bc976e5416af6d4a035793c0fb6966938a594b",
+      "effective_before": {
+        "types": [
+          "unit"
+        ],
+        "super_types": [],
+        "domains": [
+          "body"
+        ],
+        "energy": 3,
+        "power": null,
+        "might": 3,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>When I move, reveal the top card of your Main Deck. If it's [Mighty], draw it. Otherwise, recycle it. (A unit is Mighty while it has 5+ :rb_might:.)</p>",
+        "rules_text": "When I move, reveal the top card of your Main Deck. If it's [Mighty], draw it. Otherwise, recycle it. (A unit is Mighty while it has 5+ Might.)",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "effective_after": {
+        "types": [
+          "unit"
+        ],
+        "super_types": [],
+        "domains": [
+          "body"
+        ],
+        "energy": 3,
+        "power": null,
+        "might": 3,
+        "might_bonus": null,
+        "tags": [
+          "Freljord"
+        ],
+        "rules_html": "<p>When I move, reveal the top card of your Main Deck. If it's [Mighty], draw it. Otherwise, recycle it. (A unit is Mighty while it has 5+ :rb_might:.)</p>",
+        "rules_text": "When I move, reveal the top card of your Main Deck. If it's [Mighty], draw it. Otherwise, recycle it. (A unit is Mighty while it has 5+ Might.)",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "original_image": {
+        "official_id": "rad-074-167",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/778e70b353d7f28eae9b54b1a37af3853238ba04-744x1039.png?accountingTag=RB",
+        "path": "assets/data/catalog_evidence/images/rad-074-167.png",
+        "sha256": "154a6e8a93a6496123fc26e4fdfeba40c843e8c5ccfb7b47db5ffc7babfeb624",
+        "bytes": 818463
+      },
+      "visual_observation": {
+        "face_visually_inspected": true,
+        "independently_reinspected_on": "2026-10-24",
+        "official_id": "rad-074-167",
+        "name": "Raving Witness",
+        "collector_code": "RAD-074/167",
+        "original_image_sha256": "154a6e8a93a6496123fc26e4fdfeba40c843e8c5ccfb7b47db5ffc7babfeb624",
+        "printed_type_tag_line": "UNIT / FRELJORD",
+        "printed_types": [
+          "unit"
+        ],
+        "printed_supertypes": [],
+        "printed_domains": [
+          "body"
+        ],
+        "printed_energy": 3,
+        "printed_power": null,
+        "printed_might": 3,
+        "printed_might_bonus": null,
+        "printed_tags": [
+          "Freljord"
+        ],
+        "printed_rules_icons_expanded": "When I move, reveal the top card of your Main Deck. If it's [Mighty], draw it. Otherwise, recycle it. (A unit is Mighty while it has 5+ Might.)",
+        "printed_equipment_icons_expanded": "",
+        "uncertainties": []
+      },
+      "resolution_ids": [
+        "rad-074-167:tags"
+      ]
+    }
+  ],
+  "source_only_check": {
+    "main_cards": 389,
+    "mapped_legal": 416,
+    "remaining_legal": 663,
+    "changed_printings": [
+      "rad-074-167",
+      "rad-129-167"
+    ],
+    "field_resolutions": 122,
+    "reviewed_printings": 77,
+    "historical_issues": 47
+  }
+}

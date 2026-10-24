@@ -2,6 +2,7 @@ mod ability_ui;
 mod companion;
 mod deck_editor;
 mod deck_look_ui;
+mod draw_look_ui;
 mod play_ui;
 mod predict_ui;
 use companion::{AdviceLevel, Companion, draw_mote};
@@ -224,6 +225,7 @@ struct App {
     choices: Vec<usize>,
     predict_draft: Option<predict_ui::PredictDraft>,
     deck_look_draft: Option<deck_look_ui::DeckLookDraft>,
+    draw_look_draft: Option<draw_look_ui::DrawLookDraft>,
     options: PlayOptions,
     play_draft: Option<play_ui::PlayDraft>,
     cost_editor: Option<play_ui::CostEditor>,
@@ -395,6 +397,7 @@ impl App {
             choices: Vec::new(),
             predict_draft: None,
             deck_look_draft: None,
+            draw_look_draft: None,
             options: PlayOptions::default(),
             play_draft: None,
             cost_editor: None,
@@ -464,6 +467,7 @@ impl App {
         self.game = game;
         self.predict_draft = None;
         self.deck_look_draft = None;
+        self.draw_look_draft = None;
         self.play_draft = None;
         self.cost_editor = None;
         self.drag = None;
@@ -725,7 +729,7 @@ impl App {
                 && self.game.phase == Phase::Playing
                 && self.game.priority() == 1
                 // Public reveals wait for the viewer's mandatory acknowledgement.
-                && !matches!(self.game.decision, Some(Decision::RevealedDeck { .. }))
+                && !matches!(self.game.decision, Some(Decision::RevealedDeck { .. } | Decision::RevealedCard { .. }))
                 && self.drag.is_none()
                 && get_time() > self.next_ai
             {
@@ -750,6 +754,9 @@ impl App {
                 self.selection = None;
                 self.reset_predict_draft();
                 if let Some(draft) = &mut self.deck_look_draft {
+                    draft.selection = None;
+                }
+                if let Some(draft) = &mut self.draw_look_draft {
                     draft.selection = None;
                 }
             }
@@ -837,6 +844,7 @@ impl App {
         self.game.validate_numeric_state()?;
         self.sync_predict_draft();
         self.sync_deck_look_draft();
+        self.sync_draw_look_draft();
         self.sync_token_draft();
         self.sync_play_draft()?;
         let trigger_key = self
@@ -1415,6 +1423,7 @@ impl App {
                         if token {
                             self.notify(token_rules(card_id));
                         } else {
+                            self.hover_object = Some((owner, *id));
                             self.inspect = Some(card_id);
                         }
                     }
@@ -2044,6 +2053,7 @@ impl App {
                 self.hover_object_candidate = Some((1, unit.id));
             }
             if self.ui.hover(card_face) && self.ui.secondary_pressed() {
+                self.hover_object = Some((1, unit.id));
                 self.inspect = Some(unit.card_id);
             }
         }
@@ -2056,6 +2066,14 @@ impl App {
             return Ok(());
         };
         match decision {
+            Decision::DrawLook { player: 0, .. } => {
+                self.draw_look_panel();
+                return Ok(());
+            }
+            Decision::RevealedCard { .. } => {
+                self.revealed_card_panel();
+                return Ok(());
+            }
             Decision::DeckLookPlay { player: 0, .. } => {
                 self.deck_look_panel();
                 return Ok(());
@@ -2423,7 +2441,7 @@ impl App {
         }
         let (title,body)=match &decision{
             Decision::BanishPlay{card_id,..}=>("Play from Banish",format!("Play {} now? Base energy is waived; power and extra costs still apply. Declining leaves it in Banish.",self.game.catalog[*card_id].name)),
-            Decision::DeckLookPlay{..}|Decision::RevealedDeck{..}|Decision::EmpowerPlayed{..}|Decision::PredictCards{..}|Decision::Payment{..}|Decision::ResourceConversion{..}|Decision::TriggerTargets{..}|Decision::LegendTargets{..}|Decision::CombatDamage{..}|Decision::TokenPlacement{..}|Decision::TokenPlay{..}|Decision::BattlefieldOrder{..}|Decision::RevivePlay{..}|Decision::PendingPlay{..}=>unreachable!(),
+            Decision::DrawLook{..}|Decision::RevealedCard{..}|Decision::DeckLookPlay{..}|Decision::RevealedDeck{..}|Decision::EmpowerPlayed{..}|Decision::PredictCards{..}|Decision::Payment{..}|Decision::ResourceConversion{..}|Decision::TriggerTargets{..}|Decision::LegendTargets{..}|Decision::CombatDamage{..}|Decision::TokenPlacement{..}|Decision::TokenPlay{..}|Decision::BattlefieldOrder{..}|Decision::RevivePlay{..}|Decision::PendingPlay{..}=>unreachable!(),
             Decision::TrashTarget{..}=>("Choose a trash target","Choose an eligible card below before this ability enters the chain. Opponents may respond before the chosen card is played.".into()),
             Decision::OptionalPlay{card_id,..}=>("Use this triggered ability?",format!("{} offers a play from your trash. Accept and choose the ability's target, or decline now. Choose the card's own targets and costs after the ability resolves.",self.game.catalog[*card_id].name)),
             Decision::ResolutionTargets{..}=>("Choose the location", "Responses separated your targets. Choose which legal group below this spell should affect.".into()),
@@ -2886,6 +2904,7 @@ impl App {
                 }
             }
             if self.ui.hover(r) && self.ui.secondary_pressed() && !unit.token {
+                self.hover_object = Some((*owner, unit.id));
                 self.inspect = Some(unit.card_id);
             }
             let gear_hovered = self.gear_badges(Rect::new(r.x, r.y, r.w, 112.0), *owner, unit.id);
@@ -3085,7 +3104,7 @@ impl App {
                     self.hover_candidate = Some(id);
                 }
                 if self.ui.hover(r) && self.ui.secondary_pressed() {
-                    self.inspect = Some(id);
+                    self.inspect_printed_card(id);
                 }
             }
             let gears = self.game.players[owner].gear.clone();
@@ -3281,7 +3300,7 @@ impl App {
                 let r = self.tile(*id, slot, self.game.catalog[*id].name, chosen);
                 if self.ui.clicked(r) {
                     if owner == 1 || self.banish_view {
-                        self.inspect = Some(*id);
+                        self.inspect_printed_card(*id);
                     } else if matches!(self.selection, Some(Selection::Gear(_))) {
                         if let Some(i) = self.choices.iter().position(|x| *x == index) {
                             self.choices.remove(i);
@@ -3301,7 +3320,7 @@ impl App {
                     self.hover_candidate = Some(*id);
                 }
                 if self.ui.hover(r) && self.ui.secondary_pressed() {
-                    self.inspect = Some(*id);
+                    self.inspect_printed_card(*id);
                 }
             }
             self.tray_scroll(cards.len(), 6);
@@ -3369,7 +3388,7 @@ impl App {
                     self.hover_candidate = Some(card_id);
                 }
                 if self.ui.hover(r) && self.ui.secondary_pressed() {
-                    self.inspect = Some(card_id);
+                    self.inspect_printed_card(card_id);
                 }
                 return Ok(true);
             }
@@ -3547,7 +3566,7 @@ impl App {
             if self.ui.hover(r) {
                 self.hover_candidate = Some(card_id);
                 if self.ui.secondary_pressed() {
-                    self.inspect = Some(card_id);
+                    self.inspect_printed_card(card_id);
                 }
             }
             return Ok(true);
@@ -3567,7 +3586,7 @@ impl App {
             if self.ui.hover(r) {
                 self.hover_candidate = Some(card_id);
                 if self.ui.secondary_pressed() {
-                    self.inspect = Some(card_id);
+                    self.inspect_printed_card(card_id);
                 }
             }
             return Ok(true);
@@ -3600,7 +3619,7 @@ impl App {
                 if self.ui.hover(r) {
                     self.hover_candidate = Some(*card_id);
                     if self.ui.secondary_pressed() {
-                        self.inspect = Some(*card_id);
+                        self.inspect_printed_card(*card_id);
                     }
                 }
             }
@@ -3667,7 +3686,7 @@ impl App {
                 if self.ui.hover(r) {
                     self.hover_candidate = Some(*id);
                     if self.ui.secondary_pressed() {
-                        self.inspect = Some(*id);
+                        self.inspect_printed_card(*id);
                     }
                 }
             }
@@ -3710,7 +3729,7 @@ impl App {
             );
             if self.ui.clicked(r) {
                 match decision {
-                    Decision::RevealHand { .. } => self.inspect = Some(*id),
+                    Decision::RevealHand { .. } => self.inspect_printed_card(*id),
                     Decision::Discard { count, .. } => {
                         if let Some(i) = self.choices.iter().position(|x| *x == index) {
                             self.choices.remove(i);
@@ -3738,7 +3757,7 @@ impl App {
                 self.hover_candidate = Some(*id);
             }
             if self.ui.hover(r) && self.ui.secondary_pressed() {
-                self.inspect = Some(*id);
+                self.inspect_printed_card(*id);
             }
         }
         self.tray_scroll(cards.len(), 6);
@@ -5715,6 +5734,8 @@ impl App {
                     Err(e) => self.notify(e),
                 }
             }
+        } else if matches!(self.game.decision, Some(Decision::RevealedCard { .. })) {
+            self.revealed_card_panel();
         } else if matches!(self.game.decision, Some(Decision::RevealedDeck { .. })) {
             self.revealed_deck_panel();
         } else if self.game.priority() == 1 && self.game.winner.is_none() {
@@ -6932,7 +6953,7 @@ impl App {
                 self.ui.pill(x + 25.0, y + 55.0, "REPLACE", GOLD);
             }
             if self.ui.hover(r) && self.ui.secondary_pressed() {
-                self.inspect = Some(id);
+                self.inspect_printed_card(id);
             }
             if self.ui.clicked(r) && active {
                 if self.game.phase == Phase::Mulligan {
@@ -6971,7 +6992,11 @@ impl App {
                     "A resource choice is waiting."
                 } else if matches!(
                     self.game.decision,
-                    Some(Decision::EmpowerPlayed { .. } | Decision::DeckLookPlay { .. })
+                    Some(
+                        Decision::EmpowerPlayed { .. }
+                            | Decision::DeckLookPlay { .. }
+                            | Decision::DrawLook { .. }
+                    )
                 ) {
                     "A choice is waiting."
                 } else if self.game.in_window() {
@@ -6993,7 +7018,7 @@ impl App {
                     "Your opponent is choosing resources. Play continues when the payment is finished."
                 } else if matches!(self.game.decision, Some(Decision::EmpowerPlayed { player:0, .. })) {
                     "Accept or decline the Empower offer on the right before responses begin."
-                } else if matches!(self.game.decision, Some(Decision::DeckLookPlay { .. } | Decision::EmpowerPlayed { .. })) {
+                } else if matches!(self.game.decision, Some(Decision::DeckLookPlay { .. } | Decision::EmpowerPlayed { .. } | Decision::DrawLook { .. })) {
                     "Your opponent is making a choice. You can inspect the public board while waiting."
                 } else if self.game.in_window() && self.game.priority() == 0 {
                     "Use an available response, or pass priority when you're ready."
@@ -7190,7 +7215,7 @@ impl App {
                 self.hover_candidate = Some(*id);
             }
             if self.ui.clicked(r) {
-                self.inspect = Some(*id);
+                self.inspect_printed_card(*id);
             }
         }
         let max = list.len().saturating_sub(14);
@@ -7365,6 +7390,12 @@ impl App {
         self.ui
             .text("LOCAL RIFT  /  0.1.0", 271.0, 818.0, 10.0, MUTED);
     }
+    /// A printed copy in a hand, deck, trash, or reveal is not a live board object.
+    fn inspect_printed_card(&mut self, id: usize) {
+        self.hover_object = None;
+        self.inspect = Some(id);
+    }
+
     fn inspector(&mut self, id: usize) {
         self.ui.rect(
             Rect::new(0.0, 0.0, 1440.0, 900.0),

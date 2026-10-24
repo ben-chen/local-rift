@@ -168,6 +168,21 @@ fn fingerprint(game: &Game) -> u64 {
                 killed_might.hash(&mut hash);
             }
         }
+        Some(Decision::DrawLook {
+            player,
+            choice_id,
+            source_card_id,
+            cards,
+            eligible,
+            kind,
+        }) => {
+            (7_u8, *player, *choice_id, *source_card_id).hash(&mut hash);
+            format!("{kind:?}").hash(&mut hash);
+            if *player == 0 {
+                cards.hash(&mut hash);
+                eligible.hash(&mut hash);
+            }
+        }
         Some(Decision::CounterTax {
             player,
             chain_id,
@@ -739,7 +754,12 @@ fn response_window_advice(
     beginner: bool,
 ) -> Result<Option<Vec<&'static str>>, String> {
     if let Some(decision) = &game.decision {
-        if decision.player() != 0 && !matches!(decision, Decision::RevealedDeck { .. }) {
+        if decision.player() != 0
+            && !matches!(
+                decision,
+                Decision::RevealedDeck { .. } | Decision::RevealedCard { .. }
+            )
+        {
             return Ok(Some(vec![
                 "Your opponent is making a choice. I'll watch the public board while we wait, then help when priority returns.",
                 "Use this pause to identify the unit or spell that matters most to the next point. A response is useful when it changes that outcome.",
@@ -757,6 +777,42 @@ fn response_window_advice(
             }
         }
         return Ok(Some(match decision {
+            Decision::DrawLook { kind, .. } => vec![
+                if beginner {
+                    "Only you see this look. Choose a copy, then confirm to reveal and draw it; you may instead recycle all. Clicking alone changes nothing."
+                } else {
+                    "Choose for your next turn, not just printed cost. The selected copy becomes a real draw; the other looked cards recycle in random order."
+                },
+                match kind {
+                    local_rift::game::DrawLookKind::DoubleTrouble => {
+                        "Double Trouble finds a unit. Drawing adds it to your hand; it does not play the unit or waive its later play costs."
+                    }
+                    local_rift::game::DrawLookKind::FateWeaver => {
+                        "Fate Weaver checks a spell's printed Energy cost: at least 4. Discounts and available energy do not change this eligibility."
+                    }
+                    local_rift::game::DrawLookKind::TrifarianCaptain => {
+                        "Captain checks both printed costs: at most 3 Energy AND 1 Power, on a unit or gear. Meeting only one limit is not enough."
+                    }
+                },
+            ],
+            Decision::RevealedCard { outcome, .. } => vec![
+                match outcome {
+                    local_rift::game::RevealOutcome::Draw => {
+                        "This card was publicly revealed and already drawn. Inspect it, then Continue; acknowledgement does not draw a second card."
+                    }
+                    local_rift::game::RevealOutcome::Recycle => {
+                        "This card was publicly revealed and already recycled. Continue acknowledges the result; it does not move or draw the card again."
+                    }
+                    local_rift::game::RevealOutcome::Trash => {
+                        "This card was publicly revealed and already trashed. Pakaa gets +2 this turn only if it remains on the board; inspect its current Might."
+                    }
+                },
+                if beginner {
+                    "A reveal is public information. You may inspect the card before continuing, including when your opponent made the reveal."
+                } else {
+                    "Use the revealed result to update your plan, but do not assume it reveals any other cards in that player's hand or deck."
+                },
+            ],
             Decision::DeckLookPlay { kind, .. } => vec![
                 if beginner {
                     "Only you see this deck look. Choose a highlighted card, then confirm; or choose Recycle all. Clicking a card alone changes nothing."
@@ -1990,6 +2046,67 @@ mod tests {
                         .all(|tip| tip.chars().count() <= 180),
                     "{kind:?}"
                 );
+            }
+        }
+    }
+
+    #[test]
+    fn draw_look_advice_preserves_private_occurrences_and_cost_rules() {
+        let mut first = game();
+        first.start_match().unwrap();
+        first.decision = Some(Decision::DrawLook {
+            player: 1,
+            choice_id: 97,
+            source_card_id: 391,
+            cards: vec![70, 133, 70],
+            eligible: vec![0, 2],
+            kind: local_rift::game::DrawLookKind::TrifarianCaptain,
+        });
+        let mut second = first.clone();
+        if let Some(Decision::DrawLook {
+            cards, eligible, ..
+        }) = &mut second.decision
+        {
+            *cards = vec![10, 96, 145];
+            *eligible = vec![1];
+        }
+        assert_eq!(fingerprint(&first), fingerprint(&second));
+        for level in [AdviceLevel::Beginner, AdviceLevel::Advanced] {
+            assert_eq!(advice(&first, level), advice(&second, level));
+        }
+        if let Some(Decision::DrawLook { player, .. }) = &mut first.decision {
+            *player = 0;
+        }
+        let tips = advice(&first, AdviceLevel::Beginner);
+        assert!(tips[0].contains("Only you"));
+        assert!(tips[1].contains("AND 1 Power"));
+        assert!(tips.iter().all(|tip| tip.chars().count() <= 180));
+    }
+
+    #[test]
+    fn public_reveal_advice_is_available_for_both_seats_and_describes_completed_result() {
+        for player in 0..2 {
+            for outcome in [
+                local_rift::game::RevealOutcome::Draw,
+                local_rift::game::RevealOutcome::Recycle,
+                local_rift::game::RevealOutcome::Trash,
+            ] {
+                let mut g = game();
+                g.start_match().unwrap();
+                g.decision = Some(Decision::RevealedCard {
+                    player,
+                    source_card_id: 394,
+                    card_id: 133,
+                    outcome,
+                });
+                for level in [AdviceLevel::Beginner, AdviceLevel::Advanced] {
+                    let tips = advice(&g, level);
+                    assert!(tips[0].contains("already"));
+                    if outcome == local_rift::game::RevealOutcome::Trash {
+                        assert!(tips[0].contains("only if it remains"));
+                    }
+                    assert!(tips.iter().all(|tip| tip.chars().count() <= 180));
+                }
             }
         }
     }

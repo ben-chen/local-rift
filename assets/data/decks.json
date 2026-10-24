@@ -9977,6 +9977,148 @@
       "might_bonus": null,
       "keywords": [],
       "tags": []
+    },
+    {
+      "id": 389,
+      "name": "Double Trouble",
+      "official_id": "unl-032-219",
+      "energy": 2,
+      "power": 0,
+      "might": 0,
+      "domains": [
+        "Calm"
+      ],
+      "kind": "Spell",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/64e977213f50471ad7b6e8664488fb9017693f71-744x1039.png?w=320&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Repeat] [2 Energy] (You may pay the additional cost to repeat this spell's effect.)\nLook at the top 3 cards of your Main Deck. You may reveal a unit from among them and draw it. Recycle the rest.",
+      "official_text_html": "<p>[Repeat] :rb_energy_2: (You may pay the additional cost to repeat this spell's effect.)<br />Look at the top 3 cards of your Main Deck. You may reveal a unit from among them and draw it. Recycle the rest.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Repeat"
+      ],
+      "tags": []
+    },
+    {
+      "id": 390,
+      "name": "Fate Weaver",
+      "official_id": "unl-064-219",
+      "energy": 5,
+      "power": 0,
+      "might": 4,
+      "domains": [
+        "Mind"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/ab713d332b48a7526585b0be3718fea9e9f93622-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "When you play me, look at the top 4 cards of your Main Deck. You may reveal a spell with Energy cost [4 Energy] or more from among them and draw it. Recycle the rest.",
+      "official_text_html": "<p>When you play me, look at the top 4 cards of your Main Deck. You may reveal a spell with Energy cost :rb_energy_4: or more from among them and draw it. Recycle the rest.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": [
+        "Ionia"
+      ]
+    },
+    {
+      "id": 391,
+      "name": "Trifarian Captain",
+      "official_id": "rad-129-167",
+      "energy": 2,
+      "power": 0,
+      "might": 1,
+      "domains": [
+        "Order"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/914ced10400826a878ed5cf7294207a4e7b542b1-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "When you play me, look at the top 4 cards of your Main Deck. You may reveal from among them a unit or gear with Energy cost no more than [3 Energy] and with Power cost no more than [Any Power] and draw it. Recycle the rest.",
+      "official_text_html": "<p>When you play me, look at the top 4 cards of your Main Deck. You may reveal from among them a unit or gear with Energy cost no more than :rb_energy_3: and with Power cost no more than :rb_rune_rainbow: and draw it. Recycle the rest.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": [
+        "Noxus",
+        "Trifarian"
+      ]
+    },
+    {
+      "id": 392,
+      "name": "Apprentice Smith",
+      "official_id": "sfd-041-221",
+      "energy": 2,
+      "power": 0,
+      "might": 2,
+      "domains": [
+        "Calm"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/3998c6171ddc7a021560d9d9600c8eced9a8d628-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "When I move, reveal the top card of your Main Deck. If it's a gear, draw it. Otherwise, recycle it.",
+      "official_text_html": "<p>When I move, reveal the top card of your Main Deck. If it's a gear, draw it. Otherwise, recycle it.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": [
+        "Freljord"
+      ]
+    },
+    {
+      "id": 393,
+      "name": "Raving Witness",
+      "official_id": "rad-074-167",
+      "energy": 3,
+      "power": 0,
+      "might": 3,
+      "domains": [
+        "Body"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/778e70b353d7f28eae9b54b1a37af3853238ba04-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "When I move, reveal the top card of your Main Deck. If it's [Mighty], draw it. Otherwise, recycle it. (A unit is Mighty while it has 5+ Might.)",
+      "official_text_html": "<p>When I move, reveal the top card of your Main Deck. If it's [Mighty], draw it. Otherwise, recycle it. (A unit is Mighty while it has 5+ :rb_might:.)</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Mighty"
+      ],
+      "tags": [
+        "Freljord"
+      ]
+    },
+    {
+      "id": 394,
+      "name": "Pakaa Protector",
+      "official_id": "ven-033-166",
+      "energy": 5,
+      "power": 0,
+      "might": 4,
+      "domains": [
+        "Calm"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/ab3be32adadb72831c07750d8defc7918fd32d96-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "When I move, reveal the top card of your Main Deck. If it's a unit, draw it. Otherwise, put it in your trash and give me +2 Might this turn.",
+      "official_text_html": "<p>When I move, reveal the top card of your Main Deck. If it's a unit, draw it. Otherwise, put it in your trash and give me +2 :rb_might: this turn.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": [
+        "Cat",
+        "Shurima"
+      ]
     }
   ],
   "official_text_note": "Official card/legend rules text from the Riot Card Gallery, retrieved 2026-10-24 and corrected by cited errata. Resource icon tokens are expanded to readable bracketed names. Raw card and equipment HTML is preserved separately. Official text does not establish full implementation fidelity."

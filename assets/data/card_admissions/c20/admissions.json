@@ -1,0 +1,748 @@
+{
+  "schema_version": 1,
+  "draft_not_for_import": false,
+  "reviewed_on": "2026-10-24",
+  "origin_gallery": {
+    "url": "https://playriftbound.com/en-us/card-gallery/",
+    "uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+    "archive": "assets/data/catalog_sources/gallery.html.gz"
+  },
+  "pre_admission_catalog_sha256": "ebf300c61f331d8a3c5135c4e9723966deb5742303a6b3a227fd61cf4a519a62",
+  "preserved_runtime_prefix": {
+    "card_count": 389,
+    "cards_sha256": "6927a4ab27ab621dbd74f34edbe9d781dda86b10b7cc8c0714f4f7a9161d1be1",
+    "carddefs_source_prefix_sha256": "f80cee327f4cf9925211343f9cf3bc9930266c0082f31d9ee585a7c3d3e634d8",
+    "presets_sha256": "d6e64ebf3f8921686682dacd87d4b2b4baec5754dbd284c6d60bf3fb324571e2",
+    "legends_manifest_sha256": "a31bb93c27588bd4759985e9a4083372d5afae59d22b9ac9d48c54946e5474fe",
+    "training_recipe_source_sha256": "dc498f4f98cec6421dade7e01ead261693ed5f70d30d4d2c808da4a1bcb5b706"
+  },
+  "preserved_source_reviews": {
+    "field_resolutions_sha256": "09a8e5a40da3bf0016d5a2b9f5f8dc31213d4d6641608a1b9704c4fa319db8c4",
+    "raw_printings_sha256": "e0f8bc7fc0f5d513f9f361596e7d7472e4e63900bbf67f6de1664cdccf855cc3",
+    "historical_issues_sha256": "5016c1d2afa72e7c82ca2634689d1cbcc12e993f4996e91ea3371b2c5fcfde3e",
+    "field_image_index_sha256": "1bd536ff0843cf750c7802f6884b89bb3e41bce4dff88c005acdccf314134890",
+    "identity_review_manifest_sha256": "e678c7f2f2e1ae70fb6b399ce1b0ab88a314e9018810d1ccadb1759a1f7b5e12",
+    "variant_image_index_sha256": "1826db0a53cbe62eb1a1196d08df1cbef215b9d9e24cc006689559bbc7693b92"
+  },
+  "pre_admission_counts": {
+    "main_cards": 389,
+    "mapped_legal": 416,
+    "remaining_legal": 663
+  },
+  "source_correction_proof": {
+    "path": "assets/data/catalog_evidence/reviews/c20-tags.json",
+    "sha256": "ee14ec7dc5bb4c2f5053c4b136fad6cde4ac6524410f5df564e42a91d5c975dd"
+  },
+  "scope": "Six complete original faces independently inspected. Two separate artwork-confirmed tag corrections preserve the raw gallery, prior source review objects and all prior runtime cards. No applicable errata. Source facts are not executable-behavior proof.",
+  "errata_sources": [
+    {
+      "key": "origins_errata",
+      "url": "https://playriftbound.com/en-us/news/rules-and-releases/riftbound-origins-card-errata/",
+      "archive": "assets/data/catalog_sources/origins_errata.html.gz",
+      "uncompressed_sha256": "035848c5cc61007683111e63b91289d3fc386d2b33437af32d4d13d565727c52",
+      "parsed_entries_sha256": "5d5ed4e6d5e03033184b5382ab360eade62ca9cf032cf94e811cc1e0acaed581",
+      "live_checked_on": "2026-10-24",
+      "live_uncompressed_sha256": "43426147517a10fd303334c787d6c9aa61dcf01b0c35db3a98a0e1de687a8344",
+      "live_parsed_entries_sha256": "5d5ed4e6d5e03033184b5382ab360eade62ca9cf032cf94e811cc1e0acaed581"
+    },
+    {
+      "key": "spiritforged_errata",
+      "url": "https://playriftbound.com/en-us/news/rules-and-releases/riftbound-spiritforged-errata/",
+      "archive": "assets/data/catalog_sources/spiritforged_errata.html.gz",
+      "uncompressed_sha256": "2fcd51e6104eb76212c42abc850beffaf1cf3e623d875b2d9ad47ed149a726a8",
+      "parsed_entries_sha256": "88be71f74e159dde0b339273fed000ac097ae50318a0aa535b02fdc23c666d57",
+      "live_checked_on": "2026-10-24",
+      "live_uncompressed_sha256": "44a73fe653506bc89ff41e9b81c004fc5c952c10df29de34f528b6ddfd48335d",
+      "live_parsed_entries_sha256": "88be71f74e159dde0b339273fed000ac097ae50318a0aa535b02fdc23c666d57"
+    },
+    {
+      "key": "unleashed_errata",
+      "url": "https://playriftbound.com/en-us/news/rules-and-releases/unleashed-errata-updates/",
+      "archive": "assets/data/catalog_sources/unleashed_errata.html.gz",
+      "uncompressed_sha256": "8b3cb69fea7c499e435c6af0ac89b5c5013711477a172c6bbed3a782eff7ac7b",
+      "parsed_entries_sha256": "801ad0c9bcc9d7bbdde1fa8c5b229dbcaf718daaf3f3db208dd8942a119e3df3",
+      "live_checked_on": "2026-10-24",
+      "live_uncompressed_sha256": "8b3cb69fea7c499e435c6af0ac89b5c5013711477a172c6bbed3a782eff7ac7b",
+      "live_parsed_entries_sha256": "801ad0c9bcc9d7bbdde1fa8c5b229dbcaf718daaf3f3db208dd8942a119e3df3"
+    },
+    {
+      "key": "vendetta_errata",
+      "url": "https://playriftbound.com/en-us/news/announcements/vendetta-errata-updates/",
+      "archive": "assets/data/catalog_sources/vendetta_errata.html.gz",
+      "uncompressed_sha256": "d17603177df347cd44c4ef67c1c547344afcd847cec72ae545239f3c232ef2a6",
+      "parsed_entries_sha256": "9e6fb29ba5bd2bce1023b6927c395e4ed0ced61bf2fc766410d9f000c68a16be",
+      "live_checked_on": "2026-10-24",
+      "live_uncompressed_sha256": "d17603177df347cd44c4ef67c1c547344afcd847cec72ae545239f3c232ef2a6",
+      "live_parsed_entries_sha256": "9e6fb29ba5bd2bce1023b6927c395e4ed0ced61bf2fc766410d9f000c68a16be"
+    },
+    {
+      "key": "radiance_errata",
+      "url": "https://playriftbound.com/en-us/news/announcements/radiance-errata-updates/",
+      "archive": "assets/data/catalog_sources/radiance_errata.html.gz",
+      "uncompressed_sha256": "63735225d6c2f0b757e933289175fb09dcbae86178075fb227e4afa4e1a478a7",
+      "parsed_entries_sha256": "84fd3234a6cdc8c5ddd0b8b4f18c100f339497acdc02318f74b352b6da23866e",
+      "live_checked_on": "2026-10-24",
+      "live_uncompressed_sha256": "21476148bc3ecd4c2af55dd0334b112ab2ab1c3cc5e1479ba134b6850548f5a4",
+      "live_parsed_entries_sha256": "84fd3234a6cdc8c5ddd0b8b4f18c100f339497acdc02318f74b352b6da23866e"
+    }
+  ],
+  "records": [
+    {
+      "official_id": "unl-032-219",
+      "name": "Double Trouble",
+      "runtime_id": 389,
+      "raw_printing": {
+        "official_id": "unl-032-219",
+        "public_code": "UNL-032/219",
+        "name": "Double Trouble",
+        "set": "UNL",
+        "collector_number": 32,
+        "types": [
+          "spell"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "spell"
+        ],
+        "accessibility_types": [
+          "spell"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "calm"
+        ],
+        "energy": 2,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "rules_html": "<p>[Repeat] :rb_energy_2: (You may pay the additional cost to repeat this spell's effect.)<br />Look at the top 3 cards of your Main Deck. You may reveal a unit from among them and draw it. Recycle the rest.</p>",
+        "rules_text": "[Repeat] [2 Energy] (You may pay the additional cost to repeat this spell's effect.)\nLook at the top 3 cards of your Main Deck. You may reveal a unit from among them and draw it. Recycle the rest.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [],
+        "rarity": "common",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/64e977213f50471ad7b6e8664488fb9017693f71-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Spell: Double Trouble. [Repeat] [2] (You may pay the additional cost to repeat this spell's effect.)\nLook at the top 3 cards of your Main Deck. You may reveal a unit from among them and draw it. Recycle the rest.",
+        "illustrators": [
+          "Kudos Productions"
+        ]
+      },
+      "raw_printing_sha256": "e301bfee1a41c6626183f80601f4fb8fae2211a4378a8e5d2a03c6bb12504362",
+      "effective": {
+        "types": [
+          "spell"
+        ],
+        "super_types": [],
+        "domains": [
+          "calm"
+        ],
+        "energy": 2,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>[Repeat] :rb_energy_2: (You may pay the additional cost to repeat this spell's effect.)<br />Look at the top 3 cards of your Main Deck. You may reveal a unit from among them and draw it. Recycle the rest.</p>",
+        "rules_text": "[Repeat] [2 Energy] (You may pay the additional cost to repeat this spell's effect.)\nLook at the top 3 cards of your Main Deck. You may reveal a unit from among them and draw it. Recycle the rest.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "existing_field_resolution_ids": [],
+      "errata": [],
+      "runtime_rules_text": "[Repeat] [2 Energy] (You may pay the additional cost to repeat this spell's effect.)\nLook at the top 3 cards of your Main Deck. You may reveal a unit from among them and draw it. Recycle the rest.",
+      "runtime_text_authority": "official_gallery_and_original_face",
+      "visual_observation": {
+        "official_id": "unl-032-219",
+        "name": "Double Trouble",
+        "collector_code": "UNL-032/219",
+        "face_visually_inspected": true,
+        "independently_reinspected_on": "2026-10-24",
+        "original_image_sha256": "cff2a4428c1963d25170579714fa4487f0f304905d991658b6059f060c323e5f",
+        "printed_types": [
+          "spell"
+        ],
+        "printed_supertypes": [],
+        "printed_domains": [
+          "calm"
+        ],
+        "printed_tags": [],
+        "printed_energy": 2,
+        "printed_power": null,
+        "printed_might": null,
+        "printed_might_bonus": null,
+        "printed_rules_icons_expanded": "[Repeat] [2 Energy] (You may pay the additional cost to repeat this spell's effect.)\nLook at the top 3 cards of your Main Deck. You may reveal a unit from among them and draw it. Recycle the rest.",
+        "printed_equipment_icons_expanded": "",
+        "uncertainties": []
+      },
+      "original_image": {
+        "path": "assets/data/card_admissions/c20/originals/unl-032-219.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/64e977213f50471ad7b6e8664488fb9017693f71-744x1039.png?accountingTag=RB",
+        "bytes": 899521,
+        "sha256": "cff2a4428c1963d25170579714fa4487f0f304905d991658b6059f060c323e5f"
+      },
+      "runtime_image": {
+        "path": "assets/art/card_389.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/64e977213f50471ad7b6e8664488fb9017693f71-744x1039.png?w=320&q=80&fm=png",
+        "bytes": 245246,
+        "sha256": "56f1736bfd5a2e7efe19dc6c188c9a3fc995862a26720811875ff1a26e976fcb",
+        "width": 320,
+        "height": 447
+      },
+      "formatting_observation": "Original face and gallery gameplay facts agree; readable text expands printed glyphs, and tag arrays are unordered sets."
+    },
+    {
+      "official_id": "unl-064-219",
+      "name": "Fate Weaver",
+      "runtime_id": 390,
+      "raw_printing": {
+        "official_id": "unl-064-219",
+        "public_code": "UNL-064/219",
+        "name": "Fate Weaver",
+        "set": "UNL",
+        "collector_number": 64,
+        "types": [
+          "unit"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "unit"
+        ],
+        "accessibility_types": [
+          "unit"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "mind"
+        ],
+        "energy": 5,
+        "power": null,
+        "might": 4,
+        "might_bonus": null,
+        "rules_html": "<p>When you play me, look at the top 4 cards of your Main Deck. You may reveal a spell with Energy cost :rb_energy_4: or more from among them and draw it. Recycle the rest.</p>",
+        "rules_text": "When you play me, look at the top 4 cards of your Main Deck. You may reveal a spell with Energy cost [4 Energy] or more from among them and draw it. Recycle the rest.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [
+          "Ionia"
+        ],
+        "rarity": "common",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/ab713d332b48a7526585b0be3718fea9e9f93622-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Unit: Fate Weaver. When you play me, look at the top 4 cards of your Main Deck. You may reveal a spell with Energy cost [4] or more from among them and draw it. Recycle the rest.",
+        "illustrators": [
+          "Valentin Gloaguen"
+        ]
+      },
+      "raw_printing_sha256": "471f4e5325849d15e00d6777779284bf529747898849033a9912d061fe67ceb9",
+      "effective": {
+        "types": [
+          "unit"
+        ],
+        "super_types": [],
+        "domains": [
+          "mind"
+        ],
+        "energy": 5,
+        "power": null,
+        "might": 4,
+        "might_bonus": null,
+        "tags": [
+          "Ionia"
+        ],
+        "rules_html": "<p>When you play me, look at the top 4 cards of your Main Deck. You may reveal a spell with Energy cost :rb_energy_4: or more from among them and draw it. Recycle the rest.</p>",
+        "rules_text": "When you play me, look at the top 4 cards of your Main Deck. You may reveal a spell with Energy cost [4 Energy] or more from among them and draw it. Recycle the rest.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "existing_field_resolution_ids": [],
+      "errata": [],
+      "runtime_rules_text": "When you play me, look at the top 4 cards of your Main Deck. You may reveal a spell with Energy cost [4 Energy] or more from among them and draw it. Recycle the rest.",
+      "runtime_text_authority": "official_gallery_and_original_face",
+      "visual_observation": {
+        "official_id": "unl-064-219",
+        "name": "Fate Weaver",
+        "collector_code": "UNL-064/219",
+        "face_visually_inspected": true,
+        "independently_reinspected_on": "2026-10-24",
+        "original_image_sha256": "23990e84496435888c5a2987e4621e1fd0a47ea6fb12ea9ecf2f70d19fd37e4e",
+        "printed_types": [
+          "unit"
+        ],
+        "printed_supertypes": [],
+        "printed_domains": [
+          "mind"
+        ],
+        "printed_tags": [
+          "Ionia"
+        ],
+        "printed_energy": 5,
+        "printed_power": null,
+        "printed_might": 4,
+        "printed_might_bonus": null,
+        "printed_rules_icons_expanded": "When you play me, look at the top 4 cards of your Main Deck. You may reveal a spell with Energy cost [4 Energy] or more from among them and draw it. Recycle the rest.",
+        "printed_equipment_icons_expanded": "",
+        "uncertainties": []
+      },
+      "original_image": {
+        "path": "assets/data/card_admissions/c20/originals/unl-064-219.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/ab713d332b48a7526585b0be3718fea9e9f93622-744x1039.png?accountingTag=RB",
+        "bytes": 855641,
+        "sha256": "23990e84496435888c5a2987e4621e1fd0a47ea6fb12ea9ecf2f70d19fd37e4e"
+      },
+      "runtime_image": {
+        "path": "assets/art/card_390.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/ab713d332b48a7526585b0be3718fea9e9f93622-744x1039.png?w=360&q=80&fm=png",
+        "bytes": 287114,
+        "sha256": "3d97048484baad1e5db18d75e89093234cafefc5cf41d4a654fc7db7cac76abb",
+        "width": 360,
+        "height": 503
+      },
+      "formatting_observation": "Original face and gallery gameplay facts agree; readable text expands printed glyphs, and tag arrays are unordered sets."
+    },
+    {
+      "official_id": "rad-129-167",
+      "name": "Trifarian Captain",
+      "runtime_id": 391,
+      "raw_printing": {
+        "official_id": "rad-129-167",
+        "public_code": "RAD-129/167",
+        "name": "Trifarian Captain",
+        "set": "RAD",
+        "collector_number": 129,
+        "types": [
+          "unit"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "unit"
+        ],
+        "accessibility_types": [
+          "unit"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "order"
+        ],
+        "energy": 2,
+        "power": null,
+        "might": 1,
+        "might_bonus": null,
+        "rules_html": "<p>When you play me, look at the top 4 cards of your Main Deck. You may reveal from among them a unit or gear with Energy cost no more than :rb_energy_3: and with Power cost no more than :rb_rune_rainbow: and draw it. Recycle the rest.</p>",
+        "rules_text": "When you play me, look at the top 4 cards of your Main Deck. You may reveal from among them a unit or gear with Energy cost no more than [3 Energy] and with Power cost no more than [Any Power] and draw it. Recycle the rest.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [],
+        "rarity": "uncommon",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/914ced10400826a878ed5cf7294207a4e7b542b1-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Unit: Trifarian Captain. When you play me, look at the top 4 cards of your Main Deck. You may reveal from among them a unit or gear with Energy cost no more than [3] and with Power cost no more than [A] and draw it. Recycle the rest.",
+        "illustrators": [
+          "Six More Vodka"
+        ]
+      },
+      "raw_printing_sha256": "60f78e5af8ae989d65e11dad2117b763d4da41b350625176cb40f6a7c1d37dc6",
+      "effective": {
+        "types": [
+          "unit"
+        ],
+        "super_types": [],
+        "domains": [
+          "order"
+        ],
+        "energy": 2,
+        "power": null,
+        "might": 1,
+        "might_bonus": null,
+        "tags": [
+          "Noxus",
+          "Trifarian"
+        ],
+        "rules_html": "<p>When you play me, look at the top 4 cards of your Main Deck. You may reveal from among them a unit or gear with Energy cost no more than :rb_energy_3: and with Power cost no more than :rb_rune_rainbow: and draw it. Recycle the rest.</p>",
+        "rules_text": "When you play me, look at the top 4 cards of your Main Deck. You may reveal from among them a unit or gear with Energy cost no more than [3 Energy] and with Power cost no more than [Any Power] and draw it. Recycle the rest.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "existing_field_resolution_ids": [
+        "rad-129-167:tags"
+      ],
+      "errata": [],
+      "runtime_rules_text": "When you play me, look at the top 4 cards of your Main Deck. You may reveal from among them a unit or gear with Energy cost no more than [3 Energy] and with Power cost no more than [Any Power] and draw it. Recycle the rest.",
+      "runtime_text_authority": "official_gallery_and_original_face",
+      "visual_observation": {
+        "official_id": "rad-129-167",
+        "name": "Trifarian Captain",
+        "collector_code": "RAD-129/167",
+        "face_visually_inspected": true,
+        "independently_reinspected_on": "2026-10-24",
+        "original_image_sha256": "6965e01684626f32de65ca732995acf11ee8a5a47977baa7026bd9b9d72e63c0",
+        "printed_types": [
+          "unit"
+        ],
+        "printed_supertypes": [],
+        "printed_domains": [
+          "order"
+        ],
+        "printed_tags": [
+          "Noxus",
+          "Trifarian"
+        ],
+        "printed_energy": 2,
+        "printed_power": null,
+        "printed_might": 1,
+        "printed_might_bonus": null,
+        "printed_rules_icons_expanded": "When you play me, look at the top 4 cards of your Main Deck. You may reveal from among them a unit or gear with Energy cost no more than [3 Energy] and with Power cost no more than [Any Power] and draw it. Recycle the rest.",
+        "printed_equipment_icons_expanded": "",
+        "uncertainties": []
+      },
+      "original_image": {
+        "path": "assets/data/catalog_evidence/images/rad-129-167.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/914ced10400826a878ed5cf7294207a4e7b542b1-744x1039.png?accountingTag=RB",
+        "bytes": 775913,
+        "sha256": "6965e01684626f32de65ca732995acf11ee8a5a47977baa7026bd9b9d72e63c0"
+      },
+      "runtime_image": {
+        "path": "assets/art/card_391.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/914ced10400826a878ed5cf7294207a4e7b542b1-744x1039.png?w=360&q=80&fm=png",
+        "bytes": 261850,
+        "sha256": "149d1433d800ff1b78d55a4e761d7e6ba1e08efe3f31016156b66ffa614f0905",
+        "width": 360,
+        "height": 503
+      },
+      "formatting_observation": "Explicit printed tags are corrected separately; original empty feed tags remain preserved."
+    },
+    {
+      "official_id": "sfd-041-221",
+      "name": "Apprentice Smith",
+      "runtime_id": 392,
+      "raw_printing": {
+        "official_id": "sfd-041-221",
+        "public_code": "SFD-041/221",
+        "name": "Apprentice Smith",
+        "set": "SFD",
+        "collector_number": 41,
+        "types": [
+          "unit"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "unit"
+        ],
+        "accessibility_types": [
+          "unit"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "calm"
+        ],
+        "energy": 2,
+        "power": null,
+        "might": 2,
+        "might_bonus": null,
+        "rules_html": "<p>When I move, reveal the top card of your Main Deck. If it's a gear, draw it. Otherwise, recycle it.</p>",
+        "rules_text": "When I move, reveal the top card of your Main Deck. If it's a gear, draw it. Otherwise, recycle it.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [
+          "Freljord"
+        ],
+        "rarity": "uncommon",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/3998c6171ddc7a021560d9d9600c8eced9a8d628-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Unit: Apprentice Smith. When I move, reveal the top card of your Main Deck. If it's a gear, draw it. Otherwise, recycle it.",
+        "illustrators": [
+          "Kudos Productions"
+        ]
+      },
+      "raw_printing_sha256": "e4f62e9c3861955d532121c57f3405358f8e0e4f55c4f546ae6c9bad0b0c8d44",
+      "effective": {
+        "types": [
+          "unit"
+        ],
+        "super_types": [],
+        "domains": [
+          "calm"
+        ],
+        "energy": 2,
+        "power": null,
+        "might": 2,
+        "might_bonus": null,
+        "tags": [
+          "Freljord"
+        ],
+        "rules_html": "<p>When I move, reveal the top card of your Main Deck. If it's a gear, draw it. Otherwise, recycle it.</p>",
+        "rules_text": "When I move, reveal the top card of your Main Deck. If it's a gear, draw it. Otherwise, recycle it.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "existing_field_resolution_ids": [],
+      "errata": [],
+      "runtime_rules_text": "When I move, reveal the top card of your Main Deck. If it's a gear, draw it. Otherwise, recycle it.",
+      "runtime_text_authority": "official_gallery_and_original_face",
+      "visual_observation": {
+        "official_id": "sfd-041-221",
+        "name": "Apprentice Smith",
+        "collector_code": "SFD-041/221",
+        "face_visually_inspected": true,
+        "independently_reinspected_on": "2026-10-24",
+        "original_image_sha256": "c5099af816e0e5aa58f0676a42ee39ac4e167e12e566ad9f80df7b7a8f423a3c",
+        "printed_types": [
+          "unit"
+        ],
+        "printed_supertypes": [],
+        "printed_domains": [
+          "calm"
+        ],
+        "printed_tags": [
+          "Freljord"
+        ],
+        "printed_energy": 2,
+        "printed_power": null,
+        "printed_might": 2,
+        "printed_might_bonus": null,
+        "printed_rules_icons_expanded": "When I move, reveal the top card of your Main Deck. If it's a gear, draw it. Otherwise, recycle it.",
+        "printed_equipment_icons_expanded": "",
+        "uncertainties": []
+      },
+      "original_image": {
+        "path": "assets/data/card_admissions/c20/originals/sfd-041-221.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/3998c6171ddc7a021560d9d9600c8eced9a8d628-744x1039.png?accountingTag=RB",
+        "bytes": 793287,
+        "sha256": "c5099af816e0e5aa58f0676a42ee39ac4e167e12e566ad9f80df7b7a8f423a3c"
+      },
+      "runtime_image": {
+        "path": "assets/art/card_392.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/3998c6171ddc7a021560d9d9600c8eced9a8d628-744x1039.png?w=360&q=80&fm=png",
+        "bytes": 259124,
+        "sha256": "a8666f0f53feb782256a929a4513823e4b7494672b9b9d14638952c9db7df286",
+        "width": 360,
+        "height": 503
+      },
+      "formatting_observation": "Original face and gallery gameplay facts agree; readable text expands printed glyphs, and tag arrays are unordered sets."
+    },
+    {
+      "official_id": "rad-074-167",
+      "name": "Raving Witness",
+      "runtime_id": 393,
+      "raw_printing": {
+        "official_id": "rad-074-167",
+        "public_code": "RAD-074/167",
+        "name": "Raving Witness",
+        "set": "RAD",
+        "collector_number": 74,
+        "types": [
+          "unit"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "unit"
+        ],
+        "accessibility_types": [
+          "unit"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "body"
+        ],
+        "energy": 3,
+        "power": null,
+        "might": 3,
+        "might_bonus": null,
+        "rules_html": "<p>When I move, reveal the top card of your Main Deck. If it's [Mighty], draw it. Otherwise, recycle it. (A unit is Mighty while it has 5+ :rb_might:.)</p>",
+        "rules_text": "When I move, reveal the top card of your Main Deck. If it's [Mighty], draw it. Otherwise, recycle it. (A unit is Mighty while it has 5+ Might.)",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [],
+        "rarity": "common",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/778e70b353d7f28eae9b54b1a37af3853238ba04-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Unit: Raving Witness. When I move, reveal the top card of your Main Deck. If it's [Mighty], draw it. Otherwise, recycle it. (A unit is Mighty while it has 5+ [S].)",
+        "illustrators": [
+          "Six More Vodka"
+        ]
+      },
+      "raw_printing_sha256": "8392220539ccd517ddc5eeaca1bc976e5416af6d4a035793c0fb6966938a594b",
+      "effective": {
+        "types": [
+          "unit"
+        ],
+        "super_types": [],
+        "domains": [
+          "body"
+        ],
+        "energy": 3,
+        "power": null,
+        "might": 3,
+        "might_bonus": null,
+        "tags": [
+          "Freljord"
+        ],
+        "rules_html": "<p>When I move, reveal the top card of your Main Deck. If it's [Mighty], draw it. Otherwise, recycle it. (A unit is Mighty while it has 5+ :rb_might:.)</p>",
+        "rules_text": "When I move, reveal the top card of your Main Deck. If it's [Mighty], draw it. Otherwise, recycle it. (A unit is Mighty while it has 5+ Might.)",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "existing_field_resolution_ids": [
+        "rad-074-167:tags"
+      ],
+      "errata": [],
+      "runtime_rules_text": "When I move, reveal the top card of your Main Deck. If it's [Mighty], draw it. Otherwise, recycle it. (A unit is Mighty while it has 5+ Might.)",
+      "runtime_text_authority": "official_gallery_and_original_face",
+      "visual_observation": {
+        "official_id": "rad-074-167",
+        "name": "Raving Witness",
+        "collector_code": "RAD-074/167",
+        "face_visually_inspected": true,
+        "independently_reinspected_on": "2026-10-24",
+        "original_image_sha256": "154a6e8a93a6496123fc26e4fdfeba40c843e8c5ccfb7b47db5ffc7babfeb624",
+        "printed_types": [
+          "unit"
+        ],
+        "printed_supertypes": [],
+        "printed_domains": [
+          "body"
+        ],
+        "printed_tags": [
+          "Freljord"
+        ],
+        "printed_energy": 3,
+        "printed_power": null,
+        "printed_might": 3,
+        "printed_might_bonus": null,
+        "printed_rules_icons_expanded": "When I move, reveal the top card of your Main Deck. If it's [Mighty], draw it. Otherwise, recycle it. (A unit is Mighty while it has 5+ Might.)",
+        "printed_equipment_icons_expanded": "",
+        "uncertainties": []
+      },
+      "original_image": {
+        "path": "assets/data/catalog_evidence/images/rad-074-167.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/778e70b353d7f28eae9b54b1a37af3853238ba04-744x1039.png?accountingTag=RB",
+        "bytes": 818463,
+        "sha256": "154a6e8a93a6496123fc26e4fdfeba40c843e8c5ccfb7b47db5ffc7babfeb624"
+      },
+      "runtime_image": {
+        "path": "assets/art/card_393.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/778e70b353d7f28eae9b54b1a37af3853238ba04-744x1039.png?w=360&q=80&fm=png",
+        "bytes": 270923,
+        "sha256": "85985eee612349fbdf7d7861d34c89e7e760c28c3c0b338046fedd344be3cece",
+        "width": 360,
+        "height": 503
+      },
+      "formatting_observation": "Explicit printed tags are corrected separately; original empty feed tags remain preserved."
+    },
+    {
+      "official_id": "ven-033-166",
+      "name": "Pakaa Protector",
+      "runtime_id": 394,
+      "raw_printing": {
+        "official_id": "ven-033-166",
+        "public_code": "VEN-033/166",
+        "name": "Pakaa Protector",
+        "set": "VEN",
+        "collector_number": 33,
+        "types": [
+          "unit"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "unit"
+        ],
+        "accessibility_types": [
+          "unit"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "calm"
+        ],
+        "energy": 5,
+        "power": null,
+        "might": 4,
+        "might_bonus": null,
+        "rules_html": "<p>When I move, reveal the top card of your Main Deck. If it's a unit, draw it. Otherwise, put it in your trash and give me +2 :rb_might: this turn.</p>",
+        "rules_text": "When I move, reveal the top card of your Main Deck. If it's a unit, draw it. Otherwise, put it in your trash and give me +2 Might this turn.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [
+          "Cat",
+          "Shurima"
+        ],
+        "rarity": "uncommon",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/ab3be32adadb72831c07750d8defc7918fd32d96-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Unit: Pakaa Protector. When I move, reveal the top card of your Main Deck. If it's a unit, draw it. Otherwise, put it in your trash and give me +2 [S] this turn.",
+        "illustrators": [
+          "Bubble Cat Studio"
+        ]
+      },
+      "raw_printing_sha256": "bd4acc05a991f00a4b2e96f2087c7086bc721dbdf612d7f1c29f8a2eacf70f3a",
+      "effective": {
+        "types": [
+          "unit"
+        ],
+        "super_types": [],
+        "domains": [
+          "calm"
+        ],
+        "energy": 5,
+        "power": null,
+        "might": 4,
+        "might_bonus": null,
+        "tags": [
+          "Cat",
+          "Shurima"
+        ],
+        "rules_html": "<p>When I move, reveal the top card of your Main Deck. If it's a unit, draw it. Otherwise, put it in your trash and give me +2 :rb_might: this turn.</p>",
+        "rules_text": "When I move, reveal the top card of your Main Deck. If it's a unit, draw it. Otherwise, put it in your trash and give me +2 Might this turn.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "existing_field_resolution_ids": [],
+      "errata": [],
+      "runtime_rules_text": "When I move, reveal the top card of your Main Deck. If it's a unit, draw it. Otherwise, put it in your trash and give me +2 Might this turn.",
+      "runtime_text_authority": "official_gallery_and_original_face",
+      "visual_observation": {
+        "official_id": "ven-033-166",
+        "name": "Pakaa Protector",
+        "collector_code": "VEN-033/166",
+        "face_visually_inspected": true,
+        "independently_reinspected_on": "2026-10-24",
+        "original_image_sha256": "c3d51edc146465fb58c7450d6cfceb2ffd11fe8bc3e4b7bbef8d56c83da17365",
+        "printed_types": [
+          "unit"
+        ],
+        "printed_supertypes": [],
+        "printed_domains": [
+          "calm"
+        ],
+        "printed_tags": [
+          "Cat",
+          "Shurima"
+        ],
+        "printed_energy": 5,
+        "printed_power": null,
+        "printed_might": 4,
+        "printed_might_bonus": null,
+        "printed_rules_icons_expanded": "When I move, reveal the top card of your Main Deck. If it's a unit, draw it. Otherwise, put it in your trash and give me +2 Might this turn.",
+        "printed_equipment_icons_expanded": "",
+        "uncertainties": [],
+        "printed_tag_line_order": [
+          "Shurima",
+          "Cat"
+        ]
+      },
+      "original_image": {
+        "path": "assets/data/card_admissions/c20/originals/ven-033-166.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/ab3be32adadb72831c07750d8defc7918fd32d96-744x1039.png?accountingTag=RB",
+        "bytes": 900219,
+        "sha256": "c3d51edc146465fb58c7450d6cfceb2ffd11fe8bc3e4b7bbef8d56c83da17365"
+      },
+      "runtime_image": {
+        "path": "assets/art/card_394.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/ab3be32adadb72831c07750d8defc7918fd32d96-744x1039.png?w=360&q=80&fm=png",
+        "bytes": 253208,
+        "sha256": "69780f6e69fa6dfc1e24d4482138dac56dd078e5ddae029911847e7702a281a4",
+        "width": 360,
+        "height": 503
+      },
+      "formatting_observation": "Original face and gallery gameplay facts agree; readable text expands printed glyphs, and tag arrays are unordered sets."
+    }
+  ]
+}
