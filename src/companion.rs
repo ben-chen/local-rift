@@ -432,6 +432,10 @@ fn response_window_advice(game: &Game, beginner: bool) -> Option<Vec<&'static st
             ]);
         }
         return Some(match decision {
+            Decision::TriggerTargets { .. } => vec![
+                "Choose this ability's highlighted targets in order, then confirm. You can decline only when the ability is optional.",
+                "The source has entered play; the ability joins the chain after you choose targets. Check the next trade and any Deflect costs before confirming.",
+            ],
             Decision::OptionalPlay { .. } => vec![
                 "Accept or decline this trash-play trigger. If accepted, choose its trash target before the ability joins the chain; finalize the card after it resolves.",
                 "Check the trash and your available resources before accepting. Declining here keeps the ability off the chain.",
@@ -1101,6 +1105,19 @@ mod tests {
             });
             states.push(game.clone());
             for decision in [
+                Decision::TriggerTargets {
+                    player,
+                    card_id: 188,
+                    rule_index: 0,
+                    context: local_rift::game::TriggerContext {
+                        source: local_rift::game::TriggerSource {
+                            player,
+                            unit_id: Some(1),
+                            gear_id: None,
+                        },
+                        subject: None,
+                    },
+                },
                 Decision::BattlefieldOrder {
                     player,
                     lanes: vec![0, 1],

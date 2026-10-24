@@ -8,3 +8,5 @@ pub mod hidden;
 pub mod legends;
 pub mod payment;
 pub mod rules;
+
+pub mod trigger_rules;

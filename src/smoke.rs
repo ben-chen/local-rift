@@ -20,6 +20,16 @@ fn click(app: &mut App, x: f32, y: f32) {
     app.ui.input_override = Some((vec2(x, y), true, false));
 }
 
+fn capture(app: &mut App, variable: &str) {
+    if let Ok(path) = std::env::var(variable) {
+        let input = app.ui.input_override;
+        app.ui.input_override = Some((vec2(-100.0, -100.0), false, false));
+        app.draw();
+        get_screen_data().export_png(&path);
+        app.ui.input_override = input;
+    }
+}
+
 fn hand_card(app: &mut App, name: &str) {
     let id = app
         .game
@@ -1186,7 +1196,7 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
             app.hover_card = Some(3);
             app.hover_since = -1.0;
             app.ui.input_override =
-                Some((vec2(r.x + r.w / 2.0, r.y + r.h - 28.0), frame == 91, false));
+                Some((vec2(r.x + r.w / 2.0, r.y + r.h - 9.0), frame == 91, false));
         }
         92 => {
             assert_eq!(
@@ -1216,7 +1226,7 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
                 .1;
             app.hover_card = Some(21);
             app.hover_since = -1.0;
-            app.ui.input_override = Some((vec2(r.x + r.w / 2.0, r.y + r.h - 42.0), false, false));
+            app.ui.input_override = Some((vec2(r.x + r.w - 10.0, r.y + r.h - 9.0), false, false));
         }
         95 => {
             assert_eq!(
@@ -1833,6 +1843,9 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
             click(app, 1323.0, 152.0);
         }
         145 => {
+            let name = app.game.catalog[72].name.to_owned();
+            app.deck_editor.as_mut().unwrap().query = name;
+            app.deck_editor.as_mut().unwrap().scroll = 0;
             let editor = app.deck_editor.as_ref().unwrap();
             assert!(editor.filter == super::deck_editor::DeckFilter::Additional);
             let row = editor
@@ -2634,7 +2647,7 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
             app.hover_rect = None;
             app.hover_unit = None;
             let r = unit_rect(app, 100);
-            app.ui.input_override = Some((vec2(r.x + r.w / 2.0, r.y + r.h - 28.0), false, false));
+            app.ui.input_override = Some((vec2(r.x + r.w / 2.0, r.y + r.h - 9.0), false, false));
         }
         234 => {
             assert_eq!(
@@ -2644,7 +2657,7 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
             );
             assert_eq!(app.hover_unit, None);
             let r = unit_rect(app, 100);
-            click(app, r.x + r.w / 2.0, r.y + r.h - 28.0);
+            click(app, r.x + r.w / 2.0, r.y + r.h - 9.0);
         }
         235 => {
             assert_eq!(
@@ -2946,15 +2959,275 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
         266 => {
             assert!(app.game.players[0].gear.is_empty());
             assert_eq!(app.game.players[0].any_power, 1);
+        }
+        267 => {
+            expansion_fixture(app, 188);
+            app.game.players[0]
+                .units
+                .push(public_unit(100, 110, Some(0)));
+            app.game.players[1]
+                .units
+                .push(public_unit(200, 110, Some(1)));
+            app.game
+                .apply(Action::PlayCard {
+                    hand_index: 0,
+                    lane: None,
+                    target: None,
+                })
+                .unwrap();
+            assert!(matches!(
+                app.game.decision,
+                Some(Decision::TriggerTargets { card_id: 188, .. })
+            ));
+            assert_eq!(app.game.trigger_target_bounds(), Some((1, 0)));
+            COMBAT_SNAPSHOT
+                .with(|snapshot| *snapshot.borrow_mut() = Some(format!("{:?}", app.game)));
+        }
+        268 => {
+            let source = app.game.players[0]
+                .units
+                .iter()
+                .find(|unit| unit.card_id == 188)
+                .unwrap()
+                .id;
+            click_unit(app, source);
+        }
+        269 => {
+            assert!(app.targets.is_empty(), "Windsinger cannot target itself");
+            COMBAT_SNAPSHOT.with(|snapshot| {
+                assert_eq!(
+                    snapshot.borrow().as_deref(),
+                    Some(format!("{:?}", app.game).as_str())
+                )
+            });
+            click_unit(app, 200);
+        }
+        270 => {
+            assert_eq!(
+                app.targets,
+                vec![Target::Unit {
+                    player: 1,
+                    unit_id: 200
+                }]
+            );
+            click_unit(app, 200);
+        }
+        271 => {
+            assert!(
+                app.targets.is_empty(),
+                "clicking the target undoes the draft"
+            );
+            COMBAT_SNAPSHOT.with(|snapshot| {
+                assert_eq!(
+                    snapshot.borrow().as_deref(),
+                    Some(format!("{:?}", app.game).as_str())
+                )
+            });
+            click(app, 1285.0, 548.0);
+        }
+        272 => {
+            assert!(app.game.decision.is_none());
+            assert!(app.game.players[1].units.iter().any(|unit| unit.id == 200));
+            assert!(!app.game.chain.iter().any(|item| item.card_id == 188));
+            expansion_fixture(app, 188);
+            app.game.players[1]
+                .units
+                .push(public_unit(200, 110, Some(1)));
+            app.game
+                .apply(Action::PlayCard {
+                    hand_index: 0,
+                    lane: None,
+                    target: None,
+                })
+                .unwrap();
+        }
+        273 => {
+            click_unit(app, 200);
+        }
+        274 => {
+            assert_eq!(app.targets.len(), 1);
+            click(app, 1285.0, 510.0);
+        }
+        275 => {
+            assert!(
+                app.game
+                    .chain
+                    .iter()
+                    .any(|item| item.card_id == 188 && item.targets.len() == 1)
+            );
+            finish_chain_until_choice(app);
+            assert!(!app.game.players[1].units.iter().any(|unit| unit.id == 200));
+            expansion_fixture(app, 190);
+            app.game.players[0].units.push(public_unit(100, 110, None));
+            app.game.players[1]
+                .units
+                .push(public_unit(200, 110, Some(1)));
+            app.game
+                .apply(Action::PlayCard {
+                    hand_index: 0,
+                    lane: None,
+                    target: None,
+                })
+                .unwrap();
+            assert_eq!(app.game.trigger_target_bounds(), Some((2, 2)));
+            COMBAT_SNAPSHOT
+                .with(|snapshot| *snapshot.borrow_mut() = Some(format!("{:?}", app.game)));
+        }
+        276 => {
+            click_unit(app, 200);
+        }
+        277 => {
+            assert!(
+                app.targets.is_empty(),
+                "Beast Below must choose its friendly slot first"
+            );
+            COMBAT_SNAPSHOT.with(|snapshot| {
+                assert_eq!(
+                    snapshot.borrow().as_deref(),
+                    Some(format!("{:?}", app.game).as_str())
+                )
+            });
+            click_unit(app, 100);
+        }
+        278 => {
+            assert_eq!(app.targets.len(), 1);
+            click(app, 1285.0, 510.0);
+        }
+        279 => {
+            assert_eq!(
+                app.targets.len(),
+                1,
+                "incomplete confirmation stays a draft"
+            );
+            COMBAT_SNAPSHOT.with(|snapshot| {
+                assert_eq!(
+                    snapshot.borrow().as_deref(),
+                    Some(format!("{:?}", app.game).as_str())
+                )
+            });
+            click_unit(app, 200);
+        }
+        280 => {
+            assert_eq!(app.targets.len(), 2);
+            capture(app, "RIFT_SMOKE_TRIGGER_SCREENSHOT");
+            let before = format!("{:?}", app.game);
+            assert!(
+                app.game
+                    .apply(Action::ChooseTriggerTargets {
+                        targets: vec![Target::Unit {
+                            player: 1,
+                            unit_id: 200
+                        }]
+                    })
+                    .is_err()
+            );
+            assert_eq!(
+                format!("{:?}", app.game),
+                before,
+                "invalid target submission is atomic"
+            );
+            click(app, 1285.0, 548.0);
+        }
+        281 => {
+            assert!(app.targets.is_empty());
+            click_unit(app, 100);
+        }
+        282 => {
+            click_unit(app, 200);
+        }
+        283 => {
+            assert_eq!(app.targets.len(), 2);
+            click(app, 1285.0, 510.0);
+        }
+        284 => {
+            assert!(
+                app.game
+                    .chain
+                    .iter()
+                    .any(|item| item.card_id == 190 && item.targets.len() == 2)
+            );
+            finish_chain_until_choice(app);
+            assert!(!app.game.players[0].units.iter().any(|unit| unit.id == 100));
+            assert!(!app.game.players[1].units.iter().any(|unit| unit.id == 200));
+            expansion_fixture(app, 110);
+            app.game.players[0].units.push(public_unit(100, 110, None));
+            app.game.players[0]
+                .units
+                .push(public_unit(101, 110, Some(0)));
+            app.game.players[1]
+                .units
+                .push(public_unit(200, 69, Some(1)));
+            for (owner, unit_id, gear_id, card_id) in [
+                (0, 100, 800, 121),
+                (0, 100, 801, 124),
+                (0, 101, 802, 121),
+                (1, 200, 803, 124),
+            ] {
+                app.game.players[owner].gear.push(GearState {
+                    id: gear_id,
+                    card_id,
+                    ready: true,
+                    attached_to: Some(unit_id),
+                    temporary: false,
+                    token: false,
+                });
+            }
+            for owner in 0..2 {
+                app.game.players[owner].runes = [0, 4, 0, 4, 0, 0];
+                app.game.players[owner].exhausted_runes = [0, 2, 0, 2, 0, 0];
+                app.game.players[owner].energy_pool = 2;
+                app.game.players[owner].energy = 6;
+                app.game.players[owner].power_pool = [1; 6];
+                app.game.players[owner].any_power = 1;
+                app.game.legend[owner].spell_power = 1;
+            }
+            app.hover_card = None;
+            app.hover_rect = None;
+            app.ui.input_override = Some((vec2(214.0, 100.0), false, false));
+        }
+        285 => {
+            capture(app, "RIFT_SMOKE_MAT_SCREENSHOT");
+            let r = unit_rect(app, 100);
+            click(app, r.x + r.w - 10.0, r.y + r.h - 9.0);
+        }
+        286 => {
+            assert_eq!(
+                app.equipment_inspect,
+                Some((0, 100)),
+                "multiple attachments open a readable list"
+            );
+            capture(app, "RIFT_SMOKE_EQUIPMENT_SCREENSHOT");
+            click(app, 967.0, 489.0);
+        }
+        287 => {
+            assert_eq!(
+                app.inspect,
+                Some(124),
+                "each attachment opens its full card text"
+            );
+            assert!(app.equipment_inspect.is_none());
+            click(app, 960.0, 704.0);
+        }
+        288 => {
+            assert!(app.inspect.is_none());
+            click(app, 643.0, 273.0);
+        }
+        289 => {
+            assert_eq!(app.field_inspect, Some(app.game.battlefields[0]));
+            capture(app, "RIFT_SMOKE_FIELD_RULES_SCREENSHOT");
+            click(app, 690.0, 502.0);
+        }
+        290 => {
+            assert!(app.field_inspect.is_none());
             app.ui.input_override = None;
             app.ui.pointer_override = None;
             app.ui.wheel_override = None;
             println!(
-                "PASS: 267 native UI frames including three saved AI levels, Shield and equipped gear, Repeat choices, resource and Gold gear, and pending trash plays."
+                "PASS: 291 native UI frames including generic optional and ordered ability targets, atomic invalid choices, matched rune trays, attached gear lists, and battlefield rules."
             );
             return true;
         }
-        _ => panic!("UI smoke runner exceeded its 267-frame script"),
+        _ => panic!("UI smoke runner exceeded its 291-frame script"),
     }
     false
 }

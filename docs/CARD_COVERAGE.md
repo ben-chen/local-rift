@@ -2,7 +2,7 @@
 
 Snapshot checked **2026-10-24**. The official gallery contains **1,408 printing records** grouped into **1,103 distinct full-name identities**. After excluding **12 auxiliary token/tracker identities** and **12 banned identities**, **1,079 identities are legal in Standard/1v1 Constructed**. The separate 2v2 list leaves **1,078**.
 
-**This client does not yet implement every legal card.** It currently maps **152 main-deck cards, 4 preset legends, 4 battlefields, and 6 rune resource types** (166 legal identities). **913 legal identities remain unimplemented and are not playable.** Importing this snapshot does not register cards with the engine. Full inventory coverage is not full rules support.
+**This client does not yet implement every legal card.** It currently maps **230 main-deck cards, 4 preset legends, 4 battlefields, and 6 rune resource types** (244 legal identities). **835 legal identities remain unimplemented and are not playable.** Importing this snapshot does not register cards with the engine. Full inventory coverage is not full rules support.
 
 ## Scope and authority
 
@@ -28,11 +28,11 @@ Numbered positions include token slots where the publisher numbers them within a
 | Kind | Standard legal | Implemented mapping | Not implemented |
 | --- | ---: | ---: | ---: |
 | Battlefield | 69 | 4 | 65 |
-| Gear | 127 | 20 | 107 |
+| Gear | 127 | 33 | 94 |
 | Legend | 58 | 4 | 54 |
 | Rune | 6 | 6 | 0 |
-| Spell | 269 | 52 | 217 |
-| Unit | 550 | 80 | 470 |
+| Spell | 269 | 66 | 203 |
+| Unit | 550 | 131 | 419 |
 
 Implemented mapping means the existing engine/preset/field/resource implementation, not a claim that every interaction has been formally proven. See `docs/RULES.md` for engine limits. Every unimplemented identity has `implementation.status: not_implemented` and `playable_in_client: false`. Printed keywords are recorded per card and counted under `unimplemented_by_observed_keyword` as discovery hints only; shared keywords do not imply shared effect semantics or completed implementation. Each unimplemented card still requires its specific effect, targets, timing, costs, continuous/replacement effects, and interaction tests to be reviewed and implemented.
 
@@ -278,5 +278,83 @@ Source pages are archived as deterministic gzip files under `assets/data/catalog
 | 149 | Honest Broker | `sfd-155-221` |
 | 150 | Hunting Dog | `rad-119-167` |
 | 151 | Trove Golem | `sfd-174-221` |
+| 152 | Demacian Diplomat | `unl-092-219` |
+| 153 | Voracious Gromp | `unl-100-219` |
+| 154 | Herald of Spring | `unl-034-219` |
+| 155 | Scrutinizing Sergeant | `unl-157-219` |
+| 156 | Pit Crew | `ogn-091-298` |
+| 157 | Fretful Feline | `ven-071-166` |
+| 158 | Simian Ancestor | `sfd-047-221` |
+| 159 | Vicious Snapjaws | `unl-129-219` |
+| 160 | Eminent Benefactor | `sfd-152-221` |
+| 161 | Plundering Poro | `sfd-069-221` |
+| 162 | Treasure Hunter | `sfd-130-221` |
+| 163 | Black Market Broker | `sfd-121-221` |
+| 164 | Ember Monk | `ogn-167-298` |
+| 165 | Bubble Bot | `sfd-062-221` |
+| 166 | Twilight Reveler | `ven-020-166` |
+| 167 | Crackshot Corsair | `ogn-130-298` |
+| 168 | Ahri, Inquisitive | `ogn-119-298` |
+| 169 | Harpoon Squad | `sfd-137-221` |
+| 170 | Reluctant Leader | `ven-121-166` |
+| 171 | Undercover Agent | `ogn-178-298` |
+| 172 | Chemtech Enforcer | `ogn-003-298` |
+| 173 | Diana, No Longer Human | `unl-149-219` |
+| 174 | Cithria of Cloudfield | `ogn-139-298` |
+| 175 | Viktor, Innovator | `ogn-117-298` |
+| 176 | Viktor, Leader | `ogn-246-298` |
+| 177 | Machine Evangel | `ogn-239-298` |
+| 178 | Royal Guard | `sfd-157-221` |
+| 179 | Noxian Drummer | `ogn-222-298` |
+| 180 | Corinna Veraza | `sfd-179-221` |
+| 181 | Yordle Explorer | `sfd-100-221` |
+| 182 | Lux, Illuminated | `ogs-006-024` |
+| 183 | Darius, Trifarian | `ogn-027-298` |
+| 184 | Sanctum Conservator | `rad-030-167` |
+| 185 | Teemo, Scout | `ogn-197-298` |
+| 186 | Suave Negotiator | `rad-099-167` |
+| 187 | Walking Roost | `unl-130-219` |
+| 188 | Windsinger | `sfd-138-221` |
+| 189 | Zaunite Bouncer | `ogn-188-298` |
+| 190 | Beast Below | `sfd-132-221` |
+| 191 | Carnivorous Snapvine | `ogn-149-298` |
+| 192 | Solari Shieldbearer | `ogn-051-298` |
+| 193 | Mystic Poro | `ogn-171-298` |
+| 194 | Strigian Oracle | `rad-053-167` |
+| 195 | Frigid Jewel | `unl-074-219` |
+| 196 | Pirate's Haven | `ogn-143-298` |
+| 197 | Mask of Foresight | `ogn-060-298` |
+| 198 | Vanguard Helm | `ogn-228-298` |
+| 199 | Sacred Shears | `sfd-172-221` |
+| 200 | Doran's Ring | `sfd-124-221` |
+| 201 | Cull | `sfd-134-221` |
+| 202 | World Atlas | `sfd-086-221` |
+| 203 | Eye of the Herald | `sfd-153-221` |
+| 204 | Warmog's Armor | `sfd-108-221` |
+| 205 | Pendulum Blade | `ven-011-166` |
+| 206 | Recurve Bow | `sfd-016-221` |
+| 207 | Trinity Force | `sfd-115-221` |
+| 208 | Ahri, Alluring | `ogn-066-298` |
+| 209 | Shen, Leader of the Kinkou Order | `ven-138-166` |
+| 210 | Shen, Scourge of Shadows | `ven-042-166` |
+| 211 | Enthusiastic Promoter | `unl-043-219` |
+| 212 | Spectral Centaur | `unl-068-219` |
+| 213 | Storm Raptor | `rad-036-167` |
+| 214 | Wraith of Echoes | `ogn-118-298` |
+| 215 | Prize of Progress | `sfd-075-221` |
+| 216 | Upstage Comedy | `unl-009-219` |
+| 217 | Marching Orders | `sfd-114-221` |
+| 218 | Gentlemen's Duel | `ogs-008-024` |
+| 219 | Wages of Pain | `sfd-070-221` |
+| 220 | Desert's Call | `sfd-031-221` |
+| 221 | Guttural Roar | `ven-072-166` |
+| 222 | Monster Harpoon | `unl-014-219` |
+| 223 | Sudden Storm | `sfd-017-221` |
+| 224 | Right of Conquest | `unl-015-219` |
+| 225 | Show of Strength | `sfd-106-221` |
+| 226 | Sky Splitter | `ogn-014-298` |
+| 227 | Shock Blast | `ven-059-166` |
+| 228 | Against the Odds | `sfd-001-221` |
+| 229 | High Note | `rad-048-167` |
 
 Card names, rules, and images are Riot Games intellectual property. This noncommercial, unofficial project includes source references for verification and does not claim Riot affiliation.

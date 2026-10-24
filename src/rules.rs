@@ -15,6 +15,20 @@ pub enum CounterKind {
     Unconditional,
 }
 
+/// Amounts calculated when the instruction resolves, after responses.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum SpellMight {
+    Empowered { base: i8, empowered: i8 },
+    EnemiesHere { per_enemy: i8 },
+    OwnExhausted { per_unit: i8 },
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum SpellDamage {
+    OwnFacedown { base: u8, conditional: u8 },
+    Attacking { base: u8, conditional: u8 },
+}
+
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum OfficialEffect {
     /// No immediate spell/on-play operation. Check triggers and requirements.
@@ -55,6 +69,21 @@ pub enum OfficialEffect {
     Fight {
         optional_buff: u8,
     },
+    /// Give the first (friendly) target temporary Might, then fight the enemy.
+    EmpoweredFight {
+        amount: i8,
+    },
+    /// Damage the chosen battlefield unit, then play an exhausted Gold token.
+    DamageAndGold {
+        amount: u8,
+    },
+    ContextualMight(SpellMight),
+    ContextualDamage(SpellDamage),
+    /// Separate draw instructions: the fixed amount, then controlled fields.
+    DrawForBattlefields {
+        base: u8,
+    },
+    DrawForMighty,
     /// Reveal opponent's hand, choose a non-unit, recycle it.
     DisruptHand,
     Draw(u8),
@@ -367,6 +396,46 @@ pub fn effect(id: usize) -> OfficialEffect {
         },
         147 | 148 => Tokens { count: 1, might: 1 },
         151 => Tokens { count: 4, might: 0 },
+        152 | 153 | 154 | 155 | 156 | 157 | 158 | 159 | 160 | 161 | 162 | 163 | 164 | 165 | 166
+        | 167 | 168 | 169 | 170 | 171 | 172 | 173 | 174 | 175 | 176 | 177 | 178 | 179 | 180
+        | 181 | 182 | 183 | 184 | 185 | 186 | 187 | 188 | 189 | 190 | 191 | 192 | 193 | 194
+        | 195 | 196 | 197 | 198 | 208 | 209 | 210 | 211 | 212 | 213 | 214 | 215 => None,
+        199..=207 => Equipment,
+        216 => ReadyAnother,
+        217 => Fight { optional_buff: 0 },
+        218 => EmpoweredFight { amount: 3 },
+        219 => DamageAndGold { amount: 3 },
+        220 => Tokens { count: 1, might: 2 },
+        221 => ContextualMight(SpellMight::Empowered {
+            base: 2,
+            empowered: 4,
+        }),
+        222 => ContextualDamage(SpellDamage::OwnFacedown {
+            base: 2,
+            conditional: 4,
+        }),
+        223 => ContextualDamage(SpellDamage::Attacking {
+            base: 2,
+            conditional: 4,
+        }),
+        224 => DrawForBattlefields { base: 1 },
+        225 => DrawForMighty,
+        226 => Damage {
+            amount: 5,
+            targets: 1,
+            battlefield_only: true,
+            draw: 0,
+            banish_on_death: false,
+        },
+        227 => Damage {
+            amount: 4,
+            targets: 1,
+            battlefield_only: true,
+            draw: 0,
+            banish_on_death: false,
+        },
+        228 => ContextualMight(SpellMight::EnemiesHere { per_enemy: 2 }),
+        229 => ContextualMight(SpellMight::OwnExhausted { per_unit: -1 }),
         _ => Unsupported,
     }
 }
@@ -375,15 +444,19 @@ pub fn targeting(id: usize) -> Targeting {
     use Allegiance::*;
     let allegiance = match id {
         4 | 32 | 144 | 145 => Enemy,
-        8 | 9 | 14 | 19 | 27 | 85 | 137 => Friendly,
-        16 | 29 | 82 => Mixed,
+        8 | 9 | 14 | 19 | 27 | 85 | 137 | 228 => Friendly,
+        16 | 29 | 82 | 217 | 218 => Mixed,
         5 | 7 | 11 | 23 | 26 | 28 | 41 | 44 | 50 | 52 | 53 | 55 | 61 | 62 | 63 | 66 | 67 | 74
-        | 75 | 76 | 79 | 80 | 81 | 83 | 99 | 135 | 136 | 141 | 142 | 143 | 146 => Any,
+        | 75 | 76 | 79 | 80 | 81 | 83 | 99 | 135 | 136 | 141 | 142 | 143 | 146 | 216 | 219
+        | 221 | 222 | 223 | 226 | 227 | 229 => Any,
         _ => None,
     };
     Targeting {
         allegiance,
-        distinct: matches!(id, 5 | 9 | 16 | 44 | 50 | 61 | 82 | 83 | 85 | 137),
+        distinct: matches!(
+            id,
+            5 | 9 | 16 | 44 | 50 | 61 | 82 | 83 | 85 | 137 | 217 | 218
+        ),
         same_location: matches!(id, 44 | 50),
     }
 }
@@ -404,9 +477,12 @@ pub fn target_bounds(id: usize) -> (usize, usize) {
                 targets as usize
             },
         ),
-        DualMight | BounceBoth | SwapMight | Fight { .. } => (2, 2),
+        DualMight | BounceBoth | SwapMight | Fight { .. } | EmpoweredFight { .. } => (2, 2),
         MoveFriendlyToBase { up_to } => (up_to as usize, 0),
         ModifyMight { .. }
+        | ContextualMight(_)
+        | ContextualDamage(_)
+        | DamageAndGold { .. }
         | Bounce { .. }
         | MoveEnemy
         | MoveFriendlyAndReady
@@ -681,6 +757,17 @@ pub enum Mechanic {
 pub fn requirements(id: usize) -> &'static [Mechanic] {
     use Mechanic::*;
     match id {
+        152..=198 | 208..=215 => &[Chain],
+        199..=207 => &[Gear, Equip, Chain],
+        216 | 217 | 220 => &[Chain, OptionalCosts],
+        218 => &[Chain, Fight, MultipleTargets],
+        219 => &[Chain, Hidden, Tokens],
+        221 => &[Chain, Empower],
+        222 => &[Chain, Hidden],
+        223 => &[Chain, Hidden],
+        224 | 225 | 228 => &[Chain],
+        226 | 227 => &[Chain, CostReduction],
+        229 => &[Chain, NegativeMight],
         0 => &[Deflect, ChooseReadyTriggers],
         1 => &[Chain, Counterspell, Predict, Bounce],
         2 => &[Protection, MoveTriggers],
@@ -850,6 +937,15 @@ pub fn equipment(id: usize) -> Option<EquipmentRule> {
         122 => (1, Domain::Body, 0, false, EquipmentAbility::None),
         123 => (0, Domain::Fury, 0, false, EquipmentAbility::None),
         124 => (0, Domain::Order, 0, false, EquipmentAbility::None),
+        199 => (1, Domain::Order, 0, false, EquipmentAbility::None),
+        200 => (1, Domain::Chaos, 0, false, EquipmentAbility::None),
+        201 => (1, Domain::Chaos, 0, false, EquipmentAbility::None),
+        202 => (2, Domain::Mind, 0, false, EquipmentAbility::None),
+        203 => (0, Domain::Order, 0, false, EquipmentAbility::None),
+        204 => (1, Domain::Body, 0, false, EquipmentAbility::None),
+        205 => (1, Domain::Fury, 0, false, EquipmentAbility::None),
+        206 => (0, Domain::Fury, 0, false, EquipmentAbility::None),
+        207 => (2, Domain::Body, 0, false, EquipmentAbility::None),
         _ => return None,
     };
     Some(EquipmentRule {
@@ -907,6 +1003,8 @@ pub fn resource_gear(id: usize) -> Option<ResourceGear> {
 /// operation. These must not be silently discarded for a "base-stats" unit.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum StaticAbility {
+    HighestMightEnergyDiscount,
+    EmpoweredEnergyDiscount(u8),
     Deflect(u8),
     Shield(u8),
     EntersReady,
@@ -951,6 +1049,20 @@ pub enum StaticAbility {
 pub fn static_abilities(id: usize) -> &'static [StaticAbility] {
     use StaticAbility::*;
     match id {
+        172 => &[Assault(2)],
+        173 => &[Ambush],
+        180 => &[Accelerate {
+            energy: 1,
+            power: 1,
+            domain: Domain::Order,
+        }],
+        185 | 188 | 219 | 223 => &[Hidden],
+        187 | 213 => &[Deflect(1)],
+        209 => &[Shield(1)],
+        211 => &[Backline],
+        226 => &[HighestMightEnergyDiscount],
+        227 => &[EmpoweredEnergyDiscount(2)],
+
         0 | 20 => &[Deflect(1)],
         2 => &[UnchoosableByEnemies {
             except_in_combat: true,
@@ -1145,7 +1257,12 @@ pub struct RepeatCost {
 
 pub fn repeat_cost(id: usize) -> Option<RepeatCost> {
     match id {
-        37 | 133 | 135 | 136 | 137 => Some(RepeatCost {
+        217 => Some(RepeatCost {
+            energy: 3,
+            power: 0,
+            domain: None,
+        }),
+        37 | 133 | 135 | 136 | 137 | 216 | 220 => Some(RepeatCost {
             energy: 2,
             power: 0,
             domain: None,
@@ -1168,8 +1285,8 @@ pub enum TokenPlacement {
 
 pub fn token_placement(id: usize) -> TokenPlacement {
     match id {
-        48 | 87 | 138 => TokenPlacement::Default,
-        102 | 147 | 148 => TokenPlacement::Here,
+        48 | 87 | 138 | 187 | 220 => TokenPlacement::Default,
+        102 | 147 | 148 | 178 | 179 | 180 | 203 => TokenPlacement::Here,
         _ => TokenPlacement::Base,
     }
 }
@@ -1190,15 +1307,27 @@ pub struct TokenSpec {
 
 pub fn token_spec(id: usize) -> Option<TokenSpec> {
     match id {
-        13 | 149 | 151 => Some(TokenSpec {
+        178 | 220 => Some(TokenSpec {
+            name: "Sand Soldier",
+            might: 2,
+            count: 1,
+            is_gear: false,
+            deflect: false,
+            tag: Some("Shurima"),
+        }),
+        13 | 149 | 151 | 160 | 161 | 162 | 163 | 201 | 202 | 219 => Some(TokenSpec {
             name: "Gold",
             might: 0,
-            count: if id == 151 { 4 } else { 1 },
+            count: match id {
+                151 => 4,
+                160 | 202 => 2,
+                _ => 1,
+            },
             is_gear: true,
             deflect: false,
             tag: None,
         }),
-        34 | 148 | 150 => Some(TokenSpec {
+        34 | 148 | 150 | 187 => Some(TokenSpec {
             name: "Bird",
             might: 1,
             count: 1,
@@ -1222,12 +1351,13 @@ pub fn token_spec(id: usize) -> Option<TokenSpec> {
             deflect: false,
             tag: Some("Mech"),
         }),
-        87 | 102 | 147 => Some(TokenSpec {
+        87 | 102 | 147 | 175 | 176 | 177 | 179 | 180 | 203 => Some(TokenSpec {
             name: "Recruit",
             might: 1,
             count: match id {
                 87 => 4,
                 102 => 2,
+                177 | 180 => 3,
                 _ => 1,
             },
             is_gear: false,
@@ -1267,7 +1397,7 @@ mod tests {
     #[test]
     fn all_catalog_entries_have_official_classification() {
         let cards = cards();
-        assert_eq!(cards.len(), 152);
+        assert_eq!(cards.len(), 230);
         for card in cards {
             assert_ne!(
                 effect(card.id),
@@ -1277,7 +1407,7 @@ mod tests {
             );
             assert_ne!(support_status(card.id), SupportStatus::UnknownCard);
         }
-        assert_eq!(effect(152), OfficialEffect::Unsupported);
+        assert_eq!(effect(230), OfficialEffect::Unsupported);
     }
 
     #[test]

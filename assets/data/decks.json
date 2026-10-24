@@ -4283,6 +4283,1862 @@
       "tags": [
         "Freljord"
       ]
+    },
+    {
+      "id": 152,
+      "name": "Demacian Diplomat",
+      "official_id": "unl-092-219",
+      "energy": 2,
+      "power": 0,
+      "might": 2,
+      "domains": [
+        "Body"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/dabc873f161248d3c959932ee54b5cf550c471b9-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "When you play me, gain 1 XP.",
+      "official_text_html": "<p>When you play me, gain 1 XP.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": [
+        "Demacia"
+      ]
+    },
+    {
+      "id": 153,
+      "name": "Voracious Gromp",
+      "official_id": "unl-100-219",
+      "energy": 5,
+      "power": 0,
+      "might": 5,
+      "domains": [
+        "Body"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/3c006b8c9aa4581ad90c258cc6cfac9098d3c296-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Hunt 3] (When I conquer or hold, gain 3 XP.)",
+      "official_text_html": "<p>[Hunt 3] (When I conquer or hold, gain 3 XP.)</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": [
+        "Freljord"
+      ]
+    },
+    {
+      "id": 154,
+      "name": "Herald of Spring",
+      "official_id": "unl-034-219",
+      "energy": 4,
+      "power": 1,
+      "might": 4,
+      "domains": [
+        "Calm"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/5bf7ba27b809d22296deb755b6f5324ac46a5a20-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Hunt] (When I conquer or hold, gain 1 XP.)\nWhen you play me, gain 2 XP.",
+      "official_text_html": "<p>[Hunt] (When I conquer or hold, gain 1 XP.)<br />When you play me, gain 2 XP.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Hunt"
+      ],
+      "tags": [
+        "Ionia"
+      ]
+    },
+    {
+      "id": 155,
+      "name": "Scrutinizing Sergeant",
+      "official_id": "unl-157-219",
+      "energy": 6,
+      "power": 0,
+      "might": 6,
+      "domains": [
+        "Order"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/18a034ba1f4eaf7204312ca68ffb413012f6cf6b-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "When you play me, gain 1 XP for each friendly unit.",
+      "official_text_html": "<p>When you play me, gain 1 XP for each friendly unit.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": [
+        "Elite",
+        "Demacia"
+      ]
+    },
+    {
+      "id": 156,
+      "name": "Pit Crew",
+      "official_id": "ogn-091-298",
+      "energy": 3,
+      "power": 0,
+      "might": 3,
+      "domains": [
+        "Mind"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/8023223b55adc44bafe1f8c5f305d3dde6f6d114-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "When you play a gear, ready me.",
+      "official_text_html": "<p>When you play a gear, ready me.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": [
+        "Bandle City"
+      ]
+    },
+    {
+      "id": 157,
+      "name": "Fretful Feline",
+      "official_id": "ven-071-166",
+      "energy": 6,
+      "power": 0,
+      "might": 5,
+      "domains": [
+        "Body"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/24370c9e33705b393c40f426e221ae851a65dd05-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "When I become ready, give me +2 Might this turn.",
+      "official_text_html": "<p>When I become ready, give me +2 :rb_might: this turn.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": [
+        "Cat",
+        "Piltover"
+      ]
+    },
+    {
+      "id": 158,
+      "name": "Simian Ancestor",
+      "official_id": "sfd-047-221",
+      "energy": 5,
+      "power": 1,
+      "might": 5,
+      "domains": [
+        "Calm"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/901a77a01e869f1f38f7a0b1ba5ae28f06b54a08-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "When you buff me, ready me.",
+      "official_text_html": "<p>When you buff me, ready me.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": [
+        "Ionia"
+      ]
+    },
+    {
+      "id": 159,
+      "name": "Vicious Snapjaws",
+      "official_id": "unl-129-219",
+      "energy": 5,
+      "power": 0,
+      "might": 5,
+      "domains": [
+        "Chaos"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/99845de971eb165c7a6bb424050cd9a29b45b548-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "When another friendly unit dies, gain 1 XP.",
+      "official_text_html": "<p>When another friendly unit dies, gain 1 XP.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": [
+        "Bilgewater"
+      ]
+    },
+    {
+      "id": 160,
+      "name": "Eminent Benefactor",
+      "official_id": "sfd-152-221",
+      "energy": 6,
+      "power": 0,
+      "might": 5,
+      "domains": [
+        "Order"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/8b1a3e89fc40bb81c44f0ee232a701d85a1f209f-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "When I hold, play two Gold gear tokens exhausted.",
+      "official_text_html": "<p>When I hold, play two Gold gear tokens exhausted.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": [
+        "Piltover"
+      ]
+    },
+    {
+      "id": 161,
+      "name": "Plundering Poro",
+      "official_id": "sfd-069-221",
+      "energy": 2,
+      "power": 0,
+      "might": 2,
+      "domains": [
+        "Mind"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/4ff9e6c73f67b505e50ec2f5f513292fe5b20b95-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "When I conquer, play a Gold gear token exhausted.",
+      "official_text_html": "<p>When I conquer, play a Gold gear token exhausted.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": [
+        "Poro",
+        "Pirate",
+        "Bilgewater"
+      ]
+    },
+    {
+      "id": 162,
+      "name": "Treasure Hunter",
+      "official_id": "sfd-130-221",
+      "energy": 2,
+      "power": 0,
+      "might": 1,
+      "domains": [
+        "Chaos"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/c4e1bf257379b4612a1c58f0480480d9b698196c-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "When I move, play a Gold gear token exhausted.",
+      "official_text_html": "<p>When I move, play a Gold gear token exhausted.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": [
+        "Shurima"
+      ]
+    },
+    {
+      "id": 163,
+      "name": "Black Market Broker",
+      "official_id": "sfd-121-221",
+      "energy": 3,
+      "power": 0,
+      "might": 3,
+      "domains": [
+        "Chaos"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/f167c95cea17981f20b767ff81c180aab8a383e2-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "When you play a card from face down, play a Gold gear token exhausted.",
+      "official_text_html": "<p>When you play a card from face down, play a Gold gear token exhausted.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": [
+        "Zaun"
+      ]
+    },
+    {
+      "id": 164,
+      "name": "Ember Monk",
+      "official_id": "ogn-167-298",
+      "energy": 4,
+      "power": 0,
+      "might": 4,
+      "domains": [
+        "Chaos"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/0441f70a7acc377d8cbe08559b7a2fc3139c903b-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "When you play a card from [Hidden], give me +2 Might this turn.",
+      "official_text_html": "<p>When you play a card from [Hidden], give me +2 :rb_might: this turn.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Hidden"
+      ],
+      "tags": [
+        "Bandle City"
+      ]
+    },
+    {
+      "id": 165,
+      "name": "Bubble Bot",
+      "official_id": "sfd-062-221",
+      "energy": 3,
+      "power": 0,
+      "might": 3,
+      "domains": [
+        "Mind"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/c0fe9df24ae4b8a5b4fb8276b1bd6c5a5f5f7b2b-744x1039.png?w=320&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "When you play me, ready another friendly Mech.",
+      "official_text_html": "<p>When you play me, ready another friendly Mech.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": [
+        "Mech",
+        "Yordle",
+        "Bandle City"
+      ]
+    },
+    {
+      "id": 166,
+      "name": "Twilight Reveler",
+      "official_id": "ven-020-166",
+      "energy": 3,
+      "power": 0,
+      "might": 3,
+      "domains": [
+        "Fury"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/c9b3acfc3f996d784d1b5f98ab87ba4d1c6136ce-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "When I attack, ready another friendly unit.",
+      "official_text_html": "<p>When I attack, ready another friendly unit.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": [
+        "Ionia"
+      ]
+    },
+    {
+      "id": 167,
+      "name": "Crackshot Corsair",
+      "official_id": "ogn-130-298",
+      "energy": 3,
+      "power": 0,
+      "might": 3,
+      "domains": [
+        "Body"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/9106ab084e02d7a489cb351e98112e5833b0bb11-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "When I attack, deal 1 to an enemy unit here.",
+      "official_text_html": "<p>When I attack, deal 1 to an enemy unit here.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": [
+        "Pirate",
+        "Bilgewater"
+      ]
+    },
+    {
+      "id": 168,
+      "name": "Ahri, Inquisitive",
+      "official_id": "ogn-119-298",
+      "energy": 3,
+      "power": 1,
+      "might": 3,
+      "domains": [
+        "Mind"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/cfa28e1abcac1db780d11e82985e13ee5978290d-744x1039.png?w=280&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "When I attack or defend, give an enemy unit here -2 Might this turn, to a minimum of 1 Might.",
+      "official_text_html": "<p>When I attack or defend, give an enemy unit here -2 :rb_might: this turn, to a minimum of 1 :rb_might:.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": [
+        "Ahri",
+        "Ionia"
+      ]
+    },
+    {
+      "id": 169,
+      "name": "Harpoon Squad",
+      "official_id": "sfd-137-221",
+      "energy": 4,
+      "power": 0,
+      "might": 4,
+      "domains": [
+        "Chaos"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/f50d32a202375bf09781ae578db107abe84937e0-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "When I move from a battlefield, give me +2 Might this turn.",
+      "official_text_html": "<p>When I move from a battlefield, give me +2 :rb_might: this turn.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": [
+        "Pirate",
+        "Bilgewater"
+      ]
+    },
+    {
+      "id": 170,
+      "name": "Reluctant Leader",
+      "official_id": "ven-121-166",
+      "energy": 4,
+      "power": 1,
+      "might": 3,
+      "domains": [
+        "Order"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/d70352ba57ae548c405614ec6ba2bb17d7a19a44-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "When you play another unit, give me +2 Might this turn.",
+      "official_text_html": "<p>When you play another unit, give me +2 :rb_might: this turn.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": [
+        "Ionia"
+      ]
+    },
+    {
+      "id": 171,
+      "name": "Undercover Agent",
+      "official_id": "ogn-178-298",
+      "energy": 5,
+      "power": 1,
+      "might": 5,
+      "domains": [
+        "Chaos"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/3e4e318c0cc97b13646ee454da71046a09236e47-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Deathknell] — Discard 2, then draw 2. (When I die, get the effect.)",
+      "official_text_html": "<p>[Deathknell] — Discard 2, then draw 2. (When I die, get the effect.)</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Deathknell"
+      ],
+      "tags": []
+    },
+    {
+      "id": 172,
+      "name": "Chemtech Enforcer",
+      "official_id": "ogn-003-298",
+      "energy": 2,
+      "power": 0,
+      "might": 2,
+      "domains": [
+        "Fury"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/19dcf211457d9c9c6e9ea0cd32af76c2c92a3160-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Assault 2] (+2 Might while I'm an attacker.)\nWhen you play me, discard 1.",
+      "official_text_html": "<p>[Assault 2] (+2 :rb_might: while I'm an attacker.)<br />When you play me, discard 1.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": [
+        "Zaun"
+      ]
+    },
+    {
+      "id": 173,
+      "name": "Diana, No Longer Human",
+      "official_id": "unl-149-219",
+      "energy": 4,
+      "power": 1,
+      "might": 3,
+      "domains": [
+        "Chaos"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/37b015a64b6bc15e856c2d78e275b10e64db1de4-744x1039.png?w=320&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Ambush] (You may play me as a [Reaction] to a battlefield where you have units.)\nWhen you play a spell, give me +2 Might this turn.",
+      "official_text_html": "<p>[Ambush] (You may play me as a [Reaction] to a battlefield where you have units.)<br />When you play a spell, give me +2 :rb_might: this turn.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Ambush",
+        "Reaction"
+      ],
+      "tags": [
+        "Diana",
+        "Mount Targon"
+      ]
+    },
+    {
+      "id": 174,
+      "name": "Cithria of Cloudfield",
+      "official_id": "ogn-139-298",
+      "energy": 2,
+      "power": 0,
+      "might": 1,
+      "domains": [
+        "Body"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/6f0931db65e25e0a8d8351ffb97f8deed5dc0aa9-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "When you play another unit, buff me. (If I don't have a buff, I get a +1 Might buff.)",
+      "official_text_html": "<p>When you play another unit, buff me. (If I don't have a buff, I get a +1 :rb_might: buff.)</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": [
+        "Elite",
+        "Demacia"
+      ]
+    },
+    {
+      "id": 175,
+      "name": "Viktor, Innovator",
+      "official_id": "ogn-117-298",
+      "energy": 4,
+      "power": 1,
+      "might": 3,
+      "domains": [
+        "Mind"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/35be0b10f13611b4f5d828f2a79001036ab57ba1-744x1039.png?w=320&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "When you play a card on an opponent's turn, play a 1 Might Recruit unit token in your base.",
+      "official_text_html": "<p>When you play a card on an opponent's turn, play a 1 :rb_might: Recruit unit token in your base.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": [
+        "Viktor",
+        "Zaun"
+      ]
+    },
+    {
+      "id": 176,
+      "name": "Viktor, Leader",
+      "official_id": "ogn-246-298",
+      "energy": 4,
+      "power": 1,
+      "might": 4,
+      "domains": [
+        "Order"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/ab390d6d074c3f07abba000cc166faa1796ec464-744x1039.png?w=300&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "When another non-Recruit unit you control dies, play a 1 Might Recruit unit token into your base.",
+      "official_text_html": "<p>When another non-Recruit unit you control dies, play a 1 :rb_might: Recruit unit token into your base.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": [
+        "Viktor",
+        "Zaun"
+      ]
+    },
+    {
+      "id": 177,
+      "name": "Machine Evangel",
+      "official_id": "ogn-239-298",
+      "energy": 5,
+      "power": 1,
+      "might": 4,
+      "domains": [
+        "Order"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/ad15d4ff89548e83dcede9b209b12233652cf3a1-744x1039.png?w=320&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Deathknell] — Play three 1 Might Recruit unit tokens into your base. (When I die, get the effect.)",
+      "official_text_html": "<p>[Deathknell] — Play three 1 :rb_might: Recruit unit tokens into your base. (When I die, get the effect.)</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Deathknell"
+      ],
+      "tags": [
+        "Piltover"
+      ]
+    },
+    {
+      "id": 178,
+      "name": "Royal Guard",
+      "official_id": "sfd-157-221",
+      "energy": 4,
+      "power": 0,
+      "might": 2,
+      "domains": [
+        "Order"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/919d79a3f5a38c78476e6414a898a0dc7b385629-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "When you play me, play a 2 Might Sand Soldier unit token here.",
+      "official_text_html": "<p>When you play me, play a 2 :rb_might: Sand Soldier unit token here.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": [
+        "Shurima"
+      ]
+    },
+    {
+      "id": 179,
+      "name": "Noxian Drummer",
+      "official_id": "ogn-222-298",
+      "energy": 3,
+      "power": 0,
+      "might": 3,
+      "domains": [
+        "Order"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/45a69adf92b6951c8c8fa974273c22aade312068-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "When I move to a battlefield, play a 1 Might Recruit unit token here. (It is also at the battlefield.)",
+      "official_text_html": "<p>When I move to a battlefield, play a 1 :rb_might: Recruit unit token here. (It is also at the battlefield.)</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": [
+        "Trifarian",
+        "Noxus"
+      ]
+    },
+    {
+      "id": 180,
+      "name": "Corinna Veraza",
+      "official_id": "sfd-179-221",
+      "energy": 7,
+      "power": 1,
+      "might": 6,
+      "domains": [
+        "Order"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/6b0f55aee4b4f9d0074c808e0fff00dcb7e35377-744x1039.png?w=280&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Accelerate] (You may pay [1 Energy][Order Power] as an additional cost to have me enter ready.)\nWhen I move to a battlefield, play three 1 Might Recruit unit tokens here.",
+      "official_text_html": "<p>[Accelerate] (You may pay :rb_energy_1::rb_rune_order: as an additional cost to have me enter ready.)<br />When I move to a battlefield, play three 1 :rb_might: Recruit unit tokens here.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Accelerate"
+      ],
+      "tags": [
+        "Zaun"
+      ]
+    },
+    {
+      "id": 181,
+      "name": "Yordle Explorer",
+      "official_id": "sfd-100-221",
+      "energy": 4,
+      "power": 0,
+      "might": 4,
+      "domains": [
+        "Body"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/556b20c8c605545f13a8990dca36586a287ebb29-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "When you play a card with Power cost [Any Power][Any Power] or more, draw 1.",
+      "official_text_html": "<p>When you play a card with Power cost :rb_rune_rainbow::rb_rune_rainbow: or more, draw 1.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": [
+        "Yordle",
+        "Bandle City"
+      ]
+    },
+    {
+      "id": 182,
+      "name": "Lux, Illuminated",
+      "official_id": "ogs-006-024",
+      "energy": 6,
+      "power": 1,
+      "might": 5,
+      "domains": [
+        "Mind"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/a0d10edf30abb6fde21f5d386e9a7db3c1b0a098-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "When you play a spell that costs [5 Energy] or more, give me +3 Might this turn.",
+      "official_text_html": "<p>When you play a spell that costs :rb_energy_5: or more, give me +3 :rb_might: this turn.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": [
+        "Lux",
+        "Demacia"
+      ]
+    },
+    {
+      "id": 183,
+      "name": "Darius, Trifarian",
+      "official_id": "ogn-027-298",
+      "energy": 5,
+      "power": 1,
+      "might": 5,
+      "domains": [
+        "Fury"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/bf7a4900fd2296972c1305a4707c23860bb0522e-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "When you play your second card in a turn, give me +2 Might this turn and ready me.",
+      "official_text_html": "<p>When you play your second card in a turn, give me +2 :rb_might: this turn and ready me.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": [
+        "Trifarian",
+        "Darius",
+        "Noxus"
+      ]
+    },
+    {
+      "id": 184,
+      "name": "Sanctum Conservator",
+      "official_id": "rad-030-167",
+      "energy": 5,
+      "power": 0,
+      "might": 5,
+      "domains": [
+        "Calm"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/776973101613a15a7d0a2fc90587d19098ecc894-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "When you play a card with Energy cost [7 Energy] or more, ready me.",
+      "official_text_html": "<p>When you play a card with Energy cost :rb_energy_7: or more, ready me.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": []
+    },
+    {
+      "id": 185,
+      "name": "Teemo, Scout",
+      "official_id": "ogn-197-298",
+      "energy": 2,
+      "power": 0,
+      "might": 1,
+      "domains": [
+        "Chaos"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/ca8a2e11dd78dd09ad1c9ad3a23e5699254b947e-744x1039.png?w=320&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Hidden] (Hide now for [Any Power] to react with later for [0 Energy].)\nWhen you play me, give me +3 Might this turn.",
+      "official_text_html": "<p>[Hidden] (Hide now for :rb_rune_rainbow: to react with later for :rb_energy_0:.)<br />When you play me, give me +3 :rb_might: this turn.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Hidden"
+      ],
+      "tags": [
+        "Yordle",
+        "Teemo",
+        "Bandle City"
+      ]
+    },
+    {
+      "id": 186,
+      "name": "Suave Negotiator",
+      "official_id": "rad-099-167",
+      "energy": 3,
+      "power": 0,
+      "might": 3,
+      "domains": [
+        "Chaos"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/20e2752ddf0af274d26a3c25c737ccea2c353e39-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "When you play me, choose an opponent. You and that player each draw 1.",
+      "official_text_html": "<p>When you play me, choose an opponent. You and that player each draw 1.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": []
+    },
+    {
+      "id": 187,
+      "name": "Walking Roost",
+      "official_id": "unl-130-219",
+      "energy": 5,
+      "power": 0,
+      "might": 6,
+      "domains": [
+        "Chaos"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/d9b344b4b29b2baab0a1dc2e16a6e946192edaf5-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Deflect] (Opponents must pay [Any Power] to choose me with a spell or ability.)\nWhen you play me, choose an opponent. They play a 1 Might Bird unit token with [Deflect].",
+      "official_text_html": "<p>[Deflect] (Opponents must pay :rb_rune_rainbow: to choose me with a spell or ability.)<br />When you play me, choose an opponent. They play a 1 :rb_might: Bird unit token with [Deflect].</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Deflect"
+      ],
+      "tags": [
+        "Shadow Isles"
+      ]
+    },
+    {
+      "id": 188,
+      "name": "Windsinger",
+      "official_id": "sfd-138-221",
+      "energy": 2,
+      "power": 0,
+      "might": 1,
+      "domains": [
+        "Chaos"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/e47c9a3956f8fbb77daa5fdb2ee433dd1772f247-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "Hidden (Hide now for [Any Power] to react with later for [0 Energy].)\nWhen you play me, you may return another unit at a battlefield with 3 Might or less to its owner's hand.",
+      "official_text_html": "<p>Hidden (Hide now for :rb_rune_rainbow: to react with later for :rb_energy_0:.)<br />When you play me, you may return another unit at a battlefield with 3 :rb_might: or less to its owner's hand.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Hidden"
+      ],
+      "tags": [
+        "Ionia"
+      ]
+    },
+    {
+      "id": 189,
+      "name": "Zaunite Bouncer",
+      "official_id": "ogn-188-298",
+      "energy": 4,
+      "power": 2,
+      "might": 2,
+      "domains": [
+        "Chaos"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/0f4e8258e3920e4a4654cfe74faf8c266f2aa5dd-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "When you play me, return another unit at a battlefield to its owner's hand.",
+      "official_text_html": "<p>When you play me, return another unit at a battlefield to its owner's hand.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": [
+        "Zaun"
+      ]
+    },
+    {
+      "id": 190,
+      "name": "Beast Below",
+      "official_id": "sfd-132-221",
+      "energy": 7,
+      "power": 2,
+      "might": 8,
+      "domains": [
+        "Chaos"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/d27a56111c68c651099d7b73b22a54a825458857-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "When you play me, return another friendly unit and an enemy unit to their owners' hands.",
+      "official_text_html": "<p>When you play me, return another friendly unit and an enemy unit to their owners' hands.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": [
+        "Bilgewater"
+      ]
+    },
+    {
+      "id": 191,
+      "name": "Carnivorous Snapvine",
+      "official_id": "ogn-149-298",
+      "energy": 5,
+      "power": 2,
+      "might": 6,
+      "domains": [
+        "Body"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/5ceaec3452d623931b5ac93d0af26b180b9646de-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "When you play me, choose an enemy unit at a battlefield. We deal damage equal to our Mights to each other.",
+      "official_text_html": "<p>When you play me, choose an enemy unit at a battlefield. We deal damage equal to our Mights to each other.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": [
+        "Shadow Isles"
+      ]
+    },
+    {
+      "id": 192,
+      "name": "Solari Shieldbearer",
+      "official_id": "ogn-051-298",
+      "energy": 3,
+      "power": 0,
+      "might": 2,
+      "domains": [
+        "Calm"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/9387ea6480c9fd6991760b07a178c07a5fcf1c57-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "When you play me, stun a unit. (It doesn't deal combat damage this turn.)",
+      "official_text_html": "<p>When you play me, stun a unit. (It doesn't deal combat damage this turn.)</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": [
+        "Mount Targon"
+      ]
+    },
+    {
+      "id": 193,
+      "name": "Mystic Poro",
+      "official_id": "ogn-171-298",
+      "energy": 2,
+      "power": 0,
+      "might": 2,
+      "domains": [
+        "Chaos"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/11af57d045768e886d05e1c0933b0d57cb1e459d-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Vision] (When you play me, look at the top card of your Main Deck. You may recycle it.)",
+      "official_text_html": "<p>[Vision] (When you play me, look at the top card of your Main Deck. You may recycle it.)</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Vision"
+      ],
+      "tags": [
+        "Poro"
+      ]
+    },
+    {
+      "id": 194,
+      "name": "Strigian Oracle",
+      "official_id": "rad-053-167",
+      "energy": 2,
+      "power": 0,
+      "might": 2,
+      "domains": [
+        "Mind"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/5973b5036060f29e24f8778949bf6f01f360c0a4-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "When I become exhausted, [Predict]. (Look at the top card of your Main Deck. You may recycle it.)",
+      "official_text_html": "<p>When I become exhausted, [Predict]. (Look at the top card of your Main Deck. You may recycle it.)</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Predict"
+      ],
+      "tags": []
+    },
+    {
+      "id": 195,
+      "name": "Frigid Jewel",
+      "official_id": "unl-074-219",
+      "energy": 2,
+      "power": 0,
+      "might": 0,
+      "domains": [
+        "Mind"
+      ],
+      "kind": "Gear",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/f1a6c28649bf4478b4728379b6d548058739f0e9-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "When you draw your second card each turn, give a friendly unit +2 Might this turn.",
+      "official_text_html": "<p>When you draw your second card each turn, give a friendly unit +2 :rb_might: this turn.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": []
+    },
+    {
+      "id": 196,
+      "name": "Pirate's Haven",
+      "official_id": "ogn-143-298",
+      "energy": 3,
+      "power": 0,
+      "might": 0,
+      "domains": [
+        "Body"
+      ],
+      "kind": "Gear",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/1991b64d58cbd3698574f44b404f7a88d6403134-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "When you ready a friendly unit, give it +1 Might this turn.",
+      "official_text_html": "<p>When you ready a friendly unit, give it +1 :rb_might: this turn.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": []
+    },
+    {
+      "id": 197,
+      "name": "Mask of Foresight",
+      "official_id": "ogn-060-298",
+      "energy": 2,
+      "power": 0,
+      "might": 0,
+      "domains": [
+        "Calm"
+      ],
+      "kind": "Gear",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/03824709acbb4151d13b083a842c4702a3e61221-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "When a friendly unit attacks or defends alone, give it +1 Might this turn.",
+      "official_text_html": "<p>When a friendly unit attacks or defends alone, give it +1 :rb_might: this turn.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": []
+    },
+    {
+      "id": 198,
+      "name": "Vanguard Helm",
+      "official_id": "ogn-228-298",
+      "energy": 2,
+      "power": 0,
+      "might": 0,
+      "domains": [
+        "Order"
+      ],
+      "kind": "Gear",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/9718c666cbf789a572760c826d0a06b26b787ae5-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "When a buffed friendly unit dies, buff another friendly unit. (If it doesn't have a buff, it gets a +1 Might buff.)",
+      "official_text_html": "<p>When a buffed friendly unit dies, buff another friendly unit. (If it doesn't have a buff, it gets a +1 :rb_might: buff.)</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": []
+    },
+    {
+      "id": 199,
+      "name": "Sacred Shears",
+      "official_id": "sfd-172-221",
+      "energy": 2,
+      "power": 1,
+      "might": 1,
+      "domains": [
+        "Order"
+      ],
+      "kind": "Gear",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/af1069aef68d413127dfa84e4e96b8d66a8720ca-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Equip] [Order Power] ([Order Power]: Attach this to a unit you control.)\nAttached unit (+1 Might): [Deathknell] — Draw 1. (When I die, get the effect.)",
+      "official_text_html": "<p>[Equip] :rb_rune_order: (:rb_rune_order:: Attach this to a unit you control.)</p>",
+      "equipment_effect_html": "<p>[Deathknell] — Draw 1. (When I die, get the effect.)</p>",
+      "equipment_effect": "[Deathknell] — Draw 1. (When I die, get the effect.)",
+      "might_bonus": 1,
+      "keywords": [
+        "Deathknell",
+        "Equip"
+      ],
+      "tags": [
+        "Equipment"
+      ]
+    },
+    {
+      "id": 200,
+      "name": "Doran's Ring",
+      "official_id": "sfd-124-221",
+      "energy": 1,
+      "power": 0,
+      "might": 1,
+      "domains": [
+        "Chaos"
+      ],
+      "kind": "Gear",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/054df5a11967b768430a2f763e1b5d4dbbac3b50-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Equip] [Chaos Power] ([Chaos Power]: Attach this to a unit you control.)\nAttached unit (+1 Might): When I conquer, discard 1, then draw 1.",
+      "official_text_html": "<p>[Equip] :rb_rune_chaos: (:rb_rune_chaos:: Attach this to a unit you control.)</p>",
+      "equipment_effect_html": "<p>When I conquer, discard 1, then draw 1.</p>",
+      "equipment_effect": "When I conquer, discard 1, then draw 1.",
+      "might_bonus": 1,
+      "keywords": [
+        "Equip"
+      ],
+      "tags": [
+        "Equipment"
+      ]
+    },
+    {
+      "id": 201,
+      "name": "Cull",
+      "official_id": "sfd-134-221",
+      "energy": 1,
+      "power": 0,
+      "might": 1,
+      "domains": [
+        "Chaos"
+      ],
+      "kind": "Gear",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/885ee56a4153b4f9fd064e9d24c9d55400e1291f-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Equip] [Chaos Power] ([Chaos Power]: Attach this to a unit you control.)\nAttached unit (+1 Might): When I conquer, play a Gold gear token exhausted.",
+      "official_text_html": "<p>[Equip] :rb_rune_chaos: (:rb_rune_chaos:: Attach this to a unit you control.)</p>",
+      "equipment_effect_html": "<p>When I conquer, play a Gold gear token exhausted.</p>",
+      "equipment_effect": "When I conquer, play a Gold gear token exhausted.",
+      "might_bonus": 1,
+      "keywords": [
+        "Equip"
+      ],
+      "tags": [
+        "Equipment"
+      ]
+    },
+    {
+      "id": 202,
+      "name": "World Atlas",
+      "official_id": "sfd-086-221",
+      "energy": 3,
+      "power": 0,
+      "might": 2,
+      "domains": [
+        "Mind"
+      ],
+      "kind": "Gear",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/7b8d96e128c19c5ff368119a60759cffa644e942-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Equip] [Mind Power] ([Mind Power]: Attach this to a unit you control.)\nAttached unit (+2 Might): When I hold, play two Gold gear tokens exhausted.",
+      "official_text_html": "<p>[Equip] :rb_rune_mind: (:rb_rune_mind:: Attach this to a unit you control.)</p>",
+      "equipment_effect_html": "<p>When I hold, play two Gold gear tokens exhausted.</p>",
+      "equipment_effect": "When I hold, play two Gold gear tokens exhausted.",
+      "might_bonus": 2,
+      "keywords": [
+        "Equip"
+      ],
+      "tags": [
+        "Equipment"
+      ]
+    },
+    {
+      "id": 203,
+      "name": "Eye of the Herald",
+      "official_id": "sfd-153-221",
+      "energy": 1,
+      "power": 0,
+      "might": 0,
+      "domains": [
+        "Order"
+      ],
+      "kind": "Gear",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/fc3e26e0e4ff94de360f1163c41641daf81c1900-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Equip] [Order Power] ([Order Power]: Attach this to a unit you control.)\nAttached unit (+0 Might): When I move, play a 1 Might Recruit unit token here.",
+      "official_text_html": "<p>[Equip] :rb_rune_order: (:rb_rune_order:: Attach this to a unit you control.)</p>",
+      "equipment_effect_html": "<p>When I move, play a 1 :rb_might: Recruit unit token here.</p>",
+      "equipment_effect": "When I move, play a 1 Might Recruit unit token here.",
+      "might_bonus": 0,
+      "keywords": [
+        "Equip"
+      ],
+      "tags": [
+        "Equipment"
+      ]
+    },
+    {
+      "id": 204,
+      "name": "Warmog's Armor",
+      "official_id": "sfd-108-221",
+      "energy": 1,
+      "power": 0,
+      "might": 1,
+      "domains": [
+        "Body"
+      ],
+      "kind": "Gear",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/0d680867670dd75a66a632cd6f044a7f7e39b42b-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Equip] [Body Power] ([Body Power]: Attach this to a unit you control.)\nAttached unit (+1 Might): When I conquer, buff me. (If I don't have a buff, I get a +1 Might buff.)",
+      "official_text_html": "<p>[Equip] :rb_rune_body: (:rb_rune_body:: Attach this to a unit you control.)</p>",
+      "equipment_effect_html": "<p>When I conquer, buff me. (If I don't have a buff, I get a +1 :rb_might: buff.)</p>",
+      "equipment_effect": "When I conquer, buff me. (If I don't have a buff, I get a +1 Might buff.)",
+      "might_bonus": 1,
+      "keywords": [
+        "Equip"
+      ],
+      "tags": [
+        "Equipment"
+      ]
+    },
+    {
+      "id": 205,
+      "name": "Pendulum Blade",
+      "official_id": "ven-011-166",
+      "energy": 3,
+      "power": 0,
+      "might": 1,
+      "domains": [
+        "Fury"
+      ],
+      "kind": "Gear",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/857a5cee28f403454b1825dd112c07e9ac06b8a4-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Equip] [Fury Power] ([Fury Power]: Attach this to a unit you control.)\nAttached unit (+1 Might): When I move to a battlefield, give me +2 Might this turn.",
+      "official_text_html": "<p>[Equip] :rb_rune_fury: (:rb_rune_fury:: Attach this to a unit you control.)</p>",
+      "equipment_effect_html": "<p>When I move to a battlefield, give me +2 :rb_might: this turn.</p>",
+      "equipment_effect": "When I move to a battlefield, give me +2 Might this turn.",
+      "might_bonus": 1,
+      "keywords": [
+        "Equip"
+      ],
+      "tags": [
+        "Equipment"
+      ]
+    },
+    {
+      "id": 206,
+      "name": "Recurve Bow",
+      "official_id": "sfd-016-221",
+      "energy": 2,
+      "power": 0,
+      "might": 0,
+      "domains": [
+        "Fury"
+      ],
+      "kind": "Gear",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/763604237b4b59df5df98f61528be2233b850dd5-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Equip] [Fury Power] ([Fury Power]: Attach this to a unit you control.)\nAttached unit (+0 Might): When I attack or defend, deal 2 to an enemy unit here.",
+      "official_text_html": "<p>[Equip] :rb_rune_fury: (:rb_rune_fury:: Attach this to a unit you control.)</p>",
+      "equipment_effect_html": "<p>When I attack or defend, deal 2 to an enemy unit here.</p>",
+      "equipment_effect": "When I attack or defend, deal 2 to an enemy unit here.",
+      "might_bonus": 0,
+      "keywords": [
+        "Equip"
+      ],
+      "tags": [
+        "Equipment"
+      ]
+    },
+    {
+      "id": 207,
+      "name": "Trinity Force",
+      "official_id": "sfd-115-221",
+      "energy": 4,
+      "power": 0,
+      "might": 2,
+      "domains": [
+        "Body"
+      ],
+      "kind": "Gear",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/e8b64985389e5792afc2a2fe0dc23ae7590d7709-744x1039.png?w=320&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Equip] [Body Power] ([Body Power]: Attach this to a unit you control.)\nAttached unit (+2 Might): When I hold, score 1 point.",
+      "official_text_html": "<p>[Equip] :rb_rune_body: (:rb_rune_body:: Attach this to a unit you control.)</p>",
+      "equipment_effect_html": "<p>When I hold, score 1 point.</p>",
+      "equipment_effect": "When I hold, score 1 point.",
+      "might_bonus": 2,
+      "keywords": [
+        "Equip"
+      ],
+      "tags": [
+        "Equipment"
+      ]
+    },
+    {
+      "id": 208,
+      "name": "Ahri, Alluring",
+      "official_id": "ogn-066-298",
+      "energy": 5,
+      "power": 1,
+      "might": 4,
+      "domains": [
+        "Calm"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/fabbcc2f83f397cf07299236a702db05a151053b-744x1039.png?w=320&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "When I hold, you score 1 point.",
+      "official_text_html": "<p>When I hold, you score 1 point.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": [
+        "Ahri",
+        "Ionia"
+      ]
+    },
+    {
+      "id": 209,
+      "name": "Shen, Leader of the Kinkou Order",
+      "official_id": "ven-138-166",
+      "energy": 6,
+      "power": 2,
+      "might": 7,
+      "domains": [
+        "Order"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/b227d9f9abc6f165beffba4eaf3b5819cf06eab4-744x1039.png?w=300&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Shield] (+1 Might while I'm a defender.)\nWhen I hold, if there is exactly one other unit you control here, you score 1 point.",
+      "official_text_html": "<p>[Shield] (+1 :rb_might: while I'm a defender.)<br />When I hold, if there is exactly one other unit you control here, you score 1 point.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Shield"
+      ],
+      "tags": [
+        "Shen",
+        "Ionia"
+      ]
+    },
+    {
+      "id": 210,
+      "name": "Shen, Scourge of Shadows",
+      "official_id": "ven-042-166",
+      "energy": 5,
+      "power": 1,
+      "might": 6,
+      "domains": [
+        "Calm"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/bbe849918c7f4189379ae8957dd427a3f272a1a6-744x1039.png?w=320&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "When I hold, if there is exactly one other unit you control here, draw 1.",
+      "official_text_html": "<p>When I hold, if there is exactly one other unit you control here, draw 1.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": [
+        "Shen",
+        "Ionia"
+      ]
+    },
+    {
+      "id": 211,
+      "name": "Enthusiastic Promoter",
+      "official_id": "unl-043-219",
+      "energy": 3,
+      "power": 0,
+      "might": 2,
+      "domains": [
+        "Calm"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/c03bdc371440cbf6de773b0b39010808bfdecea1-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Backline] (I must be assigned combat damage last.)\nWhen I hold, [Buff] all units here. (Give each a +1 Might buff if it doesn't have one.)",
+      "official_text_html": "<p>[Backline] (I must be assigned combat damage last.)<br />When I hold, [Buff] all units here. (Give each a +1 :rb_might: buff if it doesn't have one.)</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Backline",
+        "Buff"
+      ],
+      "tags": [
+        "Yordle",
+        "Bandle City"
+      ]
+    },
+    {
+      "id": 212,
+      "name": "Spectral Centaur",
+      "official_id": "unl-068-219",
+      "energy": 6,
+      "power": 0,
+      "might": 5,
+      "domains": [
+        "Mind"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/60fb267f2d0cd16714d35a0eefd0d5864304102b-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "When another friendly unit dies, give me +2 Might this turn.",
+      "official_text_html": "<p>When another friendly unit dies, give me +2 :rb_might: this turn.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": [
+        "Spirit",
+        "Shadow Isles"
+      ]
+    },
+    {
+      "id": 213,
+      "name": "Storm Raptor",
+      "official_id": "rad-036-167",
+      "energy": 6,
+      "power": 0,
+      "might": 6,
+      "domains": [
+        "Calm"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/fc59661dfc70a1fdb393d795c90779a2b5661609-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Deflect] (Opponents must pay [Any Power] to choose me with a spell or ability.)\nWhen a stunned enemy unit dies here, draw 1.",
+      "official_text_html": "<p>[Deflect] (Opponents must pay :rb_rune_rainbow: to choose me with a spell or ability.)<br />When a stunned enemy unit dies here, draw 1.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Deflect"
+      ],
+      "tags": []
+    },
+    {
+      "id": 214,
+      "name": "Wraith of Echoes",
+      "official_id": "ogn-118-298",
+      "energy": 6,
+      "power": 1,
+      "might": 5,
+      "domains": [
+        "Mind"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/10785ab5267ca3ff2dea081d8d18ba47c3858517-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "The first time a friendly unit dies each turn, draw 1.",
+      "official_text_html": "<p>The first time a friendly unit dies each turn, draw 1.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": [
+        "Spirit",
+        "Shadow Isles"
+      ]
+    },
+    {
+      "id": 215,
+      "name": "Prize of Progress",
+      "official_id": "sfd-075-221",
+      "energy": 4,
+      "power": 1,
+      "might": 3,
+      "domains": [
+        "Mind"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/c08f0b6ed24415e6a440a17931c7e2a2db3ab2cc-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "When you use an activated ability of a gear, give me +1 Might this turn.",
+      "official_text_html": "<p>When you use an activated ability of a gear, give me +1 :rb_might: this turn.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": [
+        "Mech",
+        "Piltover"
+      ]
+    },
+    {
+      "id": 216,
+      "name": "Upstage Comedy",
+      "official_id": "unl-009-219",
+      "energy": 2,
+      "power": 0,
+      "might": 0,
+      "domains": [
+        "Fury"
+      ],
+      "kind": "Spell",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/4a636fcd682b32b41a4886c7383e781414139adb-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Repeat] [2 Energy] (You may pay the additional cost to repeat this spell's effect.)\nReady a unit.",
+      "official_text_html": "<p>[Repeat] :rb_energy_2: (You may pay the additional cost to repeat this spell's effect.)<br />Ready a unit.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Repeat"
+      ],
+      "tags": []
+    },
+    {
+      "id": 217,
+      "name": "Marching Orders",
+      "official_id": "sfd-114-221",
+      "energy": 3,
+      "power": 0,
+      "might": 0,
+      "domains": [
+        "Body"
+      ],
+      "kind": "Spell",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/b553f8e16e0ff1aaa57f74121e68954fbe45a07b-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Action] (Play on your turn or in showdowns.)\n[Repeat] [3 Energy] (You may pay the additional cost to repeat this spell's effect.)\nChoose a friendly unit anywhere and an enemy unit at a battlefield. They deal damage equal to their Mights to each other.",
+      "official_text_html": "<p>[Action] (Play on your turn or in showdowns.)<br />[Repeat] :rb_energy_3: (You may pay the additional cost to repeat this spell's effect.)<br />Choose a friendly unit anywhere and an enemy unit at a battlefield. They deal damage equal to their Mights to each other.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Action",
+        "Repeat"
+      ],
+      "tags": []
+    },
+    {
+      "id": 218,
+      "name": "Gentlemen's Duel",
+      "official_id": "ogs-008-024",
+      "energy": 6,
+      "power": 1,
+      "might": 0,
+      "domains": [
+        "Body"
+      ],
+      "kind": "Spell",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/4568ab827fdcd42d6bb86b1c2de6182e286c9ee9-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Action] (Play on your turn or in showdowns.)\nGive a friendly unit +3 Might this turn. Then choose an enemy unit. They deal damage equal to their Mights to each other.",
+      "official_text_html": "<p>[Action] (Play on your turn or in showdowns.)<br />Give a friendly unit +3 :rb_might: this turn. Then choose an enemy unit. They deal damage equal to their Mights to each other.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Action"
+      ],
+      "tags": []
+    },
+    {
+      "id": 219,
+      "name": "Wages of Pain",
+      "official_id": "sfd-070-221",
+      "energy": 3,
+      "power": 0,
+      "might": 0,
+      "domains": [
+        "Mind"
+      ],
+      "kind": "Spell",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/aef5c891bd6f7cbc3a97b1e01688868316599929-744x1039.png?w=320&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Hidden] (Hide now for [Any Power] to react with later for [0 Energy].)\n[Action] (Play on your turn or in showdowns.)\nDeal 3 to a unit at a battlefield. Play a Gold gear token exhausted.",
+      "official_text_html": "<p>[Hidden] (Hide now for :rb_rune_rainbow: to react with later for :rb_energy_0:.)<br />[Action] (Play on your turn or in showdowns.)<br />Deal 3 to a unit at a battlefield. Play a Gold gear token exhausted.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Action",
+        "Hidden"
+      ],
+      "tags": []
+    },
+    {
+      "id": 220,
+      "name": "Desert's Call",
+      "official_id": "sfd-031-221",
+      "energy": 2,
+      "power": 0,
+      "might": 0,
+      "domains": [
+        "Calm"
+      ],
+      "kind": "Spell",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/b38ab6c02238b5a8e456cdad9b5108bb30e718bc-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Repeat] [2 Energy] (You may pay the additional cost to repeat this spell's effect.)\nPlay a 2 Might Sand Soldier unit token.",
+      "official_text_html": "<p>[Repeat] :rb_energy_2: (You may pay the additional cost to repeat this spell's effect.)<br />Play a 2 :rb_might: Sand Soldier unit token.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Repeat"
+      ],
+      "tags": []
+    },
+    {
+      "id": 221,
+      "name": "Guttural Roar",
+      "official_id": "ven-072-166",
+      "energy": 2,
+      "power": 0,
+      "might": 0,
+      "domains": [
+        "Body"
+      ],
+      "kind": "Spell",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/891f0f85b039b16593865c74b90b0640a312e59b-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Action] (Play on your turn or in showdowns.)\nGive a unit +2 Might this turn. If it's [Empowered], give it +4 Might this turn instead.",
+      "official_text_html": "<p>[Action] (Play on your turn or in showdowns.)<br />Give a unit +2 :rb_might: this turn. If it's [Empowered], give it +4 :rb_might: this turn instead.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Action",
+        "Empowered"
+      ],
+      "tags": []
+    },
+    {
+      "id": 222,
+      "name": "Monster Harpoon",
+      "official_id": "unl-014-219",
+      "energy": 1,
+      "power": 1,
+      "might": 0,
+      "domains": [
+        "Fury"
+      ],
+      "kind": "Spell",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/ed51ed36ad0938048ee50894d75d299c29d17759-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Action] (Play on your turn or in showdowns.)\nDeal 2 to a unit at a battlefield. If you control a facedown card, deal 4 to it instead.",
+      "official_text_html": "<p>[Action] (Play on your turn or in showdowns.)<br />Deal 2 to a unit at a battlefield. If you control a facedown card, deal 4 to it instead.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Action"
+      ],
+      "tags": []
+    },
+    {
+      "id": 223,
+      "name": "Sudden Storm",
+      "official_id": "sfd-017-221",
+      "energy": 3,
+      "power": 0,
+      "might": 0,
+      "domains": [
+        "Fury"
+      ],
+      "kind": "Spell",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/ba3e8c3e95137a289dbdec88e96e5c5a9a45f2c7-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Hidden] (Hide now for [Any Power] to react with later for [0 Energy].)\n[Action] (Play on your turn or in showdowns.)\nDeal 2 to a unit at a battlefield. If it's attacking, deal 4 to it instead.",
+      "official_text_html": "<p>[Hidden] (Hide now for :rb_rune_rainbow: to react with later for :rb_energy_0:.)<br />[Action] (Play on your turn or in showdowns.)<br />Deal 2 to a unit at a battlefield. If it's attacking, deal 4 to it instead.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Action",
+        "Hidden"
+      ],
+      "tags": []
+    },
+    {
+      "id": 224,
+      "name": "Right of Conquest",
+      "official_id": "unl-015-219",
+      "energy": 3,
+      "power": 1,
+      "might": 0,
+      "domains": [
+        "Fury"
+      ],
+      "kind": "Spell",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/2467e43f316e8700ad43b66e3b5d490f3f9d3cea-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "Draw 1, then draw 1 for each battlefield you or allies control.",
+      "official_text_html": "<p>Draw 1, then draw 1 for each battlefield you or allies control.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": []
+    },
+    {
+      "id": 225,
+      "name": "Show of Strength",
+      "official_id": "sfd-106-221",
+      "energy": 2,
+      "power": 1,
+      "might": 0,
+      "domains": [
+        "Body"
+      ],
+      "kind": "Spell",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/d04ac6687931018fd68368c65cc024155867cab4-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Reaction] (Play any time, even before spells and abilities resolve.)\nDraw 1 for each of your [Mighty] units. (A unit is Mighty while it has 5+ Might.)",
+      "official_text_html": "<p>[Reaction] (Play any time, even before spells and abilities resolve.)<br />Draw 1 for each of your [Mighty] units. (A unit is Mighty while it has 5+ :rb_might:.)</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Mighty",
+        "Reaction"
+      ],
+      "tags": []
+    },
+    {
+      "id": 226,
+      "name": "Sky Splitter",
+      "official_id": "ogn-014-298",
+      "energy": 8,
+      "power": 1,
+      "might": 0,
+      "domains": [
+        "Fury"
+      ],
+      "kind": "Spell",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/01faae468720dd5bf5e3fe12ba56c01af70263be-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Action] (Play on your turn or in showdowns.)\nThis spell's Energy cost is reduced by the highest Might among units you control.\nDeal 5 to a unit at a battlefield.",
+      "official_text_html": "<p>[Action] (Play on your turn or in showdowns.)<br />This spell's Energy cost is reduced by the highest Might among units you control.<br />Deal 5 to a unit at a battlefield.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Action"
+      ],
+      "tags": []
+    },
+    {
+      "id": 227,
+      "name": "Shock Blast",
+      "official_id": "ven-059-166",
+      "energy": 3,
+      "power": 1,
+      "might": 0,
+      "domains": [
+        "Mind"
+      ],
+      "kind": "Spell",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/a8b976725e4722dcbf327cde9f92625cb516150e-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Action] (Play on your turn or in showdowns.)\nThis costs [2 Energy] less if you control something that's [Empowered].\nDeal 4 to a unit at a battlefield.",
+      "official_text_html": "<p>[Action] (Play on your turn or in showdowns.)<br />This costs :rb_energy_2: less if you control something that's [Empowered].<br />Deal 4 to a unit at a battlefield.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Action",
+        "Empowered"
+      ],
+      "tags": []
+    },
+    {
+      "id": 228,
+      "name": "Against the Odds",
+      "official_id": "sfd-001-221",
+      "energy": 2,
+      "power": 0,
+      "might": 0,
+      "domains": [
+        "Fury"
+      ],
+      "kind": "Spell",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/4c4ab0c838854ccd5d5399a045835876450287e8-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Reaction] (Play any time, even before spells and abilities resolve.)\nGive a friendly unit at a battlefield +2 Might this turn for each enemy unit there.",
+      "official_text_html": "<p>[Reaction] (Play any time, even before spells and abilities resolve.)<br />Give a friendly unit at a battlefield +2 :rb_might: this turn for each enemy unit there.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Reaction"
+      ],
+      "tags": []
+    },
+    {
+      "id": 229,
+      "name": "High Note",
+      "official_id": "rad-048-167",
+      "energy": 3,
+      "power": 0,
+      "might": 0,
+      "domains": [
+        "Mind"
+      ],
+      "kind": "Spell",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/afba3669ea1063dafb0e4c2c766694e00540eb13-744x1039.png?w=360&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Reaction] (Play any time, even before spells and abilities resolve.)\nGive a unit –Might this turn equal to the number of exhausted units you control.",
+      "official_text_html": "<p>[Reaction] (Play any time, even before spells and abilities resolve.)<br />Give a unit –:rb_might: this turn equal to the number of exhausted units you control.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Reaction"
+      ],
+      "tags": []
     }
   ],
   "official_text_note": "Official card/legend rules text from the Riot Card Gallery, retrieved 2026-10-24 and corrected by cited errata. Resource icon tokens are expanded to readable bracketed names. Raw card and equipment HTML is preserved separately. Official text does not establish full implementation fidelity."

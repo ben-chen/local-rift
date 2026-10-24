@@ -8,7 +8,7 @@ use crate::cards::{Domain, cards, presets};
 use crate::deck::CustomDeck;
 use crate::game::{
     Action, ChainAbility, Decision, Difficulty, FlowSource, Game, InstructedPlayKind, Phase,
-    Target, TriggeredAbility,
+    Target, TriggerContext, TriggeredAbility,
 };
 use crate::legends::{LegendAbility, LegendKind, LegendTrigger};
 use crate::payment::{PaymentQuote, PowerPayment};
@@ -298,8 +298,12 @@ impl Session {
             let hand = if owner == viewer { Some(state.hand.clone()) } else { public_hand };
             let units: Vec<_> = state.units.iter().map(|unit| {
                 let keywords = game.unit_keywords(unit);
+                let tags = if unit.token {
+                    crate::rules::token_spec(unit.card_id).and_then(|spec|spec.tag).into_iter().collect::<Vec<_>>()
+                } else { game.catalog[unit.card_id].tags.to_vec() };
                 json!({
                 "id":unit.id, "card_id":unit.card_id, "name":game.unit_name(unit), "token":unit.token,
+                "tags":tags,
                 "lane":unit.lane, "ready":unit.ready, "might":game.unit_might(unit), "damage":unit.damage,
                 "buff":unit.buff, "temporary_buff":unit.temporary_buff, "stunned":unit.stunned,
                 "protected":unit.protected, "banish_on_death":unit.banish_on_death,
@@ -312,7 +316,7 @@ impl Session {
             let gear: Vec<_> = state.gear.iter().map(|gear| json!({
                 "id":gear.id, "card_id":gear.card_id, "name":game.gear_name(gear), "token":gear.token,
                 "attached_to":gear.attached_to, "lane":game.gear_location(owner,gear.id),
-                "ready":gear.ready, "temporary":gear.temporary
+                "ready":gear.ready, "temporary":gear.temporary,"empowered":game.unit_empowered(gear.id)
             })).collect();
             let hidden: Vec<_> = state.hidden.iter().map(|card| json!({
                 "id":card.id, "lane":card.lane, "hidden_turn":card.hidden_turn,
@@ -329,6 +333,8 @@ impl Session {
                 "exhausted_runes":state.exhausted_runes, "power_pool":state.power_pool,
                 "any_power":state.any_power, "xp":state.xp, "units":units, "gear":gear, "hidden":hidden,
                 "cards_played_this_turn":game.cards_played_this_turn(owner),"cannot_play_cards":game.cannot_play_cards(owner),
+                "cards_completed_this_turn":game.trigger_state.completed_cards[owner],
+                "cards_drawn_this_turn":game.trigger_state.draws[owner],
                 "optional_power_discount":game.optional_power_discount[owner],
                 "granted_flow_indices":game.granted_flow_indices(owner),
                 "flow_costs":state.discard.iter().enumerate().map(|(index,_)| json!({"trash_index":index,
@@ -634,7 +640,7 @@ pub fn catalog() -> Value {
         "domains":["Fury","Calm","Mind","Body","Chaos","Order"],
         "cards":cards().iter().map(|c|json!({"id":c.id,"official_id":c.official_id,"name":c.name,"energy":c.cost,"power":c.power_cost,
             "might":c.might,"domain":c.domain.name(),"domains":c.domains.iter().map(|d|d.name()).collect::<Vec<_>>(),
-            "kind":c.kind.name(),"official_text":c.official_text,"keywords":c.keywords})).collect::<Vec<_>>(),
+            "kind":c.kind.name(),"official_text":c.official_text,"keywords":c.keywords,"tags":c.tags})).collect::<Vec<_>>(),
         "presets":presets().iter().enumerate().map(|(id,p)|json!({"id":id,"name":p.name,
             "legend_name":p.legend_name,"legend_text":p.legend_text,"chosen_champion":p.chosen_champion,
             "eligible_cards":crate::deck::eligible_cards(id),"eligible_champions":crate::deck::eligible_champions(id),
@@ -779,6 +785,9 @@ pub fn action_to_json(action: &Action) -> Value {
             json!({"type":"empower_unit","unit_id":unit_id,"pay_power":pay_power})
         }
         Action::ChooseTarget { target } => json!({"type":"choose_target","target":t(target)}),
+        Action::ChooseTriggerTargets { targets } => {
+            json!({"type":"choose_trigger_targets","targets":ts(targets)})
+        }
         Action::ChooseDeathReplacement { unit_id, gear_id } => {
             json!({"type":"choose_death_replacement","unit_id":unit_id,"gear_id":gear_id})
         }
@@ -1273,6 +1282,12 @@ pub fn parse_action(value: &Value) -> Result<Action, ApiError> {
             fields!("target");
             Action::ChooseTarget { target: target(o)? }
         }
+        "choose_trigger_targets" => {
+            fields!("targets");
+            Action::ChooseTriggerTargets {
+                targets: targets(o, "targets")?,
+            }
+        }
         "choose_death_replacement" => {
             fields!("unit_id", "gear_id");
             Action::ChooseDeathReplacement {
@@ -1333,6 +1348,17 @@ fn instructed_kind(kind: InstructedPlayKind) -> &'static str {
 fn decision_to_json(game: &Game, decision: &Decision, viewer: usize) -> Value {
     let player = decision.player();
     let mut out = match decision {
+        Decision::TriggerTargets {
+            card_id,
+            rule_index,
+            context,
+            ..
+        } => {
+            let (maximum, required) = game.trigger_target_bounds().unwrap_or((0, 0));
+            json!({"type":"trigger_targets","card_id":card_id,"rule_index":rule_index,
+                "context":trigger_context_to_json(context),"maximum":maximum,"required":required,
+                "candidates":game.trigger_target_candidates().iter().map(target_to_json).collect::<Vec<_>>()})
+        }
         Decision::TrashTarget {
             source_card_id,
             gear_id,
@@ -1431,6 +1457,12 @@ fn decision_to_json(game: &Game, decision: &Decision, viewer: usize) -> Value {
 
 fn ability_to_json(ability: &ChainAbility) -> Value {
     match ability {
+        ChainAbility::CardTrigger {
+            rule_index,
+            context,
+        } => {
+            json!({"type":"card_trigger","rule_index":rule_index,"context":trigger_context_to_json(context)})
+        }
         ChainAbility::PlayChosen {
             trash_index,
             card_id,
@@ -1518,6 +1550,11 @@ fn ability_to_json(ability: &ChainAbility) -> Value {
             }
         },
     }
+}
+
+fn trigger_context_to_json(context: &TriggerContext) -> Value {
+    json!({"source":{"player":context.source.player,"unit_id":context.source.unit_id,
+        "gear_id":context.source.gear_id},"subject":context.subject.as_ref().map(target_to_json)})
 }
 
 #[cfg(test)]
@@ -1671,6 +1708,10 @@ mod tests {
                 pay_power: true,
             },
             Action::ChooseTarget { target: None },
+            Action::ChooseTriggerTargets { targets: vec![] },
+            Action::ChooseTriggerTargets {
+                targets: vec![unit, gear],
+            },
             Action::ChooseDeathReplacement {
                 unit_id: 2,
                 gear_id: Some(5),
@@ -2369,5 +2410,108 @@ mod tests {
             json!([1, 0, 0, 0, 0, 0])
         );
         assert_eq!(session.observe(0).unwrap(), before);
+    }
+
+    #[test]
+    fn generic_trigger_api_preserves_target_order_and_bearer_context() {
+        let mut session = playing();
+        session.game.players[0].units = vec![unit(100, None, 5), unit(101, None, 3)];
+        session.game.players[1].units = vec![unit(102, None, 3)];
+        let context = TriggerContext {
+            source: crate::game::TriggerSource {
+                player: 0,
+                unit_id: Some(100),
+                gear_id: None,
+            },
+            subject: Some(Target::Unit {
+                player: 0,
+                unit_id: 100,
+            }),
+        };
+        session.game.decision = Some(Decision::TriggerTargets {
+            player: 0,
+            card_id: 190,
+            rule_index: 0,
+            context,
+        });
+        for viewer in 0..2 {
+            let observed = session.observe(viewer).unwrap();
+            let choice = &observed["decision"];
+            assert_eq!(choice["type"], "trigger_targets");
+            assert_eq!(choice["maximum"], 2);
+            assert_eq!(choice["required"], 2);
+            assert_eq!(choice["context"]["source"]["unit_id"], 100);
+        }
+        let own = Target::Unit {
+            player: 0,
+            unit_id: 101,
+        };
+        let enemy = Target::Unit {
+            player: 1,
+            unit_id: 102,
+        };
+        let before = session.observe(0).unwrap();
+        for targets in [vec![], vec![enemy, own], vec![own, own]] {
+            assert!(
+                session
+                    .apply_action(
+                        0,
+                        session.revision(),
+                        Action::ChooseTriggerTargets { targets }
+                    )
+                    .is_err()
+            );
+            assert_eq!(session.observe(0).unwrap(), before);
+        }
+        submit(
+            &mut session,
+            Action::ChooseTriggerTargets {
+                targets: vec![own, enemy],
+            },
+        );
+        let observed = session.observe(0).unwrap();
+        let item = observed["chain"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .find(|item| item["card_id"] == 190)
+            .unwrap();
+        assert_eq!(
+            item["targets"],
+            json!([target_to_json(&own), target_to_json(&enemy)])
+        );
+        assert_eq!(item["ability"]["type"], "card_trigger");
+        assert_eq!(
+            item["ability"]["context"],
+            trigger_context_to_json(&context)
+        );
+    }
+
+    #[test]
+    fn optional_trigger_api_reports_zero_required_and_can_decline() {
+        let mut session = playing();
+        session.game.players[0].units = vec![unit(100, None, 5)];
+        session.game.decision = Some(Decision::TriggerTargets {
+            player: 0,
+            card_id: 188,
+            rule_index: 0,
+            context: TriggerContext {
+                source: crate::game::TriggerSource {
+                    player: 0,
+                    unit_id: Some(100),
+                    gear_id: None,
+                },
+                subject: None,
+            },
+        });
+        let observed = session.observe(0).unwrap();
+        assert_eq!(observed["decision"]["maximum"], 1);
+        assert_eq!(observed["decision"]["required"], 0);
+        submit(
+            &mut session,
+            Action::ChooseTriggerTargets { targets: vec![] },
+        );
+        assert!(session.game.decision.is_none());
+        assert!(session.game.chain.is_empty());
     }
 }

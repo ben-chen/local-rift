@@ -34,7 +34,10 @@ const OFFICIAL_IDS: [&str; 22] = [
 
 fn expanded(legend: usize) -> CustomDeck {
     let mut deck = CustomDeck::from_preset(legend).unwrap();
-    for id in eligible_cards(legend).into_iter().filter(|id| *id >= 81) {
+    for id in eligible_cards(legend)
+        .into_iter()
+        .filter(|id| (81..103).contains(id))
+    {
         deck.cards.push((id, 3));
     }
     deck.name = format!("Second expansion {legend}");
@@ -233,13 +236,13 @@ fn new_cards_play_through_all_custom_pairings_with_conservation() {
                         game.players
                             .iter()
                             .flat_map(|p| p.units.iter())
-                            .filter(|u| !u.token && u.card_id >= 81)
+                            .filter(|u| !u.token && (81..103).contains(&u.card_id))
                             .map(|u| u.card_id),
                     );
                     observed.extend(
                         game.chain
                             .iter()
-                            .filter(|c| c.ability.is_none() && c.card_id >= 81)
+                            .filter(|c| c.ability.is_none() && (81..103).contains(&c.card_id))
                             .map(|c| c.card_id),
                     );
                     if game.winner.is_some() {

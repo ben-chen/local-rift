@@ -108,6 +108,7 @@ Targets have exactly one of these forms:
 | `play_hidden` | `hidden_id`, optional `targets` | Play an eligible hidden card; an empty target list uses the engine's default targets |
 | `choose` | `accept` | Accept/decline a binary decision; Predict accepts recycling the top card |
 | `choose_target` | optional `target` | Select a pending unit/gear target; during Tornado Warrior's base choice, `null` chooses the legend |
+| `choose_trigger_targets` | `targets` | Finalize an ordered target array for a `trigger_targets` decision; an empty array declines an optional trigger |
 | `select_cards` | `indices` | Select exact indices for discard, Top Three, Sabotage, or a granted Flow choice from trash |
 | `play_from_trash` | `trash_index`, optional `lane`, `target` | Resolve a replay decision using default targeting |
 | `play_from_trash_targets` | `trash_index`, optional `lane`, `targets` | Resolve a replay decision with exact targets |
@@ -127,7 +128,7 @@ The engine remains the authority on timing, costs, destinations, targeting, opti
 
 Optional costs also apply to trash plays. Fizz ignores a replayed spell's base energy cost, while a chosen Repeat cost must still be paid. Flow pays its alternative base cost plus any chosen additional cost. Last Rites can play Kai'Sa with Accelerate when the combined cost is affordable. Each repeated spell supplies its own `repeat_targets`; it may target the same objects when legal.
 
-Resource actions may be available while a payment decision is pending. For example, generate power with a rune, Seal, Gold, or Kai'Sa, then complete a replay/payment choice using the new revision. The decision remains pending. Resource actions are not a way to bypass target, combat assignment, or card selection decisions.
+Resource actions may be available while a payment decision is pending. For example, generate power with a rune, Seal, Gold, or Kai'Sa, then complete a replay/payment choice using the new revision. The decision remains pending. Resource actions are not a way to bypass target, combat assignment, or card selection decisions. Energy discounts apply after an alternative base cost and any additional costs are combined; `flow_costs` describes each instance's base cost, while validation and payment quotes use the live discounted total.
 
 `set_optional_discount` changes the player's `optional_power_discount` preference without spending resources or passing priority. The next optional-cost cast uses that preference. It still counts as a successful API mutation and advances the revision.
 
@@ -187,6 +188,7 @@ The viewer sees their own hand as card IDs. The opposing hand is `null` except w
 | `swap_unit` | `unit_id`; select another unit with `choose_target`, or decline |
 | `empower_here` | `lane`, optional `source_id`; choose an eligible unit with `choose_target`. Hidden play abilities retain their source for location/liveness checks. |
 | `on_play_target` | `card_id`, `source_id`, `lane`; select the unit/gear required by the finalized on-play ability |
+| `trigger_targets` | `card_id`, `rule_index`, `context`, `maximum`, `required`, `candidates`; send an ordered array using `choose_trigger_targets`. Candidate membership alone does not establish that a combination or slot is legal; validate the complete action. Zero targets declines an optional trigger. |
 | `legend` | `trigger` describes Irelia's ready/refresh choice; `choose` |
 | `battlefield_order` | `lanes`, `combat`; the turn player chooses one listed lane using `choose_battlefield`; non-combat showdowns precede staged combats |
 | `battlefield` | `lane`; `choose` whether to pay for the battlefield ability |
@@ -198,6 +200,10 @@ The viewer sees their own hand as card IDs. The opposing hand is `null` except w
 | `token_placement` | `card_id`, `remaining`; use `place_token` separately for each remaining token |
 
 For each decision, `suggest` supplies legal convenience responses, while structured actions allow alternate legal choices. Opposing observations omit private Predict and Top Three identities. Public replay/trigger/target decisions remain observable. Pending triggers are distinct from the public chain and cannot be targeted by counterspells until finalized.
+
+Generic card triggers retain a public `context` with `source:{player,unit_id,gear_id}` and an optional event `subject` target. Equipment granted abilities identify their bearer as the unit source. A finalized chain ability has `type:"card_trigger"`, its metadata `rule_index`, and the same context; chosen targets live in the chain item's ordered `targets` array. Target choices finish before response priority opens.
+
+The catalog and observed units expose `tags`, including token tags. Gear observations include their `empowered` status. Player observations distinguish `cards_played_this_turn` (finalized cards, including later-countered spells), `cards_completed_this_turn` (completed card plays), and `cards_drawn_this_turn`. Token plays do not increment either card-play counter.
 
 Token plays created by a resolving effect wait until that effect finishes. `pending_token_plays` exposes their public pending IDs, controller, source `card_id`, Might, and `gear` flag in finalization order. `destination:{mode:"choose"}` permits the normal base/controlled-field choice; `{mode:"fixed",lane:null}` fixes base and a numeric lane fixes a battlefield. Pending IDs identify chain objects, not selectable board units. Placement choices finalize one token at a time; earlier tokens can be on the board while later placements remain pending. These choices do not grant a response window between token plays.
 

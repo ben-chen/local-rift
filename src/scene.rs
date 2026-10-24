@@ -701,12 +701,12 @@ pub fn draw_scene(rect: Rect, state: &SceneState) -> SceneHits {
         )
     };
     let fields = [
-        Rect::new(245.0, 260.0, 435.0, 228.0),
-        Rect::new(693.0, 260.0, 435.0, 228.0),
+        Rect::new(245.0, 258.0, 435.0, 232.0),
+        Rect::new(693.0, 258.0, 435.0, 232.0),
     ];
     let bases = [
-        Rect::new(245.0, 494.0, 883.0, 71.0),
-        Rect::new(245.0, 182.0, 883.0, 71.0),
+        Rect::new(245.0, 494.0, 883.0, 76.0),
+        Rect::new(245.0, 178.0, 883.0, 76.0),
     ];
     let mut hits = SceneHits {
         battlefields: fields.map(screen),
@@ -724,24 +724,24 @@ pub fn draw_scene(rect: Rect, state: &SceneState) -> SceneHits {
             let count = group.len().min(max);
             for (index, unit) in group.iter().take(max).enumerate() {
                 let r = if location == 0 {
-                    let width = (770.0 / count.max(1) as f32 - 5.0).min(96.0);
+                    let width = (770.0 / count.max(1) as f32 - 5.0).min(132.0);
                     Rect::new(
                         base.x + 105.0 + index as f32 * (width + 5.0),
-                        base.y + 5.0,
+                        base.y + 2.0,
                         width,
-                        61.0,
+                        72.0,
                     )
                 } else {
                     let field = fields[location - 1];
-                    let width = (384.0 / count.max(1) as f32 - 6.0).min(96.0);
+                    let width = (384.0 / count.max(1) as f32 - 6.0).min(132.0);
                     Rect::new(
                         field.x
                             + 45.0
                             + (384.0 - count as f32 * (width + 6.0)) * 0.5
                             + index as f32 * (width + 6.0),
-                        field.y + if owner == 1 { 88.0 } else { 158.0 },
+                        field.y + if owner == 1 { 66.0 } else { 150.0 },
                         width,
-                        60.0,
+                        76.0,
                     )
                 };
                 hits.units.push((unit.id, screen(r)));

@@ -218,6 +218,9 @@ struct App {
     rune_menu_at: Vec2,
     field_hover: Option<usize>,
     field_inspect: Option<usize>,
+    equipment_inspect: Option<(usize, u32)>,
+    equipment_scroll: usize,
+    trigger_choice_key: Option<String>,
 }
 fn seed() -> u64 {
     std::time::SystemTime::now()
@@ -333,6 +336,9 @@ impl App {
             rune_menu_at: vec2(898.0, 395.0),
             field_hover: None,
             field_inspect: None,
+            equipment_inspect: None,
+            equipment_scroll: 0,
+            trigger_choice_key: None,
         }
     }
     fn reset(&mut self) {
@@ -364,6 +370,8 @@ impl App {
         self.drag = None;
         self.hover_card = None;
         self.payment_draft = None;
+        self.equipment_inspect = None;
+        self.trigger_choice_key = None;
         self.show_journal = false;
         self.damage_order.clear();
         self.damage_amounts = None;
@@ -440,6 +448,13 @@ impl App {
                 if preserve_selection {
                     return;
                 }
+                if adding_resource
+                    && matches!(self.game.decision, Some(Decision::TriggerTargets { .. }))
+                {
+                    self.selection = None;
+                    self.tray = Tray::Board;
+                    return;
+                }
                 if adding_resource {
                     self.tray = Tray::Hand;
                 }
@@ -509,6 +524,7 @@ impl App {
             && !self.confirm_restart
             && !self.show_journal
             && self.field_inspect.is_none()
+            && self.equipment_inspect.is_none()
         {
             if self.in_match
                 && self.game.phase == Phase::Playing
@@ -553,6 +569,7 @@ impl App {
                     && i < self.game.players[0].hand.len()
                     && self.game.phase == Phase::Playing
                     && self.game.priority() == 0
+                    && self.game.decision.is_none()
                 {
                     self.selection = Some(Selection::Hand(i));
                     self.targets.clear();
@@ -566,6 +583,7 @@ impl App {
         } else if is_key_pressed(KeyCode::Escape) {
             self.inspect = None;
             self.field_inspect = None;
+            self.equipment_inspect = None;
             self.lesson = None;
             self.confirm_restart = false;
             self.show_journal = false;
@@ -588,6 +606,22 @@ impl App {
         }
     }
     fn draw(&mut self) {
+        let trigger_key = self
+            .game
+            .decision
+            .as_ref()
+            .filter(|decision| matches!(decision, Decision::TriggerTargets { .. }))
+            .map(|decision| format!("{decision:?}"));
+        if trigger_key != self.trigger_choice_key {
+            if trigger_key.is_some() {
+                self.selection = None;
+                self.targets.clear();
+                self.repeat_targets.clear();
+                self.editing_repeat = false;
+                self.hand_scroll = 0;
+            }
+            self.trigger_choice_key = trigger_key;
+        }
         clear_background(BG);
         self.ui.rect(Rect::new(0.0, 0.0, 1440.0, 900.0), BG);
         self.field_hover = None;
@@ -607,6 +641,7 @@ impl App {
             && !self.show_journal
             && self.rune_menu.is_none()
             && self.field_inspect.is_none()
+            && self.equipment_inspect.is_none()
             && self.payment_draft.is_none()
             && !self.hover_rect.is_some_and(|r| r.contains(self.ui.mouse()));
         self.sidebar();
@@ -648,6 +683,7 @@ impl App {
         self.resource_tooltip();
         self.rune_popover();
         self.battlefield_help();
+        self.equipment_help();
         self.payment_editor();
         self.ui.enabled = true;
     }
@@ -898,8 +934,16 @@ impl App {
                     .iter()
                     .find(|unit| unit.id == *id)
                     .unwrap();
+                let equipped = self.game.players[owner]
+                    .gear
+                    .iter()
+                    .any(|gear| gear.attached_to == Some(*id));
                 self.board_card(
-                    card_rect,
+                    if equipped {
+                        Rect::new(card_rect.x, card_rect.y, card_rect.w, card_rect.h - 20.0)
+                    } else {
+                        card_rect
+                    },
                     card_id,
                     owner,
                     unit.ready,
@@ -915,6 +959,25 @@ impl App {
                 );
                 self.drop_zones
                     .push((DropZone::Unit(owner, *id), card_rect));
+                if self.game.trigger_target_bounds().is_some()
+                    && self.game.valid_trigger_target(
+                        Target::Unit {
+                            player: owner,
+                            unit_id: *id,
+                        },
+                        &self.targets,
+                    )
+                {
+                    self.ui.border(
+                        Rect::new(
+                            card_rect.x - 3.0,
+                            card_rect.y - 3.0,
+                            card_rect.w + 6.0,
+                            card_rect.h + 6.0,
+                        ),
+                        TEAL,
+                    );
+                }
                 if let Some(Decision::OnPlayTarget {
                     player,
                     card_id,
@@ -986,7 +1049,12 @@ impl App {
                             };
                             self.arm_drag(DragSource::Units { ids, card_id });
                         }
-                        if matches!(
+                        if matches!(self.game.decision, Some(Decision::TriggerTargets { .. })) {
+                            self.toggle_unit_target(Target::Unit {
+                                player: owner,
+                                unit_id: *id,
+                            });
+                        } else if matches!(
                             self.game.decision,
                             Some(
                                 Decision::SwapUnit { .. }
@@ -1074,7 +1142,7 @@ impl App {
         for (i, r) in hits.battlefields.iter().enumerate() {
             if !hit_unit
                 && r.contains(mouse)
-                && mouse.y > r.y + 72.0 * self.ui.scale
+                && mouse.y > r.y + 63.0 * self.ui.scale
                 && self.ui.enabled
                 && self.ui.primary_pressed()
                 && self.in_match
@@ -1486,6 +1554,52 @@ impl App {
             self.selection_panel();
             return;
         }
+        if let Decision::TriggerTargets { card_id, .. } = decision {
+            let (maximum, required) = self.game.trigger_target_bounds().unwrap();
+            self.ui
+                .title("Choose ability targets", 1178.0, 366.0, 20.0, TEXT);
+            self.ui.ellipsis(
+                self.game.catalog[card_id].name,
+                1178.0,
+                392.0,
+                212.0,
+                12.0,
+                GOLD,
+            );
+            self.ui.wrapped_lines(
+                &format!("{} / {maximum} selected. Choose highlighted units in order, then confirm. Click a chosen unit to undo it.{}", self.targets.len(), if required == 0 { " Choosing none declines this ability." } else { " All required targets must be chosen." }),
+                1178.0, 416.0, 209.0, 11.0, TEXT, 4,
+            );
+            let action = Action::ChooseTriggerTargets {
+                targets: self.targets.clone(),
+            };
+            let valid = self.game.clone().apply(action.clone()).is_ok();
+            if self.ui.button(
+                Rect::new(1178.0, 493.0, 212.0, 34.0),
+                "Confirm targets",
+                true,
+                valid && !self.targets.is_empty(),
+            ) {
+                self.action(action);
+            }
+            if self.ui.button(
+                Rect::new(1178.0, 534.0, 212.0, 27.0),
+                if required == 0 {
+                    "Decline this ability"
+                } else {
+                    "Clear selection"
+                },
+                false,
+                true,
+            ) {
+                if required == 0 {
+                    self.action(Action::ChooseTriggerTargets { targets: vec![] });
+                } else {
+                    self.targets.clear();
+                }
+            }
+            return;
+        }
         if let Decision::PendingPlay { pending_id, .. } = decision {
             if self.selection != Some(Selection::Pending(pending_id)) {
                 self.selection = Some(Selection::Pending(pending_id));
@@ -1638,7 +1752,7 @@ impl App {
             return;
         }
         let (title,body)=match &decision{
-            Decision::CombatDamage{..}|Decision::TokenPlacement{..}|Decision::BattlefieldOrder{..}|Decision::RevivePlay{..}|Decision::PendingPlay{..}=>unreachable!(),
+            Decision::TriggerTargets{..}|Decision::CombatDamage{..}|Decision::TokenPlacement{..}|Decision::BattlefieldOrder{..}|Decision::RevivePlay{..}|Decision::PendingPlay{..}=>unreachable!(),
             Decision::TrashTarget{..}=>("Choose a trash target","Choose an eligible card below before this ability enters the chain. Opponents may respond before the chosen card is played.".into()),
             Decision::OptionalPlay{card_id,..}=>("Use this triggered ability?",format!("{} offers a play from your trash. Accept and choose the ability's target, or decline now. Choose the card's own targets and costs after the ability resolves.",self.game.catalog[*card_id].name)),
             Decision::ResolutionTargets{..}=>("Choose the location", "Responses separated your targets. Choose which legal group below this spell should affect.".into()),
@@ -1803,6 +1917,22 @@ impl App {
         }
     }
     fn toggle_unit_target(&mut self, target: Target) {
+        if let Some((maximum, _)) = self.game.trigger_target_bounds() {
+            if let Some(index) = self.targets.iter().position(|chosen| *chosen == target) {
+                // Later slots may have different eligibility, so undo this and later choices.
+                self.targets.truncate(index);
+            } else if self.targets.len() >= maximum {
+                self.notify("All target slots are filled. Click a chosen unit to undo it.");
+            } else if self.game.valid_trigger_target(target, &self.targets) {
+                self.targets.push(target);
+                self.toast_until = 0.0;
+            } else {
+                self.notify(
+                    "Choose a highlighted unit for this target slot. Check any Deflect cost.",
+                );
+            }
+            return;
+        }
         let chosen = if self.editing_repeat {
             &self.repeat_targets
         } else {
@@ -1937,8 +2067,25 @@ impl App {
                 unit.card_id,
                 slot,
                 &self.game.unit_name(unit),
-                self.selection == Some(Selection::Unit(unit.id)) || self.group.contains(&unit.id),
+                self.selection == Some(Selection::Unit(unit.id))
+                    || self.group.contains(&unit.id)
+                    || self.targets.contains(&Target::Unit {
+                        player: *owner,
+                        unit_id: unit.id,
+                    }),
             );
+            if self.game.trigger_target_bounds().is_some()
+                && self.game.valid_trigger_target(
+                    Target::Unit {
+                        player: *owner,
+                        unit_id: unit.id,
+                    },
+                    &self.targets,
+                )
+            {
+                self.ui.border(r, TEAL);
+                self.ui.pill(r.x + 7.0, r.y + 7.0, "CHOOSE", TEAL);
+            }
             self.ui
                 .rect(Rect::new(r.x + 3.0, r.y + 128.0, r.w - 6.0, 45.0), PANEL);
             if unit.token {
@@ -1997,7 +2144,9 @@ impl App {
                     player: *owner,
                     unit_id: unit.id,
                 };
-                if self.game.decision.is_some() {
+                if matches!(self.game.decision, Some(Decision::TriggerTargets { .. })) {
+                    self.toggle_unit_target(target);
+                } else if self.game.decision.is_some() {
                     self.action(Action::ChooseTarget {
                         target: Some(target),
                     });
@@ -2304,6 +2453,10 @@ impl App {
         let Some(decision) = self.game.decision.clone() else {
             return false;
         };
+        if matches!(decision, Decision::TriggerTargets { .. }) {
+            self.board_tray();
+            return true;
+        }
         if let Decision::CombatDamage { lane, total, .. } = decision {
             self.combat_tray(lane, total);
             return true;
@@ -2923,36 +3076,46 @@ impl App {
                 TEXT,
             );
             self.ui.wrapped(
-                field.official_text,
+                field
+                    .official_text
+                    .split(" (")
+                    .next()
+                    .unwrap_or(field.official_text),
                 r.x + 12.0,
-                r.y + 39.0,
-                r.w - 36.0,
+                r.y + 38.0,
+                r.w - 24.0,
                 12.0,
                 TEXT,
             );
             self.ui.line(
-                vec2(r.x + 9.0, r.y + 83.0),
-                vec2(r.x + r.w - 9.0, r.y + 83.0),
+                vec2(r.x + 9.0, r.y + 62.0),
+                vec2(r.x + r.w - 9.0, r.y + 62.0),
                 1.0,
                 LINE,
             );
-            self.ui.text("AI", r.x + 11.0, r.y + 113.0, 9.0, GOLD);
-            self.ui.text("YOU", r.x + 8.0, r.y + 189.0, 9.0, TEAL);
+            self.ui.text("AI", r.x + 11.0, r.y + 103.0, 9.0, GOLD);
+            self.ui.text("YOU", r.x + 8.0, r.y + 188.0, 9.0, TEAL);
             self.ui.line(
-                vec2(r.x + 9.0, r.y + 150.0),
-                vec2(r.x + r.w - 9.0, r.y + 150.0),
+                vec2(r.x + 9.0, r.y + 146.0),
+                vec2(r.x + r.w - 9.0, r.y + 146.0),
                 1.0,
                 LINE,
             );
-            if self.ui.hover(Rect::new(r.x, r.y, r.w, 69.0)) {
+            if self
+                .ui
+                .hover(Rect::new(r.x + r.w - 71.0, r.y + 4.0, 64.0, 25.0))
+            {
                 self.field_hover = Some(field_id);
             }
             if self.ui.button(
-                Rect::new(r.x + r.w - 27.0, r.y + 7.0, 20.0, 20.0),
-                "i",
+                Rect::new(r.x + r.w - 71.0, r.y + 4.0, 64.0, 25.0),
+                "Rules",
                 false,
                 true,
-            ) || (self.ui.hover(Rect::new(r.x, r.y, r.w, 69.0)) && self.ui.secondary_pressed())
+            ) || (self
+                .ui
+                .hover(Rect::new(r.x + r.w - 71.0, r.y + 4.0, 64.0, 25.0))
+                && self.ui.secondary_pressed())
             {
                 self.field_inspect = Some(field_id);
             }
@@ -3022,7 +3185,7 @@ impl App {
             }
         } else {
             self.ui.text(
-                "Click the i to keep this open.",
+                "Click Rules to keep this open.",
                 r.x + 22.0,
                 r.y + 214.0,
                 10.0,
@@ -3037,30 +3200,162 @@ impl App {
             .filter(|gear| gear.attached_to == Some(unit_id))
             .cloned()
             .collect();
-        let mut hovered = false;
-        for (index, gear) in gears.iter().enumerate() {
-            let chip = Rect::new(
-                r.x + 2.0,
-                r.y + r.h - 35.0 - index as f32 * 14.0,
-                r.w - 4.0,
-                14.0,
+        let Some(gear) = gears.first() else {
+            return false;
+        };
+        let chip = Rect::new(r.x, r.y + r.h - 19.0, r.w, 19.0);
+        self.ui.rect(chip, Color::new(0.25, 0.20, 0.105, 1.0));
+        self.ui.border(chip, GOLD);
+        self.ui.diamond(vec2(chip.x + 7.0, chip.y + 9.5), 3.5, GOLD);
+        let count_width = if gears.len() > 1 { 23.0 } else { 0.0 };
+        self.ui.ellipsis(
+            self.game.gear_name(gear),
+            chip.x + 14.0,
+            chip.y + 13.0,
+            chip.w - 18.0 - count_width,
+            10.0,
+            Color::new(1.0, 0.88, 0.60, 1.0),
+        );
+        let list = Rect::new(chip.x + chip.w - 23.0, chip.y, 23.0, chip.h);
+        if gears.len() > 1 {
+            self.ui.rect(list, Color::new(0.35, 0.27, 0.12, 1.0));
+            self.ui.bold(
+                &format!("+{}", gears.len() - 1),
+                list.x + 3.0,
+                list.y + 13.0,
+                10.0,
+                TEXT,
             );
-            self.ui.rect(chip, Color::new(0.11, 0.13, 0.09, 0.98));
-            self.ui.border(chip, GOLD);
-            let name = self.game.gear_name(gear);
-            self.ui
-                .ellipsis(name, chip.x + 3.0, chip.y + 11.0, chip.w - 6.0, 9.0, GOLD);
-            if self.ui.hover(chip) {
-                self.hover_candidate = Some(gear.card_id);
-                self.hover_token_candidate = None;
-                self.hover_unit_candidate = None;
-                hovered = true;
-            }
-            if self.ui.clicked(chip) || (self.ui.hover(chip) && self.ui.secondary_pressed()) {
+        }
+        let hovered = self.ui.hover(chip);
+        if hovered {
+            self.hover_candidate = Some(if gears.len() > 1 && self.ui.hover(list) {
+                gears[1].card_id
+            } else {
+                gear.card_id
+            });
+            self.hover_token_candidate = None;
+            self.hover_unit_candidate = None;
+        }
+        if self.ui.clicked(chip) || (hovered && self.ui.secondary_pressed()) {
+            if gears.len() > 1 && self.ui.hover(list) {
+                self.equipment_inspect = Some((owner, unit_id));
+                self.equipment_scroll = 0;
+                self.hover_card = None;
+                self.hover_rect = None;
+            } else {
                 self.inspect = Some(gear.card_id);
             }
         }
         hovered
+    }
+    fn equipment_help(&mut self) {
+        let Some((owner, unit_id)) = self.equipment_inspect else {
+            return;
+        };
+        let Some(unit) = self.game.players[owner]
+            .units
+            .iter()
+            .find(|unit| unit.id == unit_id)
+        else {
+            self.equipment_inspect = None;
+            return;
+        };
+        let name = self.game.unit_name(unit);
+        let gears: Vec<_> = self.game.players[owner]
+            .gear
+            .iter()
+            .filter(|gear| gear.attached_to == Some(unit_id))
+            .cloned()
+            .collect();
+        self.hover_card = None;
+        self.hover_rect = None;
+        self.ui.rect(
+            Rect::new(0.0, 0.0, 1440.0, 900.0),
+            Color::new(0.0, 0.02, 0.03, 0.82),
+        );
+        let r = Rect::new(400.0, 170.0, 640.0, 570.0);
+        self.ui.rect(r, PANEL);
+        self.ui.border(r, GOLD);
+        self.ui.text("ATTACHED EQUIPMENT", 426.0, 204.0, 12.0, GOLD);
+        self.ui.title(&name, 426.0, 242.0, 24.0, TEXT);
+        self.ui.text(
+            &format!(
+                "{} pieces · abilities apply to this unit while attached",
+                gears.len()
+            ),
+            426.0,
+            269.0,
+            12.0,
+            MUTED,
+        );
+        let max_scroll = gears.len().saturating_sub(3);
+        self.equipment_scroll = self.equipment_scroll.min(max_scroll);
+        self.ui.enabled = true;
+        for (slot, gear) in gears.iter().skip(self.equipment_scroll).take(3).enumerate() {
+            let y = 288.0 + slot as f32 * 118.0;
+            self.ui.rect(Rect::new(420.0, y, 600.0, 110.0), BG);
+            if let Some(tex) = self.art.get(gear.card_id).and_then(Option::as_ref) {
+                self.ui
+                    .image(tex, Rect::new(428.0, y + 8.0, 62.0, 87.0), None, WHITE);
+            }
+            self.ui
+                .bold(self.game.gear_name(gear), 505.0, y + 23.0, 14.0, GOLD);
+            self.ui.wrapped_lines(
+                self.game.catalog[gear.card_id].official_text,
+                505.0,
+                y + 44.0,
+                398.0,
+                11.0,
+                TEXT,
+                4,
+            );
+            if self.ui.button(
+                Rect::new(927.0, y + 68.0, 80.0, 30.0),
+                "Full card",
+                false,
+                true,
+            ) {
+                self.inspect = Some(gear.card_id);
+                self.equipment_inspect = None;
+            }
+        }
+        if self.ui.button(
+            Rect::new(426.0, 657.0, 72.0, 28.0),
+            "<",
+            false,
+            self.equipment_scroll > 0,
+        ) {
+            self.equipment_scroll = self.equipment_scroll.saturating_sub(3);
+        }
+        if self.ui.button(
+            Rect::new(942.0, 657.0, 72.0, 28.0),
+            ">",
+            false,
+            self.equipment_scroll < max_scroll,
+        ) {
+            self.equipment_scroll = (self.equipment_scroll + 3).min(max_scroll);
+        }
+        self.ui.text(
+            &format!(
+                "{}–{} of {}",
+                self.equipment_scroll + 1,
+                (self.equipment_scroll + 3).min(gears.len()),
+                gears.len()
+            ),
+            682.0,
+            676.0,
+            11.0,
+            MUTED,
+        );
+        if self.ui.button(
+            Rect::new(426.0, 698.0, 588.0, 29.0),
+            "Back to the mat",
+            true,
+            true,
+        ) {
+            self.equipment_inspect = None;
+        }
     }
     fn reserve(&self, player: usize) -> RuneReserve {
         let state = &self.game.players[player];
@@ -3131,7 +3426,7 @@ impl App {
             r.x + 4.0,
             r.y + r.h - 10.0,
             r.w - 8.0,
-            9.0,
+            10.0,
             TEXT,
         );
         self.ui.rect(
@@ -3455,6 +3750,7 @@ impl App {
             return;
         }
         if self.inspect.is_some()
+            || self.equipment_inspect.is_some()
             || self.lesson.is_some()
             || self.show_journal
             || self.confirm_restart
@@ -3957,6 +4253,7 @@ impl App {
             || self.show_journal
             || self.confirm_restart
             || self.rune_menu.is_some()
+            || self.equipment_inspect.is_some()
         {
             return;
         }
@@ -5821,6 +6118,21 @@ fn live_unit_description(game: &Game, owner: usize, unit_id: u32) -> Option<Stri
             cost.domain.name()
         ));
     }
+    let gear: Vec<_> = game.players[owner]
+        .gear
+        .iter()
+        .filter(|gear| gear.attached_to == Some(unit_id))
+        .collect();
+    if !gear.is_empty() {
+        lines.push("ATTACHED EQUIPMENT".into());
+        for attachment in gear {
+            lines.push(format!(
+                "{}: {}",
+                game.gear_name(attachment),
+                game.catalog[attachment.card_id].official_text
+            ));
+        }
+    }
     Some(lines.join("\n"))
 }
 
@@ -5925,6 +6237,8 @@ mod live_preview_tests {
         let second = live_unit_description(&game, 0, 101).unwrap();
         assert!(first.contains("8 current might") && first.contains("Ready"));
         assert!(!first.contains("Ganking"));
+        assert!(!first.contains("ATTACHED EQUIPMENT"));
+        assert!(second.contains("ATTACHED EQUIPMENT") && second.contains("Boots of Swiftness"));
         assert!(
             second.contains("11 current might")
                 && second.contains("Exhausted")

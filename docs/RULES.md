@@ -1,6 +1,6 @@
 # Implemented rules and limitations
 
-**Local Rift is an unofficial, incomplete Riftbound client. This document describes its current behavior, not the complete tabletop game.** Full official card text appears in hover previews and pinned inspectors. All 152 bundled cards have executable printed-effect mappings. An official description in the catalog and a passing simulation are not proof of complete tabletop equivalence.
+**Local Rift is an unofficial, incomplete Riftbound client. This document describes its current behavior, not the complete tabletop game.** Full official card text appears in hover previews and pinned inspectors. All 230 bundled cards have executable printed-effect mappings. An official description in the catalog and a passing simulation are not proof of complete tabletop equivalence.
 
 For physical play, use Riot's [Rules Hub](https://playriftbound.com/en-us/rules-hub/), current errata, and printed card text. The core timing reference used here is the [October 9, 2026 Core Rules](https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/5c7946f7c3b8c6e0faff85ab6dadc6d2e721ea94.pdf). [SOURCES.md](SOURCES.md) records the card and deck sources.
 
@@ -96,6 +96,10 @@ The newest chain item resolves first after consecutive priority passes. Priority
 
 Triggered abilities and turn-start steps pause for choices and response windows. When several triggers are pending, the active player finalizes their triggers first, followed by the other player. Each controller chooses the order of their own triggers; the last placed on the chain resolves first. On-play targeting and optional trigger payments happen during finalization, before the resulting ability can resolve.
 
+The expanded card pool has explicit observers for playing cards and tokens, readying, exhausting, buffing, moving, combat designations, drawing, death, holding, conquest, and gear activation. Chosen trigger targets are selected before the ability enters the chain, with Deflect paid then; implicit references such as “me” or “it” do not create an extra target choice. Optional Windsinger play triggers can be declined. “Here” and applicable Hidden restrictions are checked again on resolution. Attached equipment abilities use the bearer as their source. Surviving death observers are distinct from Deathknell abilities captured before their source leaves play; a first-time observer does not multiply across simultaneous deaths. These are explicit card mappings, not a parser that treats arbitrary printed text as implemented.
+
+The additional spells include readying and fights with Repeat, ordered damage and Gold creation, Sand Soldier creation, and modifiers or draws based on current public board state. Their condition checks and optional costs follow their printed instructions. Dynamic discounts are evaluated when paying; temporary Might modifiers expire at turn end. As with the older pool, these tests cover selected rule cases rather than proving all interactions.
+
 ## Movement and combat
 
 A standard move exhausts a ready unit. It can move from base to a battlefield, or from a battlefield back to base. Direct battlefield-to-battlefield standard movement is unavailable unless a specifically implemented ability permits movement. A readying effect may enable another move during the same turn.
@@ -128,7 +132,7 @@ The deck library includes the real legends and authored strategy notes. The four
 
 ## Remaining fidelity limits
 
-Four supported legends, four battlefield choices, and 152 main-deck cards are available through the four supplied presets and custom deck editor. There is no sideboarding, tournament match structure, multiplayer mode, or full card-set coverage. The presets are dated tournament lists, not a ranking of the current metagame.
+Four supported legends, four battlefield choices, and 230 main-deck cards are available through the four supplied presets and custom deck editor. There is no sideboarding, tournament match structure, multiplayer mode, or full card-set coverage. The presets are dated tournament lists, not a ranking of the current metagame.
 
 The desktop and bot API expose exact damage allocations and power-source payments. The default automatic payment remains available; energy can be prepared by exhausting chosen rune domains before a play. These controls share engine validation, but broader card and interaction coverage is still required.
 

@@ -90,6 +90,7 @@ impl Game {
         if rules::equipment(card_id).is_some_and(|rule| rule.quick_draw) {
             self.request_on_play_target(player, card_id, id, None);
         }
+        self.gear_play_completed(player, card_id, false);
         Ok(())
     }
 
@@ -109,6 +110,7 @@ impl Game {
             "{} creates a Gold gear token.",
             self.players[player].name
         ));
+        self.gear_play_completed(player, 13, true);
         id
     }
 
@@ -224,6 +226,7 @@ impl Game {
             vec![target],
             ChainAbility::Equip { gear_id, target },
         );
+        self.gear_ability_used(player);
         Ok(())
     }
 
@@ -312,6 +315,7 @@ impl Game {
                     .map_or(String::new(), |domain| format!("{} ", domain.name()))
             ));
         }
+        self.gear_ability_used(player);
         Ok(())
     }
 

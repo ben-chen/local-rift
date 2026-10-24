@@ -59,7 +59,10 @@ const IDS: [&str; 49] = [
 
 fn expanded(legend: usize) -> CustomDeck {
     let mut deck = CustomDeck::from_preset(legend).unwrap();
-    for id in eligible_cards(legend).into_iter().filter(|id| *id >= 103) {
+    for id in eligible_cards(legend)
+        .into_iter()
+        .filter(|id| (103..152).contains(id))
+    {
         deck.cards.push((id, 3));
     }
     deck.name = format!("Third expansion {legend}");
@@ -73,7 +76,7 @@ fn new_card_facts_match_both_official_panels_and_stable_identity() {
     let inventory: Value =
         serde_json::from_str(include_str!("../assets/data/full_catalog.json")).unwrap();
     let manifest: Value = serde_json::from_str(include_str!("../assets/data/decks.json")).unwrap();
-    assert_eq!(cards.len(), 152);
+    assert!(cards.len() >= 152);
     for (offset, official_id) in IDS.into_iter().enumerate() {
         let card = cards[103 + offset];
         assert_eq!(card.id, 103 + offset);
@@ -227,21 +230,21 @@ fn forty_nine_card_expansion_plays_full_custom_matches_without_losing_cards() {
                 observed.extend(
                     game.chain
                         .iter()
-                        .filter(|c| c.ability.is_none() && c.card_id >= 103)
+                        .filter(|c| c.ability.is_none() && (103..152).contains(&c.card_id))
                         .map(|c| c.card_id),
                 );
                 observed.extend(
                     game.players
                         .iter()
                         .flat_map(|p| &p.units)
-                        .filter(|u| !u.token && u.card_id >= 103)
+                        .filter(|u| !u.token && (103..152).contains(&u.card_id))
                         .map(|u| u.card_id),
                 );
                 observed.extend(
                     game.players
                         .iter()
                         .flat_map(|p| &p.gear)
-                        .filter(|g| !g.token && g.card_id >= 103)
+                        .filter(|g| !g.token && (103..152).contains(&g.card_id))
                         .map(|g| g.card_id),
                 );
                 if game.winner.is_some() {

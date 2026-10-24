@@ -391,8 +391,18 @@ impl Ui {
         self.rect(r, Color::new(0.035, 0.065, 0.077, 0.98));
         self.border(r, LINE);
         self.text(title, r.x + 12.0, r.y + 15.0, 10.0, GOLD);
+        self.text(
+            "UPRIGHT = READY     SIDEWAYS = EXHAUSTED",
+            r.x + 174.0,
+            r.y + 11.0,
+            8.5,
+            TEXT,
+        );
         self.bold(
-            &(reserve.ready + reserve.stored_energy).to_string(),
+            &reserve
+                .ready
+                .saturating_add(reserve.stored_energy)
+                .to_string(),
             r.x + 12.0,
             r.y + 43.0,
             23.0,
@@ -435,13 +445,7 @@ impl Ui {
                 );
             }
         }
-        self.text(
-            &format!("RUNE DECK {}", reserve.in_deck),
-            r.x + 586.0,
-            r.y + 15.0,
-            9.0,
-            MUTED,
-        );
+        self.text("DECK", r.x + 580.0, r.y + 15.0, 9.0, MUTED);
         for n in (0..3).rev() {
             self.rect(
                 Rect::new(
@@ -469,31 +473,43 @@ impl Ui {
             12.0,
             GOLD,
         );
+        self.text("GENERATED RESOURCES", r.x + 620.0, r.y + 15.0, 9.0, GOLD);
         self.text(
-            &format!("Stored energy: {}", reserve.stored_energy),
+            &format!("Energy {}", reserve.stored_energy),
             r.x + 620.0,
-            r.y + 33.0,
+            r.y + 34.0,
             10.0,
             TEXT,
         );
         self.text(
-            &format!(
-                "Any power {} · spell-only {}",
-                reserve.any_power, reserve.spell_power
-            ),
-            r.x + 620.0,
-            r.y + 53.0,
-            9.0,
-            MUTED,
+            &format!("Any {}", reserve.any_power),
+            r.x + 704.0,
+            r.y + 34.0,
+            10.0,
+            TEXT,
         );
-        let mut x = r.x + 776.0;
-        for domain in RUNE_DOMAINS {
+        self.text(
+            &format!("Spell-only {}", reserve.spell_power),
+            r.x + 771.0,
+            r.y + 34.0,
+            10.0,
+            TEXT,
+        );
+        for (index, domain) in RUNE_DOMAINS.into_iter().enumerate() {
+            let x = r.x + 625.0 + index as f32 * 40.0;
             let count = reserve.power[domain_index(domain)];
-            if count > 0 {
-                self.diamond(vec2(x, r.y + 31.0), 4.0, rgb(domain.color()));
-                self.text(&count.to_string(), x + 7.0, r.y + 35.0, 10.0, TEXT);
-                x += 27.0;
-            }
+            self.diamond(
+                vec2(x, r.y + 52.0),
+                3.0,
+                if count > 0 { rgb(domain.color()) } else { LINE },
+            );
+            self.text(
+                &format!("{}{}", &domain.name()[..2], count),
+                x + 6.0,
+                r.y + 55.0,
+                9.0,
+                if count > 0 { TEXT } else { MUTED },
+            );
         }
     }
     pub fn text(&self, s: &str, x: f32, y: f32, size: f32, c: Color) {
