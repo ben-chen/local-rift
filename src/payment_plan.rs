@@ -18,6 +18,7 @@ enum Mode {
 
 #[derive(Clone, Debug)]
 enum Obligation {
+    Xp(crate::xp::XpAmount),
     Energy(u16),
     Power(PowerCost),
 }
@@ -51,6 +52,7 @@ struct PaymentCard {
 /// Private intent details (such as unrelated cost-selection indices) stay private.
 #[derive(Clone, Debug)]
 pub struct PaymentPlanView {
+    pub xp: crate::xp::XpAmount,
     pub player: usize,
     pub energy: u32,
     pub power: Vec<PowerCost>,
@@ -62,13 +64,21 @@ impl Game {
     pub fn payment_plan_view(&self, viewer: usize) -> Option<PaymentPlanView> {
         let plan = self.payment_plan.as_ref()?;
         Some(PaymentPlanView {
+            xp: plan
+                .obligations
+                .iter()
+                .filter_map(|cost| match cost {
+                    Obligation::Xp(n) => Some(*n),
+                    _ => None,
+                })
+                .sum(),
             player: plan.player,
             energy: plan
                 .obligations
                 .iter()
                 .filter_map(|cost| match cost {
                     Obligation::Energy(n) => Some(u32::from(*n)),
-                    Obligation::Power(_) => None,
+                    Obligation::Power(_) | Obligation::Xp(_) => None,
                 })
                 .sum(),
             power: plan
@@ -76,7 +86,7 @@ impl Game {
                 .iter()
                 .filter_map(|cost| match cost {
                     Obligation::Power(cost) => Some(cost.clone()),
-                    Obligation::Energy(_) => None,
+                    Obligation::Energy(_) | Obligation::Xp(_) => None,
                 })
                 .collect(),
             action: (viewer == plan.player).then(|| plan.action.clone()),
@@ -95,6 +105,34 @@ impl Game {
             u16::MAX
         } else {
             self.players[player].energy
+        }
+    }
+
+    pub(crate) fn payment_record_xp(
+        &mut self,
+        player: usize,
+        amount: crate::xp::XpAmount,
+    ) -> Result<bool, String> {
+        let Some(plan) = self
+            .payment_plan
+            .as_mut()
+            .filter(|plan| plan.player == player)
+        else {
+            return Ok(false);
+        };
+        match plan.mode {
+            Mode::Recording => {
+                // Keep the public aggregate exact even for host-capacity fixtures.
+                plan.obligations.iter().try_fold(amount, |sum, cost| {
+                    sum.checked_add(if let Obligation::Xp(n) = cost { *n } else { 0 })
+                }).ok_or("engine_capacity: Total XP cost exceeds the supported integer representation.")?;
+                if amount > 0 {
+                    plan.obligations.push(Obligation::Xp(amount));
+                }
+                Ok(true)
+            }
+            Mode::Replaying => Ok(true),
+            _ => Ok(false),
         }
     }
 
@@ -405,6 +443,7 @@ impl Game {
         candidate.payment_plan.as_mut().unwrap().mode = Mode::Paying;
         for cost in costs {
             match cost {
+                Obligation::Xp(amount) => candidate.spend_xp(player, amount)?,
                 Obligation::Energy(amount) => {
                     if candidate.players[player].energy < amount {
                         return Err(format!("The frozen payment still needs {amount} energy."));

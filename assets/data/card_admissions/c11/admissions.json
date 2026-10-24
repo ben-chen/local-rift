@@ -1,0 +1,453 @@
+{
+  "schema_version": 1,
+  "reviewed_on": "2026-10-24",
+  "scope": "C11 four XP-cost/resource source admissions; source facts are separate from runtime implementation",
+  "origin_gallery": {
+    "url": "https://playriftbound.com/en-us/card-gallery/",
+    "uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9"
+  },
+  "pre_admission_catalog_sha256": "f72d4b6d0a143c51b5e1f55279fbb335db05d50a493af74dbefe713bb0a4dfa4",
+  "records": [
+    {
+      "runtime_id": 345,
+      "official_id": "unl-102-219",
+      "name": "Crowd Favorite",
+      "raw_printing": {
+        "official_id": "unl-102-219",
+        "public_code": "UNL-102/219",
+        "name": "Crowd Favorite",
+        "set": "UNL",
+        "collector_number": 102,
+        "types": [
+          "unit"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "unit"
+        ],
+        "accessibility_types": [
+          "unit"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "body"
+        ],
+        "energy": 3,
+        "power": null,
+        "might": 3,
+        "might_bonus": null,
+        "rules_html": "<p>[Hunt] (When I conquer or hold, gain 1 XP.)<br />Spend 2 XP: [Buff] me. (Give me a +1 :rb_might: buff if I don't have one.)</p>",
+        "rules_text": "[Hunt] (When I conquer or hold, gain 1 XP.)\nSpend 2 XP: [Buff] me. (Give me a +1 Might buff if I don't have one.)",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [
+          "Noxus"
+        ],
+        "rarity": "uncommon",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/0031569ff123a8317e1be753f0bd895501bf838b-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Unit: Crowd Favorite. [Hunt] (When I conquer or hold, gain 1 XP.)\nSpend 2 XP: [Buff] me. (Give me a +1 [S] buff if I don't have one.)",
+        "illustrators": [
+          "Six More Vodka"
+        ]
+      },
+      "raw_printing_sha256": "48d4656f8c6b8232089aa4e71fcbf9bd37c075a87cb16ae1f2bc9bea288e375a",
+      "effective": {
+        "types": [
+          "unit"
+        ],
+        "super_types": [],
+        "domains": [
+          "body"
+        ],
+        "energy": 3,
+        "power": null,
+        "might": 3,
+        "might_bonus": null,
+        "tags": [
+          "Noxus"
+        ],
+        "rules_html": "<p>[Hunt] (When I conquer or hold, gain 1 XP.)<br />Spend 2 XP: [Buff] me. (Give me a +1 :rb_might: buff if I don't have one.)</p>",
+        "rules_text": "[Hunt] (When I conquer or hold, gain 1 XP.)\nSpend 2 XP: [Buff] me. (Give me a +1 Might buff if I don't have one.)",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "existing_field_resolution_ids": [],
+      "original_image": {
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/0031569ff123a8317e1be753f0bd895501bf838b-744x1039.png?accountingTag=RB",
+        "path": "assets/data/card_admissions/c11/images/unl-102-219.png",
+        "sha256": "e8a6f057e11aa419deae45ef862b3e49e5bd9e84189b32cd0a4e39479ed5a5d4",
+        "bytes": 807992
+      },
+      "runtime_image": {
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/0031569ff123a8317e1be753f0bd895501bf838b-744x1039.png?w=360&q=80&fm=png",
+        "path": "assets/art/card_345.png",
+        "sha256": "6f90d3cfd212526d99e2cc65a779a78e84f0cc5c92e43817bb13921ea2444053",
+        "bytes": 250943,
+        "width": 360
+      },
+      "visual_observation": {
+        "official_id": "unl-102-219",
+        "face_visually_inspected": true,
+        "original_image_sha256": "e8a6f057e11aa419deae45ef862b3e49e5bd9e84189b32cd0a4e39479ed5a5d4",
+        "name": "Crowd Favorite",
+        "collector_code": "UNL-102/219",
+        "printed_types": [
+          "unit"
+        ],
+        "printed_supertypes": [],
+        "printed_domains": [
+          "body"
+        ],
+        "printed_tags": [
+          "Noxus"
+        ],
+        "printed_energy": 3,
+        "printed_power": null,
+        "printed_might": 3,
+        "printed_might_bonus": null,
+        "printed_rules_icons_expanded": "[Hunt] (When I conquer or hold, gain 1 XP.)\nSpend 2 XP: [Buff] me. (Give me a +1 Might buff if I don't have one.)",
+        "printed_equipment_icons_expanded": "",
+        "comparison": "No mismatch found in individually inspected face; icon expansion and line wrapping are presentation only.",
+        "uncertainties": []
+      },
+      "interpretation_note": null
+    },
+    {
+      "runtime_id": 346,
+      "official_id": "unl-162-219",
+      "name": "Enthralling Protector",
+      "raw_printing": {
+        "official_id": "unl-162-219",
+        "public_code": "UNL-162/219",
+        "name": "Enthralling Protector",
+        "set": "UNL",
+        "collector_number": 162,
+        "types": [
+          "unit"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "unit"
+        ],
+        "accessibility_types": [
+          "unit"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "order"
+        ],
+        "energy": 2,
+        "power": null,
+        "might": 2,
+        "might_bonus": null,
+        "rules_html": "<p>[Hunt] (When I conquer or hold, gain 1 XP.)<br />Spend 2 XP: [Buff] me. (Give me a +1 :rb_might: buff if I don't have one.)</p>",
+        "rules_text": "[Hunt] (When I conquer or hold, gain 1 XP.)\nSpend 2 XP: [Buff] me. (Give me a +1 Might buff if I don't have one.)",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [
+          "Fae",
+          "Ionia"
+        ],
+        "rarity": "uncommon",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/3fdfe3bc7c7f81b99aa715bf54b52930ad41dcfa-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Unit: Enthralling Protector. [Hunt] (When I conquer or hold, gain 1 XP.)\nSpend 2 XP: [Buff] me. (Give me a +1 [S] buff if I don't have one.)",
+        "illustrators": [
+          "Dao Trong Le"
+        ]
+      },
+      "raw_printing_sha256": "eeb363113eeae633919fe9defccf85d0c315dbb4ab2e0cb723eff8db8b07be4e",
+      "effective": {
+        "types": [
+          "unit"
+        ],
+        "super_types": [],
+        "domains": [
+          "order"
+        ],
+        "energy": 2,
+        "power": null,
+        "might": 2,
+        "might_bonus": null,
+        "tags": [
+          "Fae",
+          "Ionia"
+        ],
+        "rules_html": "<p>[Hunt] (When I conquer or hold, gain 1 XP.)<br />Spend 2 XP: [Buff] me. (Give me a +1 :rb_might: buff if I don't have one.)</p>",
+        "rules_text": "[Hunt] (When I conquer or hold, gain 1 XP.)\nSpend 2 XP: [Buff] me. (Give me a +1 Might buff if I don't have one.)",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "existing_field_resolution_ids": [],
+      "original_image": {
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/3fdfe3bc7c7f81b99aa715bf54b52930ad41dcfa-744x1039.png?accountingTag=RB",
+        "path": "assets/data/card_admissions/c11/images/unl-162-219.png",
+        "sha256": "23599f352542b9b3def2371f1ad16bccc9ce9b84f3ed5c30c62818c9d83f0029",
+        "bytes": 879918
+      },
+      "runtime_image": {
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/3fdfe3bc7c7f81b99aa715bf54b52930ad41dcfa-744x1039.png?w=360&q=80&fm=png",
+        "path": "assets/art/card_346.png",
+        "sha256": "64da2fa81fd0bda4a0d2747bbc9cc98c111ee1f5987e47b153027054f7f86359",
+        "bytes": 257673,
+        "width": 360
+      },
+      "visual_observation": {
+        "official_id": "unl-162-219",
+        "face_visually_inspected": true,
+        "original_image_sha256": "23599f352542b9b3def2371f1ad16bccc9ce9b84f3ed5c30c62818c9d83f0029",
+        "name": "Enthralling Protector",
+        "collector_code": "UNL-162/219",
+        "printed_types": [
+          "unit"
+        ],
+        "printed_supertypes": [],
+        "printed_domains": [
+          "order"
+        ],
+        "printed_tags": [
+          "Fae",
+          "Ionia"
+        ],
+        "printed_energy": 2,
+        "printed_power": null,
+        "printed_might": 2,
+        "printed_might_bonus": null,
+        "printed_rules_icons_expanded": "[Hunt] (When I conquer or hold, gain 1 XP.)\nSpend 2 XP: [Buff] me. (Give me a +1 Might buff if I don't have one.)",
+        "printed_equipment_icons_expanded": "",
+        "comparison": "No mismatch found in individually inspected face; icon expansion and line wrapping are presentation only.",
+        "uncertainties": []
+      },
+      "interpretation_note": null
+    },
+    {
+      "runtime_id": 347,
+      "official_id": "unl-049-219",
+      "name": "Honeyfruit",
+      "raw_printing": {
+        "official_id": "unl-049-219",
+        "public_code": "UNL-049/219",
+        "name": "Honeyfruit",
+        "set": "UNL",
+        "collector_number": 49,
+        "types": [
+          "gear"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "gear"
+        ],
+        "accessibility_types": [
+          "gear"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "calm"
+        ],
+        "energy": 2,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "rules_html": "<p>This enters exhausted.<br />[Reaction][&gt;] :rb_exhaust:: [Add] :rb_rune_rainbow:. (Abilities that add resources can't be reacted to.)<br />[Level 6][&gt;] [&gt;&gt;][Reaction][&gt;] :rb_exhaust:: [Add] :rb_energy_1::rb_rune_rainbow:. (Use this ability only while you have 6+ XP.)</p>",
+        "rules_text": "This enters exhausted.\n[Reaction][>] [Exhaust]: [Add] [Any Power]. (Abilities that add resources can't be reacted to.)\n[Level 6][>] [>>][Reaction][>] [Exhaust]: [Add] [1 Energy][Any Power]. (Use this ability only while you have 6+ XP.)",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [],
+        "rarity": "rare",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/4794052d16d88b12861b348a466673ace098c32e-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Gear: Honeyfruit. This enters exhausted.\n[Reaction][>] [T]: [Add] [A]. (Abilities that add resources can't be reacted to.)\n[Level 6][>] [>>][Reaction][>] [T]: [Add] [1][A]. (Use this ability only while you have 6+ XP.)",
+        "illustrators": [
+          "黯荧岛Dark Glow"
+        ]
+      },
+      "raw_printing_sha256": "d06277e7aaee0a7ca05efe19fbe6599f6df0362054122244281960affe67f097",
+      "effective": {
+        "types": [
+          "gear"
+        ],
+        "super_types": [],
+        "domains": [
+          "calm"
+        ],
+        "energy": 2,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>This enters exhausted.<br />[Reaction][&gt;] :rb_exhaust:: [Add] :rb_rune_rainbow:. (Abilities that add resources can't be reacted to.)<br />[Level 6][&gt;] [&gt;&gt;][Reaction][&gt;] :rb_exhaust:: [Add] :rb_energy_1::rb_rune_rainbow:. (Use this ability only while you have 6+ XP.)</p>",
+        "rules_text": "This enters exhausted.\n[Reaction][>] [Exhaust]: [Add] [Any Power]. (Abilities that add resources can't be reacted to.)\n[Level 6][>] [>>][Reaction][>] [Exhaust]: [Add] [1 Energy][Any Power]. (Use this ability only while you have 6+ XP.)",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "existing_field_resolution_ids": [],
+      "original_image": {
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/4794052d16d88b12861b348a466673ace098c32e-744x1039.png?accountingTag=RB",
+        "path": "assets/data/card_admissions/c11/images/unl-049-219.png",
+        "sha256": "62e51af3e6f2ebc463f231010a4b9b87794c22dcbe4b249f544662010ce06fe2",
+        "bytes": 785399
+      },
+      "runtime_image": {
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/4794052d16d88b12861b348a466673ace098c32e-744x1039.png?w=360&q=80&fm=png",
+        "path": "assets/art/card_347.png",
+        "sha256": "296271542177e804dbe13162f92b17d4dac8f9b45735049fb803cc6008b725cc",
+        "bytes": 286693,
+        "width": 360
+      },
+      "visual_observation": {
+        "official_id": "unl-049-219",
+        "face_visually_inspected": true,
+        "original_image_sha256": "62e51af3e6f2ebc463f231010a4b9b87794c22dcbe4b249f544662010ce06fe2",
+        "name": "Honeyfruit",
+        "collector_code": "UNL-049/219",
+        "printed_types": [
+          "gear"
+        ],
+        "printed_supertypes": [],
+        "printed_domains": [
+          "calm"
+        ],
+        "printed_tags": [],
+        "printed_energy": 2,
+        "printed_power": null,
+        "printed_might": null,
+        "printed_might_bonus": null,
+        "printed_rules_icons_expanded": "This enters exhausted.\n[Reaction][>] [Exhaust]: [Add] [Any Power]. (Abilities that add resources can't be reacted to.)\n[Level 6][>] [>>][Reaction][>] [Exhaust]: [Add] [1 Energy][Any Power]. (Use this ability only while you have 6+ XP.)",
+        "printed_equipment_icons_expanded": "",
+        "comparison": "No mismatch found in individually inspected face; icon expansion and line wrapping are presentation only.",
+        "uncertainties": []
+      },
+      "interpretation_note": null
+    },
+    {
+      "runtime_id": 348,
+      "official_id": "unl-158-219",
+      "name": "Shepherd's Heirloom",
+      "raw_printing": {
+        "official_id": "unl-158-219",
+        "public_code": "UNL-158/219",
+        "name": "Shepherd's Heirloom",
+        "set": "UNL",
+        "collector_number": 158,
+        "types": [
+          "gear"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "gear"
+        ],
+        "accessibility_types": [
+          "gear"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "order"
+        ],
+        "energy": 2,
+        "power": null,
+        "might": 2,
+        "might_bonus": 2,
+        "rules_html": "<p>When you play this, gain 1 XP.<br />[Equip] — Spend 1 XP (Pay the cost: Attach this to a unit you control.)</p>",
+        "rules_text": "When you play this, gain 1 XP.\n[Equip] — Spend 1 XP (Pay the cost: Attach this to a unit you control.)",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [
+          "Equipment"
+        ],
+        "rarity": "common",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/fadd95487f164f60c9ad08a457f11170c6afa420-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Gear: Shepherd's Heirloom. When you play this, gain 1 XP.\n[Equip] — Spend 1 XP (Pay the cost: Attach this to a unit you control.)",
+        "illustrators": [
+          "Kudos Productions"
+        ]
+      },
+      "raw_printing_sha256": "3c7695df19eac76f529590ffe6b59ac3f45696d8d3dba8a001389f90dba896b8",
+      "effective": {
+        "types": [
+          "gear"
+        ],
+        "super_types": [],
+        "domains": [
+          "order"
+        ],
+        "energy": 2,
+        "power": null,
+        "might": 2,
+        "might_bonus": 2,
+        "tags": [
+          "Equipment"
+        ],
+        "rules_html": "<p>When you play this, gain 1 XP.<br />[Equip] — Spend 1 XP (Pay the cost: Attach this to a unit you control.)</p>",
+        "rules_text": "When you play this, gain 1 XP.\n[Equip] — Spend 1 XP (Pay the cost: Attach this to a unit you control.)",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "existing_field_resolution_ids": [],
+      "original_image": {
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/fadd95487f164f60c9ad08a457f11170c6afa420-744x1039.png?accountingTag=RB",
+        "path": "assets/data/card_admissions/c11/images/unl-158-219.png",
+        "sha256": "5e6b813eb72da087c5ebff96dbc4eea5f39f710b2e917b7e65b81d992e165ba1",
+        "bytes": 725546
+      },
+      "runtime_image": {
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/fadd95487f164f60c9ad08a457f11170c6afa420-744x1039.png?w=360&q=80&fm=png",
+        "path": "assets/art/card_348.png",
+        "sha256": "f5ca6e8b1182cfc6c82110f7ece6084e0b985a880d85dd5b8c3c7d84477a4b76",
+        "bytes": 269711,
+        "width": 360
+      },
+      "visual_observation": {
+        "official_id": "unl-158-219",
+        "face_visually_inspected": true,
+        "original_image_sha256": "5e6b813eb72da087c5ebff96dbc4eea5f39f710b2e917b7e65b81d992e165ba1",
+        "name": "Shepherd's Heirloom",
+        "collector_code": "UNL-158/219",
+        "printed_types": [
+          "gear"
+        ],
+        "printed_supertypes": [],
+        "printed_domains": [
+          "order"
+        ],
+        "printed_tags": [
+          "Equipment"
+        ],
+        "printed_energy": 2,
+        "printed_power": null,
+        "printed_might": null,
+        "printed_might_bonus": 2,
+        "printed_rules_icons_expanded": "When you play this, gain 1 XP.\n[Equip] — Spend 1 XP (Pay the cost: Attach this to a unit you control.)",
+        "printed_equipment_icons_expanded": "",
+        "comparison": "No mismatch found in individually inspected face; icon expansion and line wrapping are presentation only.",
+        "uncertainties": []
+      },
+      "interpretation_note": "Gear has no unit base Might; Heirloom's structured might=2 duplicates its printed attached +2 bonus and is preserved, not an invented unit stat."
+    }
+  ],
+  "preserved_runtime_prefix": {
+    "card_count": 345,
+    "cards_sha256": "f1088a808bf5163f5611b7d09e07379594a70d9fd25fc6dab0bf613a8ee783f5",
+    "presets_sha256": "d6e64ebf3f8921686682dacd87d4b2b4baec5754dbd284c6d60bf3fb324571e2",
+    "legends_manifest_sha256": "2b621121a54761ccee91e6d0df7b720e572138e7c2caac2c52abaaabd951b37f",
+    "training_recipe_source_sha256": "ad6b2ad3d5e3e34c99af35eef5a283b615cc813db27cec246fd2f433063ec1e4"
+  },
+  "preserved_source_reviews": {
+    "field_resolution_count": 114,
+    "raw_printing_count": 70,
+    "historical_issue_count": 39,
+    "identity_review_count": 29,
+    "field_image_count": 70,
+    "field_resolutions_sha256": "11423f26e8af15ca8739fd610972f6bebc5c517636d8c462783b3d03d543b21e",
+    "raw_printings_sha256": "3a3d0a7c28a9e23ed44080991157f1086baccbf67997aba7811d5522f1d99555",
+    "historical_issues_sha256": "241d9096a7397d1511483f0db7683c11f78163f692ec4157b8b9c14e8515b6dd",
+    "identity_reviews_sha256": "c61c191636c74795ec15c4149805d994c76c020093c98592a489766f30f54ad3",
+    "field_image_index_sha256": "20298558b3462cda4a60e0eb232a87967f66959c45c69d06c6a17d71b144115e"
+  },
+  "pre_admission_counts": {
+    "main_cards": 345,
+    "mapped_legal": 370,
+    "remaining_legal": 709
+  }
+}

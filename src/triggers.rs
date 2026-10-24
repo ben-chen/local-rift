@@ -104,37 +104,49 @@ impl EventSnapshot {
 }
 
 impl Game {
-    fn trigger_sources(&self) -> Vec<(CardId, TriggerSource)> {
+    fn trigger_sources(&self) -> Vec<(CardId, usize, TriggerSource)> {
         let mut sources = Vec::new();
         for player in 0..2 {
             for unit in &self.players[player].units {
-                if !unit.token && !metadata::trigger_rules(unit.card_id).is_empty() {
-                    sources.push((
-                        unit.card_id,
-                        TriggerSource {
-                            player,
-                            unit_id: Some(unit.id),
-                            gear_id: None,
-                        },
-                    ));
+                if unit.token {
+                    continue;
+                }
+                for (index, rule) in metadata::trigger_rules(unit.card_id).iter().enumerate() {
+                    if rule.text_area == metadata::TriggerTextArea::Rules {
+                        sources.push((
+                            unit.card_id,
+                            index,
+                            TriggerSource {
+                                player,
+                                unit_id: Some(unit.id),
+                                gear_id: None,
+                            },
+                        ));
+                    }
                 }
             }
             for gear in &self.players[player].gear {
-                if gear.token || metadata::trigger_rules(gear.card_id).is_empty() {
+                if gear.token {
                     continue;
                 }
-                // Equipment Effect Text is active only on an attached bearer.
-                if rules::equipment(gear.card_id).is_some() && gear.attached_to.is_none() {
-                    continue;
+                for (index, rule) in metadata::trigger_rules(gear.card_id).iter().enumerate() {
+                    let unit_id = match rule.text_area {
+                        metadata::TriggerTextArea::Rules if gear.attached_to.is_none() => None,
+                        metadata::TriggerTextArea::Equipment if gear.attached_to.is_some() => {
+                            gear.attached_to
+                        }
+                        _ => continue,
+                    };
+                    sources.push((
+                        gear.card_id,
+                        index,
+                        TriggerSource {
+                            player,
+                            unit_id,
+                            gear_id: Some(gear.id),
+                        },
+                    ));
                 }
-                sources.push((
-                    gear.card_id,
-                    TriggerSource {
-                        player,
-                        unit_id: gear.attached_to,
-                        gear_id: Some(gear.id),
-                    },
-                ));
             }
         }
         sources
@@ -340,63 +352,61 @@ impl Game {
         {
             self.legend_on_spell_completed(event.player, card_id);
         }
-        for (card_id, source) in self.trigger_sources() {
-            for (rule_index, rule) in metadata::trigger_rules(card_id).iter().enumerate() {
-                if rule.event == Event::SelfDeath {
-                    continue;
-                }
-                if self.event_matches(source, rule, &event) {
-                    let subject = event
-                        .unit
-                        .as_ref()
-                        .map(|u| Target::Unit {
+        for (card_id, rule_index, source) in self.trigger_sources() {
+            let rule = &metadata::trigger_rules(card_id)[rule_index];
+            if rule.event == Event::SelfDeath {
+                continue;
+            }
+            if self.event_matches(source, rule, &event) {
+                let subject = event
+                    .unit
+                    .as_ref()
+                    .map(|u| Target::Unit {
+                        player: event.subject_player,
+                        unit_id: u.id,
+                    })
+                    .or_else(|| {
+                        event.gear_id.map(|gear_id| Target::Gear {
                             player: event.subject_player,
-                            unit_id: u.id,
+                            gear_id,
                         })
-                        .or_else(|| {
-                            event.gear_id.map(|gear_id| Target::Gear {
-                                player: event.subject_player,
-                                gear_id,
-                            })
-                        });
-                    self.queue_card_trigger(
-                        card_id,
-                        rule_index,
-                        TriggerContext {
-                            source,
-                            subject,
-                            movement: (event.kind == Occurrence::Moved).then(|| MoveFacts {
-                                origin: event.origin,
-                                destination: event.unit.as_ref().and_then(|u| u.lane),
-                            }),
-                        },
-                    );
-                }
+                    });
+                self.queue_card_trigger(
+                    card_id,
+                    rule_index,
+                    TriggerContext {
+                        source,
+                        subject,
+                        movement: (event.kind == Occurrence::Moved).then(|| MoveFacts {
+                            origin: event.origin,
+                            destination: event.unit.as_ref().and_then(|u| u.lane),
+                        }),
+                    },
+                );
             }
         }
     }
     /// Capture Deathknell while abilities still exist; other death observers
     /// are evaluated only after all simultaneous dying units have left.
     pub(super) fn capture_death_triggers(&mut self, deaths: &[(usize, Unit)]) {
-        for (card_id, source) in self.trigger_sources() {
+        for (card_id, index, source) in self.trigger_sources() {
             for (player, unit) in deaths {
                 let mut event = EventSnapshot::unit(Occurrence::Death, *player, unit.clone());
                 event.buffed = self.buffed_units.contains(&unit.id);
-                for (index, rule) in metadata::trigger_rules(card_id).iter().enumerate() {
-                    if rule.event == Event::SelfDeath && self.event_matches(source, rule, &event) {
-                        self.queue_card_trigger(
-                            card_id,
-                            index,
-                            TriggerContext {
-                                source,
-                                movement: None,
-                                subject: Some(Target::Unit {
-                                    player: *player,
-                                    unit_id: unit.id,
-                                }),
-                            },
-                        );
-                    }
+                let rule = &metadata::trigger_rules(card_id)[index];
+                if rule.event == Event::SelfDeath && self.event_matches(source, rule, &event) {
+                    self.queue_card_trigger(
+                        card_id,
+                        index,
+                        TriggerContext {
+                            source,
+                            movement: None,
+                            subject: Some(Target::Unit {
+                                player: *player,
+                                unit_id: unit.id,
+                            }),
+                        },
+                    );
                 }
             }
         }

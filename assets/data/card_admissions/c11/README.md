@@ -1,0 +1,11 @@
+# C11 XP costs and resource gear: four source admissions
+
+Reviewed October 24, 2026. `admissions.json` records the exact official faces for runtime IDs 345–348: Crowd Favorite, Enthralling Protector, Honeyfruit, and Shepherd’s Heirloom. Each identity is Standard legal, has one gallery printing, and has no indexed erratum or unresolved source-field or variant conflict in the dated snapshot.
+
+The record preserves complete raw printing projections/hashes, effective facts, gallery origin, exact original image URLs/bytes/hashes, face observations, and runtime derivatives. All four original faces were visually rechecked. The two unit abilities cost XP and refer to themselves. Honeyfruit retains two separate Add abilities. Heirloom’s on-play XP and Equip instruction belong to its Rules panel; its Equipment effect-text panel is empty. The face’s +2 attached Might bonus is recorded separately from a Unit stat. The gallery duplicates that bonus in raw `might` and `might_bonus`; both are preserved. The runtime Gear `might=2` follows the existing attachment-bonus convention. No source correction is invented.
+
+Original faces total 3,198,855 bytes. Runtime PNGs are 360 pixels wide, total 1,065,020 bytes, and each below 300 KB. The artwork belongs to Riot Games and its credited illustrators; illustrator credits remain in the raw projections. These are official images, not project-created art.
+
+All preceding 345 runtime entries, published presets, eight authored training recipes, legend registry, 114 field resolutions, 70 preserved raw records, 39 historical issue groups and 29 complete identity reviews are preserved by pinned hashes and tests. No chosen champion is added. The remaining Temporary/Sprite family is outside this admission.
+
+Source proof establishes facts and provenance, not complete rules conformance. Explicit runtime descriptors and separate interaction tests are required. Validate with `python3 -m unittest discover -s tools -p test_c11_admissions.py -v`, `cargo test --test card_batch_thirteen`, and `python3 tools/import_catalog.py --check`. Live checks compare current source-page facts/URLs while rechecking local proof; they do not re-download these original image bytes.

@@ -18,10 +18,13 @@ impl Game {
         Ok(())
     }
 
-    // The checked cost primitive is shared with the forthcoming XP costs;
-    // this card set only contains gains. Keeping it here tests the same history.
-    #[allow(dead_code)]
     pub(crate) fn spend_xp(&mut self, player: usize, amount: XpAmount) -> Result<(), String> {
+        if player >= self.players.len() {
+            return Err("Invalid XP player.".into());
+        }
+        if self.payment_record_xp(player, amount)? {
+            return Ok(());
+        }
         let state = self.players.get_mut(player).ok_or("Invalid XP player.")?;
         state.xp = state.xp.checked_sub(amount).ok_or("Not enough XP.")?;
         Ok(())

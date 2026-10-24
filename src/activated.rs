@@ -85,6 +85,8 @@ impl AbilityTargets {
 enum AbilityEffect {
     Might { amount: i16, minimum: u8 },
     Buff,
+    BuffSource,
+    Add(ResourceOutput),
     Damage(u8),
     SourceMightDamage,
     Tokens,
@@ -108,7 +110,16 @@ pub enum AbilityCostModifier {
     EnergyIfRunesAtMost { maximum: u8, amount: u16 },
 }
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct ResourceOutput {
+    pub energy: u16,
+    pub power: u16,
+    pub domain: Option<Domain>,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct ActivatedRule {
+    pub xp_cost: crate::xp::XpAmount,
+    pub minimum_xp: Option<u8>,
     pub cost_modifiers: &'static [AbilityCostModifier],
     pub label: &'static str,
     pub timing: AbilityTiming,
@@ -133,10 +144,22 @@ impl ActivatedRule {
     pub fn adds_resources(&self) -> bool {
         matches!(
             self.effect,
-            AbilityEffect::AddEnergy(_)
+            AbilityEffect::Add(_)
+                | AbilityEffect::AddEnergy(_)
                 | AbilityEffect::AddEnergyIfSourceEmpowered { .. }
                 | AbilityEffect::Conversion(_)
         )
+    }
+    pub fn fixed_resource_output(&self) -> Option<ResourceOutput> {
+        match self.effect {
+            AbilityEffect::Add(output) => Some(output),
+            AbilityEffect::AddEnergy(energy) => Some(ResourceOutput {
+                energy: energy.into(),
+                power: 0,
+                domain: None,
+            }),
+            _ => None,
+        }
     }
     pub fn conversion_direction(&self) -> Option<ConversionDirection> {
         if let AbilityEffect::Conversion(direction) = self.effect {
@@ -153,6 +176,8 @@ const fn exhaust(
     effect: AbilityEffect,
 ) -> ActivatedRule {
     ActivatedRule {
+        xp_cost: 0,
+        minimum_xp: None,
         cost_modifiers: &[],
         label,
         timing: AbilityTiming::Main,
@@ -195,6 +220,50 @@ const fn empower(
 /// Stable zero-based ability indices belong to each explicit source printing.
 pub fn activated_rules(card_id: CardId) -> &'static [ActivatedRule] {
     match card_id {
+        345 | 346 => {
+            const {
+                &[ActivatedRule {
+                    xp_cost: 2,
+                    exhaust: false,
+                    ..exhaust(
+                        "Spend 2 XP: Buff me",
+                        AbilityTargets::NONE,
+                        AbilityEffect::BuffSource,
+                    )
+                }]
+            }
+        }
+        347 => {
+            const {
+                &[
+                    ActivatedRule {
+                        timing: AbilityTiming::Reaction,
+                        ..exhaust(
+                            "Add 1 Any power",
+                            AbilityTargets::NONE,
+                            AbilityEffect::Add(ResourceOutput {
+                                energy: 0,
+                                power: 1,
+                                domain: None,
+                            }),
+                        )
+                    },
+                    ActivatedRule {
+                        timing: AbilityTiming::Reaction,
+                        minimum_xp: Some(6),
+                        ..exhaust(
+                            "Add 1 energy and 1 Any power",
+                            AbilityTargets::NONE,
+                            AbilityEffect::Add(ResourceOutput {
+                                energy: 1,
+                                power: 1,
+                                domain: None,
+                            }),
+                        )
+                    },
+                ]
+            }
+        }
         272 | 288 => const { &[empower(2, 1, Some(Domain::Fury), &[])] },
         273 => const { &[empower(7, 0, None, &[])] },
         274 | 276 | 284 => const { &[empower(3, 0, None, &[])] },
@@ -383,6 +452,8 @@ pub fn activated_rules(card_id: CardId) -> &'static [ActivatedRule] {
         }
         239 => &[
             ActivatedRule {
+                xp_cost: 0,
+                minimum_xp: None,
                 label: "Draw 1",
                 timing: AbilityTiming::Main,
                 energy: 1,
@@ -400,6 +471,8 @@ pub fn activated_rules(card_id: CardId) -> &'static [ActivatedRule] {
                 effect: AbilityEffect::Draw(1),
             },
             ActivatedRule {
+                xp_cost: 0,
+                minimum_xp: None,
                 label: "Score 1 point",
                 timing: AbilityTiming::Main,
                 energy: 4,
@@ -688,7 +761,8 @@ impl Game {
             })
     }
 
-    /// Every live printed source ability, including ones currently unavailable.
+    /// Existing printed abilities on live sources. Timing and payment may still
+    /// prevent activation; inactive dependent abilities do not exist here.
     pub fn activated_options(&self, player: usize) -> Vec<ActivatedOption> {
         let Some(state) = self.players.get(player) else {
             return Vec::new();
@@ -716,11 +790,17 @@ impl Game {
                 )
             }))
             .flat_map(|(source, card_id)| {
-                (0..activated_rules(card_id).len()).map(move |ability_index| ActivatedOption {
-                    source,
-                    card_id,
-                    ability_index,
-                })
+                activated_rules(card_id)
+                    .iter()
+                    .enumerate()
+                    .filter(move |(_, rule)| {
+                        rule.minimum_xp.is_none_or(|n| state.xp >= u64::from(n))
+                    })
+                    .map(move |(ability_index, _)| ActivatedOption {
+                        source,
+                        card_id,
+                        ability_index,
+                    })
             })
             .collect()
     }
@@ -865,6 +945,28 @@ impl Game {
             .ok_or("That printed ability does not exist.")?;
         if self.phase != Phase::Playing || player != self.priority() {
             return Err("Wait for priority before using an ability.".into());
+        }
+        let announcement = self.payment_frozen_source().unwrap_or(self);
+        if rule
+            .minimum_xp
+            .is_some_and(|n| announcement.players[player].xp < u64::from(n))
+        {
+            return Err("This dependent ability requires more XP.".into());
+        }
+        if let Some(output) = rule.fixed_resource_output() {
+            let state = &self.players[player];
+            let power = output.domain.map_or(state.any_power, |d| {
+                state.power_pool[crate::game::domain_index(d)]
+            });
+            if state.energy_pool.checked_add(output.energy).is_none()
+                || state.energy.checked_add(output.energy).is_none()
+                || power.checked_add(output.power).is_none()
+            {
+                return Err(
+                    "engine_capacity: Added resources exceed the supported integer representation."
+                        .into(),
+                );
+            }
         }
         if !active {
             return Err("Attached gear's printed rules are inactive.".into());
@@ -1060,6 +1162,10 @@ impl Game {
                     ability_index,
                 },
             );
+            // Finalization can change a Level-dependent board state through
+            // its paid XP cost. Cleanup precedes the response window (319.4),
+            // but remains deferred while a frozen payment is still replaying.
+            self.after_resolution();
         }
         Ok(())
     }
@@ -1097,6 +1203,39 @@ impl Game {
                 for target in valid {
                     self.modify_might(target, amount, minimum);
                 }
+            }
+            AbilityEffect::BuffSource => {
+                if let AbilitySource::Unit {
+                    player: owner,
+                    unit_id,
+                } = source
+                {
+                    self.buff_unit_by(
+                        player,
+                        Target::Unit {
+                            player: owner,
+                            unit_id,
+                        },
+                    );
+                }
+            }
+            AbilityEffect::Add(output) => {
+                // Immediate Add sources validate both pools before paying any cost.
+                let state = &mut self.players[player];
+                state.energy_pool = state
+                    .energy_pool
+                    .checked_add(output.energy)
+                    .expect("validated Add energy");
+                state.energy = state
+                    .energy
+                    .checked_add(output.energy)
+                    .expect("validated available energy");
+                let power = output.domain.map_or(&mut state.any_power, |d| {
+                    &mut state.power_pool[crate::game::domain_index(d)]
+                });
+                *power = power
+                    .checked_add(output.power)
+                    .expect("validated Add power");
             }
             AbilityEffect::Buff => {
                 for target in valid {
@@ -1366,6 +1505,15 @@ impl Game {
         let enemy_target =
             matches!(target, Some(Target::Unit { player: owner, .. }) if owner != player);
         match rule.effect {
+            AbilityEffect::BuffSource => {
+                let AbilitySource::Unit { unit_id, .. } = source else { return None; };
+                let unit = self.unit_ref(Target::Unit { player, unit_id })?;
+                if self.buffed_units.contains(&unit.id) { return None; }
+                let mut paid = self.clone();
+                paid.spend_xp(player, rule.xp_cost).ok()?;
+                // Do not lose a damaged Level unit just to add a single buff.
+                (!paid.players[player].units.iter().any(|u| u.damage > 0 && u.damage >= paid.unit_might(u))).then_some(65)
+            }
             AbilityEffect::Points(amount) => Some(if self.players[player].score.saturating_add(amount) >= 8 { 1000 } else { 120 }),
             AbilityEffect::Tokens => Some(90),
             AbilityEffect::EmpowerSource => Some(if rule.exhaust { 16 } else { 24 }),
@@ -1425,7 +1573,7 @@ impl Game {
             }),
             AbilityEffect::SunDisc => (self.cards_played_this_turn(player)>0 && self.players[player].hand.iter().any(|&id|self.catalog[id].kind==crate::cards::CardKind::Unit)).then_some(65),
             AbilityEffect::PlayGrant(_) => self.players[player].hand.iter().any(|&id|self.catalog[id].kind==crate::cards::CardKind::Spell).then_some(60),
-            AbilityEffect::AddEnergy(_) | AbilityEffect::AddEnergyIfSourceEmpowered { .. } => {
+            AbilityEffect::Add(_) | AbilityEffect::AddEnergy(_) | AbilityEffect::AddEnergyIfSourceEmpowered { .. } => {
                 let mut probe = self.clone();
                 probe.activate_ability(source, index, Vec::new()).ok()?;
                 let opens_play = self.players[player].hand.iter().any(|&id| {

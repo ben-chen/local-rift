@@ -7066,15 +7066,383 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
             capture_unit(app, 10015, "RIFT_SMOKE_C10_GANKING_SCREENSHOT");
         }
         708 => {
+            expansion_fixture(app, 345);
+            app.game.battlefields = [3, 3];
+            app.game.players[0].xp = 1;
+            let mut crowd = public_unit(10020, 345, None);
+            crowd.ready = false;
+            app.game.players[0].units = vec![
+                crowd,
+                public_unit(10021, 343, None),
+                public_unit(10023, 342, None),
+            ];
+            app.game
+                .apply(Action::Move {
+                    unit_id: 10021,
+                    lane: Some(0),
+                })
+                .unwrap();
+            finish_chain_until_choice(app);
+            while app.game.in_window() {
+                app.game.apply(Action::Pass).unwrap();
+            }
+            assert_eq!(app.game.players[0].xp, 3);
+            assert!(app.game.gained_xp_this_turn(0));
+            let mut damaged = public_unit(10022, 339, None);
+            damaged.damage = 3;
+            app.game.players[0].units.push(damaged);
+            assert_eq!(
+                app.game
+                    .unit_might(app.game.players[0].units.last().unwrap()),
+                4
+            );
+            app.game.players[0].gear = vec![GearState {
+                id: 10025,
+                card_id: 347,
+                ready: true,
+                attached_to: None,
+                temporary: false,
+                token: false,
+            }];
+            click_unit(app, 10020);
+        }
+        709 => click(app, 1340.0, 547.0),
+        710 => click(app, 1285.0, 417.0),
+        711 => {
+            assert!(matches!(
+                app.selection,
+                Some(Selection::Ability(_, Some(0)))
+            ));
+            save_state(app);
+            capture(app, "RIFT_SMOKE_C11_XP_COST_SCREENSHOT");
+            click(app, 1285.0, 547.0);
+        }
+        712 => {
+            assert_same_state(app);
+            click(app, 1285.0, 417.0);
+        }
+        713 => click(app, 1285.0, 510.0),
+        714 => {
+            assert_eq!(app.game.players[0].xp, 1, "XP is paid before responses");
+            assert_eq!(
+                app.game.players[0]
+                    .units
+                    .iter()
+                    .find(|unit| unit.id == 10020)
+                    .unwrap()
+                    .buff,
+                0
+            );
+            assert!(
+                !app.game.players[0]
+                    .units
+                    .iter()
+                    .any(|unit| unit.id == 10022),
+                "lost Level Might kills a lethally damaged Mosstomper before Buff resolves"
+            );
+            assert!(app.game.players[0].discard.contains(&339));
+            assert!(app.game.gained_xp_this_turn(0));
+            assert!(
+                app.game
+                    .unit_keywords(
+                        app.game.players[0]
+                            .units
+                            .iter()
+                            .find(|unit| unit.id == 10023)
+                            .unwrap()
+                    )
+                    .ganking,
+                "spending XP does not erase Wily's real gain history"
+            );
+            capture(app, "RIFT_SMOKE_C11_XP_SPENT_SCREENSHOT");
+            finish_chain_until_choice(app);
+            assert_eq!(
+                app.game.players[0]
+                    .units
+                    .iter()
+                    .find(|unit| unit.id == 10020)
+                    .unwrap()
+                    .buff,
+                1
+            );
+            click_unit(app, 10020);
+        }
+        715 => click(app, 1340.0, 547.0),
+        716 => click(app, 1285.0, 417.0),
+        717 => {
+            save_state(app);
+            click(app, 1285.0, 510.0);
+        }
+        718 => {
+            assert!(matches!(
+                app.game.decision,
+                Some(Decision::Payment { player: 0 })
+            ));
+            assert_eq!(app.game.payment_plan_view(0).unwrap().xp, 2);
+            assert_eq!(
+                app.game.players[0].xp, 1,
+                "recording an obligation does not spend unavailable XP"
+            );
+            assert!(app.game.can_cancel_payment());
+            capture(app, "RIFT_SMOKE_C11_LOCKED_XP_SCREENSHOT");
+            click(app, 400.0, 662.0);
+        }
+        719 => click(app, 615.0, 760.0),
+        720 => click(app, 1285.0, 417.0),
+        721 => click(app, 1285.0, 510.0),
+        722 => {
+            assert!(matches!(
+                app.game.decision,
+                Some(Decision::Payment { player: 0 })
+            ));
+            assert_eq!(app.game.players[0].any_power, 1);
+            assert!(!app.game.players[0].gear[0].ready);
+            assert_eq!(app.game.players[0].xp, 1);
+            assert_eq!(
+                app.game.payment_plan_view(0).unwrap().xp,
+                2,
+                "Add power cannot replace the frozen XP obligation"
+            );
+            app.prefs.exact_payment = true;
+            click(app, 1285.0, 547.0);
+        }
+        723 => {
+            assert_same_state(app);
+            assert!(app.game.payment_plan_view(0).is_none());
+            expansion_fixture(app, 346);
+            app.game.players[0].xp = 2;
+            let mut unit = public_unit(10026, 346, None);
+            unit.ready = false;
+            app.game.players[0].units = vec![unit];
+            click_unit(app, 10026);
+        }
+        724 => click(app, 1340.0, 547.0),
+        725 => click(app, 1285.0, 417.0),
+        726 => click(app, 1285.0, 510.0),
+        727 => {
+            assert_eq!(app.game.players[0].xp, 0);
+            assert_eq!(app.game.players[0].units[0].buff, 0);
+            assert!(
+                !app.game.players[0].units[0].ready,
+                "XP self-Buff does not require or grant readiness"
+            );
+            finish_chain_until_choice(app);
+            assert_eq!(app.game.players[0].units[0].buff, 1);
+            capture_unit(app, 10026, "RIFT_SMOKE_C11_PROTECTOR_SCREENSHOT");
+        }
+        728 => {
+            expansion_fixture(app, 347);
+            app.game.players[0].xp = 5;
+            click(app, 315.0, 760.0);
+        }
+        729 => click(app, 1285.0, 510.0),
+        730 => {
+            assert_eq!(app.game.players[0].gear[0].card_id, 347);
+            assert!(
+                !app.game.players[0].gear[0].ready,
+                "Honeyfruit's real play enters exhausted"
+            );
+            app.game.apply(Action::EndTurn).unwrap();
+            app.game.run_ai_turn().unwrap();
+            finish_chain_until_choice(app);
+            assert_eq!(app.game.active, 0);
+            assert!(
+                app.game.players[0].gear[0].ready,
+                "Honeyfruit readies at its next actual awakening"
+            );
+            app.tray = super::Tray::Loadout;
+            click(app, 615.0, 760.0);
+        }
+        731 => {
+            let source = local_rift::activated::AbilitySource::Gear {
+                player: 0,
+                gear_id: app.game.players[0].gear[0].id,
+            };
+            assert_eq!(app.source_abilities(source), vec![(347, 0)]);
+            capture(app, "RIFT_SMOKE_C11_HONEY_LOW_SCREENSHOT");
+            click(app, 1285.0, 417.0);
+        }
+        732 => {
+            assert_eq!(app.game.players[0].any_power, 0);
+            ADD_CHAIN_SNAPSHOT.with(|value| {
+                *value.borrow_mut() = app.game.chain.iter().map(|item| item.id).collect()
+            });
+            click(app, 1285.0, 510.0);
+        }
+        733 => {
+            assert_eq!(app.game.players[0].any_power, 1);
+            assert_eq!(
+                app.game.players[0].energy_pool, 0,
+                "base Honeyfruit output adds no Energy"
+            );
+            assert_eq!(app.game.players[0].xp, 5);
+            assert!(!app.game.players[0].gear[0].ready);
+            ADD_CHAIN_SNAPSHOT.with(|value| {
+                assert_eq!(
+                    *value.borrow(),
+                    app.game
+                        .chain
+                        .iter()
+                        .map(|item| item.id)
+                        .collect::<Vec<_>>()
+                )
+            });
+            app.game.apply(Action::EndTurn).unwrap();
+            app.game.run_ai_turn().unwrap();
+            finish_chain_until_choice(app);
+            app.game.players[0].xp = 6;
+            app.selection = None;
+            click(app, 615.0, 760.0);
+        }
+        734 => {
+            let source = local_rift::activated::AbilitySource::Gear {
+                player: 0,
+                gear_id: app.game.players[0].gear[0].id,
+            };
+            assert_eq!(app.source_abilities(source), vec![(347, 0), (347, 1)]);
+            capture(app, "RIFT_SMOKE_C11_HONEY_CHOICES_SCREENSHOT");
+            click(app, 1285.0, 481.0);
+        }
+        735 => {
+            assert!(matches!(
+                app.selection,
+                Some(Selection::Ability(_, Some(1)))
+            ));
+            capture(app, "RIFT_SMOKE_C11_HONEY_OUTPUT_SCREENSHOT");
+            click(app, 1285.0, 510.0);
+        }
+        736 => {
+            assert_eq!(app.game.players[0].energy_pool, 1);
+            assert_eq!(app.game.players[0].any_power, 1);
+            assert_eq!(
+                app.game.players[0].xp, 6,
+                "Level checks XP without spending it"
+            );
+            assert!(!app.game.players[0].gear[0].ready);
+            expansion_fixture(app, 348);
+            app.game.players[0].xp = 0;
+            app.game.players[0].units = vec![public_unit(10024, 110, None)];
+            click(app, 315.0, 760.0);
+        }
+        737 => click(app, 1285.0, 510.0),
+        738 => {
+            assert_eq!(app.game.players[0].gear[0].card_id, 348);
+            assert_eq!(
+                app.game.players[0].xp, 0,
+                "Heirloom's play XP waits for its real trigger"
+            );
+            assert!(!app.game.chain.is_empty());
+            finish_chain_until_choice(app);
+            assert_eq!(app.game.players[0].xp, 1);
+            assert!(app.game.gained_xp_this_turn(0));
+            app.tray = super::Tray::Loadout;
+            click(app, 615.0, 760.0);
+        }
+        739 => click_unit(app, 10024),
+        740 => {
+            let gear_id = app.game.players[0].gear[0].id;
+            let plan = app
+                .game
+                .cost_plan(&Action::Equip {
+                    gear_id,
+                    target: Target::Unit {
+                        player: 0,
+                        unit_id: 10024,
+                    },
+                })
+                .unwrap();
+            assert_eq!(plan.xp, 1);
+            assert_eq!(plan.energy, 0);
+            assert!(plan.power.is_empty());
+            capture(app, "RIFT_SMOKE_C11_HEIRLOOM_COST_SCREENSHOT");
+            click(app, 1285.0, 522.0);
+        }
+        741 => {
+            assert_eq!(app.game.players[0].xp, 0);
+            assert!(
+                app.game.players[0].gear[0].attached_to.is_none(),
+                "XP Equip opens responses before attachment"
+            );
+            assert!(app.game.gained_xp_this_turn(0));
+            finish_chain_until_choice(app);
+            assert_eq!(app.game.players[0].gear[0].attached_to, Some(10024));
+            assert_eq!(app.game.unit_might(&app.game.players[0].units[0]), 4);
+            assert_eq!(
+                app.game.players[0].xp, 0,
+                "attachment does not repeat the own-play XP trigger"
+            );
+            capture_gear(
+                app,
+                app.game.players[0].gear[0].id,
+                "RIFT_SMOKE_C11_HEIRLOOM_SCREENSHOT",
+            );
+        }
+        742 => {
+            played_gear_fixture(app, 347);
+            app.game.players[0].gear[0].ready = true;
+            app.game.players[0].xp = 6;
+            app.game.players[0].units = vec![public_unit(10027, 110, None)];
+            fixture_counter_tax(app, 10027);
+            app.game.players[0].runes = [0; 6];
+            app.game.players[0].exhausted_runes = [0; 6];
+            app.game.players[0].energy_pool = 1;
+            app.game.players[0].energy = 1;
+            ADD_CHAIN_SNAPSHOT.with(|value| {
+                *value.borrow_mut() = app.game.chain.iter().map(|item| item.id).collect()
+            });
+            click(app, 615.0, 760.0);
+        }
+        743 => click(app, 1285.0, 481.0),
+        744 => click(app, 1285.0, 510.0),
+        745 => {
+            assert!(matches!(
+                app.game.decision,
+                Some(Decision::CounterTax {
+                    player: 0,
+                    cost: 2,
+                    ..
+                })
+            ));
+            assert_eq!(app.game.players[0].energy, 2);
+            assert_eq!(app.game.players[0].any_power, 1);
+            assert_eq!(app.game.players[0].xp, 6);
+            assert!(!app.game.players[0].gear[0].ready);
+            ADD_CHAIN_SNAPSHOT.with(|value| {
+                assert_eq!(
+                    *value.borrow(),
+                    app.game
+                        .chain
+                        .iter()
+                        .map(|item| item.id)
+                        .collect::<Vec<_>>(),
+                    "Reaction Add preserves the outer payment and every physical chain item"
+                )
+            });
+            capture(app, "RIFT_SMOKE_C11_HONEY_PAYMENT_SCREENSHOT");
+            click(app, 1285.0, 510.0);
+        }
+        746 => {
+            assert_eq!(app.game.players[0].energy, 0);
+            assert_eq!(
+                app.game.players[0].any_power, 1,
+                "tax pays Energy, not the accompanying Any power"
+            );
+            finish_chain_until_choice(app);
+            assert_eq!(
+                app.game.players[0].units[0].temporary_buff, 2,
+                "paid tax lets Discipline resolve its printed +2 Might"
+            );
+        }
+        747 => {
             app.ui.input_override = None;
             app.ui.pointer_override = None;
             app.ui.wheel_override = None;
             println!(
-                "PASS: 709 native UI frames including exact XP above255, conditional ready entry, actual movement XP/history, all three intrinsic/Level/history Ganking paths, Concentrate discount and cancellation, Wuju draw, Combat Experience targeting, and all previous 676 mat/resource/gear/field controls."
+                "PASS: 748 native UI frames including both XP self-Buff abilities, before-response Level-loss cleanup, gain-history preservation, insufficient-XP payment and resource rollback, both Honeyfruit outputs and Level availability, real Heirloom play XP and XP-only Equip, Reaction Add during tax, and all previous 709 mat/resource/gear/field controls."
             );
             return true;
         }
-        _ => panic!("UI smoke runner exceeded its 709-frame script"),
+        _ => panic!("UI smoke runner exceeded its 748-frame script"),
     }
     false
 }

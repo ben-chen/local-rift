@@ -25,6 +25,7 @@ mod empowered;
 mod play_choices;
 mod progression;
 mod targeting;
+mod xp_costs;
 
 #[cfg(test)]
 mod board_effects;
@@ -419,7 +420,7 @@ impl Session {
             "resource_payment_pending":game.resource_payment_pending(),
             "resource_continuations":game.resource_continuations().iter().map(|parent|json!({"player":parent.player,"task":parent.task})).collect::<Vec<_>>(),
             "payment_plan":game.payment_plan_view(viewer).map(|plan|json!({
-                "player":plan.player,"energy":plan.energy,"pending_card":plan.pending_card,
+                "player":plan.player,"energy":plan.energy,"xp":plan.xp,"xp_exact":plan.xp.to_string(),"pending_card":plan.pending_card,
                 "power":plan.power.iter().map(power_cost_to_json).collect::<Vec<_>>(),
                 "action":plan.action.as_ref().map(action_to_json)})),
             "required_trash_play":game.required_trash_play,
@@ -700,6 +701,9 @@ fn activated_rule_to_json(index: usize, rule: &ActivatedRule) -> Value {
     json!({"ability_index":index,"label":rule.label,
         "timing":match rule.timing {AbilityTiming::Main=>"main",AbilityTiming::Action=>"action",AbilityTiming::Reaction=>"reaction"},
         "energy":rule.energy,"power":rule.power,"power_domain":rule.domain.map(|domain|domain.name()),
+        "xp_cost":rule.xp_cost,"xp_cost_exact":rule.xp_cost.to_string(),"minimum_xp":rule.minimum_xp,
+        "fixed_resource_output":rule.fixed_resource_output().map(|output|json!({
+            "energy":output.energy,"power":output.power,"domain":output.domain.map(|domain|domain.name())})),
         "cost_modifiers":rule.cost_modifiers.iter().map(empowered::cost_modifier_to_json).collect::<Vec<_>>(),
         "exhaust":rule.exhaust,"requires_battlefield":rule.requires_battlefield,
         "adds_resources":rule.adds_resources(),
@@ -728,6 +732,7 @@ pub fn catalog() -> Value {
             "kind":c.kind.name(),"official_text":c.official_text,"keywords":c.keywords,"tags":c.tags,
             "play_targets":targeting::play_targets_to_json(c.id),
             "entry_ready":progression::entry_ready_to_json(c.id),
+            "equipment":xp_costs::equipment_to_json(c.id),
             "xp_energy_discounts":progression::xp_discounts_to_json(c.id),
             "passive_rules":crate::continuous::passive_rules(c.id).iter().enumerate().map(|(index,rule)|empowered::passive_rule_to_json(index,rule)).collect::<Vec<_>>(),
             "activated_abilities":activated_rules(c.id).iter().enumerate().map(|(index,rule)|activated_rule_to_json(index,rule)).collect::<Vec<_>>()})).collect::<Vec<_>>(),

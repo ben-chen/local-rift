@@ -41,6 +41,7 @@ pub struct PlayChoices {
 }
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct CostValue {
+    pub xp: crate::xp::XpAmount,
     pub energy: u16,
     pub power: u16,
     pub domains: Vec<Domain>,
@@ -83,6 +84,7 @@ pub struct CostModifier {
 }
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct CostPlanView {
+    pub xp: crate::xp::XpAmount,
     pub components: Vec<CostComponent>,
     pub modifiers: Vec<CostModifier>,
     pub energy: u32,
@@ -438,6 +440,7 @@ impl Game {
         };
         let c = self.catalog.get(id).ok_or("Unknown card.")?;
         let mut base = CostValue {
+            xp: 0,
             energy: c.cost.into(),
             power: c.power_cost.into(),
             domains: c.domains.to_vec(),
@@ -543,6 +546,7 @@ impl Game {
                 label: "Printed Repeat".into(),
                 source: ChainSource::Card { card_id: intent.id },
                 cost: CostValue {
+                    xp: 0,
                     energy: c.energy.into(),
                     power: c.power.into(),
                     domains: c.domain.map_or_else(|| ALL_DOMAINS.to_vec(), |d| vec![d]),
@@ -557,6 +561,7 @@ impl Game {
                     label: "Granted Repeat: printed cost".into(),
                     source: g.source,
                     cost: CostValue {
+                        xp: 0,
                         energy: c.cost.into(),
                         power: c.power_cost.into(),
                         domains: c.domains.to_vec(),
@@ -578,6 +583,7 @@ impl Game {
                     label: "Syndra Repeat".into(),
                     source: ChainSource::Card { card_id: 266 },
                     cost: CostValue {
+                        xp: 0,
                         energy: 2,
                         power: 1,
                         domains: vec![Domain::Chaos],
@@ -611,6 +617,7 @@ impl Game {
             return Some(OptionalCostOption {
                 label: "Accelerate: enter ready".into(),
                 cost: CostValue {
+                    xp: 0,
                     energy: c.energy.into(),
                     power: c.power.into(),
                     domains: vec![c.domain],
@@ -620,6 +627,7 @@ impl Game {
         granted.then(|| OptionalCostOption {
             label: "Granted Accelerate: enter ready".into(),
             cost: CostValue {
+                xp: 0,
                 energy: 1,
                 power: 1,
                 domains: if intent.token || self.catalog[intent.id].domains.len() != 1 {
@@ -688,6 +696,7 @@ impl Game {
             29 => Some(OptionalCostOption {
                 label: "Rampage: +2 Might".into(),
                 cost: CostValue {
+                    xp: 0,
                     energy: 0,
                     power: 1,
                     domains: vec![Domain::Body],
@@ -696,6 +705,7 @@ impl Game {
             261 => Some(OptionalCostOption {
                 label: "Nami: stun an enemy when played".into(),
                 cost: CostValue {
+                    xp: 0,
                     energy: 0,
                     power: 1,
                     domains: vec![Domain::Calm],
@@ -808,6 +818,7 @@ impl Game {
                 id: 4,
                 label: "Deflect".into(),
                 cost: CostValue {
+                    xp: 0,
                     energy: 0,
                     power: deflect.into(),
                     domains: ALL_DOMAINS.to_vec(),
@@ -1066,6 +1077,7 @@ impl Game {
             29 => Some(OptionalCostOption {
                 label: String::new(),
                 cost: CostValue {
+                    xp: 0,
                     power: 1,
                     domains: vec![Domain::Body],
                     ..Default::default()
@@ -1074,6 +1086,7 @@ impl Game {
             261 => Some(OptionalCostOption {
                 label: String::new(),
                 cost: CostValue {
+                    xp: 0,
                     power: 1,
                     domains: vec![Domain::Calm],
                     ..Default::default()
@@ -1334,6 +1347,7 @@ pub(crate) fn solve_cost_plan(
                 label: m.label.clone(),
                 optional: false,
                 cost: CostValue {
+                    xp: 0,
                     energy,
                     power,
                     domains: ALL_DOMAINS.to_vec(),
@@ -1402,6 +1416,10 @@ pub(crate) fn solve_cost_plan(
             power_allocations: allocations,
         });
     }
+    let xp = work
+        .iter()
+        .try_fold(0u64, |sum, c| sum.checked_add(c.cost.xp))
+        .ok_or("engine_capacity: Total XP cost exceeds the supported integer representation.")?;
     let energy = work.iter().map(|c| u32::from(c.cost.energy)).sum();
     let mut power: Vec<_> = work
         .into_iter()
@@ -1418,6 +1436,7 @@ pub(crate) fn solve_cost_plan(
         .collect();
     power.sort_by_key(|c| c.domains.len());
     Ok(CostPlanView {
+        xp,
         components,
         modifiers,
         energy,
@@ -1592,6 +1611,7 @@ impl Game {
                 id: 1,
                 label: "Legend ability".into(),
                 cost: CostValue {
+                    xp: 0,
                     energy: activation.energy.into(),
                     power: activation.power.into(),
                     domains: activation
@@ -1606,6 +1626,7 @@ impl Game {
                     id: 4,
                     label: "Deflect".into(),
                     cost: CostValue {
+                        xp: 0,
                         energy: 0,
                         power: deflect.into(),
                         domains: ALL_DOMAINS.to_vec(),
@@ -1615,7 +1636,7 @@ impl Game {
             }
             return solve_cost_plan(components, vec![], selection, false, 0);
         }
-        let (player, source, card_id, energy, power, domains, empower, targets) = match action {
+        let (player, source, card_id, energy, power, xp, domains, empower, targets) = match action {
             Action::ActivateAbility {
                 source,
                 ability_index,
@@ -1642,12 +1663,18 @@ impl Game {
                 let r = crate::activated::activated_rules(id)
                     .get(*ability_index)
                     .ok_or("No such ability.")?;
+                if r.minimum_xp
+                    .is_some_and(|n| self.players[source.player()].xp < u64::from(n))
+                {
+                    return Err("This dependent ability requires more XP.".into());
+                }
                 (
                     source.player(),
                     *source,
                     id,
                     r.energy.into(),
                     r.power.into(),
+                    r.xp_cost,
                     r.domain.map_or_else(|| ALL_DOMAINS.to_vec(), |d| vec![d]),
                     r.is_empower(),
                     targets.clone(),
@@ -1673,6 +1700,7 @@ impl Game {
                     g.card_id,
                     r.equip_energy.into(),
                     r.equip_power.into(),
+                    r.equip_xp,
                     vec![r.equip_domain],
                     false,
                     vec![*target],
@@ -1706,6 +1734,7 @@ impl Game {
                     u.card_id,
                     e,
                     power,
+                    0,
                     vec![d],
                     true,
                     vec![],
@@ -1717,6 +1746,7 @@ impl Game {
             id: 1,
             label: "Ability cost".into(),
             cost: CostValue {
+                xp,
                 energy,
                 power,
                 domains,
@@ -1729,6 +1759,7 @@ impl Game {
                 id: 4,
                 label: "Deflect".into(),
                 cost: CostValue {
+                    xp: 0,
                     energy: 0,
                     power: deflect.into(),
                     domains: ALL_DOMAINS.to_vec(),
@@ -1815,6 +1846,7 @@ impl Game {
         if costs.energy > u32::from(self.payment_energy_available(p)) {
             return Err("Not enough energy for this cost plan.".into());
         }
+        self.spend_xp(p, costs.xp)?;
         self.pay_energy(p, costs.energy as u16);
         for c in costs.power {
             self.consume_power(p, &c.domains, c.amount, c.spell_eligible)?;

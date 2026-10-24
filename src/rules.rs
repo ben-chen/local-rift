@@ -208,7 +208,7 @@ pub struct Targeting {
 pub fn effect(id: usize) -> OfficialEffect {
     use OfficialEffect::*;
     match id {
-        334 | 337..=344 => None,
+        334 | 337..=348 => None,
         335 => ContextualMight(SpellMight::ControllerXp {
             minimum_xp: 6,
             below: 1,
@@ -914,6 +914,9 @@ pub enum Mechanic {
 pub fn requirements(id: usize) -> &'static [Mechanic] {
     use Mechanic::*;
     match id {
+        345 | 346 => &[Chain, Xp, ActivatedAbilities, ConquerHoldTriggers],
+        347 => &[Gear, Xp, ActivatedAbilities, ResourceAbilities],
+        348 => &[Gear, Xp, Equip, Chain],
         334 | 335 | 342 => &[Chain, Xp],
         336 => &[Chain, Xp, CostReduction],
         337 | 340 | 341 => &[Chain, Xp, ConquerHoldTriggers],
@@ -1143,6 +1146,7 @@ pub enum EquipmentAbility {
 pub struct EquipmentRule {
     pub might: u8,
     pub equip_energy: u8,
+    pub equip_xp: crate::xp::XpAmount,
     pub equip_domain: Domain,
     pub equip_power: u8,
     pub recycle_trash: u8,
@@ -1153,6 +1157,7 @@ pub struct EquipmentRule {
 
 pub fn equipment(id: usize) -> Option<EquipmentRule> {
     let (might, equip_domain, recycle_trash, quick_draw, ability) = match id {
+        348 => (2, Domain::Order, 0, false, EquipmentAbility::None),
         3 => (2, Domain::Chaos, 0, false, EquipmentAbility::Ganking),
         10 => (1, Domain::Calm, 0, false, EquipmentAbility::GuardianAngel),
         38 => (2, Domain::Chaos, 2, false, EquipmentAbility::LastRites),
@@ -1182,9 +1187,10 @@ pub fn equipment(id: usize) -> Option<EquipmentRule> {
     };
     Some(EquipmentRule {
         might,
+        equip_xp: u64::from(id == 348),
         equip_energy: u8::from(matches!(id, 124 | 327 | 329)),
         equip_domain,
-        equip_power: u8::from(!matches!(id, 124 | 327)),
+        equip_power: u8::from(!matches!(id, 124 | 327 | 348)),
         recycle_trash,
         quick_draw,
         ability,
@@ -1333,7 +1339,7 @@ pub fn static_abilities(id: usize) -> &'static [StaticAbility] {
                 },
             ],
         }],
-        337 | 341 => &[Hunt(1)],
+        337 | 341 | 345 | 346 => &[Hunt(1)],
         338 | 339 => &[Hunt(2)],
         340 => &[Hunt(2), EntersReadyAtXp(3)],
         343 => &[Accelerate {
@@ -1368,7 +1374,7 @@ pub fn static_abilities(id: usize) -> &'static [StaticAbility] {
             },
             Assault(1),
         ],
-        232 | 243 | 252 => &[EntersExhausted],
+        232 | 243 | 252 | 347 => &[EntersExhausted],
         233 => &[EntersReady],
         // Caitlyn spells out the exact Backline assignment restriction.
         238 => &[Backline],
@@ -1720,7 +1726,7 @@ mod tests {
     #[test]
     fn all_catalog_entries_have_official_classification() {
         let cards = cards();
-        assert_eq!(cards.len(), 345);
+        assert_eq!(cards.len(), 349);
         for card in cards {
             assert_ne!(
                 effect(card.id),
@@ -1730,7 +1736,7 @@ mod tests {
             );
             assert_ne!(support_status(card.id), SupportStatus::UnknownCard);
         }
-        assert_eq!(effect(345), OfficialEffect::Unsupported);
+        assert_eq!(effect(349), OfficialEffect::Unsupported);
     }
 
     #[test]

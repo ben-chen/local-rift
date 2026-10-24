@@ -73,7 +73,7 @@ pub(super) fn choices_to_json(choices: &PlayChoices) -> Value {
 }
 
 fn cost_to_json(cost: &CostValue) -> Value {
-    json!({"energy":cost.energy,"power":cost.power,
+    json!({"energy":cost.energy,"power":cost.power,"xp":cost.xp,"xp_exact":cost.xp.to_string(),
         "domains":cost.domains.iter().map(|d|d.name().to_lowercase()).collect::<Vec<_>>()})
 }
 
@@ -87,7 +87,7 @@ pub(super) fn plan_to_json(plan: &CostPlanView) -> Value {
             "scope":match &modifier.scope {CostScope::Total=>json!({"type":"total"}),
                 CostScope::Component{component_id}=>json!({"type":"component","component_id":component_id.to_string()})}
         })).collect::<Vec<_>>(),
-        "energy":plan.energy,"power":plan.power.iter().map(|cost|json!({"amount":cost.amount,
+        "energy":plan.energy,"xp":plan.xp,"xp_exact":plan.xp.to_string(),"power":plan.power.iter().map(|cost|json!({"amount":cost.amount,
             "domains":cost.domains.iter().map(|d|d.name().to_lowercase()).collect::<Vec<_>>(),
             "spell_eligible":cost.spell_eligible})).collect::<Vec<_>>(),
         "applied_order":plan.applied_order.iter().map(selection_to_json).collect::<Vec<_>>()})

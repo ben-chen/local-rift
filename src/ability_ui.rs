@@ -300,6 +300,9 @@ impl App {
 
 pub(super) fn cost_label(rule: &ActivatedRule) -> String {
     let mut costs = Vec::new();
+    if rule.xp_cost > 0 {
+        costs.push(format!("{} XP", rule.xp_cost));
+    }
     if rule.disempower_source {
         costs.push("Disempower source".to_owned());
     }
@@ -335,6 +338,64 @@ pub(super) fn cost_label(rule: &ActivatedRule) -> String {
     } else {
         costs.join(" · ")
     }
+}
+pub(super) fn level_label(game: &Game, player: usize, rule: &ActivatedRule) -> Option<String> {
+    rule.minimum_xp.map(|threshold| {
+        format!(
+            "Level {threshold} · {} at XP {}",
+            if game.players[player].xp >= u64::from(threshold) {
+                "active"
+            } else {
+                "inactive"
+            },
+            game.players[player].xp
+        )
+    })
+}
+pub(super) fn output_label(rule: &ActivatedRule) -> Option<String> {
+    rule.fixed_resource_output().map(|output| {
+        let mut parts = Vec::new();
+        if output.energy > 0 {
+            parts.push(format!("{} energy", output.energy));
+        }
+        if output.power > 0 {
+            parts.push(format!(
+                "{} {} power",
+                output.power,
+                output.domain.map_or("Any", |domain| domain.name())
+            ));
+        }
+        format!("Add {} immediately", parts.join(" + "))
+    })
+}
+pub(super) fn fixed_payment_label(plan: &local_rift::payment_plan::PaymentPlanView) -> String {
+    let mut costs = Vec::new();
+    if plan.energy > 0 {
+        costs.push(format!("{} energy", plan.energy));
+    }
+    costs.extend(plan.power.iter().map(|cost| {
+        let domain = if cost.domains.len() == 6 {
+            "Any".into()
+        } else {
+            cost.domains
+                .iter()
+                .map(|domain| domain.name())
+                .collect::<Vec<_>>()
+                .join("/")
+        };
+        format!("{} {domain} power", cost.amount)
+    }));
+    if plan.xp > 0 {
+        costs.push(format!("{} XP", plan.xp));
+    }
+    format!(
+        "Fixed cost: {}.",
+        if costs.is_empty() {
+            "none".into()
+        } else {
+            costs.join(" + ")
+        }
+    )
 }
 pub(super) fn source_state(game: &Game, source: AbilitySource) -> String {
     let (id, ready, attached) = match source {
@@ -521,33 +582,8 @@ impl App {
         let name = self.payment_action_name(&Action::CompletePayment);
         self.ui
             .wrapped_lines(&name, 1178.0, 393.0, 212.0, 11.0, GOLD, 2);
-        let power = plan
-            .power
-            .iter()
-            .map(|cost| {
-                format!(
-                    "{} {} power",
-                    cost.amount,
-                    if cost.domains.len() == 6 {
-                        "Any".into()
-                    } else {
-                        cost.domains
-                            .iter()
-                            .map(|domain| domain.name())
-                            .collect::<Vec<_>>()
-                            .join("/")
-                    }
-                )
-            })
-            .collect::<Vec<_>>()
-            .join(" + ");
         self.ui.wrapped_lines(
-            &format!(
-                "Fixed cost: {} energy{}{}.",
-                plan.energy,
-                if power.is_empty() { "" } else { " + " },
-                power
-            ),
+            &fixed_payment_label(&plan),
             1178.0,
             430.0,
             212.0,
@@ -811,7 +847,9 @@ impl App {
                 TEXT,
                 2,
             );
-            self.ui.text(timing_label(rule), 1178.0, 449.0, 9.0, MUTED);
+            let timing = level_label(&self.game, source.player(), rule)
+                .unwrap_or_else(|| timing_label(rule).into());
+            self.ui.ellipsis(&timing, 1178.0, 449.0, 212.0, 9.0, MUTED);
             let status = if source.player() != 0 {
                 "Opponent ability · read only".to_owned()
             } else if self.ability_costs.len() != rule.recycle_count as usize {
@@ -860,8 +898,12 @@ impl App {
                         } else if rule.conversion_direction().is_some() {
                             "Exhaust first; choose the conversion amount next. Zero is allowed."
                                 .into()
+                        } else if let Some(output) = output_label(rule) {
+                            format!("{output}. No response window.")
                         } else if rule.adds_resources() {
                             "Adds resources immediately; no response window.".into()
+                        } else if rule.xp_cost > 0 {
+                            "XP is spent before responses. Lower XP may switch off Level bonuses immediately.".into()
                         } else {
                             self.ability_targets
                                 .first()
@@ -983,8 +1025,27 @@ impl App {
                         self.tray = Tray::Loadout;
                     }
                 }
+                let mut detail = cost_label(rule);
+                if let Some(level) = level_label(&self.game, source.player(), rule) {
+                    detail.push_str(&format!(" · {level}"));
+                }
                 self.ui
-                    .wrapped_lines(&cost_label(rule), 1178.0, y + 45.0, 212.0, 9.5, MUTED, 2);
+                    .wrapped_lines(&detail, 1178.0, y + 45.0, 212.0, 9.5, MUTED, 2);
+            }
+            if options.len() < 2
+                && let Some(rule) = activated_rules(card_id).iter().find(|rule| {
+                    rule.minimum_xp.is_some_and(|minimum| {
+                        self.game.players[source.player()].xp < u64::from(minimum)
+                    })
+                })
+            {
+                let text = format!(
+                    "{}: {}",
+                    level_label(&self.game, source.player(), rule).unwrap(),
+                    rule.label
+                );
+                self.ui
+                    .wrapped_lines(&text, 1178.0, 478.0, 212.0, 10.0, MUTED, 3);
             }
             if self.ui.button(
                 Rect::new(1178.0, 534.0, 212.0, 27.0),

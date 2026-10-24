@@ -75,7 +75,7 @@ Vengeance, Soul Harvest, and Blast of Power issue an actual Kill instruction, in
 
 ## Persistent gear
 
-Gear remains on the board and normally enters ready at base; Iron Ballista explicitly enters exhausted. Equipment adds its printed might bonus and equipment text to its attached unit. The gear remains a separate object: if the unit leaves, the equipment detaches and remains at base.
+Gear remains on the board and normally enters ready at base; Iron Ballista and Honeyfruit explicitly enter exhausted. Equipment adds its printed might bonus and equipment text to its attached unit. The gear remains a separate object: if the unit leaves, the equipment detaches and remains at base.
 
 Equip is an activated ability with its own power and additional costs. It enters the chain and can be answered. Quick-Draw permits the gear card's reaction timing and creates its free attachment trigger; it does not make an ordinary Equip activation a Reaction. Last Rites asks you to choose two trash cards to recycle for Equip, and its attached unit’s conquest or hold trigger can offer a unit play from trash with normal costs.
 
@@ -195,6 +195,12 @@ XP has no game-rule maximum. The engine records positive gains separately from t
 Bandle Soldier and Scorchclaw check Level3 when they actually enter; entering ready does not trigger abilities that observe a Ready action. Wuju Apprentice checks Level6 when its completed play occurs. Once its draw trigger is generated, later XP changes do not remove it. Combat Experience instead checks current XP when each execution resolves, giving +3 Might instead of +1 at Level6. Concentrate uses only the highest eligible Energy reduction: two at Level6, four at Level11. The determined cost remains fixed during payment.
 
 Mister Root gains XP from a real Move to a battlefield; Nilah, Joyful Ascetic observes any real Move, including a return to base. Merely entering a location or recalling a unit does not create a Move event. Their XP abilities use the ordinary response chain. The separate XP history indicator and live inspector explain which benefits currently apply.
+
+Crowd Favorite and Enthralling Protector spend2XP as an ordinary activation cost to Buff themselves. They do not Exhaust or choose a target. XP is paid before opponents may respond; removing the source later prevents its Buff without refunding the cost. An already-buffed unit can pay again but gains no additional Buff. Spending can remove current Level benefits, while a positive-gain history flag remains set for the turn.
+
+Honeyfruit enters exhausted. Its first Reaction ability exhausts it to add one Any Power; its separate Level6 ability exhausts it to add one Energy and one Any Power. Both remain available at6XP, and neither gains XP. Add resolves immediately, including during permitted payments, with no intervening response window. The UI shows the exact output and the dependent ability's requirement.
+
+Shepherd's Heirloom gains1XP through its own completed-play trigger while unattached. Its Equip ability spends1XP, has no Energy/Power cost, and gives its bearer+2 Might when attachment resolves. Gear Rules Text and attached Equipment Effect Text have separate source identities. Attaching does not play the gear again, and a trigger already created remains independent of later attachment or removal.
 
 ## Scoring and victory
 

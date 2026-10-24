@@ -621,6 +621,36 @@ fn advice(game: &Game, level: AdviceLevel) -> Vec<&'static str> {
             "An exhaust cost competes with movement. Compare the ability's payoff with a useful move, and reserve resources for responses after it enters the chain."
         });
     }
+    if game.activated_options(0).iter().any(|option| {
+        local_rift::activated::activated_rules(option.card_id)[option.ability_index].xp_cost > 0
+    }) {
+        tips.push(if beginner {
+            "An XP cost spends your XP before responses. A lower total can switch off Level bonuses; spending does not erase an XP gain earlier this turn."
+        } else {
+            "Check live Level thresholds before paying XP. The ability waits for responses after payment; a lost might bonus can matter before the Buff resolves."
+        });
+    }
+    if human.gear.iter().any(|gear| {
+        gear.attached_to.is_none()
+            && local_rift::activated::activated_rules(gear.card_id)
+                .iter()
+                .any(|rule| rule.minimum_xp.is_some() && rule.fixed_resource_output().is_some())
+    }) {
+        tips.push(if beginner {
+            "Honeyfruit has two choices at Level 6. Both exhaust the same gear: add 1 Any power, or add 1 energy and 1 Any power. Neither spends XP."
+        } else {
+            "Honeyfruit's Level ability depends on current XP. At 6 both outputs remain available, but one activation exhausts the shared source."
+        });
+    }
+    if human.gear.iter().any(|gear| {
+        local_rift::rules::equipment(gear.card_id).is_some_and(|rule| rule.equip_xp > 0)
+    }) {
+        tips.push(if beginner {
+            "Heirloom gains XP from its own play trigger. Equip then spends XP to attach it; its +2 Might belongs to the bearer, and attaching is not another play."
+        } else {
+            "Heirloom's play trigger and Equip are separate. Let the XP trigger resolve before using that XP; attaching grants the bearer +2 Might, not another play trigger."
+        });
+    }
     if human.energy == 0 {
         tips.push(if beginner {
             "No energy left? Ready units may still move. When your useful actions are done, end the turn and let your next turn refresh things."
@@ -655,6 +685,18 @@ fn response_window_advice(game: &Game, beginner: bool) -> Option<Vec<&'static st
                 "Predict looks at cards without drawing them. Choose any to recycle, then set the kept cards in the order you want to draw them.",
                 "Keep the next draw that serves your plan. Recycling all is allowed; recycled cards go to the bottom in random order. Confirm only after checking the order.",
             ],
+            Decision::Payment { .. }
+                if game.payment_plan_view(0).is_some_and(|plan| plan.xp > 0) =>
+            {
+                vec![
+                    "XP is a separate fixed cost. Add abilities make energy or power, not XP; check your XP total before finishing this payment.",
+                    if beginner {
+                        "Recording the cost does not spend XP yet. Completing payment spends it before responses, so check which Level bonuses will remain."
+                    } else {
+                        "A failed payment can undo its resource steps. Finishing spends the fixed XP cost and checks lost Level bonuses before the response window."
+                    },
+                ]
+            }
             Decision::Payment { .. } => vec![
                 "This action's costs are fixed. Use Add abilities if needed, then finish the payment. An unsuccessful attempt can be undone with its resource steps.",
                 "Keep enough matching power and energy for the fixed cost. A conversion can help one resource while spending the other.",
@@ -1133,6 +1175,77 @@ mod tests {
             assert!(tips.iter().all(|tip| tip.chars().count() <= 180));
         }
         assert_ne!(beginner, advice(&game, AdviceLevel::Advanced));
+    }
+
+    #[test]
+    fn xp_cost_advice_distinguishes_spending_output_and_bearer_effects() {
+        use local_rift::gear::GearState;
+        let mut game = game();
+        game.start_match().unwrap();
+        game.players[0].xp = 6;
+        game.players[0].units = vec![Unit {
+            id: 986,
+            card_id: 345,
+            lane: None,
+            ready: false,
+            damage: 0,
+            buff: 0,
+            temporary_buff: 0,
+            token: false,
+            protected: false,
+            stunned: false,
+            banish_on_death: false,
+        }];
+        game.players[0].gear = [347, 348]
+            .into_iter()
+            .enumerate()
+            .map(|(index, card_id)| GearState {
+                id: 987 + index as u32,
+                card_id,
+                ready: true,
+                attached_to: None,
+                temporary: false,
+                token: false,
+            })
+            .collect();
+        let beginner = advice(&game, AdviceLevel::Beginner);
+        assert!(
+            beginner
+                .iter()
+                .any(|tip| tip.contains("XP before responses"))
+        );
+        assert!(beginner.iter().any(|tip| tip.contains("Neither spends XP")));
+        assert!(
+            beginner
+                .iter()
+                .any(|tip| tip.contains("+2 Might belongs to the bearer"))
+        );
+        let mut hidden = game.clone();
+        hidden.players[1].hand = vec![345, 346, 347];
+        hidden.players[1].deck.reverse();
+        for level in [AdviceLevel::Beginner, AdviceLevel::Advanced] {
+            let tips = advice(&game, level);
+            assert_eq!(tips, advice(&hidden, level));
+            assert!(tips.iter().all(|tip| tip.chars().count() <= 180));
+        }
+        assert_ne!(beginner, advice(&game, AdviceLevel::Advanced));
+        game.apply(local_rift::game::Action::BeginPayment {
+            action: Box::new(local_rift::game::Action::ActivateAbility {
+                source: local_rift::activated::AbilitySource::Unit {
+                    player: 0,
+                    unit_id: 986,
+                },
+                ability_index: 0,
+                targets: vec![],
+            }),
+        })
+        .unwrap();
+        assert_eq!(game.players[0].xp, 6);
+        for level in [AdviceLevel::Beginner, AdviceLevel::Advanced] {
+            let tips = advice(&game, level);
+            assert!(tips[0].contains("not XP"));
+            assert!(tips.iter().all(|tip| tip.chars().count() <= 180));
+        }
     }
 
     #[test]

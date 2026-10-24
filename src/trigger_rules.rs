@@ -147,7 +147,13 @@ pub enum Effect {
     Points(u8),
 }
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum TriggerTextArea {
+    Rules,
+    Equipment,
+}
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct TriggerRule {
+    pub text_area: TriggerTextArea,
     pub event: Event,
     pub conditions: &'static [Condition],
     pub optional: bool,
@@ -177,11 +183,25 @@ const fn rule(
     effects: &'static [Effect],
 ) -> TriggerRule {
     TriggerRule {
+        text_area: TriggerTextArea::Rules,
         event,
         conditions,
         optional,
         targets,
         effects,
+    }
+}
+
+const fn equipment_rule(
+    event: Event,
+    conditions: &'static [Condition],
+    optional: bool,
+    targets: TargetRule,
+    effects: &'static [Effect],
+) -> TriggerRule {
+    TriggerRule {
+        text_area: TriggerTextArea::Equipment,
+        ..rule(event, conditions, optional, targets, effects)
     }
 }
 
@@ -196,6 +216,17 @@ pub fn trigger_rules(card_id: usize) -> &'static [TriggerRule] {
     use Operand::*;
     use TokenPlacement::*;
     match card_id {
+        348 => {
+            const {
+                &[rule(
+                    SelfPlayed,
+                    &[],
+                    false,
+                    TargetRule::NONE,
+                    &[Xp(Amount::Fixed(1))],
+                )]
+            }
+        }
         341 => {
             const {
                 &[rule(
@@ -325,7 +356,7 @@ pub fn trigger_rules(card_id: usize) -> &'static [TriggerRule] {
         }
         329 => {
             const {
-                &[rule(
+                &[equipment_rule(
                     SelfConquer,
                     &[],
                     false,
@@ -1169,10 +1200,20 @@ pub fn trigger_rules(card_id: usize) -> &'static [TriggerRule] {
                 )]
             }
         }
-        199 => const { &[rule(SelfDeath, &[], false, TargetRule::NONE, &[Draw(1)])] },
+        199 => {
+            const {
+                &[equipment_rule(
+                    SelfDeath,
+                    &[],
+                    false,
+                    TargetRule::NONE,
+                    &[Draw(1)],
+                )]
+            }
+        }
         200 => {
             const {
-                &[rule(
+                &[equipment_rule(
                     SelfConquer,
                     &[],
                     false,
@@ -1186,7 +1227,7 @@ pub fn trigger_rules(card_id: usize) -> &'static [TriggerRule] {
         }
         201 => {
             const {
-                &[rule(
+                &[equipment_rule(
                     SelfConquer,
                     &[],
                     false,
@@ -1204,7 +1245,7 @@ pub fn trigger_rules(card_id: usize) -> &'static [TriggerRule] {
         }
         202 => {
             const {
-                &[rule(
+                &[equipment_rule(
                     SelfHold,
                     &[],
                     false,
@@ -1222,7 +1263,7 @@ pub fn trigger_rules(card_id: usize) -> &'static [TriggerRule] {
         }
         203 => {
             const {
-                &[rule(
+                &[equipment_rule(
                     SelfMoved,
                     &[],
                     false,
@@ -1240,7 +1281,7 @@ pub fn trigger_rules(card_id: usize) -> &'static [TriggerRule] {
         }
         204 => {
             const {
-                &[rule(
+                &[equipment_rule(
                     SelfConquer,
                     &[],
                     false,
@@ -1251,7 +1292,7 @@ pub fn trigger_rules(card_id: usize) -> &'static [TriggerRule] {
         }
         205 => {
             const {
-                &[rule(
+                &[equipment_rule(
                     SelfMoved,
                     &[ToBattlefield],
                     false,
@@ -1267,12 +1308,22 @@ pub fn trigger_rules(card_id: usize) -> &'static [TriggerRule] {
         206 => {
             const {
                 &[
-                    rule(SelfAttack, &[], false, ENEMY_HERE, &[Damage(2)]),
-                    rule(SelfDefend, &[], false, ENEMY_HERE, &[Damage(2)]),
+                    equipment_rule(SelfAttack, &[], false, ENEMY_HERE, &[Damage(2)]),
+                    equipment_rule(SelfDefend, &[], false, ENEMY_HERE, &[Damage(2)]),
                 ]
             }
         }
-        207 => const { &[rule(SelfHold, &[], false, TargetRule::NONE, &[Points(1)])] },
+        207 => {
+            const {
+                &[equipment_rule(
+                    SelfHold,
+                    &[],
+                    false,
+                    TargetRule::NONE,
+                    &[Points(1)],
+                )]
+            }
+        }
         208 => const { &[rule(SelfHold, &[], false, TargetRule::NONE, &[Points(1)])] },
         209 => {
             const {

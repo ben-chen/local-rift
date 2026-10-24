@@ -52,15 +52,27 @@ fn value_label(value: &CostValue) -> String {
             .collect::<Vec<_>>()
             .join(" / ")
     };
-    match (value.energy, value.power) {
-        (0, 0) => "No added cost".into(),
-        (energy, 0) => format!("{energy} energy"),
-        (0, power) => format!("{power} {domains} power"),
-        (energy, power) => format!("{energy} energy + {power} {domains} power"),
+    let mut parts = Vec::new();
+    if value.energy > 0 {
+        parts.push(format!("{} energy", value.energy));
+    }
+    if value.power > 0 {
+        parts.push(format!("{} {domains} power", value.power));
+    }
+    if value.xp > 0 {
+        parts.push(format!("{} XP", value.xp));
+    }
+    if parts.is_empty() {
+        "No added cost".into()
+    } else {
+        parts.join(" + ")
     }
 }
 pub(super) fn total_label(plan: &CostPlanView) -> String {
-    let mut parts = vec![format!("{} energy", plan.energy)];
+    let mut parts = Vec::new();
+    if plan.energy > 0 || plan.xp == 0 {
+        parts.push(format!("{} energy", plan.energy));
+    }
     for cost in &plan.power {
         let domains = if cost.domains.is_empty() || cost.domains.len() == 6 {
             "Any".into()
@@ -72,6 +84,9 @@ pub(super) fn total_label(plan: &CostPlanView) -> String {
                 .join(" / ")
         };
         parts.push(format!("{} {domains} power", cost.amount));
+    }
+    if plan.xp > 0 {
+        parts.push(format!("{} XP", plan.xp));
     }
     format!("Pay {}", parts.join(" + "))
 }

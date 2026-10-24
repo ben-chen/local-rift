@@ -5273,6 +5273,66 @@ pub fn cards() -> Vec<CardDef> {
             tags: &["Nilah", "Kathkan", "Demon"],
             art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/6138c519310f917461e09d90fe3f2a9480914947-744x1039.png?w=320&q=80&fm=png",
         },
+        CardDef {
+            id: 345,
+            official_id: "unl-102-219",
+            name: "Crowd Favorite",
+            cost: 3,
+            power_cost: 0,
+            might: 3,
+            domain: Domain::Body,
+            domains: &[Domain::Body],
+            kind: CardKind::Unit,
+            official_text: "[Hunt] (When I conquer or hold, gain 1 XP.)\nSpend 2 XP: [Buff] me. (Give me a +1 Might buff if I don't have one.)",
+            keywords: &["Buff", "Hunt"],
+            tags: &["Noxus"],
+            art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/0031569ff123a8317e1be753f0bd895501bf838b-744x1039.png?w=360&q=80&fm=png",
+        },
+        CardDef {
+            id: 346,
+            official_id: "unl-162-219",
+            name: "Enthralling Protector",
+            cost: 2,
+            power_cost: 0,
+            might: 2,
+            domain: Domain::Order,
+            domains: &[Domain::Order],
+            kind: CardKind::Unit,
+            official_text: "[Hunt] (When I conquer or hold, gain 1 XP.)\nSpend 2 XP: [Buff] me. (Give me a +1 Might buff if I don't have one.)",
+            keywords: &["Buff", "Hunt"],
+            tags: &["Fae", "Ionia"],
+            art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/3fdfe3bc7c7f81b99aa715bf54b52930ad41dcfa-744x1039.png?w=360&q=80&fm=png",
+        },
+        CardDef {
+            id: 347,
+            official_id: "unl-049-219",
+            name: "Honeyfruit",
+            cost: 2,
+            power_cost: 0,
+            might: 0,
+            domain: Domain::Calm,
+            domains: &[Domain::Calm],
+            kind: CardKind::Gear,
+            official_text: "This enters exhausted.\n[Reaction][>] [Exhaust]: [Add] [Any Power]. (Abilities that add resources can't be reacted to.)\n[Level 6][>] [>>][Reaction][>] [Exhaust]: [Add] [1 Energy][Any Power]. (Use this ability only while you have 6+ XP.)",
+            keywords: &["Add", "Reaction"],
+            tags: &[],
+            art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/4794052d16d88b12861b348a466673ace098c32e-744x1039.png?w=360&q=80&fm=png",
+        },
+        CardDef {
+            id: 348,
+            official_id: "unl-158-219",
+            name: "Shepherd's Heirloom",
+            cost: 2,
+            power_cost: 0,
+            might: 2,
+            domain: Domain::Order,
+            domains: &[Domain::Order],
+            kind: CardKind::Gear,
+            official_text: "When you play this, gain 1 XP.\n[Equip] — Spend 1 XP (Pay the cost: Attach this to a unit you control.)",
+            keywords: &["Equip"],
+            tags: &["Equipment"],
+            art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/fadd95487f164f60c9ad08a457f11170c6afa420-744x1039.png?w=360&q=80&fm=png",
+        },
     ]
 }
 
@@ -5437,7 +5497,7 @@ mod tests {
     #[test]
     fn presets_are_complete_and_references_are_consistent() {
         let catalog = cards();
-        assert_eq!(catalog.len(), 345);
+        assert_eq!(catalog.len(), 349);
         for (index, card) in catalog.iter().enumerate() {
             assert_eq!(index, card.id);
             assert!(!card.official_id.is_empty());

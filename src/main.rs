@@ -6161,6 +6161,40 @@ impl App {
                             self.action(Action::ActivateGear { gear_id: id });
                         }
                     } else if let Some(rule) = local_rift::rules::equipment(gear.card_id) {
+                        let action = self.targets.first().copied().map(|target| {
+                            if rule.recycle_trash > 0 {
+                                Action::EquipWithTrash {
+                                    gear_id: id,
+                                    target,
+                                    trash_indices: self.choices.clone(),
+                                }
+                            } else {
+                                Action::Equip {
+                                    gear_id: id,
+                                    target,
+                                }
+                            }
+                        });
+                        let cost = action
+                            .as_ref()
+                            .and_then(|action| self.game.cost_plan(action).ok())
+                            .map(|plan| play_ui::total_label(&plan))
+                            .unwrap_or_else(|| equipment_cost_label(&rule));
+                        self.ui.ellipsis(
+                            &format!(
+                                "{cost}{}",
+                                if rule.equip_xp > 0 {
+                                    format!(" · XP {} available", self.game.players[0].xp)
+                                } else {
+                                    String::new()
+                                }
+                            ),
+                            1178.0,
+                            473.0,
+                            212.0,
+                            10.0,
+                            GOLD,
+                        );
                         self.ui.text(
                             if gear.attached_to.is_some() {
                                 "Already attached · Equip is inactive."
@@ -7163,6 +7197,34 @@ fn xp_status(game: &Game, owner: usize) -> String {
     )
 }
 
+fn equipment_cost_label(rule: &local_rift::rules::EquipmentRule) -> String {
+    let mut costs = Vec::new();
+    if rule.equip_energy > 0 {
+        costs.push(format!("{} energy", rule.equip_energy));
+    }
+    if rule.equip_power > 0 {
+        costs.push(format!(
+            "{} {} power",
+            rule.equip_power,
+            rule.equip_domain.name()
+        ));
+    }
+    if rule.equip_xp > 0 {
+        costs.push(format!("{} XP", rule.equip_xp));
+    }
+    if rule.recycle_trash > 0 {
+        costs.push(format!("recycle {} trash cards", rule.recycle_trash));
+    }
+    format!(
+        "Equip: {}",
+        if costs.is_empty() {
+            "no resource cost".into()
+        } else {
+            costs.join(" + ")
+        }
+    )
+}
+
 fn entry_ready_hint(game: &Game, owner: usize, card_id: usize) -> Option<String> {
     use local_rift::rules::EntryReadyRule;
     Some(match local_rift::rules::entry_ready_rule(card_id)? {
@@ -7356,6 +7418,15 @@ fn live_gear_description(game: &Game, owner: usize, gear_id: u32) -> Option<Stri
             "Not Empowered.".into()
         },
     ];
+    if !gear.token
+        && let Some(rule) = local_rift::rules::equipment(gear.card_id)
+    {
+        lines.push(format!(
+            "{} · attached bearer +{} Might.",
+            equipment_cost_label(&rule),
+            rule.might
+        ));
+    }
     if let Some(unit) = gear
         .attached_to
         .and_then(|id| game.players[owner].units.iter().find(|unit| unit.id == id))
@@ -7405,6 +7476,14 @@ fn live_gear_description(game: &Game, owner: usize, gear_id: u32) -> Option<Stri
                     ""
                 }
             ));
+            if let Some(level) = ability_ui::level_label(game, owner, rule) {
+                lines.push(level);
+            }
+            if let Some(output) = ability_ui::output_label(rule) {
+                lines.push(format!(
+                    "{output}. This uses the same physical source as its other abilities."
+                ));
+            }
         }
     }
     Some(lines.join("\n\n"))
@@ -7589,6 +7668,9 @@ fn live_unit_description(game: &Game, owner: usize, unit_id: u32) -> Option<Stri
                     ""
                 }
             ));
+            if rule.xp_cost > 0 {
+                lines.push(format!("Current XP: {}. XP is spent before responses; losing a Level threshold can change live bonuses immediately.", game.players[owner].xp));
+            }
         }
     }
     let gear: Vec<_> = game.players[owner]
@@ -7701,6 +7783,112 @@ mod live_preview_tests {
             temporary: false,
             token: false,
         }
+    }
+    #[test]
+    fn xp_activation_preview_tracks_real_payment_and_level_loss() {
+        let mut game = Game::new(1, 3, 7, Difficulty::Easy);
+        game.start_match().unwrap();
+        game.players[0].xp = 3;
+        game.players[0].units = vec![unit(100, 345), unit(101, 338)];
+        let action = Action::ActivateAbility {
+            source: AbilitySource::Unit {
+                player: 0,
+                unit_id: 100,
+            },
+            ability_index: 0,
+            targets: vec![],
+        };
+        let plan = game.cost_plan(&action).unwrap();
+        assert_eq!(play_ui::total_label(&plan), "Pay 2 XP");
+        assert!(plan.power.is_empty());
+        assert!(
+            live_unit_description(&game, 0, 100)
+                .unwrap()
+                .contains("2 XP")
+        );
+        game.apply(action).unwrap();
+        assert_eq!(game.players[0].xp, 1);
+        assert!(!game.buffed_units.contains(&100), "cost paid before effect");
+        assert!(
+            live_unit_description(&game, 0, 101)
+                .unwrap()
+                .contains("INACTIVE · Gustwalker: Ganking")
+        );
+        while !game.chain.is_empty() {
+            game.apply(Action::Pass).unwrap();
+        }
+        assert!(game.buffed_units.contains(&100));
+    }
+    #[test]
+    fn honeyfruit_preview_separates_level_output_and_shared_exhaust_cost() {
+        let mut game = Game::new(1, 3, 7, Difficulty::Easy);
+        game.start_match().unwrap();
+        let mut gear = attached(100, 347, 0);
+        gear.attached_to = None;
+        game.players[0].gear = vec![gear];
+        game.players[0].xp = 5;
+        let text = live_gear_description(&game, 0, 100).unwrap();
+        assert!(text.contains("Level 6 · inactive at XP 5"));
+        assert!(text.contains("Add 1 energy + 1 Any power immediately"));
+        game.players[0].xp = 6;
+        assert!(
+            live_gear_description(&game, 0, 100)
+                .unwrap()
+                .contains("Level 6 · active at XP 6")
+        );
+        let before = (game.players[0].energy, game.players[0].any_power);
+        game.apply(Action::ActivateAbility {
+            source: AbilitySource::Gear {
+                player: 0,
+                gear_id: 100,
+            },
+            ability_index: 1,
+            targets: vec![],
+        })
+        .unwrap();
+        assert_eq!(
+            (game.players[0].energy, game.players[0].any_power),
+            (before.0 + 1, before.1 + 1)
+        );
+        assert_eq!(game.players[0].xp, 6);
+        assert!(
+            live_gear_description(&game, 0, 100)
+                .unwrap()
+                .contains("Your gear · Exhausted")
+        );
+    }
+    #[test]
+    fn heirloom_fixed_payment_is_xp_only_and_full_integer() {
+        let mut game = Game::new(2, 3, 7, Difficulty::Easy);
+        game.start_match().unwrap();
+        game.players[0].units = vec![unit(101, 110)];
+        let mut gear = attached(100, 348, 0);
+        gear.attached_to = None;
+        game.players[0].gear = vec![gear];
+        game.players[0].xp = u64::MAX;
+        assert_eq!(
+            equipment_cost_label(&local_rift::rules::equipment(348).unwrap()),
+            "Equip: 1 XP"
+        );
+        let action = Action::Equip {
+            gear_id: 100,
+            target: Target::Unit {
+                player: 0,
+                unit_id: 101,
+            },
+        };
+        assert_eq!(
+            play_ui::total_label(&game.cost_plan(&action).unwrap()),
+            "Pay 1 XP"
+        );
+        game.apply(Action::BeginPayment {
+            action: Box::new(action),
+        })
+        .unwrap();
+        let plan = game.payment_plan_view(0).unwrap();
+        assert_eq!(ability_ui::fixed_payment_label(&plan), "Fixed cost: 1 XP.");
+        game.apply(Action::CompletePayment).unwrap();
+        assert_eq!(game.players[0].xp, u64::MAX - 1);
     }
     #[test]
     fn xp_status_preserves_full_integer_for_both_players() {
