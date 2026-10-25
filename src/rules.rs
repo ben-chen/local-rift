@@ -265,7 +265,7 @@ pub fn effect(id: usize) -> OfficialEffect {
         384..=386 => None,
         387 | 388 => DeckLookPlay,
         389 => DrawLook,
-        390..=395 | 397 => None,
+        390..=395 | 397..=400 => None,
         396 => PredictThenDraw {
             predict: 5,
             draw: 2,
@@ -1049,6 +1049,8 @@ pub fn requirements(id: usize) -> &'static [Mechanic] {
         389 => &[Chain, OptionalCosts],
         390 | 391 => &[Chain],
         392..=394 => &[Chain, MoveTriggers],
+        398 | 399 => &[Chain, Predict],
+        400 => &[Chain, Predict],
         395 => &[Chain, ConquerHoldTriggers],
         396 => &[Chain, Predict],
         397 => &[Gear, Chain, ActivatedAbilities, Predict, Xp],
@@ -1424,6 +1426,7 @@ pub fn xp_energy_discount_tiers(id: CardId) -> &'static [XpDiscountTier] {
 /// operation. These must not be silently discarded for a "base-stats" unit.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum StaticAbility {
+    Vision,
     ControlsTagEnergyDiscount {
         tag: &'static str,
         energy: u8,
@@ -1482,6 +1485,8 @@ pub enum StaticAbility {
 pub fn static_abilities(id: usize) -> &'static [StaticAbility] {
     use StaticAbility::*;
     match id {
+        193 | 242 | 398 => &[Vision],
+        400 => &[Vision, Shield(1)],
         376 => &[Ambush],
         367 => &[Shield(2)],
         371 => &[ControlsTagEnergyDiscount {
@@ -1917,7 +1922,7 @@ mod tests {
     #[test]
     fn all_catalog_entries_have_official_classification() {
         let cards = cards();
-        assert_eq!(cards.len(), 398);
+        assert_eq!(cards.len(), 401);
         for card in cards {
             assert_ne!(
                 effect(card.id),
@@ -1927,7 +1932,7 @@ mod tests {
             );
             assert_ne!(support_status(card.id), SupportStatus::UnknownCard);
         }
-        assert_eq!(effect(398), OfficialEffect::Unsupported);
+        assert_eq!(effect(401), OfficialEffect::Unsupported);
     }
 
     #[test]

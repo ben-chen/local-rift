@@ -107,17 +107,42 @@ impl EventSnapshot {
     }
 }
 
+enum TriggerObserver {
+    Rule(CardId, usize, TriggerSource),
+    EntryVision(crate::empower::BoardObject),
+}
+
 impl Game {
     fn trigger_sources(&self) -> Vec<(CardId, usize, TriggerSource)> {
+        self.trigger_observers(None)
+            .into_iter()
+            .filter_map(|observer| match observer {
+                TriggerObserver::Rule(card_id, index, source) => Some((card_id, index, source)),
+                TriggerObserver::EntryVision(_) => None,
+            })
+            .collect()
+    }
+
+    fn trigger_observers(
+        &self,
+        entering: Option<crate::empower::BoardObject>,
+    ) -> Vec<TriggerObserver> {
         let mut sources = Vec::new();
         for player in 0..2 {
             for unit in &self.players[player].units {
+                let object = crate::empower::BoardObject::Unit {
+                    player,
+                    unit_id: unit.id,
+                };
+                if entering == Some(object) {
+                    sources.push(TriggerObserver::EntryVision(object));
+                }
                 if unit.token {
                     continue;
                 }
                 for (index, rule) in metadata::trigger_rules(unit.card_id).iter().enumerate() {
                     if rule.text_area == metadata::TriggerTextArea::Rules {
-                        sources.push((
+                        sources.push(TriggerObserver::Rule(
                             unit.card_id,
                             index,
                             TriggerSource {
@@ -130,6 +155,13 @@ impl Game {
                 }
             }
             for gear in &self.players[player].gear {
+                let object = crate::empower::BoardObject::Gear {
+                    player,
+                    gear_id: gear.id,
+                };
+                if entering == Some(object) {
+                    sources.push(TriggerObserver::EntryVision(object));
+                }
                 if gear.token {
                     continue;
                 }
@@ -141,7 +173,7 @@ impl Game {
                         }
                         _ => continue,
                     };
-                    sources.push((
+                    sources.push(TriggerObserver::Rule(
                         gear.card_id,
                         index,
                         TriggerSource {
@@ -172,7 +204,7 @@ impl Game {
             })
         })
     }
-    fn unit_has_tag(&self, unit: &Unit, tag: &str) -> bool {
+    pub(crate) fn unit_has_tag(&self, unit: &Unit, tag: &str) -> bool {
         if unit.token {
             rules::token_spec(unit.card_id).is_some_and(|spec| spec.tag == Some(tag))
         } else {
@@ -340,6 +372,26 @@ impl Game {
         }
     }
     pub(super) fn emit_event(&mut self, event: EventSnapshot) {
+        let entering = match event.kind {
+            Occurrence::UnitPlayed => {
+                event
+                    .unit
+                    .as_ref()
+                    .map(|unit| crate::empower::BoardObject::Unit {
+                        player: event.subject_player,
+                        unit_id: unit.id,
+                    })
+            }
+            Occurrence::GearPlayed => {
+                event
+                    .gear_id
+                    .map(|gear_id| crate::empower::BoardObject::Gear {
+                        player: event.subject_player,
+                        gear_id,
+                    })
+            }
+            _ => None,
+        };
         if event.kind == Occurrence::UnitPlayed {
             self.legend_on_unit_completed(event.player);
         }
@@ -372,7 +424,17 @@ impl Game {
         {
             self.legend_on_spell_completed(event.player, card_id);
         }
-        for (card_id, rule_index, source) in self.trigger_sources() {
+        // Keep entry Vision at its bearer's ordinary source-traversal position.
+        // Existing simultaneous observers retain their trigger IDs and option
+        // order when an intrinsic SelfPlayed descriptor becomes typed Vision.
+        for observer in self.trigger_observers(entering) {
+            let (card_id, rule_index, source) = match observer {
+                TriggerObserver::EntryVision(source) => {
+                    self.queue_entry_vision(source);
+                    continue;
+                }
+                TriggerObserver::Rule(card_id, rule_index, source) => (card_id, rule_index, source),
+            };
             let rule = &metadata::trigger_rules(card_id)[rule_index];
             if rule.event == Event::SelfDeath {
                 continue;

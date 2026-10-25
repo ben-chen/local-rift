@@ -2,7 +2,7 @@
 
 Snapshot checked **2026-10-24**. The official gallery contains **1,408 printing records** grouped into **1,103 distinct full-name identities**. After excluding **12 auxiliary token/tracker identities** and **12 banned identities**, **1,079 identities are legal in Standard/1v1 Constructed**. The separate 2v2 list leaves **1,078**.
 
-**This client does not yet implement every legal card.** It currently maps **398 main-deck cards, 10 independently registered legends, 11 battlefields, and 6 rune resource types** (425 legal identities). **654 legal identities remain unimplemented and are not playable.** Importing this snapshot does not register cards with the engine. Full inventory coverage is not full rules support.
+**This client does not yet implement every legal card.** It currently maps **401 main-deck cards, 10 independently registered legends, 11 battlefields, and 6 rune resource types** (428 legal identities). **651 legal identities remain unimplemented and are not playable.** Importing this snapshot does not register cards with the engine. Full inventory coverage is not full rules support.
 
 ## Scope and authority
 
@@ -31,7 +31,7 @@ Numbered positions include token slots where the publisher numbers them within a
 | Legend | 58 | 10 | 48 |
 | Rune | 6 | 6 | 0 |
 | Spell | 268 | 111 | 157 |
-| Unit | 546 | 221 | 325 |
+| Unit | 546 | 224 | 322 |
 
 Each row is a disjoint complete type set. A reviewed Unit Gear has both types (Core 178) and is counted once in `gear+unit`, rather than once in each single-type row. Patched Porobot is the first explicitly reviewed dual-type correction; this is not a complete visual audit of every gallery type. No dual-type card is currently admitted to the engine.
 
@@ -533,6 +533,9 @@ Current pages are archived under `assets/data/catalog_sources/`; immutable revie
 | 395 | Ornn, Blacksmith | `sfd-058-221` |
 | 396 | Clairvoyance | `ven-056-166` |
 | 397 | Scryer's Bloom | `unl-136-219` |
+| 398 | Gemcraft Seer | `ogn-100-298` |
+| 399 | Forecaster | `sfd-065-221` |
+| 400 | Jeweled Colossus | `ogn-086-298` |
 
 ## Implemented legend ID mapping
 

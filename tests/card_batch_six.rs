@@ -3,7 +3,7 @@ use local_rift::cards::{self, CardKind, Domain};
 use local_rift::deck::eligible_cards;
 use local_rift::legend_catalog::legends;
 use local_rift::rules::{self, Mechanic, OfficialEffect, StaticAbility, TokenPlacement};
-use local_rift::trigger_rules::{self, Effect, Event, TargetRule};
+use local_rift::trigger_rules;
 use serde_json::Value;
 use std::collections::BTreeSet;
 
@@ -114,14 +114,18 @@ fn activation_and_vision_are_separate_from_playing_the_gear() {
             assert!(trigger_rules::trigger_rules(id).is_empty());
         }
     }
-    let vision = trigger_rules::trigger_rules(242);
-    assert_eq!(vision.len(), 1);
-    assert_eq!(vision[0].event, Event::SelfPlayed);
-    assert_eq!(vision[0].targets, TargetRule::NONE);
-    assert!(vision[0].conditions.is_empty());
-    // The trigger is mandatory; Predict contains its own optional recycling choice.
-    assert!(!vision[0].optional);
-    assert_eq!(vision[0].effects, &[Effect::Predict]);
+    // Intrinsic Vision now shares the actual entry-instance collector with
+    // granted Vision. Retaining the former descriptor would trigger twice.
+    for id in [193, 242] {
+        assert_eq!(
+            rules::static_abilities(id)
+                .iter()
+                .filter(|ability| **ability == StaticAbility::Vision)
+                .count(),
+            1
+        );
+        assert!(trigger_rules::trigger_rules(id).is_empty());
+    }
     assert_eq!(
         rules::static_abilities(243),
         &[StaticAbility::EntersExhausted]

@@ -320,3 +320,11 @@ Clairvoyance is a Reaction: Predict 5, then Draw 2. Choose which inspected cards
 Scryer's Bloom enters exhausted. Its ability costs Kill this, one Energy, and Exhaust. Once those costs are paid, the gear is in your Trash while the ability waits to resolve. Predict 2, then draw one, then gain one XP. The panel shows the source and remaining instructions while you choose. An empty Predict does nothing, but the separate Draw still follows Burn Out rules.
 
 Ornn, Blacksmith triggers when played and when it Holds. Look at the top four available cards, optionally reveal and draw one Gear, then recycle the rest. The trigger itself is mandatory; choosing a Gear is optional. The opponent sees only the Gear you reveal. Ornn can be in an eligible Calm main deck, but it cannot be the chosen champion of a legend with a different champion tag.
+
+### Vision from friendly units
+
+Vision means that playing the permanent triggers a private look at the top card of your Main Deck. Keep that card on top or recycle it to the bottom. This is not a Draw, and an empty deck does not cause Burn Out. Each Vision instance triggers separately: keeping the first card can mean seeing that same card again on the next instance. You can respond between separate abilities, after the current choice and effect finish.
+
+Gemcraft Seer has its own Vision and grants it to every other friendly unit, including tokens, wherever they are on your board. Forecaster grants Vision to your actual Mechs, including itself. It does not have a second printed instance. Jeweled Colossus has printed Vision and Shield 1; Shield increases its Might only while defending. Multiple grants stack as separate Vision abilities.
+
+The inspector lists the current instances and their sources. The chain records the instance that triggered when the bearer entered. Removing a granting unit stops its future grants, but does not cancel already triggered abilities. Removing the bearer likewise does not undo its pending Vision. Moving a unit or giving an existing unit Vision does not count as playing it again. Token abilities belong to the actual token, not the card that created it.

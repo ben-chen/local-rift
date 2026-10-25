@@ -16,6 +16,9 @@ use std::collections::VecDeque;
 
 #[path = "board_returns.rs"]
 mod board_returns;
+#[path = "vision.rs"]
+pub mod vision;
+pub use vision::{VisionInstance, VisionOrigin};
 #[path = "prediction.rs"]
 mod prediction;
 pub use prediction::PredictContinuationView;
@@ -267,6 +270,11 @@ pub enum Action {
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum ChainAbility {
+    Vision {
+        source: empower::BoardObject,
+        source_name: String,
+        origin: VisionOrigin,
+    },
     EmpowerLinked {
         target: Option<Target>,
     },
@@ -802,6 +810,7 @@ pub struct Unit {
 /// Assault is the keyword's value; it increases Might only while attacking.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub struct UnitKeywords {
+    pub vision: u64,
     pub hunt: u8,
     pub assault: u64,
     pub shield: u64,
@@ -1253,11 +1262,19 @@ impl Game {
 
     pub fn chain_source(&self, item: &ChainItem) -> ChainSource {
         match item.ability {
-            Some(ChainAbility::Temporary {
+            Some(ChainAbility::Vision {
+                source: empower::BoardObject::Unit { player, unit_id },
+                ..
+            })
+            | Some(ChainAbility::Temporary {
                 source: empower::BoardObject::Unit { player, unit_id },
                 ..
             }) => ChainSource::Unit { player, unit_id },
-            Some(ChainAbility::Temporary {
+            Some(ChainAbility::Vision {
+                source: empower::BoardObject::Gear { player, gear_id },
+                ..
+            })
+            | Some(ChainAbility::Temporary {
                 source: empower::BoardObject::Gear { player, gear_id },
                 ..
             }) => ChainSource::Gear { player, gear_id },
@@ -1302,6 +1319,7 @@ impl Game {
             return format!("{source_name} · Hunt {amount}");
         }
         match &item.ability {
+            Some(ChainAbility::Vision { source_name, .. }) => format!("{source_name} · Vision"),
             Some(ChainAbility::Temporary { source_name, .. }) => {
                 format!("{source_name} · Temporary")
             }
@@ -2526,6 +2544,7 @@ impl Game {
         });
         if let Some(ability) = item.ability.clone() {
             match ability {
+                ChainAbility::Vision { .. } => self.predict(item.player),
                 ChainAbility::Temporary { source, .. } => self.resolve_temporary(source)?,
                 ChainAbility::Hunt { amount, .. } => {
                     self.gain_xp(item.player, u64::from(amount))?;
@@ -4435,7 +4454,8 @@ impl Game {
         }
         let triggered = matches!(
             ability,
-            ChainAbility::Hunt { .. }
+            ChainAbility::Vision { .. }
+                | ChainAbility::Hunt { .. }
                 | ChainAbility::Temporary { .. }
                 | ChainAbility::CardTrigger { .. }
                 | ChainAbility::Triggered(_)
@@ -4459,6 +4479,7 @@ impl Game {
         let id = self.next_chain_id;
         self.next_chain_id += 1;
         let label = match &ability {
+            ChainAbility::Vision { source_name, .. } => format!("{source_name} · Vision"),
             ChainAbility::Temporary { source_name, .. } => format!("{source_name} · Temporary"),
             ChainAbility::Hunt {
                 source_name,

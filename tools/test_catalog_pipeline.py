@@ -54,7 +54,7 @@ class CatalogPipelineTests(unittest.TestCase):
         for card in self.snapshot['cards']:
             if card['implementation']['playable_in_client']:
                 self.assertEqual(card['source_review']['unresolved_variant_fields'], [])
-        self.assertEqual(counts['implemented_legal_identities'], 425)
+        self.assertEqual(counts['implemented_legal_identities'], 428)
 
     def test_required_fields_gate_every_mapping_kind_and_alternates(self):
         cases = [

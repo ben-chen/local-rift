@@ -661,6 +661,19 @@ fn c21_cast_to_choice(app: &mut App, source: usize, top_first: &[usize]) {
     finish_chain_until_choice(app);
 }
 
+fn c22_fixture(app: &mut App, card_id: usize) {
+    c21_fixture(app, card_id, &[69, 71, 96]);
+    app.game.players[0].units.clear();
+    app.game.battlefields = [2, 2];
+    app.fields = app.game.battlefields;
+    app.selection = None;
+    app.tray = super::Tray::Hand;
+    app.inspect = None;
+    app.hover_object = None;
+    app.hover_token = None;
+    app.hand_scroll = 0;
+}
+
 /// Returns true after all assertions pass. Use an isolated XDG_DATA_HOME because
 /// the settings controls intentionally exercise the normal persistence path.
 pub fn run_frame(app: &mut App, frame: u32) -> bool {
@@ -10142,15 +10155,333 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
         1027 => {
             assert_eq!(app.game.players[0].hand, vec![96, 3]);
             assert!(app.game.predict_continuation().is_none());
+        }
+        1028 => {
+            c22_fixture(app, 399);
+            click(app, 315.0, 760.0);
+        }
+        1029 => click(app, 1285.0, 510.0),
+        1030 => {
+            let unit = app.game.players[0]
+                .units
+                .iter()
+                .find(|unit| unit.card_id == 399)
+                .unwrap();
+            assert_eq!(app.game.unit_keywords(unit).unwrap().vision, 1);
+            assert_eq!(app.game.chain.len(), 1);
+            assert!(
+                app.game
+                    .chain_name(&app.game.chain[0])
+                    .ends_with(" · Vision")
+            );
+            finish_chain_until_choice(app);
+            assert!(matches!(
+                app.game.decision,
+                Some(Decision::Predict {
+                    player: 0,
+                    card_id: 69
+                })
+            ));
+            click(app, 1285.0, 546.0);
+        }
+        1031 => {
+            assert!(app.game.chain.is_empty());
+            assert_eq!(app.game.players[0].deck, vec![96, 71, 69]);
+            assert!(app.game.players[0].hand.is_empty());
+            let id = app.game.players[0].units[0].id;
+            app.ui.input_override = Some((unit_rect(app, id).center(), false, true));
+        }
+        1032 => {
+            let id = app.game.players[0].units[0].id;
+            assert_eq!(app.hover_object, Some((0, id)));
+            let text = super::live_unit_description(&app.game, 0, id).unwrap();
+            assert!(text.contains("VISION · 1 active instance."));
+            assert!(text.contains("granted by"));
+            assert!(!text.contains("Vision printed"));
+            capture(app, "RIFT_SMOKE_C22_FORECASTER_SCREENSHOT");
+            click(app, 960.0, 704.0);
+        }
+        1033 => {
+            c22_fixture(app, 400);
+            app.game.players[0]
+                .units
+                .push(public_unit(22001, 398, None));
+            click(app, 315.0, 760.0);
+        }
+        1034 => click(app, 1285.0, 510.0),
+        1035 => {
+            assert!(
+                matches!(&app.game.decision, Some(Decision::OrderTriggers { options, .. }) if options.len() == 2)
+            );
+            capture(app, "RIFT_SMOKE_C22_TRIGGER_ORDER_SCREENSHOT");
+            click(app, 315.0, 760.0);
+        }
+        1036 => {
+            assert!(app.game.decision.is_none());
+            assert_eq!(app.game.chain.len(), 2);
+            assert_ne!(app.game.chain[0].id, app.game.chain[1].id);
+            assert!(
+                app.game
+                    .chain
+                    .iter()
+                    .all(|item| app.game.chain_name(item) == "Jeweled Colossus · Vision")
+            );
+            capture(app, "RIFT_SMOKE_C22_STACKED_CHAIN_SCREENSHOT");
+            finish_chain_until_choice(app);
+        }
+        1037 => {
+            assert!(matches!(
+                app.game.decision,
+                Some(Decision::Predict {
+                    player: 0,
+                    card_id: 69
+                })
+            ));
+            click(app, 1285.0, 546.0);
+        }
+        1038 => {
+            finish_chain_until_choice(app);
+            assert!(
+                matches!(
+                    app.game.decision,
+                    Some(Decision::Predict {
+                        player: 0,
+                        card_id: 69
+                    })
+                ),
+                "keeping lets the next independent Vision see the same card"
+            );
+            assert_eq!(app.game.players[0].deck.len(), 3);
+            assert!(app.game.players[0].hand.is_empty());
+            assert_eq!(
+                super::own_predict_choice_copy(app.game.decision.as_ref())
+                    .unwrap()
+                    .0,
+                "Finish your Predict choice."
+            );
+            capture(app, "RIFT_SMOKE_C22_KEEP_AGAIN_SCREENSHOT");
+            click(app, 1285.0, 506.0);
+        }
+        1039 => {
+            assert!(app.game.chain.is_empty());
+            assert_eq!(app.game.players[0].deck, vec![69, 96, 71]);
+            assert!(app.game.players[0].hand.is_empty());
+            let id = app.game.players[0]
+                .units
+                .iter()
+                .find(|unit| unit.card_id == 400)
+                .unwrap()
+                .id;
+            app.ui.input_override = Some((unit_rect(app, id).center(), false, true));
+        }
+        1040 => {
+            let id = app.game.players[0]
+                .units
+                .iter()
+                .find(|unit| unit.card_id == 400)
+                .unwrap()
+                .id;
+            assert_eq!(app.hover_object, Some((0, id)));
+            let text = super::live_unit_description(&app.game, 0, id).unwrap();
+            assert!(text.contains("VISION · 2 active instances"));
+            assert!(text.contains("Vision printed"));
+            assert!(text.contains("granted by"));
+            assert!(text.contains("Shield 1"));
+            capture(app, "RIFT_SMOKE_C22_COLOSSUS_SCREENSHOT");
+            click(app, 960.0, 704.0);
+        }
+        1041 => {
+            c22_fixture(app, 138);
+            app.game.players[0].units =
+                vec![public_unit(22001, 398, None), public_unit(22002, 399, None)];
+            click(app, 315.0, 760.0);
+        }
+        1042 => click(app, 1285.0, 510.0),
+        1043 => {
+            finish_chain_until_choice(app);
+            assert!(matches!(
+                app.game.decision,
+                Some(Decision::TokenPlacement { .. })
+            ));
+            capture(app, "RIFT_SMOKE_C22_TOKEN_PLACEMENT_SCREENSHOT");
+            click(app, 1285.0, 469.0);
+        }
+        1044 => {
+            assert!(
+                matches!(&app.game.decision, Some(Decision::OrderTriggers { options, .. }) if options.len() == 2)
+            );
+            let token = app.game.players[0]
+                .units
+                .iter()
+                .find(|unit| unit.token)
+                .unwrap();
+            assert_eq!(app.game.unit_keywords(token).unwrap().vision, 2);
+            click(app, 315.0, 760.0);
+        }
+        1045 => {
+            assert_eq!(app.game.chain.len(), 2);
+            let token = app.game.players[0]
+                .units
+                .iter()
+                .find(|unit| unit.token)
+                .unwrap();
+            for item in &app.game.chain {
+                assert_eq!(app.game.chain_name(item), "Mech token · Vision");
+                assert_eq!(
+                    app.game.chain_source(item),
+                    local_rift::game::ChainSource::Unit {
+                        player: 0,
+                        unit_id: token.id
+                    }
+                );
+            }
+            capture(app, "RIFT_SMOKE_C22_TOKEN_CHAIN_SCREENSHOT");
+            finish_chain_until_choice(app);
+        }
+        1046 => {
+            assert!(matches!(
+                app.game.decision,
+                Some(Decision::Predict { card_id: 69, .. })
+            ));
+            click(app, 1285.0, 546.0);
+        }
+        1047 => {
+            finish_chain_until_choice(app);
+            assert!(matches!(
+                app.game.decision,
+                Some(Decision::Predict { card_id: 69, .. })
+            ));
+            click(app, 1285.0, 546.0);
+        }
+        1048 => {
+            assert!(app.game.chain.is_empty());
+            assert!(app.game.players[0].hand.is_empty());
+            let id = app.game.players[0]
+                .units
+                .iter()
+                .find(|unit| unit.token)
+                .unwrap()
+                .id;
+            app.ui.input_override = Some((unit_rect(app, id).center(), false, false));
+        }
+        1049 => {
+            let id = app.game.players[0]
+                .units
+                .iter()
+                .find(|unit| unit.token)
+                .unwrap()
+                .id;
+            assert_eq!(app.hover_object, Some((0, id)));
+            let text = super::live_unit_description(&app.game, 0, id).unwrap();
+            assert!(text.contains("VISION · 2 active instances"));
+            assert!(!text.contains("Vision printed"));
+            assert!(!text.contains("Iterative Design"));
+            capture_unit(app, id, "RIFT_SMOKE_C22_TOKEN_PREVIEW_SCREENSHOT");
+            click(app, 960.0, 704.0);
+        }
+        1050 => {
+            c22_fixture(app, 400);
+            app.game.players[0]
+                .units
+                .push(public_unit(22001, 398, None));
+            app.game.players[1].units.push(public_unit(22002, 71, None));
+            app.game
+                .apply(Action::PlayCard {
+                    hand_index: 0,
+                    lane: None,
+                    target: None,
+                })
+                .unwrap();
+            while let Some(Decision::OrderTriggers { options, .. }) = &app.game.decision {
+                app.game
+                    .apply(Action::OrderTrigger {
+                        trigger_id: options[0].id,
+                    })
+                    .unwrap();
+            }
+            app.game.players[0].hand = vec![16];
+            app.game
+                .apply(Action::PlayCardWithTargets {
+                    hand_index: 0,
+                    lane: None,
+                    targets: vec![
+                        Target::Unit {
+                            player: 0,
+                            unit_id: 22001,
+                        },
+                        Target::Unit {
+                            player: 1,
+                            unit_id: 22002,
+                        },
+                    ],
+                })
+                .unwrap();
+            app.game.apply(Action::Pass).unwrap();
+            app.game.apply(Action::Pass).unwrap();
+            assert!(
+                !app.game.players[0]
+                    .units
+                    .iter()
+                    .any(|unit| unit.id == 22001)
+            );
+            assert_eq!(
+                app.game.chain.len(),
+                2,
+                "both captured Vision instances survive granting source departure"
+            );
+        }
+        1051 => {
+            capture(app, "RIFT_SMOKE_C22_DEPARTED_SOURCE_CHAIN_SCREENSHOT");
+            finish_chain_until_choice(app);
+            assert!(matches!(
+                app.game.decision,
+                Some(Decision::Predict { card_id: 69, .. })
+            ));
+            click(app, 1285.0, 546.0);
+        }
+        1052 => {
+            finish_chain_until_choice(app);
+            assert!(matches!(
+                app.game.decision,
+                Some(Decision::Predict { card_id: 69, .. })
+            ));
+            click(app, 1285.0, 546.0);
+        }
+        1053 => {
+            assert!(app.game.chain.is_empty());
+            assert_eq!(app.game.players[0].deck, vec![96, 71, 69]);
+            let id = app.game.players[0]
+                .units
+                .iter()
+                .find(|unit| unit.card_id == 400)
+                .unwrap()
+                .id;
+            app.ui.input_override = Some((unit_rect(app, id).center(), false, true));
+        }
+        1054 => {
+            let id = app.game.players[0]
+                .units
+                .iter()
+                .find(|unit| unit.card_id == 400)
+                .unwrap()
+                .id;
+            let text = super::live_unit_description(&app.game, 0, id).unwrap();
+            assert!(text.contains("VISION · 1 active instance."));
+            assert!(!text.contains("granted by"));
+            capture(app, "RIFT_SMOKE_C22_DEPARTED_SOURCE_PREVIEW_SCREENSHOT");
+            click(app, 960.0, 704.0);
+        }
+        1055 => {
+            assert!(app.inspect.is_none());
             app.ui.input_override = None;
             app.ui.pointer_override = None;
             app.ui.wheel_override = None;
             println!(
-                "PASS: 1028 native UI frames including Predict five-card partition/order, Ornn play/Hold gear draws, Bloom paid-source and deferred Draw/XP completion, empty-Predict continuation, opponent privacy, and all previous 988 controls."
+                "PASS: 1056 native UI frames including Vision self-grants, independent Predict keep/recycle controls, printed and granted live provenance, actual Mech token identity, captured triggers after source departure, and all previous 1028 controls."
             );
             return true;
         }
-        _ => panic!("UI smoke runner exceeded its 1028-frame script"),
+        _ => panic!("UI smoke runner exceeded its 1056-frame script"),
     }
     false
 }

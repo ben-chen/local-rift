@@ -871,7 +871,6 @@ pub fn trigger_rules(card_id: usize) -> &'static [TriggerRule] {
                 )]
             }
         }
-        242 => const { &[rule(SelfPlayed, &[], false, TargetRule::NONE, &[Predict])] },
         246 => const { &[rule(SelfPlayed, &[], false, TargetRule::NONE, &[Draw(1)])] },
         152 => {
             const {
@@ -1454,7 +1453,6 @@ pub fn trigger_rules(card_id: usize) -> &'static [TriggerRule] {
             }
         }
         192 => const { &[rule(SelfPlayed, &[], false, ANY, &[Stun])] },
-        193 => const { &[rule(SelfPlayed, &[], false, TargetRule::NONE, &[Predict])] },
         194 => {
             const {
                 &[rule(
@@ -1757,9 +1755,13 @@ mod tests {
         for id in 152..=215 {
             assert!(
                 !trigger_rules(id).is_empty()
-                    || crate::rules::static_abilities(id)
-                        .iter()
-                        .any(|a| matches!(a, crate::rules::StaticAbility::Hunt(_))),
+                    || crate::rules::static_abilities(id).iter().any(|a| {
+                        matches!(
+                            a,
+                            crate::rules::StaticAbility::Hunt(_)
+                                | crate::rules::StaticAbility::Vision
+                        )
+                    }),
                 "missing trigger metadata for {id}"
             );
             for rule in trigger_rules(id) {

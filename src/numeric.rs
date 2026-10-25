@@ -33,6 +33,16 @@ impl Game {
             .players
             .iter()
             .position(|p| p.units.iter().any(|u| u.id == unit.id));
+        if let Some(player) = owner {
+            keywords.vision = u64::try_from(
+                self.vision_instances(crate::empower::BoardObject::Unit {
+                    player,
+                    unit_id: unit.id,
+                })?
+                .len(),
+            )
+            .map_err(|_| capacity("Vision instance count"))?;
+        }
         if unit.token {
             keywords.deflect = rules::token_spec(unit.card_id).is_some_and(|s| s.deflect) as u8;
         } else {

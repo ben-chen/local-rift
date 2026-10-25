@@ -53,13 +53,14 @@ fn effect_to_json(effect: PassiveEffect) -> Value {
             PassiveKeyword::Deflect(amount) => {
                 json!({"type":"keyword","keyword":"deflect","amount":amount})
             }
+            PassiveKeyword::Vision => json!({"type":"keyword","keyword":"vision"}),
             PassiveKeyword::Ganking => json!({"type":"keyword","keyword":"ganking"}),
         },
     }
 }
 
 pub(super) fn passive_rule_to_json(index: usize, rule: &PassiveRule) -> Value {
-    json!({"rule_index":index,
+    let mut value = json!({"rule_index":index,
         "condition":match rule.condition {SourceCondition::Always=>"always",SourceCondition::Empowered=>"empowered",SourceCondition::NotEmpowered=>"not_empowered",
             SourceCondition::AttackingWithAnother=>"attacking_with_another",SourceCondition::CombatAlone=>"combat_alone",
             SourceCondition::Buffed=>"buffed",SourceCondition::OtherFriendlyHere=>"other_friendly_here",
@@ -67,8 +68,12 @@ pub(super) fn passive_rule_to_json(index: usize, rule: &PassiveRule) -> Value {
             SourceCondition::ControllerGainedXpThisTurn=>"controller_gained_xp_this_turn"},
         "condition_threshold":match rule.condition {SourceCondition::ControllerRunesAtLeast(n)|SourceCondition::ControllerXpAtLeast(n)=>Some(n),_=>None},
         "recipients":match rule.recipients {Recipients::SelfUnit=>"self_unit",Recipients::FriendlyUnits=>"friendly_units",Recipients::FriendlyEmpoweredUnits=>"friendly_empowered_units",
-            Recipients::OtherFriendlyUnitsHere=>"other_friendly_units_here",Recipients::FriendlyTokenUnits=>"friendly_token_units",Recipients::AttachedBearer=>"attached_bearer"},
-        "effect":effect_to_json(rule.effect)})
+            Recipients::OtherFriendlyUnits=>"other_friendly_units",Recipients::FriendlyUnitsWithTag(_)=>"friendly_units_with_tag",Recipients::OtherFriendlyUnitsHere=>"other_friendly_units_here",Recipients::FriendlyTokenUnits=>"friendly_token_units",Recipients::AttachedBearer=>"attached_bearer"},
+        "effect":effect_to_json(rule.effect)});
+    if let Recipients::FriendlyUnitsWithTag(tag) = rule.recipients {
+        value["recipient_tag"] = json!(tag);
+    }
+    value
 }
 
 pub(super) fn cost_modifier_to_json(modifier: &AbilityCostModifier) -> Value {

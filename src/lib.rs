@@ -28,3 +28,5 @@ pub mod numeric;
 pub use numeric::{DamageAmount, Might, SignedMight, UnitStats};
 
 pub use game::temporary;
+
+pub use game::vision;

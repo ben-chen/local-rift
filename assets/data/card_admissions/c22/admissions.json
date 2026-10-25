@@ -1,0 +1,509 @@
+{
+  "schema_version": 1,
+  "draft_not_for_import": false,
+  "reviewed_on": "2026-10-24",
+  "origin_gallery": {
+    "url": "https://playriftbound.com/en-us/card-gallery/",
+    "archive": "assets/data/catalog_sources/gallery.html.gz",
+    "uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9"
+  },
+  "pre_admission_catalog_sha256": "67603727aadf933b6cd29efefb32add6b0f57584ac481a7ea69c1bae3b2a99f4",
+  "preserved_runtime_prefix": {
+    "card_count": 398,
+    "cards_sha256": "90c17a4276171a4dcd47ba0884ce6b8673c37da803a6c7bd3617074adf540752",
+    "carddefs_source_prefix_sha256": "342234a6611e16649c757d30f70e18e2a82f34d175ddf5a7e59c8dc46ac30abc",
+    "presets_sha256": "d6e64ebf3f8921686682dacd87d4b2b4baec5754dbd284c6d60bf3fb324571e2",
+    "legends_manifest_sha256": "a31bb93c27588bd4759985e9a4083372d5afae59d22b9ac9d48c54946e5474fe",
+    "training_recipe_source_sha256": "dc498f4f98cec6421dade7e01ead261693ed5f70d30d4d2c808da4a1bcb5b706"
+  },
+  "preserved_source_reviews": {
+    "field_resolutions_sha256": "9bf3cd6dbbf0e3092feb33e27c706ffafbecd00a7c47af596577ce563a2058e9",
+    "raw_printings_sha256": "1b86a59900748f9b580ee5818f3fbdc51a72e8e14353476c9b86353e980ffe7c",
+    "historical_issues_sha256": "716acdf22e0bbf0efd0270ccec19a385d2a7ab877850e37c88edd9594daad97f",
+    "field_image_index_sha256": "c70f815874e7dddf90e5d9b4a59b75ef426d2aaaf6a1c66a75c7193ee677f95f",
+    "identity_review_manifest_sha256": "e678c7f2f2e1ae70fb6b399ce1b0ab88a314e9018810d1ccadb1759a1f7b5e12",
+    "variant_image_index_sha256": "1826db0a53cbe62eb1a1196d08df1cbef215b9d9e24cc006689559bbc7693b92"
+  },
+  "pre_admission_counts": {
+    "main_cards": 398,
+    "mapped_legal": 425,
+    "remaining_legal": 654
+  },
+  "scope": "Three identities and their complete three-printing English gallery cohorts independently inspected. This isolated source patch awaits the separate executable runtime integration. Raw and effective gameplay facts agree; no field correction or variant disposition is added. Source facts are not executable-behavior proof. Existing card IDs, presets, legends, authored recipes, and all preceding source-review cohorts remain unchanged.",
+  "errata_sources": [
+    {
+      "key": "origins_errata",
+      "url": "https://playriftbound.com/en-us/news/rules-and-releases/riftbound-origins-card-errata/",
+      "archive": "assets/data/catalog_sources/origins_errata.html.gz",
+      "uncompressed_sha256": "035848c5cc61007683111e63b91289d3fc386d2b33437af32d4d13d565727c52",
+      "parsed_entries_sha256": "5d5ed4e6d5e03033184b5382ab360eade62ca9cf032cf94e811cc1e0acaed581",
+      "live_checked_on": "2026-10-24",
+      "live_uncompressed_sha256": "035848c5cc61007683111e63b91289d3fc386d2b33437af32d4d13d565727c52",
+      "live_parsed_entries_sha256": "5d5ed4e6d5e03033184b5382ab360eade62ca9cf032cf94e811cc1e0acaed581"
+    },
+    {
+      "key": "spiritforged_errata",
+      "url": "https://playriftbound.com/en-us/news/rules-and-releases/riftbound-spiritforged-errata/",
+      "archive": "assets/data/catalog_sources/spiritforged_errata.html.gz",
+      "uncompressed_sha256": "2fcd51e6104eb76212c42abc850beffaf1cf3e623d875b2d9ad47ed149a726a8",
+      "parsed_entries_sha256": "88be71f74e159dde0b339273fed000ac097ae50318a0aa535b02fdc23c666d57",
+      "live_checked_on": "2026-10-24",
+      "live_uncompressed_sha256": "44a73fe653506bc89ff41e9b81c004fc5c952c10df29de34f528b6ddfd48335d",
+      "live_parsed_entries_sha256": "88be71f74e159dde0b339273fed000ac097ae50318a0aa535b02fdc23c666d57"
+    },
+    {
+      "key": "unleashed_errata",
+      "url": "https://playriftbound.com/en-us/news/rules-and-releases/unleashed-errata-updates/",
+      "archive": "assets/data/catalog_sources/unleashed_errata.html.gz",
+      "uncompressed_sha256": "8b3cb69fea7c499e435c6af0ac89b5c5013711477a172c6bbed3a782eff7ac7b",
+      "parsed_entries_sha256": "801ad0c9bcc9d7bbdde1fa8c5b229dbcaf718daaf3f3db208dd8942a119e3df3",
+      "live_checked_on": "2026-10-24",
+      "live_uncompressed_sha256": "8b3cb69fea7c499e435c6af0ac89b5c5013711477a172c6bbed3a782eff7ac7b",
+      "live_parsed_entries_sha256": "801ad0c9bcc9d7bbdde1fa8c5b229dbcaf718daaf3f3db208dd8942a119e3df3"
+    },
+    {
+      "key": "vendetta_errata",
+      "url": "https://playriftbound.com/en-us/news/announcements/vendetta-errata-updates/",
+      "archive": "assets/data/catalog_sources/vendetta_errata.html.gz",
+      "uncompressed_sha256": "d17603177df347cd44c4ef67c1c547344afcd847cec72ae545239f3c232ef2a6",
+      "parsed_entries_sha256": "9e6fb29ba5bd2bce1023b6927c395e4ed0ced61bf2fc766410d9f000c68a16be",
+      "live_checked_on": "2026-10-24",
+      "live_uncompressed_sha256": "b2fe4126a8c007c60576bf225eb7add078e816fe8aca4419bc4200f8e4e24065",
+      "live_parsed_entries_sha256": "9e6fb29ba5bd2bce1023b6927c395e4ed0ced61bf2fc766410d9f000c68a16be"
+    },
+    {
+      "key": "radiance_errata",
+      "url": "https://playriftbound.com/en-us/news/announcements/radiance-errata-updates/",
+      "archive": "assets/data/catalog_sources/radiance_errata.html.gz",
+      "uncompressed_sha256": "63735225d6c2f0b757e933289175fb09dcbae86178075fb227e4afa4e1a478a7",
+      "parsed_entries_sha256": "84fd3234a6cdc8c5ddd0b8b4f18c100f339497acdc02318f74b352b6da23866e",
+      "live_checked_on": "2026-10-24",
+      "live_uncompressed_sha256": "63735225d6c2f0b757e933289175fb09dcbae86178075fb227e4afa4e1a478a7",
+      "live_parsed_entries_sha256": "84fd3234a6cdc8c5ddd0b8b4f18c100f339497acdc02318f74b352b6da23866e"
+    }
+  ],
+  "live_authority_check": {
+    "checked_on": "2026-10-24",
+    "hub_url": "https://playriftbound.com/en-us/rules-hub/",
+    "hub_uncompressed_sha256": "9a96b453d96b90ea2cdbb635fdae83df04586a93b3c850f523e1ccca77a76a51",
+    "legality": {
+      "source_url": "https://playriftbound.com/en-us/rules-hub/",
+      "last_updated": "September 18, 2026",
+      "standard_banned_names": [
+        "Called Shot",
+        "Ekko, Recurrent",
+        "Draven, Vanquisher",
+        "Fight or Flight",
+        "Scrapheap",
+        "Stealthy Pursuer",
+        "Stacked Deck",
+        "The Arena’s Greatest",
+        "Aspirant’s Climb",
+        "Dreaming Tree",
+        "Obelisk of Power",
+        "Reaver’s Row"
+      ],
+      "two_v_two_banned_names": [
+        "Master Yi, Wuju Bladesman",
+        "Called Shot",
+        "Ekko, Recurrent",
+        "Draven Vanquisher",
+        "Fight or Flight",
+        "Scrapheap",
+        "Stealthy Pursuer",
+        "Stacked Deck",
+        "The Arena’s Greatest",
+        "Aspirant’s Climb",
+        "Dreaming Tree",
+        "Obelisk of Power",
+        "Reaver’s Row"
+      ]
+    },
+    "core_rules_url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/5c7946f7c3b8c6e0faff85ab6dadc6d2e721ea94.pdf",
+    "gallery_uncompressed_sha256": "193eb4204e2cf2fea320c7bbc48439588b280460cea1867c43ad98d7e9991865",
+    "candidate_raw_projections_match_archive": true,
+    "complete_normalized_catalog_matches_before_admission": true,
+    "scope": "Current page data and Core link checked; no newly downloaded PDF proof is claimed."
+  },
+  "records": [
+    {
+      "official_id": "ogn-100-298",
+      "name": "Gemcraft Seer",
+      "raw_printing": {
+        "official_id": "ogn-100-298",
+        "public_code": "OGN-100/298",
+        "name": "Gemcraft Seer",
+        "set": "OGN",
+        "collector_number": 100,
+        "types": [
+          "unit"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "unit"
+        ],
+        "accessibility_types": [
+          "unit"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "mind"
+        ],
+        "energy": 3,
+        "power": 1,
+        "might": 3,
+        "might_bonus": null,
+        "rules_html": "<p>[Vision] (When you play me, look at the top card of your Main Deck. You may recycle it.)<br />Other friendly units have [Vision].</p>",
+        "rules_text": "[Vision] (When you play me, look at the top card of your Main Deck. You may recycle it.)\nOther friendly units have [Vision].",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [
+          "Mount Targon"
+        ],
+        "rarity": "uncommon",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/4b6965bd592a5f602ab932094d677b6c85b2372b-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Unit: Gemcraft Seer. [Vision] (When you play me, look at the top card of your Main Deck. You may recycle it.)\nOther friendly units have [Vision].",
+        "illustrators": [
+          "Bubble Cat Studio"
+        ]
+      },
+      "raw_printing_sha256": "0a313e7f0fcab72e6192367262cc975bc1767107aef78da760fa04a886974d2c",
+      "effective": {
+        "types": [
+          "unit"
+        ],
+        "super_types": [],
+        "domains": [
+          "mind"
+        ],
+        "energy": 3,
+        "power": 1,
+        "might": 3,
+        "might_bonus": null,
+        "tags": [
+          "Mount Targon"
+        ],
+        "rules_html": "<p>[Vision] (When you play me, look at the top card of your Main Deck. You may recycle it.)<br />Other friendly units have [Vision].</p>",
+        "rules_text": "[Vision] (When you play me, look at the top card of your Main Deck. You may recycle it.)\nOther friendly units have [Vision].",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "effective_projection_sha256": "0a313e7f0fcab72e6192367262cc975bc1767107aef78da760fa04a886974d2c",
+      "existing_field_resolution_ids": [],
+      "original_image": {
+        "path": "assets/data/card_admissions/c22/originals/ogn-100-298.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/4b6965bd592a5f602ab932094d677b6c85b2372b-744x1039.png?accountingTag=RB",
+        "bytes": 831719,
+        "sha256": "2ed04f3cbb4128e5c38beebff895575f31dfa670880136376040efc5571542f6"
+      },
+      "visual_observation": {
+        "face_visually_inspected": true,
+        "independently_reinspected_on": "2026-10-24",
+        "official_id": "ogn-100-298",
+        "name": "Gemcraft Seer",
+        "collector_code": "OGN-100/298",
+        "original_image_sha256": "2ed04f3cbb4128e5c38beebff895575f31dfa670880136376040efc5571542f6",
+        "printed_type_tag_line": "UNIT / MOUNT TARGON",
+        "uncertainties": [],
+        "notes": [
+          "Printed Mind Power symbol below Energy is present once; bottom-right domain is Mind.",
+          "Grant explicitly excludes this Seer; its own Vision is intrinsic."
+        ],
+        "printed_types": [
+          "unit"
+        ],
+        "printed_supertypes": [],
+        "printed_domains": [
+          "mind"
+        ],
+        "printed_tags": [
+          "Mount Targon"
+        ],
+        "printed_energy": 3,
+        "printed_power": 1,
+        "printed_might": 3,
+        "printed_might_bonus": null,
+        "printed_rules_icons_expanded": "[Vision] (When you play me, look at the top card of your Main Deck. You may recycle it.)\nOther friendly units have [Vision].",
+        "printed_equipment_icons_expanded": ""
+      },
+      "runtime_id": 398,
+      "errata": [],
+      "runtime_rules_text": "[Vision] (When you play me, look at the top card of your Main Deck. You may recycle it.)\nOther friendly units have [Vision].",
+      "printing_cohort": [
+        "ogn-100-298"
+      ],
+      "alternate_printings": [],
+      "legal_main_deck_legend_ids": [
+        3,
+        5,
+        6,
+        9
+      ],
+      "chosen_champion_legend_ids": [],
+      "runtime_image": {
+        "path": "assets/art/card_398.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/4b6965bd592a5f602ab932094d677b6c85b2372b-744x1039.png?w=280&q=80&fm=png",
+        "bytes": 156726,
+        "sha256": "f78a751f00750657489c3f2fc9ec065f4498ad132ca30a5ce0aacd1147f71d8f",
+        "width": 280,
+        "height": 391
+      }
+    },
+    {
+      "official_id": "sfd-065-221",
+      "name": "Forecaster",
+      "raw_printing": {
+        "official_id": "sfd-065-221",
+        "public_code": "SFD-065/221",
+        "name": "Forecaster",
+        "set": "SFD",
+        "collector_number": 65,
+        "types": [
+          "unit"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "unit"
+        ],
+        "accessibility_types": [
+          "unit"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "mind"
+        ],
+        "energy": 2,
+        "power": null,
+        "might": 2,
+        "might_bonus": null,
+        "rules_html": "<p>Your Mechs have [Vision]. (When you play us, look at the top card of your Main Deck. You may recycle it.)</p>",
+        "rules_text": "Your Mechs have [Vision]. (When you play us, look at the top card of your Main Deck. You may recycle it.)",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [
+          "Mech",
+          "Yordle",
+          "Bandle City"
+        ],
+        "rarity": "common",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/3f58f0c58503e4f8caecb7ea7f77b478a1e92961-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Unit: Forecaster. Your Mechs have [Vision]. (When you play us, look at the top card of your Main Deck. You may recycle it.)",
+        "illustrators": [
+          "Envar Studio"
+        ]
+      },
+      "raw_printing_sha256": "b476432676183a12a7d07fc5a0016b15aff7a03c19b75a10ce44c9418cae7df0",
+      "effective": {
+        "types": [
+          "unit"
+        ],
+        "super_types": [],
+        "domains": [
+          "mind"
+        ],
+        "energy": 2,
+        "power": null,
+        "might": 2,
+        "might_bonus": null,
+        "tags": [
+          "Mech",
+          "Yordle",
+          "Bandle City"
+        ],
+        "rules_html": "<p>Your Mechs have [Vision]. (When you play us, look at the top card of your Main Deck. You may recycle it.)</p>",
+        "rules_text": "Your Mechs have [Vision]. (When you play us, look at the top card of your Main Deck. You may recycle it.)",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "effective_projection_sha256": "b476432676183a12a7d07fc5a0016b15aff7a03c19b75a10ce44c9418cae7df0",
+      "existing_field_resolution_ids": [],
+      "original_image": {
+        "path": "assets/data/card_admissions/c22/originals/sfd-065-221.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/3f58f0c58503e4f8caecb7ea7f77b478a1e92961-744x1039.png?accountingTag=RB",
+        "bytes": 839606,
+        "sha256": "d5ebcfbdeab1d40ebcc7ab4c348b56bacccbeb6f98b55002323988eb2fa0bcbc"
+      },
+      "visual_observation": {
+        "face_visually_inspected": true,
+        "independently_reinspected_on": "2026-10-24",
+        "official_id": "sfd-065-221",
+        "name": "Forecaster",
+        "collector_code": "SFD-065/221",
+        "original_image_sha256": "d5ebcfbdeab1d40ebcc7ab4c348b56bacccbeb6f98b55002323988eb2fa0bcbc",
+        "printed_type_tag_line": "UNIT / BANDLE CITY / YORDLE / MECH",
+        "uncertainties": [],
+        "notes": [
+          "No printed Power cost; preserve gallery power:null in raw/effective source, normalize to zero only in a future runtime manifest.",
+          "Feed tag order is Mech/Yordle/Bandle City; the face order is Bandle City/Yordle/Mech. Same exact tag set, no missing or extra tag.",
+          "No separate intrinsic Vision line: its own active grant supplies Vision because Forecaster is a Mech."
+        ],
+        "printed_types": [
+          "unit"
+        ],
+        "printed_supertypes": [],
+        "printed_domains": [
+          "mind"
+        ],
+        "printed_tags": [
+          "Bandle City",
+          "Yordle",
+          "Mech"
+        ],
+        "printed_energy": 2,
+        "printed_power": null,
+        "printed_might": 2,
+        "printed_might_bonus": null,
+        "printed_rules_icons_expanded": "Your Mechs have [Vision]. (When you play us, look at the top card of your Main Deck. You may recycle it.)",
+        "printed_equipment_icons_expanded": ""
+      },
+      "runtime_id": 399,
+      "errata": [],
+      "runtime_rules_text": "Your Mechs have [Vision]. (When you play us, look at the top card of your Main Deck. You may recycle it.)",
+      "printing_cohort": [
+        "sfd-065-221"
+      ],
+      "alternate_printings": [],
+      "legal_main_deck_legend_ids": [
+        3,
+        5,
+        6,
+        9
+      ],
+      "chosen_champion_legend_ids": [],
+      "runtime_image": {
+        "path": "assets/art/card_399.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/3f58f0c58503e4f8caecb7ea7f77b478a1e92961-744x1039.png?w=280&q=80&fm=png",
+        "bytes": 187485,
+        "sha256": "8a1a43f3673581977d9e47b62c5e54d21cd6bdd61edf3a886b7ec8b8f6fcac1f",
+        "width": 280,
+        "height": 391
+      }
+    },
+    {
+      "official_id": "ogn-086-298",
+      "name": "Jeweled Colossus",
+      "raw_printing": {
+        "official_id": "ogn-086-298",
+        "public_code": "OGN-086/298",
+        "name": "Jeweled Colossus",
+        "set": "OGN",
+        "collector_number": 86,
+        "types": [
+          "unit"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "unit"
+        ],
+        "accessibility_types": [
+          "unit"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "mind"
+        ],
+        "energy": 5,
+        "power": null,
+        "might": 5,
+        "might_bonus": null,
+        "rules_html": "<p>[Vision] (When you play me, look at the top card of your Main Deck. You may recycle it.)<br />[Shield] (+1 :rb_might: while I'm a defender.)</p>",
+        "rules_text": "[Vision] (When you play me, look at the top card of your Main Deck. You may recycle it.)\n[Shield] (+1 Might while I'm a defender.)",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [
+          "Mount Targon"
+        ],
+        "rarity": "common",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/775bea14038165fd9feb15c796ed84aa00a032e1-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Unit: Jeweled Colossus. [Vision] (When you play me, look at the top card of your Main Deck. You may recycle it.)\n[Shield] (+1 [S] while I'm a defender.)",
+        "illustrators": [
+          "Kudos Productions"
+        ]
+      },
+      "raw_printing_sha256": "5edc8754d70169b16df984f425f485fc7484d5465d4de669f381892eba5b2b2d",
+      "effective": {
+        "types": [
+          "unit"
+        ],
+        "super_types": [],
+        "domains": [
+          "mind"
+        ],
+        "energy": 5,
+        "power": null,
+        "might": 5,
+        "might_bonus": null,
+        "tags": [
+          "Mount Targon"
+        ],
+        "rules_html": "<p>[Vision] (When you play me, look at the top card of your Main Deck. You may recycle it.)<br />[Shield] (+1 :rb_might: while I'm a defender.)</p>",
+        "rules_text": "[Vision] (When you play me, look at the top card of your Main Deck. You may recycle it.)\n[Shield] (+1 Might while I'm a defender.)",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "effective_projection_sha256": "5edc8754d70169b16df984f425f485fc7484d5465d4de669f381892eba5b2b2d",
+      "existing_field_resolution_ids": [],
+      "original_image": {
+        "path": "assets/data/card_admissions/c22/originals/ogn-086-298.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/775bea14038165fd9feb15c796ed84aa00a032e1-744x1039.png?accountingTag=RB",
+        "bytes": 827593,
+        "sha256": "4944775a439f8abfab87529dacb2e517f251abeb4893fe7cea8975a8c87f5fbd"
+      },
+      "visual_observation": {
+        "face_visually_inspected": true,
+        "independently_reinspected_on": "2026-10-24",
+        "official_id": "ogn-086-298",
+        "name": "Jeweled Colossus",
+        "collector_code": "OGN-086/298",
+        "original_image_sha256": "4944775a439f8abfab87529dacb2e517f251abeb4893fe7cea8975a8c87f5fbd",
+        "printed_type_tag_line": "UNIT / MOUNT TARGON",
+        "uncertainties": [],
+        "notes": [
+          "No printed Power cost; preserve gallery power:null in raw/effective source, normalize to zero only in a future runtime manifest.",
+          "Face shows +1 Might symbol in Shield reminder. Structured rules_html uses :rb_might: correctly; accessibility prose uses [S] as a separate symbol encoding. No operative text/stat mismatch."
+        ],
+        "printed_types": [
+          "unit"
+        ],
+        "printed_supertypes": [],
+        "printed_domains": [
+          "mind"
+        ],
+        "printed_tags": [
+          "Mount Targon"
+        ],
+        "printed_energy": 5,
+        "printed_power": null,
+        "printed_might": 5,
+        "printed_might_bonus": null,
+        "printed_rules_icons_expanded": "[Vision] (When you play me, look at the top card of your Main Deck. You may recycle it.)\n[Shield] (+1 Might while I'm a defender.)",
+        "printed_equipment_icons_expanded": ""
+      },
+      "runtime_id": 400,
+      "errata": [],
+      "runtime_rules_text": "[Vision] (When you play me, look at the top card of your Main Deck. You may recycle it.)\n[Shield] (+1 Might while I'm a defender.)",
+      "printing_cohort": [
+        "ogn-086-298"
+      ],
+      "alternate_printings": [],
+      "legal_main_deck_legend_ids": [
+        3,
+        5,
+        6,
+        9
+      ],
+      "chosen_champion_legend_ids": [],
+      "runtime_image": {
+        "path": "assets/art/card_400.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/775bea14038165fd9feb15c796ed84aa00a032e1-744x1039.png?w=280&q=80&fm=png",
+        "bytes": 170146,
+        "sha256": "e5ed771cb4d0194eb81b5e6ed45c708ceb30eedf16fbfa54ae9016543b2ad6da",
+        "width": 280,
+        "height": 391
+      }
+    }
+  ]
+}

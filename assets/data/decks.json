@@ -10187,6 +10187,84 @@
       "power": 0,
       "source_url": "https://playriftbound.com/en-us/card-gallery/",
       "tags": []
+    },
+    {
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/4b6965bd592a5f602ab932094d677b6c85b2372b-744x1039.png?w=280&q=80&fm=png",
+      "domains": [
+        "Mind"
+      ],
+      "energy": 3,
+      "equipment_effect": "",
+      "equipment_effect_html": "",
+      "id": 398,
+      "keywords": [
+        "Vision"
+      ],
+      "kind": "Unit",
+      "might": 3,
+      "might_bonus": null,
+      "name": "Gemcraft Seer",
+      "official_id": "ogn-100-298",
+      "official_text": "[Vision] (When you play me, look at the top card of your Main Deck. You may recycle it.)\nOther friendly units have [Vision].",
+      "official_text_html": "<p>[Vision] (When you play me, look at the top card of your Main Deck. You may recycle it.)<br />Other friendly units have [Vision].</p>",
+      "power": 1,
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "tags": [
+        "Mount Targon"
+      ]
+    },
+    {
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/3f58f0c58503e4f8caecb7ea7f77b478a1e92961-744x1039.png?w=280&q=80&fm=png",
+      "domains": [
+        "Mind"
+      ],
+      "energy": 2,
+      "equipment_effect": "",
+      "equipment_effect_html": "",
+      "id": 399,
+      "keywords": [
+        "Vision"
+      ],
+      "kind": "Unit",
+      "might": 2,
+      "might_bonus": null,
+      "name": "Forecaster",
+      "official_id": "sfd-065-221",
+      "official_text": "Your Mechs have [Vision]. (When you play us, look at the top card of your Main Deck. You may recycle it.)",
+      "official_text_html": "<p>Your Mechs have [Vision]. (When you play us, look at the top card of your Main Deck. You may recycle it.)</p>",
+      "power": 0,
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "tags": [
+        "Mech",
+        "Yordle",
+        "Bandle City"
+      ]
+    },
+    {
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/775bea14038165fd9feb15c796ed84aa00a032e1-744x1039.png?w=280&q=80&fm=png",
+      "domains": [
+        "Mind"
+      ],
+      "energy": 5,
+      "equipment_effect": "",
+      "equipment_effect_html": "",
+      "id": 400,
+      "keywords": [
+        "Shield",
+        "Vision"
+      ],
+      "kind": "Unit",
+      "might": 5,
+      "might_bonus": null,
+      "name": "Jeweled Colossus",
+      "official_id": "ogn-086-298",
+      "official_text": "[Vision] (When you play me, look at the top card of your Main Deck. You may recycle it.)\n[Shield] (+1 Might while I'm a defender.)",
+      "official_text_html": "<p>[Vision] (When you play me, look at the top card of your Main Deck. You may recycle it.)<br />[Shield] (+1 :rb_might: while I'm a defender.)</p>",
+      "power": 0,
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "tags": [
+        "Mount Targon"
+      ]
     }
   ],
   "official_text_note": "Official card/legend rules text from the Riot Card Gallery, retrieved 2026-10-24 and corrected by cited errata. Resource icon tokens are expanded to readable bracketed names. Raw card and equipment HTML is preserved separately. Official text does not establish full implementation fidelity."

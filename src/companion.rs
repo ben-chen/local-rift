@@ -661,6 +661,16 @@ fn checked_advice(game: &Game, level: AdviceLevel) -> Result<Vec<&'static str>, 
             "Stacked Hunt produces one captured XP amount per bearer when it conquers or holds. Protect the scoring unit, and consider which Level thresholds that XP reaches."
         });
     }
+    if human_stats
+        .iter()
+        .any(|(_, stats)| stats.keywords.vision > 0)
+    {
+        tips.push(if beginner {
+            "Each Vision triggers its own Predict 1 when that object is played. Keeping the top card can show the same card again when another Vision resolves."
+        } else {
+            "Vision grants are live characteristics, but each entry trigger captures its source. Removing the bearer or granting source does not undo a Vision already on the chain."
+        });
+    }
     if human.gear.iter().any(|gear| {
         game.gear_temporary_status(0, gear.id)
             .is_some_and(|status| status.active)
@@ -995,6 +1005,11 @@ fn response_window_advice(
                     "For Predict, compare the known top card with your next turn's needs. Recycle only when a fresh draw is worth giving up that certainty."
                 },
                 "Keeping a predicted card leaves it on top; recycling puts it at the bottom. Predict does not itself draw that card.",
+                if beginner {
+                    "If several Vision abilities are waiting, each gets its own Predict 1. Keeping the card may show it again to the next Vision."
+                } else {
+                    "Each queued Vision resolves separately, even if its bearer or granting source leaves. Keeping a card may let a later Vision see that same card."
+                },
             ],
             Decision::CounterTax { .. } => vec![
                 if beginner {
@@ -1352,6 +1367,75 @@ mod tests {
 
     fn game() -> Game {
         Game::new(0, 1, 72, Difficulty::Easy)
+    }
+
+    #[test]
+    fn vision_coaching_explains_independent_predictions_without_opponent_peeking() {
+        use local_rift::game::Action;
+        let mut game = Game::new(3, 3, 22, Difficulty::Easy);
+        game.start_match().unwrap();
+        game.players[0].units.clear();
+        game.players[0].hand = vec![398];
+        game.players[0].deck = vec![69, 71];
+        game.players[0].runes = [0; 6];
+        game.players[0].exhausted_runes = [0; 6];
+        game.players[0].energy = 20;
+        game.players[0].energy_pool = 20;
+        game.players[0].power_pool = [5; 6];
+        game.apply(Action::PlayCard {
+            hand_index: 0,
+            lane: None,
+            target: None,
+        })
+        .unwrap();
+        for _ in 0..12 {
+            if game.decision.is_some() {
+                break;
+            }
+            game.apply(Action::Pass).unwrap();
+        }
+        assert!(matches!(
+            game.decision,
+            Some(Decision::Predict {
+                player: 0,
+                card_id: 71
+            })
+        ));
+        let beginner = advice(&game, AdviceLevel::Beginner);
+        let advanced = advice(&game, AdviceLevel::Advanced);
+        assert!(
+            beginner
+                .iter()
+                .any(|tip| tip.contains("each gets its own Predict 1"))
+        );
+        assert!(
+            advanced
+                .iter()
+                .any(|tip| tip.contains("even if its bearer or granting source leaves"))
+        );
+        for tip in beginner.iter().chain(&advanced) {
+            assert!(tip.chars().count() <= 180, "{tip}");
+        }
+        let mut other_hidden = game.clone();
+        other_hidden.players[1].hand = vec![398, 399, 400];
+        other_hidden.players[1].deck = vec![3];
+        for level in [AdviceLevel::Beginner, AdviceLevel::Advanced] {
+            assert_eq!(advice(&game, level), advice(&other_hidden, level));
+        }
+        game.decision = Some(Decision::Predict {
+            player: 1,
+            card_id: 71,
+        });
+        other_hidden = game.clone();
+        other_hidden.decision = Some(Decision::Predict {
+            player: 1,
+            card_id: 400,
+        });
+        assert_eq!(fingerprint(&game), fingerprint(&other_hidden));
+        assert_eq!(
+            advice(&game, AdviceLevel::Beginner),
+            advice(&other_hidden, AdviceLevel::Beginner)
+        );
     }
 
     #[test]

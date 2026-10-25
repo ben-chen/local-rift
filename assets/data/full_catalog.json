@@ -150,13 +150,13 @@
       "legend": 10,
       "rune": 6,
       "spell": 111,
-      "unit": 221
+      "unit": 224
     },
-    "implemented_main_cards": 398,
+    "implemented_main_cards": 401,
     "implemented_legends": 10,
     "implemented_battlefields": 11,
-    "implemented_legal_identities": 425,
-    "unimplemented_legal_identities": 654,
+    "implemented_legal_identities": 428,
+    "unimplemented_legal_identities": 651,
     "errata_entries": 67,
     "identities_with_errata": 67,
     "source_quality_issues": 47,
@@ -200,13 +200,13 @@
     "Quick-Draw": 2,
     "Reaction": 71,
     "Repeat": 10,
-    "Shield": 13,
+    "Shield": 12,
     "Show Off": 6,
     "Stun": 16,
     "Tank": 22,
     "Temporary": 9,
     "Unique": 3,
-    "Vision": 7,
+    "Vision": 4,
     "Weaponmaster": 12
   },
   "cards": [
@@ -12955,8 +12955,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 399,
+        "official_id": "sfd-065-221",
+        "playable_in_client": true
       }
     },
     {
@@ -13991,8 +13993,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 398,
+        "official_id": "ogn-100-298",
+        "playable_in_client": true
       }
     },
     {
@@ -18233,8 +18237,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 400,
+        "official_id": "ogn-086-298",
+        "playable_in_client": true
       }
     },
     {

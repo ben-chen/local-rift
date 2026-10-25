@@ -27,6 +27,7 @@ mod play_choices;
 mod progression;
 mod targeting;
 mod temporary;
+mod vision;
 mod xp_costs;
 
 #[cfg(test)]
@@ -327,6 +328,10 @@ impl Session {
             let units: Vec<_> = state.units.iter().map(|unit| {
                 let stats = game.try_unit_stats(unit).map_err(ApiError::illegal)?;
                 let keywords = stats.keywords;
+                let keywords_json = json!({"vision":keywords.vision,"vision_exact":keywords.vision.to_string(),"assault":keywords.assault,"assault_exact":keywords.assault.to_string(),
+                    "shield":keywords.shield,"shield_exact":keywords.shield.to_string(),"tank":keywords.tank,"backline":keywords.backline,
+                    "deflect":keywords.deflect,"ganking":keywords.ganking,"ambush":keywords.ambush,"hunt":keywords.hunt,
+                    "accelerate":keywords.accelerate.map(|cost|json!({"energy":cost.energy,"power":cost.power,"domain":cost.domain.name()}))});
                 let tags = if unit.token {
                     crate::rules::token_spec(unit.card_id).and_then(|spec|spec.tag).into_iter().collect::<Vec<_>>()
                 } else { game.catalog[unit.card_id].tags.to_vec() };
@@ -341,19 +346,18 @@ impl Session {
                 "protected":unit.protected, "banish_on_death":unit.banish_on_death,
                 "temporary_status":game.temporary_status(crate::empower::BoardObject::Unit {player:owner,unit_id:unit.id}).map(temporary::status_to_json),
                 "empowered":game.unit_empowered(unit.id),"hidden_play_origin":game.hidden_play_origin(unit.id),"movement_locked":game.movement_locked(owner,unit.id),
-                "keywords":{"assault":keywords.assault,"assault_exact":keywords.assault.to_string(),
-                    "shield":keywords.shield,"shield_exact":keywords.shield.to_string(),"tank":keywords.tank,"backline":keywords.backline,
-                    "deflect":keywords.deflect,"ganking":keywords.ganking,"ambush":keywords.ambush,"hunt":keywords.hunt,
-                    "accelerate":keywords.accelerate.map(|cost|json!({"energy":cost.energy,"power":cost.power,"domain":cost.domain.name()}))},
+                "keywords":keywords_json,
                 "damage_priority":game.damage_priority(unit).map_err(ApiError::illegal)?,
+                "vision_instances":vision::instances_to_json(game,crate::empower::BoardObject::Unit {player:owner,unit_id:unit.id})?,
                 "passive_contributions":game.passive_contributions(crate::empower::BoardObject::Unit {player:owner,unit_id:unit.id}).map_err(ApiError::illegal)?.iter().map(empowered::contribution_to_json).collect::<Vec<_>>()
             }))}).collect::<Result<Vec<_>,ApiError>>()?;
-            let gear: Vec<_> = state.gear.iter().map(|gear| json!({
+            let gear: Vec<_> = state.gear.iter().map(|gear| Ok(json!({
                 "id":gear.id, "card_id":gear.card_id, "name":game.gear_name(gear), "token":gear.token,
                 "attached_to":gear.attached_to, "lane":game.gear_location(owner,gear.id),
                 "ready":gear.ready, "temporary":gear.temporary,"empowered":game.unit_empowered(gear.id),
-                "temporary_status":game.gear_temporary_status(owner,gear.id).map(temporary::status_to_json)
-            })).collect();
+                "temporary_status":game.gear_temporary_status(owner,gear.id).map(temporary::status_to_json),
+                "vision_instances":vision::instances_to_json(game,crate::empower::BoardObject::Gear {player:owner,gear_id:gear.id})?
+            }))).collect::<Result<Vec<_>,ApiError>>()?;
             let hidden: Vec<_> = state.hidden.iter().map(|card| json!({
                 "id":card.id, "lane":card.lane, "hidden_turn":card.hidden_turn,
                 "card_id":game.hidden_visible_card(viewer, owner, card.id)
@@ -1986,6 +1990,14 @@ fn decision_to_json(game: &Game, decision: &Decision, viewer: usize) -> Result<V
 
 fn ability_to_json(ability: &ChainAbility) -> Value {
     match ability {
+        ChainAbility::Vision {
+            source,
+            source_name,
+            origin,
+        } => {
+            json!({"type":"vision","source":empowered::board_object_to_json(*source),
+                "source_name":source_name,"origin":vision::origin_to_json(*origin)})
+        }
         ChainAbility::EmpowerLinked { target } => {
             json!({"type":"empower_linked","target":target.map(|t|target_to_json(&t))})
         }

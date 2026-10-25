@@ -1176,3 +1176,84 @@ mod c21_predict_privacy_tests {
         }
     }
 }
+
+#[cfg(test)]
+mod c22_vision_privacy_tests {
+    use super::*;
+
+    #[test]
+    fn separate_vision_instances_preserve_only_the_current_looked_card() {
+        for actor in 0..2 {
+            let mut first = Game::new_for_agents(3, 3, 22004, Difficulty::Strategic);
+            first.choose_starting_player(actor).unwrap();
+            first.start_match().unwrap();
+            for player in &mut first.players {
+                player.units.clear();
+                player.gear.clear();
+                player.hidden.clear();
+                player.hand.clear();
+                player.discard.clear();
+                player.champion = None;
+                player.runes = [0; 6];
+                player.exhausted_runes = [0; 6];
+                player.energy = 40;
+                player.energy_pool = 40;
+                player.power_pool = [8; 6];
+            }
+            for legend in &mut first.legend {
+                legend.ready = false;
+            }
+            first.create_unit(actor, 398, false, 0);
+            first.players[actor].hand = vec![400];
+            first.players[actor].deck = vec![71, 96, 7];
+            first.players[1 - actor].hand = vec![9, 86];
+            first
+                .apply(Action::PlayCardWithTargets {
+                    hand_index: 0,
+                    lane: None,
+                    targets: vec![],
+                })
+                .unwrap();
+            while let Some(Decision::OrderTriggers { ref options, .. }) = first.decision {
+                first
+                    .apply(Action::OrderTrigger {
+                        trigger_id: options[0].id,
+                    })
+                    .unwrap();
+            }
+            assert_eq!(first.chain.len(), 2);
+            first.apply(Action::Pass).unwrap();
+            first.apply(Action::Pass).unwrap();
+            assert_eq!(
+                first.decision,
+                Some(Decision::Predict {
+                    player: actor,
+                    card_id: 7
+                })
+            );
+            assert_eq!(first.chain.len(), 1);
+            assert!(matches!(
+                first.chain[0].ability,
+                Some(ChainAbility::Vision { .. })
+            ));
+            let mut second = first.clone();
+            second.players[actor].deck[0] = 52;
+            second.players[1 - actor].deck.fill(74);
+            second.players[1 - actor].hand = vec![67, 52];
+            second.rng = Rng::new(99009);
+            let a = first.strategic_belief(actor);
+            let b = second.strategic_belief(actor);
+            assert_eq!(a.decision, first.decision);
+            assert_eq!(a.players[actor].deck.last(), Some(&7));
+            assert_eq!(a.players[actor].deck, b.players[actor].deck);
+            assert_eq!(a.players[1 - actor].hand, b.players[1 - actor].hand);
+            assert_eq!(a.players[1 - actor].deck, b.players[1 - actor].deck);
+            assert_eq!(format!("{:?}", a.chain), format!("{:?}", b.chain));
+            let action = first.choose_strategic_action().unwrap();
+            assert!(matches!(action, Action::Choose { .. }));
+            assert_eq!(action, second.choose_strategic_action().unwrap());
+            first.apply(action.clone()).unwrap();
+            second.apply(action).unwrap();
+        }
+    }
+}

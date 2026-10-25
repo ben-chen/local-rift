@@ -81,6 +81,16 @@ fn opponent_private_choice_copy(
         "The current effect will finish before responses resume.",
     ))
 }
+fn own_predict_choice_copy(decision: Option<&Decision>) -> Option<(&'static str, &'static str)> {
+    matches!(
+        decision,
+        Some(Decision::Predict { player: 0, .. } | Decision::PredictCards { player: 0, .. })
+    )
+    .then_some((
+        "Finish your Predict choice.",
+        "Choose in the panel on the right. The current effect will finish before responses resume.",
+    ))
+}
 #[derive(Clone)]
 enum DragSource {
     Hand { index: usize, card_id: usize },
@@ -1710,6 +1720,17 @@ impl App {
                     &format!("Gain {amount} XP · amount fixed when triggered"),
                     1178.0,
                     300.0,
+                    8.5,
+                    TEAL,
+                );
+            } else if let Some(local_rift::game::ChainAbility::Vision { origin, .. }) =
+                &item.ability
+            {
+                self.ui.ellipsis(
+                    &format!("Predict 1 · {}", vision_origin_label(&self.game, *origin)),
+                    1178.0,
+                    300.0,
+                    212.0,
                     8.5,
                     TEAL,
                 );
@@ -7010,7 +7031,8 @@ impl App {
         }
         if len == 0 {
             let payment_waiting = self.game.resource_payment_pending();
-            let private_choice = opponent_private_choice_copy(self.game.decision.as_ref());
+            let private_choice = opponent_private_choice_copy(self.game.decision.as_ref())
+                .or_else(|| own_predict_choice_copy(self.game.decision.as_ref()));
             self.ui.title(
                 if let Some((title, _)) = private_choice {
                     title
@@ -7974,6 +7996,16 @@ fn live_gear_description(game: &Game, owner: usize, gear_id: u32) -> Option<Stri
             "Not Empowered.".into()
         },
     ];
+    match vision_description(
+        game,
+        local_rift::empower::BoardObject::Gear {
+            player: owner,
+            gear_id,
+        },
+    ) {
+        Ok(description) => lines.extend(description),
+        Err(error) => return Some(format!("Cannot calculate this gear's Vision: {error}")),
+    }
     if !gear.token
         && let Some(rule) = local_rift::rules::equipment(gear.card_id)
     {
@@ -8046,6 +8078,48 @@ fn live_gear_description(game: &Game, owner: usize, gear_id: u32) -> Option<Stri
     Some(lines.join("\n\n"))
 }
 
+fn vision_origin_label(game: &Game, origin: local_rift::game::VisionOrigin) -> String {
+    match origin {
+        local_rift::game::VisionOrigin::Printed => "printed".into(),
+        local_rift::game::VisionOrigin::Granted { card_id, .. } => {
+            format!("granted by {}", game.catalog[card_id].name)
+        }
+    }
+}
+
+fn vision_description(
+    game: &Game,
+    source: local_rift::empower::BoardObject,
+) -> Result<Vec<String>, String> {
+    let instances = game.vision_instances(source)?;
+    if instances.is_empty() {
+        return Ok(Vec::new());
+    }
+    let active = instances.iter().filter(|instance| instance.active).count();
+    let mut lines = vec![format!(
+        "VISION · {active} active instance{}. Each triggers a separate Predict 1 when this object is played.",
+        if active == 1 { "" } else { "s" }
+    )];
+    for instance in instances {
+        lines.push(format!(
+            "{} · Vision {}{}.",
+            if instance.active {
+                "ACTIVE"
+            } else {
+                "INACTIVE"
+            },
+            vision_origin_label(game, instance.origin),
+            if instance.active {
+                ""
+            } else {
+                " (printed gear rules are inactive while attached)"
+            },
+        ));
+    }
+    lines.push("Keeping the top card may show that same card to the next Vision. A Vision ability already on the chain remains there if its bearer or granting source leaves.".into());
+    Ok(lines)
+}
+
 fn passive_description(
     game: &Game,
     contribution: &local_rift::continuous::PassiveContribution,
@@ -8061,6 +8135,7 @@ fn passive_description(
         PassiveEffect::Keyword(PassiveKeyword::Shield(amount)) => format!("Shield {amount}"),
         PassiveEffect::Keyword(PassiveKeyword::Deflect(amount)) => format!("Deflect {amount}"),
         PassiveEffect::Keyword(PassiveKeyword::Ganking) => "Ganking".into(),
+        PassiveEffect::Keyword(PassiveKeyword::Vision) => "Vision".into(),
     };
     let requirement = local_rift::continuous::passive_rules(contribution.card_id)
         .get(contribution.rule_index)
@@ -8101,6 +8176,8 @@ fn passive_description(
                     " · other friendly units at the source's location"
                 }
                 Recipients::FriendlyTokenUnits => " · friendly unit tokens, at any location",
+                Recipients::OtherFriendlyUnits => " · other friendly units, at any location",
+                Recipients::FriendlyUnitsWithTag(tag) => return format!("{condition} · friendly {tag} units, at any location"),
                 Recipients::AttachedBearer => " · attached bearer only",
                 _ => "",
             };
@@ -8205,7 +8282,23 @@ fn live_unit_description(game: &Game, owner: usize, unit_id: u32) -> Option<Stri
         Err(error) => return Some(format!("Cannot calculate this unit's effects: {error}")),
     };
     for contribution in contributions {
-        lines.push(passive_description(game, &contribution));
+        if contribution.effect
+            != local_rift::continuous::PassiveEffect::Keyword(
+                local_rift::continuous::PassiveKeyword::Vision,
+            )
+        {
+            lines.push(passive_description(game, &contribution));
+        }
+    }
+    match vision_description(
+        game,
+        local_rift::empower::BoardObject::Unit {
+            player: owner,
+            unit_id,
+        },
+    ) {
+        Ok(description) => lines.extend(description),
+        Err(error) => return Some(format!("Cannot calculate this unit's Vision: {error}")),
     }
     if let Some(status) = game.temporary_status(local_rift::empower::BoardObject::Unit {
         player: owner,
@@ -8412,6 +8505,37 @@ mod live_preview_tests {
         );
         assert!(opponent_private_choice_copy(None).is_none());
     }
+    #[test]
+    fn own_predict_wait_copy_does_not_offer_responses_during_resolution() {
+        let expected = Some((
+            "Finish your Predict choice.",
+            "Choose in the panel on the right. The current effect will finish before responses resume.",
+        ));
+        assert_eq!(
+            own_predict_choice_copy(Some(&Decision::Predict {
+                player: 0,
+                card_id: 69
+            })),
+            expected
+        );
+        assert_eq!(
+            own_predict_choice_copy(Some(&Decision::PredictCards {
+                player: 0,
+                choice_id: 19,
+                cards: vec![69, 400]
+            })),
+            expected
+        );
+        assert!(
+            own_predict_choice_copy(Some(&Decision::Predict {
+                player: 1,
+                card_id: 69
+            }))
+            .is_none()
+        );
+        assert!(own_predict_choice_copy(None).is_none());
+    }
+
     fn unit(id: u32, card_id: usize) -> Unit {
         Unit {
             id,
@@ -8437,6 +8561,59 @@ mod live_preview_tests {
             token: false,
         }
     }
+    #[test]
+    fn vision_preview_tracks_printed_and_live_granted_instances() {
+        let mut game = Game::new(3, 3, 22, Difficulty::Easy);
+        game.players[0].units = vec![unit(22001, 398), unit(22002, 400)];
+        let text = live_unit_description(&game, 0, 22002).unwrap();
+        assert!(text.contains("VISION · 2 active instances"));
+        assert!(text.contains("ACTIVE · Vision printed"));
+        assert!(text.contains(&format!(
+            "ACTIVE · Vision granted by {}",
+            game.catalog[398].name
+        )));
+        assert!(text.contains("same card to the next Vision"));
+        game.players[0].units.remove(0);
+        let text = live_unit_description(&game, 0, 22002).unwrap();
+        assert!(text.contains("VISION · 1 active instance."));
+        assert!(!text.contains("granted by"));
+    }
+
+    #[test]
+    fn mech_token_vision_preview_attributes_grants_without_factory_rules() {
+        let mut game = Game::new(3, 3, 22, Difficulty::Easy);
+        let mut mech = unit(22003, 138);
+        mech.token = true;
+        mech.buff = 3;
+        game.players[0].units = vec![unit(22001, 398), unit(22002, 399), mech];
+        let text = live_unit_description(&game, 0, 22003).unwrap();
+        assert!(text.contains("Mech · 3 printed Might"));
+        assert!(text.contains("VISION · 2 active instances"));
+        for id in [398, 399] {
+            assert!(text.contains(&format!("granted by {}", game.catalog[id].name)));
+        }
+        assert!(!text.contains("Vision printed"));
+        assert!(!text.contains("Iterative Design"));
+    }
+
+    #[test]
+    fn vision_gear_preview_preserves_inactive_printed_characteristic() {
+        let mut game = Game::new(3, 3, 22, Difficulty::Easy);
+        game.players[0].units = vec![unit(22001, 398)];
+        // Controlled attachment state: Shells has no Equip action. This checks
+        // inspection of the engine's public printed-characteristic query.
+        game.players[0].gear = vec![attached(22002, 242, 22001)];
+        let text = live_gear_description(&game, 0, 22002).unwrap();
+        assert!(text.contains("VISION · 0 active instances"));
+        assert!(text.contains("INACTIVE · Vision printed"));
+        assert!(text.contains("printed gear rules are inactive while attached"));
+        assert!(!text.contains("granted by"));
+        game.players[0].gear[0].attached_to = None;
+        let text = live_gear_description(&game, 0, 22002).unwrap();
+        assert!(text.contains("VISION · 1 active instance."));
+        assert!(!text.contains("INACTIVE · Vision"));
+    }
+
     #[test]
     fn sprite_preview_shows_its_identity_and_temporary_without_factory_rules() {
         let mut game = Game::new(3, 3, 7, Difficulty::Easy);

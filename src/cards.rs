@@ -6068,6 +6068,51 @@ pub fn cards() -> Vec<CardDef> {
             tags: &[],
             art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/b10a544d24d3ae3e177d4791743bb2cfb742abcc-744x1039.png?w=280&q=80&fm=png",
         },
+        CardDef {
+            id: 398,
+            official_id: "ogn-100-298",
+            name: "Gemcraft Seer",
+            cost: 3,
+            power_cost: 1,
+            might: 3,
+            domain: Domain::Mind,
+            domains: &[Domain::Mind],
+            kind: CardKind::Unit,
+            official_text: "[Vision] (When you play me, look at the top card of your Main Deck. You may recycle it.)\nOther friendly units have [Vision].",
+            keywords: &["Vision"],
+            tags: &["Mount Targon"],
+            art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/4b6965bd592a5f602ab932094d677b6c85b2372b-744x1039.png?w=280&q=80&fm=png",
+        },
+        CardDef {
+            id: 399,
+            official_id: "sfd-065-221",
+            name: "Forecaster",
+            cost: 2,
+            power_cost: 0,
+            might: 2,
+            domain: Domain::Mind,
+            domains: &[Domain::Mind],
+            kind: CardKind::Unit,
+            official_text: "Your Mechs have [Vision]. (When you play us, look at the top card of your Main Deck. You may recycle it.)",
+            keywords: &["Vision"],
+            tags: &["Mech", "Yordle", "Bandle City"],
+            art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/3f58f0c58503e4f8caecb7ea7f77b478a1e92961-744x1039.png?w=280&q=80&fm=png",
+        },
+        CardDef {
+            id: 400,
+            official_id: "ogn-086-298",
+            name: "Jeweled Colossus",
+            cost: 5,
+            power_cost: 0,
+            might: 5,
+            domain: Domain::Mind,
+            domains: &[Domain::Mind],
+            kind: CardKind::Unit,
+            official_text: "[Vision] (When you play me, look at the top card of your Main Deck. You may recycle it.)\n[Shield] (+1 Might while I'm a defender.)",
+            keywords: &["Shield", "Vision"],
+            tags: &["Mount Targon"],
+            art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/775bea14038165fd9feb15c796ed84aa00a032e1-744x1039.png?w=280&q=80&fm=png",
+        },
     ]
 }
 
@@ -6232,7 +6277,7 @@ mod tests {
     #[test]
     fn presets_are_complete_and_references_are_consistent() {
         let catalog = cards();
-        assert_eq!(catalog.len(), 398);
+        assert_eq!(catalog.len(), 401);
         for (index, card) in catalog.iter().enumerate() {
             assert_eq!(index, card.id);
             assert!(!card.official_id.is_empty());
