@@ -6023,6 +6023,51 @@ pub fn cards() -> Vec<CardDef> {
             tags: &["Cat", "Shurima"],
             art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/ab3be32adadb72831c07750d8defc7918fd32d96-744x1039.png?w=360&q=80&fm=png",
         },
+        CardDef {
+            id: 395,
+            official_id: "sfd-058-221",
+            name: "Ornn, Blacksmith",
+            cost: 5,
+            power_cost: 1,
+            might: 5,
+            domain: Domain::Calm,
+            domains: &[Domain::Calm],
+            kind: CardKind::Unit,
+            official_text: "When you play me or when I hold, look at the top 4 cards of your Main Deck. You may reveal a gear from among them and draw it. Then recycle the rest.",
+            keywords: &[],
+            tags: &["Ornn", "Freljord"],
+            art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/77b48a28f48f26714f4bcf860379945a2d7186aa-744x1039.png?w=280&q=80&fm=png",
+        },
+        CardDef {
+            id: 396,
+            official_id: "ven-056-166",
+            name: "Clairvoyance",
+            cost: 7,
+            power_cost: 0,
+            might: 0,
+            domain: Domain::Mind,
+            domains: &[Domain::Mind],
+            kind: CardKind::Spell,
+            official_text: "[Reaction] (Play any time, even before spells and abilities resolve.)\n[Predict 5]. (Look at the top 5 cards of your Main Deck. Recycle any of them and put the rest back in any order.)\nDraw 2.",
+            keywords: &["Reaction"],
+            tags: &[],
+            art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/f43cb85d4939cc6ea1ed67b1c6526eef912cf9a6-744x1039.png?w=280&q=80&fm=png",
+        },
+        CardDef {
+            id: 397,
+            official_id: "unl-136-219",
+            name: "Scryer's Bloom",
+            cost: 1,
+            power_cost: 0,
+            might: 0,
+            domain: Domain::Chaos,
+            domains: &[Domain::Chaos],
+            kind: CardKind::Gear,
+            official_text: "This enters exhausted.\nKill this, [1 Energy], [Exhaust]: [Predict 2], then draw 1. Gain 1 XP.  (To Predict 2, look at the top two cards of your Main Deck. Recycle any of them and put the rest back in any order.)",
+            keywords: &[],
+            tags: &[],
+            art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/b10a544d24d3ae3e177d4791743bb2cfb742abcc-744x1039.png?w=280&q=80&fm=png",
+        },
     ]
 }
 
@@ -6187,7 +6232,7 @@ mod tests {
     #[test]
     fn presets_are_complete_and_references_are_consistent() {
         let catalog = cards();
-        assert_eq!(catalog.len(), 395);
+        assert_eq!(catalog.len(), 398);
         for (index, card) in catalog.iter().enumerate() {
             assert_eq!(index, card.id);
             assert!(!card.official_id.is_empty());

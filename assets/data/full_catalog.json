@@ -146,17 +146,17 @@
     "unresolved_type_conflict_identities": 0,
     "implemented_legal_by_kind": {
       "battlefield": 11,
-      "gear": 65,
+      "gear": 66,
       "legend": 10,
       "rune": 6,
-      "spell": 110,
-      "unit": 220
+      "spell": 111,
+      "unit": 221
     },
-    "implemented_main_cards": 395,
+    "implemented_main_cards": 398,
     "implemented_legends": 10,
     "implemented_battlefields": 11,
-    "implemented_legal_identities": 422,
-    "unimplemented_legal_identities": 657,
+    "implemented_legal_identities": 425,
+    "unimplemented_legal_identities": 654,
     "errata_entries": 67,
     "identities_with_errata": 67,
     "source_quality_issues": 47,
@@ -198,7 +198,7 @@
     "Mighty": 9,
     "Predict": 5,
     "Quick-Draw": 2,
-    "Reaction": 72,
+    "Reaction": 71,
     "Repeat": 10,
     "Shield": 13,
     "Show Off": 6,
@@ -6088,8 +6088,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 396,
+        "official_id": "ven-056-166",
+        "playable_in_client": true
       }
     },
     {
@@ -25003,8 +25005,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 395,
+        "official_id": "sfd-058-221",
+        "playable_in_client": true
       }
     },
     {
@@ -31194,8 +31198,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 397,
+        "official_id": "unl-136-219",
+        "playable_in_client": true
       }
     },
     {

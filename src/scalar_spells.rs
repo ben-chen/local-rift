@@ -97,13 +97,13 @@ impl Game {
                 }
             }
             OfficialEffect::DrawForBattlefields { base } => {
-                self.draw(player, base);
+                self.draw(player, base)?;
                 let count = self
                     .battlefield_owner
                     .iter()
                     .filter(|&&owner| owner == Some(player))
                     .count();
-                self.draw_count(player, count);
+                self.draw_count(player, count)?;
             }
             OfficialEffect::DrawForMighty => {
                 // A numeric failure is not a unit failing the printed test.
@@ -114,7 +114,7 @@ impl Game {
                         count += 1;
                     }
                 }
-                self.draw_count(player, count);
+                self.draw_count(player, count)?;
             }
             _ => unreachable!("only contextual spell effects reach this resolver"),
         }
@@ -155,13 +155,14 @@ impl Game {
         self.deal_damage(context, target, u64::from(amount))
     }
 
-    fn draw_count(&mut self, player: usize, count: usize) {
+    fn draw_count(&mut self, player: usize, count: usize) -> Result<(), String> {
         for _ in 0..count {
             if self.winner.is_some() {
                 break;
             }
-            self.draw(player, 1);
+            self.draw(player, 1)?;
         }
+        Ok(())
     }
 }
 

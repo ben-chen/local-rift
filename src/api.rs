@@ -396,6 +396,8 @@ impl Session {
                 "submitted_combat_damage_exact":numeric::exact_assignments(game.submitted_combat_damage(owner)),
                 "legend":legend_observation});
             observed["xp_exact"] = json!(state.xp.to_string());
+            observed["cards_drawn_this_turn_exact"] =
+                json!(game.trigger_state.draws[owner].to_string());
             observed["xp_gained_this_turn"] = json!(game.gained_xp_this_turn(owner));
             Ok(observed)
         }).collect::<Result<Vec<_>,ApiError>>()?;
@@ -424,6 +426,9 @@ impl Session {
                 "units_or_gears_here":game.play_history.units_or_gears_here},
             "resolution_progress":game.resolution_progress().map(|progress|json!({"chain_id":progress.chain_id,
                 "execution":progress.execution,"executions":progress.executions})),
+            "predict_continuation":game.predict_continuation().map(|tail|json!({"chain_id":tail.chain_id,
+                "player":tail.player,"source_card_id":tail.source_card_id,"remaining_draw":tail.remaining_draw,
+                "remaining_xp":tail.remaining_xp,"remaining_xp_exact":tail.remaining_xp.to_string()})),
             "chain":chain,"decision":game.decision.as_ref().map(|d|decision_to_json(game,d,viewer)).transpose()?,
             "pending_card_plays":game.pending_cards().iter().map(pending_card_to_json).collect::<Vec<_>>(),
             "pending_token_plays":game.pending_tokens().iter().map(|token|json!({
@@ -1758,6 +1763,7 @@ fn decision_to_json(game: &Game, decision: &Decision, viewer: usize) -> Result<V
                 DrawLookKind::DoubleTrouble => "double_trouble",
                 DrawLookKind::FateWeaver => "fate_weaver",
                 DrawLookKind::TrifarianCaptain => "trifarian_captain",
+                DrawLookKind::Ornn => "ornn",
             };
             let mut view = json!({"type":"draw_look","choice_id":choice_id,"source_card_id":source_card_id,"kind":kind,"count":cards.len(),"optional":true});
             if player == viewer {
@@ -4278,3 +4284,9 @@ mod c19;
 
 #[cfg(test)]
 mod c20;
+
+#[cfg(test)]
+mod draw_history;
+
+#[cfg(test)]
+mod c21;

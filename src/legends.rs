@@ -690,7 +690,7 @@ impl Game {
                     self.legend[player].assault_grants.push((unit_id, 2));
                 }
             }
-            LegendAbility::LuxDraw | LegendAbility::EzrealDraw => self.draw(player, 1),
+            LegendAbility::LuxDraw | LegendAbility::EzrealDraw => self.draw(player, 1)?,
             LegendAbility::RengarMight { target } => {
                 if self.legend_target_valid(player, target) {
                     self.modify_might(target, 1, 0)?;

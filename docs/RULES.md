@@ -140,7 +140,7 @@ The supported conditional Might, Assault, Shield, Deflect, and Ganking abilities
 
 Frostcoat Mother and Grumpy Rockbear's nominal 12-Energy Empower costs lose one Energy per controlled rune, including exhausted runes. Baccai Sandspinner's nominal five becomes two with four or fewer controlled runes. The ability controls and API quote the payable cost; the printed cost remains available in details. A payment fixes that cost before resource generation or rune recycling.
 
-Apprentice Mage's actual Empower transition triggers Predict2. Its controller looks at up to two available cards, chooses which to recycle, and orders the rest on top. Cards stay in the deck while the private choice is pending; confirming commits the whole choice. Predict neither draws nor causes burnout with a short deck. The other seat and its companion cannot see the looked-at cards.
+Apprentice Mage's actual Empower transition triggers Predict 2. Its controller looks at up to two available cards, chooses which to recycle, and orders the rest on top. Cards stay in the deck while the private choice is pending; confirming commits the whole choice. Predict neither draws nor causes burnout with a short deck. The other seat and its companion cannot see the looked-at cards.
 
 Covert Informant's Move, Nasus's conquest, Emissary and Witherclaw's Deathknell, and Ambessa's attack require Empowered status when the event occurs. Once created, the trigger persists independently. Akali's Move records the battlefields she moved to or from, so those locations remain valid if she leaves; its damage is two only while that same source remains Empowered, otherwise one. Ambessa's kill rechecks an enemy's current location and strictly lower Might on resolution. Witherclaw channels up to two available runes exhausted, without drawing or burnout.
 
@@ -311,3 +311,12 @@ Apprentice Smith, Raving Witness and Pakaa Protector each trigger on an actual M
 Look and Reveal do not move cards themselves. Only the selected identity becomes public for a private look; unselected identities remain private. A public acknowledgement lets the player inspect the revealed card after the prescribed movement, without creating a new response window or an extra card zone. Short looks use only available cards. If a revealed top card does not exist, further instructions on it do nothing, including Pakaa's otherwise branch; no Draw or Burn Out occurs (Core432.1.c.1).
 
 Drawing an explicitly selected card still emits the ordinary Draw event (Core414.1.a). Lightning Rush now uses this same path before trashing its remaining inspected cards, so effects such as Frigid Jewel see the successful draw. Drawing the last selected card does not attempt a second top-card draw. Repeat, cleanup and pending observers wait for the parent instruction to finish; the native and API choice controls cannot skip those obligations.
+
+
+### Predict followed by drawing
+
+Clairvoyance is a Reaction: Predict 5, then Draw 2. Choose which inspected cards to recycle and arrange the kept cards in the order you want to draw them. Nothing is drawn until you confirm. If the spell repeats, finish the first Predict and its two draws before looking at a fresh group for the next execution.
+
+Scryer's Bloom enters exhausted. Its ability costs Kill this, one Energy, and Exhaust. Once those costs are paid, the gear is in your Trash while the ability waits to resolve. Predict 2, then draw one, then gain one XP. The panel shows the source and remaining instructions while you choose. An empty Predict does nothing, but the separate Draw still follows Burn Out rules.
+
+Ornn, Blacksmith triggers when played and when it Holds. Look at the top four available cards, optionally reveal and draw one Gear, then recycle the rest. The trigger itself is mandatory; choosing a Gear is optional. The opponent sees only the Gear you reveal. Ornn can be in an eligible Calm main deck, but it cannot be the chosen champion of a legend with a different champion tag.

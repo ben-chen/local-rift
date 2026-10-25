@@ -303,7 +303,7 @@ impl Game {
         &mut self,
         player: usize,
         ability: BattlefieldAbility,
-    ) {
+    ) -> Result<(), String> {
         let lane = ability.lane();
         self.push_log(format!(
             "{} resolves {}'s ability.",
@@ -311,7 +311,7 @@ impl Game {
             battlefield(self.battlefields[lane]).name
         ));
         match ability {
-            BattlefieldAbility::TempleDraw { .. } => self.draw(player, 1),
+            BattlefieldAbility::TempleDraw { .. } => self.draw(player, 1)?,
             BattlefieldAbility::SeatDraw { lane } => {
                 let count = self
                     .battlefield_owner
@@ -319,9 +319,9 @@ impl Game {
                     .enumerate()
                     .filter(|(other, owner)| *other != lane && **owner == Some(player))
                     .count() as u8;
-                self.draw(player, count);
+                self.draw(player, count)?;
             }
-            BattlefieldAbility::MinefieldBurn { .. } => self.burn(player, 2),
+            BattlefieldAbility::MinefieldBurn { .. } => self.burn(player, 2)?,
             BattlefieldAbility::Grant { lane, kind } => {
                 self.grant_play(
                     player,
@@ -333,6 +333,7 @@ impl Game {
                 );
             }
         }
+        Ok(())
     }
 
     /// Use only for damage dealt by a spell or ability, not by a unit as an

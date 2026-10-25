@@ -97,7 +97,7 @@ fn lightning_rush_draws_selected_occurrence_and_emits_second_draw_observer() {
             g.players[0].hand.iter().filter(|&&id| id == 96).count(),
             expected
         );
-        assert_eq!(g.trigger_state.draws[0], expected as u16);
+        assert_eq!(g.trigger_state.draws[0], expected as u64);
         assert!(g.players[0].deck.is_empty());
         assert!(g.players[0].discard.contains(&70));
         assert!(g.players[0].discard.contains(&145));
@@ -243,7 +243,7 @@ fn look_decline_no_eligible_empty_and_last_card_do_not_burn_out() {
         if selected.is_some() {
             acknowledge(&mut g);
         }
-        assert_eq!(g.trigger_state.draws[0], u16::from(selected.is_some()));
+        assert_eq!(g.trigger_state.draws[0], u64::from(selected.is_some()));
         assert_eq!(g.players[0].hand.len(), usize::from(selected.is_some()));
         assert_eq!(
             g.players[0].deck.len(),
@@ -439,7 +439,7 @@ fn move_reveal_draw_recycle_and_trash_outcomes_use_actual_top_card() {
         );
         assert_eq!(
             g.trigger_state.draws[0],
-            u16::from(expected == RevealOutcome::Draw)
+            u64::from(expected == RevealOutcome::Draw)
         );
         if expected == RevealOutcome::Draw {
             assert_eq!(g.players[0].hand, [card]);

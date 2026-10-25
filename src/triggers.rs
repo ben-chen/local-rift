@@ -27,7 +27,7 @@ pub struct TriggerContext {
 }
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct TriggerState {
-    pub draws: [u16; 2],
+    pub draws: [u64; 2],
     pub completed_cards: [u16; 2],
     pub xp_gained: [bool; 2],
     pub first_used: Vec<(TriggerSource, usize)>,
@@ -1093,10 +1093,10 @@ impl Game {
                     };
                     self.gain_xp(player, count)?;
                 }
-                Effect::Draw(n) => self.draw(player, n),
+                Effect::Draw(n) => self.draw(player, n)?,
                 Effect::DrawBoth(n) => {
-                    self.draw(player, n);
-                    self.draw(1 - player, n);
+                    self.draw(player, n)?;
+                    self.draw(1 - player, n)?;
                 }
                 Effect::Loot { discard, draw } => self.enqueue_decision(Decision::Discard {
                     player,

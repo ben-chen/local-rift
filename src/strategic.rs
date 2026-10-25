@@ -925,6 +925,7 @@ mod c20_draw_privacy_tests {
             .filter_map(|(index, &id)| {
                 let card = game.catalog[id];
                 let valid = match kind {
+                    DrawLookKind::Ornn => card.kind == CardKind::Gear,
                     DrawLookKind::DoubleTrouble => card.kind == CardKind::Unit,
                     DrawLookKind::FateWeaver => card.kind == CardKind::Spell && card.cost >= 4,
                     DrawLookKind::TrifarianCaptain => {
@@ -946,6 +947,7 @@ mod c20_draw_privacy_tests {
             DrawLookKind::DoubleTrouble,
             DrawLookKind::FateWeaver,
             DrawLookKind::TrifarianCaptain,
+            DrawLookKind::Ornn,
         ];
         for owner in 0..2 {
             for (offset, kind) in kinds.iter().copied().enumerate() {
@@ -957,13 +959,25 @@ mod c20_draw_privacy_tests {
                 let decision = Decision::DrawLook {
                     player: owner,
                     choice_id: 300 + (owner * 10 + offset) as u32,
-                    source_card_id: 389 + offset,
+                    source_card_id: if kind == DrawLookKind::Ornn {
+                        395
+                    } else {
+                        389 + offset
+                    },
                     eligible: Game::draw_look_eligible(&cards, kind, &first.catalog),
                     cards,
                     kind,
                 };
                 first.pending_decisions.push_back(decision.clone());
-                first.queue_trigger_choice(owner, 389 + offset, decision);
+                first.queue_trigger_choice(
+                    owner,
+                    if kind == DrawLookKind::Ornn {
+                        395
+                    } else {
+                        389 + offset
+                    },
+                    decision,
+                );
             }
         }
         let mut second = first.clone();
@@ -1051,5 +1065,114 @@ mod c20_draw_privacy_tests {
             game.choose_strategic_action().unwrap(),
             Action::Choose { accept: true }
         );
+    }
+}
+
+#[cfg(test)]
+mod c21_predict_privacy_tests {
+    use super::*;
+    use crate::gear::GearState;
+
+    #[test]
+    fn actual_predict_tails_preserve_known_order_and_ignore_other_hidden_facts() {
+        for actor in 0..2 {
+            for source_card_id in [396, 397] {
+                let mut first = Game::new_for_agents(3, 3, 21032, Difficulty::Strategic);
+                first.choose_starting_player(actor).unwrap();
+                first.start_match().unwrap();
+                first.battlefields = [2, 2];
+                first.battlefield_owner = [None; 2];
+                for player in &mut first.players {
+                    player.units.clear();
+                    player.gear.clear();
+                    player.hidden.clear();
+                    player.hand.clear();
+                    player.discard.clear();
+                    player.champion = None;
+                    player.runes = [0; 6];
+                    player.exhausted_runes = [0; 6];
+                    player.energy = 40;
+                    player.energy_pool = 40;
+                    player.power_pool = [8; 6];
+                }
+                for legend in &mut first.legend {
+                    legend.ready = false;
+                }
+                first.players[actor].deck = vec![70, 71, 3, 7, 96, 145, 117];
+                first.players[1 - actor].hand = vec![9, 86];
+                if source_card_id == 396 {
+                    first.players[actor].hand = vec![396];
+                    first
+                        .apply(Action::PlayCardWithTargets {
+                            hand_index: 0,
+                            lane: None,
+                            targets: vec![],
+                        })
+                        .unwrap();
+                } else {
+                    first.players[actor].gear.push(GearState {
+                        id: 9000,
+                        card_id: 397,
+                        attached_to: None,
+                        ready: true,
+                        temporary: false,
+                        token: false,
+                    });
+                    first
+                        .apply(Action::ActivateAbility {
+                            source: AbilitySource::Gear {
+                                player: actor,
+                                gear_id: 9000,
+                            },
+                            ability_index: 0,
+                            targets: vec![],
+                        })
+                        .unwrap();
+                }
+                first.apply(Action::Pass).unwrap();
+                first.apply(Action::Pass).unwrap();
+                let Some(Decision::PredictCards { ref cards, .. }) = first.decision else {
+                    panic!("missing real Predict")
+                };
+                assert_eq!(cards.len(), if source_card_id == 396 { 5 } else { 2 });
+                let tail = first.predict_continuation().unwrap();
+                assert_eq!(tail.source_card_id, source_card_id);
+                let belief = first.strategic_belief(actor);
+                assert_eq!(belief.predict_continuation(), Some(tail));
+                assert_eq!(belief.decision, first.decision);
+                assert_eq!(
+                    belief.players[actor]
+                        .deck
+                        .iter()
+                        .rev()
+                        .take(cards.len())
+                        .copied()
+                        .collect::<Vec<_>>(),
+                    *cards
+                );
+                let mut second = first.clone();
+                second.players[actor].deck[0] = 52;
+                second.players[1 - actor].hand = vec![67, 52];
+                second.players[1 - actor].deck.fill(74);
+                second.players[0].rune_deck.reverse();
+                second.players[1].rune_deck.reverse();
+                second.rng = Rng::new(99999);
+                let sampled = second.strategic_belief(actor);
+                assert_eq!(belief.players[actor].deck, sampled.players[actor].deck);
+                assert_eq!(
+                    belief.players[1 - actor].hand,
+                    sampled.players[1 - actor].hand
+                );
+                assert_eq!(
+                    belief.players[1 - actor].deck,
+                    sampled.players[1 - actor].deck
+                );
+                let action = first.choose_strategic_action().unwrap();
+                assert!(matches!(action, Action::ResolvePredict { .. }));
+                assert_eq!(action, second.choose_strategic_action().unwrap());
+                first.apply(action.clone()).unwrap();
+                second.apply(action).unwrap();
+            }
+        }
     }
 }

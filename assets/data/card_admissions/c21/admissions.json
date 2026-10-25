@@ -1,0 +1,611 @@
+{
+  "schema_version": 1,
+  "draft_not_for_import": false,
+  "reviewed_on": "2026-10-24",
+  "origin_gallery": {
+    "url": "https://playriftbound.com/en-us/card-gallery/",
+    "archive": "assets/data/catalog_sources/gallery.html.gz",
+    "uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9"
+  },
+  "pre_admission_catalog_sha256": "c73070c411b48b98790709b5a435824de23f22a498a274a0a07d54637fad1107",
+  "preserved_runtime_prefix": {
+    "card_count": 395,
+    "cards_sha256": "decd3297cd09df9c6c4dda03b26796551637ba53d0cad0d9c370377daaabf826",
+    "carddefs_source_prefix_sha256": "f1b54de920b948d507a769543c5e57af8dce5bac2643108524fb4a8e5232e858",
+    "presets_sha256": "d6e64ebf3f8921686682dacd87d4b2b4baec5754dbd284c6d60bf3fb324571e2",
+    "legends_manifest_sha256": "a31bb93c27588bd4759985e9a4083372d5afae59d22b9ac9d48c54946e5474fe",
+    "training_recipe_source_sha256": "dc498f4f98cec6421dade7e01ead261693ed5f70d30d4d2c808da4a1bcb5b706"
+  },
+  "preserved_source_reviews": {
+    "field_resolutions_sha256": "9bf3cd6dbbf0e3092feb33e27c706ffafbecd00a7c47af596577ce563a2058e9",
+    "raw_printings_sha256": "1b86a59900748f9b580ee5818f3fbdc51a72e8e14353476c9b86353e980ffe7c",
+    "historical_issues_sha256": "716acdf22e0bbf0efd0270ccec19a385d2a7ab877850e37c88edd9594daad97f",
+    "field_image_index_sha256": "c70f815874e7dddf90e5d9b4a59b75ef426d2aaaf6a1c66a75c7193ee677f95f",
+    "identity_review_manifest_sha256": "e678c7f2f2e1ae70fb6b399ce1b0ab88a314e9018810d1ccadb1759a1f7b5e12",
+    "variant_image_index_sha256": "1826db0a53cbe62eb1a1196d08df1cbef215b9d9e24cc006689559bbc7693b92"
+  },
+  "pre_admission_counts": {
+    "main_cards": 395,
+    "mapped_legal": 422,
+    "remaining_legal": 657
+  },
+  "scope": "Three identities and their complete four-printing English gallery cohorts independently inspected. Raw and effective gameplay facts agree; no field correction or variant disposition is added. Source facts are not executable-behavior proof. Existing card IDs, presets, legends, authored recipes, and all preceding source-review cohorts remain unchanged.",
+  "errata_sources": [
+    {
+      "key": "origins_errata",
+      "url": "https://playriftbound.com/en-us/news/rules-and-releases/riftbound-origins-card-errata/",
+      "archive": "assets/data/catalog_sources/origins_errata.html.gz",
+      "uncompressed_sha256": "035848c5cc61007683111e63b91289d3fc386d2b33437af32d4d13d565727c52",
+      "parsed_entries_sha256": "5d5ed4e6d5e03033184b5382ab360eade62ca9cf032cf94e811cc1e0acaed581",
+      "live_checked_on": "2026-10-24",
+      "live_uncompressed_sha256": "bafd654e4568b76f1c71a6a057b7abaccb3b7b611ac873b45d71179c9902065a",
+      "live_parsed_entries_sha256": "5d5ed4e6d5e03033184b5382ab360eade62ca9cf032cf94e811cc1e0acaed581"
+    },
+    {
+      "key": "spiritforged_errata",
+      "url": "https://playriftbound.com/en-us/news/rules-and-releases/riftbound-spiritforged-errata/",
+      "archive": "assets/data/catalog_sources/spiritforged_errata.html.gz",
+      "uncompressed_sha256": "2fcd51e6104eb76212c42abc850beffaf1cf3e623d875b2d9ad47ed149a726a8",
+      "parsed_entries_sha256": "88be71f74e159dde0b339273fed000ac097ae50318a0aa535b02fdc23c666d57",
+      "live_checked_on": "2026-10-24",
+      "live_uncompressed_sha256": "44a73fe653506bc89ff41e9b81c004fc5c952c10df29de34f528b6ddfd48335d",
+      "live_parsed_entries_sha256": "88be71f74e159dde0b339273fed000ac097ae50318a0aa535b02fdc23c666d57"
+    },
+    {
+      "key": "unleashed_errata",
+      "url": "https://playriftbound.com/en-us/news/rules-and-releases/unleashed-errata-updates/",
+      "archive": "assets/data/catalog_sources/unleashed_errata.html.gz",
+      "uncompressed_sha256": "8b3cb69fea7c499e435c6af0ac89b5c5013711477a172c6bbed3a782eff7ac7b",
+      "parsed_entries_sha256": "801ad0c9bcc9d7bbdde1fa8c5b229dbcaf718daaf3f3db208dd8942a119e3df3",
+      "live_checked_on": "2026-10-24",
+      "live_uncompressed_sha256": "8b3cb69fea7c499e435c6af0ac89b5c5013711477a172c6bbed3a782eff7ac7b",
+      "live_parsed_entries_sha256": "801ad0c9bcc9d7bbdde1fa8c5b229dbcaf718daaf3f3db208dd8942a119e3df3"
+    },
+    {
+      "key": "vendetta_errata",
+      "url": "https://playriftbound.com/en-us/news/announcements/vendetta-errata-updates/",
+      "archive": "assets/data/catalog_sources/vendetta_errata.html.gz",
+      "uncompressed_sha256": "d17603177df347cd44c4ef67c1c547344afcd847cec72ae545239f3c232ef2a6",
+      "parsed_entries_sha256": "9e6fb29ba5bd2bce1023b6927c395e4ed0ced61bf2fc766410d9f000c68a16be",
+      "live_checked_on": "2026-10-24",
+      "live_uncompressed_sha256": "b2fe4126a8c007c60576bf225eb7add078e816fe8aca4419bc4200f8e4e24065",
+      "live_parsed_entries_sha256": "9e6fb29ba5bd2bce1023b6927c395e4ed0ced61bf2fc766410d9f000c68a16be"
+    },
+    {
+      "key": "radiance_errata",
+      "url": "https://playriftbound.com/en-us/news/announcements/radiance-errata-updates/",
+      "archive": "assets/data/catalog_sources/radiance_errata.html.gz",
+      "uncompressed_sha256": "63735225d6c2f0b757e933289175fb09dcbae86178075fb227e4afa4e1a478a7",
+      "parsed_entries_sha256": "84fd3234a6cdc8c5ddd0b8b4f18c100f339497acdc02318f74b352b6da23866e",
+      "live_checked_on": "2026-10-24",
+      "live_uncompressed_sha256": "63735225d6c2f0b757e933289175fb09dcbae86178075fb227e4afa4e1a478a7",
+      "live_parsed_entries_sha256": "84fd3234a6cdc8c5ddd0b8b4f18c100f339497acdc02318f74b352b6da23866e"
+    }
+  ],
+  "live_authority_check": {
+    "checked_on": "2026-10-24",
+    "hub_url": "https://playriftbound.com/en-us/rules-hub/",
+    "hub_uncompressed_sha256": "2435d853fda2dd6a0a54fa105556366aa2adf73d98c0e6ec622e58de17d16942",
+    "legality": {
+      "source_url": "https://playriftbound.com/en-us/rules-hub/",
+      "last_updated": "September 18, 2026",
+      "standard_banned_names": [
+        "Called Shot",
+        "Ekko, Recurrent",
+        "Draven, Vanquisher",
+        "Fight or Flight",
+        "Scrapheap",
+        "Stealthy Pursuer",
+        "Stacked Deck",
+        "The Arena’s Greatest",
+        "Aspirant’s Climb",
+        "Dreaming Tree",
+        "Obelisk of Power",
+        "Reaver’s Row"
+      ],
+      "two_v_two_banned_names": [
+        "Master Yi, Wuju Bladesman",
+        "Called Shot",
+        "Ekko, Recurrent",
+        "Draven Vanquisher",
+        "Fight or Flight",
+        "Scrapheap",
+        "Stealthy Pursuer",
+        "Stacked Deck",
+        "The Arena’s Greatest",
+        "Aspirant’s Climb",
+        "Dreaming Tree",
+        "Obelisk of Power",
+        "Reaver’s Row"
+      ]
+    },
+    "core_rules_url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/5c7946f7c3b8c6e0faff85ab6dadc6d2e721ea94.pdf",
+    "gallery_uncompressed_sha256": "ed20d961cc5f80b8d497768053d87212b56b995a364e202e545bc4a850cc1abd",
+    "candidate_raw_projections_match_archive": true,
+    "complete_normalized_catalog_matches_before_admission": true,
+    "scope": "Current page data and Core link checked; no newly downloaded PDF proof is claimed."
+  },
+  "records": [
+    {
+      "official_id": "sfd-058-221",
+      "name": "Ornn, Blacksmith",
+      "raw_printing": {
+        "official_id": "sfd-058-221",
+        "public_code": "SFD-058/221",
+        "name": "Ornn, Blacksmith",
+        "set": "SFD",
+        "collector_number": 58,
+        "types": [
+          "unit"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "unit"
+        ],
+        "accessibility_types": [
+          "unit"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [
+          "champion"
+        ],
+        "domains": [
+          "calm"
+        ],
+        "energy": 5,
+        "power": 1,
+        "might": 5,
+        "might_bonus": null,
+        "rules_html": "<p>When you play me or when I hold, look at the top 4 cards of your Main Deck. You may reveal a gear from among them and draw it. Then recycle the rest.</p>",
+        "rules_text": "When you play me or when I hold, look at the top 4 cards of your Main Deck. You may reveal a gear from among them and draw it. Then recycle the rest.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [
+          "Ornn",
+          "Freljord"
+        ],
+        "rarity": "epic",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/77b48a28f48f26714f4bcf860379945a2d7186aa-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Unit: Ornn, Blacksmith. When you play me or when I hold, look at the top 4 cards of your Main Deck. You may reveal a gear from among them and draw it. Then recycle the rest.",
+        "illustrators": [
+          "Kudos Productions"
+        ]
+      },
+      "raw_printing_sha256": "5b02cd5fa633408cd27a3ace6ebb762ea9b4f3b08fbf4a7c1f50a61a5641397e",
+      "effective": {
+        "types": [
+          "unit"
+        ],
+        "super_types": [
+          "champion"
+        ],
+        "domains": [
+          "calm"
+        ],
+        "energy": 5,
+        "power": 1,
+        "might": 5,
+        "might_bonus": null,
+        "tags": [
+          "Ornn",
+          "Freljord"
+        ],
+        "rules_html": "<p>When you play me or when I hold, look at the top 4 cards of your Main Deck. You may reveal a gear from among them and draw it. Then recycle the rest.</p>",
+        "rules_text": "When you play me or when I hold, look at the top 4 cards of your Main Deck. You may reveal a gear from among them and draw it. Then recycle the rest.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "effective_projection_sha256": "5b02cd5fa633408cd27a3ace6ebb762ea9b4f3b08fbf4a7c1f50a61a5641397e",
+      "existing_field_resolution_ids": [],
+      "original_image": {
+        "path": "assets/data/card_admissions/c21/originals/sfd-058-221.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/77b48a28f48f26714f4bcf860379945a2d7186aa-744x1039.png?accountingTag=RB",
+        "bytes": 1025543,
+        "sha256": "d4ce8aeb19cbbb1e4a90f36d9272e163ba76fad1cd387fe544fcaefd9b66dc03"
+      },
+      "visual_observation": {
+        "face_visually_inspected": true,
+        "independently_reinspected_on": "2026-10-24",
+        "official_id": "sfd-058-221",
+        "name": "Ornn, Blacksmith",
+        "collector_code": "SFD-058/221",
+        "original_image_sha256": "d4ce8aeb19cbbb1e4a90f36d9272e163ba76fad1cd387fe544fcaefd9b66dc03",
+        "printed_type_tag_line": "CHAMPION UNIT ♦ ORNN ♦ FRELJORD",
+        "uncertainties": [],
+        "notes": [
+          "Both the green Calm domain icon and one Calm power symbol are visible.",
+          "5 Energy and 5 Might are printed; Champion is explicit, not inferred from the name."
+        ],
+        "printed_types": [
+          "unit"
+        ],
+        "printed_supertypes": [
+          "champion"
+        ],
+        "printed_domains": [
+          "calm"
+        ],
+        "printed_tags": [
+          "Ornn",
+          "Freljord"
+        ],
+        "printed_energy": 5,
+        "printed_power": 1,
+        "printed_might": 5,
+        "printed_might_bonus": null,
+        "printed_rules_icons_expanded": "When you play me or when I hold, look at the top 4 cards of your Main Deck. You may reveal a gear from among them and draw it. Then recycle the rest.",
+        "printed_equipment_icons_expanded": ""
+      },
+      "runtime_id": 395,
+      "errata": [],
+      "runtime_rules_text": "When you play me or when I hold, look at the top 4 cards of your Main Deck. You may reveal a gear from among them and draw it. Then recycle the rest.",
+      "printing_cohort": [
+        "sfd-058-221",
+        "sfd-058a-221"
+      ],
+      "alternate_printings": [
+        {
+          "official_id": "sfd-058a-221",
+          "name": "Ornn, Blacksmith",
+          "raw_printing": {
+            "official_id": "sfd-058a-221",
+            "public_code": "SFD-058a/221",
+            "name": "Ornn, Blacksmith",
+            "set": "SFD",
+            "collector_number": 58,
+            "types": [
+              "unit"
+            ],
+            "type_source": "cardType.type",
+            "structured_types": [
+              "unit"
+            ],
+            "accessibility_types": [
+              "unit"
+            ],
+            "type_labels_conflict": false,
+            "super_types": [
+              "champion"
+            ],
+            "domains": [
+              "calm"
+            ],
+            "energy": 5,
+            "power": 1,
+            "might": 5,
+            "might_bonus": null,
+            "rules_html": "<p>When you play me or when I hold, look at the top 4 cards of your Main Deck. You may reveal a gear from among them and draw it. Then recycle the rest.</p>",
+            "rules_text": "When you play me or when I hold, look at the top 4 cards of your Main Deck. You may reveal a gear from among them and draw it. Then recycle the rest.",
+            "equipment_html": "",
+            "equipment_text": "",
+            "tags": [
+              "Ornn",
+              "Freljord"
+            ],
+            "rarity": "showcase",
+            "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/e0621bba6475425d93191677b2b120c07a8efe20-744x1039.png?accountingTag=RB",
+            "image_accessibility_text": "Riftbound Unit: Ornn, Blacksmith. When you play me or when I hold, look at the top 4 cards of your Main Deck. You may reveal a gear from among them and draw it. Then recycle the rest.",
+            "illustrators": [
+              "League Splash Team"
+            ]
+          },
+          "raw_printing_sha256": "184c5f43194d16b45d43bbedc1a7b85479b41eb1de3b83d0fa265e3aa9520b09",
+          "effective": {
+            "types": [
+              "unit"
+            ],
+            "super_types": [
+              "champion"
+            ],
+            "domains": [
+              "calm"
+            ],
+            "energy": 5,
+            "power": 1,
+            "might": 5,
+            "might_bonus": null,
+            "tags": [
+              "Ornn",
+              "Freljord"
+            ],
+            "rules_html": "<p>When you play me or when I hold, look at the top 4 cards of your Main Deck. You may reveal a gear from among them and draw it. Then recycle the rest.</p>",
+            "rules_text": "When you play me or when I hold, look at the top 4 cards of your Main Deck. You may reveal a gear from among them and draw it. Then recycle the rest.",
+            "equipment_html": "",
+            "equipment_text": ""
+          },
+          "effective_projection_sha256": "184c5f43194d16b45d43bbedc1a7b85479b41eb1de3b83d0fa265e3aa9520b09",
+          "existing_field_resolution_ids": [],
+          "original_image": {
+            "path": "assets/data/card_admissions/c21/originals/sfd-058a-221.png",
+            "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/e0621bba6475425d93191677b2b120c07a8efe20-744x1039.png?accountingTag=RB",
+            "bytes": 1196974,
+            "sha256": "c2b01ee466a60049f285644dd60392917980a9a262a77a0c420c8ff7ae4b8dad"
+          },
+          "visual_observation": {
+            "face_visually_inspected": true,
+            "independently_reinspected_on": "2026-10-24",
+            "official_id": "sfd-058a-221",
+            "name": "Ornn, Blacksmith",
+            "collector_code": "SFD-058a/221",
+            "original_image_sha256": "c2b01ee466a60049f285644dd60392917980a9a262a77a0c420c8ff7ae4b8dad",
+            "printed_type_tag_line": "CHAMPION UNIT ♦ ORNN ♦ FRELJORD",
+            "uncertainties": [],
+            "notes": [
+              "Original alternate artwork inspected separately, including the complete type/tag line.",
+              "All gameplay facts and operative/reminder text agree with the base printing."
+            ],
+            "printed_types": [
+              "unit"
+            ],
+            "printed_supertypes": [
+              "champion"
+            ],
+            "printed_domains": [
+              "calm"
+            ],
+            "printed_tags": [
+              "Ornn",
+              "Freljord"
+            ],
+            "printed_energy": 5,
+            "printed_power": 1,
+            "printed_might": 5,
+            "printed_might_bonus": null,
+            "printed_rules_icons_expanded": "When you play me or when I hold, look at the top 4 cards of your Main Deck. You may reveal a gear from among them and draw it. Then recycle the rest.",
+            "printed_equipment_icons_expanded": ""
+          }
+        }
+      ],
+      "legal_main_deck_legend_ids": [
+        0,
+        1
+      ],
+      "chosen_champion_legend_ids": [],
+      "runtime_image": {
+        "path": "assets/art/card_395.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/77b48a28f48f26714f4bcf860379945a2d7186aa-744x1039.png?w=280&q=80&fm=png",
+        "bytes": 238774,
+        "sha256": "3adaffd55713026b553eec48afa4e00a77960a0155f158c918a65602996b7b63",
+        "width": 280,
+        "height": 391
+      }
+    },
+    {
+      "official_id": "ven-056-166",
+      "name": "Clairvoyance",
+      "raw_printing": {
+        "official_id": "ven-056-166",
+        "public_code": "VEN-056/166",
+        "name": "Clairvoyance",
+        "set": "VEN",
+        "collector_number": 56,
+        "types": [
+          "spell"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "spell"
+        ],
+        "accessibility_types": [
+          "spell"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "mind"
+        ],
+        "energy": 7,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "rules_html": "<p>[Reaction] (Play any time, even before spells and abilities resolve.)<br />[Predict 5]. (Look at the top 5 cards of your Main Deck. Recycle any of them and put the rest back in any order.)<br />Draw 2.</p>",
+        "rules_text": "[Reaction] (Play any time, even before spells and abilities resolve.)\n[Predict 5]. (Look at the top 5 cards of your Main Deck. Recycle any of them and put the rest back in any order.)\nDraw 2.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [],
+        "rarity": "uncommon",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/f43cb85d4939cc6ea1ed67b1c6526eef912cf9a6-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Spell: Clairvoyance. [Reaction] (Play any time, even before spells and abilities resolve.)\n[Predict 5]. (Look at the top 5 cards of your Main Deck. Recycle any of them and put the rest back in any order.)\nDraw 2.",
+        "illustrators": [
+          "Max Grecke"
+        ]
+      },
+      "raw_printing_sha256": "8e0daac27ae4424cc7dff0fd38c656ecb73d47ba4c866defb1e9c1f68d78b618",
+      "effective": {
+        "types": [
+          "spell"
+        ],
+        "super_types": [],
+        "domains": [
+          "mind"
+        ],
+        "energy": 7,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>[Reaction] (Play any time, even before spells and abilities resolve.)<br />[Predict 5]. (Look at the top 5 cards of your Main Deck. Recycle any of them and put the rest back in any order.)<br />Draw 2.</p>",
+        "rules_text": "[Reaction] (Play any time, even before spells and abilities resolve.)\n[Predict 5]. (Look at the top 5 cards of your Main Deck. Recycle any of them and put the rest back in any order.)\nDraw 2.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "effective_projection_sha256": "8e0daac27ae4424cc7dff0fd38c656ecb73d47ba4c866defb1e9c1f68d78b618",
+      "existing_field_resolution_ids": [],
+      "original_image": {
+        "path": "assets/data/card_admissions/c21/originals/ven-056-166.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/f43cb85d4939cc6ea1ed67b1c6526eef912cf9a6-744x1039.png?accountingTag=RB",
+        "bytes": 889662,
+        "sha256": "e65bfd5fefbe8e667074fd8c41327710ab7435d69ab7c61801e76dd53db129b4"
+      },
+      "visual_observation": {
+        "face_visually_inspected": true,
+        "independently_reinspected_on": "2026-10-24",
+        "official_id": "ven-056-166",
+        "name": "Clairvoyance",
+        "collector_code": "VEN-056/166",
+        "original_image_sha256": "e65bfd5fefbe8e667074fd8c41327710ab7435d69ab7c61801e76dd53db129b4",
+        "printed_type_tag_line": "SPELL",
+        "uncertainties": [],
+        "notes": [
+          "The 7 Energy circle, Mind domain icon, Reaction and Predict 5 are visible.",
+          "No power symbol, Might or tags are printed; preserve official null values rather than introducing source zeroes."
+        ],
+        "printed_types": [
+          "spell"
+        ],
+        "printed_supertypes": [],
+        "printed_domains": [
+          "mind"
+        ],
+        "printed_tags": [],
+        "printed_energy": 7,
+        "printed_power": null,
+        "printed_might": null,
+        "printed_might_bonus": null,
+        "printed_rules_icons_expanded": "[Reaction] (Play any time, even before spells and abilities resolve.)\n[Predict 5]. (Look at the top 5 cards of your Main Deck. Recycle any of them and put the rest back in any order.)\nDraw 2.",
+        "printed_equipment_icons_expanded": ""
+      },
+      "runtime_id": 396,
+      "errata": [],
+      "runtime_rules_text": "[Reaction] (Play any time, even before spells and abilities resolve.)\n[Predict 5]. (Look at the top 5 cards of your Main Deck. Recycle any of them and put the rest back in any order.)\nDraw 2.",
+      "printing_cohort": [
+        "ven-056-166"
+      ],
+      "alternate_printings": [],
+      "legal_main_deck_legend_ids": [
+        3,
+        5,
+        6,
+        9
+      ],
+      "chosen_champion_legend_ids": [],
+      "runtime_image": {
+        "path": "assets/art/card_396.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/f43cb85d4939cc6ea1ed67b1c6526eef912cf9a6-744x1039.png?w=280&q=80&fm=png",
+        "bytes": 182467,
+        "sha256": "0a1124041cae29606669c39001ee09711f1b6060a35969957f2725756520b82f",
+        "width": 280,
+        "height": 391
+      }
+    },
+    {
+      "official_id": "unl-136-219",
+      "name": "Scryer's Bloom",
+      "raw_printing": {
+        "official_id": "unl-136-219",
+        "public_code": "UNL-136/219",
+        "name": "Scryer's Bloom",
+        "set": "UNL",
+        "collector_number": 136,
+        "types": [
+          "gear"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "gear"
+        ],
+        "accessibility_types": [
+          "gear"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "chaos"
+        ],
+        "energy": 1,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "rules_html": "<p>This enters exhausted.<br />Kill this, :rb_energy_1:, :rb_exhaust:: [Predict 2], then draw 1. Gain 1 XP.  (To Predict 2, look at the top two cards of your Main Deck. Recycle any of them and put the rest back in any order.)</p>",
+        "rules_text": "This enters exhausted.\nKill this, [1 Energy], [Exhaust]: [Predict 2], then draw 1. Gain 1 XP.  (To Predict 2, look at the top two cards of your Main Deck. Recycle any of them and put the rest back in any order.)",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [],
+        "rarity": "uncommon",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/b10a544d24d3ae3e177d4791743bb2cfb742abcc-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Gear: Scryer's Bloom. This enters exhausted.\nKill this, [1], [T]: [Predict 2], then draw 1. Gain 1 XP.  (To Predict 2, look at the top two cards of your Main Deck. Recycle any of them and put the rest back in any order.)",
+        "illustrators": [
+          "黯荧岛Dark Glow"
+        ]
+      },
+      "raw_printing_sha256": "025bae4b67dbd4d1be4c000e5381556f3f8ad1df6239e7f30c4ce3b43c10930d",
+      "effective": {
+        "types": [
+          "gear"
+        ],
+        "super_types": [],
+        "domains": [
+          "chaos"
+        ],
+        "energy": 1,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>This enters exhausted.<br />Kill this, :rb_energy_1:, :rb_exhaust:: [Predict 2], then draw 1. Gain 1 XP.  (To Predict 2, look at the top two cards of your Main Deck. Recycle any of them and put the rest back in any order.)</p>",
+        "rules_text": "This enters exhausted.\nKill this, [1 Energy], [Exhaust]: [Predict 2], then draw 1. Gain 1 XP.  (To Predict 2, look at the top two cards of your Main Deck. Recycle any of them and put the rest back in any order.)",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "effective_projection_sha256": "025bae4b67dbd4d1be4c000e5381556f3f8ad1df6239e7f30c4ce3b43c10930d",
+      "existing_field_resolution_ids": [],
+      "original_image": {
+        "path": "assets/data/card_admissions/c21/originals/unl-136-219.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/b10a544d24d3ae3e177d4791743bb2cfb742abcc-744x1039.png?accountingTag=RB",
+        "bytes": 755275,
+        "sha256": "1ddcc64a02e046fef825e61e52c80ae3e94481f108c1cc6d45402ad8af655f63"
+      },
+      "visual_observation": {
+        "face_visually_inspected": true,
+        "independently_reinspected_on": "2026-10-24",
+        "official_id": "unl-136-219",
+        "name": "Scryer's Bloom",
+        "collector_code": "UNL-136/219",
+        "original_image_sha256": "1ddcc64a02e046fef825e61e52c80ae3e94481f108c1cc6d45402ad8af655f63",
+        "printed_type_tag_line": "GEAR",
+        "uncertainties": [],
+        "notes": [
+          "Chaos domain icon and 1 Energy are visible; no power symbol, Might, Equipment supertype, or tags.",
+          "Kill this, Energy and Exhaust are all on the left side of the colon. The effect orders Predict, Draw, then XP.",
+          "The gallery has two spaces before the reminder; retain its exact raw text. Visual comparison disregards line wrapping and repeated whitespace, not operative words.",
+          "The italic Not all foliage conceals. is flavor text, not an ability or equipment panel."
+        ],
+        "printed_types": [
+          "gear"
+        ],
+        "printed_supertypes": [],
+        "printed_domains": [
+          "chaos"
+        ],
+        "printed_tags": [],
+        "printed_energy": 1,
+        "printed_power": null,
+        "printed_might": null,
+        "printed_might_bonus": null,
+        "printed_rules_icons_expanded": "This enters exhausted.\nKill this, [1 Energy], [Exhaust]: [Predict 2], then draw 1. Gain 1 XP. (To Predict 2, look at the top two cards of your Main Deck. Recycle any of them and put the rest back in any order.)",
+        "printed_equipment_icons_expanded": ""
+      },
+      "runtime_id": 397,
+      "errata": [],
+      "runtime_rules_text": "This enters exhausted.\nKill this, [1 Energy], [Exhaust]: [Predict 2], then draw 1. Gain 1 XP.  (To Predict 2, look at the top two cards of your Main Deck. Recycle any of them and put the rest back in any order.)",
+      "printing_cohort": [
+        "unl-136-219"
+      ],
+      "alternate_printings": [],
+      "legal_main_deck_legend_ids": [
+        0,
+        2,
+        9
+      ],
+      "chosen_champion_legend_ids": [],
+      "runtime_image": {
+        "path": "assets/art/card_397.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/b10a544d24d3ae3e177d4791743bb2cfb742abcc-744x1039.png?w=280&q=80&fm=png",
+        "bytes": 161322,
+        "sha256": "471ce40eee5abee6e67447aed5ad05a6b976fdc573045b5fa5e6ce6b0d8c8187",
+        "width": 280,
+        "height": 391
+      }
+    }
+  ]
+}

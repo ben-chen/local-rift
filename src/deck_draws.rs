@@ -14,6 +14,7 @@ impl Game {
             .filter_map(|(index, &id)| {
                 let card = catalog[id];
                 let eligible = match kind {
+                    DrawLookKind::Ornn => card.kind == CardKind::Gear,
                     DrawLookKind::DoubleTrouble => card.kind == CardKind::Unit,
                     DrawLookKind::FateWeaver => card.kind == CardKind::Spell && card.cost >= 4,
                     DrawLookKind::TrifarianCaptain => {
@@ -99,7 +100,7 @@ impl Game {
             // The specified occurrence is Drawn while the inspected remainder
             // is still in its actual zone; observers see that event in order.
             self.players[player].deck.remove(len - 1 - index);
-            self.draw_exact_card(player, card);
+            self.draw_exact_card(player, card)?;
         }
         let mut rest: Vec<_> = cards
             .iter()
@@ -154,7 +155,7 @@ impl Game {
             _ => unreachable!("Only reviewed Move/reveal sources reach this effect"),
         };
         let outcome = if draws {
-            self.draw_exact_card(player, card);
+            self.draw_exact_card(player, card)?;
             RevealOutcome::Draw
         } else if source_card_id == 394 {
             self.players[player].discard.push(card);

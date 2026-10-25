@@ -1,6 +1,15 @@
 //! A private, local draft: no deck changes until the complete partition is confirmed.
 use super::*;
 
+fn continuation_text(draw: u8, xp: u64) -> String {
+    match (draw, xp) {
+        (0, 0) => "Then finish this effect.".into(),
+        (draw, 0) => format!("Then draw {draw}."),
+        (0, xp) => format!("Then gain {xp} XP."),
+        (draw, xp) => format!("Then draw {draw}, then gain {xp} XP."),
+    }
+}
+
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub(super) struct PredictDraft {
     pub choice_id: u32,
@@ -100,11 +109,30 @@ impl App {
         }
         if self.ui.button(
             Rect::new(1178.0, 534.0, 212.0, 27.0),
-            "Reset choices · unspent",
+            "Reset choices",
             false,
             true,
         ) {
             self.reset_predict_draft();
+        }
+        if let Some(tail) = self.game.predict_continuation() {
+            self.ui.ellipsis(
+                self.game.catalog[tail.source_card_id].name,
+                1178.0,
+                588.0,
+                212.0,
+                12.0,
+                GOLD,
+            );
+            self.ui.wrapped_lines(
+                &continuation_text(tail.remaining_draw, tail.remaining_xp),
+                1178.0,
+                608.0,
+                209.0,
+                11.0,
+                TEXT,
+                3,
+            );
         }
     }
     pub(super) fn predict_tray(&mut self, cards: &[usize]) {
@@ -118,9 +146,25 @@ impl App {
             10.0,
             GOLD,
         );
+        let compact = cards.len() > 3;
+        let width = if compact {
+            (872.0 - 12.0 * (cards.len() - 1) as f32) / cards.len() as f32
+        } else {
+            220.0
+        };
+        let gap = if compact { 12.0 } else { 20.0 };
+        if compact {
+            self.ui.text(
+                "1 draws next · arrows change kept order · recycled cards go to the bottom in random order",
+                255.0,
+                691.0,
+                10.0,
+                MUTED,
+            );
+        }
         for (index, card_id) in cards.iter().enumerate() {
-            let x = 255.0 + index as f32 * 240.0;
-            let r = Rect::new(x, 700.0, 220.0, 135.0);
+            let x = 255.0 + index as f32 * (width + gap);
+            let r = Rect::new(x, 700.0, width, 135.0);
             let recycled = draft.recycle.contains(&index);
             self.ui.rect(r, PANEL);
             self.ui.border(r, if recycled { MUTED } else { TEAL });
@@ -131,16 +175,17 @@ impl App {
                     texture.width() * 0.84,
                     texture.height() * 0.43,
                 );
-                let ratio = (bounds.w / 216.0).min(bounds.h / 87.0);
+                let image_width = width - 4.0;
+                let ratio = (bounds.w / image_width).min(bounds.h / 87.0);
                 let crop = Rect::new(
-                    bounds.x + (bounds.w - 216.0 * ratio) / 2.0,
+                    bounds.x + (bounds.w - image_width * ratio) / 2.0,
                     bounds.y + (bounds.h - 87.0 * ratio) / 2.0,
-                    216.0 * ratio,
+                    image_width * ratio,
                     87.0 * ratio,
                 );
                 self.ui.image(
                     texture,
-                    Rect::new(x + 2.0, 702.0, 216.0, 87.0),
+                    Rect::new(x + 2.0, 702.0, image_width, 87.0),
                     Some(crop),
                     WHITE,
                 );
@@ -149,7 +194,7 @@ impl App {
                 self.game.catalog[*card_id].name,
                 x + 9.0,
                 806.0,
-                202.0,
+                width - 18.0,
                 12.0,
                 TEXT,
             );
@@ -163,20 +208,25 @@ impl App {
                     format!("{} · draw later", position + 1)
                 }
             };
-            self.ui.text(
+            self.ui.ellipsis(
                 &status,
                 x + 9.0,
                 824.0,
+                if cards.len() > 2 {
+                    width - 76.0
+                } else {
+                    width - 18.0
+                },
                 11.0,
                 if recycled { MUTED } else { GOLD },
             );
             if cards.len() > 2 {
                 let position = draft.top_order.iter().position(|&i| i == index);
                 for (later, offset, label, enabled) in [
-                    (false, 156.0, "<", position.is_some_and(|p| p > 0)),
+                    (false, width - 64.0, "<", position.is_some_and(|p| p > 0)),
                     (
                         true,
-                        188.0,
+                        width - 32.0,
                         ">",
                         position.is_some_and(|p| p + 1 < draft.top_order.len()),
                     ),
@@ -192,7 +242,7 @@ impl App {
                 }
             }
             if self.ui.button(
-                Rect::new(x, 843.0, 220.0, 31.0),
+                Rect::new(x, 843.0, width, 31.0),
                 if recycled {
                     "Keep on top"
                 } else {
@@ -207,8 +257,11 @@ impl App {
                 self.hover_candidate = Some(*card_id);
             }
             if self.ui.hover(r) && self.ui.secondary_pressed() {
-                self.inspect = Some(*card_id);
+                self.inspect_printed_card(*card_id);
             }
+        }
+        if compact {
+            return;
         }
         if cards.len() > 2 {
             self.ui.title("Draw order", 977.0, 724.0, 17.0, TEXT);
@@ -272,5 +325,31 @@ mod tests {
             }
         }
         assert_eq!(seen.len(), 6);
+    }
+    #[test]
+    fn five_cards_partition_and_reorder_before_one_atomic_confirmation() {
+        let mut draft = PredictDraft::new(21, 5);
+        draft.toggle(1);
+        draft.toggle(3);
+        draft.move_kept(4, false);
+        draft.move_kept(4, false);
+        draft.move_kept(2, false);
+        assert_eq!(draft.recycle, vec![1, 3]);
+        assert_eq!(draft.top_order, vec![4, 2, 0]);
+        assert_eq!(
+            draft.action(),
+            Action::ResolvePredict {
+                choice_id: 21,
+                recycle: vec![1, 3],
+                top_order: vec![4, 2, 0]
+            }
+        );
+        assert_eq!(PredictDraft::new(22, 5).top_order, vec![0, 1, 2, 3, 4]);
+    }
+    #[test]
+    fn continuation_copy_preserves_instruction_order_and_exact_xp() {
+        assert_eq!(continuation_text(2, 0), "Then draw 2.");
+        assert_eq!(continuation_text(1, 1), "Then draw 1, then gain 1 XP.");
+        assert!(continuation_text(1, u64::MAX).contains("18446744073709551615"));
     }
 }

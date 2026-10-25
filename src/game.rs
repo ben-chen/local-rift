@@ -16,6 +16,10 @@ use std::collections::VecDeque;
 
 #[path = "board_returns.rs"]
 mod board_returns;
+#[path = "prediction.rs"]
+mod prediction;
+pub use prediction::PredictContinuationView;
+use prediction::{PredictCompletion, PredictContinuation};
 #[path = "deck_draws.rs"]
 mod deck_draws;
 #[path = "deck_plays.rs"]
@@ -448,6 +452,7 @@ pub enum DrawLookKind {
     DoubleTrouble,
     FateWeaver,
     TrifarianCaptain,
+    Ornn,
 }
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum RevealOutcome {
@@ -876,6 +881,7 @@ pub struct Game {
     pub(crate) reserved_play_grants: Vec<(u32, Vec<PlayGrant>)>,
     pub(crate) payment_play_grants: Vec<PlayGrant>,
     resolution_frame: Option<ResolutionFrame>,
+    predict_tail: Option<PredictContinuation>,
     damage_context: Option<damage::DamageContext>,
 
     pub trigger_state: TriggerState,
@@ -1116,7 +1122,7 @@ impl Game {
         let mut game = Self {
             applying_action: false,            play_history:PlayHistory::default(),
             play_grants:Vec::new(),
-            active_play:None,selected_cost_order:Vec::new(),reserved_play_grants:Vec::new(),payment_play_grants:Vec::new(),resolution_frame:None,damage_context:None,
+            active_play:None,selected_cost_order:Vec::new(),reserved_play_grants:Vec::new(),payment_play_grants:Vec::new(),resolution_frame:None,predict_tail:None,damage_context:None,
             catalog,
             presets,
             players,
@@ -2433,6 +2439,31 @@ impl Game {
             return self.resolve_spell_executions();
         }
         let item = self.chain.last().expect("resolving chain");
+        if let Some(ChainAbility::Activated {
+            source,
+            card_id,
+            ability_index,
+        }) = item.ability
+            && let Some((predict, draw, xp)) = crate::activated::activated_rules(card_id)
+                .get(ability_index)
+                .and_then(|rule| rule.predict_sequence())
+        {
+            self.start_predict_sequence(
+                PredictContinuationView {
+                    chain_id: item.id,
+                    player: item.player,
+                    source_card_id: card_id,
+                    remaining_draw: draw,
+                    remaining_xp: xp,
+                },
+                PredictCompletion::Activated {
+                    source,
+                    ability_index,
+                },
+                predict,
+            )?;
+            return self.after_resolution();
+        }
         if let Some(ChainAbility::CardTrigger { rule_index, .. }) = &item.ability
             && let Some((discard, draw)) = Self::trigger_loot(item.card_id, *rule_index)
             && self.pending_loot != Some(item.id)
@@ -2632,7 +2663,7 @@ impl Game {
                     self.gear_resolve_equip(item.player, gear_id, target)
                 }
                 ChainAbility::Battlefield(ability) => {
-                    self.resolve_battlefield_ability(item.player, ability)
+                    self.resolve_battlefield_ability(item.player, ability)?
                 }
                 ChainAbility::Empower { unit_id } => {
                     self.empower_now(item.player, Some(unit_id), None)
@@ -2765,6 +2796,16 @@ impl Game {
     }
 
     pub(crate) fn after_resolution(&mut self) -> Result<(), String> {
+        if self.predict_tail.is_some() {
+            if self.decision.is_some() {
+                return Ok(());
+            }
+            if let Some(choice) = self.pending_decisions.pop_front() {
+                self.decision = Some(choice);
+                return Ok(());
+            }
+            self.resume_predict_sequence()?;
+        }
         if self.pending_instruction_deaths.is_some() {
             self.finish_instruction_deaths()?;
             if self.pending_instruction_deaths.is_some() {
@@ -3100,7 +3141,7 @@ impl Game {
             Decision::LastRites { .. } | Decision::ReplaySpell { .. } => {}
             Decision::BurnForMight { player, unit_id } => {
                 if accept {
-                    self.burn(player, 1);
+                    self.burn(player, 1)?;
                     if self.winner.is_none() {
                         self.queue_finalized_ability(
                             player,
@@ -4227,7 +4268,10 @@ impl Game {
     }
 
     fn advance_triggers(&mut self) -> Result<(), String> {
-        if self.payment_blocks_cleanup() || !self.resource_frames.is_empty() {
+        if self.predict_tail.is_some()
+            || self.payment_blocks_cleanup()
+            || !self.resource_frames.is_empty()
+        {
             return Ok(());
         }
         while self.decision.is_none() && !self.pending_triggers.is_empty() {
@@ -4646,7 +4690,7 @@ impl Game {
                     "{} discards {required} and draws {draw_after}.",
                     self.players[player].name
                 ));
-                self.draw(player, draw_after);
+                self.draw(player, draw_after)?;
                 if self.pending_loot.is_some() {
                     return self.resolve_top_chain();
                 }
@@ -4672,7 +4716,7 @@ impl Game {
                 // instruction. The selected last card cannot cause Burn Out.
                 if let Some(&index) = indices.first() {
                     let card = self.players[player].deck.remove(len - 1 - index);
-                    self.draw_exact_card(player, card);
+                    self.draw_exact_card(player, card)?;
                 }
                 self.players[player].deck.truncate(len - cards.len());
                 self.players[player].discard.extend(
@@ -6910,7 +6954,7 @@ impl Game {
                     }
                 }
                 // Separate instruction: a mistarget does not prevent Burn.
-                self.burn(player, burn);
+                self.burn(player, burn)?;
             }
             OfficialEffect::BanishReplay(kind) => {
                 if let Some(&target) = valid.first() {
@@ -6966,7 +7010,7 @@ impl Game {
                     && let board_targets::GearKillResult::Resolved { controller, .. } =
                         self.kill_gear_target(target)
                 {
-                    self.draw(controller, controller_draw);
+                    self.draw(controller, controller_draw)?;
                 }
             }
             OfficialEffect::KillEnemyDomain { .. } => {
@@ -7015,13 +7059,13 @@ impl Game {
                 for target in valid {
                     self.grant_temporary(target);
                 }
-                self.draw(player, draw);
+                self.draw(player, draw)?;
             }
             OfficialEffect::ExchangeLocationsIfTemporary { draw } => {
                 if targets.len() == 2 && valid.len() == 2 {
                     self.exchange_temporary_locations(player, targets[0], targets[1])?;
                 }
-                self.draw(player, draw);
+                self.draw(player, draw)?;
             }
             OfficialEffect::Kill { .. } => {
                 if let Some(&target) = valid.first() {
@@ -7065,7 +7109,7 @@ impl Game {
                 fallback_draw,
             } => {
                 if self.channel_runes(player, count, exhausted) < count {
-                    self.draw(player, fallback_draw);
+                    self.draw(player, fallback_draw)?;
                 }
             }
             OfficialEffect::FriendlyMight(amount)
@@ -7133,12 +7177,30 @@ impl Game {
                 {
                     self.gear_destroy(owner, gear_id);
                 }
-                self.draw(player, 1);
+                self.draw(player, 1)?;
             }
             OfficialEffect::TemporaryGear => {
                 if let Some(&target) = targets.first() {
                     self.gear_make_temporary(player, id, target);
                 }
+            }
+            OfficialEffect::PredictThenDraw { predict, draw } => {
+                let chain_id = self
+                    .resolution_frame
+                    .as_ref()
+                    .ok_or("Predict sequence needs its resolving spell execution.")?
+                    .chain_id;
+                self.start_predict_sequence(
+                    PredictContinuationView {
+                        chain_id,
+                        player,
+                        source_card_id: id,
+                        remaining_draw: draw,
+                        remaining_xp: 0,
+                    },
+                    PredictCompletion::SpellExecution,
+                    predict,
+                )?;
             }
             OfficialEffect::DrawLook => self.look_to_draw(player, id, DrawLookKind::DoubleTrouble),
             OfficialEffect::DeckLookPlay => {
@@ -7151,7 +7213,7 @@ impl Game {
             }
             OfficialEffect::None | OfficialEffect::Unsupported => {}
             OfficialEffect::Counter(_) => {} // Executed by the chain resolver.
-            OfficialEffect::Draw(count) => self.draw(player, count),
+            OfficialEffect::Draw(count) => self.draw(player, count)?,
             OfficialEffect::Damage {
                 amount,
                 draw,
@@ -7176,7 +7238,7 @@ impl Game {
                     }
                 }
                 if draw > 0 {
-                    self.draw(player, draw);
+                    self.draw(player, draw)?;
                 }
             }
             OfficialEffect::ModifyMight {
@@ -7227,7 +7289,7 @@ impl Game {
                     }
                 }
                 if draw > 0 {
-                    self.draw(player, draw);
+                    self.draw(player, draw)?;
                 }
                 if id == 52 {
                     self.predict(player);
@@ -7324,10 +7386,10 @@ impl Game {
                     );
                 }
                 if let OfficialEffect::TokensAndDraw { draw, .. } = rules::effect(id) {
-                    self.draw(player, draw);
+                    self.draw(player, draw)?;
                 }
             }
-            OfficialEffect::Burn(count) => self.burn(player, count),
+            OfficialEffect::Burn(count) => self.burn(player, count)?,
             OfficialEffect::WeakenEnemies { amount, minimum } => {
                 let enemy_targets: Vec<_> = self.players[1 - player]
                     .units
@@ -7392,7 +7454,7 @@ impl Game {
                     self.players[player].name
                 ));
             }
-            TriggeredAbility::Draw(count) => self.draw(player, count),
+            TriggeredAbility::Draw(count) => self.draw(player, count)?,
             TriggeredAbility::Might { unit_id, amount } => {
                 self.modify_might(Target::Unit { player, unit_id }, i128::from(amount), 0)?
             }
@@ -7438,8 +7500,8 @@ impl Game {
         Ok(())
     }
 
-    pub(crate) fn burn(&mut self, player: usize, count: u8) {
-        self.move_top_cards(player, count, false);
+    pub(crate) fn burn(&mut self, player: usize, count: u8) -> Result<(), String> {
+        self.move_top_cards(player, count, false)
     }
 
     fn create_unit(&mut self, player: usize, card_id: CardId, token: bool, buff: u8) -> u32 {
@@ -7597,7 +7659,7 @@ impl Game {
             }
             StartStage::Draw => {
                 self.pending_start = Some(StartStage::Main);
-                self.draw(player, 1);
+                self.draw(player, 1)?;
             }
             StartStage::Main => {
                 for state in &mut self.players {
@@ -7623,21 +7685,25 @@ impl Game {
         Ok(())
     }
 
-    pub(crate) fn draw(&mut self, player: usize, count: u8) {
-        self.move_top_cards(player, count, true);
+    pub(crate) fn draw(&mut self, player: usize, count: u8) -> Result<(), String> {
+        self.move_top_cards(player, count, true)
     }
 
     /// Complete a successful Draw after its specified physical card has been
     /// removed from its source zone (Core414.1.a). This must not draw another
     /// top card or burn out when the specified card was the last one.
-    fn draw_exact_card(&mut self, player: usize, card: CardId) {
+    fn draw_exact_card(&mut self, player: usize, card: CardId) -> Result<(), String> {
+        let next = self.trigger_state.draws[player]
+            .checked_add(1)
+            .ok_or_else(|| crate::numeric::capacity("successful Draw history"))?;
         self.players[player].hand.push(card);
-        self.trigger_state.draws[player] += 1;
+        self.trigger_state.draws[player] = next;
         self.emit_event(EventSnapshot::simple(Occurrence::Draw, player));
         self.trigger_batch += 1;
+        Ok(())
     }
 
-    fn move_top_cards(&mut self, player: usize, count: u8, drawing: bool) {
+    fn move_top_cards(&mut self, player: usize, count: u8, drawing: bool) -> Result<(), String> {
         for _ in 0..count {
             let mut consecutive_burnouts = 0;
             while self.players[player].deck.is_empty() && self.winner.is_none() {
@@ -7667,20 +7733,21 @@ impl Game {
                     self.check_winner(1 - player);
                 }
                 if self.winner.is_some() {
-                    return;
+                    return Ok(());
                 }
             }
             if self.winner.is_some() {
-                return;
+                return Ok(());
             }
             if let Some(id) = self.players[player].deck.pop() {
                 if drawing {
-                    self.draw_exact_card(player, id);
+                    self.draw_exact_card(player, id)?;
                 } else {
                     self.players[player].discard.push(id);
                 }
             }
         }
+        Ok(())
     }
 
     /// A legal deterministic allocation; humans may submit another legal order.
@@ -8309,7 +8376,7 @@ impl Game {
         }
         if !holding && self.players[player].score >= VICTORY_SCORE - 1 && !all_other_scored {
             self.push_log(format!("Final-point rule: {} draws instead. Hold a battlefield or score the other battlefield this turn to win.", self.players[player].name));
-            self.draw(player, 1);
+            self.draw(player, 1)?;
             return Ok(());
         }
         self.players[player].score += 1;
@@ -9220,6 +9287,7 @@ impl Game {
                     0
                 }
                 OfficialEffect::Draw(_)
+                | OfficialEffect::PredictThenDraw { .. }
                 | OfficialEffect::ChooseTopThreeBurnRest
                 | OfficialEffect::DrawLook
                 | OfficialEffect::DrawForBattlefields { .. }
@@ -9670,7 +9738,7 @@ mod tests {
         game.players[0].deck.clear();
         game.players[0].discard = vec![0, 1];
         let hand_size = game.players[0].hand.len();
-        game.draw(0, 1);
+        game.draw(0, 1).unwrap();
         assert_eq!(game.players[1].score, 1);
         assert_eq!(game.players[0].hand.len(), hand_size + 1);
         assert_eq!(game.players[0].deck.len(), 1);
@@ -9682,7 +9750,7 @@ mod tests {
         let mut game = game();
         game.players[0].deck.clear();
         game.players[0].discard.clear();
-        game.draw(0, 1);
+        game.draw(0, 1).unwrap();
         assert_eq!(game.winner, Some(1));
     }
 
@@ -11292,7 +11360,7 @@ mod tests {
         g.players[0].discard = vec![1, 2, 3];
         g.players[1].score = 7;
         let hand = g.players[0].hand.clone();
-        g.draw(0, 1);
+        g.draw(0, 1).unwrap();
         assert_eq!(g.winner, None);
         assert!(g.players[0].discard.is_empty());
         assert_eq!(g.players[0].deck.len(), 2);
@@ -11496,3 +11564,7 @@ mod tests {
         panic!("seed 29 did not finish");
     }
 }
+
+#[cfg(test)]
+#[path = "draw_history_tests.rs"]
+mod draw_history_tests;

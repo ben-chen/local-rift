@@ -99,6 +99,16 @@ fn fingerprint(game: &Game) -> u64 {
     game.active.hash(&mut hash);
     game.priority().hash(&mut hash);
     game.in_window().hash(&mut hash);
+    if let Some(tail) = game.predict_continuation() {
+        (
+            tail.chain_id,
+            tail.player,
+            tail.source_card_id,
+            tail.remaining_draw,
+            tail.remaining_xp,
+        )
+            .hash(&mut hash);
+    }
     for item in &game.chain {
         item.id.hash(&mut hash);
         item.player.hash(&mut hash);
@@ -793,6 +803,9 @@ fn response_window_advice(
                     local_rift::game::DrawLookKind::TrifarianCaptain => {
                         "Captain checks both printed costs: at most 3 Energy AND 1 Power, on a unit or gear. Meeting only one limit is not enough."
                     }
+                    local_rift::game::DrawLookKind::Ornn => {
+                        "Ornn looks for gear when played or when he holds. Drawing puts the chosen copy in your hand; you still pay its cost when you play it."
+                    }
                 },
             ],
             Decision::RevealedCard { outcome, .. } => vec![
@@ -836,10 +849,30 @@ fn response_window_advice(
                 "Wild Claw offers to Empower the exact object it played. You may decline; accepting puts a separate ability on the chain for responses.",
                 "Check that object’s Empowered effects before accepting. This offer cannot be redirected to another copy of the same card.",
             ],
-            Decision::PredictCards { .. } => vec![
-                "Predict looks at cards without drawing them. Choose any to recycle, then set the kept cards in the order you want to draw them.",
-                "Keep the next draw that serves your plan. Recycling all is allowed; recycled cards go to the bottom in random order. Confirm only after checking the order.",
-            ],
+            Decision::PredictCards { .. } => {
+                if let Some(tail) = game.predict_continuation() {
+                    vec![
+                        if beginner {
+                            "Finish Predict first: recycle any cards and order the rest. Only after confirming will this effect continue with its draw instructions."
+                        } else {
+                            "Put the cards you want to draw first at the front of the kept order. The rest of this effect resumes before any new response window."
+                        },
+                        if local_rift::activated::activated_rules(tail.source_card_id)
+                            .iter()
+                            .any(|rule| rule.kill_source)
+                        {
+                            "Bloom's kill, energy and exhaust costs are already paid. Confirm Predict; its draw happens next, then XP, then the gear ability finishes."
+                        } else {
+                            "Clairvoyance draws two after this Predict. A repeated execution will look at a fresh top five after those draws; the spell stays on the chain meanwhile."
+                        },
+                    ]
+                } else {
+                    vec![
+                        "Predict looks at cards without drawing them. Choose any to recycle, then set the kept cards in the order you want to draw them.",
+                        "Keep the next draw that serves your plan. Recycling all is allowed; recycled cards go to the bottom in random order. Confirm only after checking the order.",
+                    ]
+                }
+            }
             Decision::Payment { .. }
                 if game.payment_plan_view(0).is_some_and(|plan| plan.xp > 0) =>
             {
@@ -2081,6 +2114,102 @@ mod tests {
         assert!(tips[0].contains("Only you"));
         assert!(tips[1].contains("AND 1 Power"));
         assert!(tips.iter().all(|tip| tip.chars().count() <= 180));
+    }
+
+    #[test]
+    fn ornn_advice_explains_draw_not_play_and_hides_opponent_occurrences() {
+        let mut g = game();
+        g.start_match().unwrap();
+        g.decision = Some(Decision::DrawLook {
+            player: 0,
+            choice_id: 121,
+            source_card_id: 395,
+            cards: vec![3, 96, 3, 133],
+            eligible: vec![0, 2],
+            kind: local_rift::game::DrawLookKind::Ornn,
+        });
+        for level in [AdviceLevel::Beginner, AdviceLevel::Advanced] {
+            let tips = advice(&g, level);
+            assert!(tips[1].contains("when he holds"));
+            assert!(tips[1].contains("still pay its cost"));
+        }
+        if let Some(Decision::DrawLook { player, .. }) = &mut g.decision {
+            *player = 1;
+        }
+        let before = fingerprint(&g);
+        let tips = advice(&g, AdviceLevel::Beginner);
+        if let Some(Decision::DrawLook {
+            cards, eligible, ..
+        }) = &mut g.decision
+        {
+            *cards = vec![70, 71, 145, 96];
+            eligible.clear();
+        }
+        assert_eq!(fingerprint(&g), before);
+        assert_eq!(advice(&g, AdviceLevel::Beginner), tips);
+    }
+
+    #[test]
+    fn predictive_sequences_explain_remaining_draw_and_paid_gear_costs() {
+        use local_rift::{activated::AbilitySource, game::Action, gear::GearState};
+        for card_id in [396, 397] {
+            let mut g = Game::new(3, 3, 2121, Difficulty::Easy);
+            g.start_match().unwrap();
+            g.players[0].runes = [0; 6];
+            g.players[0].exhausted_runes = [0; 6];
+            g.players[0].energy = 20;
+            g.players[0].energy_pool = 20;
+            g.players[0].hand.clear();
+            g.players[0].deck = vec![96, 3, 70, 71, 69];
+            if card_id == 396 {
+                g.players[0].hand.push(card_id);
+                g.apply(Action::PlayCard {
+                    hand_index: 0,
+                    lane: None,
+                    target: None,
+                })
+                .unwrap();
+            } else {
+                g.players[0].gear.push(GearState {
+                    id: 212100,
+                    card_id,
+                    ready: true,
+                    attached_to: None,
+                    temporary: false,
+                    token: false,
+                });
+                g.apply(Action::ActivateAbility {
+                    source: AbilitySource::Gear {
+                        player: 0,
+                        gear_id: 212100,
+                    },
+                    ability_index: 0,
+                    targets: vec![],
+                })
+                .unwrap();
+            }
+            for _ in 0..8 {
+                if g.decision.is_some() {
+                    break;
+                }
+                g.apply(Action::Pass).unwrap();
+            }
+            assert!(matches!(g.decision, Some(Decision::PredictCards { .. })));
+            let tail = g.predict_continuation().unwrap();
+            assert_eq!(tail.source_card_id, card_id);
+            for level in [AdviceLevel::Beginner, AdviceLevel::Advanced] {
+                let tips = advice(&g, level);
+                assert!(tips.iter().all(|tip| tip.chars().count() <= 180));
+                assert!(tips[1].contains(if card_id == 396 {
+                    "draws two"
+                } else {
+                    "already paid"
+                }));
+                if card_id == 397 {
+                    assert!(tips[1].contains("then XP"));
+                }
+            }
+        }
     }
 
     #[test]

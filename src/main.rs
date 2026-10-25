@@ -62,6 +62,25 @@ struct TokenPreview {
     rules: String,
 }
 const GOLD_RULES: &str = "Exhaust and kill this Gold to add 1 Any power. This resource ability can be used when you have priority, including during a pending payment, and cannot be reacted to.";
+
+fn opponent_private_choice_copy(
+    decision: Option<&Decision>,
+) -> Option<(&'static str, &'static str)> {
+    matches!(
+        decision,
+        Some(
+            Decision::Predict { player: 1, .. }
+                | Decision::PredictCards { player: 1, .. }
+                | Decision::DrawLook { player: 1, .. }
+                | Decision::DeckLookPlay { player: 1, .. }
+                | Decision::TopThree { player: 1, .. }
+        )
+    )
+    .then_some((
+        "Your opponent is choosing privately.",
+        "The current effect will finish before responses resume.",
+    ))
+}
 #[derive(Clone)]
 enum DragSource {
     Hand { index: usize, card_id: usize },
@@ -5739,8 +5758,17 @@ impl App {
         } else if matches!(self.game.decision, Some(Decision::RevealedDeck { .. })) {
             self.revealed_deck_panel();
         } else if self.game.priority() == 1 && self.game.winner.is_none() {
-            self.ui.title("Their move.", 1178.0, 366.0, 23.0, TEXT);
-            self.ui.wrapped("Watch how your opponent spends runes and moves units. Your next turn will begin automatically.",1178.0,397.0,210.0,12.0,MUTED);
+            if let Some((_, description)) =
+                opponent_private_choice_copy(self.game.decision.as_ref())
+            {
+                self.ui
+                    .title("Choosing privately.", 1178.0, 366.0, 23.0, TEXT);
+                self.ui
+                    .wrapped(description, 1178.0, 397.0, 210.0, 12.0, MUTED);
+            } else {
+                self.ui.title("Their move.", 1178.0, 366.0, 23.0, TEXT);
+                self.ui.wrapped("Watch how your opponent spends runes and moves units. Your next turn will begin automatically.",1178.0,397.0,210.0,12.0,MUTED);
+            }
             for i in 0..3 {
                 self.ui.circle(
                     vec2(1258.0 + i as f32 * 22.0, 489.0),
@@ -6982,8 +7010,11 @@ impl App {
         }
         if len == 0 {
             let payment_waiting = self.game.resource_payment_pending();
+            let private_choice = opponent_private_choice_copy(self.game.decision.as_ref());
             self.ui.title(
-                if matches!(
+                if let Some((title, _)) = private_choice {
+                    title
+                } else if matches!(
                     self.game.decision,
                     Some(Decision::TokenPlay { .. } | Decision::TokenPlacement { .. })
                 ) {
@@ -7010,7 +7041,9 @@ impl App {
                 MUTED,
             );
             self.ui.text(
-                if matches!(self.game.decision, Some(Decision::TokenPlay { .. } | Decision::TokenPlacement { .. })) {
+                if let Some((_, description)) = private_choice {
+                    description
+                } else if matches!(self.game.decision, Some(Decision::TokenPlay { .. } | Decision::TokenPlacement { .. })) {
                     "Choose each token's location and any optional cost in the panel on the right."
                 } else if payment_waiting && self.game.priority()==0 {
                     "Use Board or Loadout for Add abilities, then finish the payment or conversion."
@@ -8343,6 +8376,42 @@ mod preference_tests {
 mod live_preview_tests {
     use super::*;
     use local_rift::{game::Unit, gear::GearState};
+
+    #[test]
+    fn private_choice_waiting_copy_is_owner_gated_and_hides_card_contents() {
+        let hidden = Decision::PredictCards {
+            player: 1,
+            choice_id: 5,
+            cards: vec![396, 397],
+        };
+        let changed_hidden = Decision::PredictCards {
+            player: 1,
+            choice_id: 9,
+            cards: vec![3, 69, 70, 71, 395],
+        };
+        assert_eq!(
+            opponent_private_choice_copy(Some(&hidden)),
+            opponent_private_choice_copy(Some(&changed_hidden))
+        );
+        assert!(opponent_private_choice_copy(Some(&hidden)).is_some());
+        assert!(
+            opponent_private_choice_copy(Some(&Decision::PredictCards {
+                player: 0,
+                choice_id: 5,
+                cards: vec![396, 397],
+            }))
+            .is_none()
+        );
+        assert!(
+            opponent_private_choice_copy(Some(&Decision::RevealedDeck {
+                player: 1,
+                source_card_id: 386,
+                cards: vec![396, 397],
+            }))
+            .is_none()
+        );
+        assert!(opponent_private_choice_copy(None).is_none());
+    }
     fn unit(id: u32, card_id: usize) -> Unit {
         Unit {
             id,

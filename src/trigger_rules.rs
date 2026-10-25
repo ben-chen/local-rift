@@ -249,6 +249,26 @@ pub fn trigger_rules(card_id: usize) -> &'static [TriggerRule] {
     use Operand::*;
     use TokenPlacement::*;
     match card_id {
+        395 => {
+            const {
+                &[
+                    rule(
+                        SelfPlayed,
+                        &[],
+                        false,
+                        TargetRule::NONE,
+                        &[DrawLook(crate::game::DrawLookKind::Ornn)],
+                    ),
+                    rule(
+                        SelfHold,
+                        &[],
+                        false,
+                        TargetRule::NONE,
+                        &[DrawLook(crate::game::DrawLookKind::Ornn)],
+                    ),
+                ]
+            }
+        }
         390 => {
             const {
                 &[rule(

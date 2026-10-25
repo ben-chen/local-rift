@@ -1312,11 +1312,20 @@ impl Game {
     }
 
     pub fn resolution_progress(&self) -> Option<ResolutionProgress> {
-        self.resolution_frame.as_ref().map(|r| ResolutionProgress {
-            chain_id: r.chain_id,
-            execution: r.execution,
-            executions: r.executions,
-        })
+        self.resolution_frame
+            .as_ref()
+            .map(|r| ResolutionProgress {
+                chain_id: r.chain_id,
+                execution: r.execution,
+                executions: r.executions,
+            })
+            .or_else(|| {
+                self.predict_continuation().map(|tail| ResolutionProgress {
+                    chain_id: tail.chain_id,
+                    execution: 0,
+                    executions: 1,
+                })
+            })
     }
 }
 

@@ -66,6 +66,10 @@ pub struct PlayTargetSpec {
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum OfficialEffect {
+    PredictThenDraw {
+        predict: u8,
+        draw: u8,
+    },
     DrawLook,
     DeckLookPlay,
     BanishSmallOrGear {
@@ -261,7 +265,11 @@ pub fn effect(id: usize) -> OfficialEffect {
         384..=386 => None,
         387 | 388 => DeckLookPlay,
         389 => DrawLook,
-        390..=394 => None,
+        390..=395 | 397 => None,
+        396 => PredictThenDraw {
+            predict: 5,
+            draw: 2,
+        },
         362 | 364 => KillGear {
             controller_draw: if id == 362 { 2 } else { 0 },
         },
@@ -1041,6 +1049,9 @@ pub fn requirements(id: usize) -> &'static [Mechanic] {
         389 => &[Chain, OptionalCosts],
         390 | 391 => &[Chain],
         392..=394 => &[Chain, MoveTriggers],
+        395 => &[Chain, ConquerHoldTriggers],
+        396 => &[Chain, Predict],
+        397 => &[Gear, Chain, ActivatedAbilities, Predict, Xp],
         362 | 363 | 365 | 366 | 367 => &[Chain, Gear],
         364 => &[Chain, Gear, Flow],
         368 | 369 => &[Chain, Gear, ConquerHoldTriggers],
@@ -1533,7 +1544,7 @@ pub fn static_abilities(id: usize) -> &'static [StaticAbility] {
             },
             Assault(1),
         ],
-        232 | 243 | 252 | 347 => &[EntersExhausted],
+        232 | 243 | 252 | 347 | 397 => &[EntersExhausted],
         233 => &[EntersReady],
         // Caitlyn spells out the exact Backline assignment restriction.
         238 => &[Backline],
@@ -1906,7 +1917,7 @@ mod tests {
     #[test]
     fn all_catalog_entries_have_official_classification() {
         let cards = cards();
-        assert_eq!(cards.len(), 395);
+        assert_eq!(cards.len(), 398);
         for card in cards {
             assert_ne!(
                 effect(card.id),
@@ -1916,7 +1927,7 @@ mod tests {
             );
             assert_ne!(support_status(card.id), SupportStatus::UnknownCard);
         }
-        assert_eq!(effect(395), OfficialEffect::Unsupported);
+        assert_eq!(effect(398), OfficialEffect::Unsupported);
     }
 
     #[test]

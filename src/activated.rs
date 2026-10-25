@@ -84,6 +84,7 @@ impl AbilityTargets {
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 enum AbilityEffect {
     BaitedHook,
+    PredictThen { predict: u8, draw: u8, xp: u64 },
     Might { amount: i16, minimum: u8 },
     Buff,
     BuffSource,
@@ -141,6 +142,12 @@ pub struct ActivatedRule {
 impl ActivatedRule {
     pub(crate) fn is_empower(&self) -> bool {
         matches!(self.effect, AbilityEffect::EmpowerSource)
+    }
+    pub(crate) fn predict_sequence(&self) -> Option<(u8, u8, u64)> {
+        match self.effect {
+            AbilityEffect::PredictThen { predict, draw, xp } => Some((predict, draw, xp)),
+            _ => None,
+        }
     }
     pub fn adds_resources(&self) -> bool {
         matches!(
@@ -221,6 +228,23 @@ const fn empower(
 /// Stable zero-based ability indices belong to each explicit source printing.
 pub fn activated_rules(card_id: CardId) -> &'static [ActivatedRule] {
     match card_id {
+        397 => {
+            const {
+                &[ActivatedRule {
+                    energy: 1,
+                    kill_source: true,
+                    ..exhaust(
+                        "Predict 2, then draw 1 and gain 1 XP",
+                        AbilityTargets::NONE,
+                        AbilityEffect::PredictThen {
+                            predict: 2,
+                            draw: 1,
+                            xp: 1,
+                        },
+                    )
+                }]
+            }
+        }
         385 => {
             const {
                 &[ActivatedRule {
@@ -1205,6 +1229,9 @@ impl Game {
             .filter(|&target| self.ability_target_valid(source, rule, target))
             .collect();
         match rule.effect {
+            AbilityEffect::PredictThen { .. } => {
+                return Err("A Predict activation needs its retained resolving chain item.".into());
+            }
             AbilityEffect::BaitedHook => self.begin_deck_kill(player, valid.first().copied())?,
             AbilityEffect::SunDisc => {
                 if self.cards_played_this_turn(player) > 0 {
@@ -1376,7 +1403,7 @@ impl Game {
                 });
                 return Ok(());
             }
-            AbilityEffect::Draw(count) => self.draw(player, count),
+            AbilityEffect::Draw(count) => self.draw(player, count)?,
             AbilityEffect::Points(count) => {
                 self.players[player].score = self.players[player].score.saturating_add(count)
             }
@@ -1404,15 +1431,26 @@ impl Game {
         if rule.effect == AbilityEffect::BaitedHook {
             return Ok(());
         }
+        self.finish_activated(source, card_id, ability_index);
+        Ok(())
+    }
+
+    pub(crate) fn finish_activated(
+        &mut self,
+        source: AbilitySource,
+        card_id: CardId,
+        ability_index: usize,
+    ) {
+        let player = source.player();
         if matches!(source, AbilitySource::Gear { .. }) {
             self.gear_ability_used(player);
         }
         self.push_log(format!(
             "{} resolves {}: {}.",
-            self.players[player].name, self.catalog[card_id].name, rule.label
+            self.players[player].name,
+            self.catalog[card_id].name,
+            activated_rules(card_id)[ability_index].label
         ));
-
-        Ok(())
     }
 
     /// Immediate resources only; future Add effects remain separate actions.
@@ -1577,6 +1615,7 @@ impl Game {
                 _ => None,
             }),
             AbilityEffect::Conversion(_) => None,
+            AbilityEffect::PredictThen { .. } => Some(35),
             AbilityEffect::Draw(_) => (self.players[player].hand.len() < 8 && (!self.players[player].deck.is_empty() || !self.players[player].discard.is_empty())).then_some(30),
             AbilityEffect::Buff | AbilityEffect::BuffOrMight(_) => unit.filter(|unit| {
                 !enemy_target && (matches!(rule.effect, AbilityEffect::BuffOrMight(_)) || !self.buffed_units.contains(&unit.id))
