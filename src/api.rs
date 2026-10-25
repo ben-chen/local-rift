@@ -21,6 +21,7 @@ use serde_json::{Map, Value, json};
 use std::fmt;
 use std::panic::{AssertUnwindSafe, catch_unwind};
 
+mod combat;
 mod empowered;
 mod numeric;
 mod play_choices;
@@ -430,6 +431,7 @@ impl Session {
                 "units_or_gears_here":game.play_history.units_or_gears_here},
             "resolution_progress":game.resolution_progress().map(|progress|json!({"chain_id":progress.chain_id,
                 "execution":progress.execution,"executions":progress.executions})),
+            "combat_resolution":game.combat_resolution().map(combat::resolution_to_json),
             "predict_continuation":game.predict_continuation().map(|tail|json!({"chain_id":tail.chain_id,
                 "player":tail.player,"source_card_id":tail.source_card_id,"remaining_draw":tail.remaining_draw,
                 "remaining_xp":tail.remaining_xp,"remaining_xp_exact":tail.remaining_xp.to_string()})),
@@ -444,7 +446,8 @@ impl Session {
                 }
             })).collect::<Vec<_>>(),
             "showdown":game.showdown.as_ref().map(|w|json!({"lane":w.lane,"attacker":w.attacker,
-                "focus":w.focus,"passes":w.passes,"combat":w.combat})),
+                "focus":w.focus,"passes":w.passes,"combat":w.combat,
+                "focus_open":game.showdown_focus_open()})),
             "resource_payment_pending":game.resource_payment_pending(),
             "resource_continuations":game.resource_continuations().iter().map(|parent|json!({"player":parent.player,"task":parent.task})).collect::<Vec<_>>(),
             "payment_plan":game.payment_plan_view(viewer).map(|plan|json!({

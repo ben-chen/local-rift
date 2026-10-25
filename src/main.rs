@@ -1,4 +1,5 @@
 mod ability_ui;
+mod combat_ui;
 mod companion;
 mod deck_editor;
 mod deck_look_ui;
@@ -1628,7 +1629,7 @@ impl App {
         Ok(())
     }
     fn pass_or_end(&mut self) {
-        if self.game.decision.is_some() {
+        if self.game.decision.is_some() || combat_ui::automatic_checkpoint(&self.game) {
             return;
         }
         self.action(
@@ -1659,9 +1660,18 @@ impl App {
             self.drop_zones.push((DropZone::Chain(item.id), r));
             self.ui.text(
                 &format!(
-                    "CHAIN · {} / {} · NEWEST FIRST",
+                    "CHAIN · {} / {} · {}",
                     self.chain_cursor + 1,
-                    self.game.chain.len()
+                    self.game.chain.len(),
+                    self.game
+                        .combat_resolution()
+                        .map_or("NEWEST FIRST", |status| {
+                            if status.result.is_some() {
+                                combat_ui::result_label(status)
+                            } else {
+                                combat_ui::stage_label(status.step)
+                            }
+                        })
                 ),
                 1178.0,
                 247.0,
@@ -1822,6 +1832,26 @@ impl App {
             ) {
                 self.toggle_target(Target::Spell { chain_id: item.id });
             }
+        } else if let Some(status) = self.game.combat_resolution() {
+            self.ui.text(
+                &format!(
+                    "{} · FIELD {}",
+                    combat_ui::stage_label(status.step),
+                    status.lane + 1
+                ),
+                1178.0,
+                252.0,
+                9.0,
+                GOLD,
+            );
+            self.ui.wrapped(
+                combat_ui::stage_description(status),
+                1178.0,
+                276.0,
+                209.0,
+                10.0,
+                MUTED,
+            );
         } else if let Some(showdown) = &self.game.showdown {
             self.ui.text(
                 &format!(
@@ -1840,7 +1870,7 @@ impl App {
             );
             self.ui.wrapped(
                 if matches!(self.game.decision, Some(Decision::CombatDamage { .. })) {
-                    "Both players assign damage before either side is hit. Spells and abilities wait until combat finishes."
+                    "Both players assign before damage is dealt simultaneously. No responses during assignment; resulting abilities resolve before combat finishes."
                 } else {
                     "Both players may respond before the field is settled. Pass when you're ready."
                 },
@@ -5788,7 +5818,7 @@ impl App {
                     .wrapped(description, 1178.0, 397.0, 210.0, 12.0, MUTED);
             } else {
                 self.ui.title("Their move.", 1178.0, 366.0, 23.0, TEXT);
-                self.ui.wrapped("Watch how your opponent spends runes and moves units. Your next turn will begin automatically.",1178.0,397.0,210.0,12.0,MUTED);
+                self.ui.wrapped(if self.game.in_window() { "Your opponent has priority. The turn has not changed; inspect the board while their response or choice finishes." } else { "Watch how your opponent spends runes and moves units. Your next turn will begin automatically." },1178.0,397.0,210.0,12.0,MUTED);
             }
             for i in 0..3 {
                 self.ui.circle(
@@ -5811,13 +5841,17 @@ impl App {
             && self.game.decision.is_none()
             && self.ui.button(
                 Rect::new(1178.0, 574.0, 212.0, 44.0),
-                if self.game.chain.is_empty() && self.game.showdown.is_none() {
+                if combat_ui::automatic_checkpoint(&self.game) {
+                    "Resolving combat…"
+                } else if self.game.chain.is_empty() && self.game.showdown.is_none() {
                     "End turn     [SPACE]"
                 } else {
                     "Pass priority  [SPACE]"
                 },
                 true,
-                self.game.priority() == 0 && self.game.decision.is_none(),
+                self.game.priority() == 0
+                    && self.game.decision.is_none()
+                    && !combat_ui::automatic_checkpoint(&self.game),
             )
         {
             self.pass_or_end();
@@ -5914,7 +5948,9 @@ impl App {
                     self.ui
                         .ellipsis(&self.game.unit_name(unit), 1178.0, 359.0, 212.0, 16.0, TEXT);
                     self.ui.text(
-                        if ready {
+                        if ready && self.game.in_window() {
+                            "READY"
+                        } else if ready {
                             "READY TO MOVE"
                         } else {
                             "EXHAUSTED · READY NEXT TURN"
@@ -6786,7 +6822,9 @@ impl App {
                 let hint = if self.prefs.coach {
                     if !self.game.chain.is_empty() {
                         "You have priority. Play a Reaction or pass. Two passes resolve the newest spell or ability.".into()
-                    } else if self.game.showdown.is_some() {
+                    } else if let Some(status) = self.game.combat_resolution() {
+                        combat_ui::stage_description(status).into()
+                    } else if self.game.showdown_focus_open() {
                         "Open showdown: play an Action or Reaction, or pass. Two passes close the showdown.".into()
                     } else {
                         self.game.action_hint()
@@ -7032,7 +7070,8 @@ impl App {
         if len == 0 {
             let payment_waiting = self.game.resource_payment_pending();
             let private_choice = opponent_private_choice_copy(self.game.decision.as_ref())
-                .or_else(|| own_predict_choice_copy(self.game.decision.as_ref()));
+                .or_else(|| own_predict_choice_copy(self.game.decision.as_ref()))
+                .or_else(|| combat_ui::waiting_copy(&self.game));
             self.ui.title(
                 if let Some((title, _)) = private_choice {
                     title

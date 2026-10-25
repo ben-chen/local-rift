@@ -14,6 +14,10 @@ use crate::legends::{LegendAbility, LegendState, LegendTrigger};
 use crate::rules::{self, Allegiance, CounterKind, OfficialEffect, StaticAbility};
 use std::collections::VecDeque;
 
+#[path = "combat.rs"]
+mod combat;
+pub use combat::{CombatResolution, CombatResult, CombatStep};
+
 #[path = "board_returns.rs"]
 mod board_returns;
 #[path = "vision.rs"]
@@ -946,7 +950,7 @@ pub struct Game {
     pending_entries: Vec<(usize, usize)>,
     movement_locks: Vec<(usize, u32)>,
     pending_combat: Option<PendingCombat>,
-    pending_combat_cleanup: Option<(usize, usize)>,
+    combat_resolution: Option<CombatResolution>,
     pending_start: Option<StartStage>,
     priority_player: usize,
     chain_passes: u8,
@@ -1183,7 +1187,7 @@ impl Game {
             pending_entries: Vec::new(),
             movement_locks: Vec::new(),
             pending_combat:None,
-            pending_combat_cleanup:None,
+            combat_resolution:None,
             pending_start:None,
             priority_player: 0,
             chain_passes: 0,
@@ -2862,16 +2866,24 @@ impl Game {
         if self.winner.is_some() {
             return Ok(());
         }
+        // Core 323.2 precedes lethal cleanup: new occupants acquire their
+        // combat designation before their Might and death events are checked.
+        self.sync_combat_triggers();
         self.remove_defeated()?;
         if matches!(self.decision, Some(Decision::DeathReplacement { .. })) {
             return Ok(());
         }
+        if self
+            .combat_resolution
+            .is_some_and(|c| c.step == CombatStep::Cleanup)
+        {
+            self.finish_combat_special_cleanup();
+            // Changes during a Special Cleanup cause normal cleanups (324.2),
+            // before any damage/cleanup trigger is finalized or resolved.
+            return self.after_resolution();
+        }
         self.sync_combat_triggers();
         self.reconcile_staged_battlefields();
-        if self.pending_combat_cleanup.is_some() {
-            self.finish_combat_cleanup()?;
-            return Ok(());
-        }
         if self.decision.is_none() {
             while let Some(decision) = self.pending_decisions.pop_front() {
                 if matches!(&decision,Decision::CounterTax{chain_id,..} if !self.chain.iter().any(|item|item.id==*chain_id))
@@ -2893,6 +2905,12 @@ impl Game {
         if let Some(item) = self.chain.last() {
             self.priority_player = item.player;
             return Ok(());
+        }
+        // Core 468.2/4/6: each outstanding combat task waits until the
+        // previous task's entire chain and associated finalizations finish.
+        if self.combat_resolution.is_some() {
+            self.advance_combat_resolution()?;
+            return self.after_resolution();
         }
         // CR323.5–6: staged fields do not retain an absent controller in an
         // open state. Only an ongoing showdown/combat preserves that control.
@@ -4525,7 +4543,23 @@ impl Game {
         ) {
             self.play_history.gear_activations[player] += 1;
         }
-        if self.chain.is_empty() {
+        // Core 340.2.a / 346.1: a trigger-opened chain never passes focus.
+        // Preserve an earlier card/activation's initiator when its resolution
+        // produces follow-up triggers, but do not invent one for a new trigger.
+        if self.chain.is_empty()
+            && matches!(
+                ability,
+                ChainAbility::Activated { .. }
+                    | ChainAbility::Equip { .. }
+                    | ChainAbility::Empower { .. }
+                    | ChainAbility::Legend(
+                        LegendAbility::MatriarchReady { .. }
+                            | LegendAbility::KennenAssault { .. }
+                            | LegendAbility::ViktorRecruit
+                            | LegendAbility::EzrealDraw
+                    )
+            )
+        {
             self.chain_initiator = Some(player);
         }
         let id = self.next_chain_id;
@@ -5199,7 +5233,14 @@ impl Game {
         self.pay_trash_cost(player, id, base, extra, &all_targets)
             .expect("validated trash costs");
         let entering = self.next_unit_id;
+        let initiator = self.chain_initiator;
         self.play_or_queue_targets(player, id, lane, targets)?;
+        if pending.is_some() || decision.is_some() {
+            // A play instructed by the resolving sequence continues that
+            // sequence. It does not turn a trigger-opened chain into a new
+            // focus action merely because its parent was already popped.
+            self.chain_initiator = initiator;
+        }
         if let Some(ref pending) = pending {
             self.link_instructed_entry(pending.id, player, card.kind, entering);
         }
@@ -5871,6 +5912,9 @@ impl Game {
         }
         if !self.chain.is_empty() {
             return "Play a Reaction, or pass priority. Two passes resolve the newest spell or ability.".into();
+        }
+        if self.combat_resolution.is_some() {
+            return "Combat is completing. Resolve its remaining effects before control and the next action window.".into();
         }
         if self.showdown.is_some() {
             return "Play an Action or Reaction, or pass focus. Two passes finish the showdown."
@@ -7954,35 +7998,13 @@ impl Game {
                 }
             }
         }
-        self.pending_combat_cleanup = Some((combat.lane, combat.attacker));
-        self.after_resolution()?;
-
-        Ok(())
-    }
-
-    fn finish_combat_cleanup(&mut self) -> Result<(), String> {
-        let (lane, attacker) = self
-            .pending_combat_cleanup
-            .take()
-            .expect("combat cleanup pending");
-        // Combat cleanup heals all surviving units, then recalls attackers.
-        for state in &mut self.players {
-            for unit in &mut state.units {
-                unit.damage = 0;
-            }
-        }
-        if self.lane_count(attacker, lane) > 0 && self.lane_count(1 - attacker, lane) > 0 {
-            for unit in &mut self.players[attacker].units {
-                if unit.lane == Some(lane) {
-                    unit.lane = None;
-                }
-            }
-            self.push_log("The defense holds. Surviving attackers are recalled to base.".into());
-        }
-        self.showdown = None;
-        self.priority_player = self.active;
-        self.refresh_control(lane)?;
-        self.push_log("The showdown closes; the turn player's main phase resumes.".into());
+        self.combat_resolution = Some(CombatResolution {
+            lane: combat.lane,
+            attacker: combat.attacker,
+            step: CombatStep::Cleanup,
+            attackers_recalled: false,
+            result: None,
+        });
         self.after_resolution()?;
 
         Ok(())
@@ -8224,6 +8246,14 @@ impl Game {
                 self.remove_death_set(doomed);
                 self.trigger_batch += 1;
             }
+            if self
+                .combat_resolution
+                .is_some_and(|c| c.step == CombatStep::Cleanup)
+            {
+                // The one-time heal/recall tasks belong to this same Special
+                // Cleanup. Do not run a second lethal cleanup ahead of them.
+                break;
+            }
         }
 
         Ok(())
@@ -8350,6 +8380,11 @@ impl Game {
         {
             return Ok(());
         }
+        self.establish_control(lane)
+    }
+
+    // Combat's Establish Control task runs while combat is still ongoing.
+    fn establish_control(&mut self, lane: usize) -> Result<(), String> {
         match (self.lane_count(0, lane) > 0, self.lane_count(1, lane) > 0) {
             (true, false) => self.claim_lane(0, lane)?,
             (false, true) => self.claim_lane(1, lane)?,

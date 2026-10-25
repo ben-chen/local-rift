@@ -691,6 +691,9 @@ impl Game {
                     .map(move |u| (p, u.clone()))
             })
             .collect();
+        // Core383.4.e.2.a/f.2.a: gaining a designation again does not
+        // permit another condition check within the same combat. Keep every
+        // seen physical identity until combat ends, including failed conditions.
         for (player, unit) in entrants {
             if self.trigger_state.combat_seen.contains(&unit.id) {
                 continue;

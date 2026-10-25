@@ -674,6 +674,105 @@ fn c22_fixture(app: &mut App, card_id: usize) {
     app.hand_scroll = 0;
 }
 
+pub(super) fn c23_deathknell_fixture(attacker: usize, conquer: bool) -> Game {
+    use local_rift::game::{Action, CombatStep, Decision, Difficulty, Unit};
+    use local_rift::gear::GearState;
+    let mut game = Game::new_for_agents(3, 3, 230025, Difficulty::Easy);
+    game.choose_starting_player(attacker).unwrap();
+    game.start_match().unwrap();
+    game.battlefields = [3, 3];
+    game.battlefield_owner = [Some(1 - attacker), None];
+    for p in &mut game.players {
+        p.units.clear();
+        p.gear.clear();
+        p.hidden.clear();
+        p.hand.clear();
+        p.discard.clear();
+        p.banish.clear();
+        p.champion = None;
+        p.deck = vec![71; 4];
+        p.runes = [0; 6];
+        p.exhausted_runes = [0; 6];
+        p.energy = 20;
+        p.energy_pool = 20;
+        p.power_pool = [5; 6];
+        p.any_power = 0;
+    }
+    for legend in &mut game.legend {
+        legend.ready = false;
+    }
+    let unit = |id, card_id, lane| Unit {
+        id,
+        card_id,
+        lane,
+        ready: true,
+        damage: 0,
+        buff: 0,
+        temporary_buff: 0,
+        token: false,
+        protected: false,
+        stunned: false,
+        banish_on_death: false,
+    };
+    game.players[attacker].units.push(unit(23001, 56, None));
+    game.players[1 - attacker]
+        .units
+        .push(unit(23002, 374, Some(0)));
+    if conquer {
+        game.players[attacker].gear.push(GearState {
+            id: 23003,
+            card_id: 201,
+            attached_to: Some(23001),
+            ready: true,
+            temporary: false,
+            token: false,
+        });
+    }
+    game.apply(Action::Move {
+        unit_id: 23001,
+        lane: Some(0),
+    })
+    .unwrap();
+    game.apply(Action::Pass).unwrap();
+    game.apply(Action::Pass).unwrap();
+    for _ in 0..2 {
+        if let Some(Decision::CombatDamage {
+            player,
+            lane,
+            total,
+        }) = game.decision
+        {
+            let assignments = game
+                .automatic_damage_assignment(player, lane, total)
+                .unwrap();
+            game.apply(Action::AssignDamage { assignments }).unwrap();
+        }
+    }
+    assert_eq!(
+        game.combat_resolution().unwrap().step,
+        CombatStep::DetermineResult
+    );
+    game
+}
+
+fn c23_fixture(app: &mut App, attacker: usize, conquer: bool) {
+    app.game = c23_deathknell_fixture(attacker, conquer);
+    app.fields = app.game.battlefields;
+    app.selection = None;
+    app.targets.clear();
+    app.inspect = None;
+    app.hover_object = None;
+    app.hover_token = None;
+    app.hover_card = None;
+    app.hover_rect = None;
+    app.hand_scroll = 0;
+    app.tray = super::Tray::Hand;
+    app.chain_cursor = 0;
+    app.prefs.coach = true;
+    app.prefs.exact_payment = false;
+    app.companion.set_level(AdviceLevel::Beginner);
+}
+
 /// Returns true after all assertions pass. Use an isolated XDG_DATA_HOME because
 /// the settings controls intentionally exercise the normal persistence path.
 pub fn run_frame(app: &mut App, frame: u32) -> bool {
@@ -10473,15 +10572,91 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
         }
         1055 => {
             assert!(app.inspect.is_none());
+            c23_fixture(app, 1, false);
+        }
+        1056 => {
+            assert!(!app.game.showdown_focus_open());
+            assert_eq!(app.game.priority(), 0);
+            assert!(app.game.chain.is_empty());
+            capture(app, "RIFT_SMOKE_C23_DEATHKNELL_CHOICE_SCREENSHOT");
+            let center = unit_rect(app, 23001).center();
+            click(app, center.x, center.y);
+        }
+        1057 => {
+            assert_eq!(
+                app.targets,
+                vec![Target::Unit {
+                    player: 1,
+                    unit_id: 23001
+                }]
+            );
+            click(app, 1285.0, 510.0);
+        }
+        1058 => {
+            assert!(app.game.decision.is_none());
+            assert!(!app.game.chain.is_empty());
+            assert_eq!(app.game.players[1].score, 0);
+            capture(app, "RIFT_SMOKE_C23_DEATHKNELL_CHAIN_SCREENSHOT");
+            click(app, 1285.0, 596.0);
+        }
+        1059 => {
+            assert_eq!(app.game.priority(), 1);
+            app.game.apply(Action::Pass).unwrap();
+            assert!(app.game.combat_resolution().is_none());
+            assert!(app.game.showdown.is_none());
+            assert_eq!(app.game.battlefield_owner[0], None);
+            assert_eq!(app.game.players[1].score, 0);
+            capture(app, "RIFT_SMOKE_C23_DEATHKNELL_COMPLETE_SCREENSHOT");
+        }
+        1060 => {
+            c23_fixture(app, 0, true);
+            capture(app, "RIFT_SMOKE_C23_OPPONENT_CHOICE_SCREENSHOT");
+            app.game
+                .apply(Action::ChooseTriggerTargets { targets: vec![] })
+                .unwrap();
+        }
+        1061 => {
+            let status = app.game.combat_resolution().unwrap();
+            assert_eq!(status.step, local_rift::game::CombatStep::End);
+            assert_eq!(
+                status.result,
+                Some(local_rift::game::CombatResult::Winner { player: 0 })
+            );
+            assert!(!app.game.showdown_focus_open());
+            capture(app, "RIFT_SMOKE_C23_CONQUER_CHAIN_SCREENSHOT");
+            app.ui.input_override = Some((unit_rect(app, 23001).center(), false, true));
+        }
+        1062 => {
+            assert_eq!(app.hover_object, Some((0, 23001)));
+            let text = super::live_unit_description(&app.game, 0, 23001).unwrap();
+            assert!(text.contains("4 current might"));
+            assert!(text.contains("Assault 2"));
+            capture(app, "RIFT_SMOKE_C23_CONQUER_BONUS_SCREENSHOT");
+            click(app, 960.0, 704.0);
+        }
+        1063 => {
+            assert!(app.inspect.is_none());
+            finish_chain_until_choice(app);
+            assert!(app.game.decision.is_none());
+            assert!(app.game.combat_resolution().is_none());
+            assert_eq!(
+                app.game.unit_might(&app.game.players[0].units[0]).unwrap(),
+                2
+            );
+            assert_eq!(app.game.players[0].score, 1);
+            assert!(app.game.players[0].gear.iter().any(|gear| gear.token));
+            capture(app, "RIFT_SMOKE_C23_COMBAT_END_SCREENSHOT");
+        }
+        1064 => {
             app.ui.input_override = None;
             app.ui.pointer_override = None;
             app.ui.wheel_override = None;
             println!(
-                "PASS: 1056 native UI frames including Vision self-grants, independent Predict keep/recycle controls, printed and granted live provenance, actual Mech token identity, captured triggers after source departure, and all previous 1028 controls."
+                "PASS: 1065 native UI frames including closed combat cleanup choices, Deathknell responses before result, captured Conquer result, retained combat bonuses, and all previous 1056 controls."
             );
             return true;
         }
-        _ => panic!("UI smoke runner exceeded its 1056-frame script"),
+        _ => panic!("UI smoke runner exceeded its 1065-frame script"),
     }
     false
 }

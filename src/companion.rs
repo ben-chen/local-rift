@@ -94,6 +94,7 @@ impl Companion {
 fn fingerprint(game: &Game) -> u64 {
     let mut hash = DefaultHasher::new();
     game.turn.hash(&mut hash);
+    format!("{:?}", game.combat_resolution()).hash(&mut hash);
     format!("{:?}", game.play_grants).hash(&mut hash);
     format!("{:?}", game.play_history).hash(&mut hash);
     game.active.hash(&mut hash);
@@ -346,7 +347,10 @@ fn checked_advice(game: &Game, level: AdviceLevel) -> Result<Vec<&'static str>, 
         return Ok(tips);
     }
 
-    if let Some(window_tips) = response_window_advice(game, beginner)? {
+    if let Some(mut window_tips) = response_window_advice(game, beginner)? {
+        if let Some(status) = game.combat_resolution() {
+            window_tips.push(crate::combat_ui::advice(status, beginner));
+        }
         return Ok(window_tips);
     }
 
@@ -1173,7 +1177,14 @@ fn response_window_advice(
         });
         return Ok(Some(tips));
     }
-    if let Some(showdown) = &game.showdown {
+    if let Some(status) = game.combat_resolution() {
+        return Ok(Some(vec![crate::combat_ui::advice(status, beginner)]));
+    }
+    if let Some(showdown) = game
+        .showdown
+        .as_ref()
+        .filter(|_| game.showdown_focus_open())
+    {
         let mut tips = vec![];
         if game.priority() == 0 {
             if showdown.passes > 0 {
@@ -1367,6 +1378,40 @@ mod tests {
 
     fn game() -> Game {
         Game::new(0, 1, 72, Difficulty::Easy)
+    }
+
+    #[test]
+    fn combat_advice_teaches_cleanup_and_conquer_without_reopening_focus() {
+        use local_rift::game::Action;
+        for attacker in 0..2 {
+            let mut game = crate::smoke::c23_deathknell_fixture(attacker, true);
+            for level in [AdviceLevel::Beginner, AdviceLevel::Advanced] {
+                let tips = advice(&game, level);
+                assert!(tips.iter().any(|tip| tip.contains("before determining")
+                    || tip.contains("before the combat result")));
+                assert!(tips.iter().all(|tip| !tip.contains("showdown is open")));
+            }
+            game.apply(Action::ChooseTriggerTargets { targets: vec![] })
+                .unwrap();
+            for level in [AdviceLevel::Beginner, AdviceLevel::Advanced] {
+                let tips = advice(&game, level);
+                assert!(tips.iter().any(|tip| tip.contains("Conquer")));
+                assert!(tips.iter().all(|tip| tip.chars().count() <= 180));
+                assert!(tips.iter().all(|tip| !tip.contains("showdown is open")));
+            }
+        }
+    }
+
+    #[test]
+    fn combat_advice_does_not_peek_at_opponent_cards() {
+        let mut game = crate::smoke::c23_deathknell_fixture(0, true);
+        let before = fingerprint(&game);
+        let beginner = advice(&game, AdviceLevel::Beginner);
+        let advanced = advice(&game, AdviceLevel::Advanced);
+        game.players[1].deck = vec![400, 399, 398, 69];
+        assert_eq!(fingerprint(&game), before);
+        assert_eq!(advice(&game, AdviceLevel::Beginner), beginner);
+        assert_eq!(advice(&game, AdviceLevel::Advanced), advanced);
     }
 
     #[test]
