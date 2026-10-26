@@ -1,5 +1,6 @@
 //! Deterministic native UI checks. Invoke before `App::draw`, starting at frame 0.
 //!
+//! Screenshot settings affect PNG output only; render checkpoints always run.
 //! This deliberately clicks the actual controls. A small public-state fixture
 //! supplies two ready units so the test does not depend on a particular AI plan.
 use super::{AdviceLevel, App, Difficulty, Game, Phase, SceneState, SceneUnit, Screen, Selection};
@@ -25,14 +26,14 @@ fn click(app: &mut App, x: f32, y: f32) {
 }
 
 fn capture(app: &mut App, variable: &str) {
+    app.companion.observe(&app.game);
+    let input = app.ui.input_override;
+    app.ui.input_override = Some((vec2(-100.0, -100.0), false, false));
+    app.draw();
     if let Ok(path) = std::env::var(variable) {
-        app.companion.observe(&app.game);
-        let input = app.ui.input_override;
-        app.ui.input_override = Some((vec2(-100.0, -100.0), false, false));
-        app.draw();
         get_screen_data().export_png(&path);
-        app.ui.input_override = input;
     }
+    app.ui.input_override = input;
 }
 
 fn hand_card(app: &mut App, name: &str) {
@@ -154,10 +155,10 @@ fn capture_unit(app: &mut App, id: u32, variable: &str) {
         });
     app.hover_object = Some((0, id));
     app.hover_since = get_time() - 1.0;
+    let rect = unit_rect(app, id);
+    app.ui.input_override = Some((rect.center(), false, false));
+    app.draw();
     if let Ok(path) = std::env::var(variable) {
-        let rect = unit_rect(app, id);
-        app.ui.input_override = Some((rect.center(), false, false));
-        app.draw();
         get_screen_data().export_png(&path);
     }
 }
@@ -175,9 +176,9 @@ fn capture_gear(app: &mut App, id: u32, variable: &str) {
     app.hover_rect = Some(Rect::new(776.0, 176.0, 350.0, 458.0));
     app.hover_since = get_time() - 1.0;
     app.hover_scroll = 0;
+    app.ui.input_override = Some((vec2(800.0, 450.0), false, false));
+    app.draw();
     if let Ok(path) = std::env::var(variable) {
-        app.ui.input_override = Some((vec2(800.0, 450.0), false, false));
-        app.draw();
         get_screen_data().export_png(&path);
     }
     app.hover_card = None;
@@ -1950,9 +1951,9 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
                     .automatic_damage_assignment(0, 0, 3)
                     .expect("valid numeric smoke fixture")
             );
+            app.ui.input_override = Some((vec2(-100.0, -100.0), false, false));
+            app.draw();
             if let Ok(path) = std::env::var("RIFT_SMOKE_COMBAT_SCREENSHOT") {
-                app.ui.input_override = Some((vec2(-100.0, -100.0), false, false));
-                app.draw();
                 get_screen_data().export_png(&path);
             }
             click(app, 1285.0, 510.0);
@@ -2080,9 +2081,9 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
             assert_eq!(draft.chosen.any, 2);
             assert_eq!(draft.chosen.spell, 0);
             assert!(app.game.clone().apply(App::payment_action(draft)).is_ok());
+            app.ui.input_override = Some((vec2(-100.0, -100.0), false, false));
+            app.draw();
             if let Ok(path) = std::env::var("RIFT_SMOKE_PAYMENT_SCREENSHOT") {
-                app.ui.input_override = Some((vec2(-100.0, -100.0), false, false));
-                app.draw();
                 get_screen_data().export_png(&path);
             }
             click(app, 936.0, 709.0);
@@ -2164,9 +2165,9 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
         }
         128 => {
             assert!(app.rune_menu.is_some());
+            app.ui.input_override = Some((vec2(-100.0, -100.0), false, false));
+            app.draw();
             if let Ok(path) = std::env::var("RIFT_SMOKE_RUNE_SCREENSHOT") {
-                app.ui.input_override = Some((vec2(-100.0, -100.0), false, false));
-                app.draw();
                 get_screen_data().export_png(&path);
             }
             click(app, app.rune_menu_at.x + 123.0, app.rune_menu_at.y + 120.0);
@@ -2207,9 +2208,9 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
         }
         133 => {
             assert_eq!(app.flow_source, Some(FlowSource::Printed));
+            app.ui.input_override = Some((vec2(-100.0, -100.0), false, false));
+            app.draw();
             if let Ok(path) = std::env::var("RIFT_SMOKE_FLOW_SCREENSHOT") {
-                app.ui.input_override = Some((vec2(-100.0, -100.0), false, false));
-                app.draw();
                 get_screen_data().export_png(&path);
             }
             click(app, 1285.0, 510.0);
@@ -2329,9 +2330,9 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
             app.toast_until = 0.0;
         }
         141 => {
+            app.ui.input_override = Some((vec2(-100.0, -100.0), false, false));
+            app.draw();
             if let Ok(path) = std::env::var("RIFT_SMOKE_FIELDS_SCREENSHOT") {
-                app.ui.input_override = Some((vec2(-100.0, -100.0), false, false));
-                app.draw();
                 get_screen_data().export_png(&path);
             }
             click(app, 1285.0, 532.0);
@@ -2444,9 +2445,9 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
         }
         151 => {
             assert!(app.deck_editor.as_ref().unwrap().deck.validate().is_ok());
+            app.ui.input_override = Some((vec2(-100.0, -100.0), false, false));
+            app.draw();
             if let Ok(path) = std::env::var("RIFT_SMOKE_EDITOR_SCREENSHOT") {
-                app.ui.input_override = Some((vec2(-100.0, -100.0), false, false));
-                app.draw();
                 get_screen_data().export_png(&path);
             }
             click(app, 328.0, 771.0);
@@ -2855,8 +2856,8 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
                     && text.contains("Accelerate, when played")
             );
             app.ui.input_override = Some((vec2(panel.x + 40.0, panel.y + 240.0), false, false));
+            app.draw();
             if let Ok(path) = std::env::var("RIFT_SMOKE_KEYWORDS_SCREENSHOT") {
-                app.draw();
                 get_screen_data().export_png(&path);
             }
             app.ui.wheel_override = Some(-12.0);
@@ -3045,8 +3046,8 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
                 Difficulty::Easy,
                 "setup choice does not mutate the previous game"
             );
+            app.draw();
             if let Ok(path) = std::env::var("RIFT_SMOKE_DIFFICULTY_SCREENSHOT") {
-                app.draw();
                 get_screen_data().export_png(&path);
             }
             click(app, 1284.0, 312.0);
@@ -3162,8 +3163,8 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
             );
             let panel = app.hover_rect.expect("Shield hover appears");
             app.ui.input_override = Some((vec2(panel.x + 40.0, panel.y + 240.0), false, false));
+            app.draw();
             if let Ok(path) = std::env::var("RIFT_SMOKE_SHIELD_SCREENSHOT") {
-                app.draw();
                 get_screen_data().export_png(&path);
             }
             app.hover_card = None;
@@ -5636,8 +5637,8 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
                     && text.contains("Disempower source")
             );
             app.ui.input_override = Some((vec2(800.0, 420.0), false, false));
+            app.draw();
             if let Ok(path) = std::env::var("RIFT_SMOKE_EMPOWER_HOVER_SCREENSHOT") {
-                app.draw();
                 get_screen_data().export_png(&path);
             }
             app.ui.input_override = None;
@@ -6169,10 +6170,10 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
             app.hover_card = Some(283);
             app.hover_object = Some((0, id));
             app.hover_since = get_time() - 1.0;
+            let r = unit_rect(app, id);
+            app.ui.input_override = Some((r.center(), false, false));
+            app.draw();
             if let Ok(path) = std::env::var("RIFT_SMOKE_C5_EMPOWER_SCREENSHOT") {
-                let r = unit_rect(app, id);
-                app.ui.input_override = Some((r.center(), false, false));
-                app.draw();
                 get_screen_data().export_png(&path);
             }
             expansion_fixture(app, 278);
