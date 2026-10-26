@@ -315,6 +315,7 @@ fn show_of_strength_counts_current_might_including_equipment() {
     game.players[0].gear.push(GearState {
         id: 103,
         card_id: 117,
+        lane: None,
         attached_to: Some(100),
         ready: true,
         temporary: false,
@@ -367,6 +368,7 @@ fn shock_blast_discount_counts_legend_gear_or_unit_but_not_stale_identity() {
                 game.players[0].gear.push(GearState {
                     id: 100,
                     card_id: 117,
+                    lane: None,
                     attached_to: None,
                     ready: true,
                     temporary: false,

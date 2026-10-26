@@ -187,6 +187,7 @@ fn pending_spell_can_generate_matching_power_without_losing_its_identity() {
     g.players[0].gear.push(GearState {
         id: 101,
         card_id: 127,
+        lane: None,
         attached_to: None,
         ready: true,
         temporary: false,

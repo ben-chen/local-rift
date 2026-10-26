@@ -53,6 +53,7 @@ fn gear(g: &mut Game, id: u32, card_id: usize) -> AbilitySource {
     g.players[0].gear.push(GearState {
         id,
         card_id,
+        lane: None,
         attached_to: None,
         ready: true,
         temporary: false,
@@ -212,6 +213,7 @@ fn formula_enters_exhausted_and_can_empower_enemy_attached_gear_but_not_itself()
     g.players[1].gear.push(GearState {
         id: 906,
         card_id: 58,
+        lane: None,
         attached_to: Some(905),
         ready: false,
         temporary: false,
@@ -234,6 +236,7 @@ fn formula_can_empower_gold_and_an_already_empowered_gear_is_a_legal_noop() {
     g.players[0].gear.push(GearState {
         id: 908,
         card_id: 13,
+        lane: None,
         attached_to: None,
         ready: true,
         temporary: false,

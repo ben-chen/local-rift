@@ -67,13 +67,19 @@ fn selection_to_json(selection: &CostSelection) -> Value {
 }
 
 pub(super) fn choices_to_json(choices: &PlayChoices) -> Value {
-    json!({"repeats":choices.repeats.iter().map(|repeat|json!({"option_id":repeat.option_id.to_string(),
+    let mut value = json!({"repeats":choices.repeats.iter().map(|repeat|json!({"option_id":repeat.option_id.to_string(),
         "choices":execution_to_json(&repeat.choices)})).collect::<Vec<_>>(),
         "accelerate":choices.accelerate,"bonus":choices.bonus,
-        "cost_order":choices.cost_order.iter().map(selection_to_json).collect::<Vec<_>>()})
+        "cost_order":choices.cost_order.iter().map(selection_to_json).collect::<Vec<_>>()});
+    // Preserve the existing wire shape for non-modal plays. A selected base
+    // execution mode remains explicit and independent of Repeat selections.
+    if let Some(mode) = choices.mode {
+        value["mode"] = json!(mode);
+    }
+    value
 }
 
-fn cost_to_json(cost: &CostValue) -> Value {
+pub(super) fn cost_to_json(cost: &CostValue) -> Value {
     json!({"energy":cost.energy,"power":cost.power,"xp":cost.xp,"xp_exact":cost.xp.to_string(),
         "domains":cost.domains.iter().map(|d|d.name().to_lowercase()).collect::<Vec<_>>()})
 }
@@ -96,6 +102,8 @@ pub(super) fn plan_to_json(plan: &CostPlanView) -> Value {
 
 pub(super) fn view_to_json(view: &PlayChoiceView) -> Value {
     json!({"card_id":view.card_id,"origin":origin_to_json(view.origin),
+        "modes":view.modes.iter().map(|mode|json!({"index":mode.index,"label":mode.label,
+            "target_kinds":mode.target_kinds.iter().copied().map(targeting::target_kind).collect::<Vec<_>>()})).collect::<Vec<_>>(),
         "repeats":view.repeats.iter().map(|option|json!({"id":option.id.to_string(),"label":option.label,
             "source":chain_source_to_json(option.source),"cost":cost_to_json(&option.cost)})).collect::<Vec<_>>(),
         "accelerate":view.accelerate.as_ref().map(|option|json!({"label":option.label,"cost":cost_to_json(&option.cost)})),
@@ -166,7 +174,10 @@ fn parse_execution(value: &Value) -> Result<ExecutionChoices, ApiError> {
 
 pub(super) fn parse_choices(value: &Value) -> Result<PlayChoices, ApiError> {
     let obj = object(value)?;
-    keys(obj, &["repeats", "accelerate", "bonus", "cost_order"])?;
+    keys(
+        obj,
+        &["repeats", "accelerate", "bonus", "cost_order", "mode"],
+    )?;
     let repeats = optional_array(obj, "repeats")?
         .iter()
         .map(|value| {
@@ -203,6 +214,11 @@ pub(super) fn parse_choices(value: &Value) -> Result<PlayChoices, ApiError> {
         })
         .collect::<Result<Vec<_>, ApiError>>()?;
     Ok(PlayChoices {
+        mode: if obj.get("mode").is_none_or(Value::is_null) {
+            None
+        } else {
+            Some(index(obj, "mode")?)
+        },
         repeats,
         accelerate: flag(obj, "accelerate")?,
         bonus: flag(obj, "bonus")?,
@@ -225,6 +241,7 @@ mod tests {
                 }],
             }),
             choices: PlayChoices {
+                mode: None,
                 repeats: vec![
                     RepeatSelection {
                         option_id: 8_000_000_003,
@@ -608,6 +625,7 @@ mod tests {
             id: 903,
             card_id: 254,
             attached_to: None,
+            lane: None,
             ready: true,
             temporary: false,
             token: false,

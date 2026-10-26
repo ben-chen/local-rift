@@ -47,6 +47,7 @@ fn gold(game: &mut Game, empowered: bool) {
     game.players[0].gear.push(GearState {
         id: 900,
         card_id: 13,
+        lane: None,
         attached_to: None,
         ready: true,
         temporary: false,
@@ -164,6 +165,7 @@ fn failed_attempt_restores_original_mandatory_choice_and_in_payment_sources() {
     game.players[0].gear.push(GearState {
         id: 901,
         card_id: 130,
+        lane: None,
         attached_to: None,
         ready: true,
         temporary: false,

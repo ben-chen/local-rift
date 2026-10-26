@@ -199,6 +199,7 @@ fn intrinsic_gear_characteristic_and_filtered_catalog_rules_are_unambiguous() {
             id: 22202,
             card_id: 242,
             attached_to: None,
+            lane: None,
             ready: true,
             temporary: false,
             token: false,

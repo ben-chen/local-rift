@@ -146,22 +146,22 @@
     "unresolved_type_conflict_identities": 0,
     "implemented_legal_by_kind": {
       "battlefield": 11,
-      "gear": 66,
+      "gear": 74,
       "legend": 10,
       "rune": 6,
-      "spell": 111,
-      "unit": 224
+      "spell": 112,
+      "unit": 225
     },
-    "implemented_main_cards": 401,
+    "implemented_main_cards": 411,
     "implemented_legends": 10,
     "implemented_battlefields": 11,
-    "implemented_legal_identities": 428,
-    "unimplemented_legal_identities": 651,
+    "implemented_legal_identities": 438,
+    "unimplemented_legal_identities": 641,
     "errata_entries": 67,
     "identities_with_errata": 67,
-    "source_quality_issues": 47,
-    "reviewed_field_resolutions": 122,
-    "resolved_source_issue_groups": 47,
+    "source_quality_issues": 52,
+    "reviewed_field_resolutions": 137,
+    "resolved_source_issue_groups": 52,
     "unresolved_source_issue_groups": 0,
     "unresolved_gameplay_identities": 0,
     "unreviewed_variant_identities": 95,
@@ -172,33 +172,33 @@
     "pinned_runtime_variant_identities": 0,
     "reviewed_variant_identities": 29,
     "reviewed_variant_printings": 90,
-    "field_reviewed_printings": 77
+    "field_reviewed_printings": 87
   },
   "unimplemented_by_observed_keyword": {
     "ADD": 1,
     "Accelerate": 17,
     "Action": 62,
-    "Add": 23,
+    "Add": 22,
     "Ambush": 10,
-    "Assault": 15,
+    "Assault": 14,
     "Backline": 2,
-    "Buff": 10,
+    "Buff": 9,
     "Deathknell": 10,
     "Deflect": 26,
-    "Deploy": 24,
+    "Deploy": 14,
     "Disarm": 6,
     "Empower": 13,
     "Empowered": 16,
     "Equip": 27,
     "Flow": 8,
-    "Ganking": 32,
+    "Ganking": 31,
     "Hidden": 32,
     "Hunt": 1,
     "Legion": 3,
     "Mighty": 9,
     "Predict": 5,
     "Quick-Draw": 2,
-    "Reaction": 71,
+    "Reaction": 70,
     "Repeat": 10,
     "Shield": 12,
     "Show Off": 6,
@@ -2826,16 +2826,20 @@
       "rules_text_status": "official_gallery_printing_text",
       "conflicting_fields": [],
       "source_review": {
-        "status": "no_detected_conflicts",
-        "resolution_ids": [],
+        "status": "reviewed_corrections",
+        "resolution_ids": [
+          "rad-002-167:tags"
+        ],
         "unresolved_gameplay_fields": [],
         "variant_diagnostics": [],
         "reviewed_variant_fields": [],
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 401,
+        "official_id": "rad-002-167",
+        "playable_in_client": true
       }
     },
     {
@@ -4268,16 +4272,21 @@
       "rules_text_status": "official_gallery_printing_text",
       "conflicting_fields": [],
       "source_review": {
-        "status": "no_detected_conflicts",
-        "resolution_ids": [],
+        "status": "reviewed_corrections",
+        "resolution_ids": [
+          "rad-024-167:domains",
+          "rad-024-167:tags"
+        ],
         "unresolved_gameplay_fields": [],
         "variant_diagnostics": [],
         "reviewed_variant_fields": [],
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 402,
+        "official_id": "rad-024-167",
+        "playable_in_client": true
       }
     },
     {
@@ -6496,8 +6505,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 410,
+        "official_id": "rad-033-167",
+        "playable_in_client": true
       }
     },
     {
@@ -6593,16 +6604,20 @@
       "rules_text_status": "official_gallery_printing_text",
       "conflicting_fields": [],
       "source_review": {
-        "status": "no_detected_conflicts",
-        "resolution_ids": [],
+        "status": "reviewed_corrections",
+        "resolution_ids": [
+          "rad-116-167:tags"
+        ],
         "unresolved_gameplay_fields": [],
         "variant_diagnostics": [],
         "reviewed_variant_fields": [],
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 403,
+        "official_id": "rad-116-167",
+        "playable_in_client": true
       }
     },
     {
@@ -8656,8 +8671,10 @@
       "rules_text_status": "official_gallery_printing_text",
       "conflicting_fields": [],
       "source_review": {
-        "status": "no_detected_conflicts",
-        "resolution_ids": [],
+        "status": "reviewed_corrections",
+        "resolution_ids": [
+          "rad-156-167:tags"
+        ],
         "unresolved_gameplay_fields": [],
         "variant_diagnostics": [],
         "reviewed_variant_fields": [],
@@ -8831,8 +8848,11 @@
       "rules_text_status": "official_gallery_printing_text",
       "conflicting_fields": [],
       "source_review": {
-        "status": "no_detected_conflicts",
-        "resolution_ids": [],
+        "status": "reviewed_corrections",
+        "resolution_ids": [
+          "rad-017-167:domains",
+          "rad-017-167:tags"
+        ],
         "unresolved_gameplay_fields": [],
         "variant_diagnostics": [],
         "reviewed_variant_fields": [],
@@ -14490,8 +14510,11 @@
       "rules_text_status": "official_gallery_printing_text",
       "conflicting_fields": [],
       "source_review": {
-        "status": "no_detected_conflicts",
-        "resolution_ids": [],
+        "status": "reviewed_corrections",
+        "resolution_ids": [
+          "rad-062-167:domains",
+          "rad-062-167:tags"
+        ],
         "unresolved_gameplay_fields": [],
         "variant_diagnostics": [],
         "reviewed_variant_fields": [],
@@ -16596,8 +16619,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 404,
+        "official_id": "rad-044-167",
+        "playable_in_client": true
       }
     },
     {
@@ -25122,8 +25147,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 409,
+        "official_id": "rad-072-167",
+        "playable_in_client": true
       }
     },
     {
@@ -25803,16 +25830,21 @@
       "rules_text_status": "official_gallery_printing_text",
       "conflicting_fields": [],
       "source_review": {
-        "status": "no_detected_conflicts",
-        "resolution_ids": [],
+        "status": "reviewed_corrections",
+        "resolution_ids": [
+          "rad-073-167:domains",
+          "rad-073-167:tags"
+        ],
         "unresolved_gameplay_fields": [],
         "variant_diagnostics": [],
         "reviewed_variant_fields": [],
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 405,
+        "official_id": "rad-073-167",
+        "playable_in_client": true
       }
     },
     {
@@ -26407,8 +26439,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 406,
+        "official_id": "rad-087-167",
+        "playable_in_client": true
       }
     },
     {
@@ -29289,16 +29323,20 @@
       "rules_text_status": "official_gallery_printing_text",
       "conflicting_fields": [],
       "source_review": {
-        "status": "no_detected_conflicts",
-        "resolution_ids": [],
+        "status": "reviewed_corrections",
+        "resolution_ids": [
+          "rad-052-167:tags"
+        ],
         "unresolved_gameplay_fields": [],
         "variant_diagnostics": [],
         "reviewed_variant_fields": [],
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 407,
+        "official_id": "rad-052-167",
+        "playable_in_client": true
       }
     },
     {
@@ -36538,8 +36576,10 @@
       "rules_text_status": "official_gallery_printing_text",
       "conflicting_fields": [],
       "source_review": {
-        "status": "no_detected_conflicts",
-        "resolution_ids": [],
+        "status": "reviewed_corrections",
+        "resolution_ids": [
+          "rad-146-167:tags"
+        ],
         "unresolved_gameplay_fields": [],
         "variant_diagnostics": [],
         "reviewed_variant_fields": [],
@@ -36749,16 +36789,21 @@
       "rules_text_status": "official_gallery_printing_text",
       "conflicting_fields": [],
       "source_review": {
-        "status": "no_detected_conflicts",
-        "resolution_ids": [],
+        "status": "reviewed_corrections",
+        "resolution_ids": [
+          "rad-106-167:domains",
+          "rad-106-167:tags"
+        ],
         "unresolved_gameplay_fields": [],
         "variant_diagnostics": [],
         "reviewed_variant_fields": [],
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 408,
+        "official_id": "rad-106-167",
+        "playable_in_client": true
       }
     },
     {
@@ -65397,15 +65442,15 @@
         "power": 1,
         "might": null,
         "might_bonus": null,
-        "tags": [
-          "Device"
-        ],
+        "tags": [],
         "rules_html": "<p>[Deploy] (Play this only to a battlefield. When an opponent holds here, kill this.)<br />Friendly units here have [Assault]. (+1 :rb_might: while they're attackers.)</p>",
         "rules_text": "[Deploy] (Play this only to a battlefield. When an opponent holds here, kill this.)\nFriendly units here have [Assault]. (+1 Might while they're attackers.)",
         "equipment_html": "",
         "equipment_text": ""
       },
-      "resolution_ids": [],
+      "resolution_ids": [
+        "rad-002-167:tags"
+      ],
       "unresolved_gameplay_fields": []
     },
     {
@@ -66281,21 +66326,22 @@
         ],
         "super_types": [],
         "domains": [
-          "chaos"
+          "fury"
         ],
         "energy": 4,
         "power": 1,
         "might": null,
         "might_bonus": null,
-        "tags": [
-          "Device"
-        ],
+        "tags": [],
         "rules_html": "<p>[Deploy] (Play this only to a battlefield. When an opponent holds here, kill this.)<br />When you play this, you may kill another friendly unit or gear to draw 1.<br />Friendly [Deathknell] effects here trigger an additional time.</p>",
         "rules_text": "[Deploy] (Play this only to a battlefield. When an opponent holds here, kill this.)\nWhen you play this, you may kill another friendly unit or gear to draw 1.\nFriendly [Deathknell] effects here trigger an additional time.",
         "equipment_html": "",
         "equipment_text": ""
       },
-      "resolution_ids": [],
+      "resolution_ids": [
+        "rad-017-167:domains",
+        "rad-017-167:tags"
+      ],
       "unresolved_gameplay_fields": []
     },
     {
@@ -66906,21 +66952,22 @@
         ],
         "super_types": [],
         "domains": [
-          "chaos"
+          "calm"
         ],
         "energy": 2,
         "power": null,
         "might": null,
         "might_bonus": null,
-        "tags": [
-          "Device"
-        ],
+        "tags": [],
         "rules_html": "<p>[Deploy] (Play this only to a battlefield. When an opponent holds here, kill this.)<br />When you win a combat here, draw 1.</p>",
         "rules_text": "[Deploy] (Play this only to a battlefield. When an opponent holds here, kill this.)\nWhen you win a combat here, draw 1.",
         "equipment_html": "",
         "equipment_text": ""
       },
-      "resolution_ids": [],
+      "resolution_ids": [
+        "rad-024-167:domains",
+        "rad-024-167:tags"
+      ],
       "unresolved_gameplay_fields": []
     },
     {
@@ -68754,15 +68801,15 @@
         "power": null,
         "might": null,
         "might_bonus": null,
-        "tags": [
-          "Device"
-        ],
+        "tags": [],
         "rules_html": "<p>[Deploy] (Play this only to a battlefield. When an opponent holds here, kill this.)<br />At the end of your turn, if you control this battlefield, play a Gold gear token exhausted. (It has &quot;[Reaction][&gt;] Kill this, :rb_exhaust:: [Add] :rb_rune_rainbow:.&quot;)</p>",
         "rules_text": "[Deploy] (Play this only to a battlefield. When an opponent holds here, kill this.)\nAt the end of your turn, if you control this battlefield, play a Gold gear token exhausted. (It has \"[Reaction][>] Kill this, [Exhaust]: [Add] [Any Power].\")",
         "equipment_html": "",
         "equipment_text": ""
       },
-      "resolution_ids": [],
+      "resolution_ids": [
+        "rad-052-167:tags"
+      ],
       "unresolved_gameplay_fields": []
     },
     {
@@ -69408,21 +69455,22 @@
         ],
         "super_types": [],
         "domains": [
-          "calm"
+          "mind"
         ],
         "energy": 5,
         "power": 1,
         "might": null,
         "might_bonus": null,
-        "tags": [
-          "Device"
-        ],
+        "tags": [],
         "rules_html": "<p>[Deploy] (Play this only to a battlefield. When an opponent holds here, kill this.)<br />Opponents must pay :rb_energy_1::rb_rune_rainbow: to move one or more units to this battlefield.<br />[Deathknell][&gt;] Draw 1. (When I die, get the effect.)</p>",
         "rules_text": "[Deploy] (Play this only to a battlefield. When an opponent holds here, kill this.)\nOpponents must pay [1 Energy][Any Power] to move one or more units to this battlefield.\n[Deathknell][>] Draw 1. (When I die, get the effect.)",
         "equipment_html": "",
         "equipment_text": ""
       },
-      "resolution_ids": [],
+      "resolution_ids": [
+        "rad-062-167:domains",
+        "rad-062-167:tags"
+      ],
       "unresolved_gameplay_fields": []
     },
     {
@@ -70214,21 +70262,22 @@
         ],
         "super_types": [],
         "domains": [
-          "calm"
+          "body"
         ],
         "energy": 1,
         "power": null,
         "might": null,
         "might_bonus": null,
-        "tags": [
-          "Device"
-        ],
+        "tags": [],
         "rules_html": "<p>[Deploy] (Play this only to a battlefield. When an opponent holds here, kill this.)<br />When you play this or when you conquer here, [Buff] a friendly unit. (Give it a +1 :rb_might: buff if it doesn't have one.)</p>",
         "rules_text": "[Deploy] (Play this only to a battlefield. When an opponent holds here, kill this.)\nWhen you play this or when you conquer here, [Buff] a friendly unit. (Give it a +1 Might buff if it doesn't have one.)",
         "equipment_html": "",
         "equipment_text": ""
       },
-      "resolution_ids": [],
+      "resolution_ids": [
+        "rad-073-167:domains",
+        "rad-073-167:tags"
+      ],
       "unresolved_gameplay_fields": []
     },
     {
@@ -72362,21 +72411,22 @@
         ],
         "super_types": [],
         "domains": [
-          "body"
+          "chaos"
         ],
         "energy": 3,
         "power": 1,
         "might": null,
         "might_bonus": null,
-        "tags": [
-          "Device"
-        ],
+        "tags": [],
         "rules_html": "<p>[Deploy] (Play this only to a battlefield. When an opponent holds here, kill this.)<br />When you play this, discard 1, then draw 3.<br />When you hold here, return this to its owner's hand.</p>",
         "rules_text": "[Deploy] (Play this only to a battlefield. When an opponent holds here, kill this.)\nWhen you play this, discard 1, then draw 3.\nWhen you hold here, return this to its owner's hand.",
         "equipment_html": "",
         "equipment_text": ""
       },
-      "resolution_ids": [],
+      "resolution_ids": [
+        "rad-106-167:domains",
+        "rad-106-167:tags"
+      ],
       "unresolved_gameplay_fields": []
     },
     {
@@ -73181,15 +73231,15 @@
         "power": null,
         "might": null,
         "might_bonus": null,
-        "tags": [
-          "Device"
-        ],
+        "tags": [],
         "rules_html": "<p>[Deploy] (Play this only to a battlefield. When an opponent holds here, kill this.)<br />When you play this or when you conquer here, you may pay :rb_energy_1: to play a 1 :rb_might: Recruit unit token to your base.</p>",
         "rules_text": "[Deploy] (Play this only to a battlefield. When an opponent holds here, kill this.)\nWhen you play this or when you conquer here, you may pay [1 Energy] to play a 1 Might Recruit unit token to your base.",
         "equipment_html": "",
         "equipment_text": ""
       },
-      "resolution_ids": [],
+      "resolution_ids": [
+        "rad-116-167:tags"
+      ],
       "unresolved_gameplay_fields": []
     },
     {
@@ -75231,7 +75281,6 @@
         "might": null,
         "might_bonus": null,
         "tags": [
-          "Device",
           "Orianna"
         ],
         "rules_html": "<p>[Deploy] (Play this only to a battlefield. When an opponent holds here, kill this.)<br />[Ganking] (While this is a unit, it can move from battlefield to battlefield.)<br />When you play or move this, choose one —</p><ul><li>Draw 1.</li><li>Deal 2 to enemy units here.</li></ul>",
@@ -75239,7 +75288,9 @@
         "equipment_html": "",
         "equipment_text": ""
       },
-      "resolution_ids": [],
+      "resolution_ids": [
+        "rad-146-167:tags"
+      ],
       "unresolved_gameplay_fields": []
     },
     {
@@ -75885,7 +75936,6 @@
         "might": null,
         "might_bonus": null,
         "tags": [
-          "Device",
           "Jarvan IV"
         ],
         "rules_html": "<p>[Deploy] (Play this only to a battlefield. When an opponent holds here, kill this.)<br />When one or more friendly units attack here, give one of them +2 :rb_might: this turn.<br />When you hold here, you may return this to its owner's hand.</p>",
@@ -75893,7 +75943,9 @@
         "equipment_html": "",
         "equipment_text": ""
       },
-      "resolution_ids": [],
+      "resolution_ids": [
+        "rad-156-167:tags"
+      ],
       "unresolved_gameplay_fields": []
     },
     {
@@ -130085,6 +130137,101 @@
         }
       ],
       "detail": "The exact RAD-074/167 official face prints UNIT / FRELJORD. The structured gallery omits all printed tags. Only the effective tag set is corrected from the explicit printed type/tag line; no tag is inferred from the name or illustration."
+    },
+    {
+      "kind": "official_artwork_field_mismatch",
+      "field": "domains",
+      "official_ids": [
+        "rad-024-167"
+      ],
+      "values": [
+        {
+          "official_id": "rad-024-167",
+          "raw_value": [
+            "chaos"
+          ],
+          "printed_value": [
+            "calm"
+          ]
+        }
+      ],
+      "detail": "The exact official face shows the Calm domain glyph and frame. The raw gallery domain remains preserved; only the effective gameplay domain is corrected."
+    },
+    {
+      "kind": "official_artwork_field_mismatch",
+      "field": "domains",
+      "official_ids": [
+        "rad-017-167"
+      ],
+      "values": [
+        {
+          "official_id": "rad-017-167",
+          "raw_value": [
+            "chaos"
+          ],
+          "printed_value": [
+            "fury"
+          ]
+        }
+      ],
+      "detail": "The exact official face shows the Fury domain glyph and frame. The raw gallery domain remains preserved; only the effective gameplay domain is corrected."
+    },
+    {
+      "kind": "official_artwork_field_mismatch",
+      "field": "domains",
+      "official_ids": [
+        "rad-062-167"
+      ],
+      "values": [
+        {
+          "official_id": "rad-062-167",
+          "raw_value": [
+            "calm"
+          ],
+          "printed_value": [
+            "mind"
+          ]
+        }
+      ],
+      "detail": "The exact official face shows the Mind domain glyph and frame. The raw gallery domain remains preserved; only the effective gameplay domain is corrected."
+    },
+    {
+      "kind": "official_artwork_field_mismatch",
+      "field": "domains",
+      "official_ids": [
+        "rad-073-167"
+      ],
+      "values": [
+        {
+          "official_id": "rad-073-167",
+          "raw_value": [
+            "calm"
+          ],
+          "printed_value": [
+            "body"
+          ]
+        }
+      ],
+      "detail": "The exact official face shows the Body domain glyph and frame. The raw gallery domain remains preserved; only the effective gameplay domain is corrected."
+    },
+    {
+      "kind": "official_artwork_field_mismatch",
+      "field": "domains",
+      "official_ids": [
+        "rad-106-167"
+      ],
+      "values": [
+        {
+          "official_id": "rad-106-167",
+          "raw_value": [
+            "body"
+          ],
+          "printed_value": [
+            "chaos"
+          ]
+        }
+      ],
+      "detail": "The exact official face shows the Chaos domain glyph and frame. The raw gallery domain remains preserved; only the effective gameplay domain is corrected."
     }
   ],
   "source_issue_reviews": [
@@ -131206,6 +131353,151 @@
           }
         ],
         "detail": "The exact RAD-074/167 official face prints UNIT / FRELJORD. The structured gallery omits all printed tags. Only the effective tag set is corrected from the explicit printed type/tag line; no tag is inferred from the name or illustration."
+      }
+    },
+    {
+      "review_issue_id": "rad-024-167-domains",
+      "official_ids": [
+        "rad-024-167"
+      ],
+      "resolution_ids": [
+        "rad-024-167:domains"
+      ],
+      "status": "resolved_by_review",
+      "raw_issue": {
+        "kind": "official_artwork_field_mismatch",
+        "field": "domains",
+        "official_ids": [
+          "rad-024-167"
+        ],
+        "values": [
+          {
+            "official_id": "rad-024-167",
+            "raw_value": [
+              "chaos"
+            ],
+            "printed_value": [
+              "calm"
+            ]
+          }
+        ],
+        "detail": "The exact official face shows the Calm domain glyph and frame. The raw gallery domain remains preserved; only the effective gameplay domain is corrected."
+      }
+    },
+    {
+      "review_issue_id": "rad-017-167-domains",
+      "official_ids": [
+        "rad-017-167"
+      ],
+      "resolution_ids": [
+        "rad-017-167:domains"
+      ],
+      "status": "resolved_by_review",
+      "raw_issue": {
+        "kind": "official_artwork_field_mismatch",
+        "field": "domains",
+        "official_ids": [
+          "rad-017-167"
+        ],
+        "values": [
+          {
+            "official_id": "rad-017-167",
+            "raw_value": [
+              "chaos"
+            ],
+            "printed_value": [
+              "fury"
+            ]
+          }
+        ],
+        "detail": "The exact official face shows the Fury domain glyph and frame. The raw gallery domain remains preserved; only the effective gameplay domain is corrected."
+      }
+    },
+    {
+      "review_issue_id": "rad-062-167-domains",
+      "official_ids": [
+        "rad-062-167"
+      ],
+      "resolution_ids": [
+        "rad-062-167:domains"
+      ],
+      "status": "resolved_by_review",
+      "raw_issue": {
+        "kind": "official_artwork_field_mismatch",
+        "field": "domains",
+        "official_ids": [
+          "rad-062-167"
+        ],
+        "values": [
+          {
+            "official_id": "rad-062-167",
+            "raw_value": [
+              "calm"
+            ],
+            "printed_value": [
+              "mind"
+            ]
+          }
+        ],
+        "detail": "The exact official face shows the Mind domain glyph and frame. The raw gallery domain remains preserved; only the effective gameplay domain is corrected."
+      }
+    },
+    {
+      "review_issue_id": "rad-073-167-domains",
+      "official_ids": [
+        "rad-073-167"
+      ],
+      "resolution_ids": [
+        "rad-073-167:domains"
+      ],
+      "status": "resolved_by_review",
+      "raw_issue": {
+        "kind": "official_artwork_field_mismatch",
+        "field": "domains",
+        "official_ids": [
+          "rad-073-167"
+        ],
+        "values": [
+          {
+            "official_id": "rad-073-167",
+            "raw_value": [
+              "calm"
+            ],
+            "printed_value": [
+              "body"
+            ]
+          }
+        ],
+        "detail": "The exact official face shows the Body domain glyph and frame. The raw gallery domain remains preserved; only the effective gameplay domain is corrected."
+      }
+    },
+    {
+      "review_issue_id": "rad-106-167-domains",
+      "official_ids": [
+        "rad-106-167"
+      ],
+      "resolution_ids": [
+        "rad-106-167:domains"
+      ],
+      "status": "resolved_by_review",
+      "raw_issue": {
+        "kind": "official_artwork_field_mismatch",
+        "field": "domains",
+        "official_ids": [
+          "rad-106-167"
+        ],
+        "values": [
+          {
+            "official_id": "rad-106-167",
+            "raw_value": [
+              "body"
+            ],
+            "printed_value": [
+              "chaos"
+            ]
+          }
+        ],
+        "detail": "The exact official face shows the Chaos domain glyph and frame. The raw gallery domain remains preserved; only the effective gameplay domain is corrected."
       }
     }
   ],
@@ -135222,6 +135514,634 @@
         }
       ],
       "enables_runtime_support": false
+    },
+    {
+      "id": "rad-002-167:tags",
+      "official_id": "rad-002-167",
+      "name": "Banner of Conquest",
+      "field": "tags",
+      "reviewed_on": "2026-10-25",
+      "basis": "rule_derived",
+      "operation": "override",
+      "expected_raw_value": [
+        "Device"
+      ],
+      "raw_source_field": "tags",
+      "expected_raw_source_value": [
+        "Device"
+      ],
+      "effective_value": [],
+      "gallery_uncompressed_sha256": "3f326496a212a3583997696042171ce9e1db1740b05fcfa78ec48ca961e4be8a",
+      "expected_printing_sha256": "c240a91dd202495e04abd98a29d1908c4e6767f3bebaed1c5c281596fe7c5bec",
+      "printing_hash_encoding": "UTF-8 JSON sorted keys; ensure_ascii=false; separators=(',', ':')",
+      "reason": "The printed type/tag line has no Device tag. Core 133.8 defines printed tags, 763.1 omits Device, and 830 does not grant it. Exclude the website-only Device classification while preserving every actually printed champion tag. This is rule-derived, not a card-specific erratum.",
+      "evidence": [
+        {
+          "kind": "official_card_image",
+          "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/1e2a4e0a8cf533c82e9c3f4d507dd7eb63ece943-744x1039.png?accountingTag=RB",
+          "local_path": "assets/data/catalog_evidence/images/rad-002-167.png",
+          "sha256": "73700384d5a62a8c7482e713ccd97116172b1cb50ec1b274a765568b66dccd36",
+          "bytes": 754406,
+          "location": "Printed type/tag line below artwork"
+        },
+        {
+          "kind": "official_core_rules",
+          "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/5c7946f7c3b8c6e0faff85ab6dadc6d2e721ea94.pdf",
+          "local_path": "assets/data/catalog_evidence/rules/94d41fee86f88b61c4157c0389c0595d990b98e5b42555c99d9f649ee64d1fec.pdf",
+          "sha256": "94d41fee86f88b61c4157c0389c0595d990b98e5b42555c99d9f649ee64d1fec",
+          "bytes": 1612011,
+          "last_updated": "2026-10-09",
+          "rules": [
+            "133.8",
+            "763.1",
+            "830"
+          ]
+        }
+      ],
+      "enables_runtime_support": false
+    },
+    {
+      "id": "rad-024-167:domains",
+      "official_id": "rad-024-167",
+      "name": "Blossoming Dreamroot",
+      "field": "domains",
+      "reviewed_on": "2026-10-25",
+      "basis": "confirmed_artwork",
+      "operation": "override",
+      "expected_raw_value": [
+        "chaos"
+      ],
+      "raw_source_field": "domains",
+      "expected_raw_source_value": [
+        "chaos"
+      ],
+      "effective_value": [
+        "calm"
+      ],
+      "gallery_uncompressed_sha256": "3f326496a212a3583997696042171ce9e1db1740b05fcfa78ec48ca961e4be8a",
+      "expected_printing_sha256": "76d7e63e29ac00a5dda8afa0e170bf0f468a7dbafbd544808ee172bce41ade47",
+      "printing_hash_encoding": "UTF-8 JSON sorted keys; ensure_ascii=false; separators=(',', ':')",
+      "reason": "The exact official face shows the Calm domain glyph and frame. The raw gallery domain remains preserved; only the effective gameplay domain is corrected.",
+      "evidence": [
+        {
+          "kind": "official_card_image",
+          "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/5b819cc232389f3ef1438350d68c7801e181961c-744x1039.png?accountingTag=RB",
+          "local_path": "assets/data/catalog_evidence/images/rad-024-167.png",
+          "sha256": "3bfad68405a05598b1566de028635b460dd9e958bd38686f1be82d70b24ce8d7",
+          "bytes": 779815,
+          "location": "Printed domain glyph and frame"
+        }
+      ],
+      "enables_runtime_support": false
+    },
+    {
+      "id": "rad-024-167:tags",
+      "official_id": "rad-024-167",
+      "name": "Blossoming Dreamroot",
+      "field": "tags",
+      "reviewed_on": "2026-10-25",
+      "basis": "rule_derived",
+      "operation": "override",
+      "expected_raw_value": [
+        "Device"
+      ],
+      "raw_source_field": "tags",
+      "expected_raw_source_value": [
+        "Device"
+      ],
+      "effective_value": [],
+      "gallery_uncompressed_sha256": "3f326496a212a3583997696042171ce9e1db1740b05fcfa78ec48ca961e4be8a",
+      "expected_printing_sha256": "76d7e63e29ac00a5dda8afa0e170bf0f468a7dbafbd544808ee172bce41ade47",
+      "printing_hash_encoding": "UTF-8 JSON sorted keys; ensure_ascii=false; separators=(',', ':')",
+      "reason": "The printed type/tag line has no Device tag. Core 133.8 defines printed tags, 763.1 omits Device, and 830 does not grant it. Exclude the website-only Device classification while preserving every actually printed champion tag. This is rule-derived, not a card-specific erratum.",
+      "evidence": [
+        {
+          "kind": "official_card_image",
+          "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/5b819cc232389f3ef1438350d68c7801e181961c-744x1039.png?accountingTag=RB",
+          "local_path": "assets/data/catalog_evidence/images/rad-024-167.png",
+          "sha256": "3bfad68405a05598b1566de028635b460dd9e958bd38686f1be82d70b24ce8d7",
+          "bytes": 779815,
+          "location": "Printed type/tag line below artwork"
+        },
+        {
+          "kind": "official_core_rules",
+          "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/5c7946f7c3b8c6e0faff85ab6dadc6d2e721ea94.pdf",
+          "local_path": "assets/data/catalog_evidence/rules/94d41fee86f88b61c4157c0389c0595d990b98e5b42555c99d9f649ee64d1fec.pdf",
+          "sha256": "94d41fee86f88b61c4157c0389c0595d990b98e5b42555c99d9f649ee64d1fec",
+          "bytes": 1612011,
+          "last_updated": "2026-10-09",
+          "rules": [
+            "133.8",
+            "763.1",
+            "830"
+          ]
+        }
+      ],
+      "enables_runtime_support": false
+    },
+    {
+      "id": "rad-116-167:tags",
+      "official_id": "rad-116-167",
+      "name": "Concert Poster",
+      "field": "tags",
+      "reviewed_on": "2026-10-25",
+      "basis": "rule_derived",
+      "operation": "override",
+      "expected_raw_value": [
+        "Device"
+      ],
+      "raw_source_field": "tags",
+      "expected_raw_source_value": [
+        "Device"
+      ],
+      "effective_value": [],
+      "gallery_uncompressed_sha256": "3f326496a212a3583997696042171ce9e1db1740b05fcfa78ec48ca961e4be8a",
+      "expected_printing_sha256": "344af4cbe071bfc2f41d1abc18662c580afcb6007a40a036c3563f3d3fa8a9bd",
+      "printing_hash_encoding": "UTF-8 JSON sorted keys; ensure_ascii=false; separators=(',', ':')",
+      "reason": "The printed type/tag line has no Device tag. Core 133.8 defines printed tags, 763.1 omits Device, and 830 does not grant it. Exclude the website-only Device classification while preserving every actually printed champion tag. This is rule-derived, not a card-specific erratum.",
+      "evidence": [
+        {
+          "kind": "official_card_image",
+          "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/0e80322dac6065e3ee726f5f9a2650a88195a44c-744x1039.png?accountingTag=RB",
+          "local_path": "assets/data/catalog_evidence/images/rad-116-167.png",
+          "sha256": "d70d74a3d08a102a83476d7fde15a8b9cb978204ed74b4a534dd78c4e0ebfce9",
+          "bytes": 912230,
+          "location": "Printed type/tag line below artwork"
+        },
+        {
+          "kind": "official_core_rules",
+          "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/5c7946f7c3b8c6e0faff85ab6dadc6d2e721ea94.pdf",
+          "local_path": "assets/data/catalog_evidence/rules/94d41fee86f88b61c4157c0389c0595d990b98e5b42555c99d9f649ee64d1fec.pdf",
+          "sha256": "94d41fee86f88b61c4157c0389c0595d990b98e5b42555c99d9f649ee64d1fec",
+          "bytes": 1612011,
+          "last_updated": "2026-10-09",
+          "rules": [
+            "133.8",
+            "763.1",
+            "830"
+          ]
+        }
+      ],
+      "enables_runtime_support": false
+    },
+    {
+      "id": "rad-156-167:tags",
+      "official_id": "rad-156-167",
+      "name": "Demacian Standard",
+      "field": "tags",
+      "reviewed_on": "2026-10-25",
+      "basis": "rule_derived",
+      "operation": "override",
+      "expected_raw_value": [
+        "Device",
+        "Jarvan IV"
+      ],
+      "raw_source_field": "tags",
+      "expected_raw_source_value": [
+        "Device",
+        "Jarvan IV"
+      ],
+      "effective_value": [
+        "Jarvan IV"
+      ],
+      "gallery_uncompressed_sha256": "3f326496a212a3583997696042171ce9e1db1740b05fcfa78ec48ca961e4be8a",
+      "expected_printing_sha256": "dd87b9847d37d4adfef86dc0ba9de79f0d4e00cb74e47d9865fa00171f36e08c",
+      "printing_hash_encoding": "UTF-8 JSON sorted keys; ensure_ascii=false; separators=(',', ':')",
+      "reason": "The printed type/tag line has no Device tag. Core 133.8 defines printed tags, 763.1 omits Device, and 830 does not grant it. Exclude the website-only Device classification while preserving every actually printed champion tag. This is rule-derived, not a card-specific erratum.",
+      "evidence": [
+        {
+          "kind": "official_card_image",
+          "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/315b0f7901a83df38b9765f12b1edfdc7de566a3-744x1040.png?accountingTag=RB",
+          "local_path": "assets/data/catalog_evidence/images/rad-156-167.png",
+          "sha256": "5f90e1807f28ca2d0b8e078a94646af14f1cde78a18fac8f2eee5de719c77d86",
+          "bytes": 1106428,
+          "location": "Printed type/tag line below artwork"
+        },
+        {
+          "kind": "official_core_rules",
+          "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/5c7946f7c3b8c6e0faff85ab6dadc6d2e721ea94.pdf",
+          "local_path": "assets/data/catalog_evidence/rules/94d41fee86f88b61c4157c0389c0595d990b98e5b42555c99d9f649ee64d1fec.pdf",
+          "sha256": "94d41fee86f88b61c4157c0389c0595d990b98e5b42555c99d9f649ee64d1fec",
+          "bytes": 1612011,
+          "last_updated": "2026-10-09",
+          "rules": [
+            "133.8",
+            "763.1",
+            "830"
+          ]
+        }
+      ],
+      "enables_runtime_support": false
+    },
+    {
+      "id": "rad-017-167:domains",
+      "official_id": "rad-017-167",
+      "name": "Detonation Amplifier",
+      "field": "domains",
+      "reviewed_on": "2026-10-25",
+      "basis": "confirmed_artwork",
+      "operation": "override",
+      "expected_raw_value": [
+        "chaos"
+      ],
+      "raw_source_field": "domains",
+      "expected_raw_source_value": [
+        "chaos"
+      ],
+      "effective_value": [
+        "fury"
+      ],
+      "gallery_uncompressed_sha256": "3f326496a212a3583997696042171ce9e1db1740b05fcfa78ec48ca961e4be8a",
+      "expected_printing_sha256": "3d3e194b524cbdab82050f9346dfd3c2bdb2b00aa388bb40f68f334d6bda669b",
+      "printing_hash_encoding": "UTF-8 JSON sorted keys; ensure_ascii=false; separators=(',', ':')",
+      "reason": "The exact official face shows the Fury domain glyph and frame. The raw gallery domain remains preserved; only the effective gameplay domain is corrected.",
+      "evidence": [
+        {
+          "kind": "official_card_image",
+          "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/0cd07e77e69a53b78486b07dd7610183c953d581-744x1039.png?accountingTag=RB",
+          "local_path": "assets/data/catalog_evidence/images/rad-017-167.png",
+          "sha256": "844ef35acb29895ef4f3ec2c74084a8509babd917304aef808a191febda73690",
+          "bytes": 867034,
+          "location": "Printed domain glyph and frame"
+        }
+      ],
+      "enables_runtime_support": false
+    },
+    {
+      "id": "rad-017-167:tags",
+      "official_id": "rad-017-167",
+      "name": "Detonation Amplifier",
+      "field": "tags",
+      "reviewed_on": "2026-10-25",
+      "basis": "rule_derived",
+      "operation": "override",
+      "expected_raw_value": [
+        "Device"
+      ],
+      "raw_source_field": "tags",
+      "expected_raw_source_value": [
+        "Device"
+      ],
+      "effective_value": [],
+      "gallery_uncompressed_sha256": "3f326496a212a3583997696042171ce9e1db1740b05fcfa78ec48ca961e4be8a",
+      "expected_printing_sha256": "3d3e194b524cbdab82050f9346dfd3c2bdb2b00aa388bb40f68f334d6bda669b",
+      "printing_hash_encoding": "UTF-8 JSON sorted keys; ensure_ascii=false; separators=(',', ':')",
+      "reason": "The printed type/tag line has no Device tag. Core 133.8 defines printed tags, 763.1 omits Device, and 830 does not grant it. Exclude the website-only Device classification while preserving every actually printed champion tag. This is rule-derived, not a card-specific erratum.",
+      "evidence": [
+        {
+          "kind": "official_card_image",
+          "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/0cd07e77e69a53b78486b07dd7610183c953d581-744x1039.png?accountingTag=RB",
+          "local_path": "assets/data/catalog_evidence/images/rad-017-167.png",
+          "sha256": "844ef35acb29895ef4f3ec2c74084a8509babd917304aef808a191febda73690",
+          "bytes": 867034,
+          "location": "Printed type/tag line below artwork"
+        },
+        {
+          "kind": "official_core_rules",
+          "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/5c7946f7c3b8c6e0faff85ab6dadc6d2e721ea94.pdf",
+          "local_path": "assets/data/catalog_evidence/rules/94d41fee86f88b61c4157c0389c0595d990b98e5b42555c99d9f649ee64d1fec.pdf",
+          "sha256": "94d41fee86f88b61c4157c0389c0595d990b98e5b42555c99d9f649ee64d1fec",
+          "bytes": 1612011,
+          "last_updated": "2026-10-09",
+          "rules": [
+            "133.8",
+            "763.1",
+            "830"
+          ]
+        }
+      ],
+      "enables_runtime_support": false
+    },
+    {
+      "id": "rad-062-167:domains",
+      "official_id": "rad-062-167",
+      "name": "Gravity Field",
+      "field": "domains",
+      "reviewed_on": "2026-10-25",
+      "basis": "confirmed_artwork",
+      "operation": "override",
+      "expected_raw_value": [
+        "calm"
+      ],
+      "raw_source_field": "domains",
+      "expected_raw_source_value": [
+        "calm"
+      ],
+      "effective_value": [
+        "mind"
+      ],
+      "gallery_uncompressed_sha256": "3f326496a212a3583997696042171ce9e1db1740b05fcfa78ec48ca961e4be8a",
+      "expected_printing_sha256": "43c3ab5ee8b8c4d6a0f8200fc11ef2cc02ce571bc7a1b9a9adfc589e64c1e645",
+      "printing_hash_encoding": "UTF-8 JSON sorted keys; ensure_ascii=false; separators=(',', ':')",
+      "reason": "The exact official face shows the Mind domain glyph and frame. The raw gallery domain remains preserved; only the effective gameplay domain is corrected.",
+      "evidence": [
+        {
+          "kind": "official_card_image",
+          "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/51f589e5ed0f7316b6cb64ebc93c4ef3e75b7f46-744x1039.png?accountingTag=RB",
+          "local_path": "assets/data/catalog_evidence/images/rad-062-167.png",
+          "sha256": "cf874989914837b94cefdfba4397da14585b14b4c10189a7a246506a31d4085a",
+          "bytes": 887204,
+          "location": "Printed domain glyph and frame"
+        }
+      ],
+      "enables_runtime_support": false
+    },
+    {
+      "id": "rad-062-167:tags",
+      "official_id": "rad-062-167",
+      "name": "Gravity Field",
+      "field": "tags",
+      "reviewed_on": "2026-10-25",
+      "basis": "rule_derived",
+      "operation": "override",
+      "expected_raw_value": [
+        "Device"
+      ],
+      "raw_source_field": "tags",
+      "expected_raw_source_value": [
+        "Device"
+      ],
+      "effective_value": [],
+      "gallery_uncompressed_sha256": "3f326496a212a3583997696042171ce9e1db1740b05fcfa78ec48ca961e4be8a",
+      "expected_printing_sha256": "43c3ab5ee8b8c4d6a0f8200fc11ef2cc02ce571bc7a1b9a9adfc589e64c1e645",
+      "printing_hash_encoding": "UTF-8 JSON sorted keys; ensure_ascii=false; separators=(',', ':')",
+      "reason": "The printed type/tag line has no Device tag. Core 133.8 defines printed tags, 763.1 omits Device, and 830 does not grant it. Exclude the website-only Device classification while preserving every actually printed champion tag. This is rule-derived, not a card-specific erratum.",
+      "evidence": [
+        {
+          "kind": "official_card_image",
+          "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/51f589e5ed0f7316b6cb64ebc93c4ef3e75b7f46-744x1039.png?accountingTag=RB",
+          "local_path": "assets/data/catalog_evidence/images/rad-062-167.png",
+          "sha256": "cf874989914837b94cefdfba4397da14585b14b4c10189a7a246506a31d4085a",
+          "bytes": 887204,
+          "location": "Printed type/tag line below artwork"
+        },
+        {
+          "kind": "official_core_rules",
+          "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/5c7946f7c3b8c6e0faff85ab6dadc6d2e721ea94.pdf",
+          "local_path": "assets/data/catalog_evidence/rules/94d41fee86f88b61c4157c0389c0595d990b98e5b42555c99d9f649ee64d1fec.pdf",
+          "sha256": "94d41fee86f88b61c4157c0389c0595d990b98e5b42555c99d9f649ee64d1fec",
+          "bytes": 1612011,
+          "last_updated": "2026-10-09",
+          "rules": [
+            "133.8",
+            "763.1",
+            "830"
+          ]
+        }
+      ],
+      "enables_runtime_support": false
+    },
+    {
+      "id": "rad-073-167:domains",
+      "official_id": "rad-073-167",
+      "name": "Pillaged Armory",
+      "field": "domains",
+      "reviewed_on": "2026-10-25",
+      "basis": "confirmed_artwork",
+      "operation": "override",
+      "expected_raw_value": [
+        "calm"
+      ],
+      "raw_source_field": "domains",
+      "expected_raw_source_value": [
+        "calm"
+      ],
+      "effective_value": [
+        "body"
+      ],
+      "gallery_uncompressed_sha256": "3f326496a212a3583997696042171ce9e1db1740b05fcfa78ec48ca961e4be8a",
+      "expected_printing_sha256": "81dada2eb9541b7196f900fca3dd4435b8ab1fb529be3c3a9d82c5f010730267",
+      "printing_hash_encoding": "UTF-8 JSON sorted keys; ensure_ascii=false; separators=(',', ':')",
+      "reason": "The exact official face shows the Body domain glyph and frame. The raw gallery domain remains preserved; only the effective gameplay domain is corrected.",
+      "evidence": [
+        {
+          "kind": "official_card_image",
+          "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/374248eb65ca1e90a434652073dbbd3a12a11eda-744x1039.png?accountingTag=RB",
+          "local_path": "assets/data/catalog_evidence/images/rad-073-167.png",
+          "sha256": "6db52cb8232b3724b2a9db695070dae72d6eb29d429550e56cef0c862216f603",
+          "bytes": 730494,
+          "location": "Printed domain glyph and frame"
+        }
+      ],
+      "enables_runtime_support": false
+    },
+    {
+      "id": "rad-073-167:tags",
+      "official_id": "rad-073-167",
+      "name": "Pillaged Armory",
+      "field": "tags",
+      "reviewed_on": "2026-10-25",
+      "basis": "rule_derived",
+      "operation": "override",
+      "expected_raw_value": [
+        "Device"
+      ],
+      "raw_source_field": "tags",
+      "expected_raw_source_value": [
+        "Device"
+      ],
+      "effective_value": [],
+      "gallery_uncompressed_sha256": "3f326496a212a3583997696042171ce9e1db1740b05fcfa78ec48ca961e4be8a",
+      "expected_printing_sha256": "81dada2eb9541b7196f900fca3dd4435b8ab1fb529be3c3a9d82c5f010730267",
+      "printing_hash_encoding": "UTF-8 JSON sorted keys; ensure_ascii=false; separators=(',', ':')",
+      "reason": "The printed type/tag line has no Device tag. Core 133.8 defines printed tags, 763.1 omits Device, and 830 does not grant it. Exclude the website-only Device classification while preserving every actually printed champion tag. This is rule-derived, not a card-specific erratum.",
+      "evidence": [
+        {
+          "kind": "official_card_image",
+          "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/374248eb65ca1e90a434652073dbbd3a12a11eda-744x1039.png?accountingTag=RB",
+          "local_path": "assets/data/catalog_evidence/images/rad-073-167.png",
+          "sha256": "6db52cb8232b3724b2a9db695070dae72d6eb29d429550e56cef0c862216f603",
+          "bytes": 730494,
+          "location": "Printed type/tag line below artwork"
+        },
+        {
+          "kind": "official_core_rules",
+          "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/5c7946f7c3b8c6e0faff85ab6dadc6d2e721ea94.pdf",
+          "local_path": "assets/data/catalog_evidence/rules/94d41fee86f88b61c4157c0389c0595d990b98e5b42555c99d9f649ee64d1fec.pdf",
+          "sha256": "94d41fee86f88b61c4157c0389c0595d990b98e5b42555c99d9f649ee64d1fec",
+          "bytes": 1612011,
+          "last_updated": "2026-10-09",
+          "rules": [
+            "133.8",
+            "763.1",
+            "830"
+          ]
+        }
+      ],
+      "enables_runtime_support": false
+    },
+    {
+      "id": "rad-052-167:tags",
+      "official_id": "rad-052-167",
+      "name": "Resource Extractor",
+      "field": "tags",
+      "reviewed_on": "2026-10-25",
+      "basis": "rule_derived",
+      "operation": "override",
+      "expected_raw_value": [
+        "Device"
+      ],
+      "raw_source_field": "tags",
+      "expected_raw_source_value": [
+        "Device"
+      ],
+      "effective_value": [],
+      "gallery_uncompressed_sha256": "3f326496a212a3583997696042171ce9e1db1740b05fcfa78ec48ca961e4be8a",
+      "expected_printing_sha256": "82f4b11e9f27d19cab1fe71d1316c5f8411c9caa241191314cc7c99b53fce914",
+      "printing_hash_encoding": "UTF-8 JSON sorted keys; ensure_ascii=false; separators=(',', ':')",
+      "reason": "The printed type/tag line has no Device tag. Core 133.8 defines printed tags, 763.1 omits Device, and 830 does not grant it. Exclude the website-only Device classification while preserving every actually printed champion tag. This is rule-derived, not a card-specific erratum.",
+      "evidence": [
+        {
+          "kind": "official_card_image",
+          "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/d5cc2f85febe2260e51b88bddfeab6ce700c85dd-744x1039.png?accountingTag=RB",
+          "local_path": "assets/data/catalog_evidence/images/rad-052-167.png",
+          "sha256": "ef9e0c9eaffd1ffffa2ca6b64874ccf4060115fa7e672ec6f1ed6b7ea71a28a8",
+          "bytes": 780600,
+          "location": "Printed type/tag line below artwork"
+        },
+        {
+          "kind": "official_core_rules",
+          "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/5c7946f7c3b8c6e0faff85ab6dadc6d2e721ea94.pdf",
+          "local_path": "assets/data/catalog_evidence/rules/94d41fee86f88b61c4157c0389c0595d990b98e5b42555c99d9f649ee64d1fec.pdf",
+          "sha256": "94d41fee86f88b61c4157c0389c0595d990b98e5b42555c99d9f649ee64d1fec",
+          "bytes": 1612011,
+          "last_updated": "2026-10-09",
+          "rules": [
+            "133.8",
+            "763.1",
+            "830"
+          ]
+        }
+      ],
+      "enables_runtime_support": false
+    },
+    {
+      "id": "rad-146-167:tags",
+      "official_id": "rad-146-167",
+      "name": "The Ball",
+      "field": "tags",
+      "reviewed_on": "2026-10-25",
+      "basis": "rule_derived",
+      "operation": "override",
+      "expected_raw_value": [
+        "Device",
+        "Orianna"
+      ],
+      "raw_source_field": "tags",
+      "expected_raw_source_value": [
+        "Device",
+        "Orianna"
+      ],
+      "effective_value": [
+        "Orianna"
+      ],
+      "gallery_uncompressed_sha256": "3f326496a212a3583997696042171ce9e1db1740b05fcfa78ec48ca961e4be8a",
+      "expected_printing_sha256": "29e66fc056a96388d114b885e2ad9b07cfc5401c5901e639ea3bf022fd02b21a",
+      "printing_hash_encoding": "UTF-8 JSON sorted keys; ensure_ascii=false; separators=(',', ':')",
+      "reason": "The printed type/tag line has no Device tag. Core 133.8 defines printed tags, 763.1 omits Device, and 830 does not grant it. Exclude the website-only Device classification while preserving every actually printed champion tag. This is rule-derived, not a card-specific erratum.",
+      "evidence": [
+        {
+          "kind": "official_card_image",
+          "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/4b11f36bd5ce2b08677959664cda3906a04d234c-744x1040.png?accountingTag=RB",
+          "local_path": "assets/data/catalog_evidence/images/rad-146-167.png",
+          "sha256": "2eff7c4cce06322b977353002fd9536f84dfc60aa609a43c0a24359626390933",
+          "bytes": 1185891,
+          "location": "Printed type/tag line below artwork"
+        },
+        {
+          "kind": "official_core_rules",
+          "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/5c7946f7c3b8c6e0faff85ab6dadc6d2e721ea94.pdf",
+          "local_path": "assets/data/catalog_evidence/rules/94d41fee86f88b61c4157c0389c0595d990b98e5b42555c99d9f649ee64d1fec.pdf",
+          "sha256": "94d41fee86f88b61c4157c0389c0595d990b98e5b42555c99d9f649ee64d1fec",
+          "bytes": 1612011,
+          "last_updated": "2026-10-09",
+          "rules": [
+            "133.8",
+            "763.1",
+            "830"
+          ]
+        }
+      ],
+      "enables_runtime_support": false
+    },
+    {
+      "id": "rad-106-167:domains",
+      "official_id": "rad-106-167",
+      "name": "The Good Stuff",
+      "field": "domains",
+      "reviewed_on": "2026-10-25",
+      "basis": "confirmed_artwork",
+      "operation": "override",
+      "expected_raw_value": [
+        "body"
+      ],
+      "raw_source_field": "domains",
+      "expected_raw_source_value": [
+        "body"
+      ],
+      "effective_value": [
+        "chaos"
+      ],
+      "gallery_uncompressed_sha256": "3f326496a212a3583997696042171ce9e1db1740b05fcfa78ec48ca961e4be8a",
+      "expected_printing_sha256": "48284bfd95f6453d4070f23725446b208d2657fe722fa17ee42ac53b7f8760f7",
+      "printing_hash_encoding": "UTF-8 JSON sorted keys; ensure_ascii=false; separators=(',', ':')",
+      "reason": "The exact official face shows the Chaos domain glyph and frame. The raw gallery domain remains preserved; only the effective gameplay domain is corrected.",
+      "evidence": [
+        {
+          "kind": "official_card_image",
+          "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/e7dcc9ad059b471373f0093453a0ca7537d6aa0f-744x1039.png?accountingTag=RB",
+          "local_path": "assets/data/catalog_evidence/images/rad-106-167.png",
+          "sha256": "028e731345ca72847dd3312a2dea4e7e02cfbdf56e2c46ecb8003cf627a3a31a",
+          "bytes": 698202,
+          "location": "Printed domain glyph and frame"
+        }
+      ],
+      "enables_runtime_support": false
+    },
+    {
+      "id": "rad-106-167:tags",
+      "official_id": "rad-106-167",
+      "name": "The Good Stuff",
+      "field": "tags",
+      "reviewed_on": "2026-10-25",
+      "basis": "rule_derived",
+      "operation": "override",
+      "expected_raw_value": [
+        "Device"
+      ],
+      "raw_source_field": "tags",
+      "expected_raw_source_value": [
+        "Device"
+      ],
+      "effective_value": [],
+      "gallery_uncompressed_sha256": "3f326496a212a3583997696042171ce9e1db1740b05fcfa78ec48ca961e4be8a",
+      "expected_printing_sha256": "48284bfd95f6453d4070f23725446b208d2657fe722fa17ee42ac53b7f8760f7",
+      "printing_hash_encoding": "UTF-8 JSON sorted keys; ensure_ascii=false; separators=(',', ':')",
+      "reason": "The printed type/tag line has no Device tag. Core 133.8 defines printed tags, 763.1 omits Device, and 830 does not grant it. Exclude the website-only Device classification while preserving every actually printed champion tag. This is rule-derived, not a card-specific erratum.",
+      "evidence": [
+        {
+          "kind": "official_card_image",
+          "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/e7dcc9ad059b471373f0093453a0ca7537d6aa0f-744x1039.png?accountingTag=RB",
+          "local_path": "assets/data/catalog_evidence/images/rad-106-167.png",
+          "sha256": "028e731345ca72847dd3312a2dea4e7e02cfbdf56e2c46ecb8003cf627a3a31a",
+          "bytes": 698202,
+          "location": "Printed type/tag line below artwork"
+        },
+        {
+          "kind": "official_core_rules",
+          "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/5c7946f7c3b8c6e0faff85ab6dadc6d2e721ea94.pdf",
+          "local_path": "assets/data/catalog_evidence/rules/94d41fee86f88b61c4157c0389c0595d990b98e5b42555c99d9f649ee64d1fec.pdf",
+          "sha256": "94d41fee86f88b61c4157c0389c0595d990b98e5b42555c99d9f649ee64d1fec",
+          "bytes": 1612011,
+          "last_updated": "2026-10-09",
+          "rules": [
+            "133.8",
+            "763.1",
+            "830"
+          ]
+        }
+      ],
+      "enables_runtime_support": false
     }
   ],
   "review_evidence": {
@@ -135232,12 +136152,18 @@
         "archive": "assets/data/catalog_evidence/pages/97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9.html.gz",
         "sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
         "uncompressed_bytes": 3986973
+      },
+      "3f326496a212a3583997696042171ce9e1db1740b05fcfa78ec48ca961e4be8a": {
+        "url": "https://playriftbound.com/en-us/card-gallery/",
+        "archive": "assets/data/catalog_evidence/pages/3f326496a212a3583997696042171ce9e1db1740b05fcfa78ec48ca961e4be8a.html.gz",
+        "sha256": "3f326496a212a3583997696042171ce9e1db1740b05fcfa78ec48ca961e4be8a",
+        "uncompressed_bytes": 3986973
       }
     },
-    "reviewed_printings": 77,
-    "field_resolutions": 122,
-    "historical_issue_groups": 47,
-    "image_evidence": 77,
+    "reviewed_printings": 87,
+    "field_resolutions": 137,
+    "historical_issue_groups": 52,
+    "image_evidence": 87,
     "live_image_bytes_checked": false
   },
   "reviewed_identity_reviews": [

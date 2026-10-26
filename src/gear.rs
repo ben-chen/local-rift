@@ -18,8 +18,10 @@ use crate::rules::{self, StaticAbility};
 pub struct GearState {
     pub id: u32,
     pub card_id: CardId,
-    /// None means this gear is unattached in its controller's base. Otherwise
-    /// its location follows the attached unit, including when that unit moves.
+    /// Independent physical location; attached gear follows its bearer instead.
+    /// Detaching preserves the bearer's location until the next cleanup Recall.
+    pub lane: Option<usize>,
+    /// Attachment does not erase this object's own identity or characteristics.
     pub attached_to: Option<u32>,
     pub ready: bool,
     pub temporary: bool,
@@ -38,7 +40,32 @@ impl GearState {
 /// attachment suppresses printed text, but not a granted ability (CR135.4.b).
 pub type GearTemporaryStatus = crate::temporary::TemporaryStatus;
 
+/// Characteristics remain referenceable when attachment suppresses printed text.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct GearDeployStatus {
+    pub characteristic: bool,
+    pub printed_abilities_active: bool,
+    pub opponent_hold_trigger_active: bool,
+}
+
 impl Game {
+    pub fn gear_deploy_status(&self, player: usize, gear_id: u32) -> Option<GearDeployStatus> {
+        let gear = self
+            .players
+            .get(player)?
+            .gear
+            .iter()
+            .find(|g| g.id == gear_id)?;
+        let characteristic =
+            !gear.token && rules::static_abilities(gear.card_id).contains(&StaticAbility::Deploy);
+        let printed_abilities_active = gear.attached_to.is_none();
+        Some(GearDeployStatus {
+            characteristic,
+            printed_abilities_active,
+            opponent_hold_trigger_active: characteristic && printed_abilities_active,
+        })
+    }
+
     pub fn gear_temporary_status(
         &self,
         player: usize,
@@ -62,22 +89,36 @@ impl Game {
             .gear
             .iter()
             .find(|g| g.id == gear_id)?;
-        let unit_id = gear.attached_to?;
-        self.players[player]
-            .units
-            .iter()
-            .find(|unit| unit.id == unit_id)?
-            .lane
+        match gear.attached_to {
+            Some(unit_id) => {
+                self.players[player]
+                    .units
+                    .iter()
+                    .find(|unit| unit.id == unit_id)?
+                    .lane
+            }
+            None => gear.lane,
+        }
     }
 
     /// Resolve playing an already paid-for gear. Gear normally enters ready
     /// (CR149.1); an explicit entry replacement can make it enter exhausted.
     /// Quick-Draw's free attachment is a separate triggered chain ability.
+    #[cfg(test)]
     pub(crate) fn gear_play(
         &mut self,
         player: usize,
         card_id: CardId,
         _target: Option<Target>,
+    ) -> Result<(), String> {
+        self.gear_play_at(player, card_id, None)
+    }
+
+    pub(crate) fn gear_play_at(
+        &mut self,
+        player: usize,
+        card_id: CardId,
+        lane: Option<usize>,
     ) -> Result<(), String> {
         if player >= self.players.len()
             || !self
@@ -87,21 +128,40 @@ impl Game {
         {
             return Err("That is not a gear card.".into());
         }
+        let deploy = rules::static_abilities(card_id).contains(&StaticAbility::Deploy);
+        // Core811.1.d.1.a overrides ordinary gear's Base-only entry when
+        // played from Hidden. Cleanup323.6 subsequently recalls non-Deploy gear.
+        let hidden = self.trigger_state.hidden_play;
+        if lane.is_some_and(|lane| lane >= crate::game::BATTLEFIELDS)
+            || (deploy && lane.is_none())
+            || (!deploy && lane.is_some() && !hidden)
+        {
+            return Err(if deploy {
+                "Deploy gear must enter a battlefield.".into()
+            } else {
+                "This gear must enter its controller's base.".into()
+            });
+        }
         let id = self.next_unit_id;
         self.next_unit_id += 1;
         let ready = !rules::static_abilities(card_id).contains(&StaticAbility::EntersExhausted);
         self.players[player].gear.push(GearState {
             id,
             card_id,
+            lane,
             attached_to: None,
             ready,
             temporary: rules::static_abilities(card_id).contains(&StaticAbility::Temporary),
             token: false,
         });
         self.push_log(format!(
-            "{} plays {} to base, {}.",
+            "{} plays {} to {}, {}.",
             self.players[player].name,
             self.catalog[card_id].name,
+            lane.map_or_else(
+                || "base".to_string(),
+                |lane| format!("battlefield {}", lane + 1)
+            ),
             if ready { "ready" } else { "exhausted" }
         ));
         if rules::equipment(card_id).is_some_and(|rule| rule.quick_draw) {
@@ -118,6 +178,7 @@ impl Game {
         self.players[player].gear.push(GearState {
             id,
             card_id: 13,
+            lane: None,
             attached_to: None,
             ready: !exhausted,
             temporary: false,
@@ -460,10 +521,31 @@ impl Game {
     /// Called on every actual unit departure (death, banish, return to hand).
     /// A recall or move is not a departure and retains attachments.
     pub(crate) fn gear_unit_left_board(&mut self, player: usize, unit_id: u32) {
+        let lane = self.players[player]
+            .units
+            .iter()
+            .find(|unit| unit.id == unit_id)
+            .and_then(|unit| unit.lane);
         for gear in &mut self.players[player].gear {
             if gear.attached_to == Some(unit_id) {
+                gear.lane = lane;
                 gear.attached_to = None;
                 // Do not ready or exhaust a detached gear: its state persists.
+            }
+        }
+    }
+
+    /// Core 323 step 5: non-Unit gear is recalled unless Deploy exempts it.
+    /// Attached cards stay with their bearer; this is not an independent move.
+    pub(crate) fn cleanup_gear_locations(&mut self) {
+        for state in &mut self.players {
+            for gear in &mut state.gear {
+                if gear.attached_to.is_none()
+                    && (gear.token
+                        || !rules::static_abilities(gear.card_id).contains(&StaticAbility::Deploy))
+                {
+                    gear.lane = None;
+                }
             }
         }
     }
@@ -783,6 +865,8 @@ mod tests {
         game.gear_unit_left_board(0, id(target));
         assert_eq!(game.players[0].gear[0].attached_to, None);
         assert!(!game.players[0].gear[0].ready);
+        assert_eq!(game.gear_location(0, boots), Some(1));
+        game.cleanup_gear_locations();
         assert_eq!(game.gear_location(0, boots), None);
         assert_eq!(game.gear_might_bonus(id(target)).unwrap(), 0);
         assert!(game.players[0].discard.is_empty());
@@ -1199,6 +1283,7 @@ mod tests {
             game.players[0].gear.push(GearState {
                 id: 1000 + offset as u32,
                 card_id,
+                lane: None,
                 attached_to: None,
                 ready: true,
                 temporary: false,

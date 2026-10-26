@@ -61,6 +61,7 @@ fn bloom(s: &mut Session, owner: usize) {
         id: 21001,
         card_id: 397,
         attached_to: None,
+        lane: None,
         ready: true,
         temporary: false,
         token: false,

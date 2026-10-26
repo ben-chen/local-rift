@@ -13,6 +13,7 @@ pub enum SourceCondition {
     CombatAlone,
     Buffed,
     OtherFriendlyHere,
+    FriendlyDeployGearHere,
     ControllerRunesAtLeast(u8),
     ControllerXpAtLeast(u8),
     ControllerGainedXpThisTurn,
@@ -23,6 +24,7 @@ pub enum Recipients {
     FriendlyUnits,
     FriendlyEmpoweredUnits,
     OtherFriendlyUnitsHere,
+    FriendlyUnitsHere,
     OtherFriendlyUnits,
     FriendlyUnitsWithTag(&'static str),
     FriendlyTokenUnits,
@@ -78,6 +80,42 @@ pub fn passive_rules(id: CardId) -> &'static [PassiveRule] {
     use PassiveEffect::*;
     use PassiveKeyword::*;
     match id {
+        401 => {
+            const {
+                &[PassiveRule {
+                    condition: SourceCondition::Always,
+                    recipients: Recipients::FriendlyUnitsHere,
+                    effect: Keyword(Assault(1)),
+                }]
+            }
+        }
+        404 => {
+            const {
+                &[PassiveRule {
+                    condition: SourceCondition::Always,
+                    recipients: Recipients::FriendlyUnitsHere,
+                    effect: Keyword(Shield(2)),
+                }]
+            }
+        }
+        406 => {
+            const {
+                &[PassiveRule {
+                    condition: SourceCondition::Always,
+                    recipients: Recipients::FriendlyUnitsHere,
+                    effect: Keyword(Ganking),
+                }]
+            }
+        }
+        409 => {
+            const {
+                &[PassiveRule {
+                    condition: SourceCondition::FriendlyDeployGearHere,
+                    recipients: Recipients::SelfUnit,
+                    effect: Might(1),
+                }]
+            }
+        }
         398 => {
             const {
                 &[PassiveRule {
@@ -328,6 +366,18 @@ pub fn passive_rules(id: CardId) -> &'static [PassiveRule] {
     }
 }
 impl Game {
+    fn passive_object_location(
+        &self,
+        object: BoardObject,
+    ) -> Option<crate::game::board_targets::BoardLocation> {
+        let target = match object {
+            BoardObject::Unit { player, unit_id } => crate::game::Target::Unit { player, unit_id },
+            BoardObject::Gear { player, gear_id } => crate::game::Target::Gear { player, gear_id },
+            BoardObject::Legend { .. } => return None,
+        };
+        self.board_target_facts(target).map(|facts| facts.location)
+    }
+
     pub(crate) fn passive_matches(&self, target: BoardObject) -> Vec<PassiveMatch> {
         let BoardObject::Unit { player, unit_id } = target else {
             return vec![];
@@ -406,25 +456,15 @@ impl Game {
                                     .find(|unit| unit.id == unit_id)
                                     .is_some_and(|unit| self.unit_has_tag(unit, tag))
                         }
-                        Recipients::OtherFriendlyUnitsHere => {
+                        Recipients::OtherFriendlyUnitsHere | Recipients::FriendlyUnitsHere => {
                             owner == player
-                                && source != target
-                                && match source {
-                                    BoardObject::Unit {
-                                        unit_id: source_id, ..
-                                    } => self.players[owner]
-                                        .units
-                                        .iter()
-                                        .find(|u| u.id == source_id)
-                                        .zip(
-                                            self.players[player]
-                                                .units
-                                                .iter()
-                                                .find(|u| u.id == unit_id),
-                                        )
-                                        .is_some_and(|(a, b)| a.lane == b.lane),
-                                    BoardObject::Gear { .. } | BoardObject::Legend { .. } => false,
-                                }
+                                && (rule.recipients == Recipients::FriendlyUnitsHere
+                                    || source != target)
+                                && self
+                                    .passive_object_location(source)
+                                    .is_some_and(|location| {
+                                        self.passive_object_location(target) == Some(location)
+                                    })
                         }
                         _ => owner == player,
                     };
@@ -433,6 +473,16 @@ impl Game {
                     }
                     let source_active = match rule.condition {
                         SourceCondition::Always => true,
+                        SourceCondition::FriendlyDeployGearHere => self
+                            .passive_object_location(source)
+                            .and_then(|location| location.battlefield())
+                            .is_some_and(|lane| {
+                                self.players[owner].gear.iter().any(|gear| {
+                                    self.gear_deploy_status(owner, gear.id)
+                                        .is_some_and(|status| status.characteristic)
+                                        && self.gear_location(owner, gear.id) == Some(lane)
+                                })
+                            }),
                         SourceCondition::Buffed => {
                             matches!(source, BoardObject::Unit { unit_id, .. } if self.buffed_units.contains(&unit_id))
                         }

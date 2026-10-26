@@ -109,6 +109,13 @@ impl Game {
                         combat.lane + 1
                     ),
                 });
+                if let CombatResult::Winner { player } = result {
+                    self.emit_event(EventSnapshot::battlefield(
+                        Occurrence::CombatWin,
+                        player,
+                        combat.lane,
+                    ));
+                }
                 if result == CombatResult::NoResult && occupants.iter().all(|&count| count > 0) {
                     // 468.3.d.1 explicitly stages the next showdown/combat.
                     // Opening waits until this combat has ended completely.

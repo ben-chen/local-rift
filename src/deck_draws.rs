@@ -14,7 +14,7 @@ impl Game {
             .filter_map(|(index, &id)| {
                 let card = catalog[id];
                 let eligible = match kind {
-                    DrawLookKind::Ornn => card.kind == CardKind::Gear,
+                    DrawLookKind::Ornn | DrawLookKind::CommandAttack => card.kind == CardKind::Gear,
                     DrawLookKind::DoubleTrouble => card.kind == CardKind::Unit,
                     DrawLookKind::FateWeaver => card.kind == CardKind::Spell && card.cost >= 4,
                     DrawLookKind::TrifarianCaptain => {
@@ -34,10 +34,10 @@ impl Game {
         source_card_id: CardId,
         kind: DrawLookKind,
     ) {
-        let count = if kind == DrawLookKind::DoubleTrouble {
-            3
-        } else {
-            4
+        let count = match kind {
+            DrawLookKind::DoubleTrouble => 3,
+            DrawLookKind::CommandAttack => 5,
+            _ => 4,
         };
         let cards: Vec<_> = self.players[player]
             .deck

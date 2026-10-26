@@ -48,7 +48,7 @@ pub(super) fn view_to_json(view: &PlayTargetView) -> Value {
         "execution":view.execution,"targets":view.targets.iter().map(target_to_json).collect::<Vec<_>>(),
         "spec":{"kind":view.spec.kind.map(target_kind),"maximum":view.spec.maximum,"required":view.spec.required},
         "next_slot":view.next_slot.as_ref().map(|slot|json!({
-            "index":slot.index,"different_location_from":slot.different_location_from,
+            "index":slot.index,"kind":target_kind(slot.kind),"different_location_from":slot.different_location_from,
             "hidden":slot.hidden.map(|restriction|match restriction {
                 HiddenTargetRestriction::AtBattlefield{lane}=>json!({"type":"at_battlefield","lane":lane}),
                 HiddenTargetRestriction::OutsideBattlefield{lane}=>json!({"type":"outside_battlefield","lane":lane}),

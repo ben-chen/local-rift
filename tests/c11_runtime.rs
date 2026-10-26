@@ -112,6 +112,7 @@ fn gear(g: &mut Game, id: u32, card: usize) -> AbilitySource {
         id,
         card_id: card,
         ready: true,
+        lane: None,
         attached_to: None,
         temporary: false,
         token: false,

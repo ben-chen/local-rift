@@ -1482,6 +1482,7 @@ impl Game {
                     Decision::CounterTax { .. } => "CounterTax",
                     Decision::PendingPlay { .. } => "PendingPlay",
                     Decision::TriggerTargets { .. } => "TriggerTargets",
+                    Decision::TriggerPayment { .. } => "TriggerPayment",
                     Decision::LegendTargets { .. } => "LegendTargets",
                     Decision::OnPlayTarget { .. } => "OnPlayTarget",
                     Decision::Legend { .. } => "Legend",

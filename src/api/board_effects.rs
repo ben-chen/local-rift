@@ -49,6 +49,7 @@ fn gear(id: u32, card_id: usize, bearer: Option<u32>) -> GearState {
         id,
         card_id,
         attached_to: bearer,
+        lane: None,
         ready: true,
         temporary: false,
         token: false,

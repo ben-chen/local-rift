@@ -62,6 +62,9 @@ pub(super) enum Occurrence {
     Hold,
     Draw,
     GearActivated,
+    BattlefieldHold,
+    BattlefieldConquer,
+    CombatWin,
 }
 #[derive(Clone)]
 pub(super) struct EventSnapshot {
@@ -75,6 +78,7 @@ pub(super) struct EventSnapshot {
     pub hidden: bool,
     pub origin: Option<usize>,
     pub buffed: bool,
+    pub battlefield: Option<usize>,
 }
 impl EventSnapshot {
     pub(super) fn unit(kind: Occurrence, player: usize, unit: Unit) -> Self {
@@ -89,6 +93,13 @@ impl EventSnapshot {
             hidden: false,
             origin: None,
             buffed: false,
+            battlefield: None,
+        }
+    }
+    pub(super) fn battlefield(kind: Occurrence, player: usize, lane: usize) -> Self {
+        Self {
+            battlefield: Some(lane),
+            ..Self::simple(kind, player)
         }
     }
     pub(super) fn simple(kind: Occurrence, player: usize) -> Self {
@@ -103,6 +114,7 @@ impl EventSnapshot {
             hidden: false,
             origin: None,
             buffed: false,
+            battlefield: None,
         }
     }
 }
@@ -271,6 +283,12 @@ impl Game {
             Event::SelfHold => same && event.kind == Occurrence::Hold,
             Event::FriendlyDraw => own && event.kind == Occurrence::Draw,
             Event::GearActivated => own && event.kind == Occurrence::GearActivated,
+            Event::FriendlyBattlefieldHold => own && event.kind == Occurrence::BattlefieldHold,
+            Event::OpponentBattlefieldHold => !own && event.kind == Occurrence::BattlefieldHold,
+            Event::FriendlyBattlefieldConquer => {
+                own && event.kind == Occurrence::BattlefieldConquer
+            }
+            Event::FriendlyCombatWin => own && event.kind == Occurrence::CombatWin,
         };
         if !event_ok {
             return false;
@@ -330,6 +348,13 @@ impl Game {
                     .count()
                     == 1
             }),
+            Condition::SourceAtEventBattlefield => event
+                .battlefield
+                .is_some_and(|lane| self.source_location(source) == Some((Some(lane), 0))),
+            Condition::ControllerControlsSourceBattlefield => self
+                .source_location(source)
+                .and_then(|(lane, _)| lane)
+                .is_some_and(|lane| self.battlefield_owner[lane] == Some(source.player)),
             Condition::FirstEachTurn => true,
             Condition::SecondDraw => self.trigger_state.draws[event.player] == 2,
         })
@@ -348,7 +373,7 @@ impl Game {
                 .first_used
                 .push((context.source, rule_index));
         }
-        if rule.targets.max > 0 || rule.optional {
+        if rule.targets.max > 0 || rule.optional || rule.base_cost.is_some() {
             self.queue_trigger_choice(
                 context.source.player,
                 card_id,
@@ -737,6 +762,17 @@ impl Game {
                 _ => {}
             }
             let lane = facts.location.battlefield();
+            if rule
+                .effects
+                .contains(&Effect::MoveTargetsToSourceBattlefield)
+            {
+                let Some((Some(destination), _)) = self.source_location(context.source) else {
+                    return Ok(false);
+                };
+                if lane == Some(destination) {
+                    return Ok(false);
+                }
+            }
             if rule.targets.event_locations
                 == metadata::EventLocationConstraint::MovedToOrFromBattlefield
                 && !context
@@ -806,15 +842,9 @@ impl Game {
                 return Ok(false);
             }
             if rule.event == Event::SelfPlayed
-                && let Some(source) = context.source.unit_id
+                && let Some(source) = context.source.unit_id.or(context.source.gear_id)
                 && let Some(origin) = self.hidden_play_origin(source)
-                && (self
-                    .unit_ref(Target::Unit {
-                        player: actor,
-                        unit_id: source,
-                    })
-                    .is_none()
-                    || lane != Some(origin))
+                && (self.source_location(context.source).is_none() || lane != Some(origin))
             {
                 return Ok(false);
             }
@@ -929,6 +959,7 @@ impl Game {
             let mut targets = prior.to_vec();
             targets.push(target);
             !costs
+                || rule.base_cost.is_some()
                 || self.available_power(context.source.player, None)
                     >= self.deflect_cost(context.source.player, &targets)?.into()
         })
@@ -996,6 +1027,98 @@ impl Game {
             actions
         })
     }
+    pub(super) fn trigger_payment_decision(
+        &mut self,
+        card_id: CardId,
+        rule_index: usize,
+        context: TriggerContext,
+        targets: Vec<Target>,
+    ) -> Result<Decision, String> {
+        let cost = metadata::trigger_rules(card_id)[rule_index]
+            .base_cost
+            .ok_or("This trigger has no base cost.")?;
+        let deflect = self.deflect_cost(context.source.player, &targets)?.into();
+        let choice_id = self.next_chain_id;
+        self.next_chain_id = self
+            .next_chain_id
+            .checked_add(1)
+            .ok_or_else(|| crate::numeric::capacity("trigger payment choice identity"))?;
+        Ok(Decision::TriggerPayment {
+            player: context.source.player,
+            choice_id,
+            card_id,
+            rule_index,
+            context,
+            targets,
+            deflect,
+            base_cost: CostValue {
+                xp: 0,
+                energy: cost.energy,
+                power: cost.power,
+                domains: cost
+                    .domain
+                    .map_or_else(|| ALL_DOMAINS.to_vec(), |d| vec![d]),
+            },
+        })
+    }
+
+    pub(super) fn resolve_trigger_payment(
+        &mut self,
+        choice_id: u32,
+        pay: bool,
+    ) -> Result<(), String> {
+        let Some(Decision::TriggerPayment {
+            player,
+            choice_id: current,
+            card_id,
+            rule_index,
+            context,
+            targets,
+            base_cost,
+            deflect,
+        }) = self.decision.clone()
+        else {
+            return Err("No triggered ability is awaiting payment.".into());
+        };
+        if current != choice_id {
+            return Err("This trigger payment choice is stale.".into());
+        }
+        if !pay {
+            if base_cost.energy == 0 && base_cost.power == 0 && deflect == 0 {
+                return Err("A zero resource cost cannot be declined.".into());
+            }
+            if let Some(original) = self.trigger_payment_origin.take() {
+                // Refusal at Pay Costs undoes Add actions in this attempt,
+                // never the source play or choices made before payment.
+                let command_payment = self.payment.take();
+                *self = *original;
+                self.payment = command_payment;
+            }
+            self.decision = None;
+            return Ok(());
+        }
+        self.pay_action_cost(&Action::ResolveTriggerPayment { choice_id, pay })?;
+        // Core406: final legality follows payment. The enclosing transaction
+        // restores the entire attempted finalization if it cannot complete.
+        for (slot, &target) in targets.iter().enumerate() {
+            if !self.trigger_rule_target_valid(card_id, rule_index, context, target, slot)? {
+                return Err("A pinned trigger target is no longer legal.".into());
+            }
+        }
+        self.decision = None;
+        self.trigger_payment_origin = None;
+        self.queue_finalized_ability(
+            player,
+            card_id,
+            targets,
+            ChainAbility::CardTrigger {
+                rule_index,
+                context,
+            },
+        );
+        Ok(())
+    }
+
     pub(super) fn choose_trigger_targets(&mut self, targets: Vec<Target>) -> Result<(), String> {
         if let Some(Decision::LegendTargets { player }) = self.decision {
             return self.choose_legend_targets(player, &targets);
@@ -1021,6 +1144,11 @@ impl Game {
             if !self.valid_trigger_target(target, &targets[..index])? {
                 return Err("That target is not legal or its Deflect cannot be paid.".into());
             }
+        }
+        if rule.base_cost.is_some() {
+            self.decision =
+                Some(self.trigger_payment_decision(card_id, rule_index, context, targets)?);
+            return Ok(());
         }
         self.spend_deflect(player, false, &targets)?;
         self.decision = None;
@@ -1124,6 +1252,29 @@ impl Game {
         let targets = selected;
         for effect in rule.effects {
             match *effect {
+                Effect::KillSourceGear => {
+                    if let Some(gear_id) = context.source.gear_id {
+                        self.kill_gear_target(Target::Gear {
+                            player: context.source.player,
+                            gear_id,
+                        });
+                    }
+                }
+                Effect::ReturnSourceGear => {
+                    if let Some(gear_id) = context.source.gear_id {
+                        self.return_board_targets(&[Target::Gear {
+                            player: context.source.player,
+                            gear_id,
+                        }]);
+                    }
+                }
+                Effect::MoveTargetsToSourceBattlefield => {
+                    if let Some((Some(lane), _)) = self.source_location(context.source) {
+                        for &target in &targets {
+                            self.move_effect(player, target, Some(lane), false)?;
+                        }
+                    }
+                }
                 Effect::DrawLook(kind) => self.look_to_draw(player, card_id, kind),
                 Effect::RevealMovedTop => {
                     self.reveal_moved_top(player, card_id, Self::source_target(context.source))?

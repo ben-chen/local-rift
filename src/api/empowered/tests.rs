@@ -174,6 +174,7 @@ fn public_passive_sources_distinguish_copies_and_do_not_change_printed_might() {
             id,
             card_id: 281,
             attached_to: None,
+            lane: None,
             ready: true,
             temporary: false,
             token: false,

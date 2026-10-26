@@ -9,6 +9,7 @@ use local_rift::{
     gear::GearState,
 };
 use macroquad::prelude::*;
+mod c24;
 
 thread_local! {
     static ADD_CHAIN_SNAPSHOT: std::cell::RefCell<Vec<u32>> = const { std::cell::RefCell::new(Vec::new()) };
@@ -103,6 +104,7 @@ fn unit_rect(app: &mut App, selected: u32) -> Rect {
         .collect();
     let state = SceneState {
         units,
+        gear: super::scene_gear(&app.game),
         selected: None,
         owners: app.game.battlefield_owner,
         time: 0.0,
@@ -418,6 +420,7 @@ fn fixture_counter_tax(app: &mut App, unit_id: u32) {
 fn anomaly_payment_fixture(app: &mut App, energy: u16, power: u16) {
     played_gear_fixture(app, 245);
     app.game.players[0].gear.push(GearState {
+        lane: None,
         id: 9902,
         card_id: 245,
         ready: true,
@@ -554,6 +557,7 @@ fn c19_hook(app: &mut App) {
     app.game.players[0].units[0].card_id = 273;
     app.game.players[0].units[0].buff = 3;
     app.game.players[0].gear.push(GearState {
+        lane: None,
         id: 19001,
         card_id: 385,
         ready: true,
@@ -720,6 +724,7 @@ pub(super) fn c23_deathknell_fixture(attacker: usize, conquer: bool) -> Game {
         .push(unit(23002, 374, Some(0)));
     if conquer {
         game.players[attacker].gear.push(GearState {
+            lane: None,
             id: 23003,
             card_id: 201,
             attached_to: Some(23001),
@@ -1000,6 +1005,7 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
             // A fixture gear exercises the native resource-ability control.
             app.game.players[0].deck.pop();
             app.game.players[0].gear.push(GearState {
+                lane: None,
                 id: 50_001,
                 card_id: 42,
                 attached_to: None,
@@ -1660,6 +1666,7 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
             fixture_unit(app, 0, 70_001, 54);
             app.game.players[0].gear.extend([
                 GearState {
+                    lane: None,
                     id: 70_010,
                     card_id: 3,
                     attached_to: Some(70_001),
@@ -1668,6 +1675,7 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
                     token: false,
                 },
                 GearState {
+                    lane: None,
                     id: 70_011,
                     card_id: 21,
                     attached_to: Some(70_001),
@@ -3123,6 +3131,7 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
             ];
             app.game.players[1].units = vec![public_unit(200, 69, Some(0))];
             app.game.players[0].gear.push(GearState {
+                lane: None,
                 id: 800,
                 card_id: 121,
                 ready: true,
@@ -3437,6 +3446,7 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
         262 => {
             expansion_fixture(app, 130);
             app.game.players[0].gear.push(GearState {
+                lane: None,
                 id: 900,
                 card_id: 18,
                 ready: true,
@@ -3690,6 +3700,7 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
                 (1, 200, 803, 124),
             ] {
                 app.game.players[owner].gear.push(GearState {
+                    lane: None,
                     id: gear_id,
                     card_id,
                     ready: true,
@@ -4533,6 +4544,7 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
                 public_unit(9004, 25, Some(0)),
             ];
             app.game.players[1].gear.push(GearState {
+                lane: None,
                 id: 9010,
                 card_id: 121,
                 ready: true,
@@ -4790,6 +4802,7 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
             app.game.players[0].gear[0].ready = true;
             app.game.players[1].units = vec![public_unit(9901, 69, None)];
             app.game.players[1].gear = vec![GearState {
+                lane: None,
                 id: 9902,
                 card_id: 121,
                 ready: true,
@@ -5669,6 +5682,7 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
             app.game.players[0].any_power = 4;
             app.game.players[0].gear = vec![
                 GearState {
+                    lane: None,
                     id: 9901,
                     card_id: 256,
                     attached_to: None,
@@ -5677,6 +5691,7 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
                     token: false,
                 },
                 GearState {
+                    lane: None,
                     id: 9902,
                     card_id: 256,
                     attached_to: None,
@@ -6477,6 +6492,7 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
             app.game.battlefields = [0, 0];
             app.game.players[0].any_power = 4;
             app.game.players[0].gear.push(GearState {
+                lane: None,
                 id: 9950,
                 card_id: 256,
                 attached_to: None,
@@ -6776,6 +6792,7 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
             expansion_fixture(app, 330);
             app.game.players[0].units = vec![public_unit(9981, 110, None)];
             app.game.players[0].gear = vec![GearState {
+                lane: None,
                 id: 9982,
                 card_id: 330,
                 ready: true,
@@ -6971,6 +6988,7 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
             ];
             app.game.players[0].gear = vec![
                 GearState {
+                    lane: None,
                     id: 9991,
                     card_id: 10,
                     ready: true,
@@ -6979,6 +6997,7 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
                     token: false,
                 },
                 GearState {
+                    lane: None,
                     id: 9992,
                     card_id: 21,
                     ready: true,
@@ -7125,6 +7144,7 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
             expansion_fixture(app, 66);
             app.game.players[0].units = vec![public_unit(9997, 69, None)];
             app.game.players[0].gear = vec![GearState {
+                lane: None,
                 id: 9996,
                 card_id: 3,
                 attached_to: None,
@@ -7555,6 +7575,7 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
                 4
             );
             app.game.players[0].gear = vec![GearState {
+                lane: None,
                 id: 10025,
                 card_id: 347,
                 ready: true,
@@ -8127,6 +8148,7 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
                 public_unit(11001, 71, Some(0)),
             ];
             app.game.players[0].gear = vec![GearState {
+                lane: None,
                 id: 11002,
                 card_id: 21,
                 attached_to: None,
@@ -8317,6 +8339,7 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
             sprite.buff = 3;
             app.game.players[0].units = vec![public_unit(11009, 358, None), sprite];
             app.game.players[0].gear = vec![GearState {
+                lane: None,
                 id: 11011,
                 card_id: 360,
                 attached_to: None,
@@ -8352,6 +8375,7 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
             app.game.players[1].units = vec![public_unit(12000, 2, Some(0))];
             app.game.battlefield_owner[0] = Some(1);
             app.game.players[1].gear = vec![GearState {
+                lane: None,
                 id: 12001,
                 card_id: 3,
                 attached_to: Some(12000),
@@ -8360,6 +8384,7 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
                 token: false,
             }];
             app.game.players[0].gear = vec![GearState {
+                lane: None,
                 id: 12002,
                 card_id: 21,
                 attached_to: None,
@@ -8426,6 +8451,7 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
         792 => {
             expansion_fixture(app, 367);
             app.game.players[1].gear = vec![GearState {
+                lane: None,
                 id: 12003,
                 card_id: 3,
                 attached_to: None,
@@ -8482,6 +8508,7 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
             app.game.players[0].units = vec![public_unit(13000, 374, Some(1))];
             app.game.players[1].units = vec![public_unit(13001, 375, Some(1))];
             app.game.players[1].gear = vec![GearState {
+                lane: None,
                 id: 13002,
                 card_id: 3,
                 attached_to: Some(13001),
@@ -8573,6 +8600,7 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
             expansion_fixture(app, 378);
             app.game.players[1].units = vec![public_unit(14000, 374, Some(0))];
             app.game.players[1].gear = vec![GearState {
+                lane: None,
                 id: 14001,
                 card_id: 10,
                 attached_to: Some(14000),
@@ -10177,6 +10205,7 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
             c21_fixture(app, 397, &[]);
             app.game.players[0].hand.clear();
             app.game.players[0].gear.push(GearState {
+                lane: None,
                 id: 21003,
                 card_id: 397,
                 ready: true,
@@ -10654,9 +10683,8 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
             println!(
                 "PASS: 1065 native UI frames including closed combat cleanup choices, Deathknell responses before result, captured Conquer result, retained combat bonuses, and all previous 1056 controls."
             );
-            return true;
         }
-        _ => panic!("UI smoke runner exceeded its 1065-frame script"),
+        1065.. => return c24::run_frame(app, frame - 1065),
     }
     false
 }

@@ -56,6 +56,7 @@ fn gear(g: &mut Game, player: usize, id: u32, card: usize) -> Target {
         id,
         card_id: card,
         ready: true,
+        lane: None,
         attached_to: None,
         token: false,
         temporary: false,

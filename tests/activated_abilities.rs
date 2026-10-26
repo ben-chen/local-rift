@@ -53,6 +53,7 @@ fn gear(g: &mut Game, id: u32, card_id: usize) -> AbilitySource {
     g.players[0].gear.push(GearState {
         id,
         card_id,
+        lane: None,
         attached_to: None,
         ready: true,
         temporary: false,
@@ -581,6 +582,7 @@ fn conflicted_combat(two_caitlyns: bool, power: u8) -> Game {
         g.players[1].gear.push(GearState {
             id,
             card_id: 121,
+            lane: None,
             attached_to: Some(bearer),
             ready: true,
             temporary: false,

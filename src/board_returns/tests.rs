@@ -51,6 +51,7 @@ fn gear(g: &mut Game, player: usize, card: usize, token: bool, attached_to: Opti
         id: gear_id,
         card_id: card,
         token,
+        lane: None,
         attached_to,
         ready: true,
         temporary: false,

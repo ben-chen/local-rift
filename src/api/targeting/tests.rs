@@ -84,6 +84,7 @@ fn portal(session: &mut Session, id: u32) {
         id,
         card_id: 256,
         attached_to: None,
+        lane: None,
         ready: true,
         temporary: false,
         token: false,

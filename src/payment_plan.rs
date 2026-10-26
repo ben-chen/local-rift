@@ -61,6 +61,47 @@ pub struct PaymentPlanView {
 }
 
 impl Game {
+    pub(crate) fn checkpoint_trigger_payment_add(&mut self, action: &Action) {
+        if self.trigger_payment_origin.is_none()
+            && self.payment_plan.is_none()
+            && matches!(self.decision, Some(Decision::TriggerPayment { .. }))
+            && matches!(
+                action,
+                Action::ActivateGear { .. }
+                    | Action::ActivateAbility { .. }
+                    | Action::ActivateAbilityWithCosts { .. }
+                    | Action::ActivateLegend { .. }
+                    | Action::ActivateRune { .. }
+                    | Action::RecycleRune { .. }
+            )
+        {
+            // The checkpoint already contains the played source and pinned
+            // trigger targets. Only subsequent payment-resource actions undo.
+            self.trigger_payment_origin = Some(Box::new(self.clone()));
+        }
+    }
+
+    /// Only the public pinned trigger-finalization choice is exposed, including
+    /// while Add instructions or the exact-payment plan temporarily suspend it.
+    pub fn trigger_payment_context(&self) -> Option<Decision> {
+        self.decision
+            .as_ref()
+            .filter(|d| matches!(d, Decision::TriggerPayment { .. }))
+            .cloned()
+            .or_else(|| {
+                self.resource_frames
+                    .iter()
+                    .rev()
+                    .filter_map(|frame| frame.suspended.as_ref())
+                    .find(|d| matches!(d, Decision::TriggerPayment { .. }))
+                    .cloned()
+            })
+            .or_else(|| {
+                self.payment_plan
+                    .as_ref()
+                    .and_then(|plan| plan.original.trigger_payment_context())
+            })
+    }
     pub(crate) fn payment_target_query_state(&self) -> Result<Option<Game>, String> {
         let Some(plan) = self.payment_plan.as_ref() else {
             return Ok(None);
@@ -496,6 +537,19 @@ impl Game {
         {
             return Ok(false);
         }
+        let plan = self.payment_plan.as_ref().unwrap();
+        // Entering the payment UI does not Pay. Core405.2/445.2 permit
+        // refusing a positive trigger cost even after Add has funded it.
+        if matches!(
+            plan.original.decision,
+            Some(Decision::TriggerPayment { .. })
+        ) && plan.obligations.iter().any(|cost| match cost {
+            Obligation::Energy(amount) => *amount > 0,
+            Obligation::Power(cost) => cost.amount > 0,
+            Obligation::Xp(_) => false,
+        }) {
+            return Ok(true);
+        }
         Ok(!crate::numeric::legal_result(
             self.clone().complete_payment(),
         )?)
@@ -545,6 +599,7 @@ fn payment_intent(action: &Action) -> bool {
             | Action::Equip { .. }
             | Action::EquipWithTrash { .. }
             | Action::EmpowerUnit { .. }
+            | Action::ResolveTriggerPayment { pay: true, .. }
             | Action::ChooseTriggerTargets { .. }
             | Action::ChooseTarget { .. }
             | Action::Choose { accept: true }

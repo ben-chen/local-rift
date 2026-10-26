@@ -612,13 +612,21 @@ impl App {
         }
         if self.ui.button(
             Rect::new(1178.0, 534.0, 212.0, 27.0),
-            "Undo unsuccessful attempt",
+            if self.game.trigger_payment_context().is_some() {
+                "Undo payment attempt"
+            } else {
+                "Undo unsuccessful attempt"
+            },
             false,
             self.game.can_cancel_payment()?,
         ) {
             self.action(Action::Choose { accept: false });
         }
-        self.ui.wrapped_lines("Board / Loadout: use Add abilities. Costs stay fixed. Undo restores resource steps only if this attempt cannot complete.",1178.0,580.0,212.0,10.0,MUTED,4);
+        self.ui.wrapped_lines(if self.game.trigger_payment_context().is_some() {
+            "Undo restores this choice and resource steps. Payment is before responses; counters give no refund."
+        } else {
+            "Board / Loadout: use Add abilities. Costs stay fixed. Undo restores resource steps only if this attempt cannot complete."
+        },1178.0,580.0,212.0,10.0,MUTED,4);
         Ok(())
     }
     pub(super) fn commit_conversion_editor(&mut self) -> Result<(), String> {

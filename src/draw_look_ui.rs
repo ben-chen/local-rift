@@ -39,7 +39,7 @@ fn eligibility_hint(kind: DrawLookKind) -> &'static str {
         DrawLookKind::TrifarianCaptain => {
             "Choose a unit or gear with printed costs of at most 3 Energy AND 1 Power to reveal and draw."
         }
-        DrawLookKind::Ornn => {
+        DrawLookKind::Ornn | DrawLookKind::CommandAttack => {
             "Choose a gear to reveal and draw. Units and spells cannot be chosen."
         }
     }
@@ -51,7 +51,7 @@ pub(super) fn ineligible_hint(
 ) -> &'static str {
     match kind {
         DrawLookKind::DoubleTrouble => "Requires a unit",
-        DrawLookKind::Ornn => "Requires gear",
+        DrawLookKind::Ornn | DrawLookKind::CommandAttack => "Requires gear",
         DrawLookKind::FateWeaver if card.kind != CardKind::Spell => "Requires a spell",
         DrawLookKind::FateWeaver => "Printed Energy below 4",
         DrawLookKind::TrifarianCaptain if card.kind == CardKind::Spell => "Requires unit or gear",

@@ -537,5 +537,75 @@
     "path": "assets/data/catalog_evidence/images/rad-074-167.png",
     "sha256": "154a6e8a93a6496123fc26e4fdfeba40c843e8c5ccfb7b47db5ffc7babfeb624",
     "bytes": 818463
+  },
+  {
+    "official_id": "rad-002-167",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/1e2a4e0a8cf533c82e9c3f4d507dd7eb63ece943-744x1039.png?accountingTag=RB",
+    "path": "assets/data/catalog_evidence/images/rad-002-167.png",
+    "sha256": "73700384d5a62a8c7482e713ccd97116172b1cb50ec1b274a765568b66dccd36",
+    "bytes": 754406
+  },
+  {
+    "official_id": "rad-024-167",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/5b819cc232389f3ef1438350d68c7801e181961c-744x1039.png?accountingTag=RB",
+    "path": "assets/data/catalog_evidence/images/rad-024-167.png",
+    "sha256": "3bfad68405a05598b1566de028635b460dd9e958bd38686f1be82d70b24ce8d7",
+    "bytes": 779815
+  },
+  {
+    "official_id": "rad-116-167",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/0e80322dac6065e3ee726f5f9a2650a88195a44c-744x1039.png?accountingTag=RB",
+    "path": "assets/data/catalog_evidence/images/rad-116-167.png",
+    "sha256": "d70d74a3d08a102a83476d7fde15a8b9cb978204ed74b4a534dd78c4e0ebfce9",
+    "bytes": 912230
+  },
+  {
+    "official_id": "rad-156-167",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/315b0f7901a83df38b9765f12b1edfdc7de566a3-744x1040.png?accountingTag=RB",
+    "path": "assets/data/catalog_evidence/images/rad-156-167.png",
+    "sha256": "5f90e1807f28ca2d0b8e078a94646af14f1cde78a18fac8f2eee5de719c77d86",
+    "bytes": 1106428
+  },
+  {
+    "official_id": "rad-017-167",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/0cd07e77e69a53b78486b07dd7610183c953d581-744x1039.png?accountingTag=RB",
+    "path": "assets/data/catalog_evidence/images/rad-017-167.png",
+    "sha256": "844ef35acb29895ef4f3ec2c74084a8509babd917304aef808a191febda73690",
+    "bytes": 867034
+  },
+  {
+    "official_id": "rad-062-167",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/51f589e5ed0f7316b6cb64ebc93c4ef3e75b7f46-744x1039.png?accountingTag=RB",
+    "path": "assets/data/catalog_evidence/images/rad-062-167.png",
+    "sha256": "cf874989914837b94cefdfba4397da14585b14b4c10189a7a246506a31d4085a",
+    "bytes": 887204
+  },
+  {
+    "official_id": "rad-073-167",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/374248eb65ca1e90a434652073dbbd3a12a11eda-744x1039.png?accountingTag=RB",
+    "path": "assets/data/catalog_evidence/images/rad-073-167.png",
+    "sha256": "6db52cb8232b3724b2a9db695070dae72d6eb29d429550e56cef0c862216f603",
+    "bytes": 730494
+  },
+  {
+    "official_id": "rad-052-167",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/d5cc2f85febe2260e51b88bddfeab6ce700c85dd-744x1039.png?accountingTag=RB",
+    "path": "assets/data/catalog_evidence/images/rad-052-167.png",
+    "sha256": "ef9e0c9eaffd1ffffa2ca6b64874ccf4060115fa7e672ec6f1ed6b7ea71a28a8",
+    "bytes": 780600
+  },
+  {
+    "official_id": "rad-146-167",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/4b11f36bd5ce2b08677959664cda3906a04d234c-744x1040.png?accountingTag=RB",
+    "path": "assets/data/catalog_evidence/images/rad-146-167.png",
+    "sha256": "2eff7c4cce06322b977353002fd9536f84dfc60aa609a43c0a24359626390933",
+    "bytes": 1185891
+  },
+  {
+    "official_id": "rad-106-167",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/e7dcc9ad059b471373f0093453a0ca7537d6aa0f-744x1039.png?accountingTag=RB",
+    "path": "assets/data/catalog_evidence/images/rad-106-167.png",
+    "sha256": "028e731345ca72847dd3312a2dea4e7e02cfbdf56e2c46ecb8003cf627a3a31a",
+    "bytes": 698202
   }
 ]

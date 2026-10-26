@@ -75,6 +75,7 @@ fn gear(g: &mut Game, p: usize, id: u32, card_id: usize, attached_to: Option<u32
     g.players[p].gear.push(GearState {
         id,
         card_id,
+        lane: None,
         attached_to,
         ready: true,
         temporary: false,

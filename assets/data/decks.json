@@ -10265,6 +10265,244 @@
       "tags": [
         "Mount Targon"
       ]
+    },
+    {
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/1e2a4e0a8cf533c82e9c3f4d507dd7eb63ece943-744x1039.png?w=280&q=80&fm=png",
+      "domains": [
+        "Fury"
+      ],
+      "energy": 1,
+      "equipment_effect": "",
+      "equipment_effect_html": "",
+      "id": 401,
+      "keywords": [
+        "Assault",
+        "Deploy"
+      ],
+      "kind": "Gear",
+      "might": 0,
+      "might_bonus": null,
+      "name": "Banner of Conquest",
+      "official_id": "rad-002-167",
+      "official_text": "[Deploy] (Play this only to a battlefield. When an opponent holds here, kill this.)\nFriendly units here have [Assault]. (+1 Might while they're attackers.)",
+      "official_text_html": "<p>[Deploy] (Play this only to a battlefield. When an opponent holds here, kill this.)<br />Friendly units here have [Assault]. (+1 :rb_might: while they're attackers.)</p>",
+      "power": 1,
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "tags": []
+    },
+    {
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/5b819cc232389f3ef1438350d68c7801e181961c-744x1039.png?w=280&q=80&fm=png",
+      "domains": [
+        "Calm"
+      ],
+      "energy": 2,
+      "equipment_effect": "",
+      "equipment_effect_html": "",
+      "id": 402,
+      "keywords": [
+        "Deploy"
+      ],
+      "kind": "Gear",
+      "might": 0,
+      "might_bonus": null,
+      "name": "Blossoming Dreamroot",
+      "official_id": "rad-024-167",
+      "official_text": "[Deploy] (Play this only to a battlefield. When an opponent holds here, kill this.)\nWhen you win a combat here, draw 1.",
+      "official_text_html": "<p>[Deploy] (Play this only to a battlefield. When an opponent holds here, kill this.)<br />When you win a combat here, draw 1.</p>",
+      "power": 0,
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "tags": []
+    },
+    {
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/0e80322dac6065e3ee726f5f9a2650a88195a44c-744x1039.png?w=280&q=80&fm=png",
+      "domains": [
+        "Order"
+      ],
+      "energy": 1,
+      "equipment_effect": "",
+      "equipment_effect_html": "",
+      "id": 403,
+      "keywords": [
+        "Deploy"
+      ],
+      "kind": "Gear",
+      "might": 0,
+      "might_bonus": null,
+      "name": "Concert Poster",
+      "official_id": "rad-116-167",
+      "official_text": "[Deploy] (Play this only to a battlefield. When an opponent holds here, kill this.)\nWhen you play this or when you conquer here, you may pay [1 Energy] to play a 1 Might Recruit unit token to your base.",
+      "official_text_html": "<p>[Deploy] (Play this only to a battlefield. When an opponent holds here, kill this.)<br />When you play this or when you conquer here, you may pay :rb_energy_1: to play a 1 :rb_might: Recruit unit token to your base.</p>",
+      "power": 0,
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "tags": []
+    },
+    {
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/0a625c22d828c83302132b0465dceb3ab11a08bc-744x1039.png?w=280&q=80&fm=png",
+      "domains": [
+        "Calm"
+      ],
+      "energy": 4,
+      "equipment_effect": "",
+      "equipment_effect_html": "",
+      "id": 404,
+      "keywords": [
+        "Deploy"
+      ],
+      "kind": "Gear",
+      "might": 0,
+      "might_bonus": null,
+      "name": "Hunting Blind",
+      "official_id": "rad-044-167",
+      "official_text": "[Deploy] (Play this only to a battlefield. When an opponent holds here, kill this.)\nWhen you play this, you may move an enemy unit to this battlefield.\nFriendly units here have [Shield 2]. (+2 Might while they're defenders.)",
+      "official_text_html": "<p>[Deploy] (Play this only to a battlefield. When an opponent holds here, kill this.)<br />When you play this, you may move an enemy unit to this battlefield.<br />Friendly units here have [Shield 2]. (+2 :rb_might: while they're defenders.)</p>",
+      "power": 2,
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "tags": []
+    },
+    {
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/374248eb65ca1e90a434652073dbbd3a12a11eda-744x1039.png?w=280&q=80&fm=png",
+      "domains": [
+        "Body"
+      ],
+      "energy": 1,
+      "equipment_effect": "",
+      "equipment_effect_html": "",
+      "id": 405,
+      "keywords": [
+        "Buff",
+        "Deploy"
+      ],
+      "kind": "Gear",
+      "might": 0,
+      "might_bonus": null,
+      "name": "Pillaged Armory",
+      "official_id": "rad-073-167",
+      "official_text": "[Deploy] (Play this only to a battlefield. When an opponent holds here, kill this.)\nWhen you play this or when you conquer here, [Buff] a friendly unit. (Give it a +1 Might buff if it doesn't have one.)",
+      "official_text_html": "<p>[Deploy] (Play this only to a battlefield. When an opponent holds here, kill this.)<br />When you play this or when you conquer here, [Buff] a friendly unit. (Give it a +1 :rb_might: buff if it doesn't have one.)</p>",
+      "power": 0,
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "tags": []
+    },
+    {
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/dba5c879aae5c614198eb8408e0104a1b0618102-744x1039.png?w=280&q=80&fm=png",
+      "domains": [
+        "Body"
+      ],
+      "energy": 2,
+      "equipment_effect": "",
+      "equipment_effect_html": "",
+      "id": 406,
+      "keywords": [
+        "Deploy",
+        "Ganking"
+      ],
+      "kind": "Gear",
+      "might": 0,
+      "might_bonus": null,
+      "name": "Portable Portal",
+      "official_id": "rad-087-167",
+      "official_text": "[Deploy] (Play this only to a battlefield. When an opponent holds here, kill this.)\nWhen you play this, you may pay [Body Power] to ready a unit here.\nFriendly units here have [Ganking]. (They can move from battlefield to battlefield.)",
+      "official_text_html": "<p>[Deploy] (Play this only to a battlefield. When an opponent holds here, kill this.)<br />When you play this, you may pay :rb_rune_body: to ready a unit here.<br />Friendly units here have [Ganking]. (They can move from battlefield to battlefield.)</p>",
+      "power": 0,
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "tags": []
+    },
+    {
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/d5cc2f85febe2260e51b88bddfeab6ce700c85dd-744x1039.png?w=280&q=80&fm=png",
+      "domains": [
+        "Mind"
+      ],
+      "energy": 1,
+      "equipment_effect": "",
+      "equipment_effect_html": "",
+      "id": 407,
+      "keywords": [
+        "Add",
+        "Deploy",
+        "Reaction"
+      ],
+      "kind": "Gear",
+      "might": 0,
+      "might_bonus": null,
+      "name": "Resource Extractor",
+      "official_id": "rad-052-167",
+      "official_text": "[Deploy] (Play this only to a battlefield. When an opponent holds here, kill this.)\nAt the end of your turn, if you control this battlefield, play a Gold gear token exhausted. (It has \"[Reaction][>] Kill this, [Exhaust]: [Add] [Any Power].\")",
+      "official_text_html": "<p>[Deploy] (Play this only to a battlefield. When an opponent holds here, kill this.)<br />At the end of your turn, if you control this battlefield, play a Gold gear token exhausted. (It has &quot;[Reaction][&gt;] Kill this, :rb_exhaust:: [Add] :rb_rune_rainbow:.&quot;)</p>",
+      "power": 0,
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "tags": []
+    },
+    {
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/e7dcc9ad059b471373f0093453a0ca7537d6aa0f-744x1039.png?w=280&q=80&fm=png",
+      "domains": [
+        "Chaos"
+      ],
+      "energy": 3,
+      "equipment_effect": "",
+      "equipment_effect_html": "",
+      "id": 408,
+      "keywords": [
+        "Deploy"
+      ],
+      "kind": "Gear",
+      "might": 0,
+      "might_bonus": null,
+      "name": "The Good Stuff",
+      "official_id": "rad-106-167",
+      "official_text": "[Deploy] (Play this only to a battlefield. When an opponent holds here, kill this.)\nWhen you play this, discard 1, then draw 3.\nWhen you hold here, return this to its owner's hand.",
+      "official_text_html": "<p>[Deploy] (Play this only to a battlefield. When an opponent holds here, kill this.)<br />When you play this, discard 1, then draw 3.<br />When you hold here, return this to its owner's hand.</p>",
+      "power": 1,
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "tags": []
+    },
+    {
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/6db2839d8702b15ab62413028c0321c75e87801c-744x1039.png?w=280&q=80&fm=png",
+      "domains": [
+        "Body"
+      ],
+      "energy": 2,
+      "equipment_effect": "",
+      "equipment_effect_html": "",
+      "id": 409,
+      "keywords": [
+        "Deploy"
+      ],
+      "kind": "Unit",
+      "might": 2,
+      "might_bonus": null,
+      "name": "Overloaded Traveler",
+      "official_id": "rad-072-167",
+      "official_text": "While there's a friendly gear with [Deploy] at my battlefield, I have +1 Might.",
+      "official_text_html": "<p>While there's a friendly gear with [Deploy] at my battlefield, I have +1 :rb_might:.</p>",
+      "power": 0,
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "tags": [
+        "Bandle City",
+        "Yordle"
+      ]
+    },
+    {
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/b025756992e22af480902e13b01e25acbc747221-744x1039.png?w=280&q=80&fm=png",
+      "domains": [
+        "Calm"
+      ],
+      "energy": 1,
+      "equipment_effect": "",
+      "equipment_effect_html": "",
+      "id": 410,
+      "keywords": [
+        "Deploy"
+      ],
+      "kind": "Spell",
+      "might": 0,
+      "might_bonus": null,
+      "name": "Command: Attack",
+      "official_id": "rad-033-167",
+      "official_text": "Choose one —\nMove a friendly gear with [Deploy] to a battlefield.\nLook at the top 5 cards of your Main Deck. You may reveal a gear from among them and draw it. Recycle the rest.",
+      "official_text_html": "<p>Choose one —</p><ul><li>Move a friendly gear with [Deploy] to a battlefield.</li><li>Look at the top 5 cards of your Main Deck. You may reveal a gear from among them and draw it. Recycle the rest.</li></ul>",
+      "power": 1,
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "tags": []
     }
   ],
   "official_text_note": "Official card/legend rules text from the Riot Card Gallery, retrieved 2026-10-24 and corrected by cited errata. Resource icon tokens are expanded to readable bracketed names. Raw card and equipment HTML is preserved separately. Official text does not establish full implementation fidelity."

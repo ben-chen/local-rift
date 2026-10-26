@@ -19,6 +19,7 @@ pub enum HiddenTargetRestriction {
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct PlayTargetSlot {
     pub index: usize,
+    pub kind: rules::PlayTargetKind,
     pub hidden: Option<HiddenTargetRestriction>,
     pub different_location_from: Option<usize>,
 }
@@ -38,7 +39,6 @@ pub struct ExecutionChoices {
     pub targets: Vec<Target>,
     pub mode: Option<usize>,
 }
-// No current spell has a mode choice: current accepted mode is None.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct RepeatSelection {
     pub option_id: u64,
@@ -57,6 +57,7 @@ pub struct CostSelection {
 }
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct PlayChoices {
+    pub mode: Option<usize>,
     pub repeats: Vec<RepeatSelection>, // ordered extra executions; each option at most once
     pub accelerate: bool,
     pub bonus: bool, // existing Rampage option / Nami optional cost; descriptor labels below
@@ -115,7 +116,14 @@ pub struct CostPlanView {
     pub applied_order: Vec<CostSelection>,
 }
 #[derive(Clone, Debug, PartialEq, Eq)]
+pub struct PlayModeOption {
+    pub index: usize,
+    pub label: &'static str,
+    pub target_kinds: Vec<rules::PlayTargetKind>,
+}
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct PlayChoiceView {
+    pub modes: Vec<PlayModeOption>,
     pub card_id: CardId,
     pub origin: PlayOrigin,
     pub repeats: Vec<RepeatOption>,
@@ -714,6 +722,17 @@ impl Game {
     ) -> Result<PlayTargetView, String> {
         self.play_choices(action)?;
         let intent = self.card_intent(action)?;
+        let mode = if execution == 0 {
+            intent.legacy.mode
+        } else {
+            intent
+                .legacy
+                .repeats
+                .get(execution - 1)
+                .ok_or("That execution is not selected.")?
+                .choices
+                .mode
+        };
         let targets = if execution == 0 {
             intent.targets.clone()
         } else {
@@ -726,7 +745,7 @@ impl Game {
                 .targets
                 .clone()
         };
-        let spec = rules::play_target_spec(intent.id);
+        let spec = Self::execution_target_spec(intent.id, mode, targets.len());
         let next_slot = (targets.len() < spec.maximum).then(|| {
             let hidden = match intent.origin {
                 PlayOrigin::Hidden { lane } => match rules::hidden_target_policy(intent.id) {
@@ -745,6 +764,7 @@ impl Game {
             };
             PlayTargetSlot {
                 index: targets.len(),
+                kind: spec.kind.expect("a target slot has a kind"),
                 hidden,
                 different_location_from: (rules::targeting(intent.id).different_locations
                     && !targets.is_empty())
@@ -752,7 +772,9 @@ impl Game {
             }
         });
         let mut candidates = Vec::new();
-        if next_slot.is_some() {
+        if intent.id == 410 {
+            candidates = self.command_attack_candidates(self.priority(), mode, &targets);
+        } else if next_slot.is_some() {
             for target in
                 self.card_target_candidates(self.priority(), intent.id, intent.lane, &targets)?
             {
@@ -781,9 +803,18 @@ impl Game {
         if intent.lane.is_some_and(|lane| lane >= BATTLEFIELDS) {
             return Err("Choose a battlefield on this board.".into());
         }
-        for group in std::iter::once(&intent.targets)
-            .chain(intent.legacy.repeats.iter().map(|r| &r.choices.targets))
-        {
+        for (mode, group) in std::iter::once((intent.legacy.mode, &intent.targets)).chain(
+            intent
+                .legacy
+                .repeats
+                .iter()
+                .map(|r| (r.choices.mode, &r.choices.targets)),
+        ) {
+            Self::validate_play_mode(intent.id, mode, false)?;
+            if intent.id == 410 {
+                self.validate_command_attack(self.priority(), mode, group, false)?;
+                continue;
+            }
             for (slot, &target) in group.iter().enumerate() {
                 if !self.valid_card_target(
                     self.priority(),
@@ -830,6 +861,7 @@ impl Game {
             bonus.as_ref(),
         )?;
         Ok(PlayChoiceView {
+            modes: Self::play_modes(intent.id),
             card_id: intent.id,
             origin: intent.origin,
             repeats,
@@ -847,7 +879,11 @@ impl Game {
         if let Action::WithPlayChoices { action, choices } = action
             && self.card_intent(action).is_err()
         {
-            if !choices.repeats.is_empty() || choices.accelerate || choices.bonus {
+            if choices.mode.is_some()
+                || !choices.repeats.is_empty()
+                || choices.accelerate
+                || choices.bonus
+            {
                 return Err("Card additional-cost choices do not apply to this ability.".into());
             }
             return self.ability_plan(action, &choices.cost_order);
@@ -874,11 +910,10 @@ impl Game {
             cost: intent.base.clone(),
             optional: false,
         }];
+        Self::validate_play_mode(intent.id, choices.mode, false)?;
         let mut seen = Vec::new();
         for selected in &choices.repeats {
-            if selected.choices.mode.is_some() {
-                return Err("This spell has no mode selection.".into());
-            }
+            Self::validate_play_mode(intent.id, selected.choices.mode, false)?;
             if seen.contains(&selected.option_id) {
                 return Err("Choose each Repeat instance at most once.".into());
             }
@@ -1213,7 +1248,7 @@ impl Game {
             action,
             Action::PlayCard { .. } | Action::PlayChampion { .. } | Action::PlayFromTrash { .. }
         );
-        if automatic {
+        if automatic && intent.id != 410 {
             intent.targets =
                 probe.prepare_targets(probe.priority(), intent.id, intent.lane, &intent.targets)?;
         }
@@ -1246,9 +1281,20 @@ impl Game {
             }),
             _ => None,
         };
+        Self::validate_play_mode(intent.id, choices.mode, true)?;
+        if intent.id == 410 {
+            probe.validate_command_attack(probe.priority(), choices.mode, &intent.targets, true)?;
+        }
         for r in &choices.repeats {
-            if r.choices.mode.is_some() {
-                return Err("This spell has no mode selection.".into());
+            Self::validate_play_mode(intent.id, r.choices.mode, true)?;
+            if intent.id == 410 {
+                probe.validate_command_attack(
+                    probe.priority(),
+                    r.choices.mode,
+                    &r.choices.targets,
+                    true,
+                )?;
+                continue;
             }
             probe.prepare_targets_explicit(
                 probe.priority(),
@@ -1707,8 +1753,11 @@ impl Game {
             let mut item = self.chain[index].clone();
             item.targets = item.executions[frame.execution].targets.clone();
             item.target = item.targets.first().copied();
-            let groups =
-                self.resolution_groups(item.player, item.card_id, item.lane, &item.targets)?;
+            let groups = if item.card_id == 410 {
+                vec![item.targets.clone()]
+            } else {
+                self.resolution_groups(item.player, item.card_id, item.lane, &item.targets)?
+            };
             if rules::targeting(item.card_id).same_location && groups.len() > 1 {
                 self.decision = Some(Decision::ResolutionTargets {
                     player: item.player,
@@ -1727,7 +1776,15 @@ impl Game {
                     card_id: item.card_id,
                 },
             });
-            if self.is_counter(item.card_id) {
+            if item.card_id == 410 {
+                match item.executions[frame.execution].mode {
+                    Some(0) => self.move_deploy_gear(item.player, &item.targets),
+                    Some(1) => {
+                        self.look_to_draw(item.player, item.card_id, DrawLookKind::CommandAttack)
+                    }
+                    _ => return Err("The finalized Command execution has no valid mode.".into()),
+                }
+            } else if self.is_counter(item.card_id) {
                 self.resolve_counter(&item);
             } else {
                 if item.options.bonus
@@ -1780,6 +1837,43 @@ impl Game {
         action: &Action,
         selection: &[CostSelection],
     ) -> Result<CostPlanView, String> {
+        if let Action::ResolveTriggerPayment {
+            choice_id,
+            pay: true,
+        } = action
+        {
+            let Some(Decision::TriggerPayment {
+                choice_id: current,
+                base_cost,
+                deflect,
+                ..
+            }) = self.trigger_payment_context()
+            else {
+                return Err("No triggered ability is awaiting payment.".into());
+            };
+            if *choice_id != current {
+                return Err("This trigger payment choice is stale.".into());
+            }
+            let mut components = vec![CostComponent {
+                id: 1,
+                label: "Trigger base cost".into(),
+                cost: base_cost,
+                optional: false,
+            }];
+            if deflect > 0 {
+                components.push(CostComponent {
+                    id: 4,
+                    label: "Deflect".into(),
+                    cost: CostValue {
+                        power: deflect,
+                        domains: ALL_DOMAINS.to_vec(),
+                        ..CostValue::default()
+                    },
+                    optional: false,
+                });
+            }
+            return solve_cost_plan(components, vec![], selection, false, 0);
+        }
         if let Action::ActivateLegend { target } = action {
             let player = self.priority();
             let activation = crate::legends::legend_activation(self.legend[player].kind)
@@ -2032,7 +2126,11 @@ impl Game {
     }
 
     fn apply_cost_choices(&mut self, action: Action, choices: PlayChoices) -> Result<(), String> {
-        if !choices.repeats.is_empty() || choices.accelerate || choices.bonus {
+        if choices.mode.is_some()
+            || !choices.repeats.is_empty()
+            || choices.accelerate
+            || choices.bonus
+        {
             return Err("Card additional-cost choices do not apply to this ability.".into());
         }
         self.ability_plan(&action, &choices.cost_order)?;
@@ -2104,6 +2202,42 @@ impl Game {
                 .collect();
             let mut result = Vec::new();
             for action in intents {
+                let intent = self.card_intent(&action)?;
+                if intent.id == 410 {
+                    result.extend(self.command_play_candidates(
+                        &action,
+                        false,
+                        limit.saturating_sub(result.len()),
+                    )?);
+                    if result.len() >= limit {
+                        return Ok(result);
+                    }
+                    continue;
+                }
+                if rules::static_abilities(intent.id).contains(&StaticAbility::Deploy) {
+                    for lane in 0..BATTLEFIELDS {
+                        let mut candidate = action.clone();
+                        match &mut candidate {
+                            Action::PlayCard {
+                                lane: destination, ..
+                            }
+                            | Action::PlayChampion {
+                                lane: destination, ..
+                            }
+                            | Action::PlayFromTrash {
+                                lane: destination, ..
+                            } => *destination = Some(lane),
+                            _ => continue,
+                        }
+                        if self.probe_action(&candidate).is_ok() {
+                            result.push(candidate);
+                        }
+                        if result.len() >= limit {
+                            return Ok(result);
+                        }
+                    }
+                    continue;
+                }
                 let Ok(view) = self.play_choices(&action) else {
                     continue;
                 };
@@ -2192,7 +2326,9 @@ impl Game {
             let extras = intent.legacy.repeats.len() as i128 * 5
                 + i128::from(intent.legacy.accelerate) * 15
                 + i128::from(intent.legacy.bonus) * 5;
-            let score = if matches!(rules::effect(intent.id), OfficialEffect::AreaDamage { .. }) {
+            let score = if intent.id == 410 {
+                self.command_choice_score(self.priority(), intent.legacy.mode, &intent.targets)
+            } else if matches!(rules::effect(intent.id), OfficialEffect::AreaDamage { .. }) {
                 let base = self.area_damage_score(self.priority(), intent.id, &intent.targets)?;
                 base + intent
                     .legacy

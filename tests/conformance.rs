@@ -174,6 +174,7 @@ fn salvage_may_decline_to_kill_an_existing_enemy_gear() {
     game.players[1].gear.push(GearState {
         id: 102,
         card_id: 42,
+        lane: None,
         attached_to: None,
         ready: true,
         temporary: false,
@@ -238,6 +239,7 @@ fn not_so_fast_can_protect_friendly_gear() {
     game.players[0].gear.push(GearState {
         id: 102,
         card_id: 42,
+        lane: None,
         attached_to: None,
         ready: true,
         temporary: false,

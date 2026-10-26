@@ -364,6 +364,7 @@ fn conquer_effects_finish_before_combat_designations_expire() {
         g.players[attacker].gear.push(GearState {
             id: 60000,
             card_id: 201,
+            lane: None,
             attached_to: Some(id),
             ready: true,
             temporary: false,
@@ -520,6 +521,7 @@ fn replacement_choice_finishes_before_the_one_time_heal_and_recall() {
             g.players[attacker].gear.push(GearState {
                 id: gear_id,
                 card_id: 10,
+                lane: None,
                 attached_to: Some(id),
                 ready: true,
                 temporary: false,
@@ -664,6 +666,7 @@ fn actual_activated_ability_passes_focus_but_add_ability_does_not() {
         g.players[attacker].gear.push(GearState {
             id: 62000,
             card_id: 242,
+            lane: None,
             attached_to: None,
             ready: true,
             temporary: false,

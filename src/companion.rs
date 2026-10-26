@@ -223,6 +223,9 @@ fn fingerprint(game: &Game) -> u64 {
         }
         None => 2_u8.hash(&mut hash),
     }
+    // The pending source and frozen targets remain public through nested Add
+    // instructions; the helper deliberately excludes private continuations.
+    format!("{:?}", game.trigger_payment_context()).hash(&mut hash);
     (game.phase as u8).hash(&mut hash);
     game.winner.hash(&mut hash);
     game.battlefield_owner.hash(&mut hash);
@@ -264,6 +267,16 @@ fn fingerprint(game: &Game) -> u64 {
             gear.id.hash(&mut hash);
             gear.card_id.hash(&mut hash);
             gear.attached_to.hash(&mut hash);
+            game.gear_location(owner, gear.id).hash(&mut hash);
+            game.gear_deploy_status(owner, gear.id)
+                .map(|status| {
+                    (
+                        status.characteristic,
+                        status.printed_abilities_active,
+                        status.opponent_hold_trigger_active,
+                    )
+                })
+                .hash(&mut hash);
             gear.ready.hash(&mut hash);
             gear.temporary.hash(&mut hash);
             game.gear_temporary_status(owner, gear.id)
@@ -371,6 +384,17 @@ fn checked_advice(game: &Game, level: AdviceLevel) -> Result<Vec<&'static str>, 
         }
     }
 
+    if human.gear.iter().any(|gear| {
+        game.gear_deploy_status(0, gear.id)
+            .is_some_and(|status| status.characteristic)
+    }) {
+        tips.push(if beginner {
+            "Deploy gear lives at a battlefield, even an enemy one. Its card and local effects are in the gear row; gear alone does not control or contest that field."
+        } else {
+            "Compare this gear's local benefit with the opponent's next Hold. Conquest does not destroy it; an opponent Hold creates a destruction ability that players can respond to."
+        });
+    }
+
     if human.hand.iter().any(|id| matches!(id, 376..=378)) {
         tips.push(if beginner {
             "Retreat returns your unit and channels a rune exhausted. Wind and Ghosts banishes small units without triggering Deathknell; larger units return to hand."
@@ -446,7 +470,7 @@ fn checked_advice(game: &Game, level: AdviceLevel) -> Result<Vec<&'static str>, 
     }
     if human_has_hold {
         tips.push(if beginner {
-            "You may deploy a unit exhausted at a battlefield you control, or at base. A held field can be reinforced without moving from base first."
+            "You may play a unit exhausted at a battlefield you control, or at base. A held field can be reinforced without moving from base first."
         } else {
             "Deploying into a controlled field reinforces a hold immediately. Deploying at base preserves a choice of destinations next turn."
         });
@@ -820,6 +844,9 @@ fn response_window_advice(
                     local_rift::game::DrawLookKind::Ornn => {
                         "Ornn looks for gear when played or when he holds. Drawing puts the chosen copy in your hand; you still pay its cost when you play it."
                     }
+                    local_rift::game::DrawLookKind::CommandAttack => {
+                        "This Command mode looks at five and may reveal and draw one Gear. Each Repeat chooses its own mode; drawing a gear does not play it."
+                    }
                 },
             ],
             Decision::RevealedCard { outcome, .. } => vec![
@@ -887,6 +914,18 @@ fn response_window_advice(
                     ]
                 }
             }
+            Decision::TriggerPayment { .. } => vec![
+                "Choose whether to pay this trigger's base cost. Payment happens before responses; declining keeps the ability off the chain.",
+                if beginner {
+                    "After payment, the ability can be responded to or countered. Its cost is not refunded if it is countered or its target becomes illegal."
+                } else {
+                    "Judge the frozen target and cost before committing. The opponent gets a response window after you pay; leave resources for that exchange."
+                },
+            ],
+            Decision::Payment { .. } if game.trigger_payment_context().is_some() => vec![
+                "This trigger's source, targets and cost are fixed while you pay. Use permitted Add abilities, then finish payment to put the ability on the chain.",
+                "Payment comes before responses and a later counter gives no refund. Undo before completion restores this optional choice and its resource steps.",
+            ],
             Decision::Payment { .. }
                 if game.payment_plan_view(0).is_some_and(|plan| plan.xp > 0) =>
             {
@@ -1630,6 +1669,7 @@ mod tests {
             .into_iter()
             .enumerate()
             .map(|(index, card_id)| GearState {
+                lane: None,
                 id: 987 + index as u32,
                 card_id,
                 ready: true,
@@ -1701,6 +1741,7 @@ mod tests {
             })
             .collect();
         game.players[0].gear = vec![GearState {
+            lane: None,
             id: 900,
             card_id: 331,
             attached_to: None,
@@ -1895,6 +1936,7 @@ mod tests {
         let mut game = game();
         game.start_match().unwrap();
         game.players[0].gear.push(local_rift::gear::GearState {
+            lane: None,
             id: 800,
             card_id: 250,
             attached_to: None,
@@ -1903,6 +1945,7 @@ mod tests {
             token: false,
         });
         game.players[0].gear.push(local_rift::gear::GearState {
+            lane: None,
             id: 801,
             card_id: 243,
             attached_to: None,
@@ -2246,6 +2289,89 @@ mod tests {
     }
 
     #[test]
+    fn deploy_coaching_tracks_public_location_and_pending_cost_without_private_cards() {
+        let mut g = game();
+        g.start_match().unwrap();
+        g.players[0].gear.push(local_rift::gear::GearState {
+            id: 24000,
+            card_id: 401,
+            lane: Some(0),
+            attached_to: None,
+            ready: true,
+            temporary: false,
+            token: false,
+        });
+        for level in [AdviceLevel::Beginner, AdviceLevel::Advanced] {
+            assert!(
+                advice(&g, level)
+                    .iter()
+                    .all(|tip| tip.chars().count() <= 180)
+            );
+        }
+        let mut urgent = g.clone();
+        urgent.players[1].score = 7;
+        urgent.battlefield_owner[0] = Some(1);
+        assert!(advice(&urgent, AdviceLevel::Beginner)[0].contains("one point away"));
+        assert!(advice(&urgent, AdviceLevel::Advanced)[0].contains("Hold denial"));
+        let first = fingerprint(&g);
+        g.players[0].gear[0].lane = Some(1);
+        assert_ne!(first, fingerprint(&g));
+        g.decision = Some(Decision::TriggerPayment {
+            player: 0,
+            choice_id: 24000,
+            card_id: 403,
+            rule_index: 1,
+            context: local_rift::game::TriggerContext {
+                source: local_rift::game::TriggerSource {
+                    player: 0,
+                    unit_id: None,
+                    gear_id: Some(24000),
+                },
+                subject: None,
+                movement: None,
+                departure_location: None,
+            },
+            targets: vec![],
+            base_cost: local_rift::play::CostValue {
+                energy: 1,
+                ..Default::default()
+            },
+            deflect: 0,
+        });
+        let mut private_change = g.clone();
+        private_change.players[1].hand = vec![410, 401];
+        private_change.players[1].deck.reverse();
+        assert_eq!(fingerprint(&g), fingerprint(&private_change));
+        for level in [AdviceLevel::Beginner, AdviceLevel::Advanced] {
+            let tips = advice(&g, level);
+            assert!(tips[0].contains("before responses"));
+            assert!(tips.iter().all(|tip| tip.chars().count() <= 180));
+            assert_eq!(tips, advice(&private_change, level));
+        }
+        g.decision = Some(Decision::DrawLook {
+            player: 1,
+            choice_id: 24001,
+            source_card_id: 410,
+            cards: vec![401, 410, 401],
+            eligible: vec![0, 2],
+            kind: local_rift::game::DrawLookKind::CommandAttack,
+        });
+        private_change = g.clone();
+        if let Some(Decision::DrawLook {
+            cards, eligible, ..
+        }) = &mut private_change.decision
+        {
+            *cards = vec![0, 4];
+            *eligible = vec![];
+        }
+        assert_eq!(fingerprint(&g), fingerprint(&private_change));
+        assert_eq!(
+            advice(&g, AdviceLevel::Beginner),
+            advice(&private_change, AdviceLevel::Beginner)
+        );
+    }
+
+    #[test]
     fn ornn_advice_explains_draw_not_play_and_hides_opponent_occurrences() {
         let mut g = game();
         g.start_match().unwrap();
@@ -2300,6 +2426,7 @@ mod tests {
                 .unwrap();
             } else {
                 g.players[0].gear.push(GearState {
+                    lane: None,
                     id: 212100,
                     card_id,
                     ready: true,
@@ -2555,6 +2682,7 @@ mod tests {
             banish_on_death: false,
         });
         game.players[1].gear.push(local_rift::gear::GearState {
+            lane: None,
             id: 992,
             card_id: 121,
             ready: true,

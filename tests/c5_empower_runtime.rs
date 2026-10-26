@@ -56,6 +56,7 @@ fn gear(g: &mut Game, id: u32, card_id: usize) -> AbilitySource {
     g.players[0].gear.push(GearState {
         id,
         card_id,
+        lane: None,
         attached_to: None,
         ready: true,
         temporary: false,
@@ -258,6 +259,7 @@ fn matriarch_observes_actor_empowering_enemy_gear_and_readies_enemy_unit_with_ex
     g.players[1].gear.push(GearState {
         id: 1001,
         card_id: 42,
+        lane: None,
         attached_to: None,
         ready: true,
         temporary: false,
@@ -767,6 +769,7 @@ fn ambessas_kill_is_a_real_kill_instruction_with_controller_replacement_choice()
     g.players[1].gear.push(GearState {
         id: 1002,
         card_id: 10,
+        lane: None,
         attached_to: Some(1001),
         ready: true,
         temporary: false,
@@ -775,6 +778,7 @@ fn ambessas_kill_is_a_real_kill_instruction_with_controller_replacement_choice()
     g.players[1].gear.push(GearState {
         id: 1003,
         card_id: 21,
+        lane: None,
         attached_to: None,
         ready: true,
         temporary: false,

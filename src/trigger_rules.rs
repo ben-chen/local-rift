@@ -31,6 +31,10 @@ pub enum Event {
     SelfHold,
     FriendlyDraw,
     GearActivated,
+    FriendlyBattlefieldHold,
+    OpponentBattlefieldHold,
+    FriendlyBattlefieldConquer,
+    FriendlyCombatWin,
 }
 
 /// Conditions are evaluated when the event occurs. They are not effect-side
@@ -54,6 +58,8 @@ pub enum Condition {
     FirstEachTurn,
     SecondDraw,
     SourceEmpowered,
+    SourceAtEventBattlefield,
+    ControllerControlsSourceBattlefield,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -130,6 +136,9 @@ pub enum Amount {
 }
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Effect {
+    KillSourceGear,
+    ReturnSourceGear,
+    MoveTargetsToSourceBattlefield,
     DrawLook(crate::game::DrawLookKind),
     RevealMovedTop,
     ClocktowerDeathknell,
@@ -184,12 +193,21 @@ pub enum TriggerTextArea {
     Rules,
     Equipment,
 }
+/// A cost appearing first in a triggered instruction is paid during
+/// finalization (Core 204.1.c, 404.1.b.1), before responses.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct TriggerBaseCost {
+    pub energy: u16,
+    pub power: u16,
+    pub domain: Option<crate::cards::Domain>,
+}
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct TriggerRule {
     pub text_area: TriggerTextArea,
     pub event: Event,
     pub conditions: &'static [Condition],
     pub optional: bool,
+    pub base_cost: Option<TriggerBaseCost>,
     pub targets: TargetRule,
     pub effects: &'static [Effect],
 }
@@ -220,6 +238,7 @@ const fn rule(
         event,
         conditions,
         optional,
+        base_cost: None,
         targets,
         effects,
     }
@@ -248,7 +267,161 @@ pub fn trigger_rules(card_id: usize) -> &'static [TriggerRule] {
     use Event::*;
     use Operand::*;
     use TokenPlacement::*;
+    const DEPLOY_HOLD: TriggerRule = rule(
+        OpponentBattlefieldHold,
+        &[SourceAtEventBattlefield],
+        false,
+        TargetRule::NONE,
+        &[KillSourceGear],
+    );
+    const POSTER: TriggerRule = TriggerRule {
+        base_cost: Some(TriggerBaseCost {
+            energy: 1,
+            power: 0,
+            domain: None,
+        }),
+        ..rule(
+            SelfPlayed,
+            &[],
+            true,
+            TargetRule::NONE,
+            &[Tokens {
+                count: 1,
+                might: 1,
+                gear: false,
+                opponent: false,
+                location: Base,
+                entry_ready: false,
+            }],
+        )
+    };
     match card_id {
+        401 => const { &[DEPLOY_HOLD] },
+        402 => {
+            const {
+                &[
+                    DEPLOY_HOLD,
+                    rule(
+                        FriendlyCombatWin,
+                        &[SourceAtEventBattlefield],
+                        false,
+                        TargetRule::NONE,
+                        &[Draw(1)],
+                    ),
+                ]
+            }
+        }
+        403 => {
+            const {
+                &[
+                    DEPLOY_HOLD,
+                    POSTER,
+                    TriggerRule {
+                        event: FriendlyBattlefieldConquer,
+                        conditions: &[SourceAtEventBattlefield],
+                        ..POSTER
+                    },
+                ]
+            }
+        }
+        404 => {
+            const {
+                &[
+                    DEPLOY_HOLD,
+                    rule(
+                        SelfPlayed,
+                        &[],
+                        true,
+                        TargetRule {
+                            allegiance: Allegiance::Enemy,
+                            ..ANY
+                        },
+                        &[MoveTargetsToSourceBattlefield],
+                    ),
+                ]
+            }
+        }
+        405 => {
+            const {
+                &[
+                    DEPLOY_HOLD,
+                    rule(SelfPlayed, &[], false, FRIENDLY, &[Buff(Targets)]),
+                    rule(
+                        FriendlyBattlefieldConquer,
+                        &[SourceAtEventBattlefield],
+                        false,
+                        FRIENDLY,
+                        &[Buff(Targets)],
+                    ),
+                ]
+            }
+        }
+        406 => {
+            const {
+                &[
+                    DEPLOY_HOLD,
+                    TriggerRule {
+                        base_cost: Some(TriggerBaseCost {
+                            energy: 0,
+                            power: 1,
+                            domain: Some(crate::cards::Domain::Body),
+                        }),
+                        ..rule(
+                            SelfPlayed,
+                            &[],
+                            true,
+                            TargetRule { here: true, ..ANY },
+                            &[Ready(Targets)],
+                        )
+                    },
+                ]
+            }
+        }
+        407 => {
+            const {
+                &[
+                    DEPLOY_HOLD,
+                    rule(
+                        ControllerEnding,
+                        &[ControllerControlsSourceBattlefield],
+                        false,
+                        TargetRule::NONE,
+                        &[Tokens {
+                            count: 1,
+                            might: 0,
+                            gear: true,
+                            opponent: false,
+                            location: Base,
+                            entry_ready: false,
+                        }],
+                    ),
+                ]
+            }
+        }
+        408 => {
+            const {
+                &[
+                    DEPLOY_HOLD,
+                    rule(
+                        SelfPlayed,
+                        &[],
+                        false,
+                        TargetRule::NONE,
+                        &[Loot {
+                            discard: 1,
+                            draw: 3,
+                        }],
+                    ),
+                    rule(
+                        FriendlyBattlefieldHold,
+                        &[SourceAtEventBattlefield],
+                        false,
+                        TargetRule::NONE,
+                        &[ReturnSourceGear],
+                    ),
+                ]
+            }
+        }
         395 => {
             const {
                 &[

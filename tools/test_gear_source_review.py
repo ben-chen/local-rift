@@ -56,7 +56,7 @@ class GearSourceReviewTests(unittest.TestCase):
         self.assertEqual((c['implemented_main_cards'], c['implemented_legal_identities'],
                           c['unimplemented_legal_identities']), (362, 387, 692))
         self.assertEqual((c['reviewed_field_resolutions'], c['field_reviewed_printings'],
-                          c['source_quality_issues'], c['resolved_source_issue_groups']), (122, 77, 47, 47))
+                          c['source_quality_issues'], c['resolved_source_issue_groups']), (137, 87, 52, 52))
         self.assertFalse(self.proof['enables_runtime_support'])
 
     def test_compound_type_is_one_inventory_identity_with_both_types(self):

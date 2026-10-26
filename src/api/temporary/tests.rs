@@ -71,6 +71,7 @@ fn gear(id: u32, card_id: usize, attached_to: Option<u32>) -> GearState {
         id,
         card_id,
         attached_to,
+        lane: None,
         ready: true,
         temporary: false,
         token: false,
@@ -302,14 +303,14 @@ fn hidden_smoke_queries_preserve_origin_order_prefix_and_opponent_privacy() {
     assert_eq!(first["result"]["origin"], json!({"type":"hidden","lane":0}));
     assert_eq!(
         first["result"]["next_slot"],
-        json!({"index":0,
+        json!({"index":0,"kind":"unit",
         "hidden":{"type":"at_battlefield","lane":0},"different_location_from":null})
     );
     let second = query(&mut session, draft(vec![target(0, 5_000)]), 0);
     assert_eq!(candidates(&second).len(), 2);
     assert_eq!(
         second["result"]["next_slot"],
-        json!({"index":1,"hidden":null,"different_location_from":0})
+        json!({"index":1,"kind":"unit","hidden":null,"different_location_from":0})
     );
     assert_eq!(
         query(&mut session, draft(vec![target(0, 5_001)]), 0)["ok"],

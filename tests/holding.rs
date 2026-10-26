@@ -107,6 +107,7 @@ fn winning_hold_does_not_finalize_hold_triggers_or_channel_or_draw() {
     game.players[1].gear.push(GearState {
         id: 102,
         card_id: 38, // Last Rites also observes its bearer's Hold.
+        lane: None,
         attached_to: Some(100),
         ready: true,
         temporary: false,

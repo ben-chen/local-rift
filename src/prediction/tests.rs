@@ -49,6 +49,7 @@ fn gear(g: &mut Game, card: CardId) -> u32 {
     g.players[0].gear.push(GearState {
         id,
         card_id: card,
+        lane: None,
         attached_to: None,
         ready: true,
         temporary: false,

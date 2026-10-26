@@ -16,6 +16,8 @@ use std::collections::VecDeque;
 
 #[path = "combat.rs"]
 mod combat;
+#[path = "deploy.rs"]
+mod deploy;
 pub use combat::{CombatResolution, CombatResult, CombatStep};
 
 #[path = "board_returns.rs"]
@@ -122,6 +124,10 @@ pub enum Action {
         source: AbilitySource,
         ability_index: usize,
         targets: Vec<Target>,
+    },
+    ResolveTriggerPayment {
+        choice_id: u32,
+        pay: bool,
     },
     ChooseTriggerTargets {
         targets: Vec<Target>,
@@ -465,6 +471,7 @@ pub enum DrawLookKind {
     FateWeaver,
     TrifarianCaptain,
     Ornn,
+    CommandAttack,
 }
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum RevealOutcome {
@@ -537,6 +544,16 @@ pub enum Decision {
         card_id: CardId,
         ability_index: usize,
         direction: ConversionDirection,
+    },
+    TriggerPayment {
+        player: usize,
+        choice_id: u32,
+        card_id: CardId,
+        rule_index: usize,
+        context: TriggerContext,
+        targets: Vec<Target>,
+        base_cost: CostValue,
+        deflect: u16,
     },
     TriggerTargets {
         player: usize,
@@ -760,6 +777,7 @@ impl Decision {
             | Self::TokenPlay { player, .. }
             | Self::Payment { player }
             | Self::ResourceConversion { player, .. }
+            | Self::TriggerPayment { player, .. }
             | Self::TriggerTargets { player, .. }
             | Self::LegendTargets { player }
             | Self::BattlefieldOrder { player, .. }
@@ -936,6 +954,8 @@ pub struct Game {
     pub(crate) payment: Option<crate::payment::PaymentContext>,
     pub(crate) resource_frames: Vec<ResourceFrame>,
     pub(crate) payment_plan: Option<Box<crate::payment_plan::PaymentPlan>>,
+    /// First Add during a pending trigger cost; refusal undoes that payment attempt.
+    pub(crate) trigger_payment_origin: Option<Box<Game>>,
     temporary_empower: Vec<(usize, usize, Option<u32>)>,
     ending_turn: bool,
     pending_decisions: VecDeque<Decision>,
@@ -1174,6 +1194,7 @@ impl Game {
             payment: None,
             resource_frames: Vec::new(),
             payment_plan: None,
+            trigger_payment_origin: None,
             temporary_empower: Vec::new(),
             ending_turn: false,
             pending_decisions: VecDeque::new(),
@@ -1605,6 +1626,7 @@ impl Game {
                     | Action::ResolveDeckLook { .. }
                     | Action::ResolveDrawLook { .. }
                     | Action::ResolvePredict { .. }
+                    | Action::ResolveTriggerPayment { .. }
                     | Action::ChooseTriggerTargets { .. }
                     | Action::Choose { .. }
                     | Action::SelectCards { .. }
@@ -1635,6 +1657,7 @@ impl Game {
         {
             return Err("Resolve the pending choice before taking another action.".into());
         }
+        self.checkpoint_trigger_payment_add(&action);
         let player = self.priority();
         let cleanup = !matches!(
             action,
@@ -1668,6 +1691,9 @@ impl Game {
                 ability_index,
                 targets,
             } => self.activate_ability(source, ability_index, targets)?,
+            Action::ResolveTriggerPayment { choice_id, pay } => {
+                self.resolve_trigger_payment(choice_id, pay)?
+            }
             Action::ChooseTriggerTargets { targets } => self.choose_trigger_targets(targets)?,
             Action::FinalizePendingPlay {
                 lane,
@@ -2073,7 +2099,7 @@ impl Game {
                 {
                     item.executions = vec![ExecutionChoices {
                         targets: item.targets.clone(),
-                        mode: None,
+                        mode: a.choices.mode,
                     }];
                     item.executions
                         .extend(a.choices.repeats.iter().map(|r| r.choices.clone()));
@@ -2130,6 +2156,7 @@ impl Game {
                     | Decision::Battlefield { .. }
                     | Decision::CounterTax { .. }
                     | Decision::OnPlayTarget { .. }
+                    | Decision::TriggerPayment { .. }
                     | Decision::TriggerTargets { .. }
                     | Decision::LegendTargets { .. }
                     | Decision::TokenPlay { .. }
@@ -2883,6 +2910,7 @@ impl Game {
             return self.after_resolution();
         }
         self.sync_combat_triggers();
+        self.cleanup_gear_locations();
         self.reconcile_staged_battlefields();
         if self.decision.is_none() {
             while let Some(decision) = self.pending_decisions.pop_front() {
@@ -3150,6 +3178,7 @@ impl Game {
             Decision::PredictCards { .. }
             | Decision::Payment { .. }
             | Decision::ResourceConversion { .. }
+            | Decision::TriggerPayment { .. }
             | Decision::TriggerTargets { .. }
             | Decision::LegendTargets { .. }
             | Decision::BattlefieldOrder { .. }
@@ -3825,7 +3854,7 @@ impl Game {
         targets: Vec<Target>,
     ) -> Result<(), String> {
         let source_id = self.next_unit_id;
-        if self.catalog[id].kind == CardKind::Unit {
+        if self.catalog[id].kind != CardKind::Spell {
             self.hidden_play_origins.push((self.next_unit_id, lane));
         }
         self.trigger_state.hidden_play = true;
@@ -4360,6 +4389,26 @@ impl Game {
                 self.pending_card = Some(card);
             }
             PendingTriggerEffect::Choice(choice) => {
+                // Zero-target trigger costs are determined only when this
+                // pending occurrence is selected to finalize (Core404).
+                let choice = match choice {
+                    Decision::TriggerTargets {
+                        card_id,
+                        rule_index,
+                        context,
+                        ..
+                    } if crate::trigger_rules::trigger_rules(card_id)[rule_index]
+                        .targets
+                        .max
+                        == 0
+                        && crate::trigger_rules::trigger_rules(card_id)[rule_index]
+                            .base_cost
+                            .is_some() =>
+                    {
+                        self.trigger_payment_decision(card_id, rule_index, context, Vec::new())?
+                    }
+                    other => other,
+                };
                 self.enqueue_decision(choice);
                 self.discard_unfinalizable_trigger()?;
             }
@@ -4834,6 +4883,20 @@ impl Game {
             else {
                 return Ok(Vec::new());
             };
+            if card_id == 410 {
+                return self.command_play_candidates(
+                    &Action::FinalizePendingPlay {
+                        lane: None,
+                        targets: vec![],
+                        repeat_targets: vec![],
+                        repeat: false,
+                        accelerate: false,
+                        bonus: false,
+                    },
+                    prepare,
+                    limit,
+                );
+            }
             let card = self.catalog[card_id];
             let mut required = rules::play_target_spec(card_id).required;
             if card.kind != CardKind::Spell {
@@ -5491,6 +5554,16 @@ impl Game {
                         }
                         out
                     }
+                    Decision::TriggerPayment { choice_id, .. } => vec![
+                        Action::ResolveTriggerPayment {
+                            choice_id: *choice_id,
+                            pay: true,
+                        },
+                        Action::ResolveTriggerPayment {
+                            choice_id: *choice_id,
+                            pay: false,
+                        },
+                    ],
                     Decision::TriggerTargets { .. } | Decision::LegendTargets { .. } => {
                         self.trigger_target_actions()?
                     }
@@ -6000,6 +6073,10 @@ impl Game {
             );
         }
         let abilities = rules::static_abilities(id);
+        let deploy_gear = card.kind == CardKind::Gear && abilities.contains(&StaticAbility::Deploy);
+        if deploy_gear && lane.is_none() {
+            return Err("Deploy gear must enter a battlefield.".into());
+        }
         let ambush = abilities.contains(&StaticAbility::Ambush);
         let enemy_field = abilities.contains(&StaticAbility::MayDeployToEnemyBattlefield);
         let reaction = card.official_text.lines().any(|line| {
@@ -6039,7 +6116,7 @@ impl Game {
                 }) || self.battlefield_owner[lane] == Some(actor)
                     || (ambush && self.lane_count(actor, lane) > 0)
                     || (enemy_field && self.lane_count(1 - actor, lane) > 0));
-            if lane >= BATTLEFIELDS || (!movement_spell && !legal_unit_location) {
+            if lane >= BATTLEFIELDS || (!movement_spell && !legal_unit_location && !deploy_gear) {
                 return Err("Deploy a unit at your base or a battlefield you control.".into());
             }
         }
@@ -6080,6 +6157,15 @@ impl Game {
         provided: &[Target],
         automatic: bool,
     ) -> Result<Vec<Target>, String> {
+        if id == 410 {
+            let mode = self
+                .active_play
+                .as_ref()
+                .filter(|play| play.card_id == id)
+                .and_then(|play| play.choices.mode);
+            self.validate_command_attack(actor, mode, provided, true)?;
+            return Ok(provided.to_vec());
+        }
         // Targeted play triggers choose after the permanent is on the board.
         if rules::on_play_requires_target(id)
             || rules::equipment(id).is_some_and(|gear| gear.quick_draw)
@@ -6144,6 +6230,14 @@ impl Game {
             return Err("Choose a gear on the board.".into());
         }
         if self.catalog[id].kind == CardKind::Gear {
+            if rules::static_abilities(id).contains(&StaticAbility::Deploy) {
+                if !provided.is_empty() {
+                    return Err(
+                        "Deploy entry selects a battlefield, not an attachment target.".into(),
+                    );
+                }
+                return Ok(Vec::new());
+            }
             if let Some(&target) = provided.first() {
                 if !matches!(target, Target::Unit { player, .. } if player == actor)
                     || self.unit_ref(target).is_none()
@@ -6738,9 +6832,7 @@ impl Game {
     ) -> Result<(), String> {
         let card = self.catalog[id];
         if card.kind == CardKind::Gear {
-            self.gear_play(player, id, targets.first().copied())
-                .expect("validated gear play");
-            return Ok(());
+            return self.gear_play_at(player, id, lane);
         }
         self.push_log(format!(
             "{} resolves {}.",
@@ -8455,6 +8547,15 @@ impl Game {
     }
 
     fn score_triggers(&mut self, player: usize, lane: usize, holding: bool) -> Result<(), String> {
+        self.emit_event(EventSnapshot::battlefield(
+            if holding {
+                Occurrence::BattlefieldHold
+            } else {
+                Occurrence::BattlefieldConquer
+            },
+            player,
+            lane,
+        ));
         let cards: Vec<_> = self.players[player]
             .units
             .iter()
@@ -8579,6 +8680,9 @@ impl Game {
                     && let Some(first) = witness.first()
                 {
                     return Ok(first.clone());
+                }
+                if let Some(action) = self.deploy_choice(decision, &actions)? {
+                    return Ok(action);
                 }
                 let preferred = match decision {
                     Decision::LegendTargets { player } => {
@@ -11067,6 +11171,7 @@ mod tests {
         game.players[1].gear.push(GearState {
             id: 900,
             card_id: 10,
+            lane: None,
             attached_to: Some(id),
             ready: true,
             temporary: false,

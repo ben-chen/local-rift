@@ -1,0 +1,1320 @@
+{
+  "schema_version": 1,
+  "draft_not_for_import": false,
+  "reviewed_on": "2026-10-25",
+  "origin_gallery": {
+    "url": "https://playriftbound.com/en-us/card-gallery/",
+    "archive": "assets/data/catalog_sources/gallery.html.gz",
+    "uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9"
+  },
+  "pre_admission_catalog_sha256": "efb0d59064f0ef12720ae69ba9225aeabe42a8c0b54cfc5dea0c0eb6d90dd193",
+  "preserved_runtime_prefix": {
+    "card_count": 401,
+    "cards_sha256": "fe2f1ae92c9761a9057c7991add6143fa6ee627d5bf39d56f187eed72b6a9a57",
+    "carddefs_source_prefix_sha256": "598b48321adf525783469d0c5dcce5bb8ea71ff4685596a195d3966a779884ce",
+    "presets_sha256": "d6e64ebf3f8921686682dacd87d4b2b4baec5754dbd284c6d60bf3fb324571e2",
+    "legends_manifest_sha256": "a31bb93c27588bd4759985e9a4083372d5afae59d22b9ac9d48c54946e5474fe",
+    "training_recipe_source_sha256": "dc498f4f98cec6421dade7e01ead261693ed5f70d30d4d2c808da4a1bcb5b706"
+  },
+  "preserved_source_reviews": {
+    "field_resolutions_sha256": "e1f817d6d54d7043ab9b0226382bfd96b8bdd1ca76717b5f9b399693cc106513",
+    "raw_printings_sha256": "6bb0d050b55017d023dfc20d8ebabba46bc47a26a947b4111c27ba2fb3575ad4",
+    "historical_issues_sha256": "22fff96ef4b6f37248d4cb92731a19456ec131978b36592976242b351353e9c6",
+    "field_image_index_sha256": "ad78fc9b4926226a281adeb999c2066085208ff79d1544481a99391b8ee75b4c",
+    "identity_review_manifest_sha256": "e678c7f2f2e1ae70fb6b399ce1b0ab88a314e9018810d1ccadb1759a1f7b5e12",
+    "variant_image_index_sha256": "1826db0a53cbe62eb1a1196d08df1cbef215b9d9e24cc006689559bbc7693b92"
+  },
+  "pre_admission_counts": {
+    "main_cards": 401,
+    "mapped_legal": 428,
+    "remaining_legal": 651
+  },
+  "scope": "Ten identities and their complete single-printing English gallery cohorts, independently inspected. Isolated source/card/art draft awaiting complete executable Deploy foundation, UI and API integration; source facts alone do not establish support. The prior 401 cards, presets, legends, training recipes and review prefixes are preserved. Original faces reuse existing archived catalog evidence without image alteration.",
+  "errata_sources": [
+    {
+      "key": "origins_errata",
+      "url": "https://playriftbound.com/en-us/news/rules-and-releases/riftbound-origins-card-errata/",
+      "archive": "assets/data/catalog_sources/origins_errata.html.gz",
+      "uncompressed_sha256": "035848c5cc61007683111e63b91289d3fc386d2b33437af32d4d13d565727c52",
+      "parsed_entries_sha256": "5d5ed4e6d5e03033184b5382ab360eade62ca9cf032cf94e811cc1e0acaed581",
+      "live_checked_on": "2026-10-25",
+      "live_uncompressed_sha256": "bafd654e4568b76f1c71a6a057b7abaccb3b7b611ac873b45d71179c9902065a",
+      "live_parsed_entries_sha256": "5d5ed4e6d5e03033184b5382ab360eade62ca9cf032cf94e811cc1e0acaed581"
+    },
+    {
+      "key": "spiritforged_errata",
+      "url": "https://playriftbound.com/en-us/news/rules-and-releases/riftbound-spiritforged-errata/",
+      "archive": "assets/data/catalog_sources/spiritforged_errata.html.gz",
+      "uncompressed_sha256": "2fcd51e6104eb76212c42abc850beffaf1cf3e623d875b2d9ad47ed149a726a8",
+      "parsed_entries_sha256": "88be71f74e159dde0b339273fed000ac097ae50318a0aa535b02fdc23c666d57",
+      "live_checked_on": "2026-10-25",
+      "live_uncompressed_sha256": "44a73fe653506bc89ff41e9b81c004fc5c952c10df29de34f528b6ddfd48335d",
+      "live_parsed_entries_sha256": "88be71f74e159dde0b339273fed000ac097ae50318a0aa535b02fdc23c666d57"
+    },
+    {
+      "key": "unleashed_errata",
+      "url": "https://playriftbound.com/en-us/news/rules-and-releases/unleashed-errata-updates/",
+      "archive": "assets/data/catalog_sources/unleashed_errata.html.gz",
+      "uncompressed_sha256": "8b3cb69fea7c499e435c6af0ac89b5c5013711477a172c6bbed3a782eff7ac7b",
+      "parsed_entries_sha256": "801ad0c9bcc9d7bbdde1fa8c5b229dbcaf718daaf3f3db208dd8942a119e3df3",
+      "live_checked_on": "2026-10-25",
+      "live_uncompressed_sha256": "ba2575633f35faa87610d34f7615fdb2dbcd3552c6c55e72a6b61e1da1fb395d",
+      "live_parsed_entries_sha256": "801ad0c9bcc9d7bbdde1fa8c5b229dbcaf718daaf3f3db208dd8942a119e3df3"
+    },
+    {
+      "key": "vendetta_errata",
+      "url": "https://playriftbound.com/en-us/news/announcements/vendetta-errata-updates/",
+      "archive": "assets/data/catalog_sources/vendetta_errata.html.gz",
+      "uncompressed_sha256": "d17603177df347cd44c4ef67c1c547344afcd847cec72ae545239f3c232ef2a6",
+      "parsed_entries_sha256": "9e6fb29ba5bd2bce1023b6927c395e4ed0ced61bf2fc766410d9f000c68a16be",
+      "live_checked_on": "2026-10-25",
+      "live_uncompressed_sha256": "75016ac4e11b11a1e6506eea73efe4574083252d71f8843dc2056e148a8744e5",
+      "live_parsed_entries_sha256": "9e6fb29ba5bd2bce1023b6927c395e4ed0ced61bf2fc766410d9f000c68a16be"
+    },
+    {
+      "key": "radiance_errata",
+      "url": "https://playriftbound.com/en-us/news/announcements/radiance-errata-updates/",
+      "archive": "assets/data/catalog_sources/radiance_errata.html.gz",
+      "uncompressed_sha256": "63735225d6c2f0b757e933289175fb09dcbae86178075fb227e4afa4e1a478a7",
+      "parsed_entries_sha256": "84fd3234a6cdc8c5ddd0b8b4f18c100f339497acdc02318f74b352b6da23866e",
+      "live_checked_on": "2026-10-25",
+      "live_uncompressed_sha256": "63735225d6c2f0b757e933289175fb09dcbae86178075fb227e4afa4e1a478a7",
+      "live_parsed_entries_sha256": "84fd3234a6cdc8c5ddd0b8b4f18c100f339497acdc02318f74b352b6da23866e"
+    }
+  ],
+  "live_authority_check": {
+    "checked_on": "2026-10-25",
+    "hub_url": "https://playriftbound.com/en-us/rules-hub/",
+    "hub_uncompressed_sha256": "b2264a4f2f4ca1e24176489f6a4711b19d29bcf3c536b2414caf9dade79195c2",
+    "legality": {
+      "source_url": "https://playriftbound.com/en-us/rules-hub/",
+      "last_updated": "September 18, 2026",
+      "standard_banned_names": [
+        "Called Shot",
+        "Ekko, Recurrent",
+        "Draven, Vanquisher",
+        "Fight or Flight",
+        "Scrapheap",
+        "Stealthy Pursuer",
+        "Stacked Deck",
+        "The Arena’s Greatest",
+        "Aspirant’s Climb",
+        "Dreaming Tree",
+        "Obelisk of Power",
+        "Reaver’s Row"
+      ],
+      "two_v_two_banned_names": [
+        "Master Yi, Wuju Bladesman",
+        "Called Shot",
+        "Ekko, Recurrent",
+        "Draven Vanquisher",
+        "Fight or Flight",
+        "Scrapheap",
+        "Stealthy Pursuer",
+        "Stacked Deck",
+        "The Arena’s Greatest",
+        "Aspirant’s Climb",
+        "Dreaming Tree",
+        "Obelisk of Power",
+        "Reaver’s Row"
+      ]
+    },
+    "core_rules_url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/5c7946f7c3b8c6e0faff85ab6dadc6d2e721ea94.pdf",
+    "gallery_uncompressed_sha256": "3f326496a212a3583997696042171ce9e1db1740b05fcfa78ec48ca961e4be8a",
+    "candidate_raw_projections_match_archive": true,
+    "complete_normalized_catalog_matches_before_admission": true,
+    "core_pdf_fresh_download_matches_bundled": true,
+    "core_pdf_sha256": "94d41fee86f88b61c4157c0389c0595d990b98e5b42555c99d9f649ee64d1fec",
+    "scope": "Fresh official page comparison and byte-identical Core PDF download on October 25; source corrections applied separately and preserved."
+  },
+  "records": [
+    {
+      "official_id": "rad-002-167",
+      "name": "Banner of Conquest",
+      "raw_printing": {
+        "official_id": "rad-002-167",
+        "public_code": "RAD-002/167",
+        "name": "Banner of Conquest",
+        "set": "RAD",
+        "collector_number": 2,
+        "types": [
+          "gear"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "gear"
+        ],
+        "accessibility_types": [
+          "gear"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "fury"
+        ],
+        "energy": 1,
+        "power": 1,
+        "might": null,
+        "might_bonus": null,
+        "rules_html": "<p>[Deploy] (Play this only to a battlefield. When an opponent holds here, kill this.)<br />Friendly units here have [Assault]. (+1 :rb_might: while they're attackers.)</p>",
+        "rules_text": "[Deploy] (Play this only to a battlefield. When an opponent holds here, kill this.)\nFriendly units here have [Assault]. (+1 Might while they're attackers.)",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [
+          "Device"
+        ],
+        "rarity": "common",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/1e2a4e0a8cf533c82e9c3f4d507dd7eb63ece943-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Gear: Banner of Conquest. [Deploy] (Play this only to a battlefield. When an opponent holds here, kill this.)\nFriendly units here have [Assault]. (+1 [S] while they're attackers.)",
+        "illustrators": [
+          "Fish Art Studio"
+        ]
+      },
+      "raw_printing_sha256": "c240a91dd202495e04abd98a29d1908c4e6767f3bebaed1c5c281596fe7c5bec",
+      "effective": {
+        "types": [
+          "gear"
+        ],
+        "super_types": [],
+        "domains": [
+          "fury"
+        ],
+        "energy": 1,
+        "power": 1,
+        "might": null,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>[Deploy] (Play this only to a battlefield. When an opponent holds here, kill this.)<br />Friendly units here have [Assault]. (+1 :rb_might: while they're attackers.)</p>",
+        "rules_text": "[Deploy] (Play this only to a battlefield. When an opponent holds here, kill this.)\nFriendly units here have [Assault]. (+1 Might while they're attackers.)",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "effective_projection_sha256": "5fad88fef64f460aa9c3976b2377d93a3f66bd564bff0f5305bc74b11a47a239",
+      "existing_field_resolution_ids": [
+        "rad-002-167:tags"
+      ],
+      "original_image": {
+        "path": "assets/data/catalog_evidence/images/rad-002-167.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/1e2a4e0a8cf533c82e9c3f4d507dd7eb63ece943-744x1039.png?accountingTag=RB",
+        "bytes": 754406,
+        "sha256": "73700384d5a62a8c7482e713ccd97116172b1cb50ec1b274a765568b66dccd36"
+      },
+      "visual_observation": {
+        "face_visually_inspected": true,
+        "independently_reinspected_on": "2026-10-25",
+        "official_id": "rad-002-167",
+        "name": "Banner of Conquest",
+        "collector_code": "RAD-002/167",
+        "original_image_sha256": "73700384d5a62a8c7482e713ccd97116172b1cb50ec1b274a765568b66dccd36",
+        "printed_type_tag_line": "GEAR",
+        "uncertainties": [],
+        "notes": [
+          "No printed Device tag; its exclusion is rule-derived under Core 133.8, 763.1 and 830, not a card-specific erratum."
+        ],
+        "printed_types": [
+          "gear"
+        ],
+        "printed_supertypes": [],
+        "printed_domains": [
+          "fury"
+        ],
+        "printed_tags": [],
+        "printed_energy": 1,
+        "printed_power": 1,
+        "printed_might": null,
+        "printed_might_bonus": null,
+        "printed_rules_icons_expanded": "[Deploy] (Play this only to a battlefield. When an opponent holds here, kill this.)\nFriendly units here have [Assault]. (+1 Might while they're attackers.)",
+        "printed_equipment_icons_expanded": ""
+      },
+      "runtime_id": 401,
+      "errata": [],
+      "runtime_rules_text": "[Deploy] (Play this only to a battlefield. When an opponent holds here, kill this.)\nFriendly units here have [Assault]. (+1 Might while they're attackers.)",
+      "printing_cohort": [
+        "rad-002-167"
+      ],
+      "alternate_printings": [],
+      "legal_main_deck_legend_ids": [
+        3,
+        4,
+        8
+      ],
+      "chosen_champion_legend_ids": [],
+      "runtime_image": {
+        "path": "assets/art/card_401.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/1e2a4e0a8cf533c82e9c3f4d507dd7eb63ece943-744x1039.png?w=280&q=80&fm=png",
+        "bytes": 177922,
+        "sha256": "c77daa51a6d859d2fb8fe25d5410f68f7a1b135e6f95ea0ffa51aa00bbd41326",
+        "width": 280,
+        "height": 391
+      }
+    },
+    {
+      "official_id": "rad-024-167",
+      "name": "Blossoming Dreamroot",
+      "raw_printing": {
+        "official_id": "rad-024-167",
+        "public_code": "RAD-024/167",
+        "name": "Blossoming Dreamroot",
+        "set": "RAD",
+        "collector_number": 24,
+        "types": [
+          "gear"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "gear"
+        ],
+        "accessibility_types": [
+          "gear"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "chaos"
+        ],
+        "energy": 2,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "rules_html": "<p>[Deploy] (Play this only to a battlefield. When an opponent holds here, kill this.)<br />When you win a combat here, draw 1.</p>",
+        "rules_text": "[Deploy] (Play this only to a battlefield. When an opponent holds here, kill this.)\nWhen you win a combat here, draw 1.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [
+          "Device"
+        ],
+        "rarity": "common",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/5b819cc232389f3ef1438350d68c7801e181961c-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Gear: Blossoming Dreamroot. [Deploy] (Play this only to a battlefield. When an opponent holds here, kill this.)\nWhen you win a combat here, draw 1.",
+        "illustrators": [
+          "Fish Art Studio"
+        ]
+      },
+      "raw_printing_sha256": "76d7e63e29ac00a5dda8afa0e170bf0f468a7dbafbd544808ee172bce41ade47",
+      "effective": {
+        "types": [
+          "gear"
+        ],
+        "super_types": [],
+        "domains": [
+          "calm"
+        ],
+        "energy": 2,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>[Deploy] (Play this only to a battlefield. When an opponent holds here, kill this.)<br />When you win a combat here, draw 1.</p>",
+        "rules_text": "[Deploy] (Play this only to a battlefield. When an opponent holds here, kill this.)\nWhen you win a combat here, draw 1.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "effective_projection_sha256": "935e4652dbeace209e1d844f1c9e5eab41f37d3b9ee1cd5e9400312e9f44514c",
+      "existing_field_resolution_ids": [
+        "rad-024-167:domains",
+        "rad-024-167:tags"
+      ],
+      "original_image": {
+        "path": "assets/data/catalog_evidence/images/rad-024-167.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/5b819cc232389f3ef1438350d68c7801e181961c-744x1039.png?accountingTag=RB",
+        "bytes": 779815,
+        "sha256": "3bfad68405a05598b1566de028635b460dd9e958bd38686f1be82d70b24ce8d7"
+      },
+      "visual_observation": {
+        "face_visually_inspected": true,
+        "independently_reinspected_on": "2026-10-25",
+        "official_id": "rad-024-167",
+        "name": "Blossoming Dreamroot",
+        "collector_code": "RAD-024/167",
+        "original_image_sha256": "3bfad68405a05598b1566de028635b460dd9e958bd38686f1be82d70b24ce8d7",
+        "printed_type_tag_line": "GEAR",
+        "uncertainties": [],
+        "notes": [
+          "No printed Device tag; its exclusion is rule-derived under Core 133.8, 763.1 and 830, not a card-specific erratum."
+        ],
+        "printed_types": [
+          "gear"
+        ],
+        "printed_supertypes": [],
+        "printed_domains": [
+          "calm"
+        ],
+        "printed_tags": [],
+        "printed_energy": 2,
+        "printed_power": null,
+        "printed_might": null,
+        "printed_might_bonus": null,
+        "printed_rules_icons_expanded": "[Deploy] (Play this only to a battlefield. When an opponent holds here, kill this.)\nWhen you win a combat here, draw 1.",
+        "printed_equipment_icons_expanded": ""
+      },
+      "runtime_id": 402,
+      "errata": [],
+      "runtime_rules_text": "[Deploy] (Play this only to a battlefield. When an opponent holds here, kill this.)\nWhen you win a combat here, draw 1.",
+      "printing_cohort": [
+        "rad-024-167"
+      ],
+      "alternate_printings": [],
+      "legal_main_deck_legend_ids": [
+        0,
+        1
+      ],
+      "chosen_champion_legend_ids": [],
+      "runtime_image": {
+        "path": "assets/art/card_402.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/5b819cc232389f3ef1438350d68c7801e181961c-744x1039.png?w=280&q=80&fm=png",
+        "bytes": 184629,
+        "sha256": "4349586b938585f07cda99bf007010ca59b4cacef1213cb755063a111061edd8",
+        "width": 280,
+        "height": 391
+      }
+    },
+    {
+      "official_id": "rad-116-167",
+      "name": "Concert Poster",
+      "raw_printing": {
+        "official_id": "rad-116-167",
+        "public_code": "RAD-116/167",
+        "name": "Concert Poster",
+        "set": "RAD",
+        "collector_number": 116,
+        "types": [
+          "gear"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "gear"
+        ],
+        "accessibility_types": [
+          "gear"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "order"
+        ],
+        "energy": 1,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "rules_html": "<p>[Deploy] (Play this only to a battlefield. When an opponent holds here, kill this.)<br />When you play this or when you conquer here, you may pay :rb_energy_1: to play a 1 :rb_might: Recruit unit token to your base.</p>",
+        "rules_text": "[Deploy] (Play this only to a battlefield. When an opponent holds here, kill this.)\nWhen you play this or when you conquer here, you may pay [1 Energy] to play a 1 Might Recruit unit token to your base.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [
+          "Device"
+        ],
+        "rarity": "common",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/0e80322dac6065e3ee726f5f9a2650a88195a44c-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Gear: Concert Poster. [Deploy] (Play this only to a battlefield. When an opponent holds here, kill this.)\nWhen you play this or when you conquer here, you may pay [1] to play a 1 [S] Recruit unit token to your base.",
+        "illustrators": []
+      },
+      "raw_printing_sha256": "344af4cbe071bfc2f41d1abc18662c580afcb6007a40a036c3563f3d3fa8a9bd",
+      "effective": {
+        "types": [
+          "gear"
+        ],
+        "super_types": [],
+        "domains": [
+          "order"
+        ],
+        "energy": 1,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>[Deploy] (Play this only to a battlefield. When an opponent holds here, kill this.)<br />When you play this or when you conquer here, you may pay :rb_energy_1: to play a 1 :rb_might: Recruit unit token to your base.</p>",
+        "rules_text": "[Deploy] (Play this only to a battlefield. When an opponent holds here, kill this.)\nWhen you play this or when you conquer here, you may pay [1 Energy] to play a 1 Might Recruit unit token to your base.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "effective_projection_sha256": "eb9802c853f89becbcd8f52b874edf9d04f059c14c2747cb763b93507bbaefb7",
+      "existing_field_resolution_ids": [
+        "rad-116-167:tags"
+      ],
+      "original_image": {
+        "path": "assets/data/catalog_evidence/images/rad-116-167.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/0e80322dac6065e3ee726f5f9a2650a88195a44c-744x1039.png?accountingTag=RB",
+        "bytes": 912230,
+        "sha256": "d70d74a3d08a102a83476d7fde15a8b9cb978204ed74b4a534dd78c4e0ebfce9"
+      },
+      "visual_observation": {
+        "face_visually_inspected": true,
+        "independently_reinspected_on": "2026-10-25",
+        "official_id": "rad-116-167",
+        "name": "Concert Poster",
+        "collector_code": "RAD-116/167",
+        "original_image_sha256": "d70d74a3d08a102a83476d7fde15a8b9cb978204ed74b4a534dd78c4e0ebfce9",
+        "printed_type_tag_line": "GEAR",
+        "uncertainties": [],
+        "notes": [
+          "No printed Device tag; its exclusion is rule-derived under Core 133.8, 763.1 and 830, not a card-specific erratum."
+        ],
+        "printed_types": [
+          "gear"
+        ],
+        "printed_supertypes": [],
+        "printed_domains": [
+          "order"
+        ],
+        "printed_tags": [],
+        "printed_energy": 1,
+        "printed_power": null,
+        "printed_might": null,
+        "printed_might_bonus": null,
+        "printed_rules_icons_expanded": "[Deploy] (Play this only to a battlefield. When an opponent holds here, kill this.)\nWhen you play this or when you conquer here, you may pay [1 Energy] to play a 1 Might Recruit unit token to your base.",
+        "printed_equipment_icons_expanded": ""
+      },
+      "runtime_id": 403,
+      "errata": [],
+      "runtime_rules_text": "[Deploy] (Play this only to a battlefield. When an opponent holds here, kill this.)\nWhen you play this or when you conquer here, you may pay [1 Energy] to play a 1 Might Recruit unit token to your base.",
+      "printing_cohort": [
+        "rad-116-167"
+      ],
+      "alternate_printings": [],
+      "legal_main_deck_legend_ids": [
+        2,
+        4,
+        5,
+        6,
+        7
+      ],
+      "chosen_champion_legend_ids": [],
+      "runtime_image": {
+        "path": "assets/art/card_403.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/0e80322dac6065e3ee726f5f9a2650a88195a44c-744x1039.png?w=280&q=80&fm=png",
+        "bytes": 203245,
+        "sha256": "bdff3ae2ea4a94bc731d2dc2d88091790e98897d7a94c881fdeb403d164c3c0b",
+        "width": 280,
+        "height": 391
+      }
+    },
+    {
+      "official_id": "rad-044-167",
+      "name": "Hunting Blind",
+      "raw_printing": {
+        "official_id": "rad-044-167",
+        "public_code": "RAD-044/167",
+        "name": "Hunting Blind",
+        "set": "RAD",
+        "collector_number": 44,
+        "types": [
+          "unit"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "unit"
+        ],
+        "accessibility_types": [
+          "gear"
+        ],
+        "type_labels_conflict": true,
+        "super_types": [],
+        "domains": [
+          "calm"
+        ],
+        "energy": 4,
+        "power": 2,
+        "might": null,
+        "might_bonus": null,
+        "rules_html": "<p>[Deploy] (Play this only to a battlefield. When an opponent holds here, kill this.)<br />When you play this, you may move an enemy unit to this battlefield.<br />Friendly units here have [Shield 2]. (+2 :rb_might: while they're defenders.)</p>",
+        "rules_text": "[Deploy] (Play this only to a battlefield. When an opponent holds here, kill this.)\nWhen you play this, you may move an enemy unit to this battlefield.\nFriendly units here have [Shield 2]. (+2 Might while they're defenders.)",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [
+          "Device"
+        ],
+        "rarity": "epic",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/0a625c22d828c83302132b0465dceb3ab11a08bc-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Gear: Hunting Blind. [Deploy] (Play this only to a battlefield. When an opponent holds here, kill this.)\nWhen you play this, you may move an enemy unit to this battlefield.\nFriendly units here have [Shield 2]. (+2 [S] while they're defenders.)",
+        "illustrators": []
+      },
+      "raw_printing_sha256": "a466eab09ca209a41d87564f161096225958332abaaa6a6f28b914ab6703afb5",
+      "effective": {
+        "types": [
+          "gear"
+        ],
+        "super_types": [],
+        "domains": [
+          "calm"
+        ],
+        "energy": 4,
+        "power": 2,
+        "might": null,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>[Deploy] (Play this only to a battlefield. When an opponent holds here, kill this.)<br />When you play this, you may move an enemy unit to this battlefield.<br />Friendly units here have [Shield 2]. (+2 :rb_might: while they're defenders.)</p>",
+        "rules_text": "[Deploy] (Play this only to a battlefield. When an opponent holds here, kill this.)\nWhen you play this, you may move an enemy unit to this battlefield.\nFriendly units here have [Shield 2]. (+2 Might while they're defenders.)",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "effective_projection_sha256": "0fcd398f215dc72893482759f292dd306995756e4f96f4489d70aa3b128512aa",
+      "existing_field_resolution_ids": [
+        "rad-044-167:types",
+        "rad-044-167:tags"
+      ],
+      "original_image": {
+        "path": "assets/data/catalog_evidence/images/rad-044-167.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/0a625c22d828c83302132b0465dceb3ab11a08bc-744x1039.png?accountingTag=RB",
+        "bytes": 937706,
+        "sha256": "57375e77ecfb01ab252831369801d0e31333031bd224a4aa32e70453e92e71ec"
+      },
+      "visual_observation": {
+        "face_visually_inspected": true,
+        "independently_reinspected_on": "2026-10-25",
+        "official_id": "rad-044-167",
+        "name": "Hunting Blind",
+        "collector_code": "RAD-044/167",
+        "original_image_sha256": "57375e77ecfb01ab252831369801d0e31333031bd224a4aa32e70453e92e71ec",
+        "printed_type_tag_line": "GEAR",
+        "uncertainties": [],
+        "notes": [],
+        "printed_types": [
+          "gear"
+        ],
+        "printed_supertypes": [],
+        "printed_domains": [
+          "calm"
+        ],
+        "printed_tags": [],
+        "printed_energy": 4,
+        "printed_power": 2,
+        "printed_might": null,
+        "printed_might_bonus": null,
+        "printed_rules_icons_expanded": "[Deploy] (Play this only to a battlefield. When an opponent holds here, kill this.)\nWhen you play this, you may move an enemy unit to this battlefield.\nFriendly units here have [Shield 2]. (+2 Might while they're defenders.)",
+        "printed_equipment_icons_expanded": ""
+      },
+      "runtime_id": 404,
+      "errata": [],
+      "runtime_rules_text": "[Deploy] (Play this only to a battlefield. When an opponent holds here, kill this.)\nWhen you play this, you may move an enemy unit to this battlefield.\nFriendly units here have [Shield 2]. (+2 Might while they're defenders.)",
+      "printing_cohort": [
+        "rad-044-167"
+      ],
+      "alternate_printings": [],
+      "legal_main_deck_legend_ids": [
+        0,
+        1
+      ],
+      "chosen_champion_legend_ids": [],
+      "runtime_image": {
+        "path": "assets/art/card_404.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/0a625c22d828c83302132b0465dceb3ab11a08bc-744x1039.png?w=280&q=80&fm=png",
+        "bytes": 223287,
+        "sha256": "28b4c15efc32b25814978bbdc4725b2bee218e32cb3bfd086c8473d81a38b8ff",
+        "width": 280,
+        "height": 391
+      }
+    },
+    {
+      "official_id": "rad-073-167",
+      "name": "Pillaged Armory",
+      "raw_printing": {
+        "official_id": "rad-073-167",
+        "public_code": "RAD-073/167",
+        "name": "Pillaged Armory",
+        "set": "RAD",
+        "collector_number": 73,
+        "types": [
+          "gear"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "gear"
+        ],
+        "accessibility_types": [
+          "gear"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "calm"
+        ],
+        "energy": 1,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "rules_html": "<p>[Deploy] (Play this only to a battlefield. When an opponent holds here, kill this.)<br />When you play this or when you conquer here, [Buff] a friendly unit. (Give it a +1 :rb_might: buff if it doesn't have one.)</p>",
+        "rules_text": "[Deploy] (Play this only to a battlefield. When an opponent holds here, kill this.)\nWhen you play this or when you conquer here, [Buff] a friendly unit. (Give it a +1 Might buff if it doesn't have one.)",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [
+          "Device"
+        ],
+        "rarity": "common",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/374248eb65ca1e90a434652073dbbd3a12a11eda-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Gear: Pillaged Armory. [Deploy] (Play this only to a battlefield. When an opponent holds here, kill this.)\nWhen you play this or when you conquer here, [Buff] a friendly unit. (Give it a +1 [S] buff if it doesn't have one.)",
+        "illustrators": []
+      },
+      "raw_printing_sha256": "81dada2eb9541b7196f900fca3dd4435b8ab1fb529be3c3a9d82c5f010730267",
+      "effective": {
+        "types": [
+          "gear"
+        ],
+        "super_types": [],
+        "domains": [
+          "body"
+        ],
+        "energy": 1,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>[Deploy] (Play this only to a battlefield. When an opponent holds here, kill this.)<br />When you play this or when you conquer here, [Buff] a friendly unit. (Give it a +1 :rb_might: buff if it doesn't have one.)</p>",
+        "rules_text": "[Deploy] (Play this only to a battlefield. When an opponent holds here, kill this.)\nWhen you play this or when you conquer here, [Buff] a friendly unit. (Give it a +1 Might buff if it doesn't have one.)",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "effective_projection_sha256": "1787d787b2d024cba0169320a578a392989e7aa42c1dcd3773f9da168365dc69",
+      "existing_field_resolution_ids": [
+        "rad-073-167:domains",
+        "rad-073-167:tags"
+      ],
+      "original_image": {
+        "path": "assets/data/catalog_evidence/images/rad-073-167.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/374248eb65ca1e90a434652073dbbd3a12a11eda-744x1039.png?accountingTag=RB",
+        "bytes": 730494,
+        "sha256": "6db52cb8232b3724b2a9db695070dae72d6eb29d429550e56cef0c862216f603"
+      },
+      "visual_observation": {
+        "face_visually_inspected": true,
+        "independently_reinspected_on": "2026-10-25",
+        "official_id": "rad-073-167",
+        "name": "Pillaged Armory",
+        "collector_code": "RAD-073/167",
+        "original_image_sha256": "6db52cb8232b3724b2a9db695070dae72d6eb29d429550e56cef0c862216f603",
+        "printed_type_tag_line": "GEAR",
+        "uncertainties": [],
+        "notes": [
+          "No printed Device tag; its exclusion is rule-derived under Core 133.8, 763.1 and 830, not a card-specific erratum."
+        ],
+        "printed_types": [
+          "gear"
+        ],
+        "printed_supertypes": [],
+        "printed_domains": [
+          "body"
+        ],
+        "printed_tags": [],
+        "printed_energy": 1,
+        "printed_power": null,
+        "printed_might": null,
+        "printed_might_bonus": null,
+        "printed_rules_icons_expanded": "[Deploy] (Play this only to a battlefield. When an opponent holds here, kill this.)\nWhen you play this or when you conquer here, [Buff] a friendly unit. (Give it a +1 Might buff if it doesn't have one.)",
+        "printed_equipment_icons_expanded": ""
+      },
+      "runtime_id": 405,
+      "errata": [],
+      "runtime_rules_text": "[Deploy] (Play this only to a battlefield. When an opponent holds here, kill this.)\nWhen you play this or when you conquer here, [Buff] a friendly unit. (Give it a +1 Might buff if it doesn't have one.)",
+      "printing_cohort": [
+        "rad-073-167"
+      ],
+      "alternate_printings": [],
+      "legal_main_deck_legend_ids": [
+        1,
+        7,
+        8
+      ],
+      "chosen_champion_legend_ids": [],
+      "runtime_image": {
+        "path": "assets/art/card_405.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/374248eb65ca1e90a434652073dbbd3a12a11eda-744x1039.png?w=280&q=80&fm=png",
+        "bytes": 177039,
+        "sha256": "d8b7d45f043487f95522b3c562baa50307d026decf0ce7a53c9d642d9362f2ac",
+        "width": 280,
+        "height": 391
+      }
+    },
+    {
+      "official_id": "rad-087-167",
+      "name": "Portable Portal",
+      "raw_printing": {
+        "official_id": "rad-087-167",
+        "public_code": "RAD-087/167",
+        "name": "Portable Portal",
+        "set": "RAD",
+        "collector_number": 87,
+        "types": [
+          "unit"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "unit"
+        ],
+        "accessibility_types": [
+          "gear"
+        ],
+        "type_labels_conflict": true,
+        "super_types": [],
+        "domains": [
+          "body"
+        ],
+        "energy": 2,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "rules_html": "<p>[Deploy] (Play this only to a battlefield. When an opponent holds here, kill this.)<br />When you play this, you may pay :rb_rune_body: to ready a unit here.<br />Friendly units here have [Ganking]. (They can move from battlefield to battlefield.)</p>",
+        "rules_text": "[Deploy] (Play this only to a battlefield. When an opponent holds here, kill this.)\nWhen you play this, you may pay [Body Power] to ready a unit here.\nFriendly units here have [Ganking]. (They can move from battlefield to battlefield.)",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [
+          "Device"
+        ],
+        "rarity": "rare",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/dba5c879aae5c614198eb8408e0104a1b0618102-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Gear: Portable Portal. [Deploy] (Play this only to a battlefield. When an opponent holds here, kill this.)\nWhen you play this, you may pay [C] to ready a unit here.\nFriendly units here have [Ganking]. (They can move from battlefield to battlefield.)",
+        "illustrators": []
+      },
+      "raw_printing_sha256": "0f88cdf49b692b739935f0e7ed97aa8825ec33c246ee3d49a7ee5be5a3468e2d",
+      "effective": {
+        "types": [
+          "gear"
+        ],
+        "super_types": [],
+        "domains": [
+          "body"
+        ],
+        "energy": 2,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>[Deploy] (Play this only to a battlefield. When an opponent holds here, kill this.)<br />When you play this, you may pay :rb_rune_body: to ready a unit here.<br />Friendly units here have [Ganking]. (They can move from battlefield to battlefield.)</p>",
+        "rules_text": "[Deploy] (Play this only to a battlefield. When an opponent holds here, kill this.)\nWhen you play this, you may pay [Body Power] to ready a unit here.\nFriendly units here have [Ganking]. (They can move from battlefield to battlefield.)",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "effective_projection_sha256": "4685fe13fff43d32ac0958859f1c566861292b9a2d53aeb4ac3c0ff3d115d18b",
+      "existing_field_resolution_ids": [
+        "rad-087-167:types",
+        "rad-087-167:tags"
+      ],
+      "original_image": {
+        "path": "assets/data/catalog_evidence/images/rad-087-167.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/dba5c879aae5c614198eb8408e0104a1b0618102-744x1039.png?accountingTag=RB",
+        "bytes": 848252,
+        "sha256": "6dba6d768919a69bfdd7b90fba01e241abbbf8df6dde9e6a24a9790fc47fdeef"
+      },
+      "visual_observation": {
+        "face_visually_inspected": true,
+        "independently_reinspected_on": "2026-10-25",
+        "official_id": "rad-087-167",
+        "name": "Portable Portal",
+        "collector_code": "RAD-087/167",
+        "original_image_sha256": "6dba6d768919a69bfdd7b90fba01e241abbbf8df6dde9e6a24a9790fc47fdeef",
+        "printed_type_tag_line": "GEAR",
+        "uncertainties": [],
+        "notes": [],
+        "printed_types": [
+          "gear"
+        ],
+        "printed_supertypes": [],
+        "printed_domains": [
+          "body"
+        ],
+        "printed_tags": [],
+        "printed_energy": 2,
+        "printed_power": null,
+        "printed_might": null,
+        "printed_might_bonus": null,
+        "printed_rules_icons_expanded": "[Deploy] (Play this only to a battlefield. When an opponent holds here, kill this.)\nWhen you play this, you may pay [Body Power] to ready a unit here.\nFriendly units here have [Ganking]. (They can move from battlefield to battlefield.)",
+        "printed_equipment_icons_expanded": ""
+      },
+      "runtime_id": 406,
+      "errata": [],
+      "runtime_rules_text": "[Deploy] (Play this only to a battlefield. When an opponent holds here, kill this.)\nWhen you play this, you may pay [Body Power] to ready a unit here.\nFriendly units here have [Ganking]. (They can move from battlefield to battlefield.)",
+      "printing_cohort": [
+        "rad-087-167"
+      ],
+      "alternate_printings": [],
+      "legal_main_deck_legend_ids": [
+        1,
+        7,
+        8
+      ],
+      "chosen_champion_legend_ids": [],
+      "runtime_image": {
+        "path": "assets/art/card_406.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/dba5c879aae5c614198eb8408e0104a1b0618102-744x1039.png?w=280&q=80&fm=png",
+        "bytes": 202260,
+        "sha256": "bb5da21101553ac16cb72ea24c463ef4feec827d34370e121555613a593205f1",
+        "width": 280,
+        "height": 391
+      }
+    },
+    {
+      "official_id": "rad-052-167",
+      "name": "Resource Extractor",
+      "raw_printing": {
+        "official_id": "rad-052-167",
+        "public_code": "RAD-052/167",
+        "name": "Resource Extractor",
+        "set": "RAD",
+        "collector_number": 52,
+        "types": [
+          "gear"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "gear"
+        ],
+        "accessibility_types": [
+          "gear"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "mind"
+        ],
+        "energy": 1,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "rules_html": "<p>[Deploy] (Play this only to a battlefield. When an opponent holds here, kill this.)<br />At the end of your turn, if you control this battlefield, play a Gold gear token exhausted. (It has &quot;[Reaction][&gt;] Kill this, :rb_exhaust:: [Add] :rb_rune_rainbow:.&quot;)</p>",
+        "rules_text": "[Deploy] (Play this only to a battlefield. When an opponent holds here, kill this.)\nAt the end of your turn, if you control this battlefield, play a Gold gear token exhausted. (It has \"[Reaction][>] Kill this, [Exhaust]: [Add] [Any Power].\")",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [
+          "Device"
+        ],
+        "rarity": "common",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/d5cc2f85febe2260e51b88bddfeab6ce700c85dd-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Gear: Resource Extractor. [Deploy] (Play this only to a battlefield. When an opponent holds here, kill this.)\nAt the end of your turn, if you control this battlefield, play a Gold gear token exhausted. (It has \"[Reaction][>] Kill this, [T]: [Add] [A].\")",
+        "illustrators": [
+          "Fish Art Studio"
+        ]
+      },
+      "raw_printing_sha256": "82f4b11e9f27d19cab1fe71d1316c5f8411c9caa241191314cc7c99b53fce914",
+      "effective": {
+        "types": [
+          "gear"
+        ],
+        "super_types": [],
+        "domains": [
+          "mind"
+        ],
+        "energy": 1,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>[Deploy] (Play this only to a battlefield. When an opponent holds here, kill this.)<br />At the end of your turn, if you control this battlefield, play a Gold gear token exhausted. (It has &quot;[Reaction][&gt;] Kill this, :rb_exhaust:: [Add] :rb_rune_rainbow:.&quot;)</p>",
+        "rules_text": "[Deploy] (Play this only to a battlefield. When an opponent holds here, kill this.)\nAt the end of your turn, if you control this battlefield, play a Gold gear token exhausted. (It has \"[Reaction][>] Kill this, [Exhaust]: [Add] [Any Power].\")",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "effective_projection_sha256": "f55f5c97017794a56572726ead15ba9a7f9344c3b47d0569d3c33537792dfb61",
+      "existing_field_resolution_ids": [
+        "rad-052-167:tags"
+      ],
+      "original_image": {
+        "path": "assets/data/catalog_evidence/images/rad-052-167.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/d5cc2f85febe2260e51b88bddfeab6ce700c85dd-744x1039.png?accountingTag=RB",
+        "bytes": 780600,
+        "sha256": "ef9e0c9eaffd1ffffa2ca6b64874ccf4060115fa7e672ec6f1ed6b7ea71a28a8"
+      },
+      "visual_observation": {
+        "face_visually_inspected": true,
+        "independently_reinspected_on": "2026-10-25",
+        "official_id": "rad-052-167",
+        "name": "Resource Extractor",
+        "collector_code": "RAD-052/167",
+        "original_image_sha256": "ef9e0c9eaffd1ffffa2ca6b64874ccf4060115fa7e672ec6f1ed6b7ea71a28a8",
+        "printed_type_tag_line": "GEAR",
+        "uncertainties": [],
+        "notes": [
+          "No printed Device tag; its exclusion is rule-derived under Core 133.8, 763.1 and 830, not a card-specific erratum."
+        ],
+        "printed_types": [
+          "gear"
+        ],
+        "printed_supertypes": [],
+        "printed_domains": [
+          "mind"
+        ],
+        "printed_tags": [],
+        "printed_energy": 1,
+        "printed_power": null,
+        "printed_might": null,
+        "printed_might_bonus": null,
+        "printed_rules_icons_expanded": "[Deploy] (Play this only to a battlefield. When an opponent holds here, kill this.)\nAt the end of your turn, if you control this battlefield, play a Gold gear token exhausted. (It has \"[Reaction][>] Kill this, [Exhaust]: [Add] [Any Power].\")",
+        "printed_equipment_icons_expanded": ""
+      },
+      "runtime_id": 407,
+      "errata": [],
+      "runtime_rules_text": "[Deploy] (Play this only to a battlefield. When an opponent holds here, kill this.)\nAt the end of your turn, if you control this battlefield, play a Gold gear token exhausted. (It has \"[Reaction][>] Kill this, [Exhaust]: [Add] [Any Power].\")",
+      "printing_cohort": [
+        "rad-052-167"
+      ],
+      "alternate_printings": [],
+      "legal_main_deck_legend_ids": [
+        3,
+        5,
+        6,
+        9
+      ],
+      "chosen_champion_legend_ids": [],
+      "runtime_image": {
+        "path": "assets/art/card_407.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/d5cc2f85febe2260e51b88bddfeab6ce700c85dd-744x1039.png?w=280&q=80&fm=png",
+        "bytes": 179823,
+        "sha256": "68a8957b8a4bf8cefe26dc249fae59727b6357a911f6fc36a2354df53ee2bfb1",
+        "width": 280,
+        "height": 391
+      }
+    },
+    {
+      "official_id": "rad-106-167",
+      "name": "The Good Stuff",
+      "raw_printing": {
+        "official_id": "rad-106-167",
+        "public_code": "RAD-106/167",
+        "name": "The Good Stuff",
+        "set": "RAD",
+        "collector_number": 106,
+        "types": [
+          "gear"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "gear"
+        ],
+        "accessibility_types": [
+          "gear"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "body"
+        ],
+        "energy": 3,
+        "power": 1,
+        "might": null,
+        "might_bonus": null,
+        "rules_html": "<p>[Deploy] (Play this only to a battlefield. When an opponent holds here, kill this.)<br />When you play this, discard 1, then draw 3.<br />When you hold here, return this to its owner's hand.</p>",
+        "rules_text": "[Deploy] (Play this only to a battlefield. When an opponent holds here, kill this.)\nWhen you play this, discard 1, then draw 3.\nWhen you hold here, return this to its owner's hand.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [
+          "Device"
+        ],
+        "rarity": "uncommon",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/e7dcc9ad059b471373f0093453a0ca7537d6aa0f-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Gear: The Good Stuff. [Deploy] (Play this only to a battlefield. When an opponent holds here, kill this.)\nWhen you play this, discard 1, then draw 3.\nWhen you hold here, return this to its owner's hand.",
+        "illustrators": []
+      },
+      "raw_printing_sha256": "48284bfd95f6453d4070f23725446b208d2657fe722fa17ee42ac53b7f8760f7",
+      "effective": {
+        "types": [
+          "gear"
+        ],
+        "super_types": [],
+        "domains": [
+          "chaos"
+        ],
+        "energy": 3,
+        "power": 1,
+        "might": null,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>[Deploy] (Play this only to a battlefield. When an opponent holds here, kill this.)<br />When you play this, discard 1, then draw 3.<br />When you hold here, return this to its owner's hand.</p>",
+        "rules_text": "[Deploy] (Play this only to a battlefield. When an opponent holds here, kill this.)\nWhen you play this, discard 1, then draw 3.\nWhen you hold here, return this to its owner's hand.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "effective_projection_sha256": "21b16381b2edb72e1f08845e3d711a3bc4891008625ba50d48e41ae99cca8cb2",
+      "existing_field_resolution_ids": [
+        "rad-106-167:domains",
+        "rad-106-167:tags"
+      ],
+      "original_image": {
+        "path": "assets/data/catalog_evidence/images/rad-106-167.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/e7dcc9ad059b471373f0093453a0ca7537d6aa0f-744x1039.png?accountingTag=RB",
+        "bytes": 698202,
+        "sha256": "028e731345ca72847dd3312a2dea4e7e02cfbdf56e2c46ecb8003cf627a3a31a"
+      },
+      "visual_observation": {
+        "face_visually_inspected": true,
+        "independently_reinspected_on": "2026-10-25",
+        "official_id": "rad-106-167",
+        "name": "The Good Stuff",
+        "collector_code": "RAD-106/167",
+        "original_image_sha256": "028e731345ca72847dd3312a2dea4e7e02cfbdf56e2c46ecb8003cf627a3a31a",
+        "printed_type_tag_line": "GEAR",
+        "uncertainties": [],
+        "notes": [
+          "No printed Device tag; its exclusion is rule-derived under Core 133.8, 763.1 and 830, not a card-specific erratum."
+        ],
+        "printed_types": [
+          "gear"
+        ],
+        "printed_supertypes": [],
+        "printed_domains": [
+          "chaos"
+        ],
+        "printed_tags": [],
+        "printed_energy": 3,
+        "printed_power": 1,
+        "printed_might": null,
+        "printed_might_bonus": null,
+        "printed_rules_icons_expanded": "[Deploy] (Play this only to a battlefield. When an opponent holds here, kill this.)\nWhen you play this, discard 1, then draw 3.\nWhen you hold here, return this to its owner's hand.",
+        "printed_equipment_icons_expanded": ""
+      },
+      "runtime_id": 408,
+      "errata": [],
+      "runtime_rules_text": "[Deploy] (Play this only to a battlefield. When an opponent holds here, kill this.)\nWhen you play this, discard 1, then draw 3.\nWhen you hold here, return this to its owner's hand.",
+      "printing_cohort": [
+        "rad-106-167"
+      ],
+      "alternate_printings": [],
+      "legal_main_deck_legend_ids": [
+        0,
+        2,
+        9
+      ],
+      "chosen_champion_legend_ids": [],
+      "runtime_image": {
+        "path": "assets/art/card_408.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/e7dcc9ad059b471373f0093453a0ca7537d6aa0f-744x1039.png?w=280&q=80&fm=png",
+        "bytes": 162742,
+        "sha256": "0892103117e24552c3206d83982d02904649b4bc937d33cef2d41df056448ae0",
+        "width": 280,
+        "height": 391
+      }
+    },
+    {
+      "official_id": "rad-072-167",
+      "name": "Overloaded Traveler",
+      "raw_printing": {
+        "official_id": "rad-072-167",
+        "public_code": "RAD-072/167",
+        "name": "Overloaded Traveler",
+        "set": "RAD",
+        "collector_number": 72,
+        "types": [
+          "spell"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "spell"
+        ],
+        "accessibility_types": [
+          "unit"
+        ],
+        "type_labels_conflict": true,
+        "super_types": [],
+        "domains": [
+          "body"
+        ],
+        "energy": 2,
+        "power": null,
+        "might": 2,
+        "might_bonus": null,
+        "rules_html": "<p>While there's a friendly gear with [Deploy] at my battlefield, I have +1 :rb_might:.</p>",
+        "rules_text": "While there's a friendly gear with [Deploy] at my battlefield, I have +1 Might.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [],
+        "rarity": "common",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/6db2839d8702b15ab62413028c0321c75e87801c-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Unit: Overloaded Traveler. While there's a friendly gear with [Deploy] at my battlefield, I have +1 [S].",
+        "illustrators": [
+          "Kudos Productions"
+        ]
+      },
+      "raw_printing_sha256": "4b2840803a851a0e32b2eb696105b50ef13c211aad614a53e5a75c2250195806",
+      "effective": {
+        "types": [
+          "unit"
+        ],
+        "super_types": [],
+        "domains": [
+          "body"
+        ],
+        "energy": 2,
+        "power": null,
+        "might": 2,
+        "might_bonus": null,
+        "tags": [
+          "Bandle City",
+          "Yordle"
+        ],
+        "rules_html": "<p>While there's a friendly gear with [Deploy] at my battlefield, I have +1 :rb_might:.</p>",
+        "rules_text": "While there's a friendly gear with [Deploy] at my battlefield, I have +1 Might.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "effective_projection_sha256": "eb0aad82edace4c39e3d3f606b59c1cf17dbdfa5f5a76e5ca7c8200895280588",
+      "existing_field_resolution_ids": [
+        "rad-072-167:types",
+        "rad-072-167:tags"
+      ],
+      "original_image": {
+        "path": "assets/data/catalog_evidence/images/rad-072-167.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/6db2839d8702b15ab62413028c0321c75e87801c-744x1039.png?accountingTag=RB",
+        "bytes": 762253,
+        "sha256": "1b5802a0594b09bc87aa0153cb5784b6519169b992e1261e15d7744059611379"
+      },
+      "visual_observation": {
+        "face_visually_inspected": true,
+        "independently_reinspected_on": "2026-10-25",
+        "official_id": "rad-072-167",
+        "name": "Overloaded Traveler",
+        "collector_code": "RAD-072/167",
+        "original_image_sha256": "1b5802a0594b09bc87aa0153cb5784b6519169b992e1261e15d7744059611379",
+        "printed_type_tag_line": "UNIT / BANDLE CITY / YORDLE",
+        "uncertainties": [],
+        "notes": [],
+        "printed_types": [
+          "unit"
+        ],
+        "printed_supertypes": [],
+        "printed_domains": [
+          "body"
+        ],
+        "printed_tags": [
+          "Bandle City",
+          "Yordle"
+        ],
+        "printed_energy": 2,
+        "printed_power": null,
+        "printed_might": 2,
+        "printed_might_bonus": null,
+        "printed_rules_icons_expanded": "While there's a friendly gear with [Deploy] at my battlefield, I have +1 Might.",
+        "printed_equipment_icons_expanded": ""
+      },
+      "runtime_id": 409,
+      "errata": [],
+      "runtime_rules_text": "While there's a friendly gear with [Deploy] at my battlefield, I have +1 Might.",
+      "printing_cohort": [
+        "rad-072-167"
+      ],
+      "alternate_printings": [],
+      "legal_main_deck_legend_ids": [
+        1,
+        7,
+        8
+      ],
+      "chosen_champion_legend_ids": [],
+      "runtime_image": {
+        "path": "assets/art/card_409.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/6db2839d8702b15ab62413028c0321c75e87801c-744x1039.png?w=280&q=80&fm=png",
+        "bytes": 178999,
+        "sha256": "64906fba4a617d20c37629f0a5326591765b184b7fdb89bf92c6d4ffa6c3161e",
+        "width": 280,
+        "height": 391
+      }
+    },
+    {
+      "official_id": "rad-033-167",
+      "name": "Command: Attack",
+      "raw_printing": {
+        "official_id": "rad-033-167",
+        "public_code": "RAD-033/167",
+        "name": "Command: Attack",
+        "set": "RAD",
+        "collector_number": 33,
+        "types": [
+          "gear"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "gear"
+        ],
+        "accessibility_types": [
+          "spell"
+        ],
+        "type_labels_conflict": true,
+        "super_types": [],
+        "domains": [
+          "calm"
+        ],
+        "energy": 1,
+        "power": 1,
+        "might": null,
+        "might_bonus": null,
+        "rules_html": "<p>Choose one —</p><ul><li>Move a friendly gear with [Deploy] to a battlefield.</li><li>Look at the top 5 cards of your Main Deck. You may reveal a gear from among them and draw it. Recycle the rest.</li></ul>",
+        "rules_text": "Choose one —\nMove a friendly gear with [Deploy] to a battlefield.\nLook at the top 5 cards of your Main Deck. You may reveal a gear from among them and draw it. Recycle the rest.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [],
+        "rarity": "uncommon",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/b025756992e22af480902e13b01e25acbc747221-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Spell: Command: Attack. Choose one —\n- Move a friendly gear with [Deploy] to a battlefield.\n- Look at the top 5 cards of your Main Deck. You may reveal a gear from among them and draw it. Recycle the rest.",
+        "illustrators": []
+      },
+      "raw_printing_sha256": "671a782e5bed098f730709b00074d0745354518346c30aaebc8ca1cd0a009c6e",
+      "effective": {
+        "types": [
+          "spell"
+        ],
+        "super_types": [],
+        "domains": [
+          "calm"
+        ],
+        "energy": 1,
+        "power": 1,
+        "might": null,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>Choose one —</p><ul><li>Move a friendly gear with [Deploy] to a battlefield.</li><li>Look at the top 5 cards of your Main Deck. You may reveal a gear from among them and draw it. Recycle the rest.</li></ul>",
+        "rules_text": "Choose one —\nMove a friendly gear with [Deploy] to a battlefield.\nLook at the top 5 cards of your Main Deck. You may reveal a gear from among them and draw it. Recycle the rest.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "effective_projection_sha256": "eed3cf53e19d5623d65310053783306de1893379acc2a74716290280b7762ef2",
+      "existing_field_resolution_ids": [
+        "rad-033-167:types"
+      ],
+      "original_image": {
+        "path": "assets/data/catalog_evidence/images/rad-033-167.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/b025756992e22af480902e13b01e25acbc747221-744x1039.png?accountingTag=RB",
+        "bytes": 754446,
+        "sha256": "738e2541492fe203002de28977015016f480cda9d55d9862409694f759836439"
+      },
+      "visual_observation": {
+        "face_visually_inspected": true,
+        "independently_reinspected_on": "2026-10-25",
+        "official_id": "rad-033-167",
+        "name": "Command: Attack",
+        "collector_code": "RAD-033/167",
+        "original_image_sha256": "738e2541492fe203002de28977015016f480cda9d55d9862409694f759836439",
+        "printed_type_tag_line": "SPELL",
+        "uncertainties": [],
+        "notes": [],
+        "printed_types": [
+          "spell"
+        ],
+        "printed_supertypes": [],
+        "printed_domains": [
+          "calm"
+        ],
+        "printed_tags": [],
+        "printed_energy": 1,
+        "printed_power": 1,
+        "printed_might": null,
+        "printed_might_bonus": null,
+        "printed_rules_icons_expanded": "Choose one —\nMove a friendly gear with [Deploy] to a battlefield.\nLook at the top 5 cards of your Main Deck. You may reveal a gear from among them and draw it. Recycle the rest.",
+        "printed_equipment_icons_expanded": ""
+      },
+      "runtime_id": 410,
+      "errata": [],
+      "runtime_rules_text": "Choose one —\nMove a friendly gear with [Deploy] to a battlefield.\nLook at the top 5 cards of your Main Deck. You may reveal a gear from among them and draw it. Recycle the rest.",
+      "printing_cohort": [
+        "rad-033-167"
+      ],
+      "alternate_printings": [],
+      "legal_main_deck_legend_ids": [
+        0,
+        1
+      ],
+      "chosen_champion_legend_ids": [],
+      "runtime_image": {
+        "path": "assets/art/card_410.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/b025756992e22af480902e13b01e25acbc747221-744x1039.png?w=280&q=80&fm=png",
+        "bytes": 183567,
+        "sha256": "f3e2088503ea0e00ad4a3e25ef4ed704e90969e4e1ff9f6cba214b3e7b13708f",
+        "width": 280,
+        "height": 391
+      }
+    }
+  ]
+}

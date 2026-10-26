@@ -168,6 +168,12 @@ impl Game {
                 scrub_queued_look(decision, &state.players, &state.catalog);
             }
         }
+        // A hypothetical refusal must restore a hypothetical payment origin,
+        // never the real hidden hand/deck captured before its first Add.
+        state.trigger_payment_origin = self
+            .trigger_payment_origin
+            .as_ref()
+            .map(|origin| Box::new(origin.strategic_belief(actor)));
         state.rng = rng;
         state.log.clear();
         state
@@ -925,7 +931,7 @@ mod c20_draw_privacy_tests {
             .filter_map(|(index, &id)| {
                 let card = game.catalog[id];
                 let valid = match kind {
-                    DrawLookKind::Ornn => card.kind == CardKind::Gear,
+                    DrawLookKind::Ornn | DrawLookKind::CommandAttack => card.kind == CardKind::Gear,
                     DrawLookKind::DoubleTrouble => card.kind == CardKind::Unit,
                     DrawLookKind::FateWeaver => card.kind == CardKind::Spell && card.cost >= 4,
                     DrawLookKind::TrifarianCaptain => {
@@ -1113,6 +1119,7 @@ mod c21_predict_privacy_tests {
                     first.players[actor].gear.push(GearState {
                         id: 9000,
                         card_id: 397,
+                        lane: None,
                         attached_to: None,
                         ready: true,
                         temporary: false,
@@ -1254,6 +1261,96 @@ mod c22_vision_privacy_tests {
             assert_eq!(action, second.choose_strategic_action().unwrap());
             first.apply(action.clone()).unwrap();
             second.apply(action).unwrap();
+        }
+    }
+
+    #[test]
+    fn trigger_payment_rollback_samples_its_historical_hidden_zones() {
+        for actor in 0..2 {
+            let mut first = Game::new_for_agents(3, 3, 240445, Difficulty::Strategic);
+            first.choose_starting_player(actor).unwrap();
+            first.start_match().unwrap();
+            for player in &mut first.players {
+                player.units.clear();
+                player.gear.clear();
+                player.hidden.clear();
+                player.hand.clear();
+                player.champion = None;
+                player.runes = [0; 6];
+                player.exhausted_runes = [0; 6];
+                player.energy_pool = 20;
+                player.energy = 20;
+                player.power_pool = [8; 6];
+            }
+            first.players[1 - actor].hand = vec![9, 86];
+            let gold = first.gear_gold(actor, false);
+            first.players[actor].hand = vec![403];
+            first
+                .apply(Action::PlayCard {
+                    hand_index: 0,
+                    lane: Some(0),
+                    target: None,
+                })
+                .unwrap();
+            first.apply(Action::ActivateGear { gear_id: gold }).unwrap();
+            let mut second = first.clone();
+            second.players[1 - actor].hand.fill(96);
+            second.players[actor].deck.fill(70);
+            second.players[1 - actor].deck.fill(71);
+            let old = second.trigger_payment_origin.as_mut().unwrap();
+            old.players[1 - actor].hand.fill(96);
+            old.players[actor].deck.fill(70);
+            old.players[1 - actor].deck.fill(71);
+            for staged in [false, true] {
+                let mut a = first.strategic_belief(actor);
+                let mut b = second.strategic_belief(actor);
+                let Some(Decision::TriggerPayment { choice_id, .. }) = a.decision else {
+                    panic!()
+                };
+                for state in [&mut a, &mut b] {
+                    if staged {
+                        state
+                            .apply(Action::BeginPayment {
+                                action: Box::new(Action::ResolveTriggerPayment {
+                                    choice_id,
+                                    pay: true,
+                                }),
+                            })
+                            .unwrap();
+                        state.apply(Action::Choose { accept: false }).unwrap();
+                    }
+                    state
+                        .apply(Action::ResolveTriggerPayment {
+                            choice_id,
+                            pay: false,
+                        })
+                        .unwrap();
+                }
+                assert_eq!(a.players[actor].deck, b.players[actor].deck);
+                assert_eq!(a.players[1 - actor].deck, b.players[1 - actor].deck);
+                assert_eq!(a.players[1 - actor].hand, b.players[1 - actor].hand);
+                assert!(a.trigger_payment_origin.is_none());
+                assert!(b.trigger_payment_origin.is_none());
+            }
+            // Live plans use the public-resource heuristic guard, so their
+            // original/frozen worlds never enter the sampled search midway.
+            for state in [&mut first, &mut second] {
+                let Some(Decision::TriggerPayment { choice_id, .. }) = state.decision else {
+                    panic!()
+                };
+                state
+                    .apply(Action::BeginPayment {
+                        action: Box::new(Action::ResolveTriggerPayment {
+                            choice_id,
+                            pay: true,
+                        }),
+                    })
+                    .unwrap();
+            }
+            assert_eq!(
+                first.choose_strategic_action().unwrap(),
+                second.choose_strategic_action().unwrap()
+            );
         }
     }
 }

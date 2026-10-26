@@ -10,6 +10,82 @@ pub(super) struct PlayDraft {
     pub open: bool,
     pub scroll: usize,
 }
+
+/// A mode belongs to one execution. Changing it invalidates that execution's
+/// targets and the cost plan, without changing other paid Repeat choices.
+fn choose_mode(draft: &mut PlayDraft, original_targets: &mut Vec<Target>, mode: usize) {
+    let (selected, targets) = if draft.execution == 0 {
+        (&mut draft.choices.mode, original_targets)
+    } else {
+        let execution = &mut draft.choices.repeats[draft.execution - 1].choices;
+        (&mut execution.mode, &mut execution.targets)
+    };
+    if *selected != Some(mode) {
+        *selected = Some(mode);
+        targets.clear();
+        draft.choices.cost_order.clear();
+    }
+}
+
+#[cfg(test)]
+mod mode_tests {
+    use super::*;
+
+    #[test]
+    fn changing_repeat_mode_preserves_other_executions_and_undoes_only_its_targets() {
+        let original = vec![
+            Target::Gear {
+                player: 0,
+                gear_id: 24,
+            },
+            Target::Battlefield { lane: 1 },
+        ];
+        let mut targets = original.clone();
+        let mut draft = PlayDraft {
+            key: (Selection::Hand(0), 410),
+            execution: 1,
+            open: true,
+            scroll: 0,
+            choices: PlayChoices {
+                mode: Some(0),
+                repeats: vec![
+                    RepeatSelection {
+                        option_id: 77,
+                        choices: ExecutionChoices {
+                            targets: original.clone(),
+                            mode: Some(0),
+                        },
+                    },
+                    RepeatSelection {
+                        option_id: 88,
+                        choices: ExecutionChoices {
+                            targets: vec![],
+                            mode: Some(1),
+                        },
+                    },
+                ],
+                cost_order: vec![CostSelection {
+                    modifier_id: 5,
+                    use_power: false,
+                    power_allocations: vec![],
+                }],
+                ..Default::default()
+            },
+        };
+        choose_mode(&mut draft, &mut targets, 1);
+        assert_eq!(targets, original);
+        assert_eq!(draft.choices.mode, Some(0));
+        assert_eq!(draft.choices.repeats[0].choices.mode, Some(1));
+        assert!(draft.choices.repeats[0].choices.targets.is_empty());
+        assert_eq!(draft.choices.repeats[1].option_id, 88);
+        assert_eq!(draft.choices.repeats[1].choices.mode, Some(1));
+        assert!(draft.choices.cost_order.is_empty());
+        draft.execution = 0;
+        choose_mode(&mut draft, &mut targets, 1);
+        assert!(targets.is_empty());
+        assert_eq!(draft.choices.repeats.len(), 2);
+    }
+}
 #[derive(Clone)]
 pub(super) struct CostEditor {
     action: Action,
@@ -76,7 +152,7 @@ pub(super) fn token_placement_description(
         }
     )
 }
-fn value_label(value: &CostValue) -> String {
+pub(super) fn value_label(value: &CostValue) -> String {
     let domains = if value.domains.is_empty() || value.domains.len() == 6 {
         "Any".into()
     } else {
@@ -264,8 +340,8 @@ pub(super) fn target_view_hint(game: &Game, view: &PlayTargetView) -> String {
             )
         };
     };
-    let noun = match view.spec.kind {
-        Some(local_rift::rules::PlayTargetKind::UnitOrGear)
+    let noun = match slot.kind {
+        local_rift::rules::PlayTargetKind::UnitOrGear
             if matches!(
                 local_rift::rules::effect(view.card_id),
                 local_rift::rules::OfficialEffect::KillEnemyDomain { .. }
@@ -273,18 +349,16 @@ pub(super) fn target_view_hint(game: &Game, view: &PlayTargetView) -> String {
         {
             "an enemy Chaos unit (base or field), or gear in Loadout"
         }
-        Some(local_rift::rules::PlayTargetKind::UnitOrGear) if view.card_id == 379 => {
+        local_rift::rules::PlayTargetKind::UnitOrGear if view.card_id == 379 => {
             "a unit with 3 Might or less (base or field), or gear in Loadout"
         }
-        Some(local_rift::rules::PlayTargetKind::Unit) if view.card_id == 383 && slot.index == 1 => {
+        local_rift::rules::PlayTargetKind::Unit if view.card_id == 383 && slot.index == 1 => {
             "an enemy unit at a battlefield for 3 damage"
         }
-        Some(local_rift::rules::PlayTargetKind::UnitOrGear) => {
-            "a battlefield unit, or gear in Loadout"
-        }
-        Some(local_rift::rules::PlayTargetKind::Gear) => "gear in either player's Loadout",
-        Some(local_rift::rules::PlayTargetKind::Battlefield) => "either battlefield, even if empty",
-        Some(local_rift::rules::PlayTargetKind::Spell) => "a pending spell above",
+        local_rift::rules::PlayTargetKind::UnitOrGear => "a battlefield unit, or gear in Loadout",
+        local_rift::rules::PlayTargetKind::Gear => "highlighted gear on the mat or in Loadout",
+        local_rift::rules::PlayTargetKind::Battlefield => "a highlighted battlefield",
+        local_rift::rules::PlayTargetKind::Spell => "a pending spell above",
         _ => match local_rift::rules::targeting(view.card_id).allegiance {
             local_rift::rules::Allegiance::Friendly => "a highlighted friendly unit",
             local_rift::rules::Allegiance::Enemy => "a highlighted enemy unit",
@@ -336,8 +410,9 @@ impl App {
             .map_or(usize::from(self.editing_repeat), |draft| draft.execution);
         if replace_single
             && self
-                .selected_card_id()
-                .is_some_and(|id| local_rift::rules::play_target_spec(id).maximum == 1)
+                .game
+                .play_target_view(&action, execution)
+                .is_ok_and(|view| view.spec.maximum == 1)
         {
             replace_execution_targets(&mut action, execution, vec![])?;
         }
@@ -414,7 +489,9 @@ impl App {
         })
     }
     fn extended_choices(&self, view: &PlayChoiceView) -> bool {
-        view.repeats.len() > usize::from(local_rift::rules::repeat_cost(view.card_id).is_some())
+        !view.modes.is_empty()
+            || view.repeats.len()
+                > usize::from(local_rift::rules::repeat_cost(view.card_id).is_some())
             || view.repeats.iter().any(|option| {
                 option.source
                     != (ChainSource::Card {
@@ -472,7 +549,7 @@ impl App {
             key,
             choices,
             execution: 0,
-            open: false,
+            open: !view.modes.is_empty(),
             scroll: 0,
         });
         self.options = PlayOptions::default();
@@ -655,6 +732,20 @@ impl App {
         if view.repeats.is_empty() {
             self.ui
                 .text("This play has no Repeat costs.", 260.0, 746.0, 12.0, MUTED);
+            if !view.modes.is_empty()
+                && self.ui.button(
+                    Rect::new(260.0, 791.0, 400.0, 32.0),
+                    "Choose a physical gear in Loadout",
+                    false,
+                    true,
+                )
+            {
+                draft.open = false;
+                self.tray = Tray::Loadout;
+                self.gear_owner = 0;
+                self.field_gear_filter = None;
+                self.hand_scroll = 0;
+            }
         }
         self.ui
             .text("EDIT TARGETS FOR EACH EXECUTION", 695.0, 708.0, 10.0, GOLD);
@@ -724,12 +815,57 @@ impl App {
         ) {
             draft.execution = first + 3;
         }
+        let modal = !view.modes.is_empty();
+        if modal {
+            let selected_mode = if draft.execution == 0 {
+                draft.choices.mode
+            } else {
+                draft.choices.repeats[draft.execution - 1].choices.mode
+            };
+            for (slot, mode) in view.modes.iter().enumerate() {
+                let rect = Rect::new(695.0 + slot as f32 * 208.0, 753.0, 205.0, 34.0);
+                let selected = selected_mode == Some(mode.index);
+                self.ui.rect(rect, if selected { GOLD } else { BG });
+                self.ui
+                    .border(rect, if self.ui.hover(rect) { TEAL } else { LINE });
+                self.ui.wrapped_lines(
+                    mode.label,
+                    rect.x + 7.0,
+                    rect.y + 13.0,
+                    rect.w - 14.0,
+                    11.5,
+                    if selected { BG } else { TEXT },
+                    2,
+                );
+                if self.ui.clicked(rect) {
+                    choose_mode(&mut draft, &mut self.targets, mode.index);
+                }
+            }
+        }
         let targets = if draft.execution == 0 {
             &self.targets
         } else {
             &draft.choices.repeats[draft.execution - 1].choices.targets
         };
-        let hint = if targets.is_empty() {
+        let hint = if modal {
+            let selected_mode = if draft.execution == 0 {
+                draft.choices.mode
+            } else {
+                draft.choices.repeats[draft.execution - 1].choices.mode
+            };
+            if selected_mode.is_none() {
+                "Choose a mode for this execution before selecting targets.".into()
+            } else {
+                let action = Action::WithPlayChoices {
+                    action: Box::new(strip_options(self.selected_play_action().unwrap())),
+                    choices: draft.choices.clone(),
+                };
+                self.game
+                    .play_target_view(&action, draft.execution)
+                    .map(|view| target_view_hint(&self.game, &view))
+                    .unwrap_or_else(|error| format!("Edit this execution: {error}"))
+            }
+        } else if targets.is_empty() {
             match local_rift::rules::play_target_spec(view.card_id).kind {
                 Some(local_rift::rules::PlayTargetKind::Battlefield) => {
                     "Choose either battlefield on the mat, even if empty.".into()
@@ -755,22 +891,37 @@ impl App {
                 .collect::<Vec<_>>()
                 .join(" · ")
         };
-        self.ui
-            .wrapped_lines(&hint, 695.0, 766.0, 414.0, 11.0, TEXT, 2);
+        self.ui.wrapped_lines(
+            &hint,
+            695.0,
+            if modal { 800.0 } else { 766.0 },
+            414.0,
+            11.0,
+            TEXT,
+            2,
+        );
+        let edit_y = if modal { 836.0 } else { 802.0 };
         if draft.execution > 0
             && self.ui.button(
-                Rect::new(695.0, 802.0, 198.0, 25.0),
-                "Copy original targets",
+                Rect::new(695.0, edit_y, 198.0, 25.0),
+                if modal {
+                    "Copy original choices"
+                } else {
+                    "Copy original targets"
+                },
                 false,
                 true,
             )
         {
             draft.choices.cost_order.clear();
             draft.choices.repeats[draft.execution - 1].choices.targets = self.targets.clone();
+            if modal {
+                draft.choices.repeats[draft.execution - 1].choices.mode = draft.choices.mode;
+            }
         }
         if draft.execution > 1
             && self.ui.button(
-                Rect::new(903.0, 802.0, 205.0, 25.0),
+                Rect::new(903.0, edit_y, 205.0, 25.0),
                 "Move this Repeat earlier",
                 false,
                 true,
@@ -818,7 +969,8 @@ impl App {
                     .text(&value_label(&optional.cost), x, 881.0, 9.0, TEAL);
             }
         }
-        if view.accelerate.is_none()
+        if !modal
+            && view.accelerate.is_none()
             && view.bonus.is_none()
             && self.ui.button(
                 Rect::new(695.0, 836.0, 413.0, 29.0),

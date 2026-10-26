@@ -253,6 +253,7 @@ fn hiding_and_equip_use_selected_sources_but_cannot_spend_spell_only_power() {
     game.players[0].gear.push(GearState {
         id: 300,
         card_id: 3,
+        lane: None,
         attached_to: None,
         ready: true,
         temporary: false,

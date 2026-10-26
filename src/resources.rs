@@ -591,6 +591,7 @@ mod tests {
         g.players[0].gear.push(GearState {
             id,
             card_id,
+            lane: None,
             attached_to: None,
             ready: true,
             temporary: false,

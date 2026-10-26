@@ -54,6 +54,7 @@ fn gear(game: &mut Game, id: u32, card_id: usize) -> AbilitySource {
     game.players[0].gear.push(GearState {
         id,
         card_id,
+        lane: None,
         attached_to: None,
         ready: true,
         temporary: false,

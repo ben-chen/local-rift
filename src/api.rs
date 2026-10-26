@@ -22,6 +22,7 @@ use std::fmt;
 use std::panic::{AssertUnwindSafe, catch_unwind};
 
 mod combat;
+mod deploy;
 mod empowered;
 mod numeric;
 mod play_choices;
@@ -357,6 +358,7 @@ impl Session {
                 "attached_to":gear.attached_to, "lane":game.gear_location(owner,gear.id),
                 "ready":gear.ready, "temporary":gear.temporary,"empowered":game.unit_empowered(gear.id),
                 "temporary_status":game.gear_temporary_status(owner,gear.id).map(temporary::status_to_json),
+                "deploy_status":game.gear_deploy_status(owner,gear.id).map(deploy::status_to_json),
                 "vision_instances":vision::instances_to_json(game,crate::empower::BoardObject::Gear {player:owner,gear_id:gear.id})?
             }))).collect::<Result<Vec<_>,ApiError>>()?;
             let hidden: Vec<_> = state.hidden.iter().map(|card| json!({
@@ -449,6 +451,7 @@ impl Session {
                 "focus":w.focus,"passes":w.passes,"combat":w.combat,
                 "focus_open":game.showdown_focus_open()})),
             "resource_payment_pending":game.resource_payment_pending(),
+            "trigger_payment_context":game.trigger_payment_context().as_ref().map(|d|decision_to_json(game,d,viewer)).transpose()?,
             "resource_continuations":game.resource_continuations().iter().map(|parent|json!({"player":parent.player,"task":parent.task})).collect::<Vec<_>>(),
             "payment_plan":game.payment_plan_view(viewer).map(|plan|json!({
                 "player":plan.player,"energy":plan.energy,"xp":plan.xp,"xp_exact":plan.xp.to_string(),"pending_card":plan.pending_card,
@@ -909,6 +912,9 @@ fn action_json_at_depth(action: &Action, depth: usize) -> Value {
         Action::Choose { accept } => json!({"type":"choose","accept":accept}),
         Action::ResolveDrawLook { choice_id, index } => {
             json!({"type":"resolve_draw_look","choice_id":choice_id,"index":index})
+        }
+        Action::ResolveTriggerPayment { choice_id, pay } => {
+            json!({"type":"resolve_trigger_payment","choice_id":choice_id,"pay":pay})
         }
         Action::ResolveDeckLook { choice_id, index } => {
             json!({"type":"resolve_deck_look","choice_id":choice_id,"index":index})
@@ -1433,6 +1439,13 @@ fn parse_action_at_depth(value: &Value, depth: usize) -> Result<Action, ApiError
                 },
             }
         }
+        "resolve_trigger_payment" => {
+            fields!("choice_id", "pay");
+            Action::ResolveTriggerPayment {
+                choice_id: id32(o, "choice_id")?,
+                pay: boolean(o, "pay")?,
+            }
+        }
         "resolve_deck_look" => {
             fields!("choice_id", "index");
             Action::ResolveDeckLook {
@@ -1771,6 +1784,7 @@ fn decision_to_json(game: &Game, decision: &Decision, viewer: usize) -> Result<V
                 DrawLookKind::FateWeaver => "fate_weaver",
                 DrawLookKind::TrifarianCaptain => "trifarian_captain",
                 DrawLookKind::Ornn => "ornn",
+                DrawLookKind::CommandAttack => "command_attack",
             };
             let mut view = json!({"type":"draw_look","choice_id":choice_id,"source_card_id":source_card_id,"kind":kind,"count":cards.len(),"optional":true});
             if player == viewer {
@@ -1833,6 +1847,19 @@ fn decision_to_json(game: &Game, decision: &Decision, viewer: usize) -> Result<V
         }),
         Decision::Payment { .. } => json!({"type":"payment",
             "can_cancel":game.can_cancel_payment().map_err(ApiError::illegal)?}),
+        Decision::TriggerPayment {
+            choice_id,
+            card_id,
+            rule_index,
+            context,
+            targets,
+            base_cost,
+            deflect,
+            ..
+        } => json!({"type":"trigger_payment","choice_id":choice_id,"card_id":card_id,
+            "rule_index":rule_index,"context":trigger_context_to_json(context),
+            "targets":targets.iter().map(target_to_json).collect::<Vec<_>>(),
+            "base_cost":play_choices::cost_to_json(base_cost),"deflect":deflect}),
         Decision::ResourceConversion {
             source,
             card_id,
@@ -2567,6 +2594,7 @@ mod tests {
             id,
             card_id,
             attached_to: None,
+            lane: None,
             ready: true,
             temporary: false,
             token: false,
@@ -3387,6 +3415,7 @@ mod tests {
             id: 701,
             card_id: 3,
             attached_to: Some(700),
+            lane: None,
             ready: true,
             temporary: false,
             token: false,
@@ -3431,6 +3460,7 @@ mod tests {
             id: 703,
             card_id: 3,
             attached_to: Some(701),
+            lane: None,
             ready: true,
             temporary: false,
             token: false,

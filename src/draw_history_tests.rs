@@ -78,6 +78,7 @@ fn old_width_crossing_keeps_exact_count_and_does_not_retrigger_second_draw() {
         g.players[0].gear.push(GearState {
             id: 9000,
             card_id: 195,
+            lane: None,
             attached_to: None,
             ready: true,
             temporary: false,
@@ -342,6 +343,7 @@ fn draw_phase_failure_restores_the_completed_beginning_expiry_command() {
     g.players[1].gear.push(GearState {
         id: 9000,
         card_id: 331,
+        lane: None,
         attached_to: None,
         ready: true,
         temporary: true,

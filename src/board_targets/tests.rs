@@ -50,6 +50,7 @@ fn gear(g: &mut Game, player: usize, card: usize, token: bool, attached_to: Opti
         id: gear_id,
         card_id: card,
         token,
+        lane: None,
         attached_to,
         ready: true,
         temporary: false,
@@ -163,6 +164,8 @@ fn bases_missing_objects_and_attached_gear_have_distinct_live_locations() {
     g.unit_mut(bearer).unwrap().lane = Some(1);
     assert_eq!(g.target_location(attached), Some((Some(1), 0)));
     g.bounce(bearer);
+    assert_eq!(g.target_location(attached), Some((Some(1), 0)));
+    g.cleanup_gear_locations();
     assert_eq!(g.target_location(attached), Some((None, 1)));
     g.kill_gear_target(attached);
     assert_eq!(g.target_location(attached), None);

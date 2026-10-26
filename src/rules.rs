@@ -249,6 +249,7 @@ pub struct Targeting {
 pub fn effect(id: usize) -> OfficialEffect {
     use OfficialEffect::*;
     match id {
+        401..=410 => None,
         372 => ReturnGear,
         373 => ReturnAllBoard,
         374..=376 => None,
@@ -978,6 +979,7 @@ pub fn triggers(id: usize) -> &'static [Trigger] {
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Mechanic {
+    Deploy,
     Chain,
     Counterspell,
     Predict,
@@ -1031,6 +1033,30 @@ pub enum Mechanic {
 pub fn requirements(id: usize) -> &'static [Mechanic] {
     use Mechanic::*;
     match id {
+        401 => &[Deploy, Gear, Assault, ConquerHoldTriggers],
+        402 => &[Deploy, Gear, Chain, ConquerHoldTriggers],
+        403 => &[
+            Deploy,
+            Gear,
+            Chain,
+            OptionalCosts,
+            Tokens,
+            ConquerHoldTriggers,
+        ],
+        404 => &[Deploy, Gear, Chain, Move, Shield, ConquerHoldTriggers],
+        405 => &[Deploy, Gear, Chain, ConquerHoldTriggers],
+        406 => &[
+            Deploy,
+            Gear,
+            Chain,
+            OptionalCosts,
+            ChooseReadyTriggers,
+            ConquerHoldTriggers,
+        ],
+        407 => &[Deploy, Gear, Chain, Gold, Tokens, ConquerHoldTriggers],
+        408 => &[Deploy, Gear, Chain, Bounce, ConquerHoldTriggers],
+        409 => &[Deploy, Gear],
+        410 => &[Deploy, Gear, Chain, Move, MultipleTargets, OptionalCosts],
         372 | 373 => &[Chain, Gear, Bounce],
         374 => &[Chain, Gear, DeathTriggers],
         375 => &[Chain, Bounce],
@@ -1459,6 +1485,8 @@ pub enum StaticAbility {
     Ambush,
     /// Rengar can also be played where enemies are present without allies.
     MayDeployToEnemyBattlefield,
+    /// Battlefield-only gear entry, cleanup Recall exemption and enemy Hold death trigger.
+    Deploy,
     Assault(u8),
     Accelerate {
         energy: u8,
@@ -1485,6 +1513,7 @@ pub enum StaticAbility {
 pub fn static_abilities(id: usize) -> &'static [StaticAbility] {
     use StaticAbility::*;
     match id {
+        401..=408 => &[Deploy],
         193 | 242 | 398 => &[Vision],
         400 => &[Vision, Shield(1)],
         376 => &[Ambush],
@@ -1835,7 +1864,7 @@ pub fn token_spec(id: usize) -> Option<TokenSpec> {
             tag: Some("Shurima"),
             temporary: false,
         }),
-        13 | 149 | 151 | 160 | 161 | 162 | 163 | 201 | 202 | 219 | 262 => Some(TokenSpec {
+        407 | 13 | 149 | 151 | 160 | 161 | 162 | 163 | 201 | 202 | 219 | 262 => Some(TokenSpec {
             name: "Gold",
             might: 0,
             count: match id {
@@ -1875,7 +1904,7 @@ pub fn token_spec(id: usize) -> Option<TokenSpec> {
             tag: Some("Mech"),
             temporary: false,
         }),
-        87 | 102 | 147 | 175 | 176 | 177 | 179 | 180 | 203 | 235 | 285 => Some(TokenSpec {
+        403 | 87 | 102 | 147 | 175 | 176 | 177 | 179 | 180 | 203 | 235 | 285 => Some(TokenSpec {
             name: "Recruit",
             might: 1,
             count: match id {
@@ -1922,7 +1951,7 @@ mod tests {
     #[test]
     fn all_catalog_entries_have_official_classification() {
         let cards = cards();
-        assert_eq!(cards.len(), 401);
+        assert_eq!(cards.len(), 411);
         for card in cards {
             assert_ne!(
                 effect(card.id),
@@ -1932,7 +1961,7 @@ mod tests {
             );
             assert_ne!(support_status(card.id), SupportStatus::UnknownCard);
         }
-        assert_eq!(effect(401), OfficialEffect::Unsupported);
+        assert_eq!(effect(411), OfficialEffect::Unsupported);
     }
 
     #[test]

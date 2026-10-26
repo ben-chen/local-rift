@@ -1,8 +1,10 @@
 mod ability_ui;
+mod board_layout;
 mod combat_ui;
 mod companion;
 mod deck_editor;
 mod deck_look_ui;
+mod deploy_ui;
 mod draw_look_ui;
 mod play_ui;
 mod predict_ui;
@@ -21,7 +23,7 @@ use local_rift::{
     payment::{POWER_DOMAINS, PaymentQuote, PowerPayment},
 };
 use macroquad::prelude::*;
-use scene::{SceneState, SceneUnit};
+use scene::{SceneGear, SceneState, SceneUnit};
 use std::{collections::HashSet, path::PathBuf};
 use ui::GOLD;
 use ui::*;
@@ -63,6 +65,22 @@ struct TokenPreview {
     rules: String,
 }
 const GOLD_RULES: &str = "Exhaust and kill this Gold to add 1 Any power. This resource ability can be used when you have priority, including during a pending payment, and cannot be reacted to.";
+
+fn scene_gear(game: &Game) -> Vec<SceneGear> {
+    let mut visible = Vec::new();
+    for (owner, player) in game.players.iter().enumerate() {
+        for gear in player.gear.iter().filter(|gear| gear.attached_to.is_none()) {
+            if let Some(lane) = game.gear_location(owner, gear.id) {
+                visible.push(SceneGear {
+                    id: gear.id,
+                    owner,
+                    lane,
+                });
+            }
+        }
+    }
+    visible
+}
 
 fn opponent_private_choice_copy(
     decision: Option<&Decision>,
@@ -110,6 +128,7 @@ enum DropZone {
     Base,
     Battlefield(usize),
     Unit(usize, u32),
+    Gear(usize, u32),
     Chain(u32),
 }
 
@@ -251,6 +270,7 @@ struct App {
     destination: Option<usize>,
     tray: Tray,
     gear_owner: usize,
+    field_gear_filter: Option<usize>,
     banish_view: bool,
     choices: Vec<usize>,
     predict_draft: Option<predict_ui::PredictDraft>,
@@ -423,6 +443,7 @@ impl App {
             destination: None,
             tray: Tray::Hand,
             gear_owner: 0,
+            field_gear_filter: None,
             banish_view: false,
             choices: Vec::new(),
             predict_draft: None,
@@ -516,6 +537,7 @@ impl App {
         self.damage_amounts = None;
         self.damage_editor = None;
         self.tray = Tray::Hand;
+        self.field_gear_filter = None;
         self.repeat_targets.clear();
         self.editing_repeat = false;
         self.group.clear();
@@ -1287,8 +1309,10 @@ impl App {
                 },
             ];
         }
+        let gear = scene_gear(&self.game);
         let state = SceneState {
             units,
+            gear,
             selected: match self.selection {
                 Some(Selection::Unit(id)) => Some(id),
                 _ => None,
@@ -1566,8 +1590,10 @@ impl App {
                 );
             }
         }
+        let (hit_gear, gear_control_clicked) = self.field_gear_rows(&hits)?;
         for (i, r) in hits.battlefields.iter().enumerate() {
-            if (!hit_unit || self.targeting_battlefield())
+            if !gear_control_clicked
+                && ((!hit_unit && !hit_gear) || self.targeting_battlefield())
                 && r.contains(mouse)
                 && mouse.y > r.y + 63.0 * self.ui.scale
                 && self.ui.enabled
@@ -1581,7 +1607,9 @@ impl App {
                 } else if let Some(Selection::Unit(id)) = self.selection {
                     self.move_selection(id, Some(i));
                 } else if let Some(Selection::Hand(index)) = self.selection {
-                    if self.game.catalog[self.game.players[0].hand[index]].kind == CardKind::Unit {
+                    if self.game.catalog[self.game.players[0].hand[index]].kind == CardKind::Unit
+                        || deploy_ui::is_deploy(self.game.players[0].hand[index])
+                    {
                         self.action(Action::PlayCardOptions {
                             hand_index: index,
                             lane: Some(i),
@@ -2176,6 +2204,10 @@ impl App {
             self.selection_panel()?;
             return Ok(());
         }
+        if matches!(decision, Decision::TriggerPayment { .. }) {
+            self.trigger_payment_panel()?;
+            return Ok(());
+        }
         if matches!(
             decision,
             Decision::TriggerTargets { .. } | Decision::LegendTargets { .. }
@@ -2510,6 +2542,7 @@ impl App {
             return Ok(());
         }
         let (title,body)=match &decision{
+            Decision::TriggerPayment { .. } => unreachable!(),
             Decision::BanishPlay{card_id,..}=>("Play from Banish",format!("Play {} now? Base energy is waived; power and extra costs still apply. Declining leaves it in Banish.",self.game.catalog[*card_id].name)),
             Decision::DrawLook{..}|Decision::RevealedCard{..}|Decision::DeckLookPlay{..}|Decision::RevealedDeck{..}|Decision::EmpowerPlayed{..}|Decision::PredictCards{..}|Decision::Payment{..}|Decision::ResourceConversion{..}|Decision::TriggerTargets{..}|Decision::LegendTargets{..}|Decision::CombatDamage{..}|Decision::TokenPlacement{..}|Decision::TokenPlay{..}|Decision::BattlefieldOrder{..}|Decision::RevivePlay{..}|Decision::PendingPlay{..}=>unreachable!(),
             Decision::TrashTarget{..}=>("Choose a trash target","Choose an eligible card below before this ability enters the chain. Opponents may respond before the chosen card is played.".into()),
@@ -2737,9 +2770,12 @@ impl App {
             self.current_targets_mut().truncate(index);
             return Ok(());
         }
-        let maximum = self
-            .selected_card_id()
-            .map_or(1, |id| local_rift::rules::play_target_spec(id).maximum);
+        let maximum = match self.selected_target_query(false)? {
+            Some((action, execution)) => {
+                self.game.play_target_view(&action, execution)?.spec.maximum
+            }
+            None => 1,
+        };
         if self.selected_card_id().is_some() && !self.card_target_candidate(target)? {
             self.notify("This target does not meet the card's requirements.");
             return Ok(());
@@ -2760,10 +2796,16 @@ impl App {
         Ok(())
     }
     fn targeting_battlefield(&self) -> bool {
-        self.selected_card_id().is_some_and(|id| {
-            local_rift::rules::play_target_spec(id).kind
-                == Some(local_rift::rules::PlayTargetKind::Battlefield)
-        })
+        self.current_targets()
+            .iter()
+            .any(|target| matches!(target, Target::Battlefield { .. }))
+            || self
+                .selected_target_query(false)
+                .ok()
+                .flatten()
+                .and_then(|(action, execution)| self.game.play_target_view(&action, execution).ok())
+                .and_then(|view| view.next_slot)
+                .is_some_and(|slot| slot.kind == local_rift::rules::PlayTargetKind::Battlefield)
     }
     fn card_target_candidate(&self, target: Target) -> Result<bool, String> {
         let Some((action, execution)) = self.selected_target_query(true)? else {
@@ -3177,7 +3219,28 @@ impl App {
                     self.inspect_printed_card(id);
                 }
             }
-            let gears = self.game.players[owner].gear.clone();
+            if let Some(lane) = self.field_gear_filter
+                && self.ui.button(
+                    Rect::new(936.0, 648.0, 103.0, 29.0),
+                    &format!("Field {} · all >", lane + 1),
+                    false,
+                    true,
+                )
+            {
+                self.field_gear_filter = None;
+                self.hand_scroll = 0;
+            }
+            let gears: Vec<_> = self.game.players[owner]
+                .gear
+                .iter()
+                .filter(|gear| {
+                    self.field_gear_filter.is_none_or(|lane| {
+                        gear.attached_to.is_none()
+                            && self.game.gear_location(owner, gear.id) == Some(lane)
+                    })
+                })
+                .cloned()
+                .collect();
             self.hand_scroll = self.hand_scroll.min(gears.len().saturating_sub(4));
             for (slot, gear) in gears.iter().skip(self.hand_scroll).take(4).enumerate() {
                 let r = self.tile(
@@ -3203,12 +3266,12 @@ impl App {
                         MUTED,
                     );
                 }
+                self.ui.rect(
+                    Rect::new(r.x + 3.0, r.y + 72.0, r.w - 6.0, 24.0),
+                    Color::new(0.025, 0.06, 0.08, 0.9),
+                );
                 self.ui.text(
-                    if gear.attached_to.is_some() {
-                        "ATTACHED"
-                    } else {
-                        "AT BASE"
-                    },
+                    &gear_location_label(&self.game, owner, gear.id),
                     r.x + 9.0,
                     r.y + 88.0,
                     9.0,
@@ -3236,7 +3299,7 @@ impl App {
                         } else if gear.attached_to.is_some() {
                             "Attached equipment"
                         } else {
-                            "In base"
+                            "Independent gear"
                         },
                         r.x + 9.0,
                         r.y + 165.0,
@@ -3412,8 +3475,10 @@ impl App {
         Ok(())
     }
     fn tray_scroll(&mut self, len: usize, visible: usize) {
-        self.ui
-            .text(&format!("{} cards", len), 985.0, 671.0, 10.0, MUTED);
+        if self.tray != Tray::Loadout || self.field_gear_filter.is_none() {
+            self.ui
+                .text(&format!("{} cards", len), 985.0, 671.0, 10.0, MUTED);
+        }
         if self.ui.button(
             Rect::new(1047.0, 650.0, 34.0, 28.0),
             "<",
@@ -3466,7 +3531,9 @@ impl App {
         }
         if matches!(
             decision,
-            Decision::TriggerTargets { .. } | Decision::LegendTargets { .. }
+            Decision::TriggerTargets { .. }
+                | Decision::LegendTargets { .. }
+                | Decision::TriggerPayment { .. }
         ) {
             if self.tray == Tray::Loadout {
                 self.other_tray()?;
@@ -4295,6 +4362,16 @@ impl App {
                         " · PENDING"
                     } else if selected {
                         " · TARGET"
+                    } else if self.in_match
+                        && self.game.battlefield_owner[lane].is_none()
+                        && self
+                            .game
+                            .players
+                            .iter()
+                            .flat_map(|player| &player.gear)
+                            .any(|gear| gear.attached_to.is_none() && gear.lane == Some(lane))
+                    {
+                        " · UNCONTROLLED"
                     } else {
                         ""
                     }
@@ -4352,9 +4429,9 @@ impl App {
             }
             for owner in 0..2 {
                 let count = self.game.lane_count(owner, lane);
-                if count > 5 {
+                if count > hits.unit_capacity[lane] {
                     self.ui.text(
-                        &format!("+{} in Board", count - 5),
+                        &format!("+{} in Board", count - hits.unit_capacity[lane]),
                         r.x + 5.0,
                         r.y + if owner == 1 { 140.0 } else { 222.0 },
                         8.0,
@@ -4424,6 +4501,148 @@ impl App {
                 TEAL,
             );
         }
+    }
+    fn field_gear_rows(&mut self, hits: &scene::SceneHits) -> Result<(bool, bool), String> {
+        let mut hovered = false;
+        let mut control_clicked = false;
+        for (object, physical) in &hits.gear {
+            let Some(gear) = self.game.players[object.owner]
+                .gear
+                .iter()
+                .find(|gear| gear.id == object.id)
+                .cloned()
+            else {
+                continue;
+            };
+            let r = self.ui.logical(*physical);
+            let count = self.game.players[object.owner]
+                .gear
+                .iter()
+                .filter(|gear| {
+                    gear.attached_to.is_none()
+                        && self.game.gear_location(object.owner, gear.id) == Some(object.lane)
+                })
+                .count();
+            let target = Target::Gear {
+                player: object.owner,
+                gear_id: object.id,
+            };
+            let selected = self.selection == Some(Selection::Gear(object.id));
+            let targeted =
+                self.current_targets().contains(&target) || self.ability_targets.contains(&target);
+            let candidate = self.game.priority() == 0
+                && (self.ability_target_candidate(target)
+                    || self.card_target_candidate(target)?
+                    || (self.game.trigger_target_bounds().is_some()
+                        && self.game.valid_trigger_target(target, &self.targets)?));
+            let color = if object.owner == 0 { TEAL } else { GOLD };
+            self.ui
+                .line(vec2(r.x - 6.0, r.y), vec2(r.x - 6.0, r.y + r.h), 1.0, LINE);
+            self.ui.rect(r, PANEL);
+            if let Some(tex) = self.art.get(gear.card_id).and_then(Option::as_ref) {
+                let art = Rect::new(r.x + 2.0, r.y + 2.0, r.w - 4.0, r.h - 24.0);
+                let bounds = Rect::new(
+                    tex.width() * 0.08,
+                    tex.height() * 0.12,
+                    tex.width() * 0.84,
+                    tex.height() * 0.43,
+                );
+                let scale = (bounds.w / art.w).min(bounds.h / art.h);
+                self.ui.image(
+                    tex,
+                    art,
+                    Some(Rect::new(
+                        bounds.x + (bounds.w - art.w * scale) * 0.5,
+                        bounds.y + (bounds.h - art.h * scale) * 0.5,
+                        art.w * scale,
+                        art.h * scale,
+                    )),
+                    WHITE,
+                );
+            }
+            self.ui
+                .rect(Rect::new(r.x + 3.0, r.y + 4.0, 38.0, 16.0), BG);
+            self.ui.bold("GEAR", r.x + 7.0, r.y + 16.0, 9.0, color);
+            self.ui.ellipsis(
+                self.game.gear_name(&gear),
+                r.x + 4.0,
+                r.y + r.h - 10.0,
+                r.w - 8.0,
+                10.0,
+                TEXT,
+            );
+            self.ui.rect(
+                Rect::new(r.x + 3.0, r.y + r.h - 6.0, r.w - 6.0, 3.0),
+                if gear.ready { color } else { LINE },
+            );
+            if !gear.ready {
+                self.ui
+                    .rect(Rect::new(r.x + 3.0, r.y + 39.0, r.w - 6.0, 12.0), BG);
+                self.ui.text("EXHAUSTED", r.x + 6.0, r.y + 48.0, 7.0, GOLD);
+            }
+            self.ui.border(
+                r,
+                if targeted || selected {
+                    GOLD
+                } else if candidate {
+                    TEAL
+                } else {
+                    color
+                },
+            );
+            let count_rect = Rect::new(r.x + r.w - 44.0, r.y + 3.0, 41.0, 22.0);
+            let count_clicked = self
+                .ui
+                .button(count_rect, &format!("{count} >"), false, true);
+            if count_clicked {
+                control_clicked = true;
+                if let Some(draft) = &mut self.play_draft {
+                    draft.open = false;
+                }
+                self.tray = Tray::Loadout;
+                self.gear_owner = object.owner;
+                self.field_gear_filter = Some(object.lane);
+                self.hand_scroll = 0;
+            }
+            self.drop_zones
+                .push((DropZone::Gear(object.owner, object.id), r));
+            if self.ui.hover(r) {
+                hovered = true;
+                self.hover_candidate = Some(gear.card_id);
+                self.hover_object_candidate = Some((object.owner, object.id));
+                if self.ui.secondary_pressed() {
+                    self.hover_object = Some((object.owner, object.id));
+                    self.inspect = Some(gear.card_id);
+                }
+            }
+            if self.ui.clicked(r)
+                && !count_clicked
+                && !self.targeting_battlefield()
+                && self.game.priority() == 0
+                && self.game.phase == Phase::Playing
+            {
+                if (self.targeting_selection()
+                    && !matches!(self.selection, Some(Selection::Gear(_))))
+                    || matches!(
+                        self.game.decision,
+                        Some(Decision::TriggerTargets { .. } | Decision::LegendTargets { .. })
+                    )
+                {
+                    self.toggle_target(target);
+                    control_clicked = true;
+                } else if object.owner == 0
+                    && (self.game.decision.is_none() || self.game.resource_payment_pending())
+                {
+                    self.remember_resource_draft();
+                    self.selection = Some(Selection::Gear(object.id));
+                    if !self.game.resource_payment_pending() {
+                        self.targets.clear();
+                        self.choices.clear();
+                    }
+                }
+            }
+        }
+        Ok((hovered, control_clicked))
     }
     fn gear_badges(&mut self, r: Rect, owner: usize, unit_id: u32) -> bool {
         let gears: Vec<_> = self.game.players[owner]
@@ -4792,6 +5011,7 @@ impl App {
                 .iter()
                 .find(|unit| unit.id == id)
                 .and_then(|unit| unit.lane),
+            DropZone::Gear(owner, id) => self.game.gear_location(owner, id),
             DropZone::Chain(_) => None,
         };
         let (action, confirm) = match source {
@@ -4822,6 +5042,26 @@ impl App {
                 let card = self.game.catalog[*card_id];
                 let effect = local_rift::rules::effect(*card_id);
                 let spec = local_rift::rules::play_target_spec(*card_id);
+                let deploy = deploy_ui::is_deploy(*card_id);
+                let query = Action::PlayCardOptions {
+                    hand_index: *index,
+                    lane,
+                    targets: vec![],
+                    repeat_targets: vec![],
+                    repeat: false,
+                    accelerate: false,
+                    bonus: false,
+                };
+                if self
+                    .game
+                    .play_choices(&query)
+                    .is_ok_and(|view| !view.modes.is_empty())
+                {
+                    return Err("Choose this spell's mode and targets in Play choices.".into());
+                }
+                if deploy && lane.is_none() {
+                    return Err("Deploy gear must enter a battlefield. Choose either field.".into());
+                }
                 let maximum = spec.maximum;
                 let field_target =
                     spec.kind == Some(local_rift::rules::PlayTargetKind::Battlefield);
@@ -4840,9 +5080,15 @@ impl App {
                         return Err("Choose a battlefield. Your base is not a battlefield.".into());
                     }
                     DropZone::Unit(player, unit_id)
-                        if maximum > 0 || card.kind == CardKind::Gear =>
+                        if maximum > 0 || (card.kind == CardKind::Gear && !deploy) =>
                     {
                         let target = Target::Unit { player, unit_id };
+                        if !targets.contains(&target) {
+                            targets.push(target);
+                        }
+                    }
+                    DropZone::Gear(player, gear_id) if maximum > 0 => {
+                        let target = Target::Gear { player, gear_id };
                         if !targets.contains(&target) {
                             targets.push(target);
                         }
@@ -4861,7 +5107,7 @@ impl App {
                 if matches!(effect, E::Counter(_)) && !matches!(zone, DropZone::Chain(_)) {
                     return Err("Drop a counterspell on the pending spell above the board.".into());
                 }
-                let destination = if card.kind == CardKind::Unit {
+                let destination = if card.kind == CardKind::Unit || deploy {
                     lane
                 } else if movement {
                     if matches!(zone, DropZone::Battlefield(_) | DropZone::Base) {
@@ -4977,7 +5223,7 @@ impl App {
                 );
                 self.ui
                     .border(*r, if r.contains(mouse) { GOLD } else { TEAL });
-                if !matches!(zone, DropZone::Unit(..)) {
+                if !matches!(zone, DropZone::Unit(..) | DropZone::Gear(..)) {
                     self.ui.pill(
                         r.x + 8.0,
                         r.y + r.h - 22.0,
@@ -5286,6 +5532,12 @@ impl App {
         }
         if let Action::ResolveConversion { amount } = action {
             return format!("Convert {amount} power into energy");
+        }
+        if matches!(action, Action::ResolveTriggerPayment { .. })
+            && let Some(context) = self.game.trigger_payment_context()
+            && let Some(source) = deploy_ui::trigger_payment_source(&self.game, &context)
+        {
+            return source;
         }
         let card_id = match action {
             Action::PlayCard { hand_index, .. }
@@ -6376,11 +6628,12 @@ impl App {
                     let affordable = payable_now || begin_payment;
                     let label = if selecting_revive {
                         "Choose this unit to revive"
-                    } else if card.kind == CardKind::Unit {
+                    } else if card.kind == CardKind::Unit || deploy_ui::is_deploy(card_id) {
                         match self.destination {
-                            Some(0) => "Deploy to field 1",
-                            Some(_) => "Deploy to field 2",
-                            None => "Deploy to base",
+                            Some(0) => "Play at field 1",
+                            Some(_) => "Play at field 2",
+                            None if deploy_ui::is_deploy(card_id) => "Choose a battlefield below",
+                            None => "Play at base",
                         }
                     } else {
                         if self.targets.is_empty() {
@@ -6406,7 +6659,10 @@ impl App {
                         }
                     }
                     let mut field_actions = Vec::new();
-                    if card.kind == CardKind::Unit && !selecting_revive && !fixed_location {
+                    if (card.kind == CardKind::Unit || deploy_ui::is_deploy(card_id))
+                        && !selecting_revive
+                        && !fixed_location
+                    {
                         for lane in 0..2 {
                             let action = if pending.is_some() {
                                 Action::FinalizePendingPlay {
@@ -6884,20 +7140,31 @@ impl App {
                         self.remember_resource_draft();
                     }
                     self.tray = *tray;
+                    self.field_gear_filter = None;
                     if *tray == Tray::Trash {
                         self.banish_view = false;
                     }
                     self.hand_scroll = 0;
                     let selecting_play_target = matches!(tray, Tray::Loadout | Tray::Board)
-                        && self.selected_card_id().is_some_and(|card_id| {
-                            matches!(
-                                local_rift::rules::play_target_spec(card_id).kind,
-                                Some(
-                                    local_rift::rules::PlayTargetKind::Gear
-                                        | local_rift::rules::PlayTargetKind::UnitOrGear
-                                )
-                            )
-                        });
+                        && self
+                            .selected_target_query(false)
+                            .ok()
+                            .flatten()
+                            .and_then(|(action, execution)| {
+                                self.game.play_target_view(&action, execution).ok()
+                            })
+                            .is_some_and(|view| {
+                                view.next_slot.is_some_and(|slot| {
+                                    matches!(
+                                        slot.kind,
+                                        local_rift::rules::PlayTargetKind::Gear
+                                            | local_rift::rules::PlayTargetKind::UnitOrGear
+                                    )
+                                }) || view
+                                    .targets
+                                    .iter()
+                                    .any(|target| matches!(target, Target::Gear { .. }))
+                            });
                     if !selecting_play_target
                         && (!matches!(self.selection, Some(Selection::Ability(..)))
                             && (*tray == Tray::Board
@@ -7359,7 +7626,7 @@ impl App {
         for (i,(title,body)) in [
             ("Build your opening","Each player draws 4 cards. Replace up to 2 once. Your chosen champion waits outside your deck, ready to deploy when you can pay its cost."),
             ("Let runes do the work","Channel 2 runes each turn (the second player gets 3 on their first turn). Exhaust runes for energy; recycle matching-domain runes for power. Payment is automatic."),
-            ("Deploy, then advance","Units enter exhausted at your base or a controlled battlefield. They ready next turn. Select ready units, then move together; ordinary moves exhaust them."),
+            ("Play units, then advance","Units enter exhausted at your base or a controlled battlefield. They ready next turn. Select ready units, then move together; ordinary moves exhaust them."),
             ("Take a battlefield","Move ready units together into an unowned or enemy battlefield to open a showdown. Both players can respond. Two passes resolve it; combat damage is simultaneous."),
             ("Hold what you conquer","Conquering earns 1 point. Holding at the start of your turn earns 1 point. Each battlefield can score for you only once during a turn. First to 8 wins."),
             ("Earn the final point","Holding can win immediately. To win by conquering, you must have scored both battlefields this turn. Otherwise your conquest draws a card instead.")
@@ -7774,7 +8041,13 @@ fn target_label(game: &Game, target: Target) -> String {
             .players
             .get(player)
             .and_then(|state| state.gear.iter().find(|gear| gear.id == gear_id))
-            .map(|gear| game.gear_name(gear).to_owned())
+            .map(|gear| {
+                if deploy_ui::is_deploy(gear.card_id) {
+                    format!("{} #{}", game.gear_name(gear), gear.id)
+                } else {
+                    game.gear_name(gear).to_owned()
+                }
+            })
             .unwrap_or_else(|| "Gear left play".into()),
         Target::Spell { chain_id } => game
             .chain
@@ -7844,6 +8117,12 @@ fn entry_ready_hint(game: &Game, owner: usize, card_id: usize) -> Option<String>
 
 fn card_brief(game: &Game, id: usize) -> String {
     use local_rift::rules::OfficialEffect::*;
+    if deploy_ui::is_deploy(id) {
+        return "Gear at a battlefield · does not control it".into();
+    }
+    if id == 410 {
+        return "Choose: move Deploy gear, or inspect five for Gear".into();
+    }
     match local_rift::rules::effect(id) {
         KillGear { controller_draw: 0 } => "Kill a gear".into(),
         KillGear { controller_draw } => {
@@ -8012,6 +8291,20 @@ fn live_object_description(
     }
 }
 
+fn gear_location_label(game: &Game, owner: usize, gear_id: u32) -> String {
+    let attached = game
+        .players
+        .get(owner)
+        .and_then(|player| player.gear.iter().find(|gear| gear.id == gear_id))
+        .is_some_and(|gear| gear.attached_to.is_some());
+    match (attached, game.gear_location(owner, gear_id)) {
+        (true, Some(lane)) => format!("ATTACHED · FIELD {}", lane + 1),
+        (true, None) => "ATTACHED · BASE".into(),
+        (false, Some(lane)) => format!("FIELD {} · GEAR", lane + 1),
+        (false, None) => "AT BASE".into(),
+    }
+}
+
 fn live_gear_description(game: &Game, owner: usize, gear_id: u32) -> Option<String> {
     let gear = game
         .players
@@ -8021,7 +8314,7 @@ fn live_gear_description(game: &Game, owner: usize, gear_id: u32) -> Option<Stri
         .find(|gear| gear.id == gear_id)?;
     let mut lines = vec![
         format!(
-            "ON BOARD · {} · {}",
+            "ON BOARD · {} · {} · gear #{gear_id}",
             if owner == 0 {
                 "Your gear"
             } else {
@@ -8077,7 +8370,57 @@ fn live_gear_description(game: &Game, owner: usize, gear_id: u32) -> Option<Stri
             lines.push(passive_description(game, contribution));
         }
     } else {
-        lines.push("Unattached in base.".into());
+        lines.push(match game.gear_location(owner, gear_id) {
+            Some(lane) => format!(
+                "Independent gear at battlefield {} · {}.",
+                lane + 1,
+                local_rift::battlefields::battlefield(game.battlefields[lane]).name
+            ),
+            None => "Unattached in base.".into(),
+        });
+        for (recipient_owner, player) in game.players.iter().enumerate() {
+            for unit in &player.units {
+                let contributions =
+                    match game.passive_contributions(local_rift::empower::BoardObject::Unit {
+                        player: recipient_owner,
+                        unit_id: unit.id,
+                    }) {
+                        Ok(value) => value,
+                        Err(error) => {
+                            return Some(format!("Cannot calculate local gear effects: {error}"));
+                        }
+                    };
+                for contribution in contributions.iter().filter(|contribution| {
+                    contribution.source
+                        == local_rift::empower::BoardObject::Gear {
+                            player: owner,
+                            gear_id,
+                        }
+                }) {
+                    lines.push(format!(
+                        "{} #{} · {}",
+                        game.unit_name(unit),
+                        unit.id,
+                        passive_description(game, contribution)
+                    ));
+                }
+            }
+        }
+    }
+    if let Some(status) = game.gear_deploy_status(owner, gear_id)
+        && status.characteristic
+    {
+        lines.push("DEPLOY · This gear is played to a battlefield, including an enemy field. Gear does not control or contest a battlefield.".into());
+        lines.push(if status.printed_abilities_active {
+            "Printed gear abilities are active at its current location. Local effects follow this physical copy when it moves."
+        } else {
+            "Printed gear abilities are inactive while attached. The Deploy characteristic remains: Command may target this gear, but it does not move while attached."
+        }.into());
+        lines.push(if status.opponent_hold_trigger_active {
+            "OPPONENT HOLD · When the opponent holds this field, this gear triggers its own destruction. Players can respond before the ability resolves. An opponent's conquest does not trigger this destruction."
+        } else {
+            "The printed opponent-Hold destruction trigger is inactive while attached. A trigger already on the chain remains pending."
+        }.into());
     }
     if let Some(status) = game.gear_temporary_status(owner, gear_id) {
         if status.active {
@@ -8191,6 +8534,9 @@ fn passive_description(
                 SourceCondition::OtherFriendlyHere => {
                     " · while another friendly unit is at its location".into()
                 }
+                SourceCondition::FriendlyDeployGearHere => {
+                    " · while a friendly Deploy gear is at this battlefield (one or more gives the same bonus)".into()
+                }
                 SourceCondition::ControllerRunesAtLeast(threshold) => format!(
                     " · {threshold}+ runes in play (currently {}; ready and exhausted both count)",
                     controller
@@ -8214,6 +8560,7 @@ fn passive_description(
                 Recipients::OtherFriendlyUnitsHere => {
                     " · other friendly units at the source's location"
                 }
+                Recipients::FriendlyUnitsHere => " · friendly units at the source's battlefield",
                 Recipients::FriendlyTokenUnits => " · friendly unit tokens, at any location",
                 Recipients::OtherFriendlyUnits => " · other friendly units, at any location",
                 Recipients::FriendlyUnitsWithTag(tag) => return format!("{condition} · friendly {tag} units, at any location"),
@@ -8592,6 +8939,7 @@ mod live_preview_tests {
     }
     fn attached(id: u32, card_id: usize, unit_id: u32) -> GearState {
         GearState {
+            lane: None,
             id,
             card_id,
             attached_to: Some(unit_id),
@@ -9098,6 +9446,7 @@ mod live_preview_tests {
                 && after.contains("ACTIVE · Kinkou")
         );
         game.players[0].gear.push(GearState {
+            lane: None,
             id: 200,
             card_id: 281,
             attached_to: None,
@@ -9126,6 +9475,7 @@ mod live_preview_tests {
         let mut game = Game::new(3, 2, 7, Difficulty::Easy);
         for id in [200, 201] {
             game.players[1].gear.push(GearState {
+                lane: None,
                 id,
                 card_id: 250,
                 attached_to: None,
@@ -9189,6 +9539,7 @@ mod live_preview_tests {
         game.players[0].units[1].buff = 1;
         game.players[0].units[1].ready = false;
         game.players[0].gear.push(GearState {
+            lane: None,
             id: 200,
             card_id: 3,
             ready: true,
@@ -9453,8 +9804,9 @@ async fn main() {
         app.inspect = Some(id);
     }
     let preview_hover = args.iter().any(|arg| arg == "--hover-preview");
-    let smoke_test = args.iter().any(|a| a == "--ui-smoke");
-    let mut frames = 0;
+    let focused_deploy_smoke = args.iter().any(|a| a == "--ui-smoke-c24");
+    let smoke_test = focused_deploy_smoke || args.iter().any(|a| a == "--ui-smoke");
+    let mut frames = if focused_deploy_smoke { 1065 } else { 0 };
     loop {
         if smoke_test {
             app.next_ai = f64::INFINITY;

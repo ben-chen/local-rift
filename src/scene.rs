@@ -15,9 +15,17 @@ pub struct SceneUnit {
     pub accent: [u8; 3],
 }
 
+#[derive(Clone, Copy, Debug)]
+pub struct SceneGear {
+    pub id: u32,
+    pub owner: usize,
+    pub lane: usize,
+}
+
 #[derive(Clone, Debug, Default)]
 pub struct SceneState {
     pub units: Vec<SceneUnit>,
+    pub gear: Vec<SceneGear>,
     pub selected: Option<u32>,
     pub owners: [Option<usize>; 2],
     pub time: f32,
@@ -28,6 +36,8 @@ pub struct SceneHits {
     pub battlefields: [Rect; 2],
     pub bases: [Rect; 2],
     pub units: Vec<(u32, Rect)>,
+    pub gear: Vec<(SceneGear, Rect)>,
+    pub unit_capacity: [usize; 2],
 }
 
 thread_local! {
@@ -709,18 +719,15 @@ pub fn draw_scene(rect: Rect, state: &SceneState) -> SceneHits {
             r.h * factor,
         )
     };
-    let fields = [
-        Rect::new(245.0, 258.0, 435.0, 232.0),
-        Rect::new(693.0, 258.0, 435.0, 232.0),
-    ];
-    let bases = [
-        Rect::new(245.0, 494.0, 883.0, 76.0),
-        Rect::new(245.0, 178.0, 883.0, 76.0),
-    ];
+    let fields = crate::board_layout::FIELDS;
+    let bases = crate::board_layout::BASES;
+    let has_gear = [0, 1].map(|lane| state.gear.iter().any(|gear| gear.lane == lane));
     let mut hits = SceneHits {
         battlefields: fields.map(screen),
         bases: bases.map(screen),
         units: Vec::new(),
+        gear: Vec::new(),
+        unit_capacity: has_gear.map(crate::board_layout::unit_capacity),
     };
     for (owner, base) in bases.iter().enumerate() {
         for location in 0..3 {
@@ -729,7 +736,11 @@ pub fn draw_scene(rect: Rect, state: &SceneState) -> SceneHits {
                 .iter()
                 .filter(|unit| unit.owner == owner && unit.location == location)
                 .collect();
-            let max = if location == 0 { 10 } else { 5 };
+            let max = if location == 0 {
+                10
+            } else {
+                hits.unit_capacity[location - 1]
+            };
             let count = group.len().min(max);
             for (index, unit) in group.iter().take(max).enumerate() {
                 let r = if location == 0 {
@@ -741,19 +752,26 @@ pub fn draw_scene(rect: Rect, state: &SceneState) -> SceneHits {
                         72.0,
                     )
                 } else {
-                    let field = fields[location - 1];
-                    let width = (384.0 / count.max(1) as f32 - 6.0).min(132.0);
-                    Rect::new(
-                        field.x
-                            + 45.0
-                            + (384.0 - count as f32 * (width + 6.0)) * 0.5
-                            + index as f32 * (width + 6.0),
-                        field.y + if owner == 1 { 66.0 } else { 150.0 },
-                        width,
-                        76.0,
-                    )
+                    crate::board_layout::unit_rects(
+                        location - 1,
+                        owner,
+                        group.len(),
+                        has_gear[location - 1],
+                    )[index]
                 };
                 hits.units.push((unit.id, screen(r)));
+            }
+        }
+    }
+    for lane in 0..2 {
+        for owner in 0..2 {
+            if let Some(gear) = state
+                .gear
+                .iter()
+                .find(|gear| gear.lane == lane && gear.owner == owner)
+            {
+                hits.gear
+                    .push((*gear, screen(crate::board_layout::gear_rect(lane, owner))));
             }
         }
     }

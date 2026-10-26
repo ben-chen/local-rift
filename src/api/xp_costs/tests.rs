@@ -53,6 +53,7 @@ fn gear(session: &mut Session, id: u32, card_id: usize) -> AbilitySource {
         id,
         card_id,
         attached_to: None,
+        lane: None,
         ready: true,
         temporary: false,
         token: false,
