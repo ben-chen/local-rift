@@ -1,0 +1,92 @@
+{
+  "status": "admitted",
+  "records": [
+    {
+      "runtime_id": 427,
+      "official_id": "rad-098-167",
+      "raw_printing": {
+        "official_id": "rad-098-167",
+        "public_code": "RAD-098/167",
+        "name": "Siren's Song",
+        "set": "RAD",
+        "collector_number": 98,
+        "types": [
+          "spell"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "spell"
+        ],
+        "accessibility_types": [
+          "spell"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "chaos"
+        ],
+        "energy": 2,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "rules_html": "<p>[Reaction] (Play any time, even before spells and abilities resolve.)<br />Move an enemy unit that moved this turn.</p>",
+        "rules_text": "[Reaction] (Play any time, even before spells and abilities resolve.)\nMove an enemy unit that moved this turn.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [],
+        "rarity": "common",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/742967b3e85f51b242fc04b8db4c4e3cd7b88672-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Spell: Siren's Song. [Reaction] (Play any time, even before spells and abilities resolve.)\nMove an enemy unit that moved this turn.",
+        "illustrators": [
+          "Kudos Productions"
+        ]
+      },
+      "raw_printing_sha256": "85bbf9a6adec87030e5c7a875b718b3704b4c855e83e463a6b62672773f25b08",
+      "effective": {
+        "types": [
+          "spell"
+        ],
+        "super_types": [],
+        "domains": [
+          "chaos"
+        ],
+        "energy": 2,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>[Reaction] (Play any time, even before spells and abilities resolve.)<br />Move an enemy unit that moved this turn.</p>",
+        "rules_text": "[Reaction] (Play any time, even before spells and abilities resolve.)\nMove an enemy unit that moved this turn.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "resolution_ids": [],
+      "printing_cohort": [
+        "rad-098-167"
+      ],
+      "errata": [],
+      "original_image": {
+        "path": "assets/data/card_admissions/irelia_siren/rad-098-167.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/742967b3e85f51b242fc04b8db4c4e3cd7b88672-744x1039.png?accountingTag=RB",
+        "sha256": "5d5cc902611d98bf59388e2f2b4785745466159330e3c16f77bdc456c2db8b15"
+      },
+      "runtime_image": {
+        "path": "assets/art/card_427.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/742967b3e85f51b242fc04b8db4c4e3cd7b88672-744x1039.png?w=280&q=85&fm=png",
+        "sha256": "24f9eaefa0203b71084e586546617c31f1f1a4d617a6456929055ad76cf4107c"
+      },
+      "visual_review": {
+        "actual_full_face_viewed": true,
+        "reviewer": "root",
+        "reviewed_on": "2026-11-11",
+        "original_image_sha256": "5d5cc902611d98bf59388e2f2b4785745466159330e3c16f77bdc456c2db8b15"
+      }
+    }
+  ],
+  "preserved_runtime_prefix": {
+    "cards_sha256": "5ad4768ab368261356a7851a4d03487af3eb318b62c7d2c5a9764d16de9f8eb9",
+    "presets_sha256": "55f81fe597de35b0c4dee12d87ad36ae72463cbfb5ae576d00f87104cd5914d5",
+    "card_count": 427,
+    "preset_count": 5
+  }
+}

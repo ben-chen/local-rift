@@ -11026,6 +11026,29 @@
         "Show Off"
       ],
       "tags": []
+    },
+    {
+      "id": 427,
+      "name": "Siren's Song",
+      "official_id": "rad-098-167",
+      "energy": 2,
+      "power": 0,
+      "might": 0,
+      "domains": [
+        "Chaos"
+      ],
+      "kind": "Spell",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/742967b3e85f51b242fc04b8db4c4e3cd7b88672-744x1039.png?w=280&q=85&fm=png",
+      "source_url": "https://riftbound.leagueoflegends.com/en-us/card-gallery/",
+      "official_text": "[Reaction] (Play any time, even before spells and abilities resolve.)\nMove an enemy unit that moved this turn.",
+      "official_text_html": "<p>[Reaction] (Play any time, even before spells and abilities resolve.)<br />Move an enemy unit that moved this turn.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Reaction"
+      ],
+      "tags": []
     }
   ],
   "official_text_note": "Official card/legend rules text from the Riot Card Gallery, retrieved 2026-10-24 and corrected by cited errata. Resource icon tokens are expanded to readable bracketed names. Raw card and equipment HTML is preserved separately. Official text does not establish full implementation fidelity."

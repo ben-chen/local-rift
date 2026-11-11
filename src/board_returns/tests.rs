@@ -431,6 +431,7 @@ fn repeated_factory_recall_returns_a_physical_card_only_once() {
             repeats: vec![RepeatSelection {
                 option_id: repeat,
                 choices: ExecutionChoices {
+                    destination: None,
                     targets: vec![target],
                     mode: None,
                 },

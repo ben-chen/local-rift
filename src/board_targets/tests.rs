@@ -216,6 +216,7 @@ fn detonate_repeat_rechecks_exact_target_and_draws_only_once() {
             repeats: vec![RepeatSelection {
                 option_id: repeat,
                 choices: ExecutionChoices {
+                    destination: None,
                     targets: vec![target],
                     mode: None,
                 },

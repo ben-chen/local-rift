@@ -1677,7 +1677,7 @@ impl App {
                             bonus: self.options.bonus,
                         });
                     } else {
-                        self.destination = Some(i);
+                        self.set_selected_destination(Some(i));
                         self.notify(format!(
                             "Destination: battlefield {}. Choose targets, then Play.",
                             i + 1
@@ -1687,7 +1687,7 @@ impl App {
                     self.selection,
                     Some(Selection::Trash(_) | Selection::Pending(_))
                 ) {
-                    self.destination = Some(i);
+                    self.set_selected_destination(Some(i));
                     self.notify(format!(
                         "Destination: field {}. Choose targets, then Play.",
                         i + 1
@@ -8434,6 +8434,9 @@ fn card_brief(game: &Game, id: usize) -> String {
     if deploy_ui::is_deploy(id) {
         return "Gear at a battlefield · does not control it".into();
     }
+    if id == 427 {
+        return "Move an enemy that moved this turn".into();
+    }
     if id == 410 {
         return "Choose: move Deploy gear, or inspect five for Gear".into();
     }
@@ -9039,6 +9042,9 @@ fn live_unit_description(game: &Game, owner: usize, unit_id: u32) -> Option<Stri
     }
     if unit.stunned {
         lines.push("Stunned: contributes no might to combat damage this turn; still needs lethal damage equal to its full might.".into());
+    }
+    if game.unit_moved_this_turn(owner, unit_id) {
+        lines.push("Moved this turn: this same unit changed locations through a Move. It can be chosen by an enemy Siren's Song; playing or recalling a unit does not count as moving.".into());
     }
     if game.movement_prevented(1 - owner, owner, unit_id) {
         lines.push("Cannot move this turn, including through either player's spells or abilities. Readying does not remove this restriction. Returning to hand or banishing is not movement.".into());

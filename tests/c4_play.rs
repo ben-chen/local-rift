@@ -114,6 +114,7 @@ fn repeated(g: &Game, action: Action, targets: Vec<Target>) -> Action {
                 .map(|r| RepeatSelection {
                     option_id: r.id,
                     choices: ExecutionChoices {
+                        destination: None,
                         targets: targets.clone(),
                         mode: None,
                     },
@@ -355,6 +356,7 @@ fn hidden_independent_repeats_reject_targets_outside_original_field() {
             repeats: vec![RepeatSelection {
                 option_id: r,
                 choices: ExecutionChoices {
+                    destination: None,
                     targets: vec![target],
                     mode: None,
                 },

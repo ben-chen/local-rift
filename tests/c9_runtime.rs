@@ -172,6 +172,7 @@ fn repeated(g: &mut Game, card: usize, base: Vec<Target>, extra: Vec<Vec<Target>
         .map(|(option, targets)| RepeatSelection {
             option_id: option.id,
             choices: ExecutionChoices {
+                destination: None,
                 targets,
                 mode: None,
             },

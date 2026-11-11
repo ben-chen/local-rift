@@ -181,6 +181,7 @@ fn all_repeats(g: &Game, action: Action, targets: Vec<Target>) -> Action {
                 .map(|o| RepeatSelection {
                     option_id: o.id,
                     choices: ExecutionChoices {
+                        destination: None,
                         targets: targets.clone(),
                         mode: None,
                     },

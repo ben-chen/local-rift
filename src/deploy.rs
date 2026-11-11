@@ -133,12 +133,14 @@ impl Game {
 
     pub(super) fn command_execution_options(&self, player: usize) -> Vec<ExecutionChoices> {
         let mut executions = vec![ExecutionChoices {
+            destination: None,
             mode: Some(1),
             targets: vec![],
         }];
         for gear in self.command_attack_candidates(player, Some(0), &[]) {
             for field in self.command_attack_candidates(player, Some(0), &[gear]) {
                 executions.push(ExecutionChoices {
+                    destination: None,
                     mode: Some(0),
                     targets: vec![gear, field],
                 });

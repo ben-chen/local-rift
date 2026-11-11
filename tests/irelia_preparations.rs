@@ -348,6 +348,7 @@ fn repeated_instructions_share_show_off_but_choose_their_own_runes() {
         choices.repeats.push(RepeatSelection {
             option_id: option,
             choices: ExecutionChoices {
+                destination: None,
                 targets: vec![second, r[1], r[2]],
                 mode: None,
             },

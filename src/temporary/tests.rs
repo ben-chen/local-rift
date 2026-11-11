@@ -308,6 +308,7 @@ fn hidden_smoke_repeat_keeps_each_original_slot_after_the_first_target_leaves() 
             repeats: vec![RepeatSelection {
                 option_id: options.repeats[0].id,
                 choices: ExecutionChoices {
+                    destination: None,
                     targets: vec![c, d],
                     mode: None,
                 },

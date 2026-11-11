@@ -214,13 +214,30 @@ Ask `play_choices` for the intended action, with its initial targets already sel
 
 Wrap the action in `with_play_choices`. Its `choices` accepts:
 
-- `repeats`: an ordered array of `{option_id, choices:{targets, mode}}`. Each option can be paid at most once. Targets are chosen separately for each execution; currently `mode` must be absent or `null`.
+- `repeats`: an ordered array of `{option_id, choices:{targets, mode, destination}}`. Each option can be paid at most once. Targets, supported modes and Move destinations are chosen separately for each execution. Omit `mode` or use `null` for non-modal spells; discover supported modes in `play_choices`.
 - `accelerate` and `bonus`: optional booleans, defaulting to false. The descriptor's label identifies the relevant printed additional cost, including Nami's optional payment.
 - `cost_order`: an ordered array of `{modifier_id, use_power, power_allocations}`. `use_power` selects Power for a modifier that explicitly allows Energy or Power; otherwise it must be false. `power_allocations` contains `{component_id, amount}` entries to distribute that modifier's usable Power reduction across eligible components.
 
 Missing arrays are empty. Declining Repeat still consumes a next-spell grant when the spell's play begins. Do not combine canonical Repeat selections with the legacy `repeat:true` adapter. `begin_payment` can contain a `with_play_choices` action so the selected costs and grants remain fixed while resources are generated. `with_power_payment` around the chosen action selects the actual payment sources; this is separate from choosing which cost a discount reduces.
 
 Field-targeting spells use the same per-execution target arrays. For example, Firestorm's base play can target slot `0`, one paid Repeat slot `1`, and another slot `0`. Every execution derives its affected enemy units from the current board. Payment, Flow, and chain observations preserve those distinct field choices. An explicitly empty array does not choose a field automatically; the legacy `play_card` default-target action remains available when automatic selection is desired.
+
+Charm, Ride the Wind and Siren's Song choose a unit Move destination separately
+from their unit target. The original execution uses the action's `lane` (`null`
+means the unit's base). Each Repeat can provide
+`destination:{"type":"base"}` or
+`destination:{"type":"battlefield","lane":0}` (slot 0 or 1). Omission inherits
+the original destination for older callers; explicit `null` is invalid. Other
+cards reject this field. Every destination must be legal at finalization, before
+any execution resolves. `target_candidates` returns the selected execution's
+`destination` and filters targets against it; finalized `chain[].executions`
+contains an explicit destination for every Move execution. Payment wrappers
+preserve these choices.
+
+Units expose public `moved_this_turn` history. Siren's Song (427) advertises the
+target condition `moved_this_turn`, which is rechecked on resolution. Forced
+movement counts; entry, recall and prevented movement do not create history.
+A moved unit with Hunker Down remains eligible, but the new Move is prevented.
 
 `cost_plan` accepts selected card plays and supported Equip, Empower, or registered ability actions. It returns nominal `components`, applicable `modifiers`, the actual `applied_order`, and final `energy`, `power`, `xp`, and decimal-string `xp_exact`. Every component and optional cost also includes `xp` and `xp_exact`, including zero. XP is a fixed obligation determined by the source, and Energy/Power discounts do not reduce it. Each Power obligation retains its allowed domains and `spell_eligible` flag; totals alone cannot represent different colored costs. Modifier scope is either `total` or `component` with a `component_id`. Cost increases apply before discounts. Component discounts precede total discounts; explicit cross-stage reversal is rejected. Within a stage, the player may order reductions, including reductions with a local minimum. A minimum applies only to that discount, not as a permanent floor on the resulting cost. An omitted order uses a deterministic legal order.
 

@@ -32,12 +32,51 @@ pub struct PlayTargetView {
     pub spec: rules::PlayTargetSpec,
     pub next_slot: Option<PlayTargetSlot>,
     pub candidates: Vec<Target>,
+    pub destination: Option<MoveDestination>,
+}
+
+/// A Move destination is a finalization choice, not a target. `Base` means
+/// the moved unit's base, even when an opponent is casting the spell.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum MoveDestination {
+    Base,
+    Battlefield { lane: usize },
+}
+impl MoveDestination {
+    pub fn from_lane(lane: Option<usize>) -> Self {
+        lane.map_or(Self::Base, |lane| Self::Battlefield { lane })
+    }
+    pub fn lane(self) -> Option<usize> {
+        match self {
+            Self::Base => None,
+            Self::Battlefield { lane } => Some(lane),
+        }
+    }
 }
 
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct ExecutionChoices {
     pub targets: Vec<Target>,
     pub mode: Option<usize>,
+    /// Omission inherits the original play's destination for legacy clients.
+    /// Finalized movement executions always contain an explicit destination.
+    pub destination: Option<MoveDestination>,
+}
+impl ExecutionChoices {
+    pub fn destination_lane(&self, original: Option<usize>) -> Option<usize> {
+        self.destination.map_or(original, MoveDestination::lane)
+    }
+    fn validate_destination(&self, card_id: CardId) -> Result<(), String> {
+        if let Some(destination) = self.destination {
+            if !rules::chooses_move_destination(card_id) {
+                return Err("This spell does not choose a unit Move destination.".into());
+            }
+            if destination.lane().is_some_and(|lane| lane >= BATTLEFIELDS) {
+                return Err("Choose a battlefield on this board.".into());
+            }
+        }
+        Ok(())
+    }
 }
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct RepeatSelection {
@@ -552,6 +591,7 @@ impl Game {
                 vec![RepeatSelection {
                     option_id: 1,
                     choices: ExecutionChoices {
+                        destination: None,
                         targets: targets.to_vec(),
                         mode: None,
                     },
@@ -726,6 +766,17 @@ impl Game {
     ) -> Result<PlayTargetView, String> {
         self.play_choices(action)?;
         let intent = self.card_intent(action)?;
+        let lane = if execution == 0 {
+            intent.lane
+        } else {
+            intent
+                .legacy
+                .repeats
+                .get(execution - 1)
+                .ok_or("That execution is not selected.")?
+                .choices
+                .destination_lane(intent.lane)
+        };
         let mode = if execution == 0 {
             intent.legacy.mode
         } else {
@@ -795,9 +846,7 @@ impl Game {
         if intent.id == 410 {
             candidates = self.command_attack_candidates(self.priority(), mode, &targets);
         } else if next_slot.is_some() {
-            for target in
-                self.card_target_candidates(self.priority(), intent.id, intent.lane, &targets)?
-            {
+            for target in self.card_target_candidates(self.priority(), intent.id, lane, &targets)? {
                 if !matches!(intent.origin,PlayOrigin::Hidden {lane} if !self.hidden_target_allowed_at(intent.id,lane,targets.len(),target))
                 {
                     candidates.push(target);
@@ -812,6 +861,8 @@ impl Game {
             spec,
             next_slot,
             candidates,
+            destination: rules::chooses_move_destination(intent.id)
+                .then(|| MoveDestination::from_lane(lane)),
         })
     }
 
@@ -824,13 +875,20 @@ impl Game {
         if intent.lane.is_some_and(|lane| lane >= BATTLEFIELDS) {
             return Err("Choose a battlefield on this board.".into());
         }
-        for (mode, group) in std::iter::once((intent.legacy.mode, &intent.targets)).chain(
-            intent
-                .legacy
-                .repeats
-                .iter()
-                .map(|r| (r.choices.mode, &r.choices.targets)),
-        ) {
+        for repeat in &intent.legacy.repeats {
+            repeat.choices.validate_destination(intent.id)?;
+        }
+        for (mode, group, lane) in
+            std::iter::once((intent.legacy.mode, &intent.targets, intent.lane)).chain(
+                intent.legacy.repeats.iter().map(|r| {
+                    (
+                        r.choices.mode,
+                        &r.choices.targets,
+                        r.choices.destination_lane(intent.lane),
+                    )
+                }),
+            )
+        {
             Self::validate_play_mode(intent.id, mode, false)?;
             if intent.id == 426 {
                 self.validate_preparations_targets(
@@ -849,7 +907,7 @@ impl Game {
                 if !self.valid_card_target(
                     self.priority(),
                     intent.id,
-                    intent.lane,
+                    lane,
                     target,
                     &group[..slot],
                 )? || matches!(intent.origin, PlayOrigin::Hidden { lane } if !self.hidden_target_allowed_at(intent.id, lane, slot, target))
@@ -994,6 +1052,7 @@ impl Game {
         }
         let mut all_targets = intent.targets.clone();
         for r in &choices.repeats {
+            r.choices.validate_destination(intent.id)?;
             all_targets.extend(&r.choices.targets);
         }
         let deflect = self.deflect_cost(p, &all_targets)?;
@@ -1372,7 +1431,7 @@ impl Game {
             probe.prepare_targets_explicit(
                 probe.priority(),
                 intent.id,
-                intent.lane,
+                r.choices.destination_lane(intent.lane),
                 &r.choices.targets,
             )?;
             if let PlayOrigin::Hidden { lane } = intent.origin
@@ -1792,14 +1851,21 @@ impl Game {
             let item = self.chain.last_mut().ok_or("No spell to resolve.")?;
             if item.executions.is_empty() {
                 item.executions.push(ExecutionChoices {
+                    destination: None,
                     targets: item.targets.clone(),
                     mode: None,
                 });
                 if item.options.repeat {
                     item.executions.push(ExecutionChoices {
+                        destination: None,
                         targets: item.repeat_targets.clone(),
                         mode: None,
                     });
+                }
+                if rules::chooses_move_destination(item.card_id) {
+                    for execution in &mut item.executions {
+                        execution.destination = Some(MoveDestination::from_lane(item.lane));
+                    }
                 }
             }
             self.resolution_frame = Some(ResolutionFrame {
@@ -1851,6 +1917,7 @@ impl Game {
                 return Ok(());
             }
             let mut item = self.chain[index].clone();
+            item.lane = item.executions[frame.execution].destination_lane(item.lane);
             item.targets = item.executions[frame.execution].targets.clone();
             item.target = item.targets.first().copied();
             let groups = if matches!(item.card_id, 410 | 426) {
@@ -2332,7 +2399,24 @@ impl Game {
             let intents: Vec<_> = intents
                 .into_iter()
                 .flat_map(|action| {
-                    if self.card_intent(&action).ok().is_some_and(|intent| {
+                    if self
+                        .card_intent(&action)
+                        .ok()
+                        .is_some_and(|intent| rules::chooses_move_destination(intent.id))
+                    {
+                        [None, Some(0), Some(1)]
+                            .into_iter()
+                            .map(|destination| {
+                                let mut movement = action.clone();
+                                match &mut movement {
+                                    Action::PlayCard { lane, .. }
+                                    | Action::PlayFromTrash { lane, .. } => *lane = destination,
+                                    _ => {}
+                                }
+                                movement
+                            })
+                            .collect::<Vec<_>>()
+                    } else if self.card_intent(&action).ok().is_some_and(|intent| {
                         rules::play_target_spec(intent.id).kind
                             == Some(rules::PlayTargetKind::Battlefield)
                     }) {
@@ -2411,19 +2495,39 @@ impl Game {
                     .card_intent(&action)
                     .map(|intent| intent.targets)
                     .unwrap_or_default();
-                let Ok(targets) = self.prepare_targets(p, view.card_id, None, &initial) else {
+                let Ok(targets) = self.prepare_targets(p, view.card_id, intent.lane, &initial)
+                else {
                     continue;
                 };
-                let repeat_targets: Vec<Vec<Target>> = if rules::play_target_spec(view.card_id).kind
-                    == Some(rules::PlayTargetKind::Battlefield)
-                {
-                    self.card_target_candidates(p, view.card_id, None, &[])?
-                        .into_iter()
-                        .map(|target| vec![target])
-                        .collect()
-                } else {
-                    vec![targets.clone()]
-                };
+                let repeat_choices: Vec<ExecutionChoices> =
+                    if rules::chooses_move_destination(view.card_id) {
+                        let mut choices = Vec::new();
+                        for lane in [None, Some(0), Some(1)] {
+                            for target in self.card_target_candidates(p, view.card_id, lane, &[])? {
+                                choices.push(ExecutionChoices {
+                                    targets: vec![target],
+                                    destination: Some(MoveDestination::from_lane(lane)),
+                                    ..Default::default()
+                                });
+                            }
+                        }
+                        choices
+                    } else if rules::play_target_spec(view.card_id).kind
+                        == Some(rules::PlayTargetKind::Battlefield)
+                    {
+                        self.card_target_candidates(p, view.card_id, None, &[])?
+                            .into_iter()
+                            .map(|target| ExecutionChoices {
+                                targets: vec![target],
+                                ..Default::default()
+                            })
+                            .collect()
+                    } else {
+                        vec![ExecutionChoices {
+                            targets: targets.clone(),
+                            ..Default::default()
+                        }]
+                    };
                 let mut choices = vec![PlayChoices::default()];
                 if view.accelerate.is_some() {
                     choices.push(PlayChoices {
@@ -2438,14 +2542,11 @@ impl Game {
                     });
                 }
                 for r in view.repeats.iter().take(3) {
-                    for selected in &repeat_targets {
+                    for selected in &repeat_choices {
                         choices.push(PlayChoices {
                             repeats: vec![RepeatSelection {
                                 option_id: r.id,
-                                choices: ExecutionChoices {
-                                    targets: selected.clone(),
-                                    mode: None,
-                                },
+                                choices: selected.clone(),
                             }],
                             ..Default::default()
                         });
@@ -2460,6 +2561,7 @@ impl Game {
                             .map(|r| RepeatSelection {
                                 option_id: r.id,
                                 choices: ExecutionChoices {
+                                    destination: None,
                                     targets: targets.clone(),
                                     mode: None,
                                 },

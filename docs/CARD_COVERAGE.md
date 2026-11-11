@@ -2,7 +2,7 @@
 
 Snapshot checked **2026-10-24**. The official gallery contains **1,408 printing records** grouped into **1,103 distinct full-name identities**. After excluding **12 auxiliary token/tracker identities** and **12 banned identities**, **1,079 identities are legal in Standard/1v1 Constructed**. The separate 2v2 list leaves **1,078**.
 
-**This client does not yet implement every legal card.** It currently maps **427 main-deck cards, 10 independently registered legends, 17 battlefields, and 6 rune resource types** (460 legal identities). **619 legal identities remain unimplemented and are not playable.** Importing this snapshot does not register cards with the engine. Full inventory coverage is not full rules support.
+**This client does not yet implement every legal card.** It currently maps **428 main-deck cards, 10 independently registered legends, 17 battlefields, and 6 rune resource types** (461 legal identities). **618 legal identities remain unimplemented and are not playable.** Importing this snapshot does not register cards with the engine. Full inventory coverage is not full rules support.
 
 ## Scope and authority
 
@@ -30,7 +30,7 @@ Numbered positions include token slots where the publisher numbers them within a
 | Gear + Unit | 1 | 0 | 1 |
 | Legend | 58 | 10 | 48 |
 | Rune | 6 | 6 | 0 |
-| Spell | 268 | 117 | 151 |
+| Spell | 268 | 118 | 150 |
 | Unit | 546 | 236 | 310 |
 
 Each row is a disjoint complete type set. A reviewed Unit Gear has both types (Core 178) and is counted once in `gear+unit`, rather than once in each single-type row. Patched Porobot is the first explicitly reviewed dual-type correction; this is not a complete visual audit of every gallery type. No dual-type card is currently admitted to the engine.
@@ -562,6 +562,7 @@ Current pages are archived under `assets/data/catalog_sources/`; immutable revie
 | 424 | Ravenbloom Prefect | `ven-102-166` |
 | 425 | Hunker Down | `rad-034-167` |
 | 426 | Battle Preparations | `rad-032-167` |
+| 427 | Siren's Song | `rad-098-167` |
 
 ## Implemented legend ID mapping
 

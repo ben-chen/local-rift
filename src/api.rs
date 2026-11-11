@@ -354,6 +354,7 @@ impl Session {
                 "protected":unit.protected, "banish_on_death":unit.banish_on_death,
                 "temporary_status":game.temporary_status(crate::empower::BoardObject::Unit {player:owner,unit_id:unit.id}).map(temporary::status_to_json),
                 "empowered":game.unit_empowered(unit.id),"hidden_play_origin":game.hidden_play_origin(unit.id),"movement_locked":game.movement_locked(owner,unit.id),
+                "moved_this_turn":game.unit_moved_this_turn(owner,unit.id),
                 "keywords":keywords_json,
                 "damage_priority":game.damage_priority(unit).map_err(ApiError::illegal)?,
                 "vision_instances":vision::instances_to_json(game,crate::empower::BoardObject::Unit {player:owner,unit_id:unit.id})?,

@@ -133,6 +133,7 @@ fn repeat(g: &Game, action: Action, targets: Vec<Target>) -> Action {
             repeats: vec![RepeatSelection {
                 option_id: options.repeats[0].id,
                 choices: ExecutionChoices {
+                    destination: None,
                     targets,
                     mode: None,
                 },

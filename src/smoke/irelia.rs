@@ -264,6 +264,164 @@ pub(crate) fn run_frame(app: &mut App, frame: u32) -> bool {
         }
         32 => {
             assert!(app.inspect.is_none());
+            expansion_fixture(app, 427);
+            app.game = Game::new_for_agents(3, 3, 427427, Difficulty::Easy);
+            app.game.start_match().unwrap();
+            app.game.battlefields = [2, 2];
+            app.game.battlefield_owner = [None; 2];
+            for p in &mut app.game.players {
+                p.units.clear();
+                p.gear.clear();
+                p.hidden.clear();
+                p.hand.clear();
+                p.champion = None;
+                p.set_rune_setup([0; 6], [0; 6]).unwrap();
+                p.energy_pool = 20;
+                p.energy = 20;
+                p.power_pool = [10; 6];
+            }
+            app.game.players[1].units =
+                vec![public_unit(42700, 73, None), public_unit(42701, 73, None)];
+            app.game.players[0].hand = vec![4];
+            app.game
+                .apply(Action::PlayCardWithTargets {
+                    hand_index: 0,
+                    lane: Some(0),
+                    targets: vec![Target::Unit {
+                        player: 1,
+                        unit_id: 42700,
+                    }],
+                })
+                .unwrap();
+            for _ in 0..12 {
+                if !app.game.in_window() {
+                    break;
+                }
+                app.game.apply(Action::Pass).unwrap();
+            }
+            assert_eq!(app.game.priority(), 0);
+            assert!(app.game.unit_moved_this_turn(1, 42700));
+            app.game.players[0].hand = vec![427];
+            app.game.play_grants.push(local_rift::play::PlayGrant {
+                id: 42799,
+                player: 0,
+                source: local_rift::game::ChainSource::Card { card_id: 427 },
+                expires_turn: app.game.turn,
+                kind: local_rift::play::PlayGrantKind::RepeatNextSpell,
+            });
+            app.fields = app.game.battlefields;
+            app.selection = None;
+            app.play_draft = None;
+            app.targets.clear();
+            app.destination = None;
+            app.companion.set_level(AdviceLevel::Beginner);
+        }
+        33 => click(app, 310.0, 760.0),
+        34 => {}
+        35 => {
+            assert!(app.play_draft.as_ref().unwrap().open);
+            capture(app, "RIFT_IRELIA_SIREN_CHOICES");
+            click_unit(app, 42701);
+        }
+        36 => {
+            assert!(
+                app.targets.is_empty(),
+                "An unmoved enemy must not be selectable"
+            );
+            click_unit(app, 42700);
+        }
+        37 => {
+            assert_eq!(app.targets.len(), 1);
+            click(app, 400.0, 741.0);
+        }
+        38 => {
+            assert_eq!(app.play_draft.as_ref().unwrap().execution, 1);
+            click(app, 1040.0, 768.0);
+        }
+        39 => {
+            assert_eq!(app.destination, None);
+            assert_eq!(
+                app.play_draft.as_ref().unwrap().choices.repeats[0]
+                    .choices
+                    .destination,
+                Some(local_rift::play::MoveDestination::Battlefield { lane: 1 })
+            );
+            click_unit(app, 42700);
+        }
+        40 => {
+            assert_eq!(
+                app.play_draft.as_ref().unwrap().choices.repeats[0]
+                    .choices
+                    .targets
+                    .len(),
+                1
+            );
+            capture(app, "RIFT_IRELIA_SIREN_REPEAT");
+            click(app, 790.0, 848.0);
+        }
+        41 => {
+            assert!(app.cost_editor.is_none());
+            assert_eq!(
+                app.play_draft.as_ref().unwrap().choices.repeats[0]
+                    .choices
+                    .destination,
+                Some(local_rift::play::MoveDestination::Base)
+            );
+            click(app, 1040.0, 768.0);
+        }
+        42 => click_unit(app, 42700),
+        43 => click(app, 1285.0, 510.0),
+        44 => {
+            let spell = app.game.chain.iter().find(|c| c.card_id == 427).unwrap();
+            assert_eq!(
+                spell.executions[0].destination,
+                Some(local_rift::play::MoveDestination::Base)
+            );
+            assert_eq!(
+                spell.executions[1].destination,
+                Some(local_rift::play::MoveDestination::Battlefield { lane: 1 })
+            );
+            capture(app, "RIFT_IRELIA_SIREN_CHAIN");
+            app.game.apply(Action::Pass).unwrap();
+            app.game.apply(Action::Pass).unwrap();
+        }
+        45 => {
+            assert_eq!(
+                app.game.players[1]
+                    .units
+                    .iter()
+                    .find(|u| u.id == 42700)
+                    .unwrap()
+                    .lane,
+                Some(1)
+            );
+            assert_eq!(
+                app.game.players[1]
+                    .units
+                    .iter()
+                    .find(|u| u.id == 42701)
+                    .unwrap()
+                    .lane,
+                None
+            );
+            capture(app, "RIFT_IRELIA_SIREN_MOVED");
+        }
+        46 => {
+            assert!(
+                super::super::live_unit_description(&app.game, 1, 42700)
+                    .unwrap()
+                    .contains("Moved this turn")
+            );
+            capture_unit(app, 42700, "RIFT_IRELIA_SIREN_HOVER");
+            app.inspect = Some(427);
+            app.companion.set_level(AdviceLevel::Advanced);
+        }
+        47 => {
+            capture(app, "RIFT_IRELIA_SIREN_INSPECT");
+            click(app, 940.0, 700.0);
+        }
+        48 => {
+            assert!(app.inspect.is_none());
             return true;
         }
 

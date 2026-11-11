@@ -445,6 +445,13 @@ fn checked_advice(game: &Game, level: AdviceLevel) -> Result<Vec<&'static str>, 
         });
     }
 
+    if human.hand.contains(&427) {
+        tips.push(if beginner {
+            "Siren's Song can move an enemy only if that same unit moved this turn. Playing a unit or recalling it does not count. Choose its destination before casting."
+        } else {
+            "Siren's Song can undo a move or redirect an attacker. Forced moves also enable it; Hunker Down can prevent the new move even when the target is legal."
+        });
+    }
     if human.hand.contains(&426) {
         tips.push(if beginner {
             "Battle Preparations always gives a unit +2 Might this turn. Show off gear on your board or reveal one from hand before paying, then choose up to two runes to ready."

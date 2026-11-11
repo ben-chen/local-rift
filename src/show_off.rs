@@ -301,6 +301,7 @@ impl Game {
                     repeated.repeats.push(RepeatSelection {
                         option_id: repeat.id,
                         choices: ExecutionChoices {
+                            destination: None,
                             targets: targets.clone(),
                             mode: None,
                         },

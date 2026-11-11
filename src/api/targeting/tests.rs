@@ -3,6 +3,156 @@ use crate::game::Unit;
 use crate::gear::GearState;
 use crate::play::{ExecutionChoices, PlayChoices, RepeatSelection};
 
+#[test]
+fn move_destination_wire_is_explicit_strict_and_preserves_legacy_omission() {
+    use crate::play::MoveDestination;
+    for destination in [
+        None,
+        Some(MoveDestination::Base),
+        Some(MoveDestination::Battlefield { lane: 1 }),
+    ] {
+        let action = Action::WithPlayChoices {
+            action: Box::new(Action::PlayCardWithTargets {
+                hand_index: 0,
+                lane: Some(0),
+                targets: vec![],
+            }),
+            choices: PlayChoices {
+                repeats: vec![RepeatSelection {
+                    option_id: 1,
+                    choices: ExecutionChoices {
+                        destination,
+                        ..Default::default()
+                    },
+                }],
+                ..Default::default()
+            },
+        };
+        let wire = action_to_json(&action);
+        assert_eq!(parse_action(&wire).unwrap(), action);
+        assert_eq!(
+            wire["choices"]["repeats"][0]["choices"]
+                .get("destination")
+                .is_some(),
+            destination.is_some()
+        );
+        for invalid in [
+            json!(null),
+            json!("base"),
+            json!({}),
+            json!({"type":"unit"}),
+            json!({"type":"base","lane":0}),
+            json!({"type":"battlefield"}),
+            json!({"type":"battlefield","lane":-1}),
+            json!({"type":"battlefield","lane":2}),
+            json!({"type":"battlefield","lane":0.5}),
+            json!({"type":"battlefield","lane":"1"}),
+        ] {
+            let mut bad = wire.clone();
+            bad["choices"]["repeats"][0]["choices"]["destination"] = invalid;
+            assert!(parse_action(&bad).is_err(), "{bad}");
+        }
+    }
+}
+
+#[test]
+fn siren_api_exposes_public_history_and_independent_destinations_without_mutating_previews() {
+    use crate::play::{MoveDestination, PlayGrant, PlayGrantKind};
+    let mut session = position();
+    session.game.players[1].units = vec![unit(500, 73, None, false), unit(501, 73, Some(1), false)];
+    let target = Target::Unit {
+        player: 1,
+        unit_id: 500,
+    };
+    session.game.move_effect(0, target, Some(0), false).unwrap();
+    session.game.players[0].hand = vec![427];
+    session.game.play_grants.push(PlayGrant {
+        id: 9900,
+        player: 0,
+        expires_turn: session.game.turn,
+        source: ChainSource::Card { card_id: 427 },
+        kind: PlayGrantKind::RepeatNextSpell,
+    });
+    let original = Action::PlayCardWithTargets {
+        hand_index: 0,
+        lane: Some(1),
+        targets: vec![target],
+    };
+    let option = session.game.play_choices(&original).unwrap().repeats[0].id;
+    let action = Action::WithPlayChoices {
+        action: Box::new(original),
+        choices: PlayChoices {
+            repeats: vec![RepeatSelection {
+                option_id: option,
+                choices: ExecutionChoices {
+                    destination: Some(MoveDestination::Base),
+                    targets: vec![target],
+                    ..Default::default()
+                },
+            }],
+            ..Default::default()
+        },
+    };
+    for viewer in 0..2 {
+        let view = session.observe(viewer).unwrap();
+        assert_eq!(view["players"][1]["units"][0]["moved_this_turn"], true);
+        assert_eq!(view["players"][1]["units"][1]["moved_this_turn"], false);
+    }
+    assert_eq!(
+        play_targets_to_json(427)["condition"]["type"],
+        "moved_this_turn"
+    );
+    let before = session.observe(0).unwrap();
+    for command in [
+        "target_candidates",
+        "play_choices",
+        "cost_plan",
+        "quote_payment",
+        "validate",
+    ] {
+        let response = session.handle(
+            json!({"command":command,"player":0,"revision":session.revision(),
+            "action":action_to_json(&action),"execution":1}),
+        );
+        // The target query accepts execution; other commands reject unknown fields.
+        if command == "target_candidates" {
+            assert_eq!(response["ok"], true, "{response}");
+            assert_eq!(
+                response["result"]["destination"],
+                json!({"type":"base"}),
+                "{response}"
+            );
+        } else {
+            let response = session.handle(
+                json!({"command":command,"player":0,"revision":session.revision(),
+                "action":action_to_json(&action)}),
+            );
+            assert_eq!(response["ok"], true, "{response}");
+        }
+        assert_eq!(session.observe(0).unwrap(), before);
+    }
+    apply(&mut session, action);
+    for viewer in 0..2 {
+        let view = session.observe(viewer).unwrap();
+        let spell = view["chain"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .find(|s| s["card_id"] == 427)
+            .unwrap();
+        assert_eq!(
+            spell["executions"][0]["destination"],
+            json!({"type":"battlefield","lane":1})
+        );
+        assert_eq!(
+            spell["executions"][1]["destination"],
+            json!({"type":"base"})
+        );
+    }
+    resolve_chain(&mut session);
+    assert_eq!(session.game.players[1].units[0].lane, None);
+}
+
 fn position() -> Session {
     let mut session = Session::new(ResetOptions {
         decks: [3, 3],
@@ -191,6 +341,7 @@ fn battlefield_wire_preserves_independent_choices_across_play_origins_and_paymen
                 RepeatSelection {
                     option_id: 8_000_000_001,
                     choices: ExecutionChoices {
+                        destination: None,
                         targets: second,
                         mode: None,
                     },
@@ -198,6 +349,7 @@ fn battlefield_wire_preserves_independent_choices_across_play_origins_and_paymen
                 RepeatSelection {
                     option_id: 8_000_000_002,
                     choices: ExecutionChoices {
+                        destination: None,
                         targets: first,
                         mode: None,
                     },
@@ -339,6 +491,7 @@ fn actual_portal_repeats_keep_each_field_through_exact_and_staged_payments() {
                     .map(|(option, lane)| RepeatSelection {
                         option_id: option.id,
                         choices: ExecutionChoices {
+                            destination: None,
                             targets: vec![Target::Battlefield { lane }],
                             mode: None,
                         },

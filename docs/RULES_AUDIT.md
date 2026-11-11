@@ -68,6 +68,25 @@ The audit started from commit `167ad7e` and continued against the shared working
 
 The first four failures were observed before correction. The fifth ordering failure was also reproduced independently rather than inferred solely from inspection.
 
+## November 11 Irelia movement review
+
+The Siren's Song admission found that repeated free-destination movement spells
+shared the original chain item's `lane`. The canonical choices could not express
+an independent destination. Core 355.4 and 820.2 require each Move's destination
+to be chosen during finalization, before responses. Movement executions now
+store their own explicit destination; target previews, cost validation, staged
+payment, resolution, bots and native controls preserve it. Legacy omitted
+Repeat destinations inherit the original choice. This also corrects Charm and
+Ride the Wind, not just the new card.
+
+The regression tests in `src/siren_tests.rs` cover distinct destinations, an
+explicit return to Base, same-location and invalid-field rejection before any
+execution, changed targets at resolution, physical movement history, swaps,
+Recall, Hunker Down, Vex, Deflect, cancellation and both seats. API tests check
+strict parsing, public observations and read-only queries. The native scenario
+uses actual target, destination, Repeat, copy-choice and Play controls. These
+focused checks do not certify the remaining unimplemented card pool.
+
 ## Regression evidence
 
 [tests/rules_audit.rs](../tests/rules_audit.rs) contains nine public-API tests:

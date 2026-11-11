@@ -210,6 +210,7 @@ fn repeated_curse_counts_live_trash_but_never_the_resolving_physical_spell() {
             repeats: vec![RepeatSelection {
                 option_id: options.repeats[0].id,
                 choices: ExecutionChoices {
+                    destination: None,
                     targets: vec![target],
                     mode: None,
                 },

@@ -426,6 +426,7 @@ fn shadow_repeats_keep_the_original_target_but_each_draw_is_independent() {
             repeats: vec![RepeatSelection {
                 option_id: options.repeats[0].id,
                 choices: ExecutionChoices {
+                    destination: None,
                     targets: vec![target(0, 5_000)],
                     mode: None,
                 },
@@ -521,6 +522,7 @@ fn last_stand_uses_six_real_executions_and_a_fresh_might_snapshot() {
                 repeats: vec![RepeatSelection {
                     option_id: options.repeats[0].id,
                     choices: ExecutionChoices {
+                        destination: None,
                         targets: vec![target(0, 5_000)],
                         mode: None,
                     },

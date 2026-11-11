@@ -250,6 +250,7 @@ pub struct Targeting {
     /// The unit must currently be in combat with an enemy unit of this domain,
     /// or be chosen by an enemy spell of this domain still on the chain.
     pub threatened_by_domain: Option<Domain>,
+    pub moved_this_turn: bool,
     /// If true, multi-target choices must name different units.
     pub distinct: bool,
     pub same_location: bool,
@@ -264,6 +265,7 @@ pub fn effect(id: usize) -> OfficialEffect {
     match id {
         425 => ReadyAndPreventMovement { draw: 1 },
         426 => BattlePreparations,
+        427 => MoveEnemy,
         424 => None,
         422 => DrawThenChannel {
             draw: 1,
@@ -666,11 +668,19 @@ pub fn effect(id: usize) -> OfficialEffect {
     }
 }
 
+/// These spells choose a unit's destination during play finalization.
+pub fn chooses_move_destination(id: usize) -> bool {
+    matches!(
+        effect(id),
+        OfficialEffect::MoveEnemy | OfficialEffect::MoveFriendlyAndReady
+    )
+}
+
 pub fn targeting(id: usize) -> Targeting {
     use Allegiance::*;
     let allegiance = match id {
         290..=296 | 335 | 349 => Any,
-        4 | 32 | 144 | 145 | 365 => Enemy,
+        4 | 32 | 144 | 145 | 365 | 427 => Enemy,
         362 | 364 | 372 | 378 | 379 | 381 => Any,
         8 | 9 | 14 | 19 | 27 | 85 | 137 | 228 | 350 | 353 | 354 | 377 | 380 | 382 | 421 | 425 => {
             Friendly
@@ -683,6 +693,7 @@ pub fn targeting(id: usize) -> Targeting {
     };
     Targeting {
         allegiance,
+        moved_this_turn: id == 427,
         threatened_by_domain: if id == 421 {
             Some(Domain::Fury)
         } else {
@@ -1108,6 +1119,7 @@ pub fn requirements(id: usize) -> &'static [Mechanic] {
         423 => &[Chain, Counterspell],
         424 => &[Chain, Banish, Gear, OptionalCosts],
         425 => &[Chain, Move, ChooseReadyTriggers],
+        427 => &[Chain, Move],
         372 | 373 => &[Chain, Gear, Bounce],
         374 => &[Chain, Gear, DeathTriggers],
         375 => &[Chain, Bounce],
@@ -2020,7 +2032,7 @@ mod tests {
     #[test]
     fn all_catalog_entries_have_official_classification() {
         let cards = cards();
-        assert_eq!(cards.len(), 427);
+        assert_eq!(cards.len(), 428);
         for card in cards {
             assert_ne!(
                 effect(card.id),
@@ -2030,7 +2042,7 @@ mod tests {
             );
             assert_ne!(support_status(card.id), SupportStatus::UnknownCard);
         }
-        assert_eq!(effect(427), OfficialEffect::Unsupported);
+        assert_eq!(effect(428), OfficialEffect::Unsupported);
     }
 
     #[test]

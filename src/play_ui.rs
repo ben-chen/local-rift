@@ -28,9 +28,100 @@ fn choose_mode(draft: &mut PlayDraft, original_targets: &mut Vec<Target>, mode: 
     }
 }
 
+/// Editing one Move must not change the other executions' destinations.
+fn choose_destination(
+    draft: &mut PlayDraft,
+    original: &mut Option<usize>,
+    original_targets: &mut Vec<Target>,
+    destination: MoveDestination,
+) {
+    for repeat in &mut draft.choices.repeats {
+        repeat
+            .choices
+            .destination
+            .get_or_insert(MoveDestination::from_lane(*original));
+    }
+    let changed = if draft.execution == 0 {
+        if *original == destination.lane() {
+            false
+        } else {
+            *original = destination.lane();
+            original_targets.clear();
+            true
+        }
+    } else {
+        let execution = &mut draft.choices.repeats[draft.execution - 1].choices;
+        if execution.destination == Some(destination) {
+            false
+        } else {
+            execution.destination = Some(destination);
+            execution.targets.clear();
+            true
+        }
+    };
+    if changed {
+        draft.choices.cost_order.clear();
+    }
+}
+
 #[cfg(test)]
 mod mode_tests {
     use super::*;
+
+    #[test]
+    fn editing_a_move_destination_preserves_other_executions_and_clears_only_its_targets() {
+        let target = Target::Unit {
+            player: 1,
+            unit_id: 500,
+        };
+        let mut original = None;
+        let mut targets = vec![target];
+        let mut draft = PlayDraft {
+            key: (Selection::Hand(0), 427),
+            execution: 1,
+            open: true,
+            scroll: 0,
+            show_off_tab: false,
+            choices: PlayChoices {
+                repeats: vec![RepeatSelection {
+                    option_id: 99,
+                    choices: ExecutionChoices {
+                        targets: vec![target],
+                        ..Default::default()
+                    },
+                }],
+                ..Default::default()
+            },
+        };
+        choose_destination(
+            &mut draft,
+            &mut original,
+            &mut targets,
+            MoveDestination::Battlefield { lane: 1 },
+        );
+        assert_eq!(original, None);
+        assert_eq!(targets, vec![target]);
+        assert!(draft.choices.repeats[0].choices.targets.is_empty());
+        assert_eq!(
+            draft.choices.repeats[0].choices.destination,
+            Some(MoveDestination::Battlefield { lane: 1 })
+        );
+        draft.choices.repeats[0].choices.targets = vec![target];
+        draft.execution = 0;
+        choose_destination(
+            &mut draft,
+            &mut original,
+            &mut targets,
+            MoveDestination::Battlefield { lane: 0 },
+        );
+        assert_eq!(original, Some(0));
+        assert!(targets.is_empty());
+        assert_eq!(draft.choices.repeats[0].choices.targets, vec![target]);
+        assert_eq!(
+            draft.choices.repeats[0].choices.destination,
+            Some(MoveDestination::Battlefield { lane: 1 })
+        );
+    }
 
     #[test]
     fn changing_repeat_mode_preserves_other_executions_and_undoes_only_its_targets() {
@@ -54,6 +145,7 @@ mod mode_tests {
                     RepeatSelection {
                         option_id: 77,
                         choices: ExecutionChoices {
+                            destination: None,
                             targets: original.clone(),
                             mode: Some(0),
                         },
@@ -61,6 +153,7 @@ mod mode_tests {
                     RepeatSelection {
                         option_id: 88,
                         choices: ExecutionChoices {
+                            destination: None,
                             targets: vec![],
                             mode: Some(1),
                         },
@@ -346,6 +439,9 @@ pub(super) fn target_view_hint(game: &Game, view: &PlayTargetView) -> String {
         local_rift::rules::PlayTargetKind::Rune => {
             "up to two different runes in either rune zone (optional)"
         }
+        local_rift::rules::PlayTargetKind::Unit if view.card_id == 427 => {
+            "an enemy unit that moved this turn"
+        }
         local_rift::rules::PlayTargetKind::Unit if view.card_id == 421 => {
             "a friendly unit fighting an enemy Fury unit or chosen by an enemy Fury spell"
         }
@@ -407,6 +503,20 @@ fn has_play_choices(action: &Action) -> bool {
     )
 }
 impl App {
+    pub(super) fn set_selected_destination(&mut self, lane: Option<usize>) {
+        if let Some(draft) = &mut self.play_draft
+            && local_rift::rules::chooses_move_destination(draft.key.1)
+        {
+            choose_destination(
+                draft,
+                &mut self.destination,
+                &mut self.targets,
+                MoveDestination::from_lane(lane),
+            );
+        } else {
+            self.destination = lane;
+        }
+    }
     pub(super) fn selected_target_query(
         &self,
         replace_single: bool,
@@ -500,7 +610,8 @@ impl App {
         })
     }
     fn extended_choices(&self, view: &PlayChoiceView) -> bool {
-        !view.show_off.is_empty()
+        local_rift::rules::chooses_move_destination(view.card_id)
+            || !view.show_off.is_empty()
             || !view.modes.is_empty()
             || view.repeats.len()
                 > usize::from(local_rift::rules::repeat_cost(view.card_id).is_some())
@@ -552,6 +663,7 @@ impl App {
             choices.repeats.push(RepeatSelection {
                 option_id: option.id,
                 choices: ExecutionChoices {
+                    destination: None,
                     targets: self.repeat_targets.clone(),
                     mode: None,
                 },
@@ -562,7 +674,9 @@ impl App {
             key,
             choices,
             execution: 0,
-            open: !view.show_off.is_empty() || !view.modes.is_empty(),
+            open: !view.show_off.is_empty()
+                || !view.modes.is_empty()
+                || local_rift::rules::chooses_move_destination(view.card_id),
             scroll: 0,
         });
         self.options = PlayOptions::default();
@@ -823,7 +937,13 @@ impl App {
                         draft.choices.cost_order.clear();
                         draft.choices.repeats.push(RepeatSelection {
                             option_id: option.id,
-                            choices: ExecutionChoices::default(),
+                            choices: ExecutionChoices {
+                                destination: local_rift::rules::chooses_move_destination(
+                                    view.card_id,
+                                )
+                                .then(|| MoveDestination::from_lane(self.destination)),
+                                ..Default::default()
+                            },
                         });
                         draft.execution = draft.choices.repeats.len();
                     }
@@ -917,6 +1037,35 @@ impl App {
             draft.execution = first + 3;
         }
         let modal = !view.modes.is_empty();
+        let movement = local_rift::rules::chooses_move_destination(view.card_id);
+        if movement {
+            let selected = if draft.execution == 0 {
+                self.destination
+            } else {
+                draft.choices.repeats[draft.execution - 1]
+                    .choices
+                    .destination_lane(self.destination)
+            };
+            for (slot, lane) in [None, Some(0), Some(1)].into_iter().enumerate() {
+                if self.ui.button(
+                    Rect::new(695.0 + slot as f32 * 138.0, 753.0, 134.0, 32.0),
+                    match lane {
+                        None => "To unit's base",
+                        Some(0) => "To field 1",
+                        _ => "To field 2",
+                    },
+                    selected == lane,
+                    true,
+                ) {
+                    choose_destination(
+                        &mut draft,
+                        &mut self.destination,
+                        &mut self.targets,
+                        MoveDestination::from_lane(lane),
+                    );
+                }
+            }
+        }
         if modal {
             let selected_mode = if draft.execution == 0 {
                 draft.choices.mode
@@ -948,7 +1097,7 @@ impl App {
         } else {
             &draft.choices.repeats[draft.execution - 1].choices.targets
         };
-        let hint = if view.card_id == 426 {
+        let hint = if view.card_id == 426 || movement {
             let action = Action::WithPlayChoices {
                 action: Box::new(strip_options(self.selected_play_action().unwrap())),
                 choices: draft.choices.clone(),
@@ -1005,17 +1154,17 @@ impl App {
         self.ui.wrapped_lines(
             &hint,
             695.0,
-            if modal { 800.0 } else { 766.0 },
+            if modal || movement { 800.0 } else { 766.0 },
             414.0,
             11.0,
             TEXT,
             2,
         );
-        let edit_y = if modal { 836.0 } else { 802.0 };
+        let edit_y = if modal || movement { 836.0 } else { 802.0 };
         if draft.execution > 0
             && self.ui.button(
                 Rect::new(695.0, edit_y, 198.0, 25.0),
-                if modal {
+                if modal || movement {
                     "Copy original choices"
                 } else {
                     "Copy original targets"
@@ -1028,6 +1177,11 @@ impl App {
             draft.choices.repeats[draft.execution - 1].choices.targets = self.targets.clone();
             if modal {
                 draft.choices.repeats[draft.execution - 1].choices.mode = draft.choices.mode;
+            }
+            if movement {
+                draft.choices.repeats[draft.execution - 1]
+                    .choices
+                    .destination = Some(MoveDestination::from_lane(self.destination));
             }
         }
         if draft.execution > 1
@@ -1081,6 +1235,7 @@ impl App {
             }
         }
         if !modal
+            && !movement
             && view.accelerate.is_none()
             && view.bonus.is_none()
             && self.ui.button(
@@ -1155,6 +1310,7 @@ impl App {
                     choices.repeats.push(RepeatSelection {
                         option_id: option.id,
                         choices: ExecutionChoices {
+                            destination: None,
                             targets,
                             mode: None,
                         },

@@ -151,14 +151,20 @@ fn click_field(app: &mut App, lane: usize) {
 
 fn capture_unit(app: &mut App, id: u32, variable: &str) {
     app.companion.observe(&app.game);
-    let card = app.game.players[0]
+    let owner = app
+        .game
+        .players
+        .iter()
+        .position(|p| p.units.iter().any(|u| u.id == id))
+        .unwrap();
+    let card = app.game.players[owner]
         .units
         .iter()
         .find(|unit| unit.id == id)
         .unwrap()
         .card_id;
     app.hover_card = Some(card);
-    app.hover_token = app.game.players[0]
+    app.hover_token = app.game.players[owner]
         .units
         .iter()
         .find(|unit| unit.id == id && unit.token)
@@ -168,7 +174,7 @@ fn capture_unit(app: &mut App, id: u32, variable: &str) {
             gear: false,
             rules: super::token_rules(unit.card_id),
         });
-    app.hover_object = Some((0, id));
+    app.hover_object = Some((owner, id));
     app.hover_since = get_time() - 1.0;
     let rect = unit_rect(app, id);
     app.ui.input_override = Some((rect.center(), false, false));

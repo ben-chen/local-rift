@@ -1,8 +1,8 @@
 //! Canonical play choices and cost-plan views for local automated opponents.
 use super::*;
 use crate::play::{
-    CostPlanView, CostScope, CostSelection, CostValue, ExecutionChoices, PlayChoiceView,
-    PlayChoices, PlayGrantKind, PlayOrigin, PowerReduction, RepeatSelection,
+    CostPlanView, CostScope, CostSelection, CostValue, ExecutionChoices, MoveDestination,
+    PlayChoiceView, PlayChoices, PlayGrantKind, PlayOrigin, PowerReduction, RepeatSelection,
 };
 use crate::show_off::{ShowOffObject, ShowOffSelection, ShownObject};
 
@@ -58,7 +58,39 @@ pub(super) fn origin_to_json(origin: PlayOrigin) -> Value {
 }
 
 pub(super) fn execution_to_json(choices: &ExecutionChoices) -> Value {
-    json!({"targets":choices.targets.iter().map(target_to_json).collect::<Vec<_>>(),"mode":choices.mode})
+    let mut value = json!({"targets":choices.targets.iter().map(target_to_json).collect::<Vec<_>>(),"mode":choices.mode});
+    if let Some(destination) = choices.destination {
+        value["destination"] = destination_to_json(destination);
+    }
+    value
+}
+
+pub(super) fn destination_to_json(destination: MoveDestination) -> Value {
+    match destination {
+        MoveDestination::Base => json!({"type":"base"}),
+        MoveDestination::Battlefield { lane } => json!({"type":"battlefield","lane":lane}),
+    }
+}
+
+fn parse_destination(value: &Value) -> Result<MoveDestination, ApiError> {
+    let obj = object(value)?;
+    match string(obj, "type")? {
+        "base" => {
+            keys(obj, &["type"])?;
+            Ok(MoveDestination::Base)
+        }
+        "battlefield" => {
+            keys(obj, &["type", "lane"])?;
+            let lane = index(obj, "lane")?;
+            if lane >= crate::game::BATTLEFIELDS {
+                return Err(ApiError::invalid("Choose a battlefield on this board."));
+            }
+            Ok(MoveDestination::Battlefield { lane })
+        }
+        _ => Err(ApiError::invalid(
+            "Move destination must be base or battlefield.",
+        )),
+    }
 }
 
 fn selection_to_json(selection: &CostSelection) -> Value {
@@ -183,13 +215,14 @@ fn optional_array<'a>(obj: &'a Map<String, Value>, key: &str) -> Result<&'a [Val
 
 fn parse_execution(value: &Value) -> Result<ExecutionChoices, ApiError> {
     let obj = object(value)?;
-    keys(obj, &["targets", "mode"])?;
+    keys(obj, &["targets", "mode", "destination"])?;
     let mode = if obj.get("mode").is_none_or(Value::is_null) {
         None
     } else {
         Some(index(obj, "mode")?)
     };
     Ok(ExecutionChoices {
+        destination: obj.get("destination").map(parse_destination).transpose()?,
         targets: targets(obj, "targets")?,
         mode,
     })
@@ -323,6 +356,7 @@ mod tests {
                     RepeatSelection {
                         option_id: 8_000_000_003,
                         choices: ExecutionChoices {
+                            destination: None,
                             targets: vec![Target::Unit {
                                 player: 0,
                                 unit_id: 19,
@@ -333,6 +367,7 @@ mod tests {
                     RepeatSelection {
                         option_id: 8_000_000_001,
                         choices: ExecutionChoices {
+                            destination: None,
                             targets: vec![Target::Unit {
                                 player: 1,
                                 unit_id: 42,

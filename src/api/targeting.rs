@@ -43,6 +43,10 @@ pub(super) fn play_targets_to_json(card_id: crate::cards::CardId) -> Value {
     let spec = play_target_spec(card_id);
     let mut value =
         json!({"kind":spec.kind.map(target_kind),"maximum":spec.maximum,"required":spec.required});
+    if crate::rules::targeting(card_id).moved_this_turn {
+        value["condition"] =
+            json!({"type":"moved_this_turn","controller":"enemy","rechecked_on_resolution":true});
+    }
     if card_id == 426 {
         value["conditional_slots"] = json!({"after":"show_off","instance":0,"kind":"rune",
             "maximum":2,"required":0,"controller":"any","after_required_unit":true});
@@ -64,7 +68,7 @@ pub(super) fn play_targets_to_json(card_id: crate::cards::CardId) -> Value {
 }
 
 pub(super) fn view_to_json(view: &PlayTargetView) -> Value {
-    json!({"card_id":view.card_id,"origin":play_choices::origin_to_json(view.origin),
+    let mut value = json!({"card_id":view.card_id,"origin":play_choices::origin_to_json(view.origin),
         "execution":view.execution,"targets":view.targets.iter().map(target_to_json).collect::<Vec<_>>(),
         "spec":{"kind":view.spec.kind.map(target_kind),"maximum":view.spec.maximum,"required":view.spec.required},
         "next_slot":view.next_slot.as_ref().map(|slot|json!({
@@ -73,7 +77,11 @@ pub(super) fn view_to_json(view: &PlayTargetView) -> Value {
                 HiddenTargetRestriction::AtBattlefield{lane}=>json!({"type":"at_battlefield","lane":lane}),
                 HiddenTargetRestriction::OutsideBattlefield{lane}=>json!({"type":"outside_battlefield","lane":lane}),
             })})),
-        "candidates":view.candidates.iter().map(target_to_json).collect::<Vec<_>>()})
+        "candidates":view.candidates.iter().map(target_to_json).collect::<Vec<_>>()});
+    if let Some(destination) = view.destination {
+        value["destination"] = play_choices::destination_to_json(destination);
+    }
+    value
 }
 
 #[cfg(test)]

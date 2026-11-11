@@ -281,6 +281,7 @@ fn c17_arcane_leaves_chain_before_granted_repeat_even_with_new_targets() {
             repeats: vec![RepeatSelection {
                 option_id: option,
                 choices: ExecutionChoices {
+                    destination: None,
                     targets: vec![f2, e2],
                     mode: None,
                 },
@@ -421,6 +422,7 @@ fn c17_ezreal_counts_repeat_choices_even_when_arcane_ends_before_repeating() {
             repeats: vec![RepeatSelection {
                 option_id: choice,
                 choices: ExecutionChoices {
+                    destination: None,
                     targets: vec![friendly, enemy],
                     mode: None,
                 },

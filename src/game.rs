@@ -23,6 +23,9 @@ pub use combat::{CombatResolution, CombatResult, CombatStep};
 #[path = "combat_card_tests.rs"]
 mod combat_card_tests;
 #[cfg(test)]
+#[path = "siren_tests.rs"]
+mod siren_tests;
+#[cfg(test)]
 #[path = "source_damage_tests.rs"]
 mod source_damage_tests;
 
@@ -1042,6 +1045,8 @@ pub struct Game {
     /// Object restrictions stop movement by either player, unlike Vex's
     /// controller-only restriction retained in movement_locks.
     immobile_units: Vec<(usize, u32)>,
+    /// Physical identities that completed an actual Move during the current turn.
+    moved_units: Vec<u32>,
     pending_combat: Option<PendingCombat>,
     combat_resolution: Option<CombatResolution>,
     pending_start: Option<StartStage>,
@@ -1287,6 +1292,7 @@ impl Game {
             pending_entries: Vec::new(),
             movement_locks: Vec::new(),
             immobile_units: Vec::new(),
+            moved_units: Vec::new(),
             pending_combat:None,
             combat_resolution:None,
             pending_start:None,
@@ -1532,6 +1538,13 @@ impl Game {
             }
             cost
         })
+    }
+
+    pub fn unit_moved_this_turn(&self, player: usize, unit_id: u32) -> bool {
+        self.players
+            .get(player)
+            .is_some_and(|p| p.units.iter().any(|u| u.id == unit_id))
+            && self.moved_units.contains(&unit_id)
     }
 
     pub fn movement_locked(&self, player: usize, unit_id: u32) -> bool {
@@ -2218,11 +2231,19 @@ impl Game {
                     .find(|i| i.ability.is_none() && i.player == player && i.card_id == id)
                 {
                     item.executions = vec![ExecutionChoices {
+                        destination: None,
                         targets: item.targets.clone(),
                         mode: a.choices.mode,
                     }];
                     item.executions
                         .extend(a.choices.repeats.iter().map(|r| r.choices.clone()));
+                    if rules::chooses_move_destination(id) {
+                        for execution in &mut item.executions {
+                            execution.destination = Some(crate::play::MoveDestination::from_lane(
+                                execution.destination_lane(item.lane),
+                            ));
+                        }
+                    }
                     item.repeat_targets = a
                         .choices
                         .repeats
@@ -6913,6 +6934,9 @@ impl Game {
             }) {
                 return Ok(false);
             }
+            if rules::targeting(id).moved_this_turn && !self.unit_moved_this_turn(player, unit_id) {
+                return Ok(false);
+            }
             if !self.can_choose_unit(actor, target) {
                 return Ok(false);
             }
@@ -7104,6 +7128,12 @@ impl Game {
             .find(|u| u.id == unit_id)
             .cloned()
         {
+            if origin != destination
+                && unit.lane == destination
+                && !self.moved_units.contains(&unit_id)
+            {
+                self.moved_units.push(unit_id);
+            }
             let mut event = EventSnapshot::unit(Occurrence::Moved, player, unit);
             event.origin = origin;
             self.emit_event(event);
@@ -8063,6 +8093,7 @@ impl Game {
         self.silenced = [false; 2];
         self.movement_locks.clear();
         self.immobile_units.clear();
+        self.moved_units.clear();
         self.legend_end_turn();
         self.hidden_view = [false; 2];
         self.temporary_flow = [Vec::new(), Vec::new()];

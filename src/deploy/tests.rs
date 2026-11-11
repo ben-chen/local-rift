@@ -797,6 +797,7 @@ fn command_repeat_preserves_independent_modes_targets_and_private_draw_continuat
         choices.repeats.push(RepeatSelection {
             option_id: repeat,
             choices: ExecutionChoices {
+                destination: None,
                 mode: Some(1),
                 targets: vec![],
             },
