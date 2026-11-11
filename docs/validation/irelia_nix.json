@@ -1,0 +1,106 @@
+{
+  "reviewed_on": "2026-11-11",
+  "commit": "5250302cacd74262df24ac77b34e5a18044dd48a",
+  "scope": "Four Irelia additions through Ravenbloom Prefect, before Hunker Down",
+  "system": "x86_64-linux",
+  "command": "nix flake check --no-write-lock-file --print-build-logs",
+  "exit_code": 0,
+  "package": "/nix/store/r12pv4gcfkfxiplvl7lgljykfw8kq9mp-local-rift-0.1.0",
+  "rust_tests": {
+    "passed": 1475,
+    "failed": 0
+  },
+  "python_tests": {
+    "passed": 246,
+    "failed": 0
+  },
+  "offline_catalog_check": "passed",
+  "inventory": {
+    "main_cards": 425,
+    "mapped_legal_identities": 458
+  },
+  "simulation": {
+    "completed_games": 600,
+    "pairings": 25,
+    "levels": 3,
+    "starting_players": "alternating by seed",
+    "elapsed_seconds": 87.4,
+    "maximum_actions": 352,
+    "maximum_turns": 28,
+    "path": "/nix/store/ggj5xzy76w96cg6945jn399ipi3aqrml-local-rift-simulation-check",
+    "sha256": "e747ea936e44106ceb897112a1992bff701d7410cff70d163b8f8d76fa143904",
+    "invariants": "card/rune conservation, energy accounting, unique valid units and winner consistency after each action"
+  },
+  "binaries": {
+    "local-rift": "7503a17a1eac4be4977bc678651ccc69d26102cdee11a2d5c89f4047c89cf304",
+    ".local-rift-wrapped": "c88e0c3ad3148f834b8303edc1e981ce14e5ea0d3e3cb2a423be269ddae79312",
+    "rift-api": "ca82c7d34889b192fe5505837631f7b441db62d2007bfe8aec46396736335960",
+    "simulate": "67450b058bd0c6a63dee37539483f90c0645145742eb6f7acfbac916ce8da9c3"
+  },
+  "native_ui": {
+    "runs": [
+      {
+        "small": false,
+        "screenshots": true,
+        "exit": 0,
+        "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-raven-ui-nix-1-normal-capture",
+        "binary_sha256": "7503a17a1eac4be4977bc678651ccc69d26102cdee11a2d5c89f4047c89cf304"
+      },
+      {
+        "small": false,
+        "screenshots": false,
+        "exit": 0,
+        "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-raven-ui-nix-1-normal-plain",
+        "binary_sha256": "7503a17a1eac4be4977bc678651ccc69d26102cdee11a2d5c89f4047c89cf304"
+      },
+      {
+        "small": true,
+        "screenshots": true,
+        "exit": 0,
+        "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-raven-ui-nix-1-small-capture",
+        "binary_sha256": "7503a17a1eac4be4977bc678651ccc69d26102cdee11a2d5c89f4047c89cf304"
+      },
+      {
+        "small": true,
+        "screenshots": false,
+        "exit": 0,
+        "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-raven-ui-nix-1-small-plain",
+        "binary_sha256": "7503a17a1eac4be4977bc678651ccc69d26102cdee11a2d5c89f4047c89cf304"
+      }
+    ],
+    "frames_per_run": 13,
+    "actual_images_viewed_by_root": [
+      {
+        "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-raven-ui-nix-1-small-capture/cost.png",
+        "sha256": "fff9245dc2e52be8e057e576232e7d9e08a190f7120cd28a159e30c42c1cbf5f"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-raven-ui-nix-1-small-capture/advanced.png",
+        "sha256": "901290699986b9c5b65ef99fee15a64cc0d3e5693e4703fcc7d8d18c66647120"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-raven-ui-nix-1-normal-capture/prefect.png",
+        "sha256": "dbc23ced78c46bfa75fad53b84ad4870d1ab5da0df7bebaeb7d01a459e889085"
+      }
+    ],
+    "findings": "Accept/decline and source-unavailable checks pass at both sizes, with and without captures; decision controls, companion and full Prefect card text visible."
+  },
+  "example_bot": {
+    "seed": 424501,
+    "winner": 1,
+    "scores": [
+      0,
+      8
+    ],
+    "actions": 65,
+    "turns": 10
+  },
+  "log": {
+    "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-nix-check-1.log",
+    "sha256": "3d18d6a111e5b66868cf14883ecec9d48b0e1f2987935681dd5af619f6387796"
+  },
+  "limits": [
+    "This package predates Hunker Down; the newer native card admission has a separate validation record.",
+    "aarch64-linux and aarch64-darwin were not built on this host."
+  ]
+}

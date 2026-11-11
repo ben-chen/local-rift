@@ -342,7 +342,7 @@ impl Session {
                 let tags = if unit.token {
                     crate::rules::token_spec(unit.card_id).and_then(|spec|spec.tag).into_iter().collect::<Vec<_>>()
                 } else { game.catalog[unit.card_id].tags.to_vec() };
-                Ok(json!({
+                let mut unit_view = json!({
                 "id":unit.id, "card_id":unit.card_id, "name":game.unit_name(unit), "token":unit.token,
                 "tags":tags,
                 "lane":unit.lane, "ready":unit.ready, "might":stats.might, "might_exact":stats.might.to_string(),
@@ -358,7 +358,12 @@ impl Session {
                 "damage_priority":game.damage_priority(unit).map_err(ApiError::illegal)?,
                 "vision_instances":vision::instances_to_json(game,crate::empower::BoardObject::Unit {player:owner,unit_id:unit.id})?,
                 "passive_contributions":game.passive_contributions(crate::empower::BoardObject::Unit {player:owner,unit_id:unit.id}).map_err(ApiError::illegal)?.iter().map(empowered::contribution_to_json).collect::<Vec<_>>()
-            }))}).collect::<Result<Vec<_>,ApiError>>()?;
+            });
+                if game.movement_prevented(1-owner, owner, unit.id) {
+                    unit_view["movement_restriction"] = json!({"scope":"any_player","expires":"end_of_turn"});
+                }
+                Ok(unit_view)
+            }).collect::<Result<Vec<_>,ApiError>>()?;
             let gear: Vec<_> = state.gear.iter().map(|gear| Ok(json!({
                 "id":gear.id, "card_id":gear.card_id, "name":game.gear_name(gear), "token":gear.token,
                 "attached_to":gear.attached_to, "lane":game.gear_location(owner,gear.id),

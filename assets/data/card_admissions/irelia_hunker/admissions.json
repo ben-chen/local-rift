@@ -1,0 +1,92 @@
+{
+  "status": "admitted",
+  "records": [
+    {
+      "runtime_id": 425,
+      "official_id": "rad-034-167",
+      "raw_printing": {
+        "official_id": "rad-034-167",
+        "public_code": "RAD-034/167",
+        "name": "Hunker Down",
+        "set": "RAD",
+        "collector_number": 34,
+        "types": [
+          "spell"
+        ],
+        "type_source": "cardImage.accessibilityText",
+        "structured_types": [],
+        "accessibility_types": [
+          "spell"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "calm"
+        ],
+        "energy": 1,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "rules_html": "<p>[Reaction] (Play any time, even before spells and abilities resolve.)<br />Ready a friendly unit. It can't move this turn. Draw 1.</p>",
+        "rules_text": "[Reaction] (Play any time, even before spells and abilities resolve.)\nReady a friendly unit. It can't move this turn. Draw 1.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [],
+        "rarity": "uncommon",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/111c518590b17919e5b851ef6c713c7eb7504ae2-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Spell: Hunker Down. [Reaction] (Play any time, even before spells and abilities resolve.)\nReady a friendly unit. It can't move this turn. Draw 1.",
+        "illustrators": [
+          "Kudos Productions"
+        ]
+      },
+      "raw_printing_sha256": "2d50f276046df74c2146b3e4617b51c377f3e39c98f76252283b24d78422adab",
+      "effective": {
+        "types": [
+          "spell"
+        ],
+        "super_types": [],
+        "domains": [
+          "calm"
+        ],
+        "energy": 1,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>[Reaction] (Play any time, even before spells and abilities resolve.)<br />Ready a friendly unit. It can't move this turn. Draw 1.</p>",
+        "rules_text": "[Reaction] (Play any time, even before spells and abilities resolve.)\nReady a friendly unit. It can't move this turn. Draw 1.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "resolution_ids": [
+        "rad-034-167:types"
+      ],
+      "printing_cohort": [
+        "rad-034-167"
+      ],
+      "errata": [],
+      "original_image": {
+        "path": "assets/data/card_admissions/irelia_hunker/rad-034-167.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/111c518590b17919e5b851ef6c713c7eb7504ae2-744x1039.png?accountingTag=RB",
+        "sha256": "22f84b148f61d383851b89a1eb3f16ae857325f813a48f4eda2bea1bcdf62d7e"
+      },
+      "runtime_image": {
+        "path": "assets/art/card_425.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/111c518590b17919e5b851ef6c713c7eb7504ae2-744x1039.png?w=280&q=85&fm=png",
+        "sha256": "e21b0e0b60ae3c92b2ed1217005bb9163ea8637cd1f30a006437123784693fbb"
+      },
+      "visual_review": {
+        "actual_full_face_viewed": true,
+        "reviewer": "root",
+        "reviewed_on": "2026-11-11",
+        "original_image_sha256": "22f84b148f61d383851b89a1eb3f16ae857325f813a48f4eda2bea1bcdf62d7e"
+      }
+    }
+  ],
+  "preserved_runtime_prefix": {
+    "cards_sha256": "1cd801957240287551b2906847924f3b39186e8866ea7f2687721420d1981316",
+    "presets_sha256": "55f81fe597de35b0c4dee12d87ad36ae72463cbfb5ae576d00f87104cd5914d5",
+    "card_count": 425,
+    "preset_count": 5
+  }
+}

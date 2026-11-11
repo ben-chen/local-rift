@@ -445,6 +445,24 @@ fn checked_advice(game: &Game, level: AdviceLevel) -> Result<Vec<&'static str>, 
         });
     }
 
+    if human.hand.contains(&425) {
+        tips.push(if beginner {
+            "Hunker Down readies your unit and draws a card, but that unit cannot move this turn. An opponent's movement effect cannot move it either."
+        } else {
+            "Hunker Down can protect a defender from forced movement. It also stops your own movement this turn, so choose your battlefield before casting it."
+        });
+    }
+    if human
+        .units
+        .iter()
+        .any(|unit| game.movement_prevented(1, 0, unit.id))
+    {
+        tips.push(if beginner {
+            "A unit marked CANNOT MOVE stays where it is this turn, even if it is ready. It can still fight and use other legal abilities. The restriction ends with the turn."
+        } else {
+            "Your movement-locked unit can hold its position against forced Move effects. Return-to-hand and banish effects still work; don't treat it as complete protection."
+        });
+    }
     if human.hand.contains(&422) {
         tips.push(if beginner {
             "Find Your Center draws a card and channels an exhausted rune. It costs 1 energy when the opponent has at least 5 points; otherwise it costs 3."
@@ -530,14 +548,17 @@ fn checked_advice(game: &Game, level: AdviceLevel) -> Result<Vec<&'static str>, 
         .iter()
         .map(|unit| game.try_unit_stats(unit).map(|stats| (unit, stats)))
         .collect::<Result<Vec<_>, _>>()?;
-    let ready_at_base = human.units.iter().any(|u| u.ready && u.lane.is_none());
+    let ready_at_base = human
+        .units
+        .iter()
+        .any(|u| u.ready && u.lane.is_none() && !game.movement_locked(0, u.id));
     if ready_at_base {
         for (lane, field) in game.battlefields.iter().enumerate() {
             if game.battlefield_owner[lane] == Some(0) {
                 continue;
             }
             match field {
-                0 if human_stats.iter().any(|(unit, stats)| unit.ready && unit.lane.is_none() && stats.might >= 5) => {
+                0 if human_stats.iter().any(|(unit, stats)| unit.ready && unit.lane.is_none() && !game.movement_locked(0, unit.id) && stats.might >= 5) => {
                     tips.push("A Mighty unit can unlock Sunken Temple's conquest draw. Keep 1 energy if that extra card is part of your plan.");
                 }
                 1 if game.battlefield_owner.iter().enumerate().any(|(other, owner)| other != lane && *owner == Some(0)) => {

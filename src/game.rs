@@ -1036,6 +1036,9 @@ pub struct Game {
     pending_loot: Option<u32>,
     pending_entries: Vec<(usize, usize)>,
     movement_locks: Vec<(usize, u32)>,
+    /// Object restrictions stop movement by either player, unlike Vex's
+    /// controller-only restriction retained in movement_locks.
+    immobile_units: Vec<(usize, u32)>,
     pending_combat: Option<PendingCombat>,
     combat_resolution: Option<CombatResolution>,
     pending_start: Option<StartStage>,
@@ -1280,6 +1283,7 @@ impl Game {
             pending_loot: None,
             pending_entries: Vec::new(),
             movement_locks: Vec::new(),
+            immobile_units: Vec::new(),
             pending_combat:None,
             combat_resolution:None,
             pending_start:None,
@@ -1528,7 +1532,11 @@ impl Game {
     }
 
     pub fn movement_locked(&self, player: usize, unit_id: u32) -> bool {
-        self.movement_locks.contains(&(player, unit_id))
+        self.movement_prevented(player, player, unit_id)
+    }
+    pub fn movement_prevented(&self, actor: usize, owner: usize, unit_id: u32) -> bool {
+        self.immobile_units.contains(&(owner, unit_id))
+            || (actor == owner && self.movement_locks.contains(&(owner, unit_id)))
     }
     pub fn cards_played_this_turn(&self, player: usize) -> u16 {
         self.cards_played[player]
@@ -2085,8 +2093,8 @@ impl Game {
             if !unit.ready {
                 return Err("Every selected unit must be ready before moving.".into());
             }
-            if self.movement_locks.contains(&(player, unit.id)) {
-                return Err("Vex prevents you from moving this unit this turn.".into());
+            if self.movement_locked(player, unit.id) {
+                return Err("This unit cannot be moved by you this turn.".into());
             }
             if unit.lane == lane {
                 return Err("A selected unit is already at the destination.".into());
@@ -3958,20 +3966,26 @@ impl Game {
         else {
             return Ok(());
         };
-        if a == b
-            || owner != player
-            || self.movement_locks.contains(&(player, unit_id))
-            || self.movement_locks.contains(&(player, other))
-        {
+        if a == b || owner != player {
             return Ok(());
         }
-        self.unit_mut(source).unwrap().lane = b;
-        self.unit_mut(target).unwrap().lane = a;
-        self.on_move(player, unit_id, a, b);
-        self.on_move(player, other, b, a);
+        // Each Move is independent; retain both original locations and defer
+        // control checks until both instructions have been attempted.
+        let mut moved = Vec::new();
+        for (object, id, from, to) in [(source, unit_id, a, b), (target, other, b, a)] {
+            if !self.movement_locked(player, id) {
+                self.unit_mut(object).unwrap().lane = to;
+                moved.push((id, from, to));
+            }
+        }
+        for &(id, from, to) in &moved {
+            self.on_move(player, id, from, to);
+        }
         self.trigger_batch += 1;
-        for lane in [a, b].into_iter().flatten() {
-            self.stage_entry(lane, player);
+        for (_, _, to) in moved {
+            if let Some(lane) = to {
+                self.stage_entry(lane, player);
+            }
         }
         for lane in [a, b].into_iter().flatten() {
             self.refresh_control(lane)?;
@@ -6100,7 +6114,7 @@ impl Game {
                 return Ok(actions);
             }
             for unit in &self.players[self.priority()].units {
-                if !unit.ready || self.movement_locks.contains(&(self.priority(), unit.id)) {
+                if !unit.ready || self.movement_locked(self.priority(), unit.id) {
                     continue;
                 }
                 if unit.lane.is_none() {
@@ -6243,7 +6257,7 @@ impl Game {
         if self.players[0]
             .units
             .iter()
-            .any(|u| u.ready && u.lane.is_none())
+            .any(|u| u.ready && u.lane.is_none() && !self.movement_locked(0, u.id))
         {
             return "Select a ready unit at base, then choose a battlefield to move and conquer."
                 .into();
@@ -7005,9 +7019,9 @@ impl Game {
             return Ok(());
         };
         let old = self.players[player].units[index].lane;
-        if actor == player && self.movement_locks.contains(&(player, unit_id)) {
+        if self.movement_prevented(actor, player, unit_id) {
             if ready {
-                self.ready_unit(player, unit_id);
+                self.ready_unit_by(actor, player, unit_id);
             }
             return Ok(());
         }
@@ -7766,6 +7780,20 @@ impl Game {
                     self.ready_unit_by(player, owner, unit_id);
                 }
             }
+            OfficialEffect::ReadyAndPreventMovement { draw } => {
+                if let Some(&Target::Unit {
+                    player: owner,
+                    unit_id,
+                }) = valid.first()
+                {
+                    self.ready_unit_by(player, owner, unit_id);
+                    if !self.immobile_units.contains(&(owner, unit_id)) {
+                        self.immobile_units.push((owner, unit_id));
+                    }
+                }
+                // CR359.3.e.5: the independent draw survives an illegal target.
+                self.draw(player, draw)?;
+            }
             OfficialEffect::BuffAnother => {
                 if let Some(&target) = valid.first()
                     && let Some(unit) = self.unit_ref(target)
@@ -7984,6 +8012,7 @@ impl Game {
         }
         self.silenced = [false; 2];
         self.movement_locks.clear();
+        self.immobile_units.clear();
         self.legend_end_turn();
         self.hidden_view = [false; 2];
         self.temporary_flow = [Vec::new(), Vec::new()];
@@ -9348,9 +9377,7 @@ impl Game {
             let ready_base: Vec<&Unit> = self.players[player]
                 .units
                 .iter()
-                .filter(|u| {
-                    u.ready && !self.movement_locks.contains(&(player, u.id)) && u.lane.is_none()
-                })
+                .filter(|u| u.ready && !self.movement_locked(player, u.id) && u.lane.is_none())
                 .collect();
             let ready_values: Vec<_> = ready_base
                 .iter()
@@ -9729,6 +9756,18 @@ impl Game {
                             && self.unit_ref(target).is_some_and(|unit| !unit.ready)
                     }) {
                         35
+                    } else {
+                        0
+                    }
+                }
+                OfficialEffect::ReadyAndPreventMovement { .. } => {
+                    if targets.iter().any(|&target| {
+                        self.unit_ref(target)
+                            .is_some_and(|u| u.lane.is_some() && !u.ready)
+                    }) {
+                        35
+                    } else if self.players[actor].hand.len() < 5 {
+                        15
                     } else {
                         0
                     }

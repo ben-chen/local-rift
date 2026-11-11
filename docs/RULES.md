@@ -430,3 +430,21 @@ event subject, not a chosen target. If it leaves play, a later copy is unaffecte
 and the paid source stays banished. Banish does not trigger Deathknell or a death
 replacement. Declining keeps your unit. Mote explains the timing and helps compare
 the gear with the unit's combat and scoring value.
+
+
+## Hunker Down
+
+Hunker Down readies a friendly unit, prevents that unit from moving this turn, and
+draws one card. It can choose an already-ready unit. Irelia gains Might separately
+for being chosen and for actually becoming ready. If the target leaves play in
+response, the independent draw still resolves (Core 359.3.e.5). A counter stops
+the entire spell.
+
+The restriction stops both players' Move effects as well as basic/grouped movement.
+Movement spells remain legal to cast on it (Core 358.3.a), and independent Ready
+or Draw instructions still happen. Tideturner and Smoke and Mirrors move each
+unrestricted unit to the other's original location. Vex's narrower restriction
+continues to stop only movement performed by the unit's controller. Return-to-hand,
+Recall, and banish are separate actions; a newly played copy has no inherited lock.
+The board label, hover explanation, companion tips and bot observation describe
+this restriction, which expires at the end of the turn.

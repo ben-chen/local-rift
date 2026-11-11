@@ -704,3 +704,74 @@ fn prefect_api_exposes_public_object_cost_and_exact_event_gear() {
     resolve_chain(&mut session);
     assert_eq!(session.game.players[0].banish, vec![235]);
 }
+
+#[test]
+fn hunker_api_filters_friendly_targets_reports_public_lock_and_rolls_back_bad_moves() {
+    let mut session = position();
+    session.game.players[0].hand = vec![425];
+    session.game.players[0].units = vec![unit(500, 73, None, false)];
+    session.game.players[1].units = vec![unit(501, 73, None, false)];
+    let revision = session.revision();
+    let before = format!("{:?}", session.game);
+    let draft = Action::PlayCardWithTargets {
+        hand_index: 0,
+        lane: None,
+        targets: vec![],
+    };
+    let target = Target::Unit {
+        player: 0,
+        unit_id: 500,
+    };
+    assert_eq!(
+        session
+            .target_candidates(0, revision, draft, 0)
+            .unwrap()
+            .candidates,
+        vec![target]
+    );
+    assert_eq!(session.revision(), revision);
+    assert_eq!(format!("{:?}", session.game), before);
+    apply(
+        &mut session,
+        Action::PlayCardWithTargets {
+            hand_index: 0,
+            lane: None,
+            targets: vec![target],
+        },
+    );
+    resolve_chain(&mut session);
+    for viewer in 0..2 {
+        let observation = session.observe(viewer).unwrap();
+        let friendly = &observation["players"][0]["units"][0];
+        assert_eq!(friendly["ready"], true);
+        assert_eq!(friendly["movement_locked"], true);
+        assert_eq!(
+            friendly["movement_restriction"],
+            json!({"scope":"any_player","expires":"end_of_turn"})
+        );
+        assert!(
+            observation["players"][1]["units"][0]
+                .get("movement_restriction")
+                .is_none()
+        );
+    }
+    let revision = session.revision();
+    let before = format!("{:?}", session.game);
+    let move_action = Action::Move {
+        unit_id: 500,
+        lane: Some(0),
+    };
+    for command in ["validate", "apply"] {
+        let response=session.handle(json!({"command":command,"player":0,"revision":revision,"action":action_to_json(&move_action)}));
+        assert_eq!(response["ok"], false, "{response}");
+        assert_eq!(response["error"]["code"], "illegal_action", "{response}");
+        assert_eq!(session.revision(), revision);
+        assert_eq!(format!("{:?}", session.game), before);
+    }
+    apply(&mut session, Action::EndTurn);
+    assert!(
+        session.observe(1).unwrap()["players"][0]["units"][0]
+            .get("movement_restriction")
+            .is_none()
+    );
+}

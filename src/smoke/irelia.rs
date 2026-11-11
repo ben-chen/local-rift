@@ -105,6 +105,85 @@ pub(crate) fn run_frame(app: &mut App, frame: u32) -> bool {
         11 => click(app, 940.0, 700.0),
         12 => {
             assert!(app.inspect.is_none());
+            expansion_fixture(app, 425);
+            app.game = Game::new_for_agents(3, 3, 425425, Difficulty::Easy);
+            app.game.start_match().unwrap();
+            app.game.battlefields = [2, 2];
+            app.game.battlefield_owner = [None; 2];
+            for p in &mut app.game.players {
+                p.units.clear();
+                p.gear.clear();
+                p.hidden.clear();
+                p.hand.clear();
+                p.champion = None;
+                p.energy_pool = 20;
+                p.energy = 20;
+                p.power_pool = [10; 6];
+                p.set_rune_setup([0; 6], [0; 6]).unwrap();
+            }
+            let mut unit = public_unit(42500, 73, None);
+            unit.ready = false;
+            app.game.players[0].units = vec![unit];
+            app.game.players[0].hand = vec![425];
+            app.game.players[0].deck = vec![71; 10];
+            app.fields = app.game.battlefields;
+            app.ai_worker.invalidate();
+            app.prefs.exact_payment = false;
+            app.companion.set_level(AdviceLevel::Beginner);
+        }
+        13 => {
+            capture(app, "RIFT_IRELIA_HUNKER_HAND");
+            click(app, 315.0, 760.0);
+        }
+        14 => {
+            assert!(app.selection == Some(Selection::Hand(0)));
+            click_unit(app, 42500);
+        }
+        15 => {
+            assert_eq!(
+                app.targets,
+                vec![Target::Unit {
+                    player: 0,
+                    unit_id: 42500
+                }]
+            );
+            click(app, 1285.0, 510.0);
+        }
+        16 => {
+            assert!(app.game.chain.iter().any(|item| item.card_id == 425));
+            app.game.apply(Action::Pass).unwrap();
+            app.game.apply(Action::Pass).unwrap();
+            assert!(app.game.players[0].units[0].ready);
+            assert!(app.game.movement_prevented(1, 0, 42500));
+            assert_eq!(app.game.players[0].hand, vec![71]);
+            assert!(!app.game.action_hint().contains("ready unit at base"));
+            capture(app, "RIFT_IRELIA_HUNKER_LOCKED");
+            click_unit(app, 42500);
+        }
+        17 => {
+            assert!(app.selection == Some(Selection::Unit(42500)));
+            // The selected-unit movement button is disabled, not a failed action.
+            app.toast_until = 0.0;
+            click(app, 1285.0, 420.0);
+        }
+        18 => {
+            assert_eq!(app.game.players[0].units[0].lane, None);
+            assert_eq!(app.toast_until, 0.0);
+            assert!(
+                super::super::live_unit_description(&app.game, 0, 42500)
+                    .unwrap()
+                    .contains("either player's spells")
+            );
+            capture_unit(app, 42500, "RIFT_IRELIA_HUNKER_HOVER");
+        }
+        19 => {
+            app.inspect = Some(425);
+            app.companion.set_level(AdviceLevel::Advanced);
+            capture(app, "RIFT_IRELIA_HUNKER_INSPECT");
+            click(app, 940.0, 700.0);
+        }
+        20 => {
+            assert!(app.inspect.is_none());
             return true;
         }
         _ => {}

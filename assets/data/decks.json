@@ -10979,6 +10979,29 @@
       "tags": [
         "Noxus"
       ]
+    },
+    {
+      "id": 425,
+      "name": "Hunker Down",
+      "official_id": "rad-034-167",
+      "energy": 1,
+      "power": 0,
+      "might": 0,
+      "domains": [
+        "Calm"
+      ],
+      "kind": "Spell",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/111c518590b17919e5b851ef6c713c7eb7504ae2-744x1039.png?w=280&q=85&fm=png",
+      "source_url": "https://riftbound.leagueoflegends.com/en-us/card-gallery/",
+      "official_text": "[Reaction] (Play any time, even before spells and abilities resolve.)\nReady a friendly unit. It can't move this turn. Draw 1.",
+      "official_text_html": "<p>[Reaction] (Play any time, even before spells and abilities resolve.)<br />Ready a friendly unit. It can't move this turn. Draw 1.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Reaction"
+      ],
+      "tags": []
     }
   ],
   "official_text_note": "Official card/legend rules text from the Riot Card Gallery, retrieved 2026-10-24 and corrected by cited errata. Resource icon tokens are expanded to readable bracketed names. Raw card and equipment HTML is preserved separately. Official text does not establish full implementation fidelity."

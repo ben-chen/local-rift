@@ -635,3 +635,40 @@ fn momentary_grants_only_from_its_opponent_turn_play_trigger() {
         assert_eq!(status.granted, opponent_turn);
     }
 }
+
+#[test]
+fn hunker_stops_only_its_half_of_smoke_and_mirrors_and_keeps_independent_draw() {
+    let mut g = position(3);
+    let a = unit(&mut g, 69, Some(0));
+    let b = unit(&mut g, 69, None);
+    g.battlefield_owner[0] = Some(0);
+    g.grant_temporary(a);
+    cast(&mut g, 425, vec![a]);
+    let draws = g.trigger_state.draws[0];
+    cast(&mut g, 354, vec![a, b]);
+    assert_eq!(g.unit_ref(a).unwrap().lane, Some(0));
+    assert_eq!(g.unit_ref(b).unwrap().lane, Some(0));
+    assert_eq!(g.trigger_state.draws[0], draws + 1);
+}
+
+#[test]
+fn vex_controller_only_move_restriction_still_permits_enemy_applied_move() {
+    let mut g = position(3);
+    let a = unit(&mut g, 69, None);
+    // The actual Vex trigger's resolution, rather than a fabricated global lock.
+    g.resolve_trigger(
+        1,
+        20,
+        TriggeredAbility::Stun {
+            player: 0,
+            unit_id: tid(a),
+        },
+    )
+    .unwrap();
+    assert!(g.movement_locked(0, tid(a)));
+    assert!(!g.movement_prevented(1, 0, tid(a)));
+    g.move_effect(0, a, Some(0), false).unwrap();
+    assert_eq!(g.unit_ref(a).unwrap().lane, None);
+    g.move_effect(1, a, Some(0), false).unwrap();
+    assert_eq!(g.unit_ref(a).unwrap().lane, Some(0));
+}

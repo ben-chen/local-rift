@@ -67,6 +67,9 @@ pub struct PlayTargetSpec {
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum OfficialEffect {
+    ReadyAndPreventMovement {
+        draw: u8,
+    },
     PredictThenDraw {
         predict: u8,
         draw: u8,
@@ -257,6 +260,7 @@ pub struct Targeting {
 pub fn effect(id: usize) -> OfficialEffect {
     use OfficialEffect::*;
     match id {
+        425 => ReadyAndPreventMovement { draw: 1 },
         424 => None,
         422 => DrawThenChannel {
             draw: 1,
@@ -665,7 +669,9 @@ pub fn targeting(id: usize) -> Targeting {
         290..=296 | 335 | 349 => Any,
         4 | 32 | 144 | 145 | 365 => Enemy,
         362 | 364 | 372 | 378 | 379 | 381 => Any,
-        8 | 9 | 14 | 19 | 27 | 85 | 137 | 228 | 350 | 353 | 354 | 377 | 380 | 382 | 421 => Friendly,
+        8 | 9 | 14 | 19 | 27 | 85 | 137 | 228 | 350 | 353 | 354 | 377 | 380 | 382 | 421 | 425 => {
+            Friendly
+        }
         16 | 29 | 82 | 217 | 218 | 383 => Mixed,
         5 | 7 | 11 | 23 | 26 | 28 | 41 | 44 | 50 | 52 | 53 | 55 | 61 | 62 | 63 | 66 | 67 | 74
         | 75 | 76 | 79 | 80 | 81 | 83 | 99 | 135 | 136 | 141 | 142 | 143 | 146 | 216 | 219
@@ -730,6 +736,7 @@ pub fn target_bounds(id: usize) -> (usize, usize) {
         | Bounce { .. }
         | MoveEnemy
         | MoveFriendlyAndReady
+        | ReadyAndPreventMovement { .. }
         | ReadyAnother
         | BuffAnother
         | GiveTemporary
@@ -1096,6 +1103,7 @@ pub fn requirements(id: usize) -> &'static [Mechanic] {
         422 => &[Chain, Channel, CostReduction],
         423 => &[Chain, Counterspell],
         424 => &[Chain, Banish, Gear, OptionalCosts],
+        425 => &[Chain, Move, ChooseReadyTriggers],
         372 | 373 => &[Chain, Gear, Bounce],
         374 => &[Chain, Gear, DeathTriggers],
         375 => &[Chain, Bounce],
@@ -2008,7 +2016,7 @@ mod tests {
     #[test]
     fn all_catalog_entries_have_official_classification() {
         let cards = cards();
-        assert_eq!(cards.len(), 425);
+        assert_eq!(cards.len(), 426);
         for card in cards {
             assert_ne!(
                 effect(card.id),
@@ -2018,7 +2026,7 @@ mod tests {
             );
             assert_ne!(support_status(card.id), SupportStatus::UnknownCard);
         }
-        assert_eq!(effect(425), OfficialEffect::Unsupported);
+        assert_eq!(effect(426), OfficialEffect::Unsupported);
     }
 
     #[test]

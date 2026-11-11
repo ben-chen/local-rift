@@ -6473,6 +6473,21 @@ pub fn cards() -> Vec<CardDef> {
             tags: &["Noxus"],
             art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/57ecb26880ea084ea16b785c9a563ff298ee6a42-744x1039.png?w=280&q=85&fm=png",
         },
+        CardDef {
+            id: 425,
+            official_id: "rad-034-167",
+            name: "Hunker Down",
+            cost: 1,
+            power_cost: 0,
+            might: 0,
+            domain: Domain::Calm,
+            domains: &[Domain::Calm],
+            kind: CardKind::Spell,
+            official_text: "[Reaction] (Play any time, even before spells and abilities resolve.)\nReady a friendly unit. It can't move this turn. Draw 1.",
+            keywords: &["Reaction"],
+            tags: &[],
+            art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/111c518590b17919e5b851ef6c713c7eb7504ae2-744x1039.png?w=280&q=85&fm=png",
+        },
     ]
 }
 
@@ -6672,7 +6687,7 @@ mod tests {
     #[test]
     fn presets_are_complete_and_references_are_consistent() {
         let catalog = cards();
-        assert_eq!(catalog.len(), 425);
+        assert_eq!(catalog.len(), 426);
         for (index, card) in catalog.iter().enumerate() {
             assert_eq!(index, card.id);
             assert!(!card.official_id.is_empty());

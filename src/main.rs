@@ -1420,6 +1420,7 @@ impl App {
                     card_id,
                     owner,
                     unit.ready,
+                    self.game.movement_locked(owner, unit.id),
                     self.game.unit_empowered(unit.id),
                     self.game
                         .has_temporary(local_rift::empower::BoardObject::Unit {
@@ -1633,6 +1634,7 @@ impl App {
                     id,
                     index,
                     true,
+                    false,
                     false,
                     false,
                     Might::from(card.might),
@@ -4974,6 +4976,7 @@ impl App {
         id: usize,
         owner: usize,
         ready: bool,
+        movement_locked: bool,
         empowered: bool,
         temporary: bool,
         might: Might,
@@ -5108,6 +5111,14 @@ impl App {
             );
             self.ui
                 .text(status, r.x + 5.0, r.y + art.h + 0.5, 6.7, GOLD);
+        }
+        if movement_locked {
+            let y = r.y + art.h - if status.is_some() { 20.0 } else { 8.0 };
+            self.ui.rect(
+                Rect::new(r.x + 2.0, y, r.w - 4.0, 11.0),
+                Color::new(0.03, 0.06, 0.07, 0.95),
+            );
+            self.ui.text("CANNOT MOVE", r.x + 5.0, y + 8.5, 6.7, GOLD);
         }
         self.ui.border(
             r,
@@ -6414,12 +6425,15 @@ impl App {
                 if let Some(unit) = self.game.players[0].units.iter().find(|u| u.id == id) {
                     let card_id = unit.card_id;
                     let ready = unit.ready;
+                    let movement_locked = self.game.movement_locked(0, id);
                     let lane = unit.lane;
                     let ganking = self.game.unit_keywords(unit)?.ganking;
                     self.ui
                         .ellipsis(&self.game.unit_name(unit), 1178.0, 359.0, 212.0, 16.0, TEXT);
                     self.ui.text(
-                        if ready && self.game.in_window() {
+                        if movement_locked {
+                            "CANNOT MOVE THIS TURN"
+                        } else if ready && self.game.in_window() {
                             "READY"
                         } else if ready {
                             "READY TO MOVE"
@@ -6429,13 +6443,18 @@ impl App {
                         1178.0,
                         383.0,
                         9.0,
-                        if ready { TEAL } else { GOLD },
+                        if ready && !movement_locked {
+                            TEAL
+                        } else {
+                            GOLD
+                        },
                     );
                     if self.ui.button(
                         Rect::new(1178.0, 403.0, 212.0, 34.0),
                         "Move to field 1",
                         false,
                         ready
+                            && !movement_locked
                             && (lane.is_none() || ganking)
                             && self.game.chain.is_empty()
                             && self.game.showdown.is_none(),
@@ -6447,6 +6466,7 @@ impl App {
                         "Move to field 2",
                         false,
                         ready
+                            && !movement_locked
                             && (lane.is_none() || ganking)
                             && self.game.chain.is_empty()
                             && self.game.showdown.is_none(),
@@ -6458,6 +6478,7 @@ impl App {
                         "Return to base",
                         false,
                         ready
+                            && !movement_locked
                             && lane.is_some()
                             && self.game.chain.is_empty()
                             && self.game.showdown.is_none(),
@@ -6467,7 +6488,9 @@ impl App {
                     let group_available = self.game.players[0]
                         .units
                         .iter()
-                        .filter(|u| u.ready && u.lane == lane)
+                        .filter(|u| {
+                            u.ready && u.lane == lane && !self.game.movement_locked(0, u.id)
+                        })
                         .map(|u| u.id)
                         .collect::<Vec<_>>();
                     if matches!(card_id, 24 | 45) {
@@ -6522,6 +6545,7 @@ impl App {
                             },
                             false,
                             group_available.len() > 1
+                                && !movement_locked
                                 && self.game.showdown.is_none()
                                 && self.game.chain.is_empty(),
                         ) {
@@ -8401,6 +8425,7 @@ fn card_brief(game: &Game, id: usize) -> String {
         KillGear { controller_draw } => {
             format!("Kill gear · its controller draws {controller_draw}")
         }
+        ReadyAndPreventMovement { .. } => "Ready · cannot move this turn · draw 1".into(),
         DrawThenChannel { draw, channel } => format!("Draw {draw} · channel {channel} exhausted"),
         Counter(local_rift::rules::CounterKind::MinimumPower(minimum)) => {
             format!("Counter a spell with printed Power {minimum}+")
@@ -8996,6 +9021,11 @@ fn live_unit_description(game: &Game, owner: usize, unit_id: u32) -> Option<Stri
     }
     if unit.stunned {
         lines.push("Stunned: contributes no might to combat damage this turn; still needs lethal damage equal to its full might.".into());
+    }
+    if game.movement_prevented(1 - owner, owner, unit_id) {
+        lines.push("Cannot move this turn, including through either player's spells or abilities. Readying does not remove this restriction. Returning to hand or banishing is not movement.".into());
+    } else if game.movement_locked(owner, unit_id) {
+        lines.push("Its controller cannot move this unit this turn, including through spells or abilities. An opponent's movement effect can still move it.".into());
     }
     if unit.protected {
         lines.push("Protected from being chosen by enemy spells and abilities this turn.".into());

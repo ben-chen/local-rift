@@ -1,0 +1,683 @@
+{
+  "reviewed_on": "2026-11-11",
+  "scope": "Hunker Down and movement restriction clarity after Ravenbloom Prefect",
+  "runtime_id": 425,
+  "rust": {
+    "passed": 1488,
+    "failed": 0,
+    "targets": 98,
+    "command": "cargo test --all-targets",
+    "exit_code": 0
+  },
+  "final_affected_tests": {
+    "passed": 826,
+    "failed": 0,
+    "command": "cargo test --lib --bin local-rift",
+    "reason": "After full-suite compilation, fixed movement controls, general movement hint and companion movement hints; gameplay resolution was unchanged."
+  },
+  "python": {
+    "passed": 248,
+    "failed": 0,
+    "exit_code": 0
+  },
+  "checks": [
+    "cargo fmt --check",
+    "cargo clippy --all-targets -- -D warnings",
+    "offline catalog check"
+  ],
+  "games": {
+    "completed": 60,
+    "all_five_presets": true,
+    "all_levels": true,
+    "both_seats": true,
+    "both_starting_players": true,
+    "recipe": "authored exact40 variant; sourced recipes unchanged",
+    "required_observation": "Hunker Down played and all new spell copies conserved at match end"
+  },
+  "api": {
+    "games": 24,
+    "results": [
+      {
+        "level": "easy",
+        "opponent": 1,
+        "seat": 0,
+        "starter": 0,
+        "seed": 425004,
+        "winner": 1,
+        "scores": [
+          3,
+          8
+        ],
+        "actions": 124
+      },
+      {
+        "level": "easy",
+        "opponent": 1,
+        "seat": 0,
+        "starter": 1,
+        "seed": 425005,
+        "winner": 1,
+        "scores": [
+          1,
+          8
+        ],
+        "actions": 113
+      },
+      {
+        "level": "easy",
+        "opponent": 1,
+        "seat": 1,
+        "starter": 0,
+        "seed": 425006,
+        "winner": 0,
+        "scores": [
+          8,
+          7
+        ],
+        "actions": 199
+      },
+      {
+        "level": "easy",
+        "opponent": 1,
+        "seat": 1,
+        "starter": 1,
+        "seed": 425007,
+        "winner": 1,
+        "scores": [
+          3,
+          8
+        ],
+        "actions": 134
+      },
+      {
+        "level": "easy",
+        "opponent": 3,
+        "seat": 0,
+        "starter": 0,
+        "seed": 425012,
+        "winner": 1,
+        "scores": [
+          5,
+          9
+        ],
+        "actions": 176
+      },
+      {
+        "level": "easy",
+        "opponent": 3,
+        "seat": 0,
+        "starter": 1,
+        "seed": 425013,
+        "winner": 1,
+        "scores": [
+          6,
+          8
+        ],
+        "actions": 227
+      },
+      {
+        "level": "easy",
+        "opponent": 3,
+        "seat": 1,
+        "starter": 0,
+        "seed": 425014,
+        "winner": 0,
+        "scores": [
+          8,
+          4
+        ],
+        "actions": 149
+      },
+      {
+        "level": "easy",
+        "opponent": 3,
+        "seat": 1,
+        "starter": 1,
+        "seed": 425015,
+        "winner": 1,
+        "scores": [
+          1,
+          8
+        ],
+        "actions": 106
+      },
+      {
+        "level": "tactical",
+        "opponent": 1,
+        "seat": 0,
+        "starter": 0,
+        "seed": 425104,
+        "winner": 0,
+        "scores": [
+          8,
+          7
+        ],
+        "actions": 221
+      },
+      {
+        "level": "tactical",
+        "opponent": 1,
+        "seat": 0,
+        "starter": 1,
+        "seed": 425105,
+        "winner": 1,
+        "scores": [
+          0,
+          9
+        ],
+        "actions": 104
+      },
+      {
+        "level": "tactical",
+        "opponent": 1,
+        "seat": 1,
+        "starter": 0,
+        "seed": 425106,
+        "winner": 0,
+        "scores": [
+          8,
+          2
+        ],
+        "actions": 145
+      },
+      {
+        "level": "tactical",
+        "opponent": 1,
+        "seat": 1,
+        "starter": 1,
+        "seed": 425107,
+        "winner": 1,
+        "scores": [
+          6,
+          8
+        ],
+        "actions": 188
+      },
+      {
+        "level": "tactical",
+        "opponent": 3,
+        "seat": 0,
+        "starter": 0,
+        "seed": 425112,
+        "winner": 0,
+        "scores": [
+          8,
+          4
+        ],
+        "actions": 173
+      },
+      {
+        "level": "tactical",
+        "opponent": 3,
+        "seat": 0,
+        "starter": 1,
+        "seed": 425113,
+        "winner": 1,
+        "scores": [
+          0,
+          9
+        ],
+        "actions": 86
+      },
+      {
+        "level": "tactical",
+        "opponent": 3,
+        "seat": 1,
+        "starter": 0,
+        "seed": 425114,
+        "winner": 0,
+        "scores": [
+          8,
+          3
+        ],
+        "actions": 141
+      },
+      {
+        "level": "tactical",
+        "opponent": 3,
+        "seat": 1,
+        "starter": 1,
+        "seed": 425115,
+        "winner": 0,
+        "scores": [
+          8,
+          6
+        ],
+        "actions": 154
+      },
+      {
+        "level": "strategic",
+        "opponent": 1,
+        "seat": 0,
+        "starter": 0,
+        "seed": 425204,
+        "winner": 1,
+        "scores": [
+          7,
+          8
+        ],
+        "actions": 172
+      },
+      {
+        "level": "strategic",
+        "opponent": 1,
+        "seat": 0,
+        "starter": 1,
+        "seed": 425205,
+        "winner": 0,
+        "scores": [
+          8,
+          7
+        ],
+        "actions": 197
+      },
+      {
+        "level": "strategic",
+        "opponent": 1,
+        "seat": 1,
+        "starter": 0,
+        "seed": 425206,
+        "winner": 1,
+        "scores": [
+          7,
+          8
+        ],
+        "actions": 168
+      },
+      {
+        "level": "strategic",
+        "opponent": 1,
+        "seat": 1,
+        "starter": 1,
+        "seed": 425207,
+        "winner": 0,
+        "scores": [
+          9,
+          3
+        ],
+        "actions": 83
+      },
+      {
+        "level": "strategic",
+        "opponent": 3,
+        "seat": 0,
+        "starter": 0,
+        "seed": 425212,
+        "winner": 0,
+        "scores": [
+          9,
+          4
+        ],
+        "actions": 208
+      },
+      {
+        "level": "strategic",
+        "opponent": 3,
+        "seat": 0,
+        "starter": 1,
+        "seed": 425213,
+        "winner": 1,
+        "scores": [
+          2,
+          8
+        ],
+        "actions": 104
+      },
+      {
+        "level": "strategic",
+        "opponent": 3,
+        "seat": 1,
+        "starter": 0,
+        "seed": 425214,
+        "winner": 1,
+        "scores": [
+          3,
+          8
+        ],
+        "actions": 142
+      },
+      {
+        "level": "strategic",
+        "opponent": 3,
+        "seat": 1,
+        "starter": 1,
+        "seed": 425215,
+        "winner": 1,
+        "scores": [
+          6,
+          8
+        ],
+        "actions": 181
+      }
+    ],
+    "object_cost_choices": 0,
+    "public_lock_observations": 217,
+    "observed_priority_chain_cards": [
+      421,
+      422,
+      423,
+      425
+    ],
+    "requests": 7729,
+    "binary": "/home/benchen/.cache/local-rift-builds/c28-source-target/debug/rift-api",
+    "binary_sha256": "d60ec0eeccb5ba26532a7a411ea5778fa4c68b73cd6d9c5a2fbabb4527a23039",
+    "recipe": {
+      "battlefield": 0,
+      "cards": [
+        [
+          0,
+          1
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          3,
+          2
+        ],
+        [
+          4,
+          2
+        ],
+        [
+          5,
+          3
+        ],
+        [
+          7,
+          3
+        ],
+        [
+          8,
+          2
+        ],
+        [
+          9,
+          1
+        ],
+        [
+          10,
+          1
+        ],
+        [
+          12,
+          1
+        ],
+        [
+          13,
+          1
+        ],
+        [
+          14,
+          2
+        ],
+        [
+          15,
+          3
+        ],
+        [
+          16,
+          2
+        ],
+        [
+          18,
+          3
+        ],
+        [
+          20,
+          1
+        ],
+        [
+          21,
+          2
+        ],
+        [
+          421,
+          3
+        ],
+        [
+          422,
+          2
+        ],
+        [
+          423,
+          1
+        ],
+        [
+          425,
+          3
+        ]
+      ],
+      "chosen_champion": 0,
+      "legend": 0,
+      "name": "Irelia 40-card API verification",
+      "runes": [
+        0,
+        6,
+        0,
+        0,
+        6,
+        0
+      ]
+    },
+    "scope": "24 games through JSON API, both Irelia seats and both starters, all AI levels, presets 1 and 3. Exact 40-card authored variant, unchanged sourced presets."
+  },
+  "visual_review": {
+    "runs": [
+      {
+        "small": false,
+        "screenshots": true,
+        "exit": 0,
+        "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-hunker-ui-3-normal-capture",
+        "binary_sha256": "3acd96df02c5b173339fb25f97d08efe6ac5210381885cd8139c11be9487f45d"
+      },
+      {
+        "small": false,
+        "screenshots": false,
+        "exit": 0,
+        "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-hunker-ui-3-normal-plain",
+        "binary_sha256": "3acd96df02c5b173339fb25f97d08efe6ac5210381885cd8139c11be9487f45d"
+      },
+      {
+        "small": true,
+        "screenshots": true,
+        "exit": 0,
+        "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-hunker-ui-3-small-capture",
+        "binary_sha256": "3acd96df02c5b173339fb25f97d08efe6ac5210381885cd8139c11be9487f45d"
+      },
+      {
+        "small": true,
+        "screenshots": false,
+        "exit": 0,
+        "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-hunker-ui-3-small-plain",
+        "binary_sha256": "3acd96df02c5b173339fb25f97d08efe6ac5210381885cd8139c11be9487f45d"
+      }
+    ],
+    "frames_per_run": 21,
+    "captures": [
+      {
+        "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-hunker-ui-3-normal-capture/advanced.png",
+        "sha256": "3856e755c7f682865be02c30951eb4768ec485d2117b02dc8355bd0095dd912b"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-hunker-ui-3-normal-capture/cost.png",
+        "sha256": "841ac66c42742a41390ddf148e686498f7c6778255f820492573580e26654ba0"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-hunker-ui-3-normal-capture/declined.png",
+        "sha256": "0fbfd78d02d9c8d27acc4b913caeea58780daf9757b590101d4f27941aaa0a6a"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-hunker-ui-3-normal-capture/hunker_hand.png",
+        "sha256": "db79b89a44991b21a4b85ee1ea64f8f79d9fae64e7dbb213c71abba6262d5c56"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-hunker-ui-3-normal-capture/hunker_hover.png",
+        "sha256": "97e1fa8d1614366d00566035a52f8c98573bdd2d30822a6be9842aee32c7161e"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-hunker-ui-3-normal-capture/hunker_inspect.png",
+        "sha256": "64eaa34d7046c4f9d7ed38b8cba0e77a713dfe4b1f274b92fd04a5017446dfe8"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-hunker-ui-3-normal-capture/hunker_locked.png",
+        "sha256": "a4fcf9c6aad767e7e8a716eeab1591fbefdc001afeae3fb24fa5a2a82d7cb950"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-hunker-ui-3-normal-capture/paid.png",
+        "sha256": "732dc26d43f26e367b57adce41357a752c2e8b7de42f5757bc35cf2bfd76dcf7"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-hunker-ui-3-normal-capture/prefect.png",
+        "sha256": "d224d4fa64cdf0be78fbc56e0e9ba57c60d35516488704212a5b7bb69f8be923"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-hunker-ui-3-normal-capture/resolved.png",
+        "sha256": "1863a778b7adf54340cc611a04eb6dbd844c7f88ff61af9cf66ac6b65ffdbee8"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-hunker-ui-3-normal-capture/unavailable.png",
+        "sha256": "47589f18ae8ea89a83873cd1aca82239d6a4ec92ef0ff58fe51f3968a9415127"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-hunker-ui-3-small-capture/advanced.png",
+        "sha256": "05edac835d92f7267d3c7af5e304abf27131132f531c1259eecdd4c9f4ce248e"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-hunker-ui-3-small-capture/cost.png",
+        "sha256": "a425975b03fbfc16f7856a8644c90704d4fa915a0e299f9de2fa1dadc0139418"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-hunker-ui-3-small-capture/declined.png",
+        "sha256": "254e7d6d7e5d6c7ee9d974c4c933f430b94967e61336a1be446a18fedd9542b9"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-hunker-ui-3-small-capture/hunker_hand.png",
+        "sha256": "b7bcc99cc548ae9978c872173016bae04ddd0a108c1d98383adfd725da97a21d"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-hunker-ui-3-small-capture/hunker_hover.png",
+        "sha256": "8fb217778563a9b751a90a9b62d2f4fd4a10e4350853f816741abc62b06cc183"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-hunker-ui-3-small-capture/hunker_inspect.png",
+        "sha256": "1afb5f94c30729ad37f9d667842e80aa00dd94a8f9a3edc4d03012518d5f878b"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-hunker-ui-3-small-capture/hunker_locked.png",
+        "sha256": "afb45268a433dba97d3eb556d674d2323e4df3906d8285dd31404562d368d6ab"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-hunker-ui-3-small-capture/paid.png",
+        "sha256": "2dcefbf2c3352f155e73ba8ee89208648cf321cef3cd866763c28c5a77232efb"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-hunker-ui-3-small-capture/prefect.png",
+        "sha256": "857a9ca4fabc4ec676bee03ca8f4d17713719711f49bbc74602a3aec80823630"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-hunker-ui-3-small-capture/resolved.png",
+        "sha256": "0970c1d85ace4362d6877e212d571b053d7cc6c04b454d5f56a9d8a0697447d9"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-hunker-ui-3-small-capture/unavailable.png",
+        "sha256": "4667e9e28d2d265dbf36ae6f39b91e810b193b5ca074e8e2525f85a83fff007b"
+      }
+    ],
+    "actual_images_viewed_by_root": [
+      {
+        "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-hunker-ui-3-normal-capture/hunker_hover.png",
+        "sha256": "97e1fa8d1614366d00566035a52f8c98573bdd2d30822a6be9842aee32c7161e"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-hunker-ui-3-normal-capture/hunker_inspect.png",
+        "sha256": "64eaa34d7046c4f9d7ed38b8cba0e77a713dfe4b1f274b92fd04a5017446dfe8"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-hunker-ui-3-small-capture/hunker_hover.png",
+        "sha256": "8fb217778563a9b751a90a9b62d2f4fd4a10e4350853f816741abc62b06cc183"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-hunker-ui-3-small-capture/hunker_inspect.png",
+        "sha256": "1afb5f94c30729ad37f9d667842e80aa00dd94a8f9a3edc4d03012518d5f878b"
+      }
+    ],
+    "findings": [
+      "Full official Hunker Down art and text visible at 1440x900 and1152x720.",
+      "Movement restriction shown on unit and hover; selected-unit controls disabled and labeled CANNOT MOVE THIS TURN.",
+      "Beginner and Advanced Mote commentary stays in its sidebar.",
+      "Actual hand click, unit target click and Play control resolve Hunker Down. Disabled Move button does not mutate state or show a rejection toast. Inspector closes normally."
+    ],
+    "earlier_visual_finding": "First run revealed READY TO MOVE on a restricted unit; corrected controls and general movement hints, then reran four cases."
+  },
+  "logs": {
+    "irelia-hunker-native-all-1.log": {
+      "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-hunker-native-all-1.log",
+      "sha256": "dd4d6c63fc2bcef9a7bbfc6b88b88b7c9b93eaab86d4cddce9cb563556bedc73"
+    },
+    "irelia-hunker-python-all-1.log": {
+      "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-hunker-python-all-1.log",
+      "sha256": "35f181f22f79f70bdc41679c3745911d240637b9448275c7809d1e931374afaf"
+    },
+    "irelia-hunker-final-unit-3.log": {
+      "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-hunker-final-unit-3.log",
+      "sha256": "d8899532dbbce09cf46c533146a434506a745be0667452887f1690980c17eebd"
+    },
+    "irelia-hunker-clippy-3.log": {
+      "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-hunker-clippy-3.log",
+      "sha256": "ec23ce88b15e779a7cdf18b61803ea8788f39b7240943dd3778bb1e566e79762"
+    },
+    "irelia-hunker-fmt-3.log": {
+      "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-hunker-fmt-3.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "irelia-hunker-offline-1.log": {
+      "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-hunker-offline-1.log",
+      "sha256": "a0c80559d5c1aec5ed5e653119aa4a19c873047fde5a8dc88c2bc07ac4fe52af"
+    },
+    "irelia-hunker-focused-2.log": {
+      "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-hunker-focused-2.log",
+      "sha256": "89559718332bc86abe044138643d88d6ffa25c1769e14c58d01d0753668757fa"
+    },
+    "irelia-hunker-api-matrix.log": {
+      "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-hunker-api-matrix.log",
+      "sha256": "0c2c0f425f6efb9155350810ff256cfa644642517f3a2e18f8c89787d0b74593"
+    },
+    "irelia-hunker-api-matrix.jsonl.gz": {
+      "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-hunker-api-matrix.jsonl.gz",
+      "sha256": "ddd1a8ef5de21c7ac15ac6358351287372fcd7f1d07c887799a36386d0f0739e"
+    }
+  },
+  "prior_findings": [
+    "Initial return-to-hand fixtures used Stupefy by the wrong numeric ID; corrected to Retreat and all focused cases passed.",
+    "Official Core359.3.e.5 corrected the draft assumption about illegal targets: independent Draw still executes.",
+    "Visual inspection found READY TO MOVE and enabled buttons on a locked unit. Fixed labels/buttons/group filters and movement advice; final four-case native run passed."
+  ],
+  "limitations": [
+    "Nix checkpoint is commit5250302, before Hunker Down; no claim that the new Hunker binary has had a separate full Nix rebuild.",
+    "No new tournament preset or best-of-three sideboarding.",
+    "The accepted dated gallery snapshot remains in use while the live publisher duplicate is unresolved."
+  ],
+  "release": {
+    "build": "cargo build --release --bins",
+    "exit_code": 0,
+    "native_ui_runs": [
+      {
+        "small": false,
+        "screenshots": false,
+        "exit": 0,
+        "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-hunker-ui-release-1-normal-plain",
+        "binary_sha256": "31252b71aebff6a18f72c56175e672c8a8c36cb16dc97b916df3040e82d8fa88"
+      },
+      {
+        "small": true,
+        "screenshots": false,
+        "exit": 0,
+        "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-hunker-ui-release-1-small-plain",
+        "binary_sha256": "31252b71aebff6a18f72c56175e672c8a8c36cb16dc97b916df3040e82d8fa88"
+      }
+    ],
+    "build_log_sha256": "b7b526fa9a9e1006edce147b7158def97fcd256f31f5d188af81678f12b0a277"
+  }
+}

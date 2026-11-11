@@ -230,7 +230,7 @@ impl Game {
         }
         let mut moved = Vec::new();
         for (target, id, from, to) in [(first, ia, a, b), (second, ib, b, a)] {
-            if !self.movement_locks.contains(&(player, id)) {
+            if !self.movement_locked(player, id) {
                 self.unit_mut(target).unwrap().lane = to;
                 moved.push((id, from, to));
             }

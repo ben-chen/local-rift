@@ -285,7 +285,7 @@ impl Game {
                         .filter(|unit| {
                             unit.ready
                                 && unit.lane.is_none()
-                                && !self.movement_locks.contains(&(actor, unit.id))
+                                && !self.movement_locked(actor, unit.id)
                         })
                         .collect();
                     let mut keyed = ready
