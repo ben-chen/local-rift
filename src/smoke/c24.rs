@@ -251,8 +251,13 @@ pub(super) fn run_frame(app: &mut App, frame: u32) -> bool {
             capture(app, "RIFT_SMOKE_C24_TRIGGER_TOKEN_SCREENSHOT");
             reset(app, 403);
             place(app, 403, 0);
-            app.game.players[0].runes = [0; 6];
-            app.game.players[0].exhausted_runes = [0; 6];
+            {
+                let setup_runes = [0; 6];
+                let setup_exhausted_runes = [0; 6];
+                app.game.players[0]
+                    .set_rune_setup(setup_runes, setup_exhausted_runes)
+                    .unwrap();
+            }
             app.game.players[0].energy = 0;
             app.game.players[0].energy_pool = 0;
             app.game.players[0].xp = 6;
@@ -515,8 +520,13 @@ pub(super) fn run_frame(app: &mut App, frame: u32) -> bool {
             assert!(app.drag.is_none());
             reset(app, 403);
             place(app, 403, 0);
-            app.game.players[0].runes = [0; 6];
-            app.game.players[0].exhausted_runes = [0; 6];
+            {
+                let setup_runes = [0; 6];
+                let setup_exhausted_runes = [0; 6];
+                app.game.players[0]
+                    .set_rune_setup(setup_runes, setup_exhausted_runes)
+                    .unwrap();
+            }
             app.game.players[0].energy = 0;
             app.game.players[0].energy_pool = 0;
             app.game.players[0].xp = 6;

@@ -4,6 +4,7 @@ use local_rift::activated::{
     AbilitySource, AbilityTargetKind, AbilityTiming, ActivatedRule, ConversionDirection,
     activated_rules,
 };
+use local_rift::payment_plan::PaymentRefusalKind;
 
 /// User selections survive resource visits; these are not game-state snapshots.
 #[derive(Clone)]
@@ -126,6 +127,7 @@ impl App {
                 self.resource_visit_action_allowed(action)?
             }
             Action::ActivateRune { .. }
+            | Action::ActivateRuneObject { .. }
             | Action::RecycleRune { .. }
             | Action::ActivateGear { .. } => true,
             Action::ActivateLegend { .. } => matches!(
@@ -145,6 +147,7 @@ impl App {
                 .ability_rule(*source, *ability_index)
                 .is_some_and(|(_, rule)| rule.adds_resources()),
             Action::ResolveConversion { .. } | Action::CompletePayment => true,
+            Action::RefusePayment => self.game.can_refuse_payment()?,
             Action::Choose { accept: false }
                 if matches!(self.game.decision, Some(Decision::Payment { .. })) =>
             {
@@ -181,6 +184,7 @@ impl App {
             action: Box::new(action),
         }) {
             Ok(()) => {
+                self.ai_worker.invalidate();
                 self.payment_origin = Some(original);
                 self.selection = None;
                 self.tray = Tray::Loadout;
@@ -263,6 +267,11 @@ impl App {
             return Ok(());
         }
         let ready = saved.decision == self.decision_key();
+        let refusal_kind = self
+            .game
+            .payment_plan_view(0)
+            .and_then(|plan| plan.refusal_kind);
+        let decline = refusal_label(refusal_kind).filter(|_| saved.owns_plan);
         self.ui.rect(Rect::new(244.0, 86.0, 886.0, 40.0), PANEL);
         self.ui.border(Rect::new(244.0, 86.0, 886.0, 40.0), GOLD);
         self.ui.ellipsis(
@@ -276,10 +285,21 @@ impl App {
             ),
             256.0,
             111.0,
-            526.0,
+            if decline.is_some() { 372.0 } else { 526.0 },
             11.0,
             GOLD,
         );
+        if let Some(label) = decline
+            && self.ui.button(
+                Rect::new(632.0, 92.0, 160.0, 28.0),
+                label,
+                false,
+                ready && self.game.can_refuse_payment()?,
+            )
+        {
+            self.apply_action(Action::RefusePayment);
+            return Ok(());
+        }
         if self.ui.button(
             Rect::new(800.0, 92.0, 192.0, 28.0),
             "Resume payment",
@@ -407,6 +427,15 @@ pub(super) fn fixed_payment_label(plan: &local_rift::payment_plan::PaymentPlanVi
             costs.join(" + ")
         }
     )
+}
+
+fn refusal_label(kind: Option<PaymentRefusalKind>) -> Option<&'static str> {
+    match kind {
+        Some(PaymentRefusalKind::PendingCard) => Some("Decline this play"),
+        Some(PaymentRefusalKind::PendingToken) => Some("Decline this token"),
+        Some(PaymentRefusalKind::Trigger) => Some("Decline this trigger"),
+        Some(PaymentRefusalKind::Ordinary) | None => None,
+    }
 }
 pub(super) fn source_state(game: &Game, source: AbilitySource) -> String {
     let (id, ready, attached) = match source {
@@ -609,10 +638,13 @@ impl App {
             true,
         ) {
             self.action(Action::CompletePayment);
+            return Ok(());
         }
         if self.ui.button(
             Rect::new(1178.0, 534.0, 212.0, 27.0),
-            if self.game.trigger_payment_context().is_some() {
+            if plan.refusal_kind == Some(PaymentRefusalKind::Ordinary) {
+                "Undo / refuse payment"
+            } else if plan.refusal_kind.is_some() {
                 "Undo payment attempt"
             } else {
                 "Undo unsuccessful attempt"
@@ -621,12 +653,37 @@ impl App {
             self.game.can_cancel_payment()?,
         ) {
             self.action(Action::Choose { accept: false });
+            return Ok(());
         }
-        self.ui.wrapped_lines(if self.game.trigger_payment_context().is_some() {
-            "Undo restores this choice and resource steps. Payment is before responses; counters give no refund."
+        if let Some(label) = refusal_label(plan.refusal_kind) {
+            if self.ui.button(
+                Rect::new(1178.0, 565.0, 212.0, 27.0),
+                label,
+                false,
+                self.game.can_refuse_payment()?,
+            ) {
+                self.action(Action::RefusePayment);
+                return Ok(());
+            }
+            self.ui.wrapped_lines(
+                "Undo returns to this choice. Decline ends only this play or trigger.",
+                1178.0,
+                605.0,
+                212.0,
+                10.0,
+                MUTED,
+                2,
+            );
         } else {
-            "Board / Loadout: use Add abilities. Costs stay fixed. Undo restores resource steps only if this attempt cannot complete."
-        },1178.0,580.0,212.0,10.0,MUTED,4);
+            self.ui.wrapped_lines(
+                if plan.refusal_kind == Some(PaymentRefusalKind::Ordinary) {
+                    "Undo refuses this cost, even when funded, and restores this attempt's resource steps. Use Board / Loadout for Add abilities."
+                } else {
+                    "Board / Loadout: use Add abilities. Costs stay fixed. Undo restores resource steps only if this attempt cannot complete."
+                },
+                1178.0, 580.0, 212.0, 10.0, MUTED, 4,
+            );
+        }
         Ok(())
     }
     pub(super) fn commit_conversion_editor(&mut self) -> Result<(), String> {

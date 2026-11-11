@@ -21,8 +21,7 @@ fn position() -> Game {
         player.hidden.clear();
         player.discard.clear();
         player.champion = None;
-        player.runes = [0; 6];
-        player.exhausted_runes = [0; 6];
+        player.set_rune_setup([0; 6], [0; 6]).unwrap();
         player.energy_pool = 20;
         player.energy = 20;
         player.power_pool = [8; 6];
@@ -389,8 +388,9 @@ fn rune_dependent_prices_use_controlled_runes_and_stay_fixed_during_payment() {
         for n in [0, 4, 5, 12] {
             let mut g = position();
             let t = unit(&mut g, 0, 1000, card, None);
-            g.players[0].runes = [n, 0, 0, 0, 0, 0];
-            g.players[0].exhausted_runes = [n, 0, 0, 0, 0, 0];
+            g.players[0]
+                .set_rune_setup([n, 0, 0, 0, 0, 0], [n, 0, 0, 0, 0, 0])
+                .unwrap();
             let expected = if card == 280 {
                 if n <= 4 { 2 } else { 5 }
             } else {
@@ -404,8 +404,9 @@ fn rune_dependent_prices_use_controlled_runes_and_stay_fixed_during_payment() {
     }
     let mut g = position();
     let t = unit(&mut g, 0, 1000, 278, None);
-    g.players[0].runes = [5, 0, 0, 0, 0, 0];
-    g.players[0].exhausted_runes = [5, 0, 0, 0, 0, 0];
+    g.players[0]
+        .set_rune_setup([5, 0, 0, 0, 0, 0], [5, 0, 0, 0, 0, 0])
+        .unwrap();
     g.apply(Action::BeginPayment {
         action: Box::new(ability(source(t), 0, vec![])),
     })

@@ -19,6 +19,12 @@ mod combat;
 #[path = "deploy.rs"]
 mod deploy;
 pub use combat::{CombatResolution, CombatResult, CombatStep};
+#[cfg(test)]
+#[path = "combat_card_tests.rs"]
+mod combat_card_tests;
+#[cfg(test)]
+#[path = "source_damage_tests.rs"]
+mod source_damage_tests;
 
 #[path = "board_returns.rs"]
 mod board_returns;
@@ -59,6 +65,10 @@ pub mod triggers;
 use triggers::{EventSnapshot, Occurrence};
 pub use triggers::{TriggerContext, TriggerSource, TriggerState};
 
+#[path = "field_triggers.rs"]
+pub mod field_triggers;
+use field_triggers::{BattlefieldSource, BattlefieldTargetKind, DelayedBattlefieldTrigger};
+
 pub const VICTORY_SCORE: u8 = 8;
 pub const BATTLEFIELDS: usize = 2;
 
@@ -78,6 +88,7 @@ pub enum Phase {
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Target {
+    Rune { player: usize, rune_id: u32 },
     Unit { player: usize, unit_id: u32 },
     Spell { chain_id: u32 },
     Gear { player: usize, gear_id: u32 },
@@ -86,6 +97,22 @@ pub enum Target {
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Action {
+    ResolveBattlefieldTargets {
+        choice_id: u32,
+        targets: Vec<Target>,
+    },
+    SelectBattlefieldCost {
+        choice_id: u32,
+        unit_id: Option<u32>,
+    },
+    ResolveBattlefieldPayment {
+        choice_id: u32,
+        pay: bool,
+    },
+    ActivateRuneObject {
+        rune_id: u32,
+        recycle: bool,
+    },
     ResolveDrawLook {
         choice_id: u32,
         index: Option<usize>,
@@ -111,6 +138,8 @@ pub enum Action {
         action: Box<Action>,
     },
     CompletePayment,
+    /// Refuse the positive frozen resource cost and end this finalization.
+    RefusePayment,
     ActivateAbilityWithCosts {
         source: AbilitySource,
         ability_index: usize,
@@ -482,6 +511,24 @@ pub enum RevealOutcome {
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Decision {
+    BattlefieldTargets {
+        player: usize,
+        choice_id: u32,
+        source: BattlefieldSource,
+        kind: BattlefieldTargetKind,
+    },
+    BattlefieldCost {
+        player: usize,
+        choice_id: u32,
+        source: BattlefieldSource,
+    },
+    BattlefieldPayment {
+        player: usize,
+        choice_id: u32,
+        source: BattlefieldSource,
+        unit_id: u32,
+        cost: CostValue,
+    },
     DrawLook {
         player: usize,
         choice_id: u32,
@@ -734,6 +781,7 @@ pub struct PendingCard {
 /// Tokens created on the chain await finalization after their parent effect.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct PendingToken {
+    pub source: Option<ChainSource>,
     pub id: u32,
     pub player: usize,
     pub card_id: CardId,
@@ -791,6 +839,9 @@ impl Decision {
             | Self::DeathReplacement { player, .. }
             | Self::CombatDamage { player, .. }
             | Self::RevealHand { player, .. }
+            | Self::BattlefieldTargets { player, .. }
+            | Self::BattlefieldCost { player, .. }
+            | Self::BattlefieldPayment { player, .. }
             | Self::Battlefield { player, .. }
             | Self::ReviveUnit { player }
             | Self::RevivePlay { player, .. }
@@ -867,6 +918,8 @@ pub struct PlayerState {
     pub exhausted_runes: [u8; 6],
     /// The top of the rune deck is the end of this vector.
     pub rune_deck: Vec<Domain>,
+    pub(crate) rune_objects: Vec<crate::runes::RuneObject>,
+    pub(crate) next_rune_id: u32,
     pub xp: crate::xp::XpAmount,
 }
 
@@ -956,10 +1009,16 @@ pub struct Game {
     pub(crate) payment_plan: Option<Box<crate::payment_plan::PaymentPlan>>,
     /// First Add during a pending trigger cost; refusal undoes that payment attempt.
     pub(crate) trigger_payment_origin: Option<Box<Game>>,
+    /// First Add while an explicitly classified pending finalization is choosing/paying.
+    pub(crate) finalization_payment_origin: Option<Box<Game>>,
     temporary_empower: Vec<(usize, usize, Option<u32>)>,
     ending_turn: bool,
+    spring_used: [[bool; 2]; 2],
+    delayed_battlefield_triggers: Vec<DelayedBattlefieldTrigger>,
     pending_decisions: VecDeque<Decision>,
     pending_triggers: Vec<PendingTrigger>,
+    /// Last pending occurrence selected by FEPR, stable through its Add actions.
+    pub(crate) pending_occurrence_id: Option<u32>,
     trigger_batch: u64,
     pending_token: Option<PendingToken>,
     pending_card: Option<PendingCard>,
@@ -1148,6 +1207,8 @@ impl Game {
                 runes: [0; 6],
                 exhausted_runes: [0; 6],
                 rune_deck,
+                rune_objects: Vec::new(),
+                next_rune_id: 1,
                 xp: 0,
             }
         });
@@ -1195,10 +1256,14 @@ impl Game {
             resource_frames: Vec::new(),
             payment_plan: None,
             trigger_payment_origin: None,
+            finalization_payment_origin: None,
             temporary_empower: Vec::new(),
             ending_turn: false,
+            spring_used:[[false;2];2],
+            delayed_battlefield_triggers:Vec::new(),
             pending_decisions: VecDeque::new(),
             pending_triggers: Vec::new(),
+            pending_occurrence_id: None,
             trigger_state: TriggerState::default(),
             trigger_batch: 0,
             pending_token: None,
@@ -1573,7 +1638,11 @@ impl Game {
     /// resolution. Nested adapters share the outer transaction.
     pub fn apply(&mut self, action: Action) -> Result<(), String> {
         if self.applying_action {
-            return self.apply_inner(action);
+            let result = self.apply_inner(action);
+            if result.is_ok() {
+                self.clear_completed_finalization_payment_origin();
+            }
+            return result;
         }
         self.validate_numeric_state()?;
         let original = self.clone();
@@ -1585,6 +1654,7 @@ impl Game {
             *self = original;
         } else {
             self.applying_action = false;
+            self.clear_completed_finalization_payment_origin();
         }
         result
     }
@@ -1605,6 +1675,11 @@ impl Game {
         }
         if let Action::BeginPayment { action } = action {
             self.begin_payment(*action)?;
+            self.ai_resource_witness = None;
+            return Ok(());
+        }
+        if matches!(action, Action::RefusePayment) {
+            self.refuse_payment()?;
             self.ai_resource_witness = None;
             return Ok(());
         }
@@ -1641,6 +1716,9 @@ impl Game {
                     | Action::ChooseBattlefield { .. }
                     | Action::PlaceToken { .. }
                     | Action::FinalizeTokenPlay { .. }
+                    | Action::ResolveBattlefieldTargets { .. }
+                    | Action::SelectBattlefieldCost { .. }
+                    | Action::ResolveBattlefieldPayment { .. }
                     | Action::FinalizePendingPlay { .. }
             )
             && !(self.resource_payment_pending()
@@ -1650,6 +1728,7 @@ impl Game {
                         | Action::ActivateAbility { .. }
                         | Action::ActivateAbilityWithCosts { .. }
                         | Action::ActivateLegend { .. }
+                        | Action::ActivateRuneObject { .. }
                         | Action::ActivateRune { .. }
                         | Action::RecycleRune { .. }
                         | Action::SetOptionalDiscount { .. }
@@ -1658,6 +1737,7 @@ impl Game {
             return Err("Resolve the pending choice before taking another action.".into());
         }
         self.checkpoint_trigger_payment_add(&action);
+        self.checkpoint_finalization_payment_add(&action);
         let player = self.priority();
         let cleanup = !matches!(
             action,
@@ -1667,6 +1747,7 @@ impl Game {
                 | Action::ChooseResolutionGroup { .. }
                 | Action::PlaceToken { .. }
                 | Action::FinalizeTokenPlay { .. }
+                | Action::ActivateRuneObject { .. }
                 | Action::ActivateRune { .. }
                 | Action::RecycleRune { .. }
                 | Action::ActivateGear { .. }
@@ -1677,6 +1758,7 @@ impl Game {
         match action {
             Action::BeginPayment { .. }
             | Action::CompletePayment
+            | Action::RefusePayment
             | Action::WithPlayChoices { .. } => unreachable!(),
             Action::FinalizeTokenPlay { lane, .. } => self.place_token(lane)?,
             Action::ResolveConversion { amount } => self.resolve_conversion(amount)?,
@@ -1764,6 +1846,18 @@ impl Game {
             Action::OrderTrigger { trigger_id } => self.order_trigger(trigger_id)?,
             Action::ChooseDeathReplacement { unit_id, gear_id } => {
                 self.choose_death_replacement(unit_id, gear_id)?
+            }
+            Action::ResolveBattlefieldTargets { choice_id, targets } => {
+                self.resolve_battlefield_targets(choice_id, targets)?
+            }
+            Action::SelectBattlefieldCost { choice_id, unit_id } => {
+                self.select_battlefield_cost(choice_id, unit_id)?
+            }
+            Action::ResolveBattlefieldPayment { choice_id, pay } => {
+                self.resolve_battlefield_payment(choice_id, pay)?
+            }
+            Action::ActivateRuneObject { rune_id, recycle } => {
+                self.activate_rune_object(player, rune_id, recycle)?
             }
             Action::ActivateRune { domain, recycle } => {
                 self.activate_rune(player, domain, recycle)?
@@ -2156,6 +2250,7 @@ impl Game {
                     | Decision::Battlefield { .. }
                     | Decision::CounterTax { .. }
                     | Decision::OnPlayTarget { .. }
+                    | Decision::BattlefieldPayment { .. }
                     | Decision::TriggerPayment { .. }
                     | Decision::TriggerTargets { .. }
                     | Decision::LegendTargets { .. }
@@ -2166,6 +2261,7 @@ impl Game {
 
     fn after_spell_played(&mut self, player: usize, id: CardId, offhand: bool, hidden: bool) {
         self.emit_play_event(Occurrence::SpellPlayed, player, id, false, hidden);
+        self.battlefield_spell_played(player);
         // Core 420.4: played triggers occur only after successful resolution.
         let ravens: Vec<_> = self.players[player]
             .units
@@ -2198,6 +2294,7 @@ impl Game {
             self.stage_entry(lane, player);
         }
         self.emit_unit_event(Occurrence::UnitPlayed, player, unit_id);
+        self.battlefield_unit_played(player, unit_id);
         let ready_buffs = self
             .active_play
             .as_ref()
@@ -2513,6 +2610,21 @@ impl Game {
             )?;
             return self.after_resolution();
         }
+        if matches!(
+            item.ability,
+            Some(ChainAbility::Battlefield(
+                BattlefieldAbility::ZaunWarrensLoot { .. }
+            ))
+        ) && self.pending_loot != Some(item.id)
+        {
+            self.pending_loot = Some(item.id);
+            self.decision = Some(Decision::Discard {
+                player: item.player,
+                count: 1,
+                draw_after: 1,
+            });
+            return Ok(());
+        }
         if let Some(ChainAbility::CardTrigger { rule_index, .. }) = &item.ability
             && let Some((discard, draw)) = Self::trigger_loot(item.card_id, *rule_index)
             && self.pending_loot != Some(item.id)
@@ -2713,7 +2825,7 @@ impl Game {
                     self.gear_resolve_equip(item.player, gear_id, target)
                 }
                 ChainAbility::Battlefield(ability) => {
-                    self.resolve_battlefield_ability(item.player, ability)?
+                    self.resolve_battlefield_ability(item.player, ability, &item.targets)?
                 }
                 ChainAbility::Empower { unit_id } => {
                     self.empower_now(item.player, Some(unit_id), None)
@@ -3038,17 +3150,10 @@ impl Game {
             if accept || !self.can_decline_trash_play()? {
                 return Err("Finalize the pending card with legal choices and payment.".into());
             }
-            let card = self
-                .pending_card
-                .take()
-                .ok_or("The pending card is missing.")?;
-            // CR358.5 undoes a play that cannot finalize, including its move
-            // out of its origin. No completed-play trigger occurs.
-            self.restore_reserved_grants(card.id);
-            self.restore_failed_card(card);
-            self.decision = None;
-            self.after_resolution()?;
-            return Ok(());
+            // An impossible finalization and an explicit positive-cost refusal
+            // share the same physical-card restoration boundary.
+            self.rollback_finalization_payment_add();
+            return self.drop_refused_pending_play();
         }
         if let Decision::CounterTax { player, cost, .. } = decision
             && accept
@@ -3092,6 +3197,14 @@ impl Game {
             }
             return self.select_cards(&[]);
         }
+        if !accept
+            && matches!(
+                decision,
+                Decision::Legend { .. } | Decision::Battlefield { .. }
+            )
+        {
+            self.rollback_finalization_payment_add();
+        }
         if let Decision::Legend { player, trigger } = decision.clone() {
             let mut probe = self.clone();
             probe.decision = None;
@@ -3126,6 +3239,11 @@ impl Game {
         }
         self.decision = None;
         match decision {
+            Decision::BattlefieldTargets { .. }
+            | Decision::BattlefieldCost { .. }
+            | Decision::BattlefieldPayment { .. } => {
+                return Err("Use the explicit battlefield choice action.".into());
+            }
             Decision::RevealedDeck { .. } | Decision::RevealedCard { .. } => {
                 if !accept {
                     return Err("Continue after inspecting the revealed cards.".into());
@@ -3400,7 +3518,7 @@ impl Game {
             power += cost.power;
         }
         if options.bonus {
-            if id != 29 {
+            if !matches!(id, 29 | 420) {
                 return Err("This card has no optional might bonus cost.".into());
             }
             power += 1;
@@ -3961,43 +4079,19 @@ impl Game {
         domain: Domain,
         recycle: bool,
     ) -> Result<(), String> {
-        if self.decision.is_some() && !self.resource_payment_pending() {
-            return Err("Finish the pending choice before activating a rune.".into());
-        }
-        let state = &mut self.players[player];
-        let d = domain_index(domain);
-        if recycle {
-            if state.runes[d] == 0 {
-                return Err("No rune of that domain is channelled.".into());
-            }
-            state.runes[d] -= 1;
-            if state.exhausted_runes[d] > 0 {
-                state.exhausted_runes[d] -= 1;
-            }
-            state.rune_deck.insert(0, domain);
-            state.power_pool[d] += 1;
+        let id = if recycle {
+            self.players[player]
+                .rune_for_domain(domain, false)
+                .or_else(|| self.players[player].rune_for_domain(domain, true))
         } else {
-            if state.runes[d] == state.exhausted_runes[d] {
-                return Err("No ready rune of that domain is available.".into());
-            }
-            state.exhausted_runes[d] += 1;
-            state.energy_pool += 1;
+            self.players[player].rune_for_domain(domain, true)
         }
-        state.energy = state.energy_pool
-            + state
-                .runes
-                .iter()
-                .zip(state.exhausted_runes)
-                .map(|(all, used)| u16::from(all - used))
-                .sum::<u16>();
-        self.push_log(format!(
-            "{} {} a {} rune, adding {}.",
-            self.players[player].name,
-            if recycle { "recycles" } else { "exhausts" },
-            domain.name(),
-            if recycle { "power" } else { "energy" }
-        ));
-        Ok(())
+        .ok_or(if recycle {
+            "No rune of that domain is channelled."
+        } else {
+            "No ready rune of that domain is available."
+        })?;
+        self.activate_rune_object(player, id, recycle)
     }
 
     fn remove_from_trash(&mut self, player: usize, index: usize) -> CardId {
@@ -4194,6 +4288,39 @@ impl Game {
         });
     }
 
+    pub(crate) fn drop_refused_pending_play(&mut self) -> Result<(), String> {
+        match self.decision {
+            Some(Decision::PendingPlay { .. }) => {
+                let card = self
+                    .pending_card
+                    .take()
+                    .ok_or("The pending card is missing.")?;
+                self.restore_reserved_grants(card.id);
+                self.restore_failed_card(card);
+            }
+            Some(Decision::TokenPlay { .. } | Decision::TokenPlacement { .. }) => {
+                let token = self
+                    .pending_token
+                    .take()
+                    .ok_or("The pending token is missing.")?;
+                self.restore_reserved_grants(token.id);
+                // Core185.2.a/186: a refused token has no card origin to restore.
+            }
+            Some(
+                Decision::LastRites { .. }
+                | Decision::ReplaySpell { .. }
+                | Decision::RevivePlay { .. },
+            ) => {
+                // Older instructed trash paths select/detach in BeginPayment;
+                // its original snapshot already restored the exact occurrence.
+                self.required_trash_play = false;
+            }
+            _ => return Err("There is no instructed play to refuse.".into()),
+        }
+        self.decision = None;
+        self.after_resolution()
+    }
+
     fn restore_failed_card(&mut self, card: PendingCard) {
         let (origin_index, origin_flow, origin_targets) = match card.origin {
             PendingOrigin::Banish { index } => {
@@ -4269,6 +4396,7 @@ impl Game {
             true,
         );
         let token = PendingToken {
+            source: None,
             id,
             player,
             card_id,
@@ -4316,6 +4444,12 @@ impl Game {
         let id = self.next_chain_id;
         self.next_chain_id += 1;
         let label = match &choice {
+            Decision::BattlefieldTargets { source, .. }
+            | Decision::BattlefieldCost { source, .. }
+            | Decision::BattlefieldPayment { source, .. } => format!(
+                "{} trigger",
+                crate::battlefields::battlefield(source.battlefield_id).name
+            ),
             Decision::Battlefield { lane, .. } => format!(
                 "{} optional trigger",
                 crate::battlefields::battlefield(self.battlefields[*lane]).name
@@ -4377,6 +4511,7 @@ impl Game {
             .position(|t| t.option.id == trigger_id)
             .expect("offered trigger");
         let trigger = self.pending_triggers.remove(index);
+        self.pending_occurrence_id = Some(trigger.option.id);
         self.trigger_batch += 1;
         match trigger.effect {
             PendingTriggerEffect::Card(card) => {
@@ -5446,7 +5581,7 @@ impl Game {
         amount -= stored;
         for domain in preferred.iter().copied().map(domain_index).chain(0..6) {
             let paid = u16::from(state.runes[domain] - state.exhausted_runes[domain]).min(amount);
-            state.exhausted_runes[domain] += paid as u8;
+            state.exhaust_rune_objects(ALL_DOMAINS[domain], paid as u8);
             amount -= paid;
         }
         state.energy = state.energy_pool
@@ -5524,7 +5659,11 @@ impl Game {
                         vec![Action::Choose { accept: true }]
                     }
                     Decision::Payment { .. } => {
-                        vec![Action::CompletePayment, Action::Choose { accept: false }]
+                        vec![
+                            Action::CompletePayment,
+                            Action::RefusePayment,
+                            Action::Choose { accept: false },
+                        ]
                     }
                     Decision::ResourceConversion { .. } => {
                         (0..=self.conversion_available().unwrap_or(0))
@@ -5618,6 +5757,55 @@ impl Game {
                         choices.push(Action::Choose { accept: false });
                         choices
                     }
+                    Decision::BattlefieldTargets {
+                        choice_id, kind, ..
+                    } => {
+                        let candidates = self.battlefield_choice_candidates();
+                        let mut choices = candidates
+                            .iter()
+                            .map(|&target| Action::ResolveBattlefieldTargets {
+                                choice_id: *choice_id,
+                                targets: vec![target],
+                            })
+                            .collect::<Vec<_>>();
+                        if *kind == BattlefieldTargetKind::TargonPeakReady {
+                            for (i, &first) in candidates.iter().enumerate() {
+                                for &second in &candidates[i + 1..] {
+                                    choices.push(Action::ResolveBattlefieldTargets {
+                                        choice_id: *choice_id,
+                                        targets: vec![first, second],
+                                    });
+                                }
+                            }
+                        }
+                        choices.push(Action::ResolveBattlefieldTargets {
+                            choice_id: *choice_id,
+                            targets: Vec::new(),
+                        });
+                        choices
+                    }
+                    Decision::BattlefieldCost { choice_id, .. } => self
+                        .battlefield_cost_candidates()
+                        .into_iter()
+                        .map(|unit_id| Action::SelectBattlefieldCost {
+                            choice_id: *choice_id,
+                            unit_id: Some(unit_id),
+                        })
+                        .chain(std::iter::once(Action::SelectBattlefieldCost {
+                            choice_id: *choice_id,
+                            unit_id: None,
+                        }))
+                        .collect(),
+                    Decision::BattlefieldPayment { choice_id, .. } => vec![
+                        Action::ResolveBattlefieldPayment {
+                            choice_id: *choice_id,
+                            pay: true,
+                        },
+                        Action::ResolveBattlefieldPayment {
+                            choice_id: *choice_id,
+                            pay: false,
+                        },
+                    ],
                     Decision::BattlefieldOrder { lanes, .. } => lanes
                         .iter()
                         .map(|&lane| Action::ChooseBattlefield { lane })
@@ -6115,7 +6303,11 @@ impl Game {
                     )
                 }) || self.battlefield_owner[lane] == Some(actor)
                     || (ambush && self.lane_count(actor, lane) > 0)
-                    || (enemy_field && self.lane_count(1 - actor, lane) > 0));
+                    || (enemy_field && self.lane_count(1 - actor, lane) > 0)
+                    || (abilities.contains(&StaticAbility::MayPlayToAttackedBattlefield)
+                        && self.showdown.as_ref().is_some_and(|combat| {
+                            combat.combat && combat.attacker == actor && combat.lane == lane
+                        })));
             if lane >= BATTLEFIELDS || (!movement_spell && !legal_unit_location && !deploy_gear) {
                 return Err("Deploy a unit at your base or a battlefield you control.".into());
             }
@@ -6682,7 +6874,7 @@ impl Game {
             let d = domain_index(domain);
             let ready = self.players[player].runes[d] - self.players[player].exhausted_runes[d];
             let paid = remaining.min(u16::from(ready));
-            self.players[player].exhausted_runes[d] += paid as u8;
+            self.players[player].exhaust_rune_objects(domain, paid as u8);
             remaining -= paid;
         }
         self.pay_energy(player, remaining);
@@ -6904,22 +7096,27 @@ impl Game {
         Ok(())
     }
 
-    pub(crate) fn channel_runes(&mut self, player: usize, count: u8, exhausted: bool) -> u8 {
+    pub(crate) fn channel_runes(
+        &mut self,
+        player: usize,
+        count: u8,
+        exhausted: bool,
+    ) -> Result<u8, String> {
         let mut actual = 0;
         for _ in 0..count {
             let Some(domain) = self.players[player].rune_deck.pop() else {
                 break;
             };
-            let index = domain_index(domain);
-            self.players[player].runes[index] += 1;
-            if exhausted {
-                self.players[player].exhausted_runes[index] += 1;
-            } else {
-                self.players[player].energy += 1;
+            self.players[player].add_rune_object(domain, !exhausted)?;
+            if !exhausted {
+                self.players[player].energy = self.players[player]
+                    .energy
+                    .checked_add(1)
+                    .ok_or_else(|| crate::numeric::capacity("channel Energy"))?;
             }
             actual += 1;
         }
-        actual
+        Ok(actual)
     }
 
     fn deal_area_damage(
@@ -7140,7 +7337,7 @@ impl Game {
                 if let Some(&target) = valid.first()
                     && let Some(owner) = self.return_unit_to_hand(target)
                 {
-                    self.channel_runes(owner, 1, true);
+                    self.channel_runes(owner, 1, true)?;
                 }
             }
             OfficialEffect::BanishSmallOrReturn { maximum } => {
@@ -7265,7 +7462,7 @@ impl Game {
                 exhausted,
                 fallback_draw,
             } => {
-                if self.channel_runes(player, count, exhausted) < count {
+                if self.channel_runes(player, count, exhausted)? < count {
                     self.draw(player, fallback_draw)?;
                 }
             }
@@ -7688,6 +7885,7 @@ impl Game {
             Occurrence::ControllerEnding,
             self.active,
         ));
+        self.dispatch_delayed_battlefields();
         for (controller, player, object_id) in std::mem::take(&mut self.temporary_empower) {
             self.queue_ability(
                 controller,
@@ -7746,6 +7944,7 @@ impl Game {
         self.ai_steps_this_turn = 0;
         self.cards_played = [0; 2];
         self.play_history = PlayHistory::default();
+        self.spring_used = [[false; 2]; 2];
         self.trigger_state.begin_turn();
         self.pyke_triggered.clear();
         self.scored_this_turn = [false; 2];
@@ -7755,7 +7954,7 @@ impl Game {
             "Turn {} · {}",
             self.turn, self.players[player].name
         ));
-        self.players[player].exhausted_runes = [0; 6];
+        self.players[player].awaken_rune_objects();
         self.players[player].energy =
             u16::from(self.players[player].total_runes()) + self.players[player].energy_pool;
         self.gear_awaken(player);
@@ -7803,7 +8002,7 @@ impl Game {
                 };
                 for _ in 0..count {
                     if let Some(domain) = self.players[player].rune_deck.pop() {
-                        self.players[player].runes[domain_index(domain)] += 1;
+                        self.players[player].add_rune_object(domain, true)?;
                     }
                 }
                 self.players[player].energy = self.players[player].energy_pool
@@ -7960,7 +8159,7 @@ impl Game {
         });
         let powers = [self.lane_might(0, lane)?, self.lane_might(1, lane)?];
         self.push_log(format!(
-            "Battlefield {} combat: {} might vs {} might. Assign damage before either side is hit.",
+            "Battlefield {} combat: {} damage vs {} damage. Assign damage before either side is hit.",
             lane + 1,
             powers[attacker],
             powers[1 - attacker]
@@ -8668,6 +8867,7 @@ impl Game {
                 let actions = self.legal_actions()?;
                 if matches!(decision, Decision::CounterTax { .. })
                     && self.clone().apply(Action::Choose { accept: true }).is_err()
+                    && !self.ai_counter_tax_decline_without_add(player)?
                     && let Some(witness) = self.resource_witness(player, |state| {
                         if matches!(state.decision, Some(Decision::CounterTax { .. })) {
                             crate::numeric::legal_result(
@@ -8682,6 +8882,12 @@ impl Game {
                     return Ok(first.clone());
                 }
                 if let Some(action) = self.deploy_choice(decision, &actions)? {
+                    return Ok(action);
+                }
+                if let Some(action) = self.battlefield_choice(decision, &actions)? {
+                    return Ok(action);
+                }
+                if let Some(action) = self.faefolk_choice(decision, &actions)? {
                     return Ok(action);
                 }
                 let preferred = match decision {
@@ -9543,9 +9749,11 @@ mod tests {
     }
 
     fn give_runes(game: &mut Game, player: usize, domain: Domain, number: u8) {
-        game.players[player].runes = [0; 6];
-        game.players[player].runes[domain_index(domain)] = number;
-        game.players[player].exhausted_runes = [0; 6];
+        {
+            let mut runes = [0; 6];
+            runes[domain_index(domain)] = number;
+            game.players[player].set_rune_setup(runes, [0; 6]).unwrap();
+        }
         game.players[player].energy = u16::from(number);
         game.players[player].rune_deck = vec![domain; (12 - number) as usize];
     }
@@ -10332,9 +10540,11 @@ mod tests {
         };
         assert_eq!(game.deflect_cost(0, &[target, target]).unwrap(), 2);
         let required = game.catalog[55].power_cost;
-        game.players[0].runes = [0; 6];
-        game.players[0].exhausted_runes = [0; 6];
-        game.players[0].runes[domain_index(domain)] = required;
+        {
+            let mut runes = [0; 6];
+            runes[domain_index(domain)] = required;
+            game.players[0].set_rune_setup(runes, [0; 6]).unwrap();
+        }
         game.players[0].energy = u16::from(required);
         let before = game.players.clone();
         assert!(
@@ -11729,3 +11939,11 @@ mod tests {
 #[cfg(test)]
 #[path = "draw_history_tests.rs"]
 mod draw_history_tests;
+
+#[cfg(test)]
+#[path = "payment_refusal_tests.rs"]
+mod payment_refusal_tests;
+
+#[cfg(test)]
+#[path = "counter_tax_ai_tests.rs"]
+mod counter_tax_ai_tests;

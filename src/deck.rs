@@ -331,7 +331,7 @@ impl CustomDeck {
             chosen_champion: preset.chosen_champion,
             cards: preset.cards.clone(),
             runes,
-            battlefield: index,
+            battlefield: crate::battlefields::default_battlefield(index),
         })
     }
 
@@ -341,7 +341,11 @@ impl CustomDeck {
     /// changes an existing training list or a user's saved custom deck.
     pub fn from_legend(id: usize) -> Result<Self, String> {
         let definition = legend(id).ok_or("Choose a supported legend.")?;
-        if let Some(index) = presets().iter().position(|preset| preset.legend_id == id) {
+        if let Some(index) = presets()
+            .iter()
+            .take(4)
+            .position(|preset| preset.legend_id == id)
+        {
             let mut deck = Self::from_preset(index)?;
             deck.name = format!("{} training", definition.champion);
             deck.validate()?;

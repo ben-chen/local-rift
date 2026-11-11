@@ -204,11 +204,12 @@ fn eleven_fields_keep_source_identity_and_original_preset_defaults() {
     for id in 0..11 {
         art(&format!("battlefield_{id}"));
     }
-    for (index, preset) in cards::presets().iter().enumerate() {
+    for (index, preset) in cards::presets().iter().take(4).enumerate() {
         assert_eq!(default_battlefield(index), index);
         assert_eq!(CustomDeck::from_preset(index).unwrap().cards, preset.cards);
     }
-    for id in 4..7 {
+    let first_unknown_preset = cards::presets().len();
+    for id in first_unknown_preset..first_unknown_preset + 3 {
         assert_eq!(default_battlefield(id), 3);
     }
 }
@@ -234,6 +235,6 @@ fn all_new_cards_have_real_legal_homes_and_all_fields_are_selectable() {
         }
     }
     assert_eq!(covered, (254..272).collect());
-    assert_eq!(cards::presets().len(), 4);
+    assert!(cards::presets().len() >= 4);
     assert!(legends().len() >= 7);
 }

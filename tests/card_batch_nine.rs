@@ -134,8 +134,8 @@ fn eighteen_appended_cards_preserve_clean_source_facts_and_art() {
                 .any(|t| t == "champion")
         );
     }
-    // The C6 review preserves raw issue history while resolving effective facts.
-    assert_eq!(source["counts"]["source_quality_issues"], 52);
+    // Raw issue history includes the later Armored Tusker tag review.
+    assert_eq!(source["counts"]["source_quality_issues"], 53);
     assert_eq!(
         source["source_quality_issues"]
             .as_array()
@@ -192,10 +192,9 @@ fn ambessa_has_her_actual_legend_identity_and_a_legal_authored_recipe() {
     let mut stable_id = deck.to_json();
     stable_id["legend"] = json!("ven-153-166");
     assert_eq!(CustomDeck::from_json(&stable_id).unwrap(), deck);
-    assert_eq!(
-        cards::presets().len(),
-        4,
-        "training is not another tournament preset"
+    assert!(
+        cards::presets().iter().all(|preset| preset.legend_id != 7),
+        "Ambessa training is not a tournament preset"
     );
 }
 
@@ -270,7 +269,7 @@ fn all_eighteen_new_cards_have_exact_domain_legal_homes() {
 
 #[test]
 fn original_seven_training_lists_and_four_presets_remain_stable() {
-    for (id, preset) in cards::presets().iter().enumerate() {
+    for (id, preset) in cards::presets().iter().take(4).enumerate() {
         assert_eq!(CustomDeck::from_legend(id).unwrap().cards, preset.cards);
         assert_eq!(
             CustomDeck::from_legend(id).unwrap().chosen_champion,

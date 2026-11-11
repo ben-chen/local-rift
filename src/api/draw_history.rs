@@ -19,8 +19,7 @@ fn position() -> Session {
         p.banish.clear();
         p.champion = None;
         p.deck = vec![96; 8];
-        p.runes = [0; 6];
-        p.exhausted_runes = [0; 6];
+        p.set_rune_setup([0; 6], [0; 6]).unwrap();
         p.energy_pool = 40;
         p.energy = 40;
         p.power_pool = [8; 6];

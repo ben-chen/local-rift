@@ -48,6 +48,16 @@ struct PaymentCard {
     origin: PaymentOrigin,
 }
 
+/// The result of refusing a supported frozen finalization cost. Ordinary refusal
+/// and Undo are equivalent; pending objects also need to leave the chain.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum PaymentRefusalKind {
+    Ordinary,
+    PendingCard,
+    PendingToken,
+    Trigger,
+}
+
 /// The selected card is publicly announced and physically in the pending zone.
 /// Private intent details (such as unrelated cost-selection indices) stay private.
 #[derive(Clone, Debug)]
@@ -58,9 +68,172 @@ pub struct PaymentPlanView {
     pub power: Vec<PowerCost>,
     pub action: Option<Action>,
     pub pending_card: Option<CardId>,
+    pub refusal_kind: Option<PaymentRefusalKind>,
+}
+
+impl PaymentPlan {
+    fn refusal_kind(&self) -> Option<PaymentRefusalKind> {
+        // Dais always incurs its return-unit base cost even if its Energy
+        // component is reduced to zero; Core405.2 is not resource-only.
+        let mut field_action = &self.action;
+        while let Action::WithPlayChoices { action, .. } = field_action {
+            field_action = action;
+        }
+        if matches!(
+            field_action,
+            Action::ResolveBattlefieldPayment { pay: true, .. }
+        ) && matches!(
+            self.original.decision,
+            Some(Decision::BattlefieldPayment { .. })
+        ) {
+            return Some(PaymentRefusalKind::Trigger);
+        }
+        if !self.obligations.iter().any(|cost| match cost {
+            Obligation::Energy(amount) => *amount > 0,
+            Obligation::Power(cost) => cost.amount > 0,
+            Obligation::Xp(_) => false,
+        }) {
+            return None;
+        }
+        let mut action = &self.action;
+        while let Action::WithPlayChoices { action: inner, .. } = action {
+            action = inner;
+        }
+        use PaymentRefusalKind::*;
+        match action {
+            Action::FinalizePendingPlay { .. } => Some(PendingCard),
+            Action::FinalizeTokenPlay { .. } | Action::PlaceToken { .. } => Some(PendingToken),
+            Action::PlayFromTrash { .. }
+            | Action::PlayFromTrashWithTargets { .. }
+            | Action::PlayFromTrashOptions { .. } => match self.original.decision {
+                None => Some(Ordinary),
+                Some(
+                    Decision::PendingPlay { .. }
+                    | Decision::LastRites { .. }
+                    | Decision::ReplaySpell { .. }
+                    | Decision::RevivePlay { .. },
+                ) => Some(PendingCard),
+                _ => None,
+            },
+            Action::PlayCard { .. }
+            | Action::PlayCardWithTargets { .. }
+            | Action::PlayCardOptions { .. }
+            | Action::PlayChampion { .. }
+            | Action::PlayChampionOptions { .. }
+            | Action::PlayHidden { .. }
+            | Action::ActivateAbility { .. }
+            | Action::ActivateAbilityWithCosts { .. }
+            | Action::ActivateLegend { .. }
+            | Action::Equip { .. }
+            | Action::EquipWithTrash { .. }
+            | Action::EmpowerUnit { .. } => Some(Ordinary),
+            Action::ResolveTriggerPayment { pay: true, .. }
+            | Action::ChooseTriggerTargets { .. }
+            | Action::ChooseTarget { .. }
+                if pending_trigger_finalization(&self.original) =>
+            {
+                Some(Trigger)
+            }
+            // These legacy choices pay BEFORE queuing the responding ability.
+            // CounterTax instead belongs to an already resolving parent.
+            Action::Choose { accept: true }
+                if matches!(
+                    self.original.decision,
+                    Some(Decision::Legend { .. } | Decision::Battlefield { .. })
+                ) && pending_trigger_finalization(&self.original) =>
+            {
+                Some(Trigger)
+            }
+            _ => None,
+        }
+    }
+}
+
+fn pending_trigger_finalization(game: &Game) -> bool {
+    match game.decision {
+        Some(
+            Decision::BattlefieldPayment { .. }
+            | Decision::TriggerPayment { .. }
+            | Decision::TriggerTargets { .. }
+            | Decision::LegendTargets { .. }
+            | Decision::OnPlayTarget { .. }
+            | Decision::EmpowerHere { .. },
+        ) => true,
+        Some(Decision::Legend { trigger, .. }) => matches!(
+            trigger,
+            crate::legends::LegendTrigger::IreliaChoose { .. }
+                | crate::legends::LegendTrigger::IreliaConquer
+        ),
+        Some(Decision::Battlefield { lane, .. }) => game.battlefields.get(lane) == Some(&0),
+        _ => false,
+    }
 }
 
 impl Game {
+    pub(crate) fn checkpoint_finalization_payment_add(&mut self, action: &Action) {
+        let eligible = matches!(
+            self.decision,
+            Some(
+                Decision::PendingPlay { .. }
+                    | Decision::TokenPlay { .. }
+                    | Decision::LastRites { .. }
+                    | Decision::ReplaySpell { .. }
+                    | Decision::RevivePlay { .. }
+            )
+        ) || (pending_trigger_finalization(self)
+            && !matches!(self.decision, Some(Decision::TriggerPayment { .. })));
+        if self.finalization_payment_origin.is_none()
+            && self.payment_plan.is_none()
+            && self.resource_frames.is_empty()
+            && eligible
+            && matches!(
+                action,
+                Action::ActivateGear { .. }
+                    | Action::ActivateAbility { .. }
+                    | Action::ActivateAbilityWithCosts { .. }
+                    | Action::ActivateLegend { .. }
+                    | Action::ActivateRuneObject { .. }
+                    | Action::ActivateRune { .. }
+                    | Action::RecycleRune { .. }
+            )
+        {
+            // This snapshot is after the parent resolved and before only the
+            // first Add; it contains no recursively captured copy of itself.
+            let mut origin = self.clone();
+            // Exact-payment ledgers belong to the current command, never to a
+            // persistent rollback point. Rollback preserves its caller's ledger.
+            origin.payment = None;
+            self.finalization_payment_origin = Some(Box::new(origin));
+        }
+    }
+
+    pub(crate) fn clear_completed_finalization_payment_origin(&mut self) {
+        let Some(origin) = &self.finalization_payment_origin else {
+            return;
+        };
+        if self.payment_plan.is_some() || !self.resource_frames.is_empty() {
+            return;
+        }
+        let same_trigger = matches!((&origin.decision, &self.decision),
+            (Some(Decision::TriggerTargets { player:a, card_id:b, rule_index:c, context:d }),
+             Some(Decision::TriggerPayment { player:e, card_id:f, rule_index:g, context:h, .. }))
+                if (a,b,c,d)==(e,f,g,h));
+        let same_token = origin.current_pending_token().map(|token| token.id)
+            == self.current_pending_token().map(|token| token.id);
+        let same_occurrence = origin.pending_occurrence_id == self.pending_occurrence_id;
+        if !same_occurrence || !same_token || (origin.decision != self.decision && !same_trigger) {
+            self.finalization_payment_origin = None;
+        }
+    }
+
+    pub(crate) fn rollback_finalization_payment_add(&mut self) {
+        if let Some(origin) = self.finalization_payment_origin.take() {
+            let command_payment = self.payment.take();
+            *self = *origin;
+            self.payment = command_payment;
+        }
+    }
+
     pub(crate) fn checkpoint_trigger_payment_add(&mut self, action: &Action) {
         if self.trigger_payment_origin.is_none()
             && self.payment_plan.is_none()
@@ -71,13 +244,16 @@ impl Game {
                     | Action::ActivateAbility { .. }
                     | Action::ActivateAbilityWithCosts { .. }
                     | Action::ActivateLegend { .. }
+                    | Action::ActivateRuneObject { .. }
                     | Action::ActivateRune { .. }
                     | Action::RecycleRune { .. }
             )
         {
             // The checkpoint already contains the played source and pinned
             // trigger targets. Only subsequent payment-resource actions undo.
-            self.trigger_payment_origin = Some(Box::new(self.clone()));
+            let mut origin = self.clone();
+            origin.payment = None;
+            self.trigger_payment_origin = Some(Box::new(origin));
         }
     }
 
@@ -100,6 +276,25 @@ impl Game {
                 self.payment_plan
                     .as_ref()
                     .and_then(|plan| plan.original.trigger_payment_context())
+            })
+    }
+    pub fn battlefield_payment_context(&self) -> Option<Decision> {
+        self.decision
+            .as_ref()
+            .filter(|d| matches!(d, Decision::BattlefieldPayment { .. }))
+            .cloned()
+            .or_else(|| {
+                self.resource_frames
+                    .iter()
+                    .rev()
+                    .filter_map(|frame| frame.suspended.as_ref())
+                    .find(|d| matches!(d, Decision::BattlefieldPayment { .. }))
+                    .cloned()
+            })
+            .or_else(|| {
+                self.payment_plan
+                    .as_ref()
+                    .and_then(|plan| plan.original.battlefield_payment_context())
             })
     }
     pub(crate) fn payment_target_query_state(&self) -> Result<Option<Game>, String> {
@@ -144,6 +339,7 @@ impl Game {
                 .collect(),
             action: (viewer == plan.player).then(|| plan.action.clone()),
             pending_card: plan.pending_card.as_ref().map(|card| card.card_id),
+            refusal_kind: plan.refusal_kind(),
         })
     }
 
@@ -525,8 +721,8 @@ impl Game {
         Ok(())
     }
 
-    /// A failed attempt may be undone, restoring even the Add abilities used
-    /// during it. A mandatory original choice is restored, never skipped.
+    /// A positive finalization cost or unsuccessful attempt may be undone,
+    /// restoring its Add actions and original choice rather than skipping it.
     pub fn can_cancel_payment(&self) -> Result<bool, String> {
         self.validate_numeric_state()?;
         if !self
@@ -538,21 +734,53 @@ impl Game {
             return Ok(false);
         }
         let plan = self.payment_plan.as_ref().unwrap();
-        // Entering the payment UI does not Pay. Core405.2/445.2 permit
-        // refusing a positive trigger cost even after Add has funded it.
-        if matches!(
-            plan.original.decision,
-            Some(Decision::TriggerPayment { .. })
-        ) && plan.obligations.iter().any(|cost| match cost {
-            Obligation::Energy(amount) => *amount > 0,
-            Obligation::Power(cost) => cost.amount > 0,
-            Obligation::Xp(_) => false,
-        }) {
+        // Entering the payment UI does not Pay. Core445.2 allows refusing
+        // positive card/ability finalization resources even when fully funded.
+        // Undo restores the choice; Refuse additionally consumes pending items.
+        if plan.refusal_kind().is_some() {
             return Ok(true);
         }
         Ok(!crate::numeric::legal_result(
             self.clone().complete_payment(),
         )?)
+    }
+
+    pub fn can_refuse_payment(&self) -> Result<bool, String> {
+        self.validate_numeric_state()?;
+        Ok(self.payment_plan.as_ref().is_some_and(|plan|
+            plan.mode == Mode::Pending
+                && matches!(self.decision, Some(Decision::Payment { player }) if player == plan.player)
+                && self.resource_frames.is_empty()
+                && plan.refusal_kind().is_some()))
+    }
+
+    pub(crate) fn refuse_payment(&mut self) -> Result<(), String> {
+        if !self.can_refuse_payment()? {
+            return Err("Only a supported pending finalization cost can be refused; finish nested instructions first.".into());
+        }
+        let kind = self.payment_plan.as_ref().unwrap().refusal_kind().unwrap();
+        self.cancel_payment()?;
+        if kind == PaymentRefusalKind::Ordinary {
+            return Ok(());
+        }
+        // A prior direct Add belongs to this pending child/trigger, not its
+        // already completed parent. The staged Undo boundary stays distinct.
+        self.rollback_finalization_payment_add();
+        match kind {
+            PaymentRefusalKind::PendingCard | PaymentRefusalKind::PendingToken => {
+                self.drop_refused_pending_play()
+            }
+            PaymentRefusalKind::Trigger => {
+                if let Some(Decision::TriggerPayment { choice_id, .. }) = self.decision {
+                    self.resolve_trigger_payment(choice_id, false)?;
+                } else {
+                    self.decision = None;
+                    self.trigger_payment_origin = None;
+                }
+                self.after_resolution()
+            }
+            PaymentRefusalKind::Ordinary => unreachable!(),
+        }
     }
 
     pub(crate) fn cancel_payment(&mut self) -> Result<(), String> {
@@ -599,6 +827,7 @@ fn payment_intent(action: &Action) -> bool {
             | Action::Equip { .. }
             | Action::EquipWithTrash { .. }
             | Action::EmpowerUnit { .. }
+            | Action::ResolveBattlefieldPayment { pay: true, .. }
             | Action::ResolveTriggerPayment { pay: true, .. }
             | Action::ChooseTriggerTargets { .. }
             | Action::ChooseTarget { .. }

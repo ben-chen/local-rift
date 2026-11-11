@@ -18,8 +18,8 @@ class MomentarySourceReviewTests(unittest.TestCase):
         cls.proof = json.loads((catalog.ROOT / 'assets/data/catalog_evidence/reviews/momentary-companion.json').read_text())
         cls.raw = catalog.project_gallery(cls.data['gallery'])[0]
         cls.historical_runtime = copy.deepcopy(catalog.load_runtime_manifest())
-        cls.historical_runtime["cards"] = cls.historical_runtime["cards"][:349]
-        with patch.object(catalog, "load_runtime_manifest", return_value=cls.historical_runtime), patch.object(catalog, "load_legend_manifest", return_value=history.legacy_legends()):
+        cls.historical_runtime["cards"] = cls.historical_runtime["cards"][:349]; cls.historical_runtime['decks'] = cls.historical_runtime['decks'][:4]
+        with patch.object(catalog, "load_runtime_manifest", return_value=cls.historical_runtime), patch.object(catalog, 'load_battlefield_manifest', return_value=history.legacy_battlefields()), patch.object(catalog, "load_legend_manifest", return_value=history.legacy_legends()):
             cls.snapshot = catalog.make_catalog(cls.archive_manifest, cls.data)
 
     def apply(self, manifest=None, raw=None):
@@ -59,7 +59,7 @@ class MomentarySourceReviewTests(unittest.TestCase):
                           counts['unimplemented_legal_identities']), (349, 374, 705))
         self.assertEqual((counts['reviewed_field_resolutions'], counts['field_reviewed_printings'],
                           counts['source_quality_issues'], counts['resolved_source_issue_groups']),
-                         (137, 87, 52, 52))
+                         (138, 88, 53, 53))
         self.assertFalse(self.proof['enables_runtime_support'])
         self.assertFalse(self.resolution(self.manifest)['enables_runtime_support'])
         self.assertNotIn(pid, {c['official_id'] for c in self.historical_runtime['cards']})
@@ -112,10 +112,13 @@ class MomentarySourceReviewTests(unittest.TestCase):
             ('assets/data/catalog_identity_reviews.json', 'manifest_sha256'),
             ('assets/data/catalog_evidence/variant_images.json', 'image_index_sha256'),
         ]:
-            self.assertEqual(catalog.sha((catalog.ROOT / path).read_bytes()), variant[key])
+            self.assertEqual(catalog.sha(history.legacy_variant_evidence_bytes(path)), variant[key])
         self.assertEqual((variant['identities'], variant['printings']), (29, 90))
-        self.assertEqual(self.snapshot['counts']['reviewed_variant_identities'], 29)
-        self.assertEqual(self.snapshot['counts']['reviewed_variant_printings'], 90)
+        legacy = json.loads(history.legacy_variant_evidence_bytes('assets/data/catalog_identity_reviews.json'))
+        review_ids = {r['id'] for r in legacy['reviews']}
+        preserved = [r for r in self.snapshot['reviewed_identity_reviews'] if r['id'] in review_ids]
+        self.assertEqual(len(preserved), 29)
+        self.assertEqual(sum(len(r['member_ids']) for r in preserved), 90)
 
     def test_superseded_observation_remains_explicit_and_proof_is_portable(self):
         superseded = self.proof['superseded_visual_observation']

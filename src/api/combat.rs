@@ -48,8 +48,7 @@ mod tests {
             state.banish.clear();
             state.champion = None;
             state.deck = vec![71; 4];
-            state.runes = [0; 6];
-            state.exhausted_runes = [0; 6];
+            state.set_rune_setup([0; 6], [0; 6]).unwrap();
             state.energy_pool = 100;
             state.energy = 100;
             state.power_pool = [20; 6];

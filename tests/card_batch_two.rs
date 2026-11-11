@@ -106,7 +106,7 @@ fn append_only_cards_match_official_source_and_manifest() {
 fn custom_builder_exposes_only_compatible_new_cards_and_keeps_source_presets() {
     let catalog = cards::cards();
     let mut offered = BTreeSet::new();
-    for (legend, preset) in cards::presets().iter().enumerate() {
+    for (legend, preset) in cards::presets().iter().take(4).enumerate() {
         assert_eq!(
             preset
                 .cards

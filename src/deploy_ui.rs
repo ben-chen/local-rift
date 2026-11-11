@@ -133,8 +133,13 @@ mod tests {
         game.players[0].gear.clear();
         game.players[1].gear.clear();
         game.players[0].hand = vec![401, 410];
-        game.players[0].runes = [0; 6];
-        game.players[0].exhausted_runes = [0; 6];
+        {
+            let setup_runes = [0; 6];
+            let setup_exhausted_runes = [0; 6];
+            game.players[0]
+                .set_rune_setup(setup_runes, setup_exhausted_runes)
+                .unwrap();
+        }
         game.players[0].energy_pool = 20;
         game.players[0].energy = 20;
         game.players[0].power_pool = [20; 6];

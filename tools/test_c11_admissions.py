@@ -81,7 +81,7 @@ class C11AdmissionTests(unittest.TestCase):
         digest = lambda value: catalog.sha(review.canonical_bytes(value))
         self.assertEqual(preserved['card_count'], 345)
         self.assertEqual(digest(runtime['cards'][:345]), preserved['cards_sha256'])
-        self.assertEqual(digest(runtime['decks']), preserved['presets_sha256'])
+        self.assertEqual(digest(runtime['decks'][:4]), preserved['presets_sha256'])
         self.assertEqual(catalog.sha(history.legacy_legend_manifest_bytes()), preserved['legends_manifest_sha256'])
         self.assertEqual(catalog.sha(history.legacy_recipe_source_bytes()), preserved['training_recipe_source_sha256'])
         p = self.proof['preserved_source_reviews']

@@ -247,6 +247,7 @@ fn eight_cards_have_existing_legend_homes_without_changing_recipes() {
     assert!(
         cards::presets()
             .iter()
+            .take(4)
             .flat_map(|p| &p.cards)
             .all(|(id, _)| *id < 69)
     );

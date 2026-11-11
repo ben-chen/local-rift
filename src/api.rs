@@ -22,11 +22,15 @@ use std::fmt;
 use std::panic::{AssertUnwindSafe, catch_unwind};
 
 mod combat;
+mod combat_contribution;
 mod deploy;
 mod empowered;
+mod fields;
 mod numeric;
 mod play_choices;
 mod progression;
+mod refusal;
+mod runes;
 mod targeting;
 mod temporary;
 mod vision;
@@ -319,6 +323,7 @@ impl Session {
     pub fn observe(&self, viewer: usize) -> Result<Value, ApiError> {
         valid_player(viewer)?;
         let game = &self.game;
+        let can_refuse_payment = game.can_refuse_payment().map_err(ApiError::illegal)?;
         game.validate_numeric_state().map_err(ApiError::illegal)?;
         let players: Vec<_> = game.players.iter().enumerate().map(|(owner, state)| {
             let public_hand = match &game.decision {
@@ -342,6 +347,7 @@ impl Session {
                 "tags":tags,
                 "lane":unit.lane, "ready":unit.ready, "might":stats.might, "might_exact":stats.might.to_string(),
                 "signed_might":stats.signed_might,"signed_might_exact":stats.signed_might.to_string(),
+                "combat_contribution":combat_contribution::to_json(game.unit_combat_contribution(unit).map_err(ApiError::illegal)?),
                 "damage":unit.damage,"damage_exact":unit.damage.to_string(),
                 "buff":unit.buff,"buff_exact":unit.buff.to_string(), "temporary_buff":unit.temporary_buff,
                 "temporary_buff_exact":unit.temporary_buff.to_string(), "stunned":unit.stunned,
@@ -387,6 +393,7 @@ impl Session {
                 "discard":state.discard, "banish":state.banish, "score":state.score,
                 "energy":state.energy, "energy_pool":state.energy_pool, "runes":state.runes,
                 "exhausted_runes":state.exhausted_runes, "power_pool":state.power_pool,
+                "rune_objects":state.rune_objects().iter().map(runes::object_to_json).collect::<Vec<_>>(),
                 "any_power":state.any_power, "xp":state.xp, "units":units, "gear":gear, "hidden":hidden,
                 "activated_abilities":activated_observation,
                 "cards_played_this_turn":game.cards_played_this_turn(owner),"cannot_play_cards":game.cannot_play_cards(owner),
@@ -442,6 +449,7 @@ impl Session {
             "pending_token_plays":game.pending_tokens().iter().map(|token|json!({
                 "id":token.id,"player":token.player,"card_id":token.card_id,"might":token.might,"gear":token.gear,"entry_ready":token.entry_ready,
                 "token_identity":temporary::token_identity_to_json(token.card_id),
+                "source":token.source.map(chain_source_to_json),
                 "destination":match token.location {
                     None => json!({"mode":"choose"}),
                     Some(lane) => json!({"mode":"fixed","lane":lane}),
@@ -452,9 +460,13 @@ impl Session {
                 "focus_open":game.showdown_focus_open()})),
             "resource_payment_pending":game.resource_payment_pending(),
             "trigger_payment_context":game.trigger_payment_context().as_ref().map(|d|decision_to_json(game,d,viewer)).transpose()?,
+            "battlefield_payment_context":game.battlefield_payment_context().as_ref().map(|d|decision_to_json(game,d,viewer)).transpose()?,
+            "delayed_battlefield_triggers":game.delayed_battlefield_triggers().iter().map(fields::delayed_to_json).collect::<Vec<_>>(),
+            "star_spring_used":game.star_spring_used(),
             "resource_continuations":game.resource_continuations().iter().map(|parent|json!({"player":parent.player,"task":parent.task})).collect::<Vec<_>>(),
             "payment_plan":game.payment_plan_view(viewer).map(|plan|json!({
                 "player":plan.player,"energy":plan.energy,"xp":plan.xp,"xp_exact":plan.xp.to_string(),"pending_card":plan.pending_card,
+                "refusal_kind":plan.refusal_kind.map(refusal::kind_to_json),"can_refuse":can_refuse_payment,
                 "power":plan.power.iter().map(power_cost_to_json).collect::<Vec<_>>(),
                 "action":plan.action.as_ref().map(action_to_json)})),
             "required_trash_play":game.required_trash_play,
@@ -795,7 +807,7 @@ pub fn catalog() -> Value {
             "eligible_cards":crate::deck::eligible_cards(definition.id),
             "eligible_champions":crate::deck::eligible_champions(definition.id),
             "training_deck":CustomDeck::from_legend(definition.id).ok().map(|deck|deck.to_json()),
-            "training_note":if presets().iter().any(|preset|preset.legend_id==definition.id) {
+            "training_note":if presets().iter().take(4).any(|preset|preset.legend_id==definition.id) {
                 "Editable copy of the sourced preset; the original preset remains unchanged."
             } else { "Authored practice list; not a tournament or meta recommendation." }
         })).collect::<Vec<_>>(),
@@ -839,6 +851,9 @@ fn chain_source_to_json(source: ChainSource) -> Value {
 
 pub fn target_to_json(target: &Target) -> Value {
     match target {
+        Target::Rune { player, rune_id } => {
+            json!({"type":"rune","player":player,"rune_id":rune_id})
+        }
         Target::Unit { player, unit_id } => {
             json!({"type":"unit","player":player,"unit_id":unit_id})
         }
@@ -871,6 +886,7 @@ fn action_json_at_depth(action: &Action, depth: usize) -> Value {
                 json!({"type":"invalid_nested_payment"})
             } else { action_json_at_depth(action, depth + 1) }}),
         Action::CompletePayment => json!({"type":"complete_payment"}),
+        Action::RefusePayment => json!({"type":"refuse_payment"}),
         Action::RecycleRune { domain, exhausted } => {
             json!({"type":"recycle_rune", "domain":domain.name().to_lowercase(), "exhausted":exhausted})
         }
@@ -955,6 +971,18 @@ fn action_json_at_depth(action: &Action, depth: usize) -> Value {
             json!({"type":"resolve_conversion","amount":amount})
         }
         Action::ActivateLegend { target } => json!({"type":"activate_legend","target":t(target)}),
+        Action::ResolveBattlefieldTargets { choice_id, targets } => {
+            json!({"type":"resolve_battlefield_targets","choice_id":choice_id,"targets":ts(targets)})
+        }
+        Action::SelectBattlefieldCost { choice_id, unit_id } => {
+            json!({"type":"select_battlefield_cost","choice_id":choice_id,"unit_id":unit_id})
+        }
+        Action::ResolveBattlefieldPayment { choice_id, pay } => {
+            json!({"type":"resolve_battlefield_payment","choice_id":choice_id,"pay":pay})
+        }
+        Action::ActivateRuneObject { rune_id, recycle } => {
+            json!({"type":"activate_rune_object","rune_id":rune_id,"recycle":recycle})
+        }
         Action::ActivateRune { domain, recycle } => {
             json!({"type":"activate_rune","domain":domain.name(),"recycle":recycle})
         }
@@ -1198,6 +1226,13 @@ pub fn parse_ability_source(value: &Value) -> Result<AbilitySource, ApiError> {
 pub fn parse_target(value: &Value) -> Result<Target, ApiError> {
     let obj = object(value)?;
     match string(obj, "type")? {
+        "rune" => {
+            keys(obj, &["type", "player", "rune_id"])?;
+            Ok(Target::Rune {
+                player: player(obj)?,
+                rune_id: id32(obj, "rune_id")?,
+            })
+        }
         "unit" => {
             keys(obj, &["type", "player", "unit_id"])?;
             Ok(Target::Unit {
@@ -1225,7 +1260,7 @@ pub fn parse_target(value: &Value) -> Result<Target, ApiError> {
             })
         }
         _ => Err(ApiError::invalid(
-            "Target type must be unit, gear, spell, or battlefield.",
+            "Target type must be unit, gear, spell, battlefield, or rune.",
         )),
     }
 }
@@ -1523,6 +1558,39 @@ fn parse_action_at_depth(value: &Value, depth: usize) -> Result<Action, ApiError
             fields!("target");
             Action::ActivateLegend { target: target(o)? }
         }
+        "resolve_battlefield_targets" => {
+            fields!("choice_id", "targets");
+            Action::ResolveBattlefieldTargets {
+                choice_id: id32(o, "choice_id")?,
+                targets: targets(o, "targets")?,
+            }
+        }
+        "select_battlefield_cost" => {
+            fields!("choice_id", "unit_id");
+            let unit_id = if required(o, "unit_id")?.is_null() {
+                None
+            } else {
+                Some(id32(o, "unit_id")?)
+            };
+            Action::SelectBattlefieldCost {
+                choice_id: id32(o, "choice_id")?,
+                unit_id,
+            }
+        }
+        "resolve_battlefield_payment" => {
+            fields!("choice_id", "pay");
+            Action::ResolveBattlefieldPayment {
+                choice_id: id32(o, "choice_id")?,
+                pay: boolean(o, "pay")?,
+            }
+        }
+        "activate_rune_object" => {
+            fields!("rune_id", "recycle");
+            Action::ActivateRuneObject {
+                rune_id: id32(o, "rune_id")?,
+                recycle: boolean(o, "recycle")?,
+            }
+        }
         "activate_rune" => {
             fields!("domain", "recycle");
             Action::ActivateRune {
@@ -1696,7 +1764,9 @@ fn parse_action_at_depth(value: &Value, depth: usize) -> Result<Action, ApiError
             let intent = required(o, "action")?;
             if matches!(
                 intent.get("type").and_then(Value::as_str),
-                Some("begin_payment" | "with_power_payment" | "complete_payment")
+                Some(
+                    "begin_payment" | "with_power_payment" | "complete_payment" | "refuse_payment"
+                )
             ) {
                 return Err(ApiError::invalid(
                     "Begin payment requires an unwrapped payment action.",
@@ -1709,6 +1779,10 @@ fn parse_action_at_depth(value: &Value, depth: usize) -> Result<Action, ApiError
         "complete_payment" => {
             fields!();
             Action::CompletePayment
+        }
+        "refuse_payment" => {
+            fields!();
+            Action::RefusePayment
         }
         "end_turn" => {
             fields!();
@@ -1771,6 +1845,29 @@ fn instructed_kind(kind: InstructedPlayKind) -> &'static str {
 fn decision_to_json(game: &Game, decision: &Decision, viewer: usize) -> Result<Value, ApiError> {
     let player = decision.player();
     let mut out = match decision {
+        Decision::BattlefieldTargets {
+            choice_id,
+            source,
+            kind,
+            ..
+        } => json!({
+            "type":"battlefield_targets","choice_id":choice_id,"source":fields::source_to_json(source),
+            "kind":fields::kind_to_json(kind),"maximum":fields::maximum(kind),"required":0,
+            "candidates":game.battlefield_choice_candidates().iter().map(target_to_json).collect::<Vec<_>>() }),
+        Decision::BattlefieldCost {
+            choice_id, source, ..
+        } => json!({
+            "type":"battlefield_cost","choice_id":choice_id,"source":fields::source_to_json(source),
+            "optional":true,"cost_unit_ids":game.battlefield_cost_candidates() }),
+        Decision::BattlefieldPayment {
+            choice_id,
+            source,
+            unit_id,
+            cost,
+            ..
+        } => json!({
+            "type":"battlefield_payment","choice_id":choice_id,"source":fields::source_to_json(source),
+            "cost_unit_id":unit_id,"cost":play_choices::cost_to_json(cost) }),
         Decision::DrawLook {
             choice_id,
             source_card_id,
@@ -1846,6 +1943,7 @@ fn decision_to_json(game: &Game, decision: &Decision, viewer: usize) -> Result<V
             "base_cost_waiver":"energy"
         }),
         Decision::Payment { .. } => json!({"type":"payment",
+            "can_refuse":game.can_refuse_payment().map_err(ApiError::illegal)?,
             "can_cancel":game.can_cancel_payment().map_err(ApiError::illegal)?}),
         Decision::TriggerPayment {
             choice_id,
@@ -2126,6 +2224,13 @@ fn ability_to_json(ability: &ChainAbility) -> Value {
                 BattlefieldAbility::TempleDraw{..}=>"temple_draw",
                 BattlefieldAbility::SeatDraw{..}=>"seat_draw",
                 BattlefieldAbility::MinefieldBurn{..}=>"minefield_burn",
+                BattlefieldAbility::Dais{..}=>"dais",
+                BattlefieldAbility::StarSpring{..}=>"star_spring",
+                BattlefieldAbility::AbandonedHall{..}=>"abandoned_hall",
+                BattlefieldAbility::TargonPeakDelay{..}=>"targon_peak_delay",
+                BattlefieldAbility::TargonPeakReady{..}=>"targon_peak_ready",
+                BattlefieldAbility::ShadowTempleBurn{..}=>"shadow_temple_burn",
+                BattlefieldAbility::ZaunWarrensLoot{..}=>"zaun_warrens_loot",
                 BattlefieldAbility::Grant{..}=>unreachable!(),
             },"lane":ability.lane()}),
         },
@@ -2462,8 +2567,9 @@ mod tests {
         session.game.battlefield_owner[0] = Some(0);
         session.game.players[0].energy_pool = 10;
         session.game.players[0].energy = 10;
-        session.game.players[0].runes = [0; 6];
-        session.game.players[0].exhausted_runes = [0; 6];
+        session.game.players[0]
+            .set_rune_setup([0; 6], [0; 6])
+            .unwrap();
         session.game.players[0].power_pool = [0, 0, 8, 0, 0, 0];
         let first = session.observe(0).unwrap();
         let second = session.observe(1).unwrap();
@@ -2579,8 +2685,7 @@ mod tests {
         for player in &mut session.game.players {
             player.units.clear();
             player.gear.clear();
-            player.runes = [0; 6];
-            player.exhausted_runes = [0; 6];
+            player.set_rune_setup([0; 6], [0; 6]).unwrap();
             player.energy = 8;
             player.energy_pool = 8;
             player.power_pool = [0; 6];
@@ -3175,7 +3280,15 @@ mod tests {
             nested["resource_continuations"],
             json!([{"player":0,"task":"Payment"}])
         );
-        assert_eq!(nested["payment_plan"], owner["payment_plan"]);
+        assert_eq!(owner["payment_plan"]["can_refuse"], true);
+        let mut suspended_plan = owner["payment_plan"].clone();
+        suspended_plan["can_refuse"] = json!(false);
+        assert_eq!(nested["payment_plan"], suspended_plan);
+        assert_eq!(
+            session.observe(1).unwrap()["payment_plan"]["can_refuse"],
+            false
+        );
+        rejected_wire_action(&mut session, json!({"type":"refuse_payment"}));
         rejected_wire_action(&mut session, json!({"type":"complete_payment"}));
         submit(&mut session, Action::ResolveConversion { amount: 1 });
         let before = format!("{:?}", session.game);
@@ -3539,8 +3652,9 @@ mod tests {
         session.game.players[0].hand = vec![87];
         session.game.players[0].energy_pool = 6;
         session.game.players[0].energy = 6;
-        session.game.players[0].runes = [0; 6];
-        session.game.players[0].exhausted_runes = [0; 6];
+        session.game.players[0]
+            .set_rune_setup([0; 6], [0; 6])
+            .unwrap();
         submit(
             &mut session,
             Action::PlayCardWithTargets {
@@ -3585,8 +3699,7 @@ mod tests {
         player.hand = vec![36];
         player.discard = vec![7];
         player.units.clear();
-        player.runes = [6; 6];
-        player.exhausted_runes = [0; 6];
+        player.set_rune_setup([6; 6], [0; 6]).unwrap();
         player.energy = 36;
         submit(
             &mut session,
@@ -3644,9 +3757,9 @@ mod tests {
         let mut session = playing();
         session.game.battlefields = [0, 1];
         session.game.players[0].hand = vec![53];
-        session.game.players[0].runes = [0; 6];
-        session.game.players[0].runes[domain_index(Domain::Fury)] = 5;
-        session.game.players[0].exhausted_runes = [0; 6];
+        session.game.players[0]
+            .set_rune_setup([5, 0, 0, 0, 0, 0], [0; 6])
+            .unwrap();
         session.game.players[0].energy = 5;
         session.game.players[1].units = vec![unit(100, None, 4), unit(101, None, 4)];
         let targets = vec![
@@ -3699,9 +3812,9 @@ mod tests {
         let mut session = playing();
         session.game.players[0].hand = vec![48];
         session.game.players[0].discard = vec![37];
-        session.game.players[0].runes = [0; 6];
-        session.game.players[0].runes[domain_index(Domain::Chaos)] = 4;
-        session.game.players[0].exhausted_runes = [0; 6];
+        session.game.players[0]
+            .set_rune_setup([0, 0, 0, 0, 4, 0], [0; 6])
+            .unwrap();
         session.game.players[0].energy = 4;
         session.game.players[0].energy_pool = 0;
         submit(
@@ -3819,8 +3932,8 @@ mod tests {
 
     #[test]
     fn api_builtin_steps_finish_every_preset_pairing() {
-        for own in 0..4 {
-            for opposing in 0..4 {
+        for own in 0..presets().len() {
+            for opposing in 0..presets().len() {
                 let mut session = Session::new(ResetOptions {
                     decks: [own, opposing],
                     seed: 72 + own as u64,
@@ -3847,8 +3960,9 @@ mod tests {
         session.game.players[0].discard = vec![39];
         session.game.players[0].energy = 5;
         session.game.players[0].energy_pool = 5;
-        session.game.players[0].runes = [0; 6];
-        session.game.players[0].exhausted_runes = [0; 6];
+        session.game.players[0]
+            .set_rune_setup([0; 6], [0; 6])
+            .unwrap();
         session.game.players[0].power_pool = [1, 0, 0, 0, 0, 0];
         for viewer in 0..2 {
             let observed = session.observe(viewer).unwrap();

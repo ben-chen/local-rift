@@ -738,9 +738,8 @@ mod tests {
 
     fn rich(game: &mut Game, player: usize) {
         let state = &mut game.players[player];
-        state.runes = [2; 6];
+        state.set_rune_setup([2; 6], [0; 6]).unwrap();
         state.rune_deck.clear();
-        state.exhausted_runes = [0; 6];
         state.energy = 12;
     }
 
@@ -829,9 +828,11 @@ mod tests {
         assert!(game.apply(Action::ActivateLegend { target: None }).is_err());
         // Flexible generated power must not become a recycled rune or energy.
         let state = &mut game.players[0];
-        state.runes = [0; 6];
-        state.runes[domain_index(Domain::Mind)] = 10;
-        state.exhausted_runes = [0; 6];
+        {
+            let mut runes = [0; 6];
+            runes[domain_index(Domain::Mind)] = 10;
+            state.set_rune_setup(runes, [0; 6]).unwrap();
+        }
         state.energy = 10;
         state.power_pool = [0; 6];
         state.any_power = 0;
@@ -853,8 +854,7 @@ mod tests {
     #[test]
     fn kaisa_can_generate_spell_power_during_fizz_replay_payment() {
         let mut game = game(3);
-        game.players[0].runes = [0; 6];
-        game.players[0].exhausted_runes = [0; 6];
+        game.players[0].set_rune_setup([0; 6], [0; 6]).unwrap();
         game.players[0].energy = 0;
         game.players[0].power_pool = [0; 6];
         game.players[0].any_power = 0;
@@ -887,9 +887,11 @@ mod tests {
     #[test]
     fn resource_activation_preserves_last_rites_choice_but_cannot_pay_unit_power() {
         let mut game = game(3);
-        game.players[0].runes = [0; 6];
-        game.players[0].runes[domain_index(Domain::Mind)] = 3;
-        game.players[0].exhausted_runes = [0; 6];
+        {
+            let mut runes = [0; 6];
+            runes[domain_index(Domain::Mind)] = 3;
+            game.players[0].set_rune_setup(runes, [0; 6]).unwrap();
+        }
         game.players[0].energy = 3;
         game.players[0].power_pool = [0; 6];
         game.players[0].any_power = 0;
@@ -1013,8 +1015,7 @@ mod tests {
         enemy.card_id = 0; // Irelia has Deflect.
         game.players[1].units.push(enemy);
         game.legend[0].empowered = true;
-        game.players[0].runes = [0; 6];
-        game.players[0].exhausted_runes = [0; 6];
+        game.players[0].set_rune_setup([0; 6], [0; 6]).unwrap();
         game.players[0].energy = 0;
         game.legend[0].spell_power = 1;
         let action = Action::ActivateLegend {
@@ -1071,7 +1072,10 @@ mod tests {
         let before = game.players[0].clone();
         game.resolve_legend_choice(0, trigger, false).unwrap();
         assert_eq!(game.players[0], before);
-        game.players[0].runes = [0; 6];
+        {
+            let used = game.players[0].exhausted_runes;
+            game.players[0].set_rune_setup([0; 6], used).unwrap();
+        }
         game.players[0].energy = 0;
         let before = game.players[0].clone();
         assert!(game.resolve_legend_choice(0, trigger, true).is_err());

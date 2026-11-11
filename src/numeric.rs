@@ -10,6 +10,15 @@ pub struct UnitStats {
     pub might: Might,
     pub keywords: UnitKeywords,
 }
+/// Current reference Might and the amount this unit contributes to combat.
+/// A printed combat-damage prohibition is independent of the Stunned condition.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct CombatContribution {
+    pub might: Might,
+    pub damage: DamageAmount,
+    pub stunned: bool,
+    pub prevents_combat_damage: bool,
+}
 pub(crate) fn capacity(what: &str) -> String {
     format!("engine_capacity: {what} exceeds the supported numeric range")
 }
@@ -25,6 +34,22 @@ pub(crate) fn is_capacity(error: &str) -> bool {
 impl Game {
     pub fn unit_might(&self, unit: &Unit) -> Result<Might, String> {
         Ok(self.try_unit_stats(unit)?.might)
+    }
+
+    pub fn unit_combat_contribution(&self, unit: &Unit) -> Result<CombatContribution, String> {
+        let might = self.unit_might(unit)?;
+        let prevents_combat_damage = !unit.token
+            && rules::static_abilities(unit.card_id).contains(&StaticAbility::NoCombatDamage);
+        Ok(CombatContribution {
+            might,
+            damage: if unit.stunned || prevents_combat_damage {
+                0
+            } else {
+                might
+            },
+            stunned: unit.stunned,
+            prevents_combat_damage,
+        })
     }
 
     pub fn unit_keywords(&self, unit: &Unit) -> Result<UnitKeywords, String> {
@@ -166,9 +191,13 @@ impl Game {
         state
             .units
             .iter()
-            .filter(|u| u.lane == Some(lane) && !u.stunned)
+            .filter(|u| u.lane == Some(lane))
             .try_fold(0, |sum, unit| {
-                add_u64(sum, self.unit_might(unit)?, "battlefield Might")
+                add_u64(
+                    sum,
+                    self.unit_combat_contribution(unit)?.damage,
+                    "battlefield combat damage",
+                )
             })
     }
     pub fn lane_might(&self, player: usize, lane: usize) -> Result<Might, String> {
@@ -177,6 +206,9 @@ impl Game {
     /// Validate derived quantities without performing cleanup or changing state.
     /// A lethal unit may legally remain while its parent effect is resolving.
     pub fn validate_numeric_state(&self) -> Result<(), String> {
+        for state in &self.players {
+            state.validate_rune_objects()?;
+        }
         for player in 0..self.players.len() {
             for unit in &self.players[player].units {
                 self.try_unit_stats(unit)?;

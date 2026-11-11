@@ -564,6 +564,134 @@
         "Add"
       ],
       "learning_notes": "The legend exhausts to add one flexible power usable only for spells. Survivor draws when it conquers, not simply when it attacks. Damage spells can clear a battlefield; Stupefy draws and reduces might, while Watchful Sentry draws on death. Save resources for reactions and avoid treating the historic list as a current metagame recommendation."
+    },
+    {
+      "name": "Rengar / Pridestalker",
+      "champion": "Rengar, Pridestalker",
+      "chosen": "Rengar, Trophy Hunter",
+      "domains": [
+        "Fury",
+        "Body"
+      ],
+      "accent": [
+        216,
+        158,
+        102
+      ],
+      "strategy": "Develop units, concentrate temporary Might, and use movement to contest battlefields. DSG Prismaticism's winning Los Angeles list (September 2026).",
+      "difficulty": "Tactical",
+      "source_url": "https://playriftbound.com/en-us/news/organizedplay/los-angeles-top-decks/",
+      "pilot": "DSG Prismaticism",
+      "event": "Los Angeles Regional Qualifier, September 2026",
+      "placing": 1,
+      "runes": {
+        "Fury": 4,
+        "Body": 8
+      },
+      "battlefields": [
+        "Emperor's Dais",
+        "Seat of Power",
+        "Star Spring"
+      ],
+      "cards": [
+        {
+          "id": 30,
+          "name": "Rengar, Trophy Hunter",
+          "count": 1
+        },
+        {
+          "id": 183,
+          "name": "Darius, Trifarian",
+          "count": 1
+        },
+        {
+          "id": 54,
+          "name": "Ferrous Forerunner",
+          "count": 1
+        },
+        {
+          "id": 23,
+          "name": "First Mate",
+          "count": 2
+        },
+        {
+          "id": 376,
+          "name": "Grim Apothecary",
+          "count": 3
+        },
+        {
+          "id": 56,
+          "name": "Inferna",
+          "count": 3
+        },
+        {
+          "id": 417,
+          "name": "Irresistible Faefolk",
+          "count": 3
+        },
+        {
+          "id": 49,
+          "name": "Kai'Sa, Survivor",
+          "count": 3
+        },
+        {
+          "id": 418,
+          "name": "Kinkou Initiate",
+          "count": 3
+        },
+        {
+          "id": 419,
+          "name": "Nidalee, Cat Form",
+          "count": 2
+        },
+        {
+          "id": 59,
+          "name": "Noxus Hopeful",
+          "count": 3
+        },
+        {
+          "id": 108,
+          "name": "Pakaa Cub",
+          "count": 1
+        },
+        {
+          "id": 27,
+          "name": "Pit Rookie",
+          "count": 3
+        },
+        {
+          "id": 28,
+          "name": "Punch First",
+          "count": 3
+        },
+        {
+          "id": 420,
+          "name": "Pyke, Dockside Butcher",
+          "count": 1
+        },
+        {
+          "id": 29,
+          "name": "Rampage",
+          "count": 2
+        },
+        {
+          "id": 32,
+          "name": "Sabotage",
+          "count": 3
+        },
+        {
+          "id": 382,
+          "name": "Thrill of the Hunt",
+          "count": 2
+        }
+      ],
+      "chosen_champion": 30,
+      "legend_name": "Rengar, Pridestalker",
+      "legend_text": "When you play a unit, give a unit +1 Might this turn.",
+      "legend_id": "unl-183-219",
+      "legend_text_html": "<p>When you play a unit, give a unit +1 :rb_might: this turn.</p>",
+      "legend_keywords": [],
+      "learning_notes": "Pridestalker gives a unit +1 Might this turn after each unit you play. Choose where that temporary Might matters before committing to combat. Kinkou Initiate checks the Might of your other units as its draw ability resolves. Faefolk can pull an enemy into the battlefield it moved to. Keep matching Power for Pyke and combat tricks; plan a second scoring turn with units that survive."
     }
   ],
   "cards": [
@@ -10503,6 +10631,262 @@
       "power": 1,
       "source_url": "https://playriftbound.com/en-us/card-gallery/",
       "tags": []
+    },
+    {
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/e24eb3fb835c4762479da5608b018785ef22e02c-744x1039.png?w=280&q=80&fm=png",
+      "domains": [
+        "Fury"
+      ],
+      "energy": 3,
+      "equipment_effect": "",
+      "equipment_effect_html": "",
+      "id": 411,
+      "keywords": [
+        "Reaction"
+      ],
+      "kind": "Unit",
+      "might": 3,
+      "might_bonus": null,
+      "name": "Rengar, Pouncing",
+      "official_id": "sfd-025-221",
+      "official_text": "[Reaction] (Play any time, even before spells and abilities resolve, including to a battlefield you control.)\n[Assault 2] (+2 Might while I'm an attacker.)\nI can be played to a battlefield you're attacking.",
+      "official_text_html": "<p>[Reaction] (Play any time, even before spells and abilities resolve, including to a battlefield you control.)<br />[Assault 2] (+2 :rb_might: while I'm an attacker.)<br />I can be played to a battlefield you're attacking.</p>",
+      "power": 1,
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "tags": [
+        "Cat",
+        "Rengar",
+        "Ixtal"
+      ]
+    },
+    {
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/3e040f7b7ca16009a2558674a911b8cc93122ba3-744x1039.png?w=280&q=80&fm=png",
+      "domains": [
+        "Mind"
+      ],
+      "energy": 4,
+      "equipment_effect": "",
+      "equipment_effect_html": "",
+      "id": 412,
+      "keywords": [
+        "Action"
+      ],
+      "kind": "Unit",
+      "might": 3,
+      "might_bonus": null,
+      "name": "Ezreal, Dashing",
+      "official_id": "sfd-082-221",
+      "official_text": "When I attack or defend, deal damage equal to my Might to an enemy unit here.\nI don't deal combat damage.\n[Mind Power]: [Action] — Move me to your base.",
+      "official_text_html": "<p>When I attack or defend, deal damage equal to my Might to an enemy unit here.<br />I don't deal combat damage.<br />:rb_rune_mind:: [Action] — Move me to your base.</p>",
+      "power": 1,
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "tags": [
+        "Ezreal",
+        "Piltover"
+      ]
+    },
+    {
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/1643a6c93626884c93363557e1a483642bda6c45-744x1039.png?w=280&q=80&fm=png",
+      "domains": [
+        "Calm"
+      ],
+      "energy": 6,
+      "equipment_effect": "",
+      "equipment_effect_html": "",
+      "id": 413,
+      "keywords": [],
+      "kind": "Unit",
+      "might": 6,
+      "might_bonus": null,
+      "name": "Yasuo, Remorseful",
+      "official_id": "ogn-076-298",
+      "official_text": "When I attack, deal damage equal to my Might to an enemy unit here.",
+      "official_text_html": "<p>When I attack, deal damage equal to my Might to an enemy unit here.</p>",
+      "power": 2,
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "tags": [
+        "Yasuo",
+        "Ionia"
+      ]
+    },
+    {
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/5bc0671f9f78630e2932052bb9f7f42ef2742c86-744x1039.png?w=280&q=80&fm=png",
+      "domains": [
+        "Body"
+      ],
+      "energy": 5,
+      "equipment_effect": "",
+      "equipment_effect_html": "",
+      "id": 414,
+      "keywords": [],
+      "kind": "Unit",
+      "might": 4,
+      "might_bonus": null,
+      "name": "Graves, Blasting Through",
+      "official_id": "rad-085-167",
+      "official_text": "When I attack or defend, deal damage equal to my Might to all enemy units here.\nI don't deal combat damage.",
+      "official_text_html": "<p>When I attack or defend, deal damage equal to my Might to all enemy units here.<br />I don't deal combat damage.</p>",
+      "power": 1,
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "tags": [
+        "Bilgewater",
+        "Graves"
+      ]
+    },
+    {
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/2dfb106d7c85235436d25261195a638e2ab15092-744x1039.png?w=280&q=80&fm=png",
+      "domains": [
+        "Fury"
+      ],
+      "energy": 3,
+      "equipment_effect": "",
+      "equipment_effect_html": "",
+      "id": 415,
+      "keywords": [
+        "Assault"
+      ],
+      "kind": "Unit",
+      "might": 2,
+      "might_bonus": null,
+      "name": "Lucian, Gunslinger",
+      "official_id": "sfd-028-221",
+      "official_text": "[Assault] (+1 Might while I'm an attacker.)\nWhen I attack, deal damage equal to my [Assault] to an enemy unit here.",
+      "official_text_html": "<p>[Assault] (+1 :rb_might: while I'm an attacker.)<br />When I attack, deal damage equal to my [Assault] to an enemy unit here.</p>",
+      "power": 0,
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "tags": [
+        "Lucian",
+        "Demacia",
+        "Sentinel"
+      ]
+    },
+    {
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/c479f2fda00506e71a57ac4e8cc297f7f3110a54-744x1039.png?w=280&q=80&fm=png",
+      "domains": [
+        "Body"
+      ],
+      "energy": 6,
+      "equipment_effect": "",
+      "equipment_effect_html": "",
+      "id": 416,
+      "keywords": [
+        "Shield",
+        "Tank"
+      ],
+      "kind": "Unit",
+      "might": 4,
+      "might_bonus": null,
+      "name": "Armored Tusker",
+      "official_id": "rad-078-167",
+      "official_text": "[Shield 3] (+3 Might while I'm a defender.)\n[Tank] (I must be assigned combat damage first.)\nWhen I move, you may deal damage equal to my [Shield] to a unit at a battlefield.",
+      "official_text_html": "<p>[Shield 3] (+3 :rb_might: while I'm a defender.)<br />[Tank] (I must be assigned combat damage first.)<br />When I move, you may deal damage equal to my [Shield] to a unit at a battlefield.</p>",
+      "power": 1,
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "tags": [
+        "Noxus"
+      ]
+    },
+    {
+      "id": 417,
+      "name": "Irresistible Faefolk",
+      "official_id": "unl-112-219",
+      "energy": 2,
+      "power": 0,
+      "might": 1,
+      "might_bonus": null,
+      "domains": [
+        "Body"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/6834e4b00a22dd6d7476d36884b43cf59b60c611-744x1039.png?w=280&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "When I move to a battlefield, you may move an enemy unit to that battlefield.",
+      "official_text_html": "<p>When I move to a battlefield, you may move an enemy unit to that battlefield.</p>",
+      "equipment_effect": "",
+      "equipment_effect_html": "",
+      "keywords": [],
+      "tags": [
+        "Fae",
+        "Ionia"
+      ]
+    },
+    {
+      "id": 418,
+      "name": "Kinkou Initiate",
+      "official_id": "unl-097-219",
+      "energy": 3,
+      "power": 0,
+      "might": 3,
+      "might_bonus": null,
+      "domains": [
+        "Body"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/358c56479ff4a02df622827092265fe4e8373fc2-744x1039.png?w=280&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "When you play me, draw 1 if your other units have total Might 5 or more.",
+      "official_text_html": "<p>When you play me, draw 1 if your other units have total Might 5 or more.</p>",
+      "equipment_effect": "",
+      "equipment_effect_html": "",
+      "keywords": [],
+      "tags": [
+        "Ionia"
+      ]
+    },
+    {
+      "id": 419,
+      "name": "Nidalee, Cat Form",
+      "official_id": "unl-114-219",
+      "energy": 3,
+      "power": 1,
+      "might": 4,
+      "might_bonus": null,
+      "domains": [
+        "Body"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/0e51e39dfe4f922b2c8c9bff785d170350e9b803-744x1039.png?w=280&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Ambush] (You may play me as a [Reaction] to a battlefield where you have units.)\nWhen I win a combat, draw 1. (I win if I remain after combat.)",
+      "official_text_html": "<p>[Ambush] (You may play me as a [Reaction] to a battlefield where you have units.)<br />When I win a combat, draw 1. (I win if I remain after combat.)</p>",
+      "equipment_effect": "",
+      "equipment_effect_html": "",
+      "keywords": [
+        "Ambush",
+        "Reaction"
+      ],
+      "tags": [
+        "Cat",
+        "Ixtal",
+        "Nidalee"
+      ]
+    },
+    {
+      "id": 420,
+      "name": "Pyke, Dockside Butcher",
+      "official_id": "unl-028-219",
+      "energy": 3,
+      "power": 0,
+      "might": 2,
+      "might_bonus": null,
+      "domains": [
+        "Fury"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/e0ce05148d7368070bcc8c0a43f66ece0834653a-744x1039.png?w=280&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Hidden] (Hide now for [Any Power] to react with later for [0 Energy].)\n[Ganking] (I can move from battlefield to battlefield.)\nYou may pay [Fury Power] as an additional cost to play me.\nWhen you play me, if you paid the additional cost, ready me and give me +2 Might this turn.",
+      "official_text_html": "<p>[Hidden] (Hide now for :rb_rune_rainbow: to react with later for :rb_energy_0:.)<br />[Ganking] (I can move from battlefield to battlefield.)<br />You may pay :rb_rune_fury: as an additional cost to play me.<br />When you play me, if you paid the additional cost, ready me and give me +2 :rb_might: this turn.</p>",
+      "equipment_effect": "",
+      "equipment_effect_html": "",
+      "keywords": [
+        "Ganking",
+        "Hidden"
+      ],
+      "tags": [
+        "Pyke",
+        "Bilgewater"
+      ]
     }
   ],
   "official_text_note": "Official card/legend rules text from the Riot Card Gallery, retrieved 2026-10-24 and corrected by cited errata. Resource icon tokens are expanded to readable bracketed names. Raw card and equipment HTML is preserved separately. Official text does not establish full implementation fidelity."

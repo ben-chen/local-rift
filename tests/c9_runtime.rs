@@ -20,8 +20,7 @@ fn game() -> Game {
         state.hidden.clear();
         state.discard.clear();
         state.champion = None;
-        state.runes = [0; 6];
-        state.exhausted_runes = [0; 6];
+        state.set_rune_setup([0; 6], [0; 6]).unwrap();
         state.energy_pool = 60;
         state.energy = 60;
         state.power_pool = [20; 6];
@@ -588,8 +587,9 @@ fn rune_and_level_thresholds_are_live_with_exhausted_runes_and_attached_sword() 
     let mut g = game();
     let yi = unit(&mut g, 0, 1000, 325, None);
     let seer = unit(&mut g, 0, 1001, 326, None);
-    g.players[0].runes = [7, 0, 0, 0, 0, 0];
-    g.players[0].exhausted_runes = [7, 0, 0, 0, 0, 0];
+    g.players[0]
+        .set_rune_setup([7, 0, 0, 0, 0, 0], [7, 0, 0, 0, 0, 0])
+        .unwrap();
     g.players[0].rune_deck = vec![Domain::Body];
     assert_eq!(g.unit_might(u(&g, yi)).unwrap(), 4);
     cast(&mut g, 309, vec![]);
@@ -833,8 +833,9 @@ fn rune_might_loss_during_payment_defers_cleanup_and_failed_payment_rolls_back()
         let mut g = game();
         let yi = unit(&mut g, 0, 1000, 325, None);
         um(&mut g, yi).damage = 5;
-        g.players[0].runes = [8, 0, 0, 0, 0, 0];
-        g.players[0].exhausted_runes = [8, 0, 0, 0, 0, 0];
+        g.players[0]
+            .set_rune_setup([8, 0, 0, 0, 0, 0], [8, 0, 0, 0, 0, 0])
+            .unwrap();
         g.players[0].power_pool = [0; 6];
         g.players[0].energy_pool = if rollback { 0 } else { 2 };
         g.players[0].energy = g.players[0].energy_pool;

@@ -2,7 +2,7 @@
 
 Snapshot checked **2026-10-24**. The official gallery contains **1,408 printing records** grouped into **1,103 distinct full-name identities**. After excluding **12 auxiliary token/tracker identities** and **12 banned identities**, **1,079 identities are legal in Standard/1v1 Constructed**. The separate 2v2 list leaves **1,078**.
 
-**This client does not yet implement every legal card.** It currently maps **411 main-deck cards, 10 independently registered legends, 11 battlefields, and 6 rune resource types** (438 legal identities). **641 legal identities remain unimplemented and are not playable.** Importing this snapshot does not register cards with the engine. Full inventory coverage is not full rules support.
+**This client does not yet implement every legal card.** It currently maps **421 main-deck cards, 10 independently registered legends, 17 battlefields, and 6 rune resource types** (454 legal identities). **625 legal identities remain unimplemented and are not playable.** Importing this snapshot does not register cards with the engine. Full inventory coverage is not full rules support.
 
 ## Scope and authority
 
@@ -25,13 +25,13 @@ Numbered positions include token slots where the publisher numbers them within a
 
 | Kind | Standard legal | Implemented mapping | Not implemented |
 | --- | ---: | ---: | ---: |
-| Battlefield | 69 | 11 | 58 |
+| Battlefield | 69 | 17 | 52 |
 | Gear | 131 | 74 | 57 |
 | Gear + Unit | 1 | 0 | 1 |
 | Legend | 58 | 10 | 48 |
 | Rune | 6 | 6 | 0 |
 | Spell | 268 | 112 | 156 |
-| Unit | 546 | 225 | 321 |
+| Unit | 546 | 235 | 311 |
 
 Each row is a disjoint complete type set. A reviewed Unit Gear has both types (Core 178) and is counted once in `gear+unit`, rather than once in each single-type row. Patched Porobot is the first explicitly reviewed dual-type correction; this is not a complete visual audit of every gallery type. No dual-type card is currently admitted to the engine.
 
@@ -66,7 +66,7 @@ The snapshot preserves printed rules HTML, readable rules, equipment text, exact
 - [Vendetta Errata](https://playriftbound.com/en-us/news/announcements/vendetta-errata-updates/)
 - [Radiance Errata](https://playriftbound.com/en-us/news/announcements/radiance-errata-updates/)
 
-**52 historical issue groups are preserved; 52 have evidence-backed resolutions and 0 remain unresolved.** The reviewed manifest contains 137 field corrections or confirmations across 87 printings. It preserves original gallery values, both type labels, original HTML, and the original issue records. The generated `effective` object applies only explicitly reviewed fields. This is a targeted review, not a complete visual audit of the gallery.
+**53 historical issue groups are preserved; 53 have evidence-backed resolutions and 0 remain unresolved.** The reviewed manifest contains 138 field corrections or confirmations across 88 printings. It preserves original gallery values, both type labels, original HTML, and the original issue records. The generated `effective` object applies only explicitly reviewed fields. This is a targeted review, not a complete visual audit of the gallery.
 
 **13 Radiance records have an empty structured type field.** Their raw normalized type still records the accessibility-label fallback. Matching card images corroborate the effective types; no structured source value was overwritten.
 
@@ -100,11 +100,11 @@ The snapshot preserves printed rules HTML, readable rules, equipment text, exact
 
 **Historical official stat conflict:** Kai'Sa, Rebel, `might`: `rad-063-167` = 5; `rad-sp4-005` = 4. The source values remain unchanged. Reviewed effective values: `rad-063-167` = 5; `rad-sp4-005` = 5.
 
-The original 37 parser issue groups remain unchanged. Another 15 issues were discovered by reading exact official card faces, then validated against the raw printing and linked field resolutions before being appended to the history. Bilgewater Tracker's raw Body domain and empty tags remain visible; its effective Fury domain and Bilgewater tag match the printed glyph and type/tag line. These are explicit visual observations, not additional discrepancies detected by the feed parser.
+The original 37 parser issue groups remain unchanged. Another 16 issues were discovered by reading exact official card faces, then validated against the raw printing and linked field resolutions before being appended to the history. Bilgewater Tracker's raw Body domain and empty tags remain visible; its effective Fury domain and Bilgewater tag match the printed glyph and type/tag line. These are explicit visual observations, not additional discrepancies detected by the feed parser.
 
 The same reviewed evidence corrects missing/wrong domains, printed tags, Runeblade Anvil's activation power glyph, and Rousing Display's trailing editorial text. Individually reviewed Device-tag exclusions are explicitly rule-derived and retain their Core Rules evidence. Every resolution names exact raw prerequisites, its immutable origin gallery, complete printing hash, and local official image evidence. A changed printing or corrupted evidence fails validation; publisher fixes require a deliberate review update. See [the review contract and evidence](CATALOG_REVIEW.md).
 
-**Alternate-printing review remains incomplete:** 95 identities have unreviewed differences (33 tag sets and 84 rules-text variants, with overlap). Reminder omissions and possible gameplay differences are recorded without automatic normalization. The 29 already-playable affected identities now have complete individual reviews of all 90 printings, replacing their old compatibility exceptions. The [variant review](VARIANT_REVIEW.md) preserves genuine printed differences and identifies exact transcription corrections, reminder equivalence, and two narrowly justified wording/separator interpretations. Any mapping with an unreviewed variant difference is rejected. Changes to reviewed printings, corrections, membership, local evidence, current Core Rules link, or applicable errata require renewed review, even if a difference disappears.
+**Alternate-printing review remains incomplete:** 94 identities have unreviewed differences (33 tag sets and 83 rules-text variants, with overlap). Reminder omissions and possible gameplay differences are recorded without automatic normalization. The 30 already-playable affected identities now have complete individual reviews of all 92 printings, replacing their old compatibility exceptions. The [variant review](VARIANT_REVIEW.md) preserves genuine printed differences and identifies exact transcription corrections, reminder equivalence, and two narrowly justified wording/separator interpretations. Any mapping with an unreviewed variant difference is rejected. Changes to reviewed printings, corrections, membership, local evidence, current Core Rules link, or applicable errata require renewed review, even if a difference disappears.
 
 The gallery's auxiliary entries are incomplete as a complete token catalog: official rules/card text mentions additional tokens such as Tentacle, Mech, and Bomb. Tokens cannot be included in legal constructed decks and are excluded from the 1,079 denominator; a full engine still needs every rules-created token and marker. These source corrections enable no new playable cards.
 
@@ -118,7 +118,7 @@ python3 -m unittest discover -s tools -p 'test_*.py'
 cargo test --test catalog_coverage --test catalog_review
 ```
 
-The four tournament lists remain separate from the legend registry. The offline check verifies current source archives, immutable origin evidence, every reviewed image and rules PDF, printing prerequisites, all numbered base positions, legality/errata, and runtime source readiness. It regenerates raw/effective inventory and this report deterministically. No unsupported identity becomes playable through a resolution entry.
+The tournament presets remain separate from the legend registry. The offline check verifies current source archives, immutable origin evidence, every reviewed image and rules PDF, printing prerequisites, all numbered base positions, legality/errata, and runtime source readiness. It regenerates raw/effective inventory and this report deterministically. No unsupported identity becomes playable through a resolution entry.
 
 ```sh
 # Compare live official page data without changing the committed snapshot.
@@ -546,10 +546,20 @@ Current pages are archived under `assets/data/catalog_sources/`; immutable revie
 | 408 | The Good Stuff | `rad-106-167` |
 | 409 | Overloaded Traveler | `rad-072-167` |
 | 410 | Command: Attack | `rad-033-167` |
+| 411 | Rengar, Pouncing | `sfd-025-221` |
+| 412 | Ezreal, Dashing | `sfd-082-221` |
+| 413 | Yasuo, Remorseful | `ogn-076-298` |
+| 414 | Graves, Blasting Through | `rad-085-167` |
+| 415 | Lucian, Gunslinger | `sfd-028-221` |
+| 416 | Armored Tusker | `rad-078-167` |
+| 417 | Irresistible Faefolk | `unl-112-219` |
+| 418 | Kinkou Initiate | `unl-097-219` |
+| 419 | Nidalee, Cat Form | `unl-114-219` |
+| 420 | Pyke, Dockside Butcher | `unl-028-219` |
 
 ## Implemented legend ID mapping
 
-Registry IDs are independent of the four sourced tournament presets. The original four retain their existing implementation status for compatibility; additional legends use `implemented_legend`. These mappings identify reviewed runtime identities, not a proof of all interactions.
+Registry IDs are independent of the sourced tournament presets. Legends used by a bundled preset use `implemented_preset_legend`; other registered legends use `implemented_legend`. These mappings identify reviewed runtime identities, not a proof of all interactions.
 
 | Legend ID | Legend | Official printing ID |
 | ---: | --- | --- |

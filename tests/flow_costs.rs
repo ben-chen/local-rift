@@ -42,8 +42,7 @@ fn position(granted: bool) -> Game {
     let player = &mut game.players[0];
     player.energy = 6;
     player.energy_pool = 6;
-    player.runes = [0; 6];
-    player.exhausted_runes = [0; 6];
+    player.set_rune_setup([0; 6], [0; 6]).unwrap();
     player.power_pool = [1, 0, 0, 0, 0, 0]; // Fury is valid Any power for printed Flow.
     player.any_power = 0;
     game

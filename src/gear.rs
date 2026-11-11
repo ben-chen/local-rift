@@ -712,9 +712,11 @@ mod tests {
     }
 
     fn give_power(game: &mut Game, player: usize, domain: Domain, count: u8) {
-        game.players[player].runes = [0; 6];
-        game.players[player].exhausted_runes = [0; 6];
-        game.players[player].runes[domain_index(domain)] = count;
+        {
+            let mut runes = [0; 6];
+            runes[domain_index(domain)] = count;
+            game.players[player].set_rune_setup(runes, [0; 6]).unwrap();
+        }
         game.players[player].energy = u16::from(count);
     }
 

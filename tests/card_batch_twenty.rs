@@ -104,6 +104,7 @@ fn new_cards_fit_existing_domains_without_changing_recipes_or_champions() {
     assert!(
         cards::presets()
             .iter()
+            .take(4)
             .all(|p| p.cards.iter().all(|(id, _)| *id < 69))
     );
 }

@@ -14,8 +14,7 @@ fn position() -> Game {
         state.gear.clear();
         state.hidden.clear();
         state.discard.clear();
-        state.runes = [0; 6];
-        state.exhausted_runes = [0; 6];
+        state.set_rune_setup([0; 6], [0; 6]).unwrap();
         state.energy = 40;
         state.energy_pool = 40;
         state.power_pool = [10; 6];

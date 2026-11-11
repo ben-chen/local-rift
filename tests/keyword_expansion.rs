@@ -18,8 +18,7 @@ fn position() -> Game {
         player.gear.clear();
         player.hidden.clear();
         player.discard.clear();
-        player.runes = [6; 6];
-        player.exhausted_runes = [0; 6];
+        player.set_rune_setup([6; 6], [0; 6]).unwrap();
         player.energy_pool = 0;
         player.energy = 36;
         player.power_pool = [0; 6];
@@ -309,7 +308,10 @@ fn every_accelerate_mapping_pays_its_optional_cost_and_enters_ready() {
     }
     let mut game = position();
     game.players[0].hand = vec![96];
-    game.players[0].runes = [0; 6];
+    {
+        let used = game.players[0].exhausted_runes;
+        game.players[0].set_rune_setup([0; 6], used).unwrap();
+    }
     game.players[0].energy_pool = 3;
     game.players[0].energy = 3;
     let before = game.players.clone();
@@ -456,7 +458,10 @@ fn matriarch_selects_first_then_optional_accelerate_is_paid_at_actual_play() {
     for accelerate in [false, true] {
         let mut game = position();
         game.players[0].discard = vec![96];
-        game.players[0].runes = [0; 6];
+        {
+            let used = game.players[0].exhausted_runes;
+            game.players[0].set_rune_setup([0; 6], used).unwrap();
+        }
         game.players[0].energy = 0;
         game.decision = Some(Decision::ReviveUnit { player: 0 });
         game.apply(Action::PlayFromTrash {
@@ -473,7 +478,12 @@ fn matriarch_selects_first_then_optional_accelerate_is_paid_at_actual_play() {
         ));
         assert!(game.apply(Action::Choose { accept: false }).is_err());
         if accelerate {
-            game.players[0].runes[domain_index(Domain::Fury)] = 1;
+            {
+                let mut runes = game.players[0].runes;
+                let used = game.players[0].exhausted_runes;
+                runes[domain_index(Domain::Fury)] = 1;
+                game.players[0].set_rune_setup(runes, used).unwrap();
+            }
             game.players[0].energy = 1;
         }
         game.apply(Action::FinalizePendingPlay {
@@ -504,7 +514,10 @@ fn ezreal_optional_discount_can_be_allocated_during_revived_unit_finalization() 
     let mut game = position();
     game.players[0].units.push(unit(1000, 35, None));
     game.players[0].discard = vec![96];
-    game.players[0].runes = [0; 6];
+    {
+        let used = game.players[0].exhausted_runes;
+        game.players[0].set_rune_setup([0; 6], used).unwrap();
+    }
     game.players[0].energy_pool = 1;
     game.players[0].energy = 1;
     game.decision = Some(Decision::ReviveUnit { player: 0 });

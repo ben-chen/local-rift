@@ -78,6 +78,7 @@ pub(super) struct EventSnapshot {
     pub hidden: bool,
     pub origin: Option<usize>,
     pub buffed: bool,
+    pub optional_play_cost_paid: bool,
     pub battlefield: Option<usize>,
 }
 impl EventSnapshot {
@@ -93,6 +94,7 @@ impl EventSnapshot {
             hidden: false,
             origin: None,
             buffed: false,
+            optional_play_cost_paid: false,
             battlefield: None,
         }
     }
@@ -114,6 +116,7 @@ impl EventSnapshot {
             hidden: false,
             origin: None,
             buffed: false,
+            optional_play_cost_paid: false,
             battlefield: None,
         }
     }
@@ -294,6 +297,7 @@ impl Game {
             return false;
         }
         rule.conditions.iter().all(|condition| match *condition {
+            Condition::OptionalPlayCostPaid => event.optional_play_cost_paid,
             Condition::SourceEmpowered => source
                 .unit_id
                 .or(source.gear_id)
@@ -564,6 +568,11 @@ impl Game {
             let mut event = EventSnapshot::unit(kind, player, unit);
             if kind == Occurrence::UnitPlayed {
                 event.hidden = self.trigger_state.hidden_play;
+                event.optional_play_cost_paid = self.active_play.as_ref().is_some_and(|play| {
+                    play.player == player
+                        && Some(play.card_id) == event.card_id
+                        && play.choices.bonus
+                });
                 if !event.token {
                     self.trigger_state.completed_cards[player] += 1;
                 }
@@ -767,6 +776,17 @@ impl Game {
                 .contains(&Effect::MoveTargetsToSourceBattlefield)
             {
                 let Some((Some(destination), _)) = self.source_location(context.source) else {
+                    return Ok(false);
+                };
+                if lane == Some(destination) {
+                    return Ok(false);
+                }
+            }
+            if rule
+                .effects
+                .contains(&Effect::MoveTargetsToEventDestination)
+            {
+                let Some(destination) = context.movement.and_then(|facts| facts.destination) else {
                     return Ok(false);
                 };
                 if lane == Some(destination) {
@@ -1062,7 +1082,7 @@ impl Game {
         })
     }
 
-    pub(super) fn resolve_trigger_payment(
+    pub(crate) fn resolve_trigger_payment(
         &mut self,
         choice_id: u32,
         pay: bool,
@@ -1087,7 +1107,11 @@ impl Game {
             if base_cost.energy == 0 && base_cost.power == 0 && deflect == 0 {
                 return Err("A zero resource cost cannot be declined.".into());
             }
-            if let Some(original) = self.trigger_payment_origin.take() {
+            if self.finalization_payment_origin.is_some() {
+                // A direct Add may precede the base-cost target choice. The
+                // source occurrence is still the same pending finalization.
+                self.rollback_finalization_payment_add();
+            } else if let Some(original) = self.trigger_payment_origin.take() {
                 // Refusal at Pay Costs undoes Add actions in this attempt,
                 // never the source play or choices made before payment.
                 let command_payment = self.payment.take();
@@ -1134,6 +1158,7 @@ impl Game {
         };
         let rule = &metadata::trigger_rules(card_id)[rule_index];
         if rule.optional && targets.is_empty() {
+            self.rollback_finalization_payment_add();
             self.decision = None;
             return Ok(());
         }
@@ -1268,6 +1293,27 @@ impl Game {
                         }]);
                     }
                 }
+                Effect::MoveTargetsToEventDestination => {
+                    if let Some(destination) = context.movement.and_then(|facts| facts.destination)
+                    {
+                        for &target in &targets {
+                            self.move_effect(player, target, Some(destination), false)?;
+                        }
+                    }
+                }
+                Effect::DrawIfOtherFriendlyMightAtLeast(threshold) => {
+                    // Only a threshold is referenced. Evaluate every canonical Might
+                    // (including its errors), and retain no overflowing total.
+                    let mut remaining = threshold;
+                    for unit in &self.players[player].units {
+                        if context.source.unit_id != Some(unit.id) {
+                            remaining = remaining.saturating_sub(self.unit_might(unit)?);
+                        }
+                    }
+                    if remaining == 0 {
+                        self.draw(player, 1)?;
+                    }
+                }
                 Effect::MoveTargetsToSourceBattlefield => {
                     if let Some((Some(lane), _)) = self.source_location(context.source) {
                         for &target in &targets {
@@ -1344,17 +1390,48 @@ impl Game {
                         self.buff_unit_by(player, target)?;
                     }
                 }
-                Effect::Damage(amount) => {
+                Effect::Damage(_) | Effect::SourceDamage { .. } => {
+                    let (amount, recipients) = match *effect {
+                        Effect::Damage(amount) => (u64::from(amount), targets.clone()),
+                        Effect::SourceDamage { value, recipients } => {
+                            let Some(source) = Self::source_target(context.source)
+                                .and_then(|target| self.unit_ref(target))
+                            else {
+                                // CR359.3.e.12: source information is unavailable,
+                                // rather than printed or last-known information.
+                                continue;
+                            };
+                            let amount = match value {
+                                metadata::SourceDamageValue::Might => self.unit_might(source)?,
+                                metadata::SourceDamageValue::Assault => {
+                                    self.unit_keywords(source)?.assault
+                                }
+                                metadata::SourceDamageValue::Shield => {
+                                    self.unit_keywords(source)?.shield
+                                }
+                            };
+                            let recipients = match recipients {
+                                metadata::SourceDamageRecipients::ChosenTargets => targets.clone(),
+                                metadata::SourceDamageRecipients::AllEnemiesHere => self
+                                    .trigger_operands(context, Operand::AllHere, &[])
+                                    .into_iter()
+                                    .filter(|target| matches!(target, Target::Unit { player: owner, .. } if *owner != player))
+                                    .collect(),
+                            };
+                            (amount, recipients)
+                        }
+                        _ => unreachable!("damage descriptor arm"),
+                    };
                     let context = crate::game::damage::DamageContext {
                         player,
                         bonus_damage: 0,
                         dealer: crate::game::damage::DamageDealer::Ability,
                     };
-                    let packets: Vec<_> = targets
+                    // Compute every packet against the same pre-damage state.
+                    // Cleanup and its observers follow the entire instruction.
+                    let packets: Vec<_> = recipients
                         .iter()
-                        .map(|&target| {
-                            Ok((target, self.damage_amount(context, target, amount.into())?))
-                        })
+                        .map(|&target| Ok((target, self.damage_amount(context, target, amount)?)))
                         .collect::<Result<Vec<_>, String>>()?;
                     for (target, amount) in packets {
                         if let Some(unit) = self.unit_mut(target) {
@@ -1402,7 +1479,7 @@ impl Game {
                 Effect::Predict => self.predict(player),
                 Effect::PredictMany(n) => self.predict_many(player, n),
                 Effect::Channel { count, exhausted } => {
-                    self.channel_runes(player, count, exhausted);
+                    self.channel_runes(player, count, exhausted)?;
                 }
                 Effect::KillTargets => self.kill_units(&targets)?,
                 Effect::DamageIfSourceEmpowered { base, empowered } => {

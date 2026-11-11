@@ -14,8 +14,7 @@ fn position() -> Game {
         player.gear.clear();
         player.hidden.clear();
         player.discard.clear();
-        player.runes = [4, 4, 4, 4, 4, 4];
-        player.exhausted_runes = [0; 6];
+        player.set_rune_setup([4, 4, 4, 4, 4, 4], [0; 6]).unwrap();
         player.energy_pool = 0;
         player.energy = 24;
     }

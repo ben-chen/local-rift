@@ -1,0 +1,35 @@
+{
+  "reviewed_on": "2026-11-11",
+  "runtime_source_manifest_sha256": "c5a04b6eee20114bccf3e0b9f80efed051fc9fff324ad7042cd7111b3e21f31d",
+  "scope": "C25-C28 release checkpoint, incomplete Standard coverage",
+  "rust_unique_tests": 1445,
+  "rust_targets": 95,
+  "python_tests": 238,
+  "native_preset_matches": 600,
+  "nix_flake_check": "pass",
+  "primary_API_games_per_build": 468,
+  "legal40_API_games_per_build": 336,
+  "expanded_API_games_per_build": 132,
+  "GUI_runs_per_build": 16,
+  "full_GUI_steps": 1261,
+  "API_native_nix_semantic_parity": true,
+  "historical_API_comparison": {
+    "raw_pass": false,
+    "reviewed_wording_only_differences": 2
+  },
+  "validation_evidence_sha256": {
+    "final5-native-test-union.json": "878d7e17a0f25fa2a5ab6b9e81dd906190b0320951b3da7885fdd8d41cfdd0bb",
+    "final5-native/gates.json": "74059a3d3adb627f594ff2c4252c535a6407c699e98c75edc10b073447b8598c",
+    "final5-nix/gates.json": "8def6862a79fedd0b38a09ba4b5426114845a1e1abba6fd24a70fec6ffab9f06",
+    "final2-catalog/gates.json": "689032ccce0409e72eebd8949e6958977ba90bd55d5612ff2cf30b59f8dbac53",
+    "api/final5-acceptance/nix/packaged-independent-review.json": "b01bca6916b9ae0fd33fb7ab553227fc8477ffd84b57abe94ebc7dd3a317d7a6",
+    "ui/final-acceptance/final5-nix/acceptance-exit.json": "8ff8b20947379f51ae96843279a66899940424b23903ba9ec230845bfba5ecb8"
+  },
+  "publication_overlay": "README documentation only; tested runtime files unchanged",
+  "live_source_check_2026_11_11": {
+    "status": "rejected",
+    "reason": "Duplicate official printing IDs",
+    "source_snapshot_updated": false,
+    "raw_gallery_sha256": "1882e19651bafda2f4954cee82b946963aacdf4a38a7d570379dc7b252e91b19"
+  }
+}

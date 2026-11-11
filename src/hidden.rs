@@ -167,7 +167,9 @@ impl Game {
                 .get(player)
                 .and_then(|state| state.gear.iter().find(|gear| gear.id == gear_id))
                 .map(|_| self.gear_location(player, gear_id)),
-            Target::Spell { .. } | Target::Battlefield { .. } => return false,
+            Target::Spell { .. } | Target::Battlefield { .. } | Target::Rune { .. } => {
+                return false;
+            }
         };
         // Tideturner's explicit 'another location' can never choose here, so
         // CR811.1.d3 permits its target outside the hidden battlefield.
@@ -383,8 +385,7 @@ mod tests {
             state.discard.clear();
             state.gear.clear();
             state.hidden.clear();
-            state.runes = [0; 6];
-            state.exhausted_runes = [0; 6];
+            state.set_rune_setup([0; 6], [0; 6]).unwrap();
             state.power_pool = [0; 6];
             state.any_power = 0;
             state.energy = 0;
@@ -743,9 +744,11 @@ mod tests {
             }
         }
         game.players[1].hand = vec![7];
-        game.players[1].runes = [0; 6];
-        game.players[1].runes[domain_index(Domain::Calm)] = 6;
-        game.players[1].exhausted_runes = [0; 6];
+        {
+            let mut runes = [0; 6];
+            runes[domain_index(Domain::Calm)] = 6;
+            game.players[1].set_rune_setup(runes, [0; 6]).unwrap();
+        }
         game.players[1].energy = 6;
         let target = Target::Unit {
             player: 1,

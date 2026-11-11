@@ -38,11 +38,11 @@ class OfficialInventoryTests(unittest.TestCase):
     def test_exact_published_scope_and_runtime_gap(self):
         counts = self.snapshot["counts"]
         self.assertEqual((counts["gallery_printings"], counts["unique_gallery_identities"], counts["standard_legal_identities"]), (1408, 1103, 1079))
-        self.assertEqual(counts["implemented_main_cards"], 411)
+        self.assertEqual(counts["implemented_main_cards"], 421)
         self.assertEqual(counts["implemented_legends"], 10)
-        self.assertEqual(counts["implemented_battlefields"], 11)
-        self.assertEqual(counts["implemented_legal_identities"], 438)
-        self.assertEqual(counts["unimplemented_legal_identities"], 641)
+        self.assertEqual(counts["implemented_battlefields"], 17)
+        self.assertEqual(counts["implemented_legal_identities"], 454)
+        self.assertEqual(counts["unimplemented_legal_identities"], 625)
         for card in self.snapshot["cards"]:
             if card["implementation"]["status"] == "not_implemented":
                 self.assertFalse(card["implementation"]["playable_in_client"])
@@ -56,7 +56,7 @@ class OfficialInventoryTests(unittest.TestCase):
         preserved = proof["preserved_runtime_prefix"]
         digest = lambda value: catalog.sha(catalog.canonical_json(value).encode())
         self.assertEqual(digest(runtime["cards"][:290]), preserved["cards_sha256"])
-        self.assertEqual(digest(runtime["decks"]), preserved["presets_sha256"])
+        self.assertEqual(digest(runtime["decks"][:4]), preserved["presets_sha256"])
         self.assertEqual(catalog.sha(history.legacy_legend_manifest_bytes()), preserved["legends_manifest_sha256"])
         self.assertEqual(catalog.sha(self.data["gallery"]), proof["origin_gallery"]["uncompressed_sha256"])
         raw = {p["official_id"]: p for p in catalog.project_gallery(self.data["gallery"])[0]}
@@ -110,7 +110,7 @@ class OfficialInventoryTests(unittest.TestCase):
         self.assertEqual((legend["official_id"], legend["default_champion"]), ("ven-153-166", 289))
         self.assertEqual(legend["champion"], "Ambessa")
         self.assertEqual(legend["domains"], ["Body", "Order"])
-        self.assertEqual(self.snapshot["counts"]["source_quality_issues"], 52)
+        self.assertEqual(self.snapshot["counts"]["source_quality_issues"], 53)
         self.assertEqual(self.snapshot["counts"]["unresolved_type_conflict_identities"], 0)
 
     def test_next_play_batch_maps_exact_source_ids_and_errata(self):
@@ -129,7 +129,7 @@ class OfficialInventoryTests(unittest.TestCase):
 
     def test_battlefield_registry_preserves_sources_and_rejects_changed_facts(self):
         fields = catalog.load_battlefield_manifest()
-        self.assertEqual([v["id"] for v in fields], list(range(11)))
+        self.assertEqual([v["id"] for v in fields], list(range(17)))
         for field in fields:
             identity = next(c for c in self.snapshot["cards"] if c["identity"] == field["source_id"])
             self.assertEqual(identity["implementation"]["runtime_id"], field["id"])
@@ -162,17 +162,17 @@ class OfficialInventoryTests(unittest.TestCase):
         self.assertIn("two 1 Might Bird", runtime[249]["official_text"])
         self.assertEqual(runtime[249]["official_text_html"], poro["rules_html"])
 
-    def test_independent_legend_registry_keeps_original_ids_and_adds_no_presets(self):
+    def test_independent_legend_registry_keeps_original_ids_and_tracks_preset_membership(self):
         legends = catalog.load_legend_manifest()
         self.assertEqual([v["id"] for v in legends], list(range(10)))
         self.assertEqual([v["default_champion"] for v in legends], [0, 22, 33, 49, 183, 175, 182, 289, 30, 35])
         for entry in legends:
             identity = next(c for c in self.snapshot["cards"] if entry["official_id"] in c["official_ids"])
             self.assertEqual(identity["implementation"]["runtime_id"], entry["id"])
-            self.assertEqual(identity["implementation"]["status"], "implemented_preset_legend" if entry["id"] < 4 else "implemented_legend")
+            self.assertEqual(identity["implementation"]["status"], "implemented_preset_legend" if entry["id"] in [0, 1, 2, 3, 8] else "implemented_legend")
             self.assertTrue(identity["standard_legal"])
         presets = json.loads((catalog.ROOT / "assets/data/decks.json").read_text())["decks"]
-        self.assertEqual(len(presets), 4)
+        self.assertEqual(len(presets), 5)
 
     def test_legend_manifest_rejects_changed_source_facts_or_invalid_champion(self):
         mutations = [
@@ -273,12 +273,12 @@ class OfficialInventoryTests(unittest.TestCase):
         issues = [i for i in self.snapshot["source_quality_issues"] if i["kind"] == "conflicting_type_labels"]
         self.assertEqual(len(issues), 23)
         self.assertTrue(all(i["official_ids"][0].startswith("rad-") for i in issues))
-        self.assertEqual(self.snapshot["counts"]["source_quality_issues"], 52)
+        self.assertEqual(self.snapshot["counts"]["source_quality_issues"], 53)
         self.assertFalse(self.snapshot["counts"]["standard_legal_by_kind_provisional"])
         self.assertEqual(self.snapshot["counts"]["unresolved_type_conflict_identities"], 0)
         self.assertEqual(printing["effective"]["types"], ["spell"])
         self.assertEqual(identity["source_review"]["unresolved_gameplay_fields"], [])
-        self.assertEqual(self.snapshot["counts"]["resolved_source_issue_groups"], 52)
+        self.assertEqual(self.snapshot["counts"]["resolved_source_issue_groups"], 53)
         self.assertIn("reviewed effective type", catalog.report(self.snapshot))
 
     def test_mapped_type_conflict_is_rejected(self):

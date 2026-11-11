@@ -17,8 +17,7 @@ fn game() -> Game {
         state.hidden.clear();
         state.discard.clear();
         state.champion = None;
-        state.runes = [0; 6];
-        state.exhausted_runes = [0; 6];
+        state.set_rune_setup([0; 6], [0; 6]).unwrap();
         state.energy = 50;
         state.energy_pool = 50;
         state.power_pool = [20; 6];
@@ -122,8 +121,7 @@ fn academy(g: &mut Game) {
     // Replenish the explicit resource fixture after normal turn pool expiry.
     g.players[0].energy_pool = 50;
     g.players[0].energy = 50;
-    g.players[0].runes = [0; 6];
-    g.players[0].exhausted_runes = [0; 6];
+    g.players[0].set_rune_setup([0; 6], [0; 6]).unwrap();
     g.players[0].power_pool = [20; 6];
 }
 fn repeat(g: &Game, action: Action, targets: Vec<Target>) -> Action {

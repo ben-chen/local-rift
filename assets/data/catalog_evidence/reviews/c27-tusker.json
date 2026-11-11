@@ -1,0 +1,173 @@
+{
+  "schema_version": 1,
+  "reviewed_on": "2026-10-26",
+  "enables_runtime_support": false,
+  "scope": "One exact original face establishes an omitted Noxus tag; raw gallery records and old review cohorts are preserved. Source review alone admits no card.",
+  "origin_gallery": {
+    "url": "https://playriftbound.com/en-us/card-gallery/",
+    "archive": "assets/data/catalog_evidence/pages/97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9.html.gz",
+    "sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+    "uncompressed_bytes": 3986973
+  },
+  "preserved_source_cohorts": {
+    "resolutions": {
+      "count": 137,
+      "canonical_sha256": "e1f817d6d54d7043ab9b0226382bfd96b8bdd1ca76717b5f9b399693cc106513"
+    },
+    "raw_printings": {
+      "count": 87,
+      "canonical_sha256": "6bb0d050b55017d023dfc20d8ebabba46bc47a26a947b4111c27ba2fb3575ad4"
+    },
+    "historical_issues": {
+      "count": 52,
+      "canonical_sha256": "22fff96ef4b6f37248d4cb92731a19456ec131978b36592976242b351353e9c6"
+    }
+  },
+  "preserved_field_image_index": {
+    "count": 87,
+    "canonical_sha256": "ad78fc9b4926226a281adeb999c2066085208ff79d1544481a99391b8ee75b4c"
+  },
+  "preserved_variant_review": {
+    "identities": 29,
+    "printings": 90,
+    "manifest_sha256": "e678c7f2f2e1ae70fb6b399ce1b0ab88a314e9018810d1ccadb1759a1f7b5e12",
+    "image_index_sha256": "1826db0a53cbe62eb1a1196d08df1cbef215b9d9e24cc006689559bbc7693b92"
+  },
+  "preserved_runtime": {
+    "card_count": 413,
+    "cards_sha256": "66d22e3820670eeb3ff825956cb913eb51a612f3631314a23e798ce9868bf993",
+    "carddefs_source_prefix_sha256": "48f7c8ab4d3c6b57bdcc1cc7739d9160e14133a6fb4c8235d58f89c5ee3b52c0",
+    "presets_sha256": "d6e64ebf3f8921686682dacd87d4b2b4baec5754dbd284c6d60bf3fb324571e2",
+    "legends_manifest_sha256": "a31bb93c27588bd4759985e9a4083372d5afae59d22b9ac9d48c54946e5474fe",
+    "training_recipe_source_sha256": "dc498f4f98cec6421dade7e01ead261693ed5f70d30d4d2c808da4a1bcb5b706"
+  },
+  "source_only_check": {
+    "main_cards": 413,
+    "mapped_legal": 440,
+    "remaining_legal": 639,
+    "changed_printings": [
+      "rad-078-167"
+    ],
+    "field_resolutions": 138,
+    "reviewed_printings": 88,
+    "historical_issues": 53
+  },
+  "records": [
+    {
+      "official_id": "rad-078-167",
+      "name": "Armored Tusker",
+      "raw_printing": {
+        "official_id": "rad-078-167",
+        "public_code": "RAD-078/167",
+        "name": "Armored Tusker",
+        "set": "RAD",
+        "collector_number": 78,
+        "types": [
+          "unit"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "unit"
+        ],
+        "accessibility_types": [
+          "unit"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "body"
+        ],
+        "energy": 6,
+        "power": 1,
+        "might": 4,
+        "might_bonus": null,
+        "rules_html": "<p>[Shield 3] (+3 :rb_might: while I'm a defender.)<br />[Tank] (I must be assigned combat damage first.)<br />When I move, you may deal damage equal to my [Shield] to a unit at a battlefield.</p>",
+        "rules_text": "[Shield 3] (+3 Might while I'm a defender.)\n[Tank] (I must be assigned combat damage first.)\nWhen I move, you may deal damage equal to my [Shield] to a unit at a battlefield.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [],
+        "rarity": "uncommon",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/c479f2fda00506e71a57ac4e8cc297f7f3110a54-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Unit: Armored Tusker. [Shield 3] (+3 [S] while I'm a defender.)\n[Tank] (I must be assigned combat damage first.)\nWhen I move, you may deal damage equal to my [Shield] to a unit at a battlefield.",
+        "illustrators": [
+          "Kudos Productions"
+        ]
+      },
+      "raw_printing_sha256": "3cd4777ff5b583ec253c845981dd122ca9b4755c76ac03a2f85d13296b1f3633",
+      "effective_before": {
+        "types": [
+          "unit"
+        ],
+        "super_types": [],
+        "domains": [
+          "body"
+        ],
+        "energy": 6,
+        "power": 1,
+        "might": 4,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>[Shield 3] (+3 :rb_might: while I'm a defender.)<br />[Tank] (I must be assigned combat damage first.)<br />When I move, you may deal damage equal to my [Shield] to a unit at a battlefield.</p>",
+        "rules_text": "[Shield 3] (+3 Might while I'm a defender.)\n[Tank] (I must be assigned combat damage first.)\nWhen I move, you may deal damage equal to my [Shield] to a unit at a battlefield.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "effective_after": {
+        "types": [
+          "unit"
+        ],
+        "super_types": [],
+        "domains": [
+          "body"
+        ],
+        "energy": 6,
+        "power": 1,
+        "might": 4,
+        "might_bonus": null,
+        "tags": [
+          "Noxus"
+        ],
+        "rules_html": "<p>[Shield 3] (+3 :rb_might: while I'm a defender.)<br />[Tank] (I must be assigned combat damage first.)<br />When I move, you may deal damage equal to my [Shield] to a unit at a battlefield.</p>",
+        "rules_text": "[Shield 3] (+3 Might while I'm a defender.)\n[Tank] (I must be assigned combat damage first.)\nWhen I move, you may deal damage equal to my [Shield] to a unit at a battlefield.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "original_image": {
+        "official_id": "rad-078-167",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/c479f2fda00506e71a57ac4e8cc297f7f3110a54-744x1039.png?accountingTag=RB",
+        "path": "assets/data/catalog_evidence/images/rad-078-167.png",
+        "bytes": 820313,
+        "sha256": "1bfe065178df0b026f98ba4f6fabc3fc0c443466b059791833ea5407b8573356"
+      },
+      "visual_observation": {
+        "face_visually_inspected": true,
+        "independently_reinspected_on": "2026-10-26",
+        "official_id": "rad-078-167",
+        "name": "Armored Tusker",
+        "collector_code": "RAD-078/167",
+        "original_image_sha256": "1bfe065178df0b026f98ba4f6fabc3fc0c443466b059791833ea5407b8573356",
+        "printed_type_tag_line": "UNIT / NOXUS",
+        "printed_tags": [
+          "Noxus"
+        ],
+        "uncertainties": [],
+        "printed_types": [
+          "unit"
+        ],
+        "printed_supertypes": [],
+        "printed_domains": [
+          "body"
+        ],
+        "printed_energy": 6,
+        "printed_power": 1,
+        "printed_might": 4,
+        "printed_might_bonus": null,
+        "printed_rules_icons_expanded": "[Shield 3] (+3 Might while I'm a defender.)\n[Tank] (I must be assigned combat damage first.)\nWhen I move, you may deal damage equal to my [Shield] to a unit at a battlefield.",
+        "printed_equipment_icons_expanded": ""
+      },
+      "resolution_ids": [
+        "rad-078-167:tags"
+      ]
+    }
+  ]
+}

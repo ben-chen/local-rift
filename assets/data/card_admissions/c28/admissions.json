@@ -1,0 +1,1204 @@
+{
+  "schema_version": 1,
+  "draft_not_for_import": false,
+  "reviewed_on": "2026-10-26",
+  "scope": "Four unit and six battlefield source admissions, requiring separate executable implementation and acceptance. All11 official faces directly inspected; Pyke reminder variants explicitly reviewed; Dais/Peak operative errata kept separately from printed art. Prior four presets remain unchanged.",
+  "origin_gallery": {
+    "url": "https://playriftbound.com/en-us/card-gallery/",
+    "archive": "assets/data/catalog_sources/gallery.html.gz",
+    "uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9"
+  },
+  "pre_admission_catalog_sha256": "b601b85f39a7c41c0b304097c1579b39e45fc3f8aa8108412959f9c5b364f7c2",
+  "pre_admission_counts": {
+    "main_cards": 417,
+    "battlefields": 11,
+    "mapped_legal": 444,
+    "remaining_legal": 635
+  },
+  "preserved_runtime_prefix": {
+    "card_count": 417,
+    "cards_sha256": "3d30de076f500c735b46948d4f938692c4917416bde57ac702247e5ccd477565",
+    "carddefs_source_prefix_sha256": "36171fcd697622e6ec48653c63d50b86bd4bfb80a10c4826d3bbd43a39bc7c5f",
+    "battlefield_count": 11,
+    "battlefields_sha256": "2724f9280e16548991e1157e4f47f57fdc9fd8a33131aad634633ab8a4f889ca",
+    "presets_sha256": "d6e64ebf3f8921686682dacd87d4b2b4baec5754dbd284c6d60bf3fb324571e2",
+    "legends_manifest_sha256": "a31bb93c27588bd4759985e9a4083372d5afae59d22b9ac9d48c54946e5474fe",
+    "training_recipe_source_sha256": "dc498f4f98cec6421dade7e01ead261693ed5f70d30d4d2c808da4a1bcb5b706",
+    "preset_count": 4
+  },
+  "preserved_source_reviews": {
+    "field_manifest_sha256": "cf1405d9af0b863a64f6a408e15aa193818d3f4ea75b2c180ffd1ff27b144699",
+    "field_image_index_sha256": "7aec9fcdc394ed6da38cda6ab6178aca563493de400bee00bb465187ee5f8fd2",
+    "identity_review_prefix_count": 29,
+    "identity_review_prefix_sha256": "c61c191636c74795ec15c4149805d994c76c020093c98592a489766f30f54ad3",
+    "variant_image_prefix_count": 90,
+    "variant_image_prefix_sha256": "1e4f565135f19a7befb2e8391ff4e9428bbab1d1ad1f9f44b600c1386786e3ff"
+  },
+  "source_only_review": {
+    "identity": "unl-028-219",
+    "review_id": "c28-unl-028-219",
+    "printings_unchanged": true,
+    "runtime_counts_unchanged": true,
+    "reviewed_identities": 30,
+    "reviewed_printings": 92,
+    "unreviewed_identities": 94
+  },
+  "records": [
+    {
+      "official_id": "unl-112-219",
+      "name": "Irresistible Faefolk",
+      "raw_printing": {
+        "official_id": "unl-112-219",
+        "public_code": "UNL-112/219",
+        "name": "Irresistible Faefolk",
+        "set": "UNL",
+        "collector_number": 112,
+        "types": [
+          "unit"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "unit"
+        ],
+        "accessibility_types": [
+          "unit"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "body"
+        ],
+        "energy": 2,
+        "power": null,
+        "might": 1,
+        "might_bonus": null,
+        "rules_html": "<p>When I move to a battlefield, you may move an enemy unit to that battlefield.</p>",
+        "rules_text": "When I move to a battlefield, you may move an enemy unit to that battlefield.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [
+          "Fae",
+          "Ionia"
+        ],
+        "rarity": "rare",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/6834e4b00a22dd6d7476d36884b43cf59b60c611-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Unit: Irresistible Faefolk. When I move to a battlefield, you may move an enemy unit to that battlefield.",
+        "illustrators": [
+          "Six More Vodka"
+        ]
+      },
+      "raw_printing_sha256": "d9045480618b162a982395a7233385bbf39e2f1e93c6ad13998e13eb8ff6ab80",
+      "effective": {
+        "types": [
+          "unit"
+        ],
+        "super_types": [],
+        "domains": [
+          "body"
+        ],
+        "energy": 2,
+        "power": null,
+        "might": 1,
+        "might_bonus": null,
+        "tags": [
+          "Fae",
+          "Ionia"
+        ],
+        "rules_html": "<p>When I move to a battlefield, you may move an enemy unit to that battlefield.</p>",
+        "rules_text": "When I move to a battlefield, you may move an enemy unit to that battlefield.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "effective_projection_sha256": "d9045480618b162a982395a7233385bbf39e2f1e93c6ad13998e13eb8ff6ab80",
+      "existing_field_resolution_ids": [],
+      "original_image": {
+        "path": "assets/data/card_admissions/c28/originals/unl-112-219.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/6834e4b00a22dd6d7476d36884b43cf59b60c611-744x1039.png?accountingTag=RB",
+        "sha256": "797992e5560f4a4773c231584d04a5df4024973ee2a1a37661dee61410b015ec",
+        "bytes": 783809
+      },
+      "visual_observation": {
+        "official_id": "unl-112-219",
+        "image": "unl-112-219.png",
+        "sha256": "797992e5560f4a4773c231584d04a5df4024973ee2a1a37661dee61410b015ec",
+        "actual_full_face_viewed": true,
+        "observation": "Complete face UNL112/219: Body Unit, Ionia/Fae, Energy2, no printed Power, Might1. Move-to-battlefield optional enemy Move to that battlefield. No equipment panel."
+      },
+      "runtime_id": 417,
+      "errata": [],
+      "runtime_rules_text": "When I move to a battlefield, you may move an enemy unit to that battlefield.",
+      "printing_cohort": [
+        "unl-112-219"
+      ],
+      "alternate_printings": [],
+      "legal_main_deck_legend_ids": [
+        1,
+        7,
+        8
+      ],
+      "chosen_champion_legend_ids": [],
+      "runtime_image": {
+        "path": "assets/art/card_417.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/6834e4b00a22dd6d7476d36884b43cf59b60c611-744x1039.png?w=280&q=80&fm=png",
+        "bytes": 209219,
+        "sha256": "ec8ce5422227fee40ee5bdc1cf6d52b68280477802aa39691fe0a051b4d10cf5",
+        "width": 280,
+        "height": 391
+      }
+    },
+    {
+      "official_id": "unl-097-219",
+      "name": "Kinkou Initiate",
+      "raw_printing": {
+        "official_id": "unl-097-219",
+        "public_code": "UNL-097/219",
+        "name": "Kinkou Initiate",
+        "set": "UNL",
+        "collector_number": 97,
+        "types": [
+          "unit"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "unit"
+        ],
+        "accessibility_types": [
+          "unit"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "body"
+        ],
+        "energy": 3,
+        "power": null,
+        "might": 3,
+        "might_bonus": null,
+        "rules_html": "<p>When you play me, draw 1 if your other units have total Might 5 or more.</p>",
+        "rules_text": "When you play me, draw 1 if your other units have total Might 5 or more.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [
+          "Ionia"
+        ],
+        "rarity": "common",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/358c56479ff4a02df622827092265fe4e8373fc2-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Unit: Kinkou Initiate. When you play me, draw 1 if your other units have total Might 5 or more.",
+        "illustrators": [
+          "Six More Vodka"
+        ]
+      },
+      "raw_printing_sha256": "f66828d517207bea1cfce3777913e02166e9a8e6151b96236280c098742bf529",
+      "effective": {
+        "types": [
+          "unit"
+        ],
+        "super_types": [],
+        "domains": [
+          "body"
+        ],
+        "energy": 3,
+        "power": null,
+        "might": 3,
+        "might_bonus": null,
+        "tags": [
+          "Ionia"
+        ],
+        "rules_html": "<p>When you play me, draw 1 if your other units have total Might 5 or more.</p>",
+        "rules_text": "When you play me, draw 1 if your other units have total Might 5 or more.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "effective_projection_sha256": "f66828d517207bea1cfce3777913e02166e9a8e6151b96236280c098742bf529",
+      "existing_field_resolution_ids": [],
+      "original_image": {
+        "path": "assets/data/card_admissions/c28/originals/unl-097-219.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/358c56479ff4a02df622827092265fe4e8373fc2-744x1039.png?accountingTag=RB",
+        "sha256": "843b10762d87b30945071981b623c3851a947a2c54035af6716f85241a5598ac",
+        "bytes": 773592
+      },
+      "visual_observation": {
+        "official_id": "unl-097-219",
+        "image": "unl-097-219.png",
+        "sha256": "843b10762d87b30945071981b623c3851a947a2c54035af6716f85241a5598ac",
+        "actual_full_face_viewed": true,
+        "observation": "Complete face UNL097/219: Body Unit, Ionia, Energy3, no printed Power, Might3. Play trigger draws1 if other friendly units total Might5+. No equipment panel."
+      },
+      "runtime_id": 418,
+      "errata": [],
+      "runtime_rules_text": "When you play me, draw 1 if your other units have total Might 5 or more.",
+      "printing_cohort": [
+        "unl-097-219"
+      ],
+      "alternate_printings": [],
+      "legal_main_deck_legend_ids": [
+        1,
+        7,
+        8
+      ],
+      "chosen_champion_legend_ids": [],
+      "runtime_image": {
+        "path": "assets/art/card_418.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/358c56479ff4a02df622827092265fe4e8373fc2-744x1039.png?w=280&q=80&fm=png",
+        "bytes": 169404,
+        "sha256": "cacfc5e5499531683658d22efa23653540edf6471e15a7295a25d16976d25ffa",
+        "width": 280,
+        "height": 391
+      }
+    },
+    {
+      "official_id": "unl-114-219",
+      "name": "Nidalee, Cat Form",
+      "raw_printing": {
+        "official_id": "unl-114-219",
+        "public_code": "UNL-114/219",
+        "name": "Nidalee, Cat Form",
+        "set": "UNL",
+        "collector_number": 114,
+        "types": [
+          "unit"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "unit"
+        ],
+        "accessibility_types": [
+          "unit"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [
+          "champion"
+        ],
+        "domains": [
+          "body"
+        ],
+        "energy": 3,
+        "power": 1,
+        "might": 4,
+        "might_bonus": null,
+        "rules_html": "<p>[Ambush] (You may play me as a [Reaction] to a battlefield where you have units.)<br />When I win a combat, draw 1. (I win if I remain after combat.)</p>",
+        "rules_text": "[Ambush] (You may play me as a [Reaction] to a battlefield where you have units.)\nWhen I win a combat, draw 1. (I win if I remain after combat.)",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [
+          "Cat",
+          "Ixtal",
+          "Nidalee"
+        ],
+        "rarity": "rare",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/0e51e39dfe4f922b2c8c9bff785d170350e9b803-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Unit: Nidalee, Cat Form. [Ambush] (You may play me as a [Reaction] to a battlefield where you have units.)\nWhen I win a combat, draw 1. (I win if I remain after combat.)",
+        "illustrators": [
+          "Envar Studio"
+        ]
+      },
+      "raw_printing_sha256": "5a3da96c852f0f46dbf5ffb0f3b727c02e9db53cc85e6fdf4dd1933201be443a",
+      "effective": {
+        "types": [
+          "unit"
+        ],
+        "super_types": [
+          "champion"
+        ],
+        "domains": [
+          "body"
+        ],
+        "energy": 3,
+        "power": 1,
+        "might": 4,
+        "might_bonus": null,
+        "tags": [
+          "Cat",
+          "Ixtal",
+          "Nidalee"
+        ],
+        "rules_html": "<p>[Ambush] (You may play me as a [Reaction] to a battlefield where you have units.)<br />When I win a combat, draw 1. (I win if I remain after combat.)</p>",
+        "rules_text": "[Ambush] (You may play me as a [Reaction] to a battlefield where you have units.)\nWhen I win a combat, draw 1. (I win if I remain after combat.)",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "effective_projection_sha256": "5a3da96c852f0f46dbf5ffb0f3b727c02e9db53cc85e6fdf4dd1933201be443a",
+      "existing_field_resolution_ids": [],
+      "original_image": {
+        "path": "assets/data/card_admissions/c28/originals/unl-114-219.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/0e51e39dfe4f922b2c8c9bff785d170350e9b803-744x1039.png?accountingTag=RB",
+        "sha256": "d9d7f41fc408a5a3c55815c7f0902ecc58001e94010c177b4275d5334054a850",
+        "bytes": 886854
+      },
+      "visual_observation": {
+        "official_id": "unl-114-219",
+        "image": "unl-114-219.png",
+        "sha256": "d9d7f41fc408a5a3c55815c7f0902ecc58001e94010c177b4275d5334054a850",
+        "actual_full_face_viewed": true,
+        "observation": "Complete face UNL114/219: Body Champion Unit, Nidalee/Ixtal/Cat, Energy3, oneBodyPower, Might4. Ambush and combat-win Draw1 with reminder text. No equipment panel."
+      },
+      "runtime_id": 419,
+      "errata": [],
+      "runtime_rules_text": "[Ambush] (You may play me as a [Reaction] to a battlefield where you have units.)\nWhen I win a combat, draw 1. (I win if I remain after combat.)",
+      "printing_cohort": [
+        "unl-114-219"
+      ],
+      "alternate_printings": [],
+      "legal_main_deck_legend_ids": [
+        1,
+        7,
+        8
+      ],
+      "chosen_champion_legend_ids": [],
+      "runtime_image": {
+        "path": "assets/art/card_419.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/0e51e39dfe4f922b2c8c9bff785d170350e9b803-744x1039.png?w=280&q=80&fm=png",
+        "bytes": 195801,
+        "sha256": "48f110741f1c566b1fc30c9808fe7cbdae93a457aa5219f5a5db4e0332c58061",
+        "width": 280,
+        "height": 391
+      }
+    },
+    {
+      "official_id": "unl-028-219",
+      "name": "Pyke, Dockside Butcher",
+      "raw_printing": {
+        "official_id": "unl-028-219",
+        "public_code": "UNL-028/219",
+        "name": "Pyke, Dockside Butcher",
+        "set": "UNL",
+        "collector_number": 28,
+        "types": [
+          "unit"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "unit"
+        ],
+        "accessibility_types": [
+          "unit"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [
+          "champion"
+        ],
+        "domains": [
+          "fury"
+        ],
+        "energy": 3,
+        "power": null,
+        "might": 2,
+        "might_bonus": null,
+        "rules_html": "<p>[Hidden] (Hide now for :rb_rune_rainbow: to react with later for :rb_energy_0:.)<br />[Ganking] (I can move from battlefield to battlefield.)<br />You may pay :rb_rune_fury: as an additional cost to play me.<br />When you play me, if you paid the additional cost, ready me and give me +2 :rb_might: this turn.</p>",
+        "rules_text": "[Hidden] (Hide now for [Any Power] to react with later for [0 Energy].)\n[Ganking] (I can move from battlefield to battlefield.)\nYou may pay [Fury Power] as an additional cost to play me.\nWhen you play me, if you paid the additional cost, ready me and give me +2 Might this turn.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [
+          "Pyke",
+          "Bilgewater"
+        ],
+        "rarity": "epic",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/e0ce05148d7368070bcc8c0a43f66ece0834653a-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Unit: Pyke, Dockside Butcher. [Hidden] (Hide now for [A] to react with later for [0].)\n[Ganking] (I can move from battlefield to battlefield.)\nYou may pay [C] as an additional cost to play me.\nWhen you play me, if you paid the additional cost, ready me and give me +2 [S] this turn.",
+        "illustrators": [
+          "Six More Vodka"
+        ]
+      },
+      "raw_printing_sha256": "96fa6f1b4d5c2b55ce3dacd0996384997e013045485c1993302e0801528b98a3",
+      "effective": {
+        "types": [
+          "unit"
+        ],
+        "super_types": [
+          "champion"
+        ],
+        "domains": [
+          "fury"
+        ],
+        "energy": 3,
+        "power": null,
+        "might": 2,
+        "might_bonus": null,
+        "tags": [
+          "Pyke",
+          "Bilgewater"
+        ],
+        "rules_html": "<p>[Hidden] (Hide now for :rb_rune_rainbow: to react with later for :rb_energy_0:.)<br />[Ganking] (I can move from battlefield to battlefield.)<br />You may pay :rb_rune_fury: as an additional cost to play me.<br />When you play me, if you paid the additional cost, ready me and give me +2 :rb_might: this turn.</p>",
+        "rules_text": "[Hidden] (Hide now for [Any Power] to react with later for [0 Energy].)\n[Ganking] (I can move from battlefield to battlefield.)\nYou may pay [Fury Power] as an additional cost to play me.\nWhen you play me, if you paid the additional cost, ready me and give me +2 Might this turn.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "effective_projection_sha256": "96fa6f1b4d5c2b55ce3dacd0996384997e013045485c1993302e0801528b98a3",
+      "existing_field_resolution_ids": [],
+      "original_image": {
+        "path": "assets/data/catalog_evidence/images/unl-028-219.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/e0ce05148d7368070bcc8c0a43f66ece0834653a-744x1039.png?accountingTag=RB",
+        "sha256": "6926030f227cc8bc2bbcc76c4d5bbcc37ab5d70e4dee551f0ae000458c2fcf10",
+        "bytes": 930012
+      },
+      "visual_observation": {
+        "official_id": "unl-028-219",
+        "image": "unl-028-219.png",
+        "sha256": "6926030f227cc8bc2bbcc76c4d5bbcc37ab5d70e4dee551f0ae000458c2fcf10",
+        "actual_full_face_viewed": true,
+        "observation": "Complete face UNL028/219: Fury Champion Unit, Pyke/Bilgewater, Energy3, no printed Power, Might2. Hidden/Ganking with reminder text; optional oneFuryPower play cost; on play if paid, Ready then+2Mightthisturn. No equipment panel."
+      },
+      "runtime_id": 420,
+      "errata": [],
+      "runtime_rules_text": "[Hidden] (Hide now for [Any Power] to react with later for [0 Energy].)\n[Ganking] (I can move from battlefield to battlefield.)\nYou may pay [Fury Power] as an additional cost to play me.\nWhen you play me, if you paid the additional cost, ready me and give me +2 Might this turn.",
+      "printing_cohort": [
+        "unl-028-219",
+        "unl-028a-219"
+      ],
+      "alternate_printings": [
+        {
+          "official_id": "unl-028a-219",
+          "name": "Pyke, Dockside Butcher",
+          "raw_printing": {
+            "official_id": "unl-028a-219",
+            "public_code": "UNL-028a/219",
+            "name": "Pyke, Dockside Butcher",
+            "set": "UNL",
+            "collector_number": 28,
+            "types": [
+              "unit"
+            ],
+            "type_source": "cardType.type",
+            "structured_types": [
+              "unit"
+            ],
+            "accessibility_types": [
+              "unit"
+            ],
+            "type_labels_conflict": false,
+            "super_types": [
+              "champion"
+            ],
+            "domains": [
+              "fury"
+            ],
+            "energy": 3,
+            "power": null,
+            "might": 2,
+            "might_bonus": null,
+            "rules_html": "<p>[Hidden]<br />[Ganking]<br />You may pay :rb_rune_fury: as an additional cost to play me.<br />When you play me, if you paid the additional cost, ready me and give me +2 :rb_might: this turn.</p>",
+            "rules_text": "[Hidden]\n[Ganking]\nYou may pay [Fury Power] as an additional cost to play me.\nWhen you play me, if you paid the additional cost, ready me and give me +2 Might this turn.",
+            "equipment_html": "",
+            "equipment_text": "",
+            "tags": [
+              "Pyke",
+              "Bilgewater"
+            ],
+            "rarity": "epic",
+            "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/583f1c15c1bdc47c9d4ebb41a210c182262c8ee9-744x1039.png?accountingTag=RB",
+            "image_accessibility_text": "Riftbound Unit: Pyke, Dockside Butcher. [Hidden]\n[Ganking]\nYou may pay [C] as an additional cost to play me.\nWhen you play me, if you paid the additional cost, ready me and give me +2 [S] this turn.",
+            "illustrators": [
+              "League Splash Team"
+            ]
+          },
+          "raw_printing_sha256": "163475db759da02a8fd4414b8922f09531da502f4979257e0e855800386e8b71",
+          "effective": {
+            "types": [
+              "unit"
+            ],
+            "super_types": [
+              "champion"
+            ],
+            "domains": [
+              "fury"
+            ],
+            "energy": 3,
+            "power": null,
+            "might": 2,
+            "might_bonus": null,
+            "tags": [
+              "Pyke",
+              "Bilgewater"
+            ],
+            "rules_html": "<p>[Hidden]<br />[Ganking]<br />You may pay :rb_rune_fury: as an additional cost to play me.<br />When you play me, if you paid the additional cost, ready me and give me +2 :rb_might: this turn.</p>",
+            "rules_text": "[Hidden]\n[Ganking]\nYou may pay [Fury Power] as an additional cost to play me.\nWhen you play me, if you paid the additional cost, ready me and give me +2 Might this turn.",
+            "equipment_html": "",
+            "equipment_text": ""
+          },
+          "effective_projection_sha256": "163475db759da02a8fd4414b8922f09531da502f4979257e0e855800386e8b71",
+          "existing_field_resolution_ids": [],
+          "original_image": {
+            "path": "assets/data/catalog_evidence/images/unl-028a-219.png",
+            "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/583f1c15c1bdc47c9d4ebb41a210c182262c8ee9-744x1039.png?accountingTag=RB",
+            "sha256": "1f64a7b011325a4910c55164f729c2bcb5560f9afe8171d08900b39fc1ebe3fd",
+            "bytes": 1106824
+          },
+          "visual_observation": {
+            "official_id": "unl-028a-219",
+            "image": "unl-028a-219.png",
+            "sha256": "1f64a7b011325a4910c55164f729c2bcb5560f9afe8171d08900b39fc1ebe3fd",
+            "actual_full_face_viewed": true,
+            "observation": "Complete alternate face UNL028a/219: same type/tags/domain/stats and both operative additional-cost/conditional-play sentences as base printing. Hidden/Ganking present without reminder text. Rule text variance is reminder omission, not changed instructions. No equipment panel."
+          }
+        }
+      ],
+      "legal_main_deck_legend_ids": [
+        3,
+        4,
+        8
+      ],
+      "chosen_champion_legend_ids": [],
+      "runtime_image": {
+        "path": "assets/art/card_420.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/e0ce05148d7368070bcc8c0a43f66ece0834653a-744x1039.png?w=280&q=80&fm=png",
+        "bytes": 209845,
+        "sha256": "710354391d99d6cdf206e815e31679e4246d5634f97897070c24aa38a1b6da70",
+        "width": 280,
+        "height": 391
+      }
+    }
+  ],
+  "battlefield_records": [
+    {
+      "official_id": "sfd-207-221",
+      "name": "Emperor's Dais",
+      "raw_printing": {
+        "official_id": "sfd-207-221",
+        "public_code": "SFD-207/221",
+        "name": "Emperor's Dais",
+        "set": "SFD",
+        "collector_number": 207,
+        "types": [
+          "battlefield"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "battlefield"
+        ],
+        "accessibility_types": [
+          "battlefield"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "colorless"
+        ],
+        "energy": null,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "rules_html": "<p>When you conquer here, you may pay :rb_energy_1: and return a unit you control here to its owner's hand. If you do, play a 2 :rb_might: Sand Soldier unit token here.</p>",
+        "rules_text": "When you conquer here, you may pay [1 Energy] and return a unit you control here to its owner's hand. If you do, play a 2 Might Sand Soldier unit token here.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [],
+        "rarity": "uncommon",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/c1ea4f6f58a62fc2b62647aa3459109e3d10297a-1039x744.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Battlefield: Emperor's Dais. When you conquer here, you may pay [1] and return a unit you control here to its owner's hand. If you do, play a 2 [S] Sand Soldier unit token here.",
+        "illustrators": [
+          "Kudos Productions"
+        ]
+      },
+      "raw_printing_sha256": "4ac8dcbb2f92803d992708f96eb58099cad50352a73a843ebd9b90c3b245d322",
+      "effective": {
+        "types": [
+          "battlefield"
+        ],
+        "super_types": [],
+        "domains": [
+          "colorless"
+        ],
+        "energy": null,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>When you conquer here, you may pay :rb_energy_1: and return a unit you control here to its owner's hand. If you do, play a 2 :rb_might: Sand Soldier unit token here.</p>",
+        "rules_text": "When you conquer here, you may pay [1 Energy] and return a unit you control here to its owner's hand. If you do, play a 2 Might Sand Soldier unit token here.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "effective_projection_sha256": "4ac8dcbb2f92803d992708f96eb58099cad50352a73a843ebd9b90c3b245d322",
+      "existing_field_resolution_ids": [],
+      "original_image": {
+        "path": "assets/data/card_admissions/c28/originals/sfd-207-221.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/c1ea4f6f58a62fc2b62647aa3459109e3d10297a-1039x744.png?accountingTag=RB",
+        "sha256": "3ca77d251bfc36fa837a662a6d09fdb94c7ed1a12c279579bfacdcc820d776dd",
+        "bytes": 932996
+      },
+      "visual_observation": {
+        "official_id": "sfd-207-221",
+        "image": "sfd-207-221.png",
+        "sha256": "3ca77d251bfc36fa837a662a6d09fdb94c7ed1a12c279579bfacdcc820d776dd",
+        "actual_full_face_viewed": true,
+        "observation": "Complete landscape SFD207/221: colorless Battlefield, no cost/Might/tags. Printed Conquer optional pay1Energy and return controlled unit Here to owner hand; if so play2MightSandSoldierHere. Current Vendetta erratum changes to cost-linked wording and must remain separately authoritative."
+      },
+      "runtime_id": 11,
+      "errata": [
+        {
+          "article_heading": "Emperor’s Dais",
+          "text": "When you conquer here, you may pay [1] and return a unit you control here to its owner's hand to play a 2 [M] Sand Soldier unit token here.",
+          "source_url": "https://playriftbound.com/en-us/news/announcements/vendetta-errata-updates/"
+        }
+      ],
+      "runtime_rules_text": "When you conquer here, you may pay [1 Energy] and return a unit you control here to its owner's hand to play a 2 Might Sand Soldier unit token here.",
+      "runtime_rules_source": "https://playriftbound.com/en-us/news/announcements/vendetta-errata-updates/",
+      "printing_cohort": [
+        "sfd-207-221"
+      ],
+      "alternate_printings": [],
+      "runtime_image": {
+        "path": "assets/art/battlefield_11.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/c1ea4f6f58a62fc2b62647aa3459109e3d10297a-1039x744.png?w=360&q=80&fm=png",
+        "bytes": 172824,
+        "sha256": "20aa46ff1bf76d8371ee01978e6e1779c7648e8253891eab17b89088886840ac",
+        "width": 360,
+        "height": 258
+      }
+    },
+    {
+      "official_id": "unl-215-219",
+      "name": "Star Spring",
+      "raw_printing": {
+        "official_id": "unl-215-219",
+        "public_code": "UNL-215/219",
+        "name": "Star Spring",
+        "set": "UNL",
+        "collector_number": 215,
+        "types": [
+          "battlefield"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "battlefield"
+        ],
+        "accessibility_types": [
+          "battlefield"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "colorless"
+        ],
+        "energy": null,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "rules_html": "<p>The first time a player plays a non-token unit here each turn, they may move another unit they control here to its base.</p>",
+        "rules_text": "The first time a player plays a non-token unit here each turn, they may move another unit they control here to its base.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [],
+        "rarity": "uncommon",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/0c4fe88ffb5c1b02b58b2c6b4f02de441ac451d6-1039x744.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Battlefield: Star Spring. The first time a player plays a non-token unit here each turn, they may move another unit they control here to its base.",
+        "illustrators": [
+          "Six More Vodka"
+        ]
+      },
+      "raw_printing_sha256": "0629c572748806c8dc73c128d6ccf7efb61a9631ee9dd530657b0ad4d8861130",
+      "effective": {
+        "types": [
+          "battlefield"
+        ],
+        "super_types": [],
+        "domains": [
+          "colorless"
+        ],
+        "energy": null,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>The first time a player plays a non-token unit here each turn, they may move another unit they control here to its base.</p>",
+        "rules_text": "The first time a player plays a non-token unit here each turn, they may move another unit they control here to its base.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "effective_projection_sha256": "0629c572748806c8dc73c128d6ccf7efb61a9631ee9dd530657b0ad4d8861130",
+      "existing_field_resolution_ids": [],
+      "original_image": {
+        "path": "assets/data/card_admissions/c28/originals/unl-215-219.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/0c4fe88ffb5c1b02b58b2c6b4f02de441ac451d6-1039x744.png?accountingTag=RB",
+        "sha256": "704dbca67b40e293ba5ccdefffa4d7d3380dd47018f69d7d15ad747314aeb987",
+        "bytes": 829833
+      },
+      "visual_observation": {
+        "official_id": "unl-215-219",
+        "image": "unl-215-219.png",
+        "sha256": "704dbca67b40e293ba5ccdefffa4d7d3380dd47018f69d7d15ad747314aeb987",
+        "actual_full_face_viewed": true,
+        "observation": "Complete landscape UNL215/219: colorless Battlefield, no cost/Might/tags. First non-token Unit play Here per player each turn permits optional Move of another controlled unit Here to its Base."
+      },
+      "runtime_id": 12,
+      "errata": [],
+      "runtime_rules_text": "The first time a player plays a non-token unit here each turn, they may move another unit they control here to its base.",
+      "runtime_rules_source": "https://playriftbound.com/en-us/card-gallery/",
+      "printing_cohort": [
+        "unl-215-219"
+      ],
+      "alternate_printings": [],
+      "runtime_image": {
+        "path": "assets/art/battlefield_12.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/0c4fe88ffb5c1b02b58b2c6b4f02de441ac451d6-1039x744.png?w=360&q=80&fm=png",
+        "bytes": 148427,
+        "sha256": "947e00978b81fa75e9d66933c90007a26605f95dbb9b64dd25357dc6cf05d323",
+        "width": 360,
+        "height": 258
+      }
+    },
+    {
+      "official_id": "unl-205-219",
+      "name": "Abandoned Hall",
+      "raw_printing": {
+        "official_id": "unl-205-219",
+        "public_code": "UNL-205/219",
+        "name": "Abandoned Hall",
+        "set": "UNL",
+        "collector_number": 205,
+        "types": [
+          "battlefield"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "battlefield"
+        ],
+        "accessibility_types": [
+          "battlefield"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "colorless"
+        ],
+        "energy": null,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "rules_html": "<p>When a player plays a spell, they may give a unit they control here +1 :rb_might: this turn.</p>",
+        "rules_text": "When a player plays a spell, they may give a unit they control here +1 Might this turn.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [],
+        "rarity": "uncommon",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/7447b04d1e78192509e89e5ff3556368ea5c471a-1039x744.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Battlefield: Abandoned Hall. When a player plays a spell, they may give a unit they control here +1 [S] this turn.",
+        "illustrators": [
+          "Envar Studio"
+        ]
+      },
+      "raw_printing_sha256": "73e7471dade59b7ec3a0b00982308f2fc61b278fedff083d142825952368e6f5",
+      "effective": {
+        "types": [
+          "battlefield"
+        ],
+        "super_types": [],
+        "domains": [
+          "colorless"
+        ],
+        "energy": null,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>When a player plays a spell, they may give a unit they control here +1 :rb_might: this turn.</p>",
+        "rules_text": "When a player plays a spell, they may give a unit they control here +1 Might this turn.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "effective_projection_sha256": "73e7471dade59b7ec3a0b00982308f2fc61b278fedff083d142825952368e6f5",
+      "existing_field_resolution_ids": [],
+      "original_image": {
+        "path": "assets/data/card_admissions/c28/originals/unl-205-219.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/7447b04d1e78192509e89e5ff3556368ea5c471a-1039x744.png?accountingTag=RB",
+        "sha256": "f711e67719a3e790a1775a721a27fb43551c5e9d7522505e1118f2b1caef2deb",
+        "bytes": 889238
+      },
+      "visual_observation": {
+        "official_id": "unl-205-219",
+        "image": "unl-205-219.png",
+        "sha256": "f711e67719a3e790a1775a721a27fb43551c5e9d7522505e1118f2b1caef2deb",
+        "actual_full_face_viewed": true,
+        "observation": "Complete landscape UNL205/219: colorless Battlefield, no cost/Might/tags. Each player Spell play permits optional +1Mightthisturn to controlled unit Here."
+      },
+      "runtime_id": 13,
+      "errata": [],
+      "runtime_rules_text": "When a player plays a spell, they may give a unit they control here +1 Might this turn.",
+      "runtime_rules_source": "https://playriftbound.com/en-us/card-gallery/",
+      "printing_cohort": [
+        "unl-205-219"
+      ],
+      "alternate_printings": [],
+      "runtime_image": {
+        "path": "assets/art/battlefield_13.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/7447b04d1e78192509e89e5ff3556368ea5c471a-1039x744.png?w=360&q=80&fm=png",
+        "bytes": 155235,
+        "sha256": "bf4f63ca1eac32b098eef8dce1630fedfaaada254e50032c5ec9c2e4eb67d92d",
+        "width": 360,
+        "height": 258
+      }
+    },
+    {
+      "official_id": "ogn-289-298",
+      "name": "Targon's Peak",
+      "raw_printing": {
+        "official_id": "ogn-289-298",
+        "public_code": "OGN-289/298",
+        "name": "Targon's Peak",
+        "set": "OGN",
+        "collector_number": 289,
+        "types": [
+          "battlefield"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "battlefield"
+        ],
+        "accessibility_types": [
+          "battlefield"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "colorless"
+        ],
+        "energy": null,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "rules_html": "<p>When you conquer here, ready 2 runes at the end of this turn.</p>",
+        "rules_text": "When you conquer here, ready 2 runes at the end of this turn.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [],
+        "rarity": "uncommon",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/6ff1b34ad231645910f670496e1662de0b545a44-1038x744.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Battlefield: Targon's Peak. When you conquer here, ready 2 runes at the end of this turn.",
+        "illustrators": [
+          "Six More Vodka"
+        ]
+      },
+      "raw_printing_sha256": "4ef330e1ad5bae53255aee1eada95e79e46ec1c3528b341a2ead7f59b4ce1fb4",
+      "effective": {
+        "types": [
+          "battlefield"
+        ],
+        "super_types": [],
+        "domains": [
+          "colorless"
+        ],
+        "energy": null,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>When you conquer here, ready 2 runes at the end of this turn.</p>",
+        "rules_text": "When you conquer here, ready 2 runes at the end of this turn.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "effective_projection_sha256": "4ef330e1ad5bae53255aee1eada95e79e46ec1c3528b341a2ead7f59b4ce1fb4",
+      "existing_field_resolution_ids": [],
+      "original_image": {
+        "path": "assets/data/card_admissions/c28/originals/ogn-289-298.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/6ff1b34ad231645910f670496e1662de0b545a44-1038x744.png?accountingTag=RB",
+        "sha256": "8de85013250d765ca3577bf0a47b369cea238077aaecc1b06abe623a592a82f6",
+        "bytes": 913845
+      },
+      "visual_observation": {
+        "official_id": "ogn-289-298",
+        "image": "ogn-289-298.png",
+        "sha256": "8de85013250d765ca3577bf0a47b369cea238077aaecc1b06abe623a592a82f6",
+        "actual_full_face_viewed": true,
+        "observation": "Complete landscape OGN289/298: colorless Battlefield, no cost/Might/tags. Printed Conquer queues Ready2runes at endofturn. Current Origins erratum adds up to2; preserve original face and use erratum for runtime."
+      },
+      "runtime_id": 14,
+      "errata": [
+        {
+          "article_heading": "Targon's Peak",
+          "text": "When you conquer here, ready up to 2 runes at the end of this turn.",
+          "source_url": "https://playriftbound.com/en-us/news/rules-and-releases/riftbound-origins-card-errata/"
+        }
+      ],
+      "runtime_rules_text": "When you conquer here, ready up to 2 runes at the end of this turn.",
+      "runtime_rules_source": "https://playriftbound.com/en-us/news/rules-and-releases/riftbound-origins-card-errata/",
+      "printing_cohort": [
+        "ogn-289-298"
+      ],
+      "alternate_printings": [],
+      "runtime_image": {
+        "path": "assets/art/battlefield_14.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/6ff1b34ad231645910f670496e1662de0b545a44-1038x744.png?w=360&q=80&fm=png",
+        "bytes": 157539,
+        "sha256": "73fb2eeee8d35c473f3088ffe622f1a443f818b1098a71617471ea0232be9f63",
+        "width": 360,
+        "height": 258
+      }
+    },
+    {
+      "official_id": "ven-165-166",
+      "name": "Shadow Temple",
+      "raw_printing": {
+        "official_id": "ven-165-166",
+        "public_code": "VEN-165/166",
+        "name": "Shadow Temple",
+        "set": "VEN",
+        "collector_number": 165,
+        "types": [
+          "battlefield"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "battlefield"
+        ],
+        "accessibility_types": [
+          "battlefield"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "colorless"
+        ],
+        "energy": null,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "rules_html": "<p>When you hold here, [Burn 3]. (Put the top 3 cards of your Main Deck into your trash.)</p>",
+        "rules_text": "When you hold here, [Burn 3]. (Put the top 3 cards of your Main Deck into your trash.)",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [],
+        "rarity": "uncommon",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/635a3a0b724a2cfc11938ecbc1d8abddd89d3436-1039x744.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Battlefield: Shadow Temple. When you hold here, [Burn 3]. (Put the top 3 cards of your Main Deck into your trash.)",
+        "illustrators": [
+          "Grafit Studio"
+        ]
+      },
+      "raw_printing_sha256": "e707fc472e59395773daa49ad1bfd4e7b8e1a4d32ec7862b2f1e815127238c09",
+      "effective": {
+        "types": [
+          "battlefield"
+        ],
+        "super_types": [],
+        "domains": [
+          "colorless"
+        ],
+        "energy": null,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>When you hold here, [Burn 3]. (Put the top 3 cards of your Main Deck into your trash.)</p>",
+        "rules_text": "When you hold here, [Burn 3]. (Put the top 3 cards of your Main Deck into your trash.)",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "effective_projection_sha256": "e707fc472e59395773daa49ad1bfd4e7b8e1a4d32ec7862b2f1e815127238c09",
+      "existing_field_resolution_ids": [],
+      "original_image": {
+        "path": "assets/data/card_admissions/c28/originals/ven-165-166.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/635a3a0b724a2cfc11938ecbc1d8abddd89d3436-1039x744.png?accountingTag=RB",
+        "sha256": "93652d55be48b90d3089837be9920ebd4143a90244048a717d5dddaf297bd78e",
+        "bytes": 830171
+      },
+      "visual_observation": {
+        "official_id": "ven-165-166",
+        "image": "ven-165-166.png",
+        "sha256": "93652d55be48b90d3089837be9920ebd4143a90244048a717d5dddaf297bd78e",
+        "actual_full_face_viewed": true,
+        "observation": "Complete landscape VEN165/166: colorless Battlefield, no cost/Might/tags. Hold Burn3 plus complete reminder sending top3MainDeckcards toTrash."
+      },
+      "runtime_id": 15,
+      "errata": [],
+      "runtime_rules_text": "When you hold here, [Burn 3]. (Put the top 3 cards of your Main Deck into your trash.)",
+      "runtime_rules_source": "https://playriftbound.com/en-us/card-gallery/",
+      "printing_cohort": [
+        "ven-165-166"
+      ],
+      "alternate_printings": [],
+      "runtime_image": {
+        "path": "assets/art/battlefield_15.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/635a3a0b724a2cfc11938ecbc1d8abddd89d3436-1039x744.png?w=360&q=80&fm=png",
+        "bytes": 128786,
+        "sha256": "ecc05923bc4679112be271930eac3ae7a3e97d9fdf3c216284fd8d9a900eee85",
+        "width": 360,
+        "height": 258
+      }
+    },
+    {
+      "official_id": "ogn-298-298",
+      "name": "Zaun Warrens",
+      "raw_printing": {
+        "official_id": "ogn-298-298",
+        "public_code": "OGN-298/298",
+        "name": "Zaun Warrens",
+        "set": "OGN",
+        "collector_number": 298,
+        "types": [
+          "battlefield"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "battlefield"
+        ],
+        "accessibility_types": [
+          "battlefield"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "colorless"
+        ],
+        "energy": null,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "rules_html": "<p>When you conquer here, discard 1, then draw 1.</p>",
+        "rules_text": "When you conquer here, discard 1, then draw 1.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [],
+        "rarity": "uncommon",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/458ee40086c77b43b98c2decbaf33a4aa2359bb9-1038x744.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Battlefield: Zaun Warrens. When you conquer here, discard 1, then draw 1.",
+        "illustrators": [
+          "Envar Studio"
+        ]
+      },
+      "raw_printing_sha256": "68fd22f7e96b6fd9674694e352546841b22341a6823fac518cdea7d90b5348a2",
+      "effective": {
+        "types": [
+          "battlefield"
+        ],
+        "super_types": [],
+        "domains": [
+          "colorless"
+        ],
+        "energy": null,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>When you conquer here, discard 1, then draw 1.</p>",
+        "rules_text": "When you conquer here, discard 1, then draw 1.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "effective_projection_sha256": "68fd22f7e96b6fd9674694e352546841b22341a6823fac518cdea7d90b5348a2",
+      "existing_field_resolution_ids": [],
+      "original_image": {
+        "path": "assets/data/card_admissions/c28/originals/ogn-298-298.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/458ee40086c77b43b98c2decbaf33a4aa2359bb9-1038x744.png?accountingTag=RB",
+        "sha256": "f39c8bef48027fc8627d3c84023801cc04289ff9c990a8dd4e992eb4f0fc81bc",
+        "bytes": 883316
+      },
+      "visual_observation": {
+        "official_id": "ogn-298-298",
+        "image": "ogn-298-298.png",
+        "sha256": "f39c8bef48027fc8627d3c84023801cc04289ff9c990a8dd4e992eb4f0fc81bc",
+        "actual_full_face_viewed": true,
+        "observation": "Complete landscape OGN298/298: colorless Battlefield, no cost/Might/tags. Conquer discard1 then draw1; order printed explicitly."
+      },
+      "runtime_id": 16,
+      "errata": [],
+      "runtime_rules_text": "When you conquer here, discard 1, then draw 1.",
+      "runtime_rules_source": "https://playriftbound.com/en-us/card-gallery/",
+      "printing_cohort": [
+        "ogn-298-298"
+      ],
+      "alternate_printings": [],
+      "runtime_image": {
+        "path": "assets/art/battlefield_16.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/458ee40086c77b43b98c2decbaf33a4aa2359bb9-1038x744.png?w=360&q=80&fm=png",
+        "bytes": 142257,
+        "sha256": "b429d23fbd9b1b163a29edfdc071218ffc9bc0486b0233c99b5d7d73242982d4",
+        "width": 360,
+        "height": 258
+      }
+    }
+  ],
+  "live_authority_check": {
+    "checked_on": "2026-10-26",
+    "gallery_uncompressed_sha256": "92441a31df3f68cb68a4c64ed3b8aacb1016be8081eb67fcb2751716764e6a8a",
+    "hub_uncompressed_sha256": "2435d853fda2dd6a0a54fa105556366aa2adf73d98c0e6ec622e58de17d16942",
+    "core_rules_url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/5c7946f7c3b8c6e0faff85ab6dadc6d2e721ea94.pdf",
+    "legality": {
+      "source_url": "https://playriftbound.com/en-us/rules-hub/",
+      "last_updated": "September 18, 2026",
+      "standard_banned_names": [
+        "Called Shot",
+        "Ekko, Recurrent",
+        "Draven, Vanquisher",
+        "Fight or Flight",
+        "Scrapheap",
+        "Stealthy Pursuer",
+        "Stacked Deck",
+        "The Arena’s Greatest",
+        "Aspirant’s Climb",
+        "Dreaming Tree",
+        "Obelisk of Power",
+        "Reaver’s Row"
+      ],
+      "two_v_two_banned_names": [
+        "Master Yi, Wuju Bladesman",
+        "Called Shot",
+        "Ekko, Recurrent",
+        "Draven Vanquisher",
+        "Fight or Flight",
+        "Scrapheap",
+        "Stealthy Pursuer",
+        "Stacked Deck",
+        "The Arena’s Greatest",
+        "Aspirant’s Climb",
+        "Dreaming Tree",
+        "Obelisk of Power",
+        "Reaver’s Row"
+      ]
+    },
+    "normalized_catalog_matches_after_source_only_review": true
+  },
+  "errata_sources": [
+    {
+      "key": "origins_errata",
+      "url": "https://playriftbound.com/en-us/news/rules-and-releases/riftbound-origins-card-errata/",
+      "archive": "assets/data/catalog_sources/origins_errata.html.gz",
+      "uncompressed_sha256": "035848c5cc61007683111e63b91289d3fc386d2b33437af32d4d13d565727c52",
+      "parsed_entries_sha256": "5d5ed4e6d5e03033184b5382ab360eade62ca9cf032cf94e811cc1e0acaed581",
+      "live_uncompressed_sha256": "a700228d17910269b56c8609ba52d2461d6e7f2370771217416e065f7b2626e9",
+      "live_parsed_entries_sha256": "5d5ed4e6d5e03033184b5382ab360eade62ca9cf032cf94e811cc1e0acaed581"
+    },
+    {
+      "key": "spiritforged_errata",
+      "url": "https://playriftbound.com/en-us/news/rules-and-releases/riftbound-spiritforged-errata/",
+      "archive": "assets/data/catalog_sources/spiritforged_errata.html.gz",
+      "uncompressed_sha256": "2fcd51e6104eb76212c42abc850beffaf1cf3e623d875b2d9ad47ed149a726a8",
+      "parsed_entries_sha256": "88be71f74e159dde0b339273fed000ac097ae50318a0aa535b02fdc23c666d57",
+      "live_uncompressed_sha256": "44a73fe653506bc89ff41e9b81c004fc5c952c10df29de34f528b6ddfd48335d",
+      "live_parsed_entries_sha256": "88be71f74e159dde0b339273fed000ac097ae50318a0aa535b02fdc23c666d57"
+    },
+    {
+      "key": "unleashed_errata",
+      "url": "https://playriftbound.com/en-us/news/rules-and-releases/unleashed-errata-updates/",
+      "archive": "assets/data/catalog_sources/unleashed_errata.html.gz",
+      "uncompressed_sha256": "8b3cb69fea7c499e435c6af0ac89b5c5013711477a172c6bbed3a782eff7ac7b",
+      "parsed_entries_sha256": "801ad0c9bcc9d7bbdde1fa8c5b229dbcaf718daaf3f3db208dd8942a119e3df3",
+      "live_uncompressed_sha256": "c31df55d4024c5bbc5881d07233e707f326cdd0bd6b746b2e490d48983ad6086",
+      "live_parsed_entries_sha256": "801ad0c9bcc9d7bbdde1fa8c5b229dbcaf718daaf3f3db208dd8942a119e3df3"
+    },
+    {
+      "key": "vendetta_errata",
+      "url": "https://playriftbound.com/en-us/news/announcements/vendetta-errata-updates/",
+      "archive": "assets/data/catalog_sources/vendetta_errata.html.gz",
+      "uncompressed_sha256": "d17603177df347cd44c4ef67c1c547344afcd847cec72ae545239f3c232ef2a6",
+      "parsed_entries_sha256": "9e6fb29ba5bd2bce1023b6927c395e4ed0ced61bf2fc766410d9f000c68a16be",
+      "live_uncompressed_sha256": "b2fe4126a8c007c60576bf225eb7add078e816fe8aca4419bc4200f8e4e24065",
+      "live_parsed_entries_sha256": "9e6fb29ba5bd2bce1023b6927c395e4ed0ced61bf2fc766410d9f000c68a16be"
+    },
+    {
+      "key": "radiance_errata",
+      "url": "https://playriftbound.com/en-us/news/announcements/radiance-errata-updates/",
+      "archive": "assets/data/catalog_sources/radiance_errata.html.gz",
+      "uncompressed_sha256": "63735225d6c2f0b757e933289175fb09dcbae86178075fb227e4afa4e1a478a7",
+      "parsed_entries_sha256": "84fd3234a6cdc8c5ddd0b8b4f18c100f339497acdc02318f74b352b6da23866e",
+      "live_uncompressed_sha256": "63735225d6c2f0b757e933289175fb09dcbae86178075fb227e4afa4e1a478a7",
+      "live_parsed_entries_sha256": "84fd3234a6cdc8c5ddd0b8b4f18c100f339497acdc02318f74b352b6da23866e"
+    }
+  ],
+  "visual_review_provenance": {
+    "path": "assets/data/card_admissions/c28/visual-review.json",
+    "sha256": "e8035517a1d039673c3ebc4cc6176eb0bd3e5448178537c9d3fe1d04640f4b50",
+    "reviewed_by": "root",
+    "method": "Individual complete official original faces; no observation generated from thumbnails or inferred from card name."
+  }
+}

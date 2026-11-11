@@ -25,12 +25,25 @@ fn ambush_chain(rengars: usize) -> Game {
         player.units.clear();
         player.gear.clear();
         player.hidden.clear();
-        player.exhausted_runes = [0; 6];
+        {
+            let runes = player.runes;
+            player.set_rune_setup(runes, [0; 6]).unwrap();
+        }
         player.energy_pool = 0;
         player.energy = 12;
     }
-    game.players[0].runes = [0, 6, 0, 0, 6, 0];
-    game.players[1].runes = [0, 5, 0, 7, 0, 0];
+    {
+        let used = game.players[0].exhausted_runes;
+        game.players[0]
+            .set_rune_setup([0, 6, 0, 0, 6, 0], used)
+            .unwrap();
+    }
+    {
+        let used = game.players[1].exhausted_runes;
+        game.players[1]
+            .set_rune_setup([0, 5, 0, 7, 0, 0], used)
+            .unwrap();
+    }
     game.players[0].hand = vec![7, 9]; // Discipline and Flash.
     game.players[1].hand = vec![30; rengars];
     game.players[0].units = vec![defender(100, 0), defender(101, 1)];

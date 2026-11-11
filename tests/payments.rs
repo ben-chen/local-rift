@@ -9,8 +9,7 @@ fn position(card: usize) -> Game {
     game.start_match().unwrap();
     let state = &mut game.players[0];
     state.hand = vec![card];
-    state.runes = [0; 6];
-    state.exhausted_runes = [0; 6];
+    state.set_rune_setup([0; 6], [0; 6]).unwrap();
     state.energy_pool = 12;
     state.energy = 12;
     state.power_pool = [0; 6];
@@ -55,8 +54,9 @@ fn enemy(id: u32) -> Target {
 #[test]
 fn recycling_can_choose_ready_or_exhausted_runes_of_the_same_domain() {
     let mut initial = position(59);
-    initial.players[0].runes = [0, 0, 0, 0, 2, 0];
-    initial.players[0].exhausted_runes = [0, 0, 0, 0, 1, 0];
+    initial.players[0]
+        .set_rune_setup([0, 0, 0, 0, 2, 0], [0, 0, 0, 0, 1, 0])
+        .unwrap();
     initial.players[0].energy_pool = 0;
     initial.players[0].energy = 1;
     let mut ready = initial.clone();
@@ -167,7 +167,12 @@ fn a_split_payment_covers_restricted_base_cost_and_each_deflect_choice() {
 fn explicit_rune_choice_preserves_other_runes_and_conserves_energy() {
     let mut game = position(5);
     game.players[1].units = vec![unit(100, 59), unit(101, 59)];
-    game.players[0].runes = [0, 1, 0, 0, 1, 0];
+    {
+        let used = game.players[0].exhausted_runes;
+        game.players[0]
+            .set_rune_setup([0, 1, 0, 0, 1, 0], used)
+            .unwrap();
+    }
     game.players[0].energy = 14;
     let mut payment = PowerPayment::default();
     payment.recycle[4] = 1;

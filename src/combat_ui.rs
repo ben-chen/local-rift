@@ -75,6 +75,143 @@ pub fn advice(status: CombatResolution, beginner: bool) -> &'static str {
     }
 }
 
+/// A restriction on pooled combat damage does not change the unit's Might.
+pub fn unit_description(contribution: local_rift::numeric::CombatContribution) -> Vec<String> {
+    let mut lines = vec![format!(
+        "Combat contribution: {} damage.",
+        contribution.damage
+    )];
+    if contribution.prevents_combat_damage {
+        lines.push("NO COMBAT DAMAGE · Printed ability. Current Might still applies to its damage ability and the damage needed to kill it.".into());
+        if !contribution.stunned {
+            lines.push("Not Stunned: its printed ability prevents combat damage.".into());
+        }
+    }
+    lines
+}
+
+pub fn unit_badge(
+    contribution: local_rift::numeric::CombatContribution,
+    ready: bool,
+) -> Option<&'static str> {
+    if contribution.stunned {
+        Some("STUN · 0 COMBAT")
+    } else if contribution.prevents_combat_damage {
+        Some(if ready { "0 COMBAT" } else { "EXH · 0 COMBAT" })
+    } else {
+        None
+    }
+}
+
+/// Live reference values, not a promise of the damage after responses or bonuses.
+pub fn source_damage_description(
+    game: &Game,
+    unit: &local_rift::game::Unit,
+) -> Result<Vec<String>, String> {
+    use local_rift::trigger_rules::{Effect, SourceDamageRecipients, SourceDamageValue};
+    let mut seen = Vec::new();
+    let mut lines = Vec::new();
+    for rule in local_rift::trigger_rules::trigger_rules(unit.card_id) {
+        for effect in rule.effects {
+            let Effect::SourceDamage { value, recipients } = effect else {
+                continue;
+            };
+            if seen.contains(&(*value, *recipients)) {
+                continue;
+            }
+            seen.push((*value, *recipients));
+            let (label, amount) = match value {
+                SourceDamageValue::Might => ("Might", game.unit_might(unit)?),
+                SourceDamageValue::Assault => ("Assault", game.unit_keywords(unit)?.assault),
+                SourceDamageValue::Shield => ("Shield", game.unit_keywords(unit)?.shield),
+            };
+            lines.push(format!(
+                "ABILITY DAMAGE · Current {label}: {amount}. Read again on resolution, before damage bonuses or prevention."
+            ));
+            if *value != SourceDamageValue::Might {
+                lines.push(format!(
+                    "Uses total {label}, not full Might. This value exists even while not {}.",
+                    if *value == SourceDamageValue::Assault {
+                        "attacking"
+                    } else {
+                        "defending"
+                    }
+                ));
+            }
+            lines.push(match recipients {
+                SourceDamageRecipients::ChosenTargets => {
+                    "Chosen targets must still satisfy the printed location limits on resolution.".into()
+                }
+                SourceDamageRecipients::AllEnemiesHere => {
+                    "Hits every enemy at this unit's current battlefield. These hits do not choose targets.".into()
+                }
+            });
+        }
+    }
+    Ok(lines)
+}
+
+/// Uses public board facts and the local player's hand, never the opponent's hand.
+pub fn card_advice(game: &Game, beginner: bool) -> Result<Vec<&'static str>, String> {
+    let mut tips = Vec::new();
+    let has_unit = |card| {
+        game.players
+            .iter()
+            .flat_map(|player| &player.units)
+            .any(|unit| unit.card_id == card)
+    };
+    if has_unit(412) {
+        tips.push(if beginner {
+            "Ezreal's Might still sets his ability damage and the damage needed to kill him. His printed ability adds no combat damage; it does not make him Stunned."
+        } else {
+            "Ezreal adds no combat damage. His attack or defend ability reads Might on resolution: responses can change its damage or move the target out of his battlefield."
+        });
+    }
+    if has_unit(413) {
+        tips.push(if beginner {
+            "Yasuo's attack ability reads his current Might when it resolves. It is separate from combat damage; Stunned stops his combat contribution, not this ability."
+        } else {
+            "Yasuo's damage needs his current Might and a target still at his current battlefield. Responses that change Might or move either unit can change the result."
+        });
+    }
+    if has_unit(414) {
+        tips.push(if beginner {
+            "Graves deals ability damage to every enemy at his current battlefield. He adds no combat damage, but is not Stunned just because of that printed ability."
+        } else {
+            "Graves reads current Might and hits all enemies at his current battlefield without choosing targets. Responses can change his Might or move units before resolution."
+        });
+    }
+    if has_unit(415) {
+        tips.push(if beginner {
+            "Lucian's attack ability uses total Assault, not full Might. Hover over him to see its current value; extra Assault can change both his attack and ability damage."
+        } else {
+            "Lucian reads total Assault on resolution. Check keyword grants and responses that move him or his chosen enemy; the target must still be at his current battlefield."
+        });
+    }
+    if has_unit(416) {
+        tips.push(if beginner {
+            "Armored Tusker's move ability is optional. Choose a unit at any battlefield or decline. It reads total Shield on resolution, even while Tusker is not defending."
+        } else {
+            "Tusker can choose a friendly or enemy battlefield unit after moving. Check current Shield and possible responses before accepting the optional damage."
+        });
+    }
+    if game.players[0].hand.iter().any(|id| {
+        local_rift::rules::static_abilities(*id)
+            .contains(&local_rift::rules::StaticAbility::MayPlayToAttackedBattlefield)
+    }) && game
+        .showdown
+        .as_ref()
+        .is_some_and(|showdown| showdown.combat && showdown.attacker == 0)
+    {
+        tips.push(if beginner {
+            "Rengar can join the battlefield you're attacking, even with no friendly unit left there. Costs, response timing and fixed play destinations still apply."
+        } else {
+            "Keep power for Rengar's Reaction into the field you're attacking. Assault changes his attacking Might; leaving no other friendly unit there does not remove his permission."
+        });
+    }
+    Ok(tips)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

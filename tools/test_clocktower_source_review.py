@@ -7,6 +7,7 @@ from unittest.mock import patch
 
 import catalog_review as review
 import import_catalog as catalog
+import admission_history as history
 
 
 class ClocktowerSourceReviewTests(unittest.TestCase):
@@ -17,9 +18,9 @@ class ClocktowerSourceReviewTests(unittest.TestCase):
         cls.manifest = json.loads((catalog.ROOT / 'assets/data/catalog_resolutions.json').read_text())
         cls.proof = json.loads((catalog.ROOT / 'assets/data/catalog_evidence/reviews/clocktower-guardian.json').read_text())
         cls.runtime = copy.deepcopy(catalog.load_runtime_manifest())
-        cls.runtime['cards'] = cls.runtime['cards'][:384]
+        cls.runtime['cards'] = cls.runtime['cards'][:384]; cls.runtime['decks'] = cls.runtime['decks'][:4]
         legends = catalog.load_legend_manifest()[:10]
-        with patch.object(catalog, 'load_runtime_manifest', return_value=cls.runtime), patch.object(catalog, 'load_legend_manifest', return_value=legends):
+        with patch.object(catalog, 'load_runtime_manifest', return_value=cls.runtime), patch.object(catalog, 'load_battlefield_manifest', return_value=history.legacy_battlefields()), patch.object(catalog, 'load_legend_manifest', return_value=legends):
             cls.snapshot = catalog.make_catalog(cls.origin, cls.archives)
 
     def apply(self, manifest=None, raw=None):
@@ -74,12 +75,12 @@ class ClocktowerSourceReviewTests(unittest.TestCase):
         old = p['preserved_field_image_index']
         self.assertEqual(digest(images[:old['count']]), old['canonical_sha256'])
         for path, key in [('assets/data/catalog_identity_reviews.json', 'manifest_sha256'), ('assets/data/catalog_evidence/variant_images.json', 'image_index_sha256')]:
-            self.assertEqual(catalog.sha((catalog.ROOT / path).read_bytes()), p['preserved_variant_review'][key])
+            self.assertEqual(catalog.sha(history.legacy_variant_evidence_bytes(path)), p['preserved_variant_review'][key])
         old = p['preserved_runtime']
         self.assertEqual(digest(self.runtime['cards']), old['cards_sha256'])
-        self.assertEqual(digest(self.runtime['decks']), old['presets_sha256'])
+        self.assertEqual(digest(self.runtime['decks'][:4]), old['presets_sha256'])
         self.assertEqual(catalog.sha((catalog.ROOT / 'assets/data/legends.json').read_bytes()), old['legends_manifest_sha256'])
-        self.assertEqual(catalog.sha((catalog.ROOT / 'src/deck.rs').read_bytes()), old['training_recipe_source_sha256'])
+        self.assertEqual(catalog.sha(history.pre_rengar_recipe_source_bytes()), old['training_recipe_source_sha256'])
 
     def test_changed_raw_prerequisites_are_rejected(self):
         for field, value in [('domains', ['mind']), ('tags', ['Shurima']), ('might', 9)]:

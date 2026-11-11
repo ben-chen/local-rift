@@ -18,8 +18,7 @@ fn position() -> Game {
         player.gear.clear();
         player.hidden.clear();
         player.discard.clear();
-        player.runes = [0; 6];
-        player.exhausted_runes = [0; 6];
+        player.set_rune_setup([0; 6], [0; 6]).unwrap();
         player.energy_pool = 50;
         player.energy = 50;
         player.power_pool = [20; 6];
@@ -354,8 +353,9 @@ fn rune_discount_counts_exhausted_controlled_runes_and_freezes_before_recycling(
     ] {
         let mut g = position();
         unit(&mut g, 0, 900, card, None);
-        g.players[0].runes = [count, 0, 0, 0, 0, 0];
-        g.players[0].exhausted_runes = [count, 0, 0, 0, 0, 0];
+        g.players[0]
+            .set_rune_setup([count, 0, 0, 0, 0, 0], [count, 0, 0, 0, 0, 0])
+            .unwrap();
         let action = Action::ActivateAbility {
             source: AbilitySource::Unit {
                 player: 0,

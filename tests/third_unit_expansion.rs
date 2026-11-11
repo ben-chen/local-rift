@@ -12,8 +12,7 @@ fn position() -> Game {
         p.gear.clear();
         p.hidden.clear();
         p.discard.clear();
-        p.runes = [12; 6];
-        p.exhausted_runes = [0; 6];
+        p.set_rune_setup([12; 6], [0; 6]).unwrap();
         p.energy_pool = 0;
         p.energy = 72;
         p.power_pool = [0; 6];

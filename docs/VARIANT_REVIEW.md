@@ -1,6 +1,6 @@
 # Complete alternate-printing reviews
 
-Reviewed **October 24, 2026**. This source review covers **29 existing playable identities and every one of their 90 gallery printings**. It adds no playable identity or card mechanic: at C7 publication, coverage remained **315 of 1,079 Standard-legal identities**, with 764 unavailable. Later runtime admissions are reported in [Card coverage](CARD_COVERAGE.md), separately from this dated review. “Complete” means complete membership and coverage of the detected tag/text differences in these exact groups; it is not a complete visual audit of every statistic or proof of engine conformance.
+The original cohort was reviewed **October 24, 2026**. That source review covers **29 existing playable identities and every one of their 90 gallery printings**. It adds no playable identity or card mechanic: at C7 publication, coverage remained **315 of 1,079 Standard-legal identities**, with 764 unavailable. Later runtime admissions are reported in [Card coverage](CARD_COVERAGE.md), separately from this dated review. “Complete” means complete membership and coverage of the detected tag/text differences in these exact groups; it is not a complete visual audit of every statistic or proof of engine conformance.
 
 The [identity-review manifest](../assets/data/catalog_identity_reviews.json) replaces the former temporary compatibility baseline. Each identity has an explicit disposition for every field in the union of its raw and effective tag/rules/equipment-text differences. The validator does not choose the newest or numbered face, strip parentheticals, union tags, or normalize punctuation to manufacture agreement.
 
@@ -16,7 +16,7 @@ These **35 field dispositions** cover nine tag fields and 26 rules-text fields; 
 
 ## Evidence and applicability
 
-The [variant image index](../assets/data/catalog_evidence/variant_images.json) contains all **90 exact original Riot CDN images, 86,696,094 bytes**. Each was individually inspected for matching identity/collector footer and the relevant tag or text feature. The index retains the original URL, exact bytes/SHA-256, and visual observations. No runtime thumbnail or OCR inference substitutes for the original image. Riftbound and the artwork belong to Riot Games; this project is unaffiliated.
+The original cohort in the [variant image index](../assets/data/catalog_evidence/variant_images.json) contains **90 exact original Riot CDN images, 86,696,094 bytes**. The October 26 Pyke addition below brings the current index to 92 images totaling 88,732,930 bytes. Each was individually inspected for matching identity/collector footer and the relevant tag or text feature. The index retains the original URL, exact bytes/SHA-256, and visual observations. No runtime thumbnail or OCR inference substitutes for the original image. Riftbound and the artwork belong to Riot Games; this project is unaffiliated.
 
 The field-resolution index remains separate: it covered 69 printing records and 112 entries at C7 publication. The later Tracker review brought it to 70 printing records and 114 entries; the subsequent Momentary Companion tag correction brought it to 71 records and 115 entries. The subsequent Stalwart Goatherd and Patched Porobot review brings it to 73 records and 117 entries. There are still 31 images shared with the 90-member identity index. Shared image files are stored once. The original 112 entries and 37 historical issue groups remain unchanged, with five separately evidenced artwork-discovery groups added. These additions do not change any of the 29 complete identity reviews. [Catalog review](CATALOG_REVIEW.md) describes that layer.
 
@@ -81,9 +81,15 @@ The official [October 9 Core PDF](https://cmsassets.rgpub.io/sanity/files/dsfx76
 
 **Rengar, Trophy Hunter.** The inspected printed variants share the historical “I can be played” placement instruction, with reminder omissions on some faces. The current [Unleashed erratum](https://playriftbound.com/en-us/news/rules-and-releases/unleashed-errata-updates/) instead specifies that the special enemy-field placement is available through **Ambush**. The identity review pins that full current erratum separately. It does not rewrite old printed faces, mistake old text for current authority, or grant ordinary-speed placement. The runtime already uses the erratum.
 
+## October 26 addition: Pyke, Dockside Butcher
+
+The [C28 admission proof](../assets/data/card_admissions/c28/README.md) records both complete original faces, `unl-028-219` and `unl-028a-219`. They retain Hidden, Ganking, the optional one-Fury-Power additional play cost, and the same conditional Ready then +2 Might instruction. The alternate face omits only the Hidden and Ganking reminders. Its exact differing text remains in the catalog; Core 135.2.d.1–3, 810 and 811 support this specific reminder-equivalent disposition. No scalar, type, domain, tag, or operative text correction is made.
+
+The source-only checkpoint adds one identity review and two images while leaving runtime mappings unchanged. Subsequent source registration is separately recorded; neither establishes executable acceptance. The original 29 review objects and 90 image records remain exact prefixes. Current totals are 30 complete identity reviews, 92 printings and 36 field dispositions: 15 corrected transcriptions, 19 reminder equivalences and two rule-derived equivalences.
+
 ## Remaining review and checks
 
-The raw history retains 124 identities with variant diagnostics: 123 Standard-legal identities and auxiliary Gold. These 29 identity reviews leave **95 unreviewed identities: 94 Standard-legal identities plus Gold**. Other source facts are not declared clean merely because they lack a diagnostic. Every new admission still needs accurate facts and a separate executable implementation.
+The raw history retains 124 identities with variant diagnostics: 123 Standard-legal identities and auxiliary Gold. The 30 identity reviews now leave **94 unreviewed identities: 93 Standard-legal identities plus Gold**. Other source facts are not declared clean merely because they lack a diagnostic. Every new admission still needs accurate facts and a separate executable implementation.
 
 Run the offline importer check and the Python review tests to verify the exact local evidence and current applicability. Live page checks additionally verify current parsed facts/errata and the Rules Hub Core link, ignoring unrelated website markup. **They do not freshly download remote image or PDF bytes.** An unchanged URL can conceal changed remote content, so the visual/rules evidence remains dated and a separate fresh fetch is needed to reassess those bytes.
 

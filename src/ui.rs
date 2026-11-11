@@ -21,6 +21,7 @@ const RUNE_DOMAINS: [Domain; 6] = [
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct RuneSlot {
+    pub rune_id: Option<u32>,
     pub domain: Domain,
     pub ready: bool,
 }
@@ -40,6 +41,37 @@ pub struct RuneReserve {
 }
 
 impl RuneReserve {
+    pub fn with_objects(
+        mut self,
+        objects: &[local_rift::runes::RuneObject],
+        in_deck: usize,
+    ) -> Self {
+        let mut public = objects.iter().collect::<Vec<_>>();
+        public.sort_by_key(|rune| (domain_index(rune.domain), rune.id));
+        self.slots = [None; 12];
+        for (slot, rune) in self.slots.iter_mut().zip(public) {
+            *slot = Some(RuneSlot {
+                rune_id: Some(rune.id),
+                domain: rune.domain,
+                ready: rune.ready,
+            });
+        }
+        self.ready = objects
+            .iter()
+            .filter(|rune| rune.ready)
+            .count()
+            .try_into()
+            .unwrap_or(u8::MAX);
+        self.exhausted = objects
+            .iter()
+            .filter(|rune| !rune.ready)
+            .count()
+            .try_into()
+            .unwrap_or(u8::MAX);
+        self.in_deck = in_deck.try_into().unwrap_or(u8::MAX);
+        self
+    }
+
     pub fn new(
         runes: [u8; 6],
         exhausted: [u8; 6],
@@ -61,6 +93,7 @@ impl RuneReserve {
                 }
                 let is_ready = ordinal < available;
                 slots[occupied] = Some(RuneSlot {
+                    rune_id: None,
                     domain,
                     ready: is_ready,
                 });
@@ -879,5 +912,40 @@ mod resource_tests {
         assert_eq!(reserve.ready, 0);
         assert_eq!(reserve.exhausted, 1);
         assert_eq!(reserve.stored_energy, 2);
+    }
+    #[test]
+    fn physical_slots_keep_identity_on_exhaust_and_remove_only_the_recycled_copy() {
+        use local_rift::game::{Action, Difficulty, Game};
+        let mut game = Game::new(3, 3, 2800, Difficulty::Easy);
+        game.start_match().unwrap();
+        game.players[0]
+            .set_rune_setup([2, 0, 0, 0, 0, 0], [0; 6])
+            .unwrap();
+        let draw = |game: &Game| {
+            RuneReserve::new([0; 6], [0; 6], [0; 6], 0, 0, 0)
+                .with_objects(game.players[0].rune_objects(), 10)
+        };
+        let before = draw(&game);
+        let first = before.slots[0].unwrap().rune_id.unwrap();
+        let second = before.slots[1].unwrap().rune_id.unwrap();
+        assert_ne!(first, second);
+        game.apply(Action::ActivateRuneObject {
+            rune_id: second,
+            recycle: false,
+        })
+        .unwrap();
+        let after = draw(&game);
+        assert_eq!(after.slots[0].unwrap().rune_id, Some(first));
+        assert_eq!(after.slots[1].unwrap().rune_id, Some(second));
+        assert!(after.slots[0].unwrap().ready);
+        assert!(!after.slots[1].unwrap().ready);
+        game.apply(Action::ActivateRuneObject {
+            rune_id: second,
+            recycle: true,
+        })
+        .unwrap();
+        let after = draw(&game);
+        assert_eq!(after.slots[0].unwrap().rune_id, Some(first));
+        assert!(after.slots[1].is_none());
     }
 }

@@ -144,6 +144,7 @@ fn all_four_have_exact_domain_homes_without_new_chosen_champions() {
     assert!(
         cards::presets()
             .iter()
+            .take(4)
             .all(|d| d.cards.iter().all(|(id, _)| *id < 69))
     );
 }

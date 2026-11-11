@@ -15,8 +15,7 @@ fn position() -> Game {
         p.gear.clear();
         p.hidden.clear();
         p.discard.clear();
-        p.runes = [6; 6];
-        p.exhausted_runes = [0; 6];
+        p.set_rune_setup([6; 6], [0; 6]).unwrap();
         p.energy_pool = 0;
         p.energy = 36;
         p.power_pool = [0; 6];
@@ -154,8 +153,7 @@ fn fizz_can_target_an_unpayable_spell_but_failed_finalization_returns_it() {
     let mut g = position();
     g.players[0].discard = vec![67];
     fizz_target(&mut g, 0);
-    g.players[0].runes = [0; 6];
-    g.players[0].exhausted_runes = [0; 6];
+    g.players[0].set_rune_setup([0; 6], [0; 6]).unwrap();
     g.players[0].energy = 0;
     g.players[0].units.push(unit(100, 72, Some(0)));
     g.legend[0].ready = false;
@@ -180,8 +178,7 @@ fn pending_spell_can_generate_matching_power_without_losing_its_identity() {
     let mut g = position();
     g.players[0].discard = vec![67];
     fizz_target(&mut g, 0);
-    g.players[0].runes = [0; 6];
-    g.players[0].exhausted_runes = [0; 6];
+    g.players[0].set_rune_setup([0; 6], [0; 6]).unwrap();
     g.players[0].energy = 0;
     g.players[0].units.push(unit(100, 72, Some(0)));
     g.players[0].gear.push(GearState {
@@ -265,8 +262,7 @@ fn pending_cancellation_checks_payable_explicit_targets_not_only_preferred_enemy
     fizz_target(&mut g, 0);
     g.players[0].units.push(unit(100, 72, Some(0)));
     g.players[1].units.push(unit(101, 0, Some(1)));
-    g.players[0].runes = [0; 6];
-    g.players[0].exhausted_runes = [0; 6];
+    g.players[0].set_rune_setup([0; 6], [0; 6]).unwrap();
     g.players[0].energy = 0;
     g.legend[0].ready = false;
     resolve(&mut g);
@@ -305,8 +301,7 @@ fn cancelling_failed_finalization_restores_granted_flow_and_original_trash_posit
     let flow = g.flow_costs(0, 1);
     assert!(!flow.is_empty());
     fizz_target(&mut g, 1);
-    g.players[0].runes = [0; 6];
-    g.players[0].exhausted_runes = [0; 6];
+    g.players[0].set_rune_setup([0; 6], [0; 6]).unwrap();
     g.players[0].energy = 0;
     g.legend[0].ready = false;
     resolve(&mut g);

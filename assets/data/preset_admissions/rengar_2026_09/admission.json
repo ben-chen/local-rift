@@ -1,0 +1,317 @@
+{
+  "reviewed_on": "2026-10-26",
+  "source_url": "https://playriftbound.com/en-us/news/organizedplay/los-angeles-top-decks/",
+  "source_archive": "assets/data/preset_audits/2026-10-26/los_angeles.html.gz",
+  "source_raw_sha256": "784d1945ea2199b1d9a7c6bd0b80e5d37565b52e9ae7e1c647b042d34a3746c9",
+  "source_section_index": 32,
+  "source_pilot": "DSG Prismaticism",
+  "source_placing": 1,
+  "main_deck_includes_chosen_champion": true,
+  "source_list": {
+    "Legend": [
+      {
+        "name": "Rengar, Pridestalker",
+        "identity": "unl-183-219",
+        "catalog_name": "Pridestalker",
+        "standard_legal": true,
+        "implemented": true,
+        "runtime_id": 8,
+        "count": 1
+      }
+    ],
+    "Champion": [
+      {
+        "name": "Rengar, Trophy Hunter",
+        "identity": "unl-120-219",
+        "catalog_name": "Rengar, Trophy Hunter",
+        "standard_legal": true,
+        "implemented": true,
+        "runtime_id": 30,
+        "count": 1
+      }
+    ],
+    "Main Deck": [
+      {
+        "name": "Darius, Trifarian",
+        "identity": "ogn-027-298",
+        "catalog_name": "Darius, Trifarian",
+        "standard_legal": true,
+        "implemented": true,
+        "runtime_id": 183,
+        "count": 1
+      },
+      {
+        "name": "Ferrous Forerunner",
+        "identity": "sfd-021-221",
+        "catalog_name": "Ferrous Forerunner",
+        "standard_legal": true,
+        "implemented": true,
+        "runtime_id": 54,
+        "count": 1
+      },
+      {
+        "name": "First Mate",
+        "identity": "ogn-132-298",
+        "catalog_name": "First Mate",
+        "standard_legal": true,
+        "implemented": true,
+        "runtime_id": 23,
+        "count": 2
+      },
+      {
+        "name": "Grim Apothecary",
+        "identity": "unl-021-219",
+        "catalog_name": "Grim Apothecary",
+        "standard_legal": true,
+        "implemented": true,
+        "runtime_id": 376,
+        "count": 3
+      },
+      {
+        "name": "Inferna",
+        "identity": "unl-002-219",
+        "catalog_name": "Inferna",
+        "standard_legal": true,
+        "implemented": true,
+        "runtime_id": 56,
+        "count": 3
+      },
+      {
+        "name": "Irresistible Faefolk",
+        "identity": "unl-112-219",
+        "catalog_name": "Irresistible Faefolk",
+        "standard_legal": true,
+        "implemented": false,
+        "runtime_id": null,
+        "count": 3
+      },
+      {
+        "name": "Kai'Sa, Survivor",
+        "identity": "ogn-039-298",
+        "catalog_name": "Kai'Sa, Survivor",
+        "standard_legal": true,
+        "implemented": true,
+        "runtime_id": 49,
+        "count": 3
+      },
+      {
+        "name": "Kinkou Initiate",
+        "identity": "unl-097-219",
+        "catalog_name": "Kinkou Initiate",
+        "standard_legal": true,
+        "implemented": false,
+        "runtime_id": null,
+        "count": 3
+      },
+      {
+        "name": "Nidalee, Cat Form",
+        "identity": "unl-114-219",
+        "catalog_name": "Nidalee, Cat Form",
+        "standard_legal": true,
+        "implemented": false,
+        "runtime_id": null,
+        "count": 2
+      },
+      {
+        "name": "Noxus Hopeful",
+        "identity": "ogn-012-298",
+        "catalog_name": "Noxus Hopeful",
+        "standard_legal": true,
+        "implemented": true,
+        "runtime_id": 59,
+        "count": 3
+      },
+      {
+        "name": "Pakaa Cub",
+        "identity": "ogn-135-298",
+        "catalog_name": "Pakaa Cub",
+        "standard_legal": true,
+        "implemented": true,
+        "runtime_id": 108,
+        "count": 1
+      },
+      {
+        "name": "Pit Rookie",
+        "identity": "ogn-136-298",
+        "catalog_name": "Pit Rookie",
+        "standard_legal": true,
+        "implemented": true,
+        "runtime_id": 27,
+        "count": 3
+      },
+      {
+        "name": "Punch First",
+        "identity": "sfd-097-221",
+        "catalog_name": "Punch First",
+        "standard_legal": true,
+        "implemented": true,
+        "runtime_id": 28,
+        "count": 3
+      },
+      {
+        "name": "Pyke, Dockside Butcher",
+        "identity": "unl-028-219",
+        "catalog_name": "Pyke, Dockside Butcher",
+        "standard_legal": true,
+        "implemented": false,
+        "runtime_id": null,
+        "count": 1
+      },
+      {
+        "name": "Rampage",
+        "identity": "ven-083-166",
+        "catalog_name": "Rampage",
+        "standard_legal": true,
+        "implemented": true,
+        "runtime_id": 29,
+        "count": 2
+      },
+      {
+        "name": "Sabotage",
+        "identity": "ogn-156-298",
+        "catalog_name": "Sabotage",
+        "standard_legal": true,
+        "implemented": true,
+        "runtime_id": 32,
+        "count": 3
+      },
+      {
+        "name": "Thrill of the Hunt",
+        "identity": "unl-184-219",
+        "catalog_name": "Thrill of the Hunt",
+        "standard_legal": true,
+        "implemented": true,
+        "runtime_id": 382,
+        "count": 2
+      }
+    ],
+    "Battlefields": [
+      {
+        "name": "Emperor's Dais",
+        "identity": "sfd-207-221",
+        "catalog_name": "Emperor's Dais",
+        "standard_legal": true,
+        "implemented": false,
+        "runtime_id": null,
+        "count": 1
+      },
+      {
+        "name": "Seat of Power",
+        "identity": "sfd-217-221",
+        "catalog_name": "Seat of Power",
+        "standard_legal": true,
+        "implemented": true,
+        "runtime_id": 1,
+        "count": 1
+      },
+      {
+        "name": "Star Spring",
+        "identity": "unl-215-219",
+        "catalog_name": "Star Spring",
+        "standard_legal": true,
+        "implemented": false,
+        "runtime_id": null,
+        "count": 1
+      }
+    ],
+    "Rune Pool": [
+      {
+        "name": "Body Rune",
+        "identity": "ogn-126-298",
+        "catalog_name": "Body Rune",
+        "standard_legal": true,
+        "implemented": true,
+        "runtime_id": null,
+        "count": 8
+      },
+      {
+        "name": "Fury Rune",
+        "identity": "ogn-007-298",
+        "catalog_name": "Fury Rune",
+        "standard_legal": true,
+        "implemented": true,
+        "runtime_id": null,
+        "count": 4
+      }
+    ],
+    "Sideboard": [
+      {
+        "name": "Brittle Steel",
+        "identity": "ven-003-166",
+        "catalog_name": "Brittle Steel",
+        "standard_legal": true,
+        "implemented": true,
+        "runtime_id": 364,
+        "count": 2
+      },
+      {
+        "name": "Brynhir Thundersong",
+        "identity": "ogn-026-298",
+        "catalog_name": "Brynhir Thundersong",
+        "standard_legal": true,
+        "implemented": true,
+        "runtime_id": 51,
+        "count": 1
+      },
+      {
+        "name": "Decree of Strength",
+        "identity": "ven-085-166",
+        "catalog_name": "Decree of Strength",
+        "standard_legal": true,
+        "implemented": false,
+        "runtime_id": null,
+        "count": 2
+      },
+      {
+        "name": "Ferrous Forerunner",
+        "identity": "sfd-021-221",
+        "catalog_name": "Ferrous Forerunner",
+        "standard_legal": true,
+        "implemented": true,
+        "runtime_id": 54,
+        "count": 2
+      },
+      {
+        "name": "Noxian Demolitionist",
+        "identity": "ven-080-166",
+        "catalog_name": "Noxian Demolitionist",
+        "standard_legal": true,
+        "implemented": true,
+        "runtime_id": 368,
+        "count": 1
+      },
+      {
+        "name": "Pyke, Dockside Butcher",
+        "identity": "unl-028-219",
+        "catalog_name": "Pyke, Dockside Butcher",
+        "standard_legal": true,
+        "implemented": false,
+        "runtime_id": null,
+        "count": 1
+      },
+      {
+        "name": "Rampage",
+        "identity": "ven-083-166",
+        "catalog_name": "Rampage",
+        "standard_legal": true,
+        "implemented": true,
+        "runtime_id": 29,
+        "count": 1
+      }
+    ]
+  },
+  "runtime_preset_index": 4,
+  "legend_registry_id": 8,
+  "default_battlefield_id": 1,
+  "default_battlefield_name": "Seat of Power",
+  "preserved_preset_count": 4,
+  "preserved_presets_sha256": "d6e64ebf3f8921686682dacd87d4b2b4baec5754dbd284c6d60bf3fb324571e2",
+  "predecessor_training_recipe_source": "assets/data/preset_admissions/rengar_2026_09/predecessor_deck.rs",
+  "predecessor_training_recipe_sha256": "dc498f4f98cec6421dade7e01ead261693ed5f70d30d4d2c808da4a1bcb5b706",
+  "pending_dependencies": [
+    "C28 four unit implementations and six field implementations",
+    "Exact40 main+chosen,12 runes and legal default-field validation",
+    "Native/Nix/API/UI acceptance"
+  ],
+  "scope": "Dated competitive main-deck preset. The three published field names and sideboard are preserved as source evidence; this admission alone does not implement registered battlefield selection or sideboarding."
+}

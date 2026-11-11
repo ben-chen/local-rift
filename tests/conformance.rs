@@ -39,8 +39,7 @@ fn position() -> Game {
         player.units.clear();
         player.gear.clear();
         player.hidden.clear();
-        player.runes = [6, 0, 6, 0, 0, 0];
-        player.exhausted_runes = [0; 6];
+        player.set_rune_setup([6, 0, 6, 0, 0, 0], [0; 6]).unwrap();
         player.energy = 12;
     }
     game
@@ -67,7 +66,12 @@ fn defiant_dance_accepts_chaos_for_its_multidomain_power_cost() {
     // CR 135.2.e.6.c uses Defiant Dance as its explicit example.
     let mut game = position();
     game.players[0].hand = vec![5];
-    game.players[0].runes = [0, 0, 0, 0, 2, 0];
+    {
+        let used = game.players[0].exhausted_runes;
+        game.players[0]
+            .set_rune_setup([0, 0, 0, 0, 2, 0], used)
+            .unwrap();
+    }
     game.players[0].energy = 2;
     game.players[0].units.push(unit(100, None));
     game.players[1].units.push(unit(101, None));
@@ -168,7 +172,12 @@ fn flash_can_explicitly_choose_zero_units() {
 fn salvage_may_decline_to_kill_an_existing_enemy_gear() {
     // October 21, 2025 erratum: "You may kill up to one gear. Draw 1."
     let mut game = position();
-    game.players[0].runes = [0, 0, 0, 0, 0, 4];
+    {
+        let used = game.players[0].exhausted_runes;
+        game.players[0]
+            .set_rune_setup([0, 0, 0, 0, 0, 4], used)
+            .unwrap();
+    }
     game.players[0].energy = 4;
     game.players[0].hand = vec![41];
     game.players[1].gear.push(GearState {
@@ -197,7 +206,12 @@ fn rengar_can_ambush_an_enemy_only_battlefield_in_response() {
     game.players[0].units.push(unit(100, Some(0)));
     game.battlefield_owner[0] = Some(0);
     game.players[1].hand = vec![30];
-    game.players[1].runes = [0, 0, 0, 6, 0, 0];
+    {
+        let used = game.players[1].exhausted_runes;
+        game.players[1]
+            .set_rune_setup([0, 0, 0, 6, 0, 0], used)
+            .unwrap();
+    }
     game.players[1].energy = 6;
     game.apply(Action::PlayCardWithTargets {
         hand_index: 0,
@@ -231,8 +245,9 @@ fn not_so_fast_can_protect_friendly_gear() {
     // Printed wording covers "a friendly unit or gear", not only units.
     let mut game = position();
     game.apply(Action::EndTurn).unwrap();
-    game.players[0].runes = [0, 6, 0, 0, 0, 0];
-    game.players[0].exhausted_runes = [0; 6];
+    game.players[0]
+        .set_rune_setup([0, 6, 0, 0, 0, 0], [0; 6])
+        .unwrap();
     game.players[0].energy = 6;
     game.players[0].hand = vec![12];
     game.players[1].hand = vec![66];
@@ -271,8 +286,7 @@ fn not_so_fast_can_protect_friendly_gear() {
 fn mandatory_on_play_target_does_not_stall_when_deflect_cannot_be_paid() {
     let mut game = position();
     game.players[0].hand = vec![23]; // First Mate must choose another unit.
-    game.players[0].runes = [0; 6];
-    game.players[0].exhausted_runes = [0; 6];
+    game.players[0].set_rune_setup([0; 6], [0; 6]).unwrap();
     game.players[0].energy_pool = 3;
     game.players[0].energy = 3;
     let mut enemy = unit(101, None);
@@ -295,7 +309,12 @@ fn falling_star_pays_deflect_for_each_time_it_chooses_the_same_unit() {
     // CR 809.1.c / Spiritforged FAQ: two choices incur two Deflect costs.
     let mut game = position();
     game.players[0].hand = vec![53];
-    game.players[0].runes = [6, 0, 0, 0, 0, 0];
+    {
+        let used = game.players[0].exhausted_runes;
+        game.players[0]
+            .set_rune_setup([6, 0, 0, 0, 0, 0], used)
+            .unwrap();
+    }
     game.players[0].energy = 6;
     let mut enemy = unit(101, None);
     enemy.card_id = 0;

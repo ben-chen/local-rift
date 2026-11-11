@@ -91,43 +91,24 @@ impl Game {
         domain: Domain,
         exhausted: bool,
     ) -> Result<(), String> {
-        if self.decision.is_some() && !self.resource_payment_pending() {
-            return Err("Finish the pending choice before activating a rune.".into());
-        }
-        let state = &mut self.players[player];
-        let d = domain_index(domain);
-        let available = if exhausted {
-            state.exhausted_runes[d]
-        } else {
-            state.runes[d] - state.exhausted_runes[d]
-        };
-        if available == 0 {
-            return Err(format!(
-                "No {} {} rune is available.",
+        let id = self.players[player]
+            .rune_for_domain(domain, !exhausted)
+            .ok_or_else(|| {
+                format!(
+                    "No {} {} rune is available.",
+                    if exhausted { "exhausted" } else { "ready" },
+                    domain.name()
+                )
+            })?;
+        self.activate_rune_object(player, id, true)?;
+        if let Some(log) = self.log.last_mut() {
+            *log = format!(
+                "{} recycles a {} {} rune for power.",
+                self.players[player].name,
                 if exhausted { "exhausted" } else { "ready" },
                 domain.name()
-            ));
+            );
         }
-        state.runes[d] -= 1;
-        if exhausted {
-            state.exhausted_runes[d] -= 1;
-        }
-        state.rune_deck.insert(0, domain);
-        state.power_pool[d] += 1;
-        state.energy = state.energy_pool
-            + state
-                .runes
-                .iter()
-                .zip(state.exhausted_runes)
-                .map(|(all, used)| all - used)
-                .map(u16::from)
-                .sum::<u16>();
-        self.push_log(format!(
-            "{} recycles a {} {} rune for power.",
-            self.players[player].name,
-            if exhausted { "exhausted" } else { "ready" },
-            domain.name()
-        ));
         Ok(())
     }
 
@@ -270,13 +251,21 @@ impl Game {
         for (d, domain) in POWER_DOMAINS.into_iter().enumerate() {
             state.power_pool[d] -= used.colored[d];
             let exhausted = used.recycle[d].min(state.exhausted_runes[d]);
-            state.exhausted_runes[d] -= exhausted;
-            state.runes[d] -= used.recycle[d];
+            for ready in [false, true] {
+                let count = if ready {
+                    used.recycle[d] - exhausted
+                } else {
+                    exhausted
+                };
+                for _ in 0..count {
+                    let id = state
+                        .rune_for_domain(domain, ready)
+                        .ok_or("No matching physical rune is available.")?;
+                    state.remove_rune_object(id)?;
+                }
+            }
             // A ready rune may exhaust for energy before it is recycled.
             state.energy_pool += u16::from(used.recycle[d] - exhausted);
-            for _ in 0..used.recycle[d] {
-                state.rune_deck.insert(0, domain);
-            }
         }
         state.energy = state.energy_pool
             + state

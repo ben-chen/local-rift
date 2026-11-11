@@ -1503,7 +1503,12 @@ impl App {
             .title(&format!("Play a {name}"), 1178.0, 366.0, 21.0, TEXT);
         self.ui.wrapped_lines(
             &format!(
-                "{remaining} remaining. {location} {}",
+                "{remaining} remaining. {location} {}{}",
+                self.game
+                    .current_pending_token()
+                    .and_then(|token| token.source.as_ref())
+                    .map(|source| format!("From {}. ", source_label(&self.game, source)))
+                    .unwrap_or_default(),
                 if entry_ready {
                     "Enters ready by instruction."
                 } else if accelerate.is_some() {

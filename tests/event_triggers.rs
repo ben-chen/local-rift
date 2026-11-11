@@ -14,8 +14,7 @@ fn game() -> Game {
         p.gear.clear();
         p.hidden.clear();
         p.discard.clear();
-        p.runes = [6; 6];
-        p.exhausted_runes = [0; 6];
+        p.set_rune_setup([6; 6], [0; 6]).unwrap();
         p.energy_pool = 0;
         p.energy = 36;
         p.deck = vec![69; 30];
@@ -879,7 +878,10 @@ fn trigger_deflect_cost_can_be_generated_and_failed_choices_are_atomic() {
     let mut g = game();
     let enemy = unit(&mut g, 1, 100, 0, Some(0), true);
     g.battlefield_owner[0] = Some(1);
-    g.players[0].runes = [0; 6];
+    {
+        let used = g.players[0].exhausted_runes;
+        g.players[0].set_rune_setup([0; 6], used).unwrap();
+    }
     g.players[0].energy_pool = 4;
     g.players[0].energy = 4;
     g.players[0].power_pool[4] = 2;

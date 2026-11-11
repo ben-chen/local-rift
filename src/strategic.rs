@@ -15,6 +15,14 @@ impl Game {
         Ok({
             // A suspended transaction retains its rollback snapshot. Follow the
             // public-resource witness rather than resampling only half that state.
+            // Faefolk uses the same bounded public-board pull policy at every
+            // level, rather than defaulting its optional first action to decline.
+            if matches!(
+                self.decision,
+                Some(Decision::TriggerTargets { card_id: 417, .. })
+            ) {
+                return self.choose_heuristic_action();
+            }
             if self.payment_plan.is_some() || !self.resource_frames.is_empty() {
                 return self.choose_heuristic_action();
             }
@@ -174,6 +182,10 @@ impl Game {
             .trigger_payment_origin
             .as_ref()
             .map(|origin| Box::new(origin.strategic_belief(actor)));
+        state.finalization_payment_origin = self
+            .finalization_payment_origin
+            .as_ref()
+            .map(|origin| Box::new(origin.strategic_belief(actor)));
         state.rng = rng;
         state.log.clear();
         state
@@ -186,7 +198,7 @@ impl Game {
             candidates.extend(self.legal_actions()?.into_iter().filter(|action| {
             !matches!(
                 action,
-                Action::ActivateRune { .. } | Action::RecycleRune { .. }
+                Action::ActivateRuneObject { .. } | Action::ActivateRune { .. } | Action::RecycleRune { .. }
             ) && !matches!(action,Action::ActivateLegend{target} if self.legend_ai_score(actor,*target).is_none())
         }));
             if self.decision.is_none() {
@@ -489,8 +501,7 @@ mod tests {
             player.hand.clear();
             player.units.clear();
             player.champion = None;
-            player.runes = [0; 6];
-            player.exhausted_runes = [0; 6];
+            player.set_rune_setup([0; 6], [0; 6]).unwrap();
             player.energy = 0;
         }
         game
@@ -796,7 +807,17 @@ mod tests {
                 if game.winner.is_some() {
                     break;
                 }
-                game.step_ai().unwrap();
+                game.step_ai().unwrap_or_else(|error| {
+                    panic!(
+                        "Strategic {pair:?} turn{} decision{:?} pending{:?} origin{:?}: {error}",
+                        game.turn,
+                        game.decision,
+                        game.pending_card,
+                        game.finalization_payment_origin
+                            .as_ref()
+                            .map(|g| &g.decision)
+                    )
+                });
             }
             assert!(game.winner.is_some(), "Strategic match stalled: {pair:?}");
         }
@@ -818,8 +839,7 @@ mod c20_draw_privacy_tests {
             player.gear.clear();
             player.hidden.clear();
             player.champion = None;
-            player.runes = [0; 6];
-            player.exhausted_runes = [0; 6];
+            player.set_rune_setup([0; 6], [0; 6]).unwrap();
             player.energy = 20;
             player.energy_pool = 20;
             player.power_pool = [4; 6];
@@ -1095,8 +1115,7 @@ mod c21_predict_privacy_tests {
                     player.hand.clear();
                     player.discard.clear();
                     player.champion = None;
-                    player.runes = [0; 6];
-                    player.exhausted_runes = [0; 6];
+                    player.set_rune_setup([0; 6], [0; 6]).unwrap();
                     player.energy = 40;
                     player.energy_pool = 40;
                     player.power_pool = [8; 6];
@@ -1201,8 +1220,7 @@ mod c22_vision_privacy_tests {
                 player.hand.clear();
                 player.discard.clear();
                 player.champion = None;
-                player.runes = [0; 6];
-                player.exhausted_runes = [0; 6];
+                player.set_rune_setup([0; 6], [0; 6]).unwrap();
                 player.energy = 40;
                 player.energy_pool = 40;
                 player.power_pool = [8; 6];
@@ -1276,8 +1294,7 @@ mod c22_vision_privacy_tests {
                 player.hidden.clear();
                 player.hand.clear();
                 player.champion = None;
-                player.runes = [0; 6];
-                player.exhausted_runes = [0; 6];
+                player.set_rune_setup([0; 6], [0; 6]).unwrap();
                 player.energy_pool = 20;
                 player.energy = 20;
                 player.power_pool = [8; 6];
@@ -1344,6 +1361,78 @@ mod c22_vision_privacy_tests {
                             choice_id,
                             pay: true,
                         }),
+                    })
+                    .unwrap();
+            }
+            assert_eq!(
+                first.choose_strategic_action().unwrap(),
+                second.choose_strategic_action().unwrap()
+            );
+        }
+    }
+    #[test]
+    fn c25_pending_child_direct_add_undo_refusal_samples_historical_hidden_zones() {
+        for actor in 0..2 {
+            let mut first = Game::new_for_agents(3, 3, 250445, Difficulty::Strategic);
+            first.choose_starting_player(actor).unwrap();
+            first.start_match().unwrap();
+            for player in &mut first.players {
+                player.units.clear();
+                player.gear.clear();
+                player.hidden.clear();
+                player.hand.clear();
+                player.champion = None;
+                player.set_rune_setup([0; 6], [0; 6]).unwrap();
+                player.energy_pool = 20;
+                player.energy = 20;
+                player.power_pool = [8; 6];
+            }
+            first.players[1 - actor].hand = vec![9, 86];
+            first.players[actor].banish = vec![109];
+            first.queue_banish_play(actor, 0, InstructedPlayKind::ClocktowerGuardian, None);
+            first.after_resolution().unwrap();
+            let gold = first.gear_gold(actor, false);
+            first.apply(Action::ActivateGear { gear_id: gold }).unwrap();
+            let mut second = first.clone();
+            second.players[1 - actor].hand.fill(96);
+            second.players[actor].deck.fill(70);
+            second.players[1 - actor].deck.fill(71);
+            let old = second.finalization_payment_origin.as_mut().unwrap();
+            old.players[1 - actor].hand.fill(96);
+            old.players[actor].deck.fill(70);
+            old.players[1 - actor].deck.fill(71);
+            let action = Action::FinalizePendingPlay {
+                lane: None,
+                targets: vec![],
+                repeat_targets: vec![],
+                repeat: false,
+                accelerate: false,
+                bonus: false,
+            };
+            let mut a = first.strategic_belief(actor);
+            let mut b = second.strategic_belief(actor);
+            for state in [&mut a, &mut b] {
+                state
+                    .apply(Action::BeginPayment {
+                        action: Box::new(action.clone()),
+                    })
+                    .unwrap();
+                state.apply(Action::Choose { accept: false }).unwrap();
+                state
+                    .apply(Action::BeginPayment {
+                        action: Box::new(action.clone()),
+                    })
+                    .unwrap();
+                state.apply(Action::RefusePayment).unwrap();
+                assert!(state.finalization_payment_origin.is_none());
+            }
+            assert_eq!(a.players[actor].deck, b.players[actor].deck);
+            assert_eq!(a.players[1 - actor].deck, b.players[1 - actor].deck);
+            assert_eq!(a.players[1 - actor].hand, b.players[1 - actor].hand);
+            for state in [&mut first, &mut second] {
+                state
+                    .apply(Action::BeginPayment {
+                        action: Box::new(action.clone()),
                     })
                     .unwrap();
             }

@@ -43,8 +43,7 @@ fn zero_resources(g: &mut Game, player: usize) {
     p.energy_pool = 0;
     p.power_pool = [0; 6];
     p.any_power = 0;
-    p.runes = [0; 6];
-    p.exhausted_runes = [0; 6];
+    p.set_rune_setup([0; 6], [0; 6]).unwrap();
     p.gear.clear();
 }
 

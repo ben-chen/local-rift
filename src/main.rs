@@ -1,4 +1,5 @@
 mod ability_ui;
+mod ai_worker;
 mod board_layout;
 mod combat_ui;
 mod companion;
@@ -6,6 +7,7 @@ mod deck_editor;
 mod deck_look_ui;
 mod deploy_ui;
 mod draw_look_ui;
+mod field_ui;
 mod play_ui;
 mod predict_ui;
 use companion::{AdviceLevel, Companion, draw_mote};
@@ -228,6 +230,7 @@ struct FieldPicker {
 }
 
 struct App {
+    ai_worker: ai_worker::AiWorker,
     ui: Ui,
     game: Game,
     screen: Screen,
@@ -249,6 +252,7 @@ struct App {
     companion: Companion,
     toast: String,
     toast_until: f64,
+    target_choice_feedback: bool,
     next_ai: f64,
     orbit: f32,
     deck_scroll: usize,
@@ -307,6 +311,7 @@ struct App {
     inspect_scroll: usize,
     inspect_last: Option<usize>,
     rune_menu: Option<Domain>,
+    rune_menu_id: Option<u32>,
     rune_menu_at: Vec2,
     field_hover: Option<usize>,
     field_inspect: Option<usize>,
@@ -397,6 +402,7 @@ impl App {
             }
         }
         Self {
+            ai_worker: ai_worker::AiWorker::default(),
             ui: Ui::new(),
             game,
             screen: Screen::Practice,
@@ -422,6 +428,7 @@ impl App {
             prefs,
             toast: String::new(),
             toast_until: 0.0,
+            target_choice_feedback: false,
             next_ai: 0.0,
             orbit: 0.0,
             deck_scroll: 0,
@@ -480,6 +487,7 @@ impl App {
             inspect_scroll: 0,
             inspect_last: None,
             rune_menu: None,
+            rune_menu_id: None,
             rune_menu_at: vec2(898.0, 395.0),
             field_hover: None,
             field_inspect: None,
@@ -515,6 +523,7 @@ impl App {
             game.choose_battlefield(player, self.fields[player])
                 .expect("valid selected battlefield");
         }
+        self.ai_worker.invalidate();
         self.game = game;
         self.predict_draft = None;
         self.deck_look_draft = None;
@@ -556,6 +565,11 @@ impl App {
     fn notify(&mut self, s: impl Into<String>) {
         self.toast = s.into();
         self.toast_until = get_time() + 4.5;
+        self.target_choice_feedback = false;
+    }
+    fn notify_target_choice(&mut self, s: impl Into<String>) {
+        self.notify(s);
+        self.target_choice_feedback = true;
     }
     fn action(&mut self, a: Action) {
         let a = self.canonical_action(a);
@@ -611,12 +625,30 @@ impl App {
     }
     fn apply_action(&mut self, a: Action) {
         let inner = play_ui::core_action(&a);
+        let finishing_target_choice = matches!(
+            inner,
+            Action::ChooseTriggerTargets { .. }
+                | Action::ResolveBattlefieldTargets { .. }
+                | Action::SelectBattlefieldCost { .. }
+        ) && matches!(
+            self.game.decision,
+            Some(
+                Decision::TriggerTargets { .. }
+                    | Decision::LegendTargets { .. }
+                    | Decision::BattlefieldTargets { .. }
+                    | Decision::BattlefieldCost { .. }
+            )
+        );
         let finishing_plan = matches!(self.game.decision, Some(Decision::Payment { .. }))
-            && matches!(inner, Action::CompletePayment | Action::Choose { .. });
+            && matches!(
+                inner,
+                Action::CompletePayment | Action::Choose { .. } | Action::RefusePayment
+            );
         let cancelling_plan = finishing_plan && matches!(inner, Action::Choose { accept: false });
         let preserve_selection = matches!(
             inner,
             Action::ActivateRune { .. }
+                | Action::ActivateRuneObject { .. }
                 | Action::RecycleRune { .. }
                 | Action::SetOptionalDiscount { .. }
         );
@@ -628,10 +660,16 @@ impl App {
                 | Action::ResolveConversion { .. }
                 | Action::ActivateLegend { .. }
                 | Action::ActivateRune { .. }
+                | Action::ActivateRuneObject { .. }
                 | Action::RecycleRune { .. }
         ) && self.game.decision.is_some();
         match self.game.apply(a) {
             Ok(()) => {
+                self.ai_worker.invalidate();
+                if finishing_target_choice && self.target_choice_feedback {
+                    self.toast_until = 0.0;
+                    self.target_choice_feedback = false;
+                }
                 if finishing_plan {
                     self.suspended_payments.clear();
                     self.resource_drafts.clear();
@@ -682,6 +720,7 @@ impl App {
     }
     fn update(&mut self) {
         self.ui.resize();
+        self.ai_worker.poll();
         if self.game.validate_numeric_state().is_err() {
             return;
         }
@@ -783,12 +822,19 @@ impl App {
                 // Public reveals wait for the viewer's mandatory acknowledgement.
                 && !matches!(self.game.decision, Some(Decision::RevealedDeck { .. } | Decision::RevealedCard { .. }))
                 && self.drag.is_none()
-                && get_time() > self.next_ai
             {
-                if let Err(e) = self.game.step_ai() {
-                    self.notify(e);
+                if let Some(result) = self.ai_worker.take_completed(true) {
+                    match result {
+                        Ok(game) => {
+                            self.ai_worker.invalidate();
+                            self.game = game;
+                        }
+                        Err(error) => self.notify(error),
+                    }
+                    self.next_ai = get_time() + if self.prefs.animation { 0.68 } else { 0.05 };
+                } else if get_time() > self.next_ai && self.ai_worker.can_start() {
+                    self.ai_worker.request(self.game.clone());
                 }
-                self.next_ai = get_time() + if self.prefs.animation { 0.68 } else { 0.05 };
             }
             if is_key_pressed(KeyCode::Space)
                 && self.drag.is_none()
@@ -906,7 +952,10 @@ impl App {
             .filter(|decision| {
                 matches!(
                     decision,
-                    Decision::TriggerTargets { .. } | Decision::LegendTargets { .. }
+                    Decision::TriggerTargets { .. }
+                        | Decision::LegendTargets { .. }
+                        | Decision::BattlefieldTargets { .. }
+                        | Decision::BattlefieldCost { .. }
                 )
             })
             .map(|decision| format!("{decision:?}"));
@@ -1379,6 +1428,7 @@ impl App {
                         }),
                     self.game.unit_might(unit)?,
                     unit.damage,
+                    Some(self.game.unit_combat_contribution(unit)?),
                     token,
                     &unit_name,
                     state.selected == Some(*id) || self.group.contains(id),
@@ -1392,7 +1442,10 @@ impl App {
                 );
                 self.drop_zones
                     .push((DropZone::Unit(owner, *id), card_rect));
-                if self.ability_target_candidate(Target::Unit {
+                if self.field_object_candidate(Target::Unit {
+                    player: owner,
+                    unit_id: *id,
+                }) || self.ability_target_candidate(Target::Unit {
                     player: owner,
                     unit_id: *id,
                 }) || self.card_target_candidate(Target::Unit {
@@ -1495,7 +1548,8 @@ impl App {
                             };
                             self.arm_drag(DragSource::Units { ids, card_id });
                         }
-                        if matches!(self.selection, Some(Selection::Ability(_, Some(_))))
+                        if self.field_choice_active()
+                            || matches!(self.selection, Some(Selection::Ability(_, Some(_))))
                             || matches!(
                                 self.game.decision,
                                 Some(
@@ -1583,6 +1637,7 @@ impl App {
                     false,
                     Might::from(card.might),
                     0,
+                    None,
                     false,
                     card.name,
                     false,
@@ -1896,18 +1951,44 @@ impl App {
                 11.0,
                 GOLD,
             );
-            self.ui.wrapped(
-                if matches!(self.game.decision, Some(Decision::CombatDamage { .. })) {
-                    "Both players assign before damage is dealt simultaneously. No responses during assignment; resulting abilities resolve before combat finishes."
-                } else {
-                    "Both players may respond before the field is settled. Pass when you're ready."
-                },
-                1178.0,
-                279.0,
-                209.0,
-                11.0,
-                MUTED,
-            );
+            if showdown.combat && !matches!(self.game.decision, Some(Decision::CombatDamage { .. }))
+            {
+                self.ui.wrapped_lines(
+                    &format!(
+                        "Combat damage · YOU {} · AI {}",
+                        self.game.lane_might(0, showdown.lane)?,
+                        self.game.lane_might(1, showdown.lane)?
+                    ),
+                    1178.0,
+                    270.0,
+                    209.0,
+                    9.0,
+                    TEAL,
+                    2,
+                );
+                self.ui.wrapped_lines(
+                    "Current contributions. Responses may change these before assignment.",
+                    1178.0,
+                    310.0,
+                    209.0,
+                    9.0,
+                    MUTED,
+                    2,
+                );
+            } else {
+                self.ui.wrapped(
+                    if matches!(self.game.decision, Some(Decision::CombatDamage { .. })) {
+                        "Both players assign before damage is dealt simultaneously. No responses during assignment; resulting abilities resolve before combat finishes."
+                    } else {
+                        "Both players may respond before the field is settled. Pass when you're ready."
+                    },
+                    1178.0,
+                    279.0,
+                    209.0,
+                    11.0,
+                    MUTED,
+                );
+            }
         }
         Ok(())
     }
@@ -2204,6 +2285,9 @@ impl App {
             self.selection_panel()?;
             return Ok(());
         }
+        if self.battlefield_decision_panel()? {
+            return Ok(());
+        }
         if matches!(decision, Decision::TriggerPayment { .. }) {
             self.trigger_payment_panel()?;
             return Ok(());
@@ -2247,6 +2331,8 @@ impl App {
                     == local_rift::trigger_rules::RelativeEnergyConstraint::AtMostSourceMight
                 {
                     "Printed Energy ≤ source's current Might".into()
+                } else if rule.battlefield {
+                    "Targets: units at a battlefield".into()
                 } else {
                     String::new()
                 };
@@ -2542,7 +2628,7 @@ impl App {
             return Ok(());
         }
         let (title,body)=match &decision{
-            Decision::TriggerPayment { .. } => unreachable!(),
+            Decision::TriggerPayment { .. } | Decision::BattlefieldTargets { .. } | Decision::BattlefieldCost { .. } | Decision::BattlefieldPayment { .. } => unreachable!(),
             Decision::BanishPlay{card_id,..}=>("Play from Banish",format!("Play {} now? Base energy is waived; power and extra costs still apply. Declining leaves it in Banish.",self.game.catalog[*card_id].name)),
             Decision::DrawLook{..}|Decision::RevealedCard{..}|Decision::DeckLookPlay{..}|Decision::RevealedDeck{..}|Decision::EmpowerPlayed{..}|Decision::PredictCards{..}|Decision::Payment{..}|Decision::ResourceConversion{..}|Decision::TriggerTargets{..}|Decision::LegendTargets{..}|Decision::CombatDamage{..}|Decision::TokenPlacement{..}|Decision::TokenPlay{..}|Decision::BattlefieldOrder{..}|Decision::RevivePlay{..}|Decision::PendingPlay{..}=>unreachable!(),
             Decision::TrashTarget{..}=>("Choose a trash target","Choose an eligible card below before this ability enters the chain. Opponents may respond before the chosen card is played.".into()),
@@ -2725,6 +2811,9 @@ impl App {
         }
     }
     fn try_toggle_target(&mut self, target: Target) -> Result<(), String> {
+        if self.field_object_click(target) {
+            return Ok(());
+        }
         if let Some(Selection::Ability(source, Some(index))) = self.selection {
             if let Some(position) = self
                 .ability_targets
@@ -2751,12 +2840,16 @@ impl App {
                 // Later slots may have different eligibility, so undo this and later choices.
                 self.targets.truncate(index);
             } else if self.targets.len() >= maximum {
-                self.notify("All target slots are filled. Click a chosen target to undo it.");
+                self.notify_target_choice(
+                    "All target slots are filled. Click a chosen target to undo it.",
+                );
             } else if self.game.valid_trigger_target(target, &self.targets)? {
                 self.targets.push(target);
                 self.toast_until = 0.0;
             } else {
-                self.notify("Choose a highlighted target for this slot. Check any Deflect cost.");
+                self.notify_target_choice(
+                    "Choose a highlighted target for this slot. Check any Deflect cost.",
+                );
             }
             return Ok(());
         }
@@ -2870,6 +2963,9 @@ impl App {
         }
     }
     fn targeting_selection(&self) -> bool {
+        if self.field_choice_active() {
+            return true;
+        }
         if self.game.trigger_target_bounds().is_some() {
             return true;
         }
@@ -3034,7 +3130,10 @@ impl App {
             if ability_button {
                 self.open_abilities(source);
             }
-            if self.ability_target_candidate(Target::Unit {
+            if self.field_object_candidate(Target::Unit {
+                player: *owner,
+                unit_id: unit.id,
+            }) || self.ability_target_candidate(Target::Unit {
                 player: *owner,
                 unit_id: unit.id,
             }) {
@@ -3045,7 +3144,8 @@ impl App {
                     player: *owner,
                     unit_id: unit.id,
                 };
-                if matches!(self.selection, Some(Selection::Ability(_, Some(_))))
+                if self.field_choice_active()
+                    || matches!(self.selection, Some(Selection::Ability(_, Some(_))))
                     || matches!(
                         self.game.decision,
                         Some(Decision::TriggerTargets { .. } | Decision::LegendTargets { .. })
@@ -3534,6 +3634,9 @@ impl App {
             Decision::TriggerTargets { .. }
                 | Decision::LegendTargets { .. }
                 | Decision::TriggerPayment { .. }
+                | Decision::BattlefieldTargets { .. }
+                | Decision::BattlefieldCost { .. }
+                | Decision::BattlefieldPayment { .. }
         ) {
             if self.tray == Tray::Loadout {
                 self.other_tray()?;
@@ -3924,7 +4027,7 @@ impl App {
             .map(|preset| preset.learning_notes)
             .unwrap_or_else(|| legend_practice_tip(id));
         self.ui.wrapped(notes, 380.0, 541.0, 775.0, 13.0, MUTED);
-        self.ui.wrapped("Legend rules and training ideas are separate from tournament deck results. Your custom list is editable, and the original four tournament presets keep their sourced lists.",380.0,644.0,770.0,11.0,GOLD);
+        self.ui.wrapped("Legend rules and training ideas are separate from tournament deck results. Your custom list is editable, and tournament presets keep their sourced lists.",380.0,644.0,770.0,11.0,GOLD);
         if self
             .ui
             .button(Rect::new(380.0, 701.0, 780.0, 38.0), "Back", true, true)
@@ -4275,19 +4378,38 @@ impl App {
                 },
                 &self.reserve(owner),
             );
-            if owner == 0 {
-                for (index, slot) in self.reserve(0).slots.iter().enumerate() {
-                    if let Some(slot) = slot
-                        && self.ui.clicked(Rect::new(
-                            rail.x + 169.0 + index as f32 * 33.0,
-                            rail.y + 18.0,
-                            32.0,
-                            34.0,
-                        ))
-                    {
-                        self.rune_menu = Some(slot.domain);
-                        self.rune_menu_at =
-                            vec2((self.ui.mouse().x - 123.0).clamp(245.0, 898.0), 395.0);
+            for (index, slot) in self.reserve(owner).slots.iter().enumerate() {
+                if let Some(slot) = slot
+                    && let Some(rune_id) = slot.rune_id
+                {
+                    let rect = Rect::new(
+                        rail.x + 169.0 + index as f32 * 33.0,
+                        rail.y + 18.0,
+                        32.0,
+                        34.0,
+                    );
+                    let target = Target::Rune {
+                        player: owner,
+                        rune_id,
+                    };
+                    if self.field_object_candidate(target) {
+                        self.ui.border(rect, TEAL);
+                    }
+                    if self.targets.contains(&target) {
+                        self.ui.border(
+                            Rect::new(rect.x - 2.0, rect.y - 2.0, rect.w + 4.0, rect.h + 4.0),
+                            GOLD,
+                        );
+                    }
+                    if self.ui.clicked(rect) {
+                        if self.field_choice_active() {
+                            self.field_object_click(target);
+                        } else if owner == 0 {
+                            self.rune_menu = Some(slot.domain);
+                            self.rune_menu_id = Some(rune_id);
+                            self.rune_menu_at =
+                                vec2((self.ui.mouse().x - 123.0).clamp(245.0, 898.0), 395.0);
+                        }
                     }
                 }
             }
@@ -4475,8 +4597,18 @@ impl App {
             14.0,
             TEXT,
         );
+        let waiting = self
+            .game
+            .delayed_battlefield_triggers()
+            .iter()
+            .filter(|trigger| trigger.source.battlefield_id == id)
+            .count();
         self.ui.text(
-            "Conquer and hold this location to score points.",
+            if waiting > 0 {
+                "A Peak ability is waiting for this turn's ending."
+            } else {
+                "Conquer and hold this location to score points."
+            },
             r.x + 22.0,
             r.y + 179.0,
             11.0,
@@ -4827,6 +4959,7 @@ impl App {
             self.game.legend[player].spell_power,
             state.energy_pool,
         )
+        .with_objects(state.rune_objects(), state.rune_deck.len())
     }
     #[allow(clippy::too_many_arguments)]
     fn board_card(
@@ -4839,6 +4972,7 @@ impl App {
         temporary: bool,
         might: Might,
         damage: DamageAmount,
+        combat: Option<local_rift::numeric::CombatContribution>,
         token: bool,
         name: &str,
         selected: bool,
@@ -4957,12 +5091,17 @@ impl App {
                 2.0,
                 GOLD,
             );
+        }
+        let status = combat
+            .and_then(|combat| combat_ui::unit_badge(combat, ready))
+            .or((!ready).then_some("EXHAUSTED"));
+        if let Some(status) = status {
             self.ui.rect(
                 Rect::new(r.x + 2.0, r.y + art.h - 8.0, r.w - 4.0, 11.0),
                 Color::new(0.03, 0.06, 0.07, 0.9),
             );
             self.ui
-                .text("EXHAUSTED", r.x + 5.0, r.y + art.h + 0.5, 6.7, GOLD);
+                .text(status, r.x + 5.0, r.y + art.h + 0.5, 6.7, GOLD);
         }
         self.ui.border(
             r,
@@ -5516,6 +5655,24 @@ impl App {
                 return self.payment_action_name(&original);
             }
         }
+        if matches!(action, Action::FinalizePendingPlay { .. })
+            && let Some(card) = self.game.pending_cards().first()
+        {
+            return format!(
+                "{} · from {}",
+                self.game.catalog[card.card_id].name,
+                match card.play_origin() {
+                    local_rift::play::PlayOrigin::Trash => "trash",
+                    local_rift::play::PlayOrigin::Banish => "banish",
+                    _ => "its source",
+                }
+            );
+        }
+        if matches!(action, Action::FinalizeTokenPlay { .. })
+            && let Some(token) = self.game.current_pending_token()
+        {
+            return format!("{} token", self.game.catalog[token.card_id].name);
+        }
         if let Action::ActivateAbility {
             source,
             ability_index,
@@ -5532,6 +5689,11 @@ impl App {
         }
         if let Action::ResolveConversion { amount } = action {
             return format!("Convert {amount} power into energy");
+        }
+        if matches!(action, Action::ResolveBattlefieldPayment { .. })
+            && let Some(name) = field_ui::payment_name(&self.game)
+        {
+            return name;
         }
         if matches!(action, Action::ResolveTriggerPayment { .. })
             && let Some(context) = self.game.trigger_payment_context()
@@ -5802,10 +5964,31 @@ impl App {
             TEXT,
         );
         let i = domain_index(domain);
+        let selected = self
+            .rune_menu_id
+            .and_then(|id| {
+                self.game.players[0]
+                    .rune_objects()
+                    .iter()
+                    .find(|r| r.id == id && r.domain == domain)
+            })
+            .copied();
+        if self.rune_menu_id.is_some() && selected.is_none() {
+            self.rune_menu = None;
+            self.rune_menu_id = None;
+            return;
+        }
         let exhausted = self.game.players[0].exhausted_runes[i];
         let ready = self.game.players[0].runes[i].saturating_sub(exhausted);
         self.ui.text(
-            &format!("{ready} ready · {exhausted} exhausted"),
+            &selected
+                .map(|rune| {
+                    format!(
+                        "This rune: {} · {ready} ready in zone",
+                        if rune.ready { "ready" } else { "exhausted" }
+                    )
+                })
+                .unwrap_or_else(|| format!("{ready} ready · {exhausted} exhausted")),
             r.x + 16.0,
             r.y + 48.0,
             10.0,
@@ -5837,8 +6020,16 @@ impl App {
         .into_iter()
         .enumerate()
         {
-            let valid =
-                self.game.priority() == 0 && self.game.clone().apply(action.clone()).is_ok();
+            let matches_state = selected.is_none_or(|rune| {
+                index == 0 || (index == 1 && !rune.ready) || (index == 2 && rune.ready)
+            });
+            let action = selected.map_or(action, |rune| Action::ActivateRuneObject {
+                rune_id: rune.id,
+                recycle: index != 0,
+            });
+            let valid = matches_state
+                && self.game.priority() == 0
+                && self.game.clone().apply(action.clone()).is_ok();
             if self.ui.button(
                 Rect::new(r.x + 16.0, r.y + 61.0 + index as f32 * 42.0, 214.0, 34.0),
                 label,
@@ -6048,6 +6239,7 @@ impl App {
                 indices.sort_unstable();
                 match self.game.mulligan(&indices) {
                     Ok(()) => {
+                        self.ai_worker.invalidate();
                         if let Err(e) = self.game.start_match() {
                             self.notify(e);
                         }
@@ -6072,17 +6264,38 @@ impl App {
                 self.ui.title("Their move.", 1178.0, 366.0, 23.0, TEXT);
                 self.ui.wrapped(if self.game.in_window() { "Your opponent has priority. The turn has not changed; inspect the board while their response or choice finishes." } else { "Watch how your opponent spends runes and moves units. Your next turn will begin automatically." },1178.0,397.0,210.0,12.0,MUTED);
             }
-            for i in 0..3 {
-                self.ui.circle(
-                    vec2(1258.0 + i as f32 * 22.0, 489.0),
-                    3.5,
-                    Color::new(
-                        GOLD.r,
-                        GOLD.g,
-                        GOLD.b,
-                        0.3 + 0.7 * ((get_time() as f32 * 2.0 - i as f32).sin() * 0.5 + 0.5),
-                    ),
+            if self.ai_worker.failure().is_some() {
+                self.ui.wrapped(
+                    "The calculation stopped. You can retry or choose another matchup.",
+                    1178.0,
+                    466.0,
+                    210.0,
+                    12.0,
+                    MUTED,
                 );
+                if self.ui.button(
+                    Rect::new(1178.0, 516.0, 212.0, 34.0),
+                    "Retry opponent",
+                    false,
+                    true,
+                ) {
+                    self.ai_worker.retry();
+                    self.toast_until = 0.0;
+                    self.next_ai = 0.0;
+                }
+            } else if self.ai_worker.busy() {
+                for i in 0..3 {
+                    self.ui.circle(
+                        vec2(1258.0 + i as f32 * 22.0, 489.0),
+                        3.5,
+                        Color::new(
+                            GOLD.r,
+                            GOLD.g,
+                            GOLD.b,
+                            0.3 + 0.7 * ((get_time() as f32 * 2.0 - i as f32).sin() * 0.5 + 0.5),
+                        ),
+                    );
+                }
             }
         } else if self.game.decision.is_some() {
             self.decision_panel()?;
@@ -7409,8 +7622,48 @@ impl App {
         ) {
             self.legend_picker = Some(self.game.presets[self.browse_deck].legend_id);
         }
-        for index in 0..self.game.presets.len() {
-            let x = 245.0 + index as f32 * 296.0;
+        // Keep each card readable as the library grows. Selection determines
+        // the page, so switching between Practice and the library stays in sync.
+        const PER_PAGE: usize = 4;
+        let count = self.game.presets.len();
+        let mut page = self.browse_deck / PER_PAGE;
+        if count > PER_PAGE {
+            if self.ui.button(
+                Rect::new(1272.0, 76.0, 62.0, 28.0),
+                "< Prev",
+                false,
+                page > 0,
+            ) {
+                page -= 1;
+                self.browse_deck = page * PER_PAGE;
+                self.deck_scroll = 0;
+            }
+            if self.ui.button(
+                Rect::new(1344.0, 76.0, 62.0, 28.0),
+                "Next >",
+                false,
+                (page + 1) * PER_PAGE < count,
+            ) {
+                page += 1;
+                self.browse_deck = page * PER_PAGE;
+                self.deck_scroll = 0;
+            }
+            self.ui.rect(Rect::new(1096.0, 76.0, 160.0, 28.0), PANEL);
+            self.ui.text(
+                &format!(
+                    "Decks {}–{} of {}",
+                    page * PER_PAGE + 1,
+                    ((page + 1) * PER_PAGE).min(count),
+                    count
+                ),
+                1110.0,
+                95.0,
+                11.0,
+                MUTED,
+            );
+        }
+        for (slot, index) in (page * PER_PAGE..((page + 1) * PER_PAGE).min(count)).enumerate() {
+            let x = 245.0 + slot as f32 * 296.0;
             let r = Rect::new(x, 116.0, 274.0, 278.0);
             let p = &self.game.presets[index];
             let selected = self.browse_deck == index;
@@ -7788,16 +8041,15 @@ impl App {
             13.0,
             rgb(card.domain.color()),
         );
-        self.ui.text(
-            &format!(
+        let stats = if card.kind == CardKind::Unit {
+            format!(
                 "{} ENERGY   {} POWER   {} MIGHT",
                 card.cost, card.power_cost, card.might
-            ),
-            764.0,
-            346.0,
-            11.0,
-            GOLD,
-        );
+            )
+        } else {
+            format!("{} ENERGY   {} POWER", card.cost, card.power_cost)
+        };
+        self.ui.text(&stats, 764.0, 346.0, 11.0, GOLD);
         self.ui
             .line(vec2(764.0, 371.0), vec2(1158.0, 371.0), 1.0, LINE);
         if self.inspect_last != Some(id) {
@@ -7935,6 +8187,7 @@ impl App {
             self.in_match = false;
             self.selection = None;
             self.confirm_restart = false;
+            self.ai_worker.invalidate();
             self.game = Game::new(
                 self.player_deck,
                 self.opponent_deck,
@@ -7994,6 +8247,7 @@ impl App {
         ) {
             self.in_match = false;
             self.selection = None;
+            self.ai_worker.invalidate();
             self.game = Game::new(
                 self.player_deck,
                 self.opponent_deck,
@@ -8020,6 +8274,19 @@ fn chain_field_targets(item: &local_rift::game::ChainItem) -> Vec<usize> {
 
 fn target_label(game: &Game, target: Target) -> String {
     match target {
+        Target::Rune { player, rune_id } => game
+            .players
+            .get(player)
+            .and_then(|p| p.rune_objects().iter().find(|r| r.id == rune_id))
+            .map(|r| {
+                format!(
+                    "{} {} rune · {}",
+                    if player == 0 { "Your" } else { "Opponent’s" },
+                    r.domain.name(),
+                    if r.ready { "ready" } else { "exhausted" }
+                )
+            })
+            .unwrap_or_else(|| "Rune no longer in play".into()),
         Target::Battlefield { lane } => game
             .battlefields
             .get(lane)
@@ -8648,6 +8915,22 @@ fn live_unit_description(game: &Game, owner: usize, unit_id: u32) -> Option<Stri
             "Not Empowered.".into()
         },
     ];
+    match game.unit_combat_contribution(unit) {
+        Ok(contribution) => lines.extend(combat_ui::unit_description(contribution)),
+        Err(error) => {
+            return Some(format!(
+                "Cannot calculate this unit's combat contribution: {error}"
+            ));
+        }
+    }
+    match combat_ui::source_damage_description(game, unit) {
+        Ok(description) => lines.extend(description),
+        Err(error) => {
+            return Some(format!(
+                "Cannot calculate this unit's ability damage: {error}"
+            ));
+        }
+    }
     if unit.token {
         lines.push(token_identity_description(unit.card_id));
     }
@@ -9279,12 +9562,24 @@ mod live_preview_tests {
     fn rune_threshold_preview_counts_exhausted_runes_and_updates_on_recycling() {
         let mut game = Game::new(1, 3, 7, Difficulty::Easy);
         game.players[0].units = vec![unit(100, 325)];
-        game.players[0].runes = [8, 0, 0, 0, 0, 0];
-        game.players[0].exhausted_runes = [1, 0, 0, 0, 0, 0];
+        {
+            let setup_runes = [8, 0, 0, 0, 0, 0];
+            let setup_exhausted_runes = [1, 0, 0, 0, 0, 0];
+            game.players[0]
+                .set_rune_setup(setup_runes, setup_exhausted_runes)
+                .unwrap();
+        }
         let before = live_unit_description(&game, 0, 100).unwrap();
         assert!(before.contains("8 current might"));
         assert!(before.contains("8+ runes in play (currently 8; ready and exhausted both count)"));
-        game.players[0].runes[0] = 7;
+        {
+            let mut setup_runes = game.players[0].runes;
+            let setup_exhausted_runes = game.players[0].exhausted_runes;
+            setup_runes[0] = 7;
+            game.players[0]
+                .set_rune_setup(setup_runes, setup_exhausted_runes)
+                .unwrap();
+        }
         let after = live_unit_description(&game, 0, 100).unwrap();
         assert!(after.contains("4 current might") && after.contains("INACTIVE · Master Yi"));
         assert!(after.contains("currently 7;"));
@@ -9383,9 +9678,14 @@ mod live_preview_tests {
         gear.attached_to = None;
         game.players[0].gear = vec![gear];
         game.players[0].hand = vec![66];
-        game.players[0].runes = [0; 6];
-        game.players[0].runes[local_rift::game::domain_index(Domain::Mind)] = 6;
-        game.players[0].exhausted_runes = [0; 6];
+        {
+            let mut setup_runes = [0; 6];
+            let setup_exhausted_runes = [0; 6];
+            setup_runes[local_rift::game::domain_index(Domain::Mind)] = 6;
+            game.players[0]
+                .set_rune_setup(setup_runes, setup_exhausted_runes)
+                .unwrap();
+        }
         game.players[0].energy = 6;
         game.players[0].any_power = 2;
         game.apply(Action::PlayCardWithTargets {
@@ -9766,8 +10066,13 @@ async fn main() {
         }
         // Deterministic visual stress fixture, used only by the screenshot flag.
         if args.iter().any(|arg| arg == "--energy-full") {
-            app.game.players[0].runes = [6, 0, 6, 0, 0, 0];
-            app.game.players[0].exhausted_runes = [2, 0, 3, 0, 0, 0];
+            {
+                let setup_runes = [6, 0, 6, 0, 0, 0];
+                let setup_exhausted_runes = [2, 0, 3, 0, 0, 0];
+                app.game.players[0]
+                    .set_rune_setup(setup_runes, setup_exhausted_runes)
+                    .unwrap();
+            }
             app.game.players[0].rune_deck.clear();
             app.game.players[0].energy = 7;
             app.game.players[0].power_pool[domain_index(Domain::Chaos)] = 2;
@@ -9804,9 +10109,34 @@ async fn main() {
         app.inspect = Some(id);
     }
     let preview_hover = args.iter().any(|arg| arg == "--hover-preview");
+    let preset_smoke = args.iter().any(|a| a == "--ui-smoke-presets");
+    let ai_smoke = args.iter().any(|a| a == "--ui-smoke-ai");
     let focused_deploy_smoke = args.iter().any(|a| a == "--ui-smoke-c24");
-    let smoke_test = focused_deploy_smoke || args.iter().any(|a| a == "--ui-smoke");
-    let mut frames = if focused_deploy_smoke { 1065 } else { 0 };
+    let focused_payment_smoke = args.iter().any(|a| a == "--ui-smoke-c25");
+    let focused_combat_card_smoke = args.iter().any(|a| a == "--ui-smoke-c26");
+    let focused_field_smoke = args.iter().any(|a| a == "--ui-smoke-c28");
+    let focused_source_damage_smoke = args.iter().any(|a| a == "--ui-smoke-c27");
+    let smoke_test = preset_smoke
+        || focused_field_smoke
+        || ai_smoke
+        || focused_deploy_smoke
+        || focused_payment_smoke
+        || focused_combat_card_smoke
+        || focused_source_damage_smoke
+        || args.iter().any(|a| a == "--ui-smoke");
+    let mut frames = if focused_field_smoke {
+        1215
+    } else if focused_source_damage_smoke {
+        1190
+    } else if focused_combat_card_smoke {
+        1161
+    } else if focused_payment_smoke {
+        1132
+    } else if focused_deploy_smoke {
+        1065
+    } else {
+        0
+    };
     loop {
         if smoke_test {
             app.next_ai = f64::INFINITY;
@@ -9817,7 +10147,18 @@ async fn main() {
             app.hover_card = app.game.players[0].hand.first().copied();
             app.hover_since = -1.0;
         }
-        let smoke_done = smoke_test && smoke::run_frame(&mut app, frames);
+        let smoke_done = if preset_smoke {
+            smoke::run_preset_frame(&mut app, frames)
+        } else if ai_smoke {
+            smoke::run_ai_frame(&mut app, frames)
+        } else {
+            smoke_test
+                && (smoke::run_frame(&mut app, frames)
+                    || (focused_deploy_smoke && frames == 1131)
+                    || (focused_payment_smoke && frames == 1160)
+                    || (focused_combat_card_smoke && frames == 1189)
+                    || (focused_source_damage_smoke && frames == 1214))
+        };
         app.draw();
         if smoke_done {
             println!("UI smoke: all native click checks passed.");

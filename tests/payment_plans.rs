@@ -17,8 +17,7 @@ fn position(card: usize, energy: u16) -> Game {
         state.hidden.clear();
         state.discard.clear();
         state.champion = None;
-        state.runes = [0; 6];
-        state.exhausted_runes = [0; 6];
+        state.set_rune_setup([0; 6], [0; 6]).unwrap();
         state.energy_pool = 0;
         state.energy = 0;
         state.power_pool = [0; 6];
@@ -213,8 +212,8 @@ fn malformed_begin_and_exact_budget_errors_preserve_the_whole_transaction() {
     assert!(complete_with_any(&mut game, 2).is_err());
     assert_eq!(format!("{game:?}"), funded);
     assert!(
-        !game.can_cancel_payment().unwrap(),
-        "a fully payable selected action must finish"
+        game.can_cancel_payment().unwrap(),
+        "Core445.2 permits refusing a positive resource cost even while funded"
     );
     complete_with_any(&mut game, 1).unwrap();
     assert_eq!(game.players[0].any_power, 1);

@@ -145,42 +145,42 @@
     "standard_legal_by_kind_provisional": false,
     "unresolved_type_conflict_identities": 0,
     "implemented_legal_by_kind": {
-      "battlefield": 11,
+      "battlefield": 17,
       "gear": 74,
       "legend": 10,
       "rune": 6,
       "spell": 112,
-      "unit": 225
+      "unit": 235
     },
-    "implemented_main_cards": 411,
+    "implemented_main_cards": 421,
     "implemented_legends": 10,
-    "implemented_battlefields": 11,
-    "implemented_legal_identities": 438,
-    "unimplemented_legal_identities": 641,
+    "implemented_battlefields": 17,
+    "implemented_legal_identities": 454,
+    "unimplemented_legal_identities": 625,
     "errata_entries": 67,
     "identities_with_errata": 67,
-    "source_quality_issues": 52,
-    "reviewed_field_resolutions": 137,
-    "resolved_source_issue_groups": 52,
+    "source_quality_issues": 53,
+    "reviewed_field_resolutions": 138,
+    "resolved_source_issue_groups": 53,
     "unresolved_source_issue_groups": 0,
     "unresolved_gameplay_identities": 0,
-    "unreviewed_variant_identities": 95,
+    "unreviewed_variant_identities": 94,
     "unreviewed_variants_by_field": {
-      "rules_text": 84,
+      "rules_text": 83,
       "tags": 33
     },
     "pinned_runtime_variant_identities": 0,
-    "reviewed_variant_identities": 29,
-    "reviewed_variant_printings": 90,
-    "field_reviewed_printings": 87
+    "reviewed_variant_identities": 30,
+    "reviewed_variant_printings": 92,
+    "field_reviewed_printings": 88
   },
   "unimplemented_by_observed_keyword": {
     "ADD": 1,
     "Accelerate": 17,
-    "Action": 62,
+    "Action": 61,
     "Add": 22,
-    "Ambush": 10,
-    "Assault": 14,
+    "Ambush": 9,
+    "Assault": 13,
     "Backline": 2,
     "Buff": 9,
     "Deathknell": 10,
@@ -191,19 +191,19 @@
     "Empowered": 16,
     "Equip": 27,
     "Flow": 8,
-    "Ganking": 31,
-    "Hidden": 32,
+    "Ganking": 30,
+    "Hidden": 31,
     "Hunt": 1,
     "Legion": 3,
     "Mighty": 9,
     "Predict": 5,
     "Quick-Draw": 2,
-    "Reaction": 70,
+    "Reaction": 68,
     "Repeat": 10,
-    "Shield": 12,
+    "Shield": 11,
     "Show Off": 6,
     "Stun": 16,
-    "Tank": 22,
+    "Tank": 21,
     "Temporary": 9,
     "Unique": 3,
     "Vision": 4,
@@ -276,8 +276,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_battlefield",
+        "runtime_id": 13,
+        "official_id": "unl-205-219",
+        "playable_in_client": true
       }
     },
     {
@@ -2007,16 +2009,20 @@
       "rules_text_status": "official_gallery_printing_text",
       "conflicting_fields": [],
       "source_review": {
-        "status": "no_detected_conflicts",
-        "resolution_ids": [],
+        "status": "reviewed_corrections",
+        "resolution_ids": [
+          "rad-078-167:tags"
+        ],
         "unresolved_gameplay_fields": [],
         "variant_diagnostics": [],
         "reviewed_variant_fields": [],
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 416,
+        "official_id": "rad-078-167",
+        "playable_in_client": true
       }
     },
     {
@@ -10889,8 +10895,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_battlefield",
+        "runtime_id": 11,
+        "official_id": "sfd-207-221",
+        "playable_in_client": true
       }
     },
     {
@@ -11742,8 +11750,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 412,
+        "official_id": "sfd-082-221",
+        "playable_in_client": true
       }
     },
     {
@@ -14481,8 +14491,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 414,
+        "official_id": "rad-085-167",
+        "playable_in_client": true
       }
     },
     {
@@ -17562,8 +17574,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 417,
+        "official_id": "unl-112-219",
+        "playable_in_client": true
       }
     },
     {
@@ -19672,8 +19686,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 418,
+        "official_id": "unl-097-219",
+        "playable_in_client": true
       }
     },
     {
@@ -21212,8 +21228,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 415,
+        "official_id": "sfd-028-221",
+        "playable_in_client": true
       }
     },
     {
@@ -24168,8 +24186,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 419,
+        "official_id": "unl-114-219",
+        "playable_in_client": true
       }
     },
     {
@@ -26763,7 +26783,7 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "implemented_legend",
+        "status": "implemented_preset_legend",
         "runtime_id": 8,
         "official_id": "unl-183-219",
         "playable_in_client": true
@@ -27295,13 +27315,13 @@
       "rules_text_status": "official_gallery_printing_text",
       "conflicting_fields": [],
       "source_review": {
-        "status": "unreviewed_variants",
+        "status": "reviewed_variants",
         "resolution_ids": [],
         "unresolved_gameplay_fields": [],
         "variant_diagnostics": [
           {
             "field": "rules_text",
-            "status": "unreviewed_variant_difference",
+            "status": "reviewed_variant_difference",
             "values": [
               {
                 "official_id": "unl-028-219",
@@ -27311,17 +27331,21 @@
                 "official_id": "unl-028a-219",
                 "value": "[Hidden]\n[Ganking]\nYou may pay [Fury Power] as an additional cost to play me.\nWhen you play me, if you paid the additional cost, ready me and give me +2 Might this turn."
               }
-            ]
+            ],
+            "disposition": "reminder_equivalent"
           }
         ],
-        "reviewed_variant_fields": [],
-        "unresolved_variant_fields": [
+        "reviewed_variant_fields": [
           "rules_text"
-        ]
+        ],
+        "unresolved_variant_fields": [],
+        "identity_review_id": "c28-unl-028-219"
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 420,
+        "official_id": "unl-028-219",
+        "playable_in_client": true
       }
     },
     {
@@ -29048,8 +29072,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 411,
+        "official_id": "sfd-025-221",
+        "playable_in_client": true
       }
     },
     {
@@ -32180,8 +32206,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_battlefield",
+        "runtime_id": 15,
+        "official_id": "ven-165-166",
+        "playable_in_client": true
       }
     },
     {
@@ -34829,8 +34857,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_battlefield",
+        "runtime_id": 12,
+        "official_id": "unl-215-219",
+        "playable_in_client": true
       }
     },
     {
@@ -36138,8 +36168,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_battlefield",
+        "runtime_id": 14,
+        "official_id": "ogn-289-298",
+        "playable_in_client": true
       }
     },
     {
@@ -41315,8 +41347,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 413,
+        "official_id": "ogn-076-298",
+        "playable_in_client": true
       }
     },
     {
@@ -41626,8 +41660,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_battlefield",
+        "runtime_id": 16,
+        "official_id": "ogn-298-298",
+        "playable_in_client": true
       }
     },
     {
@@ -70560,13 +70596,17 @@
         "power": 1,
         "might": 4,
         "might_bonus": null,
-        "tags": [],
+        "tags": [
+          "Noxus"
+        ],
         "rules_html": "<p>[Shield 3] (+3 :rb_might: while I'm a defender.)<br />[Tank] (I must be assigned combat damage first.)<br />When I move, you may deal damage equal to my [Shield] to a unit at a battlefield.</p>",
         "rules_text": "[Shield 3] (+3 Might while I'm a defender.)\n[Tank] (I must be assigned combat damage first.)\nWhen I move, you may deal damage equal to my [Shield] to a unit at a battlefield.",
         "equipment_html": "",
         "equipment_text": ""
       },
-      "resolution_ids": [],
+      "resolution_ids": [
+        "rad-078-167:tags"
+      ],
       "unresolved_gameplay_fields": []
     },
     {
@@ -130232,6 +130272,23 @@
         }
       ],
       "detail": "The exact official face shows the Chaos domain glyph and frame. The raw gallery domain remains preserved; only the effective gameplay domain is corrected."
+    },
+    {
+      "kind": "official_artwork_field_mismatch",
+      "field": "tags",
+      "official_ids": [
+        "rad-078-167"
+      ],
+      "values": [
+        {
+          "official_id": "rad-078-167",
+          "raw_value": [],
+          "printed_value": [
+            "Noxus"
+          ]
+        }
+      ],
+      "detail": "The exact official face prints UNIT / NOXUS below the artwork, while the gallery tag array is empty. Preserve the raw empty array and correct only the effective tags to Noxus. This observation does not enable runtime support."
     }
   ],
   "source_issue_reviews": [
@@ -131498,6 +131555,33 @@
           }
         ],
         "detail": "The exact official face shows the Chaos domain glyph and frame. The raw gallery domain remains preserved; only the effective gameplay domain is corrected."
+      }
+    },
+    {
+      "review_issue_id": "rad-078-167-tags",
+      "official_ids": [
+        "rad-078-167"
+      ],
+      "resolution_ids": [
+        "rad-078-167:tags"
+      ],
+      "status": "resolved_by_review",
+      "raw_issue": {
+        "kind": "official_artwork_field_mismatch",
+        "field": "tags",
+        "official_ids": [
+          "rad-078-167"
+        ],
+        "values": [
+          {
+            "official_id": "rad-078-167",
+            "raw_value": [],
+            "printed_value": [
+              "Noxus"
+            ]
+          }
+        ],
+        "detail": "The exact official face prints UNIT / NOXUS below the artwork, while the gallery tag array is empty. Preserve the raw empty array and correct only the effective tags to Noxus. This observation does not enable runtime support."
       }
     }
   ],
@@ -136142,6 +136226,36 @@
         }
       ],
       "enables_runtime_support": false
+    },
+    {
+      "id": "rad-078-167:tags",
+      "official_id": "rad-078-167",
+      "name": "Armored Tusker",
+      "field": "tags",
+      "reviewed_on": "2026-10-26",
+      "basis": "confirmed_artwork",
+      "operation": "override",
+      "expected_raw_value": [],
+      "raw_source_field": "tags",
+      "expected_raw_source_value": [],
+      "effective_value": [
+        "Noxus"
+      ],
+      "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+      "expected_printing_sha256": "3cd4777ff5b583ec253c845981dd122ca9b4755c76ac03a2f85d13296b1f3633",
+      "printing_hash_encoding": "UTF-8 JSON sorted keys; ensure_ascii=false; separators=(',', ':')",
+      "reason": "The exact official face prints UNIT / NOXUS below the artwork, while the gallery tag array is empty. Preserve the raw empty array and correct only the effective tags to Noxus. This observation does not enable runtime support.",
+      "evidence": [
+        {
+          "kind": "official_card_image",
+          "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/c479f2fda00506e71a57ac4e8cc297f7f3110a54-744x1039.png?accountingTag=RB",
+          "local_path": "assets/data/catalog_evidence/images/rad-078-167.png",
+          "sha256": "1bfe065178df0b026f98ba4f6fabc3fc0c443466b059791833ea5407b8573356",
+          "bytes": 820313,
+          "location": "Printed UNIT / NOXUS type/tag line below artwork"
+        }
+      ],
+      "enables_runtime_support": false
     }
   ],
   "review_evidence": {
@@ -136160,10 +136274,10 @@
         "uncompressed_bytes": 3986973
       }
     },
-    "reviewed_printings": 87,
-    "field_resolutions": 137,
-    "historical_issue_groups": 52,
-    "image_evidence": 87,
+    "reviewed_printings": 88,
+    "field_resolutions": 138,
+    "historical_issue_groups": 53,
+    "image_evidence": 88,
     "live_image_bytes_checked": false
   },
   "reviewed_identity_reviews": [
@@ -136756,6 +136870,41 @@
       "errata": []
     },
     {
+      "id": "c28-unl-028-219",
+      "identity": "unl-028-219",
+      "name": "Pyke, Dockside Butcher",
+      "status": "complete",
+      "reviewed_variant_fields": [
+        "rules_text"
+      ],
+      "raw_variant_fields": [
+        "rules_text"
+      ],
+      "effective_variant_fields": [
+        "rules_text"
+      ],
+      "member_ids": [
+        "unl-028-219",
+        "unl-028a-219"
+      ],
+      "field_reviews": [
+        {
+          "field": "rules_text",
+          "disposition": "reminder_equivalent",
+          "reason": "Both complete faces print Hidden and Ganking, the optional one-Fury-Power additional play cost, and the same conditional on-play Ready then +2 Might this turn instruction. UNL028 includes italic Hidden/Ganking reminders; UNL028a omits only those reminders. Type, domain, cost, Might and tags agree. No operative instruction is removed or changed.",
+          "rules": [
+            "135.2.d.1",
+            "135.2.d.2",
+            "135.2.d.3",
+            "810",
+            "811"
+          ],
+          "resolution_ids": []
+        }
+      ],
+      "errata": []
+    },
+    {
       "id": "c7-unl-113-219",
       "identity": "unl-113-219",
       "name": "Master Yi, Tempered",
@@ -137336,10 +137485,10 @@
   ],
   "identity_review_evidence": {
     "printing_projection_version": 1,
-    "reviewed_identities": 29,
-    "reviewed_printings": 90,
-    "reviewed_fields": 35,
-    "image_evidence": 90,
+    "reviewed_identities": 30,
+    "reviewed_printings": 92,
+    "reviewed_fields": 36,
+    "image_evidence": 92,
     "origin_archives": {
       "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9": {
         "url": "https://playriftbound.com/en-us/card-gallery/",

@@ -19,8 +19,7 @@ fn position() -> Game {
         s.hidden.clear();
         s.discard.clear();
         s.champion = None;
-        s.runes = [0; 6];
-        s.exhausted_runes = [0; 6];
+        s.set_rune_setup([0; 6], [0; 6]).unwrap();
         s.energy_pool = 50;
         s.energy = 50;
         s.power_pool = [20; 6];
@@ -212,7 +211,12 @@ fn separate_nami_hold_grants_produce_separate_delayed_ready_buff_triggers() {
     let mut g = position();
     unit(&mut g, 0, 8005, 261, Some(0));
     unit(&mut g, 0, 8006, 261, Some(0));
-    g.players[0].runes[0] = 6;
+    {
+        let mut runes = g.players[0].runes;
+        let used = g.players[0].exhausted_runes;
+        runes[0] = 6;
+        g.players[0].set_rune_setup(runes, used).unwrap();
+    }
     g.players[0].energy = 56;
     g.apply(Action::EndTurn).unwrap();
     g.apply(Action::EndTurn).unwrap();

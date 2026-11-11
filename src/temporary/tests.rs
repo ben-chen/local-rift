@@ -24,8 +24,7 @@ fn position(legend: usize) -> Game {
         p.discard.clear();
         p.banish.clear();
         p.champion = None;
-        p.runes = [0; 6];
-        p.exhausted_runes = [0; 6];
+        p.set_rune_setup([0; 6], [0; 6]).unwrap();
         p.energy_pool = 100;
         p.energy = 100;
         p.power_pool = [20; 6];
@@ -567,19 +566,29 @@ fn hidden_sprite_keeps_identity_and_fixed_field_through_payment_and_conversion()
     assert_eq!(g.current_pending_token().unwrap().id, child);
     g.apply(Action::ResolveConversion { amount: 1 }).unwrap();
     assert!(matches!(g.decision, Some(Decision::Payment { .. })));
-    // A mandatory token play with a payable cost cannot be cancelled.
-    let before = format!("{g:?}");
-    assert!(g.apply(Action::Choose { accept: false }).is_err());
-    assert_eq!(format!("{g:?}"), before);
+    // Core445.2: funded positive Accelerate can be undone, returning to
+    // the same mandatory token and restoring the nested Add source.
+    g.apply(Action::Choose { accept: false }).unwrap();
     assert_eq!(g.current_pending_token().unwrap().id, child);
     assert!(
-        !g.players[0]
+        g.players[0]
             .gear
             .iter()
             .find(|gear| gear.id == henge)
             .unwrap()
             .ready
     );
+    g.apply(begin).unwrap();
+    g.apply(Action::ActivateAbility {
+        source: AbilitySource::Gear {
+            player: 0,
+            gear_id: henge,
+        },
+        ability_index: 0,
+        targets: vec![],
+    })
+    .unwrap();
+    g.apply(Action::ResolveConversion { amount: 1 }).unwrap();
     g.battlefield_owner[0] = Some(1);
     assert_eq!(g.current_pending_token().unwrap().id, child);
     g.apply(Action::CompletePayment).unwrap();

@@ -1,0 +1,90 @@
+{
+  "reviewed_by": "root",
+  "review_date": "2026-10-26",
+  "source_candidates_sha256": "76192196b66dff85b6e8a9de5593a52a3057a55fa492aa317b39869ffb5f102f",
+  "faces": [
+    {
+      "official_id": "unl-112-219",
+      "image": "unl-112-219.png",
+      "sha256": "797992e5560f4a4773c231584d04a5df4024973ee2a1a37661dee61410b015ec",
+      "actual_full_face_viewed": true,
+      "observation": "Complete face UNL112/219: Body Unit, Ionia/Fae, Energy2, no printed Power, Might1. Move-to-battlefield optional enemy Move to that battlefield. No equipment panel."
+    },
+    {
+      "official_id": "unl-097-219",
+      "image": "unl-097-219.png",
+      "sha256": "843b10762d87b30945071981b623c3851a947a2c54035af6716f85241a5598ac",
+      "actual_full_face_viewed": true,
+      "observation": "Complete face UNL097/219: Body Unit, Ionia, Energy3, no printed Power, Might3. Play trigger draws1 if other friendly units total Might5+. No equipment panel."
+    },
+    {
+      "official_id": "unl-114-219",
+      "image": "unl-114-219.png",
+      "sha256": "d9d7f41fc408a5a3c55815c7f0902ecc58001e94010c177b4275d5334054a850",
+      "actual_full_face_viewed": true,
+      "observation": "Complete face UNL114/219: Body Champion Unit, Nidalee/Ixtal/Cat, Energy3, oneBodyPower, Might4. Ambush and combat-win Draw1 with reminder text. No equipment panel."
+    },
+    {
+      "official_id": "unl-028-219",
+      "image": "unl-028-219.png",
+      "sha256": "6926030f227cc8bc2bbcc76c4d5bbcc37ab5d70e4dee551f0ae000458c2fcf10",
+      "actual_full_face_viewed": true,
+      "observation": "Complete face UNL028/219: Fury Champion Unit, Pyke/Bilgewater, Energy3, no printed Power, Might2. Hidden/Ganking with reminder text; optional oneFuryPower play cost; on play if paid, Ready then+2Mightthisturn. No equipment panel."
+    },
+    {
+      "official_id": "unl-028a-219",
+      "image": "unl-028a-219.png",
+      "sha256": "1f64a7b011325a4910c55164f729c2bcb5560f9afe8171d08900b39fc1ebe3fd",
+      "actual_full_face_viewed": true,
+      "observation": "Complete alternate face UNL028a/219: same type/tags/domain/stats and both operative additional-cost/conditional-play sentences as base printing. Hidden/Ganking present without reminder text. Rule text variance is reminder omission, not changed instructions. No equipment panel."
+    },
+    {
+      "official_id": "sfd-207-221",
+      "image": "sfd-207-221.png",
+      "sha256": "3ca77d251bfc36fa837a662a6d09fdb94c7ed1a12c279579bfacdcc820d776dd",
+      "actual_full_face_viewed": true,
+      "observation": "Complete landscape SFD207/221: colorless Battlefield, no cost/Might/tags. Printed Conquer optional pay1Energy and return controlled unit Here to owner hand; if so play2MightSandSoldierHere. Current Vendetta erratum changes to cost-linked wording and must remain separately authoritative."
+    },
+    {
+      "official_id": "unl-215-219",
+      "image": "unl-215-219.png",
+      "sha256": "704dbca67b40e293ba5ccdefffa4d7d3380dd47018f69d7d15ad747314aeb987",
+      "actual_full_face_viewed": true,
+      "observation": "Complete landscape UNL215/219: colorless Battlefield, no cost/Might/tags. First non-token Unit play Here per player each turn permits optional Move of another controlled unit Here to its Base."
+    },
+    {
+      "official_id": "unl-205-219",
+      "image": "unl-205-219.png",
+      "sha256": "f711e67719a3e790a1775a721a27fb43551c5e9d7522505e1118f2b1caef2deb",
+      "actual_full_face_viewed": true,
+      "observation": "Complete landscape UNL205/219: colorless Battlefield, no cost/Might/tags. Each player Spell play permits optional +1Mightthisturn to controlled unit Here."
+    },
+    {
+      "official_id": "ogn-289-298",
+      "image": "ogn-289-298.png",
+      "sha256": "8de85013250d765ca3577bf0a47b369cea238077aaecc1b06abe623a592a82f6",
+      "actual_full_face_viewed": true,
+      "observation": "Complete landscape OGN289/298: colorless Battlefield, no cost/Might/tags. Printed Conquer queues Ready2runes at endofturn. Current Origins erratum adds up to2; preserve original face and use erratum for runtime."
+    },
+    {
+      "official_id": "ven-165-166",
+      "image": "ven-165-166.png",
+      "sha256": "93652d55be48b90d3089837be9920ebd4143a90244048a717d5dddaf297bd78e",
+      "actual_full_face_viewed": true,
+      "observation": "Complete landscape VEN165/166: colorless Battlefield, no cost/Might/tags. Hold Burn3 plus complete reminder sending top3MainDeckcards toTrash."
+    },
+    {
+      "official_id": "ogn-298-298",
+      "image": "ogn-298-298.png",
+      "sha256": "f39c8bef48027fc8627d3c84023801cc04289ff9c990a8dd4e992eb4f0fc81bc",
+      "actual_full_face_viewed": true,
+      "observation": "Complete landscape OGN298/298: colorless Battlefield, no cost/Might/tags. Conquer discard1 then draw1; order printed explicitly."
+    }
+  ],
+  "conclusions": [
+    "All raw gameplay metadata matches the visible faces, with no new source-field correction identified.",
+    "Pyke requires an explicit two-printing identity review for reminder omission before admission.",
+    "Dais and Peak require preserved printed text plus operative errata; the art is not the current text.",
+    "These are reviewed source candidates only, not runtime implementation or legal deck acceptance."
+  ]
+}

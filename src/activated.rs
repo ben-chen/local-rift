@@ -100,6 +100,7 @@ enum AbilityEffect {
     EmpowerSource,
     BuffOrMight(u8),
     MoveTargetToBase,
+    MoveSourceToBase,
     MightIfSourceEmpowered { base: i16, empowered: i16 },
     AddEnergyIfSourceEmpowered { base: u8, empowered: u8 },
     PlayGrant(crate::play::PlayGrantKind),
@@ -228,6 +229,22 @@ const fn empower(
 /// Stable zero-based ability indices belong to each explicit source printing.
 pub fn activated_rules(card_id: CardId) -> &'static [ActivatedRule] {
     match card_id {
+        412 => {
+            const {
+                &[ActivatedRule {
+                    timing: AbilityTiming::Action,
+                    power: 1,
+                    domain: Some(Domain::Mind),
+                    exhaust: false,
+                    requires_battlefield: true,
+                    ..exhaust(
+                        "Move me to my base",
+                        AbilityTargets::NONE,
+                        AbilityEffect::MoveSourceToBase,
+                    )
+                }]
+            }
+        }
         397 => {
             const {
                 &[ActivatedRule {
@@ -1373,6 +1390,11 @@ impl Game {
                     self.move_effect(player, target, None, false)?;
                 }
             }
+            AbilityEffect::MoveSourceToBase => {
+                if let AbilitySource::Unit { player, unit_id } = source {
+                    self.move_effect(player, Target::Unit { player, unit_id }, None, false)?;
+                }
+            }
             AbilityEffect::MightIfSourceEmpowered { base, empowered } => {
                 let amount = if self.ability_source_empowered(source) {
                     empowered
@@ -1610,6 +1632,18 @@ impl Game {
                 let retains_hold = self.players[player].units.iter().any(|u| u.id != unit.id && u.lane == Some(origin));
                 (destination && !another_mover && (retains_hold || self.player_scored_this_turn[player][origin]))
                     .then_some(if self.players[player].score >= 7 && self.player_scored_this_turn[player][origin] { 1000 } else { 70 })
+            },
+            AbilityEffect::MoveSourceToBase => {
+                let AbilitySource::Unit { unit_id, .. } = source else { return Ok(None); };
+                let Some(unit) = self.unit_ref(Target::Unit { player, unit_id }) else { return Ok(None); };
+                let Some(lane) = unit.lane else { return Ok(None); };
+                if self.movement_locked(player, unit_id) { return Ok(None); }
+                // Escape a losing combat after the first-designation damage has
+                // resolved. Do not abandon an uncontested Hold for no benefit.
+                let enemy = self.lane_might(1-player, lane)?;
+                (enemy >= self.unit_might(unit)?.saturating_sub(unit.damage)
+                    && self.showdown.as_ref().is_some_and(|s| s.combat && s.lane == lane))
+                    .then_some(100)
             },
             AbilityEffect::EmpowerGear => targets.first().and_then(|target| match target {
                 Target::Gear { player: owner, gear_id } if *owner == player && !self.unit_empowered(*gear_id) => Some(35),

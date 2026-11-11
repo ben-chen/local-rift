@@ -29,8 +29,8 @@
   },
   "image_index": {
     "local_path": "assets/data/catalog_evidence/variant_images.json",
-    "sha256": "1826db0a53cbe62eb1a1196d08df1cbef215b9d9e24cc006689559bbc7693b92",
-    "bytes": 91009
+    "sha256": "b3e1960864095e2032603d204aa22e04d27c2ff5ee498310453ff26e97e59116",
+    "bytes": 93755
   },
   "reviews": [
     {
@@ -1725,6 +1725,49 @@
             "806",
             "807",
             "442"
+          ],
+          "resolution_ids": []
+        }
+      ],
+      "errata": []
+    },
+    {
+      "id": "c28-unl-028-219",
+      "identity": "unl-028-219",
+      "name": "Pyke, Dockside Butcher",
+      "reviewed_on": "2026-10-26",
+      "status": "complete",
+      "enables_runtime_support": false,
+      "core_authority_id": "core",
+      "members": [
+        {
+          "official_id": "unl-028-219",
+          "raw_sha256": "96fa6f1b4d5c2b55ce3dacd0996384997e013045485c1993302e0801528b98a3",
+          "effective_sha256": "96fa6f1b4d5c2b55ce3dacd0996384997e013045485c1993302e0801528b98a3",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {},
+          "image_id": "unl-028-219"
+        },
+        {
+          "official_id": "unl-028a-219",
+          "raw_sha256": "163475db759da02a8fd4414b8922f09531da502f4979257e0e855800386e8b71",
+          "effective_sha256": "163475db759da02a8fd4414b8922f09531da502f4979257e0e855800386e8b71",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {},
+          "image_id": "unl-028a-219"
+        }
+      ],
+      "fields": [
+        {
+          "field": "rules_text",
+          "disposition": "reminder_equivalent",
+          "reason": "Both complete faces print Hidden and Ganking, the optional one-Fury-Power additional play cost, and the same conditional on-play Ready then +2 Might this turn instruction. UNL028 includes italic Hidden/Ganking reminders; UNL028a omits only those reminders. Type, domain, cost, Might and tags agree. No operative instruction is removed or changed.",
+          "rules": [
+            "135.2.d.1",
+            "135.2.d.2",
+            "135.2.d.3",
+            "810",
+            "811"
           ],
           "resolution_ids": []
         }

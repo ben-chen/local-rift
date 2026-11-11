@@ -37,8 +37,7 @@ fn position(legend: usize) -> Session {
         player.hidden.clear();
         player.discard.clear();
         player.champion = None;
-        player.runes = [0; 6];
-        player.exhausted_runes = [0; 6];
+        player.set_rune_setup([0; 6], [0; 6]).unwrap();
         player.energy_pool = 60;
         player.energy = 60;
         player.power_pool = [0; 6];

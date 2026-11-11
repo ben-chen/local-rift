@@ -15,8 +15,7 @@ fn position() -> Game {
         player.hand.clear();
         player.champion = None;
         player.discard.clear();
-        player.runes = [0; 6];
-        player.exhausted_runes = [0; 6];
+        player.set_rune_setup([0; 6], [0; 6]).unwrap();
         player.energy = 50;
         player.energy_pool = 50;
         player.power_pool = [10; 6];

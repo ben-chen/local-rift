@@ -899,11 +899,11 @@ mod tests {
     #[test]
     fn additional_filter_has_supported_cards_absent_from_all_presets() {
         let mut count = 0;
-        for legend in 0..4 {
-            let mut editor = DeckEditor::new(CustomDeck::from_preset(legend).unwrap());
+        for preset in 0..local_rift::cards::presets().len() {
+            let mut editor = DeckEditor::new(CustomDeck::from_preset(preset).unwrap());
             editor.filter = DeckFilter::Additional;
             for id in editor.visible_cards() {
-                assert!(eligible_cards(legend).contains(&id));
+                assert!(eligible_cards(editor.deck.legend).contains(&id));
                 assert!(
                     !local_rift::cards::presets()
                         .iter()

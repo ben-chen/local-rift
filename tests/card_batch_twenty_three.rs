@@ -142,6 +142,7 @@ fn all_three_have_four_legal_main_deck_homes_and_no_chosen_champion_eligibility(
     assert!(
         cards::presets()
             .iter()
+            .take(4)
             .all(|d| d.cards.iter().all(|(id, _)| *id < 398))
     );
 }

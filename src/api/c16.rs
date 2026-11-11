@@ -13,8 +13,7 @@ fn session(legend: usize) -> Session {
         p.hand.clear();
         p.units.clear();
         p.gear.clear();
-        p.runes = [0; 6];
-        p.exhausted_runes = [0; 6];
+        p.set_rune_setup([0; 6], [0; 6]).unwrap();
         p.energy = 20;
         p.energy_pool = 20;
         p.power_pool = [3; 6];
@@ -133,5 +132,5 @@ fn catalog_registers_both_legends_with_legal_independent_training_lists() {
         assert_eq!(deck.legend, id);
     }
     assert_eq!(c["legends"][9]["activation"]["effect"], "draw");
-    assert_eq!(c["presets"].as_array().unwrap().len(), 4);
+    assert_eq!(c["presets"].as_array().unwrap().len(), presets().len());
 }

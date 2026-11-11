@@ -60,7 +60,7 @@ pub struct PlayChoices {
     pub mode: Option<usize>,
     pub repeats: Vec<RepeatSelection>, // ordered extra executions; each option at most once
     pub accelerate: bool,
-    pub bonus: bool, // existing Rampage option / Nami optional cost; descriptor labels below
+    pub bonus: bool, // one reviewed optional card cost; labels below
     pub cost_order: Vec<CostSelection>,
 }
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
@@ -841,6 +841,15 @@ impl Game {
                     domains: vec![Domain::Body],
                 },
             }),
+            420 => Some(OptionalCostOption {
+                label: "Pyke: ready and +2 Might when played".into(),
+                cost: CostValue {
+                    xp: 0,
+                    energy: 0,
+                    power: 1,
+                    domains: vec![Domain::Fury],
+                },
+            }),
             261 => Some(OptionalCostOption {
                 label: "Nami: stun an enemy when played".into(),
                 cost: CostValue {
@@ -1268,6 +1277,15 @@ impl Game {
                     power: 1,
                     domains: vec![Domain::Body],
                     ..Default::default()
+                },
+            }),
+            420 => Some(OptionalCostOption {
+                label: "Pyke: ready and +2 Might when played".into(),
+                cost: CostValue {
+                    xp: 0,
+                    energy: 0,
+                    power: 1,
+                    domains: vec![Domain::Fury],
                 },
             }),
             261 => Some(OptionalCostOption {
@@ -1837,6 +1855,35 @@ impl Game {
         action: &Action,
         selection: &[CostSelection],
     ) -> Result<CostPlanView, String> {
+        if let Action::ResolveBattlefieldPayment {
+            choice_id,
+            pay: true,
+        } = action
+        {
+            let Some(Decision::BattlefieldPayment {
+                choice_id: current,
+                cost,
+                ..
+            }) = self.battlefield_payment_context()
+            else {
+                return Err("No battlefield trigger is awaiting payment.".into());
+            };
+            if *choice_id != current {
+                return Err("That battlefield payment choice is stale.".into());
+            }
+            return solve_cost_plan(
+                vec![CostComponent {
+                    id: 1,
+                    label: "Dais base resource cost (also return the pinned unit)".into(),
+                    cost,
+                    optional: false,
+                }],
+                vec![],
+                selection,
+                false,
+                0,
+            );
+        }
         if let Action::ResolveTriggerPayment {
             choice_id,
             pay: true,

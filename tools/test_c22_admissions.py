@@ -7,6 +7,7 @@ from unittest.mock import patch
 
 import catalog_review as review
 import import_catalog as catalog
+import admission_history as history
 
 BASE = 398
 ORDER = ['ogn-100-298', 'sfd-065-221', 'ogn-086-298']
@@ -24,8 +25,8 @@ class C22AdmissionTests(unittest.TestCase):
         cls.raw = {p['official_id']: p for p in catalog.project_gallery(cls.archives['gallery'])[0]}
         cls.proof = json.loads((catalog.ROOT / 'assets/data/card_admissions/c22/admissions.json').read_text())
         runtime = copy.deepcopy(catalog.load_runtime_manifest())
-        runtime['cards'] = runtime['cards'][:401]
-        with patch.object(catalog, 'load_runtime_manifest', return_value=runtime):
+        runtime['cards'] = runtime['cards'][:401]; runtime['decks'] = runtime['decks'][:4]
+        with patch.object(catalog, 'load_runtime_manifest', return_value=runtime), patch.object(catalog, 'load_battlefield_manifest', return_value=history.legacy_battlefields()):
             cls.snapshot = catalog.make_catalog(cls.origin, cls.archives)
         cls.printings = {p['official_id']: p for p in cls.snapshot['printings']}
         cls.identities = {p['identity']: p for p in cls.snapshot['cards']}
@@ -151,11 +152,11 @@ class C22AdmissionTests(unittest.TestCase):
         root = catalog.ROOT; runtime = catalog.load_runtime_manifest(); pin = self.proof['preserved_runtime_prefix']
         self.assertEqual(pin['card_count'], BASE)
         self.assertEqual(digest(runtime['cards'][:BASE]), pin['cards_sha256'])
-        self.assertEqual(digest(runtime['decks']), pin['presets_sha256'])
+        self.assertEqual(digest(runtime['decks'][:4]), pin['presets_sha256'])
         prefix = (root / 'src/cards.rs').read_text().split('        CardDef {\n            id: 398,', 1)[0]
         self.assertEqual(catalog.sha(prefix.encode()), pin['carddefs_source_prefix_sha256'])
         self.assertEqual(catalog.sha((root / 'assets/data/legends.json').read_bytes()), pin['legends_manifest_sha256'])
-        self.assertEqual(catalog.sha((root / 'src/deck.rs').read_bytes()), pin['training_recipe_source_sha256'])
+        self.assertEqual(catalog.sha(history.pre_rengar_recipe_source_bytes()), pin['training_recipe_source_sha256'])
         reviewed = json.loads((root / 'assets/data/catalog_resolutions.json').read_text())
         images = json.loads((root / 'assets/data/catalog_evidence/images.json').read_text())
         source = self.proof['preserved_source_reviews']
@@ -167,11 +168,11 @@ class C22AdmissionTests(unittest.TestCase):
             self.assertEqual(digest(values[:count]), source[key])
         for path, key in [('assets/data/catalog_identity_reviews.json', 'identity_review_manifest_sha256'),
                 ('assets/data/catalog_evidence/variant_images.json', 'variant_image_index_sha256')]:
-            self.assertEqual(catalog.sha((root / path).read_bytes()), source[key])
+            self.assertEqual(catalog.sha(history.legacy_variant_evidence_bytes(path)), source[key])
 
     def test_source_review_does_not_admit_cards_or_create_champion_eligibility(self):
-        runtime = copy.deepcopy(catalog.load_runtime_manifest()); runtime['cards'] = runtime['cards'][:BASE]
-        with patch.object(catalog, 'load_runtime_manifest', return_value=runtime):
+        runtime = copy.deepcopy(catalog.load_runtime_manifest()); runtime['cards'] = runtime['cards'][:BASE]; runtime['decks'] = runtime['decks'][:4]
+        with patch.object(catalog, 'load_runtime_manifest', return_value=runtime), patch.object(catalog, 'load_battlefield_manifest', return_value=history.legacy_battlefields()):
             original = catalog.make_catalog(self.origin, self.archives)
         self.assertEqual(self.proof['pre_admission_counts'], {'main_cards':398, 'mapped_legal':425, 'remaining_legal':654})
         self.assertEqual(tuple(original['counts'][key] for key in ['implemented_main_cards', 'implemented_legal_identities', 'unimplemented_legal_identities']), (398, 425, 654))

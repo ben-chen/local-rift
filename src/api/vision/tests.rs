@@ -21,8 +21,7 @@ fn position(owner: usize) -> Session {
         player.hidden.clear();
         player.champion = None;
         player.deck = vec![71, 70, 133];
-        player.runes = [0; 6];
-        player.exhausted_runes = [0; 6];
+        player.set_rune_setup([0; 6], [0; 6]).unwrap();
         player.energy = 40;
         player.energy_pool = 40;
         player.power_pool = [8; 6];

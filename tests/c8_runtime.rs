@@ -19,8 +19,7 @@ fn game() -> Game {
         state.hidden.clear();
         state.discard.clear();
         state.champion = None;
-        state.runes = [0; 6];
-        state.exhausted_runes = [0; 6];
+        state.set_rune_setup([0; 6], [0; 6]).unwrap();
         state.energy_pool = 60;
         state.energy = 60;
         state.power_pool = [20; 6];

@@ -18,8 +18,8 @@ class MournfulSourceReviewTests(unittest.TestCase):
         cls.manifest = json.loads((catalog.ROOT / 'assets/data/catalog_resolutions.json').read_text())
         cls.proof = json.loads((catalog.ROOT / 'assets/data/catalog_evidence/reviews/mournful-spirit.json').read_text())
         cls.runtime = copy.deepcopy(catalog.load_runtime_manifest())
-        cls.runtime['cards'] = cls.runtime['cards'][:372]
-        with patch.object(catalog, 'load_runtime_manifest', return_value=cls.runtime), patch.object(catalog, "load_legend_manifest", return_value=history.legacy_legends()):
+        cls.runtime['cards'] = cls.runtime['cards'][:372]; cls.runtime['decks'] = cls.runtime['decks'][:4]
+        with patch.object(catalog, 'load_runtime_manifest', return_value=cls.runtime), patch.object(catalog, 'load_battlefield_manifest', return_value=history.legacy_battlefields()), patch.object(catalog, "load_legend_manifest", return_value=history.legacy_legends()):
             cls.snapshot = catalog.make_catalog(cls.origin, cls.archives)
 
     def apply(self, manifest=None, raw=None):
@@ -79,10 +79,10 @@ class MournfulSourceReviewTests(unittest.TestCase):
         v = p['preserved_variant_review']
         for path, key in [('assets/data/catalog_identity_reviews.json', 'manifest_sha256'),
                           ('assets/data/catalog_evidence/variant_images.json', 'image_index_sha256')]:
-            self.assertEqual(catalog.sha((catalog.ROOT / path).read_bytes()), v[key])
+            self.assertEqual(catalog.sha(history.legacy_variant_evidence_bytes(path)), v[key])
         r = p['preserved_runtime']
         self.assertEqual(digest(self.runtime['cards']), r['cards_sha256'])
-        self.assertEqual(digest(self.runtime['decks']), r['presets_sha256'])
+        self.assertEqual(digest(self.runtime['decks'][:4]), r['presets_sha256'])
         self.assertEqual(catalog.sha(history.legacy_legend_manifest_bytes()), r['legends_manifest_sha256'])
         self.assertEqual(catalog.sha(history.legacy_recipe_source_bytes()), r['training_recipe_source_sha256'])
 

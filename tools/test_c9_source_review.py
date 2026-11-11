@@ -31,8 +31,8 @@ class ArtworkDiscoveryTests(unittest.TestCase):
 
     def test_source_only_correction_does_not_add_runtime_support(self):
         runtime = copy.deepcopy(catalog.load_runtime_manifest())
-        runtime['cards'] = runtime['cards'][:308]
-        with patch.object(catalog, 'load_runtime_manifest', return_value=runtime), patch.object(catalog, "load_legend_manifest", return_value=history.legacy_legends()):
+        runtime['cards'] = runtime['cards'][:308]; runtime['decks'] = runtime['decks'][:4]
+        with patch.object(catalog, 'load_runtime_manifest', return_value=runtime), patch.object(catalog, 'load_battlefield_manifest', return_value=history.legacy_battlefields()), patch.object(catalog, "load_legend_manifest", return_value=history.legacy_legends()):
             result = catalog.make_catalog(self.manifest, self.data)
         counts = result['counts']
         self.assertEqual((counts['implemented_main_cards'], counts['implemented_legal_identities'],
@@ -45,7 +45,7 @@ class ArtworkDiscoveryTests(unittest.TestCase):
                          (['fury'], ['Bilgewater']))
         self.assertEqual(printing['resolution_ids'], ['rad-003-167:domains', 'rad-003-167:tags'])
         self.assertEqual((counts['reviewed_field_resolutions'], counts['field_reviewed_printings'],
-                          counts['resolved_source_issue_groups']), (137, 87, 52))
+                          counts['resolved_source_issue_groups']), (138, 88, 53))
         old = result['source_quality_issues'][:37]
         self.assertEqual(hashlib.sha256(catalog.canonical_json(old).encode()).hexdigest(),
                          '923bd9fee267e4e4e2d46301ea30771438e6146d805ab3bb45f177095388afae')

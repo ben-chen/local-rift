@@ -8,6 +8,7 @@ from unittest.mock import patch
 
 import catalog_review as review
 import import_catalog as catalog
+import admission_history as history
 
 BASE = 385
 ORDER = ['ogn-242-298', 'ogn-160-298', 'ogn-062-298', 'ven-089-166']
@@ -36,8 +37,8 @@ class C19AdmissionTests(unittest.TestCase):
     def setUpClass(cls):
         cls.manifest, cls.data = catalog.read_archives()
         runtime = copy.deepcopy(catalog.load_runtime_manifest())
-        runtime['cards'] = runtime['cards'][:389]
-        with patch.object(catalog, 'load_runtime_manifest', return_value=runtime):
+        runtime['cards'] = runtime['cards'][:389]; runtime['decks'] = runtime['decks'][:4]
+        with patch.object(catalog, 'load_runtime_manifest', return_value=runtime), patch.object(catalog, 'load_battlefield_manifest', return_value=history.legacy_battlefields()):
             cls.snapshot = catalog.make_catalog(cls.manifest, cls.data)
         cls.proof = json.loads((catalog.ROOT / PROOF).read_text())
         cls.raw = {p['official_id']: p for p in catalog.project_gallery(cls.data['gallery'])[0]}
@@ -145,11 +146,11 @@ class C19AdmissionTests(unittest.TestCase):
         pin = self.proof['preserved_runtime_prefix']
         self.assertEqual(pin['card_count'], BASE)
         self.assertEqual(digest(runtime['cards'][:BASE]), pin['cards_sha256'])
-        self.assertEqual(digest(runtime['decks']), pin['presets_sha256'])
+        self.assertEqual(digest(runtime['decks'][:4]), pin['presets_sha256'])
         rust_prefix = (root / 'src/cards.rs').read_text().split('        CardDef {\n            id: 385,', 1)[0]
         self.assertEqual(catalog.sha(rust_prefix.encode()), pin['carddefs_source_prefix_sha256'])
         self.assertEqual(catalog.sha((root / 'assets/data/legends.json').read_bytes()), pin['legends_manifest_sha256'])
-        self.assertEqual(catalog.sha((root / 'src/deck.rs').read_bytes()), pin['training_recipe_source_sha256'])
+        self.assertEqual(catalog.sha(history.pre_rengar_recipe_source_bytes()), pin['training_recipe_source_sha256'])
         reviewed = json.loads((root / 'assets/data/catalog_resolutions.json').read_text())
         identities = json.loads((root / 'assets/data/catalog_identity_reviews.json').read_text())
         images = json.loads((root / 'assets/data/catalog_evidence/images.json').read_text())

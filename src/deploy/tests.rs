@@ -18,8 +18,7 @@ fn position(player: usize) -> Game {
         p.banish.clear();
         p.champion = None;
         p.deck = vec![71; 12];
-        p.runes = [0; 6];
-        p.exhausted_runes = [0; 6];
+        p.set_rune_setup([0; 6], [0; 6]).unwrap();
         p.energy_pool = 100;
         p.energy = 100;
         p.power_pool = [20; 6];
@@ -932,7 +931,12 @@ fn funded_trigger_cost_can_cancel_and_direct_add_decline_restores_resources_only
             })
             .unwrap();
             g.players[p].power_pool = [0; 6];
-            g.players[p].runes[domain_index(Domain::Body)] = 1;
+            {
+                let mut runes = g.players[p].runes;
+                let used = g.players[p].exhausted_runes;
+                runes[domain_index(Domain::Body)] = 1;
+                g.players[p].set_rune_setup(runes, used).unwrap();
+            }
             g.players[p].energy += 1;
             let original = g.decision.clone().unwrap();
             let Decision::TriggerPayment { choice_id, .. } = original else {

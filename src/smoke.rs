@@ -10,7 +10,15 @@ use local_rift::{
     gear::GearState,
 };
 use macroquad::prelude::*;
+mod ai;
+pub(super) use ai::run_frame as run_ai_frame;
 mod c24;
+mod c25;
+mod c26;
+mod c27;
+mod c28;
+mod presets;
+pub(super) use presets::run_frame as run_preset_frame;
 
 thread_local! {
     static ADD_CHAIN_SNAPSHOT: std::cell::RefCell<Vec<u32>> = const { std::cell::RefCell::new(Vec::new()) };
@@ -76,9 +84,14 @@ fn fixture_unit(app: &mut App, owner: usize, id: u32, card_id: usize) {
 }
 
 fn fixture_resources(app: &mut App, domain: Domain) {
-    app.game.players[0].runes = [0; 6];
-    app.game.players[0].runes[domain_index(domain)] = 6;
-    app.game.players[0].exhausted_runes = [0; 6];
+    {
+        let mut setup_runes = [0; 6];
+        let setup_exhausted_runes = [0; 6];
+        setup_runes[domain_index(domain)] = 6;
+        app.game.players[0]
+            .set_rune_setup(setup_runes, setup_exhausted_runes)
+            .unwrap();
+    }
     app.game.players[0].energy = 6;
     app.game.players[0].energy_pool = 0;
     app.game.players[0].rune_deck.truncate(6);
@@ -233,12 +246,30 @@ fn staged_battlefield_fixture(app: &mut App) {
         player.units.clear();
         player.gear.clear();
         player.hidden.clear();
-        player.exhausted_runes = [0; 6];
+        {
+            let setup_runes = player.runes;
+            let setup_exhausted_runes = [0; 6];
+            player
+                .set_rune_setup(setup_runes, setup_exhausted_runes)
+                .unwrap();
+        }
         player.energy_pool = 0;
         player.energy = 12;
     }
-    app.game.players[0].runes = [0, 6, 0, 0, 6, 0];
-    app.game.players[1].runes = [0, 5, 0, 7, 0, 0];
+    {
+        let setup_runes = [0, 6, 0, 0, 6, 0];
+        let setup_exhausted_runes = app.game.players[0].exhausted_runes;
+        app.game.players[0]
+            .set_rune_setup(setup_runes, setup_exhausted_runes)
+            .unwrap();
+    }
+    {
+        let setup_runes = [0, 5, 0, 7, 0, 0];
+        let setup_exhausted_runes = app.game.players[1].exhausted_runes;
+        app.game.players[1]
+            .set_rune_setup(setup_runes, setup_exhausted_runes)
+            .unwrap();
+    }
     app.game.players[0].hand = vec![7, 9];
     app.game.players[1].hand = vec![30, 30];
     app.game.players[0].units = (0..2)
@@ -322,9 +353,14 @@ fn expansion_fixture(app: &mut App, card_id: usize) {
     hand_card(app, name);
     let extra = app.game.players[0].hand.drain(1..).collect::<Vec<_>>();
     app.game.players[0].deck.extend(extra);
-    app.game.players[0].runes = [0; 6];
-    app.game.players[0].runes[domain_index(app.game.catalog[card_id].domain)] = 12;
-    app.game.players[0].exhausted_runes = [0; 6];
+    {
+        let mut setup_runes = [0; 6];
+        let setup_exhausted_runes = [0; 6];
+        setup_runes[domain_index(app.game.catalog[card_id].domain)] = 12;
+        app.game.players[0]
+            .set_rune_setup(setup_runes, setup_exhausted_runes)
+            .unwrap();
+    }
     app.game.players[0].energy = 12;
     app.game.players[0].energy_pool = 0;
     app.game.players[0].rune_deck.clear();
@@ -395,9 +431,14 @@ fn fixture_counter_tax(app: &mut App, unit_id: u32) {
     let chain_id = app.game.chain.last().unwrap().id;
     app.game.apply(Action::Pass).unwrap();
     app.game.players[1].hand = vec![37];
-    app.game.players[1].runes = [0; 6];
-    app.game.players[1].runes[domain_index(Domain::Chaos)] = 6;
-    app.game.players[1].exhausted_runes = [0; 6];
+    {
+        let mut setup_runes = [0; 6];
+        let setup_exhausted_runes = [0; 6];
+        setup_runes[domain_index(Domain::Chaos)] = 6;
+        app.game.players[1]
+            .set_rune_setup(setup_runes, setup_exhausted_runes)
+            .unwrap();
+    }
     app.game.players[1].energy = 6;
     app.game.players[1].energy_pool = 0;
     app.game
@@ -431,8 +472,13 @@ fn anomaly_payment_fixture(app: &mut App, energy: u16, power: u16) {
     });
     app.game.players[0].units = vec![public_unit(9901, 239, Some(0))];
     app.game.battlefield_owner[0] = Some(0);
-    app.game.players[0].runes = [0; 6];
-    app.game.players[0].exhausted_runes = [0; 6];
+    {
+        let setup_runes = [0; 6];
+        let setup_exhausted_runes = [0; 6];
+        app.game.players[0]
+            .set_rune_setup(setup_runes, setup_exhausted_runes)
+            .unwrap();
+    }
     app.game.players[0].rune_deck = vec![Domain::Mind; 12];
     app.game.players[0].energy_pool = energy;
     app.game.players[0].energy = energy;
@@ -486,8 +532,12 @@ fn c17_fixture(app: &mut App, spell: usize) {
         p.hidden.clear();
         p.discard.clear();
         p.banish.clear();
-        p.runes = [0; 6];
-        p.exhausted_runes = [0; 6];
+        {
+            let setup_runes = [0; 6];
+            let setup_exhausted_runes = [0; 6];
+            p.set_rune_setup(setup_runes, setup_exhausted_runes)
+                .unwrap();
+        }
         p.energy = 30;
         p.energy_pool = 30;
         p.power_pool = [5; 6];
@@ -696,8 +746,12 @@ pub(super) fn c23_deathknell_fixture(attacker: usize, conquer: bool) -> Game {
         p.banish.clear();
         p.champion = None;
         p.deck = vec![71; 4];
-        p.runes = [0; 6];
-        p.exhausted_runes = [0; 6];
+        {
+            let setup_runes = [0; 6];
+            let setup_exhausted_runes = [0; 6];
+            p.set_rune_setup(setup_runes, setup_exhausted_runes)
+                .unwrap();
+        }
         p.energy = 20;
         p.energy_pool = 20;
         p.power_pool = [5; 6];
@@ -2132,14 +2186,27 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
             app.game = Game::new(3, 1, 42, Difficulty::Easy);
             app.game.start_match().unwrap();
             fixture_resources(app, Domain::Fury);
-            app.game.players[0].exhausted_runes[0] = 2;
+            {
+                let setup_runes = app.game.players[0].runes;
+                let mut setup_exhausted_runes = app.game.players[0].exhausted_runes;
+                setup_exhausted_runes[0] = 2;
+                app.game.players[0]
+                    .set_rune_setup(setup_runes, setup_exhausted_runes)
+                    .unwrap();
+            }
             app.game.players[0].energy = 4;
             app.selection = Some(Selection::Hand(0));
             app.targets.clear();
             app.toast_until = 0.0;
             app.hover_card = None;
             app.hover_rect = None;
-            click(app, 430.0, 605.0);
+            let slot = app
+                .reserve(0)
+                .slots
+                .iter()
+                .position(|rune| rune.is_some_and(|rune| rune.domain == Domain::Fury && rune.ready))
+                .unwrap();
+            click(app, 430.0 + slot as f32 * 33.0, 605.0);
         }
         126 => {
             assert!(app.rune_menu.is_some());
@@ -3711,8 +3778,13 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
                 });
             }
             for owner in 0..2 {
-                app.game.players[owner].runes = [0, 4, 0, 4, 0, 0];
-                app.game.players[owner].exhausted_runes = [0, 2, 0, 2, 0, 0];
+                {
+                    let setup_runes = [0, 4, 0, 4, 0, 0];
+                    let setup_exhausted_runes = [0, 2, 0, 2, 0, 0];
+                    app.game.players[owner]
+                        .set_rune_setup(setup_runes, setup_exhausted_runes)
+                        .unwrap();
+                }
                 app.game.players[owner].energy_pool = 2;
                 app.game.players[owner].energy = 6;
                 app.game.players[owner].power_pool = [1; 6];
@@ -4431,7 +4503,14 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
             source.ready = true;
             let id = source.id;
             fixture_resources(app, Domain::Body);
-            app.game.players[0].exhausted_runes[domain_index(Domain::Body)] = 3;
+            {
+                let setup_runes = app.game.players[0].runes;
+                let mut setup_exhausted_runes = app.game.players[0].exhausted_runes;
+                setup_exhausted_runes[domain_index(Domain::Body)] = 3;
+                app.game.players[0]
+                    .set_rune_setup(setup_runes, setup_exhausted_runes)
+                    .unwrap();
+            }
             app.game.players[0].energy = 3;
             app.game.players[0].hand = vec![7];
             app.game
@@ -4447,9 +4526,14 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
             let chain_id = app.game.chain.last().unwrap().id;
             app.game.apply(Action::Pass).unwrap();
             app.game.players[1].hand = vec![37];
-            app.game.players[1].runes = [0; 6];
-            app.game.players[1].runes[domain_index(Domain::Chaos)] = 6;
-            app.game.players[1].exhausted_runes = [0; 6];
+            {
+                let mut setup_runes = [0; 6];
+                let setup_exhausted_runes = [0; 6];
+                setup_runes[domain_index(Domain::Chaos)] = 6;
+                app.game.players[1]
+                    .set_rune_setup(setup_runes, setup_exhausted_runes)
+                    .unwrap();
+            }
             app.game.players[1].energy = 6;
             app.game.players[1].energy_pool = 0;
             app.game
@@ -4860,7 +4944,14 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
             played_gear_fixture(app, 244);
             app.game.players[0].units = vec![public_unit(9901, 236, None)];
             fixture_resources(app, Domain::Body);
-            app.game.players[0].exhausted_runes[domain_index(Domain::Body)] = 2;
+            {
+                let setup_runes = app.game.players[0].runes;
+                let mut setup_exhausted_runes = app.game.players[0].exhausted_runes;
+                setup_exhausted_runes[domain_index(Domain::Body)] = 2;
+                app.game.players[0]
+                    .set_rune_setup(setup_runes, setup_exhausted_runes)
+                    .unwrap();
+            }
             app.game.players[0].energy = 4;
             fixture_counter_tax(app, 9901);
             assert_eq!(app.game.players[0].energy, 2);
@@ -5076,11 +5167,12 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
                 Some(Decision::Payment { player: 0 })
             ));
             assert!(
-                !app.game
+                app.game
                     .can_cancel_payment()
                     .expect("valid numeric smoke fixture"),
-                "a legal begun payment must complete"
+                "a positive finalization cost may be refused even when fully funded"
             );
+            assert!(app.game.can_refuse_payment().unwrap());
             click(app, 1285.0, 510.0);
         }
         445 => {
@@ -5393,7 +5485,13 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
             app.game.players[0].gear[0].ready = true;
             app.game.players[0].units = vec![public_unit(9901, 18, None)];
             fixture_counter_tax(app, 9901);
-            app.game.players[0].exhausted_runes = app.game.players[0].runes;
+            {
+                let setup_runes = app.game.players[0].runes;
+                let setup_exhausted_runes = app.game.players[0].runes;
+                app.game.players[0]
+                    .set_rune_setup(setup_runes, setup_exhausted_runes)
+                    .unwrap();
+            }
             app.game.players[0].energy = 0;
             app.game.players[0].energy_pool = 0;
             app.selection = None;
@@ -6403,7 +6501,13 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
             ));
             assert!(automatic.chain.last().unwrap().lane.is_none());
             let mut poor = app.game.clone();
-            poor.players[0].runes = [0; 6];
+            {
+                let setup_runes = [0; 6];
+                let setup_exhausted_runes = poor.players[0].exhausted_runes;
+                poor.players[0]
+                    .set_rune_setup(setup_runes, setup_exhausted_runes)
+                    .unwrap();
+            }
             poor.players[0].energy = 0;
             assert_eq!(
                 poor.card_target_candidates(0, 299, None, &[])
@@ -6820,10 +6924,15 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
             expansion_fixture(app, 325);
             app.game.players[0].units = vec![public_unit(9983, 325, None)];
             let calm = domain_index(Domain::Calm);
-            app.game.players[0].runes = [0; 6];
-            app.game.players[0].runes[calm] = 8;
-            app.game.players[0].exhausted_runes = [0; 6];
-            app.game.players[0].exhausted_runes[calm] = 1;
+            {
+                let mut setup_runes = [0; 6];
+                let mut setup_exhausted_runes = [0; 6];
+                setup_runes[calm] = 8;
+                setup_exhausted_runes[calm] = 1;
+                app.game.players[0]
+                    .set_rune_setup(setup_runes, setup_exhausted_runes)
+                    .unwrap();
+            }
             app.game.players[0].energy = 7;
             app.game.players[0].rune_deck = vec![Domain::Calm; 4];
             assert_eq!(
@@ -7081,7 +7190,14 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
             );
             expansion_fixture(app, 310);
             let body = domain_index(Domain::Body);
-            app.game.players[0].runes[body] = 11;
+            {
+                let mut setup_runes = app.game.players[0].runes;
+                let setup_exhausted_runes = app.game.players[0].exhausted_runes;
+                setup_runes[body] = 11;
+                app.game.players[0]
+                    .set_rune_setup(setup_runes, setup_exhausted_runes)
+                    .unwrap();
+            }
             app.game.players[0].rune_deck = vec![Domain::Body];
             app.game.players[0].energy = 11;
             click(app, 315.0, 760.0);
@@ -7873,8 +7989,13 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
             app.game.players[0].xp = 6;
             app.game.players[0].units = vec![public_unit(10027, 110, None)];
             fixture_counter_tax(app, 10027);
-            app.game.players[0].runes = [0; 6];
-            app.game.players[0].exhausted_runes = [0; 6];
+            {
+                let setup_runes = [0; 6];
+                let setup_exhausted_runes = [0; 6];
+                app.game.players[0]
+                    .set_rune_setup(setup_runes, setup_exhausted_runes)
+                    .unwrap();
+            }
             app.game.players[0].energy_pool = 1;
             app.game.players[0].energy = 1;
             ADD_CHAIN_SNAPSHOT.with(|value| {
@@ -8702,7 +8823,14 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
             app.game.players[0].units = vec![public_unit(14020, 25, Some(0))];
             // Replace one ready rune with a rune in the deck, retaining the total.
             let d = domain_index(Domain::Mind);
-            app.game.players[0].runes[d] -= 1;
+            {
+                let mut setup_runes = app.game.players[0].runes;
+                let setup_exhausted_runes = app.game.players[0].exhausted_runes;
+                setup_runes[d] -= 1;
+                app.game.players[0]
+                    .set_rune_setup(setup_runes, setup_exhausted_runes)
+                    .unwrap();
+            }
             app.game.players[0].energy -= 1;
             app.game.players[0].rune_deck = vec![Domain::Mind];
             app.game
@@ -10685,7 +10813,19 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
                 "PASS: 1065 native UI frames including closed combat cleanup choices, Deathknell responses before result, captured Conquer result, retained combat bonuses, and all previous 1056 controls."
             );
         }
-        1065.. => return c24::run_frame(app, frame - 1065),
+        1065..=1131 => {
+            c24::run_frame(app, frame - 1065);
+        }
+        1132..=1160 => {
+            c25::run_frame(app, frame - 1132);
+        }
+        1161..=1189 => {
+            c26::run_frame(app, frame - 1161);
+        }
+        1190..=1214 => {
+            c27::run_frame(app, frame - 1190);
+        }
+        1215.. => return c28::run_frame(app, frame - 1215),
     }
     false
 }

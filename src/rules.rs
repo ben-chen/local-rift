@@ -249,7 +249,7 @@ pub struct Targeting {
 pub fn effect(id: usize) -> OfficialEffect {
     use OfficialEffect::*;
     match id {
-        401..=410 => None,
+        401..=420 => None,
         372 => ReturnGear,
         373 => ReturnAllBoard,
         374..=376 => None,
@@ -1057,6 +1057,16 @@ pub fn requirements(id: usize) -> &'static [Mechanic] {
         408 => &[Deploy, Gear, Chain, Bounce, ConquerHoldTriggers],
         409 => &[Deploy, Gear],
         410 => &[Deploy, Gear, Chain, Move, MultipleTargets, OptionalCosts],
+        411 => &[Chain, Assault],
+        412 => &[Chain, ActivatedAbilities, Move],
+        413 => &[Chain],
+        414 => &[Chain, MultipleTargets],
+        415 => &[Chain, Assault],
+        416 => &[Chain, Shield, Tank, MoveTriggers, OptionalCosts],
+        417 => &[Chain, MoveTriggers, Move, OptionalCosts],
+        418 => &[Chain],
+        419 => &[Chain, Ambush],
+        420 => &[Chain, Hidden, Move, OptionalCosts],
         372 | 373 => &[Chain, Gear, Bounce],
         374 => &[Chain, Gear, DeathTriggers],
         375 => &[Chain, Bounce],
@@ -1485,6 +1495,10 @@ pub enum StaticAbility {
     Ambush,
     /// Rengar can also be played where enemies are present without allies.
     MayDeployToEnemyBattlefield,
+    /// Additional location permission while this unit's controller is the attacking player.
+    MayPlayToAttackedBattlefield,
+    /// Retain Might for every other purpose but do not deal combat damage.
+    NoCombatDamage,
     /// Battlefield-only gear entry, cleanup Recall exemption and enemy Hold death trigger.
     Deploy,
     Assault(u8),
@@ -1513,6 +1527,12 @@ pub enum StaticAbility {
 pub fn static_abilities(id: usize) -> &'static [StaticAbility] {
     use StaticAbility::*;
     match id {
+        411 => &[Assault(2), MayPlayToAttackedBattlefield],
+        412 | 414 => &[NoCombatDamage],
+        415 => &[Assault(1)],
+        416 => &[Shield(3), Tank],
+        419 => &[Ambush],
+        420 => &[Hidden, Ganking],
         401..=408 => &[Deploy],
         193 | 242 | 398 => &[Vision],
         400 => &[Vision, Shield(1)],
@@ -1951,7 +1971,7 @@ mod tests {
     #[test]
     fn all_catalog_entries_have_official_classification() {
         let cards = cards();
-        assert_eq!(cards.len(), 411);
+        assert_eq!(cards.len(), 421);
         for card in cards {
             assert_ne!(
                 effect(card.id),
@@ -1961,7 +1981,7 @@ mod tests {
             );
             assert_ne!(support_status(card.id), SupportStatus::UnknownCard);
         }
-        assert_eq!(effect(411), OfficialEffect::Unsupported);
+        assert_eq!(effect(421), OfficialEffect::Unsupported);
     }
 
     #[test]

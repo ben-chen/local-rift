@@ -17,8 +17,7 @@ fn position() -> Game {
         p.banish.clear();
         p.champion = None;
         p.deck = vec![96; 8];
-        p.runes = [0; 6];
-        p.exhausted_runes = [0; 6];
+        p.set_rune_setup([0; 6], [0; 6]).unwrap();
         p.energy_pool = 100;
         p.energy = 100;
         p.power_pool = [20; 6];
@@ -411,7 +410,12 @@ fn bloom_enters_exhausted_then_real_turn_readiness_allows_the_paid_sacrifice() {
     let energy = g.players[0].energy;
     // The fixture's stored pools clear at turn transition; supply one actual ready rune.
     if energy == 0 {
-        g.players[0].runes[0] = 1;
+        {
+            let mut runes = g.players[0].runes;
+            let used = g.players[0].exhausted_runes;
+            runes[0] = 1;
+            g.players[0].set_rune_setup(runes, used).unwrap();
+        }
         g.players[0].energy = 1;
     }
     g.apply(bloom_action(id)).unwrap();

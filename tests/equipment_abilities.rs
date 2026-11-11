@@ -9,8 +9,7 @@ fn game() -> Game {
         player.hand.clear();
         player.units.clear();
         player.gear.clear();
-        player.runes = [2; 6];
-        player.exhausted_runes = [0; 6];
+        player.set_rune_setup([2; 6], [0; 6]).unwrap();
         player.energy_pool = 0;
         player.energy = 12;
     }

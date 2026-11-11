@@ -32,8 +32,7 @@ fn position() -> Game {
         player.hidden.clear();
         player.discard.clear();
         player.banish.clear();
-        player.runes = [4; 6];
-        player.exhausted_runes = [0; 6];
+        player.set_rune_setup([4; 6], [0; 6]).unwrap();
         player.energy_pool = 0;
         player.energy = 24;
         player.power_pool = [0; 6];
@@ -267,13 +266,23 @@ fn premonition_responds_and_draws_three_before_progress_day_draws_four() {
 fn premonition_requires_three_matching_power_and_does_not_spend_on_failure() {
     let mut game = position();
     game.players[0].hand = vec![78];
-    game.players[0].runes = [10, 0, 2, 0, 0, 0];
+    {
+        let used = game.players[0].exhausted_runes;
+        game.players[0]
+            .set_rune_setup([10, 0, 2, 0, 0, 0], used)
+            .unwrap();
+    }
     game.players[0].energy = 12;
     assert!(cast(&mut game, 78, vec![]).is_err());
     assert_eq!(game.players[0].runes, [10, 0, 2, 0, 0, 0]);
     assert_eq!(game.players[0].exhausted_runes, [0; 6]);
     assert_eq!(game.players[0].energy, 12);
-    game.players[0].runes = [9, 0, 3, 0, 0, 0];
+    {
+        let used = game.players[0].exhausted_runes;
+        game.players[0]
+            .set_rune_setup([9, 0, 3, 0, 0, 0], used)
+            .unwrap();
+    }
     cast(&mut game, 78, vec![]).unwrap();
     assert_eq!(game.players[0].runes[2], 0);
     assert_eq!(game.players[0].energy, 10);
@@ -284,7 +293,10 @@ fn premonition_requires_three_matching_power_and_does_not_spend_on_failure() {
 fn zero_power_incinerate_still_pays_enemy_deflect_before_entering_the_chain() {
     let mut game = position();
     game.players[0].hand = vec![74];
-    game.players[0].runes = [0; 6];
+    {
+        let used = game.players[0].exhausted_runes;
+        game.players[0].set_rune_setup([0; 6], used).unwrap();
+    }
     game.players[0].energy_pool = 2;
     game.players[0].energy = 2;
     game.players[1].units.push(unit(101, 20, Some(0))); // Vex has Deflect.

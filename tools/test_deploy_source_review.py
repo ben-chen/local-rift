@@ -6,6 +6,7 @@ from unittest.mock import patch
 import unittest
 
 import import_catalog as catalog
+import admission_history as history
 import catalog_review as review
 
 
@@ -79,10 +80,10 @@ class DeploySourceReviewTests(unittest.TestCase):
         self.assertTrue(all(not r['enables_runtime_support'] for r in self.manifest['resolutions'][122:137]))
 
     def test_source_review_does_not_register_any_of_the_sixteen_candidates(self):
-        runtime = copy.deepcopy(catalog.load_runtime_manifest()); runtime['cards'] = runtime['cards'][:401]
+        runtime = copy.deepcopy(catalog.load_runtime_manifest()); runtime['cards'] = runtime['cards'][:401]; runtime['decks'] = runtime['decks'][:4]
         legends = copy.deepcopy(catalog.load_legend_manifest())[:10]
         fields = copy.deepcopy(catalog.load_battlefield_manifest())[:11]
-        with patch.object(catalog, 'load_runtime_manifest', return_value=runtime), \
+        with patch.object(catalog, 'load_runtime_manifest', return_value=runtime), patch.object(catalog, 'load_battlefield_manifest', return_value=history.legacy_battlefields()), \
              patch.object(catalog, 'load_legend_manifest', return_value=legends), \
              patch.object(catalog, 'load_battlefield_manifest', return_value=fields):
             source_only = catalog.make_catalog(self.origin, self.data)

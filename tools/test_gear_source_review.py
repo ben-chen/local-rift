@@ -19,8 +19,8 @@ class GearSourceReviewTests(unittest.TestCase):
         cls.raw = catalog.project_gallery(cls.data['gallery'])[0]
         # Reconstruct the runtime at the source-only review; later admission is separate.
         cls.historical_runtime = copy.deepcopy(catalog.load_runtime_manifest())
-        cls.historical_runtime['cards'] = cls.historical_runtime['cards'][:362]
-        with patch.object(catalog, 'load_runtime_manifest', return_value=cls.historical_runtime), patch.object(catalog, "load_legend_manifest", return_value=history.legacy_legends()):
+        cls.historical_runtime['cards'] = cls.historical_runtime['cards'][:362]; cls.historical_runtime['decks'] = cls.historical_runtime['decks'][:4]
+        with patch.object(catalog, 'load_runtime_manifest', return_value=cls.historical_runtime), patch.object(catalog, 'load_battlefield_manifest', return_value=history.legacy_battlefields()), patch.object(catalog, "load_legend_manifest", return_value=history.legacy_legends()):
             cls.snapshot = catalog.make_catalog(cls.archive_manifest, cls.data)
 
     def apply(self, manifest=None, raw=None):
@@ -56,7 +56,7 @@ class GearSourceReviewTests(unittest.TestCase):
         self.assertEqual((c['implemented_main_cards'], c['implemented_legal_identities'],
                           c['unimplemented_legal_identities']), (362, 387, 692))
         self.assertEqual((c['reviewed_field_resolutions'], c['field_reviewed_printings'],
-                          c['source_quality_issues'], c['resolved_source_issue_groups']), (137, 87, 52, 52))
+                          c['source_quality_issues'], c['resolved_source_issue_groups']), (138, 88, 53, 53))
         self.assertFalse(self.proof['enables_runtime_support'])
 
     def test_compound_type_is_one_inventory_identity_with_both_types(self):
@@ -124,6 +124,8 @@ class GearSourceReviewTests(unittest.TestCase):
                 payload = history.legacy_legend_manifest_bytes()
             elif path == 'src/deck.rs':
                 payload = history.legacy_recipe_source_bytes()
+            elif path in ('assets/data/catalog_identity_reviews.json', 'assets/data/catalog_evidence/variant_images.json'):
+                payload = history.legacy_variant_evidence_bytes(path)
             self.assertEqual(catalog.sha(payload), sha, path)
 
     def test_porobot_cannot_be_registered_as_an_ordinary_unit_or_gear(self):
@@ -139,7 +141,7 @@ class GearSourceReviewTests(unittest.TestCase):
                                  official_text=facts['rules_text'], official_text_html=facts['rules_html'],
                                  equipment_effect_html='', art_url=record['original_image']['url'])
                 runtime['cards'].append(candidate)
-                with patch.object(catalog, 'load_runtime_manifest', return_value=runtime), patch.object(catalog, "load_legend_manifest", return_value=history.legacy_legends()):
+                with patch.object(catalog, 'load_runtime_manifest', return_value=runtime), patch.object(catalog, 'load_battlefield_manifest', return_value=history.legacy_battlefields()), patch.object(catalog, "load_legend_manifest", return_value=history.legacy_legends()):
                     with self.assertRaisesRegex(ValueError, 'Runtime main-card kind mismatch: ven-058-166'):
                         catalog.make_catalog(self.archive_manifest, self.data)
 

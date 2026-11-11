@@ -225,8 +225,8 @@ mod tests {
     #[test]
     fn original_preset_ids_and_choices_are_preserved() {
         let presets = presets();
-        assert_eq!(presets.len(), 4);
-        for (index, preset) in presets.iter().enumerate() {
+        assert!(presets.len() >= 4);
+        for (index, preset) in presets.iter().take(4).enumerate() {
             let def = legend(preset.legend_id).unwrap();
             assert_eq!(preset.legend_id, index);
             assert_eq!(def.domains, preset.domains);

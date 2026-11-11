@@ -19,8 +19,7 @@ fn game() -> Game {
         state.hidden.clear();
         state.discard.clear();
         state.champion = None;
-        state.runes = [0; 6];
-        state.exhausted_runes = [0; 6];
+        state.set_rune_setup([0; 6], [0; 6]).unwrap();
         state.energy = 50;
         state.energy_pool = 50;
         state.power_pool = [20; 6];
@@ -145,8 +144,7 @@ fn no_resources(g: &mut Game, p: usize) {
     g.players[p].energy_pool = 0;
     g.players[p].power_pool = [0; 6];
     g.players[p].any_power = 0;
-    g.players[p].runes = [0; 6];
-    g.players[p].exhausted_runes = [0; 6];
+    g.players[p].set_rune_setup([0; 6], [0; 6]).unwrap();
     g.legend[p].ready = false;
     g.legend[p].spell_power = 0;
 }

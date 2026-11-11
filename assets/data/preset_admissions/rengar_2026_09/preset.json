@@ -1,0 +1,128 @@
+{
+  "name": "Rengar / Pridestalker",
+  "champion": "Rengar, Pridestalker",
+  "chosen": "Rengar, Trophy Hunter",
+  "domains": [
+    "Fury",
+    "Body"
+  ],
+  "accent": [
+    216,
+    158,
+    102
+  ],
+  "strategy": "Develop units, concentrate temporary Might, and use movement to contest battlefields. DSG Prismaticism's winning Los Angeles list (September 2026).",
+  "difficulty": "Tactical",
+  "source_url": "https://playriftbound.com/en-us/news/organizedplay/los-angeles-top-decks/",
+  "pilot": "DSG Prismaticism",
+  "event": "Los Angeles Regional Qualifier, September 2026",
+  "placing": 1,
+  "runes": {
+    "Fury": 4,
+    "Body": 8
+  },
+  "battlefields": [
+    "Emperor's Dais",
+    "Seat of Power",
+    "Star Spring"
+  ],
+  "cards": [
+    {
+      "id": 30,
+      "name": "Rengar, Trophy Hunter",
+      "count": 1
+    },
+    {
+      "id": 183,
+      "name": "Darius, Trifarian",
+      "count": 1
+    },
+    {
+      "id": 54,
+      "name": "Ferrous Forerunner",
+      "count": 1
+    },
+    {
+      "id": 23,
+      "name": "First Mate",
+      "count": 2
+    },
+    {
+      "id": 376,
+      "name": "Grim Apothecary",
+      "count": 3
+    },
+    {
+      "id": 56,
+      "name": "Inferna",
+      "count": 3
+    },
+    {
+      "id": 417,
+      "name": "Irresistible Faefolk",
+      "count": 3
+    },
+    {
+      "id": 49,
+      "name": "Kai'Sa, Survivor",
+      "count": 3
+    },
+    {
+      "id": 418,
+      "name": "Kinkou Initiate",
+      "count": 3
+    },
+    {
+      "id": 419,
+      "name": "Nidalee, Cat Form",
+      "count": 2
+    },
+    {
+      "id": 59,
+      "name": "Noxus Hopeful",
+      "count": 3
+    },
+    {
+      "id": 108,
+      "name": "Pakaa Cub",
+      "count": 1
+    },
+    {
+      "id": 27,
+      "name": "Pit Rookie",
+      "count": 3
+    },
+    {
+      "id": 28,
+      "name": "Punch First",
+      "count": 3
+    },
+    {
+      "id": 420,
+      "name": "Pyke, Dockside Butcher",
+      "count": 1
+    },
+    {
+      "id": 29,
+      "name": "Rampage",
+      "count": 2
+    },
+    {
+      "id": 32,
+      "name": "Sabotage",
+      "count": 3
+    },
+    {
+      "id": 382,
+      "name": "Thrill of the Hunt",
+      "count": 2
+    }
+  ],
+  "chosen_champion": 30,
+  "legend_name": "Rengar, Pridestalker",
+  "legend_text": "When you play a unit, give a unit +1 Might this turn.",
+  "legend_id": "unl-183-219",
+  "legend_text_html": "<p>When you play a unit, give a unit +1 :rb_might: this turn.</p>",
+  "legend_keywords": [],
+  "learning_notes": "Pridestalker gives a unit +1 Might this turn after each unit you play. Choose where that temporary Might matters before committing to combat. Kinkou Initiate checks the Might of your other units as its draw ability resolves. Faefolk can pull an enemy into the battlefield it moved to. Keep matching Power for Pyke and combat tricks; plan a second scoring turn with units that survive."
+}

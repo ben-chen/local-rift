@@ -18,8 +18,7 @@ fn position() -> Session {
         player.gear.clear();
         player.discard.clear();
         player.champion = None;
-        player.runes = [0; 6];
-        player.exhausted_runes = [0; 6];
+        player.set_rune_setup([0; 6], [0; 6]).unwrap();
         player.energy_pool = 50;
         player.energy = 50;
         player.power_pool = [20; 6];
@@ -137,8 +136,10 @@ fn both_seats_observe_live_rune_xp_and_distinct_attached_sword_contributions() {
     let mut session = position();
     session.game.players[0].units = vec![unit(900, 325, None), unit(901, 326, Some(0))];
     session.game.players[0].gear = vec![gear(902, 330, Some(900)), gear(903, 330, Some(900))];
-    session.game.players[0].runes[1] = 8;
-    session.game.players[0].exhausted_runes[1] = 1;
+    session.game.players[0]
+        .set_rune_setup([0, 8, 0, 0, 0, 0], [0, 1, 0, 0, 0, 0])
+        .unwrap();
+    session.game.players[0].refresh_rune_energy().unwrap();
     session.game.players[0].xp = 3;
     for view in views(&session) {
         let yi = &view["players"][0]["units"][0];
@@ -152,7 +153,22 @@ fn both_seats_observe_live_rune_xp_and_distinct_attached_sword_contributions() {
         }
         assert_eq!(view["players"][0]["units"][1]["might"], 6);
     }
-    session.game.players[0].runes[1] = 7;
+    let rune_id = session.game.players[0]
+        .rune_objects()
+        .iter()
+        .find(|rune| rune.ready)
+        .unwrap()
+        .id;
+    session
+        .apply_action(
+            0,
+            session.revision(),
+            Action::ActivateRuneObject {
+                rune_id,
+                recycle: true,
+            },
+        )
+        .unwrap();
     session.game.players[0].xp = 2;
     for view in views(&session) {
         assert_eq!(view["players"][0]["units"][0]["might"], 6);

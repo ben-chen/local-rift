@@ -94,12 +94,21 @@ impl Companion {
 fn fingerprint(game: &Game) -> u64 {
     let mut hash = DefaultHasher::new();
     game.turn.hash(&mut hash);
+    format!("{:?}", game.delayed_battlefield_triggers()).hash(&mut hash);
+    for player in &game.players {
+        format!("{:?}", player.rune_objects()).hash(&mut hash);
+    }
     format!("{:?}", game.combat_resolution()).hash(&mut hash);
     format!("{:?}", game.play_grants).hash(&mut hash);
     format!("{:?}", game.play_history).hash(&mut hash);
     game.active.hash(&mut hash);
     game.priority().hash(&mut hash);
     game.in_window().hash(&mut hash);
+    format!(
+        "{:?}",
+        game.payment_plan_view(0).and_then(|plan| plan.refusal_kind)
+    )
+    .hash(&mut hash);
     if let Some(tail) = game.predict_continuation() {
         (
             tail.chain_id,
@@ -119,6 +128,7 @@ fn fingerprint(game: &Game) -> u64 {
             Some(Target::Unit { player, unit_id }) => (0_u8, player, unit_id).hash(&mut hash),
             Some(Target::Spell { chain_id }) => (1_u8, 0_usize, chain_id).hash(&mut hash),
             Some(Target::Gear { player, gear_id }) => (3_u8, player, gear_id).hash(&mut hash),
+            Some(Target::Rune { player, rune_id }) => (5_u8, player, rune_id).hash(&mut hash),
             Some(Target::Battlefield { lane }) => (4_u8, lane, 0_u32).hash(&mut hash),
             None => (2_u8, 0_usize, 0_u32).hash(&mut hash),
         }
@@ -127,6 +137,7 @@ fn fingerprint(game: &Game) -> u64 {
                 Target::Unit { player, unit_id } => (0_u8, *player, *unit_id).hash(&mut hash),
                 Target::Spell { chain_id } => (1_u8, 0_usize, *chain_id).hash(&mut hash),
                 Target::Gear { player, gear_id } => (3_u8, *player, *gear_id).hash(&mut hash),
+                Target::Rune { player, rune_id } => (5_u8, *player, *rune_id).hash(&mut hash),
                 Target::Battlefield { lane } => (4_u8, *lane, 0_u32).hash(&mut hash),
             }
         }
@@ -311,6 +322,19 @@ fn fingerprint(game: &Game) -> u64 {
             unit.token.hash(&mut hash);
             unit.protected.hash(&mut hash);
             unit.stunned.hash(&mut hash);
+            game.unit_keywords(unit)
+                .map(|keywords| (keywords.assault, keywords.shield))
+                .hash(&mut hash);
+            game.unit_combat_contribution(unit)
+                .map(|value| {
+                    (
+                        value.might,
+                        value.damage,
+                        value.stunned,
+                        value.prevents_combat_damage,
+                    )
+                })
+                .hash(&mut hash);
             unit.banish_on_death.hash(&mut hash);
         }
     }
@@ -361,11 +385,14 @@ fn checked_advice(game: &Game, level: AdviceLevel) -> Result<Vec<&'static str>, 
     }
 
     if let Some(mut window_tips) = response_window_advice(game, beginner)? {
+        window_tips.extend(crate::combat_ui::card_advice(game, beginner)?);
         if let Some(status) = game.combat_resolution() {
             window_tips.push(crate::combat_ui::advice(status, beginner));
         }
         return Ok(window_tips);
     }
+
+    tips.extend(crate::combat_ui::card_advice(game, beginner)?);
 
     // High stakes scoring and visible threats come before routine suggestions.
     let enemy_has_hold = game.battlefield_owner.contains(&Some(1));
@@ -413,11 +440,11 @@ fn checked_advice(game: &Game, level: AdviceLevel) -> Result<Vec<&'static str>, 
     let contested = (0..2).find(|&lane| game.contested(lane));
     if let Some(lane) = contested {
         if beginner {
-            tips.push("Both sides have units here. Check might totals and legal responses before resolving, then choose your combat damage order.");
+            tips.push("Both sides have units here. Check combat damage totals and legal responses before resolving, then choose your damage order.");
         } else if game.lane_might(0, lane)? <= game.lane_might(1, lane)? {
-            tips.push("This trade looks costly on raw might. Check your legal responses before committing; printed reactions can change real games.");
+            tips.push("This trade looks costly on combat damage. Check legal responses before committing; Might and actual combat contribution can differ.");
         } else {
-            tips.push("You lead on raw might. Consider what survives, how damage can be assigned, and whether the survivor can hold the next point.");
+            tips.push("You lead on combat damage. Consider what survives, how damage can be assigned, and whether the survivor can hold the next point.");
         }
     }
 
@@ -785,7 +812,7 @@ fn checked_advice(game: &Game, level: AdviceLevel) -> Result<Vec<&'static str>, 
         });
     }
     if !human.units.is_empty() && human.units.iter().all(|unit| !unit.ready) {
-        tips.push("Sleepy units! Exhaustion alone doesn't stop combat might. Stun can; check the unit's state. Units normally ready on their controller's turn.");
+        tips.push("Exhaustion alone doesn't stop combat damage. Stun and printed abilities can; check the unit's contribution. Units normally ready on their controller's turn.");
     }
     if beginner {
         tips.push("Turn rhythm: ready, beginning and hold scoring, channel runes, then draw. After those steps, plan your actions.");
@@ -922,10 +949,31 @@ fn response_window_advice(
                     "Judge the frozen target and cost before committing. The opponent gets a response window after you pay; leave resources for that exchange."
                 },
             ],
-            Decision::Payment { .. } if game.trigger_payment_context().is_some() => vec![
-                "This trigger's source, targets and cost are fixed while you pay. Use permitted Add abilities, then finish payment to put the ability on the chain.",
-                "Payment comes before responses and a later counter gives no refund. Undo before completion restores this optional choice and its resource steps.",
-            ],
+            Decision::Payment { .. }
+                if game
+                    .payment_plan_view(0)
+                    .is_some_and(|plan| plan.refusal_kind.is_some()) =>
+            {
+                use local_rift::payment_plan::PaymentRefusalKind;
+                match game.payment_plan_view(0).unwrap().refusal_kind.unwrap() {
+                    PaymentRefusalKind::Ordinary => vec![
+                        "You may refuse this positive resource cost even when you can afford it. Undo restores this attempt and its resource steps; nothing from the action resolves.",
+                        "Finishing pays the fixed cost before responses. A later counter gives no refund, so leave resources for the exchange you expect.",
+                    ],
+                    PaymentRefusalKind::PendingCard => vec![
+                        "Undo returns to this card's choice. Decline returns it to where it came from and skips playing it; earlier effects stay resolved.",
+                        "Both choices undo this attempt's resource steps. Check the fixed cost and remaining cards before deciding whether to continue this instructed play.",
+                    ],
+                    PaymentRefusalKind::PendingToken => vec![
+                        "Undo returns to this token's choice. Decline skips this token play and undoes its payment steps; earlier effects stay resolved.",
+                        "An unplayed token has no card to return to a deck or trash. Any remaining instructions continue after you decline this token.",
+                    ],
+                    PaymentRefusalKind::Trigger => vec![
+                        "Undo restores this same trigger choice and its resource steps. Decline this trigger skips it entirely, keeping the ability off the chain.",
+                        "The fixed source, targets and cost stay visible. Payment comes before responses; a counter after you pay gives no refund.",
+                    ],
+                }
+            }
             Decision::Payment { .. }
                 if game.payment_plan_view(0).is_some_and(|plan| plan.xp > 0) =>
             {
@@ -945,6 +993,28 @@ fn response_window_advice(
             Decision::ResourceConversion { .. } => vec![
                 "Choose how much to convert. The gear is already exhausted. Zero finishes without adding resources; your original payment stays waiting.",
                 "Other Add abilities can supply this payment. Keep the energy and colored power needed for the original action, not just the conversion.",
+            ],
+            Decision::BattlefieldTargets {
+                kind: local_rift::game::field_triggers::BattlefieldTargetKind::TargonPeakReady,
+                ..
+            } => vec![
+                "Peak readies up to two chosen runes at turn end. Click either player's rune zone; zero is allowed. The chosen ability can still be answered.",
+                "Ready your spent runes for responses, or choose fewer. Exact rune copies matter: recycling and channeling creates a new object, not the old target.",
+            ],
+            Decision::BattlefieldTargets {
+                kind: local_rift::game::field_triggers::BattlefieldTargetKind::StarSpring { .. },
+                ..
+            } => vec![
+                "Star Spring can move another friendly unit here to your base. The unit just played is excluded. You may decline.",
+                "This triggers on your first non-token unit played here each turn. Moving a unit away can protect it but reduces your presence at the field.",
+            ],
+            Decision::BattlefieldTargets { .. } => vec![
+                "Abandoned Hall can give a friendly unit here +1 Might this turn after you play a spell. Choose a highlighted unit or none.",
+                "The bonus is a separate ability on the chain. Responses may change where its target is before it resolves.",
+            ],
+            Decision::BattlefieldCost { .. } | Decision::BattlefieldPayment { .. } => vec![
+                "Dais asks for energy and a friendly unit returned from here as its cost. The return is not a target. You may decline before paying.",
+                "The return and energy are paid before responses. A later counter gives no refund; the Sand Soldier is played when the ability resolves.",
             ],
             Decision::LegendTargets { .. } => vec![
                 "Rengar must give one unit +1 Might this turn. Choose a highlighted unit, then confirm. You may choose the unit you just played.",
@@ -1461,8 +1531,13 @@ mod tests {
         game.players[0].units.clear();
         game.players[0].hand = vec![398];
         game.players[0].deck = vec![69, 71];
-        game.players[0].runes = [0; 6];
-        game.players[0].exhausted_runes = [0; 6];
+        {
+            let setup_runes = [0; 6];
+            let setup_exhausted_runes = [0; 6];
+            game.players[0]
+                .set_rune_setup(setup_runes, setup_exhausted_runes)
+                .unwrap();
+        }
         game.players[0].energy = 20;
         game.players[0].energy_pool = 20;
         game.players[0].power_pool = [5; 6];
@@ -1529,8 +1604,13 @@ mod tests {
         game.players[0].hand = vec![355];
         game.players[0].energy = 10;
         game.players[0].energy_pool = 10;
-        game.players[0].runes = [0; 6];
-        game.players[0].exhausted_runes = [0; 6];
+        {
+            let setup_runes = [0; 6];
+            let setup_exhausted_runes = [0; 6];
+            game.players[0]
+                .set_rune_setup(setup_runes, setup_exhausted_runes)
+                .unwrap();
+        }
         game.apply(local_rift::game::Action::PlayCardWithTargets {
             hand_index: 0,
             lane: None,
@@ -1798,9 +1878,14 @@ mod tests {
         );
         let before_grant = fingerprint(&game);
         game.players[0].hand = vec![66];
-        game.players[0].runes = [0; 6];
-        game.players[0].runes[local_rift::game::domain_index(local_rift::cards::Domain::Mind)] = 6;
-        game.players[0].exhausted_runes = [0; 6];
+        {
+            let mut setup_runes = [0; 6];
+            let setup_exhausted_runes = [0; 6];
+            setup_runes[local_rift::game::domain_index(local_rift::cards::Domain::Mind)] = 6;
+            game.players[0]
+                .set_rune_setup(setup_runes, setup_exhausted_runes)
+                .unwrap();
+        }
         game.players[0].energy = 6;
         game.apply(local_rift::game::Action::PlayCardWithTargets {
             hand_index: 0,
@@ -2081,8 +2166,9 @@ mod tests {
 
     #[test]
     fn advice_is_short_and_explains_scoring_pressure() {
-        for deck in 0..4 {
-            let mut game = Game::new(deck, (deck + 1) % 4, 17, Difficulty::Tactical);
+        let preset_count = local_rift::cards::presets().len();
+        for deck in 0..preset_count {
+            let mut game = Game::new(deck, (deck + 1) % preset_count, 17, Difficulty::Tactical);
             for level in [AdviceLevel::Beginner, AdviceLevel::Advanced] {
                 for tip in advice(&game, level) {
                     assert!(tip.chars().count() <= 180, "Too long: {tip}");
@@ -2410,8 +2496,13 @@ mod tests {
         for card_id in [396, 397] {
             let mut g = Game::new(3, 3, 2121, Difficulty::Easy);
             g.start_match().unwrap();
-            g.players[0].runes = [0; 6];
-            g.players[0].exhausted_runes = [0; 6];
+            {
+                let setup_runes = [0; 6];
+                let setup_exhausted_runes = [0; 6];
+                g.players[0]
+                    .set_rune_setup(setup_runes, setup_exhausted_runes)
+                    .unwrap();
+            }
             g.players[0].energy = 20;
             g.players[0].energy_pool = 20;
             g.players[0].hand.clear();

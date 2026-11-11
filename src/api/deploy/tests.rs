@@ -23,8 +23,7 @@ fn position(owner: usize) -> Session {
         p.hidden.clear();
         p.champion = None;
         p.deck = vec![71, 195, 71, 195, 133];
-        p.runes = [0; 6];
-        p.exhausted_runes = [0; 6];
+        p.set_rune_setup([0; 6], [0; 6]).unwrap();
         p.energy = 40;
         p.energy_pool = 40;
         p.power_pool = [8; 6];
@@ -640,7 +639,9 @@ fn trigger_decline_undoes_direct_add_and_preserves_the_pre_payment_source_and_ta
         for nested_plan in [false, true] {
             let mut s = position(owner);
             s.game.players[owner].power_pool = [0; 6];
-            s.game.players[owner].runes[3] = 1;
+            s.game.players[owner]
+                .set_rune_setup([0, 0, 0, 1, 0, 0], [0; 6])
+                .unwrap();
             let mut target = unit(24_003, Some(0));
             target.ready = false;
             s.game.players[owner].units.push(target);

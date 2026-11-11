@@ -24,8 +24,7 @@ fn position(legend: usize) -> Game {
         p.gear.clear();
         p.hidden.clear();
         p.discard.clear();
-        p.runes = [0; 6];
-        p.exhausted_runes = [0; 6];
+        p.set_rune_setup([0; 6], [0; 6]).unwrap();
         p.energy_pool = 30;
         p.energy = 30;
         p.power_pool = [6; 6];

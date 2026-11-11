@@ -1,0 +1,627 @@
+{
+  "schema_version": 1,
+  "draft_not_for_import": false,
+  "reviewed_on": "2026-10-25",
+  "origin_gallery": {
+    "url": "https://playriftbound.com/en-us/card-gallery/",
+    "archive": "assets/data/catalog_sources/gallery.html.gz",
+    "uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9"
+  },
+  "pre_admission_catalog_sha256": "fe086a29880557d4fd7a2134641a68b6a74b70e7a7a4f29f828ebf8a6f162ab2",
+  "preserved_runtime_prefix": {
+    "card_count": 411,
+    "cards_sha256": "3e802be1fa8c97bcf12b1c347975afed52f8bccaaeb89aa6e8b848916d297e21",
+    "carddefs_source_prefix_sha256": "ca6655cd4132a65bbbb5d9d17b52453a3258c9f767b3454a53b2e120357e3d37",
+    "presets_sha256": "d6e64ebf3f8921686682dacd87d4b2b4baec5754dbd284c6d60bf3fb324571e2",
+    "legends_manifest_sha256": "a31bb93c27588bd4759985e9a4083372d5afae59d22b9ac9d48c54946e5474fe",
+    "training_recipe_source_sha256": "dc498f4f98cec6421dade7e01ead261693ed5f70d30d4d2c808da4a1bcb5b706"
+  },
+  "preserved_source_reviews": {
+    "field_resolutions_sha256": "e1f817d6d54d7043ab9b0226382bfd96b8bdd1ca76717b5f9b399693cc106513",
+    "raw_printings_sha256": "6bb0d050b55017d023dfc20d8ebabba46bc47a26a947b4111c27ba2fb3575ad4",
+    "historical_issues_sha256": "22fff96ef4b6f37248d4cb92731a19456ec131978b36592976242b351353e9c6",
+    "field_image_index_sha256": "ad78fc9b4926226a281adeb999c2066085208ff79d1544481a99391b8ee75b4c",
+    "identity_review_manifest_sha256": "e678c7f2f2e1ae70fb6b399ce1b0ab88a314e9018810d1ccadb1759a1f7b5e12",
+    "variant_image_index_sha256": "1826db0a53cbe62eb1a1196d08df1cbef215b9d9e24cc006689559bbc7693b92"
+  },
+  "pre_admission_counts": {
+    "main_cards": 411,
+    "mapped_legal": 438,
+    "remaining_legal": 641
+  },
+  "scope": "Two identities and all four current English printing faces inspected. This isolated source patch requires separately reviewed executable integration before admission. Existing definitions, presets, legends, recipes and source reviews are unchanged; source facts are not behavior proof.",
+  "errata_sources": [
+    {
+      "key": "origins_errata",
+      "url": "https://playriftbound.com/en-us/news/rules-and-releases/riftbound-origins-card-errata/",
+      "archive": "assets/data/catalog_sources/origins_errata.html.gz",
+      "uncompressed_sha256": "035848c5cc61007683111e63b91289d3fc386d2b33437af32d4d13d565727c52",
+      "parsed_entries_sha256": "5d5ed4e6d5e03033184b5382ab360eade62ca9cf032cf94e811cc1e0acaed581",
+      "live_checked_on": "2026-10-25",
+      "live_uncompressed_sha256": "bafd654e4568b76f1c71a6a057b7abaccb3b7b611ac873b45d71179c9902065a",
+      "live_parsed_entries_sha256": "5d5ed4e6d5e03033184b5382ab360eade62ca9cf032cf94e811cc1e0acaed581"
+    },
+    {
+      "key": "spiritforged_errata",
+      "url": "https://playriftbound.com/en-us/news/rules-and-releases/riftbound-spiritforged-errata/",
+      "archive": "assets/data/catalog_sources/spiritforged_errata.html.gz",
+      "uncompressed_sha256": "2fcd51e6104eb76212c42abc850beffaf1cf3e623d875b2d9ad47ed149a726a8",
+      "parsed_entries_sha256": "88be71f74e159dde0b339273fed000ac097ae50318a0aa535b02fdc23c666d57",
+      "live_checked_on": "2026-10-25",
+      "live_uncompressed_sha256": "44a73fe653506bc89ff41e9b81c004fc5c952c10df29de34f528b6ddfd48335d",
+      "live_parsed_entries_sha256": "88be71f74e159dde0b339273fed000ac097ae50318a0aa535b02fdc23c666d57"
+    },
+    {
+      "key": "unleashed_errata",
+      "url": "https://playriftbound.com/en-us/news/rules-and-releases/unleashed-errata-updates/",
+      "archive": "assets/data/catalog_sources/unleashed_errata.html.gz",
+      "uncompressed_sha256": "8b3cb69fea7c499e435c6af0ac89b5c5013711477a172c6bbed3a782eff7ac7b",
+      "parsed_entries_sha256": "801ad0c9bcc9d7bbdde1fa8c5b229dbcaf718daaf3f3db208dd8942a119e3df3",
+      "live_checked_on": "2026-10-25",
+      "live_uncompressed_sha256": "ba2575633f35faa87610d34f7615fdb2dbcd3552c6c55e72a6b61e1da1fb395d",
+      "live_parsed_entries_sha256": "801ad0c9bcc9d7bbdde1fa8c5b229dbcaf718daaf3f3db208dd8942a119e3df3"
+    },
+    {
+      "key": "vendetta_errata",
+      "url": "https://playriftbound.com/en-us/news/announcements/vendetta-errata-updates/",
+      "archive": "assets/data/catalog_sources/vendetta_errata.html.gz",
+      "uncompressed_sha256": "d17603177df347cd44c4ef67c1c547344afcd847cec72ae545239f3c232ef2a6",
+      "parsed_entries_sha256": "9e6fb29ba5bd2bce1023b6927c395e4ed0ced61bf2fc766410d9f000c68a16be",
+      "live_checked_on": "2026-10-25",
+      "live_uncompressed_sha256": "75016ac4e11b11a1e6506eea73efe4574083252d71f8843dc2056e148a8744e5",
+      "live_parsed_entries_sha256": "9e6fb29ba5bd2bce1023b6927c395e4ed0ced61bf2fc766410d9f000c68a16be"
+    },
+    {
+      "key": "radiance_errata",
+      "url": "https://playriftbound.com/en-us/news/announcements/radiance-errata-updates/",
+      "archive": "assets/data/catalog_sources/radiance_errata.html.gz",
+      "uncompressed_sha256": "63735225d6c2f0b757e933289175fb09dcbae86178075fb227e4afa4e1a478a7",
+      "parsed_entries_sha256": "84fd3234a6cdc8c5ddd0b8b4f18c100f339497acdc02318f74b352b6da23866e",
+      "live_checked_on": "2026-10-25",
+      "live_uncompressed_sha256": "63735225d6c2f0b757e933289175fb09dcbae86178075fb227e4afa4e1a478a7",
+      "live_parsed_entries_sha256": "84fd3234a6cdc8c5ddd0b8b4f18c100f339497acdc02318f74b352b6da23866e"
+    }
+  ],
+  "live_authority_check": {
+    "checked_on": "2026-10-25",
+    "hub_url": "https://playriftbound.com/en-us/rules-hub/",
+    "hub_uncompressed_sha256": "b2264a4f2f4ca1e24176489f6a4711b19d29bcf3c536b2414caf9dade79195c2",
+    "legality": {
+      "source_url": "https://playriftbound.com/en-us/rules-hub/",
+      "last_updated": "September 18, 2026",
+      "standard_banned_names": [
+        "Called Shot",
+        "Ekko, Recurrent",
+        "Draven, Vanquisher",
+        "Fight or Flight",
+        "Scrapheap",
+        "Stealthy Pursuer",
+        "Stacked Deck",
+        "The Arena’s Greatest",
+        "Aspirant’s Climb",
+        "Dreaming Tree",
+        "Obelisk of Power",
+        "Reaver’s Row"
+      ],
+      "two_v_two_banned_names": [
+        "Master Yi, Wuju Bladesman",
+        "Called Shot",
+        "Ekko, Recurrent",
+        "Draven Vanquisher",
+        "Fight or Flight",
+        "Scrapheap",
+        "Stealthy Pursuer",
+        "Stacked Deck",
+        "The Arena’s Greatest",
+        "Aspirant’s Climb",
+        "Dreaming Tree",
+        "Obelisk of Power",
+        "Reaver’s Row"
+      ]
+    },
+    "core_rules_url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/5c7946f7c3b8c6e0faff85ab6dadc6d2e721ea94.pdf",
+    "gallery_uncompressed_sha256": "3f326496a212a3583997696042171ce9e1db1740b05fcfa78ec48ca961e4be8a",
+    "candidate_raw_projections_match_archive": true,
+    "complete_normalized_catalog_matches_before_admission": true,
+    "scope": "Uses the root October25 pinned live gallery/Hub/errata comparison; no new PDF download claim."
+  },
+  "records": [
+    {
+      "official_id": "sfd-025-221",
+      "name": "Rengar, Pouncing",
+      "raw_printing": {
+        "official_id": "sfd-025-221",
+        "public_code": "SFD-025/221",
+        "name": "Rengar, Pouncing",
+        "set": "SFD",
+        "collector_number": 25,
+        "types": [
+          "unit"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "unit"
+        ],
+        "accessibility_types": [
+          "unit"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [
+          "champion"
+        ],
+        "domains": [
+          "fury"
+        ],
+        "energy": 3,
+        "power": 1,
+        "might": 3,
+        "might_bonus": null,
+        "rules_html": "<p>[Reaction] (Play any time, even before spells and abilities resolve, including to a battlefield you control.)<br />[Assault 2] (+2 :rb_might: while I'm an attacker.)<br />I can be played to a battlefield you're attacking.</p>",
+        "rules_text": "[Reaction] (Play any time, even before spells and abilities resolve, including to a battlefield you control.)\n[Assault 2] (+2 Might while I'm an attacker.)\nI can be played to a battlefield you're attacking.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [
+          "Cat",
+          "Rengar",
+          "Ixtal"
+        ],
+        "rarity": "rare",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/e24eb3fb835c4762479da5608b018785ef22e02c-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Unit: Rengar, Pouncing. [Reaction] (Play any time, even before spells and abilities resolve, including to a battlefield you control.)\n[Assault 2] (+2 [S] while I'm an attacker.)\nI can be played to a battlefield you're attacking.",
+        "illustrators": [
+          "League Splash Team"
+        ]
+      },
+      "raw_printing_sha256": "7cbcbbaae96e77b14af6a69161ab40af3a7c3201f69edce2f9050ae75d46e13d",
+      "effective": {
+        "types": [
+          "unit"
+        ],
+        "super_types": [
+          "champion"
+        ],
+        "domains": [
+          "fury"
+        ],
+        "energy": 3,
+        "power": 1,
+        "might": 3,
+        "might_bonus": null,
+        "tags": [
+          "Cat",
+          "Rengar",
+          "Ixtal"
+        ],
+        "rules_html": "<p>[Reaction] (Play any time, even before spells and abilities resolve, including to a battlefield you control.)<br />[Assault 2] (+2 :rb_might: while I'm an attacker.)<br />I can be played to a battlefield you're attacking.</p>",
+        "rules_text": "[Reaction] (Play any time, even before spells and abilities resolve, including to a battlefield you control.)\n[Assault 2] (+2 Might while I'm an attacker.)\nI can be played to a battlefield you're attacking.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "effective_projection_sha256": "7cbcbbaae96e77b14af6a69161ab40af3a7c3201f69edce2f9050ae75d46e13d",
+      "existing_field_resolution_ids": [],
+      "original_image": {
+        "path": "assets/data/card_admissions/c26/originals/sfd-025-221.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/e24eb3fb835c4762479da5608b018785ef22e02c-744x1039.png?accountingTag=RB",
+        "bytes": 963080,
+        "sha256": "6813056e733538d15b764651c975436cbea5d0ac1870a6bc3256a1524a4d6bf0"
+      },
+      "visual_observation": {
+        "face_visually_inspected": true,
+        "independently_reinspected_on": "2026-10-25",
+        "official_id": "sfd-025-221",
+        "name": "Rengar, Pouncing",
+        "collector_code": "SFD-025/221",
+        "original_image_sha256": "6813056e733538d15b764651c975436cbea5d0ac1870a6bc3256a1524a4d6bf0",
+        "printed_type_tag_line": "CHAMPION UNIT / RENGAR / IXTAL / CAT",
+        "uncertainties": [],
+        "notes": [
+          "Full original face directly inspected; physical tag order retained separately from gallery order.",
+          "Reaction is unit timing; Assault2 and attacking-field permission are distinct."
+        ],
+        "printed_types": [
+          "unit"
+        ],
+        "printed_supertypes": [
+          "champion"
+        ],
+        "printed_domains": [
+          "fury"
+        ],
+        "printed_tags": [
+          "Rengar",
+          "Ixtal",
+          "Cat"
+        ],
+        "printed_energy": 3,
+        "printed_power": 1,
+        "printed_might": 3,
+        "printed_might_bonus": null,
+        "printed_rules_icons_expanded": "[Reaction] (Play any time, even before spells and abilities resolve, including to a battlefield you control.)\n[Assault 2] (+2 Might while I'm an attacker.)\nI can be played to a battlefield you're attacking.",
+        "printed_equipment_icons_expanded": ""
+      },
+      "runtime_id": 411,
+      "errata": [],
+      "runtime_rules_text": "[Reaction] (Play any time, even before spells and abilities resolve, including to a battlefield you control.)\n[Assault 2] (+2 Might while I'm an attacker.)\nI can be played to a battlefield you're attacking.",
+      "printing_cohort": [
+        "sfd-025-221"
+      ],
+      "alternate_printings": [],
+      "legal_main_deck_legend_ids": [
+        3,
+        4,
+        8
+      ],
+      "chosen_champion_legend_ids": [
+        8
+      ],
+      "runtime_image": {
+        "path": "assets/art/card_411.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/e24eb3fb835c4762479da5608b018785ef22e02c-744x1039.png?w=280&q=80&fm=png",
+        "bytes": 214747,
+        "sha256": "9a81a383f10d874b4e24a1d506b35a9764db6e5c56fa3ea47e8d91a40bcbf599",
+        "width": 280,
+        "height": 391
+      }
+    },
+    {
+      "official_id": "sfd-082-221",
+      "name": "Ezreal, Dashing",
+      "raw_printing": {
+        "official_id": "sfd-082-221",
+        "public_code": "SFD-082/221",
+        "name": "Ezreal, Dashing",
+        "set": "SFD",
+        "collector_number": 82,
+        "types": [
+          "unit"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "unit"
+        ],
+        "accessibility_types": [
+          "unit"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [
+          "champion"
+        ],
+        "domains": [
+          "mind"
+        ],
+        "energy": 4,
+        "power": 1,
+        "might": 3,
+        "might_bonus": null,
+        "rules_html": "<p>When I attack or defend, deal damage equal to my Might to an enemy unit here.<br />I don't deal combat damage.<br />:rb_rune_mind:: [Action] — Move me to your base.</p>",
+        "rules_text": "When I attack or defend, deal damage equal to my Might to an enemy unit here.\nI don't deal combat damage.\n[Mind Power]: [Action] — Move me to your base.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [
+          "Ezreal",
+          "Piltover"
+        ],
+        "rarity": "rare",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/3e040f7b7ca16009a2558674a911b8cc93122ba3-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Unit: Ezreal, Dashing. When I attack or defend, deal damage equal to my Might to an enemy unit here.\nI don't deal combat damage.\n[C]: [Action] — Move me to your base.",
+        "illustrators": [
+          "Six More Vodka"
+        ]
+      },
+      "raw_printing_sha256": "59a8db3ddc082580682b4f912a795b37ab6f7c248b496d7ea0654d258363ddba",
+      "effective": {
+        "types": [
+          "unit"
+        ],
+        "super_types": [
+          "champion"
+        ],
+        "domains": [
+          "mind"
+        ],
+        "energy": 4,
+        "power": 1,
+        "might": 3,
+        "might_bonus": null,
+        "tags": [
+          "Ezreal",
+          "Piltover"
+        ],
+        "rules_html": "<p>When I attack or defend, deal damage equal to my Might to an enemy unit here.<br />I don't deal combat damage.<br />:rb_rune_mind:: [Action] — Move me to your base.</p>",
+        "rules_text": "When I attack or defend, deal damage equal to my Might to an enemy unit here.\nI don't deal combat damage.\n[Mind Power]: [Action] — Move me to your base.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "effective_projection_sha256": "59a8db3ddc082580682b4f912a795b37ab6f7c248b496d7ea0654d258363ddba",
+      "existing_field_resolution_ids": [],
+      "original_image": {
+        "path": "assets/data/card_admissions/c26/originals/sfd-082-221.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/3e040f7b7ca16009a2558674a911b8cc93122ba3-744x1039.png?accountingTag=RB",
+        "bytes": 681951,
+        "sha256": "6b74e4aa0c3d1c7a1f2b964df8843af3d39a5260c7eaee6ef20cf4b9d8c1ca0d"
+      },
+      "visual_observation": {
+        "face_visually_inspected": true,
+        "independently_reinspected_on": "2026-10-25",
+        "official_id": "sfd-082-221",
+        "name": "Ezreal, Dashing",
+        "collector_code": "SFD-082/221",
+        "original_image_sha256": "6b74e4aa0c3d1c7a1f2b964df8843af3d39a5260c7eaee6ef20cf4b9d8c1ca0d",
+        "printed_type_tag_line": "CHAMPION UNIT / EZREAL / PILTOVER",
+        "uncertainties": [],
+        "notes": [
+          "Full original face directly inspected; physical tag order retained separately from gallery order.",
+          "Action appears in the paid self-Move activation; it does not give the Unit card Action timing. Combat-damage restriction does not replace its printed Might."
+        ],
+        "printed_types": [
+          "unit"
+        ],
+        "printed_supertypes": [
+          "champion"
+        ],
+        "printed_domains": [
+          "mind"
+        ],
+        "printed_tags": [
+          "Ezreal",
+          "Piltover"
+        ],
+        "printed_energy": 4,
+        "printed_power": 1,
+        "printed_might": 3,
+        "printed_might_bonus": null,
+        "printed_rules_icons_expanded": "When I attack or defend, deal damage equal to my Might to an enemy unit here.\nI don't deal combat damage.\n[Mind Power]: [Action] — Move me to your base.",
+        "printed_equipment_icons_expanded": ""
+      },
+      "runtime_id": 412,
+      "errata": [],
+      "runtime_rules_text": "When I attack or defend, deal damage equal to my Might to an enemy unit here.\nI don't deal combat damage.\n[Mind Power]: [Action] — Move me to your base.",
+      "printing_cohort": [
+        "sfd-082-221",
+        "sfd-082a-221",
+        "rad-180-167"
+      ],
+      "alternate_printings": [
+        {
+          "official_id": "sfd-082a-221",
+          "name": "Ezreal, Dashing",
+          "raw_printing": {
+            "official_id": "sfd-082a-221",
+            "public_code": "SFD-082a/221",
+            "name": "Ezreal, Dashing",
+            "set": "SFD",
+            "collector_number": 82,
+            "types": [
+              "unit"
+            ],
+            "type_source": "cardType.type",
+            "structured_types": [
+              "unit"
+            ],
+            "accessibility_types": [
+              "unit"
+            ],
+            "type_labels_conflict": false,
+            "super_types": [
+              "champion"
+            ],
+            "domains": [
+              "mind"
+            ],
+            "energy": 4,
+            "power": 1,
+            "might": 3,
+            "might_bonus": null,
+            "rules_html": "<p>When I attack or defend, deal damage equal to my Might to an enemy unit here.<br />I don't deal combat damage.<br />:rb_rune_mind:: [Action] — Move me to your base.</p>",
+            "rules_text": "When I attack or defend, deal damage equal to my Might to an enemy unit here.\nI don't deal combat damage.\n[Mind Power]: [Action] — Move me to your base.",
+            "equipment_html": "",
+            "equipment_text": "",
+            "tags": [
+              "Ezreal",
+              "Piltover"
+            ],
+            "rarity": "showcase",
+            "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/83da64e39d838d2fee68c319c03fbff0d4c7035f-744x1039.png?accountingTag=RB",
+            "image_accessibility_text": "Riftbound Unit: Ezreal, Dashing. When I attack or defend, deal damage equal to my Might to an enemy unit here.\nI don't deal combat damage.\n[C]: [Action] — Move me to your base.",
+            "illustrators": [
+              "League Splash Team"
+            ]
+          },
+          "raw_printing_sha256": "9c5f4935e14f00aceb857512315d0740f6a17a0b433cf4960c278bb2655c4cdb",
+          "effective": {
+            "types": [
+              "unit"
+            ],
+            "super_types": [
+              "champion"
+            ],
+            "domains": [
+              "mind"
+            ],
+            "energy": 4,
+            "power": 1,
+            "might": 3,
+            "might_bonus": null,
+            "tags": [
+              "Ezreal",
+              "Piltover"
+            ],
+            "rules_html": "<p>When I attack or defend, deal damage equal to my Might to an enemy unit here.<br />I don't deal combat damage.<br />:rb_rune_mind:: [Action] — Move me to your base.</p>",
+            "rules_text": "When I attack or defend, deal damage equal to my Might to an enemy unit here.\nI don't deal combat damage.\n[Mind Power]: [Action] — Move me to your base.",
+            "equipment_html": "",
+            "equipment_text": ""
+          },
+          "effective_projection_sha256": "9c5f4935e14f00aceb857512315d0740f6a17a0b433cf4960c278bb2655c4cdb",
+          "existing_field_resolution_ids": [],
+          "original_image": {
+            "path": "assets/data/card_admissions/c26/originals/sfd-082a-221.png",
+            "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/83da64e39d838d2fee68c319c03fbff0d4c7035f-744x1039.png?accountingTag=RB",
+            "bytes": 908062,
+            "sha256": "96ffc88e7c95aab77708738da282920d8d0dc97150e7203fe2a589c9aad5ec80"
+          },
+          "visual_observation": {
+            "face_visually_inspected": true,
+            "independently_reinspected_on": "2026-10-25",
+            "official_id": "sfd-082a-221",
+            "name": "Ezreal, Dashing",
+            "collector_code": "SFD-082a/221",
+            "original_image_sha256": "96ffc88e7c95aab77708738da282920d8d0dc97150e7203fe2a589c9aad5ec80",
+            "printed_type_tag_line": "CHAMPION UNIT / EZREAL / PILTOVER",
+            "uncertainties": [],
+            "notes": [
+              "Full original face directly inspected; physical tag order retained separately from gallery order.",
+              "Action appears in the paid self-Move activation; it does not give the Unit card Action timing. Combat-damage restriction does not replace its printed Might."
+            ],
+            "printed_types": [
+              "unit"
+            ],
+            "printed_supertypes": [
+              "champion"
+            ],
+            "printed_domains": [
+              "mind"
+            ],
+            "printed_tags": [
+              "Ezreal",
+              "Piltover"
+            ],
+            "printed_energy": 4,
+            "printed_power": 1,
+            "printed_might": 3,
+            "printed_might_bonus": null,
+            "printed_rules_icons_expanded": "When I attack or defend, deal damage equal to my Might to an enemy unit here.\nI don't deal combat damage.\n[Mind Power]: [Action] — Move me to your base.",
+            "printed_equipment_icons_expanded": ""
+          }
+        },
+        {
+          "official_id": "rad-180-167",
+          "name": "Ezreal, Dashing",
+          "raw_printing": {
+            "official_id": "rad-180-167",
+            "public_code": "RAD-180/167",
+            "name": "Ezreal, Dashing",
+            "set": "RAD",
+            "collector_number": 180,
+            "types": [
+              "unit"
+            ],
+            "type_source": "cardType.type",
+            "structured_types": [
+              "unit"
+            ],
+            "accessibility_types": [
+              "unit"
+            ],
+            "type_labels_conflict": false,
+            "super_types": [
+              "champion"
+            ],
+            "domains": [
+              "mind"
+            ],
+            "energy": 4,
+            "power": 1,
+            "might": 3,
+            "might_bonus": null,
+            "rules_html": "<p>When I attack or defend, deal damage equal to my Might to an enemy unit here.<br />I don't deal combat damage.<br />:rb_rune_mind:: [Action] — Move me to your base.</p>",
+            "rules_text": "When I attack or defend, deal damage equal to my Might to an enemy unit here.\nI don't deal combat damage.\n[Mind Power]: [Action] — Move me to your base.",
+            "equipment_html": "",
+            "equipment_text": "",
+            "tags": [
+              "Ezreal",
+              "Piltover"
+            ],
+            "rarity": "showcase",
+            "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/262da39c80211046e27a839c50d210d19592267c-744x1039.png?accountingTag=RB",
+            "image_accessibility_text": "Riftbound Unit: Ezreal, Dashing. When I attack or defend, deal damage equal to my Might to an enemy unit here.\nI don't deal combat damage.\n[C]: [Action] — Move me to your base.",
+            "illustrators": [
+              "Luscinia Studio"
+            ]
+          },
+          "raw_printing_sha256": "3138069e717fd11c42af23fd8267fa4e2fd9ed14cd3e928c6f3d43bb284ba52a",
+          "effective": {
+            "types": [
+              "unit"
+            ],
+            "super_types": [
+              "champion"
+            ],
+            "domains": [
+              "mind"
+            ],
+            "energy": 4,
+            "power": 1,
+            "might": 3,
+            "might_bonus": null,
+            "tags": [
+              "Ezreal",
+              "Piltover"
+            ],
+            "rules_html": "<p>When I attack or defend, deal damage equal to my Might to an enemy unit here.<br />I don't deal combat damage.<br />:rb_rune_mind:: [Action] — Move me to your base.</p>",
+            "rules_text": "When I attack or defend, deal damage equal to my Might to an enemy unit here.\nI don't deal combat damage.\n[Mind Power]: [Action] — Move me to your base.",
+            "equipment_html": "",
+            "equipment_text": ""
+          },
+          "effective_projection_sha256": "3138069e717fd11c42af23fd8267fa4e2fd9ed14cd3e928c6f3d43bb284ba52a",
+          "existing_field_resolution_ids": [],
+          "original_image": {
+            "path": "assets/data/card_admissions/c26/originals/rad-180-167.png",
+            "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/262da39c80211046e27a839c50d210d19592267c-744x1039.png?accountingTag=RB",
+            "bytes": 1375715,
+            "sha256": "b24851922e3e0c72004a9d533542d9c4c71855eb899af59fbde39596bc629232"
+          },
+          "visual_observation": {
+            "face_visually_inspected": true,
+            "independently_reinspected_on": "2026-10-25",
+            "official_id": "rad-180-167",
+            "name": "Ezreal, Dashing",
+            "collector_code": "RAD-180/167",
+            "original_image_sha256": "b24851922e3e0c72004a9d533542d9c4c71855eb899af59fbde39596bc629232",
+            "printed_type_tag_line": "CHAMPION UNIT / EZREAL / PILTOVER",
+            "uncertainties": [],
+            "notes": [
+              "Full original face directly inspected; physical tag order retained separately from gallery order.",
+              "Action appears in the paid self-Move activation; it does not give the Unit card Action timing. Combat-damage restriction does not replace its printed Might."
+            ],
+            "printed_types": [
+              "unit"
+            ],
+            "printed_supertypes": [
+              "champion"
+            ],
+            "printed_domains": [
+              "mind"
+            ],
+            "printed_tags": [
+              "Ezreal",
+              "Piltover"
+            ],
+            "printed_energy": 4,
+            "printed_power": 1,
+            "printed_might": 3,
+            "printed_might_bonus": null,
+            "printed_rules_icons_expanded": "When I attack or defend, deal damage equal to my Might to an enemy unit here.\nI don't deal combat damage.\n[Mind Power]: [Action] — Move me to your base.",
+            "printed_equipment_icons_expanded": ""
+          }
+        }
+      ],
+      "legal_main_deck_legend_ids": [
+        3,
+        5,
+        6,
+        9
+      ],
+      "chosen_champion_legend_ids": [
+        9
+      ],
+      "runtime_image": {
+        "path": "assets/art/card_412.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/3e040f7b7ca16009a2558674a911b8cc93122ba3-744x1039.png?w=280&q=80&fm=png",
+        "bytes": 163054,
+        "sha256": "f27eeb1f9a37bbc8385df8c9e3a9ae44aa2bfcaa28310db9446a6d9c4a8037af",
+        "width": 280,
+        "height": 391
+      }
+    }
+  ]
+}

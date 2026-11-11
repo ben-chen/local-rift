@@ -30,8 +30,7 @@ fn position(legends: [usize; 2]) -> Game {
         p.discard.clear();
         p.banish.clear();
         p.champion = None;
-        p.runes = [0; 6];
-        p.exhausted_runes = [0; 6];
+        p.set_rune_setup([0; 6], [0; 6]).unwrap();
         p.energy = 100;
         p.energy_pool = 100;
         p.power_pool = [30; 6];
@@ -646,6 +645,7 @@ fn complete_payment_numeric_failure_retains_the_plan_and_deliberate_add_steps() 
     });
     let hand_index = g.players[0].hand.len();
     g.players[0].hand.push(320);
+    let before_payment = format!("{g:?}");
     g.apply(Action::BeginPayment {
         action: Box::new(Action::PlayCardWithTargets {
             hand_index,
@@ -663,12 +663,30 @@ fn complete_payment_numeric_failure_retains_the_plan_and_deliberate_add_steps() 
     capacity(&mut g, Action::CompletePayment);
     assert_eq!(g.payment_plan_view(0).unwrap().pending_card, Some(320));
     assert!(!g.players[0].gear[0].ready);
-    assert!(
-        g.can_cancel_payment()
-            .unwrap_err()
-            .starts_with("engine_capacity:"),
-        "capacity is not proof of legal impossibility"
+    // CompletePayment's capacity failure is still fully atomic, including the
+    // pending card and deliberate Add above. This positive Ordinary payment
+    // independently permits refusal under Core445.2; it does not need a proof
+    // that finalization is impossible. Queries themselves must remain pure.
+    let after_failure = format!("{g:?}");
+    assert!(energy > 0);
+    assert_eq!(
+        g.payment_plan_view(0).unwrap().refusal_kind,
+        Some(local_rift::payment_plan::PaymentRefusalKind::Ordinary)
     );
+    assert!(g.can_cancel_payment().unwrap());
+    assert!(g.can_refuse_payment().unwrap());
+    assert_eq!(format!("{g:?}"), after_failure);
+    for action in [Action::Choose { accept: false }, Action::RefusePayment] {
+        let mut cancelled = g.clone();
+        cancelled.apply(action).unwrap();
+        assert_eq!(
+            format!("{cancelled:?}"),
+            before_payment,
+            "Undo and Ordinary refusal restore the complete pre-payment state"
+        );
+    }
+    // Keeping the plan instead is also valid: fixing only the controlled
+    // numeric boundary must allow one successful completion, with no duplicate.
     numeric_might(&mut g, target, i64::MAX - 1);
     g.apply(Action::CompletePayment).unwrap();
     assert!(g.payment_plan_view(0).is_none());

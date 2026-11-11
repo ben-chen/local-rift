@@ -115,7 +115,10 @@ fn new_legend_construction_rejects_wrong_tags_domains_and_runes() {
 #[test]
 fn catalog_separates_legends_from_presets_and_exposes_training_templates() {
     let catalog = catalog();
-    assert_eq!(catalog["presets"].as_array().unwrap().len(), 4);
+    assert_eq!(
+        catalog["presets"].as_array().unwrap().len(),
+        presets().len()
+    );
     assert_eq!(
         catalog["legends"].as_array().unwrap().len(),
         legends().len()
@@ -134,7 +137,8 @@ fn catalog_separates_legends_from_presets_and_exposes_training_templates() {
         assert_eq!(deck.legend, definition.id);
     }
     for (id, row) in catalog["presets"].as_array().unwrap().iter().enumerate() {
-        assert_eq!(row["legend_id"], id);
+        assert_eq!(row["id"], id);
+        assert_eq!(row["legend_id"], presets()[id].legend_id);
     }
 }
 

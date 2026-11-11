@@ -47,6 +47,9 @@
             nativeBuildInputs = lib.optional pkgs.stdenv.hostPlatform.isLinux pkgs.makeWrapper;
             buildInputs = graphicsLibraries;
             doCheck = true;
+            # Run the complete suite with assertions, matching `cargo test`.
+            # Keep release optimization for the installed client and bot tools.
+            checkType = "debug";
             postFixup = lib.optionalString pkgs.stdenv.hostPlatform.isLinux ''
               wrapProgram "$out/bin/local-rift" \
                 --prefix LD_LIBRARY_PATH : "${graphicsPath}"

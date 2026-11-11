@@ -1,0 +1,878 @@
+{
+  "schema_version": 1,
+  "draft_not_for_import": false,
+  "reviewed_on": "2026-10-26",
+  "origin_gallery": {
+    "url": "https://playriftbound.com/en-us/card-gallery/",
+    "archive": "assets/data/catalog_sources/gallery.html.gz",
+    "uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9"
+  },
+  "pre_admission_catalog_sha256": "e50b9e8571ab69690ba2d3f09d3113141a27222b8ae78d18f83f601b915b9b23",
+  "preserved_runtime_prefix": {
+    "card_count": 413,
+    "cards_sha256": "66d22e3820670eeb3ff825956cb913eb51a612f3631314a23e798ce9868bf993",
+    "carddefs_source_prefix_sha256": "48f7c8ab4d3c6b57bdcc1cc7739d9160e14133a6fb4c8235d58f89c5ee3b52c0",
+    "presets_sha256": "d6e64ebf3f8921686682dacd87d4b2b4baec5754dbd284c6d60bf3fb324571e2",
+    "legends_manifest_sha256": "a31bb93c27588bd4759985e9a4083372d5afae59d22b9ac9d48c54946e5474fe",
+    "training_recipe_source_sha256": "dc498f4f98cec6421dade7e01ead261693ed5f70d30d4d2c808da4a1bcb5b706"
+  },
+  "preserved_source_reviews": {
+    "field_resolutions_sha256": "e1f817d6d54d7043ab9b0226382bfd96b8bdd1ca76717b5f9b399693cc106513",
+    "raw_printings_sha256": "6bb0d050b55017d023dfc20d8ebabba46bc47a26a947b4111c27ba2fb3575ad4",
+    "historical_issues_sha256": "22fff96ef4b6f37248d4cb92731a19456ec131978b36592976242b351353e9c6",
+    "field_image_index_sha256": "ad78fc9b4926226a281adeb999c2066085208ff79d1544481a99391b8ee75b4c",
+    "identity_review_manifest_sha256": "e678c7f2f2e1ae70fb6b399ce1b0ab88a314e9018810d1ccadb1759a1f7b5e12",
+    "variant_image_index_sha256": "1826db0a53cbe62eb1a1196d08df1cbef215b9d9e24cc006689559bbc7693b92"
+  },
+  "pre_admission_counts": {
+    "main_cards": 413,
+    "mapped_legal": 440,
+    "remaining_legal": 639
+  },
+  "scope": "Four identities and all six current English printing faces inspected. This isolated source patch requires separately reviewed executable integration before admission. Existing definitions, presets, legends, recipes and prior source-review prefixes are unchanged; the separately reviewed Tusker Noxus correction is appended; source facts are not behavior proof.",
+  "errata_sources": [
+    {
+      "key": "origins_errata",
+      "url": "https://playriftbound.com/en-us/news/rules-and-releases/riftbound-origins-card-errata/",
+      "archive": "assets/data/catalog_sources/origins_errata.html.gz",
+      "uncompressed_sha256": "035848c5cc61007683111e63b91289d3fc386d2b33437af32d4d13d565727c52",
+      "parsed_entries_sha256": "5d5ed4e6d5e03033184b5382ab360eade62ca9cf032cf94e811cc1e0acaed581",
+      "live_checked_on": "2026-10-26",
+      "live_uncompressed_sha256": "a700228d17910269b56c8609ba52d2461d6e7f2370771217416e065f7b2626e9",
+      "live_parsed_entries_sha256": "5d5ed4e6d5e03033184b5382ab360eade62ca9cf032cf94e811cc1e0acaed581"
+    },
+    {
+      "key": "spiritforged_errata",
+      "url": "https://playriftbound.com/en-us/news/rules-and-releases/riftbound-spiritforged-errata/",
+      "archive": "assets/data/catalog_sources/spiritforged_errata.html.gz",
+      "uncompressed_sha256": "2fcd51e6104eb76212c42abc850beffaf1cf3e623d875b2d9ad47ed149a726a8",
+      "parsed_entries_sha256": "88be71f74e159dde0b339273fed000ac097ae50318a0aa535b02fdc23c666d57",
+      "live_checked_on": "2026-10-26",
+      "live_uncompressed_sha256": "44a73fe653506bc89ff41e9b81c004fc5c952c10df29de34f528b6ddfd48335d",
+      "live_parsed_entries_sha256": "88be71f74e159dde0b339273fed000ac097ae50318a0aa535b02fdc23c666d57"
+    },
+    {
+      "key": "unleashed_errata",
+      "url": "https://playriftbound.com/en-us/news/rules-and-releases/unleashed-errata-updates/",
+      "archive": "assets/data/catalog_sources/unleashed_errata.html.gz",
+      "uncompressed_sha256": "8b3cb69fea7c499e435c6af0ac89b5c5013711477a172c6bbed3a782eff7ac7b",
+      "parsed_entries_sha256": "801ad0c9bcc9d7bbdde1fa8c5b229dbcaf718daaf3f3db208dd8942a119e3df3",
+      "live_checked_on": "2026-10-26",
+      "live_uncompressed_sha256": "c31df55d4024c5bbc5881d07233e707f326cdd0bd6b746b2e490d48983ad6086",
+      "live_parsed_entries_sha256": "801ad0c9bcc9d7bbdde1fa8c5b229dbcaf718daaf3f3db208dd8942a119e3df3"
+    },
+    {
+      "key": "vendetta_errata",
+      "url": "https://playriftbound.com/en-us/news/announcements/vendetta-errata-updates/",
+      "archive": "assets/data/catalog_sources/vendetta_errata.html.gz",
+      "uncompressed_sha256": "d17603177df347cd44c4ef67c1c547344afcd847cec72ae545239f3c232ef2a6",
+      "parsed_entries_sha256": "9e6fb29ba5bd2bce1023b6927c395e4ed0ced61bf2fc766410d9f000c68a16be",
+      "live_checked_on": "2026-10-26",
+      "live_uncompressed_sha256": "b2fe4126a8c007c60576bf225eb7add078e816fe8aca4419bc4200f8e4e24065",
+      "live_parsed_entries_sha256": "9e6fb29ba5bd2bce1023b6927c395e4ed0ced61bf2fc766410d9f000c68a16be"
+    },
+    {
+      "key": "radiance_errata",
+      "url": "https://playriftbound.com/en-us/news/announcements/radiance-errata-updates/",
+      "archive": "assets/data/catalog_sources/radiance_errata.html.gz",
+      "uncompressed_sha256": "63735225d6c2f0b757e933289175fb09dcbae86178075fb227e4afa4e1a478a7",
+      "parsed_entries_sha256": "84fd3234a6cdc8c5ddd0b8b4f18c100f339497acdc02318f74b352b6da23866e",
+      "live_checked_on": "2026-10-26",
+      "live_uncompressed_sha256": "63735225d6c2f0b757e933289175fb09dcbae86178075fb227e4afa4e1a478a7",
+      "live_parsed_entries_sha256": "84fd3234a6cdc8c5ddd0b8b4f18c100f339497acdc02318f74b352b6da23866e"
+    }
+  ],
+  "live_authority_check": {
+    "checked_on": "2026-10-26",
+    "hub_url": "https://playriftbound.com/en-us/rules-hub/",
+    "hub_uncompressed_sha256": "2435d853fda2dd6a0a54fa105556366aa2adf73d98c0e6ec622e58de17d16942",
+    "legality": {
+      "source_url": "https://playriftbound.com/en-us/rules-hub/",
+      "last_updated": "September 18, 2026",
+      "standard_banned_names": [
+        "Called Shot",
+        "Ekko, Recurrent",
+        "Draven, Vanquisher",
+        "Fight or Flight",
+        "Scrapheap",
+        "Stealthy Pursuer",
+        "Stacked Deck",
+        "The Arena’s Greatest",
+        "Aspirant’s Climb",
+        "Dreaming Tree",
+        "Obelisk of Power",
+        "Reaver’s Row"
+      ],
+      "two_v_two_banned_names": [
+        "Master Yi, Wuju Bladesman",
+        "Called Shot",
+        "Ekko, Recurrent",
+        "Draven Vanquisher",
+        "Fight or Flight",
+        "Scrapheap",
+        "Stealthy Pursuer",
+        "Stacked Deck",
+        "The Arena’s Greatest",
+        "Aspirant’s Climb",
+        "Dreaming Tree",
+        "Obelisk of Power",
+        "Reaver’s Row"
+      ]
+    },
+    "core_rules_url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/5c7946f7c3b8c6e0faff85ab6dadc6d2e721ea94.pdf",
+    "gallery_uncompressed_sha256": "92441a31df3f68cb68a4c64ed3b8aacb1016be8081eb67fcb2751716764e6a8a",
+    "candidate_raw_projections_match_archive": true,
+    "complete_normalized_catalog_matches_before_admission": true,
+    "scope": "Uses the root October26 pinned live gallery/Hub/errata comparison and exact Core PDF comparison; the candidate faces were freshly downloaded and directly inspected."
+  },
+  "records": [
+    {
+      "official_id": "ogn-076-298",
+      "name": "Yasuo, Remorseful",
+      "raw_printing": {
+        "official_id": "ogn-076-298",
+        "public_code": "OGN-076/298",
+        "name": "Yasuo, Remorseful",
+        "set": "OGN",
+        "collector_number": 76,
+        "types": [
+          "unit"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "unit"
+        ],
+        "accessibility_types": [
+          "unit"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [
+          "champion"
+        ],
+        "domains": [
+          "calm"
+        ],
+        "energy": 6,
+        "power": 2,
+        "might": 6,
+        "might_bonus": null,
+        "rules_html": "<p>When I attack, deal damage equal to my Might to an enemy unit here.</p>",
+        "rules_text": "When I attack, deal damage equal to my Might to an enemy unit here.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [
+          "Yasuo",
+          "Ionia"
+        ],
+        "rarity": "rare",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/1643a6c93626884c93363557e1a483642bda6c45-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Unit: Yasuo, Remorseful. When I attack, deal damage equal to my Might to an enemy unit here.",
+        "illustrators": [
+          "Six More Vodka"
+        ]
+      },
+      "raw_printing_sha256": "6c798ed14aee2869401c47674dc7bf5cc1c412840cd08f9c2ec47ea3225fa5e9",
+      "effective": {
+        "types": [
+          "unit"
+        ],
+        "super_types": [
+          "champion"
+        ],
+        "domains": [
+          "calm"
+        ],
+        "energy": 6,
+        "power": 2,
+        "might": 6,
+        "might_bonus": null,
+        "tags": [
+          "Yasuo",
+          "Ionia"
+        ],
+        "rules_html": "<p>When I attack, deal damage equal to my Might to an enemy unit here.</p>",
+        "rules_text": "When I attack, deal damage equal to my Might to an enemy unit here.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "effective_projection_sha256": "6c798ed14aee2869401c47674dc7bf5cc1c412840cd08f9c2ec47ea3225fa5e9",
+      "existing_field_resolution_ids": [],
+      "original_image": {
+        "path": "assets/data/card_admissions/c27/originals/ogn-076-298.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/1643a6c93626884c93363557e1a483642bda6c45-744x1039.png?accountingTag=RB",
+        "bytes": 907964,
+        "sha256": "80c288cbc1076eb69e4c83ccd211214ed0bdae5b136b584db9d506ae0bf433aa"
+      },
+      "visual_observation": {
+        "face_visually_inspected": true,
+        "independently_reinspected_on": "2026-10-26",
+        "official_id": "ogn-076-298",
+        "name": "Yasuo, Remorseful",
+        "collector_code": "OGN-076/298",
+        "original_image_sha256": "80c288cbc1076eb69e4c83ccd211214ed0bdae5b136b584db9d506ae0bf433aa",
+        "printed_type_tag_line": "CHAMPION UNIT / YASUO / IONIA",
+        "uncertainties": [],
+        "notes": [
+          "Full original face directly inspected; physical tag order retained separately from gallery order.",
+          "Current source-relative attributes and Here are evaluated by the separate engine implementation; source evidence alone is not gameplay proof."
+        ],
+        "printed_types": [
+          "unit"
+        ],
+        "printed_supertypes": [
+          "champion"
+        ],
+        "printed_domains": [
+          "calm"
+        ],
+        "printed_tags": [
+          "Yasuo",
+          "Ionia"
+        ],
+        "printed_energy": 6,
+        "printed_power": 2,
+        "printed_might": 6,
+        "printed_might_bonus": null,
+        "printed_rules_icons_expanded": "When I attack, deal damage equal to my Might to an enemy unit here.",
+        "printed_equipment_icons_expanded": ""
+      },
+      "runtime_id": 413,
+      "errata": [],
+      "runtime_rules_text": "When I attack, deal damage equal to my Might to an enemy unit here.",
+      "printing_cohort": [
+        "ogn-076-298",
+        "ogn-076a-298"
+      ],
+      "alternate_printings": [
+        {
+          "official_id": "ogn-076a-298",
+          "name": "Yasuo, Remorseful",
+          "raw_printing": {
+            "official_id": "ogn-076a-298",
+            "public_code": "OGN-076a/298",
+            "name": "Yasuo, Remorseful",
+            "set": "OGN",
+            "collector_number": 76,
+            "types": [
+              "unit"
+            ],
+            "type_source": "cardType.type",
+            "structured_types": [
+              "unit"
+            ],
+            "accessibility_types": [
+              "unit"
+            ],
+            "type_labels_conflict": false,
+            "super_types": [
+              "champion"
+            ],
+            "domains": [
+              "calm"
+            ],
+            "energy": 6,
+            "power": 2,
+            "might": 6,
+            "might_bonus": null,
+            "rules_html": "<p>When I attack, deal damage equal to my Might to an enemy unit here.</p>",
+            "rules_text": "When I attack, deal damage equal to my Might to an enemy unit here.",
+            "equipment_html": "",
+            "equipment_text": "",
+            "tags": [
+              "Yasuo",
+              "Ionia"
+            ],
+            "rarity": "showcase",
+            "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/3f2cff3ff3b146c8bfe11594e37e9d8109884273-744x1039.png?accountingTag=RB",
+            "image_accessibility_text": "Riftbound Unit: Yasuo, Remorseful. When I attack, deal damage equal to my Might to an enemy unit here.",
+            "illustrators": [
+              "League Splash Team"
+            ]
+          },
+          "raw_printing_sha256": "e4321d5d2acc75a4b68a758256f281301ca1c3fe68ed317d63af8ebb1ef0c708",
+          "effective": {
+            "types": [
+              "unit"
+            ],
+            "super_types": [
+              "champion"
+            ],
+            "domains": [
+              "calm"
+            ],
+            "energy": 6,
+            "power": 2,
+            "might": 6,
+            "might_bonus": null,
+            "tags": [
+              "Yasuo",
+              "Ionia"
+            ],
+            "rules_html": "<p>When I attack, deal damage equal to my Might to an enemy unit here.</p>",
+            "rules_text": "When I attack, deal damage equal to my Might to an enemy unit here.",
+            "equipment_html": "",
+            "equipment_text": ""
+          },
+          "effective_projection_sha256": "e4321d5d2acc75a4b68a758256f281301ca1c3fe68ed317d63af8ebb1ef0c708",
+          "existing_field_resolution_ids": [],
+          "original_image": {
+            "path": "assets/data/card_admissions/c27/originals/ogn-076a-298.png",
+            "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/3f2cff3ff3b146c8bfe11594e37e9d8109884273-744x1039.png?accountingTag=RB",
+            "bytes": 986545,
+            "sha256": "89ed25981a0ebcd168932929c2225d3a4dcbd9d84a5bc9fef1ac257aefe09ffb"
+          },
+          "visual_observation": {
+            "face_visually_inspected": true,
+            "independently_reinspected_on": "2026-10-26",
+            "official_id": "ogn-076a-298",
+            "name": "Yasuo, Remorseful",
+            "collector_code": "OGN-076a/298",
+            "original_image_sha256": "89ed25981a0ebcd168932929c2225d3a4dcbd9d84a5bc9fef1ac257aefe09ffb",
+            "printed_type_tag_line": "CHAMPION UNIT / YASUO / IONIA",
+            "uncertainties": [],
+            "notes": [
+              "Full original face directly inspected; physical tag order retained separately from gallery order.",
+              "Current source-relative attributes and Here are evaluated by the separate engine implementation; source evidence alone is not gameplay proof."
+            ],
+            "printed_types": [
+              "unit"
+            ],
+            "printed_supertypes": [
+              "champion"
+            ],
+            "printed_domains": [
+              "calm"
+            ],
+            "printed_tags": [
+              "Yasuo",
+              "Ionia"
+            ],
+            "printed_energy": 6,
+            "printed_power": 2,
+            "printed_might": 6,
+            "printed_might_bonus": null,
+            "printed_rules_icons_expanded": "When I attack, deal damage equal to my Might to an enemy unit here.",
+            "printed_equipment_icons_expanded": ""
+          }
+        }
+      ],
+      "legal_main_deck_legend_ids": [
+        0,
+        1
+      ],
+      "chosen_champion_legend_ids": [],
+      "runtime_image": {
+        "path": "assets/art/card_413.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/1643a6c93626884c93363557e1a483642bda6c45-744x1039.png?w=280&q=80&fm=png",
+        "bytes": 211008,
+        "sha256": "56c65952b8d7b2e485345d0bfaf71e3205369ed04ba2703ea8ff61fea71b6eea",
+        "width": 280,
+        "height": 391
+      }
+    },
+    {
+      "official_id": "rad-085-167",
+      "name": "Graves, Blasting Through",
+      "raw_printing": {
+        "official_id": "rad-085-167",
+        "public_code": "RAD-085/167",
+        "name": "Graves, Blasting Through",
+        "set": "RAD",
+        "collector_number": 85,
+        "types": [
+          "unit"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "unit"
+        ],
+        "accessibility_types": [
+          "unit"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [
+          "champion"
+        ],
+        "domains": [
+          "body"
+        ],
+        "energy": 5,
+        "power": 1,
+        "might": 4,
+        "might_bonus": null,
+        "rules_html": "<p>When I attack or defend, deal damage equal to my Might to all enemy units here.<br />I don't deal combat damage.</p>",
+        "rules_text": "When I attack or defend, deal damage equal to my Might to all enemy units here.\nI don't deal combat damage.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [
+          "Bilgewater",
+          "Graves"
+        ],
+        "rarity": "rare",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/5bc0671f9f78630e2932052bb9f7f42ef2742c86-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Unit: Graves, Blasting Through. When I attack or defend, deal damage equal to my Might to all enemy units here.\nI don't deal combat damage.",
+        "illustrators": []
+      },
+      "raw_printing_sha256": "ffea7a622120727c2804d103834027b3af82142af14963a857c3fc3450091593",
+      "effective": {
+        "types": [
+          "unit"
+        ],
+        "super_types": [
+          "champion"
+        ],
+        "domains": [
+          "body"
+        ],
+        "energy": 5,
+        "power": 1,
+        "might": 4,
+        "might_bonus": null,
+        "tags": [
+          "Bilgewater",
+          "Graves"
+        ],
+        "rules_html": "<p>When I attack or defend, deal damage equal to my Might to all enemy units here.<br />I don't deal combat damage.</p>",
+        "rules_text": "When I attack or defend, deal damage equal to my Might to all enemy units here.\nI don't deal combat damage.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "effective_projection_sha256": "ffea7a622120727c2804d103834027b3af82142af14963a857c3fc3450091593",
+      "existing_field_resolution_ids": [],
+      "original_image": {
+        "path": "assets/data/card_admissions/c27/originals/rad-085-167.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/5bc0671f9f78630e2932052bb9f7f42ef2742c86-744x1039.png?accountingTag=RB",
+        "bytes": 871477,
+        "sha256": "6849e72a3d7621ed5b4d97bd0ff4dfe8829bc3b03c9ad0ff17f6a7ac1b28cf65"
+      },
+      "visual_observation": {
+        "face_visually_inspected": true,
+        "independently_reinspected_on": "2026-10-26",
+        "official_id": "rad-085-167",
+        "name": "Graves, Blasting Through",
+        "collector_code": "RAD-085/167",
+        "original_image_sha256": "6849e72a3d7621ed5b4d97bd0ff4dfe8829bc3b03c9ad0ff17f6a7ac1b28cf65",
+        "printed_type_tag_line": "CHAMPION UNIT / GRAVES / BILGEWATER",
+        "uncertainties": [],
+        "notes": [
+          "Full original face directly inspected; physical tag order retained separately from gallery order.",
+          "Current source-relative attributes and Here are evaluated by the separate engine implementation; source evidence alone is not gameplay proof."
+        ],
+        "printed_types": [
+          "unit"
+        ],
+        "printed_supertypes": [
+          "champion"
+        ],
+        "printed_domains": [
+          "body"
+        ],
+        "printed_tags": [
+          "Graves",
+          "Bilgewater"
+        ],
+        "printed_energy": 5,
+        "printed_power": 1,
+        "printed_might": 4,
+        "printed_might_bonus": null,
+        "printed_rules_icons_expanded": "When I attack or defend, deal damage equal to my Might to all enemy units here.\nI don't deal combat damage.",
+        "printed_equipment_icons_expanded": ""
+      },
+      "runtime_id": 414,
+      "errata": [],
+      "runtime_rules_text": "When I attack or defend, deal damage equal to my Might to all enemy units here.\nI don't deal combat damage.",
+      "printing_cohort": [
+        "rad-085-167"
+      ],
+      "alternate_printings": [],
+      "legal_main_deck_legend_ids": [
+        1,
+        7,
+        8
+      ],
+      "chosen_champion_legend_ids": [],
+      "runtime_image": {
+        "path": "assets/art/card_414.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/5bc0671f9f78630e2932052bb9f7f42ef2742c86-744x1039.png?w=280&q=80&fm=png",
+        "bytes": 202659,
+        "sha256": "6c497398b37b5409f48ebbec48060417167d95397257cf3ce9198a28ad468418",
+        "width": 280,
+        "height": 391
+      }
+    },
+    {
+      "official_id": "sfd-028-221",
+      "name": "Lucian, Gunslinger",
+      "raw_printing": {
+        "official_id": "sfd-028-221",
+        "public_code": "SFD-028/221",
+        "name": "Lucian, Gunslinger",
+        "set": "SFD",
+        "collector_number": 28,
+        "types": [
+          "unit"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "unit"
+        ],
+        "accessibility_types": [
+          "unit"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [
+          "champion"
+        ],
+        "domains": [
+          "fury"
+        ],
+        "energy": 3,
+        "power": null,
+        "might": 2,
+        "might_bonus": null,
+        "rules_html": "<p>[Assault] (+1 :rb_might: while I'm an attacker.)<br />When I attack, deal damage equal to my [Assault] to an enemy unit here.</p>",
+        "rules_text": "[Assault] (+1 Might while I'm an attacker.)\nWhen I attack, deal damage equal to my [Assault] to an enemy unit here.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [
+          "Lucian",
+          "Demacia",
+          "Sentinel"
+        ],
+        "rarity": "epic",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/2dfb106d7c85235436d25261195a638e2ab15092-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Unit: Lucian, Gunslinger. [Assault] (+1 [S] while I'm an attacker.)\nWhen I attack, deal damage equal to my [Assault] to an enemy unit here.",
+        "illustrators": [
+          "Six More Vodka"
+        ]
+      },
+      "raw_printing_sha256": "17b308e2cb4b0ef9aadba9fbd61c0586427d88fb1315882bd7bc9583a1312cc2",
+      "effective": {
+        "types": [
+          "unit"
+        ],
+        "super_types": [
+          "champion"
+        ],
+        "domains": [
+          "fury"
+        ],
+        "energy": 3,
+        "power": null,
+        "might": 2,
+        "might_bonus": null,
+        "tags": [
+          "Lucian",
+          "Demacia",
+          "Sentinel"
+        ],
+        "rules_html": "<p>[Assault] (+1 :rb_might: while I'm an attacker.)<br />When I attack, deal damage equal to my [Assault] to an enemy unit here.</p>",
+        "rules_text": "[Assault] (+1 Might while I'm an attacker.)\nWhen I attack, deal damage equal to my [Assault] to an enemy unit here.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "effective_projection_sha256": "17b308e2cb4b0ef9aadba9fbd61c0586427d88fb1315882bd7bc9583a1312cc2",
+      "existing_field_resolution_ids": [],
+      "original_image": {
+        "path": "assets/data/card_admissions/c27/originals/sfd-028-221.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/2dfb106d7c85235436d25261195a638e2ab15092-744x1039.png?accountingTag=RB",
+        "bytes": 984477,
+        "sha256": "8f88e85ce0d36c67b51606bc22b6cb93053e916397407a69a9a178e1220ca99b"
+      },
+      "visual_observation": {
+        "face_visually_inspected": true,
+        "independently_reinspected_on": "2026-10-26",
+        "official_id": "sfd-028-221",
+        "name": "Lucian, Gunslinger",
+        "collector_code": "SFD-028/221",
+        "original_image_sha256": "8f88e85ce0d36c67b51606bc22b6cb93053e916397407a69a9a178e1220ca99b",
+        "printed_type_tag_line": "CHAMPION UNIT / LUCIAN / DEMACIA / SENTINEL",
+        "uncertainties": [],
+        "notes": [
+          "Full original face directly inspected; physical tag order retained separately from gallery order.",
+          "Current source-relative attributes and Here are evaluated by the separate engine implementation; source evidence alone is not gameplay proof."
+        ],
+        "printed_types": [
+          "unit"
+        ],
+        "printed_supertypes": [
+          "champion"
+        ],
+        "printed_domains": [
+          "fury"
+        ],
+        "printed_tags": [
+          "Lucian",
+          "Demacia",
+          "Sentinel"
+        ],
+        "printed_energy": 3,
+        "printed_power": null,
+        "printed_might": 2,
+        "printed_might_bonus": null,
+        "printed_rules_icons_expanded": "[Assault] (+1 Might while I'm an attacker.)\nWhen I attack, deal damage equal to my [Assault] to an enemy unit here.",
+        "printed_equipment_icons_expanded": ""
+      },
+      "runtime_id": 415,
+      "errata": [],
+      "runtime_rules_text": "[Assault] (+1 Might while I'm an attacker.)\nWhen I attack, deal damage equal to my [Assault] to an enemy unit here.",
+      "printing_cohort": [
+        "sfd-028-221",
+        "sfd-028a-221"
+      ],
+      "alternate_printings": [
+        {
+          "official_id": "sfd-028a-221",
+          "name": "Lucian, Gunslinger",
+          "raw_printing": {
+            "official_id": "sfd-028a-221",
+            "public_code": "SFD-028a/221",
+            "name": "Lucian, Gunslinger",
+            "set": "SFD",
+            "collector_number": 28,
+            "types": [
+              "unit"
+            ],
+            "type_source": "cardType.type",
+            "structured_types": [
+              "unit"
+            ],
+            "accessibility_types": [
+              "unit"
+            ],
+            "type_labels_conflict": false,
+            "super_types": [
+              "champion"
+            ],
+            "domains": [
+              "fury"
+            ],
+            "energy": 3,
+            "power": null,
+            "might": 2,
+            "might_bonus": null,
+            "rules_html": "<p>[Assault] (+1 :rb_might: while I'm an attacker.)<br />When I attack, deal damage equal to my [Assault] to an enemy unit here.</p>",
+            "rules_text": "[Assault] (+1 Might while I'm an attacker.)\nWhen I attack, deal damage equal to my [Assault] to an enemy unit here.",
+            "equipment_html": "",
+            "equipment_text": "",
+            "tags": [
+              "Lucian",
+              "Demacia",
+              "Sentinel"
+            ],
+            "rarity": "showcase",
+            "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/3982de5a4aee53471ca589179f5cf8617169fb52-744x1039.png?accountingTag=RB",
+            "image_accessibility_text": "Riftbound Unit: Lucian, Gunslinger. [Assault] (+1 [S] while I'm an attacker.)\nWhen I attack, deal damage equal to my [Assault] to an enemy unit here.",
+            "illustrators": [
+              "Kudos Productions"
+            ]
+          },
+          "raw_printing_sha256": "b70012ebde37ed3afaf5598519fc80fb77213545d0dc9e9e7b2ba7a1a4442c23",
+          "effective": {
+            "types": [
+              "unit"
+            ],
+            "super_types": [
+              "champion"
+            ],
+            "domains": [
+              "fury"
+            ],
+            "energy": 3,
+            "power": null,
+            "might": 2,
+            "might_bonus": null,
+            "tags": [
+              "Lucian",
+              "Demacia",
+              "Sentinel"
+            ],
+            "rules_html": "<p>[Assault] (+1 :rb_might: while I'm an attacker.)<br />When I attack, deal damage equal to my [Assault] to an enemy unit here.</p>",
+            "rules_text": "[Assault] (+1 Might while I'm an attacker.)\nWhen I attack, deal damage equal to my [Assault] to an enemy unit here.",
+            "equipment_html": "",
+            "equipment_text": ""
+          },
+          "effective_projection_sha256": "b70012ebde37ed3afaf5598519fc80fb77213545d0dc9e9e7b2ba7a1a4442c23",
+          "existing_field_resolution_ids": [],
+          "original_image": {
+            "path": "assets/data/card_admissions/c27/originals/sfd-028a-221.png",
+            "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/3982de5a4aee53471ca589179f5cf8617169fb52-744x1039.png?accountingTag=RB",
+            "bytes": 997335,
+            "sha256": "66f0c426984c0cc717679ba447fd36764bb0d41a80508430354df8094c0b7e69"
+          },
+          "visual_observation": {
+            "face_visually_inspected": true,
+            "independently_reinspected_on": "2026-10-26",
+            "official_id": "sfd-028a-221",
+            "name": "Lucian, Gunslinger",
+            "collector_code": "SFD-028a/221",
+            "original_image_sha256": "66f0c426984c0cc717679ba447fd36764bb0d41a80508430354df8094c0b7e69",
+            "printed_type_tag_line": "CHAMPION UNIT / LUCIAN / DEMACIA / SENTINEL",
+            "uncertainties": [],
+            "notes": [
+              "Full original face directly inspected; physical tag order retained separately from gallery order.",
+              "Current source-relative attributes and Here are evaluated by the separate engine implementation; source evidence alone is not gameplay proof."
+            ],
+            "printed_types": [
+              "unit"
+            ],
+            "printed_supertypes": [
+              "champion"
+            ],
+            "printed_domains": [
+              "fury"
+            ],
+            "printed_tags": [
+              "Lucian",
+              "Demacia",
+              "Sentinel"
+            ],
+            "printed_energy": 3,
+            "printed_power": null,
+            "printed_might": 2,
+            "printed_might_bonus": null,
+            "printed_rules_icons_expanded": "[Assault] (+1 Might while I'm an attacker.)\nWhen I attack, deal damage equal to my [Assault] to an enemy unit here.",
+            "printed_equipment_icons_expanded": ""
+          }
+        }
+      ],
+      "legal_main_deck_legend_ids": [
+        3,
+        4,
+        8
+      ],
+      "chosen_champion_legend_ids": [],
+      "runtime_image": {
+        "path": "assets/art/card_415.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/2dfb106d7c85235436d25261195a638e2ab15092-744x1039.png?w=280&q=80&fm=png",
+        "bytes": 204230,
+        "sha256": "13e477ee0417526d4e2600b5a66dddef7ded43a059fa323794add0fa157a147d",
+        "width": 280,
+        "height": 391
+      }
+    },
+    {
+      "official_id": "rad-078-167",
+      "name": "Armored Tusker",
+      "raw_printing": {
+        "official_id": "rad-078-167",
+        "public_code": "RAD-078/167",
+        "name": "Armored Tusker",
+        "set": "RAD",
+        "collector_number": 78,
+        "types": [
+          "unit"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "unit"
+        ],
+        "accessibility_types": [
+          "unit"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "body"
+        ],
+        "energy": 6,
+        "power": 1,
+        "might": 4,
+        "might_bonus": null,
+        "rules_html": "<p>[Shield 3] (+3 :rb_might: while I'm a defender.)<br />[Tank] (I must be assigned combat damage first.)<br />When I move, you may deal damage equal to my [Shield] to a unit at a battlefield.</p>",
+        "rules_text": "[Shield 3] (+3 Might while I'm a defender.)\n[Tank] (I must be assigned combat damage first.)\nWhen I move, you may deal damage equal to my [Shield] to a unit at a battlefield.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [],
+        "rarity": "uncommon",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/c479f2fda00506e71a57ac4e8cc297f7f3110a54-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Unit: Armored Tusker. [Shield 3] (+3 [S] while I'm a defender.)\n[Tank] (I must be assigned combat damage first.)\nWhen I move, you may deal damage equal to my [Shield] to a unit at a battlefield.",
+        "illustrators": [
+          "Kudos Productions"
+        ]
+      },
+      "raw_printing_sha256": "3cd4777ff5b583ec253c845981dd122ca9b4755c76ac03a2f85d13296b1f3633",
+      "effective": {
+        "types": [
+          "unit"
+        ],
+        "super_types": [],
+        "domains": [
+          "body"
+        ],
+        "energy": 6,
+        "power": 1,
+        "might": 4,
+        "might_bonus": null,
+        "tags": [
+          "Noxus"
+        ],
+        "rules_html": "<p>[Shield 3] (+3 :rb_might: while I'm a defender.)<br />[Tank] (I must be assigned combat damage first.)<br />When I move, you may deal damage equal to my [Shield] to a unit at a battlefield.</p>",
+        "rules_text": "[Shield 3] (+3 Might while I'm a defender.)\n[Tank] (I must be assigned combat damage first.)\nWhen I move, you may deal damage equal to my [Shield] to a unit at a battlefield.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "effective_projection_sha256": "21446f3ad1e3442de331f19d5ceb341f48c2727c3eedac840d1b2ce76beb8f6a",
+      "existing_field_resolution_ids": [
+        "rad-078-167:tags"
+      ],
+      "original_image": {
+        "path": "assets/data/catalog_evidence/images/rad-078-167.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/c479f2fda00506e71a57ac4e8cc297f7f3110a54-744x1039.png?accountingTag=RB",
+        "bytes": 820313,
+        "sha256": "1bfe065178df0b026f98ba4f6fabc3fc0c443466b059791833ea5407b8573356"
+      },
+      "visual_observation": {
+        "face_visually_inspected": true,
+        "independently_reinspected_on": "2026-10-26",
+        "official_id": "rad-078-167",
+        "name": "Armored Tusker",
+        "collector_code": "RAD-078/167",
+        "original_image_sha256": "1bfe065178df0b026f98ba4f6fabc3fc0c443466b059791833ea5407b8573356",
+        "printed_type_tag_line": "UNIT / NOXUS",
+        "uncertainties": [],
+        "notes": [
+          "Full original face directly inspected; physical tag order retained separately from gallery order.",
+          "Current source-relative attributes and Here are evaluated by the separate engine implementation; source evidence alone is not gameplay proof."
+        ],
+        "printed_types": [
+          "unit"
+        ],
+        "printed_supertypes": [],
+        "printed_domains": [
+          "body"
+        ],
+        "printed_tags": [
+          "Noxus"
+        ],
+        "printed_energy": 6,
+        "printed_power": 1,
+        "printed_might": 4,
+        "printed_might_bonus": null,
+        "printed_rules_icons_expanded": "[Shield 3] (+3 Might while I'm a defender.)\n[Tank] (I must be assigned combat damage first.)\nWhen I move, you may deal damage equal to my [Shield] to a unit at a battlefield.",
+        "printed_equipment_icons_expanded": ""
+      },
+      "runtime_id": 416,
+      "errata": [],
+      "runtime_rules_text": "[Shield 3] (+3 Might while I'm a defender.)\n[Tank] (I must be assigned combat damage first.)\nWhen I move, you may deal damage equal to my [Shield] to a unit at a battlefield.",
+      "printing_cohort": [
+        "rad-078-167"
+      ],
+      "alternate_printings": [],
+      "legal_main_deck_legend_ids": [
+        1,
+        7,
+        8
+      ],
+      "chosen_champion_legend_ids": [],
+      "runtime_image": {
+        "path": "assets/art/card_416.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/c479f2fda00506e71a57ac4e8cc297f7f3110a54-744x1039.png?w=280&q=80&fm=png",
+        "bytes": 176844,
+        "sha256": "93c647f9e9f374ca633a779bb4470f6a8f8a7bd5d55d2ca02ba4229c275a051d",
+        "width": 280,
+        "height": 391
+      }
+    }
+  ]
+}

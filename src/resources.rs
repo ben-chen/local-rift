@@ -8,6 +8,66 @@ use crate::payment::{POWER_DOMAINS, PowerPayment};
 use std::collections::HashSet;
 
 impl Game {
+    /// An AI policy for an optional counter tax, not a replacement for exact
+    /// resource reachability. Ready-rune Energy is already included in energy;
+    /// tapping preserves that total and recycling/Power-only Add cannot raise it.
+    /// While this decision is unresolved, resource observers stay queued.
+    /// Unknown or conditional producers and any nested payment keep the existing
+    /// exact search. We intentionally do not explore an unchosen Power branch
+    /// merely to discover its hypothetical capacity failure before declining.
+    pub(crate) fn ai_counter_tax_decline_without_add(&self, player: usize) -> Result<bool, String> {
+        self.validate_numeric_state()?;
+        let Some(Decision::CounterTax {
+            player: owner,
+            cost,
+            ..
+        }) = self.decision
+        else {
+            return Ok(false);
+        };
+        if owner != player
+            || self.payment_plan.is_some()
+            || !self.resource_frames.is_empty()
+            || self.payment_energy_available(player) >= u16::from(cost)
+        {
+            return Ok(false);
+        }
+        // Scan the physical board, not currently offered actions: a producer
+        // may become affordable, or its XP/Empower condition may be satisfied.
+        // Ignoring readiness and attachment deliberately overestimates routes.
+        let state = &self.players[player];
+        for card in state
+            .units
+            .iter()
+            .map(|unit| unit.card_id)
+            .chain(state.gear.iter().map(|gear| gear.card_id))
+        {
+            for rule in activated_rules(card) {
+                if rule.adds_resources()
+                    && rule
+                        .fixed_resource_output()
+                        .is_none_or(|output| output.energy > 0)
+                {
+                    return Ok(false);
+                }
+            }
+        }
+        if state.gear.iter().any(|gear| {
+            !gear.is_gold()
+                && crate::rules::resource_gear(gear.card_id).is_some_and(|output| output.energy > 0)
+        }) {
+            return Ok(false);
+        }
+        if let Some(activation) = crate::legends::legend_activation(self.legend[player].kind) {
+            use crate::legends::LegendActivationEffect::*;
+            match activation.effect {
+                LegionEnergy => return Ok(false),
+                SpellPower | Assault | Recruit | Ready | Draw => {}
+            }
+        }
+        Ok(true)
+    }
+
     fn resource_state_key(&self, player: usize) -> String {
         let p = &self.players[player];
         format!(
@@ -576,8 +636,7 @@ mod tests {
             p.gear.clear();
             p.discard.clear();
             p.champion = None;
-            p.runes = [0; 6];
-            p.exhausted_runes = [0; 6];
+            p.set_rune_setup([0; 6], [0; 6]).unwrap();
             p.energy = 0;
             p.energy_pool = 0;
             p.power_pool = [0; 6];
@@ -981,7 +1040,12 @@ mod tests {
         // A bounded suggestion can decline a hypothetical branch, but only an
         // exact search establishes impossibility. A legal Add can still yield
         // a complete executable witness after the initial goal is unresolved.
-        game.players[0].runes[0] = 1;
+        {
+            let mut runes = game.players[0].runes;
+            let used = game.players[0].exhausted_runes;
+            runes[0] = 1;
+            game.players[0].set_rune_setup(runes, used).unwrap();
+        }
         let path = game
             .resource_witness(0, |state| {
                 if state.players[0].energy > 0 {

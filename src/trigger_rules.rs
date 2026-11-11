@@ -58,6 +58,7 @@ pub enum Condition {
     FirstEachTurn,
     SecondDraw,
     SourceEmpowered,
+    OptionalPlayCostPaid,
     SourceAtEventBattlefield,
     ControllerControlsSourceBattlefield,
 }
@@ -134,11 +135,27 @@ pub enum Amount {
     Fixed(u8),
     FriendlyUnits,
 }
+/// A source characteristic referenced when a damage instruction executes.
+/// Keyword values remain referenceable even outside their combat designation.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum SourceDamageValue {
+    Might,
+    Assault,
+    Shield,
+}
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum SourceDamageRecipients {
+    ChosenTargets,
+    /// Programmatic affected set; these units are not chosen targets.
+    AllEnemiesHere,
+}
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Effect {
     KillSourceGear,
     ReturnSourceGear,
     MoveTargetsToSourceBattlefield,
+    MoveTargetsToEventDestination,
+    DrawIfOtherFriendlyMightAtLeast(u64),
     DrawLook(crate::game::DrawLookKind),
     RevealMovedTop,
     ClocktowerDeathknell,
@@ -164,6 +181,12 @@ pub enum Effect {
     Ready(Operand),
     Buff(Operand),
     Damage(u8),
+    /// Read the physical source's current characteristic and current location.
+    /// An unavailable source supplies neither a value nor a last-known Here.
+    SourceDamage {
+        value: SourceDamageValue,
+        recipients: SourceDamageRecipients,
+    },
     Bounce,
     FightSource,
     Stun,
@@ -296,6 +319,157 @@ pub fn trigger_rules(card_id: usize) -> &'static [TriggerRule] {
         )
     };
     match card_id {
+        417 => {
+            const {
+                &[rule(
+                    SelfMoved,
+                    &[ToBattlefield],
+                    true,
+                    TargetRule {
+                        allegiance: Allegiance::Enemy,
+                        ..ANY
+                    },
+                    &[MoveTargetsToEventDestination],
+                )]
+            }
+        }
+        418 => {
+            const {
+                &[rule(
+                    SelfPlayed,
+                    &[],
+                    false,
+                    TargetRule::NONE,
+                    &[DrawIfOtherFriendlyMightAtLeast(5)],
+                )]
+            }
+        }
+        419 => {
+            const {
+                &[rule(
+                    FriendlyCombatWin,
+                    &[SourceAtEventBattlefield],
+                    false,
+                    TargetRule::NONE,
+                    &[Draw(1)],
+                )]
+            }
+        }
+        420 => {
+            const {
+                &[rule(
+                    SelfPlayed,
+                    &[OptionalPlayCostPaid],
+                    false,
+                    TargetRule::NONE,
+                    &[
+                        Ready(Source),
+                        Might {
+                            who: Source,
+                            amount: 2,
+                            minimum: 0,
+                        },
+                    ],
+                )]
+            }
+        }
+        412 => {
+            const {
+                &[
+                    rule(
+                        SelfAttack,
+                        &[],
+                        false,
+                        ENEMY_HERE,
+                        &[SourceDamage {
+                            value: SourceDamageValue::Might,
+                            recipients: SourceDamageRecipients::ChosenTargets,
+                        }],
+                    ),
+                    rule(
+                        SelfDefend,
+                        &[],
+                        false,
+                        ENEMY_HERE,
+                        &[SourceDamage {
+                            value: SourceDamageValue::Might,
+                            recipients: SourceDamageRecipients::ChosenTargets,
+                        }],
+                    ),
+                ]
+            }
+        }
+        413 => {
+            const {
+                &[rule(
+                    SelfAttack,
+                    &[],
+                    false,
+                    ENEMY_HERE,
+                    &[SourceDamage {
+                        value: SourceDamageValue::Might,
+                        recipients: SourceDamageRecipients::ChosenTargets,
+                    }],
+                )]
+            }
+        }
+        414 => {
+            const {
+                &[
+                    rule(
+                        SelfAttack,
+                        &[],
+                        false,
+                        TargetRule::NONE,
+                        &[SourceDamage {
+                            value: SourceDamageValue::Might,
+                            recipients: SourceDamageRecipients::AllEnemiesHere,
+                        }],
+                    ),
+                    rule(
+                        SelfDefend,
+                        &[],
+                        false,
+                        TargetRule::NONE,
+                        &[SourceDamage {
+                            value: SourceDamageValue::Might,
+                            recipients: SourceDamageRecipients::AllEnemiesHere,
+                        }],
+                    ),
+                ]
+            }
+        }
+        415 => {
+            const {
+                &[rule(
+                    SelfAttack,
+                    &[],
+                    false,
+                    ENEMY_HERE,
+                    &[SourceDamage {
+                        value: SourceDamageValue::Assault,
+                        recipients: SourceDamageRecipients::ChosenTargets,
+                    }],
+                )]
+            }
+        }
+        416 => {
+            const {
+                &[rule(
+                    SelfMoved,
+                    &[],
+                    true,
+                    TargetRule {
+                        battlefield: true,
+                        ..ANY
+                    },
+                    &[SourceDamage {
+                        value: SourceDamageValue::Shield,
+                        recipients: SourceDamageRecipients::ChosenTargets,
+                    }],
+                )]
+            }
+        }
         401 => const { &[DEPLOY_HOLD] },
         402 => {
             const {

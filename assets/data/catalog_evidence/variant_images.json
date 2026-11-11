@@ -1469,5 +1469,48 @@
       ],
       "observation": "Same attack/defend -2 Might, minimum 1, instruction. Printed Ahri/Ionia tags agree with feed."
     }
+  },
+  {
+    "official_id": "unl-028-219",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/e0ce05148d7368070bcc8c0a43f66ece0834653a-744x1039.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/unl-028-219.png",
+    "sha256": "6926030f227cc8bc2bbcc76c4d5bbcc37ab5d70e4dee551f0ae000458c2fcf10",
+    "bytes": 930012,
+    "visual_review": {
+      "reviewed_on": "2026-10-26",
+      "method": "Individual complete original official face inspection: footer/name/type/domain/cost/Might/tags and rules panel.",
+      "collector_footer": "UNL · 028/219",
+      "printed_type": "Champion Unit",
+      "printed_tags_in_face_order": [
+        "Pyke",
+        "Bilgewater"
+      ],
+      "printed_rules_text": "[Hidden] (Hide now for [Any Power] to react with later for [0 Energy].)\n[Ganking] (I can move from battlefield to battlefield.)\nYou may pay [Fury Power] as an additional cost to play me.\nWhen you play me, if you paid the additional cost, ready me and give me +2 Might this turn.",
+      "printed_reminder_spans": [
+        "(Hide now for [Any Power] to react with later for [0 Energy].)",
+        "(I can move from battlefield to battlefield.)"
+      ],
+      "observation": "Complete face UNL028/219: Fury Champion Unit, Pyke/Bilgewater, Energy3, no printed Power, Might2. Hidden/Ganking with reminder text; optional oneFuryPower play cost; on play if paid, Ready then+2Mightthisturn. No equipment panel."
+    }
+  },
+  {
+    "official_id": "unl-028a-219",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/583f1c15c1bdc47c9d4ebb41a210c182262c8ee9-744x1039.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/unl-028a-219.png",
+    "sha256": "1f64a7b011325a4910c55164f729c2bcb5560f9afe8171d08900b39fc1ebe3fd",
+    "bytes": 1106824,
+    "visual_review": {
+      "reviewed_on": "2026-10-26",
+      "method": "Individual complete original official face inspection: footer/name/type/domain/cost/Might/tags and rules panel.",
+      "collector_footer": "UNL · 028a/219",
+      "printed_type": "Champion Unit",
+      "printed_tags_in_face_order": [
+        "Pyke",
+        "Bilgewater"
+      ],
+      "printed_rules_text": "[Hidden]\n[Ganking]\nYou may pay [Fury Power] as an additional cost to play me.\nWhen you play me, if you paid the additional cost, ready me and give me +2 Might this turn.",
+      "printed_reminder_spans": [],
+      "observation": "Complete alternate face UNL028a/219: same type/tags/domain/stats and both operative additional-cost/conditional-play sentences as base printing. Hidden/Ganking present without reminder text. Rule text variance is reminder omission, not changed instructions. No equipment panel."
+    }
   }
 ]

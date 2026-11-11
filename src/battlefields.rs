@@ -1,8 +1,8 @@
-//! Eleven source-reviewed battlefield choices; preset defaults remain IDs 0–3.
+//! Seventeen source-reviewed battlefield choices; preset defaults remain IDs 0–3.
 //!
-//! Text is from Riot's official Card Gallery snapshot (2026-10-24). Void Gate
-//! uses the corrected Origins erratum, not the older text still shown in art:
-//! https://riftbound.leagueoflegends.com/en-us/news/rules-and-releases/riftbound-origins-card-errata/
+//! Gallery text and complete original faces are source-reviewed through 2026-10-26.
+//! Void Gate, Emperor's Dais, and Targon's Peak use operative official errata;
+//! assets/data/battlefields.json preserves the separate original printed text.
 use crate::activated::AbilitySource;
 use crate::cards::CardKind;
 use crate::game::play::{CostContext, CostModifier, CostScope, PlayGrantKind};
@@ -17,7 +17,7 @@ pub struct BattlefieldDef {
     pub source_url: &'static str,
 }
 
-pub const BATTLEFIELDS: [BattlefieldDef; 11] = [
+pub const BATTLEFIELDS: [BattlefieldDef; 17] = [
     BattlefieldDef {
         id: 0,
         name: "Sunken Temple",
@@ -95,19 +95,71 @@ pub const BATTLEFIELDS: [BattlefieldDef; 11] = [
         source_id: "unl-219-219",
         source_url: "https://playriftbound.com/en-us/card-gallery/",
     },
+    BattlefieldDef {
+        id: 11,
+        name: "Emperor's Dais",
+        official_text: "When you conquer here, you may pay [1 Energy] and return a unit you control here to its owner's hand to play a 2 Might Sand Soldier unit token here.",
+        source_id: "sfd-207-221",
+        source_url: "https://playriftbound.com/en-us/news/announcements/vendetta-errata-updates/",
+    },
+    BattlefieldDef {
+        id: 12,
+        name: "Star Spring",
+        official_text: "The first time a player plays a non-token unit here each turn, they may move another unit they control here to its base.",
+        source_id: "unl-215-219",
+        source_url: "https://playriftbound.com/en-us/card-gallery/",
+    },
+    BattlefieldDef {
+        id: 13,
+        name: "Abandoned Hall",
+        official_text: "When a player plays a spell, they may give a unit they control here +1 Might this turn.",
+        source_id: "unl-205-219",
+        source_url: "https://playriftbound.com/en-us/card-gallery/",
+    },
+    BattlefieldDef {
+        id: 14,
+        name: "Targon's Peak",
+        official_text: "When you conquer here, ready up to 2 runes at the end of this turn.",
+        source_id: "ogn-289-298",
+        source_url: "https://playriftbound.com/en-us/news/rules-and-releases/riftbound-origins-card-errata/",
+    },
+    BattlefieldDef {
+        id: 15,
+        name: "Shadow Temple",
+        official_text: "When you hold here, [Burn 3]. (Put the top 3 cards of your Main Deck into your trash.)",
+        source_id: "ven-165-166",
+        source_url: "https://playriftbound.com/en-us/card-gallery/",
+    },
+    BattlefieldDef {
+        id: 16,
+        name: "Zaun Warrens",
+        official_text: "When you conquer here, discard 1, then draw 1.",
+        source_id: "ogn-298-298",
+        source_url: "https://playriftbound.com/en-us/card-gallery/",
+    },
 ];
 
 pub fn battlefield(id: usize) -> &'static BattlefieldDef {
     &BATTLEFIELDS[id]
 }
 
-/// Irelia, Yi, Kennen, and Kai'Sa each default to a field from their source list.
+/// Bundled presets default to a battlefield from their published source list.
 pub fn default_battlefield(deck: usize) -> usize {
-    deck.min(3)
+    match deck {
+        4 => 1, // Rengar: Seat of Power.
+        _ => deck.min(3),
+    }
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum BattlefieldAbility {
+    Dais { lane: usize },
+    StarSpring { lane: usize },
+    AbandonedHall { lane: usize },
+    TargonPeakDelay { lane: usize },
+    TargonPeakReady { lane: usize },
+    ShadowTempleBurn { lane: usize },
+    ZaunWarrensLoot { lane: usize },
     TempleDraw { lane: usize },
     SeatDraw { lane: usize },
     MinefieldBurn { lane: usize },
@@ -117,7 +169,14 @@ pub enum BattlefieldAbility {
 impl BattlefieldAbility {
     pub fn lane(self) -> usize {
         match self {
-            Self::TempleDraw { lane }
+            Self::Dais { lane }
+            | Self::StarSpring { lane }
+            | Self::AbandonedHall { lane }
+            | Self::TargonPeakDelay { lane }
+            | Self::TargonPeakReady { lane }
+            | Self::ShadowTempleBurn { lane }
+            | Self::ZaunWarrensLoot { lane }
+            | Self::TempleDraw { lane }
             | Self::SeatDraw { lane }
             | Self::MinefieldBurn { lane }
             | Self::Grant { lane, .. } => lane,
@@ -174,7 +233,20 @@ impl Game {
                 ChainAbility::Battlefield(BattlefieldAbility::MinefieldBurn { lane }),
             ),
             5 => self.queue_battlefield_grant(player, lane, PlayGrantKind::AccelerateNextUnit),
-            3 | 4 | 6..=10 => {}
+            11 => self.queue_dais_cost(player, lane),
+            14 => self.queue_ability(
+                player,
+                0,
+                Vec::new(),
+                ChainAbility::Battlefield(BattlefieldAbility::TargonPeakDelay { lane }),
+            ),
+            16 => self.queue_ability(
+                player,
+                0,
+                Vec::new(),
+                ChainAbility::Battlefield(BattlefieldAbility::ZaunWarrensLoot { lane }),
+            ),
+            3 | 4 | 6..=10 | 12 | 13 | 15 => {}
             _ => unreachable!("validated battlefield selection"),
         }
 
@@ -188,6 +260,12 @@ impl Game {
         }
         match self.battlefields[lane] {
             4 => self.queue_battlefield_grant(player, lane, PlayGrantKind::RepeatNextSpell),
+            15 => self.queue_ability(
+                player,
+                0,
+                Vec::new(),
+                ChainAbility::Battlefield(BattlefieldAbility::ShadowTempleBurn { lane }),
+            ),
             10 => {
                 self.queue_battlefield_grant(player, lane, PlayGrantKind::UnitSurchargeThisTurn(1))
             }
@@ -303,6 +381,7 @@ impl Game {
         &mut self,
         player: usize,
         ability: BattlefieldAbility,
+        targets: &[Target],
     ) -> Result<(), String> {
         let lane = ability.lane();
         self.push_log(format!(
@@ -311,6 +390,15 @@ impl Game {
             battlefield(self.battlefields[lane]).name
         ));
         match ability {
+            BattlefieldAbility::Dais { .. }
+            | BattlefieldAbility::StarSpring { .. }
+            | BattlefieldAbility::AbandonedHall { .. }
+            | BattlefieldAbility::TargonPeakDelay { .. }
+            | BattlefieldAbility::TargonPeakReady { .. }
+            | BattlefieldAbility::ShadowTempleBurn { .. }
+            | BattlefieldAbility::ZaunWarrensLoot { .. } => {
+                self.resolve_new_battlefield_ability(player, ability, targets)?
+            }
             BattlefieldAbility::TempleDraw { .. } => self.draw(player, 1)?,
             BattlefieldAbility::SeatDraw { lane } => {
                 let count = self
@@ -588,8 +676,7 @@ mod tests {
         game.players[1].units.push(unit(100, Some(0), 10));
         game.players[1].units.push(unit(101, Some(1), 10));
         game.battlefield_owner = [Some(1), Some(1)];
-        game.players[0].runes = [2; 6];
-        game.players[0].exhausted_runes = [0; 6];
+        game.players[0].set_rune_setup([2; 6], [0; 6]).unwrap();
         game.players[0].energy = 12;
         game.players[0].hand = vec![53]; // Two separate packets of 3 damage.
         game.apply(Action::PlayCardWithTargets {
