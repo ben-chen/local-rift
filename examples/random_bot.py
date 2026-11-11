@@ -61,8 +61,9 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--binary", default="target/release/rift-api")
     parser.add_argument("--seed", type=int, default=42)
-    parser.add_argument("--deck", type=int, choices=range(4), default=0)
-    parser.add_argument("--opponent", type=int, choices=range(4), default=3)
+    # The server's catalog owns the available IDs as new presets are admitted.
+    parser.add_argument("--deck", type=int, default=0)
+    parser.add_argument("--opponent", type=int, default=3)
     parser.add_argument("--custom-deck", type=Path, help="Your saved custom deck JSON file")
     parser.add_argument("--custom-opponent", type=Path, help="Opponent's saved custom deck JSON file")
     parser.add_argument("--first-player", type=int, choices=(0, 1), default=0)
