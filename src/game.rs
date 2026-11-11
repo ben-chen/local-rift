@@ -1483,6 +1483,12 @@ impl Game {
                     {
                         cost = cost.saturating_sub(amount);
                     }
+                    StaticAbility::OpponentNearVictoryEnergyDiscount { within, energy }
+                        if self.players[1 - player].score
+                            >= VICTORY_SCORE.saturating_sub(within) =>
+                    {
+                        cost = cost.saturating_sub(energy);
+                    }
                     StaticAbility::TrashEnergyDiscount => {
                         cost =
                             cost.saturating_sub(self.players[player].discard.len().min(255) as u8);
@@ -3391,6 +3397,7 @@ impl Game {
         match kind {
             CounterKind::Abandon | CounterKind::HardBargain | CounterKind::Unconditional => true,
             CounterKind::Defy => target.cost <= 4 && target.power_cost <= 1,
+            CounterKind::MinimumPower(minimum) => target.power_cost >= minimum,
             CounterKind::NotSoFast => {
                 item.player != actor
                     && item.targets.iter().any(
@@ -3437,7 +3444,10 @@ impl Game {
                 self.predict(item.player);
             }
             OfficialEffect::Counter(
-                CounterKind::Defy | CounterKind::NotSoFast | CounterKind::Unconditional,
+                CounterKind::Defy
+                | CounterKind::NotSoFast
+                | CounterKind::Unconditional
+                | CounterKind::MinimumPower(_),
             ) => self.counter_spell(chain_id, false),
             OfficialEffect::Counter(CounterKind::HardBargain) => {
                 let target_player = self
@@ -7572,6 +7582,12 @@ impl Game {
             }
             OfficialEffect::None | OfficialEffect::Unsupported => {}
             OfficialEffect::Counter(_) => {} // Executed by the chain resolver.
+            OfficialEffect::DrawThenChannel { draw, channel } => {
+                self.draw(player, draw)?;
+                if self.winner.is_none() {
+                    self.channel_runes(player, channel, true)?;
+                }
+            }
             OfficialEffect::Draw(count) => self.draw(player, count)?,
             OfficialEffect::Damage {
                 amount,
@@ -9475,7 +9491,7 @@ impl Game {
                     };
                     (value(1 - actor)? - value(actor)?).max(0)
                 }
-                OfficialEffect::Channel { .. } => 30,
+                OfficialEffect::Channel { .. } | OfficialEffect::DrawThenChannel { .. } => 30,
                 OfficialEffect::FriendlyMight(_) => {
                     if in_combat {
                         70

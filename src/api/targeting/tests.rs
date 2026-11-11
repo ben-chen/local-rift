@@ -585,3 +585,78 @@ fn decree_preview_wire_and_apply_share_the_live_fury_restriction() {
     resolve_chain(&mut session);
     assert_eq!(session.game.players[0].units[0].temporary_buff, 4);
 }
+
+#[test]
+fn hush_api_filters_printed_power_and_rejects_invalid_choices_atomically() {
+    let mut session = position();
+    session.game.players[0].hand = vec![53, 63];
+    session.game.players[1].hand = vec![423];
+    session.game.players[1]
+        .units
+        .push(unit(510, 73, None, false));
+    let target = Target::Unit {
+        player: 1,
+        unit_id: 510,
+    };
+    apply(
+        &mut session,
+        Action::PlayCardWithTargets {
+            hand_index: 0,
+            lane: None,
+            targets: vec![target, target],
+        },
+    );
+    let eligible = Target::Spell {
+        chain_id: session.game.chain[0].id,
+    };
+    apply(
+        &mut session,
+        Action::PlayCardWithTargets {
+            hand_index: 0,
+            lane: None,
+            targets: vec![target],
+        },
+    );
+    let ineligible = Target::Spell {
+        chain_id: session.game.chain[1].id,
+    };
+    apply(&mut session, Action::Pass);
+    let revision = session.revision();
+    let before = format!("{:?}", session.game);
+    let view = session
+        .target_candidates(
+            1,
+            revision,
+            Action::PlayCardWithTargets {
+                hand_index: 0,
+                lane: None,
+                targets: vec![],
+            },
+            0,
+        )
+        .unwrap();
+    assert_eq!(view.candidates, vec![eligible]);
+    assert_eq!(
+        play_targets_to_json(423)["condition"],
+        json!({"type":"spell_printed_power_at_least", "minimum":2})
+    );
+    let bad = session.handle(json!({"command":"apply", "player":1, "revision":revision,
+    "action":action_to_json(&Action::PlayCardWithTargets {
+        hand_index: 0, lane: None, targets: vec![ineligible],
+    })}));
+    assert_eq!(bad["ok"], false, "{bad}");
+    assert_eq!(bad["error"]["code"], "illegal_action", "{bad}");
+    assert_eq!(session.revision(), revision);
+    assert_eq!(format!("{:?}", session.game), before);
+    apply(
+        &mut session,
+        Action::PlayCardWithTargets {
+            hand_index: 0,
+            lane: None,
+            targets: vec![eligible],
+        },
+    );
+    resolve_chain(&mut session);
+    assert!(session.game.players[0].discard.contains(&53));
+    assert!(session.game.players[1].discard.contains(&423));
+}

@@ -409,3 +409,14 @@ Fury spell still on the chain. The condition is checked again on resolution:
 removing the threat or moving the unit out of combat can invalidate the target.
 Repeat choices count; area damage without unit targets and activated or triggered
 abilities do not. Irelia's choose triggers still resolve independently of Decree.
+
+## Find Your Center and Hush
+
+Find Your Center draws a card, then channels one exhausted rune. If the opponent
+has five or more points, its Energy cost drops from three to one. An empty Rune
+Deck does not add a fallback draw; a victory during Draw ends play immediately.
+
+Hush is a 1-Energy, 2-Calm-Power Reaction. It counters a spell whose printed or
+copied Power cost is at least two. Deflect, Repeat payments and discounts do not
+change that printed characteristic (Core 131.3, 204.1.a and 356.1.c). Hush does not
+counter activated or triggered abilities.

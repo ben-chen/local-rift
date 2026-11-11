@@ -8395,6 +8395,10 @@ fn card_brief(game: &Game, id: usize) -> String {
         KillGear { controller_draw } => {
             format!("Kill gear · its controller draws {controller_draw}")
         }
+        DrawThenChannel { draw, channel } => format!("Draw {draw} · channel {channel} exhausted"),
+        Counter(local_rift::rules::CounterKind::MinimumPower(minimum)) => {
+            format!("Counter a spell with printed Power {minimum}+")
+        }
         KillAllGear => "Kill all gear · including attached equipment".into(),
         KillEnemyDomain { domain } => format!("Kill an enemy {} unit or gear", domain.name()),
         TokensAndDraw { count, might, draw } => {

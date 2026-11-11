@@ -2,7 +2,7 @@
 
 Snapshot checked **2026-10-24**. The official gallery contains **1,408 printing records** grouped into **1,103 distinct full-name identities**. After excluding **12 auxiliary token/tracker identities** and **12 banned identities**, **1,079 identities are legal in Standard/1v1 Constructed**. The separate 2v2 list leaves **1,078**.
 
-**This client does not yet implement every legal card.** It currently maps **422 main-deck cards, 10 independently registered legends, 17 battlefields, and 6 rune resource types** (455 legal identities). **624 legal identities remain unimplemented and are not playable.** Importing this snapshot does not register cards with the engine. Full inventory coverage is not full rules support.
+**This client does not yet implement every legal card.** It currently maps **424 main-deck cards, 10 independently registered legends, 17 battlefields, and 6 rune resource types** (457 legal identities). **622 legal identities remain unimplemented and are not playable.** Importing this snapshot does not register cards with the engine. Full inventory coverage is not full rules support.
 
 ## Scope and authority
 
@@ -30,7 +30,7 @@ Numbered positions include token slots where the publisher numbers them within a
 | Gear + Unit | 1 | 0 | 1 |
 | Legend | 58 | 10 | 48 |
 | Rune | 6 | 6 | 0 |
-| Spell | 268 | 113 | 155 |
+| Spell | 268 | 115 | 153 |
 | Unit | 546 | 235 | 311 |
 
 Each row is a disjoint complete type set. A reviewed Unit Gear has both types (Core 178) and is counted once in `gear+unit`, rather than once in each single-type row. Patched Porobot is the first explicitly reviewed dual-type correction; this is not a complete visual audit of every gallery type. No dual-type card is currently admitted to the engine.
@@ -557,6 +557,8 @@ Current pages are archived under `assets/data/catalog_sources/`; immutable revie
 | 419 | Nidalee, Cat Form | `unl-114-219` |
 | 420 | Pyke, Dockside Butcher | `unl-028-219` |
 | 421 | Decree of Focus | `ven-040-166` |
+| 422 | Find Your Center | `ogn-047-298` |
+| 423 | Hush | `rad-041-167` |
 
 ## Implemented legend ID mapping
 

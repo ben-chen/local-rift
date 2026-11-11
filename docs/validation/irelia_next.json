@@ -1,0 +1,112 @@
+{
+  "reviewed_on": "2026-11-11",
+  "scope": "Find Your Center and Hush following Decree of Focus",
+  "runtime_ids": [
+    422,
+    423
+  ],
+  "rust": {
+    "passed": 1463,
+    "failed": 0,
+    "targets": 96,
+    "command": "cargo test --all-targets",
+    "exit_code": 0
+  },
+  "python": {
+    "passed": 243,
+    "failed": 0,
+    "exit_code": 0
+  },
+  "checks": [
+    "cargo fmt --check",
+    "cargo clippy --all-targets -- -D warnings",
+    "offline catalog check"
+  ],
+  "games": {
+    "completed": 30,
+    "all_five_presets": true,
+    "all_levels": true,
+    "both_seats": true,
+    "starting_player": "Irelia in every match",
+    "recipe": "authored 49-card variant; sourced recipes unchanged",
+    "observed_cards": [
+      421,
+      422
+    ],
+    "hush": "actual AI play checked separately at all three levels in a controlled eligible lethal-spell position"
+  },
+  "visual_review": [
+    {
+      "card": 422,
+      "small": false,
+      "exit": 0,
+      "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-next-preview-422-normal/card.png",
+      "actual_viewed": true,
+      "reviewer": "root",
+      "sha256": "e14f82911b223e392f8ffb78168697661b50279ba64bf685238fd6e6b71112a7",
+      "finding": "Full official art and complete text visible. Inspector only; no target selection interaction claimed."
+    },
+    {
+      "card": 422,
+      "small": true,
+      "exit": 0,
+      "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-next-preview-422-small/card.png",
+      "actual_viewed": true,
+      "reviewer": "root",
+      "sha256": "afb587a15aafc178a8176af8b94d5eba6a096aceb2f4bcea61d088c24c9222bc",
+      "finding": "Full official art and complete text visible. Inspector only; no target selection interaction claimed."
+    },
+    {
+      "card": 423,
+      "small": false,
+      "exit": 0,
+      "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-next-preview-423-normal/card.png",
+      "actual_viewed": true,
+      "reviewer": "root",
+      "sha256": "ef180d9a7455e620a0656caf84ad6e568b6ff3720c9a28f3392c29e349448a72",
+      "finding": "Full official art and complete text visible. Inspector only; no target selection interaction claimed."
+    },
+    {
+      "card": 423,
+      "small": true,
+      "exit": 0,
+      "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-next-preview-423-small/card.png",
+      "actual_viewed": true,
+      "reviewer": "root",
+      "sha256": "d328adeb0a27cb0a2f263ae2a22ba00a7a55ba2089613d5cacf122493baaabfd",
+      "finding": "Full official art and complete text visible. Inspector only; no target selection interaction claimed."
+    }
+  ],
+  "logs": {
+    "irelia-next-native-all-1.log": {
+      "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-next-native-all-1.log",
+      "sha256": "15affb31a5ca0f487f735bbd9297be4712e74e5980f63db6f8cd32d66749dc01"
+    },
+    "irelia-next-python-all-1.log": {
+      "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-next-python-all-1.log",
+      "sha256": "d2788ef87163f89cd686ee0442a067eae5c4182a08caa944f82d0ac47ebcf112"
+    },
+    "irelia-next-clippy-2.log": {
+      "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-next-clippy-2.log",
+      "sha256": "ee41d96bfa66c21bc3925da4be44409ecea0f305706be27854b26463719d6963"
+    },
+    "irelia-next-matches-2.log": {
+      "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-next-matches-2.log",
+      "sha256": "40885a283be886fca9fc264fc940c28d5d70195f770fb318a63cd97ab17ddf78"
+    },
+    "irelia-next-api-2.log": {
+      "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-next-api-2.log",
+      "sha256": "1a5c9a72c2fa97e66f99e776a36260d720f0340ac9295787a3e8ef6b095943a1"
+    }
+  },
+  "prior_failures": [
+    "Early fixtures used the wrong starting-priority seat and a spell with printed Power1; corrected to an explicitly selected starter and Falling Star Power2.",
+    "Random match sample did not naturally play Hush; retained the observed coverage and added a controlled all-level AI response requirement.",
+    "Initial Hush API fixture tried a non-Reaction spell on a chain; corrected to Stupefy."
+  ],
+  "limitations": [
+    "Nix verification remains the previous C28 checkpoint.",
+    "No newly admitted tournament preset or best-of-three sideboarding.",
+    "The archived catalog remains in use while the live publisher gallery duplicate is unresolved."
+  ]
+}

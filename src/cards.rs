@@ -6428,6 +6428,36 @@ pub fn cards() -> Vec<CardDef> {
             tags: &[],
             art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/3f9a1b209cfd6097bac6fa9aec57531e300ef511-744x1039.png?w=280&q=85&fm=png",
         },
+        CardDef {
+            id: 422,
+            official_id: "ogn-047-298",
+            name: "Find Your Center",
+            cost: 3,
+            power_cost: 0,
+            might: 0,
+            domain: Domain::Calm,
+            domains: &[Domain::Calm],
+            kind: CardKind::Spell,
+            official_text: "[Action] (Play on your turn or in showdowns.)\nIf an opponent's score is within 3 points of the Victory Score, this costs [2 Energy] less.\nDraw 1 and channel 1 rune exhausted.",
+            keywords: &["Action"],
+            tags: &[],
+            art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/cd9d798b496fdce133c5b0106d636a230b6e7ebe-744x1039.png?w=280&q=85&fm=png",
+        },
+        CardDef {
+            id: 423,
+            official_id: "rad-041-167",
+            name: "Hush",
+            cost: 1,
+            power_cost: 2,
+            might: 0,
+            domain: Domain::Calm,
+            domains: &[Domain::Calm],
+            kind: CardKind::Spell,
+            official_text: "[Reaction] (Play any time, even before spells and abilities resolve.)\nCounter a spell with Power cost [Any Power][Any Power] or more.",
+            keywords: &["Reaction"],
+            tags: &[],
+            art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/b9c1b9441e42639805b715466938ccd26b89892d-744x1039.png?w=280&q=85&fm=png",
+        },
     ]
 }
 
@@ -6627,7 +6657,7 @@ mod tests {
     #[test]
     fn presets_are_complete_and_references_are_consistent() {
         let catalog = cards();
-        assert_eq!(catalog.len(), 422);
+        assert_eq!(catalog.len(), 424);
         for (index, card) in catalog.iter().enumerate() {
             assert_eq!(index, card.id);
             assert!(!card.official_id.is_empty());

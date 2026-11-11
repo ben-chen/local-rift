@@ -361,6 +361,9 @@ pub(super) fn target_view_hint(game: &Game, view: &PlayTargetView) -> String {
         local_rift::rules::PlayTargetKind::UnitOrGear => "a battlefield unit, or gear in Loadout",
         local_rift::rules::PlayTargetKind::Gear => "highlighted gear on the mat or in Loadout",
         local_rift::rules::PlayTargetKind::Battlefield => "a highlighted battlefield",
+        local_rift::rules::PlayTargetKind::Spell if view.card_id == 423 => {
+            "a pending spell with printed Power cost 2 or more"
+        }
         local_rift::rules::PlayTargetKind::Spell => "a pending spell above",
         _ => match local_rift::rules::targeting(view.card_id).allegiance {
             local_rift::rules::Allegiance::Friendly => "a highlighted friendly unit",

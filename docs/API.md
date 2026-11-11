@@ -23,7 +23,7 @@ Replace `choose_action(view, suggestions, rng)` in that example with your policy
 
 The initial session is in `mulligan` phase, with decks `[0,1]`, seed `1`, Tactical AI, and player `0` going first. `info` reports protocol version `1`; `catalog` reports separate preset, legend, card, domain, and battlefield IDs.
 
-The repository's `assets/data/full_catalog.json` is a separate inventory with schema version `2`; it is not the bot protocol or the playable `catalog` response. It preserves raw printing fields and adds reviewed `effective` facts, resolution references, and unresolved-field diagnostics. Deck validation uses those effective facts and rejects unresolved gameplay or variant fields, including conflicts on alternate printings. Source review alone never registers a playable card. Inventory-only identity `kind` preserves complete type sets as sorted `+`-joined strings, such as `gear+unit`; the corresponding printing’s `effective.types` retains both types. This does not add a playable bot-protocol card kind. Main-card IDs are append-only; the latest additions are 417–420. Existing IDs and sourced preset lists retain their identities, while eligible-card and chosen-champion lists expand with supported cards. Additive Temporary status, token identity, evaluated passive values and target queries retain protocol version `1`. See [the inventory review contract](CATALOG_REVIEW.md) for evidence and remaining variant-review limits.
+The repository's `assets/data/full_catalog.json` is a separate inventory with schema version `2`; it is not the bot protocol or the playable `catalog` response. It preserves raw printing fields and adds reviewed `effective` facts, resolution references, and unresolved-field diagnostics. Deck validation uses those effective facts and rejects unresolved gameplay or variant fields, including conflicts on alternate printings. Source review alone never registers a playable card. Inventory-only identity `kind` preserves complete type sets as sorted `+`-joined strings, such as `gear+unit`; the corresponding printing’s `effective.types` retains both types. This does not add a playable bot-protocol card kind. Main-card IDs are append-only; the latest additions are 421–423. Existing IDs and sourced preset lists retain their identities, while eligible-card and chosen-champion lists expand with supported cards. Additive Temporary status, token identity, evaluated passive values and target queries retain protocol version `1`. See [the inventory review contract](CATALOG_REVIEW.md) for evidence and remaining variant-review limits.
 
 ```json
 {"id":"hello","command":"info"}
@@ -66,7 +66,7 @@ Reset defaults match the initial settings. `decks` is a pair of preset IDs. `bat
 
 A custom list can replace either seat through `custom_decks:[deck_or_null,deck_or_null]`. Omission uses presets for both seats. Each deck object contains `name`, `legend`, `chosen_champion`, `cards` (pairs of card ID and count), `runes` (six counts in catalog domain order), and `battlefield`. `legend` accepts a stable numeric registry ID or its official printing ID, such as `"ogn-265-298"`; saved/output decks normalize it to the numeric ID. Existing numeric IDs0–3 retain their identities. The selected chosen-champion variant does not change the legend.
 
-`catalog.legends` is independent of `catalog.presets`: ten legends are supported while the four sourced preset lists retain their original IDs. Every legend reports its official identity/text, domains, default chosen champion, `eligible_cards`, `eligible_champions`, and a complete editable `training_deck`. For Darius, Viktor, Lux, Ambessa, Rengar, and Ezreal those are authored practice lists, not tournament/meta recommendations; `training_note` describes the origin. Pass the returned training deck through `custom_decks` to practice with that legend. `CustomDeck::from_legend` provides the same starting list in Rust; `from_preset` still copies an exact sourced preset. `catalog.presets[].legend_id` links each preset to the registry. A new legend ID must not be used as a preset ID in `reset.decks`.
+`catalog.legends` is independent of `catalog.presets`: ten legends are supported while the five sourced preset lists retain their original IDs. Every legend reports its official identity/text, domains, default chosen champion, `eligible_cards`, `eligible_champions`, and a complete editable `training_deck`. For Darius, Viktor, Lux, Ambessa, Rengar, and Ezreal those are authored practice lists, not tournament/meta recommendations; `training_note` describes the origin. Pass the returned training deck through `custom_decks` to practice with that legend. `CustomDeck::from_legend` provides the same starting list in Rust; `from_preset` still copies an exact sourced preset. `catalog.presets[].legend_id` links each preset to the registry. A new legend ID must not be used as a preset ID in `reset.decks`.
 
 Deck validation requires at least 40 main-deck cards including the chosen champion, no more than three copies by full name, at most three Signature cards in total, matching champion tags, complete domain compatibility, exactly 12 legal runes, and an implemented legal battlefield. A `Unique` card is limited to one copy. Only implemented Standard-legal cards and legends can be selected. Zero-count rows should be omitted. Invalid decks are rejected before resetting the live match. Optional reset `battlefields` overrides the decks' selected fields. The API leaves both opening hands untouched for each agent's mulligan.
 
@@ -570,3 +570,16 @@ friendly units using the live combat and spell chain, including Repeat choices.
 The same predicate guards finalization and resolution. Abilities and unchosen
 area-damage recipients do not satisfy the spell condition. No new action type is
 needed; use `play_card_targets` and the existing payment/response commands.
+
+### Find Your Center and Hush
+
+Card 422 (`ogn-047-298`) uses the ordinary zero-target spell and payment actions.
+Cost previews and final payment reduce its Energy by two when the opponent's
+score is at least five. Resolution draws one, then channels one exhausted rune;
+an empty Rune Deck does not produce an extra draw.
+
+Card 423 (`rad-041-167`) uses ordinary spell targets and adds
+`play_targets.condition: {"type":"spell_printed_power_at_least","minimum":2}`.
+Eligible targets are spells with at least two printed or copied Power. Cost
+modifiers and additional payments do not affect that characteristic. Abilities
+are ineligible. Target previews, validation and application share this rule.

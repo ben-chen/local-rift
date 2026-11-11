@@ -1042,6 +1042,11 @@ impl Game {
                     StaticAbility::EmpoweredEnergyDiscount(n) if self.controls_empowered(p) => {
                         (n.into(), 0)
                     }
+                    StaticAbility::OpponentNearVictoryEnergyDiscount { within, energy }
+                        if self.players[1 - p].score >= VICTORY_SCORE.saturating_sub(within) =>
+                    {
+                        (u64::from(energy), 0)
+                    }
                     StaticAbility::TrashEnergyDiscount => (self.players[p].discard.len() as u64, 0),
                     StaticAbility::LegionEnergyDiscount(n) if self.cards_played[p] > 0 => {
                         (n.into(), 0)

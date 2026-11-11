@@ -50,6 +50,11 @@ pub(super) fn play_targets_to_json(card_id: crate::cards::CardId) -> Value {
             "rechecked_on_resolution":true
         });
     }
+    if let crate::rules::OfficialEffect::Counter(crate::rules::CounterKind::MinimumPower(minimum)) =
+        crate::rules::effect(card_id)
+    {
+        value["condition"] = json!({"type":"spell_printed_power_at_least","minimum":minimum});
+    }
     value
 }
 

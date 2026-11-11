@@ -10,9 +10,10 @@ sideboard gaps are **Decree of Focus** and **Ravenbloom Prefect**. Decree of Foc
 from those shared gaps. The dated lists remain unchanged.
 
 The November 6–8 [Stuttgart list attributed to DonCapucino by Riftwatch](https://riftwatch.gg/decks/rc-stuttgart-2026-33/)
-adds two priority gaps: **Find Your Center** (two main-deck copies) and **Hush**
+identified two further priority cards: **Find Your Center** (two main-deck copies) and **Hush**
 (one sideboard copy). This is a secondary-source lead pending independent list
-provenance review, not a newly admitted tournament preset.
+provenance review, not a newly admitted tournament preset. Both cards are now
+implemented and validated for custom practice.
 
 Next, review Radiance Irelia lists for Battle Preparations, Reckless Innovator,
 and Hunker Down. Community mentions and aggregate reference lists are leads,

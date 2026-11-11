@@ -1,0 +1,173 @@
+{
+  "status": "admitted",
+  "records": [
+    {
+      "runtime_id": 422,
+      "official_id": "ogn-047-298",
+      "raw_printing": {
+        "official_id": "ogn-047-298",
+        "public_code": "OGN-047/298",
+        "name": "Find Your Center",
+        "set": "OGN",
+        "collector_number": 47,
+        "types": [
+          "spell"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "spell"
+        ],
+        "accessibility_types": [
+          "spell"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "calm"
+        ],
+        "energy": 3,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "rules_html": "<p>[Action] (Play on your turn or in showdowns.)<br />If an opponent's score is within 3 points of the Victory Score, this costs :rb_energy_2: less.<br />Draw 1 and channel 1 rune exhausted.</p>",
+        "rules_text": "[Action] (Play on your turn or in showdowns.)\nIf an opponent's score is within 3 points of the Victory Score, this costs [2 Energy] less.\nDraw 1 and channel 1 rune exhausted.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [],
+        "rarity": "common",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/cd9d798b496fdce133c5b0106d636a230b6e7ebe-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Spell: Find Your Center. [Action] (Play on your turn or in showdowns.)\nIf an opponent's score is within 3 points of the Victory Score, this costs [2] less.\nDraw 1 and channel 1 rune exhausted.",
+        "illustrators": [
+          "Kudos Productions"
+        ]
+      },
+      "raw_printing_sha256": "5224a221f1c0f7e224ad42d05a9623efe9a14190bef167793b878f275160a5ce",
+      "effective": {
+        "types": [
+          "spell"
+        ],
+        "super_types": [],
+        "domains": [
+          "calm"
+        ],
+        "energy": 3,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>[Action] (Play on your turn or in showdowns.)<br />If an opponent's score is within 3 points of the Victory Score, this costs :rb_energy_2: less.<br />Draw 1 and channel 1 rune exhausted.</p>",
+        "rules_text": "[Action] (Play on your turn or in showdowns.)\nIf an opponent's score is within 3 points of the Victory Score, this costs [2 Energy] less.\nDraw 1 and channel 1 rune exhausted.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "resolution_ids": [],
+      "printing_cohort": [
+        "ogn-047-298"
+      ],
+      "errata": [],
+      "original_image": {
+        "path": "assets/data/card_admissions/irelia_next/ogn-047-298.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/cd9d798b496fdce133c5b0106d636a230b6e7ebe-744x1039.png?accountingTag=RB",
+        "sha256": "deb11acc5e69c8b2e3ec26a240b78cd80763b8c3ef115d7d019a232e9d74b71b"
+      },
+      "runtime_image": {
+        "path": "assets/art/card_422.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/cd9d798b496fdce133c5b0106d636a230b6e7ebe-744x1039.png?w=280&q=85&fm=png",
+        "sha256": "ef209747eba36030a939b99c0e95b5c09024a45bd4ec3b0a4e83143ac529aa92"
+      },
+      "visual_review": {
+        "actual_full_face_viewed": true,
+        "reviewer": "root",
+        "reviewed_on": "2026-11-11",
+        "original_image_sha256": "deb11acc5e69c8b2e3ec26a240b78cd80763b8c3ef115d7d019a232e9d74b71b"
+      }
+    },
+    {
+      "runtime_id": 423,
+      "official_id": "rad-041-167",
+      "raw_printing": {
+        "official_id": "rad-041-167",
+        "public_code": "RAD-041/167",
+        "name": "Hush",
+        "set": "RAD",
+        "collector_number": 41,
+        "types": [
+          "spell"
+        ],
+        "type_source": "cardImage.accessibilityText",
+        "structured_types": [],
+        "accessibility_types": [
+          "spell"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [],
+        "energy": 1,
+        "power": 2,
+        "might": null,
+        "might_bonus": null,
+        "rules_html": "<p>[Reaction] (Play any time, even before spells and abilities resolve.)<br />Counter a spell with Power cost :rb_rune_rainbow::rb_rune_rainbow: or more.</p>",
+        "rules_text": "[Reaction] (Play any time, even before spells and abilities resolve.)\nCounter a spell with Power cost [Any Power][Any Power] or more.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [],
+        "rarity": "rare",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/b9c1b9441e42639805b715466938ccd26b89892d-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Spell: Hush. [Reaction] (Play any time, even before spells and abilities resolve.)\nCounter a spell with Power cost [A][A] or more.",
+        "illustrators": [
+          "Kudos Productions"
+        ]
+      },
+      "raw_printing_sha256": "8a4aa521ace3687c4fea67fc25715dd4f7d7d6ab4ccba8e2a24d8a25859b4330",
+      "effective": {
+        "types": [
+          "spell"
+        ],
+        "super_types": [],
+        "domains": [
+          "calm"
+        ],
+        "energy": 1,
+        "power": 2,
+        "might": null,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>[Reaction] (Play any time, even before spells and abilities resolve.)<br />Counter a spell with Power cost :rb_rune_rainbow::rb_rune_rainbow: or more.</p>",
+        "rules_text": "[Reaction] (Play any time, even before spells and abilities resolve.)\nCounter a spell with Power cost [Any Power][Any Power] or more.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "resolution_ids": [
+        "rad-041-167:types",
+        "rad-041-167:domains"
+      ],
+      "printing_cohort": [
+        "rad-041-167"
+      ],
+      "errata": [],
+      "original_image": {
+        "path": "assets/data/card_admissions/irelia_next/rad-041-167.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/b9c1b9441e42639805b715466938ccd26b89892d-744x1039.png?accountingTag=RB",
+        "sha256": "5a6024a14de44725e0147767126586bcc938f46f67a496643a22b327c1aa8a2f"
+      },
+      "runtime_image": {
+        "path": "assets/art/card_423.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/b9c1b9441e42639805b715466938ccd26b89892d-744x1039.png?w=280&q=85&fm=png",
+        "sha256": "34fa2b05da36fc4db4b0b4de30effcb7dacca88fab05a8da910bb3aa209eae1a"
+      },
+      "visual_review": {
+        "actual_full_face_viewed": true,
+        "reviewer": "root",
+        "reviewed_on": "2026-11-11",
+        "original_image_sha256": "5a6024a14de44725e0147767126586bcc938f46f67a496643a22b327c1aa8a2f"
+      }
+    }
+  ],
+  "preserved_runtime_prefix": {
+    "cards_sha256": "3d85848196a8fc08317e16fe3b05c2fe202d8d24a3e36ced604b03973f3afb6f",
+    "presets_sha256": "55f81fe597de35b0c4dee12d87ad36ae72463cbfb5ae576d00f87104cd5914d5",
+    "card_count": 422,
+    "preset_count": 5
+  },
+  "reviewed_on": "2026-11-11"
+}

@@ -13,6 +13,7 @@ pub enum CounterKind {
     NotSoFast,
     HardBargain,
     Unconditional,
+    MinimumPower(u8),
 }
 
 /// Amounts calculated when the instruction resolves, after responses.
@@ -71,6 +72,10 @@ pub enum OfficialEffect {
         draw: u8,
     },
     DrawLook,
+    DrawThenChannel {
+        draw: u8,
+        channel: u8,
+    },
     DeckLookPlay,
     BanishSmallOrGear {
         maximum: u8,
@@ -252,6 +257,11 @@ pub struct Targeting {
 pub fn effect(id: usize) -> OfficialEffect {
     use OfficialEffect::*;
     match id {
+        422 => DrawThenChannel {
+            draw: 1,
+            channel: 1,
+        },
+        423 => Counter(CounterKind::MinimumPower(2)),
         421 => ModifyMight {
             amount: 4,
             minimum: 0,
@@ -1082,6 +1092,8 @@ pub fn requirements(id: usize) -> &'static [Mechanic] {
         419 => &[Chain, Ambush],
         420 => &[Chain, Hidden, Move, OptionalCosts],
         421 => &[Chain],
+        422 => &[Chain, Channel, CostReduction],
+        423 => &[Chain, Counterspell],
         372 | 373 => &[Chain, Gear, Bounce],
         374 => &[Chain, Gear, DeathTriggers],
         375 => &[Chain, Bounce],
@@ -1532,6 +1544,10 @@ pub enum StaticAbility {
     EmpoweredMight(i8),
     /// Cost is reduced by one energy per card currently in the owner's trash.
     TrashEnergyDiscount,
+    OpponentNearVictoryEnergyDiscount {
+        within: u8,
+        energy: u8,
+    },
     /// Noxus Hopeful: two energy less after another card has been played.
     LegionEnergyDiscount(u8),
     /// Ezreal: optional additional costs cost one energy OR one power less.
@@ -1546,6 +1562,10 @@ pub fn static_abilities(id: usize) -> &'static [StaticAbility] {
         412 | 414 => &[NoCombatDamage],
         415 => &[Assault(1)],
         416 => &[Shield(3), Tank],
+        422 => &[OpponentNearVictoryEnergyDiscount {
+            within: 3,
+            energy: 2,
+        }],
         419 => &[Ambush],
         420 => &[Hidden, Ganking],
         401..=408 => &[Deploy],
@@ -1986,7 +2006,7 @@ mod tests {
     #[test]
     fn all_catalog_entries_have_official_classification() {
         let cards = cards();
-        assert_eq!(cards.len(), 422);
+        assert_eq!(cards.len(), 424);
         for card in cards {
             assert_ne!(
                 effect(card.id),
@@ -1996,7 +2016,7 @@ mod tests {
             );
             assert_ne!(support_status(card.id), SupportStatus::UnknownCard);
         }
-        assert_eq!(effect(422), OfficialEffect::Unsupported);
+        assert_eq!(effect(424), OfficialEffect::Unsupported);
     }
 
     #[test]

@@ -445,6 +445,20 @@ fn checked_advice(game: &Game, level: AdviceLevel) -> Result<Vec<&'static str>, 
         });
     }
 
+    if human.hand.contains(&422) {
+        tips.push(if beginner {
+            "Find Your Center draws a card and channels an exhausted rune. It costs 1 energy when the opponent has at least 5 points; otherwise it costs 3."
+        } else {
+            "Find Your Center is cheaper when the opponent reaches 5 points. Its rune arrives exhausted: plan future resources without counting it as ready energy now."
+        });
+    }
+    if human.hand.contains(&423) {
+        tips.push(if beginner {
+            "Hush counters a spell with printed Power cost 2 or more. It cannot counter abilities. Extra payments such as Deflect do not make a spell eligible."
+        } else {
+            "Reserve Hush for a high-Power spell. Discounts do not change printed Power, and Hush itself needs 1 energy plus 2 Calm power."
+        });
+    }
     let contested = (0..2).find(|&lane| game.contested(lane));
     if let Some(lane) = contested {
         if beginner {
