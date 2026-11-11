@@ -15,11 +15,14 @@ impl Game {
         Ok({
             // A suspended transaction retains its rollback snapshot. Follow the
             // public-resource witness rather than resampling only half that state.
-            // Faefolk uses the same bounded public-board pull policy at every
-            // level, rather than defaulting its optional first action to decline.
+            // Faefolk and object-cost trades use their public-board policies at
+            // every level; the short rollout undervalues ongoing gear engines.
             if matches!(
                 self.decision,
-                Some(Decision::TriggerTargets { card_id: 417, .. })
+                Some(
+                    Decision::TriggerTargets { card_id: 417, .. }
+                        | Decision::TriggerObjectCost { .. }
+                )
             ) {
                 return self.choose_heuristic_action();
             }

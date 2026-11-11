@@ -1945,6 +1945,19 @@ fn decision_to_json(game: &Game, decision: &Decision, viewer: usize) -> Result<V
         Decision::Payment { .. } => json!({"type":"payment",
             "can_refuse":game.can_refuse_payment().map_err(ApiError::illegal)?,
             "can_cancel":game.can_cancel_payment().map_err(ApiError::illegal)?}),
+        Decision::TriggerObjectCost {
+            card_id,
+            rule_index,
+            context,
+            ..
+        } => json!({
+            "type":"trigger_object_cost", "card_id":card_id, "rule_index":rule_index,
+            "context":trigger_context_to_json(context), "optional":true,
+            "cost":{"type":"banish_source","source":context.source.unit_id.map(|unit_id|
+                target_to_json(&Target::Unit { player:context.source.player, unit_id }))},
+            "can_accept":game.clone().apply(Action::Choose { accept:true }).is_ok(),
+            "paid_before_responses":true
+        }),
         Decision::TriggerPayment {
             choice_id,
             card_id,

@@ -660,3 +660,47 @@ fn hush_api_filters_printed_power_and_rejects_invalid_choices_atomically() {
     assert!(session.game.players[0].discard.contains(&53));
     assert!(session.game.players[1].discard.contains(&423));
 }
+
+#[test]
+fn prefect_api_exposes_public_object_cost_and_exact_event_gear() {
+    let mut session = position();
+    session.game.players[0].hand = vec![235];
+    session.game.players[1]
+        .units
+        .push(unit(520, 424, None, false));
+    apply(
+        &mut session,
+        Action::PlayCardWithTargets {
+            hand_index: 0,
+            lane: None,
+            targets: vec![],
+        },
+    );
+    let gear = session.game.players[0].gear[0].id;
+    let before = format!("{:?}", session.game);
+    for viewer in 0..2 {
+        let observed = session.observe(viewer).unwrap();
+        let choice = &observed["decision"];
+        assert_eq!(choice["type"], "trigger_object_cost");
+        assert_eq!(choice["cost"]["type"], "banish_source");
+        assert_eq!(
+            choice["cost"]["source"],
+            json!({"type":"unit","player":1,"unit_id":520})
+        );
+        assert_eq!(
+            choice["context"]["subject"],
+            json!({"type":"gear","player":0,"gear_id":gear})
+        );
+        assert_eq!(choice["can_accept"], true);
+        assert_eq!(choice["paid_before_responses"], true);
+    }
+    assert_eq!(format!("{:?}", session.game), before);
+    let mut missing = session.clone();
+    missing.game.players[1].units.clear();
+    assert_eq!(missing.observe(0).unwrap()["decision"]["can_accept"], false);
+    apply(&mut session, Action::Choose { accept: true });
+    assert_eq!(session.game.players[1].banish, vec![424]);
+    assert_eq!(session.game.players[0].gear.len(), 1);
+    resolve_chain(&mut session);
+    assert_eq!(session.game.players[0].banish, vec![235]);
+}

@@ -1,0 +1,98 @@
+{
+  "reviewed_on": "2026-11-11",
+  "runtime_id": 424,
+  "official_id": "ven-102-166",
+  "printing_cohort": [
+    "ven-102-166"
+  ],
+  "raw_printing": {
+    "official_id": "ven-102-166",
+    "public_code": "VEN-102/166",
+    "name": "Ravenbloom Prefect",
+    "set": "VEN",
+    "collector_number": 102,
+    "types": [
+      "unit"
+    ],
+    "type_source": "cardType.type",
+    "structured_types": [
+      "unit"
+    ],
+    "accessibility_types": [
+      "unit"
+    ],
+    "type_labels_conflict": false,
+    "super_types": [],
+    "domains": [
+      "chaos"
+    ],
+    "energy": 3,
+    "power": null,
+    "might": 3,
+    "might_bonus": null,
+    "rules_html": "<p>When an opponent plays a gear, you may banish me to banish it.</p>",
+    "rules_text": "When an opponent plays a gear, you may banish me to banish it.",
+    "equipment_html": "",
+    "equipment_text": "",
+    "tags": [
+      "Noxus"
+    ],
+    "rarity": "common",
+    "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/57ecb26880ea084ea16b785c9a563ff298ee6a42-744x1039.png?accountingTag=RB",
+    "image_accessibility_text": "Riftbound Unit: Ravenbloom Prefect. When an opponent plays a gear, you may banish me to banish it.",
+    "illustrators": [
+      "Polar Engine Studio"
+    ]
+  },
+  "raw_printing_sha256": "9a4bb4294c730d564fd8060fe497c1bdf0f647c5770c8aaadf17cfb7e57ea6c8",
+  "effective": {
+    "types": [
+      "unit"
+    ],
+    "super_types": [],
+    "domains": [
+      "chaos"
+    ],
+    "energy": 3,
+    "power": null,
+    "might": 3,
+    "might_bonus": null,
+    "tags": [
+      "Noxus"
+    ],
+    "rules_html": "<p>When an opponent plays a gear, you may banish me to banish it.</p>",
+    "rules_text": "When an opponent plays a gear, you may banish me to banish it.",
+    "equipment_html": "",
+    "equipment_text": ""
+  },
+  "errata": [],
+  "origin_gallery_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+  "original_image": {
+    "path": "assets/data/card_admissions/irelia_raven/ven-102-166.png",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/57ecb26880ea084ea16b785c9a563ff298ee6a42-744x1039.png?accountingTag=RB",
+    "sha256": "eff74692b9beeed4ad9f84e453e33ed56bb8f13ff86d2fabce346ca6dc137cab",
+    "bytes": 702853,
+    "width": 744,
+    "height": 1039
+  },
+  "runtime_image": {
+    "path": "assets/art/card_424.png",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/57ecb26880ea084ea16b785c9a563ff298ee6a42-744x1039.png?w=280&q=85&fm=png",
+    "sha256": "78f06e0c83f265e603b743ad89785846d4637cd7c49a65d473b3566100171a52",
+    "bytes": 145713,
+    "width": 280,
+    "height": 391
+  },
+  "visual_review": {
+    "actual_full_face_viewed": true,
+    "reviewer": "root",
+    "observation": "Chaos Unit; 3 Energy; no Power; 3 Might; Noxus; when an opponent plays a gear, may banish self to banish that gear.",
+    "image_sha256": "eff74692b9beeed4ad9f84e453e33ed56bb8f13ff86d2fabce346ca6dc137cab"
+  },
+  "preserved_runtime_prefix": {
+    "card_count": 424,
+    "cards_sha256": "42bffc8ce10804ba8efe9938b02bed4994eb65c4df0f7484372e9871121e2f8c",
+    "preset_count": 5,
+    "presets_sha256": "55f81fe597de35b0c4dee12d87ad36ae72463cbfb5ae576d00f87104cd5914d5"
+  }
+}

@@ -17,7 +17,9 @@ mod c25;
 mod c26;
 mod c27;
 mod c28;
+mod irelia;
 mod presets;
+pub(super) use irelia::run_frame as run_irelia_frame;
 pub(super) use presets::run_frame as run_preset_frame;
 
 thread_local! {

@@ -2628,6 +2628,7 @@ impl App {
             return Ok(());
         }
         let (title,body)=match &decision{
+            Decision::TriggerObjectCost { context, .. } => ("Banish Prefect?", format!("Banish Prefect now. Then banish {} after responses. Decline to keep Prefect.", context.subject.map(|t| target_label(&self.game, t)).unwrap_or_else(|| "the played gear".into()))),
             Decision::TriggerPayment { .. } | Decision::BattlefieldTargets { .. } | Decision::BattlefieldCost { .. } | Decision::BattlefieldPayment { .. } => unreachable!(),
             Decision::BanishPlay{card_id,..}=>("Play from Banish",format!("Play {} now? Base energy is waived; power and extra costs still apply. Declining leaves it in Banish.",self.game.catalog[*card_id].name)),
             Decision::DrawLook{..}|Decision::RevealedCard{..}|Decision::DeckLookPlay{..}|Decision::RevealedDeck{..}|Decision::EmpowerPlayed{..}|Decision::PredictCards{..}|Decision::Payment{..}|Decision::ResourceConversion{..}|Decision::TriggerTargets{..}|Decision::LegendTargets{..}|Decision::CombatDamage{..}|Decision::TokenPlacement{..}|Decision::TokenPlay{..}|Decision::BattlefieldOrder{..}|Decision::RevivePlay{..}|Decision::PendingPlay{..}=>unreachable!(),
@@ -2668,6 +2669,7 @@ impl App {
         let simple = matches!(
             decision,
             Decision::RevealHand { .. }
+                | Decision::TriggerObjectCost { .. }
                 | Decision::BanishPlay { .. }
                 | Decision::OptionalPlay { .. }
                 | Decision::Battlefield { .. }
@@ -2691,6 +2693,8 @@ impl App {
                 Rect::new(1178.0, 490.0, 212.0, 32.0),
                 if matches!(decision, Decision::RevealHand { .. }) {
                     "Continue"
+                } else if matches!(decision, Decision::TriggerObjectCost { .. }) {
+                    "Banish Prefect · accept"
                 } else if matches!(decision, Decision::OptionalPlay { .. }) {
                     "Use this ability"
                 } else if matches!(decision, Decision::BanishPlay { .. }) {
@@ -2701,12 +2705,14 @@ impl App {
                     "Yes · pay the cost"
                 },
                 true,
-                !matches!(decision, Decision::BanishPlay { .. })
-                    || self
-                        .game
-                        .clone()
-                        .apply(Action::Choose { accept: true })
-                        .is_ok(),
+                !matches!(
+                    decision,
+                    Decision::BanishPlay { .. } | Decision::TriggerObjectCost { .. }
+                ) || self
+                    .game
+                    .clone()
+                    .apply(Action::Choose { accept: true })
+                    .is_ok(),
             ) {
                 self.action(Action::Choose { accept: true });
             }
@@ -10113,6 +10119,7 @@ async fn main() {
         app.inspect = Some(id);
     }
     let preview_hover = args.iter().any(|arg| arg == "--hover-preview");
+    let irelia_smoke = args.iter().any(|a| a == "--ui-smoke-irelia");
     let preset_smoke = args.iter().any(|a| a == "--ui-smoke-presets");
     let ai_smoke = args.iter().any(|a| a == "--ui-smoke-ai");
     let focused_deploy_smoke = args.iter().any(|a| a == "--ui-smoke-c24");
@@ -10120,7 +10127,8 @@ async fn main() {
     let focused_combat_card_smoke = args.iter().any(|a| a == "--ui-smoke-c26");
     let focused_field_smoke = args.iter().any(|a| a == "--ui-smoke-c28");
     let focused_source_damage_smoke = args.iter().any(|a| a == "--ui-smoke-c27");
-    let smoke_test = preset_smoke
+    let smoke_test = irelia_smoke
+        || preset_smoke
         || focused_field_smoke
         || ai_smoke
         || focused_deploy_smoke
@@ -10151,7 +10159,9 @@ async fn main() {
             app.hover_card = app.game.players[0].hand.first().copied();
             app.hover_since = -1.0;
         }
-        let smoke_done = if preset_smoke {
+        let smoke_done = if irelia_smoke {
+            smoke::run_irelia_frame(&mut app, frames)
+        } else if preset_smoke {
             smoke::run_preset_frame(&mut app, frames)
         } else if ai_smoke {
             smoke::run_ai_frame(&mut app, frames)

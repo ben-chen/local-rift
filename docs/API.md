@@ -23,7 +23,7 @@ Replace `choose_action(view, suggestions, rng)` in that example with your policy
 
 The initial session is in `mulligan` phase, with decks `[0,1]`, seed `1`, Tactical AI, and player `0` going first. `info` reports protocol version `1`; `catalog` reports separate preset, legend, card, domain, and battlefield IDs.
 
-The repository's `assets/data/full_catalog.json` is a separate inventory with schema version `2`; it is not the bot protocol or the playable `catalog` response. It preserves raw printing fields and adds reviewed `effective` facts, resolution references, and unresolved-field diagnostics. Deck validation uses those effective facts and rejects unresolved gameplay or variant fields, including conflicts on alternate printings. Source review alone never registers a playable card. Inventory-only identity `kind` preserves complete type sets as sorted `+`-joined strings, such as `gear+unit`; the corresponding printing’s `effective.types` retains both types. This does not add a playable bot-protocol card kind. Main-card IDs are append-only; the latest additions are 421–423. Existing IDs and sourced preset lists retain their identities, while eligible-card and chosen-champion lists expand with supported cards. Additive Temporary status, token identity, evaluated passive values and target queries retain protocol version `1`. See [the inventory review contract](CATALOG_REVIEW.md) for evidence and remaining variant-review limits.
+The repository's `assets/data/full_catalog.json` is a separate inventory with schema version `2`; it is not the bot protocol or the playable `catalog` response. It preserves raw printing fields and adds reviewed `effective` facts, resolution references, and unresolved-field diagnostics. Deck validation uses those effective facts and rejects unresolved gameplay or variant fields, including conflicts on alternate printings. Source review alone never registers a playable card. Inventory-only identity `kind` preserves complete type sets as sorted `+`-joined strings, such as `gear+unit`; the corresponding printing’s `effective.types` retains both types. This does not add a playable bot-protocol card kind. Main-card IDs are append-only; the latest additions are 421–424. Existing IDs and sourced preset lists retain their identities, while eligible-card and chosen-champion lists expand with supported cards. Additive Temporary status, token identity, evaluated passive values and target queries retain protocol version `1`. See [the inventory review contract](CATALOG_REVIEW.md) for evidence and remaining variant-review limits.
 
 ```json
 {"id":"hello","command":"info"}
@@ -583,3 +583,20 @@ Card 423 (`rad-041-167`) uses ordinary spell targets and adds
 Eligible targets are spells with at least two printed or copied Power. Cost
 modifiers and additional payments do not affect that characteristic. Abilities
 are ineligible. Target previews, validation and application share this rule.
+
+### Ravenbloom Prefect: optional object cost
+
+Card 424 (`ven-102-166`) uses the ordinary unit-play action. An opponent's completed
+gear play creates a public `trigger_object_cost` decision with `card_id`,
+`rule_index`, `context`, `optional:true`, `can_accept` and `paid_before_responses:true`.
+Its `cost` is `{"type":"banish_source","source":{"type":"unit","player":0,"unit_id":123}}`.
+`context.subject` names the exact played gear, including Gold; this is not a
+chosen target. Both observers see these public fields.
+
+Use `{"type":"choose","accept":true}` to pay or `accept:false` to decline.
+Acceptance banishes the source immediately, then finalizes the ability for
+responses. If the source is unavailable, `can_accept` is false and acceptance is
+rejected without changing the revision or state. Decline remains available.
+Removing the gear after acceptance does not refund the source. Gear activations
+and friendly gear plays do not trigger this card. No resource payment wrapper is
+needed for this object cost.

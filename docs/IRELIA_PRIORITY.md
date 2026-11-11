@@ -5,9 +5,9 @@ Updated November 11, 2026. Irelia cards take priority over the saved Azir draft.
 The first checkpoint is the union of Xeno's second-place and TM2's fifth-place
 Irelia lists in Riot's [Los Angeles results](https://playriftbound.com/en-us/news/organizedplay/los-angeles-top-decks/).
 Both complete main decks, Irelia's legend/chosen champion, and all three of their
-battlefield options are already mapped by the C28 runtime. Their remaining shared
-sideboard gaps are **Decree of Focus** and **Ravenbloom Prefect**. Decree of Focus is now implemented and validated; Ravenbloom Prefect remains next
-from those shared gaps. The dated lists remain unchanged.
+battlefield options were already mapped by C28. Decree of Focus and Ravenbloom
+Prefect, the remaining shared sideboard gaps, are now implemented and validated.
+The dated sourced recipes remain unchanged.
 
 The November 6–8 [Stuttgart list attributed to DonCapucino by Riftwatch](https://riftwatch.gg/decks/rc-stuttgart-2026-33/)
 identified two further priority cards: **Find Your Center** (two main-deck copies) and **Hush**

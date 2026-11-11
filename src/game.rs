@@ -511,6 +511,13 @@ pub enum RevealOutcome {
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Decision {
+    /// Pay a non-resource trigger cost before the ability becomes respondable.
+    TriggerObjectCost {
+        player: usize,
+        card_id: CardId,
+        rule_index: usize,
+        context: TriggerContext,
+    },
     BattlefieldTargets {
         player: usize,
         choice_id: u32,
@@ -817,6 +824,7 @@ impl Decision {
     pub fn player(&self) -> usize {
         match self {
             Self::DrawLook { player, .. }
+            | Self::TriggerObjectCost { player, .. }
             | Self::RevealedCard { player, .. }
             | Self::DeckLookPlay { player, .. }
             | Self::RevealedDeck { player, .. }
@@ -3245,6 +3253,41 @@ impl Game {
         }
         self.decision = None;
         match decision {
+            Decision::TriggerObjectCost {
+                player,
+                card_id,
+                rule_index,
+                context,
+            } => {
+                if accept {
+                    match crate::trigger_rules::trigger_rules(card_id)[rule_index].object_cost {
+                        Some(crate::trigger_rules::TriggerObjectCost::BanishSource) => {
+                            let unit_id = context
+                                .source
+                                .unit_id
+                                .ok_or("This cost needs its source unit.")?;
+                            if self
+                                .banish_unit_directly(Target::Unit { player, unit_id })
+                                .is_none()
+                            {
+                                return Err(
+                                    "The source unit is no longer available to banish.".into()
+                                );
+                            }
+                        }
+                        None => return Err("This ability has no object cost.".into()),
+                    }
+                    self.queue_finalized_ability(
+                        player,
+                        card_id,
+                        Vec::new(),
+                        ChainAbility::CardTrigger {
+                            rule_index,
+                            context,
+                        },
+                    );
+                }
+            }
             Decision::BattlefieldTargets { .. }
             | Decision::BattlefieldCost { .. }
             | Decision::BattlefieldPayment { .. } => {
@@ -9103,6 +9146,34 @@ impl Game {
                         Some(Action::ResolveDeckLook {
                             choice_id: *choice_id,
                             index: best,
+                        })
+                    }
+                    Decision::TriggerObjectCost {
+                        player, context, ..
+                    } => {
+                        let gear_value = context
+                            .subject
+                            .map_or(0, |target| self.gear_kill_score(*player, target));
+                        let unit = context
+                            .source
+                            .unit_id
+                            .and_then(|id| self.players[*player].units.iter().find(|u| u.id == id));
+                        let keep_value = if let Some(unit) = unit {
+                            20 + i128::from(self.unit_might(unit)?) * 4
+                                + if unit.ready { 5 } else { 0 }
+                                + if unit.lane.is_some() { 18 } else { 0 }
+                                + if unit.lane.is_some()
+                                    && self.players[*player].score == VICTORY_SCORE - 1
+                                {
+                                    30
+                                } else {
+                                    0
+                                }
+                        } else {
+                            i128::MAX
+                        };
+                        Some(Action::Choose {
+                            accept: gear_value > keep_value,
                         })
                     }
                     Decision::Predict { player, card_id } => Some(Action::Choose {

@@ -420,3 +420,13 @@ Hush is a 1-Energy, 2-Calm-Power Reaction. It counters a spell whose printed or
 copied Power cost is at least two. Deflect, Repeat payments and discounts do not
 change that printed characteristic (Core 131.3, 204.1.a and 356.1.c). Hush does not
 counter activated or triggered abilities.
+
+## Ravenbloom Prefect
+
+An opponent's gear play offers a choice: banish Prefect now, then banish that
+exact gear after responses. Gold token plays count; activating gear does not.
+The source is a cost paid before the ability enters the chain. The gear is an
+event subject, not a chosen target. If it leaves play, a later copy is unaffected
+and the paid source stays banished. Banish does not trigger Deathknell or a death
+replacement. Declining keeps your unit. Mote explains the timing and helps compare
+the gear with the unit's combat and scoring value.

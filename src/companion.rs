@@ -963,6 +963,11 @@ fn response_window_advice(
                     ]
                 }
             }
+            Decision::TriggerObjectCost { .. } => vec![if beginner {
+                "Ravenbloom Prefect banishes itself as a cost. After you accept, the opponent can respond before their gear is banished. Banish does not trigger Deathknell."
+            } else {
+                "Compare that gear's value with keeping your Prefect for combat and scoring. If the gear leaves in response, your paid cost is not refunded."
+            }],
             Decision::TriggerPayment { .. } => vec![
                 "Choose whether to pay this trigger's base cost. Payment happens before responses; declining keeps the ability off the chain.",
                 if beginner {

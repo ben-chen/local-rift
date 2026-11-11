@@ -1,0 +1,633 @@
+{
+  "reviewed_on": "2026-11-11",
+  "scope": "Ravenbloom Prefect after the three Irelia spell admissions",
+  "runtime_id": 424,
+  "rust": {
+    "passed": 1475,
+    "failed": 0,
+    "targets": 97,
+    "command": "cargo test --all-targets",
+    "exit_code": 0
+  },
+  "python": {
+    "passed": 246,
+    "failed": 0,
+    "exit_code": 0
+  },
+  "checks": [
+    "cargo fmt --check",
+    "cargo clippy --all-targets -- -D warnings",
+    "offline catalog check"
+  ],
+  "games": {
+    "completed": 60,
+    "all_five_presets": true,
+    "all_levels": true,
+    "both_seats": true,
+    "both_starting_players": true,
+    "recipe": "authored exact40 variant; sourced recipes unchanged",
+    "required_observation": "Decree and Find Your Center played; Prefect cost paid; all new copies conserved at match end"
+  },
+  "api": {
+    "games": 24,
+    "results": [
+      {
+        "level": "easy",
+        "opponent": 1,
+        "seat": 0,
+        "starter": 0,
+        "seed": 424004,
+        "winner": 1,
+        "scores": [
+          7,
+          8
+        ],
+        "actions": 198
+      },
+      {
+        "level": "easy",
+        "opponent": 1,
+        "seat": 0,
+        "starter": 1,
+        "seed": 424005,
+        "winner": 1,
+        "scores": [
+          4,
+          8
+        ],
+        "actions": 168
+      },
+      {
+        "level": "easy",
+        "opponent": 1,
+        "seat": 1,
+        "starter": 0,
+        "seed": 424006,
+        "winner": 0,
+        "scores": [
+          9,
+          3
+        ],
+        "actions": 108
+      },
+      {
+        "level": "easy",
+        "opponent": 1,
+        "seat": 1,
+        "starter": 1,
+        "seed": 424007,
+        "winner": 1,
+        "scores": [
+          5,
+          8
+        ],
+        "actions": 147
+      },
+      {
+        "level": "easy",
+        "opponent": 3,
+        "seat": 0,
+        "starter": 0,
+        "seed": 424012,
+        "winner": 0,
+        "scores": [
+          8,
+          5
+        ],
+        "actions": 158
+      },
+      {
+        "level": "easy",
+        "opponent": 3,
+        "seat": 0,
+        "starter": 1,
+        "seed": 424013,
+        "winner": 1,
+        "scores": [
+          2,
+          8
+        ],
+        "actions": 130
+      },
+      {
+        "level": "easy",
+        "opponent": 3,
+        "seat": 1,
+        "starter": 0,
+        "seed": 424014,
+        "winner": 0,
+        "scores": [
+          9,
+          7
+        ],
+        "actions": 166
+      },
+      {
+        "level": "easy",
+        "opponent": 3,
+        "seat": 1,
+        "starter": 1,
+        "seed": 424015,
+        "winner": 0,
+        "scores": [
+          8,
+          6
+        ],
+        "actions": 190
+      },
+      {
+        "level": "tactical",
+        "opponent": 1,
+        "seat": 0,
+        "starter": 0,
+        "seed": 424104,
+        "winner": 1,
+        "scores": [
+          2,
+          9
+        ],
+        "actions": 117
+      },
+      {
+        "level": "tactical",
+        "opponent": 1,
+        "seat": 0,
+        "starter": 1,
+        "seed": 424105,
+        "winner": 1,
+        "scores": [
+          5,
+          8
+        ],
+        "actions": 178
+      },
+      {
+        "level": "tactical",
+        "opponent": 1,
+        "seat": 1,
+        "starter": 0,
+        "seed": 424106,
+        "winner": 0,
+        "scores": [
+          9,
+          2
+        ],
+        "actions": 93
+      },
+      {
+        "level": "tactical",
+        "opponent": 1,
+        "seat": 1,
+        "starter": 1,
+        "seed": 424107,
+        "winner": 1,
+        "scores": [
+          7,
+          8
+        ],
+        "actions": 136
+      },
+      {
+        "level": "tactical",
+        "opponent": 3,
+        "seat": 0,
+        "starter": 0,
+        "seed": 424112,
+        "winner": 0,
+        "scores": [
+          8,
+          4
+        ],
+        "actions": 143
+      },
+      {
+        "level": "tactical",
+        "opponent": 3,
+        "seat": 0,
+        "starter": 1,
+        "seed": 424113,
+        "winner": 1,
+        "scores": [
+          7,
+          8
+        ],
+        "actions": 182
+      },
+      {
+        "level": "tactical",
+        "opponent": 3,
+        "seat": 1,
+        "starter": 0,
+        "seed": 424114,
+        "winner": 0,
+        "scores": [
+          8,
+          2
+        ],
+        "actions": 143
+      },
+      {
+        "level": "tactical",
+        "opponent": 3,
+        "seat": 1,
+        "starter": 1,
+        "seed": 424115,
+        "winner": 1,
+        "scores": [
+          4,
+          8
+        ],
+        "actions": 127
+      },
+      {
+        "level": "strategic",
+        "opponent": 1,
+        "seat": 0,
+        "starter": 0,
+        "seed": 424204,
+        "winner": 1,
+        "scores": [
+          7,
+          8
+        ],
+        "actions": 202
+      },
+      {
+        "level": "strategic",
+        "opponent": 1,
+        "seat": 0,
+        "starter": 1,
+        "seed": 424205,
+        "winner": 1,
+        "scores": [
+          5,
+          9
+        ],
+        "actions": 118
+      },
+      {
+        "level": "strategic",
+        "opponent": 1,
+        "seat": 1,
+        "starter": 0,
+        "seed": 424206,
+        "winner": 0,
+        "scores": [
+          8,
+          4
+        ],
+        "actions": 159
+      },
+      {
+        "level": "strategic",
+        "opponent": 1,
+        "seat": 1,
+        "starter": 1,
+        "seed": 424207,
+        "winner": 1,
+        "scores": [
+          6,
+          8
+        ],
+        "actions": 165
+      },
+      {
+        "level": "strategic",
+        "opponent": 3,
+        "seat": 0,
+        "starter": 0,
+        "seed": 424212,
+        "winner": 0,
+        "scores": [
+          8,
+          4
+        ],
+        "actions": 174
+      },
+      {
+        "level": "strategic",
+        "opponent": 3,
+        "seat": 0,
+        "starter": 1,
+        "seed": 424213,
+        "winner": 0,
+        "scores": [
+          8,
+          2
+        ],
+        "actions": 78
+      },
+      {
+        "level": "strategic",
+        "opponent": 3,
+        "seat": 1,
+        "starter": 0,
+        "seed": 424214,
+        "winner": 0,
+        "scores": [
+          8,
+          6
+        ],
+        "actions": 112
+      },
+      {
+        "level": "strategic",
+        "opponent": 3,
+        "seat": 1,
+        "starter": 1,
+        "seed": 424215,
+        "winner": 1,
+        "scores": [
+          2,
+          9
+        ],
+        "actions": 157
+      }
+    ],
+    "object_cost_choices": 5,
+    "observed_priority_chain_cards": [
+      421,
+      422,
+      423,
+      424
+    ],
+    "requests": 7235,
+    "binary": "/home/benchen/.cache/local-rift-builds/irelia-raven-target/debug/rift-api",
+    "binary_sha256": "d3a8e171a590b4c4ad63a605e647754d40f86972911aa1d264cf65014baff441",
+    "recipe": {
+      "battlefield": 0,
+      "cards": [
+        [
+          0,
+          1
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          3,
+          2
+        ],
+        [
+          4,
+          2
+        ],
+        [
+          5,
+          3
+        ],
+        [
+          7,
+          3
+        ],
+        [
+          8,
+          2
+        ],
+        [
+          9,
+          1
+        ],
+        [
+          10,
+          1
+        ],
+        [
+          12,
+          1
+        ],
+        [
+          13,
+          1
+        ],
+        [
+          14,
+          2
+        ],
+        [
+          15,
+          3
+        ],
+        [
+          16,
+          2
+        ],
+        [
+          18,
+          3
+        ],
+        [
+          20,
+          1
+        ],
+        [
+          21,
+          2
+        ],
+        [
+          421,
+          3
+        ],
+        [
+          422,
+          2
+        ],
+        [
+          423,
+          1
+        ],
+        [
+          424,
+          3
+        ]
+      ],
+      "chosen_champion": 0,
+      "legend": 0,
+      "name": "Irelia 40-card API verification",
+      "runes": [
+        0,
+        6,
+        0,
+        0,
+        6,
+        0
+      ]
+    },
+    "scope": "24 games through JSON API, both Irelia seats and both starters, all AI levels, presets 1 and 3. Exact 40-card authored variant, unchanged sourced presets."
+  },
+  "visual_review": {
+    "reviewer": "root",
+    "runs": [
+      {
+        "small": false,
+        "screenshots": true,
+        "exit": 0,
+        "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-raven-ui-3-normal-capture",
+        "binary_sha256": "5f0ddc5140cf707a2551ed3e540db7849e9f1c0612e55d20a29a5b4ba4fd6598"
+      },
+      {
+        "small": false,
+        "screenshots": false,
+        "exit": 0,
+        "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-raven-ui-3-normal-plain",
+        "binary_sha256": "5f0ddc5140cf707a2551ed3e540db7849e9f1c0612e55d20a29a5b4ba4fd6598"
+      },
+      {
+        "small": true,
+        "screenshots": true,
+        "exit": 0,
+        "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-raven-ui-3-small-capture",
+        "binary_sha256": "5f0ddc5140cf707a2551ed3e540db7849e9f1c0612e55d20a29a5b4ba4fd6598"
+      },
+      {
+        "small": true,
+        "screenshots": false,
+        "exit": 0,
+        "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-raven-ui-3-small-plain",
+        "binary_sha256": "5f0ddc5140cf707a2551ed3e540db7849e9f1c0612e55d20a29a5b4ba4fd6598"
+      }
+    ],
+    "images": [
+      {
+        "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-raven-ui-3-normal-capture/advanced.png",
+        "sha256": "305c29d51336543d3ec75ad262e3657cc33a2b0804ee18e8cd333fa059f0b915",
+        "actual_viewed": true,
+        "finding": "Controls and full text readable; correct visible choice or outcome."
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-raven-ui-3-normal-capture/cost.png",
+        "sha256": "99739f1ee12d366f4660c33f13bc7aefbd890ad39914f7b51e4629b411acb968",
+        "actual_viewed": true,
+        "finding": "Controls and full text readable; correct visible choice or outcome."
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-raven-ui-3-normal-capture/declined.png",
+        "sha256": "c6afe982a4cc811a2a60d6862555a3a48728e54601310297126f448e41ef39bd",
+        "actual_viewed": false,
+        "finding": "Captured; not separately visually inspected."
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-raven-ui-3-normal-capture/paid.png",
+        "sha256": "96ad4b81f0e89877cc9a9b3392cc3c631adbfc35ed964a58cc61f6e4c65861ac",
+        "actual_viewed": true,
+        "finding": "Controls and full text readable; correct visible choice or outcome."
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-raven-ui-3-normal-capture/prefect.png",
+        "sha256": "093daf608f9baa929f561e51086b787a107583d8e613d0bb09e8d7419daf94fe",
+        "actual_viewed": false,
+        "finding": "Captured; not separately visually inspected."
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-raven-ui-3-normal-capture/resolved.png",
+        "sha256": "21af960429396f814017ab38699b27a7fc5d8df22fac7090b81daef2a54c476f",
+        "actual_viewed": false,
+        "finding": "Captured; not separately visually inspected."
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-raven-ui-3-normal-capture/unavailable.png",
+        "sha256": "f91656d3791b34b33ce73a30ec0efb235419dae49e105c2b4b6c15777d62851b",
+        "actual_viewed": false,
+        "finding": "Captured; not separately visually inspected."
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-raven-ui-3-small-capture/advanced.png",
+        "sha256": "3f13c6cfd4cc3439d15c65fb2588b4502c06c8ba164d3fb2ab4ee37eee3a01c0",
+        "actual_viewed": false,
+        "finding": "Captured; not separately visually inspected."
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-raven-ui-3-small-capture/cost.png",
+        "sha256": "9e26d5d29e0df0d39ea0e8ab61ba6e07a0d645aff653d7466e571f0b6e16acfe",
+        "actual_viewed": true,
+        "finding": "Controls and full text readable; correct visible choice or outcome."
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-raven-ui-3-small-capture/declined.png",
+        "sha256": "a000c883d38ab2807ce5e271c0aa1293744adf7a39b19ca65ea1ca40ae1fa1a4",
+        "actual_viewed": true,
+        "finding": "Controls and full text readable; correct visible choice or outcome."
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-raven-ui-3-small-capture/paid.png",
+        "sha256": "cb7d655b0e3d48853fb33ddfa231cf31a98f5510744b627a41beb3138e5df141",
+        "actual_viewed": false,
+        "finding": "Captured; not separately visually inspected."
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-raven-ui-3-small-capture/prefect.png",
+        "sha256": "6a380786680b22a0e962c323308eceff2a9558933c8413f4d396285e702480d1",
+        "actual_viewed": true,
+        "finding": "Controls and full text readable; correct visible choice or outcome."
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-raven-ui-3-small-capture/resolved.png",
+        "sha256": "681ab28709ba6cc9bb22e23c53f20c58118d8f8bb5e3830dd8e90168597a95dd",
+        "actual_viewed": true,
+        "finding": "Controls and full text readable; correct visible choice or outcome."
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-raven-ui-3-small-capture/unavailable.png",
+        "sha256": "f5629912b701ffb177c5ce801b04a53d3604d0a978afa46efd6c9cee3e250ec8",
+        "actual_viewed": true,
+        "finding": "Controls and full text readable; correct visible choice or outcome."
+      }
+    ],
+    "earlier_attempts": [
+      {
+        "run": 1,
+        "result": "Test harness retained previous frame clicks; fixed by resetting injected input each frame."
+      },
+      {
+        "run": 2,
+        "result": "All click assertions passed. First normal-size capture preceded font atlas warmup; moved that capture to frame 1 and reran all four cases."
+      }
+    ]
+  },
+  "logs": {
+    "irelia-raven-native-all-2.log": {
+      "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-raven-native-all-2.log",
+      "sha256": "ba33de1357427f8906674d3efdbcae88d02e40a13803e4d2fc0903dd6dea2974"
+    },
+    "irelia-raven-python-all-1.log": {
+      "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-raven-python-all-1.log",
+      "sha256": "56ff71146585f8893e60a019b4026245c6ff932b0f2a107865a8cad027596033"
+    },
+    "irelia-raven-clippy-2.log": {
+      "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-raven-clippy-2.log",
+      "sha256": "912bcea1df128f7cf45a91e054440eceecab805a44b36cf00d0e1ab0076c3e5c"
+    },
+    "irelia-raven-offline.log": {
+      "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-raven-offline.log",
+      "sha256": "4dc295570701bf67b24965f31cf4ab6fa4881e0dab0e6c0d170c862b57466c21"
+    },
+    "irelia-raven-matches-1.log": {
+      "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-raven-matches-1.log",
+      "sha256": "3f8cee7dce62f9b40d507e6f169e57276d9e46181592ba0e86024231513f9e63"
+    },
+    "irelia-raven-api-1.log": {
+      "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-raven-api-1.log",
+      "sha256": "526a91d98f1239248e822941485bb8b0bf221eba2e0f08c82c99cd4c5ca3028f"
+    },
+    "irelia-api-matrix.log": {
+      "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-api-matrix.log",
+      "sha256": "b0cd451def212b3241b95ed1dc26ddc548068b7b369b01f90de91c46a59851de"
+    },
+    "irelia-api-matrix.jsonl.gz": {
+      "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-api-matrix.jsonl.gz",
+      "sha256": "fd26a40a5c93e3fbc05630151d17e3e0bd7c510b7c51816d88e24255d2adf47e"
+    }
+  },
+  "prior_failures": [
+    "Initial fixtures incorrectly tried to pass after immediate gear entry; corrected to inspect the pending cost directly.",
+    "Strategic undervalued the expensive gear trade; object-cost decisions now use the public-board comparison policy at all levels, also checked to retain the unit against cheap gear and for imminent scoring.",
+    "First full native run found a stale catalog-length assertion, corrected from 424 to 425 and all targets rerun.",
+    "Initial UI harness retained clicks across frames; reset injected input each frame. The first capture was then moved after font-atlas warmup. Final four-case UI run passed."
+  ],
+  "limitations": [
+    "Nix verification remains the preceding C28 checkpoint.",
+    "No new tournament preset or best-of-three sideboarding.",
+    "The archived inventory remains in use while the live publisher gallery duplicate is unresolved."
+  ]
+}

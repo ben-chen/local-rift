@@ -252,6 +252,7 @@ impl Game {
             }
             Event::FriendlyUnitPlayed => own && event.kind == Occurrence::UnitPlayed,
             Event::FriendlyGearPlayed => own && event.kind == Occurrence::GearPlayed,
+            Event::OpponentGearPlayed => !own && event.kind == Occurrence::GearPlayed,
             Event::FriendlySpellPlayed => own && event.kind == Occurrence::SpellPlayed,
             Event::FriendlyCardPlayed => own && played_card,
             Event::FriendlyHiddenPlayed => own && played_card && event.hidden,
@@ -377,7 +378,18 @@ impl Game {
                 .first_used
                 .push((context.source, rule_index));
         }
-        if rule.targets.max > 0 || rule.optional || rule.base_cost.is_some() {
+        if rule.object_cost.is_some() {
+            self.queue_trigger_choice(
+                context.source.player,
+                card_id,
+                Decision::TriggerObjectCost {
+                    player: context.source.player,
+                    card_id,
+                    rule_index,
+                    context,
+                },
+            );
+        } else if rule.targets.max > 0 || rule.optional || rule.base_cost.is_some() {
             self.queue_trigger_choice(
                 context.source.player,
                 card_id,
@@ -1277,6 +1289,17 @@ impl Game {
         let targets = selected;
         for effect in rule.effects {
             match *effect {
+                Effect::Banish(who) => {
+                    for target in self.trigger_operands(context, who, &targets) {
+                        match target {
+                            Target::Unit { .. } => {
+                                self.banish_unit_directly(target);
+                            }
+                            Target::Gear { .. } => self.banish_gear_directly(target),
+                            _ => {}
+                        }
+                    }
+                }
                 Effect::KillSourceGear => {
                     if let Some(gear_id) = context.source.gear_id {
                         self.kill_gear_target(Target::Gear {

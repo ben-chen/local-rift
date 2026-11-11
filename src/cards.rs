@@ -6458,6 +6458,21 @@ pub fn cards() -> Vec<CardDef> {
             tags: &[],
             art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/b9c1b9441e42639805b715466938ccd26b89892d-744x1039.png?w=280&q=85&fm=png",
         },
+        CardDef {
+            id: 424,
+            official_id: "ven-102-166",
+            name: "Ravenbloom Prefect",
+            cost: 3,
+            power_cost: 0,
+            might: 3,
+            domain: Domain::Chaos,
+            domains: &[Domain::Chaos],
+            kind: CardKind::Unit,
+            official_text: "When an opponent plays a gear, you may banish me to banish it.",
+            keywords: &[],
+            tags: &["Noxus"],
+            art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/57ecb26880ea084ea16b785c9a563ff298ee6a42-744x1039.png?w=280&q=85&fm=png",
+        },
     ]
 }
 
@@ -6657,7 +6672,7 @@ mod tests {
     #[test]
     fn presets_are_complete_and_references_are_consistent() {
         let catalog = cards();
-        assert_eq!(catalog.len(), 424);
+        assert_eq!(catalog.len(), 425);
         for (index, card) in catalog.iter().enumerate() {
             assert_eq!(index, card.id);
             assert!(!card.official_id.is_empty());

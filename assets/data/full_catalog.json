@@ -150,13 +150,13 @@
       "legend": 10,
       "rune": 6,
       "spell": 115,
-      "unit": 235
+      "unit": 236
     },
-    "implemented_main_cards": 424,
+    "implemented_main_cards": 425,
     "implemented_legends": 10,
     "implemented_battlefields": 17,
-    "implemented_legal_identities": 457,
-    "unimplemented_legal_identities": 622,
+    "implemented_legal_identities": 458,
+    "unimplemented_legal_identities": 621,
     "errata_entries": 67,
     "identities_with_errata": 67,
     "source_quality_issues": 53,
@@ -27900,8 +27900,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 424,
+        "official_id": "ven-102-166",
+        "playable_in_client": true
       }
     },
     {

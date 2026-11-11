@@ -49,3 +49,5 @@ jobs:
           XDG_DATA_HOME="$RUNNER_TEMP/local-rift-presets-small" xvfb-run -a ./target/release/local-rift --ui-smoke-presets --small
           XDG_DATA_HOME="$RUNNER_TEMP/local-rift-ai" xvfb-run -a ./target/release/local-rift --ui-smoke-ai
           XDG_DATA_HOME="$RUNNER_TEMP/local-rift-ai-small" xvfb-run -a ./target/release/local-rift --ui-smoke-ai --small
+          XDG_DATA_HOME="$RUNNER_TEMP/local-rift-irelia" xvfb-run -a ./target/release/local-rift --ui-smoke-irelia
+          XDG_DATA_HOME="$RUNNER_TEMP/local-rift-irelia-small" xvfb-run -a ./target/release/local-rift --ui-smoke-irelia --small

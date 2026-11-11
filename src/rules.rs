@@ -257,6 +257,7 @@ pub struct Targeting {
 pub fn effect(id: usize) -> OfficialEffect {
     use OfficialEffect::*;
     match id {
+        424 => None,
         422 => DrawThenChannel {
             draw: 1,
             channel: 1,
@@ -1094,6 +1095,7 @@ pub fn requirements(id: usize) -> &'static [Mechanic] {
         421 => &[Chain],
         422 => &[Chain, Channel, CostReduction],
         423 => &[Chain, Counterspell],
+        424 => &[Chain, Banish, Gear, OptionalCosts],
         372 | 373 => &[Chain, Gear, Bounce],
         374 => &[Chain, Gear, DeathTriggers],
         375 => &[Chain, Bounce],
@@ -2006,7 +2008,7 @@ mod tests {
     #[test]
     fn all_catalog_entries_have_official_classification() {
         let cards = cards();
-        assert_eq!(cards.len(), 424);
+        assert_eq!(cards.len(), 425);
         for card in cards {
             assert_ne!(
                 effect(card.id),
@@ -2016,7 +2018,7 @@ mod tests {
             );
             assert_ne!(support_status(card.id), SupportStatus::UnknownCard);
         }
-        assert_eq!(effect(424), OfficialEffect::Unsupported);
+        assert_eq!(effect(425), OfficialEffect::Unsupported);
     }
 
     #[test]

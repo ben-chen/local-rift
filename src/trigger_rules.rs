@@ -11,6 +11,7 @@ pub enum Event {
     SelfPlayed,
     FriendlyUnitPlayed,
     FriendlyGearPlayed,
+    OpponentGearPlayed,
     FriendlySpellPlayed,
     FriendlyCardPlayed,
     FriendlyHiddenPlayed,
@@ -151,6 +152,7 @@ pub enum SourceDamageRecipients {
 }
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Effect {
+    Banish(Operand),
     KillSourceGear,
     ReturnSourceGear,
     MoveTargetsToSourceBattlefield,
@@ -225,12 +227,17 @@ pub struct TriggerBaseCost {
     pub domain: Option<crate::cards::Domain>,
 }
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum TriggerObjectCost {
+    BanishSource,
+}
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct TriggerRule {
     pub text_area: TriggerTextArea,
     pub event: Event,
     pub conditions: &'static [Condition],
     pub optional: bool,
     pub base_cost: Option<TriggerBaseCost>,
+    pub object_cost: Option<TriggerObjectCost>,
     pub targets: TargetRule,
     pub effects: &'static [Effect],
 }
@@ -262,6 +269,7 @@ const fn rule(
         conditions,
         optional,
         base_cost: None,
+        object_cost: None,
         targets,
         effects,
     }
@@ -319,6 +327,20 @@ pub fn trigger_rules(card_id: usize) -> &'static [TriggerRule] {
         )
     };
     match card_id {
+        424 => {
+            const {
+                &[TriggerRule {
+                    object_cost: Some(TriggerObjectCost::BanishSource),
+                    ..rule(
+                        OpponentGearPlayed,
+                        &[],
+                        true,
+                        TargetRule::NONE,
+                        &[Banish(Subject)],
+                    )
+                }]
+            }
+        }
         417 => {
             const {
                 &[rule(
