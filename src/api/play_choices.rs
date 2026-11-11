@@ -4,6 +4,7 @@ use crate::play::{
     CostPlanView, CostScope, CostSelection, CostValue, ExecutionChoices, PlayChoiceView,
     PlayChoices, PlayGrantKind, PlayOrigin, PowerReduction, RepeatSelection,
 };
+use crate::show_off::{ShowOffObject, ShowOffSelection, ShownObject};
 
 impl Session {
     /// Preview the acting player's optional costs without committing any choice.
@@ -73,6 +74,15 @@ pub(super) fn choices_to_json(choices: &PlayChoices) -> Value {
         "cost_order":choices.cost_order.iter().map(selection_to_json).collect::<Vec<_>>()});
     // Preserve the existing wire shape for non-modal plays. A selected base
     // execution mode remains explicit and independent of Repeat selections.
+    if !choices.show_off.is_empty() {
+        value["show_off"] = json!(
+            choices
+                .show_off
+                .iter()
+                .map(show_off_selection_to_json)
+                .collect::<Vec<_>>()
+        );
+    }
     if let Some(mode) = choices.mode {
         value["mode"] = json!(mode);
     }
@@ -101,14 +111,27 @@ pub(super) fn plan_to_json(plan: &CostPlanView) -> Value {
 }
 
 pub(super) fn view_to_json(view: &PlayChoiceView) -> Value {
-    json!({"card_id":view.card_id,"origin":origin_to_json(view.origin),
+    let mut value = json!({"card_id":view.card_id,"origin":origin_to_json(view.origin),
         "modes":view.modes.iter().map(|mode|json!({"index":mode.index,"label":mode.label,
             "target_kinds":mode.target_kinds.iter().copied().map(targeting::target_kind).collect::<Vec<_>>()})).collect::<Vec<_>>(),
         "repeats":view.repeats.iter().map(|option|json!({"id":option.id.to_string(),"label":option.label,
             "source":chain_source_to_json(option.source),"cost":cost_to_json(&option.cost)})).collect::<Vec<_>>(),
         "accelerate":view.accelerate.as_ref().map(|option|json!({"label":option.label,"cost":cost_to_json(&option.cost)})),
         "bonus":view.bonus.as_ref().map(|option|json!({"label":option.label,"cost":cost_to_json(&option.cost)})),
-        "costs":plan_to_json(&view.costs)})
+        "costs":plan_to_json(&view.costs)});
+    if !view.show_off.is_empty() {
+        value["show_off"] = json!(
+            view.show_off
+                .iter()
+                .map(|o| json!({"instance":o.instance,
+            "label":o.label,"optional":true,"candidates":o.candidates.iter().map(|s| {
+                let mut v = show_off_selection_to_json(&s.selection);
+                v["card_id"] = json!(s.card_id); v["token"] = json!(s.token); v
+            }).collect::<Vec<_>>() }))
+                .collect::<Vec<_>>()
+        );
+    }
+    value
 }
 
 pub(super) fn grant_kind_to_json(kind: PlayGrantKind) -> Value {
@@ -176,7 +199,14 @@ pub(super) fn parse_choices(value: &Value) -> Result<PlayChoices, ApiError> {
     let obj = object(value)?;
     keys(
         obj,
-        &["repeats", "accelerate", "bonus", "cost_order", "mode"],
+        &[
+            "repeats",
+            "accelerate",
+            "bonus",
+            "cost_order",
+            "mode",
+            "show_off",
+        ],
     )?;
     let repeats = optional_array(obj, "repeats")?
         .iter()
@@ -213,7 +243,34 @@ pub(super) fn parse_choices(value: &Value) -> Result<PlayChoices, ApiError> {
             })
         })
         .collect::<Result<Vec<_>, ApiError>>()?;
+    let show_off = optional_array(obj, "show_off")?
+        .iter()
+        .map(|value| {
+            let obj = object(value)?;
+            keys(obj, &["instance", "object"])?;
+            let instance = index(obj, "instance")?;
+            let obj = object(required(obj, "object")?)?;
+            let object = match string(obj, "type")? {
+                "hand" => {
+                    keys(obj, &["type", "hand_index"])?;
+                    ShowOffObject::Hand {
+                        hand_index: index(obj, "hand_index")?,
+                    }
+                }
+                "gear" => {
+                    keys(obj, &["type", "gear_id"])?;
+                    ShowOffObject::Gear {
+                        gear_id: u32::try_from(unsigned(obj, "gear_id")?)
+                            .map_err(|_| ApiError::invalid("Gear ID exceeds u32."))?,
+                    }
+                }
+                _ => return Err(ApiError::invalid("Show Off object must be hand or gear.")),
+            };
+            Ok(ShowOffSelection { instance, object })
+        })
+        .collect::<Result<Vec<_>, ApiError>>()?;
     Ok(PlayChoices {
+        show_off,
         mode: if obj.get("mode").is_none_or(Value::is_null) {
             None
         } else {
@@ -224,6 +281,25 @@ pub(super) fn parse_choices(value: &Value) -> Result<PlayChoices, ApiError> {
         bonus: flag(obj, "bonus")?,
         cost_order,
     })
+}
+
+fn show_off_selection_to_json(selection: &ShowOffSelection) -> Value {
+    let object = match selection.object {
+        ShowOffObject::Hand { hand_index } => json!({"type":"hand","hand_index":hand_index}),
+        ShowOffObject::Gear { gear_id } => json!({"type":"gear","gear_id":gear_id}),
+    };
+    json!({"instance":selection.instance,"object":object})
+}
+
+// A revealed hand card becomes public; its original private hand position does not.
+pub(super) fn shown_to_json(shown: &[ShownObject]) -> Value {
+    json!(shown.iter().map(|s| {
+        let source = match s.selection.object {
+            ShowOffObject::Hand { .. } => json!({"type":"hand"}),
+            ShowOffObject::Gear { gear_id } => json!({"type":"gear","gear_id":gear_id}),
+        };
+        json!({"instance":s.selection.instance,"source":source,"card_id":s.card_id,"token":s.token})
+    }).collect::<Vec<_>>())
 }
 
 #[cfg(test)]
@@ -241,6 +317,7 @@ mod tests {
                 }],
             }),
             choices: PlayChoices {
+                show_off: vec![],
                 mode: None,
                 repeats: vec![
                     RepeatSelection {

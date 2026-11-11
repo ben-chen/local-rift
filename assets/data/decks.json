@@ -11002,6 +11002,30 @@
         "Reaction"
       ],
       "tags": []
+    },
+    {
+      "id": 426,
+      "name": "Battle Preparations",
+      "official_id": "rad-032-167",
+      "energy": 2,
+      "power": 0,
+      "might": 0,
+      "domains": [
+        "Calm"
+      ],
+      "kind": "Spell",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/9422caf2fcd4cfb346cf0dce48245ef13a77180f-744x1039.png?w=280&q=85&fm=png",
+      "source_url": "https://riftbound.leagueoflegends.com/en-us/card-gallery/",
+      "official_text": "[Reaction] (Play any time, even before spells and abilities resolve.)\n[Show Off] a gear. (As you play this, you may reveal a gear from hand or pick a friendly gear.)\nGive a unit +2 Might this turn. If you showed off, ready up to 2 runes.",
+      "official_text_html": "<p>[Reaction] (Play any time, even before spells and abilities resolve.)<br />[Show Off] a gear. (As you play this, you may reveal a gear from hand or pick a friendly gear.)<br />Give a unit +2 :rb_might: this turn. If you showed off, ready up to 2 runes.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Reaction",
+        "Show Off"
+      ],
+      "tags": []
     }
   ],
   "official_text_note": "Official card/legend rules text from the Riot Card Gallery, retrieved 2026-10-24 and corrected by cited errata. Resource icon tokens are expanded to readable bracketed names. Raw card and equipment HTML is preserved separately. Official text does not establish full implementation fidelity."

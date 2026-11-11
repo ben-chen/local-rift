@@ -445,6 +445,13 @@ fn checked_advice(game: &Game, level: AdviceLevel) -> Result<Vec<&'static str>, 
         });
     }
 
+    if human.hand.contains(&426) {
+        tips.push(if beginner {
+            "Battle Preparations always gives a unit +2 Might this turn. Show off gear on your board or reveal one from hand before paying, then choose up to two runes to ready."
+        } else {
+            "Show board gear to keep your hand private. Choose runes you will exhaust for Energy; Battle Preparations can ready them again when it resolves."
+        });
+    }
     if human.hand.contains(&425) {
         tips.push(if beginner {
             "Hunker Down readies your unit and draws a card, but that unit cannot move this turn. An opponent's movement effect cannot move it either."
@@ -2261,6 +2268,7 @@ mod tests {
         game.start_match().unwrap();
         let mut mote = Companion::default();
         game.chain.push(ChainItem {
+            show_off: Vec::new(),
             id: 77,
             player: 1,
             card_id: 11,
@@ -2977,6 +2985,7 @@ mod tests {
         }
         game.decision = None;
         game.chain.push(ChainItem {
+            show_off: Vec::new(),
             id: 1,
             player: 1,
             card_id: 11,

@@ -1,0 +1,92 @@
+{
+  "status": "admitted",
+  "records": [
+    {
+      "runtime_id": 426,
+      "official_id": "rad-032-167",
+      "raw_printing": {
+        "official_id": "rad-032-167",
+        "public_code": "RAD-032/167",
+        "name": "Battle Preparations",
+        "set": "RAD",
+        "collector_number": 32,
+        "types": [
+          "spell"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "spell"
+        ],
+        "accessibility_types": [
+          "spell"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "calm"
+        ],
+        "energy": 2,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "rules_html": "<p>[Reaction] (Play any time, even before spells and abilities resolve.)<br />[Show Off] a gear. (As you play this, you may reveal a gear from hand or pick a friendly gear.)<br />Give a unit +2 :rb_might: this turn. If you showed off, ready up to 2 runes.</p>",
+        "rules_text": "[Reaction] (Play any time, even before spells and abilities resolve.)\n[Show Off] a gear. (As you play this, you may reveal a gear from hand or pick a friendly gear.)\nGive a unit +2 Might this turn. If you showed off, ready up to 2 runes.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [],
+        "rarity": "uncommon",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/9422caf2fcd4cfb346cf0dce48245ef13a77180f-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Spell: Battle Preparations. [Reaction] (Play any time, even before spells and abilities resolve.)\n[Show Off] a gear. (As you play this, you may reveal a gear from hand or pick a friendly gear.)\nGive a unit +2 [S] this turn. If you showed off, ready up to 2 runes.",
+        "illustrators": [
+          "Kudos Productions"
+        ]
+      },
+      "raw_printing_sha256": "d47058acebc0518020afb30af61f992f55cbcf47773da4232fe2ae33dda68c83",
+      "effective": {
+        "types": [
+          "spell"
+        ],
+        "super_types": [],
+        "domains": [
+          "calm"
+        ],
+        "energy": 2,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>[Reaction] (Play any time, even before spells and abilities resolve.)<br />[Show Off] a gear. (As you play this, you may reveal a gear from hand or pick a friendly gear.)<br />Give a unit +2 :rb_might: this turn. If you showed off, ready up to 2 runes.</p>",
+        "rules_text": "[Reaction] (Play any time, even before spells and abilities resolve.)\n[Show Off] a gear. (As you play this, you may reveal a gear from hand or pick a friendly gear.)\nGive a unit +2 Might this turn. If you showed off, ready up to 2 runes.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "resolution_ids": [],
+      "printing_cohort": [
+        "rad-032-167"
+      ],
+      "errata": [],
+      "original_image": {
+        "path": "assets/data/card_admissions/irelia_preparations/rad-032-167.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/9422caf2fcd4cfb346cf0dce48245ef13a77180f-744x1039.png?accountingTag=RB",
+        "sha256": "eaeb7715b05c5183fd7ddfb84f32935f18e3c92cf71f38787843c2929ef0ac4c"
+      },
+      "runtime_image": {
+        "path": "assets/art/card_426.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/9422caf2fcd4cfb346cf0dce48245ef13a77180f-744x1039.png?w=280&q=85&fm=png",
+        "sha256": "9ac26f36e6eebcc219a62ba0097cecdb116000e6a0bbed47dc03fcf115ff3783"
+      },
+      "visual_review": {
+        "actual_full_face_viewed": true,
+        "reviewer": "root",
+        "reviewed_on": "2026-11-11",
+        "original_image_sha256": "eaeb7715b05c5183fd7ddfb84f32935f18e3c92cf71f38787843c2929ef0ac4c"
+      }
+    }
+  ],
+  "preserved_runtime_prefix": {
+    "cards_sha256": "bc10bd89a807f717684f14b84042a7d4a352fd45dd5a5aa187dc84743cacb1f3",
+    "presets_sha256": "55f81fe597de35b0c4dee12d87ad36ae72463cbfb5ae576d00f87104cd5914d5",
+    "card_count": 426,
+    "preset_count": 5
+  }
+}

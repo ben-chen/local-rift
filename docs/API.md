@@ -614,3 +614,50 @@ instruction does nothing, while other independent instructions still resolve.
 Basic and grouped moves reject the locked unit without changing state or revision.
 The restriction expires with the turn and does not follow a card that leaves play
 and is played again as a new object.
+
+
+## Show Off and Battle Preparations
+
+Battle Preparations (426) accepts `choices.show_off` on `with_play_choices`.
+Omitting the array or supplying `[]` declines the optional Show Off. Instance 0
+accepts exactly one own-hand gear or friendly board gear:
+
+```json
+{
+  "type": "with_play_choices",
+  "action": {
+    "type": "play_card_targets",
+    "hand_index": 0,
+    "targets": [
+      {"type": "unit", "player": 0, "unit_id": 500},
+      {"type": "rune", "player": 0, "rune_id": 12}
+    ]
+  },
+  "choices": {
+    "show_off": [{"instance": 0, "object": {"type": "hand", "hand_index": 1}}]
+  }
+}
+```
+
+Board selections use `{"type":"gear","gear_id":700}`. Hand indices refer to
+the same pre-play hand as the wrapped action, and cannot select the played card.
+`play_choices` returns optional `show_off` descriptors and owner-only candidates.
+Only the acting player may query them. No selected object is automatically revealed
+by a read-only query. Other cards omit this descriptor and reject Show Off choices.
+
+Use `target_candidates` for each execution: its first slot is a required unit;
+after Show Off, its next slots are optional `rune` targets with physical IDs.
+Choose zero to two different runes; either player's objects and already-ready
+runes are legal. Static card metadata also includes `conditional_slots`. Rune
+choices belong to the base/Repeat execution's `targets`; the Show Off array is
+shared because Repeat does not repeat finalization instructions.
+
+Public chain items and staged `payment_plan` observations include `show_off` only
+when used. Each captured entry has `instance`, `source`, `card_id` and `token`.
+A hand source is `{"type":"hand"}` without a private hand index; a board source
+includes its gear ID. Both viewers see the selected card, never the rest of the
+hand. The snapshot remains valid if shown Gold is spent during payment or a shown
+object leaves play afterward. Costs, targets and Show Off cannot be changed once
+payment is staged. Automatic Power payment preserves chosen rune targets; manually
+recycling a target before finalization requires Undo/refusal or a different play.
+Invalid input or payment completion preserves the current state and revision.

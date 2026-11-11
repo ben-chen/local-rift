@@ -9,6 +9,7 @@ pub(super) struct PlayDraft {
     pub execution: usize,
     pub open: bool,
     pub scroll: usize,
+    pub show_off_tab: bool,
 }
 
 /// A mode belongs to one execution. Changing it invalidates that execution's
@@ -46,6 +47,7 @@ mod mode_tests {
             execution: 1,
             open: true,
             scroll: 0,
+            show_off_tab: true,
             choices: PlayChoices {
                 mode: Some(0),
                 repeats: vec![
@@ -341,6 +343,9 @@ pub(super) fn target_view_hint(game: &Game, view: &PlayTargetView) -> String {
         };
     };
     let noun = match slot.kind {
+        local_rift::rules::PlayTargetKind::Rune => {
+            "up to two different runes in either rune zone (optional)"
+        }
         local_rift::rules::PlayTargetKind::Unit if view.card_id == 421 => {
             "a friendly unit fighting an enemy Fury unit or chosen by an enemy Fury spell"
         }
@@ -495,7 +500,8 @@ impl App {
         })
     }
     fn extended_choices(&self, view: &PlayChoiceView) -> bool {
-        !view.modes.is_empty()
+        !view.show_off.is_empty()
+            || !view.modes.is_empty()
             || view.repeats.len()
                 > usize::from(local_rift::rules::repeat_cost(view.card_id).is_some())
             || view.repeats.iter().any(|option| {
@@ -552,10 +558,11 @@ impl App {
             });
         }
         self.play_draft = Some(PlayDraft {
+            show_off_tab: true,
             key,
             choices,
             execution: 0,
-            open: !view.modes.is_empty(),
+            open: !view.show_off.is_empty() || !view.modes.is_empty(),
             scroll: 0,
         });
         self.options = PlayOptions::default();
@@ -654,103 +661,191 @@ impl App {
         };
         self.ui.rect(Rect::new(245.0, 687.0, 883.0, 202.0), PANEL);
         self.ui.border(Rect::new(245.0, 687.0, 883.0, 202.0), LINE);
-        let list = Rect::new(255.0, 716.0, 425.0, 155.0);
-        if self.ui.hover(list) {
-            let wheel = self.ui.wheel();
-            if wheel < 0.0 {
-                draft.scroll = draft
-                    .scroll
-                    .saturating_add(1)
-                    .min(view.repeats.len().saturating_sub(3));
-            }
-            if wheel > 0.0 {
-                draft.scroll = draft.scroll.saturating_sub(1);
-            }
-        }
-        self.ui.text(
-            "OPTIONAL REPEATS · select independently",
-            260.0,
-            708.0,
-            10.0,
-            GOLD,
-        );
-        for (slot, option) in view.repeats.iter().skip(draft.scroll).take(3).enumerate() {
-            let y = 720.0 + slot as f32 * 50.0;
-            let position = draft
-                .choices
-                .repeats
-                .iter()
-                .position(|selected| selected.option_id == option.id);
-            let rect = Rect::new(258.0, y, 412.0, 44.0);
-            self.ui.rect(
-                rect,
-                if position.is_some() {
-                    Color::new(0.08, 0.20, 0.20, 1.0)
+        if !view.show_off.is_empty()
+            && self.ui.button(
+                Rect::new(505.0, 690.0, 165.0, 22.0),
+                if draft.show_off_tab {
+                    "See Repeat choices"
                 } else {
-                    BG
+                    "See Show Off choices"
                 },
-            );
+                false,
+                true,
+            )
+        {
+            draft.show_off_tab = !draft.show_off_tab;
+            draft.scroll = 0;
+        }
+        if let Some(option) = view.show_off.first().filter(|_| draft.show_off_tab) {
             self.ui
-                .border(rect, if position.is_some() { TEAL } else { LINE });
-            self.ui.ellipsis(
-                &format!(
-                    "{} {}",
-                    if position.is_some() { "+" } else { "○" },
-                    if option.source
-                        == (ChainSource::Card {
-                            card_id: view.card_id
-                        })
-                    {
-                        option.label.clone()
-                    } else {
-                        format!("{} · Repeat", source_label(&self.game, &option.source))
-                    }
-                ),
-                268.0,
-                y + 17.0,
-                388.0,
-                11.5,
-                TEXT,
-            );
-            self.ui.ellipsis(
-                &value_label(&option.cost),
-                268.0,
-                y + 35.0,
-                388.0,
-                10.0,
-                TEAL,
-            );
-            if self.ui.clicked(rect) {
-                if let Some(index) = position {
-                    draft.choices.cost_order.clear();
-                    draft.choices.repeats.remove(index);
-                    draft.execution = 0;
-                } else {
-                    draft.choices.cost_order.clear();
-                    draft.choices.repeats.push(RepeatSelection {
-                        option_id: option.id,
-                        choices: ExecutionChoices::default(),
-                    });
-                    draft.execution = draft.choices.repeats.len();
+                .text("SHOW OFF A GEAR · optional", 260.0, 708.0, 10.0, GOLD);
+            if self.ui.button(
+                Rect::new(258.0, 720.0, 412.0, 26.0),
+                "Don't show off · +2 Might only",
+                draft.choices.show_off.is_empty(),
+                true,
+            ) {
+                draft.choices.show_off.clear();
+                self.targets.truncate(1);
+                for repeated in &mut draft.choices.repeats {
+                    repeated.choices.targets.truncate(1);
+                }
+                draft.choices.cost_order.clear();
+            }
+            if self.ui.hover(Rect::new(255.0, 750.0, 425.0, 132.0)) {
+                let wheel = self.ui.wheel();
+                if wheel < 0.0 {
+                    draft.scroll =
+                        (draft.scroll + 1).min(option.candidates.len().saturating_sub(3));
+                }
+                if wheel > 0.0 {
+                    draft.scroll = draft.scroll.saturating_sub(1);
                 }
             }
-        }
-        if view.repeats.is_empty() {
-            self.ui
-                .text("This play has no Repeat costs.", 260.0, 746.0, 12.0, MUTED);
-            if !view.modes.is_empty()
-                && self.ui.button(
-                    Rect::new(260.0, 791.0, 400.0, 32.0),
-                    "Choose a physical gear in Loadout",
-                    false,
-                    true,
-                )
+            if option.candidates.is_empty() {
+                self.ui.wrapped_lines(
+                    "No gear in your hand or on your board. You can still cast this for +2 Might.",
+                    268.0,
+                    772.0,
+                    390.0,
+                    12.0,
+                    MUTED,
+                    3,
+                );
+            }
+            for (row, shown) in option
+                .candidates
+                .iter()
+                .skip(draft.scroll)
+                .take(3)
+                .enumerate()
             {
-                draft.open = false;
-                self.tray = Tray::Loadout;
-                self.gear_owner = 0;
-                self.field_gear_filter = None;
-                self.hand_scroll = 0;
+                let name = if shown.token {
+                    "Gold"
+                } else {
+                    self.game.catalog[shown.card_id].name
+                };
+                let zone = match shown.selection.object {
+                    local_rift::show_off::ShowOffObject::Hand { .. } => "Reveal from hand",
+                    local_rift::show_off::ShowOffObject::Gear { .. } => "Pick on board",
+                };
+                let rect = Rect::new(258.0, 751.0 + row as f32 * 42.0, 412.0, 38.0);
+                let selected = draft.choices.show_off.contains(&shown.selection);
+                if self
+                    .ui
+                    .button(rect, &format!("{zone}: {name}"), selected, true)
+                {
+                    draft.choices.show_off = vec![shown.selection.clone()];
+                    draft.choices.cost_order.clear();
+                }
+                if self.ui.hover(rect) && !shown.token {
+                    self.hover_card = Some(shown.card_id);
+                    self.hover_rect = Some(rect);
+                }
+            }
+        } else {
+            let list = Rect::new(255.0, 716.0, 425.0, 155.0);
+            if self.ui.hover(list) {
+                let wheel = self.ui.wheel();
+                if wheel < 0.0 {
+                    draft.scroll = draft
+                        .scroll
+                        .saturating_add(1)
+                        .min(view.repeats.len().saturating_sub(3));
+                }
+                if wheel > 0.0 {
+                    draft.scroll = draft.scroll.saturating_sub(1);
+                }
+            }
+            self.ui.text(
+                if view.show_off.is_empty() {
+                    "OPTIONAL REPEATS · select independently"
+                } else {
+                    "OPTIONAL REPEATS"
+                },
+                260.0,
+                708.0,
+                10.0,
+                GOLD,
+            );
+            for (slot, option) in view.repeats.iter().skip(draft.scroll).take(3).enumerate() {
+                let y = 720.0 + slot as f32 * 50.0;
+                let position = draft
+                    .choices
+                    .repeats
+                    .iter()
+                    .position(|selected| selected.option_id == option.id);
+                let rect = Rect::new(258.0, y, 412.0, 44.0);
+                self.ui.rect(
+                    rect,
+                    if position.is_some() {
+                        Color::new(0.08, 0.20, 0.20, 1.0)
+                    } else {
+                        BG
+                    },
+                );
+                self.ui
+                    .border(rect, if position.is_some() { TEAL } else { LINE });
+                self.ui.ellipsis(
+                    &format!(
+                        "{} {}",
+                        if position.is_some() { "+" } else { "○" },
+                        if option.source
+                            == (ChainSource::Card {
+                                card_id: view.card_id
+                            })
+                        {
+                            option.label.clone()
+                        } else {
+                            format!("{} · Repeat", source_label(&self.game, &option.source))
+                        }
+                    ),
+                    268.0,
+                    y + 17.0,
+                    388.0,
+                    11.5,
+                    TEXT,
+                );
+                self.ui.ellipsis(
+                    &value_label(&option.cost),
+                    268.0,
+                    y + 35.0,
+                    388.0,
+                    10.0,
+                    TEAL,
+                );
+                if self.ui.clicked(rect) {
+                    if let Some(index) = position {
+                        draft.choices.cost_order.clear();
+                        draft.choices.repeats.remove(index);
+                        draft.execution = 0;
+                    } else {
+                        draft.choices.cost_order.clear();
+                        draft.choices.repeats.push(RepeatSelection {
+                            option_id: option.id,
+                            choices: ExecutionChoices::default(),
+                        });
+                        draft.execution = draft.choices.repeats.len();
+                    }
+                }
+            }
+            if view.repeats.is_empty() {
+                self.ui
+                    .text("This play has no Repeat costs.", 260.0, 746.0, 12.0, MUTED);
+                if !view.modes.is_empty()
+                    && self.ui.button(
+                        Rect::new(260.0, 791.0, 400.0, 32.0),
+                        "Choose a physical gear in Loadout",
+                        false,
+                        true,
+                    )
+                {
+                    draft.open = false;
+                    self.tray = Tray::Loadout;
+                    self.gear_owner = 0;
+                    self.field_gear_filter = None;
+                    self.hand_scroll = 0;
+                }
             }
         }
         self.ui
@@ -853,7 +948,16 @@ impl App {
         } else {
             &draft.choices.repeats[draft.execution - 1].choices.targets
         };
-        let hint = if modal {
+        let hint = if view.card_id == 426 {
+            let action = Action::WithPlayChoices {
+                action: Box::new(strip_options(self.selected_play_action().unwrap())),
+                choices: draft.choices.clone(),
+            };
+            self.game
+                .play_target_view(&action, draft.execution)
+                .map(|view| target_view_hint(&self.game, &view))
+                .unwrap_or_else(|error| format!("Edit targets: {error}"))
+        } else if modal {
             let selected_mode = if draft.execution == 0 {
                 draft.choices.mode
             } else {
@@ -876,6 +980,7 @@ impl App {
                 Some(local_rift::rules::PlayTargetKind::Battlefield) => {
                     "Choose either battlefield on the mat, even if empty.".into()
                 }
+                Some(local_rift::rules::PlayTargetKind::Rune) => "Choose runes on the mat.".into(),
                 Some(local_rift::rules::PlayTargetKind::Spell) => {
                     "Choose a pending spell above the board.".into()
                 }

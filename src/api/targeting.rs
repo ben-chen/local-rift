@@ -30,6 +30,7 @@ impl Session {
 
 pub(super) fn target_kind(kind: PlayTargetKind) -> &'static str {
     match kind {
+        PlayTargetKind::Rune => "rune",
         PlayTargetKind::Unit => "unit",
         PlayTargetKind::Gear => "gear",
         PlayTargetKind::Spell => "spell",
@@ -42,6 +43,10 @@ pub(super) fn play_targets_to_json(card_id: crate::cards::CardId) -> Value {
     let spec = play_target_spec(card_id);
     let mut value =
         json!({"kind":spec.kind.map(target_kind),"maximum":spec.maximum,"required":spec.required});
+    if card_id == 426 {
+        value["conditional_slots"] = json!({"after":"show_off","instance":0,"kind":"rune",
+            "maximum":2,"required":0,"controller":"any","after_required_unit":true});
+    }
     if let Some(domain) = crate::rules::targeting(card_id).threatened_by_domain {
         value["condition"] = json!({
             "type":"in_combat_with_unit_or_chosen_by_spell",

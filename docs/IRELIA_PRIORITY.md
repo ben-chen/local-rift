@@ -20,8 +20,9 @@ restrictions, independent draw, and Irelia's choose/ready triggers. Its admissio
 is a card-pool addition, not a claim that it is a staple of the sourced Los Angeles
 or Stuttgart recipes.
 
-Next, prioritize Battle Preparations and review Siren's Song, Back Off and Hunters'
-Circle. The [Sacramento list attributed to Michael Mckain](https://riftwatch.gg/decks/sacramento-269/)
+Battle Preparations now has explicit Show Off, optional physical rune targets,
+Repeat, companion advice and AI/API support. Next, prioritize Siren's Song, Back
+Off and Hunters' Circle. The [Sacramento list attributed to Michael Mckain](https://riftwatch.gg/decks/sacramento-269/)
 (October 24–25, 269th place) supplies a concrete secondary-source lead: three
 Battle Preparations, two Siren's Song, two Back Off and that battlefield. It is
 not a verified new preset or evidence of top-tier results. Reckless Innovator
@@ -29,8 +30,7 @@ remains a community lead behind cards tied to these specific lists. All-time
 aggregate frequencies include older banned decks and must not be presented as
 current Standard prevalence.
 
-Battle Preparations needs an explicit Show Off choice and exact optional rune
-readying. Siren's Song must check the same physical unit's movement history this
+Siren's Song must check the same physical unit's movement history this
 turn. Back Off's draw depends on actually being played from hand; its Hidden
 play must not fabricate that draw. Hunters' Circle needs a per-player first-play
 record and a discount only during that player's turn. Verify each against the
@@ -44,3 +44,5 @@ these card pools does not by itself implement best-of-three sideboarding.
 The unpublished Azir source, engine and preset drafts remain saved outside the
 repository. Their tentative numeric IDs must be rebased after Irelia admissions;
 they must not overwrite newly published identities.
+
+Battle Preparations validation is recorded in [its acceptance receipt](validation/irelia_preparations.json).

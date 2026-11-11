@@ -57,6 +57,7 @@ pub struct CostSelection {
 }
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct PlayChoices {
+    pub show_off: Vec<super::show_off::ShowOffSelection>,
     pub mode: Option<usize>,
     pub repeats: Vec<RepeatSelection>, // ordered extra executions; each option at most once
     pub accelerate: bool,
@@ -123,6 +124,7 @@ pub struct PlayModeOption {
 }
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct PlayChoiceView {
+    pub show_off: Vec<super::show_off::ShowOffOption>,
     pub modes: Vec<PlayModeOption>,
     pub card_id: CardId,
     pub origin: PlayOrigin,
@@ -181,6 +183,8 @@ pub struct CostContext {
 
 #[derive(Clone, Debug)]
 pub(crate) struct ActivePlay {
+    pub rune_targets: Vec<Target>,
+    pub show_off: Vec<super::show_off::ShownObject>,
     pub player: usize,
     pub card_id: CardId,
     pub origin: PlayOrigin,
@@ -745,7 +749,23 @@ impl Game {
                 .targets
                 .clone()
         };
-        let spec = Self::execution_target_spec(intent.id, mode, targets.len());
+        let spec = if intent.id == 426 {
+            rules::PlayTargetSpec {
+                kind: Some(if targets.is_empty() {
+                    rules::PlayTargetKind::Unit
+                } else {
+                    rules::PlayTargetKind::Rune
+                }),
+                maximum: if intent.legacy.show_off.is_empty() {
+                    1
+                } else {
+                    3
+                },
+                required: 1,
+            }
+        } else {
+            Self::execution_target_spec(intent.id, mode, targets.len())
+        };
         let next_slot = (targets.len() < spec.maximum).then(|| {
             let hidden = match intent.origin {
                 PlayOrigin::Hidden { lane } => match rules::hidden_target_policy(intent.id) {
@@ -798,6 +818,7 @@ impl Game {
     pub fn play_choices(&self, action: &Action) -> Result<PlayChoiceView, String> {
         Self::validate_choice_nesting(action)?;
         let intent = self.card_intent(action)?;
+        let shown = self.capture_show_off(action, intent.id, &intent.legacy.show_off)?;
         // Previews accept incomplete drafts, not malformed choices. Keep this on
         // the live board: only cost facts use the frozen/post-departure snapshot.
         if intent.lane.is_some_and(|lane| lane >= BATTLEFIELDS) {
@@ -811,6 +832,15 @@ impl Game {
                 .map(|r| (r.choices.mode, &r.choices.targets)),
         ) {
             Self::validate_play_mode(intent.id, mode, false)?;
+            if intent.id == 426 {
+                self.validate_preparations_targets(
+                    self.priority(),
+                    group,
+                    !shown.is_empty(),
+                    false,
+                )?;
+                continue;
+            }
             if intent.id == 410 {
                 self.validate_command_attack(self.priority(), mode, group, false)?;
                 continue;
@@ -870,6 +900,7 @@ impl Game {
             bonus.as_ref(),
         )?;
         Ok(PlayChoiceView {
+            show_off: self.show_off_options(action, intent.id),
             modes: Self::play_modes(intent.id),
             card_id: intent.id,
             origin: intent.origin,
@@ -888,7 +919,8 @@ impl Game {
         if let Action::WithPlayChoices { action, choices } = action
             && self.card_intent(action).is_err()
         {
-            if choices.mode.is_some()
+            if !choices.show_off.is_empty()
+                || choices.mode.is_some()
                 || !choices.repeats.is_empty()
                 || choices.accelerate
                 || choices.bonus
@@ -1271,6 +1303,15 @@ impl Game {
         if wrapped && !intent.legacy.repeats.is_empty() {
             return Err("Do not combine legacy Repeat with independent Repeat selections.".into());
         }
+        let shown = probe.capture_show_off(&action, intent.id, &choices.show_off)?;
+        if intent.id == 426 {
+            probe.validate_preparations_targets(
+                probe.priority(),
+                &intent.targets,
+                !shown.is_empty(),
+                true,
+            )?;
+        }
         let grants = probe.intent_grants(&intent);
         let repeats = probe.repeat_options(&intent, &grants);
         let accel = probe.accelerate_option(&intent, &grants);
@@ -1310,6 +1351,15 @@ impl Game {
         }
         for r in &choices.repeats {
             Self::validate_play_mode(intent.id, r.choices.mode, true)?;
+            if intent.id == 426 {
+                probe.validate_preparations_targets(
+                    probe.priority(),
+                    &r.choices.targets,
+                    !shown.is_empty(),
+                    true,
+                )?;
+                continue;
+            }
             if intent.id == 410 {
                 probe.validate_command_attack(
                     probe.priority(),
@@ -1345,7 +1395,22 @@ impl Game {
             bonus.as_ref(),
         )?;
         probe.consume_grants(&grants);
+        if probe.payment_show_off().is_none() {
+            probe.log_show_off(&shown);
+        }
+        let rune_targets = if intent.id == 426 {
+            std::iter::once(intent.targets.as_slice())
+                .chain(choices.repeats.iter().map(|r| r.choices.targets.as_slice()))
+                .flatten()
+                .copied()
+                .filter(|t| matches!(t, Target::Rune { .. }))
+                .collect()
+        } else {
+            vec![]
+        };
         probe.active_play = Some(ActivePlay {
+            rune_targets,
+            show_off: shown,
             player: probe.priority(),
             card_id: intent.id,
             origin: intent.origin,
@@ -1356,6 +1421,18 @@ impl Game {
         });
         let inner = without_legacy_options(action);
         probe.apply(inner)?;
+        if intent.id == 426 {
+            for targets in std::iter::once(&intent.targets)
+                .chain(choices.repeats.iter().map(|r| &r.choices.targets))
+            {
+                probe.validate_preparations_targets(
+                    probe.active_play.as_ref().unwrap().player,
+                    targets,
+                    !choices.show_off.is_empty(),
+                    true,
+                )?;
+            }
+        }
         probe.active_play = None;
         probe.payment_play_grants.clear();
         *self = probe;
@@ -1776,7 +1853,7 @@ impl Game {
             let mut item = self.chain[index].clone();
             item.targets = item.executions[frame.execution].targets.clone();
             item.target = item.targets.first().copied();
-            let groups = if item.card_id == 410 {
+            let groups = if matches!(item.card_id, 410 | 426) {
                 vec![item.targets.clone()]
             } else {
                 self.resolution_groups(item.player, item.card_id, item.lane, &item.targets)?
@@ -1807,6 +1884,8 @@ impl Game {
                     }
                     _ => return Err("The finalized Command execution has no valid mode.".into()),
                 }
+            } else if item.card_id == 426 {
+                self.resolve_preparations(item.player, &item.targets, !item.show_off.is_empty())?;
             } else if self.is_counter(item.card_id) {
                 self.resolve_counter(&item);
             } else {
@@ -1845,6 +1924,29 @@ impl Game {
 }
 
 impl Game {
+    pub(crate) fn capture_action_rune_targets(&self, action: &Action) -> Vec<Target> {
+        self.card_intent(action)
+            .ok()
+            .filter(|i| i.id == 426)
+            .map_or_else(Vec::new, |i| {
+                i.targets
+                    .into_iter()
+                    .chain(i.legacy.repeats.into_iter().flat_map(|r| r.choices.targets))
+                    .filter(|t| matches!(t, Target::Rune { .. }))
+                    .collect()
+            })
+    }
+
+    pub(crate) fn capture_action_show_off(
+        &self,
+        action: &Action,
+    ) -> Result<Vec<super::show_off::ShownObject>, String> {
+        match self.card_intent(action) {
+            Ok(intent) => self.capture_show_off(action, intent.id, &intent.legacy.show_off),
+            Err(_) => Ok(vec![]),
+        }
+    }
+
     pub(crate) fn capture_payment_grants(&mut self, action: &Action) {
         if let Ok(intent) = self.card_intent(action) {
             let grants = self.intent_grants(&intent);
@@ -2178,7 +2280,8 @@ impl Game {
     }
 
     fn apply_cost_choices(&mut self, action: Action, choices: PlayChoices) -> Result<(), String> {
-        if choices.mode.is_some()
+        if !choices.show_off.is_empty()
+            || choices.mode.is_some()
             || !choices.repeats.is_empty()
             || choices.accelerate
             || choices.bonus
@@ -2255,6 +2358,17 @@ impl Game {
             let mut result = Vec::new();
             for action in intents {
                 let intent = self.card_intent(&action)?;
+                if intent.id == 426 {
+                    result.extend(self.preparations_play_candidates(
+                        &action,
+                        false,
+                        limit.saturating_sub(result.len()),
+                    )?);
+                    if result.len() >= limit {
+                        return Ok(result);
+                    }
+                    continue;
+                }
                 if intent.id == 410 {
                     result.extend(self.command_play_candidates(
                         &action,
@@ -2378,7 +2492,9 @@ impl Game {
             let extras = intent.legacy.repeats.len() as i128 * 5
                 + i128::from(intent.legacy.accelerate) * 15
                 + i128::from(intent.legacy.bonus) * 5;
-            let score = if intent.id == 410 {
+            let score = if intent.id == 426 {
+                self.preparations_score(&intent.targets, &intent.legacy.show_off)
+            } else if intent.id == 410 {
                 self.command_choice_score(self.priority(), intent.legacy.mode, &intent.targets)
             } else if matches!(rules::effect(intent.id), OfficialEffect::AreaDamage { .. }) {
                 let base = self.area_damage_score(self.priority(), intent.id, &intent.targets)?;

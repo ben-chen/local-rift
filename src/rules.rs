@@ -52,6 +52,7 @@ pub enum AreaSelector {
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum PlayTargetKind {
+    Rune,
     UnitOrGear,
     Unit,
     Gear,
@@ -67,6 +68,7 @@ pub struct PlayTargetSpec {
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum OfficialEffect {
+    BattlePreparations,
     ReadyAndPreventMovement {
         draw: u8,
     },
@@ -261,6 +263,7 @@ pub fn effect(id: usize) -> OfficialEffect {
     use OfficialEffect::*;
     match id {
         425 => ReadyAndPreventMovement { draw: 1 },
+        426 => BattlePreparations,
         424 => None,
         422 => DrawThenChannel {
             draw: 1,
@@ -703,6 +706,7 @@ pub fn target_bounds(id: usize) -> (usize, usize) {
         return (2, 2);
     }
     match effect(id) {
+        BattlePreparations => (3, 1),
         AreaDamage {
             selector: AreaSelector::EnemyAtTargetBattlefield,
             ..
@@ -2016,7 +2020,7 @@ mod tests {
     #[test]
     fn all_catalog_entries_have_official_classification() {
         let cards = cards();
-        assert_eq!(cards.len(), 426);
+        assert_eq!(cards.len(), 427);
         for card in cards {
             assert_ne!(
                 effect(card.id),
@@ -2026,7 +2030,7 @@ mod tests {
             );
             assert_ne!(support_status(card.id), SupportStatus::UnknownCard);
         }
-        assert_eq!(effect(426), OfficialEffect::Unsupported);
+        assert_eq!(effect(427), OfficialEffect::Unsupported);
     }
 
     #[test]

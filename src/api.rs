@@ -420,7 +420,7 @@ impl Session {
             observed["xp_gained_this_turn"] = json!(game.gained_xp_this_turn(owner));
             Ok(observed)
         }).collect::<Result<Vec<_>,ApiError>>()?;
-        let chain: Vec<_> = game.chain.iter().map(|item| json!({
+        let chain: Vec<_> = game.chain.iter().map(|item| { let mut value = json!({
             "id":item.id,"player":item.player,"card_id":item.card_id,"name":game.chain_name(item),
             "source":chain_source_to_json(game.chain_source(item)),
             "ability":item.ability.as_ref().map(ability_to_json),"targets":item.targets.iter().map(target_to_json).collect::<Vec<_>>(),
@@ -430,7 +430,10 @@ impl Session {
             "executions":item.executions.iter().map(play_choices::execution_to_json).collect::<Vec<_>>(),
             "play_origin":item.play_origin.map(play_choices::origin_to_json),"bonus_damage":item.bonus_damage,
             "bonus_damage_exact":item.bonus_damage.to_string()
-        })).collect();
+        });
+            if !item.show_off.is_empty() { value["show_off"] = play_choices::shown_to_json(&item.show_off); }
+            value
+        }).collect();
         Ok(
             json!({"protocol":PROTOCOL_VERSION,"revision":self.revision,"viewer":viewer,
             "phase":phase_name(game.phase),"turn":game.turn,"active":game.active,
@@ -469,11 +472,14 @@ impl Session {
             "delayed_battlefield_triggers":game.delayed_battlefield_triggers().iter().map(fields::delayed_to_json).collect::<Vec<_>>(),
             "star_spring_used":game.star_spring_used(),
             "resource_continuations":game.resource_continuations().iter().map(|parent|json!({"player":parent.player,"task":parent.task})).collect::<Vec<_>>(),
-            "payment_plan":game.payment_plan_view(viewer).map(|plan|json!({
+            "payment_plan":game.payment_plan_view(viewer).map(|plan| { let mut value = json!({
                 "player":plan.player,"energy":plan.energy,"xp":plan.xp,"xp_exact":plan.xp.to_string(),"pending_card":plan.pending_card,
                 "refusal_kind":plan.refusal_kind.map(refusal::kind_to_json),"can_refuse":can_refuse_payment,
                 "power":plan.power.iter().map(power_cost_to_json).collect::<Vec<_>>(),
-                "action":plan.action.as_ref().map(action_to_json)})),
+                "action":plan.action.as_ref().map(action_to_json)});
+                if !plan.show_off.is_empty() { value["show_off"] = play_choices::shown_to_json(&plan.show_off); }
+                value
+            }),
             "required_trash_play":game.required_trash_play,
             "can_decline_trash_play":game.can_decline_trash_play().map_err(ApiError::illegal)?}),
         )

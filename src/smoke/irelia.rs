@@ -184,8 +184,89 @@ pub(crate) fn run_frame(app: &mut App, frame: u32) -> bool {
         }
         20 => {
             assert!(app.inspect.is_none());
+        }
+        21 => {
+            expansion_fixture(app, 426);
+            app.game = Game::new_for_agents(3, 3, 426426, Difficulty::Easy);
+            app.game.start_match().unwrap();
+            app.game.battlefields = [2, 2];
+            app.game.battlefield_owner = [None; 2];
+            for p in &mut app.game.players {
+                p.units.clear();
+                p.gear.clear();
+                p.hidden.clear();
+                p.hand.clear();
+                p.champion = None;
+                p.set_rune_setup([0; 6], [0; 6]).unwrap();
+                p.energy_pool = 0;
+                p.energy = 0;
+                p.power_pool = [0; 6];
+            }
+            app.game.players[0].units = vec![public_unit(42600, 73, None)];
+            app.game.players[0].hand = vec![426, 58];
+            app.game.players[0]
+                .set_rune_setup([0, 2, 0, 0, 0, 0], [0; 6])
+                .unwrap();
+            app.game.players[0].energy = 2;
+            app.fields = app.game.battlefields;
+            app.ai_worker.invalidate();
+            app.prefs.exact_payment = false;
+            app.companion.set_level(AdviceLevel::Beginner);
+        }
+        22 => {
+            capture(app, "RIFT_IRELIA_PREP_HAND");
+            click(app, 315.0, 760.0);
+        }
+        23 => {}
+        24 => {
+            assert!(app.selection == Some(Selection::Hand(0)));
+            assert!(app.play_draft.as_ref().unwrap().open);
+            capture(app, "RIFT_IRELIA_PREP_SHOW");
+            click(app, 450.0, 770.0);
+        }
+        25 => {
+            assert_eq!(app.play_draft.as_ref().unwrap().choices.show_off.len(), 1);
+            click_unit(app, 42600);
+        }
+        26 => {
+            assert_eq!(app.targets.len(), 1);
+            click(app, 430.0, 606.0);
+        }
+        27 => {
+            assert_eq!(app.targets.len(), 2);
+            click(app, 463.0, 606.0);
+        }
+        28 => {
+            assert_eq!(app.targets.len(), 3);
+            assert!(app.rune_menu.is_none());
+            capture(app, "RIFT_IRELIA_PREP_TARGETS");
+            click(app, 1285.0, 510.0);
+        }
+        29 => {
+            let spell = app.game.chain.iter().find(|c| c.card_id == 426).unwrap();
+            assert_eq!(spell.show_off.len(), 1);
+            assert_eq!(spell.targets.len(), 3);
+            assert!(app.game.players[0].rune_objects().iter().all(|r| !r.ready));
+            capture(app, "RIFT_IRELIA_PREP_CHAIN");
+            app.game.apply(Action::Pass).unwrap();
+            app.game.apply(Action::Pass).unwrap();
+        }
+        30 => {
+            assert_eq!(app.game.players[0].units[0].temporary_buff, 2);
+            assert!(app.game.players[0].rune_objects().iter().all(|r| r.ready));
+            capture(app, "RIFT_IRELIA_PREP_READY");
+            app.inspect = Some(426);
+            app.companion.set_level(AdviceLevel::Advanced);
+        }
+        31 => {
+            capture(app, "RIFT_IRELIA_PREP_INSPECT");
+            click(app, 940.0, 700.0);
+        }
+        32 => {
+            assert!(app.inspect.is_none());
             return true;
         }
+
         _ => {}
     }
     false

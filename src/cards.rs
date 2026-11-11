@@ -6488,6 +6488,21 @@ pub fn cards() -> Vec<CardDef> {
             tags: &[],
             art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/111c518590b17919e5b851ef6c713c7eb7504ae2-744x1039.png?w=280&q=85&fm=png",
         },
+        CardDef {
+            id: 426,
+            official_id: "rad-032-167",
+            name: "Battle Preparations",
+            cost: 2,
+            power_cost: 0,
+            might: 0,
+            domain: Domain::Calm,
+            domains: &[Domain::Calm],
+            kind: CardKind::Spell,
+            official_text: "[Reaction] (Play any time, even before spells and abilities resolve.)\n[Show Off] a gear. (As you play this, you may reveal a gear from hand or pick a friendly gear.)\nGive a unit +2 Might this turn. If you showed off, ready up to 2 runes.",
+            keywords: &["Reaction", "Show Off"],
+            tags: &[],
+            art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/9422caf2fcd4cfb346cf0dce48245ef13a77180f-744x1039.png?w=280&q=85&fm=png",
+        },
     ]
 }
 
@@ -6687,7 +6702,7 @@ mod tests {
     #[test]
     fn presets_are_complete_and_references_are_consistent() {
         let catalog = cards();
-        assert_eq!(catalog.len(), 426);
+        assert_eq!(catalog.len(), 427);
         for (index, card) in catalog.iter().enumerate() {
             assert_eq!(index, card.id);
             assert!(!card.official_id.is_empty());

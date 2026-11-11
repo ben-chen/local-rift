@@ -31,6 +31,8 @@ pub(crate) struct PaymentPlan {
     frozen: Box<Game>,
     pending_card: Option<PaymentCard>,
     obligations: Vec<Obligation>,
+    show_off: Vec<crate::show_off::ShownObject>,
+    rune_targets: Vec<crate::game::Target>,
     mode: Mode,
 }
 
@@ -68,6 +70,7 @@ pub struct PaymentPlanView {
     pub power: Vec<PowerCost>,
     pub action: Option<Action>,
     pub pending_card: Option<CardId>,
+    pub show_off: Vec<crate::show_off::ShownObject>,
     pub refusal_kind: Option<PaymentRefusalKind>,
 }
 
@@ -339,6 +342,7 @@ impl Game {
                 .collect(),
             action: (viewer == plan.player).then(|| plan.action.clone()),
             pending_card: plan.pending_card.as_ref().map(|card| card.card_id),
+            show_off: plan.show_off.clone(),
             refusal_kind: plan.refusal_kind(),
         })
     }
@@ -435,6 +439,28 @@ impl Game {
         }
     }
 
+    pub(crate) fn reserved_rune_targets(&self) -> Vec<crate::game::Target> {
+        self.active_play
+            .as_ref()
+            .map(|a| a.rune_targets.as_slice())
+            .into_iter()
+            .chain(
+                self.payment_plan
+                    .as_ref()
+                    .map(|p| p.rune_targets.as_slice()),
+            )
+            .flatten()
+            .copied()
+            .collect()
+    }
+
+    pub(crate) fn payment_show_off(&self) -> Option<&[crate::show_off::ShownObject]> {
+        self.payment_plan
+            .as_ref()
+            .filter(|plan| matches!(plan.mode, Mode::Recording | Mode::Replaying))
+            .map(|plan| plan.show_off.as_slice())
+    }
+
     pub(crate) fn payment_frozen_source(&self) -> Option<&Game> {
         self.payment_plan
             .as_ref()
@@ -482,10 +508,13 @@ impl Game {
             frozen: Box::new(original.clone()),
             pending_card: None,
             obligations: Vec::new(),
+            show_off: Vec::new(),
+            rune_targets: Vec::new(),
             mode: Mode::Recording,
         }));
         // Normalize convenience target choices before resources change the board.
         let action = probe.normalize_payment_intent(action)?;
+        let shown = self.capture_action_show_off(&action)?;
         let mut staged = self.clone();
         staged.capture_payment_grants(&action);
         let pending_card = staged.detach_payment_card(&action)?;
@@ -500,6 +529,8 @@ impl Game {
             frozen: Box::new(staged.clone()),
             pending_card: pending_card.clone(),
             obligations: Vec::new(),
+            show_off: shown.clone(),
+            rune_targets: self.capture_action_rune_targets(&action),
             mode: Mode::Recording,
         }));
         if let Some(card) = pending_card {
@@ -512,6 +543,7 @@ impl Game {
             .ok_or("Payment recording was interrupted.")?;
         plan.mode = Mode::Pending;
         staged.payment_plan = Some(plan);
+        staged.log_show_off(&shown);
         *self = staged;
         self.decision = Some(Decision::Payment { player });
         Ok(())

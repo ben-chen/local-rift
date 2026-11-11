@@ -1829,6 +1829,20 @@ impl App {
                     8.5,
                     TEAL,
                 );
+            } else if let Some(shown) = item.show_off.first() {
+                let name = if shown.token {
+                    "Gold"
+                } else {
+                    self.game.catalog[shown.card_id].name
+                };
+                self.ui.ellipsis(
+                    &format!("Show Off: {name}"),
+                    1178.0,
+                    300.0,
+                    212.0,
+                    9.0,
+                    TEAL,
+                );
             } else if item.executions.len() > 1 {
                 self.ui.text(
                     &format!(
@@ -2928,6 +2942,7 @@ impl App {
         let spec = play_target_spec(card_id);
         let count = self.current_targets().len();
         match spec.kind {
+            Some(PlayTargetKind::Rune) => "Choose runes in either rune zone.".into(),
             Some(PlayTargetKind::Battlefield) => self
                 .current_targets()
                 .first()
@@ -4400,10 +4415,10 @@ impl App {
                         player: owner,
                         rune_id,
                     };
-                    if self.field_object_candidate(target) {
+                    if self.field_object_candidate(target) || self.card_target_candidate(target)? {
                         self.ui.border(rect, TEAL);
                     }
-                    if self.targets.contains(&target) {
+                    if self.current_targets().contains(&target) {
                         self.ui.border(
                             Rect::new(rect.x - 2.0, rect.y - 2.0, rect.w + 4.0, rect.h + 4.0),
                             GOLD,
@@ -4412,6 +4427,8 @@ impl App {
                     if self.ui.clicked(rect) {
                         if self.field_choice_active() {
                             self.field_object_click(target);
+                        } else if self.selected_card_id() == Some(426) {
+                            self.try_toggle_target(target)?;
                         } else if owner == 0 {
                             self.rune_menu = Some(slot.domain);
                             self.rune_menu_id = Some(rune_id);
@@ -8425,6 +8442,7 @@ fn card_brief(game: &Game, id: usize) -> String {
         KillGear { controller_draw } => {
             format!("Kill gear · its controller draws {controller_draw}")
         }
+        BattlePreparations => "+2 Might · show gear to ready up to 2 runes".into(),
         ReadyAndPreventMovement { .. } => "Ready · cannot move this turn · draw 1".into(),
         DrawThenChannel { draw, channel } => format!("Draw {draw} · channel {channel} exhausted"),
         Counter(local_rift::rules::CounterKind::MinimumPower(minimum)) => {

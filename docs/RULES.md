@@ -448,3 +448,26 @@ continues to stop only movement performed by the unit's controller. Return-to-ha
 Recall, and banish are separate actions; a newly played copy has no inherited lock.
 The board label, hover explanation, companion tips and bot observation describe
 this restriction, which expires at the end of the turn.
+
+
+## Battle Preparations and Show Off
+
+Battle Preparations chooses one unit for +2 Might this turn. During finalization,
+you may show off a gear from your hand or board. A gear in hand is revealed;
+a board gear is picked without targeting it, including attached gear or Gold.
+If you showed off, choose zero, one or two different rune objects to ready. The
+unit and runes can belong to either player. Runes may already be ready when chosen.
+
+The Show Off fact is captured before costs. Shown Gold can be spent to help pay
+for the spell. Runes chosen to ready can be exhausted for Energy; automatic Power
+payment preserves those rune objects. Recycling a chosen rune during staged
+payment fails the final legality check, allowing Undo or refusal. After the spell
+is finalized, losing a rune affects only that rune's readying. Losing the unit
+does not stop the independent rune instructions. A counter stops the spell.
+
+Repeat uses the same Show Off fact with independently selected units and runes
+for each execution. Show Off itself does not trigger Irelia's Choose ability.
+Only the chosen card is revealed; the rest of the hand remains private. The
+client's play choices panel offers Show Off and Repeat separately, and the two
+rune zones highlight legal physical targets. Mote explains the timing and the
+tradeoff between revealing a hand card and picking public gear.

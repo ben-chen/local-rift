@@ -191,7 +191,9 @@ impl Game {
                 rules::PlayTargetKind::Unit => facts.kind == CardKind::Unit,
                 rules::PlayTargetKind::Gear => facts.kind == CardKind::Gear,
                 rules::PlayTargetKind::UnitOrGear => true,
-                rules::PlayTargetKind::Spell | rules::PlayTargetKind::Battlefield => false,
+                rules::PlayTargetKind::Rune
+                | rules::PlayTargetKind::Spell
+                | rules::PlayTargetKind::Battlefield => false,
             })
     }
 }

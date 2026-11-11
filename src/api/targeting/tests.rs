@@ -775,3 +775,102 @@ fn hunker_api_filters_friendly_targets_reports_public_lock_and_rolls_back_bad_mo
             .is_none()
     );
 }
+
+#[test]
+fn show_off_protocol_exposes_only_selected_reveal_and_pins_it_through_payment() {
+    use crate::show_off::{ShowOffObject, ShowOffSelection};
+    let mut s = position();
+    s.game.players[0].hand = vec![426, 58, 10, 73];
+    s.game.players[0].units = vec![unit(500, 73, None, false)];
+    s.game.players[0]
+        .set_rune_setup([0, 3, 0, 0, 0, 0], [0, 3, 0, 0, 0, 0])
+        .unwrap();
+    let rune = s.game.players[0].rune_objects()[0].id;
+    let wire = json!({"type":"with_play_choices","action":{"type":"play_card_targets","hand_index":0,
+        "lane":null,"targets":[{"type":"unit","player":0,"unit_id":500},{"type":"rune","player":0,"rune_id":rune}]},
+        "choices":{"show_off":[{"instance":0,"object":{"type":"hand","hand_index":1}}]}});
+    let action = parse_action(&wire).unwrap();
+    if let Action::WithPlayChoices { choices, .. } = &action {
+        assert_eq!(
+            choices.show_off,
+            vec![ShowOffSelection {
+                instance: 0,
+                object: ShowOffObject::Hand { hand_index: 1 }
+            }]
+        );
+    } else {
+        panic!("missing explicit choices");
+    }
+    assert_eq!(parse_action(&action_to_json(&action)).unwrap(), action);
+    let before = format!("{:?}", s.game);
+    for command in [
+        "validate",
+        "play_choices",
+        "cost_plan",
+        "quote_payment",
+        "target_candidates",
+    ] {
+        let mut request =
+            json!({"command":command,"player":0,"revision":s.revision(),"action":wire});
+        if command == "target_candidates" {
+            request["execution"] = json!(0);
+        }
+        let response = s.handle(request);
+        assert_eq!(response["ok"], true, "{command}: {response}");
+        assert_eq!(format!("{:?}", s.game), before);
+    }
+    let opponent = s
+        .handle(json!({"command":"play_choices","player":1,"revision":s.revision(),"action":wire}));
+    assert_eq!(opponent["ok"], false);
+    apply(
+        &mut s,
+        Action::BeginPayment {
+            action: Box::new(action),
+        },
+    );
+    for viewer in 0..2 {
+        let obs = s.observe(viewer).unwrap();
+        assert_eq!(
+            obs["payment_plan"]["show_off"],
+            json!([{"instance":0,"source":{"type":"hand"},"card_id":58,"token":false}])
+        );
+        if viewer == 1 {
+            assert!(obs["payment_plan"]["action"].is_null());
+            assert!(obs["players"][0]["hand"].is_null());
+        }
+    }
+    apply(&mut s, Action::CompletePayment);
+    for viewer in 0..2 {
+        let obs = s.observe(viewer).unwrap();
+        assert_eq!(obs["chain"][0]["show_off"][0]["card_id"], 58);
+        assert!(
+            obs["chain"][0]["show_off"][0]["source"]
+                .get("hand_index")
+                .is_none()
+        );
+    }
+    resolve_chain(&mut s);
+    assert!(s.game.players[0].rune_objects()[0].ready);
+}
+
+#[test]
+fn malformed_show_off_wire_cannot_mutate_the_session() {
+    let mut s = position();
+    s.game.players[0].hand = vec![426, 58];
+    s.game.players[0].units = vec![unit(500, 73, None, false)];
+    for object in [
+        json!({"type":"hand","hand_index":-1}),
+        json!({"type":"gear","gear_id":4294967296u64}),
+        json!({"type":"hand","hand_index":1,"player":1}),
+        json!({"type":"unit","unit_id":500}),
+    ] {
+        let before = format!("{:?}", s.game);
+        let rev = s.revision();
+        let response=s.handle(json!({"command":"apply","player":0,"revision":rev,"action":{
+            "type":"with_play_choices","action":{"type":"play_card_targets","hand_index":0,"targets":[{"type":"unit","player":0,"unit_id":500}]},
+            "choices":{"show_off":[{"instance":0,"object":object}]}}}));
+        assert_eq!(response["ok"], false);
+        assert_eq!(s.revision(), rev);
+        assert_eq!(format!("{:?}", s.game), before);
+    }
+}

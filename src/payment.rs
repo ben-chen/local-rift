@@ -177,11 +177,31 @@ impl Game {
     }
 
     fn permitted_sources(&self, player: usize) -> PowerPayment {
-        self.payment
+        let mut sources = self
+            .payment
             .as_ref()
             .filter(|p| p.player == player)
             .and_then(|p| p.remaining.clone())
-            .unwrap_or_else(|| self.power_sources(player))
+            .unwrap_or_else(|| self.power_sources(player));
+        let targets = self.reserved_rune_targets();
+        if targets.is_empty() {
+            return sources;
+        }
+        for (d, domain) in POWER_DOMAINS.into_iter().enumerate() {
+            let count = self.players[player]
+                .rune_objects()
+                .iter()
+                .filter(|r| {
+                    r.domain == domain
+                        && !targets.contains(&crate::game::Target::Rune {
+                            player,
+                            rune_id: r.id,
+                        })
+                })
+                .count();
+            sources.recycle[d] = sources.recycle[d].min(count as u8);
+        }
+        sources
     }
 
     pub(crate) fn power_available(&self, player: usize, domains: &[Domain], spell: bool) -> u16 {
@@ -206,6 +226,17 @@ impl Game {
             return Ok(());
         }
         let sources = self.permitted_sources(player);
+        let protected = self.reserved_rune_targets();
+        let mut exhausted_available = [0u8; 6];
+        for rune in self.players[player].rune_objects().iter().filter(|r| {
+            !r.ready
+                && !protected.contains(&crate::game::Target::Rune {
+                    player,
+                    rune_id: r.id,
+                })
+        }) {
+            exhausted_available[domain_index(rune.domain)] += 1;
+        }
         if sources.available(domains, spell) < amount {
             return Err(
                 "The selected sources do not provide enough matching power for this cost.".into(),
@@ -232,7 +263,7 @@ impl Game {
             for &domain in domains {
                 let d = domain_index(domain);
                 let count = if exhausted {
-                    sources.recycle[d].min(self.players[player].exhausted_runes[d])
+                    sources.recycle[d].min(exhausted_available[d])
                 } else {
                     sources.recycle[d] - used.recycle[d]
                 };
@@ -250,7 +281,7 @@ impl Game {
         self.legend[player].spell_power -= used.spell;
         for (d, domain) in POWER_DOMAINS.into_iter().enumerate() {
             state.power_pool[d] -= used.colored[d];
-            let exhausted = used.recycle[d].min(state.exhausted_runes[d]);
+            let exhausted = used.recycle[d].min(exhausted_available[d]);
             for ready in [false, true] {
                 let count = if ready {
                     used.recycle[d] - exhausted
@@ -259,8 +290,18 @@ impl Game {
                 };
                 for _ in 0..count {
                     let id = state
-                        .rune_for_domain(domain, ready)
-                        .ok_or("No matching physical rune is available.")?;
+                        .rune_objects()
+                        .iter()
+                        .find(|r| {
+                            r.domain == domain
+                                && r.ready == ready
+                                && !protected.contains(&crate::game::Target::Rune {
+                                    player,
+                                    rune_id: r.id,
+                                })
+                        })
+                        .map(|r| r.id)
+                        .ok_or("No untargeted matching physical rune is available.")?;
                     state.remove_rune_object(id)?;
                 }
             }

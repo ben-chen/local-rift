@@ -52,6 +52,8 @@ pub mod damage;
 pub mod empower;
 #[path = "play.rs"]
 pub mod play;
+#[path = "show_off.rs"]
+pub mod show_off;
 use play::*;
 
 #[path = "scalar_spells.rs"]
@@ -473,6 +475,7 @@ pub struct ChainItem {
     pub executions: Vec<ExecutionChoices>,
     pub play_origin: Option<PlayOrigin>,
     pub bonus_damage: u64,
+    pub show_off: Vec<show_off::ShownObject>,
 }
 
 /// Canonical definition source, independent of legacy main-card art references.
@@ -2170,6 +2173,7 @@ impl Game {
             let chain_id = self.next_chain_id;
             self.next_chain_id += 1;
             self.chain.push(ChainItem {
+                show_off: Vec::new(),
                 id: chain_id,
                 player,
                 card_id: id,
@@ -2230,6 +2234,7 @@ impl Game {
                         bonus: a.choices.bonus,
                     };
                     item.play_origin = Some(a.origin);
+                    item.show_off = a.show_off;
                     item.bonus_damage = a
                         .grants
                         .iter()
@@ -4639,6 +4644,8 @@ impl Game {
                         .map_or_else(Vec::new, |(_, g)| g.clone());
                     let prior = self.active_play.take();
                     self.active_play = Some(ActivePlay {
+                        rune_targets: vec![],
+                        show_off: Vec::new(),
                         player: token.player,
                         card_id: token.card_id,
                         origin: PlayOrigin::Token,
@@ -4816,6 +4823,7 @@ impl Game {
         let id = self.next_chain_id;
         self.next_chain_id += 1;
         self.chain.push(ChainItem {
+            show_off: Vec::new(),
             id,
             player,
             card_id,
@@ -5085,6 +5093,20 @@ impl Game {
             else {
                 return Ok(Vec::new());
             };
+            if card_id == 426 {
+                return self.preparations_play_candidates(
+                    &Action::FinalizePendingPlay {
+                        lane: None,
+                        targets: vec![],
+                        repeat_targets: vec![],
+                        repeat: false,
+                        accelerate: false,
+                        bonus: false,
+                    },
+                    prepare,
+                    limit,
+                );
+            }
             if card_id == 410 {
                 return self.command_play_candidates(
                     &Action::FinalizePendingPlay {
@@ -6416,6 +6438,20 @@ impl Game {
         provided: &[Target],
         automatic: bool,
     ) -> Result<Vec<Target>, String> {
+        if id == 426 {
+            let mut targets = provided.to_vec();
+            if targets.is_empty()
+                && automatic
+                && let Some(target) = self
+                    .preparations_candidates(actor, &[])
+                    .into_iter()
+                    .find(|t| matches!(t, Target::Unit { player, .. } if *player == actor))
+            {
+                targets.push(target);
+            }
+            self.validate_preparations_targets(actor, &targets, true, true)?;
+            return Ok(targets);
+        }
         if id == 410 {
             let mode = self
                 .active_play
@@ -6660,7 +6696,11 @@ impl Game {
             {
                 return Ok(vec![]);
             }
+            if card_id == 426 {
+                return Ok(self.preparations_candidates(player, prior));
+            }
             let targets: Vec<_> = match rules::play_target_spec(card_id).kind {
+                Some(rules::PlayTargetKind::Rune) => vec![],
                 Some(rules::PlayTargetKind::Battlefield) => (0..BATTLEFIELDS)
                     .map(|lane| Target::Battlefield { lane })
                     .collect(),
@@ -6735,6 +6775,13 @@ impl Game {
                 || prior.len() >= rules::play_target_spec(card_id).maximum
             {
                 return Ok(false);
+            }
+            if card_id == 426 {
+                let mut targets = prior.to_vec();
+                targets.push(target);
+                return Ok(self
+                    .validate_preparations_targets(player, &targets, true, false)
+                    .is_ok());
             }
             for (i, &earlier) in prior.iter().enumerate() {
                 if !self.target_append_valid(player, card_id, lane, earlier, &prior[..i])? {
@@ -7779,6 +7826,9 @@ impl Game {
                 {
                     self.ready_unit_by(player, owner, unit_id);
                 }
+            }
+            OfficialEffect::BattlePreparations => {
+                return Err("Battle Preparations requires its finalized Show Off snapshot.".into());
             }
             OfficialEffect::ReadyAndPreventMovement { draw } => {
                 if let Some(&Target::Unit {
