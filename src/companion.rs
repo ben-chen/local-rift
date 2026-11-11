@@ -437,6 +437,14 @@ fn checked_advice(game: &Game, level: AdviceLevel) -> Result<Vec<&'static str>, 
         });
     }
 
+    if human.hand.contains(&421) {
+        tips.push(if beginner {
+            "Decree of Focus gives +4 Might this turn to a friendly unit fighting an enemy Fury unit or chosen by an enemy Fury spell. Legal targets are highlighted."
+        } else {
+            "Save Decree of Focus for a Fury threat. Removing that threat can invalidate its target. Choosing Irelia still triggers her abilities, even if Decree later fails."
+        });
+    }
+
     let contested = (0..2).find(|&lane| game.contested(lane));
     if let Some(lane) = contested {
         if beginner {

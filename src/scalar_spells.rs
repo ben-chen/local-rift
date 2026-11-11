@@ -5,6 +5,48 @@ use super::{Game, Target};
 use crate::rules::{OfficialEffect, SpellDamage, SpellMight};
 
 impl Game {
+    /// Read current combat and physical spells on the chain. A token's factory
+    /// card supplies neither its domains nor a spell/ability identity. Repeat
+    /// executions are separate choices of the same spell.
+    pub(super) fn unit_threatened_by_domain(
+        &self,
+        target: Target,
+        domain: crate::cards::Domain,
+    ) -> bool {
+        let Target::Unit { player, .. } = target else {
+            return false;
+        };
+        let Some(unit) = self.unit_ref(target) else {
+            return false;
+        };
+        let in_combat = self.showdown.as_ref().is_some_and(|combat| {
+            combat.combat
+                && unit.lane == Some(combat.lane)
+                && self.players[1 - player].units.iter().any(|enemy| {
+                    enemy.lane == unit.lane
+                        && self
+                            .board_target_facts(Target::Unit {
+                                player: 1 - player,
+                                unit_id: enemy.id,
+                            })
+                            .is_some_and(|facts| facts.domains.contains(&domain))
+                })
+        });
+        in_combat
+            || self.chain.iter().any(|item| {
+                item.player != player
+                    && item.ability.is_none()
+                    && self.catalog[item.card_id].kind == crate::cards::CardKind::Spell
+                    && self.catalog[item.card_id].domains.contains(&domain)
+                    && (item.targets.contains(&target)
+                        || item.repeat_targets.contains(&target)
+                        || item
+                            .executions
+                            .iter()
+                            .any(|execution| execution.targets.contains(&target)))
+            })
+    }
+
     pub(super) fn controls_empowered(&self, player: usize) -> bool {
         self.legend[player].empowered
             || self.players[player]

@@ -400,3 +400,12 @@ Lucian, Gunslinger reads his total Assault for his Attack ability. Armored Tuske
 These are ordinary triggered abilities with response windows. A chosen target must remain legal when the ability resolves. Removing the physical source before resolution leaves no current value to read; another copy cannot supply it. A zero value deals no damage and does not become positive through Bonus Damage. Graves determines all affected units and damage packets before applying the simultaneous marks and performing cleanup. An undamaged unit does not die merely because its Might becomes zero.
 
 Hovering or pinning one of these units shows the current reference value before damage bonuses or prevention. This is a preview of the current board, not a promise about the result after responses. The beginner companion explains the mechanic; advanced commentary points out relevant response and positioning choices without interrupting play.
+
+## Decree of Focus
+
+Decree of Focus is a 1-Energy Calm Reaction that gives a friendly unit +4 Might
+this turn. That unit must be fighting an enemy Fury unit or chosen by an enemy
+Fury spell still on the chain. The condition is checked again on resolution:
+removing the threat or moving the unit out of combat can invalidate the target.
+Repeat choices count; area damage without unit targets and activated or triggered
+abilities do not. Irelia's choose triggers still resolve independently of Decree.

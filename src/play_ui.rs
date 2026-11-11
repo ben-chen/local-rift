@@ -341,6 +341,9 @@ pub(super) fn target_view_hint(game: &Game, view: &PlayTargetView) -> String {
         };
     };
     let noun = match slot.kind {
+        local_rift::rules::PlayTargetKind::Unit if view.card_id == 421 => {
+            "a friendly unit fighting an enemy Fury unit or chosen by an enemy Fury spell"
+        }
         local_rift::rules::PlayTargetKind::UnitOrGear
             if matches!(
                 local_rift::rules::effect(view.card_id),

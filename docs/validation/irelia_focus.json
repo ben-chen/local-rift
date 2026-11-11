@@ -1,0 +1,88 @@
+{
+  "reviewed_on": "2026-11-11",
+  "scope": "Decree of Focus only, extending d002ed65e138a70cc201810888ef511a4e89925d",
+  "runtime_id": 421,
+  "rust": {
+    "passed": 1455,
+    "failed": 0,
+    "test_targets": 95,
+    "command": "cargo test --all-targets",
+    "exit_code": 0
+  },
+  "python": {
+    "passed": 241,
+    "failed": 0,
+    "command": "python3 -m unittest discover -s tools -p 'test_*.py'",
+    "exit_code": 0
+  },
+  "other_checks": [
+    "cargo fmt --check",
+    "cargo clippy --all-targets -- -D warnings",
+    "python3 tools/import_catalog.py --check",
+    "git diff --check"
+  ],
+  "focused_games": {
+    "completed": 30,
+    "all_five_presets": true,
+    "all_three_ai_levels": true,
+    "both_seats": true,
+    "starting_player": "Irelia in every game",
+    "recipe": "authored 43-card practice variant; unchanged tournament recipe"
+  },
+  "visual_review": {
+    "reviewed_on": "2026-11-11",
+    "reviewer": "root",
+    "binary_sha256": "0329518a1c14eb435ac63d0d235087fea41a228ca9421c4eb9e104f558c8f5eb",
+    "scope": "card inspector only; target selection is covered by engine/API tests, not these screenshots",
+    "images": [
+      {
+        "size": "normal",
+        "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-preview-normal/decree.png",
+        "sha256": "9000a21efb7fe7bee2e5f9193314e3a0944e7e093df02bca0bb1a55450457c57",
+        "visually_inspected": true,
+        "result": "complete art and complete readable official text; no clipping observed"
+      },
+      {
+        "size": "small",
+        "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-preview-small/decree.png",
+        "sha256": "83056c5ada26317f484e27edb3df4ba7bff9d94db945d29036e1afae4a4e97f5",
+        "visually_inspected": true,
+        "result": "complete art and complete readable official text; no clipping observed"
+      }
+    ]
+  },
+  "limitations": [
+    "New-card target selection is checked through engine/API tests, not a desktop click script.",
+    "Nix was verified at the preceding C28 checkpoint, not rerun for this card.",
+    "The accepted dated catalog remains in use; the live publisher gallery duplicate is unresolved.",
+    "No claim of complete Standard coverage or best-of-three sideboarding."
+  ],
+  "preserved_failures": [
+    {
+      "log": "irelia-native-1.log",
+      "reason": "An obsolete catalog length assertion expected 421 instead of 422; corrected and all targets rerun."
+    }
+  ],
+  "logs": {
+    "irelia-native-all-2.log": {
+      "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-native-all-2.log",
+      "sha256": "631206b2c52b9bad1771a5f1cc481052f783bee132a8a251123452d89411c1ce"
+    },
+    "irelia-python-all-1.log": {
+      "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-python-all-1.log",
+      "sha256": "af59c9d645829456b94c91cb5353aa1c6eb05e1f5be78baa02a48c6f146f03bc"
+    },
+    "irelia-clippy-1.log": {
+      "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-clippy-1.log",
+      "sha256": "25e7b11ec9d3c745568cadb6e5aae3d5ffc5206a3abcf9c80d27ff3f18794b11"
+    },
+    "irelia-offline-catalog.log": {
+      "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-offline-catalog.log",
+      "sha256": "307162ff0cd178eab22f06f290f9c734058348a0a56beff9a78fbe383661cd5a"
+    },
+    "irelia-focused-final.log": {
+      "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-focused-final.log",
+      "sha256": "7466aa370d214a24200b46fc65f2a4d0ca7d54eeaa2fc23e919f3ea6d2fa2b36"
+    }
+  }
+}

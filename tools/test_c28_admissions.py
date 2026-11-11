@@ -24,7 +24,11 @@ class C28AdmissionTests(unittest.TestCase):
         cls.origin, cls.archives = catalog.read_archives()
         cls.raw = {p['official_id']: p for p in catalog.project_gallery(cls.archives['gallery'])[0]}
         cls.proof = json.loads((catalog.ROOT / 'assets/data/card_admissions/c28/admissions.json').read_text())
-        cls.snapshot = catalog.make_catalog(cls.origin, cls.archives)
+        runtime = copy.deepcopy(catalog.load_runtime_manifest())
+        runtime['cards'] = runtime['cards'][:421]
+        runtime['decks'] = runtime['decks'][:5]
+        with patch.object(catalog, 'load_runtime_manifest', return_value=runtime):
+            cls.snapshot = catalog.make_catalog(cls.origin, cls.archives)
         cls.printings = {p['official_id']: p for p in cls.snapshot['printings']}
         cls.identities = {p['identity']: p for p in cls.snapshot['cards']}
         cls.review_manifest = json.loads((catalog.ROOT / 'assets/data/catalog_identity_reviews.json').read_text())

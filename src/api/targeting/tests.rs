@@ -525,3 +525,63 @@ fn cost_previews_reject_supplied_wrong_kind_or_extra_fields_in_every_execution()
         before
     );
 }
+
+#[test]
+fn decree_preview_wire_and_apply_share_the_live_fury_restriction() {
+    let mut session = position();
+    session.game.players[0].hand = vec![421];
+    session.game.players[0]
+        .units
+        .push(unit(500, 73, Some(0), false));
+    session.game.players[0]
+        .units
+        .push(unit(501, 73, None, false));
+    session.game.players[1]
+        .units
+        .push(unit(502, 183, Some(0), false));
+    session.game.showdown = Some(crate::game::Showdown {
+        lane: 0,
+        attacker: 0,
+        focus: 0,
+        passes: 0,
+        combat: true,
+    });
+    let action = Action::PlayCardWithTargets {
+        hand_index: 0,
+        lane: None,
+        targets: vec![],
+    };
+    let before = format!("{:?}", session.game);
+    let view = session
+        .target_candidates(0, session.revision(), action, 0)
+        .unwrap();
+    assert_eq!(
+        view.candidates,
+        vec![Target::Unit {
+            player: 0,
+            unit_id: 500
+        }]
+    );
+    assert_eq!(format!("{:?}", session.game), before);
+    let revision = session.revision();
+    let bad = session.handle(json!({"command":"apply", "player":0, "revision":revision,
+        "action":{"type":"play_card_targets","hand_index":0,"lane":null,
+            "targets":[{"type":"unit","player":0,"unit_id":501}]}}));
+    assert_eq!(bad["ok"], false, "{bad}");
+    assert_eq!(bad["error"]["code"], "illegal_action", "{bad}");
+    assert_eq!(session.revision(), revision);
+    assert_eq!(format!("{:?}", session.game), before);
+    apply(
+        &mut session,
+        Action::PlayCardWithTargets {
+            hand_index: 0,
+            lane: None,
+            targets: vec![Target::Unit {
+                player: 0,
+                unit_id: 500,
+            }],
+        },
+    );
+    resolve_chain(&mut session);
+    assert_eq!(session.game.players[0].units[0].temporary_buff, 4);
+}

@@ -6808,6 +6808,11 @@ impl Game {
                 Allegiance::Mixed if (slot == 0) != (player == actor) => return Ok(false),
                 _ => {}
             }
+            if let Some(domain) = rules::targeting(id).threatened_by_domain
+                && !self.unit_threatened_by_domain(target, domain)
+            {
+                return Ok(false);
+            }
             match rules::effect(id) {
                 OfficialEffect::BanishSmallOrReturn { .. } => unit.lane.is_some(),
                 OfficialEffect::ArcaneShift => slot == 0 || unit.lane.is_some(),

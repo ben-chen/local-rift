@@ -560,3 +560,13 @@ Emperor's Dais uses a separate cost protocol. `battlefield_cost` exposes `choice
 Use `{"type":"resolve_battlefield_payment","choice_id":123,"pay":true}` to complete the composite cost, or `pay:false` to decline. The accepting action supports ordinary exact `with_power_payment` and staged `begin_payment` wrappers. Successful payment spends its resources and returns the selected unit before opponents respond to the token-producing chain ability. Countering that finalized ability refunds neither cost. `battlefield_payment_context` remains available through a suspended Payment/Add choice, containing only this public decision. It does not expose a payment snapshot or private hand action. Undo preserves the original choice and selected object; successful acceptance/decline consumes that occurrence. Its return-unit base cost remains an optional obligation even if the Energy component is reduced to zero; staged `refuse_payment` reports kind `trigger` and consumes the declined occurrence. Declining rolls back Add actions from that payment, including direct Add before a staged plan, while preserving the completed Conquer and its score.
 
 `pending_token_plays[].source` is nullable. When a battlefield ability instructs a token play, it names that actual battlefield source separately from the token factory's existing `card_id` and `token_identity`. The child still goes through ordinary pending-token choices and any selected additional costs.
+
+### Decree of Focus targeting
+
+Card 421 (`ven-040-166`) adds an optional `play_targets.condition` descriptor:
+`{"type":"in_combat_with_unit_or_chosen_by_spell","controller":"enemy","domain":"Fury","rechecked_on_resolution":true}`.
+Existing card descriptors omit this field. The regular target preview filters the
+friendly units using the live combat and spell chain, including Repeat choices.
+The same predicate guards finalization and resolution. Abilities and unchosen
+area-damage recipients do not satisfy the spell condition. No new action type is
+needed; use `play_card_targets` and the existing payment/response commands.

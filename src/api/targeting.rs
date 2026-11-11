@@ -40,7 +40,17 @@ pub(super) fn target_kind(kind: PlayTargetKind) -> &'static str {
 
 pub(super) fn play_targets_to_json(card_id: crate::cards::CardId) -> Value {
     let spec = play_target_spec(card_id);
-    json!({"kind":spec.kind.map(target_kind),"maximum":spec.maximum,"required":spec.required})
+    let mut value =
+        json!({"kind":spec.kind.map(target_kind),"maximum":spec.maximum,"required":spec.required});
+    if let Some(domain) = crate::rules::targeting(card_id).threatened_by_domain {
+        value["condition"] = json!({
+            "type":"in_combat_with_unit_or_chosen_by_spell",
+            "controller":"enemy",
+            "domain":domain.name(),
+            "rechecked_on_resolution":true
+        });
+    }
+    value
 }
 
 pub(super) fn view_to_json(view: &PlayTargetView) -> Value {

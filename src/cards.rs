@@ -6413,6 +6413,21 @@ pub fn cards() -> Vec<CardDef> {
             tags: &["Pyke", "Bilgewater"],
             art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/e0ce05148d7368070bcc8c0a43f66ece0834653a-744x1039.png?w=280&q=80&fm=png",
         },
+        CardDef {
+            id: 421,
+            official_id: "ven-040-166",
+            name: "Decree of Focus",
+            cost: 1,
+            power_cost: 0,
+            might: 0,
+            domain: Domain::Calm,
+            domains: &[Domain::Calm],
+            kind: CardKind::Spell,
+            official_text: "[Reaction] (Play any time, even before spells and abilities resolve.)\nChoose a friendly unit that's in combat with an enemy Fury ([Fury Power]) unit or that's being chosen by an enemy Fury spell. Give it +4 Might this turn.",
+            keywords: &["Reaction"],
+            tags: &[],
+            art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/3f9a1b209cfd6097bac6fa9aec57531e300ef511-744x1039.png?w=280&q=85&fm=png",
+        },
     ]
 }
 
@@ -6612,7 +6627,7 @@ mod tests {
     #[test]
     fn presets_are_complete_and_references_are_consistent() {
         let catalog = cards();
-        assert_eq!(catalog.len(), 421);
+        assert_eq!(catalog.len(), 422);
         for (index, card) in catalog.iter().enumerate() {
             assert_eq!(index, card.id);
             assert!(!card.official_id.is_empty());

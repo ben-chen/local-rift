@@ -149,14 +149,14 @@
       "gear": 74,
       "legend": 10,
       "rune": 6,
-      "spell": 112,
+      "spell": 113,
       "unit": 235
     },
-    "implemented_main_cards": 421,
+    "implemented_main_cards": 422,
     "implemented_legends": 10,
     "implemented_battlefields": 17,
-    "implemented_legal_identities": 454,
-    "unimplemented_legal_identities": 625,
+    "implemented_legal_identities": 455,
+    "unimplemented_legal_identities": 624,
     "errata_entries": 67,
     "identities_with_errata": 67,
     "source_quality_issues": 53,
@@ -198,7 +198,7 @@
     "Mighty": 9,
     "Predict": 5,
     "Quick-Draw": 2,
-    "Reaction": 68,
+    "Reaction": 67,
     "Repeat": 10,
     "Shield": 11,
     "Show Off": 6,
@@ -8307,8 +8307,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 421,
+        "official_id": "ven-040-166",
+        "playable_in_client": true
       }
     },
     {

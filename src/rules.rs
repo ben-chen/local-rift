@@ -237,6 +237,9 @@ pub enum Allegiance {
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct Targeting {
     pub allegiance: Allegiance,
+    /// The unit must currently be in combat with an enemy unit of this domain,
+    /// or be chosen by an enemy spell of this domain still on the chain.
+    pub threatened_by_domain: Option<Domain>,
     /// If true, multi-target choices must name different units.
     pub distinct: bool,
     pub same_location: bool,
@@ -249,6 +252,12 @@ pub struct Targeting {
 pub fn effect(id: usize) -> OfficialEffect {
     use OfficialEffect::*;
     match id {
+        421 => ModifyMight {
+            amount: 4,
+            minimum: 0,
+            draw: 0,
+            alone_bonus: 0,
+        },
         401..=420 => None,
         372 => ReturnGear,
         373 => ReturnAllBoard,
@@ -645,7 +654,7 @@ pub fn targeting(id: usize) -> Targeting {
         290..=296 | 335 | 349 => Any,
         4 | 32 | 144 | 145 | 365 => Enemy,
         362 | 364 | 372 | 378 | 379 | 381 => Any,
-        8 | 9 | 14 | 19 | 27 | 85 | 137 | 228 | 350 | 353 | 354 | 377 | 380 | 382 => Friendly,
+        8 | 9 | 14 | 19 | 27 | 85 | 137 | 228 | 350 | 353 | 354 | 377 | 380 | 382 | 421 => Friendly,
         16 | 29 | 82 | 217 | 218 | 383 => Mixed,
         5 | 7 | 11 | 23 | 26 | 28 | 41 | 44 | 50 | 52 | 53 | 55 | 61 | 62 | 63 | 66 | 67 | 74
         | 75 | 76 | 79 | 80 | 81 | 83 | 99 | 135 | 136 | 141 | 142 | 143 | 146 | 216 | 219
@@ -654,6 +663,11 @@ pub fn targeting(id: usize) -> Targeting {
     };
     Targeting {
         allegiance,
+        threatened_by_domain: if id == 421 {
+            Some(Domain::Fury)
+        } else {
+            Option::None
+        },
         distinct: matches!(
             id,
             5 | 9 | 16 | 44 | 50 | 61 | 82 | 83 | 85 | 137 | 217 | 218 | 354
@@ -1067,6 +1081,7 @@ pub fn requirements(id: usize) -> &'static [Mechanic] {
         418 => &[Chain],
         419 => &[Chain, Ambush],
         420 => &[Chain, Hidden, Move, OptionalCosts],
+        421 => &[Chain],
         372 | 373 => &[Chain, Gear, Bounce],
         374 => &[Chain, Gear, DeathTriggers],
         375 => &[Chain, Bounce],
@@ -1971,7 +1986,7 @@ mod tests {
     #[test]
     fn all_catalog_entries_have_official_classification() {
         let cards = cards();
-        assert_eq!(cards.len(), 421);
+        assert_eq!(cards.len(), 422);
         for card in cards {
             assert_ne!(
                 effect(card.id),
@@ -1981,7 +1996,7 @@ mod tests {
             );
             assert_ne!(support_status(card.id), SupportStatus::UnknownCard);
         }
-        assert_eq!(effect(421), OfficialEffect::Unsupported);
+        assert_eq!(effect(422), OfficialEffect::Unsupported);
     }
 
     #[test]
