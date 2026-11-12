@@ -1,0 +1,102 @@
+{
+  "status": "passed",
+  "date": "2026-11-12T23:53:42.698939+00:00",
+  "base_commit": "4267891b1fd2d49041b231f732f23822400e9e02",
+  "cards": [
+    {
+      "id": 441,
+      "name": "Unyielding Spirit",
+      "official_id": "ogn-145-298"
+    },
+    {
+      "id": 442,
+      "name": "Repulse",
+      "official_id": "unl-106-219"
+    }
+  ],
+  "coverage": {
+    "main_cards": 443,
+    "legends": 11,
+    "battlefields": 17,
+    "runes": 6,
+    "implemented_legal": 477,
+    "catalogued_legal": 1079
+  },
+  "scope": "These two cards, global prevention and live physical target relationships. This does not certify full Standard parity, Alpha Strike or the complete SWAGALISK registration.",
+  "preserved_main_cards": 441,
+  "preserved_presets": 7,
+  "rules": {
+    "hub": "https://playriftbound.com/en-us/rules-hub/",
+    "core": "2026-10-09",
+    "reviewed": "2026-11-12",
+    "sections": [
+      "418.6",
+      "438",
+      "359.3.e.9.a"
+    ]
+  },
+  "validation": {
+    "full_rust_tests": 1774,
+    "source_checks": 280,
+    "native_and_nix_same_tests_not_added": true,
+    "authored_card_package_games": 144,
+    "authored_all_levels_seats_starters": true,
+    "both_cards_used_and_repulse_success_at_every_level_and_seat": true,
+    "preset_simulations": 1176,
+    "preset_pairings": 49,
+    "ai_levels": 3,
+    "per_action_invariants": true,
+    "all_targets_clippy_warnings_denied": true,
+    "native_api_games": 36,
+    "packaged_api_games": 36,
+    "every_native_packaged_trace_identical": true,
+    "pure_linked_target_previews": 56,
+    "api_card_use_limit": "Each card observed in five of six level-seat cells in the 36-game API corpus; 144 engine games cover all six.",
+    "installed_ui_runs": 8,
+    "installed_ui_captures": 26,
+    "window_sizes": [
+      "1440x900",
+      "1152x720"
+    ],
+    "capture_and_no_capture": true,
+    "host_graphics_library_override_removed": true,
+    "visually_reviewed_installed_small": [
+      "Unyielding Spirit turn-effects panel",
+      "Repulse linked choice",
+      "Repulse complete inspector"
+    ],
+    "visual_findings": "Complete official text, response controls and advice fit. Turn effect scope and expiry are visible."
+  },
+  "nix": {
+    "system": "x86_64-linux",
+    "other_systems_unverified": [
+      "aarch64-linux",
+      "aarch64-darwin"
+    ],
+    "outputs": {
+      "catalog": "/nix/store/kvz1afsrhaz3aicnzhb0ih611h1m615a-local-rift-catalog-check",
+      "package": "/nix/store/5ykg6j6mf3af97yw6jjjjk70p7ny2agp-local-rift-0.1.0",
+      "simulation": "/nix/store/2cqbc5k82whwrzq7lqxihd1b679zg7lj-local-rift-simulation-check"
+    }
+  },
+  "evidence_sha256": {
+    "repulse-source-manifest-v2.json": "411b7bd3a77b25bff5a78e417cd77924e7f993ff6f92a99cd8784d1dfb87da09",
+    "repulse-full-v1.log": "44eb78df0c13ea278cf82096ce285b34b13ada4e80cf50a84c079894b32e8747",
+    "repulse-source-v1.log": "654a50f2b6e01c42d87f3f87fe3c4c7df1e16809c95a3cbc7724f5b6b57fcd2b",
+    "repulse-nix-v1.log": "825e7b77659ffd1dd6658c0850352e3e4371ebde8ee0a0541d3bbec667af57d3",
+    "repulse-installed-ui-v1.json": "d396678aa284720bcb95570c4a91897cecde089a7bc684f6daf6002cb8e9dc99",
+    "repulse-installed-api-v1.json": "23d42037fd625b420786c2af5ea56a23235c107d4f74c8497098f76562645bf3",
+    "repulse-installed-comparison-v1.json": "9820823d4447f05b5ddb7ff0a09834a8b8cb10b2806bc53c69616fd3130d3c74",
+    "run_master_yi_reactions_api.py": "5d6f46e3907d6fa591c4ef25a35b42bd3c079263dc32d63218339115584bf811"
+  },
+  "binaries": {
+    "native_binary_sha256": "ae879f0163909ee916ef45c454236e3234e84ca6fcb1abbd649a98de247b89d7",
+    "installed_binary_sha256": "c7c4ebc87e3248838ac9f388b36850052d556f17d1a8002f77c26746a480f265"
+  },
+  "release_differences_from_tested_snapshot": "Only documentation, this validation record, and CI wiring for already-exercised native UI and external API checks differ. All original runtime, test, data and art files were hash-verified identical.",
+  "excluded_drafts": [
+    "Alpha Strike",
+    "Brutalizer",
+    "Hand Hammer"
+  ]
+}

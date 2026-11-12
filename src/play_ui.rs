@@ -474,6 +474,12 @@ pub(super) fn target_view_hint(game: &Game, view: &PlayTargetView) -> String {
         };
     };
     let noun = match slot.kind {
+        local_rift::rules::PlayTargetKind::Unit if view.card_id == 442 => {
+            "a friendly battlefield unit chosen by one eligible enemy spell or ability"
+        }
+        local_rift::rules::PlayTargetKind::Spell if view.card_id == 442 => {
+            "an enemy spell or ability choosing that unit and no other friendly unit"
+        }
         local_rift::rules::PlayTargetKind::Rune => {
             "up to two different runes in either rune zone (optional)"
         }
@@ -1134,7 +1140,7 @@ impl App {
         } else {
             &draft.choices.repeats[draft.execution - 1].choices.targets
         };
-        let hint = if view.card_id == 426 || movement {
+        let hint = if matches!(view.card_id, 426 | 442) || movement {
             let action = Action::WithPlayChoices {
                 action: Box::new(strip_options(self.selected_play_action().unwrap())),
                 choices: draft.choices.clone(),
@@ -1890,6 +1896,9 @@ impl App {
         self.ui
             .title("Effects available this turn", 354.0, 183.0, 25.0, TEXT);
         let mut lines = Vec::new();
+        if self.game.spell_ability_damage_prevented {
+            lines.push("BOTH PLAYERS · UNYIELDING SPIRIT\nPrevent all spell and ability damage until this turn ends, including damage to units that enter later. Combat and damage explicitly dealt by units still apply. Existing damage is unchanged; other spell instructions still resolve.".into());
+        }
         for grant in &self.game.play_grants {
             let effect=match grant.kind {
                 PlayGrantKind::ReadyNextUnit=>"Your next unit enters ready.".into(),
@@ -1910,7 +1919,7 @@ impl App {
             ));
         }
         if lines.is_empty() {
-            lines.push("No waiting next-play effects. Printed abilities on units, gear and locations still apply.".into());
+            lines.push("No waiting turn effects. Printed abilities on units, gear and locations still apply.".into());
         }
         for player in 0..2 {
             lines.push(format!("{} · PUBLIC TURN HISTORY\n{} non-token gear played · {} gear abilities played\nUnits or gear played here: field 1 = {}, field 2 = {}",if player==0 {"YOU"} else {"OPPONENT"},self.game.play_history.non_token_gears[player],self.game.play_history.gear_activations[player],self.game.play_history.units_or_gears_here[player][0],self.game.play_history.units_or_gears_here[player][1]));

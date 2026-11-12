@@ -778,6 +778,42 @@ fn choose_stranger(g: &mut Game, target: Target, lane: usize) {
     .unwrap();
 }
 
+#[test]
+fn bedeviling_token_return_value_is_independent_of_the_factory_card() {
+    for actor in 0..2 {
+        let mut g = position(actor);
+        // These different printed cards create the same Bird token. Neither
+        // factory's Energy is a characteristic of the resulting token.
+        assert_ne!(g.catalog[34].cost, g.catalog[249].cost);
+        let birds: Vec<_> = [34, 249]
+            .into_iter()
+            .map(|factory| {
+                let id = g.create_unit(1 - actor, factory, true, 0);
+                let target = Target::Unit {
+                    player: 1 - actor,
+                    unit_id: id,
+                };
+                g.unit_mut(target).unwrap().lane = Some(0);
+                target
+            })
+            .collect();
+        unit(&mut g, actor, 71, Some(0));
+        play_stranger(&mut g, actor, false);
+        let mut values = Vec::new();
+        for bird in birds {
+            let targets = vec![Target::Battlefield { lane: 0 }, bird];
+            g.clone()
+                .apply(Action::ChooseTriggerTargets {
+                    targets: targets.clone(),
+                })
+                .unwrap();
+            assert_eq!(g.board_target_facts(bird).unwrap().printed_energy, 0);
+            values.push(g.trigger_return_target_score(actor, &targets).unwrap());
+        }
+        assert_eq!(values[0], values[1]);
+    }
+}
+
 fn resolve_stranger(g: &mut Game) {
     g.apply(Action::Pass).unwrap();
     g.apply(Action::Pass).unwrap();

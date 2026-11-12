@@ -1661,6 +1661,7 @@ impl Game {
             AbilityEffect::Damage(amount) => {
                 let Some(unit) = unit.filter(|_| enemy_target) else { return Ok(None); };
                 let damage = self.battlefield_damage(target.unwrap(), u64::from(amount))?;
+                if damage == 0 { return Ok(None); }
                 Some(if u128::from(unit.damage)+u128::from(damage) >= u128::from(self.unit_might(unit)?) {150} else {40})
             },
             AbilityEffect::SourceMightDamage => {
@@ -1669,6 +1670,7 @@ impl Game {
                 let amount = self.unit_might(source)?;
                 let Some(unit) = unit.filter(|_| enemy_target && amount > 0) else {return Ok(None);};
                 let damage = self.battlefield_damage(target.unwrap(),amount)?;
+                if damage == 0 { return Ok(None); }
                 Some(if u128::from(unit.damage)+u128::from(damage) >= u128::from(self.unit_might(unit)?) {150} else {35})
             },
             AbilityEffect::Might { amount, minimum } if amount < 0 => {

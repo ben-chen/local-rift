@@ -52,7 +52,14 @@ impl Game {
                 .filter(|&&card| self.catalog[card].name == self.catalog[260].name)
                 .count() as u128;
         }
-        DamageAmount::try_from(total).map_err(|_| capacity("damage packet"))
+        // CR438: prevention includes every bonus and applies to the whole Deal.
+        // Keep the intermediate total wide: even a packet above u64 capacity
+        // is representable once ALL of its damage is prevented.
+        if self.spell_ability_damage_prevented {
+            Ok(0)
+        } else {
+            DamageAmount::try_from(total).map_err(|_| capacity("damage packet"))
+        }
     }
 
     pub(crate) fn mark_damage(

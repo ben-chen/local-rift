@@ -11,6 +11,50 @@ const FOLLOWUP_LIMIT: usize = 10;
 const SETTLE_LIMIT: usize = 48;
 
 impl Game {
+    /// Compare the public pending chain with/without global prevention. Stop at
+    /// choices instead of inventing decisions, and never inspect real hidden cards.
+    pub(super) fn damage_prevention_score(&self) -> Result<i128, String> {
+        if self.spell_ability_damage_prevented || self.chain.is_empty() {
+            return Ok(0);
+        }
+        let actor = self.priority();
+        let belief = self.strategic_belief(actor);
+        let mut normal = belief.clone();
+        let mut protected = belief.clone();
+        protected.spell_ability_damage_prevented = true;
+        for state in [&mut normal, &mut protected] {
+            for _ in 0..SETTLE_LIMIT {
+                if state.decision.is_some()
+                    || state.chain.is_empty()
+                    || state.winner.is_some()
+                    || state.turn != belief.turn
+                {
+                    break;
+                }
+                state.apply(Action::Pass)?;
+            }
+        }
+        let loss = |state: &Game, owner: usize| -> Result<i128, String> {
+            belief.players[owner]
+                .units
+                .iter()
+                .try_fold(0, |total, original| {
+                    let current = state.players[owner]
+                        .units
+                        .iter()
+                        .find(|u| u.id == original.id);
+                    let value = match current {
+                        None => 50 + i128::from(belief.unit_might(original)?) * 8,
+                        Some(unit) => i128::from(unit.damage.saturating_sub(original.damage)) * 4,
+                    };
+                    Ok(total + value)
+                })
+        };
+        let own_saved = loss(&normal, actor)? - loss(&protected, actor)?;
+        let enemy_saved = loss(&normal, 1 - actor)? - loss(&protected, 1 - actor)?;
+        Ok((own_saved - enemy_saved - 5).max(0))
+    }
+
     pub(super) fn choose_strategic_action(&self) -> Result<Action, String> {
         Ok({
             // A suspended transaction retains its rollback snapshot. Follow the

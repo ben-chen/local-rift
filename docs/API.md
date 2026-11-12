@@ -73,6 +73,15 @@ Deck validation requires at least 40 main-deck cards including the chosen champi
 
 Use observation `priority`, not `active`, to choose who acts. An opposing player can have priority while the active player owns the turn. Pending decisions can also transfer priority. `step_ai` works for either seat and processes one choice/action, not a whole turn.
 
+Repulse (card442) has ordered, dependent targets. Its `play_targets.ordered_slots`
+metadata describes a friendly battlefield unit followed by an enemy spell or
+ability choosing it and no other friendly unit. Query `target_candidates` with
+`execution:0` and the current target prefix: the next slot changes from `unit`
+to `spell`. Supply both targets in that order to confirm. Candidate queries and
+payment previews do not spend resources. References from all Repeat executions
+count; movement between board locations preserves a targeting relationship,
+while departure to a non-board zone breaks it.
+
 Suggestion IDs such as `r4:p0:a2` are opaque and valid only for that seat and revision. Do not cache them across actions. Structured actions are not restricted to the suggestion list:
 
 ```json
@@ -259,6 +268,17 @@ Explicit Power allocations must name distinct eligible components, fit their rem
 One physical spell remains on the chain through every execution and any intervening discard, look, target-group, or other mandatory choice. `chain[].executions` is the canonical list; legacy fields describe only the initial and first repeated execution. `resolution_progress` reports `{chain_id, execution, executions}`, with a zero-based execution index while resolving. There is no response window between executions. The spell produces one completed-play event and moves to its final zone only after all its instructions finish. Private choices remain filtered for their owner throughout.
 
 Public `play_grants` identify each delayed effect's controller, source, expiry turn, and typed effect. `play_history` exposes finalized non-token gear plays, gear activations, and per-player/per-lane unit-or-gear plays. These are shared public facts, identical in both observations. They are distinct from completed-play counters and from a live cost quote.
+
+Public `turn_effects` lists global temporary rules. Unyielding Spirit (card 441)
+adds `{type: "prevent_spell_and_ability_damage", source_card_id: 441,
+scope: "both_players", amount: "all", expires: "end_of_turn", expires_turn,
+prevents_unit_damage: false}` only after it resolves. Both viewers receive the
+same entry, including when later units enter. The array becomes empty when the
+effect expires after ending triggers. Multiple resolutions do not stack separate
+finite shields. This does not counter spells, erase marked damage, stop combat,
+or prevent damage explicitly dealt by units such as Challenge. Other instructions
+still resolve. Playing this Reaction requires no targets and uses the existing
+`play_card_targets` action with an empty `targets` array.
 
 ## Choosing power sources
 

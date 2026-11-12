@@ -111,8 +111,13 @@ completeness remains a separate active goal.
 Match practice now includes the exact Xeno LA registration and complete
 Kennen and Rengar opponents from Riot’s same September article.
 Decree of Strength and Lacerate fill their final sideboard gaps. The main-deck
-recipes remain unchanged. Master Yi still needs Alpha Strike, Repulse and
-Unyielding Spirit; the historical Kai’Sa registration contains a now-banned
+recipes remain unchanged. Unyielding Spirit adds global spell/ability damage
+prevention, while Repulse adds linked unit and chain targeting, including Repeat
+choices and physical-copy tracking. Both include bot API support, native controls
+and Beginner/Advanced companion advice. Their acceptance evidence is recorded in
+[reaction-card validation](validation/master_yi_reactions.json).
+Master Yi still needs Alpha Strike before its complete registration can be
+enabled. The historical Kai’Sa registration contains a now-banned
 battlefield and is not admitted as a complete current Standard registration.
 
 The [registered-opponent and timing checkpoint](validation/registered_opponents.json) records final Nix acceptance, installed UI checks and matching native/packaged API games for these registrations and the corrected Innovator sequence.

@@ -123,6 +123,14 @@ pub(super) fn play_targets_to_json(card_id: crate::cards::CardId) -> Value {
         value["conditional_slots"] = json!({"after":"show_off","instance":0,"kind":"rune",
             "maximum":2,"required":0,"controller":"any","after_required_unit":true});
     }
+    if card_id == 442 {
+        value["ordered_slots"] = json!([
+            {"index":0,"kind":"unit","controller":"friendly","location":"battlefield"},
+            {"index":1,"kind":"spell","controller":"enemy","includes_abilities":true,
+             "chooses_slot":0,"other_friendly_units":0,"counts_live_physical_relationships":true,
+             "includes_repeat_choices":true,"rechecked_on_resolution":true}
+        ]);
+    }
     if let Some(domain) = crate::rules::targeting(card_id).threatened_by_domain {
         value["condition"] = json!({
             "type":"in_combat_with_unit_or_chosen_by_spell",
@@ -156,5 +164,7 @@ pub(super) fn view_to_json(view: &PlayTargetView) -> Value {
     value
 }
 
+#[cfg(test)]
+mod repulse_tests;
 #[cfg(test)]
 mod tests;

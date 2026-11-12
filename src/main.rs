@@ -1380,7 +1380,11 @@ impl App {
             } else {
                 "The practice grounds."
             },
-            "A quiet place to learn. An opponent that's always ready.",
+            if self.in_match && self.game.spell_ability_damage_prevented {
+                ""
+            } else {
+                "A quiet place to learn. An opponent that's always ready."
+            },
         );
         if self.ui.button(
             Rect::new(1246.0, 25.0, 164.0, 42.0),
@@ -1401,7 +1405,11 @@ impl App {
         if self.in_match
             && self.ui.button(
                 Rect::new(1030.0, 34.0, 185.0, 32.0),
-                &format!("Turn effects · {}", self.game.play_grants.len()),
+                &format!(
+                    "Turn effects · {}",
+                    self.game.play_grants.len()
+                        + usize::from(self.game.spell_ability_damage_prevented)
+                ),
                 self.show_play_effects,
                 true,
             )
@@ -1410,6 +1418,15 @@ impl App {
             self.play_effects_scroll = 0;
         }
         let p = self.ui.physical(Rect::new(232.0, 105.0, 910.0, 536.0));
+        if self.in_match && self.game.spell_ability_damage_prevented {
+            self.ui.text(
+                "UNYIELDING SPIRIT · Spell / ability damage prevented for both players this turn",
+                245.0,
+                70.0,
+                12.0,
+                GOLD,
+            );
+        }
         let mut units = Vec::new();
         for player in 0..2 {
             for unit in &self.game.players[player].units {
@@ -8715,6 +8732,10 @@ fn card_brief(game: &Game, id: usize) -> String {
         return "Choose: move Deploy gear, or inspect five for Gear".into();
     }
     match local_rift::rules::effect(id) {
+        Repulse => "Friendly unit at a field · counter its linked enemy spell / ability".into(),
+        PreventSpellAndAbilityDamage => {
+            "Prevent spell / ability damage · both players · this turn".into()
+        }
         KillGear {
             controller_gold: true,
             ..
@@ -10486,6 +10507,8 @@ async fn main() {
     let series_smoke = args.iter().any(|a| a == "--ui-smoke-series");
     let irelia_smoke = args.iter().any(|a| a == "--ui-smoke-irelia");
     let riven_smoke = args.iter().any(|a| a == "--ui-smoke-riven");
+    let unyielding_smoke = args.iter().any(|a| a == "--ui-smoke-unyielding");
+    let repulse_smoke = args.iter().any(|a| a == "--ui-smoke-repulse");
     let blade_smoke = args.iter().any(|a| a == "--ui-smoke-blade");
     let riven_champion_smoke = args.iter().any(|a| a == "--ui-smoke-riven-champion");
     let preset_smoke = args.iter().any(|a| a == "--ui-smoke-presets");
@@ -10496,6 +10519,8 @@ async fn main() {
     let focused_field_smoke = args.iter().any(|a| a == "--ui-smoke-c28");
     let focused_source_damage_smoke = args.iter().any(|a| a == "--ui-smoke-c27");
     let smoke_test = series_smoke
+        || repulse_smoke
+        || unyielding_smoke
         || riven_champion_smoke
         || blade_smoke
         || riven_smoke
@@ -10531,7 +10556,11 @@ async fn main() {
             app.hover_card = app.game.players[0].hand.first().copied();
             app.hover_since = -1.0;
         }
-        let smoke_done = if series_smoke {
+        let smoke_done = if repulse_smoke {
+            smoke::run_repulse_frame(&mut app, frames)
+        } else if unyielding_smoke {
+            smoke::run_unyielding_frame(&mut app, frames)
+        } else if series_smoke {
             smoke::run_series_frame(&mut app, frames)
         } else if riven_champion_smoke {
             smoke::run_riven_champion_frame(&mut app, frames)

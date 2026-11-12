@@ -68,6 +68,10 @@ pub struct PlayTargetSpec {
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum OfficialEffect {
+    /// Choose a friendly battlefield unit, then a linked enemy chain item.
+    Repulse,
+    /// Unyielding Spirit: both players' spell/ability damage is prevented this turn.
+    PreventSpellAndAbilityDamage,
     BattlePreparations,
     ReadyAndPreventMovement {
         draw: u8,
@@ -271,6 +275,8 @@ pub struct Targeting {
 pub fn effect(id: usize) -> OfficialEffect {
     use OfficialEffect::*;
     match id {
+        441 => PreventSpellAndAbilityDamage,
+        442 => Repulse,
         425 => ReadyAndPreventMovement { draw: 1 },
         426 => BattlePreparations,
         427 => MoveEnemy,
@@ -740,6 +746,7 @@ pub fn target_bounds(id: usize) -> (usize, usize) {
     }
     match effect(id) {
         BattlePreparations => (3, 1),
+        Repulse => (2, 2),
         AreaDamage {
             selector: AreaSelector::EnemyAtTargetBattlefield,
             ..
@@ -793,6 +800,7 @@ pub fn play_target_spec(id: CardId) -> PlayTargetSpec {
             (None, 0, 0)
         } else {
             match effect(id) {
+                OfficialEffect::Repulse => (Some(Unit), 2, 2),
                 OfficialEffect::KillGear { .. } | OfficialEffect::ReturnGear => (Some(Gear), 1, 1),
                 OfficialEffect::KillEnemyDomain { .. }
                 | OfficialEffect::BanishSmallOrGear { .. } => (Some(UnitOrGear), 1, 1),
@@ -1104,6 +1112,8 @@ pub enum Mechanic {
 pub fn requirements(id: usize) -> &'static [Mechanic] {
     use Mechanic::*;
     match id {
+        441 => &[Chain, Protection],
+        442 => &[Chain, Counterspell, MultipleTargets, ChooseReadyTriggers],
         401 => &[Deploy, Gear, Assault, ConquerHoldTriggers],
         402 => &[Deploy, Gear, Chain, ConquerHoldTriggers],
         403 => &[
@@ -2092,7 +2102,7 @@ mod tests {
     #[test]
     fn all_catalog_entries_have_official_classification() {
         let cards = cards();
-        assert_eq!(cards.len(), 441);
+        assert_eq!(cards.len(), 443);
         for card in cards {
             assert_ne!(
                 effect(card.id),
@@ -2102,7 +2112,7 @@ mod tests {
             );
             assert_ne!(support_status(card.id), SupportStatus::UnknownCard);
         }
-        assert_eq!(effect(441), OfficialEffect::Unsupported);
+        assert_eq!(effect(443), OfficialEffect::Unsupported);
     }
 
     #[test]

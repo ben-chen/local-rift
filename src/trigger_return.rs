@@ -20,8 +20,10 @@ impl Game {
             .count();
         let value = if count >= 4 {
             if let Some(unit) = self.unit_ref(*target) {
-                30 + i128::from(self.unit_might(unit)?) * 4
-                    + i128::from(self.catalog[unit.card_id].cost) * 2
+                let printed_energy = self
+                    .board_target_facts(*target)
+                    .map_or(0, |facts| facts.printed_energy);
+                30 + i128::from(self.unit_might(unit)?) * 4 + i128::from(printed_energy) * 2
             } else {
                 0
             }

@@ -12,6 +12,10 @@ use local_rift::{
 use macroquad::prelude::*;
 mod ai;
 mod blade;
+mod unyielding;
+pub(super) use unyielding::run_frame as run_unyielding_frame;
+mod repulse;
+pub(super) use repulse::run_frame as run_repulse_frame;
 mod riven_champion;
 pub(super) use ai::run_frame as run_ai_frame;
 pub(super) use blade::run_frame as run_blade_frame;

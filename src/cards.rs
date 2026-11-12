@@ -6725,6 +6725,36 @@ pub fn cards() -> Vec<CardDef> {
             tags: &["The Void"],
             art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/59946969e8d21869c3ffe801a3ffbdd8165a873f-744x1039.png?accountingTag=RB",
         },
+        CardDef {
+            id: 441,
+            official_id: "ogn-145-298",
+            name: "Unyielding Spirit",
+            cost: 1,
+            power_cost: 1,
+            might: 0,
+            domain: Domain::Body,
+            domains: &[Domain::Body],
+            kind: CardKind::Spell,
+            official_text: "[Reaction] (Play any time, even before spells and abilities resolve.)\nPrevent all spell and ability damage this turn.",
+            keywords: &["Reaction"],
+            tags: &[],
+            art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/9afea96ec04ce0c2ee76c4affbf4e6df470e7647-744x1039.png?w=280&q=85&fm=png",
+        },
+        CardDef {
+            id: 442,
+            official_id: "unl-106-219",
+            name: "Repulse",
+            cost: 1,
+            power_cost: 1,
+            might: 0,
+            domain: Domain::Body,
+            domains: &[Domain::Body],
+            kind: CardKind::Spell,
+            official_text: "[Reaction] (Play any time, even before spells and abilities resolve.)\nChoose a friendly unit at a battlefield. Counter an enemy spell or ability that chooses it and no other friendly unit.",
+            keywords: &["Reaction"],
+            tags: &[],
+            art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/ca56ad44ec24db67e10a4ee18f5c7f3756c83d94-744x1039.png?w=280&q=85&fm=png",
+        },
     ]
 }
 
@@ -7080,7 +7110,7 @@ mod tests {
     #[test]
     fn presets_are_complete_and_references_are_consistent() {
         let catalog = cards();
-        assert_eq!(catalog.len(), 441);
+        assert_eq!(catalog.len(), 443);
         for (index, card) in catalog.iter().enumerate() {
             assert_eq!(index, card.id);
             assert!(!card.official_id.is_empty());

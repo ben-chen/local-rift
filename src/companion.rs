@@ -94,6 +94,7 @@ impl Companion {
 fn fingerprint(game: &Game) -> u64 {
     let mut hash = DefaultHasher::new();
     game.turn.hash(&mut hash);
+    game.spell_ability_damage_prevented.hash(&mut hash);
     format!("{:?}", game.delayed_battlefield_triggers()).hash(&mut hash);
     for player in &game.players {
         format!("{:?}", player.rune_objects()).hash(&mut hash);
@@ -386,6 +387,12 @@ fn checked_advice(game: &Game, level: AdviceLevel) -> Result<Vec<&'static str>, 
     }
 
     if let Some(mut window_tips) = response_window_advice(game, beginner)? {
+        if let Some(tip) = repulse_advice(game, beginner) {
+            window_tips.push(tip);
+        }
+        if let Some(tip) = unyielding_advice(game, beginner) {
+            window_tips.push(tip);
+        }
         window_tips.extend(crate::combat_ui::card_advice(game, beginner)?);
         if let Some(status) = game.combat_resolution() {
             window_tips.push(crate::combat_ui::advice(status, beginner));
@@ -565,6 +572,12 @@ fn checked_advice(game: &Game, level: AdviceLevel) -> Result<Vec<&'static str>, 
         } else {
             "Show board gear to keep your hand private. Choose runes you will exhaust for Energy; Battle Preparations can ready them again when it resolves."
         });
+    }
+    if let Some(tip) = repulse_advice(game, beginner) {
+        tips.push(tip);
+    }
+    if let Some(tip) = unyielding_advice(game, beginner) {
+        tips.push(tip);
     }
     if human.hand.contains(&425) {
         tips.push(if beginner {
@@ -1553,6 +1566,22 @@ fn response_window_advice(
     Ok(None)
 }
 
+fn repulse_advice(game: &Game, beginner: bool) -> Option<&'static str> {
+    (game.players[0].hand.contains(&442) || game.chain.iter().any(|item| item.player == 0 && item.card_id == 442 && item.ability.is_none())).then_some(if beginner {
+        "Repulse chooses your battlefield unit, then an enemy spell or ability choosing it and no other friendly unit. Both choices must still work when Repulse resolves."
+    } else {
+        "Moving another chosen unit to base won't enable Repulse: it is still chosen. Returning it to hand breaks that link. Count targets across every Repeat."
+    })
+}
+
+fn unyielding_advice(game: &Game, beginner: bool) -> Option<&'static str> {
+    (game.players[0].hand.contains(&441) || game.spell_ability_damage_prevented).then_some(if beginner {
+        "Unyielding Spirit prevents spell and ability damage to both players' units this turn. Combat and Challenge still deal damage; other instructions still resolve."
+    } else {
+        "Use Unyielding Spirit before damage resolves. It also protects enemy units and shuts off your own spell damage for the turn. Combat and Challenge still work."
+    })
+}
+
 fn archetype_tip(game: &Game) -> &'static str {
     use local_rift::legends::LegendKind;
     match game.legend[0].kind {
@@ -1716,6 +1745,108 @@ pub fn draw_mote(center: Vec2, scale: f32, time: f32, accent: Color) {
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn repulse_advice_is_brief_private_and_available_during_responses() {
+        let mut g = Game::new_for_agents(3, 3, 442, Difficulty::Easy);
+        g.start_match().unwrap();
+        g.players[0].hand.clear();
+        g.players[1].hand = vec![442];
+        assert!(repulse_advice(&g, true).is_none());
+        g.players[0].hand = vec![442];
+        for level in [AdviceLevel::Beginner, AdviceLevel::Advanced] {
+            let tips = advice(&g, level);
+            let tip = tips.iter().find(|tip| tip.contains("Repulse")).unwrap();
+            assert!(tip.chars().count() <= 180);
+        }
+        g.players[0].hand.push(67);
+        g.players[0].energy = 10;
+        g.players[0].energy_pool = 10;
+        g.players[0].power_pool = [10; 6];
+        g.players[1].units.push(Unit {
+            id: 44200,
+            card_id: 69,
+            lane: Some(0),
+            ready: true,
+            damage: 0,
+            buff: 0,
+            temporary_buff: 0,
+            token: false,
+            protected: false,
+            stunned: false,
+            banish_on_death: false,
+        });
+        g.apply(local_rift::game::Action::PlayCardWithTargets {
+            hand_index: 1,
+            lane: None,
+            targets: vec![local_rift::game::Target::Unit {
+                player: 1,
+                unit_id: 44200,
+            }],
+        })
+        .unwrap();
+        assert!(g.in_window());
+        for level in [AdviceLevel::Beginner, AdviceLevel::Advanced] {
+            let tips = advice(&g, level);
+            let tip = tips.iter().find(|tip| tip.contains("Repulse")).unwrap();
+            assert!(tip.chars().count() <= 180);
+        }
+    }
+    #[test]
+    fn unyielding_advice_covers_the_response_window_and_does_not_reveal_enemy_cards() {
+        let mut g = Game::new_for_agents(3, 3, 441, Difficulty::Easy);
+        g.start_match().unwrap();
+        g.players[0].hand = vec![441];
+        for level in [AdviceLevel::Beginner, AdviceLevel::Advanced] {
+            let tips = advice(&g, level);
+            let tip = tips
+                .iter()
+                .find(|tip| tip.contains("Unyielding Spirit"))
+                .unwrap();
+            assert!(tip.contains("Challenge"));
+            assert!(tip.chars().count() <= 180);
+        }
+        g.players[0].hand.clear();
+        g.players[1].hand = vec![441];
+        assert!(unyielding_advice(&g, true).is_none());
+        let before = fingerprint(&g);
+        g.spell_ability_damage_prevented = true;
+        assert_ne!(fingerprint(&g), before);
+        assert!(unyielding_advice(&g, true).is_some());
+        // Both advice levels must survive the response-window early return.
+        g.players[0].hand = vec![67];
+        g.players[0].energy = 10;
+        g.players[0].energy_pool = 10;
+        g.players[0].power_pool = [10; 6];
+        g.players[1].units.push(local_rift::game::Unit {
+            id: 44100,
+            card_id: 69,
+            lane: Some(0),
+            ready: true,
+            damage: 0,
+            buff: 0,
+            temporary_buff: 0,
+            token: false,
+            protected: false,
+            stunned: false,
+            banish_on_death: false,
+        });
+        g.apply(local_rift::game::Action::PlayCardWithTargets {
+            hand_index: 0,
+            lane: None,
+            targets: vec![local_rift::game::Target::Unit {
+                player: 1,
+                unit_id: 44100,
+            }],
+        })
+        .unwrap();
+        for level in [AdviceLevel::Beginner, AdviceLevel::Advanced] {
+            assert!(
+                advice(&g, level)
+                    .iter()
+                    .any(|tip| tip.contains("Unyielding Spirit"))
+            );
+        }
+    }
     use local_rift::game::{Difficulty, Unit};
 
     #[test]

@@ -52,7 +52,7 @@ Other tournament battlefields remain source-list references, including the histo
 
 ## Legends
 
-Each deck has its registered legend, independent of preset selection and chosen-champion variant. Ten legends are available, with the original four preset identities preserved. Legends ready at the start of their controller's turn.
+Each deck has its registered legend, independent of preset selection and chosen-champion variant. Eleven legends are available, with the original four preset identities preserved. Legends ready at the start of their controller's turn.
 
 | Legend | Implemented power |
 |---|---|
@@ -191,6 +191,18 @@ If multiple battlefields become staged during a closed chain, they wait for the 
 The newest chain item resolves first after consecutive priority passes. Priority is reassessed between resolutions. A pass is not an irrevocable promise to stop responding: a new play or a resolved item can create another decision. When a chain completes during a showdown, focus passes after a player-initiated spell or ordinary activated ability. A chain opened by a triggered ability does not pass focus; Add abilities also preserve it.
 
 **Pass priority** and `Space` pass within a window. They only end your turn when no chain, showdown, or pending choice remains. A pending choice must be answered first. Implemented counters include countering, returning a spell to hand, and asking the spell's controller to pay additional energy. Predict offers its controller a keep-on-top or recycle-to-bottom choice; it does not itself draw a card, and looking at an empty deck does not cause burnout.
+
+Repulse chooses a friendly battlefield unit, then an enemy spell or ability that
+chooses it and no other friendly unit. All Repeat choices belong to the same
+spell. A second chosen unit moving to base still counts; leaving the board ends
+that physical targeting relationship. Not So Fast uses the same live-object
+tracking. Dependent target controls and API previews preserve this order.
+
+Unyielding Spirit prevents all spell and ability damage for both players for the
+rest of the turn, including damage bonuses and later entrants. The effect remains
+through ending triggers. Combat and damage explicitly dealt by units still work;
+existing marked damage remains, and independent instructions such as drawing
+cards still resolve. **Turn effects** shows the active protection and its expiry.
 
 Triggered abilities and turn-start steps pause for choices and response windows. Pending event groups finalize in chronological order. Within one simultaneous trigger group, the active player finalizes their triggers first, followed by the other player. Each controller chooses the order of their own triggers; the last placed on the chain resolves first. On-play targeting and optional trigger payments happen during finalization, before the resulting ability can resolve.
 

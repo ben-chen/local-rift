@@ -43,6 +43,17 @@ impl Game {
         mode: Option<usize>,
         slot: usize,
     ) -> rules::PlayTargetSpec {
+        if card_id == 442 {
+            return rules::PlayTargetSpec {
+                kind: Some(if slot == 0 {
+                    rules::PlayTargetKind::Unit
+                } else {
+                    rules::PlayTargetKind::Spell
+                }),
+                maximum: 2,
+                required: 2,
+            };
+        }
         if card_id != 410 {
             return rules::play_target_spec(card_id);
         }

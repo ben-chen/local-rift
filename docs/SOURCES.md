@@ -249,3 +249,14 @@ deck entries were read, with no exported raw deck file claimed. This corrects th
 previous overlooked Edge of Night gap. The [validation record](validation/irelia_arito.json)
 distinguishes source facts, actual games and UI checks from unfinished tournament
 match structure and sideboarding.
+
+The [Master Yi reaction-card admission](../assets/data/card_admissions/master_yi/README.md)
+adds Unyielding Spirit and Repulse from complete official faces, preserving raw
+gallery facts, current effective text, printing cohorts and image hashes. Neither
+has a reviewed erratum. The November 12 rules audit uses the current October 9
+Core Rules: 418.6 and 438 for source-specific damage prevention, and 359.3.e.9.a
+for live physical targets across all Repeat executions. Retired FAQs supply no
+text override. The preceding 441 main cards and all seven sourced main recipes
+remain unchanged. The [validation record](validation/master_yi_reactions.json)
+separates authored card-use games from preset simulations and packaged UI/API
+checks; complete SWAGALISK registration and Alpha Strike remain outstanding.

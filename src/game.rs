@@ -52,6 +52,9 @@ mod siren_tests;
 #[cfg(test)]
 #[path = "source_damage_tests.rs"]
 mod source_damage_tests;
+#[cfg(test)]
+#[path = "unyielding_tests.rs"]
+mod unyielding_tests;
 
 #[path = "board_returns.rs"]
 mod board_returns;
@@ -77,6 +80,11 @@ pub mod board_targets;
 pub mod damage;
 #[path = "empower.rs"]
 pub mod empower;
+#[cfg(test)]
+#[path = "linked_counter_tests.rs"]
+mod linked_counter_tests;
+#[path = "linked_counters.rs"]
+mod linked_counters;
 #[path = "play.rs"]
 pub mod play;
 #[path = "show_off.rs"]
@@ -1047,6 +1055,8 @@ pub struct Game {
     resolution_frame: Option<ResolutionFrame>,
     predict_tail: Option<PredictContinuation>,
     damage_context: Option<damage::DamageContext>,
+    /// Global Unyielding Spirit effect; expires after the ending triggers finish.
+    pub spell_ability_damage_prevented: bool,
 
     pub trigger_state: TriggerState,
     pub catalog: Vec<CardDef>,
@@ -1302,6 +1312,7 @@ impl Game {
             applying_action: false,            play_history:PlayHistory::default(),
             play_grants:Vec::new(),
             active_play:None,selected_cost_order:Vec::new(),reserved_play_grants:Vec::new(),payment_play_grants:Vec::new(),resolution_frame:None,predict_tail:None,damage_context:None,
+            spell_ability_damage_prevented: false,
             catalog,
             presets,
             players,
@@ -3681,7 +3692,7 @@ impl Game {
             CounterKind::MinimumPower(minimum) => target.power_cost >= minimum,
             CounterKind::NotSoFast => {
                 item.player != actor
-                    && item.targets.iter().any(
+                    && self.live_chosen_board_targets(item).iter().any(
                         |target| matches!(target, Target::Unit { player, .. } | Target::Gear {player,..} if *player == actor),
                     )
             }
@@ -6750,6 +6761,9 @@ impl Game {
             self.validate_command_attack(actor, mode, provided, true)?;
             return Ok(provided.to_vec());
         }
+        if id == 442 {
+            return self.prepare_repulse_targets(actor, provided, automatic);
+        }
         // Targeted play triggers choose after the permanent is on the board.
         if rules::on_play_requires_target(id)
             || rules::equipment(id).is_some_and(|gear| gear.quick_draw)
@@ -6999,6 +7013,9 @@ impl Game {
             if card_id == 426 {
                 return Ok(self.preparations_candidates(player, prior));
             }
+            if card_id == 442 {
+                return Ok(self.repulse_candidates(player, prior));
+            }
             let targets: Vec<_> = match rules::play_target_spec(card_id).kind {
                 Some(rules::PlayTargetKind::Rune) => vec![],
                 Some(rules::PlayTargetKind::Battlefield) => (0..self.battlefield_count())
@@ -7083,6 +7100,13 @@ impl Game {
                     .validate_preparations_targets(player, &targets, true, false)
                     .is_ok());
             }
+            if card_id == 442 {
+                let mut targets = prior.to_vec();
+                targets.push(target);
+                return Ok(self
+                    .validate_repulse_targets(player, &targets, true)
+                    .is_ok());
+            }
             for (i, &earlier) in prior.iter().enumerate() {
                 if !self.target_append_valid(player, card_id, lane, earlier, &prior[..i])? {
                     return Ok(false);
@@ -7150,6 +7174,24 @@ impl Game {
                 || destination.is_some_and(|lane| lane >= self.battlefield_count())
             {
                 return Ok(false);
+            }
+            if id == 442 {
+                return Ok(match (slot, target) {
+                    (0, target) => self.repulse_unit_valid(actor, target),
+                    (1, Target::Spell { chain_id }) => {
+                        self.players[actor].units.iter().any(|unit| {
+                            self.repulse_chain_target_valid(
+                                actor,
+                                Target::Unit {
+                                    player: actor,
+                                    unit_id: unit.id,
+                                },
+                                chain_id,
+                            )
+                        })
+                    }
+                    _ => false,
+                });
             }
             match rules::effect(id) {
                 OfficialEffect::BanishSmallOrGear { maximum, .. } => {
@@ -7666,6 +7708,10 @@ impl Game {
         targets: Vec<Target>,
         entering: Option<u32>,
     ) -> Result<(), String> {
+        if id == 442 {
+            self.resolve_repulse(player, &targets);
+            return Ok(());
+        }
         if id == 257 {
             self.grant_play(
                 player,
@@ -8056,6 +8102,13 @@ impl Game {
                 };
                 self.look_for_play(player, id, kind, None);
             }
+            OfficialEffect::PreventSpellAndAbilityDamage => {
+                self.spell_ability_damage_prevented = true;
+                self.push_log("Unyielding Spirit prevents all spell and ability damage for both players this turn. Unit damage still applies.".into());
+            }
+            OfficialEffect::Repulse => {
+                unreachable!("Linked counter resolves before independent target filtering")
+            }
             OfficialEffect::None | OfficialEffect::Unsupported => {}
             OfficialEffect::Counter(_) => {} // Executed by the chain resolver.
             OfficialEffect::DrawThenChannel { draw, channel } => {
@@ -8433,6 +8486,7 @@ impl Game {
                 .sum();
         }
         self.silenced = [false; 2];
+        self.spell_ability_damage_prevented = false;
         self.movement_locks.clear();
         self.immobile_units.clear();
         self.moved_units.clear();
@@ -10114,6 +10168,14 @@ impl Game {
                     .first()
                     .map_or(Ok(0), |&t| self.replay_target_score(actor, t))?
                     .max(0),
+                OfficialEffect::Repulse => {
+                    if self.repulse_candidates(actor, &[]).is_empty() {
+                        0
+                    } else {
+                        105
+                    }
+                }
+                OfficialEffect::PreventSpellAndAbilityDamage => self.damage_prevention_score()?,
                 OfficialEffect::ArcaneShift => {
                     targets
                         .first()
@@ -10262,6 +10324,15 @@ impl Game {
                 effect @ (OfficialEffect::Damage { .. }
                 | OfficialEffect::ContextualDamage(_)
                 | OfficialEffect::DamageAndGold { .. }) => {
+                    if self.spell_ability_damage_prevented {
+                        // Prevention removes damage, not the independent draw
+                        // or token instruction. Do not spend a card just for zero.
+                        return Ok(match effect {
+                            OfficialEffect::Damage { draw, .. } => i128::from(draw) * 15,
+                            OfficialEffect::DamageAndGold { .. } => 25,
+                            _ => 0,
+                        });
+                    }
                     let mut lethal = 0;
                     for &target in &targets {
                         let amount = match effect {

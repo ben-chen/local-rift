@@ -1,0 +1,183 @@
+{
+  "status": "development; Unyielding Spirit and Repulse; Alpha Strike pending",
+  "records": [
+    {
+      "runtime_id": 441,
+      "official_id": "ogn-145-298",
+      "raw_printing": {
+        "official_id": "ogn-145-298",
+        "public_code": "OGN-145/298",
+        "name": "Unyielding Spirit",
+        "set": "OGN",
+        "collector_number": 145,
+        "types": [
+          "spell"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "spell"
+        ],
+        "accessibility_types": [
+          "spell"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "body"
+        ],
+        "energy": 1,
+        "power": 1,
+        "might": null,
+        "might_bonus": null,
+        "rules_html": "<p>[Reaction] (Play any time, even before spells and abilities resolve.)<br />Prevent all spell and ability damage this turn.</p>",
+        "rules_text": "[Reaction] (Play any time, even before spells and abilities resolve.)\nPrevent all spell and ability damage this turn.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [],
+        "rarity": "uncommon",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/9afea96ec04ce0c2ee76c4affbf4e6df470e7647-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Spell: Unyielding Spirit. [Reaction] (Play any time, even before spells and abilities resolve.)\nPrevent all spell and ability damage this turn.",
+        "illustrators": [
+          "Max Grecke"
+        ]
+      },
+      "raw_printing_sha256": "e88a7c4c9bf985ce61b555778c7a0230205fcf336b3355ae9d589c07dd53dc4e",
+      "effective": {
+        "types": [
+          "spell"
+        ],
+        "super_types": [],
+        "domains": [
+          "body"
+        ],
+        "energy": 1,
+        "power": 1,
+        "might": null,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>[Reaction] (Play any time, even before spells and abilities resolve.)<br />Prevent all spell and ability damage this turn.</p>",
+        "rules_text": "[Reaction] (Play any time, even before spells and abilities resolve.)\nPrevent all spell and ability damage this turn.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "resolution_ids": [],
+      "printing_cohort": [
+        "ogn-145-298"
+      ],
+      "errata": [],
+      "original_image": {
+        "path": "assets/data/card_admissions/master_yi/ogn-145-298.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/9afea96ec04ce0c2ee76c4affbf4e6df470e7647-744x1039.png?accountingTag=RB",
+        "sha256": "a9418e47719d7a99fc4431e70db0215563527b78492701e48f348d590ca89187"
+      },
+      "runtime_image": {
+        "path": "assets/art/card_441.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/9afea96ec04ce0c2ee76c4affbf4e6df470e7647-744x1039.png?w=280&q=85&fm=png",
+        "sha256": "646e331c837ad92a13975755e582b1e01d9572c0b90427442498bd69bfa8ddc0"
+      },
+      "visual_review": {
+        "actual_full_face_viewed": true,
+        "reviewer": "root",
+        "reviewed_on": "2026-11-12",
+        "original_image_sha256": "a9418e47719d7a99fc4431e70db0215563527b78492701e48f348d590ca89187"
+      }
+    },
+    {
+      "runtime_id": 442,
+      "official_id": "unl-106-219",
+      "raw_printing": {
+        "official_id": "unl-106-219",
+        "public_code": "UNL-106/219",
+        "name": "Repulse",
+        "set": "UNL",
+        "collector_number": 106,
+        "types": [
+          "spell"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "spell"
+        ],
+        "accessibility_types": [
+          "spell"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "body"
+        ],
+        "energy": 1,
+        "power": 1,
+        "might": null,
+        "might_bonus": null,
+        "rules_html": "<p>[Reaction] (Play any time, even before spells and abilities resolve.)<br />Choose a friendly unit at a battlefield. Counter an enemy spell or ability that chooses it and no other friendly unit.</p>",
+        "rules_text": "[Reaction] (Play any time, even before spells and abilities resolve.)\nChoose a friendly unit at a battlefield. Counter an enemy spell or ability that chooses it and no other friendly unit.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [],
+        "rarity": "uncommon",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/ca56ad44ec24db67e10a4ee18f5c7f3756c83d94-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Spell: Repulse. [Reaction] (Play any time, even before spells and abilities resolve.)\nChoose a friendly unit at a battlefield. Counter an enemy spell or ability that chooses it and no other friendly unit.",
+        "illustrators": [
+          "Kudos Productions"
+        ]
+      },
+      "raw_printing_sha256": "2e0ce5f1251236aee710aac475b27419cf102577e53fdae75c26234b44eeb94e",
+      "effective": {
+        "types": [
+          "spell"
+        ],
+        "super_types": [],
+        "domains": [
+          "body"
+        ],
+        "energy": 1,
+        "power": 1,
+        "might": null,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>[Reaction] (Play any time, even before spells and abilities resolve.)<br />Choose a friendly unit at a battlefield. Counter an enemy spell or ability that chooses it and no other friendly unit.</p>",
+        "rules_text": "[Reaction] (Play any time, even before spells and abilities resolve.)\nChoose a friendly unit at a battlefield. Counter an enemy spell or ability that chooses it and no other friendly unit.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "resolution_ids": [],
+      "printing_cohort": [
+        "unl-106-219"
+      ],
+      "errata": [],
+      "original_image": {
+        "path": "assets/data/card_admissions/master_yi/unl-106-219.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/ca56ad44ec24db67e10a4ee18f5c7f3756c83d94-744x1039.png?accountingTag=RB",
+        "sha256": "a654fb5f0caf7184123735f35e308eb7a467097409e2f051207444da693e9b47"
+      },
+      "runtime_image": {
+        "path": "assets/art/card_442.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/ca56ad44ec24db67e10a4ee18f5c7f3756c83d94-744x1039.png?w=280&q=85&fm=png",
+        "sha256": "75391c8fba0ed3036b7b291863324f071be63eaba33e4224959fad67ca8b8605"
+      },
+      "visual_review": {
+        "actual_full_face_viewed": true,
+        "reviewer": "root",
+        "reviewed_on": "2026-11-12",
+        "original_image_sha256": "a654fb5f0caf7184123735f35e308eb7a467097409e2f051207444da693e9b47"
+      }
+    }
+  ],
+  "preserved_runtime_prefix": {
+    "cards_sha256": "5a7340954e0d295f4cb2da649e52b347e95d52774a0cabd28af84d95520106f3",
+    "presets_sha256": "e975739d803427e54928d6e6cd03d1ce51d7ad108f4e247b8a000acf037a5cdb",
+    "card_count": 441,
+    "preset_count": 7
+  },
+  "core_sections": [
+    "418.6",
+    "438",
+    "355.9",
+    "359.3.e.3",
+    "359.3.e.4",
+    "359.3.e.9.a"
+  ],
+  "historical_faq_note": "The Origins FAQ is obsolete; no invented erratum is applied. Current gallery text and Core Rules determine this effect.",
+  "repulse_review_note": "The April Unleashed FAQ is historical after subsequent Core updates; its physical-target example agrees with current Core359.3.e.3–4 and is not treated as overriding current rules."
+}

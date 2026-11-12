@@ -443,7 +443,7 @@ impl Game {
     /// Use only for damage dealt by a spell or ability, not by a unit as an
     /// instruction's consequence (for example Rampage), and never combat damage.
     pub(crate) fn battlefield_damage(&self, target: Target, amount: u64) -> Result<u64, String> {
-        if amount == 0 {
+        if amount == 0 || self.spell_ability_damage_prevented {
             return Ok(0);
         }
         if self

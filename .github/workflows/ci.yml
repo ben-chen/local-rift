@@ -39,6 +39,7 @@ jobs:
           python3 examples/random_bot.py --binary target/release/rift-api --seed 42
           python3 examples/random_bot.py --binary target/release/rift-api --seed 43 --first-player 1
           python3 examples/random_bot.py --binary target/release/rift-api --seed 44 --difficulty strategic
+          python3 tools/check_master_yi_reactions_api.py target/release/rift-api "$RUNNER_TEMP/local-rift-reactions.json"
       - name: Exercise desktop controls at both window sizes
         env:
           LIBGL_ALWAYS_SOFTWARE: "1"
@@ -57,3 +58,7 @@ jobs:
           XDG_DATA_HOME="$RUNNER_TEMP/local-rift-blade-small" xvfb-run -a ./target/release/local-rift --ui-smoke-blade --small
           XDG_DATA_HOME="$RUNNER_TEMP/local-rift-riven-champion" xvfb-run -a ./target/release/local-rift --ui-smoke-riven-champion
           XDG_DATA_HOME="$RUNNER_TEMP/local-rift-riven-champion-small" xvfb-run -a ./target/release/local-rift --ui-smoke-riven-champion --small
+          XDG_DATA_HOME="$RUNNER_TEMP/local-rift-unyielding" xvfb-run -a ./target/release/local-rift --ui-smoke-unyielding
+          XDG_DATA_HOME="$RUNNER_TEMP/local-rift-unyielding-small" xvfb-run -a ./target/release/local-rift --ui-smoke-unyielding --small
+          XDG_DATA_HOME="$RUNNER_TEMP/local-rift-repulse" xvfb-run -a ./target/release/local-rift --ui-smoke-repulse
+          XDG_DATA_HOME="$RUNNER_TEMP/local-rift-repulse-small" xvfb-run -a ./target/release/local-rift --ui-smoke-repulse --small

@@ -38,6 +38,8 @@ mod series;
 mod series_sideboard_tests;
 mod targeting;
 mod temporary;
+#[cfg(test)]
+mod unyielding_tests;
 mod vision;
 mod xp_costs;
 
@@ -556,6 +558,15 @@ impl Session {
             }),
             "required_trash_play":game.required_trash_play,
             "can_decline_trash_play":game.can_decline_trash_play().map_err(ApiError::illegal)?});
+        view["turn_effects"] = if game.spell_ability_damage_prevented {
+            json!([{
+                "type":"prevent_spell_and_ability_damage", "source_card_id":441,
+                "scope":"both_players", "amount":"all", "expires":"end_of_turn",
+                "expires_turn":game.turn, "prevents_unit_damage":false
+            }])
+        } else {
+            json!([])
+        };
         if let Some(run) = &self.series {
             view["series"] = run.state.observe(viewer).map_err(ApiError::illegal)?;
         }

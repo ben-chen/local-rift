@@ -149,14 +149,14 @@
       "gear": 76,
       "legend": 11,
       "rune": 6,
-      "spell": 122,
+      "spell": 124,
       "unit": 243
     },
-    "implemented_main_cards": 441,
+    "implemented_main_cards": 443,
     "implemented_legends": 11,
     "implemented_battlefields": 17,
-    "implemented_legal_identities": 475,
-    "unimplemented_legal_identities": 604,
+    "implemented_legal_identities": 477,
+    "unimplemented_legal_identities": 602,
     "errata_entries": 67,
     "identities_with_errata": 67,
     "source_quality_issues": 57,
@@ -198,7 +198,7 @@
     "Mighty": 9,
     "Predict": 5,
     "Quick-Draw": 2,
-    "Reaction": 61,
+    "Reaction": 59,
     "Repeat": 10,
     "Shield": 10,
     "Show Off": 5,
@@ -29321,8 +29321,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 442,
+        "official_id": "unl-106-219",
+        "playable_in_client": true
       }
     },
     {
@@ -38829,8 +38831,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 441,
+        "official_id": "ogn-145-298",
+        "playable_in_client": true
       }
     },
     {
