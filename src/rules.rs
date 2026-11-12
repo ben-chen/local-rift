@@ -142,6 +142,8 @@ pub enum OfficialEffect {
         selector: AreaSelector,
     },
     Stun,
+    /// Back Off draws independently, but only when its actual play origin was Hand.
+    StunAndDrawFromHand,
     GrantAssault(u8),
     AreaDamage {
         amount: u8,
@@ -266,6 +268,7 @@ pub fn effect(id: usize) -> OfficialEffect {
         425 => ReadyAndPreventMovement { draw: 1 },
         426 => BattlePreparations,
         427 => MoveEnemy,
+        428 => StunAndDrawFromHand,
         424 => None,
         422 => DrawThenChannel {
             draw: 1,
@@ -679,7 +682,7 @@ pub fn chooses_move_destination(id: usize) -> bool {
 pub fn targeting(id: usize) -> Targeting {
     use Allegiance::*;
     let allegiance = match id {
-        290..=296 | 335 | 349 => Any,
+        290..=296 | 335 | 349 | 428 => Any,
         4 | 32 | 144 | 145 | 365 | 427 => Enemy,
         362 | 364 | 372 | 378 | 379 | 381 => Any,
         8 | 9 | 14 | 19 | 27 | 85 | 137 | 228 | 350 | 353 | 354 | 377 | 380 | 382 | 421 | 425 => {
@@ -731,6 +734,7 @@ pub fn target_bounds(id: usize) -> (usize, usize) {
         | BanishReplay(_)
         | KillEnemyDomain { .. }
         | Stun
+        | StunAndDrawFromHand
         | GrantAssault(_) => (1, 1),
         Damage { targets, .. } => (
             targets as usize,
@@ -1120,6 +1124,7 @@ pub fn requirements(id: usize) -> &'static [Mechanic] {
         424 => &[Chain, Banish, Gear, OptionalCosts],
         425 => &[Chain, Move, ChooseReadyTriggers],
         427 => &[Chain, Move],
+        428 => &[Chain, Hidden, Stun],
         372 | 373 => &[Chain, Gear, Bounce],
         374 => &[Chain, Gear, DeathTriggers],
         375 => &[Chain, Bounce],
@@ -2032,7 +2037,7 @@ mod tests {
     #[test]
     fn all_catalog_entries_have_official_classification() {
         let cards = cards();
-        assert_eq!(cards.len(), 428);
+        assert_eq!(cards.len(), 429);
         for card in cards {
             assert_ne!(
                 effect(card.id),
@@ -2042,7 +2047,7 @@ mod tests {
             );
             assert_ne!(support_status(card.id), SupportStatus::UnknownCard);
         }
-        assert_eq!(effect(428), OfficialEffect::Unsupported);
+        assert_eq!(effect(429), OfficialEffect::Unsupported);
     }
 
     #[test]

@@ -23,8 +23,10 @@ or Stuttgart recipes.
 Battle Preparations now has explicit Show Off, optional physical rune targets,
 Repeat, companion advice and AI/API support. Siren's Song now tracks actual
 physical-unit movement and supports separate destinations for repeated Moves.
-The same destination correction also applies to Charm and Ride the Wind. Next,
-prioritize Back Off and Hunters' Circle. The [Sacramento list attributed to Michael Mckain](https://riftwatch.gg/decks/sacramento-269/)
+The same destination correction also applies to Charm and Ride the Wind. Back Off
+now distinguishes Hand, Hidden, Trash and Banish origins, including Repeat.
+Hunters' Circle is already registered as battlefield 7; the next task is a renewed
+interaction audit, not a new card admission. The [Sacramento list attributed to Michael Mckain](https://riftwatch.gg/decks/sacramento-269/)
 (October 24–25, 269th place) supplies a concrete secondary-source lead: three
 Battle Preparations, two Siren's Song, two Back Off and that battlefield. It is
 not a verified new preset or evidence of top-tier results. Reckless Innovator
@@ -32,10 +34,12 @@ remains a community lead behind cards tied to these specific lists. All-time
 aggregate frequencies include older banned decks and must not be presented as
 current Standard prevalence.
 
-Back Off's draw depends on actually being played from hand; its Hidden
-play must not fabricate that draw. Hunters' Circle needs a per-player first-play
-record and a discount only during that player's turn. Verify each against the
-full official face, current rules and errata before admitting it.
+Back Off's independent draw requires an actual Hand origin; Hidden and instructed
+replays do not draw. Its [validation record](validation/irelia_backoff.json) covers
+these distinctions. Hunters' Circle already uses a per-player, per-field first-play
+record and restricts its discount to that player's turn. Recheck the existing
+token, Deploy, Hidden and instructed-play paths, payment refusal and turn reset
+against its official face and current rules before marking that audit complete.
 
 For each addition, exercise legal targeting, costs, responses, resolution after
 targets change, Irelia's choose/ready triggers, bot-visible actions and UI hints.

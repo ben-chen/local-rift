@@ -4,6 +4,77 @@ use crate::gear::GearState;
 use crate::play::{ExecutionChoices, PlayChoices, RepeatSelection};
 
 #[test]
+fn backoff_api_preserves_hidden_privacy_origin_and_the_hand_only_draw() {
+    for from_hidden in [false, true] {
+        let mut session = position();
+        session.game.battlefields = [2, 2];
+        session.game.battlefield_owner[0] = Some(0);
+        session.game.players[0].units = vec![unit(500, 73, Some(0), false)];
+        session.game.players[0].hand = vec![428];
+        session.game.players[0].deck = vec![71];
+        let target = Target::Unit {
+            player: 0,
+            unit_id: 500,
+        };
+        let action = if from_hidden {
+            apply(
+                &mut session,
+                Action::Hide {
+                    hand_index: 0,
+                    lane: 0,
+                },
+            );
+            let owner = session.observe(0).unwrap();
+            let opponent = session.observe(1).unwrap();
+            assert_eq!(owner["players"][0]["hidden"][0]["card_id"], 428);
+            assert!(opponent["players"][0]["hidden"][0]["card_id"].is_null());
+            session.game.players[0].hidden[0].hidden_turn = session.game.turn - 1;
+            Action::PlayHidden {
+                hidden_id: session.game.players[0].hidden[0].id,
+                targets: vec![target],
+            }
+        } else {
+            Action::PlayCardWithTargets {
+                hand_index: 0,
+                lane: None,
+                targets: vec![target],
+            }
+        };
+        let before = session.observe(0).unwrap();
+        for command in ["play_choices", "cost_plan", "quote_payment", "validate"] {
+            let response = session.handle(json!({"command":command,"player":0,"revision":session.revision(),"action":action_to_json(&action)}));
+            assert_eq!(response["ok"], true, "{response}");
+            assert_eq!(session.observe(0).unwrap(), before);
+        }
+        apply(&mut session, action);
+        for viewer in 0..2 {
+            let view = session.observe(viewer).unwrap();
+            let spell = view["chain"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .find(|item| item["card_id"] == 428)
+                .unwrap();
+            assert_eq!(
+                spell["play_origin"]["type"],
+                if from_hidden { "hidden" } else { "hand" }
+            );
+        }
+        resolve_chain(&mut session);
+        assert!(session.game.players[0].units[0].stunned);
+        assert!(session.game.players[0].units[0].ready);
+        assert_eq!(
+            session.game.players[0].hand,
+            if from_hidden { vec![] } else { vec![71] }
+        );
+        assert_eq!(
+            session.observe(1).unwrap()["players"][0]["units"][0]["stunned"],
+            true
+        );
+    }
+}
+
+#[test]
 fn move_destination_wire_is_explicit_strict_and_preserves_legacy_omission() {
     use crate::play::MoveDestination;
     for destination in [

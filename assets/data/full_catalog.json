@@ -149,14 +149,14 @@
       "gear": 74,
       "legend": 10,
       "rune": 6,
-      "spell": 118,
+      "spell": 119,
       "unit": 236
     },
-    "implemented_main_cards": 428,
+    "implemented_main_cards": 429,
     "implemented_legends": 10,
     "implemented_battlefields": 17,
-    "implemented_legal_identities": 461,
-    "unimplemented_legal_identities": 618,
+    "implemented_legal_identities": 462,
+    "unimplemented_legal_identities": 617,
     "errata_entries": 67,
     "identities_with_errata": 67,
     "source_quality_issues": 53,
@@ -177,7 +177,7 @@
   "unimplemented_by_observed_keyword": {
     "ADD": 1,
     "Accelerate": 17,
-    "Action": 60,
+    "Action": 59,
     "Add": 22,
     "Ambush": 9,
     "Assault": 13,
@@ -192,7 +192,7 @@
     "Equip": 27,
     "Flow": 8,
     "Ganking": 30,
-    "Hidden": 31,
+    "Hidden": 30,
     "Hunt": 1,
     "Legion": 3,
     "Mighty": 9,
@@ -202,7 +202,7 @@
     "Repeat": 10,
     "Shield": 11,
     "Show Off": 5,
-    "Stun": 16,
+    "Stun": 15,
     "Tank": 21,
     "Temporary": 9,
     "Unique": 3,
@@ -2595,8 +2595,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 428,
+        "official_id": "unl-042-219",
+        "playable_in_client": true
       }
     },
     {

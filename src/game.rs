@@ -20,6 +20,9 @@ mod combat;
 mod deploy;
 pub use combat::{CombatResolution, CombatResult, CombatStep};
 #[cfg(test)]
+#[path = "backoff_tests.rs"]
+mod backoff_tests;
+#[cfg(test)]
 #[path = "combat_card_tests.rs"]
 mod combat_card_tests;
 #[cfg(test)]
@@ -6658,6 +6661,7 @@ impl Game {
                         | OfficialEffect::MoveEnemy
                         | OfficialEffect::Kill { .. }
                         | OfficialEffect::Stun
+                        | OfficialEffect::StunAndDrawFromHand
                 ) || matches!(effect, OfficialEffect::ModifyMight { amount, .. } if amount < 0)
                     || matches!(effect, OfficialEffect::ContextualMight(rules::SpellMight::OwnExhausted { per_unit }) if per_unit < 0)
                     || (effect == OfficialEffect::DualMight && targets.len() == 1);
@@ -7575,11 +7579,27 @@ impl Game {
                     self.kill_unit(target)?;
                 }
             }
-            OfficialEffect::Stun => {
+            OfficialEffect::Stun | OfficialEffect::StunAndDrawFromHand => {
                 for target in valid {
                     if let Some(unit) = self.unit_mut(target) {
                         unit.stunned = true;
                     }
+                }
+                // The independent draw uses the physical spell's finalized
+                // origin, including every Repeat execution. Non-Hidden is not
+                // equivalent to Hand: Flow and instructed replays do not draw.
+                if rules::effect(id) == OfficialEffect::StunAndDrawFromHand
+                    && self.resolution_frame.as_ref().is_some_and(|frame| {
+                        self.chain.iter().any(|item| {
+                            item.id == frame.chain_id
+                                && item.player == player
+                                && item.card_id == id
+                                && item.ability.is_none()
+                                && item.play_origin == Some(PlayOrigin::Hand)
+                        })
+                    })
+                {
+                    self.draw(player, 1)?;
                 }
             }
             OfficialEffect::GrantAssault(amount) => {
@@ -9702,7 +9722,7 @@ impl Game {
                         0
                     }
                 }
-                OfficialEffect::Stun => {
+                OfficialEffect::Stun | OfficialEffect::StunAndDrawFromHand => {
                     if in_combat
                         && targets.iter().any(|t| {
                             matches!(t, Target::Unit { player, .. } if *player != actor)

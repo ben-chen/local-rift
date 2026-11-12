@@ -452,6 +452,13 @@ fn checked_advice(game: &Game, level: AdviceLevel) -> Result<Vec<&'static str>, 
             "Siren's Song can undo a move or redirect an attacker. Forced moves also enable it; Hunker Down can prevent the new move even when the target is legal."
         });
     }
+    if human.hand.contains(&428) || human.hidden.iter().any(|card| card.card_id == 428) {
+        tips.push(if beginner {
+            "Back Off stops a unit's combat damage this turn without exhausting it. Playing it from hand draws 1; playing it from Hidden does not draw."
+        } else {
+            "Stun a large attacker before combat damage. Back Off from hand replaces itself; hiding it saves Energy on a later turn but gives up that draw."
+        });
+    }
     if human.hand.contains(&426) {
         tips.push(if beginner {
             "Battle Preparations always gives a unit +2 Might this turn. Show off gear on your board or reveal one from hand before paying, then choose up to two runes to ready."

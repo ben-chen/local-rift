@@ -239,6 +239,16 @@ target condition `moved_this_turn`, which is rechecked on resolution. Forced
 movement counts; entry, recall and prevented movement do not create history.
 A moved unit with Hunker Down remains eligible, but the new Move is prevented.
 
+Back Off (428) uses the existing play and Hidden actions. The public chain's
+`play_origin` determines its independent draw: `hand` draws one per execution;
+`hidden`, `trash` and `banish` do not. This remains true for Repeat and for
+instructed plays that waive costs. Losing the target prevents its Stun but does
+not cancel a hand-origin draw. Hidden keeps its usual field targeting and later
+Reaction permission; it waives the base cost, including neither Deflect nor paid
+Repeat costs. Before revelation, opponent observations keep its hidden `card_id`
+null. The standard unit `stunned` field reflects resolution without changing
+`ready` or Might.
+
 `cost_plan` accepts selected card plays and supported Equip, Empower, or registered ability actions. It returns nominal `components`, applicable `modifiers`, the actual `applied_order`, and final `energy`, `power`, `xp`, and decimal-string `xp_exact`. Every component and optional cost also includes `xp` and `xp_exact`, including zero. XP is a fixed obligation determined by the source, and Energy/Power discounts do not reduce it. Each Power obligation retains its allowed domains and `spell_eligible` flag; totals alone cannot represent different colored costs. Modifier scope is either `total` or `component` with a `component_id`. Cost increases apply before discounts. Component discounts precede total discounts; explicit cross-stage reversal is rejected. Within a stage, the player may order reductions, including reductions with a local minimum. A minimum applies only to that discount, not as a permanent floor on the resulting cost. An omitted order uses a deterministic legal order.
 
 Explicit Power allocations must name distinct eligible components, fit their remaining cost, and allocate the entire usable reduction. A selected optional cost remains paid when discounts reduce it to zero. Invalid option IDs, duplicates, unsupported modes, and inconsistent allocations reject without changing the match. These queries require the acting seat and current revision; a preview is not a reservation of the position.

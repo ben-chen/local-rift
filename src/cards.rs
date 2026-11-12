@@ -6518,6 +6518,21 @@ pub fn cards() -> Vec<CardDef> {
             tags: &[],
             art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/742967b3e85f51b242fc04b8db4c4e3cd7b88672-744x1039.png?w=280&q=85&fm=png",
         },
+        CardDef {
+            id: 428,
+            official_id: "unl-042-219",
+            name: "Back Off",
+            cost: 3,
+            power_cost: 0,
+            might: 0,
+            domain: Domain::Calm,
+            domains: &[Domain::Calm],
+            kind: CardKind::Spell,
+            official_text: "[Hidden] (Hide now for [Any Power] to react with later for [0 Energy].)\n[Action] (Play on your turn or in showdowns.)\n[Stun] a unit. (It doesn't deal combat damage this turn.)\nIf you played this from your hand, draw 1.",
+            keywords: &["Action", "Hidden", "Stun"],
+            tags: &[],
+            art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/a0e7f7fa55ae618f94fe48920f92406ddd7e3512-744x1039.png?w=280&q=85&fm=png",
+        },
     ]
 }
 
@@ -6717,7 +6732,7 @@ mod tests {
     #[test]
     fn presets_are_complete_and_references_are_consistent() {
         let catalog = cards();
-        assert_eq!(catalog.len(), 428);
+        assert_eq!(catalog.len(), 429);
         for (index, card) in catalog.iter().enumerate() {
             assert_eq!(index, card.id);
             assert!(!card.official_id.is_empty());

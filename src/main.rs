@@ -8474,6 +8474,7 @@ fn card_brief(game: &Game, id: usize) -> String {
             at_least,
         }) => format!("{below:+} might · Level {minimum_xp}: {at_least:+} instead"),
         Stun => "Stun a unit this turn".into(),
+        StunAndDrawFromHand => "Stun · draw 1 if played from hand".into(),
         KillAllUnits => "Kill all units · both players, everywhere".into(),
         Channel {
             count,

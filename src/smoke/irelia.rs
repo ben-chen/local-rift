@@ -45,6 +45,36 @@ fn setup(app: &mut App) {
     app.prefs.exact_payment = false;
     app.companion.set_level(AdviceLevel::Beginner);
 }
+
+fn backoff_setup(app: &mut App) {
+    expansion_fixture(app, 428);
+    app.game = Game::new_for_agents(3, 3, 428428, Difficulty::Easy);
+    app.game.start_match().unwrap();
+    app.game.battlefields = [2, 2];
+    app.game.battlefield_owner = [Some(0), None];
+    for p in &mut app.game.players {
+        p.units.clear();
+        p.gear.clear();
+        p.hidden.clear();
+        p.hand.clear();
+        p.discard.clear();
+        p.champion = None;
+        p.set_rune_setup([0; 6], [0; 6]).unwrap();
+        p.energy_pool = 20;
+        p.energy = 20;
+        p.power_pool = [10; 6];
+    }
+    app.game.players[0].units = vec![public_unit(42800, 73, Some(0))];
+    app.game.players[1].units = vec![public_unit(42801, 73, None)];
+    app.game.players[0].hand = vec![428];
+    app.game.players[0].deck = vec![71, 70];
+    app.fields = app.game.battlefields;
+    app.selection = None;
+    app.targets.clear();
+    app.play_draft = None;
+    app.destination = None;
+    app.companion.set_level(AdviceLevel::Beginner);
+}
 pub(crate) fn run_frame(app: &mut App, frame: u32) -> bool {
     app.next_ai = f64::INFINITY;
     app.ui.input_override = Some((vec2(-100.0, -100.0), false, false));
@@ -422,6 +452,91 @@ pub(crate) fn run_frame(app: &mut App, frame: u32) -> bool {
         }
         48 => {
             assert!(app.inspect.is_none());
+            backoff_setup(app);
+        }
+        49 => click(app, 310.0, 760.0),
+        50 => {
+            assert!(matches!(app.selection, Some(Selection::Hand(0))));
+            capture(app, "RIFT_IRELIA_BACKOFF_HAND");
+            click_unit(app, 42801);
+        }
+        51 => click(app, 1285.0, 510.0),
+        52 => {
+            let spell = app.game.chain.iter().find(|s| s.card_id == 428).unwrap();
+            assert_eq!(spell.play_origin, Some(local_rift::play::PlayOrigin::Hand));
+            assert!(app.game.players[0].hand.is_empty());
+            app.game.apply(Action::Pass).unwrap();
+            app.game.apply(Action::Pass).unwrap();
+        }
+        53 => {
+            assert_eq!(app.game.players[0].hand, vec![70]);
+            assert!(app.game.players[1].units[0].stunned && app.game.players[1].units[0].ready);
+            capture(app, "RIFT_IRELIA_BACKOFF_DRAW");
+            app.inspect = Some(428);
+        }
+        54 => {
+            capture(app, "RIFT_IRELIA_BACKOFF_INSPECT");
+            click(app, 940.0, 700.0);
+        }
+        55 => {
+            assert!(app.inspect.is_none());
+            backoff_setup(app);
+        }
+        56 => click(app, 310.0, 760.0),
+        57 => click(app, 1225.0, 467.0),
+        58 => {
+            assert!(app.game.players[0].hand.is_empty());
+            assert_eq!(app.game.players[0].hidden.len(), 1);
+            let id = app.game.players[0].hidden[0].id;
+            assert_eq!(app.game.hidden_visible_card(1, 0, id), None);
+            assert!(app.game.chain.is_empty());
+            capture(app, "RIFT_IRELIA_BACKOFF_HIDDEN");
+            app.game.apply(Action::EndTurn).unwrap();
+            for _ in 0..20 {
+                if !app.game.in_window() {
+                    break;
+                }
+                app.game.apply(Action::Pass).unwrap();
+            }
+            assert_eq!(app.game.active, 1);
+            app.game
+                .apply(Action::Move {
+                    unit_id: 42801,
+                    lane: Some(0),
+                })
+                .unwrap();
+            app.game.apply(Action::Pass).unwrap();
+            assert_eq!(app.game.priority(), 0);
+            app.selection = None;
+            app.targets.clear();
+            app.companion.set_level(AdviceLevel::Advanced);
+            click(app, 610.0, 661.0);
+        }
+        59 => click(app, 315.0, 760.0),
+        60 => {
+            assert!(matches!(app.selection, Some(Selection::Hidden(_))));
+            click_unit(app, 42801);
+        }
+        61 => {
+            capture(app, "RIFT_IRELIA_BACKOFF_REVEAL");
+            click(app, 1285.0, 535.0);
+        }
+        62 => {
+            let spell = app.game.chain.iter().find(|s| s.card_id == 428).unwrap();
+            assert_eq!(
+                spell.play_origin,
+                Some(local_rift::play::PlayOrigin::Hidden { lane: 0 })
+            );
+            assert!(spell.from_hidden);
+            assert_eq!(app.game.players[0].energy, 0);
+            app.game.apply(Action::Pass).unwrap();
+            app.game.apply(Action::Pass).unwrap();
+        }
+        63 => {
+            assert!(app.game.players[1].units[0].stunned);
+            assert!(app.game.players[0].hand.is_empty());
+            assert_eq!(app.game.players[0].deck, vec![71, 70]);
+            capture(app, "RIFT_IRELIA_BACKOFF_NO_DRAW");
             return true;
         }
 
