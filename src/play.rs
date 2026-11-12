@@ -929,6 +929,13 @@ impl Game {
                     domains: vec![Domain::Body],
                 },
             }),
+            431 => Some(OptionalCostOption {
+                label: "Gust Monk: banish from either trash for Assault 2".into(),
+                cost: CostValue {
+                    energy: 1,
+                    ..Default::default()
+                },
+            }),
             420 => Some(OptionalCostOption {
                 label: "Pyke: ready and +2 Might when played".into(),
                 cost: CostValue {
@@ -1381,6 +1388,13 @@ impl Game {
                     xp: 0,
                     power: 1,
                     domains: vec![Domain::Body],
+                    ..Default::default()
+                },
+            }),
+            431 => Some(OptionalCostOption {
+                label: "Gust Monk: banish from either trash for Assault 2".into(),
+                cost: CostValue {
+                    energy: 1,
                     ..Default::default()
                 },
             }),
@@ -2061,7 +2075,8 @@ impl Game {
         if let Action::ResolveTriggerPayment {
             choice_id,
             pay: true,
-        } = action
+        }
+        | Action::ResolveTriggerTrashPayment { choice_id, .. } = action
         {
             let Some(Decision::TriggerPayment {
                 choice_id: current,

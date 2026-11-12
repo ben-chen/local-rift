@@ -684,6 +684,125 @@ pub(crate) fn run_frame(app: &mut App, frame: u32) -> bool {
             assert!(text.contains("FRIENDLY GEAR HERE · Combat requirement met"));
             assert!(text.contains("Combat contribution: 4 damage"));
             capture(app, "RIFT_IRELIA_ORIANNA_ENABLED_INSPECT");
+        }
+        84 => {
+            backoff_setup(app);
+            app.inspect = None;
+            app.game.players[0].hand = vec![431];
+            app.game.players[0].discard = vec![71, 7];
+            app.game.players[1].discard = vec![6, 71];
+            app.hand_scroll = 0;
+        }
+        85 => {
+            capture(app, "RIFT_IRELIA_GUST_HAND");
+            click(app, 315.0, 760.0);
+        }
+        86 => {
+            assert!(app.selection == Some(Selection::Hand(0)));
+            click(app, 1285.0, 467.0);
+        }
+        87 => {
+            assert!(app.play_draft.as_ref().unwrap().open);
+            click(app, 790.0, 849.0);
+        }
+        88 => {
+            assert!(app.play_draft.as_ref().unwrap().choices.bonus);
+            capture(app, "RIFT_IRELIA_GUST_EXTRA");
+            click(app, 1285.0, 510.0);
+        }
+        89 => {
+            assert!(matches!(
+                app.game.decision,
+                Some(Decision::TriggerTargets { card_id: 431, .. })
+            ));
+            click_unit(app, 42800);
+        }
+        90 => {
+            assert_eq!(app.targets.len(), 1);
+            click(app, 1285.0, 510.0);
+        }
+        91 => {
+            assert!(matches!(
+                app.game.decision,
+                Some(Decision::TriggerPayment { card_id: 431, .. })
+            ));
+            assert_eq!(app.game.players[0].energy, 17);
+            capture(app, "RIFT_IRELIA_GUST_TRASH");
+            app.ui.input_override = Some((vec2(315.0, 750.0), false, true));
+        }
+        92 => {
+            assert_eq!(app.inspect, Some(71));
+            capture(app, "RIFT_IRELIA_GUST_COST_INSPECT");
+            click(app, 940.0, 700.0);
+        }
+        93 => {
+            assert!(app.inspect.is_none());
+            click(app, 615.0, 858.0);
+        }
+        94 => {
+            assert_eq!(app.game.players[1].banish, vec![6]);
+            assert_eq!(app.game.players[1].discard, vec![71]);
+            assert!(app.game.chain.iter().any(|item| item.card_id == 431));
+            assert_eq!(
+                app.game
+                    .unit_keywords(&app.game.players[0].units[0])
+                    .unwrap()
+                    .assault,
+                0
+            );
+            capture(app, "RIFT_IRELIA_GUST_PAID");
+            app.game.apply(Action::Pass).unwrap();
+            app.game.apply(Action::Pass).unwrap();
+        }
+        95 => {
+            assert_eq!(
+                app.game
+                    .unit_keywords(&app.game.players[0].units[0])
+                    .unwrap()
+                    .assault,
+                2
+            );
+            app.companion.set_level(AdviceLevel::Advanced);
+            capture_unit(app, 42800, "RIFT_IRELIA_GUST_ASSAULT");
+        }
+        96 => {
+            backoff_setup(app);
+            app.game.players[0].hand = vec![431];
+            app.game
+                .apply(Action::WithPlayChoices {
+                    action: Box::new(Action::PlayCardWithTargets {
+                        hand_index: 0,
+                        lane: None,
+                        targets: vec![],
+                    }),
+                    choices: local_rift::play::PlayChoices {
+                        bonus: true,
+                        ..Default::default()
+                    },
+                })
+                .unwrap();
+            app.game
+                .apply(Action::ChooseTriggerTargets {
+                    targets: vec![Target::Unit {
+                        player: 0,
+                        unit_id: 42800,
+                    }],
+                })
+                .unwrap();
+            app.targets.clear();
+            app.selection = None;
+            app.play_draft = None;
+            app.hand_scroll = 0;
+        }
+        97 => {
+            capture(app, "RIFT_IRELIA_GUST_EMPTY");
+            click(app, 1285.0, 545.0);
+        }
+        98 => {
+            assert!(app.game.decision.is_none());
+            assert!(app.game.chain.is_empty());
+            assert!(app.game.players[0].units.iter().any(|u| u.card_id == 431));
+            capture(app, "RIFT_IRELIA_GUST_DECLINED");
             return true;
         }
         _ => {}

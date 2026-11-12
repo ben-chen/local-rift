@@ -306,7 +306,7 @@ The fifth preset is the sourced Los Angeles Rengar winning list. Copying that pr
 
 ## Remaining fidelity limits
 
-Ten supported legends, seventeen battlefield choices, and 431 main-deck cards are available through five supplied presets and the custom deck editor. The original four presets and all ten authored or preset-derived training recipes remain unchanged; the fifth tournament preset is separate. Additional supported cards can be added through the editor where eligible. There is no sideboarding, tournament match structure, multiplayer mode, or full card-set coverage. The presets are dated tournament lists, not a ranking of the current metagame.
+Ten supported legends, seventeen battlefield choices, and 432 main-deck cards are available through five supplied presets and the custom deck editor. The original four presets and all ten authored or preset-derived training recipes remain unchanged; the fifth tournament preset is separate. Additional supported cards can be added through the editor where eligible. There is no sideboarding, tournament match structure, multiplayer mode, or full card-set coverage. The presets are dated tournament lists, not a ranking of the current metagame.
 
 The desktop and bot API expose exact damage allocations and power-source payments. The default automatic payment remains available; energy can be prepared by exhausting chosen rune domains before a play. These controls share engine validation, but broader card and interaction coverage is still required.
 
@@ -512,3 +512,23 @@ prevents combat damage even when gear is present.
 The board retains the zero-combat badge, and the live inspector explains whether
 the nearby gear requirement is met. The bot API exposes that same public condition
 alongside Might and combat damage. Mote explains the interaction at both levels.
+
+
+## Gust Monk and a banish cost
+
+Gust Monk costs 2 Energy. Its optional extra 1 Energy enables its play trigger;
+it does not itself grant Assault. Choose one unit, then banish one card from
+either trash to finalize the ability. The trash card is a cost, not a target.
+Enemy targets may require Deflect, paid with power eligible for abilities.
+The controller can decline this incurred cost; the completed unit play remains.
+
+The banish happens before responses. Assault 2 is gained only on resolution,
+adds 2 Might while attacking, and expires at turn cleanup. The chosen unit may
+be Gust Monk, a friendly unit, or an enemy. Source departure does not end the
+ability. A counter or lost target does not refund a paid banish cost.
+
+The client shows separate play choices, unit targets and a tray containing both
+trashes. Each cost card can be inspected before payment. Staged payment tracks
+the chosen physical copy through preceding removals; a departed copy cannot be
+replaced by another at the same index. Undo and refusal restore payment-resource
+actions while keeping the completed unit play. The bot API uses the same choices.

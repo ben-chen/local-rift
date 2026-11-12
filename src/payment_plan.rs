@@ -91,6 +91,9 @@ impl PaymentPlan {
         ) {
             return Some(PaymentRefusalKind::Trigger);
         }
+        if matches!(field_action, Action::ResolveTriggerTrashPayment { .. }) {
+            return Some(PaymentRefusalKind::Trigger);
+        }
         if !self.obligations.iter().any(|cost| match cost {
             Obligation::Energy(amount) => *amount > 0,
             Obligation::Power(cost) => cost.amount > 0,
@@ -173,6 +176,37 @@ fn pending_trigger_finalization(game: &Game) -> bool {
 }
 
 impl Game {
+    /// Keep an announced physical cost card pinned while Add actions alter trash.
+    /// None means the entire trash leaves (burnout). Rollback snapshots stay intact.
+    pub(crate) fn update_pending_trash_cost(&mut self, owner: usize, removed: Option<usize>) {
+        let Some(plan) = self
+            .payment_plan
+            .as_mut()
+            .filter(|p| p.mode == Mode::Pending)
+        else {
+            return;
+        };
+        let mut action = &mut plan.action;
+        while let Action::WithPlayChoices { action: inner, .. } = action {
+            action = inner;
+        }
+        if let Action::ResolveTriggerTrashPayment {
+            trash_player,
+            trash_index,
+            ..
+        } = action
+            && *trash_player == owner
+            && *trash_index != usize::MAX
+        {
+            match removed {
+                None => *trash_index = usize::MAX,
+                Some(index) if index == *trash_index => *trash_index = usize::MAX,
+                Some(index) if index < *trash_index => *trash_index -= 1,
+                _ => {}
+            }
+        }
+    }
+
     pub(crate) fn checkpoint_finalization_payment_add(&mut self, action: &Action) {
         let eligible = matches!(
             self.decision,
@@ -861,6 +895,7 @@ fn payment_intent(action: &Action) -> bool {
             | Action::EmpowerUnit { .. }
             | Action::ResolveBattlefieldPayment { pay: true, .. }
             | Action::ResolveTriggerPayment { pay: true, .. }
+            | Action::ResolveTriggerTrashPayment { .. }
             | Action::ChooseTriggerTargets { .. }
             | Action::ChooseTarget { .. }
             | Action::Choose { accept: true }

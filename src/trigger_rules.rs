@@ -168,6 +168,7 @@ pub enum Effect {
         buff_source_if_killed: bool,
     },
     GiveTemporary(Operand),
+    GrantAssault(u8),
     Xp(Amount),
     Draw(u8),
     DrawBoth(u8),
@@ -229,6 +230,7 @@ pub struct TriggerBaseCost {
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum TriggerObjectCost {
     BanishSource,
+    BanishFromAnyTrash,
 }
 /// A triggered ability chooses its mode during finalization, before paying
 /// that mode's costs and before either player can respond to the ability.
@@ -435,6 +437,25 @@ pub fn trigger_rules(card_id: usize) -> &'static [TriggerRule] {
                     TargetRule::NONE,
                     &[Draw(1)],
                 )]
+            }
+        }
+        431 => {
+            const {
+                &[TriggerRule {
+                    base_cost: Some(TriggerBaseCost {
+                        energy: 0,
+                        power: 0,
+                        domain: None,
+                    }),
+                    object_cost: Some(TriggerObjectCost::BanishFromAnyTrash),
+                    ..rule(
+                        SelfPlayed,
+                        &[OptionalPlayCostPaid],
+                        false,
+                        ANY,
+                        &[GrantAssault(2)],
+                    )
+                }]
             }
         }
         420 => {

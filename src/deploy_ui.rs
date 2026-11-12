@@ -45,6 +45,9 @@ impl App {
         else {
             unreachable!()
         };
+        if card_id == 431 {
+            return self.gust_trash_payment_panel(choice_id, targets, deflect);
+        }
         self.ui
             .title("Pay for this trigger?", 1178.0, 366.0, 20.0, TEXT);
         self.ui.wrapped_lines(

@@ -694,3 +694,21 @@ recycling a target before finalization requires Undo/refusal or a different play
 Invalid input or payment completion preserves the current state and revision.
 
 Orianna, Exquisite's `combat_contribution` adds `requirement: {"type":"friendly_gear_here","met":false}`. `met` is true when the requirement is satisfied. The object is absent on units without that printed requirement. The value uses public physical gear locations, including attachments on another friendly unit, and changes immediately as gear moves or leaves. `prevents_combat_damage` remains independent of `stunned`; `might` retains the full reference value either way. The optional requirement is explanatory and read-only.
+
+
+Gust Monk uses the existing `play_choices.bonus` flag for its optional extra
+1 Energy. After the unit enters, `choose_trigger_targets` chooses exactly one
+unit. The resulting `trigger_payment` decision includes an `object_cost` with
+`type: "banish_from_any_trash"`, `is_target: false`, `paid_before_responses: true`
+and public `candidates` containing `player`, `trash_index`, and `card_id`.
+Only the unit appears in the ability's `targets`.
+
+Submit `{"type":"resolve_trigger_trash_payment","choice_id":ID,"trash_player":0,"trash_index":0}`
+to banish the exact selected trash card and pay any Deflect before finalizing.
+Both players' trash cards are eligible. `resolve_trigger_payment` with `pay:false`
+declines the incurred cost; `pay:true` cannot bypass its explicit trash selection.
+The new action supports validation, exact Power payment, payment quotes, and
+`begin_payment`. During a staged payment, preceding trash removals update the
+pinned copy's index. If it leaves or the trash is recycled by burnout, payment
+cannot substitute a different copy; Undo/refusal restore the payment boundary.
+Existing resource-only trigger observations retain their prior object shape.

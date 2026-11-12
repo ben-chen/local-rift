@@ -8,6 +8,7 @@ mod deck_look_ui;
 mod deploy_ui;
 mod draw_look_ui;
 mod field_ui;
+mod gust_ui;
 mod play_ui;
 mod predict_ui;
 use companion::{AdviceLevel, Companion, draw_mote};
@@ -3656,6 +3657,16 @@ impl App {
         let Some(decision) = self.game.decision.clone() else {
             return Ok(false);
         };
+        if let Decision::TriggerPayment {
+            player: 0,
+            card_id: 431,
+            choice_id,
+            ..
+        } = decision
+        {
+            self.gust_trash_cost_tray(choice_id);
+            return Ok(true);
+        }
         if let Decision::PredictCards { player, cards, .. } = &decision {
             if *player == 0 {
                 self.predict_tray(cards);
@@ -5763,8 +5774,10 @@ impl App {
         {
             return name;
         }
-        if matches!(action, Action::ResolveTriggerPayment { .. })
-            && let Some(context) = self.game.trigger_payment_context()
+        if matches!(
+            action,
+            Action::ResolveTriggerPayment { .. } | Action::ResolveTriggerTrashPayment { .. }
+        ) && let Some(context) = self.game.trigger_payment_context()
             && let Some(source) = deploy_ui::trigger_payment_source(&self.game, &context)
         {
             return source;
@@ -8473,6 +8486,9 @@ fn card_brief(game: &Game, id: usize) -> String {
     }
     if id == 429 {
         return "On exhaust: Gold exhausted, or pay 1 Chaos to draw 1".into();
+    }
+    if id == 431 {
+        return "Extra 1 Energy: banish from either trash to grant Assault 2".into();
     }
     if id == 430 {
         return "Shield · Needs friendly gear here to deal combat damage".into();

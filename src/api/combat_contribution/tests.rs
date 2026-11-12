@@ -757,3 +757,78 @@ fn c27_tusker_wire_damage_uses_live_shield_without_defending_bonus_might() {
         }
     }
 }
+
+#[test]
+fn gust_api_separates_public_trash_cost_from_the_single_unit_target() {
+    for owner in 0..2 {
+        let mut s = position(owner);
+        let target = unit(&mut s, owner, 71, 43100, None);
+        s.game.players[owner].hand = vec![431];
+        s.game.players[0].discard = vec![71, 7];
+        s.game.players[1].discard = vec![7, 71];
+        submit(
+            &mut s,
+            Action::WithPlayChoices {
+                action: Box::new(Action::PlayCardWithTargets {
+                    hand_index: 0,
+                    lane: None,
+                    targets: vec![],
+                }),
+                choices: crate::play::PlayChoices {
+                    bonus: true,
+                    ..Default::default()
+                },
+            },
+        );
+        submit(
+            &mut s,
+            Action::ChooseTriggerTargets {
+                targets: vec![target],
+            },
+        );
+        let Some(Decision::TriggerPayment { choice_id, .. }) = s.game.decision else {
+            panic!()
+        };
+        for viewer in 0..2 {
+            let view = s.observe(viewer).unwrap();
+            let choice = &view["decision"];
+            assert_eq!(choice["type"], "trigger_payment");
+            assert_eq!(choice["targets"], json!([target_to_json(&target)]));
+            assert_eq!(choice["object_cost"]["type"], "banish_from_any_trash");
+            assert_eq!(choice["object_cost"]["is_target"], false);
+            assert_eq!(choice["object_cost"]["paid_before_responses"], true);
+            assert_eq!(
+                choice["object_cost"]["candidates"]
+                    .as_array()
+                    .unwrap()
+                    .len(),
+                4
+            );
+        }
+        let action = Action::ResolveTriggerTrashPayment {
+            choice_id,
+            trash_player: 1 - owner,
+            trash_index: 1,
+        };
+        assert_eq!(parse_action(&action_to_json(&action)).unwrap(), action);
+        assert_eq!(query(&mut s, "validate", &action)["ok"], true);
+        let revision = s.revision();
+        reject(
+            &mut s,
+            json!({"command":"apply","revision":revision-1,"player":owner,"action":action_to_json(&action)}),
+            "stale_revision",
+        );
+        reject(
+            &mut s,
+            json!({"command":"apply","revision":revision,"player":1-owner,"action":action_to_json(&action)}),
+            "wrong_player",
+        );
+        let banished = s.game.players[1 - owner].discard[1];
+        submit(&mut s, action);
+        assert_eq!(s.game.players[1 - owner].banish, vec![banished]);
+        assert_eq!(s.game.chain.last().unwrap().targets, vec![target]);
+        assert_eq!(observed_unit(&s, owner, 43100)["keywords"]["assault"], 0);
+        settle_chain(&mut s);
+        assert_eq!(observed_unit(&s, owner, 43100)["keywords"]["assault"], 2);
+    }
+}

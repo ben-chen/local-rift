@@ -270,7 +270,7 @@ pub fn effect(id: usize) -> OfficialEffect {
         427 => MoveEnemy,
         428 => StunAndDrawFromHand,
         429 => None,
-        430 => None,
+        430 | 431 => None,
         424 => None,
         422 => DrawThenChannel {
             draw: 1,
@@ -1129,6 +1129,7 @@ pub fn requirements(id: usize) -> &'static [Mechanic] {
         428 => &[Chain, Hidden, Stun],
         429 => &[Chain, Accelerate, Gold, Tokens, OptionalCosts],
         430 => &[Chain, Gear, Shield],
+        431 => &[Chain, OptionalCosts, Assault, Banish],
         372 | 373 => &[Chain, Gear, Bounce],
         374 => &[Chain, Gear, DeathTriggers],
         375 => &[Chain, Bounce],
@@ -2044,7 +2045,7 @@ mod tests {
     #[test]
     fn all_catalog_entries_have_official_classification() {
         let cards = cards();
-        assert_eq!(cards.len(), 431);
+        assert_eq!(cards.len(), 432);
         for card in cards {
             assert_ne!(
                 effect(card.id),
@@ -2054,7 +2055,7 @@ mod tests {
             );
             assert_ne!(support_status(card.id), SupportStatus::UnknownCard);
         }
-        assert_eq!(effect(431), OfficialEffect::Unsupported);
+        assert_eq!(effect(432), OfficialEffect::Unsupported);
     }
 
     #[test]

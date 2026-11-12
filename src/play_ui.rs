@@ -1220,6 +1220,8 @@ impl App {
                 Rect::new(x, 836.0, 198.0, 29.0),
                 if view.card_id == 261 {
                     "Extra cost: stun on play"
+                } else if view.card_id == 431 {
+                    "Extra 1 Energy · Assault 2"
                 } else {
                     &optional.label
                 },

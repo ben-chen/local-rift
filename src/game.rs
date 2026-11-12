@@ -26,6 +26,9 @@ mod backoff_tests;
 #[path = "combat_card_tests.rs"]
 mod combat_card_tests;
 #[cfg(test)]
+#[path = "gust_tests.rs"]
+mod gust_tests;
+#[cfg(test)]
 #[path = "innovator_tests.rs"]
 mod innovator_tests;
 #[cfg(test)]
@@ -173,6 +176,12 @@ pub enum Action {
     ResolveTriggerPayment {
         choice_id: u32,
         pay: bool,
+    },
+    /// This public trash card is a cost, never an effect target.
+    ResolveTriggerTrashPayment {
+        choice_id: u32,
+        trash_player: usize,
+        trash_index: usize,
     },
     ChooseTriggerTargets {
         targets: Vec<Target>,
@@ -1764,6 +1773,7 @@ impl Game {
                     | Action::ResolveDrawLook { .. }
                     | Action::ResolvePredict { .. }
                     | Action::ResolveTriggerPayment { .. }
+                    | Action::ResolveTriggerTrashPayment { .. }
                     | Action::ChooseTriggerTargets { .. }
                     | Action::ChooseTriggerMode { .. }
                     | Action::Choose { .. }
@@ -1836,6 +1846,15 @@ impl Game {
                 ability_index,
                 targets,
             } => self.activate_ability(source, ability_index, targets)?,
+            Action::ResolveTriggerTrashPayment {
+                choice_id,
+                trash_player,
+                trash_index,
+            } => self.resolve_trigger_payment_with_trash(
+                choice_id,
+                true,
+                Some((trash_player, trash_index)),
+            )?,
             Action::ResolveTriggerPayment { choice_id, pay } => {
                 self.resolve_trigger_payment(choice_id, pay)?
             }
@@ -3344,6 +3363,11 @@ impl Game {
                                 );
                             }
                         }
+                        Some(crate::trigger_rules::TriggerObjectCost::BanishFromAnyTrash) => {
+                            return Err(
+                                "Choose this ability's targets and trash cost explicitly.".into()
+                            );
+                        }
                         None => return Err("This ability has no object cost.".into()),
                     }
                     self.queue_finalized_ability(
@@ -4224,6 +4248,7 @@ impl Game {
     }
 
     fn remove_from_trash(&mut self, player: usize, index: usize) -> CardId {
+        self.update_pending_trash_cost(player, Some(index));
         for item in &mut self.chain {
             if item.player == player
                 && let Some(
@@ -5854,6 +5879,42 @@ impl Game {
                             mode,
                         })
                         .collect(),
+                    Decision::TriggerPayment {
+                        choice_id,
+                        card_id,
+                        rule_index,
+                        context,
+                        ..
+                    } if crate::trigger_rules::selected_rule(
+                        *card_id,
+                        *rule_index,
+                        context.mode,
+                    )
+                    .is_some_and(|r| {
+                        r.object_cost
+                            == Some(crate::trigger_rules::TriggerObjectCost::BanishFromAnyTrash)
+                    }) =>
+                    {
+                        let mut actions: Vec<_> = self
+                            .players
+                            .iter()
+                            .enumerate()
+                            .flat_map(|(trash_player, p)| {
+                                (0..p.discard.len()).map(move |trash_index| {
+                                    Action::ResolveTriggerTrashPayment {
+                                        choice_id: *choice_id,
+                                        trash_player,
+                                        trash_index,
+                                    }
+                                })
+                            })
+                            .collect();
+                        actions.push(Action::ResolveTriggerPayment {
+                            choice_id: *choice_id,
+                            pay: false,
+                        });
+                        actions
+                    }
                     Decision::TriggerPayment { choice_id, .. } => vec![
                         Action::ResolveTriggerPayment {
                             choice_id: *choice_id,
@@ -8321,6 +8382,7 @@ impl Game {
                         *trash_index = usize::MAX;
                     }
                 }
+                self.update_pending_trash_cost(player, None);
                 self.players[player].deck = std::mem::take(&mut self.players[player].discard);
                 self.rng.shuffle(&mut self.players[player].deck);
                 self.players[1 - player].score += 1;
@@ -9133,7 +9195,51 @@ impl Game {
                     return Ok(action);
                 }
                 let preferred = match decision {
-                    Decision::LegendTargets { player } => {
+                    Decision::TriggerPayment {
+                        player,
+                        card_id: 431,
+                        targets,
+                        ..
+                    } => {
+                        let useful = targets.first().is_some_and(
+                            |t| matches!(t,Target::Unit{player:owner,..} if owner==player),
+                        );
+                        actions
+                            .iter()
+                            .filter_map(|action| match action {
+                                Action::ResolveTriggerTrashPayment {
+                                    trash_player,
+                                    trash_index,
+                                    ..
+                                } if useful => {
+                                    let card = self.catalog
+                                        [self.players[*trash_player].discard[*trash_index]];
+                                    let value = i32::from(card.cost) * 3
+                                        + i32::from(card.power_cost) * 5
+                                        + i32::from(card.might);
+                                    Some((
+                                        if trash_player != player {
+                                            100 + value
+                                        } else {
+                                            20 - value
+                                        },
+                                        action,
+                                    ))
+                                }
+                                Action::ResolveTriggerPayment { pay: false, .. } => {
+                                    Some((0, action))
+                                }
+                                _ => None,
+                            })
+                            .max_by_key(|(score, _)| *score)
+                            .map(|(_, action)| action.clone())
+                    }
+                    Decision::TriggerTargets {
+                        player,
+                        card_id: 431,
+                        ..
+                    }
+                    | Decision::LegendTargets { player } => {
                         let mut scored = Vec::new();
                         for action in &actions {
                             if let Action::ChooseTriggerTargets { targets } = action

@@ -941,6 +941,13 @@ fn action_json_at_depth(action: &Action, depth: usize) -> Value {
         Action::ResolveDrawLook { choice_id, index } => {
             json!({"type":"resolve_draw_look","choice_id":choice_id,"index":index})
         }
+        Action::ResolveTriggerTrashPayment {
+            choice_id,
+            trash_player,
+            trash_index,
+        } => {
+            json!({"type":"resolve_trigger_trash_payment","choice_id":choice_id,"trash_player":trash_player,"trash_index":trash_index})
+        }
         Action::ResolveTriggerPayment { choice_id, pay } => {
             json!({"type":"resolve_trigger_payment","choice_id":choice_id,"pay":pay})
         }
@@ -1489,6 +1496,14 @@ fn parse_action_at_depth(value: &Value, depth: usize) -> Result<Action, ApiError
                 },
             }
         }
+        "resolve_trigger_trash_payment" => {
+            fields!("choice_id", "trash_player", "trash_index");
+            Action::ResolveTriggerTrashPayment {
+                choice_id: id32(o, "choice_id")?,
+                trash_player: index(o, "trash_player")?,
+                trash_index: index(o, "trash_index")?,
+            }
+        }
         "resolve_trigger_payment" => {
             fields!("choice_id", "pay");
             Action::ResolveTriggerPayment {
@@ -2004,10 +2019,24 @@ fn decision_to_json(game: &Game, decision: &Decision, viewer: usize) -> Result<V
             base_cost,
             deflect,
             ..
-        } => json!({"type":"trigger_payment","choice_id":choice_id,"card_id":card_id,
-            "rule_index":rule_index,"context":trigger_context_to_json(context),
-            "targets":targets.iter().map(target_to_json).collect::<Vec<_>>(),
-            "base_cost":play_choices::cost_to_json(base_cost),"deflect":deflect}),
+        } => {
+            let mut value = json!({"type":"trigger_payment","choice_id":choice_id,"card_id":card_id,
+                "rule_index":rule_index,"context":trigger_context_to_json(context),
+                "targets":targets.iter().map(target_to_json).collect::<Vec<_>>(),
+                "base_cost":play_choices::cost_to_json(base_cost),"deflect":deflect});
+            if crate::trigger_rules::selected_rule(*card_id, *rule_index, context.mode).is_some_and(
+                |r| {
+                    r.object_cost
+                        == Some(crate::trigger_rules::TriggerObjectCost::BanishFromAnyTrash)
+                },
+            ) {
+                value["object_cost"] = json!({"type":"banish_from_any_trash","paid_before_responses":true,
+                    "is_target":false,"candidates":game.players.iter().enumerate().flat_map(|(owner,p)|
+                        p.discard.iter().enumerate().map(move |(index,id)|json!({"player":owner,"trash_index":index,"card_id":id}))
+                    ).collect::<Vec<_>>()});
+            }
+            value
+        }
         Decision::ResourceConversion {
             source,
             card_id,

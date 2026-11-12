@@ -6563,6 +6563,21 @@ pub fn cards() -> Vec<CardDef> {
             tags: &["Piltover", "Orianna"],
             art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/3e608c51698b6fb0cc6a00335dbd1bca84f57c73-744x1039.png?w=280&q=85&fm=png",
         },
+        CardDef {
+            id: 431,
+            official_id: "ven-101-166",
+            name: "Gust Monk",
+            cost: 2,
+            power_cost: 0,
+            might: 2,
+            domain: Domain::Chaos,
+            domains: &[Domain::Chaos],
+            kind: CardKind::Unit,
+            official_text: "You may pay [1 Energy] as an additional cost to play me.\nWhen you play me, if you paid the additional cost, banish a card from any trash to give a unit [Assault 2] this turn. (+2 Might while it's an attacker.)",
+            keywords: &[],
+            tags: &["Yordle", "Bandle City"],
+            art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/93a194c0c1f055c0b3bc3c0717cbe488749fed92-744x1039.png?w=280&q=85&fm=png",
+        },
     ]
 }
 
@@ -6762,7 +6777,7 @@ mod tests {
     #[test]
     fn presets_are_complete_and_references_are_consistent() {
         let catalog = cards();
-        assert_eq!(catalog.len(), 431);
+        assert_eq!(catalog.len(), 432);
         for (index, card) in catalog.iter().enumerate() {
             assert_eq!(index, card.id);
             assert!(!card.official_id.is_empty());

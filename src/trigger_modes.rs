@@ -40,7 +40,7 @@ impl Game {
         let rule = &chosen.rule;
         context.mode = Some(mode);
         self.decision = None;
-        if rule.object_cost.is_some() {
+        if rule.object_cost == Some(trigger_rules::TriggerObjectCost::BanishSource) {
             self.decision = Some(Decision::TriggerObjectCost {
                 player,
                 card_id,

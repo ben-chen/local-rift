@@ -19,7 +19,7 @@ The original lists' exact counts and reference metadata are in `assets/data/deck
 
 ## Card facts and artwork
 
-All 431 runtime card names, energy costs, power costs, printed might, domains, card types, rules text, and keyword annotations come from the embedded public card data and explicitly reviewed source corrections for the [official Riftbound Card Gallery](https://playriftbound.com/en-us/card-gallery/) on October 24, 2026. The manifest records the original card identifier and CDN image URL for each card. An ordinary printing was preferred where available. The full inventory preserves conflicting printing values rather than assuming alternate printings always agree. It preserves 23 official records whose structured type contradicts their accessibility label. A separate, dated visual review now supplies explicit effective facts for those records and the other original source-issue groups, while keeping both raw claims. Every resolution has exact raw prerequisites and archived artwork evidence; an unresolved gameplay field still blocks runtime mapping. The source review does not add playable cards. See [Catalog review](CATALOG_REVIEW.md) and [Card coverage](CARD_COVERAGE.md).
+All 432 runtime card names, energy costs, power costs, printed might, domains, card types, rules text, and keyword annotations come from the embedded public card data and explicitly reviewed source corrections for the [official Riftbound Card Gallery](https://playriftbound.com/en-us/card-gallery/) on October 24, 2026. The manifest records the original card identifier and CDN image URL for each card. An ordinary printing was preferred where available. The full inventory preserves conflicting printing values rather than assuming alternate printings always agree. It preserves 23 official records whose structured type contradicts their accessibility label. A separate, dated visual review now supplies explicit effective facts for those records and the other original source-issue groups, while keeping both raw claims. Every resolution has exact raw prerequisites and archived artwork evidence; an unresolved gameplay field still blocks runtime mapping. The source review does not add playable cards. See [Catalog review](CATALOG_REVIEW.md) and [Card coverage](CARD_COVERAGE.md).
 
 Images under `assets/art/` are the gallery's official Riot CDN card images, resized by its image service to 280–360 pixels wide as PNG (supported by the default Macroquad image decoder). `card_0.png` through `card_429.png` match catalog IDs; `champion_0.png` through `champion_3.png` are aliases of cards 0, 22, 33, and 49. The game does not need a network connection to load the bundled assets. These images are not original art created for this project.
 
@@ -206,5 +206,27 @@ The [admission evidence](../assets/data/card_admissions/irelia_orianna/README.md
 records the full faces, offline artwork, and unchanged predecessor cards and
 five preset recipes. The [validation record](validation/irelia_orianna.json)
 separates source review, focused rules tests, complete games, API observations
-and native interface checks. A newer Irelia list attributed to Arito at
-Convergence IV is a priority lead, not a newly verified tournament preset.
+and native interface checks. Primary provenance for Arito’s newer Convergence
+IV list is now verified below; it has not yet been added as a preset.
+
+
+## Gust Monk: November 11, 2026
+
+Runtime ID431 is VEN-101/166, a Chaos unit costing 2 Energy and no Power with
+2 Might and Bandle City/Yordle tags. Its complete original official face was
+individually inspected. The accepted gallery has one printing, no unresolved
+source conflict and no indexed erratum. No field or variant review is rewritten.
+The [admission evidence](../assets/data/card_admissions/irelia_gust/README.md)
+pins the raw/effective facts, both artwork sizes and every predecessor source
+review, runtime definition and preset recipe. The current Rules Hub still links
+the October 9 Core Rules; the Vendetta errata does not alter Gust Monk.
+
+The optional extra play Energy and the separate pre-response banish cost follow
+Core 204.1.c, 355.10.c, 383.2–3 and 404–407. The ability grants Assault to its
+chosen unit rather than making Assault intrinsic to Gust Monk. Availability
+completes the remaining main-card gap in Arito’s list. The original
+[organizer standings](https://topdeck.gg/bracket/convergence-4) and linked
+[deck page](https://topdeck.gg/deck/convergence-4/3Mb0hLsUTwgBYrpAauGOaRvDhnq1)
+were read independently on November 11, confirming second place and the complete
+list. The [validation record](validation/irelia_gust.json) preserves those facts.
+A sixth preset still requires integration and exact-list match testing.

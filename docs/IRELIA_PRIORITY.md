@@ -58,13 +58,21 @@ gear on another friendly unit, without reducing her Might or Shield. Her
 [validation record](validation/irelia_orianna.json) includes both gear conditions,
 movement and removal, native inspection, API views, and all three AI levels.
 
-The next priority is **Gust Monk**, the remaining unimplemented main-deck card
-in the [list attributed to Arito at Convergence IV](https://riftbench.com/decks/TD-convergence-4-0002)
-(October 31; attributed second place). It contains three Orianna and one Gust
-Monk. The [organizer's event page](https://topdeck.gg/event/convergence-4) confirms
-the event and Radiance card pool; the primary standings and full deck provenance
-still need independent confirmation before admitting a preset. The current five
-preset recipes remain unchanged.
+Gust Monk is now implemented and validated for custom practice. Its optional
+play Energy, unit target and separate pre-response banish cost are explicit in
+the client and API. The [validation record](validation/irelia_gust.json) covers
+both trash owners, Irelia's choose/ready triggers, counters, Deflect, physical-copy
+tracking during payment, temporary Assault and Beginner/Advanced advice.
+
+The primary [Convergence IV standings](https://topdeck.gg/bracket/convergence-4)
+and [Arito deck list](https://topdeck.gg/deck/convergence-4/3Mb0hLsUTwgBYrpAauGOaRvDhnq1)
+were independently read on November 11. They confirm second place, an 8–2–0
+record and a 272-player event on October 31. The deck has three Orianna and one
+Gust Monk; its remaining main-card gap is now covered. Its full displayed main,
+sideboard, runes and battlefields are recorded in the Gust Monk validation record.
+The next priority is admitting and testing this exact Irelia preset, then
+continuing the match-flow and sideboarding work. The current five preset recipes
+remain unchanged.
 
 Continue the end-to-end Irelia rules audit, including tournament match flow and
 sideboarding; card-pool coverage alone does not make that match experience complete.

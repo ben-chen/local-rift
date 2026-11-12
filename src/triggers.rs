@@ -391,7 +391,7 @@ impl Game {
                     context,
                 },
             );
-        } else if rule.object_cost.is_some() {
+        } else if rule.object_cost == Some(metadata::TriggerObjectCost::BanishSource) {
             self.queue_trigger_choice(
                 context.source.player,
                 card_id,
@@ -1127,6 +1127,15 @@ impl Game {
         choice_id: u32,
         pay: bool,
     ) -> Result<(), String> {
+        self.resolve_trigger_payment_with_trash(choice_id, pay, None)
+    }
+
+    pub(super) fn resolve_trigger_payment_with_trash(
+        &mut self,
+        choice_id: u32,
+        pay: bool,
+        trash: Option<(usize, usize)>,
+    ) -> Result<(), String> {
         let Some(Decision::TriggerPayment {
             player,
             choice_id: current,
@@ -1143,8 +1152,12 @@ impl Game {
         if current != choice_id {
             return Err("This trigger payment choice is stale.".into());
         }
+        let requires_trash = metadata::selected_rule(card_id, rule_index, context.mode)
+            .expect("validated trigger mode")
+            .object_cost
+            == Some(metadata::TriggerObjectCost::BanishFromAnyTrash);
         if !pay {
-            if base_cost.energy == 0 && base_cost.power == 0 && deflect == 0 {
+            if base_cost.energy == 0 && base_cost.power == 0 && deflect == 0 && !requires_trash {
                 return Err("A zero resource cost cannot be declined.".into());
             }
             if self.finalization_payment_origin.is_some() {
@@ -1161,13 +1174,36 @@ impl Game {
             self.decision = None;
             return Ok(());
         }
-        self.pay_action_cost(&Action::ResolveTriggerPayment { choice_id, pay })?;
+        if requires_trash != trash.is_some() {
+            return Err("This ability requires its explicit trash-cost choice.".into());
+        }
+        if let Some((owner, index)) = trash {
+            self.players
+                .get(owner)
+                .and_then(|p| p.discard.get(index))
+                .ok_or("Choose a card still in either trash for the banish cost.")?;
+            self.pay_action_cost(&Action::ResolveTriggerTrashPayment {
+                choice_id,
+                trash_player: owner,
+                trash_index: index,
+            })?;
+        } else {
+            self.pay_action_cost(&Action::ResolveTriggerPayment { choice_id, pay })?;
+        }
         // Core406: final legality follows payment. The enclosing transaction
         // restores the entire attempted finalization if it cannot complete.
         for (slot, &target) in targets.iter().enumerate() {
             if !self.trigger_rule_target_valid(card_id, rule_index, context, target, slot)? {
                 return Err("A pinned trigger target is no longer legal.".into());
             }
+        }
+        if let Some((owner, index)) = trash {
+            let card = self.remove_from_trash(owner, index);
+            self.players[owner].banish.push(card);
+            self.push_log(format!(
+                "{} banishes {} from {}'s trash as Gust Monk's ability cost.",
+                self.players[player].name, self.catalog[card].name, self.players[owner].name
+            ));
         }
         self.decision = None;
         self.trigger_payment_origin = None;
@@ -1322,6 +1358,13 @@ impl Game {
         let targets = selected;
         for effect in rule.effects {
             match *effect {
+                Effect::GrantAssault(amount) => {
+                    for target in &targets {
+                        if let Target::Unit { unit_id, .. } = target {
+                            self.legend[player].assault_grants.push((*unit_id, amount));
+                        }
+                    }
+                }
                 Effect::Banish(who) => {
                     for target in self.trigger_operands(context, who, &targets) {
                         match target {

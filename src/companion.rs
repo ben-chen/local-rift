@@ -445,6 +445,13 @@ fn checked_advice(game: &Game, level: AdviceLevel) -> Result<Vec<&'static str>, 
         });
     }
 
+    if human.hand.contains(&431) || human.units.iter().any(|u| !u.token && u.card_id == 431) {
+        tips.push(if beginner {
+            "Gust Monk can cost 1 extra Energy. Then banish a card from either trash to give a unit Assault 2 this turn: +2 Might only while it attacks."
+        } else {
+            "Gust Monk can remove an opponent's reusable trash card while adding attack power. Budget the extra Energy and protect the chosen unit through responses."
+        });
+    }
     if human.hand.contains(&430)
         || human
             .units
@@ -1042,6 +1049,11 @@ fn response_window_advice(
             Decision::TriggerMode { .. } => vec![
                 "Choose this ability's mode before paying its costs. The opponent can respond after those choices and payments are complete.",
             ],
+            Decision::TriggerPayment { card_id: 431, .. } => vec![if beginner {
+                "Banish a card from either trash as the cost now. Only the unit is a target. The opponent can respond before Assault 2 is gained; declining keeps Gust Monk."
+            } else {
+                "Remove a useful card from the opponent's trash when possible. The banish is paid before responses; a counter or lost target will not refund it."
+            }],
             Decision::TriggerPayment { card_id: 429, .. } => vec![if beginner {
                 "You chose draw 1. Pay 1 Chaos Power before the opponent responds. Declining skips this ability; it does not create Gold instead."
             } else {
@@ -1593,6 +1605,25 @@ mod tests {
 
     fn game() -> Game {
         Game::new(0, 1, 72, Difficulty::Easy)
+    }
+
+    #[test]
+    fn gust_coaching_explains_two_costs_and_ignores_hidden_cards() {
+        let mut g = game();
+        g.start_match().unwrap();
+        g.players[0].hand = vec![431];
+        let mut hidden = g.clone();
+        hidden.players[1].hand = vec![431, 12];
+        hidden.players[1].deck.reverse();
+        for level in [AdviceLevel::Beginner, AdviceLevel::Advanced] {
+            let tips = advice(&g, level);
+            assert!(
+                tips.iter()
+                    .any(|tip| tip.contains("Gust Monk") && tip.contains("trash"))
+            );
+            assert!(tips.iter().all(|tip| tip.chars().count() <= 180));
+            assert_eq!(tips, advice(&hidden, level));
+        }
     }
 
     #[test]

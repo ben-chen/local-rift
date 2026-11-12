@@ -550,3 +550,23 @@ combat lethality, Fight, and token isolation. API observations explain the live
 condition identically to both viewers and remain read-only. The first API fixture
 attempted passes after a permanent play that opens no response window; it was
 corrected to pass only while a chain exists, without changing game behavior.
+
+
+### Gust Monk: two costs and temporary Assault, November 11, 2026
+
+The complete official VEN-101/166 face confirms the optional 1 Energy play cost,
+conditional play trigger and separate banish-to-grant instruction. Under
+204.1.c and 383.3.b, the banish is the triggered ability's base cost. The trash
+card is excluded from targeting by 355.10.c. Unit targets are chosen before
+costs, costs are paid before finalization, and responses follow (403–407).
+405.2 permits declining an incurred trigger cost without undoing the unit play.
+
+Focused checks cover both controllers, both trash owners, friendly/enemy/self
+targets, delayed and stacking Assault, attacker designation, end-turn expiry,
+source/target departure, counters, Deflect and spell-only Power exclusion,
+Hunters' Circle's total-cost discount, and Irelia's choose/ready interaction.
+Payment tests verify rollback after actual Add activation and physical trash
+copy tracking through removals and burnout. Public API checks distinguish the
+cost from targets and reject stale/wrong-player requests without mutation.
+An initial Irelia readiness fixture used Kai'Sa's legend; it now explicitly uses
+Irelia's legend and accepts its paid ready trigger, with no engine change.
