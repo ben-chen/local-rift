@@ -189,9 +189,18 @@ class C28AdmissionTests(unittest.TestCase):
                           ('src/deck.rs', 'training_recipe_source_sha256')]:
             self.assertEqual(catalog.sha(history.pre_rengar_recipe_source_bytes() if path == 'src/deck.rs' else (root / path).read_bytes()), pin[key])
         source = self.proof['preserved_source_reviews']
-        for path, key in [('assets/data/catalog_resolutions.json', 'field_manifest_sha256'),
-                          ('assets/data/catalog_evidence/images.json', 'field_image_index_sha256')]:
-            self.assertEqual(catalog.sha((root / path).read_bytes()), source[key])
+        # Later field reviews append records. Preserve this checkpoint's exact
+        # bytes and require every old record to remain an unchanged prefix.
+        import gzip
+        previous = gzip.decompress((root / 'assets/data/catalog_evidence/reviews/pre-reckless-resolutions.json.gz').read_bytes())
+        self.assertEqual(catalog.sha(previous), source['field_manifest_sha256'])
+        prior = json.loads(previous)
+        current = json.loads((root / 'assets/data/catalog_resolutions.json').read_text())
+        for field in ['resolutions', 'raw_printings', 'historical_issues']:
+            self.assertEqual(current[field][:len(prior[field])], prior[field])
+        field_images = json.loads((root / 'assets/data/catalog_evidence/images.json').read_text())
+        prior_images = (json.dumps(field_images[:88], ensure_ascii=False, indent=2) + '\n').encode()
+        self.assertEqual(catalog.sha(prior_images), source['field_image_index_sha256'])
         images = json.loads((root / 'assets/data/catalog_evidence/variant_images.json').read_text())
         self.assertEqual(digest(images[:90]), source['variant_image_prefix_sha256'])
         self.assertEqual(digest(self.review_manifest['reviews'][:29]), source['identity_review_prefix_sha256'])

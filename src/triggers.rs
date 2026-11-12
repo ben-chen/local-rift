@@ -20,6 +20,7 @@ pub struct MoveFacts {
 }
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct TriggerContext {
+    pub mode: Option<usize>,
     pub source: TriggerSource,
     pub subject: Option<Target>,
     pub movement: Option<MoveFacts>,
@@ -378,7 +379,19 @@ impl Game {
                 .first_used
                 .push((context.source, rule_index));
         }
-        if rule.object_cost.is_some() {
+        if !rule.modes.is_empty() {
+            self.queue_trigger_choice(
+                context.source.player,
+                card_id,
+                Decision::TriggerMode {
+                    player: context.source.player,
+                    choice_id: self.next_chain_id,
+                    card_id,
+                    rule_index,
+                    context,
+                },
+            );
+        } else if rule.object_cost.is_some() {
             self.queue_trigger_choice(
                 context.source.player,
                 card_id,
@@ -498,6 +511,7 @@ impl Game {
                     card_id,
                     rule_index,
                     TriggerContext {
+                        mode: None,
                         source,
                         subject,
                         departure_location: None,
@@ -523,6 +537,7 @@ impl Game {
                         card_id,
                         index,
                         TriggerContext {
+                            mode: None,
                             source,
                             movement: None,
                             departure_location: Some(board_targets::BoardLocation::from_lane(
@@ -559,6 +574,7 @@ impl Game {
                     card_id,
                     index,
                     TriggerContext {
+                        mode: None,
                         source,
                         subject: Some(Target::Gear { player, gear_id }),
                         movement: None,
@@ -765,7 +781,8 @@ impl Game {
         slot: usize,
     ) -> Result<bool, String> {
         Ok({
-            let rule = &metadata::trigger_rules(card_id)[index];
+            let rule = metadata::selected_rule(card_id, index, context.mode)
+                .expect("validated trigger mode");
             let Some(facts) = self.board_target_facts(target) else {
                 return Ok(false);
             };
@@ -896,12 +913,13 @@ impl Game {
         let Decision::TriggerTargets {
             card_id,
             rule_index,
+            context,
             ..
         } = self.decision.as_ref()?
         else {
             return None;
         };
-        Some(&metadata::trigger_rules(*card_id).get(*rule_index)?.targets)
+        Some(&metadata::selected_rule(*card_id, *rule_index, context.mode)?.targets)
     }
     fn trigger_here_location(
         &self,
@@ -931,12 +949,14 @@ impl Game {
         let Decision::TriggerTargets {
             card_id,
             rule_index,
+            context,
             ..
         } = self.decision.as_ref()?
         else {
             return None;
         };
-        let rule = &metadata::trigger_rules(*card_id)[*rule_index];
+        let rule = metadata::selected_rule(*card_id, *rule_index, context.mode)
+            .expect("validated trigger mode");
         Some((
             rule.targets.max as usize,
             if rule.optional {
@@ -973,7 +993,8 @@ impl Game {
             else {
                 return Ok(false);
             };
-            let rule = &metadata::trigger_rules(*card_id)[*rule_index];
+            let rule = metadata::selected_rule(*card_id, *rule_index, context.mode)
+                .expect("validated trigger mode");
             if prior.len() >= rule.targets.max as usize
                 || (rule.targets.distinct && prior.contains(&target))
             {
@@ -1001,8 +1022,14 @@ impl Game {
             Some(Decision::TriggerTargets {
                 card_id,
                 rule_index,
+                context,
                 ..
-            }) => metadata::trigger_rules(*card_id)[*rule_index].targets.kind,
+            }) => {
+                metadata::selected_rule(*card_id, *rule_index, context.mode)
+                    .expect("validated trigger mode")
+                    .targets
+                    .kind
+            }
             _ => rules::PlayTargetKind::Unit,
         };
         Ok(self
@@ -1066,7 +1093,8 @@ impl Game {
         context: TriggerContext,
         targets: Vec<Target>,
     ) -> Result<Decision, String> {
-        let cost = metadata::trigger_rules(card_id)[rule_index]
+        let cost = metadata::selected_rule(card_id, rule_index, context.mode)
+            .expect("validated trigger mode")
             .base_cost
             .ok_or("This trigger has no base cost.")?;
         let deflect = self.deflect_cost(context.source.player, &targets)?.into();
@@ -1168,7 +1196,8 @@ impl Game {
         else {
             return Err("No triggered ability is choosing targets.".into());
         };
-        let rule = &metadata::trigger_rules(card_id)[rule_index];
+        let rule = metadata::selected_rule(card_id, rule_index, context.mode)
+            .expect("validated trigger mode");
         if rule.optional && targets.is_empty() {
             self.rollback_finalization_payment_add();
             self.decision = None;
@@ -1233,9 +1262,12 @@ impl Game {
 
         Ok(())
     }
-    pub(super) fn trigger_loot(card_id: CardId, index: usize) -> Option<(u8, u8)> {
-        metadata::trigger_rules(card_id)
-            .get(index)?
+    pub(super) fn trigger_loot(
+        card_id: CardId,
+        index: usize,
+        mode: Option<usize>,
+    ) -> Option<(u8, u8)> {
+        metadata::selected_rule(card_id, index, mode)?
             .effects
             .iter()
             .find_map(|effect| match effect {
@@ -1279,7 +1311,8 @@ impl Game {
         context: TriggerContext,
         targets: &[Target],
     ) -> Result<(), String> {
-        let rule = &metadata::trigger_rules(card_id)[index];
+        let rule =
+            metadata::selected_rule(card_id, index, context.mode).expect("validated trigger mode");
         let mut selected = Vec::new();
         for (slot, &target) in targets.iter().enumerate() {
             if self.trigger_rule_target_valid(card_id, index, context, target, slot)? {

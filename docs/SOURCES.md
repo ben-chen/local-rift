@@ -4,7 +4,7 @@ Checked **October 26, 2026**. This is a personal, offline, unofficial practice p
 
 ## What the presets contain
 
-Each preset reproduces the published **40-card main-deck composition**, including the chosen champion. At setup, the chosen champion is removed from the shuffled deck into its own playable zone. The published rune split is also used at setup. Each published list’s three battlefield choices remain provenance metadata. Before a match, each player selects one of eleven reviewed official fields. The original choices are Sunken Temple, Seat of Power, Minefield, and Void Gate; the seven later choices are listed below. Each preset defaults to a field from its published list. Runtime support for legend and card abilities is identified separately from these source facts.
+Each preset reproduces the published **40-card main-deck composition**, including the chosen champion. At setup, the chosen champion is removed from the shuffled deck into its own playable zone. The published rune split is also used at setup. Each published list’s three battlefield choices remain provenance metadata. Before a game, each player selects one of seventeen reviewed official fields. The original choices and later additions are recorded below. Each preset defaults to a field from its published list. Runtime support for legend and card abilities is identified separately from these source facts.
 
 | Preset | Published pilot and result | Source |
 |---|---|---|
@@ -19,9 +19,9 @@ The original lists' exact counts and reference metadata are in `assets/data/deck
 
 ## Card facts and artwork
 
-All 417 runtime card names, energy costs, power costs, printed might, domains, card types, rules text, and keyword annotations come from the embedded public card data and explicitly reviewed source corrections for the [official Riftbound Card Gallery](https://playriftbound.com/en-us/card-gallery/) on October 24, 2026. The manifest records the original card identifier and CDN image URL for each card. An ordinary printing was preferred where available. The full inventory preserves conflicting printing values rather than assuming alternate printings always agree. It preserves 23 official records whose structured type contradicts their accessibility label. A separate, dated visual review now supplies explicit effective facts for those records and the other original source-issue groups, while keeping both raw claims. Every resolution has exact raw prerequisites and archived artwork evidence; an unresolved gameplay field still blocks runtime mapping. The source review does not add playable cards. See [Catalog review](CATALOG_REVIEW.md) and [Card coverage](CARD_COVERAGE.md).
+All 430 runtime card names, energy costs, power costs, printed might, domains, card types, rules text, and keyword annotations come from the embedded public card data and explicitly reviewed source corrections for the [official Riftbound Card Gallery](https://playriftbound.com/en-us/card-gallery/) on October 24, 2026. The manifest records the original card identifier and CDN image URL for each card. An ordinary printing was preferred where available. The full inventory preserves conflicting printing values rather than assuming alternate printings always agree. It preserves 23 official records whose structured type contradicts their accessibility label. A separate, dated visual review now supplies explicit effective facts for those records and the other original source-issue groups, while keeping both raw claims. Every resolution has exact raw prerequisites and archived artwork evidence; an unresolved gameplay field still blocks runtime mapping. The source review does not add playable cards. See [Catalog review](CATALOG_REVIEW.md) and [Card coverage](CARD_COVERAGE.md).
 
-Images under `assets/art/` are the gallery's official Riot CDN card images, resized by its image service to 280–360 pixels wide as PNG (supported by the default Macroquad image decoder). `card_0.png` through `card_416.png` match catalog IDs; `champion_0.png` through `champion_3.png` are aliases of cards 0, 22, 33, and 49. The game does not need a network connection to load the bundled assets. These images are not original art created for this project.
+Images under `assets/art/` are the gallery's official Riot CDN card images, resized by its image service to 280–360 pixels wide as PNG (supported by the default Macroquad image decoder). `card_0.png` through `card_429.png` match catalog IDs; `champion_0.png` through `champion_3.png` are aliases of cards 0, 22, 33, and 49. The game does not need a network connection to load the bundled assets. These images are not original art created for this project.
 
 Runtime IDs 0–68 preserve the original preset catalog. IDs 69–80 append five vanilla units (Mega-Mech, Mountain Drake, Playful Phantom, Shipyard Skulker, and Vanguard Sergeant) and seven spells (Incinerate, Falling Comet, Primal Strength, Progress Day, Premonition, Moonlight Affliction, and Rebuke). These additions come from the same official gallery snapshot and do not alter the sourced tournament lists. Their five empty rules-text fields are intentional: those vanilla units have no printed abilities. `CardDef.official_id` exposes each stable official printing identifier independently of its runtime index.
 
@@ -174,3 +174,19 @@ The [preset audit](PRESET_AUDIT.md) compares all four bundled lists with fresh o
 C28’s [source evidence](../assets/data/card_admissions/c28/README.md) covers Irresistible Faefolk, Kinkou Initiate, Nidalee, Cat Form and Pyke, Dockside Butcher (IDs 417–420), plus Emperor’s Dais, Star Spring, Abandoned Hall, Targon’s Peak, Shadow Temple and Zaun Warrens (field IDs 11–16). All eleven original faces, including both Pyke printings, were individually inspected by the recorded reviewer. Ten proportional offline thumbnails retain the complete card faces. The dated gallery, legality, Core link and five errata articles match the separately archived October 26 audit.
 
 The Pyke identity review covers only the observed Hidden/Ganking reminder omission; the optional Fury Power remains an additional play cost while its raw printed base Power field remains null. Dais and Peak retain original text separately from current official errata. No field correction, legend, chosen champion or preset is added. The source-only review keeps 444 legal mappings; the explicit metadata registration reaches 454, leaving 625 unavailable. These are registry counts, not engine or interaction acceptance claims. Exact predecessor files preserve historical whole-file evidence hashes while tests independently verify their live prefixes.
+
+
+## Reckless Innovator: November 11, 2026
+
+Runtime ID429 uses the official RAD-105/167 face and the accepted October 24
+gallery snapshot. The complete face visibly prints Piltover although its raw
+gallery record has an empty tag list. The [independent source review](../assets/data/catalog_evidence/reviews/reckless-innovator.json)
+corrects only the effective tag and preserves the original raw projection,
+image hashes, prior review prefixes and archived preceding ledger. Its single
+printing is legal in the dated catalog and has no indexed erratum.
+
+The [admission evidence](../assets/data/card_admissions/irelia_innovator/README.md)
+keeps the full face and resized runtime artwork, exact costs, rules text, and
+unchanged predecessor cards and five tournament recipes. Availability in custom
+Irelia decks is separate from evidence that a particular newer list is a current
+meta preset.

@@ -1,0 +1,96 @@
+{
+  "status": "admitted",
+  "records": [
+    {
+      "runtime_id": 429,
+      "official_id": "rad-105-167",
+      "raw_printing": {
+        "official_id": "rad-105-167",
+        "public_code": "RAD-105/167",
+        "name": "Reckless Innovator",
+        "set": "RAD",
+        "collector_number": 105,
+        "types": [
+          "unit"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "unit"
+        ],
+        "accessibility_types": [
+          "unit"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "chaos"
+        ],
+        "energy": 3,
+        "power": null,
+        "might": 3,
+        "might_bonus": null,
+        "rules_html": "<p>[Accelerate] (You may pay :rb_energy_1::rb_rune_chaos: as an additional cost to have me enter ready.)<br />When I become exhausted, choose one —</p><ul><li>Play a Gold gear token exhausted. (It has &quot;[Reaction][&gt;] Kill this, :rb_exhaust:: [Add] :rb_rune_rainbow:.&quot;)</li><li>Pay :rb_rune_chaos: to draw 1.</li></ul>",
+        "rules_text": "[Accelerate] (You may pay [1 Energy][Chaos Power] as an additional cost to have me enter ready.)\nWhen I become exhausted, choose one —\nPlay a Gold gear token exhausted. (It has \"[Reaction][>] Kill this, [Exhaust]: [Add] [Any Power].\")\nPay [Chaos Power] to draw 1.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [],
+        "rarity": "uncommon",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/b7ff5684309bcd346e6b3534e0d1f38ec1a38726-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Unit: Reckless Innovator. [Accelerate] (You may pay [1][C] as an additional cost to have me enter ready.)\nWhen I become exhausted, choose one —\n- Play a Gold gear token exhausted. (It has \"[Reaction][>] Kill this, [T]: [Add] [A].\")\n- Pay [C] to draw 1.",
+        "illustrators": [
+          "Six More Vodka"
+        ]
+      },
+      "raw_printing_sha256": "d142a648375fc67d213b8a9144ead50d2cc96c1816ed2bdcf96616f4067d4ed1",
+      "effective": {
+        "types": [
+          "unit"
+        ],
+        "super_types": [],
+        "domains": [
+          "chaos"
+        ],
+        "energy": 3,
+        "power": null,
+        "might": 3,
+        "might_bonus": null,
+        "tags": [
+          "Piltover"
+        ],
+        "rules_html": "<p>[Accelerate] (You may pay :rb_energy_1::rb_rune_chaos: as an additional cost to have me enter ready.)<br />When I become exhausted, choose one —</p><ul><li>Play a Gold gear token exhausted. (It has &quot;[Reaction][&gt;] Kill this, :rb_exhaust:: [Add] :rb_rune_rainbow:.&quot;)</li><li>Pay :rb_rune_chaos: to draw 1.</li></ul>",
+        "rules_text": "[Accelerate] (You may pay [1 Energy][Chaos Power] as an additional cost to have me enter ready.)\nWhen I become exhausted, choose one —\nPlay a Gold gear token exhausted. (It has \"[Reaction][>] Kill this, [Exhaust]: [Add] [Any Power].\")\nPay [Chaos Power] to draw 1.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "resolution_ids": [
+        "rad-105-167:tags"
+      ],
+      "printing_cohort": [
+        "rad-105-167"
+      ],
+      "errata": [],
+      "original_image": {
+        "path": "assets/data/card_admissions/irelia_innovator/rad-105-167.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/b7ff5684309bcd346e6b3534e0d1f38ec1a38726-744x1039.png?accountingTag=RB",
+        "sha256": "cb6f6be20c39b4e5a8cf690d3430532449e57185aaa01ab79979709f39ad4c3c"
+      },
+      "runtime_image": {
+        "path": "assets/art/card_429.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/b7ff5684309bcd346e6b3534e0d1f38ec1a38726-744x1039.png?w=280&q=85&fm=png",
+        "sha256": "af194031da83c8c02a39b08c723886ef8fab1f6a0a9a2146e270672127405fbf"
+      },
+      "visual_review": {
+        "actual_full_face_viewed": true,
+        "reviewer": "root",
+        "reviewed_on": "2026-11-11",
+        "original_image_sha256": "cb6f6be20c39b4e5a8cf690d3430532449e57185aaa01ab79979709f39ad4c3c"
+      }
+    }
+  ],
+  "preserved_runtime_prefix": {
+    "cards_sha256": "e45e98e257e0658fb5b52d4c491d4e088eaf01be07bb13363c08a3faa1905fe5",
+    "presets_sha256": "55f81fe597de35b0c4dee12d87ad36ae72463cbfb5ae576d00f87104cd5914d5",
+    "card_count": 429,
+    "preset_count": 5
+  }
+}

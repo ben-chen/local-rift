@@ -1,0 +1,2064 @@
+{
+  "reviewed_on": "2026-11-11",
+  "scope": "Reckless Innovator: modal exhaustion trigger, Gold or paid draw, Accelerate, Irelia ready/move interaction, API and native controls",
+  "runtime_id": 429,
+  "base_commit": "3a258d75a7a10db26bfd1785f4647ba445db5d75",
+  "rust": {
+    "scope": "102 all-targets harnesses from the complete run, with three corrected catalog assertions and the lint-updated Irelia match harness superseded by successful targeted reruns. The full library harness was rerun after adding two Irelia/exhaustion interaction tests (755 passed). No runtime changes followed the complete run build.",
+    "targets": 102,
+    "passed": 1563,
+    "failures": 0,
+    "results": [
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/activated_matches-3a69bb274ef8e1f8",
+        "sha256": "98cdddd53489ce4ab48767a204fd87319ee7a1861d3e6c2e5cfb4672d1e7f1f2",
+        "exit": 0,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-targets/activated_matches-3a69bb274ef8e1f8.log",
+        "log_sha256": "cb7d43b62fe34c3b170ee27a6789f91238b5a735c7529a213027ea5aabb66cf0",
+        "seconds": 96.02
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/c10_matches-98ec2f8af50d2b82",
+        "sha256": "2660e3e6bd759a252524730c74f14dd05776c9672f50ca1ffd7cf0b3eb3dc45a",
+        "exit": 0,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-targets/c10_matches-98ec2f8af50d2b82.log",
+        "log_sha256": "6f17b97403d61eb1a68ca7c0ff82cf0d61760bc257d42c204576216d5a44a3e8",
+        "seconds": 96.92
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/c11_matches-e1676949712656ac",
+        "sha256": "c727877233e20412a09d6e342e5e7dc22833f61b477231b7e253d4ad6602d716",
+        "exit": 0,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-targets/c11_matches-e1676949712656ac.log",
+        "log_sha256": "db077154f27118c771330f11e43d25009d85ed45aabf757ec4cffa4c00642152",
+        "seconds": 115.28
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/c12_matches-62d00d989e5149df",
+        "sha256": "f10c064014cfbc80309e1ce63ce15253767431e697e91f32fafe61720a9086d4",
+        "exit": 0,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-targets/c12_matches-62d00d989e5149df.log",
+        "log_sha256": "9138d89491171957db18dd1d29a6783ee56037fea955cec432eca122c16e8f9a",
+        "seconds": 25.65
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/c13_matches-b557e1100fc3a853",
+        "sha256": "ecc9a22153d6963542c569c9cd4fff3e400819e3b0d0c0a776edcffa15b98a4b",
+        "exit": 0,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-targets/c13_matches-b557e1100fc3a853.log",
+        "log_sha256": "4d078945f016c164fdd0e169d6088c58353baae00c506760df89c166e354ee3d",
+        "seconds": 22.72
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/c14_matches-ff9056db1809a6dc",
+        "sha256": "f2dba5d3abc47a4e6def70974495aed328a57bfb7191ade01daa23a5cd96dcef",
+        "exit": 0,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-targets/c14_matches-ff9056db1809a6dc.log",
+        "log_sha256": "4564a83d8a299f6ac395b0f311378a2b0ed13c3da2b43c496ca6c13faa6f35fc",
+        "seconds": 20.22
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/c15_matches-90888b81d36c6378",
+        "sha256": "c7e9d45d4c75b18e26fc466f65982f9a8348e33175de5479fd7ebdd805eb8ab7",
+        "exit": 0,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-targets/c15_matches-90888b81d36c6378.log",
+        "log_sha256": "ec99add4cdd4ad0054d9002593d99ecc6bf2f8955f3aa429dc2d3abd222dc875",
+        "seconds": 23.99
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/c16_matches-d4bcbc3f825ad235",
+        "sha256": "595021f5611fb5dd90bf24aabe33beaf8de1f1c7ca740622ef2ac6bc22b8f87b",
+        "exit": 0,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-targets/c16_matches-d4bcbc3f825ad235.log",
+        "log_sha256": "eed10dec8ab540a842bbed8fab25507e51121ce1ac3543306ced65f3c8eed8c2",
+        "seconds": 100.84
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/c17_matches-44eb512612fdf494",
+        "sha256": "c7f5cff3a1077d4875900e86ece98b255bc4e7670676cafd896f90b1c3e5a6ac",
+        "exit": 0,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-targets/c17_matches-44eb512612fdf494.log",
+        "log_sha256": "aa8159b3886a76cfcbdd5e11fda5b037e2057b7c55d8b26d693a8d959fc09216",
+        "seconds": 54.2
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/c18_matches-0f20b6c75380dade",
+        "sha256": "cbb22017ba1fa1d81a9b7e21c324017dc9d781aafdbfa3a798e5192ad9f99bdf",
+        "exit": 0,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-targets/c18_matches-0f20b6c75380dade.log",
+        "log_sha256": "68c71ae0a0e3199c7ee6143d588651286d0c0e78a9de5b3ee514793c2e7720aa",
+        "seconds": 58.84
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/c19_matches-233437d97e3377e2",
+        "sha256": "372ef2ba4cfe03d3d03807bd21f78765fb50ac58b9703b36b12448681108a762",
+        "exit": 0,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-targets/c19_matches-233437d97e3377e2.log",
+        "log_sha256": "39d5dca9fd298ddb6a58f7bf6a439d8244bf0ae5471cbedc7f581400a656c2f1",
+        "seconds": 70.48
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/c20_matches-1109d6b99370cbdf",
+        "sha256": "368af488aeef046945d8a5f28496a93d60b7e105479ec38e1d13d79c011b704c",
+        "exit": 0,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-targets/c20_matches-1109d6b99370cbdf.log",
+        "log_sha256": "624fd4f5ccaea9349fe89adfb64c84aa7dedc1965cc7f226756903d9d1f972ac",
+        "seconds": 58.9
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/c21_matches-0b6b5eda31d93fba",
+        "sha256": "aeb93432fd6351cc5618caaaa6f837a4dadca1d2dcb475325f821d3c241e9d2c",
+        "exit": 0,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-targets/c21_matches-0b6b5eda31d93fba.log",
+        "log_sha256": "05b522a824d1cf6fb30968de51fbcb82e476891de1d59f6722faf9a80a43df00",
+        "seconds": 54.32
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/c22_matches-0ba47aaa9b289e37",
+        "sha256": "a7c412ebd5af6cf006ed41616593b4b147d7611c2141134ed382e30f232a66c2",
+        "exit": 0,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-targets/c22_matches-0ba47aaa9b289e37.log",
+        "log_sha256": "3dad1e4e12e9d4c9b590203314fe78627292d13c8e10936681bb4f6a14382886",
+        "seconds": 15.73
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/c24_matches-ac239c8d95d1460d",
+        "sha256": "d40b852b4391a3872bbb666643cf26e1b28c9cc327c2ed06823c53c242db4353",
+        "exit": 0,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-targets/c24_matches-ac239c8d95d1460d.log",
+        "log_sha256": "c9b4467d579834f07507cb92c22166e5f94d453fc82c09a6a9b9532f49333ce6",
+        "seconds": 44.61
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/c26_matches-a2ab4de6a700380e",
+        "sha256": "ee7b0742bd61ee5eb4e9387cb6fd22188adead123cdd6885d02a1f4f63510bbd",
+        "exit": 0,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-targets/c26_matches-a2ab4de6a700380e.log",
+        "log_sha256": "779d5d60b14d5f4af58a3cf26f358536bf44e2f46f6d8179f9d0f9ce6ae7fbce",
+        "seconds": 15.33
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/c27_matches-07bbc3c48ccc1848",
+        "sha256": "47d1df65e2f0f2922f6c7b64cafb9165fc339d60d45eb8d160b692535a5fa724",
+        "exit": 0,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-targets/c27_matches-07bbc3c48ccc1848.log",
+        "log_sha256": "725542d729294f6799c7fd2b1d1535909479b9f154236a6f5b8edf3399af0cbe",
+        "seconds": 17.2
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/c28_matches-ca0d4bf0a7ff014e",
+        "sha256": "c9c318dfa6d3d91127b9e268ffcc5b81697e4fc02625d2098dfe5bd906e848aa",
+        "exit": 0,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-targets/c28_matches-ca0d4bf0a7ff014e.log",
+        "log_sha256": "817ce04cdbda0858716023c28525102018394e8c6526df36331fc9f1d84ace01",
+        "seconds": 20.69
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/c4_matches-85202f9be6751671",
+        "sha256": "d937618bccca8e8049e3b3d708168ca66d0e2d94825debef7e02fa0690f3c301",
+        "exit": 0,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-targets/c4_matches-85202f9be6751671.log",
+        "log_sha256": "677e8dfc798b04e0a8444461b7021ce71285c96856a59b6d4e3eeec9a9208a2a",
+        "seconds": 92.1
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/c5_matches-a05985aaf6a4ed6b",
+        "sha256": "06a28d022fbcefa46f5a6aa19087e0e1d610b881c9fe205012e45d311d767689",
+        "exit": 0,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-targets/c5_matches-a05985aaf6a4ed6b.log",
+        "log_sha256": "58a474406e78d51d87dbf5c078461e80e7ca14de6a80e2df1764848566b761f8",
+        "seconds": 103.16
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/c8_matches-537dbdf01b6dcbe6",
+        "sha256": "49eed529330ca3fce845c8397052eadb90afd25178f8cdb69a7dacad88e28133",
+        "exit": 0,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-targets/c8_matches-537dbdf01b6dcbe6.log",
+        "log_sha256": "abe800d2e8d8f36a21c391f2cab9a61797ba68454a7269c3315cab9c67b883f1",
+        "seconds": 103.42
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/c9_matches-359449f3e3b46c2d",
+        "sha256": "53af03a6c6bda2eeff3b7649fcb3db751859220ba4483d1f67bb8a1ff98a0cb7",
+        "exit": 0,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-targets/c9_matches-359449f3e3b46c2d.log",
+        "log_sha256": "d5d3092fc3796fb81c10c1630d1a7e0263951f553e22523c22b4c151e94ff940",
+        "seconds": 96.1
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/conversion_matches-972b2c1bacbe2007",
+        "sha256": "b44155b3dcd5b0534a5c4ec7cedaa242fcd0bb614349dbb12d8c76254c9835d0",
+        "exit": 0,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-targets/conversion_matches-972b2c1bacbe2007.log",
+        "log_sha256": "bd122a30780d88441b4c8b37684f847ee419388ad1c11303165a45072f80e4f1",
+        "seconds": 115.01
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/empowered_matches-ca2c35664c15eb1c",
+        "sha256": "8d4c1902413ea3c19479b42da542afcc0f86ebdef52bec5d83320901d78ce938",
+        "exit": 0,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-targets/empowered_matches-ca2c35664c15eb1c.log",
+        "log_sha256": "8f0ef730422a33056d8e340ed34aec34a47e359e983d3b921e3289e685ecc174",
+        "seconds": 104.8
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/activated_abilities-ac5e2e2507938427",
+        "sha256": "8ebabcdd12ada2d8f4042d7f03807a2e0c1eecea932646e63bba47b2b3dfeb2e",
+        "exit": 0,
+        "passed": 23,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-targets/activated_abilities-ac5e2e2507938427.log",
+        "log_sha256": "e24e8f6cde21dc27f4b6bbafef94a27cdbcbda9c1b3ea67617b02bee564af02b",
+        "seconds": 0.11
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/api_custom_decks-aabed456028f2ebf",
+        "sha256": "094e91c5c9f12a9f0152590229689ef4ddc2f35c6fa077b2074cd92332ff6073",
+        "exit": 0,
+        "passed": 5,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-targets/api_custom_decks-aabed456028f2ebf.log",
+        "log_sha256": "02db5171a87f7d43f091cb7c161a09dfd613ab8b484b9e5f1ec03e7b82930570",
+        "seconds": 0.56
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/c10_runtime-a3c8b363fe62ff63",
+        "sha256": "4a4c2d92fa48b5b8ec2a8d9fb233a37d036e5471f8420b4d8594959884f05369",
+        "exit": 0,
+        "passed": 19,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-targets/c10_runtime-a3c8b363fe62ff63.log",
+        "log_sha256": "27c2b5dbbda217c87cc62016a0fe7fce527cad615e6896b04abcfb2b015b48bb",
+        "seconds": 0.08
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/c11_runtime-85465e6aba4d1e9c",
+        "sha256": "c9856ed8a501a57947362812b6c1c19ccff6477f53bfba528f21cd4b346185b8",
+        "exit": 0,
+        "passed": 23,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-targets/c11_runtime-85465e6aba4d1e9c.log",
+        "log_sha256": "e13a982d01d0fd1444ac9fd7a2816032817f99ae945d6f2c345bf21a9de9f735",
+        "seconds": 0.07
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/c16_legends-28e6bc14a114f5b9",
+        "sha256": "b8c41f88aa74b987c65db37a3a81c9937f87a983f00a6eab2f4cbafdc451dd28",
+        "exit": 0,
+        "passed": 14,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-targets/c16_legends-28e6bc14a114f5b9.log",
+        "log_sha256": "a512fe361651f408f71039e593ad338ceae790af9926377166cfb492b49a322a",
+        "seconds": 0.11
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/c4_battlefields-cf626a527d41ba45",
+        "sha256": "377ba2dfbcef760672ef4295890b83de5dd0a7128f0a05ae705538c614afeb8c",
+        "exit": 0,
+        "passed": 19,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-targets/c4_battlefields-cf626a527d41ba45.log",
+        "log_sha256": "597ee6917caab4dd7c3d08a34fb1637feb1458a3285352c5917c3e829fffb2dd",
+        "seconds": 0.05
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/c4_event_audit-f77643db74ac38cd",
+        "sha256": "8bd8000e20f7bb43bb40971a7e64b7998b75cb84547808369143c53598243dab",
+        "exit": 0,
+        "passed": 9,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-targets/c4_event_audit-f77643db74ac38cd.log",
+        "log_sha256": "a0776c028eb385c9ca51039f54937e612f0b20ecdb74d5971f65df270ff42640",
+        "seconds": 0.06
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/c4_play-a3f1a7b2d93498dd",
+        "sha256": "f87d864bf4edc3b3fbed9bc3f85a464782f13bf8515c7953841b09b80159fa3a",
+        "exit": 0,
+        "passed": 24,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-targets/c4_play-a3f1a7b2d93498dd.log",
+        "log_sha256": "ba426081ce50cc92494a4b8bb20c25fa3cd6a33f313190787df01ce29c0cb6f2",
+        "seconds": 0.2
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/c4_query_audit-8949aa7e10789517",
+        "sha256": "6d4c503182e5383fedbb85263bd895d5ffbb4828243454d6f0f1fd3f678a2b78",
+        "exit": 0,
+        "passed": 2,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-targets/c4_query_audit-8949aa7e10789517.log",
+        "log_sha256": "9febf2613d52dff7b2bf7df970ff49ea4fced39175b99c693ce99b5c38f98906",
+        "seconds": 0.05
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/c4_rules_audit-2c031494fc20b97b",
+        "sha256": "5a85c0acc15532931ca82f345d222affc2e6f07667976bbe588a319967787d04",
+        "exit": 0,
+        "passed": 6,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-targets/c4_rules_audit-2c031494fc20b97b.log",
+        "log_sha256": "fb59c226f8f5948365379c436154f5a72148e273d85f9b18c7f789de4369673e",
+        "seconds": 0.04
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/c5_empower_runtime-043ea20362850ca5",
+        "sha256": "f75f1bf3be861970d686b5aff679609e64d184a760f30cb30ad6a599a1099d3e",
+        "exit": 0,
+        "passed": 23,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-targets/c5_empower_runtime-043ea20362850ca5.log",
+        "log_sha256": "73ddc283f771121c10dda93922c425ab4bdf27f4295bc777b28ab135f6e0022f",
+        "seconds": 0.11
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/c5_rules_audit-d5b02d91bd1c0a0b",
+        "sha256": "400bd2a61fd0cf4a62328f6696b7689fff4c3a1e1924544eb6a78fc5f4cc9423",
+        "exit": 0,
+        "passed": 9,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-targets/c5_rules_audit-d5b02d91bd1c0a0b.log",
+        "log_sha256": "aaae5cb5695102d4a35e182dc4de07d0f6b4951faf3c41babd9c8188f665fd78",
+        "seconds": 0.07
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/c8_runtime-17b44d22047330f1",
+        "sha256": "b370f7deed752404f8a58e828105f266eaa7e3e1154d677dfa8e95795861f5e8",
+        "exit": 0,
+        "passed": 21,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-targets/c8_runtime-17b44d22047330f1.log",
+        "log_sha256": "23a5cd7093d54476f12e122c073a88fe990d95639a0c3365681df970b3169332",
+        "seconds": 0.07
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/c9_runtime-53be03aa0616d346",
+        "sha256": "bc4bc8fbf8aeaef03e40d2e9b922b4fefdd9f3fd47a62e6d89e127bb6824def2",
+        "exit": 0,
+        "passed": 31,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-targets/c9_runtime-53be03aa0616d346.log",
+        "log_sha256": "15c2ebc65f8e3e76f60afd8a0eeb13d68755f68b0d135696aea11251b429adc7",
+        "seconds": 0.06
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/card_batch_eight-230508b9d5b2861d",
+        "sha256": "23896d99717825200e7d43bfd3b345da23cdbe679cb38baa79f8a320b0d1916d",
+        "exit": 0,
+        "passed": 4,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-targets/card_batch_eight-230508b9d5b2861d.log",
+        "log_sha256": "456a27d9b077402fb17dd1fa2676ae68a135f754f7b2e74915930a215f6ec221",
+        "seconds": 0.22
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/card_batch_eighteen-9608dfc6c0d2fdcf",
+        "sha256": "195403b147c9352a0e35f3216753836824727835b085e24a504f5721d5a4cd1d",
+        "exit": 0,
+        "passed": 2,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-targets/card_batch_eighteen-9608dfc6c0d2fdcf.log",
+        "log_sha256": "0ddcf75dbda3a4c43ddc3cb566574d8f2bdb00dada47629f2c7daaa5c2c1ae3d",
+        "seconds": 0.15
+      },
+      {
+        "name": "card_batch_eleven.rs",
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/card_batch_eleven-30df25492fc57c9a",
+        "sha256": "1132abfa094971956a06d52390cfad3dcd28be8f885b120f7337c85911b10209",
+        "passed": 4,
+        "failed": 0,
+        "ignored": 0,
+        "exit": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-fixes2.log",
+        "log_sha256": "9d473b0a8acb60d689b9418a84107ddb774230e3c8b1ad39927ec387435ab567"
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/card_batch_fifteen-c2715db9e50e18ed",
+        "sha256": "1af2ce8242ea1184387e5349b217d01ca2e66b642241cdb9a31565d38905d9f9",
+        "exit": 0,
+        "passed": 2,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-targets/card_batch_fifteen-c2715db9e50e18ed.log",
+        "log_sha256": "0acc8fe90c3b5c642cf6ab4f245caa4507fc0dc03b75bd145e46e990cdcd29c8",
+        "seconds": 0.15
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/card_batch_five-31c8b557c7d4888f",
+        "sha256": "9e494701ef5115b1d3f49955ca42e15bd6b8870efb172579902739f3237f6cb3",
+        "exit": 0,
+        "passed": 3,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-targets/card_batch_five-31c8b557c7d4888f.log",
+        "log_sha256": "16e346f4862b9b4362aa4b2dee9ad94ad1d64ae4d8fd4559db44c1fa61cf6495",
+        "seconds": 0.11
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/card_batch_four-bcbad10359e76cd5",
+        "sha256": "05274c1a37991cd25f7ccffba2bcbbcee408d6d19fe30c35fa86504eaa0da804",
+        "exit": 0,
+        "passed": 3,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-targets/card_batch_four-bcbad10359e76cd5.log",
+        "log_sha256": "a753ec01f7226f15e1eb0780323f630c0657ce613fd945269d3d24b7bba14585",
+        "seconds": 1.01
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/card_batch_fourteen-d19e77d27eed56d5",
+        "sha256": "a7ceb25fd033dead07a7d7859877991afaaf29993019a96438e0d917f1ad66ea",
+        "exit": 0,
+        "passed": 2,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-targets/card_batch_fourteen-d19e77d27eed56d5.log",
+        "log_sha256": "ddea3708bf30217eb0d56de295cfb04c1a9abddd13f1b1c23d80a3e9b88ffe1a",
+        "seconds": 0.2
+      },
+      {
+        "name": "card_batch_nine.rs",
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/card_batch_nine-11bbc5ac082b3fb6",
+        "sha256": "613ed0943638a7853822e4140099d88df673bf91ea880a531850fd0fe68ad759",
+        "passed": 5,
+        "failed": 0,
+        "ignored": 0,
+        "exit": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-fixes2.log",
+        "log_sha256": "9d473b0a8acb60d689b9418a84107ddb774230e3c8b1ad39927ec387435ab567"
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/card_batch_nineteen-248076295e57eb07",
+        "sha256": "98c568db90af98078e4b5780b8aaa4cc99f04dbdd1a86670c4121ae66d5a86cb",
+        "exit": 0,
+        "passed": 2,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-targets/card_batch_nineteen-248076295e57eb07.log",
+        "log_sha256": "85fd9a3e1041ed507726ca82abf98d8a528ae4f30d1b90c2cc5f23cc90d2f572",
+        "seconds": 0.15
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/card_batch_seven-0b69620abf0ba7b7",
+        "sha256": "e0f19131c06d02d7c10e7ca73014746179f2500e1173501a213f5fc4f26ba4fa",
+        "exit": 0,
+        "passed": 4,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-targets/card_batch_seven-0b69620abf0ba7b7.log",
+        "log_sha256": "cea4891a2b6d25f859c2d7ac447007e4c51d7cbd6527217ef1a9fb8af521209c",
+        "seconds": 0.16
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/card_batch_seventeen-5872b0238323e72f",
+        "sha256": "28f95301325271810ea08877f71a94f36c5a7e0e22152a9b3f18f6ef395fc971",
+        "exit": 0,
+        "passed": 2,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-targets/card_batch_seventeen-5872b0238323e72f.log",
+        "log_sha256": "d3afa893d6610e960295be40ced53df6b430bc8cc0140b0c1302f0984f2e9db4",
+        "seconds": 0.15
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/card_batch_six-170a17a5dc2db085",
+        "sha256": "2a4594e7d6fa6b87e32dd0956a40fd463d100af7e1cca9b2dd44c53daf4e9da7",
+        "exit": 0,
+        "passed": 3,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-targets/card_batch_six-170a17a5dc2db085.log",
+        "log_sha256": "e69812645d778f4bc7b319c4511242d835d871faf304a94597dc67ff054109f6",
+        "seconds": 0.1
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/card_batch_sixteen-4e8b0752fd95fe86",
+        "sha256": "a4bbf0a33ef2d4fc21671f84c69a1e1ec5314335c1b50a7096c9ec919e2452a7",
+        "exit": 0,
+        "passed": 2,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-targets/card_batch_sixteen-4e8b0752fd95fe86.log",
+        "log_sha256": "2962f72de158fe412b189055a8967a304aff24ef47f087c049ca6b8d353839b3",
+        "seconds": 0.15
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/card_batch_ten-1e08e4479fd81539",
+        "sha256": "b8577c72a1a7c3c9c4341853a7c16ec7ad3167ca9a4d645f330e5a3f2b67110c",
+        "exit": 0,
+        "passed": 4,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-targets/card_batch_ten-1e08e4479fd81539.log",
+        "log_sha256": "ec627ca1e079268eb06dca4e7ad609f1cbc25ff7f870c08d5e0c7f7cd618da3d",
+        "seconds": 0.16
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/card_batch_thirteen-6d3abe8f56166881",
+        "sha256": "2b1c2875ee3b9e63f405524a8de05f44154db0294bc5c8eda36cc9a12f559ae2",
+        "exit": 0,
+        "passed": 4,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-targets/card_batch_thirteen-6d3abe8f56166881.log",
+        "log_sha256": "9594772d84dc58f148093b8816e2be55edc3e5d04ca6c8a36948cd637d215a11",
+        "seconds": 0.16
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/card_batch_three-1de663b5f6f38b0b",
+        "sha256": "97d2454fa10e85868fe923ed6c790ad306a56a7f9fce066a613bd9333afe7fd3",
+        "exit": 0,
+        "passed": 3,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-targets/card_batch_three-1de663b5f6f38b0b.log",
+        "log_sha256": "edcfa9533faaf5fd0a2aea66adaffb35c06b4a5618873c5314c87ac97edb699f",
+        "seconds": 1.16
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/card_batch_twelve-9c0928bce16cf3b2",
+        "sha256": "8e17d8d61477ea04ea1206490644c57d761d0bf4a01059e4d6d4ce6d0cd11286",
+        "exit": 0,
+        "passed": 3,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-targets/card_batch_twelve-9c0928bce16cf3b2.log",
+        "log_sha256": "66e2d6a714e6b2ce567b05cb90b7be0cb6c1d22837eb22a3c43d0d633e2509d4",
+        "seconds": 0.16
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/card_batch_twenty-1647230ff71e3655",
+        "sha256": "d1e675975ed99470012a926a063564a7e20ed2c30c8b09c90a3f2ba4ac9420e0",
+        "exit": 0,
+        "passed": 3,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-targets/card_batch_twenty-1647230ff71e3655.log",
+        "log_sha256": "e5d931466fa66c30a95e405cfdee1b11ef2ca1d66c566825e677102c4f6bde30",
+        "seconds": 0.15
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/card_batch_twenty_five-c3ab0258bd8a756c",
+        "sha256": "e06c4fe392f083a9336dd6446712c581227110ba638e771f4220863091e6dfa3",
+        "exit": 0,
+        "passed": 4,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-targets/card_batch_twenty_five-c3ab0258bd8a756c.log",
+        "log_sha256": "dbc1ed3209ee39256d5480bc37f472dc9d3d8352dd70476e9ce06d66a2b24918",
+        "seconds": 0.15
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/card_batch_twenty_four-959ddab43b7f1f8d",
+        "sha256": "81da15e7a19ec403387f847498e35acdb67c01c88c14561b0d7db3c4bc9f8263",
+        "exit": 0,
+        "passed": 4,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-targets/card_batch_twenty_four-959ddab43b7f1f8d.log",
+        "log_sha256": "36f3e1d83432590388bc33be31eaa709d43ea98ad3589e4897f1a9ab415fd207",
+        "seconds": 0.21
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/card_batch_twenty_one-057449a9a924393f",
+        "sha256": "85044666415b1f85ea2e934dde10944d8bf834934b7cf51a920890f9722fac58",
+        "exit": 0,
+        "passed": 4,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-targets/card_batch_twenty_one-057449a9a924393f.log",
+        "log_sha256": "b8de1a7c5cd9c3f4edf10964897bfbfd70c142592a022da57943d72c9b9fc038",
+        "seconds": 0.15
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/card_batch_twenty_seven-0681bd4f3d2bf42e",
+        "sha256": "310d0d24d17174b64ac223f01f2419c9946382e355e642648f3f45ed8188d7c5",
+        "exit": 0,
+        "passed": 3,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-targets/card_batch_twenty_seven-0681bd4f3d2bf42e.log",
+        "log_sha256": "e32315bbdd20d0539e13e8ad3b2260948c4974895593f45705259cdab13d4960",
+        "seconds": 0.15
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/card_batch_twenty_six-eeae9cfedc96c433",
+        "sha256": "72c7e430856aa856dd6cb9b71b9cc58028478105fe4e84b7f2438ef1d377a02c",
+        "exit": 0,
+        "passed": 3,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-targets/card_batch_twenty_six-eeae9cfedc96c433.log",
+        "log_sha256": "afe5ff6c33e0ff3d9592848b682ff64d8d85c1ab022ba5b92a98f273683bfaba",
+        "seconds": 0.15
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/card_batch_twenty_three-9b257e889d504dfe",
+        "sha256": "b43b68f4e0477e6855c582bb365f3429da5be2de6fcbbb38add56f524d58170f",
+        "exit": 0,
+        "passed": 4,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-targets/card_batch_twenty_three-9b257e889d504dfe.log",
+        "log_sha256": "0682722db4b1e422121a59e26c5d884a08f9ad97174c1c128a94a8c7809b4035",
+        "seconds": 0.16
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/card_batch_twenty_two-2c0997c898933277",
+        "sha256": "7f7fc974320ba168bbfd12a3ba7ac26ee1f0f951ca533c9f7b43804f96d37cb4",
+        "exit": 0,
+        "passed": 4,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-targets/card_batch_twenty_two-2c0997c898933277.log",
+        "log_sha256": "838ed7e24ef3b919613f192ef3474d614061d886667615548da546f64e64dcf2",
+        "seconds": 0.15
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/card_batch_two-feae370609441680",
+        "sha256": "5e502de717c784e670543815a9ce91eb5ab9d78e3f3d21412d041ad12894adca",
+        "exit": 0,
+        "passed": 4,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-targets/card_batch_two-feae370609441680.log",
+        "log_sha256": "46f0c091a939ea83875a9daffffff2b94c13cc9a2c8df55e05987b9ce7ffc335",
+        "seconds": 2.17
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/card_expansion-5963b13cd47fa4f4",
+        "sha256": "c19cd58108afd3933dd15117e1c164e8c2622376635d23757bf2f3f6aecc908d",
+        "exit": 0,
+        "passed": 17,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-targets/card_expansion-5963b13cd47fa4f4.log",
+        "log_sha256": "5754fa7621fd2a3e125a0ac48e0c78d574f9002e8b6cdd3b1fb21f5ca5411dd8",
+        "seconds": 0.05
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/catalog_coverage-f191bf9ab61a3bef",
+        "sha256": "a664c5e1fa30045dff98083cee3db58cf5b0179930a2eec8a39bc08493d6501d",
+        "exit": 0,
+        "passed": 3,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-targets/catalog_coverage-f191bf9ab61a3bef.log",
+        "log_sha256": "027e06832599d1a60e61ce604349025ff8a41e4c7b2cc52d567b7b1fe6e1f3d9",
+        "seconds": 0.16
+      },
+      {
+        "name": "catalog_review.rs",
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/catalog_review-dddbbd9d21d18230",
+        "sha256": "cc966b9fe0745360bf6591c5904366fbd9b36a911ea349c11db167f631ef42a1",
+        "passed": 11,
+        "failed": 0,
+        "ignored": 0,
+        "exit": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-fixes2.log",
+        "log_sha256": "9d473b0a8acb60d689b9418a84107ddb774230e3c8b1ad39927ec387435ab567"
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/conformance-acb7258f7a4d8322",
+        "sha256": "abab11d5a0875c3d66dd063b10f7c05555861e0ad4e2a2f9883aadba398dece8",
+        "exit": 0,
+        "passed": 10,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-targets/conformance-acb7258f7a4d8322.log",
+        "log_sha256": "e5bb8ee8f6e09b3d71a3bd45b032cb023baf3889745bba9a4947b40a0e7d97f0",
+        "seconds": 0.07
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/conversion_abilities-7983716fb78b0e23",
+        "sha256": "dc57222d596a2923c4f9d4f1f602afd9406a4557105e55dcfda0dc680a4d4d6a",
+        "exit": 0,
+        "passed": 14,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-targets/conversion_abilities-7983716fb78b0e23.log",
+        "log_sha256": "7556d726f64a1307e2ce16a651594bf6b8d31679ac6dbc99c0e42781de6dc3d7",
+        "seconds": 0.06
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/custom_decks-8ac35caaae157c37",
+        "sha256": "dacec9955beece33d8c457985ededfeba11a1117b4079015d5e81aa05c574d43",
+        "exit": 0,
+        "passed": 15,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-targets/custom_decks-8ac35caaae157c37.log",
+        "log_sha256": "eb90b453b4eed3a8d28f4844106cd370397bded9865ae279fe235740b450f64d",
+        "seconds": 11.65
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/empowered_abilities-f5c694999a4c5a3b",
+        "sha256": "4788bf40db027a54afb2c4d6b0cca29f92c9a9f07f4a5298cc529ed287664df4",
+        "exit": 0,
+        "passed": 23,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-targets/empowered_abilities-f5c694999a4c5a3b.log",
+        "log_sha256": "92b107c195d28409537b641ab7e81cb51da6706631ee975ffa4645e556497eb4",
+        "seconds": 0.16
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/equipment_abilities-3e2736d1e9dff261",
+        "sha256": "37f2f1d45b97440b9593720acb944711c742bd6da9a5e24732f8efabaac2816a",
+        "exit": 0,
+        "passed": 5,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-targets/equipment_abilities-3e2736d1e9dff261.log",
+        "log_sha256": "240d2e8d5868dc4a0a95593946b958ee02cd998d8ec04087c5e4b5e0d109395c",
+        "seconds": 0.05
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/event_triggers-f6a9c669f77647f6",
+        "sha256": "f2d1ca56af2778c2487868d1070004e41db56bbbd23c962640f8d919a1de991c",
+        "exit": 0,
+        "passed": 30,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-targets/event_triggers-f6a9c669f77647f6.log",
+        "log_sha256": "bf78d5c490446f2dec6e1cee1222c6229a3a3eed7d2674e76d4b12d2672cf0a4",
+        "seconds": 0.07
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/flow_costs-49caf59d3052a88f",
+        "sha256": "09724e23a9787ec0cda4e2518a4eadc6e9b51c4aaafd97e5ff921f50599d4bef",
+        "exit": 0,
+        "passed": 5,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-targets/flow_costs-49caf59d3052a88f.log",
+        "log_sha256": "8895589372901630ebd74f40f0d3d0dc319fb5c7c88c70352c1d5a3e3adc5ffa",
+        "seconds": 0.06
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/holding-4080668c06d675c1",
+        "sha256": "613a56f33cb470090d07e89ab6dc780a27aeff5d434fa67e478680fdc32f2cee",
+        "exit": 0,
+        "passed": 4,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-targets/holding-4080668c06d675c1.log",
+        "log_sha256": "b2ec733d3e279e974302271000e31bcbab66b982ba1b836a63deb48083e557c6",
+        "seconds": 0.05
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/irelia_backoff-e0300c96a31eb3db",
+        "sha256": "23bb0588b223a13ce31b13527c378ee6cf83aaf429b5e90e5536336976824df8",
+        "exit": 0,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-targets/irelia_backoff-e0300c96a31eb3db.log",
+        "log_sha256": "227a341e8577760c30236e5525c08276bb97cd8c9c82b2d0c405deed70c582d6",
+        "seconds": 11.53
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/irelia_focus-6360dfd726c65675",
+        "sha256": "ecc004edb8cb5b8ca50051b6dfc9cb2613af8afad462a3656994de97dc22f61c",
+        "exit": 0,
+        "passed": 9,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-targets/irelia_focus-6360dfd726c65675.log",
+        "log_sha256": "9510aab080769be03dcad877e82d20734d3d497da251ff72ae9db40a8aa9118e",
+        "seconds": 8.19
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/irelia_hunker-9e98fe39a5884b6b",
+        "sha256": "ce5c4f095570092a7a874bbc96ccf456b1814534d9cfcbee8c678e90647fa012",
+        "exit": 0,
+        "passed": 10,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-targets/irelia_hunker-9e98fe39a5884b6b.log",
+        "log_sha256": "e1250e948040a655982a7cd1d2bd8dad37ed29251ce83657464b89fd3ee189e9",
+        "seconds": 13.71
+      },
+      {
+        "name": "irelia_innovator.rs",
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/irelia_innovator-9c686011f6a68811",
+        "sha256": "dae5cb946ce6ca15efefd2e06c79c1110b14e175dc8145f8b3bdb7d0e286f112",
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "exit": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-fixes2.log",
+        "log_sha256": "9d473b0a8acb60d689b9418a84107ddb774230e3c8b1ad39927ec387435ab567"
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/irelia_next-4dfd316375b698e8",
+        "sha256": "1361dac9fd8ca3668c918e92ae55c05a6f4078b77566b7b991b1d9377cea190e",
+        "exit": 0,
+        "passed": 7,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-targets/irelia_next-4dfd316375b698e8.log",
+        "log_sha256": "4c4b52d4110daa213033a5ef365c49a49ea6ccd8868b2c02ab30f4a581d55083",
+        "seconds": 7.99
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/irelia_preparations-1d6d5495718a99a1",
+        "sha256": "2fa7233464d43b101e81db2dcfd7698e92c9d392154bdc0147d1b9566bef0d8f",
+        "exit": 0,
+        "passed": 14,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-targets/irelia_preparations-1d6d5495718a99a1.log",
+        "log_sha256": "c6d453b3179c0733dcac3f9eeced294e380e9a27b1f9416f6327520f1ca48b81",
+        "seconds": 12.54
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/irelia_raven-6bae301aa55527a3",
+        "sha256": "523ef17099ff07b74221d92679349c8d7abb09f3affdaf3dd8dae0af7fe483a8",
+        "exit": 0,
+        "passed": 11,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-targets/irelia_raven-6bae301aa55527a3.log",
+        "log_sha256": "52757da89a8a078cf26a4b8dc145a2427e6d550bf346bbe99a5eb7a6656766c7",
+        "seconds": 12.91
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/irelia_siren-36998ca0c8de6263",
+        "sha256": "889cc32eb46161d36cf21961f870ee9943f729f560f8ff29cdb225c004ff7168",
+        "exit": 0,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-targets/irelia_siren-36998ca0c8de6263.log",
+        "log_sha256": "f123f8df6c3e0c542ef6e33c28b30717d3c1d815a0bb360f7c48626b55dddac4",
+        "seconds": 13.8
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/keyword_expansion-5d9f54f1c2cac28d",
+        "sha256": "004aa44d37e5347daaa7a0bfb5035fbb3a22bfba506dded986f31b603d5a93f1",
+        "exit": 0,
+        "passed": 17,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-targets/keyword_expansion-5d9f54f1c2cac28d.log",
+        "log_sha256": "41745152bb4d01008df7ea2ddf3ef4279c664827156d197b4b28cdcf337469d8",
+        "seconds": 0.08
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/legend_decks-155b504a491a67a4",
+        "sha256": "80e902606997551092fbb22f39ca9a34de4ae0161db67b67e667f4b48e0f7dec",
+        "exit": 0,
+        "passed": 7,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-targets/legend_decks-155b504a491a67a4.log",
+        "log_sha256": "8d3616214b62b04dff97669c57c4822ea81faa8f39bbdddd1150b7b375094a4f",
+        "seconds": 0.17
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/legend_foundation-91cbe66e985d5301",
+        "sha256": "c460dfb3d4cce17600f515d0abee629b64002a6a1880360c887bd0d6ca6fa459",
+        "exit": 0,
+        "passed": 15,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-targets/legend_foundation-91cbe66e985d5301.log",
+        "log_sha256": "e2c872e2b029b27aa5450460fbc4ecf05d9a47d0bbae2c6e9da8aad087d440ca",
+        "seconds": 0.11
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/local_rift-f3b4ec23503e7f7c",
+        "sha256": "c950366171be45dca8c1cc8818b547f2d28094baa703d715bf75497f08b619b1",
+        "exit": 0,
+        "passed": 121,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-targets/local_rift-f3b4ec23503e7f7c.log",
+        "log_sha256": "502116271991d656e55218d2a543b786f6d113dee7e93f03ddd153e960c0374c",
+        "seconds": 0.2
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/local_rift-f945c4cb8e79f7c9",
+        "sha256": "c16aed4e0a6138176d8c2732500fbd4e25b9543eb3d1aba5c7fe1b5ea3ea45c5",
+        "exit": 0,
+        "passed": 755,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-lib-final.log",
+        "log_sha256": "1beef184ca360e30943102f29191aaef21b128c672ce8d8df14ca10d2960c333",
+        "seconds": 2.8
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/nested_plays-237faf22c862f8e1",
+        "sha256": "a436945c8df45da33ce68e88e65442f769747e5418c5f7d48371f161ae31414e",
+        "exit": 0,
+        "passed": 9,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-targets/nested_plays-237faf22c862f8e1.log",
+        "log_sha256": "e27facdd58ddd0767710c5ae966bcde1b38f86b3f58aa6d79fc43a5cdfac7cbc",
+        "seconds": 0.07
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/numeric_runtime-dafb06482bd7e0de",
+        "sha256": "e44f10ed47802f8cf8331fbff8b3dd1e93a8012362f1e532046b633f00b973c4",
+        "exit": 0,
+        "passed": 21,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-targets/numeric_runtime-dafb06482bd7e0de.log",
+        "log_sha256": "2342f9a612070dcaba545799b7bdee679af9876e797dc6041e53fe521381a125",
+        "seconds": 0.17
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/payment_plans-c496f964ff2cddba",
+        "sha256": "97c5a74535100fce11b70871a574226976a69187e876db2ed932d7000a55af2b",
+        "exit": 0,
+        "passed": 9,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-targets/payment_plans-c496f964ff2cddba.log",
+        "log_sha256": "6a5b348b8047112274df5e076753f120915682a446408230a8ca8e8b133404a4",
+        "seconds": 0.07
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/payments-cd8424839e4d0ab6",
+        "sha256": "0bd717467f225ac83c82b4b9b8556207229d219d1b8ef57a7cabc134a1049bdd",
+        "exit": 0,
+        "passed": 9,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-targets/payments-cd8424839e4d0ab6.log",
+        "log_sha256": "e6c5be75450ba617db2134fa0cbbf8b4e2fd73cbe462e01a3014e97a34d9cae8",
+        "seconds": 3.07
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/rengar_preset-f2221ddfe07b4307",
+        "sha256": "2af63cea3a080bd0f37b60fd1776d9a987192693943aa1723d94c3573d1078d8",
+        "exit": 0,
+        "passed": 5,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-targets/rengar_preset-f2221ddfe07b4307.log",
+        "log_sha256": "f4d69f245f12051fa585ea7a7cc203cc2529029731497c6c2c021e2e12cc0422",
+        "seconds": 0.17
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/repeat_flow_expansion-902ef2267ba369c3",
+        "sha256": "402df83842a4b1a51a543715cc57d444ccd2aa55407eec3bd810b721f12ce018",
+        "exit": 0,
+        "passed": 8,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-targets/repeat_flow_expansion-902ef2267ba369c3.log",
+        "log_sha256": "c9ab90a3b2b669eb1bac485ae6013e2156b73beba4577b282a4e4549c4608426",
+        "seconds": 0.06
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/rift_api-72e371709eef4ad5",
+        "sha256": "9178d5a0d96956459f2d9de4e823c6643c2ba3c614b06e89849d8a4e9c7c70c1",
+        "exit": 0,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-targets/rift_api-72e371709eef4ad5.log",
+        "log_sha256": "762e1caf62c9f91b0abf5a88209ed91b34efc7307416467c93c987c8f9cad082",
+        "seconds": 0.04
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/rules_audit-90089c4901cfbbda",
+        "sha256": "1c831a249c6bcbc95d4de74ed9eaa1f154d771f0a76d30ead4315e37efb1deda",
+        "exit": 0,
+        "passed": 9,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-targets/rules_audit-90089c4901cfbbda.log",
+        "log_sha256": "b0fc173ee3a75ded1c19fb3814e14df78882c816b8ca51b481eeede6d6fc0b43",
+        "seconds": 0.05
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/scalar_spell_expansion-da899810b1663eb6",
+        "sha256": "1edcfc25e5929ce5be1847b0bbba9df581dd74002728f3bb0c442053055eae94",
+        "exit": 0,
+        "passed": 17,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-targets/scalar_spell_expansion-da899810b1663eb6.log",
+        "log_sha256": "70706b4ffe01c4e258ab83b879f4de33652439b17d8a3b0484304fc7aedc5a33",
+        "seconds": 0.06
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/simulate-aa3cf87772bde5b6",
+        "sha256": "942e0a3e71542ed51958c744d0f75215c7b3c0bf71f061e8cb9abb6bfbd2e94e",
+        "exit": 0,
+        "passed": 0,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-targets/simulate-aa3cf87772bde5b6.log",
+        "log_sha256": "df166913f47ff1f04202cae9b31df67ed272d692d99a0023a8117dc3029100dd",
+        "seconds": 0.0
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/spell_expansion-21db5de186b72374",
+        "sha256": "d99c70d80d0f5f59f1aba0a1c2b1a2c3a471ce92a34898d194bcfca2f07e12b5",
+        "exit": 0,
+        "passed": 12,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-targets/spell_expansion-21db5de186b72374.log",
+        "log_sha256": "36a7068af5f37f5364141479be8b810cf2e5b7d73186b879c43c4e08adbdb9d9",
+        "seconds": 0.06
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/staged_battlefields-daf921129dad9bf1",
+        "sha256": "67fa40bf934145837803a1816264ebd1f54f0e69df29cacaf87718ad81ab27ef",
+        "exit": 0,
+        "passed": 6,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-targets/staged_battlefields-daf921129dad9bf1.log",
+        "log_sha256": "55eb4a8b7c7b91484ce26753f04a83893858d1ecd5e6437df97f1ea0f72f6bb3",
+        "seconds": 0.06
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/strategic_api-3878645bb9f495b0",
+        "sha256": "ae7f161368e138be8fc22756b3b0915112de17bfb3088059c541f3a932a90c9b",
+        "exit": 0,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-targets/strategic_api-3878645bb9f495b0.log",
+        "log_sha256": "5ed248692e89b6b5c1fc53ecd5ee19162546343018e44f28b2fd7fac30379734",
+        "seconds": 0.12
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/third_unit_expansion-f1eddbf627324600",
+        "sha256": "1dace17618f9df9074401fd4f9c7fc4cb881f73d9cd4c666a2f67deba108b564",
+        "exit": 0,
+        "passed": 13,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-targets/third_unit_expansion-f1eddbf627324600.log",
+        "log_sha256": "f65b84bc66212f44cadc73252f962e6b975e29859ab09ea4d9dfe63f44320e02",
+        "seconds": 0.06
+      }
+    ],
+    "initial_audit": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-initial-audit.json",
+    "initial_audit_sha256": "ab10590c1fe832c18cc522f828f4457e76e8cfbbad8a5349ca3e3d2890ac7a5b",
+    "reruns": [
+      {
+        "name": "card_batch_eleven.rs",
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/card_batch_eleven-30df25492fc57c9a",
+        "sha256": "1132abfa094971956a06d52390cfad3dcd28be8f885b120f7337c85911b10209",
+        "passed": 4,
+        "failed": 0,
+        "ignored": 0,
+        "exit": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-fixes2.log",
+        "log_sha256": "9d473b0a8acb60d689b9418a84107ddb774230e3c8b1ad39927ec387435ab567"
+      },
+      {
+        "name": "card_batch_nine.rs",
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/card_batch_nine-11bbc5ac082b3fb6",
+        "sha256": "613ed0943638a7853822e4140099d88df673bf91ea880a531850fd0fe68ad759",
+        "passed": 5,
+        "failed": 0,
+        "ignored": 0,
+        "exit": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-fixes2.log",
+        "log_sha256": "9d473b0a8acb60d689b9418a84107ddb774230e3c8b1ad39927ec387435ab567"
+      },
+      {
+        "name": "catalog_review.rs",
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/catalog_review-dddbbd9d21d18230",
+        "sha256": "cc966b9fe0745360bf6591c5904366fbd9b36a911ea349c11db167f631ef42a1",
+        "passed": 11,
+        "failed": 0,
+        "ignored": 0,
+        "exit": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-fixes2.log",
+        "log_sha256": "9d473b0a8acb60d689b9418a84107ddb774230e3c8b1ad39927ec387435ab567"
+      },
+      {
+        "name": "irelia_innovator.rs",
+        "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/irelia_innovator-9c686011f6a68811",
+        "sha256": "dae5cb946ce6ca15efefd2e06c79c1110b14e175dc8145f8b3bdb7d0e286f112",
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "exit": 0,
+        "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-fixes2.log",
+        "log_sha256": "9d473b0a8acb60d689b9418a84107ddb774230e3c8b1ad39927ec387435ab567"
+      },
+      {
+        "superseded": {
+          "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/local_rift-f945c4cb8e79f7c9",
+          "sha256": "687ca9775e36ca322e424a68f7562582e68a52dc193859cf39f2032b2d16f1db",
+          "exit": 0,
+          "passed": 753,
+          "failed": 0,
+          "ignored": 0,
+          "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-targets/local_rift-f945c4cb8e79f7c9.log",
+          "log_sha256": "368c1e07cb363ef23b9bc020df90f558c830705a5e26702d0274420044668807",
+          "seconds": 5.55
+        },
+        "replacement": {
+          "executable": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/debug/deps/local_rift-f945c4cb8e79f7c9",
+          "sha256": "c16aed4e0a6138176d8c2732500fbd4e25b9543eb3d1aba5c7fe1b5ea3ea45c5",
+          "exit": 0,
+          "passed": 755,
+          "failed": 0,
+          "ignored": 0,
+          "log": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-lib-final.log",
+          "log_sha256": "1beef184ca360e30943102f29191aaef21b128c672ce8d8df14ca10d2960c333",
+          "seconds": 2.8
+        },
+        "reason": "Two additional adjacent-interaction tests; complete 755-test library rerun passes."
+      }
+    ]
+  },
+  "focused_rust": {
+    "passed": 15,
+    "failed": 0,
+    "included_in_total": true
+  },
+  "python": {
+    "unique_tests_passed": 259,
+    "remaining_failures": 0,
+    "single_clean_full_run": false,
+    "initial": "257 tests: 250 passed, seven stale aggregate/history assertions failed.",
+    "correction": "All seven corrected tests, three source-review tests and two new admission tests passed together (12 tests).",
+    "additional": "The archived review-prefix test passed again after adding compressed and uncompressed hash checks.",
+    "historical_integrity": "The original C28 acceptance receipt is unchanged. The old field ledger is archived byte-for-byte; all old records must remain exact prefixes of the current ledger."
+  },
+  "checks": [
+    "Complete Cargo all-targets harness inventory with documented targeted reruns",
+    "cargo fmt --all --check",
+    "cargo clippy --all-targets -- -D warnings",
+    "offline catalog check"
+  ],
+  "games": {
+    "native_completed": 60,
+    "all_five_presets": true,
+    "all_levels": true,
+    "both_seats": true,
+    "both_starting_players": true,
+    "recipe": "Authored legal 40-card Irelia variant. Stored tournament recipes are unchanged.",
+    "observations": "Both Innovator modes occur; physical copies of priority cards are conserved at each completed match."
+  },
+  "api": {
+    "games": 24,
+    "results": [
+      {
+        "level": "easy",
+        "opponent": 1,
+        "seat": 0,
+        "starter": 0,
+        "seed": 429004,
+        "winner": 1,
+        "scores": [
+          5,
+          8
+        ],
+        "actions": 199
+      },
+      {
+        "level": "easy",
+        "opponent": 1,
+        "seat": 0,
+        "starter": 1,
+        "seed": 429005,
+        "winner": 1,
+        "scores": [
+          7,
+          8
+        ],
+        "actions": 167
+      },
+      {
+        "level": "easy",
+        "opponent": 1,
+        "seat": 1,
+        "starter": 0,
+        "seed": 429006,
+        "winner": 0,
+        "scores": [
+          9,
+          2
+        ],
+        "actions": 112
+      },
+      {
+        "level": "easy",
+        "opponent": 1,
+        "seat": 1,
+        "starter": 1,
+        "seed": 429007,
+        "winner": 0,
+        "scores": [
+          8,
+          2
+        ],
+        "actions": 134
+      },
+      {
+        "level": "easy",
+        "opponent": 3,
+        "seat": 0,
+        "starter": 0,
+        "seed": 429012,
+        "winner": 0,
+        "scores": [
+          8,
+          0
+        ],
+        "actions": 132
+      },
+      {
+        "level": "easy",
+        "opponent": 3,
+        "seat": 0,
+        "starter": 1,
+        "seed": 429013,
+        "winner": 1,
+        "scores": [
+          4,
+          8
+        ],
+        "actions": 147
+      },
+      {
+        "level": "easy",
+        "opponent": 3,
+        "seat": 1,
+        "starter": 0,
+        "seed": 429014,
+        "winner": 0,
+        "scores": [
+          8,
+          2
+        ],
+        "actions": 109
+      },
+      {
+        "level": "easy",
+        "opponent": 3,
+        "seat": 1,
+        "starter": 1,
+        "seed": 429015,
+        "winner": 0,
+        "scores": [
+          8,
+          5
+        ],
+        "actions": 150
+      },
+      {
+        "level": "tactical",
+        "opponent": 1,
+        "seat": 0,
+        "starter": 0,
+        "seed": 429104,
+        "winner": 0,
+        "scores": [
+          8,
+          7
+        ],
+        "actions": 174
+      },
+      {
+        "level": "tactical",
+        "opponent": 1,
+        "seat": 0,
+        "starter": 1,
+        "seed": 429105,
+        "winner": 1,
+        "scores": [
+          4,
+          9
+        ],
+        "actions": 156
+      },
+      {
+        "level": "tactical",
+        "opponent": 1,
+        "seat": 1,
+        "starter": 0,
+        "seed": 429106,
+        "winner": 1,
+        "scores": [
+          5,
+          8
+        ],
+        "actions": 158
+      },
+      {
+        "level": "tactical",
+        "opponent": 1,
+        "seat": 1,
+        "starter": 1,
+        "seed": 429107,
+        "winner": 0,
+        "scores": [
+          8,
+          5
+        ],
+        "actions": 143
+      },
+      {
+        "level": "tactical",
+        "opponent": 3,
+        "seat": 0,
+        "starter": 0,
+        "seed": 429112,
+        "winner": 0,
+        "scores": [
+          8,
+          2
+        ],
+        "actions": 99
+      },
+      {
+        "level": "tactical",
+        "opponent": 3,
+        "seat": 0,
+        "starter": 1,
+        "seed": 429113,
+        "winner": 1,
+        "scores": [
+          3,
+          8
+        ],
+        "actions": 168
+      },
+      {
+        "level": "tactical",
+        "opponent": 3,
+        "seat": 1,
+        "starter": 0,
+        "seed": 429114,
+        "winner": 0,
+        "scores": [
+          9,
+          4
+        ],
+        "actions": 114
+      },
+      {
+        "level": "tactical",
+        "opponent": 3,
+        "seat": 1,
+        "starter": 1,
+        "seed": 429115,
+        "winner": 1,
+        "scores": [
+          2,
+          8
+        ],
+        "actions": 106
+      },
+      {
+        "level": "strategic",
+        "opponent": 1,
+        "seat": 0,
+        "starter": 0,
+        "seed": 429204,
+        "winner": 0,
+        "scores": [
+          9,
+          6
+        ],
+        "actions": 159
+      },
+      {
+        "level": "strategic",
+        "opponent": 1,
+        "seat": 0,
+        "starter": 1,
+        "seed": 429205,
+        "winner": 1,
+        "scores": [
+          5,
+          8
+        ],
+        "actions": 143
+      },
+      {
+        "level": "strategic",
+        "opponent": 1,
+        "seat": 1,
+        "starter": 0,
+        "seed": 429206,
+        "winner": 0,
+        "scores": [
+          8,
+          2
+        ],
+        "actions": 108
+      },
+      {
+        "level": "strategic",
+        "opponent": 1,
+        "seat": 1,
+        "starter": 1,
+        "seed": 429207,
+        "winner": 1,
+        "scores": [
+          7,
+          8
+        ],
+        "actions": 225
+      },
+      {
+        "level": "strategic",
+        "opponent": 3,
+        "seat": 0,
+        "starter": 0,
+        "seed": 429212,
+        "winner": 1,
+        "scores": [
+          4,
+          9
+        ],
+        "actions": 136
+      },
+      {
+        "level": "strategic",
+        "opponent": 3,
+        "seat": 0,
+        "starter": 1,
+        "seed": 429213,
+        "winner": 1,
+        "scores": [
+          3,
+          8
+        ],
+        "actions": 121
+      },
+      {
+        "level": "strategic",
+        "opponent": 3,
+        "seat": 1,
+        "starter": 0,
+        "seed": 429214,
+        "winner": 0,
+        "scores": [
+          8,
+          4
+        ],
+        "actions": 141
+      },
+      {
+        "level": "strategic",
+        "opponent": 3,
+        "seat": 1,
+        "starter": 1,
+        "seed": 429215,
+        "winner": 1,
+        "scores": [
+          4,
+          9
+        ],
+        "actions": 134
+      }
+    ],
+    "object_cost_choices": 0,
+    "public_movement_observations": 1588,
+    "backoff_public_origin_observations": {
+      "{\"type\": \"hand\"}": 14,
+      "{\"lane\": 0, \"type\": \"hidden\"}": 33,
+      "{\"lane\": 1, \"type\": \"hidden\"}": 20
+    },
+    "innovator_mode_choices": 21,
+    "innovator_payment_choices": 8,
+    "innovator_public_mode_observations": {
+      "0": 36,
+      "1": 16
+    },
+    "observed_priority_chain_cards": [
+      421,
+      422,
+      423,
+      428,
+      429
+    ],
+    "requests": 15669,
+    "binary": "/home/benchen/.cache/local-rift-builds/irelia-innovator-target/release/rift-api",
+    "binary_sha256": "6f390dbd6ba5b98dd917b5d259ca0458cec61bd39ac4f06566b0431c0cb03c71",
+    "recipe": {
+      "battlefield": 0,
+      "cards": [
+        [
+          0,
+          1
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          3,
+          2
+        ],
+        [
+          4,
+          2
+        ],
+        [
+          5,
+          3
+        ],
+        [
+          7,
+          3
+        ],
+        [
+          8,
+          2
+        ],
+        [
+          9,
+          1
+        ],
+        [
+          10,
+          1
+        ],
+        [
+          12,
+          1
+        ],
+        [
+          13,
+          1
+        ],
+        [
+          14,
+          2
+        ],
+        [
+          15,
+          3
+        ],
+        [
+          16,
+          2
+        ],
+        [
+          18,
+          3
+        ],
+        [
+          20,
+          1
+        ],
+        [
+          21,
+          2
+        ],
+        [
+          421,
+          2
+        ],
+        [
+          422,
+          1
+        ],
+        [
+          423,
+          1
+        ],
+        [
+          428,
+          2
+        ],
+        [
+          429,
+          3
+        ]
+      ],
+      "chosen_champion": 0,
+      "legend": 0,
+      "name": "Irelia 40-card API verification",
+      "runes": [
+        0,
+        6,
+        0,
+        0,
+        6,
+        0
+      ]
+    },
+    "scope": "24 games through JSON API, both Irelia seats and both starters, all AI levels, presets 1 and 3. Exact 40-card authored variant, unchanged sourced presets."
+  },
+  "visual_review": {
+    "runs": [
+      {
+        "small": false,
+        "screenshots": true,
+        "exit": 0,
+        "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-ui-release-1-normal-capture",
+        "binary_sha256": "328dc9672d1413eaa35195a7c05586268ac72c7503048fdd94494d346b9e8ff5",
+        "render_checkpoints": 78,
+        "capture_count": 37,
+        "log_sha256": "1d00480580d407474a10f4b1e5ec20ad0c707c169d430bac43fd89c1519458b9"
+      },
+      {
+        "small": false,
+        "screenshots": false,
+        "exit": 0,
+        "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-ui-release-1-normal-plain",
+        "binary_sha256": "328dc9672d1413eaa35195a7c05586268ac72c7503048fdd94494d346b9e8ff5",
+        "render_checkpoints": 78,
+        "capture_count": 0,
+        "log_sha256": "1d00480580d407474a10f4b1e5ec20ad0c707c169d430bac43fd89c1519458b9"
+      },
+      {
+        "small": true,
+        "screenshots": true,
+        "exit": 0,
+        "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-ui-release-1-small-capture",
+        "binary_sha256": "328dc9672d1413eaa35195a7c05586268ac72c7503048fdd94494d346b9e8ff5",
+        "render_checkpoints": 78,
+        "capture_count": 37,
+        "log_sha256": "1d00480580d407474a10f4b1e5ec20ad0c707c169d430bac43fd89c1519458b9"
+      },
+      {
+        "small": true,
+        "screenshots": false,
+        "exit": 0,
+        "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-ui-release-1-small-plain",
+        "binary_sha256": "328dc9672d1413eaa35195a7c05586268ac72c7503048fdd94494d346b9e8ff5",
+        "render_checkpoints": 78,
+        "capture_count": 0,
+        "log_sha256": "1d00480580d407474a10f4b1e5ec20ad0c707c169d430bac43fd89c1519458b9"
+      }
+    ],
+    "actually_viewed": [
+      {
+        "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-ui-release-1-normal-capture/innovator_modes.png",
+        "sha256": "e6f961b94392f6f01fe90d3424e6462be81c69a2d723fa061b19f3fdaadd6cc7",
+        "observation": "Both mode buttons and labels fit; card source and Beginner advice are visible.",
+        "actually_viewed": true
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-ui-release-1-small-capture/innovator_payment.png",
+        "sha256": "86712f8d92cc6c50083afb1b6bff050bafd1ecb761e6848611160995cb8e6f2c",
+        "observation": "The selected draw mode, one Chaos Power cost and payment/decline controls remain readable at the smaller size.",
+        "actually_viewed": true
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-ui-release-1-small-capture/innovator_inspect.png",
+        "sha256": "9fc8b8b1c5cdbba9a8df84d97044de95604b0fe814550ff118b7f23eb971ab98",
+        "observation": "The full official card face and complete printed text are available in the inspector.",
+        "actually_viewed": true
+      }
+    ],
+    "reviewed_on": "2026-11-11",
+    "environment": "Isolated profiles, Xvfb and software-rendered OpenGL; native x86-64 Linux release."
+  },
+  "release": {
+    "command": "cargo build --release --bins",
+    "exit_code": 0,
+    "client_sha256": "328dc9672d1413eaa35195a7c05586268ac72c7503048fdd94494d346b9e8ff5",
+    "api_sha256": "6f390dbd6ba5b98dd917b5d259ca0458cec61bd39ac4f06566b0431c0cb03c71"
+  },
+  "rules_review": [
+    "The complete official RAD-105/167 face supplies the missing Piltover tag; raw gallery facts and all predecessor reviews are preserved.",
+    "Normal exhausted entry and Accelerated ready entry do not exhaust a previously ready unit. Actual Ready-to-Exhausted transitions trigger, including Standard Move costs and effect instructions.",
+    "Already exhausted copies do not generate another occurrence. Readying through Irelia permits a second exhaustion trigger in the same turn.",
+    "Choose the mode before costs under Core 403.2. The selected draw instruction is a base cost under 204.1.c and 404.1.b.1, paid before responses.",
+    "Declining the positive draw cost ends that occurrence under 405.2 and does not switch to Gold. Payment undo retains the chosen mode and restores resources for that attempt.",
+    "Gold enters exhausted at Base. Spell-only Power cannot pay the draw ability. The Gold reminder does not give the unit Reaction timing.",
+    "The captured chosen effect survives source departure, including an effect that exhausts and then kills the unit before its trigger finalizes.",
+    "Separate copies keep their own mode and payment identity. Invalid and stale API actions preserve state; public modes and costs do not expose private draws.",
+    "Native controls, all AI levels and Beginner/Advanced Mote advice use the same legal choices."
+  ],
+  "findings_resolved": [
+    "Initial catalog tests expected predecessor totals; three Rust harnesses and six Python assertions now expect the appended card and source review.",
+    "The old whole-file C28 review-ledger check could not permit a legitimate append. It now verifies the exact archived old bytes and exact unchanged prefixes without rewriting the old proof.",
+    "The adjacent Irelia test initially omitted Discipline’s own draw. Its assertion now accounts for both Discipline and Innovator drawing, with no engine behavior change.",
+    "Two initial API campaigns assumed every opponent hand stays hidden. The fixture now permits only the exact explicitly revealed cards for RevealHand and Sabotage decisions; no engine visibility behavior changed."
+  ],
+  "limitations": [
+    "This addition enables custom-deck practice; it is not a newly verified Irelia tournament preset or proof of current metagame strength.",
+    "This acceptance uses native x86-64 Linux builds. The separate Nix acceptance remains the Back Off source at 6411bd141a3bff35eb6491e2a6202496045030bf, recorded in irelia_backoff_nix.json.",
+    "The accepted dated card catalog remains in use while duplicate live publisher printing IDs are unresolved.",
+    "Complete Standard parity, all legal cards, individual combat attribution, best-of-three sideboarding and tournament-strength AI remain unfinished."
+  ],
+  "logs": {
+    "irelia-innovator-test-artifacts.jsonl": {
+      "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-test-artifacts.jsonl",
+      "sha256": "53eed91a44f72c4917c54bfc38245e018e9261d8d17eb304564aba9b055b36a4"
+    },
+    "irelia-innovator-test-build.log": {
+      "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-test-build.log",
+      "sha256": "dce87a0ee5f11556d25fbe81fe35a9e3d86b00521aed46945ae06edb8687fca7"
+    },
+    "irelia-innovator-rust-initial-audit.json": {
+      "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-initial-audit.json",
+      "sha256": "ab10590c1fe832c18cc522f828f4457e76e8cfbbad8a5349ca3e3d2890ac7a5b"
+    },
+    "irelia-innovator-rust-final-coverage.json": {
+      "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-final-coverage.json",
+      "sha256": "3a574ca249172c605e4c8c691ef82a78696069227c9dd0031568a029ea5ab279"
+    },
+    "irelia-innovator-rust-fixes2.log": {
+      "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-rust-fixes2.log",
+      "sha256": "9d473b0a8acb60d689b9418a84107ddb774230e3c8b1ad39927ec387435ab567"
+    },
+    "irelia-innovator-lib-final.log": {
+      "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-lib-final.log",
+      "sha256": "1beef184ca360e30943102f29191aaef21b128c672ce8d8df14ca10d2960c333"
+    },
+    "irelia-innovator-python1.log": {
+      "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-python1.log",
+      "sha256": "cf00b41730491340d37058adc87a9c0c6c5d433ccc84449d62124e0d0e2c78fb"
+    },
+    "irelia-innovator-python-fixes.log": {
+      "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-python-fixes.log",
+      "sha256": "c0c92b1c68cdeb7b1efa285070395f947622f3af1d16d0d9027c6542cc3a2d0b"
+    },
+    "irelia-innovator-history-test.log": {
+      "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-history-test.log",
+      "sha256": "3692bf90d7c25c10cf254a1cf1bbdf8197a6b1ed2c3ded9ab0eda3f813ab5f2e"
+    },
+    "irelia-innovator-focused5.log": {
+      "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-focused5.log",
+      "sha256": "9df147684519c12e54c9c8db7760a2dacc60704e7295402a1ca3cb27b60032f5"
+    },
+    "irelia-innovator-focused6.log": {
+      "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-focused6.log",
+      "sha256": "b28c191237e9ae15a2782d5ddf5577c050e9b02402efb552ddbd5bac49d52156"
+    },
+    "irelia-innovator-api-attempt1.log": {
+      "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-api-attempt1.log",
+      "sha256": "4aff3d8fe6b93c7bfda8d6eb28cad6cb1563d8c9a29ab0f2e82dd19e09c85320"
+    },
+    "irelia-innovator-api-attempt2.log": {
+      "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-api-attempt2.log",
+      "sha256": "c495cf6ee8100bd3f8d930df6e99de76c9b3604afe50de5d66e3b1157d6b04ad"
+    },
+    "irelia-innovator-api-final.log": {
+      "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-api-final.log",
+      "sha256": "448f5fbef5f8e5bb84108c06dac83c59995f95be07d692ca2fa8a083e87a639c"
+    },
+    "irelia-innovator-api-final.jsonl.gz": {
+      "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-api-final.jsonl.gz",
+      "sha256": "24dd617a2964c342766b70ef123460f7a75b822df378ae99af7fad930e865b7a"
+    },
+    "irelia-innovator-ui-release1.log": {
+      "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-ui-release1.log",
+      "sha256": "c3a6b8f197af673267f82924be93f34b6e82e02d11df52832c8d58b0bb440921"
+    },
+    "irelia-innovator-ui-final-review.json": {
+      "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-ui-final-review.json",
+      "sha256": "1d5a1ef1707080a0dd118953d789e129743d8495d3645dcf745d931b0f7a56cd"
+    },
+    "irelia-innovator-clippy-final.log": {
+      "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-clippy-final.log",
+      "sha256": "43b72730d1ad09d0aa7070e957a4c6e4f58662bbfdfefe3c3d8ef9037ab80002"
+    },
+    "irelia-innovator-release-build.log": {
+      "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-release-build.log",
+      "sha256": "94dc99a53e0caff66c63332d32148196d13656b92fd36eac1d04211948cfcd95"
+    },
+    "irelia-innovator-fmt-final.log": {
+      "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-fmt-final.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "irelia-innovator-offline-final.log": {
+      "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-offline-final.log",
+      "sha256": "41795c39fff3f2c196c0449324d0936847bff330d73863fb5222926d0705cedf"
+    },
+    "irelia-innovator-integrated-source.log": {
+      "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-integrated-source.log",
+      "sha256": "dcb92c7be2117ed372577b5b69d8ea14d07c4dcf38a8ce64c7d7b8a0e7beeab1"
+    },
+    "irelia-innovator-integrated-catalog.log": {
+      "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-innovator-integrated-catalog.log",
+      "sha256": "41795c39fff3f2c196c0449324d0936847bff330d73863fb5222926d0705cedf"
+    }
+  },
+  "frozen_source_files": 1138,
+  "changed_source_files": [
+    {
+      "path": "README.md",
+      "sha256": "bf73e4a4bb6d33449d30e9fc160b48f919d34eca44bb14677a61504d2c644f69"
+    },
+    {
+      "path": "assets/art/card_429.png",
+      "sha256": "af194031da83c8c02a39b08c723886ef8fab1f6a0a9a2146e270672127405fbf"
+    },
+    {
+      "path": "assets/data/card_admissions/irelia_innovator/README.md",
+      "sha256": "5235d017d8653de7e190725533c286bfe85db839eb8d08c5ed1bac4dbf6e740e"
+    },
+    {
+      "path": "assets/data/card_admissions/irelia_innovator/admissions.json",
+      "sha256": "885af24ea3e620e40e8f590c38249f50f7e814b6238e19ea1f34a78813b488cf"
+    },
+    {
+      "path": "assets/data/card_admissions/irelia_innovator/rad-105-167.png",
+      "sha256": "cb6f6be20c39b4e5a8cf690d3430532449e57185aaa01ab79979709f39ad4c3c"
+    },
+    {
+      "path": "assets/data/catalog_evidence/images/rad-105-167.png",
+      "sha256": "cb6f6be20c39b4e5a8cf690d3430532449e57185aaa01ab79979709f39ad4c3c"
+    },
+    {
+      "path": "assets/data/catalog_evidence/images.json",
+      "sha256": "91999160384f5944210498c98ba31f86c64bb641e497dc45d765bf6be93086a5"
+    },
+    {
+      "path": "assets/data/catalog_evidence/reviews/pre-reckless-resolutions.json.gz",
+      "sha256": "48bc503c957338e878a0f46949b9a1fe4973029b1a2a3e8336e67b56c0c5d3b6"
+    },
+    {
+      "path": "assets/data/catalog_evidence/reviews/reckless-innovator.json",
+      "sha256": "ec79e3dbcf60e7b3f61eced7b13d5399d5add3bcc3a9854f59b4cf383c53eae0"
+    },
+    {
+      "path": "assets/data/catalog_resolutions.json",
+      "sha256": "d3c20a87520f89b5a41fafc519588806758d10709943c287a46ef8b6c8990475"
+    },
+    {
+      "path": "assets/data/decks.json",
+      "sha256": "85c2311822b3bdf245d6865b7f65b1bdb30db8fdad6a6b13ac341f51fbc17337"
+    },
+    {
+      "path": "assets/data/full_catalog.json",
+      "sha256": "849004407507f348dee82ab03d78ebb70d559c61ad21ca5486e7f1fb28a5bb96"
+    },
+    {
+      "path": "docs/API.md",
+      "sha256": "a8e78e6289a00caf020c49d3de80b89e5876a7d599b0919f008a6e46cbf2e15c"
+    },
+    {
+      "path": "docs/CARD_COVERAGE.md",
+      "sha256": "ad3b8c9e0200fe5652956ca9f30b607b92007fef2d8b1560b3d489b8875aa174"
+    },
+    {
+      "path": "docs/IRELIA_PRIORITY.md",
+      "sha256": "31ba582e6eb4e335ef699ce11fa744b44fc759c39ee430ef1462796b8b63f64b"
+    },
+    {
+      "path": "docs/RULES.md",
+      "sha256": "ff9268ab5f9c9f31aab1b9c1982e951db3fc3e048d1005bf36423b48a7b571c2"
+    },
+    {
+      "path": "docs/RULES_AUDIT.md",
+      "sha256": "672dc080ed84ea3ec174e528a5a19d9cde48a78563b666fa6528bb8551354766"
+    },
+    {
+      "path": "docs/SOURCES.md",
+      "sha256": "c7b90e35b44b9d83dca0b6c3702871aecfbe7fdf62e0d9c49d908c097378d9ac"
+    },
+    {
+      "path": "src/api/empowered/tests.rs",
+      "sha256": "cca35d8e575ff1d02c36c8fdaa370c01ff0a903fdf9ce1d9864ea3365192772a"
+    },
+    {
+      "path": "src/api.rs",
+      "sha256": "e8d41c1006629e47a50404741dc06745746f209ec1a9781add1e1a2c7a180e56"
+    },
+    {
+      "path": "src/board_returns/tests.rs",
+      "sha256": "e748dd892e82851f8db7aac9b0501d455c6e4193e8b142eee73cf3f3a06217f1"
+    },
+    {
+      "path": "src/cards.rs",
+      "sha256": "8b63386af6fcce9d7b82386db529c463dd5cf9d6a2ed2acc5290c1b3d2d78d2c"
+    },
+    {
+      "path": "src/companion.rs",
+      "sha256": "592b7b6413521bb1fc703c2ea4f959d16fce2e4d62f9f25c3259139d6e13e59f"
+    },
+    {
+      "path": "src/deploy_ui.rs",
+      "sha256": "9056e62595db86a4b64407982d2139f3df7945d04c23b0257a5dab5f853c27a8"
+    },
+    {
+      "path": "src/game.rs",
+      "sha256": "53a7de0d9141729713ed4d7eac8e0c0815d8b8eb8834c129efcd3838cd53003c"
+    },
+    {
+      "path": "src/innovator_tests.rs",
+      "sha256": "3f913b38c97c5ff62ea321fa31be96dcb2f04b1898d8238c2deccbcb162bfc61"
+    },
+    {
+      "path": "src/main.rs",
+      "sha256": "6dd64ea81a5928f3f748dfdfb2514d9bb473ed1efb09540a069f1d260d84c608"
+    },
+    {
+      "path": "src/rules.rs",
+      "sha256": "f3aabd4c0a9ae526e9f2a3fd83cb3f12407d5773a6c3da6119174edb0001f6a8"
+    },
+    {
+      "path": "src/smoke/irelia.rs",
+      "sha256": "d528902855ace56f91680cc2df4906daa77ea98fdef6309a9d1f8f40626a838e"
+    },
+    {
+      "path": "src/trigger_modes.rs",
+      "sha256": "d175139bacc72f0a5eabeb0644145ee5d15508e270e81a1809e75d0afb1ead3e"
+    },
+    {
+      "path": "src/trigger_rules.rs",
+      "sha256": "2efeab5be38eccc1e24f20b603ee64b1fbec52a8485e45fc7a8fd79db2015d4a"
+    },
+    {
+      "path": "src/triggers.rs",
+      "sha256": "70defb496e3efca37c8e2ab3a4a8f1f9bc2fd4eda35f468fb5ded65ce33b6690"
+    },
+    {
+      "path": "tests/card_batch_eleven.rs",
+      "sha256": "4c8b327c71923a8dd8a6c50204b4a6d8388160c8192350d33c00c0392c0ea42b"
+    },
+    {
+      "path": "tests/card_batch_nine.rs",
+      "sha256": "c7c5d7541fcdf05a20985f5e7b8387eeeafd4ddd38e2eab9f4de5b16d01f9e51"
+    },
+    {
+      "path": "tests/catalog_review.rs",
+      "sha256": "61011a0162793264da062e6ef93869af2bde4937471f8d5229a304687a4347e0"
+    },
+    {
+      "path": "tests/irelia_innovator.rs",
+      "sha256": "b20d101fd7648c368ed9b4709c5df359aae74069f55f0b445d06854fc47c0cc9"
+    },
+    {
+      "path": "tools/test_c28_admissions.py",
+      "sha256": "679082a002669d6e0763f7379069bd11218cabd7a5544ef9b3c6e0ecc321345d"
+    },
+    {
+      "path": "tools/test_c9_source_review.py",
+      "sha256": "78232e1235b311c5881cc5bd0b21379b694e0496fbd6752b353988d318d92dc4"
+    },
+    {
+      "path": "tools/test_catalog_pipeline.py",
+      "sha256": "8bd718505e83e74a9399a36de238215d77e8cadee2daaef58c6fea37bc23ace7"
+    },
+    {
+      "path": "tools/test_catalog_review.py",
+      "sha256": "48b2c4b2d388b49a38b3691c0bcf6b28f63948f431148184ac1a9635c17be131"
+    },
+    {
+      "path": "tools/test_gear_source_review.py",
+      "sha256": "354064548bdb2da20c0f155c14539d4e2e4bbad7748218ad0be6dc95363700aa"
+    },
+    {
+      "path": "tools/test_import_catalog.py",
+      "sha256": "64fb302fad13f742f17f77e29e02324bf74b86b73143abf9ccd39461e999e0e4"
+    },
+    {
+      "path": "tools/test_irelia_innovator.py",
+      "sha256": "5a876a3b1bd21633110d216612f7a578cdaa423f572fae2c572cab514b5e54e0"
+    },
+    {
+      "path": "tools/test_momentary_source_review.py",
+      "sha256": "8ce321a4e6727d96c9aff7688d41c35fcecc1f5f2440e17bdfb5cf90e5be9205"
+    },
+    {
+      "path": "tools/test_reckless_source_review.py",
+      "sha256": "b62c16370d21b2c45618371bbc382f81a47ae89e34ca72a044eb4c1f4ac29aa1"
+    }
+  ],
+  "integration": {
+    "identical_runtime_test_source_files": 1108,
+    "format": "PASS",
+    "git_diff_check": "PASS",
+    "offline_catalog": "PASS",
+    "focused_source_tests": 6,
+    "source_tests_exit": 0,
+    "bridge_sha256": "94a8d9b7bd91df0633d354d8f12c95f692c3ecd9864f08f758e7cfa33a43dc0e"
+  }
+}

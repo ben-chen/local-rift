@@ -400,6 +400,7 @@ fn live_here_source_absence_is_not_changed_to_departure_lookup() {
         card_id: 167,
         rule_index: 0,
         context: TriggerContext {
+            mode: None,
             source: TriggerSource {
                 player: 0,
                 unit_id: Some(90000),

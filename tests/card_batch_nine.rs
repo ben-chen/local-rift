@@ -134,8 +134,8 @@ fn eighteen_appended_cards_preserve_clean_source_facts_and_art() {
                 .any(|t| t == "champion")
         );
     }
-    // Raw issue history includes the later Armored Tusker tag review.
-    assert_eq!(source["counts"]["source_quality_issues"], 53);
+    // Raw issue history includes the later Reckless Innovator tag review.
+    assert_eq!(source["counts"]["source_quality_issues"], 54);
     assert_eq!(
         source["source_quality_issues"]
             .as_array()

@@ -445,6 +445,18 @@ fn checked_advice(game: &Game, level: AdviceLevel) -> Result<Vec<&'static str>, 
         });
     }
 
+    if human.hand.contains(&429)
+        || human
+            .units
+            .iter()
+            .any(|unit| !unit.token && unit.card_id == 429)
+    {
+        tips.push(if beginner {
+            "Reckless Innovator triggers when a ready copy becomes exhausted. Entering exhausted does not trigger it. Accelerate lets it enter ready and move this turn."
+        } else {
+            "Ready Innovator again to earn another choice when it exhausts. Weigh a paid draw now against exhausted Gold for a later turn; neither mode is once per turn."
+        });
+    }
     if human.hand.contains(&427) {
         tips.push(if beginner {
             "Siren's Song can move an enemy only if that same unit moved this turn. Playing a unit or recalling it does not count. Choose its destination before casting."
@@ -1010,6 +1022,19 @@ fn response_window_advice(
             } else {
                 "Compare that gear's value with keeping your Prefect for combat and scoring. If the gear leaves in response, your paid cost is not refunded."
             }],
+            Decision::TriggerMode { card_id: 429, .. } => vec![if beginner {
+                "Choose Gold or a paid draw. Gold enters exhausted, so it cannot pay costs yet. Drawing costs 1 Chaos Power before the ability can be answered."
+            } else {
+                "Choose a paid draw when you need cards now; choose Gold to save future Power. Your mode and any payment are fixed before the opponent responds."
+            }],
+            Decision::TriggerMode { .. } => vec![
+                "Choose this ability's mode before paying its costs. The opponent can respond after those choices and payments are complete.",
+            ],
+            Decision::TriggerPayment { card_id: 429, .. } => vec![if beginner {
+                "You chose draw 1. Pay 1 Chaos Power before the opponent responds. Declining skips this ability; it does not create Gold instead."
+            } else {
+                "The draw mode is fixed. Compare the card with keeping that Chaos Power for a response. Declining ends this occurrence without switching to Gold."
+            }],
             Decision::TriggerPayment { .. } => vec![
                 "Choose whether to pay this trigger's base cost. Payment happens before responses; declining keeps the ability off the chain.",
                 if beginner {
@@ -1556,6 +1581,58 @@ mod tests {
 
     fn game() -> Game {
         Game::new(0, 1, 72, Difficulty::Easy)
+    }
+
+    #[test]
+    fn innovator_coaching_explains_entry_modes_and_payment_without_private_information() {
+        use local_rift::game::{Action, TriggerContext, TriggerSource};
+        let mut g = game();
+        g.start_match().unwrap();
+        g.players[0].hand = vec![429];
+        for level in [AdviceLevel::Beginner, AdviceLevel::Advanced] {
+            let tips = advice(&g, level);
+            assert!(tips.iter().any(|tip| tip.contains("Innovator")));
+            assert!(tips.iter().all(|tip| tip.chars().count() <= 180));
+        }
+        g.decision = Some(Decision::TriggerMode {
+            player: 0,
+            choice_id: 42900,
+            card_id: 429,
+            rule_index: 0,
+            context: TriggerContext {
+                mode: None,
+                source: TriggerSource {
+                    player: 0,
+                    unit_id: Some(42900),
+                    gear_id: None,
+                },
+                subject: None,
+                movement: None,
+                departure_location: None,
+            },
+        });
+        for payment in [false, true] {
+            if payment {
+                g.apply(Action::ChooseTriggerMode {
+                    choice_id: 42900,
+                    mode: 1,
+                })
+                .unwrap();
+            }
+            let mut hidden_change = g.clone();
+            hidden_change.players[1].hand = vec![429, 70, 6];
+            hidden_change.players[1].deck.reverse();
+            assert_eq!(fingerprint(&g), fingerprint(&hidden_change));
+            for level in [AdviceLevel::Beginner, AdviceLevel::Advanced] {
+                let tips = advice(&g, level);
+                assert!(tips[0].contains("Gold"));
+                assert!(tips.iter().all(|tip| tip.chars().count() <= 180));
+                assert_eq!(tips, advice(&hidden_change, level));
+            }
+            if payment {
+                assert!(advice(&g, AdviceLevel::Beginner)[0].contains("does not create Gold"));
+            }
+        }
     }
 
     #[test]
@@ -2478,6 +2555,7 @@ mod tests {
             card_id: 403,
             rule_index: 1,
             context: local_rift::game::TriggerContext {
+                mode: None,
                 source: local_rift::game::TriggerSource {
                     player: 0,
                     unit_id: None,
@@ -2901,6 +2979,7 @@ mod tests {
                     card_id: 188,
                     rule_index: 0,
                     context: local_rift::game::TriggerContext {
+                        mode: None,
                         departure_location: None,
                         movement: None,
                         source: local_rift::game::TriggerSource {

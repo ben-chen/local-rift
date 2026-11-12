@@ -30,8 +30,9 @@ Hunters' Circle was already registered as battlefield 7. Its renewed
 card admission. The [Sacramento list attributed to Michael Mckain](https://riftwatch.gg/decks/sacramento-269/)
 (October 24–25, 269th place) supplies a concrete secondary-source lead: three
 Battle Preparations, two Siren's Song, two Back Off and that battlefield. It is
-not a verified new preset or evidence of top-tier results. Reckless Innovator
-remains a community lead behind cards tied to these specific lists. All-time
+not a verified new preset or evidence of top-tier results. Reckless Innovator's
+Irelia deck relevance remains a community lead; its availability does not verify
+a new tournament preset. All-time
 aggregate frequencies include older banned decks and must not be presented as
 current Standard prevalence.
 
@@ -44,9 +45,17 @@ move-versus-play, payment refusal and turn reset. Its total-cost discount also
 applies to Accelerate after Hidden ignores the base cost. Eight new regressions
 pass alongside all eleven existing tests in the battlefield test target.
 
-Next, review Reckless Innovator's printed Piltover tag and Exhaust-triggered
-choices before implementing it. It remains a lower-confidence community lead,
-not evidence of a current top-performing tournament list.
+Reckless Innovator is now implemented and validated. Its printed Piltover tag
+is preserved as a reviewed correction of the gallery's empty tag list. Its
+exhaustion choice, pre-response draw cost, exhausted Gold, and repeated
+Irelia-ready interactions use the same rules through the client and bot API.
+The [validation record](validation/irelia_innovator.json) separates complete
+games, focused interactions, source review and native interface checks.
+
+Next, reconcile the remaining cards in newer Irelia lists against dated
+tournament sources before choosing another admission or preset. Continue the
+end-to-end Irelia rules audit, including tournament match flow and sideboarding;
+card-pool coverage alone does not make that match experience complete.
 
 For each addition, exercise legal targeting, costs, responses, resolution after
 targets change, Irelia's choose/ready triggers, bot-visible actions and UI hints.

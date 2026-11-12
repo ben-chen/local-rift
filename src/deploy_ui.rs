@@ -34,6 +34,9 @@ impl App {
         };
         let Decision::TriggerPayment {
             choice_id,
+            card_id,
+            rule_index,
+            context,
             ref targets,
             ref base_cost,
             deflect,
@@ -65,7 +68,13 @@ impl App {
         self.ui
             .wrapped_lines(&cost, 1178.0, 425.0, 212.0, 11.0, TEXT, 2);
         self.ui.wrapped_lines(
-            &if targets.is_empty() {
+            &if let Some(mode) = context.mode.and_then(|mode| {
+                local_rift::trigger_rules::trigger_rules(card_id)[rule_index]
+                    .modes
+                    .get(mode)
+            }) {
+                format!("Chosen: {}", mode.label)
+            } else if targets.is_empty() {
                 "No chosen targets.".into()
             } else {
                 targets

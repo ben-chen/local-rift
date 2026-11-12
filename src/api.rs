@@ -1067,6 +1067,9 @@ fn action_json_at_depth(action: &Action, depth: usize) -> Value {
         Action::ChooseTriggerTargets { targets } => {
             json!({"type":"choose_trigger_targets","targets":ts(targets)})
         }
+        Action::ChooseTriggerMode { choice_id, mode } => {
+            json!({"type":"choose_trigger_mode","choice_id":choice_id,"mode":mode})
+        }
         Action::ChooseDeathReplacement { unit_id, gear_id } => {
             json!({"type":"choose_death_replacement","unit_id":unit_id,"gear_id":gear_id})
         }
@@ -1742,6 +1745,13 @@ fn parse_action_at_depth(value: &Value, depth: usize) -> Result<Action, ApiError
                 targets: targets(o, "targets")?,
             }
         }
+        "choose_trigger_mode" => {
+            fields!("choice_id", "mode");
+            Action::ChooseTriggerMode {
+                choice_id: id32(o, "choice_id")?,
+                mode: index(o, "mode")?,
+            }
+        }
         "choose_death_replacement" => {
             fields!("unit_id", "gear_id");
             Action::ChooseDeathReplacement {
@@ -1969,6 +1979,21 @@ fn decision_to_json(game: &Game, decision: &Decision, viewer: usize) -> Result<V
                 target_to_json(&Target::Unit { player:context.source.player, unit_id }))},
             "can_accept":game.clone().apply(Action::Choose { accept:true }).is_ok(),
             "paid_before_responses":true
+        }),
+        Decision::TriggerMode {
+            choice_id,
+            card_id,
+            rule_index,
+            context,
+            ..
+        } => json!({
+            "type":"trigger_mode","choice_id":choice_id,"card_id":card_id,"rule_index":rule_index,
+            "context":trigger_context_to_json(context),"chosen_before_responses":true,
+            "options":game.trigger_mode_options().iter().enumerate().map(|(index, mode)|json!({
+                "index":index,"label":mode.label,"base_cost":mode.rule.base_cost.map(|cost|json!({
+                    "energy":cost.energy,"power":cost.power,"domain":cost.domain.map(|domain|format!("{domain:?}").to_lowercase())
+                }))
+            })).collect::<Vec<_>>()
         }),
         Decision::TriggerPayment {
             choice_id,
@@ -2304,10 +2329,14 @@ fn board_location_to_json(location: crate::game::board_targets::BoardLocation) -
     }
 }
 fn trigger_context_to_json(context: &TriggerContext) -> Value {
-    json!({"source":{"player":context.source.player,"unit_id":context.source.unit_id,
+    let mut value = json!({"source":{"player":context.source.player,"unit_id":context.source.unit_id,
         "gear_id":context.source.gear_id},"subject":context.subject.as_ref().map(target_to_json),
         "movement":context.movement.map(|movement|json!({"origin":movement.origin,"destination":movement.destination})),
-        "departure_location":context.departure_location.map(board_location_to_json)})
+        "departure_location":context.departure_location.map(board_location_to_json)});
+    if let Some(mode) = context.mode {
+        value["mode"] = json!(mode);
+    }
+    value
 }
 
 #[cfg(test)]
@@ -4010,11 +4039,131 @@ mod tests {
     }
 
     #[test]
+    fn innovator_api_exposes_modes_pays_before_responses_and_preserves_private_draws() {
+        for owner in 0usize..2 {
+            for chosen in 0..2 {
+                let mut session = Session::new(ResetOptions {
+                    decks: [3, 3],
+                    ..ResetOptions::default()
+                })
+                .unwrap();
+                session.game.choose_starting_player(owner).unwrap();
+                session.start(0).unwrap();
+                session.game.battlefields = [2, 2];
+                session.game.battlefield_owner = [Some(owner); 2];
+                for state in &mut session.game.players {
+                    state.units.clear();
+                    state.gear.clear();
+                    state.hand.clear();
+                    state.champion = None;
+                    state.deck = vec![71];
+                    state.set_rune_setup([0; 6], [0; 6]).unwrap();
+                    state.energy = 8;
+                    state.energy_pool = 8;
+                    state.power_pool = [0, 0, 0, 0, 1, 0];
+                    state.any_power = 0;
+                }
+                let mut innovator = unit(900, None, 0);
+                innovator.card_id = 429;
+                innovator.token = false;
+                session.game.players[owner].units.push(innovator);
+                submit(
+                    &mut session,
+                    Action::MoveGroup {
+                        unit_ids: vec![900],
+                        lane: Some(0),
+                    },
+                );
+                let before = format!("{:?}", session.game);
+                let revision = session.revision();
+                let view = session.observe(owner).unwrap();
+                let choice_id = view["decision"]["choice_id"].as_u64().unwrap() as u32;
+                for viewer in 0..2 {
+                    let observed = session.observe(viewer).unwrap();
+                    let choice = &observed["decision"];
+                    assert_eq!(choice["type"], "trigger_mode");
+                    assert_eq!(choice["card_id"], 429);
+                    assert_eq!(choice["chosen_before_responses"], true);
+                    assert_eq!(choice["context"]["source"]["player"], owner);
+                    assert_eq!(choice["context"]["source"]["unit_id"], 900);
+                    assert!(choice["context"].get("mode").is_none());
+                    assert_eq!(choice["options"][0]["base_cost"], Value::Null);
+                    assert_eq!(
+                        choice["options"][1]["base_cost"],
+                        json!({"energy":0,"power":1,"domain":"chaos"})
+                    );
+                    assert_eq!(observed["chain"], json!([]));
+                }
+                assert_eq!(session.revision(), revision);
+                assert_eq!(format!("{:?}", session.game), before);
+                for wire in [
+                    json!({"type":"choose_trigger_mode","choice_id":choice_id,"mode":-1}),
+                    json!({"type":"choose_trigger_mode","choice_id":choice_id,"mode":0.5}),
+                    json!({"type":"choose_trigger_mode","choice_id":choice_id,"mode":null}),
+                    json!({"type":"choose_trigger_mode","choice_id":choice_id,"mode":2}),
+                    json!({"type":"choose_trigger_mode","choice_id":choice_id+1,"mode":0}),
+                    json!({"type":"choose_trigger_mode","choice_id":choice_id,"mode":0,"accept":true}),
+                    json!({"type":"choose_trigger_mode","mode":0}),
+                ] {
+                    rejected_wire_action(&mut session, wire);
+                }
+                let action = Action::ChooseTriggerMode {
+                    choice_id,
+                    mode: chosen,
+                };
+                assert_eq!(parse_action(&action_to_json(&action)).unwrap(), action);
+                submit(&mut session, action);
+                if chosen == 1 {
+                    let observed = session.observe(1 - owner).unwrap();
+                    assert_eq!(observed["decision"]["type"], "trigger_payment");
+                    assert_eq!(observed["decision"]["context"]["mode"], 1);
+                    assert_eq!(observed["chain"], json!([]));
+                    assert_eq!(observed["players"][owner]["power_pool"][4], 1);
+                    assert_eq!(observed["players"][owner]["hand_count"], 0);
+                    let payment_id = observed["decision"]["choice_id"].as_u64().unwrap() as u32;
+                    rejected_wire_action(
+                        &mut session,
+                        json!({"type":"choose_trigger_mode","choice_id":choice_id,"mode":0}),
+                    );
+                    submit(
+                        &mut session,
+                        Action::ResolveTriggerPayment {
+                            choice_id: payment_id,
+                            pay: true,
+                        },
+                    );
+                }
+                for viewer in 0..2 {
+                    let observed = session.observe(viewer).unwrap();
+                    assert_eq!(observed["chain"][0]["ability"]["context"]["mode"], chosen);
+                    assert_eq!(observed["players"][owner]["power_pool"][4], 1 - chosen);
+                    assert_eq!(observed["players"][owner]["hand_count"], 0);
+                    assert!(session.game.players[owner].gear.is_empty());
+                }
+                pass_twice(&mut session);
+                assert_eq!(
+                    session.game.players[owner].gear.len(),
+                    usize::from(chosen == 0)
+                );
+                let own = session.observe(owner).unwrap();
+                let opponent = session.observe(1 - owner).unwrap();
+                assert_eq!(own["players"][owner]["hand_count"], chosen);
+                assert_eq!(opponent["players"][owner]["hand_count"], chosen);
+                if chosen == 1 {
+                    assert_eq!(own["players"][owner]["hand"], json!([71]));
+                    assert_eq!(opponent["players"][owner]["hand"], Value::Null);
+                }
+            }
+        }
+    }
+
+    #[test]
     fn generic_trigger_api_preserves_target_order_and_bearer_context() {
         let mut session = playing();
         session.game.players[0].units = vec![unit(100, None, 5), unit(101, None, 3)];
         session.game.players[1].units = vec![unit(102, None, 3)];
         let context = TriggerContext {
+            mode: None,
             departure_location: None,
             movement: None,
             source: crate::game::TriggerSource {
@@ -4095,6 +4244,7 @@ mod tests {
             card_id: 188,
             rule_index: 0,
             context: TriggerContext {
+                mode: None,
                 departure_location: None,
                 movement: None,
                 source: crate::game::TriggerSource {
@@ -4225,6 +4375,7 @@ mod tests {
                 card_id: 374,
                 rule_index: 0,
                 context: TriggerContext {
+                    mode: None,
                     source: crate::game::TriggerSource {
                         player: 0,
                         unit_id: Some(99),
@@ -4301,6 +4452,7 @@ mod tests {
                 card_id,
                 rule_index: 0,
                 context: TriggerContext {
+                    mode: None,
                     departure_location: None,
                     movement: None,
                     source: crate::game::TriggerSource {

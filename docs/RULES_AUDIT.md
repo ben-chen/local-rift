@@ -500,3 +500,34 @@ not tournament deck legality. No gameplay code changed. The exact source pins,
 fixture corrections and validation scope are in the
 [audit record](validation/irelia_circle.json). This is not a renewed full-client
 or full-Standard certification.
+
+
+### Reckless Innovator: modal exhaustion triggers, November 11, 2026
+
+The complete official RAD-105/167 face supplies its missing Piltover tag and
+confirms two modes, with no once-per-turn restriction. Core 415 distinguishes
+Exhaust from exhausted entry and ignores an instruction to Exhaust an already
+exhausted object. Accelerate changes entry; it does not create an Exhaust event.
+
+Mode selection precedes costs (403.2). The draw instruction supplies the selected
+trigger's base cost (204.1.c, 404.1.b.1), paid before responses. Positive-cost
+refusal ends that occurrence under 405.2, without falling back to Gold. Source
+departure does not change the selected mode. The original source identity is
+retained for each occurrence; simultaneous copies choose and pay separately.
+
+Focused tests exercise both seats, ordinary and accelerated entry, actual
+movement, repeated ready/exhaust transitions, Irelia's paid ready trigger, and
+an effect that exhausts before dealing lethal damage. They cover exact payment
+undo/refusal, invalid and stale choices, source departure, AI choices, and public
+API modes with private draws. These controlled fixtures may supply resources or
+cards outside a legal deck; separate exact-40-card Irelia games establish legal
+setup and completion.
+
+The full-card inspector, mode controls, fixed-mode payment view and companion
+were reviewed at both sizes. The [acceptance record](validation/irelia_innovator.json)
+records original failures and successful targeted reruns. The Irelia fixture's
+first expectation omitted Discipline's independent draw; the API campaign's
+first privacy assertion omitted explicit Reveal Hand/Sabotage permissions.
+Correcting those checks did not change the engine's draw or visibility rules.
+This card admission does not certify the remaining Standard pool or expert AI
+strength.

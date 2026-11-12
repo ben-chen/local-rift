@@ -306,7 +306,7 @@ The fifth preset is the sourced Los Angeles Rengar winning list. Copying that pr
 
 ## Remaining fidelity limits
 
-Ten supported legends, seventeen battlefield choices, and 421 main-deck cards are available through five supplied presets and the custom deck editor. The original four presets and all ten authored or preset-derived training recipes remain unchanged; the fifth tournament preset is separate. Additional supported cards can be added through the editor where eligible. There is no sideboarding, tournament match structure, multiplayer mode, or full card-set coverage. The presets are dated tournament lists, not a ranking of the current metagame.
+Ten supported legends, seventeen battlefield choices, and 430 main-deck cards are available through five supplied presets and the custom deck editor. The original four presets and all ten authored or preset-derived training recipes remain unchanged; the fifth tournament preset is separate. Additional supported cards can be added through the editor where eligible. There is no sideboarding, tournament match structure, multiplayer mode, or full card-set coverage. The presets are dated tournament lists, not a ranking of the current metagame.
 
 The desktop and bot API expose exact damage allocations and power-source payments. The default automatic payment remains available; energy can be prepared by exhausting chosen rune domains before a play. These controls share engine validation, but broader card and interaction coverage is still required.
 
@@ -471,3 +471,25 @@ Only the chosen card is revealed; the rest of the hand remains private. The
 client's play choices panel offers Show Off and Repeat separately, and the two
 rune zones highlight legal physical targets. Mote explains the timing and the
 tradeoff between revealing a hand card and picking public gear.
+
+
+## Reckless Innovator and modal triggers
+
+Reckless Innovator may pay its Accelerate cost of 1 Energy and 1 Chaos Power to
+enter ready. Entering exhausted does not trigger its ability. Each later change
+from ready to exhausted creates its own choice, including a Standard Move cost
+or an effect's Exhaust instruction. Readying it with Irelia can enable another
+exhaustion in the same turn. There is no once-per-turn restriction.
+
+Choose one effect before costs and responses: play a Gold token exhausted at
+Base, or pay 1 Chaos Power to draw one. The selected mode stays fixed through
+payment and resolution, even if the original unit leaves play. An effect that
+exhausts and then kills Innovator still produces its pending trigger. Already
+exhausted copies do not trigger again merely because an effect says Exhaust.
+
+Gold cannot be spent while exhausted. The draw mode costs Power before the
+ability can be answered; it cannot use spell-only Power. Declining that positive
+cost skips this occurrence without producing Gold. Undoing a staged payment
+returns to the same selected mode and restores that payment attempt. The native
+controls and bot API expose the same public choices. The Gold reminder's
+Reaction keyword does not grant Reaction timing to the unit card.

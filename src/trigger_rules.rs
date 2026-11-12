@@ -230,8 +230,16 @@ pub struct TriggerBaseCost {
 pub enum TriggerObjectCost {
     BanishSource,
 }
+/// A triggered ability chooses its mode during finalization, before paying
+/// that mode's costs and before either player can respond to the ability.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct TriggerMode {
+    pub label: &'static str,
+    pub rule: TriggerRule,
+}
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct TriggerRule {
+    pub modes: &'static [TriggerMode],
     pub text_area: TriggerTextArea,
     pub event: Event,
     pub conditions: &'static [Condition],
@@ -264,6 +272,7 @@ const fn rule(
     effects: &'static [Effect],
 ) -> TriggerRule {
     TriggerRule {
+        modes: &[],
         text_area: TriggerTextArea::Rules,
         event,
         conditions,
@@ -285,6 +294,20 @@ const fn equipment_rule(
     TriggerRule {
         text_area: TriggerTextArea::Equipment,
         ..rule(event, conditions, optional, targets, effects)
+    }
+}
+
+/// The selected mode is frozen with the triggered ability, never inferred from
+/// resources or board state when it resolves.
+pub fn selected_rule(
+    card_id: usize,
+    index: usize,
+    mode: Option<usize>,
+) -> Option<&'static TriggerRule> {
+    let parent = trigger_rules(card_id).get(index)?;
+    match mode {
+        Some(mode) => parent.modes.get(mode).map(|mode| &mode.rule),
+        None => Some(parent),
     }
 }
 
@@ -327,6 +350,43 @@ pub fn trigger_rules(card_id: usize) -> &'static [TriggerRule] {
         )
     };
     match card_id {
+        429 => {
+            const {
+                &[TriggerRule {
+                    modes: &[
+                        TriggerMode {
+                            label: "Play a Gold exhausted",
+                            rule: rule(
+                                SelfExhausted,
+                                &[],
+                                false,
+                                TargetRule::NONE,
+                                &[Tokens {
+                                    count: 1,
+                                    might: 0,
+                                    gear: true,
+                                    opponent: false,
+                                    location: Base,
+                                    entry_ready: false,
+                                }],
+                            ),
+                        },
+                        TriggerMode {
+                            label: "Pay 1 Chaos Power to draw 1",
+                            rule: TriggerRule {
+                                base_cost: Some(TriggerBaseCost {
+                                    energy: 0,
+                                    power: 1,
+                                    domain: Some(crate::cards::Domain::Chaos),
+                                }),
+                                ..rule(SelfExhausted, &[], false, TargetRule::NONE, &[Draw(1)])
+                            },
+                        },
+                    ],
+                    ..rule(SelfExhausted, &[], false, TargetRule::NONE, &[])
+                }]
+            }
+        }
         424 => {
             const {
                 &[TriggerRule {

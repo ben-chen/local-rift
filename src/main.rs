@@ -2384,6 +2384,39 @@ impl App {
             }
             return Ok(());
         }
+        if let Decision::TriggerMode {
+            card_id, choice_id, ..
+        } = decision
+        {
+            self.ui.ellipsis(
+                self.game.catalog[card_id].name,
+                1178.0,
+                359.0,
+                210.0,
+                16.0,
+                TEXT,
+            );
+            self.ui.wrapped_lines(
+                "Choose one effect. Pay its cost before the opponent can respond.",
+                1178.0,
+                390.0,
+                210.0,
+                11.0,
+                MUTED,
+                4,
+            );
+            for (mode, option) in self.game.trigger_mode_options().iter().enumerate() {
+                if self.ui.button(
+                    Rect::new(1178.0, 448.0 + mode as f32 * 48.0, 212.0, 40.0),
+                    option.label,
+                    false,
+                    true,
+                ) {
+                    self.action(Action::ChooseTriggerMode { choice_id, mode });
+                }
+            }
+            return Ok(());
+        }
         if matches!(decision, Decision::Payment { .. }) {
             self.locked_payment_panel()?;
             return Ok(());
@@ -2645,7 +2678,7 @@ impl App {
         }
         let (title,body)=match &decision{
             Decision::TriggerObjectCost { context, .. } => ("Banish Prefect?", format!("Banish Prefect now. Then banish {} after responses. Decline to keep Prefect.", context.subject.map(|t| target_label(&self.game, t)).unwrap_or_else(|| "the played gear".into()))),
-            Decision::TriggerPayment { .. } | Decision::BattlefieldTargets { .. } | Decision::BattlefieldCost { .. } | Decision::BattlefieldPayment { .. } => unreachable!(),
+            Decision::TriggerMode { .. } | Decision::TriggerPayment { .. } | Decision::BattlefieldTargets { .. } | Decision::BattlefieldCost { .. } | Decision::BattlefieldPayment { .. } => unreachable!(),
             Decision::BanishPlay{card_id,..}=>("Play from Banish",format!("Play {} now? Base energy is waived; power and extra costs still apply. Declining leaves it in Banish.",self.game.catalog[*card_id].name)),
             Decision::DrawLook{..}|Decision::RevealedCard{..}|Decision::DeckLookPlay{..}|Decision::RevealedDeck{..}|Decision::EmpowerPlayed{..}|Decision::PredictCards{..}|Decision::Payment{..}|Decision::ResourceConversion{..}|Decision::TriggerTargets{..}|Decision::LegendTargets{..}|Decision::CombatDamage{..}|Decision::TokenPlacement{..}|Decision::TokenPlay{..}|Decision::BattlefieldOrder{..}|Decision::RevivePlay{..}|Decision::PendingPlay{..}=>unreachable!(),
             Decision::TrashTarget{..}=>("Choose a trash target","Choose an eligible card below before this ability enters the chain. Opponents may respond before the chosen card is played.".into()),
@@ -3656,6 +3689,7 @@ impl App {
             decision,
             Decision::TriggerTargets { .. }
                 | Decision::LegendTargets { .. }
+                | Decision::TriggerMode { .. }
                 | Decision::TriggerPayment { .. }
                 | Decision::BattlefieldTargets { .. }
                 | Decision::BattlefieldCost { .. }
@@ -8436,6 +8470,9 @@ fn card_brief(game: &Game, id: usize) -> String {
     }
     if id == 427 {
         return "Move an enemy that moved this turn".into();
+    }
+    if id == 429 {
+        return "On exhaust: Gold exhausted, or pay 1 Chaos to draw 1".into();
     }
     if id == 410 {
         return "Choose: move Deploy gear, or inspect five for Gear".into();

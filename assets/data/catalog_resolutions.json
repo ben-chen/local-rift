@@ -2,7 +2,7 @@
   "schema_version": 1,
   "status": "reviewed",
   "prepared_on": "2026-10-26",
-  "scope": "All earlier source cohorts preserved, plus Armored Tusker's independently observed missing Noxus tag. Source review alone enables no runtime card.",
+  "scope": "All preceding source review cohorts preserved, plus Reckless Innovator's artwork-confirmed Piltover tag. No source correction admits runtime support.",
   "baseline": {
     "main_cards": 290,
     "legends": 8,
@@ -63,7 +63,7 @@
     }
   },
   "evidence_manifest_path": "assets/data/catalog_evidence/images.json",
-  "evidence_manifest_sha256": "7aec9fcdc394ed6da38cda6ab6178aca563493de400bee00bb465187ee5f8fd2",
+  "evidence_manifest_sha256": "91999160384f5944210498c98ba31f86c64bb641e497dc45d765bf6be93086a5",
   "evidence_checks": {
     "historical_c6_review": {
       "all8_archives_verified": true,
@@ -72,12 +72,12 @@
       "artwork_review": "Dated visual review of the matching official card images, documented in docs/CATALOG_REVIEW.md. No automatic preference for accessibility labels or new inferred source values."
     },
     "current_field_review": {
-      "reviewed_printings": 88,
+      "reviewed_printings": 89,
       "all_image_hashes_verified": true,
       "all_image_urls_match_pinned_raw_printings": true,
       "all_raw_projection_and_origin_checks_pass": true,
-      "visual_review_date": "2026-10-26",
-      "note": "All preceding 137 resolutions / 87 printings / 52 historical issues remain unchanged as prefixes. The exact original Armored Tusker face adds one artwork-confirmed missing-tag correction and explicit discovery group. The 29 complete identity reviews / 90 members and all runtime mappings remain unchanged by this source correction."
+      "visual_review_date": "2026-11-11",
+      "note": "All preceding 138 resolutions, 88 preserved raw printings and 53 historical issues remain unchanged as prefixes. One full official face adds the missing Piltover tag for Reckless Innovator. Runtime mappings and identity reviews are unchanged by this source correction."
     }
   },
   "preservation_contract": [
@@ -92,12 +92,12 @@
     "Live page checks fetch current gallery and legality pages but do not freshly download image evidence; the stored visual review remains dated."
   ],
   "stats": {
-    "historical_issue_groups": 53,
-    "reviewed_printings": 88,
-    "field_resolutions": 138,
-    "overrides": 111,
+    "historical_issue_groups": 54,
+    "reviewed_printings": 89,
+    "field_resolutions": 139,
+    "overrides": 112,
     "confirmations": 27,
-    "artwork_confirmed": 124,
+    "artwork_confirmed": 125,
     "rule_derived": 14,
     "c7_new_field_resolutions": 39,
     "c7_new_printings": 31,
@@ -115,7 +115,9 @@
     "deploy_new_printings": 10,
     "deploy_new_artwork_issue_groups": 5,
     "c27_new_field_resolutions": 1,
-    "c27_new_printings": 1
+    "c27_new_printings": 1,
+    "innovator_new_field_resolutions": 1,
+    "innovator_new_printings": 1
   },
   "historical_issues": [
     {
@@ -1494,6 +1496,36 @@
       "runtime_support": "source_review_only",
       "discovery_basis": "confirmed_artwork",
       "discovered_on": "2026-10-26"
+    },
+    {
+      "review_issue_id": "rad-105-167-tags",
+      "raw_issue": {
+        "kind": "official_artwork_field_mismatch",
+        "field": "tags",
+        "official_ids": [
+          "rad-105-167"
+        ],
+        "values": [
+          {
+            "official_id": "rad-105-167",
+            "raw_value": [],
+            "printed_value": [
+              "Piltover"
+            ]
+          }
+        ],
+        "detail": "The complete official face prints UNIT / PILTOVER below the artwork, while the raw gallery tags are empty. Preserve the raw data and override only effective tags to Piltover; this source correction does not enable runtime support."
+      },
+      "printing_ids": [
+        "rad-105-167"
+      ],
+      "resolution_ids": [
+        "rad-105-167:tags"
+      ],
+      "proposed_status": "reviewed",
+      "runtime_support": "source_review_only",
+      "discovery_basis": "confirmed_artwork",
+      "discovered_on": "2026-11-11"
     }
   ],
   "raw_printings": [
@@ -4947,6 +4979,44 @@
         "Kudos Productions"
       ],
       "review_draft_sha256": "3cd4777ff5b583ec253c845981dd122ca9b4755c76ac03a2f85d13296b1f3633"
+    },
+    {
+      "official_id": "rad-105-167",
+      "public_code": "RAD-105/167",
+      "name": "Reckless Innovator",
+      "set": "RAD",
+      "collector_number": 105,
+      "types": [
+        "unit"
+      ],
+      "type_source": "cardType.type",
+      "structured_types": [
+        "unit"
+      ],
+      "accessibility_types": [
+        "unit"
+      ],
+      "type_labels_conflict": false,
+      "super_types": [],
+      "domains": [
+        "chaos"
+      ],
+      "energy": 3,
+      "power": null,
+      "might": 3,
+      "might_bonus": null,
+      "rules_html": "<p>[Accelerate] (You may pay :rb_energy_1::rb_rune_chaos: as an additional cost to have me enter ready.)<br />When I become exhausted, choose one —</p><ul><li>Play a Gold gear token exhausted. (It has &quot;[Reaction][&gt;] Kill this, :rb_exhaust:: [Add] :rb_rune_rainbow:.&quot;)</li><li>Pay :rb_rune_chaos: to draw 1.</li></ul>",
+      "rules_text": "[Accelerate] (You may pay [1 Energy][Chaos Power] as an additional cost to have me enter ready.)\nWhen I become exhausted, choose one —\nPlay a Gold gear token exhausted. (It has \"[Reaction][>] Kill this, [Exhaust]: [Add] [Any Power].\")\nPay [Chaos Power] to draw 1.",
+      "equipment_html": "",
+      "equipment_text": "",
+      "tags": [],
+      "rarity": "uncommon",
+      "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/b7ff5684309bcd346e6b3534e0d1f38ec1a38726-744x1039.png?accountingTag=RB",
+      "image_accessibility_text": "Riftbound Unit: Reckless Innovator. [Accelerate] (You may pay [1][C] as an additional cost to have me enter ready.)\nWhen I become exhausted, choose one —\n- Play a Gold gear token exhausted. (It has \"[Reaction][>] Kill this, [T]: [Add] [A].\")\n- Pay [C] to draw 1.",
+      "illustrators": [
+        "Six More Vodka"
+      ],
+      "review_draft_sha256": "d142a648375fc67d213b8a9144ead50d2cc96c1816ed2bdcf96616f4067d4ed1"
     }
   ],
   "resolutions": [
@@ -9617,6 +9687,36 @@
           "sha256": "1bfe065178df0b026f98ba4f6fabc3fc0c443466b059791833ea5407b8573356",
           "bytes": 820313,
           "location": "Printed UNIT / NOXUS type/tag line below artwork"
+        }
+      ],
+      "enables_runtime_support": false
+    },
+    {
+      "id": "rad-105-167:tags",
+      "official_id": "rad-105-167",
+      "name": "Reckless Innovator",
+      "field": "tags",
+      "reviewed_on": "2026-11-11",
+      "basis": "confirmed_artwork",
+      "operation": "override",
+      "expected_raw_value": [],
+      "raw_source_field": "tags",
+      "expected_raw_source_value": [],
+      "effective_value": [
+        "Piltover"
+      ],
+      "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+      "expected_printing_sha256": "d142a648375fc67d213b8a9144ead50d2cc96c1816ed2bdcf96616f4067d4ed1",
+      "printing_hash_encoding": "UTF-8 JSON sorted keys; ensure_ascii=false; separators=(',', ':')",
+      "reason": "The complete official face prints UNIT / PILTOVER below the artwork, while the raw gallery tags are empty. Preserve the raw data and override only effective tags to Piltover; this source correction does not enable runtime support.",
+      "evidence": [
+        {
+          "kind": "official_card_image",
+          "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/b7ff5684309bcd346e6b3534e0d1f38ec1a38726-744x1039.png?accountingTag=RB",
+          "local_path": "assets/data/catalog_evidence/images/rad-105-167.png",
+          "sha256": "cb6f6be20c39b4e5a8cf690d3430532449e57185aaa01ab79979709f39ad4c3c",
+          "bytes": 779325,
+          "location": "Printed UNIT / PILTOVER type/tag line below artwork"
         }
       ],
       "enables_runtime_support": false

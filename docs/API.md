@@ -134,6 +134,7 @@ Each playable card's `play_targets` reports `{kind, maximum, required}`. `kind` 
 | `resolve_trigger_payment` | `choice_id`, `pay` | Explicitly accept or decline a pending trigger's frozen base/Deflect cost before it becomes a finalized chain item |
 | `choose_target` | optional `target` | Select a pending unit/gear target; during Tornado Warrior's base choice, `null` chooses the legend |
 | `choose_trigger_targets` | `targets` | Finalize an ordered target array for a `trigger_targets` decision; an empty array declines an optional trigger |
+| `choose_trigger_mode` | `choice_id`, `mode` | Choose the zero-based mode of a pending `trigger_mode` occurrence before targets, costs, and responses |
 | `select_cards` | `indices` | Select exact indices for discard, Top Three, Sabotage, or a granted Flow choice from trash |
 | `play_from_trash` | `trash_index`, optional `lane`, `target` | Resolve a replay decision using default targeting |
 | `play_from_trash_targets` | `trash_index`, optional `lane`, `targets` | Resolve a replay decision with exact targets |
@@ -356,6 +357,7 @@ The viewer sees their own hand as card IDs. The opposing hand is `null` except w
 | `predict` | Owner sees `card_id`; `choose` recycles it when true, keeps it on top when false |
 | `draw_look` | Public source, kind, choice ID and count; only the owner sees top-first `cards` and eligible occurrence indices. Use `resolve_draw_look`. |
 | `trigger_payment` | Public choice ID, card/rule, physical source context, selected targets, base cost, and separate Deflect. Use `resolve_trigger_payment` before this pending trigger becomes respondable. |
+| `trigger_mode` | Public `choice_id`, card/rule and physical source `context`, with `options` containing `index`, `label`, and nullable `base_cost`. Use `choose_trigger_mode`; this mandatory choice has no decline action. |
 | `revealed_card` | Public source, card ID and completed `outcome` (`draw`, `recycle`, or `trash`); acknowledge with `choose` and `accept:true`. This record is not a card zone. |
 | `predict_cards` | Public `choice_id` and actual `count`; only owner sees `cards`. Submit the exact index partition and kept order with `resolve_predict`. |
 | `counter_tax` | `chain_id`, energy `cost`; `choose`, with resource actions allowed before payment |
@@ -563,6 +565,8 @@ The public `trigger_payment` decision includes `player`, `choice_id`, `card_id`,
 ```
 
 `pay` must be an explicit Boolean. Declining spends nothing and removes the pending trigger without an effect or a finalized chain item. Accepting pays the frozen cost, rechecks the pinned targets, and finalizes the ordinary trigger with its normal response window. The token or Ready effect happens only when that finalized trigger resolves. Losing the target or being countered later does not refund the paid cost. There is no automatic replacement target.
+
+Reckless Innovator (card429) creates a `trigger_mode` choice on each actual Ready-to-Exhausted transition. Mode 0 plays a Gold token exhausted; mode 1 proceeds to a `trigger_payment` decision costing one Chaos Power. `context.mode` is included only after a modal choice and remains present on the finalized chain ability, even if the physical source leaves play. Declining payment ends that occurrence without switching modes. Choice IDs reject stale submissions; the chosen mode, cost, source, and resulting public Gold are visible to both seats. Drawn card identities remain private. The Gold reminder text does not grant Reaction timing to the unit card.
 
 The nullable top-level `trigger_payment_context` preserves that same public decision through a nested payment plan or Add continuation. It is identical in both seat observations and contains no hidden instructions. Distinct copies of the same card remain distinguishable by their source object IDs and originally selected targets. The opponent still sees `payment_plan.action:null`; exposing the already-public trigger context does not expose a private hand action.
 

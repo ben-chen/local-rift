@@ -269,6 +269,7 @@ pub fn effect(id: usize) -> OfficialEffect {
         426 => BattlePreparations,
         427 => MoveEnemy,
         428 => StunAndDrawFromHand,
+        429 => None,
         424 => None,
         422 => DrawThenChannel {
             draw: 1,
@@ -1125,6 +1126,7 @@ pub fn requirements(id: usize) -> &'static [Mechanic] {
         425 => &[Chain, Move, ChooseReadyTriggers],
         427 => &[Chain, Move],
         428 => &[Chain, Hidden, Stun],
+        429 => &[Chain, Accelerate, Gold, Tokens, OptionalCosts],
         372 | 373 => &[Chain, Gear, Bounce],
         374 => &[Chain, Gear, DeathTriggers],
         375 => &[Chain, Bounce],
@@ -1632,7 +1634,7 @@ pub fn static_abilities(id: usize) -> &'static [StaticAbility] {
         337 | 341 | 345 | 346 => &[Hunt(1)],
         338 | 339 => &[Hunt(2)],
         340 => &[Hunt(2), EntersReadyAtXp(3)],
-        343 => &[Accelerate {
+        343 | 429 => &[Accelerate {
             energy: 1,
             power: 1,
             domain: Domain::Chaos,
@@ -2037,7 +2039,7 @@ mod tests {
     #[test]
     fn all_catalog_entries_have_official_classification() {
         let cards = cards();
-        assert_eq!(cards.len(), 429);
+        assert_eq!(cards.len(), 430);
         for card in cards {
             assert_ne!(
                 effect(card.id),
@@ -2047,7 +2049,7 @@ mod tests {
             );
             assert_ne!(support_status(card.id), SupportStatus::UnknownCard);
         }
-        assert_eq!(effect(429), OfficialEffect::Unsupported);
+        assert_eq!(effect(430), OfficialEffect::Unsupported);
     }
 
     #[test]

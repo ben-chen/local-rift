@@ -6533,6 +6533,21 @@ pub fn cards() -> Vec<CardDef> {
             tags: &[],
             art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/a0e7f7fa55ae618f94fe48920f92406ddd7e3512-744x1039.png?w=280&q=85&fm=png",
         },
+        CardDef {
+            id: 429,
+            official_id: "rad-105-167",
+            name: "Reckless Innovator",
+            cost: 3,
+            power_cost: 0,
+            might: 3,
+            domain: Domain::Chaos,
+            domains: &[Domain::Chaos],
+            kind: CardKind::Unit,
+            official_text: "[Accelerate] (You may pay [1 Energy][Chaos Power] as an additional cost to have me enter ready.)\nWhen I become exhausted, choose one —\nPlay a Gold gear token exhausted. (It has \"[Reaction][>] Kill this, [Exhaust]: [Add] [Any Power].\")\nPay [Chaos Power] to draw 1.",
+            keywords: &["Accelerate", "Add", "Reaction"],
+            tags: &["Piltover"],
+            art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/b7ff5684309bcd346e6b3534e0d1f38ec1a38726-744x1039.png?w=280&q=85&fm=png",
+        },
     ]
 }
 
@@ -6732,7 +6747,7 @@ mod tests {
     #[test]
     fn presets_are_complete_and_references_are_consistent() {
         let catalog = cards();
-        assert_eq!(catalog.len(), 429);
+        assert_eq!(catalog.len(), 430);
         for (index, card) in catalog.iter().enumerate() {
             assert_eq!(index, card.id);
             assert!(!card.official_id.is_empty());

@@ -26,6 +26,9 @@ mod backoff_tests;
 #[path = "combat_card_tests.rs"]
 mod combat_card_tests;
 #[cfg(test)]
+#[path = "innovator_tests.rs"]
+mod innovator_tests;
+#[cfg(test)]
 #[path = "siren_tests.rs"]
 mod siren_tests;
 #[cfg(test)]
@@ -68,6 +71,8 @@ mod scalar_spells;
 mod strategic;
 #[path = "temporary.rs"]
 pub mod temporary;
+#[path = "trigger_modes.rs"]
+mod trigger_modes;
 #[path = "triggers.rs"]
 pub mod triggers;
 use triggers::{EventSnapshot, Occurrence};
@@ -168,6 +173,10 @@ pub enum Action {
     },
     ChooseTriggerTargets {
         targets: Vec<Target>,
+    },
+    ChooseTriggerMode {
+        choice_id: u32,
+        mode: usize,
     },
     FinalizePendingPlay {
         lane: Option<usize>,
@@ -624,6 +633,13 @@ pub enum Decision {
         rule_index: usize,
         context: TriggerContext,
     },
+    TriggerMode {
+        player: usize,
+        choice_id: u32,
+        card_id: CardId,
+        rule_index: usize,
+        context: TriggerContext,
+    },
     LegendTargets {
         player: usize,
     },
@@ -843,6 +859,7 @@ impl Decision {
             | Self::Payment { player }
             | Self::ResourceConversion { player, .. }
             | Self::TriggerPayment { player, .. }
+            | Self::TriggerMode { player, .. }
             | Self::TriggerTargets { player, .. }
             | Self::LegendTargets { player }
             | Self::BattlefieldOrder { player, .. }
@@ -1395,6 +1412,7 @@ impl Game {
             Some(ChainAbility::CardTrigger {
                 context:
                     TriggerContext {
+                        mode: None,
                         source:
                             TriggerSource {
                                 player,
@@ -1744,6 +1762,7 @@ impl Game {
                     | Action::ResolvePredict { .. }
                     | Action::ResolveTriggerPayment { .. }
                     | Action::ChooseTriggerTargets { .. }
+                    | Action::ChooseTriggerMode { .. }
                     | Action::Choose { .. }
                     | Action::SelectCards { .. }
                     | Action::PlayFromTrash { .. }
@@ -1818,6 +1837,9 @@ impl Game {
                 self.resolve_trigger_payment(choice_id, pay)?
             }
             Action::ChooseTriggerTargets { targets } => self.choose_trigger_targets(targets)?,
+            Action::ChooseTriggerMode { choice_id, mode } => {
+                self.choose_trigger_mode(choice_id, mode)?
+            }
             Action::FinalizePendingPlay {
                 lane,
                 targets,
@@ -2676,8 +2698,12 @@ impl Game {
             });
             return Ok(());
         }
-        if let Some(ChainAbility::CardTrigger { rule_index, .. }) = &item.ability
-            && let Some((discard, draw)) = Self::trigger_loot(item.card_id, *rule_index)
+        if let Some(ChainAbility::CardTrigger {
+            rule_index,
+            context,
+        }) = &item.ability
+            && let Some((discard, draw)) =
+                Self::trigger_loot(item.card_id, *rule_index, context.mode)
             && self.pending_loot != Some(item.id)
         {
             self.pending_loot = Some(item.id);
@@ -3297,7 +3323,10 @@ impl Game {
                 context,
             } => {
                 if accept {
-                    match crate::trigger_rules::trigger_rules(card_id)[rule_index].object_cost {
+                    match crate::trigger_rules::selected_rule(card_id, rule_index, context.mode)
+                        .expect("validated trigger mode")
+                        .object_cost
+                    {
                         Some(crate::trigger_rules::TriggerObjectCost::BanishSource) => {
                             let unit_id = context
                                 .source
@@ -3383,6 +3412,7 @@ impl Game {
             | Decision::Payment { .. }
             | Decision::ResourceConversion { .. }
             | Decision::TriggerPayment { .. }
+            | Decision::TriggerMode { .. }
             | Decision::TriggerTargets { .. }
             | Decision::LegendTargets { .. }
             | Decision::BattlefieldOrder { .. }
@@ -4628,13 +4658,19 @@ impl Game {
                         rule_index,
                         context,
                         ..
-                    } if crate::trigger_rules::trigger_rules(card_id)[rule_index]
+                    } if crate::trigger_rules::selected_rule(card_id, rule_index, context.mode)
+                        .expect("validated trigger mode")
                         .targets
                         .max
                         == 0
-                        && crate::trigger_rules::trigger_rules(card_id)[rule_index]
-                            .base_cost
-                            .is_some() =>
+                        && crate::trigger_rules::selected_rule(
+                            card_id,
+                            rule_index,
+                            context.mode,
+                        )
+                        .expect("validated trigger mode")
+                        .base_cost
+                        .is_some() =>
                     {
                         self.trigger_payment_decision(card_id, rule_index, context, Vec::new())?
                     }
@@ -5806,6 +5842,15 @@ impl Game {
                         }
                         out
                     }
+                    Decision::TriggerMode { choice_id, .. } => self
+                        .trigger_mode_options()
+                        .iter()
+                        .enumerate()
+                        .map(|(mode, _)| Action::ChooseTriggerMode {
+                            choice_id: *choice_id,
+                            mode,
+                        })
+                        .collect(),
                     Decision::TriggerPayment { choice_id, .. } => vec![
                         Action::ResolveTriggerPayment {
                             choice_id: *choice_id,
@@ -9276,6 +9321,34 @@ impl Game {
                         Some(Action::ResolveDeckLook {
                             choice_id: *choice_id,
                             index: best,
+                        })
+                    }
+                    Decision::TriggerMode {
+                        player,
+                        choice_id,
+                        card_id: 429,
+                        ..
+                    } => {
+                        let mut draw = self.clone();
+                        let mut can_draw = false;
+                        if draw
+                            .apply(Action::ChooseTriggerMode {
+                                choice_id: *choice_id,
+                                mode: 1,
+                            })
+                            .is_ok()
+                            && let Some(Decision::TriggerPayment { choice_id, .. }) = draw.decision
+                        {
+                            can_draw = crate::numeric::legal_result(draw.apply(
+                                Action::ResolveTriggerPayment {
+                                    choice_id,
+                                    pay: true,
+                                },
+                            ))?;
+                        }
+                        Some(Action::ChooseTriggerMode {
+                            choice_id: *choice_id,
+                            mode: usize::from(can_draw && self.players[*player].hand.len() <= 3),
                         })
                     }
                     Decision::TriggerObjectCost {

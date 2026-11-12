@@ -1,5 +1,7 @@
 //! Irelia's optional object cost through real native accept/decline controls.
 use super::*;
+use crate::Tray;
+use local_rift::game::ChainAbility;
 const PREFECT: u32 = 42400;
 fn setup(app: &mut App) {
     expansion_fixture(app, 70);
@@ -75,6 +77,26 @@ fn backoff_setup(app: &mut App) {
     app.destination = None;
     app.companion.set_level(AdviceLevel::Beginner);
 }
+fn innovator_setup(app: &mut App) {
+    backoff_setup(app);
+    app.game.players[0].hand.clear();
+    app.game.players[0].units = vec![public_unit(42900, 429, None)];
+    app.game.players[1].units.clear();
+    app.game
+        .apply(Action::Move {
+            unit_id: 42900,
+            lane: Some(0),
+        })
+        .unwrap();
+    assert!(matches!(
+        app.game.decision,
+        Some(Decision::TriggerMode { card_id: 429, .. })
+    ));
+    app.selection = None;
+    app.tray = Tray::Board;
+    app.inspect = None;
+}
+
 pub(crate) fn run_frame(app: &mut App, frame: u32) -> bool {
     app.next_ai = f64::INFINITY;
     app.ui.input_override = Some((vec2(-100.0, -100.0), false, false));
@@ -537,9 +559,75 @@ pub(crate) fn run_frame(app: &mut App, frame: u32) -> bool {
             assert!(app.game.players[0].hand.is_empty());
             assert_eq!(app.game.players[0].deck, vec![71, 70]);
             capture(app, "RIFT_IRELIA_BACKOFF_NO_DRAW");
+        }
+        64 => innovator_setup(app),
+        65 => {
+            capture(app, "RIFT_IRELIA_INNOVATOR_MODES");
+            click(app, 1285.0, 468.0);
+        }
+        66 => {
+            let item = app.game.chain.last().unwrap();
+            assert!(
+                matches!(item.ability, Some(ChainAbility::CardTrigger { context, .. }) if context.mode == Some(0))
+            );
+            assert!(app.game.players[0].gear.is_empty());
+            app.game.apply(Action::Pass).unwrap();
+            app.game.apply(Action::Pass).unwrap();
+        }
+        67 => {
+            assert_eq!(app.game.players[0].gear.len(), 1);
+            assert!(app.game.players[0].gear[0].is_gold() && !app.game.players[0].gear[0].ready);
+            capture(app, "RIFT_IRELIA_INNOVATOR_GOLD");
+            innovator_setup(app);
+            app.companion.set_level(AdviceLevel::Advanced);
+        }
+        68 => {
+            capture(app, "RIFT_IRELIA_INNOVATOR_ADVANCED");
+            click(app, 1285.0, 516.0);
+        }
+        69 => {
+            assert!(
+                matches!(app.game.decision, Some(Decision::TriggerPayment { context, .. }) if context.mode == Some(1))
+            );
+            assert_eq!(app.game.players[0].power_pool[4], 10);
+            assert!(app.game.chain.is_empty());
+            capture(app, "RIFT_IRELIA_INNOVATOR_PAYMENT");
+        }
+        70 => click(app, 1285.0, 510.0),
+        71 => {
+            assert!(app.game.decision.is_none());
+            assert!(
+                matches!(app.game.chain.last().unwrap().ability, Some(ChainAbility::CardTrigger { context, .. }) if context.mode == Some(1))
+            );
+            assert_eq!(app.game.players[0].power_pool[4], 9);
+            assert!(app.game.players[0].hand.is_empty());
+            capture(app, "RIFT_IRELIA_INNOVATOR_PAID");
+            app.game.apply(Action::Pass).unwrap();
+            app.game.apply(Action::Pass).unwrap();
+        }
+        72 => {
+            assert_eq!(app.game.players[0].hand, vec![70]);
+            assert!(app.game.players[0].gear.is_empty());
+            capture(app, "RIFT_IRELIA_INNOVATOR_DRAW");
+            app.inspect = Some(429);
+        }
+        73 => {
+            capture(app, "RIFT_IRELIA_INNOVATOR_INSPECT");
+            click(app, 940.0, 700.0);
+        }
+        74 => {
+            assert!(app.inspect.is_none());
+            innovator_setup(app);
+        }
+        75 => click(app, 1285.0, 516.0),
+        76 => click(app, 1285.0, 548.0),
+        77 => {
+            assert!(app.game.decision.is_none() && app.game.chain.is_empty());
+            assert!(app.game.players[0].gear.is_empty() && app.game.players[0].hand.is_empty());
+            assert_eq!(app.game.players[0].power_pool[4], 10);
+            capture(app, "RIFT_IRELIA_INNOVATOR_DECLINED");
             return true;
         }
-
         _ => {}
     }
     false
