@@ -2473,8 +2473,8 @@ mod tests {
             game.players[0].hand = (0..game.catalog.len()).collect();
             game.players[0].score = 7;
             game.players[1].score = 7;
-            for player in 0..2 {
-                game.players[player].units.push(Unit {
+            for (player, state) in game.players.iter_mut().enumerate() {
+                state.units.push(Unit {
                     id: 100 + player as u32,
                     card_id: 0,
                     lane: Some(0),

@@ -532,8 +532,8 @@ impl App {
             self.starting_player
         })
         .expect("valid starting player");
-        for player in 0..2 {
-            game.choose_battlefield(player, self.fields[player])
+        for (player, &field) in self.fields.iter().enumerate() {
+            game.choose_battlefield(player, field)
                 .expect("valid selected battlefield");
         }
         self.native_match = None;
@@ -10287,9 +10287,9 @@ async fn main() {
             app.game.legend[0].spell_power = 3;
         }
         if args.iter().any(|arg| arg == "--board-full") {
-            for owner in 0..2 {
-                let template = app.game.players[owner].units[0].clone();
-                app.game.players[owner].units.clear();
+            for (owner, player) in app.game.players.iter_mut().enumerate() {
+                let template = player.units[0].clone();
+                player.units.clear();
                 for index in 0..16 {
                     let mut unit = template.clone();
                     unit.id = 60_000 + (owner * 100 + index) as u32;
@@ -10299,7 +10299,7 @@ async fn main() {
                         Some((index - 8) / 4)
                     };
                     unit.ready = index % 2 == 0;
-                    app.game.players[owner].units.push(unit);
+                    player.units.push(unit);
                 }
             }
             app.tray = Tray::Board;

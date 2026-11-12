@@ -111,17 +111,17 @@ impl Game {
             }
         }
         let mut rng = Rng::new(seed);
-        for owner in 0..2 {
+        for (owner, player) in state.players.iter_mut().enumerate() {
             let domains = self.legend_def(owner).domains;
             let pool: Vec<_> = crate::deck::eligible_cards(self.legend_id(owner))
                 .into_iter()
                 .filter(|&id| self.card_supported(id))
                 .collect();
             let sample = |rng: &mut Rng| pool[rng.next() as usize % pool.len()];
-            for id in &mut state.players[owner].deck {
+            for id in &mut player.deck {
                 *id = sample(&mut rng);
             }
-            for domain in &mut state.players[owner].rune_deck {
+            for domain in &mut player.rune_deck {
                 *domain = domains[rng.next() as usize % domains.len()];
             }
             let hand_visible = owner == actor
@@ -129,7 +129,7 @@ impl Game {
                 Some(Decision::Sabotage { opponent, .. } | Decision::RevealHand { opponent, .. } | Decision::RecycleRevealedHand { opponent, .. })
                     if opponent == owner);
             if !hand_visible {
-                for id in &mut state.players[owner].hand {
+                for id in &mut player.hand {
                     *id = sample(&mut rng);
                 }
             }
@@ -138,7 +138,7 @@ impl Game {
                 .copied()
                 .filter(|&id| self.catalog[id].keywords.contains(&"Hidden"))
                 .collect();
-            for hidden in &mut state.players[owner].hidden {
+            for hidden in &mut player.hidden {
                 if self.hidden_visible_card(actor, owner, hidden.id).is_none() {
                     let pool = if hidden_pool.is_empty() {
                         &pool
@@ -740,15 +740,10 @@ mod tests {
             game.players[1].hand = vec![69; 100];
             let belief = game.strategic_belief(0);
             let eligible = crate::deck::eligible_cards(legend);
-            for owner in 0..2 {
+            for (owner, player) in belief.players.iter().enumerate() {
+                assert!(player.deck.iter().all(|id| eligible.contains(id)));
                 assert!(
-                    belief.players[owner]
-                        .deck
-                        .iter()
-                        .all(|id| eligible.contains(id))
-                );
-                assert!(
-                    belief.players[owner]
+                    player
                         .rune_deck
                         .iter()
                         .all(|domain| { game.legend_def(owner).domains.contains(domain) })

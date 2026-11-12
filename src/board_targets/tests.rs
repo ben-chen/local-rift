@@ -289,12 +289,12 @@ fn thermo_fixes_all_gear_deaths_before_cleanup_or_fountain_children() {
         "Children wait until parent completes"
     );
     drive(&mut g, false, false);
-    for player in 0..2 {
-        assert_eq!(g.players[player].units.len(), 1);
-        assert!(g.players[player].units[0].token);
-        assert!(g.players[player].units[0].ready);
-        assert!(g.players[player].discard.contains(&360));
-        assert!(!g.players[player].discard.contains(&13));
+    for player in &g.players {
+        assert_eq!(player.units.len(), 1);
+        assert!(player.units[0].token);
+        assert!(player.units[0].ready);
+        assert!(player.discard.contains(&360));
+        assert!(!player.discard.contains(&13));
     }
 }
 

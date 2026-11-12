@@ -46,8 +46,8 @@ fn dense(app: &mut App) {
     for _ in 0..6 {
         place(app, 401, 0);
     }
-    for owner in 0..2 {
-        app.game.players[owner].units = (0..7)
+    for (owner, player) in app.game.players.iter_mut().enumerate() {
+        player.units = (0..7)
             .map(|index| public_unit(24000 + owner as u32 * 100 + index, 24, Some(0)))
             .collect();
     }

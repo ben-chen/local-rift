@@ -83,10 +83,10 @@ fn repeated(targets: Vec<Target>, repeat_targets: Vec<Target>) -> Action {
 #[test]
 fn upstage_comedy_repeats_on_distinct_owners_and_pays_the_extra_cost() {
     let mut game = position();
-    for owner in 0..2 {
+    for (owner, player) in game.players.iter_mut().enumerate() {
         let mut u = unit(100 + owner as u32, 70, None);
         u.ready = false;
-        game.players[owner].units.push(u);
+        player.units.push(u);
     }
     game.players[0].hand = vec![216];
     game.apply(repeated(vec![t(0, 100)], vec![t(1, 101)]))

@@ -144,8 +144,8 @@ impl Game {
         entering: Option<crate::empower::BoardObject>,
     ) -> Vec<TriggerObserver> {
         let mut sources = Vec::new();
-        for player in 0..2 {
-            for unit in &self.players[player].units {
+        for (player, state) in self.players.iter().enumerate() {
+            for unit in &state.units {
                 let object = crate::empower::BoardObject::Unit {
                     player,
                     unit_id: unit.id,
@@ -170,7 +170,7 @@ impl Game {
                     }
                 }
             }
-            for gear in &self.players[player].gear {
+            for gear in &state.gear {
                 let object = crate::empower::BoardObject::Gear {
                     player,
                     gear_id: gear.id,
