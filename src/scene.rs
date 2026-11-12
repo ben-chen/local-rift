@@ -8,7 +8,7 @@ use std::f32::consts::{PI, TAU};
 pub struct SceneUnit {
     pub id: u32,
     pub owner: usize,
-    /// 0 is the owner's base; 1 and 2 are the two battlefields.
+    /// 0 is the owner's base; a battlefield's physical slot is offset by one.
     pub location: usize,
     pub ready: bool,
     pub might: local_rift::numeric::Might,
@@ -27,17 +27,17 @@ pub struct SceneState {
     pub units: Vec<SceneUnit>,
     pub gear: Vec<SceneGear>,
     pub selected: Option<u32>,
-    pub owners: [Option<usize>; 2],
+    pub owners: Vec<Option<usize>>,
     pub time: f32,
     pub orbit: f32,
 }
 
 pub struct SceneHits {
-    pub battlefields: [Rect; 2],
+    pub battlefields: Vec<Rect>,
     pub bases: [Rect; 2],
     pub units: Vec<(u32, Rect)>,
     pub gear: Vec<(SceneGear, Rect)>,
-    pub unit_capacity: [usize; 2],
+    pub unit_capacity: Vec<usize>,
 }
 
 thread_local! {
@@ -694,7 +694,7 @@ pub fn draw_scene(rect: Rect, state: &SceneState) -> SceneHits {
         }
     });
     let mut animated = Sculptor::new();
-    for (index, owner) in state.owners.iter().enumerate() {
+    for (index, owner) in state.owners.iter().take(2).enumerate() {
         let center = vec3(if index == 0 { -2.67 } else { 2.67 }, 0.485, 0.18);
         let color = match owner {
             Some(0) => rgb(102, 211, 197),
@@ -719,18 +719,24 @@ pub fn draw_scene(rect: Rect, state: &SceneState) -> SceneHits {
             r.h * factor,
         )
     };
-    let fields = crate::board_layout::FIELDS;
+    let fields = crate::board_layout::fields(state.owners.len());
     let bases = crate::board_layout::BASES;
-    let has_gear = [0, 1].map(|lane| state.gear.iter().any(|gear| gear.lane == lane));
+    let has_gear: Vec<_> = (0..fields.len())
+        .map(|lane| state.gear.iter().any(|gear| gear.lane == lane))
+        .collect();
     let mut hits = SceneHits {
-        battlefields: fields.map(screen),
+        battlefields: fields.iter().copied().map(screen).collect(),
         bases: bases.map(screen),
         units: Vec::new(),
         gear: Vec::new(),
-        unit_capacity: has_gear.map(crate::board_layout::unit_capacity),
+        unit_capacity: fields
+            .iter()
+            .zip(&has_gear)
+            .map(|(&field, &gear)| crate::board_layout::unit_capacity_at(field, gear))
+            .collect(),
     };
     for (owner, base) in bases.iter().enumerate() {
-        for location in 0..3 {
+        for location in 0..=fields.len() {
             let group: Vec<_> = state
                 .units
                 .iter()
@@ -752,8 +758,8 @@ pub fn draw_scene(rect: Rect, state: &SceneState) -> SceneHits {
                         72.0,
                     )
                 } else {
-                    crate::board_layout::unit_rects(
-                        location - 1,
+                    crate::board_layout::unit_rects_at(
+                        fields[location - 1],
                         owner,
                         group.len(),
                         has_gear[location - 1],
@@ -763,15 +769,17 @@ pub fn draw_scene(rect: Rect, state: &SceneState) -> SceneHits {
             }
         }
     }
-    for lane in 0..2 {
+    for (lane, field) in fields.iter().copied().enumerate() {
         for owner in 0..2 {
             if let Some(gear) = state
                 .gear
                 .iter()
                 .find(|gear| gear.lane == lane && gear.owner == owner)
             {
-                hits.gear
-                    .push((*gear, screen(crate::board_layout::gear_rect(lane, owner))));
+                hits.gear.push((
+                    *gear,
+                    screen(crate::board_layout::gear_rect_at(field, owner)),
+                ));
             }
         }
     }

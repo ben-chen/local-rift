@@ -1625,7 +1625,7 @@ impl Game {
                     return Ok(None);
                 }
                 let another_mover = self.players[player].units.iter().any(|u| u.lane.is_none() && u.ready);
-                let destination = (0..2).any(|lane| lane != origin
+                let destination = (0..self.battlefield_count()).any(|lane| lane != origin
                     && self.battlefield_owner[lane] != Some(player)
                     && !self.player_scored_this_turn[player][lane]
                     && self.players[1-player].units.iter().all(|u| u.lane != Some(lane)));
@@ -1656,7 +1656,7 @@ impl Game {
                 !enemy_target && (matches!(rule.effect, AbilityEffect::BuffOrMight(_)) || !self.buffed_units.contains(&unit.id))
             }).filter(|_| {
                 !matches!(source, AbilitySource::Unit { unit_id, .. } if self.unit_ref(Target::Unit { player, unit_id }).is_some_and(|u| u.lane.is_none()))
-                    || !(0..2).any(|lane| self.battlefield_owner[lane] != Some(player) && self.players[1-player].units.iter().all(|u| u.lane != Some(lane)))
+                    || !(0..self.battlefield_count()).any(|lane| self.battlefield_owner[lane] != Some(player) && self.players[1-player].units.iter().all(|u| u.lane != Some(lane)))
             }).map(|_| 65),
             AbilityEffect::Damage(amount) => {
                 let Some(unit) = unit.filter(|_| enemy_target) else { return Ok(None); };
@@ -1690,7 +1690,7 @@ impl Game {
                     unit.ready && self.players[1 - player].units.iter().any(|u| u.lane.is_some())
                 };
                 let preserve_mover = matches!(source, AbilitySource::Unit { unit_id, .. } if self.unit_ref(Target::Unit { player, unit_id }).is_some_and(|u| u.lane.is_none()))
-                    && (0..2).any(|lane| self.battlefield_owner[lane] != Some(player) && self.players[1 - player].units.iter().all(|u| u.lane != Some(lane)));
+                    && (0..self.battlefield_count()).any(|lane| self.battlefield_owner[lane] != Some(player) && self.players[1 - player].units.iter().all(|u| u.lane != Some(lane)));
                 (relevant && !preserve_mover).then_some(55)
             }),
             AbilityEffect::SunDisc => (self.cards_played_this_turn(player)>0 && self.players[player].hand.iter().any(|&id|self.catalog[id].kind==crate::cards::CardKind::Unit)).then_some(65),

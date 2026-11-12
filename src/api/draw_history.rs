@@ -8,8 +8,8 @@ fn position() -> Session {
     })
     .unwrap();
     s.start(0).unwrap();
-    s.game.battlefields = [2, 2];
-    s.game.battlefield_owner = [None; 2];
+    s.game.battlefields = vec![2, 2];
+    s.game.battlefield_owner = vec![None; 2];
     for p in &mut s.game.players {
         p.units.clear();
         p.gear.clear();

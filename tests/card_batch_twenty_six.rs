@@ -52,11 +52,14 @@ fn four_units_keep_their_printed_costs_and_attributes_separate() {
 
 #[test]
 fn exact_legal_forty_card_decks_accept_only_matching_domains_and_no_new_chosen_champions() {
-    let homes: [&[usize]; 4] = [&[0, 1], &[1, 7, 8], &[3, 4, 8], &[1, 7, 8]];
+    let homes: [&[usize]; 4] = [&[0, 1, 10], &[1, 7, 8], &[3, 4, 8], &[1, 7, 8]];
     for legend in legends() {
         let original = CustomDeck::from_legend(legend.id).unwrap();
         assert_eq!(original.card_count(), 40);
-        assert!(original.cards.iter().all(|(id, _)| *id < 413));
+        // Riven (legend10) was introduced after this historical batch.
+        if legend.id < 10 {
+            assert!(original.cards.iter().all(|(id, _)| *id < 413));
+        }
         for id in 413..417 {
             let legal = homes[id - 413].contains(&legend.id);
             assert_eq!(eligible_cards(legend.id).contains(&id), legal);

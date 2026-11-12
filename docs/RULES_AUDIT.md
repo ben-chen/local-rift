@@ -702,3 +702,62 @@ including Flow. Legal human targets remain unchanged. A regression covers all
 three difficulties and both spell origins.
 
 The November 12 [registered-opponent and Innovator correction acceptance](validation/registered_opponents.json) records 1,657 Rust tests, 272 source/catalog tests, 864 Nix simulations, matching 70-game API campaigns and the installed native checks. The original Innovator admission remains historical; its pre-response payment interpretation is superseded.
+
+## Riven registration and dynamic Baron Pit — November 12, 2026
+
+The eight admitted identities and twelve original faces are recorded in
+[the Riven source admission](../assets/data/card_admissions/riven/README.md).
+Riven and Baron alternate faces differ only in the reviewed reminder text; The
+Exile's two faces retain the same passive rule. Earlier raw gallery projections,
+source corrections, legend records and six tournament recipes remain preserved.
+
+The [Radiance FAQ](https://playriftbound.com/en-us/news/organizedplay/radiance-rules-faq-and-clarifications/)
+explicitly places Riven's Buff cost at resolution after the mode choice. The
+engine finalizes each mode and target, tracks chosen modes per physical source
+for the turn, and then spends a real Buff when the linked instruction resolves.
+Countering a mode does not undo its choice. Losing the Buff prevents the linked
+Stun or Ready. Treating an invalid sole Stun target as invalidating the whole
+linked instruction, including the Buff cost, is an interpretation of Core
+359.3.e.7 and 740.4.a, rather than a separate card-specific ruling. Standard group
+movement queues exhaust triggers before movement triggers.
+
+Blade of the Exile costs 3 Energy and one hybrid Calm/Chaos Power. Its Equip cost
+is one Any Power **or** exhausting a ready friendly unit; that unit can be the
+bearer or another friendly unit. The equipment panel grants +3 Might and Ganking.
+The exhaust cost uses the ordinary exhaust observers, including Riven and
+Reckless Innovator. The new preset's draft lesson was corrected during visual
+source review: Blade does not generate Energy, and Riven's modes do not deal
+damage or grant extra plays.
+
+The Exile captures its ready-entry replacement from the chosen controlled
+battlefield at play finalization (Core 355.2). This includes tokens and instructed
+plays, but does not itself authorize play to an otherwise illegal location.
+The passive is not a separate Ready action. The Radiance FAQ confirms that
+Baron's later entry redirection does not discard this replacement or change the
+chosen-location Hunters' Circle discount.
+
+Baron adds the Pit during the non-cost as-play step (Core 355.1). The play that
+adds it stores the delayed entry replacement (Core 369.3); later Barons do not
+reuse that replacement. The suspended payment view exposes the new physical
+field, with refusal and undo restoring the pre-play state. Successfully created
+Pits remain after Baron leaves. Normal moves may enter the Pit from any field;
+they still require the ordinary readiness, timing and exhaustion. Its permission
+is directional and does not grant Ganking to leave for another battlefield.
+Scoring, final-point conditions, area spells, tokens, movement, field histories,
+unit previews, API observations and rematches use the current board size.
+
+Baron's choice protection applies only to enemy spells and abilities. Untargeted
+area effects can affect him. His +2 Might is a continuous bonus to every other
+friendly unit, including tokens and other Barons, at any location. Returning him
+to base retains it; leaving the board removes it. The auxiliary Pit cannot be a
+registered starting battlefield and is excluded from the legal-card denominator.
+
+The exact Sonecon Stuttgart registration has completed 84 single games across
+all seven presets, three difficulty levels, both seats and starters; 12 engine
+best-of-three matches (29 games); and 12 bot API matches (29 games). Both match
+paths exercise a real Baron-to-Offer sideboard swap. These are consistency and
+regression checks, not a proof of exhaustive Standard parity. Final complete
+regression, desktop review and installed Nix acceptance are recorded in the
+[release receipt](validation/riven_stuttgart.json): 1,743 Rust tests, 278 source
+checks, 1,176 additional simulated games, 16 installed native runs with 138
+captures, and 12 installed API matches whose complete traces match the development build.

@@ -10,7 +10,7 @@ Choose a preset or a saved custom deck for each player. Presets contain 40 cards
 
 Each player has a 12-card rune deck using the preset’s **published domain split**, preserved in the source manifest. Choose whether you or the AI starts. The second player channels an extra rune on their first turn.
 
-Each player brings one battlefield. The client offers seventeen official choices; its two battlefield panels display the selected names and effect text. The default follows each player’s chosen deck. The battlefield picker shows artwork and full rules before selection. The deck editor can copy a preset, adjust supported cards, rune counts, chosen champion, and battlefield, and save a separate list for you or the AI. It validates the main deck, champion tag, full domain identity, three-copy and Signature limits, and exactly 12 runes. Native **Best of three** practice registers three fields and allows legal sideboarding between games using the complete Arito preset; explicit custom registrations are available through Rust and the bot API.
+Each player brings one battlefield. The client offers seventeen official choices; its battlefield panels display the selected names and effect text, including any field added during play. The default follows each player’s chosen deck. The battlefield picker shows artwork and full rules before selection. The deck editor can copy a preset, adjust supported cards, rune counts, chosen champion, and battlefield, and save a separate list for you or the AI. It validates the main deck, champion tag, full domain identity, three-copy and Signature limits, and exactly 12 runes. Native **Best of three** practice registers three fields and allows legal sideboarding between games using the complete tournament registrations in the deck library; explicit custom registrations are available through Rust and the bot API.
 
 ## Turns and resources
 
@@ -565,6 +565,34 @@ one-for-one sideboarding, private simultaneous battlefield selection, the losing
 player's next play-order choice, ordered mulligans and first-to-two game wins.
 Sideboard card identities stay private; their counts remain visible. Drawn games
 retain both deck configurations, fields and starting player without sideboarding.
-Native match play begins from **Practice → Best of three**. Its AI currently
-keeps its main list between games; native draw agreements and custom registration
+Native match play begins from **Practice → Best of three**. Tactical and Strategic opponents may make legal sideboard swaps using revealed-card scouting; Relaxed keeps its list. Native draw agreements and custom registration
 editing are not exposed. Timed rounds and judge procedures remain outside this version.
+
+
+## Baron Nashor and Baron Pit
+
+Baron is a unit costing 10 Energy and 3 Chaos Power, with 12 Might. During play choices, he adds the
+Baron Pit token battlefield if none exists (Core355.1). Only the play that creates
+it receives the delayed entry replacement (Core369.3); subsequent Barons enter at
+their selected legal locations. The chosen location still determines Hunters'
+Circle's cost reduction and The Exile's ready-entry replacement, as explicitly
+confirmed in the [Radiance FAQ](https://playriftbound.com/en-us/news/organizedplay/radiance-rules-faq-and-clarifications/).
+
+The added battlefield is public while payment is pending. Undo, refusal or an
+illegal play rolls back the attempted play's new field and associated resources.
+It remains after a successfully played Baron dies or leaves. Units may Standard
+Move into the Pit from another field without Ganking; ordinary readiness,
+exhaustion, timing and movement restrictions still apply. Moving from the Pit to
+another field still requires permission such as Ganking. The Pit participates in
+conquest, holding, final-point requirements and all location-based choices.
+
+Enemy spells and abilities cannot choose Baron, including during combat. Friendly
+choices and untargeted effects still apply. Each Baron grants 2 Might to every other
+friendly unit at every location, including tokens and other Barons. These live
+bonuses stack and cease when their source leaves the board; Recall retains the
+source at base and therefore retains its aura. The Pit is an auxiliary token,
+excluded from starting selections and the constructed legal-card denominator.
+
+Controlled tests cover both seats, direct and suspended payment, rollback, plays
+from trash and banish, repeated copies, targeting, auras, movement, scoring and
+rematches. The exact Sonecon list has completed 84 single games and 12 registered engine matches (29 games), plus 12 bot API matches (29 games). The [release acceptance](validation/riven_stuttgart.json) records 1,743 Rust tests, 278 source checks, 1,176 Nix simulations and installed client/API validation. These cases are not a claim of complete Standard parity.

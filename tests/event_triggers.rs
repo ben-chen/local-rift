@@ -7,7 +7,7 @@ use local_rift::hidden::HiddenCard;
 fn game() -> Game {
     let mut g = Game::new(3, 3, 382, Difficulty::Tactical);
     g.start_match().unwrap();
-    g.battlefields = [1, 1];
+    g.battlefields = vec![1, 1];
     for p in &mut g.players {
         p.hand.clear();
         p.units.clear();
@@ -738,7 +738,7 @@ fn hidden_optional_target_rechecks_source_existence_before_bouncing() {
     let mut g = game();
     let friend = unit(&mut g, 0, 100, 72, Some(0), true);
     let outside = unit(&mut g, 0, 101, 72, Some(1), true);
-    g.battlefield_owner = [Some(0), Some(0)];
+    g.battlefield_owner = vec![Some(0), Some(0)];
     g.players[0].hidden.push(HiddenCard {
         id: 500,
         card_id: 188,

@@ -1,0 +1,217 @@
+{
+  "schema_version": 1,
+  "preset": 6,
+  "pilot": "Sonecon",
+  "placing": 2,
+  "source_url": "https://playriftbound.com/en-us/news/organizedplay/best-ofs-for-the-european-championship/",
+  "source_archive": "assets/data/preset_admissions/riven_stuttgart_2026_11/stuttgart.html.gz",
+  "source_raw_sha256": "0dbe22999380869942bd4550d8f5e83720de55cbb4c685988fbf142577627c78",
+  "source_copies": 2,
+  "reviewed_on": "2026-11-12",
+  "source_list": {
+    "Legend": [
+      {
+        "name": "Riven, The Exile",
+        "count": 1
+      }
+    ],
+    "Champion": [
+      {
+        "name": "Riven, Broken Blade",
+        "count": 1
+      }
+    ],
+    "Main Deck": [
+      {
+        "name": "Astral Heron",
+        "count": 3
+      },
+      {
+        "name": "Baron Nashor",
+        "count": 1
+      },
+      {
+        "name": "Battle Preparations",
+        "count": 1
+      },
+      {
+        "name": "Bedeviling Stranger",
+        "count": 2
+      },
+      {
+        "name": "Blade of the Exile",
+        "count": 3
+      },
+      {
+        "name": "Blitzcrank, Impassive",
+        "count": 2
+      },
+      {
+        "name": "Defy",
+        "count": 2
+      },
+      {
+        "name": "Discipline",
+        "count": 3
+      },
+      {
+        "name": "En Garde",
+        "count": 1
+      },
+      {
+        "name": "Gust",
+        "count": 2
+      },
+      {
+        "name": "Not So Fast",
+        "count": 1
+      },
+      {
+        "name": "Rebuke",
+        "count": 1
+      },
+      {
+        "name": "Reckless Innovator",
+        "count": 2
+      },
+      {
+        "name": "Scuttle Crab",
+        "count": 2
+      },
+      {
+        "name": "Star-Crossed",
+        "count": 1
+      },
+      {
+        "name": "Stellacorn Herder",
+        "count": 3
+      },
+      {
+        "name": "Switcheroo",
+        "count": 2
+      },
+      {
+        "name": "Tideturner",
+        "count": 2
+      },
+      {
+        "name": "Traveling Merchant",
+        "count": 2
+      },
+      {
+        "name": "Zhonya's Hourglass",
+        "count": 3
+      }
+    ],
+    "Battlefields": [
+      {
+        "name": "Emperor's Dais",
+        "count": 1
+      },
+      {
+        "name": "Hunter's Circle",
+        "count": 1
+      },
+      {
+        "name": "Star Spring",
+        "count": 1
+      }
+    ],
+    "Rune Pool": [
+      {
+        "name": "Calm Rune",
+        "count": 6
+      },
+      {
+        "name": "Chaos Rune",
+        "count": 6
+      }
+    ],
+    "Sideboard": [
+      {
+        "name": "Abandon",
+        "count": 1
+      },
+      {
+        "name": "An Offer You Can't Refuse",
+        "count": 2
+      },
+      {
+        "name": "Decree of Focus",
+        "count": 2
+      },
+      {
+        "name": "Hush",
+        "count": 1
+      },
+      {
+        "name": "Ravenbloom Prefect",
+        "count": 1
+      },
+      {
+        "name": "Rebuke",
+        "count": 1
+      },
+      {
+        "name": "Reckless Innovator",
+        "count": 1
+      },
+      {
+        "name": "Vex, Apathetic",
+        "count": 1
+      }
+    ]
+  },
+  "battlefield_ids": [
+    11,
+    7,
+    12
+  ],
+  "sideboard": [
+    [
+      1,
+      1
+    ],
+    [
+      435,
+      2
+    ],
+    [
+      421,
+      2
+    ],
+    [
+      423,
+      1
+    ],
+    [
+      424,
+      1
+    ],
+    [
+      80,
+      1
+    ],
+    [
+      429,
+      1
+    ],
+    [
+      20,
+      1
+    ]
+  ],
+  "source_name_equivalences": {
+    "Hunter's Circle": {
+      "runtime_name": "Hunters' Circle",
+      "battlefield_id": 7,
+      "official_id": "rad-163-167"
+    }
+  },
+  "preserved_runtime_prefix": {
+    "card_count": 435,
+    "cards_sha256": "a5900479b0c1ca394896cf46200226138d42d4ce6483dfd1de837cbf207ba587",
+    "preset_count": 6,
+    "presets_sha256": "7dcd344ff63ab33041734445f0756bfecca308ea9cef97c97db8ad1bf0e53d70"
+  }
+}

@@ -1554,5 +1554,107 @@
       "printed_reminder_spans": [],
       "observation": "Calm Champion Unit; 3 Energy, no printed Power, 4 Might; Orianna/Piltover. Shield and the same friendly-gear-here combat-damage restriction on both faces. Alternate face omits only the Shield reminder."
     }
+  },
+  {
+    "official_id": "rad-043-167",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/0c9ac0da1c144f46a1e0c5423f51f9b8f6ba295b-744x1039.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/rad-043-167.png",
+    "sha256": "e1eeccd4286ed7421a7126ad606eef6d3b3fe192f61e6dddd6d651b89568207a",
+    "bytes": 830179,
+    "visual_review": {
+      "reviewed_on": "2026-11-12",
+      "method": "Individual visual inspection of the exact full original official face, including all stats, tags, text and collector footer.",
+      "collector_footer": "RAD-043/167",
+      "printed_type": "Champion Unit",
+      "printed_tags_in_face_order": [
+        "Riven",
+        "Noxus"
+      ],
+      "printed_rules_text": "When I become exhausted, choose one that hasn't been chosen this turn —\n[Buff] me. (Give me a +1 Might buff if I don't have one.)\nSpend my buff to [Stun] an enemy unit. (It doesn't deal combat damage this turn.)\nSpend my buff to ready me.",
+      "printed_reminder_spans": [
+        "(Give me a +1 Might buff if I don't have one.)",
+        "(It doesn't deal combat damage this turn.)"
+      ],
+      "observation": "Both complete faces retain the exhaustion trigger, per-turn choice restriction and all three identical Buff, spend-to-Stun and spend-to-ready choices. The alternate omits only the italic Buff and Stun reminders. Both faces print Riven / Noxus; separately evidenced corrections restore the omitted Noxus tags."
+    }
+  },
+  {
+    "official_id": "rad-043a-167",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/9870e0f591e2ca04bea2274209e8df3d4435213b-744x1039.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/rad-043a-167.png",
+    "sha256": "9899ab8c795ab7d9dbc5c8bcb6bc2a657f86254207f582ea4924ceb4efb07ac0",
+    "bytes": 1051940,
+    "visual_review": {
+      "reviewed_on": "2026-11-12",
+      "method": "Individual visual inspection of the exact full original official face, including all stats, tags, text and collector footer.",
+      "collector_footer": "RAD-043a/167",
+      "printed_type": "Champion Unit",
+      "printed_tags_in_face_order": [
+        "Riven",
+        "Noxus"
+      ],
+      "printed_rules_text": "When I become exhausted, choose one that hasn't been chosen this turn —\n[Buff] me.\nSpend my buff to [Stun] an enemy unit.\nSpend my buff to ready me.",
+      "printed_reminder_spans": [],
+      "observation": "Both complete faces retain the exhaustion trigger, per-turn choice restriction and all three identical Buff, spend-to-Stun and spend-to-ready choices. The alternate omits only the italic Buff and Stun reminders. Both faces print Riven / Noxus; separately evidenced corrections restore the omitted Noxus tags."
+    }
+  },
+  {
+    "official_id": "unl-147-219",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/59946969e8d21869c3ffe801a3ffbdd8165a873f-744x1039.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/unl-147-219.png",
+    "sha256": "f649c58a5fd6ae9cc3fe099383b33e572e6d481425e6415fe18a190cb08d9c14",
+    "bytes": 1130249,
+    "visual_review": {
+      "reviewed_on": "2026-11-12",
+      "method": "Individual visual inspection of the exact full original official face, including all stats, tags, text and collector footer.",
+      "collector_footer": "UNL-147/219",
+      "printed_type": "Unit",
+      "printed_tags_in_face_order": [
+        "The Void"
+      ],
+      "printed_rules_text": "As you play me, add the Baron Pit battlefield token to the board if it's not there already. If you do, I enter there. (It has \"Units can move here from anywhere.\")\nI can't be chosen by enemy spells and abilities.\nOther friendly units have +2 Might.",
+      "printed_reminder_spans": [
+        "(It has \"Units can move here from anywhere.\")"
+      ],
+      "observation": "All three complete faces retain the same Baron Pit creation and entry replacement, enemy-spell/ability choice restriction, and +2 Might for other friendly units. Alternate/showcase faces omit only the italic Baron Pit movement reminder. Each prints Unit / The Void, 10 Energy, 3 Chaos Power and 12 Might."
+    }
+  },
+  {
+    "official_id": "unl-147a-219",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/97d0f7aa81f67bf8f4a19099c648a23a2df169ae-744x1039.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/unl-147a-219.png",
+    "sha256": "ca31efc7e78a9aa07df098cbe5a923b42a95424b777a81c0c08c46b3fa5d3b9a",
+    "bytes": 1149080,
+    "visual_review": {
+      "reviewed_on": "2026-11-12",
+      "method": "Individual visual inspection of the exact full original official face, including all stats, tags, text and collector footer.",
+      "collector_footer": "UNL-147a/219",
+      "printed_type": "Unit",
+      "printed_tags_in_face_order": [
+        "The Void"
+      ],
+      "printed_rules_text": "As you play me, add the Baron Pit battlefield token to the board if it's not there already. If you do, I enter there.\nI can't be chosen by enemy spells and abilities.\nOther friendly units have +2 Might.",
+      "printed_reminder_spans": [],
+      "observation": "All three complete faces retain the same Baron Pit creation and entry replacement, enemy-spell/ability choice restriction, and +2 Might for other friendly units. Alternate/showcase faces omit only the italic Baron Pit movement reminder. Each prints Unit / The Void, 10 Energy, 3 Chaos Power and 12 Might."
+    }
+  },
+  {
+    "official_id": "unl-238-219",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/7e8d207a8057b97f9059ea6025a16e59229dc54d-744x1039.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/unl-238-219.png",
+    "sha256": "bc6d7594587195163db437e052a79a457f22e30152feff8c881607e0ae489113",
+    "bytes": 2014578,
+    "visual_review": {
+      "reviewed_on": "2026-11-12",
+      "method": "Individual visual inspection of the exact full original official face, including all stats, tags, text and collector footer.",
+      "collector_footer": "UNL-238/219",
+      "printed_type": "Unit",
+      "printed_tags_in_face_order": [
+        "The Void"
+      ],
+      "printed_rules_text": "As you play me, add the Baron Pit battlefield token to the board if it's not there already. If you do, I enter there.\nI can't be chosen by enemy spells and abilities.\nOther friendly units have +2 Might.",
+      "printed_reminder_spans": [],
+      "observation": "All three complete faces retain the same Baron Pit creation and entry replacement, enemy-spell/ability choice restriction, and +2 Might for other friendly units. Alternate/showcase faces omit only the italic Baron Pit movement reminder. Each prints Unit / The Void, 10 Energy, 3 Chaos Power and 12 Might."
+    }
   }
 ]

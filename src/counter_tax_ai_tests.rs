@@ -16,7 +16,7 @@ fn pending_tax(actor: usize, legend: usize) -> Game {
     g.start_match().unwrap();
     g.active = actor;
     g.priority_player = actor;
-    g.battlefield_owner = [None; 2];
+    g.battlefield_owner = vec![None; 2];
     for p in &mut g.players {
         p.units.clear();
         p.gear.clear();

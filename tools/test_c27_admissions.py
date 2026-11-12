@@ -26,7 +26,7 @@ class C27AdmissionTests(unittest.TestCase):
         cls.proof = json.loads((catalog.ROOT / 'assets/data/card_admissions/c27/admissions.json').read_text())
         runtime = copy.deepcopy(catalog.load_runtime_manifest())
         runtime['cards'] = runtime['cards'][:417]; runtime['decks'] = runtime['decks'][:4]
-        with patch.object(catalog, 'load_runtime_manifest', return_value=runtime), patch.object(catalog, 'load_battlefield_manifest', return_value=history.legacy_battlefields()):
+        with history.pre_riven_runtime(runtime), patch.object(catalog, 'load_battlefield_manifest', return_value=history.legacy_battlefields()):
             cls.snapshot = catalog.make_catalog(cls.origin, cls.archives)
         cls.printings = {p['official_id']: p for p in cls.snapshot['printings']}
         cls.identities = {p['identity']: p for p in cls.snapshot['cards']}
@@ -139,14 +139,14 @@ class C27AdmissionTests(unittest.TestCase):
         self.assertEqual(catalog.sha(prefix.encode()), pin['carddefs_source_prefix_sha256'])
         for path, key in [('assets/data/legends.json', 'legends_manifest_sha256'),
                           ('src/deck.rs', 'training_recipe_source_sha256')]:
-            self.assertEqual(catalog.sha(history.pre_rengar_recipe_source_bytes() if path == 'src/deck.rs' else (root / path).read_bytes()), pin[key])
+            self.assertEqual(catalog.sha(history.pre_rengar_recipe_source_bytes() if path == 'src/deck.rs' else history.pre_riven_evidence_bytes(path)), pin[key])
         for path, key in [('assets/data/catalog_identity_reviews.json', 'identity_review_manifest_sha256'),
                           ('assets/data/catalog_evidence/variant_images.json', 'variant_image_index_sha256')]:
             self.assertEqual(catalog.sha(history.legacy_variant_evidence_bytes(path)), self.proof['preserved_source_reviews'][key])
 
     def test_source_correction_does_not_admit_cards_and_main_deck_homes_are_exact(self):
         runtime = copy.deepcopy(catalog.load_runtime_manifest()); runtime['cards'] = runtime['cards'][:BASE]; runtime['decks'] = runtime['decks'][:4]
-        with patch.object(catalog, 'load_runtime_manifest', return_value=runtime), patch.object(catalog, 'load_battlefield_manifest', return_value=history.legacy_battlefields()):
+        with history.pre_riven_runtime(runtime), patch.object(catalog, 'load_battlefield_manifest', return_value=history.legacy_battlefields()):
             source_only = catalog.make_catalog(self.origin, self.archives)
         keys = ['implemented_main_cards', 'implemented_legal_identities', 'unimplemented_legal_identities']
         self.assertEqual(tuple(source_only['counts'][k] for k in keys), (413, 440, 639))
@@ -154,7 +154,7 @@ class C27AdmissionTests(unittest.TestCase):
         for identity in source_only['cards']:
             if identity['identity'] in ORDER:
                 self.assertFalse(identity['implementation']['playable_in_client'])
-        legends = catalog.load_legend_manifest()
+        legends = history.pre_riven_legends()
         for offset, record in enumerate(self.proof['records']):
             homes = [l['id'] for l in legends if set(record['effective']['domains']) <= {d.lower() for d in l['domains']}]
             self.assertEqual(homes, HOMES[offset])

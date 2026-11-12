@@ -6,8 +6,8 @@ use crate::gear::GearState;
 fn position() -> Game {
     let mut g = Game::new(3, 3, 13013, Difficulty::Tactical);
     g.start_match().unwrap();
-    g.battlefields = [7, 9];
-    g.battlefield_owner = [None; 2];
+    g.battlefields = vec![7, 9];
+    g.battlefield_owner = vec![None; 2];
     for p in &mut g.players {
         p.units.clear();
         p.gear.clear();
@@ -591,4 +591,144 @@ fn repeated_production_surge_draws_twice_before_distinct_pending_children_enter(
             .iter()
             .all(|u| u.token && u.lane.is_none() && !u.ready)
     );
+}
+
+#[test]
+fn offer_gives_exhausted_gold_to_the_destroyed_gears_controller() {
+    for owner in [0, 1] {
+        for attached in [false, true] {
+            let mut g = position();
+            let bearer = unit(&mut g, owner, 79, false, Some(1));
+            let target = gear(&mut g, owner, 432, false, attached.then_some(uid(bearer)));
+            cast(&mut g, 435, vec![target]);
+            assert!(g.board_target_facts(target).is_none());
+            assert!(g.players[owner].discard.contains(&432));
+            assert!(g.players[1 - owner].gear.is_empty());
+            assert_eq!(g.players[owner].gear.len(), 1);
+            let gold = &g.players[owner].gear[0];
+            assert!(gold.is_gold());
+            assert!(!gold.ready);
+            assert_eq!(gold.lane, None);
+            assert_eq!(gold.attached_to, None);
+            assert!(g.unit_ref(bearer).is_some());
+            assert!(g.players[0].discard.contains(&435));
+        }
+    }
+}
+
+#[test]
+fn offer_can_replace_friendly_or_enemy_gold_without_trashing_a_token() {
+    for owner in [0, 1] {
+        let mut g = position();
+        let target = gear(&mut g, owner, 13, true, None);
+        cast(&mut g, 435, vec![target]);
+        assert_eq!(g.players[owner].gear.len(), 1);
+        assert!(g.players[owner].gear[0].is_gold());
+        assert!(!g.players[owner].gear[0].ready);
+        assert!(g.board_target_facts(target).is_none());
+        assert!(!g.players[owner].discard.contains(&13));
+    }
+}
+
+#[test]
+fn offer_invalidated_physical_target_does_not_grant_gold() {
+    let mut g = position();
+    let target = gear(&mut g, 1, 432, false, None);
+    let action = hand_action(&mut g, 435, vec![target]);
+    g.apply(action).unwrap();
+    g.kill_gear_target(target);
+    let replacement = gear(&mut g, 1, 432, false, None);
+    drive(&mut g, false, false);
+    assert!(g.board_target_facts(replacement).is_some());
+    assert_eq!(g.players[1].gear.len(), 1);
+    assert!(!g.players[1].gear.iter().any(|x| x.is_gold()));
+}
+
+#[test]
+fn offer_counter_leaves_gear_and_grants_no_gold() {
+    let mut g = position();
+    let target = gear(&mut g, 1, 432, false, None);
+    let action = hand_action(&mut g, 435, vec![target]);
+    g.apply(action).unwrap();
+    let chain_id = g.chain[0].id;
+    g.apply(Action::Pass).unwrap();
+    cast(&mut g, 86, vec![Target::Spell { chain_id }]);
+    assert!(g.board_target_facts(target).is_some());
+    assert!(!g.players[1].gear.iter().any(|x| x.is_gold()));
+    assert!(g.players[0].discard.contains(&435));
+}
+
+#[test]
+fn offer_repeat_rechecks_targets_and_gives_each_controller_their_gold() {
+    for same_target in [true, false] {
+        let mut g = position();
+        let first = gear(&mut g, 1, 432, false, None);
+        let second = if same_target {
+            first
+        } else {
+            gear(&mut g, 0, 432, false, None)
+        };
+        g.grant_play(
+            0,
+            ChainSource::Card { card_id: 255 },
+            PlayGrantKind::RepeatNextSpell,
+        );
+        let action = hand_action(&mut g, 435, vec![first]);
+        let option_id = g.play_choices(&action).unwrap().repeats[0].id;
+        g.apply(Action::WithPlayChoices {
+            action: Box::new(action),
+            choices: PlayChoices {
+                repeats: vec![RepeatSelection {
+                    option_id,
+                    choices: ExecutionChoices {
+                        destination: None,
+                        targets: vec![second],
+                        mode: None,
+                    },
+                }],
+                ..Default::default()
+            },
+        })
+        .unwrap();
+        drive(&mut g, false, false);
+        assert_eq!(g.players[1].gear.iter().filter(|x| x.is_gold()).count(), 1);
+        assert_eq!(
+            g.players[0].gear.iter().filter(|x| x.is_gold()).count(),
+            usize::from(!same_target)
+        );
+    }
+}
+
+#[test]
+fn offer_is_an_action_and_does_not_gain_gold_tokens_reaction_timing() {
+    let mut g = position();
+    let first = gear(&mut g, 1, 432, false, None);
+    let second = gear(&mut g, 1, 432, false, None);
+    g.showdown = Some(Showdown {
+        lane: 0,
+        attacker: 1,
+        focus: 0,
+        passes: 0,
+        combat: true,
+    });
+    let before_energy = g.players[0].energy;
+    let before_power = g.players[0].power_pool;
+    let action = hand_action(&mut g, 435, vec![first]);
+    g.apply(action).unwrap();
+    assert_eq!(g.players[0].energy, before_energy - 2);
+    assert_eq!(g.players[0].power_pool, before_power);
+    let action = hand_action(&mut g, 435, vec![second]);
+    let before = format!("{g:?}");
+    assert!(g.apply(action).is_err());
+    assert_eq!(format!("{g:?}"), before);
+}
+
+#[test]
+fn offer_rejects_unit_targets_without_spending_resources() {
+    let mut g = position();
+    let target = unit(&mut g, 1, 79, false, None);
+    let action = hand_action(&mut g, 435, vec![target]);
+    let before = format!("{g:?}");
+    assert!(g.apply(action).is_err());
+    assert_eq!(format!("{g:?}"), before);
 }

@@ -7,10 +7,10 @@ use local_rift::payment::PowerPayment;
 fn position() -> Game {
     let mut game = Game::new_for_agents(3, 3, 3772, Difficulty::Tactical);
     game.start_match().unwrap();
-    game.battlefields = [0, 0];
+    game.battlefields = vec![0, 0];
     game.legend[0].ready = false;
     game.legend[1].ready = false;
-    game.battlefield_owner = [None; 2];
+    game.battlefield_owner = vec![None; 2];
     for player in &mut game.players {
         player.hand.clear();
         player.units.clear();
@@ -489,7 +489,7 @@ fn renata_draw_is_repeatable_without_exhaustion_and_point_is_not_conquest() {
     assert_eq!(g.players[0].energy, 18);
     assert_eq!(g.players[0].power_pool[2], 6);
     g.players[0].score = 7;
-    let owners = g.battlefield_owner;
+    let owners = g.battlefield_owner.clone();
     g.apply(ability(renata, 1, vec![])).unwrap();
     assert_eq!(g.players[0].score, 7);
     assert!(!g.players[0].units[0].ready);

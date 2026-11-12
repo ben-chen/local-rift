@@ -38,11 +38,11 @@ class OfficialInventoryTests(unittest.TestCase):
     def test_exact_published_scope_and_runtime_gap(self):
         counts = self.snapshot["counts"]
         self.assertEqual((counts["gallery_printings"], counts["unique_gallery_identities"], counts["standard_legal_identities"]), (1408, 1103, 1079))
-        self.assertEqual(counts["implemented_main_cards"], 435)
-        self.assertEqual(counts["implemented_legends"], 10)
+        self.assertEqual(counts["implemented_main_cards"], 441)
+        self.assertEqual(counts["implemented_legends"], 11)
         self.assertEqual(counts["implemented_battlefields"], 17)
-        self.assertEqual(counts["implemented_legal_identities"], 468)
-        self.assertEqual(counts["unimplemented_legal_identities"], 611)
+        self.assertEqual(counts["implemented_legal_identities"], 475)
+        self.assertEqual(counts["unimplemented_legal_identities"], 604)
         for card in self.snapshot["cards"]:
             if card["implementation"]["status"] == "not_implemented":
                 self.assertFalse(card["implementation"]["playable_in_client"])
@@ -110,7 +110,7 @@ class OfficialInventoryTests(unittest.TestCase):
         self.assertEqual((legend["official_id"], legend["default_champion"]), ("ven-153-166", 289))
         self.assertEqual(legend["champion"], "Ambessa")
         self.assertEqual(legend["domains"], ["Body", "Order"])
-        self.assertEqual(self.snapshot["counts"]["source_quality_issues"], 54)
+        self.assertEqual(self.snapshot["counts"]["source_quality_issues"], 57)
         self.assertEqual(self.snapshot["counts"]["unresolved_type_conflict_identities"], 0)
 
     def test_next_play_batch_maps_exact_source_ids_and_errata(self):
@@ -164,15 +164,15 @@ class OfficialInventoryTests(unittest.TestCase):
 
     def test_independent_legend_registry_keeps_original_ids_and_tracks_preset_membership(self):
         legends = catalog.load_legend_manifest()
-        self.assertEqual([v["id"] for v in legends], list(range(10)))
-        self.assertEqual([v["default_champion"] for v in legends], [0, 22, 33, 49, 183, 175, 182, 289, 30, 35])
+        self.assertEqual([v["id"] for v in legends], list(range(11)))
+        self.assertEqual([v["default_champion"] for v in legends], [0, 22, 33, 49, 183, 175, 182, 289, 30, 35, 439])
         for entry in legends:
             identity = next(c for c in self.snapshot["cards"] if entry["official_id"] in c["official_ids"])
             self.assertEqual(identity["implementation"]["runtime_id"], entry["id"])
-            self.assertEqual(identity["implementation"]["status"], "implemented_preset_legend" if entry["id"] in [0, 1, 2, 3, 8] else "implemented_legend")
+            self.assertEqual(identity["implementation"]["status"], "implemented_preset_legend" if entry["id"] in [0, 1, 2, 3, 8, 10] else "implemented_legend")
             self.assertTrue(identity["standard_legal"])
         presets = json.loads((catalog.ROOT / "assets/data/decks.json").read_text())["decks"]
-        self.assertEqual(len(presets), 6)
+        self.assertEqual(len(presets), 7)
 
     def test_legend_manifest_rejects_changed_source_facts_or_invalid_champion(self):
         mutations = [
@@ -273,12 +273,12 @@ class OfficialInventoryTests(unittest.TestCase):
         issues = [i for i in self.snapshot["source_quality_issues"] if i["kind"] == "conflicting_type_labels"]
         self.assertEqual(len(issues), 23)
         self.assertTrue(all(i["official_ids"][0].startswith("rad-") for i in issues))
-        self.assertEqual(self.snapshot["counts"]["source_quality_issues"], 54)
+        self.assertEqual(self.snapshot["counts"]["source_quality_issues"], 57)
         self.assertFalse(self.snapshot["counts"]["standard_legal_by_kind_provisional"])
         self.assertEqual(self.snapshot["counts"]["unresolved_type_conflict_identities"], 0)
         self.assertEqual(printing["effective"]["types"], ["spell"])
         self.assertEqual(identity["source_review"]["unresolved_gameplay_fields"], [])
-        self.assertEqual(self.snapshot["counts"]["resolved_source_issue_groups"], 54)
+        self.assertEqual(self.snapshot["counts"]["resolved_source_issue_groups"], 57)
         self.assertIn("reviewed effective type", catalog.report(self.snapshot))
 
     def test_mapped_type_conflict_is_rejected(self):

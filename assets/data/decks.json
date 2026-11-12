@@ -878,6 +878,192 @@
         }
       ],
       "date": "2026-10-31"
+    },
+    {
+      "name": "Riven / Sonecon Stuttgart",
+      "champion": "Riven, The Exile",
+      "chosen": "Riven, Broken Blade",
+      "domains": [
+        "Calm",
+        "Chaos"
+      ],
+      "accent": [
+        171,
+        218,
+        124
+      ],
+      "strategy": "Establish a controlled battlefield, then use ready entrants, equipment and movement to pressure points. Sonecon’s runner-up Stuttgart list, November 2026.",
+      "difficulty": "Advanced",
+      "source_url": "https://playriftbound.com/en-us/news/organizedplay/best-ofs-for-the-european-championship/",
+      "pilot": "Sonecon",
+      "event": "European Regional Championship, Stuttgart",
+      "placing": 2,
+      "runes": {
+        "Calm": 6,
+        "Chaos": 6
+      },
+      "battlefields": [
+        "Emperor's Dais",
+        "Hunters' Circle",
+        "Star Spring"
+      ],
+      "cards": [
+        {
+          "id": 439,
+          "name": "Riven, Broken Blade",
+          "count": 1
+        },
+        {
+          "id": 258,
+          "name": "Astral Heron",
+          "count": 3
+        },
+        {
+          "id": 440,
+          "name": "Baron Nashor",
+          "count": 1
+        },
+        {
+          "id": 426,
+          "name": "Battle Preparations",
+          "count": 1
+        },
+        {
+          "id": 437,
+          "name": "Bedeviling Stranger",
+          "count": 2
+        },
+        {
+          "id": 438,
+          "name": "Blade of the Exile",
+          "count": 3
+        },
+        {
+          "id": 436,
+          "name": "Blitzcrank, Impassive",
+          "count": 2
+        },
+        {
+          "id": 6,
+          "name": "Defy",
+          "count": 2
+        },
+        {
+          "id": 7,
+          "name": "Discipline",
+          "count": 3
+        },
+        {
+          "id": 8,
+          "name": "En Garde",
+          "count": 1
+        },
+        {
+          "id": 11,
+          "name": "Gust",
+          "count": 2
+        },
+        {
+          "id": 12,
+          "name": "Not So Fast",
+          "count": 1
+        },
+        {
+          "id": 80,
+          "name": "Rebuke",
+          "count": 1
+        },
+        {
+          "id": 429,
+          "name": "Reckless Innovator",
+          "count": 2
+        },
+        {
+          "id": 15,
+          "name": "Scuttle Crab",
+          "count": 2
+        },
+        {
+          "id": 16,
+          "name": "Star-Crossed",
+          "count": 1
+        },
+        {
+          "id": 17,
+          "name": "Stellacorn Herder",
+          "count": 3
+        },
+        {
+          "id": 44,
+          "name": "Switcheroo",
+          "count": 2
+        },
+        {
+          "id": 18,
+          "name": "Tideturner",
+          "count": 2
+        },
+        {
+          "id": 47,
+          "name": "Traveling Merchant",
+          "count": 2
+        },
+        {
+          "id": 21,
+          "name": "Zhonya's Hourglass",
+          "count": 3
+        }
+      ],
+      "chosen_champion": 439,
+      "legend_name": "Riven, The Exile",
+      "legend_text": "Units you play to battlefields you control enter ready.",
+      "legend_id": "rad-149-167",
+      "legend_text_html": "<p>Units you play to battlefields you control enter ready.</p>",
+      "legend_keywords": [],
+      "learning_notes": "The Exile readies units played to fields you control. Blade grants +3 Might and Ganking; its Equip cost can exhaust a friendly unit. Riven’s exhaust trigger offers Buff, spend Buff to Stun, or spend Buff to ready, once each per turn. Baron adds a persistent field.",
+      "sideboard": [
+        {
+          "id": 1,
+          "name": "Abandon",
+          "count": 1
+        },
+        {
+          "id": 435,
+          "name": "An Offer You Can't Refuse",
+          "count": 2
+        },
+        {
+          "id": 421,
+          "name": "Decree of Focus",
+          "count": 2
+        },
+        {
+          "id": 423,
+          "name": "Hush",
+          "count": 1
+        },
+        {
+          "id": 424,
+          "name": "Ravenbloom Prefect",
+          "count": 1
+        },
+        {
+          "id": 80,
+          "name": "Rebuke",
+          "count": 1
+        },
+        {
+          "id": 429,
+          "name": "Reckless Innovator",
+          "count": 1
+        },
+        {
+          "id": 20,
+          "name": "Vex, Apathetic",
+          "count": 1
+        }
+      ],
+      "date": "November 2026"
     }
   ],
   "cards": [
@@ -11408,6 +11594,162 @@
         "Flow"
       ],
       "tags": []
+    },
+    {
+      "id": 435,
+      "name": "An Offer You Can't Refuse",
+      "official_id": "rad-101-167",
+      "energy": 2,
+      "power": 0,
+      "might": 0,
+      "domains": [
+        "Chaos"
+      ],
+      "kind": "Spell",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/f724f95257abeacee82c774eff64973b56035357-744x1039.png?w=280&q=85&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Action] (Play on your turn or in showdowns.)\nKill a gear. Its controller plays a Gold gear token exhausted. (It has \"[Reaction][>] Kill this, [Exhaust]: [Add] [Any Power].\")",
+      "official_text_html": "<p>[Action] (Play on your turn or in showdowns.)<br />Kill a gear. Its controller plays a Gold gear token exhausted. (It has &quot;[Reaction][&gt;] Kill this, :rb_exhaust:: [Add] :rb_rune_rainbow:.&quot;)</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Action",
+        "Add",
+        "Reaction"
+      ],
+      "tags": []
+    },
+    {
+      "id": 436,
+      "name": "Blitzcrank, Impassive",
+      "official_id": "ogn-067-298",
+      "energy": 5,
+      "power": 1,
+      "might": 5,
+      "domains": [
+        "Calm"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/654dcc4aef0a0b5a0c6e928d7aae397a52c3ab17-744x1039.png?w=280&q=85&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Tank] (I must be assigned combat damage first.)\nWhen you play me to a battlefield, you may move an enemy unit to here.\nWhen I hold, return me to my owner's hand.",
+      "official_text_html": "<p>[Tank] (I must be assigned combat damage first.)<br />When you play me to a battlefield, you may move an enemy unit to here.<br />When I hold, return me to my owner's hand.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Tank"
+      ],
+      "tags": [
+        "Mech",
+        "Blitzcrank",
+        "Zaun"
+      ]
+    },
+    {
+      "id": 437,
+      "name": "Bedeviling Stranger",
+      "official_id": "rad-107-167",
+      "energy": 2,
+      "power": 0,
+      "might": 2,
+      "domains": [
+        "Chaos"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/d112a706fe957e5cea58ea1e4366ac02e3ba292b-744x1039.png?w=280&q=85&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Hidden] (Hide now for [Any Power] to react with later for [0 Energy].)\nWhen you play me, choose a battlefield. If there are 4 or more units there, you may return an enemy unit there to its owner's hand.",
+      "official_text_html": "<p>[Hidden] (Hide now for :rb_rune_rainbow: to react with later for :rb_energy_0:.)<br />When you play me, choose a battlefield. If there are 4 or more units there, you may return an enemy unit there to its owner's hand.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Hidden"
+      ],
+      "tags": [
+        "Shadow Isles",
+        "Demon"
+      ]
+    },
+    {
+      "id": 438,
+      "name": "Blade of the Exile",
+      "official_id": "rad-150-167",
+      "energy": 3,
+      "power": 1,
+      "might": 3,
+      "domains": [
+        "Calm",
+        "Chaos"
+      ],
+      "kind": "Gear",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/04aaded01b23641e496e39f51882ccfe89715492-744x1040.png?w=280&q=85&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Equip] — [Any Power] or exhaust a friendly unit. (Pay the cost: Attach this to a unit you control.)\nAttached unit (+3 Might): [Ganking] (I can move from battlefield to battlefield.)",
+      "official_text_html": "<p>[Equip] — :rb_rune_rainbow: or exhaust a friendly unit. (Pay the cost: Attach this to a unit you control.)</p>",
+      "equipment_effect_html": "<p>[Ganking] (I can move from battlefield to battlefield.)</p>",
+      "equipment_effect": "[Ganking] (I can move from battlefield to battlefield.)",
+      "might_bonus": 3,
+      "keywords": [
+        "Equip",
+        "Ganking"
+      ],
+      "tags": [
+        "Equipment",
+        "Riven"
+      ]
+    },
+    {
+      "id": 439,
+      "name": "Riven, Broken Blade",
+      "official_id": "rad-043-167",
+      "energy": 4,
+      "power": 0,
+      "might": 4,
+      "domains": [
+        "Calm"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/0c9ac0da1c144f46a1e0c5423f51f9b8f6ba295b-744x1039.png?w=280&q=85&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "When I become exhausted, choose one that hasn't been chosen this turn —\n[Buff] me. (Give me a +1 Might buff if I don't have one.)\nSpend my buff to [Stun] an enemy unit. (It doesn't deal combat damage this turn.)\nSpend my buff to ready me.",
+      "official_text_html": "<p>When I become exhausted, choose one that hasn't been chosen this turn —</p><ul><li>[Buff] me. (Give me a +1 :rb_might: buff if I don't have one.)</li><li>Spend my buff to [Stun] an enemy unit. (It doesn't deal combat damage this turn.)</li><li>Spend my buff to ready me.</li></ul>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Buff",
+        "Stun"
+      ],
+      "tags": [
+        "Riven",
+        "Noxus"
+      ]
+    },
+    {
+      "id": 440,
+      "name": "Baron Nashor",
+      "official_id": "unl-147-219",
+      "energy": 10,
+      "power": 3,
+      "might": 12,
+      "domains": [
+        "Chaos"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/59946969e8d21869c3ffe801a3ffbdd8165a873f-744x1039.png?accountingTag=RB",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "As you play me, add the Baron Pit battlefield token to the board if it's not there already. If you do, I enter there. (It has \"Units can move here from anywhere.\")\nI can't be chosen by enemy spells and abilities.\nOther friendly units have +2 Might.",
+      "official_text_html": "<p>As you play me, add the Baron Pit battlefield token to the board if it's not there already. If you do, I enter there. (It has &quot;Units can move here from anywhere.&quot;)<br />I can't be chosen by enemy spells and abilities.<br />Other friendly units have +2 :rb_might:.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": [
+        "The Void"
+      ]
     }
   ],
   "official_text_note": "Official card/legend rules text from the Riot Card Gallery, retrieved 2026-10-24 and corrected by cited errata. Resource icon tokens are expanded to readable bracketed names. Raw card and equipment HTML is preserved separately. Official text does not establish full implementation fidelity."

@@ -27,7 +27,7 @@ class C28AdmissionTests(unittest.TestCase):
         runtime = copy.deepcopy(catalog.load_runtime_manifest())
         runtime['cards'] = runtime['cards'][:421]
         runtime['decks'] = runtime['decks'][:5]
-        with patch.object(catalog, 'load_runtime_manifest', return_value=runtime):
+        with history.pre_riven_runtime(runtime):
             cls.snapshot = catalog.make_catalog(cls.origin, cls.archives)
         cls.printings = {p['official_id']: p for p in cls.snapshot['printings']}
         cls.identities = {p['identity']: p for p in cls.snapshot['cards']}
@@ -107,7 +107,7 @@ class C28AdmissionTests(unittest.TestCase):
             self.assertEqual(row['keywords'], self.identities[UNITS[offset]]['effective_keywords_observed'])
             self.assertEqual(row['art_url'], record['runtime_image']['url'])
             self.check_image(record['runtime_image'])
-            homes = [l['id'] for l in catalog.load_legend_manifest()
+            homes = [l['id'] for l in history.pre_riven_legends()
                      if set(effective['domains']) <= {d.lower() for d in l['domains']}]
             self.assertEqual(homes, [1, 7, 8] if offset < 3 else [3, 4, 8])
             self.assertEqual(record['legal_main_deck_legend_ids'], homes)
@@ -161,7 +161,7 @@ class C28AdmissionTests(unittest.TestCase):
     def test_source_only_review_does_not_admit_any_of_the_ten_candidates(self):
         runtime = copy.deepcopy(catalog.load_runtime_manifest()); runtime['cards'] = runtime['cards'][:417]; runtime['decks'] = runtime['decks'][:4]
         fields = catalog.load_battlefield_manifest()[:11]
-        with patch.object(catalog, 'load_runtime_manifest', return_value=runtime), \
+        with history.pre_riven_runtime(runtime), \
                 patch.object(catalog, 'load_battlefield_manifest', return_value=fields):
             source_only = catalog.make_catalog(self.origin, self.archives)
         keys = ['implemented_main_cards', 'implemented_battlefields',
@@ -174,7 +174,7 @@ class C28AdmissionTests(unittest.TestCase):
                 self.assertFalse(card['implementation']['playable_in_client'])
         self.assertEqual(tuple(source_only['counts'][k] for k in [
             'reviewed_variant_identities', 'reviewed_variant_printings', 'unreviewed_variant_identities']),
-            (31, 94, 93))
+            (33, 99, 91))
 
     def test_all_previous_runtime_records_and_review_prefixes_are_unchanged(self):
         root = catalog.ROOT; runtime = catalog.load_runtime_manifest(); pin = self.proof['preserved_runtime_prefix']
@@ -187,7 +187,7 @@ class C28AdmissionTests(unittest.TestCase):
         self.assertEqual(catalog.sha(prefix.encode()), pin['carddefs_source_prefix_sha256'])
         for path, key in [('assets/data/legends.json', 'legends_manifest_sha256'),
                           ('src/deck.rs', 'training_recipe_source_sha256')]:
-            self.assertEqual(catalog.sha(history.pre_rengar_recipe_source_bytes() if path == 'src/deck.rs' else (root / path).read_bytes()), pin[key])
+            self.assertEqual(catalog.sha(history.pre_rengar_recipe_source_bytes() if path == 'src/deck.rs' else history.pre_riven_evidence_bytes(path)), pin[key])
         source = self.proof['preserved_source_reviews']
         # Later field reviews append records. Preserve this checkpoint's exact
         # bytes and require every old record to remain an unchanged prefix.

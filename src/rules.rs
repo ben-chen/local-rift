@@ -96,6 +96,7 @@ pub enum OfficialEffect {
     },
     KillGear {
         controller_draw: u8,
+        controller_gold: bool,
     },
     KillAllGear,
     KillEnemyDomain {
@@ -276,9 +277,16 @@ pub fn effect(id: usize) -> OfficialEffect {
         428 => StunAndDrawFromHand,
         429 => None,
         430 | 431 => None,
-        432 => Equipment,
+        432 | 438 => Equipment,
         433 => RecycleRevealedHand(Domain::Mind),
         434 => DisempowerThenKill { maximum: 3 },
+        435 => KillGear {
+            controller_draw: 0,
+            controller_gold: true,
+        },
+        436 => None,
+        437 => None,
+        439 | 440 => None,
         424 => None,
         422 => DrawThenChannel {
             draw: 1,
@@ -315,6 +323,7 @@ pub fn effect(id: usize) -> OfficialEffect {
         },
         362 | 364 => KillGear {
             controller_draw: if id == 362 { 2 } else { 0 },
+            controller_gold: false,
         },
         363 => KillAllGear,
         365 => KillEnemyDomain {
@@ -694,7 +703,7 @@ pub fn targeting(id: usize) -> Targeting {
     let allegiance = match id {
         290..=296 | 335 | 349 | 428 | 434 => Any,
         4 | 32 | 144 | 145 | 365 | 427 => Enemy,
-        362 | 364 | 372 | 378 | 379 | 381 => Any,
+        362 | 364 | 372 | 378 | 379 | 381 | 435 => Any,
         8 | 9 | 14 | 19 | 27 | 85 | 137 | 228 | 350 | 353 | 354 | 377 | 380 | 382 | 421 | 425 => {
             Friendly
         }
@@ -1142,6 +1151,19 @@ pub fn requirements(id: usize) -> &'static [Mechanic] {
         432 => &[Chain, Gear, Equip, Hidden],
         433 => &[Chain, HandInspection],
         434 => &[Chain, Empower, Flow],
+        435 => &[Chain, Gear, Gold, Tokens],
+        437 => &[Chain, Hidden, Bounce, MultipleTargets],
+        438 => &[Chain, Gear, Equip, Move, OptionalCosts],
+        439 => &[Chain, Stun, ChooseReadyTriggers],
+        440 => &[Chain, Protection, Move],
+        436 => &[
+            Chain,
+            Tank,
+            Move,
+            Bounce,
+            ConquerHoldTriggers,
+            OptionalCosts,
+        ],
         372 | 373 => &[Chain, Gear, Bounce],
         374 => &[Chain, Gear, DeathTriggers],
         375 => &[Chain, Bounce],
@@ -1414,6 +1436,8 @@ pub struct EquipmentRule {
     pub equip_xp: crate::xp::XpAmount,
     pub equip_domain: Domain,
     pub equip_power: u8,
+    pub equip_any_power: bool,
+    pub equip_exhaust_unit: bool,
     pub recycle_trash: u8,
     pub quick_draw: bool,
     pub ability: EquipmentAbility,
@@ -1422,6 +1446,7 @@ pub struct EquipmentRule {
 
 pub fn equipment(id: usize) -> Option<EquipmentRule> {
     let (might, equip_domain, recycle_trash, quick_draw, ability) = match id {
+        438 => (3, Domain::Chaos, 0, false, EquipmentAbility::Ganking),
         432 => (2, Domain::Chaos, 0, false, EquipmentAbility::None),
         348 => (2, Domain::Order, 0, false, EquipmentAbility::None),
         3 => (2, Domain::Chaos, 0, false, EquipmentAbility::Ganking),
@@ -1457,11 +1482,13 @@ pub fn equipment(id: usize) -> Option<EquipmentRule> {
         equip_energy: u8::from(matches!(id, 124 | 327 | 329)),
         equip_domain,
         equip_power: u8::from(!matches!(id, 124 | 327 | 348)),
+        equip_any_power: id == 438,
+        equip_exhaust_unit: id == 438,
         recycle_trash,
         quick_draw,
         ability,
         grants: match id {
-            3 => &[StaticAbility::Ganking],
+            3 | 438 => &[StaticAbility::Ganking],
             120 | 124 => &[StaticAbility::Shield(2)],
             121 | 327 => &[StaticAbility::Tank],
             328 => &[StaticAbility::Hunt(1)],
@@ -1609,6 +1636,8 @@ pub enum StaticAbility {
 pub fn static_abilities(id: usize) -> &'static [StaticAbility] {
     use StaticAbility::*;
     match id {
+        436 => &[Tank],
+        437 => &[Hidden],
         411 => &[Assault(2), MayPlayToAttackedBattlefield],
         412 | 414 => &[NoCombatDamage],
         430 => &[Shield(1), NoCombatDamageWithoutFriendlyGearHere],
@@ -1720,7 +1749,7 @@ pub fn static_abilities(id: usize) -> &'static [StaticAbility] {
             EmpoweredMight(1),
         ],
         30 => &[Ambush, MayDeployToEnemyBattlefield],
-        31 => &[UnchoosableByEnemies {
+        31 | 440 => &[UnchoosableByEnemies {
             except_in_combat: false,
         }],
         35 => &[OptionalAdditionalCostDiscount],
@@ -2063,7 +2092,7 @@ mod tests {
     #[test]
     fn all_catalog_entries_have_official_classification() {
         let cards = cards();
-        assert_eq!(cards.len(), 435);
+        assert_eq!(cards.len(), 441);
         for card in cards {
             assert_ne!(
                 effect(card.id),
@@ -2073,7 +2102,7 @@ mod tests {
             );
             assert_ne!(support_status(card.id), SupportStatus::UnknownCard);
         }
-        assert_eq!(effect(435), OfficialEffect::Unsupported);
+        assert_eq!(effect(441), OfficialEffect::Unsupported);
     }
 
     #[test]

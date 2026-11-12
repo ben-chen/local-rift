@@ -4,6 +4,78 @@ use crate::play::{HiddenTargetRestriction, PlayTargetView};
 use crate::rules::{PlayTargetKind, play_target_spec};
 
 impl Session {
+    /// Preview an ordered trigger target prefix using the same slot, location,
+    /// protection and Deflect checks as the native client. No choice is committed.
+    pub fn trigger_target_candidates(
+        &self,
+        player: usize,
+        revision: u64,
+        targets: Vec<Target>,
+    ) -> Result<Value, ApiError> {
+        self.require_revision(revision)?;
+        self.require_actor(player)?;
+        self.game
+            .validate_numeric_state()
+            .map_err(ApiError::illegal)?;
+        let (maximum, required) = self
+            .game
+            .trigger_target_bounds()
+            .ok_or_else(|| ApiError::illegal("No triggered ability is choosing targets."))?;
+        if targets.len() > maximum {
+            return Err(ApiError::illegal("Too many targets for this ability."));
+        }
+        for (index, &target) in targets.iter().enumerate() {
+            if !self
+                .game
+                .valid_trigger_target(target, &targets[..index])
+                .map_err(ApiError::illegal)?
+            {
+                return Err(ApiError::illegal(
+                    "A target does not meet this ability's ordered requirements.",
+                ));
+            }
+        }
+        let mut candidates = Vec::new();
+        if targets.len() < maximum {
+            for target in self
+                .game
+                .trigger_target_candidates()
+                .map_err(ApiError::illegal)?
+            {
+                if self
+                    .game
+                    .valid_trigger_target(target, &targets)
+                    .map_err(ApiError::illegal)?
+                {
+                    candidates.push(target_to_json(&target));
+                }
+            }
+        }
+        let kind = self
+            .game
+            .trigger_target_rule()
+            .map_or(PlayTargetKind::Unit, |rule| {
+                if rule.battlefield_first && targets.is_empty() {
+                    PlayTargetKind::Battlefield
+                } else {
+                    rule.kind
+                }
+            });
+        let can_confirm = self
+            .game
+            .clone()
+            .apply(Action::ChooseTriggerTargets {
+                targets: targets.clone(),
+            })
+            .is_ok();
+        Ok(
+            json!({"targets":targets.iter().map(target_to_json).collect::<Vec<_>>(),
+            "maximum":maximum,"required":required,"can_confirm":can_confirm,
+            "next_slot":(targets.len()<maximum).then(||json!({"index":targets.len(),"kind":target_kind(kind)})),
+            "candidates":candidates}),
+        )
+    }
+
     /// Preview the next target of an incomplete play without spending costs or
     /// changing its original/Repeat execution's ordered target prefix.
     pub fn target_candidates(

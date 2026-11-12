@@ -52,7 +52,10 @@ fn main_deck_domains_and_chosen_champion_tags_have_distinct_eligibility() {
     for legend in legends() {
         let original = CustomDeck::from_legend(legend.id).unwrap();
         assert_eq!(original.card_count(), 40);
-        assert!(original.cards.iter().all(|(id, _)| *id < 411));
+        // Riven (legend10) was introduced after this historical batch.
+        if legend.id < 10 {
+            assert!(original.cards.iter().all(|(id, _)| *id < 411));
+        }
         for id in 411..413 {
             let legal = homes[id - 411].contains(&legend.id);
             let chosen = legend.id == [8, 9][id - 411];

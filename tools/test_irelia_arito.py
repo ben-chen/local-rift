@@ -6,6 +6,7 @@ import struct
 import unittest
 from unittest.mock import patch
 import import_catalog as catalog
+import admission_history as history
 import catalog_review as review
 
 
@@ -77,11 +78,11 @@ class AritoPresetTests(unittest.TestCase):
                 digest_key='cards_sha256' if field=='cards' else 'presets_sha256'
                 self.assertEqual(catalog.sha(review.canonical_bytes(self.runtime[field][:proof[count]])),proof[digest_key])
         for path,digest in self.edge['preserved_source_reviews'].items():
-            self.assertEqual(catalog.sha((catalog.ROOT/path).read_bytes()),digest)
+            self.assertEqual(catalog.sha(history.pre_riven_evidence_bytes(path)),digest)
 
     def test_source_review_alone_does_not_enable_edge_or_the_new_preset(self):
         runtime=copy.deepcopy(self.runtime);runtime['cards']=runtime['cards'][:432];runtime['decks']=runtime['decks'][:5]
-        with patch.object(catalog,'load_runtime_manifest',return_value=runtime):
+        with history.pre_riven_runtime(runtime):
             snapshot=catalog.make_catalog(self.origin,self.archives)
         edge=next(x for x in snapshot['cards'] if x['identity']=='sfd-139-221')
         self.assertFalse(edge['implementation']['playable_in_client'])

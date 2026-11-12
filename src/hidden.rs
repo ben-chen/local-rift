@@ -7,7 +7,7 @@
 //! their triggered abilities, and spells, use the ordinary response chain.
 
 use crate::cards::{CardId, CardKind};
-use crate::game::{Action, BATTLEFIELDS, Game, Phase, Target};
+use crate::game::{Action, Game, Phase, Target};
 use crate::rules;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -61,7 +61,7 @@ impl Game {
         {
             return Err("This card does not have Hidden.".into());
         }
-        if lane >= BATTLEFIELDS || self.battlefield_owner[lane] != Some(player) {
+        if lane >= self.battlefield_count() || self.battlefield_owner[lane] != Some(player) {
             return Err("Hide at a battlefield you control.".into());
         }
         if self
@@ -311,13 +311,13 @@ impl Game {
         }
         let mut actions = Vec::new();
         for (hand_index, _) in self.players[player].hand.iter().enumerate() {
-            for lane in 0..BATTLEFIELDS {
+            for lane in 0..self.battlefield_count() {
                 if self.hidden_can_hide(player, hand_index, lane).is_ok() {
                     actions.push(Action::Hide { hand_index, lane });
                 }
             }
         }
-        for lane in 0..BATTLEFIELDS {
+        for lane in 0..self.battlefield_count() {
             if self.hidden_can_hide_champion(player, lane).is_ok() {
                 actions.push(Action::HideChampion { lane });
             }
@@ -390,7 +390,7 @@ mod tests {
             state.any_power = 0;
             state.energy = 0;
         }
-        game.battlefield_owner = [Some(0), Some(1)];
+        game.battlefield_owner = vec![Some(0), Some(1)];
         unit(&mut game, 0, 25, Some(0));
         unit(&mut game, 1, 25, Some(1));
         game

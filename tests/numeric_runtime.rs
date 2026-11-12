@@ -18,8 +18,8 @@ fn position(legends: [usize; 2]) -> Game {
     )
     .unwrap();
     g.start_match().unwrap();
-    g.battlefields = [7, 9]; // No automatic scoring/damage instructions.
-    g.battlefield_owner = [None; 2];
+    g.battlefields = vec![7, 9]; // No automatic scoring/damage instructions.
+    g.battlefield_owner = vec![None; 2];
     for player in 0..2 {
         g.legend[player].ready = false;
         let p = &mut g.players[player];

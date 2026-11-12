@@ -1,0 +1,15 @@
+{
+  "checked": "2026-11-12",
+  "note": "Auxiliary tokens cannot start a game and do not increase Standard legal-identity coverage.",
+  "battlefields": [
+    {
+      "id": 1000,
+      "name": "Baron Pit",
+      "source_id": "unl-t01",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_html": "<p>(You can't start the game with a token battlefield.)<br />Units can move here from anywhere.</p>",
+      "official_text": "(You can't start the game with a token battlefield.)\nUnits can move here from anywhere.",
+      "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/e44f173629322a4e0c32d3f8902c294d4482ef42-1039x744.png?accountingTag=RB"
+    }
+  ]
+}

@@ -33,6 +33,9 @@ pub(crate) struct PaymentPlan {
     obligations: Vec<Obligation>,
     show_off: Vec<crate::show_off::ShownObject>,
     rune_targets: Vec<crate::game::Target>,
+    /// Outer None: not a Baron play. Inner None: a Pit already existed, so this
+    /// play established no entry replacement. Some(slot): this play added it.
+    baron_entry: Option<Option<usize>>,
     mode: Mode,
 }
 
@@ -139,6 +142,7 @@ impl PaymentPlan {
             | Action::ActivateLegend { .. }
             | Action::Equip { .. }
             | Action::EquipWithTrash { .. }
+            | Action::EquipExhaustUnit { .. }
             | Action::EmpowerUnit { .. } => Some(Ordinary),
             Action::ResolveTriggerPayment { pay: true, .. }
             | Action::ChooseTriggerTargets { .. }
@@ -526,6 +530,52 @@ impl Game {
             .map(|plan| plan.frozen.as_ref())
     }
 
+    pub(crate) fn baron_entry_preview(&self) -> Option<usize> {
+        if let Some(entry) = self.payment_plan.as_ref().and_then(|plan| plan.baron_entry) {
+            return entry;
+        }
+        (!self
+            .battlefields
+            .contains(&crate::battlefields::BARON_PIT_ID))
+        .then_some(self.battlefield_count())
+    }
+
+    /// Core355.1 adds the Pit during choices, before resource generation and
+    /// payment. Core369.3 separately redirects this particular Baron's entry.
+    pub(crate) fn finalize_baron_entry(&mut self) -> Result<Option<usize>, String> {
+        if let Some(plan) = &self.payment_plan
+            && plan.mode == Mode::Replaying
+        {
+            return plan
+                .baron_entry
+                .ok_or("The frozen Baron entry is missing.".into());
+        }
+        let entry = if self
+            .battlefields
+            .contains(&crate::battlefields::BARON_PIT_ID)
+        {
+            None
+        } else {
+            let lane = self.add_battlefield(crate::battlefields::BARON_PIT_ID);
+            self.push_log("Baron Pit joins the board during Baron Nashor's play choices.".into());
+            Some(lane)
+        };
+        if let Some(plan) = &mut self.payment_plan
+            && plan.mode == Mode::Recording
+        {
+            plan.baron_entry = Some(entry);
+            if let Some(lane) = entry
+                && plan
+                    .frozen
+                    .add_battlefield(crate::battlefields::BARON_PIT_ID)
+                    != lane
+            {
+                return Err("The frozen battlefield slots do not match this play.".into());
+            }
+        }
+        Ok(entry)
+    }
+
     pub(crate) fn payment_blocks_cleanup(&self) -> bool {
         self.payment_plan.is_some()
     }
@@ -568,6 +618,7 @@ impl Game {
             obligations: Vec::new(),
             show_off: Vec::new(),
             rune_targets: Vec::new(),
+            baron_entry: None,
             mode: Mode::Recording,
         }));
         // Normalize convenience target choices before resources change the board.
@@ -589,6 +640,7 @@ impl Game {
             obligations: Vec::new(),
             show_off: shown.clone(),
             rune_targets: self.capture_action_rune_targets(&action),
+            baron_entry: None,
             mode: Mode::Recording,
         }));
         if let Some(card) = pending_card {
@@ -599,6 +651,12 @@ impl Game {
             .payment_plan
             .take()
             .ok_or("Payment recording was interrupted.")?;
+        if let Some(Some(lane)) = plan.baron_entry {
+            if staged.add_battlefield(crate::battlefields::BARON_PIT_ID) != lane {
+                return Err("The staged battlefield slots do not match this play.".into());
+            }
+            staged.push_log("Baron Pit joins the board during Baron Nashor's play choices.".into());
+        }
         plan.mode = Mode::Pending;
         staged.payment_plan = Some(plan);
         staged.log_show_off(&shown);
@@ -929,6 +987,7 @@ fn payment_intent(action: &Action) -> bool {
             | Action::ActivateLegend { .. }
             | Action::Equip { .. }
             | Action::EquipWithTrash { .. }
+            | Action::EquipExhaustUnit { .. }
             | Action::EmpowerUnit { .. }
             | Action::ResolveBattlefieldPayment { pay: true, .. }
             | Action::ResolveTriggerPayment { pay: true, .. }

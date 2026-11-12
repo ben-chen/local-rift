@@ -18,8 +18,7 @@ class C18AdmissionTests(unittest.TestCase):
         cls.manifest, cls.data = catalog.read_archives()
         runtime = copy.deepcopy(catalog.load_runtime_manifest())
         runtime['cards'] = runtime['cards'][:385]; runtime['decks'] = runtime['decks'][:4]
-        with patch.object(catalog, 'load_runtime_manifest', return_value=runtime), patch.object(catalog, 'load_battlefield_manifest', return_value=history.legacy_battlefields()), \
-                patch.object(catalog, 'load_legend_manifest', return_value=catalog.load_legend_manifest()):
+        with history.pre_riven_runtime(runtime), patch.object(catalog, 'load_battlefield_manifest', return_value=history.legacy_battlefields()):
             cls.snapshot = catalog.make_catalog(cls.manifest, cls.data)
         cls.proof = json.loads((catalog.ROOT / 'assets/data/card_admissions/c18/admissions.json').read_text())
 
@@ -88,7 +87,7 @@ class C18AdmissionTests(unittest.TestCase):
         self.assertEqual(p['card_count'], BASE)
         self.assertEqual(digest(runtime['cards'][:BASE]), p['cards_sha256'])
         self.assertEqual(digest(runtime['decks'][:4]), p['presets_sha256'])
-        self.assertEqual(catalog.sha((root / 'assets/data/legends.json').read_bytes()), p['legends_manifest_sha256'])
+        self.assertEqual(catalog.sha(history.pre_riven_evidence_bytes('assets/data/legends.json')), p['legends_manifest_sha256'])
         self.assertEqual(catalog.sha(history.pre_rengar_recipe_source_bytes()), p['training_recipe_source_sha256'])
         p = self.proof['preserved_source_reviews']
         r = json.loads((root / 'assets/data/catalog_resolutions.json').read_text())
@@ -110,7 +109,7 @@ class C18AdmissionTests(unittest.TestCase):
 
 
     def test_every_new_card_has_legal_existing_homes_without_champion_eligibility(self):
-        legends = catalog.load_legend_manifest()
+        legends = history.pre_riven_legends()
         for record in self.proof['records']:
             e = record['effective']
             self.assertNotIn('champion', [s.lower() for s in e['super_types']])

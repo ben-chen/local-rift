@@ -29,8 +29,8 @@
   },
   "image_index": {
     "local_path": "assets/data/catalog_evidence/variant_images.json",
-    "sha256": "c3a466807391bfebf9b12ee979fd887b75d248c77c803574d632d283072479a8",
-    "bytes": 96030
+    "sha256": "a847832fc15e3ae8139e5fe18f463a7e1082f958130ea17f5523b6a085d0d4d5",
+    "bytes": 102883
   },
   "reviews": [
     {
@@ -1813,6 +1813,105 @@
             "814.1.b.3",
             "814.1.c",
             "814.1.d"
+          ],
+          "resolution_ids": []
+        }
+      ],
+      "errata": []
+    },
+    {
+      "id": "riven-rad-043-167",
+      "identity": "rad-043-167",
+      "name": "Riven, Broken Blade",
+      "reviewed_on": "2026-11-12",
+      "status": "complete",
+      "enables_runtime_support": false,
+      "core_authority_id": "core",
+      "members": [
+        {
+          "official_id": "rad-043-167",
+          "raw_sha256": "1c089480bb67b33e04431c779fcff25bbb6efa88354ed0d88bd66f1db1081cde",
+          "effective_sha256": "66d66fbf6066f95be4798e6336973eb5fc98b476049f1bbdc7178d73fc1ea547",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {
+            "rad-043-167:tags": "25380c27d52922bfbef3638c0af7863835f352fc6a1c9abe93be0e91f7668558"
+          },
+          "image_id": "rad-043-167"
+        },
+        {
+          "official_id": "rad-043a-167",
+          "raw_sha256": "6fbc3282aec8ffa9843629ce1a71c1c6ccb42f14ba1d9837ca19aa6513fbc1a9",
+          "effective_sha256": "a152d4d1a93bac1f49b776bf47ecdefe16df6a0162946334d69ca2434817f439",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {
+            "rad-043a-167:tags": "d5366b1da2e595b61e74237ee0d79ecfb1b6e752b48bc0f24730d55cf6201fe2"
+          },
+          "image_id": "rad-043a-167"
+        }
+      ],
+      "fields": [
+        {
+          "field": "rules_text",
+          "disposition": "reminder_equivalent",
+          "reason": "Both complete faces retain the exhaustion trigger, per-turn choice restriction and all three identical Buff, spend-to-Stun and spend-to-ready choices. The alternate omits only the italic Buff and Stun reminders. Both faces print Riven / Noxus; separately evidenced corrections restore the omitted Noxus tags.",
+          "rules": [
+            "135.2.d.1",
+            "135.2.d.2",
+            "135.2.d.3",
+            "424.1",
+            "427.1",
+            "702.1"
+          ],
+          "resolution_ids": []
+        }
+      ],
+      "errata": []
+    },
+    {
+      "id": "riven-unl-147-219",
+      "identity": "unl-147-219",
+      "name": "Baron Nashor",
+      "reviewed_on": "2026-11-12",
+      "status": "complete",
+      "enables_runtime_support": false,
+      "core_authority_id": "core",
+      "members": [
+        {
+          "official_id": "unl-147-219",
+          "raw_sha256": "ba500ade3c3347b5c3dbe5138d664b371a4e84da44058cd83fe08737c09a6729",
+          "effective_sha256": "ba500ade3c3347b5c3dbe5138d664b371a4e84da44058cd83fe08737c09a6729",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {},
+          "image_id": "unl-147-219"
+        },
+        {
+          "official_id": "unl-147a-219",
+          "raw_sha256": "5c31f42e9319cfb40fdcc6f12f54e0433c1d0b906a0a2051a22cb1ff84ad7980",
+          "effective_sha256": "5c31f42e9319cfb40fdcc6f12f54e0433c1d0b906a0a2051a22cb1ff84ad7980",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {},
+          "image_id": "unl-147a-219"
+        },
+        {
+          "official_id": "unl-238-219",
+          "raw_sha256": "e137f055a6c42e706629e85eaccc701bd97d2f78bfc0df1ae75a97b4bb57c675",
+          "effective_sha256": "e137f055a6c42e706629e85eaccc701bd97d2f78bfc0df1ae75a97b4bb57c675",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {},
+          "image_id": "unl-238-219"
+        }
+      ],
+      "fields": [
+        {
+          "field": "rules_text",
+          "disposition": "reminder_equivalent",
+          "reason": "All three complete faces retain the same Baron Pit creation and entry replacement, enemy-spell/ability choice restriction, and +2 Might for other friendly units. Alternate/showcase faces omit only the italic Baron Pit movement reminder. Each prints Unit / The Void, 10 Energy, 3 Chaos Power and 12 Might.",
+          "rules": [
+            "135.2.d.1",
+            "135.2.d.2",
+            "135.2.d.3",
+            "187.9",
+            "369.3"
           ],
           "resolution_ids": []
         }

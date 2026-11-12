@@ -139,8 +139,22 @@ pub const BATTLEFIELDS: [BattlefieldDef; 17] = [
     },
 ];
 
+/// Token definitions occupy a separate ID range and cannot be chosen at setup.
+pub const BARON_PIT_ID: usize = 1_000;
+pub const TOKEN_BATTLEFIELDS: [BattlefieldDef; 1] = [BattlefieldDef {
+    id: BARON_PIT_ID,
+    name: "Baron Pit",
+    official_text: "(You can't start the game with a token battlefield.)\nUnits can move here from anywhere.",
+    source_id: "unl-t01",
+    source_url: "https://playriftbound.com/en-us/card-gallery/",
+}];
+
 pub fn battlefield(id: usize) -> &'static BattlefieldDef {
-    &BATTLEFIELDS[id]
+    if id == BARON_PIT_ID {
+        &TOKEN_BATTLEFIELDS[0]
+    } else {
+        &BATTLEFIELDS[id]
+    }
 }
 
 /// Bundled presets default to a battlefield from their published source list.
@@ -148,6 +162,7 @@ pub fn default_battlefield(deck: usize) -> usize {
     match deck {
         4 => 1,  // Rengar: Seat of Power.
         5 => 13, // Arito Irelia: Abandoned Hall.
+        6 => 11, // Sonecon Riven: Emperor's Dais.
         _ => deck.min(3),
     }
 }
@@ -247,7 +262,7 @@ impl Game {
                 Vec::new(),
                 ChainAbility::Battlefield(BattlefieldAbility::ZaunWarrensLoot { lane }),
             ),
-            3 | 4 | 6..=10 | 12 | 13 | 15 => {}
+            3 | 4 | 6..=10 | 12 | 13 | 15 | BARON_PIT_ID => {}
             _ => unreachable!("validated battlefield selection"),
         }
 
@@ -358,7 +373,7 @@ impl Game {
         if !accept {
             return Ok(());
         }
-        if lane >= 2 || self.battlefields[lane] != 0 {
+        if lane >= self.battlefield_count() || self.battlefields[lane] != 0 {
             return Err("That field has no optional Sunken Temple trigger.".into());
         }
         if self.payment_energy_available(player) < 1 {
@@ -551,7 +566,7 @@ mod tests {
     fn seat_of_power_counts_other_fields_at_resolution() {
         let mut game = game();
         game.battlefields[0] = 1;
-        game.battlefield_owner = [Some(0), Some(0)];
+        game.battlefield_owner = vec![Some(0), Some(0)];
         let hand = game.players[0].hand.len();
         game.battlefield_on_conquer(0, 0).unwrap();
         assert_eq!(game.players[0].hand.len(), hand);
@@ -619,7 +634,7 @@ mod tests {
     #[test]
     fn void_gate_bonus_is_target_local_and_does_not_modify_combat_might() {
         let mut game = game();
-        game.battlefields = [3, 2];
+        game.battlefields = vec![3, 2];
         game.players[0].units.push(unit(100, Some(0), 6));
         game.players[1].units.push(unit(101, Some(1), 6));
         game.players[1].units.push(unit(102, None, 6));
@@ -673,10 +688,10 @@ mod tests {
     #[test]
     fn actual_spell_damage_gains_void_gate_bonus_per_packet() {
         let mut game = game();
-        game.battlefields = [3, 2];
+        game.battlefields = vec![3, 2];
         game.players[1].units.push(unit(100, Some(0), 10));
         game.players[1].units.push(unit(101, Some(1), 10));
-        game.battlefield_owner = [Some(1), Some(1)];
+        game.battlefield_owner = vec![Some(1), Some(1)];
         game.players[0].set_rune_setup([2; 6], [0; 6]).unwrap();
         game.players[0].energy = 12;
         game.players[0].hand = vec![53]; // Two separate packets of 3 damage.

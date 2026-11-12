@@ -479,6 +479,27 @@ impl CustomDeck {
                 ],
                 [7, 5],
             ),
+            // An authored introduction to ready entry, movement and Riven's modes.
+            // The complete sourced Riven registration is admitted separately.
+            10 => (
+                &[
+                    (439, 3),
+                    (436, 3),
+                    (437, 3),
+                    (36, 3),
+                    (71, 3),
+                    (438, 3),
+                    (6, 3),
+                    (12, 3),
+                    (11, 3),
+                    (37, 3),
+                    (435, 2),
+                    (3, 2),
+                    (42, 3),
+                    (1, 3),
+                ],
+                [6, 6],
+            ),
             _ => return Err("No authored training list is available for this legend.".into()),
         };
         let mut runes = [0; 6];

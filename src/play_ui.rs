@@ -2,6 +2,21 @@
 use super::*;
 use local_rift::{game::ChainSource, play::*};
 
+/// Keep all physical locations inside their allotted action area. Additional
+/// fields use two columns rather than covering the turn/response controls.
+pub(super) fn location_button(index: usize, count: usize, area: Rect, step: f32) -> Rect {
+    let columns = if count <= 3 { 1 } else { 2 };
+    let rows = count.div_ceil(columns);
+    let step = step.min(area.h / rows.max(1) as f32);
+    let width = (area.w - 8.0 * (columns - 1) as f32) / columns as f32;
+    Rect::new(
+        area.x + (index % columns) as f32 * (width + 8.0),
+        area.y + (index / columns) as f32 * step,
+        width,
+        step - 6.0,
+    )
+}
+
 #[derive(Clone)]
 pub(super) struct PlayDraft {
     pub key: (Selection, usize),
@@ -66,6 +81,22 @@ fn choose_destination(
 
 #[cfg(test)]
 mod mode_tests {
+    #[test]
+    fn dynamic_fields_location_choices_stay_above_turn_controls() {
+        use super::*;
+        let area = Rect::new(1178.0, 480.0, 212.0, 87.0);
+        for count in 3..=5 {
+            let buttons: Vec<_> = (0..count)
+                .map(|i| location_button(i, count, area, 29.0))
+                .collect();
+            for (i, button) in buttons.iter().enumerate() {
+                assert!(button.x >= area.x && button.x + button.w <= area.x + area.w);
+                assert!(button.y >= area.y && button.y + button.h <= area.y + area.h);
+                assert!(button.w >= 102.0 && button.h >= 23.0);
+                assert!(buttons[i + 1..].iter().all(|other| !button.overlaps(other)));
+            }
+        }
+    }
     use super::*;
 
     #[test]
@@ -276,7 +307,7 @@ pub(super) fn value_label(value: &CostValue) -> String {
 }
 pub(super) fn total_label(plan: &CostPlanView) -> String {
     let mut parts = Vec::new();
-    if plan.energy > 0 || plan.xp == 0 {
+    if plan.energy > 0 || (plan.xp == 0 && plan.object_costs.is_empty()) {
         parts.push(format!("{} energy", plan.energy));
     }
     for cost in &plan.power {
@@ -293,6 +324,13 @@ pub(super) fn total_label(plan: &CostPlanView) -> String {
     }
     if plan.xp > 0 {
         parts.push(format!("{} XP", plan.xp));
+    }
+    for cost in &plan.object_costs {
+        match cost {
+            local_rift::play::ObjectCost::ExhaustUnit { .. } => {
+                parts.push("exhaust chosen unit".into())
+            }
+        }
     }
     format!("Pay {}", parts.join(" + "))
 }
@@ -1046,14 +1084,13 @@ impl App {
                     .choices
                     .destination_lane(self.destination)
             };
-            for (slot, lane) in [None, Some(0), Some(1)].into_iter().enumerate() {
+            for (slot, lane) in self.game.board_locations().enumerate() {
+                let step = 414.0 / (self.game.battlefield_count() + 1) as f32;
                 if self.ui.button(
-                    Rect::new(695.0 + slot as f32 * 138.0, 753.0, 134.0, 32.0),
-                    match lane {
-                        None => "To unit's base",
-                        Some(0) => "To field 1",
-                        _ => "To field 2",
-                    },
+                    Rect::new(695.0 + slot as f32 * step, 753.0, step - 4.0, 32.0),
+                    &lane.map_or("Unit's base".into(), |lane| {
+                        format!("To field {}", lane + 1)
+                    }),
                     selected == lane,
                     true,
                 ) {
@@ -1806,13 +1843,18 @@ impl App {
         ) {
             self.options.accelerate = !self.options.accelerate;
         }
-        for (index, lane) in [None, Some(0), Some(1)].into_iter().enumerate() {
+        for (index, lane) in self.game.board_locations().enumerate() {
             let allowed = fixed_lane.map_or_else(
                 || lane.is_none_or(|lane| self.game.battlefield_owner[lane] == Some(0)),
                 |fixed| fixed == lane,
             );
             if self.ui.button(
-                Rect::new(1178.0, 480.0 + index as f32 * 29.0, 212.0, 25.0),
+                location_button(
+                    index,
+                    self.game.battlefield_count() + 1,
+                    Rect::new(1178.0, 480.0, 212.0, 87.0),
+                    29.0,
+                ),
                 &lane.map_or("Play at base".into(), |lane| {
                     format!("Play at field {}", lane + 1)
                 }),

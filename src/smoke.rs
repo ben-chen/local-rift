@@ -11,7 +11,11 @@ use local_rift::{
 };
 use macroquad::prelude::*;
 mod ai;
+mod blade;
+mod riven_champion;
 pub(super) use ai::run_frame as run_ai_frame;
+pub(super) use blade::run_frame as run_blade_frame;
+pub(super) use riven_champion::run_frame as run_riven_champion_frame;
 mod c24;
 mod c25;
 mod c26;
@@ -19,9 +23,11 @@ mod c27;
 mod c28;
 mod irelia;
 mod presets;
+mod riven;
 mod series;
 pub(super) use irelia::run_frame as run_irelia_frame;
 pub(super) use presets::run_frame as run_preset_frame;
+pub(super) use riven::run_frame as run_riven_frame;
 pub(super) use series::run_frame as run_series_frame;
 
 thread_local! {
@@ -124,7 +130,7 @@ fn unit_rect(app: &mut App, selected: u32) -> Rect {
         units,
         gear: super::scene_gear(&app.game),
         selected: None,
-        owners: app.game.battlefield_owner,
+        owners: app.game.battlefield_owner.clone(),
         time: 0.0,
         orbit: app.orbit,
     };
@@ -297,7 +303,7 @@ fn staged_battlefield_fixture(app: &mut App) {
             banish_on_death: false,
         })
         .collect();
-    app.game.battlefield_owner = [Some(0), Some(0)];
+    app.game.battlefield_owner = vec![Some(0), Some(0)];
     app.game
         .apply(Action::PlayCardWithTargets {
             hand_index: 0,
@@ -356,7 +362,7 @@ fn expansion_fixture(app: &mut App, card_id: usize) {
     app.game.start_match().unwrap();
     app.player_deck = legend;
     app.opponent_deck = 3;
-    app.fields = app.game.battlefields;
+    app.fields = std::array::from_fn(|i| app.game.battlefields[i]);
     app.screen = Screen::Practice;
     app.in_match = true;
     let name = app.game.catalog[card_id].name;
@@ -532,9 +538,9 @@ fn c17_fixture(app: &mut App, spell: usize) {
     app.game =
         Game::new_with_custom([0, 3], [Some(deck), None], 171700, Difficulty::Easy, false).unwrap();
     app.game.start_match().unwrap();
-    app.game.battlefields = [7, 9];
-    app.game.battlefield_owner = [None; 2];
-    app.fields = app.game.battlefields;
+    app.game.battlefields = vec![7, 9];
+    app.game.battlefield_owner = vec![None; 2];
+    app.fields = std::array::from_fn(|i| app.game.battlefields[i]);
     for p in &mut app.game.players {
         p.hand.clear();
         p.units.clear();
@@ -706,7 +712,7 @@ fn c20_move(app: &mut App, source: usize, top: Option<usize>) {
 fn c21_fixture(app: &mut App, source: usize, top_first: &[usize]) {
     c17_fixture(app, source);
     app.game.players[1].units.clear();
-    app.game.battlefield_owner = [None; 2];
+    app.game.battlefield_owner = vec![None; 2];
     app.game.players[0].deck = top_first.iter().rev().copied().collect();
     app.game.players[0].xp = 0;
     app.predict_draft = None;
@@ -729,8 +735,8 @@ fn c21_cast_to_choice(app: &mut App, source: usize, top_first: &[usize]) {
 fn c22_fixture(app: &mut App, card_id: usize) {
     c21_fixture(app, card_id, &[69, 71, 96]);
     app.game.players[0].units.clear();
-    app.game.battlefields = [2, 2];
-    app.fields = app.game.battlefields;
+    app.game.battlefields = vec![2, 2];
+    app.fields = std::array::from_fn(|i| app.game.battlefields[i]);
     app.selection = None;
     app.tray = super::Tray::Hand;
     app.inspect = None;
@@ -745,8 +751,8 @@ pub(super) fn c23_deathknell_fixture(attacker: usize, conquer: bool) -> Game {
     let mut game = Game::new_for_agents(3, 3, 230025, Difficulty::Easy);
     game.choose_starting_player(attacker).unwrap();
     game.start_match().unwrap();
-    game.battlefields = [3, 3];
-    game.battlefield_owner = [Some(1 - attacker), None];
+    game.battlefields = vec![3, 3];
+    game.battlefield_owner = vec![Some(1 - attacker), None];
     for p in &mut game.players {
         p.units.clear();
         p.gear.clear();
@@ -827,7 +833,7 @@ pub(super) fn c23_deathknell_fixture(attacker: usize, conquer: bool) -> Game {
 
 fn c23_fixture(app: &mut App, attacker: usize, conquer: bool) {
     app.game = c23_deathknell_fixture(attacker, conquer);
-    app.fields = app.game.battlefields;
+    app.fields = std::array::from_fn(|i| app.game.battlefields[i]);
     app.selection = None;
     app.targets.clear();
     app.inspect = None;
@@ -965,7 +971,7 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
                     unit.damage = 0;
                 }
             }
-            app.game.battlefield_owner = [None; 2];
+            app.game.battlefield_owner = vec![None; 2];
             app.selection = None;
             app.group.clear();
             click_unit(app, 40_001);
@@ -2748,7 +2754,7 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
             expansion_fixture(app, 87);
             app.game.players[0].units =
                 vec![public_unit(100, 72, Some(0)), public_unit(101, 73, Some(1))];
-            app.game.battlefield_owner = [Some(0), Some(0)];
+            app.game.battlefield_owner = vec![Some(0), Some(0)];
             click(app, 315.0, 760.0);
         }
         180 => {
@@ -5548,7 +5554,7 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
             moving.ready = false;
             app.game.players[0].units = vec![moving, public_unit(9902, 18, None)];
             app.game.players[1].units = vec![public_unit(9903, 18, Some(1))];
-            app.game.battlefield_owner = [Some(0), Some(1)];
+            app.game.battlefield_owner = vec![Some(0), Some(1)];
             click(app, 615.0, 760.0);
         }
         503 => {
@@ -5829,7 +5835,7 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
                 public_unit(9912, 25, Some(0)),
                 public_unit(9913, 25, Some(1)),
             ];
-            app.game.battlefield_owner = [Some(1), Some(1)];
+            app.game.battlefield_owner = vec![Some(1), Some(1)];
             save_state(app);
             click(app, 315.0, 760.0);
         }
@@ -6480,7 +6486,7 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
         }
         598 => {
             expansion_fixture(app, 299);
-            app.game.battlefields = [0, 0];
+            app.game.battlefields = vec![0, 0];
             app.game.players[0].units.clear();
             app.game.players[1].units.clear();
             save_state(app);
@@ -6604,7 +6610,7 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
             finish_chain_until_choice(app);
             assert!(app.game.players[0].discard.contains(&299));
             expansion_fixture(app, 299);
-            app.game.battlefields = [0, 0];
+            app.game.battlefields = vec![0, 0];
             app.game.players[0].any_power = 4;
             app.game.players[0].gear.push(GearState {
                 lane: None,
@@ -6631,7 +6637,7 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
                 public_unit(9951, 110, Some(0)),
                 public_unit(9952, 110, Some(1)),
             ];
-            app.game.battlefield_owner = [Some(1), Some(1)];
+            app.game.battlefield_owner = vec![Some(1), Some(1)];
             save_state(app);
             click(app, 315.0, 760.0);
         }
@@ -6877,7 +6883,7 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
         }
         639 => {
             assert!(app.equipment_inspect.is_none());
-            app.game.battlefields = [3, 3];
+            app.game.battlefields = vec![3, 3];
             app.game
                 .apply(Action::Move {
                     unit_id: 9980,
@@ -7419,13 +7425,13 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
         }
         680 => {
             expansion_fixture(app, 342);
-            app.game.battlefields = [3, 3];
+            app.game.battlefields = vec![3, 3];
             app.game.players[0].xp = 255;
             app.game.players[0].units = vec![
                 public_unit(10010, 342, Some(0)),
                 public_unit(10011, 343, None),
             ];
-            app.game.battlefield_owner = [Some(0), None];
+            app.game.battlefield_owner = vec![Some(0), None];
             assert!(
                 !app.game.gained_xp_this_turn(0),
                 "setting the public fixture balance is not an XP gain"
@@ -7566,11 +7572,11 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
                 "Combat Experience may target an enemy and uses +3 instead"
             );
             expansion_fixture(app, 344);
-            app.game.battlefields = [3, 3];
+            app.game.battlefields = vec![3, 3];
             app.game.players[0].xp = 255;
             app.game.players[1].xp = u64::MAX;
             app.game.players[0].units = vec![public_unit(10013, 344, Some(0))];
-            app.game.battlefield_owner = [Some(0), None];
+            app.game.battlefield_owner = vec![Some(0), None];
             click_unit(app, 10013);
         }
         697 => click(app, 1285.0, 462.0),
@@ -7604,7 +7610,7 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
                 "actual Level6 Wuju play draws exactly one"
             );
             expansion_fixture(app, 340);
-            app.game.battlefields = [3, 3];
+            app.game.battlefields = vec![3, 3];
             app.game.players[0].xp = 1;
             app.game.players[0].units = vec![public_unit(10014, 343, None)];
             click_unit(app, 10014);
@@ -7647,10 +7653,10 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
         }
         705 => {
             expansion_fixture(app, 338);
-            app.game.battlefields = [3, 3];
+            app.game.battlefields = vec![3, 3];
             app.game.players[0].xp = 3;
             app.game.players[0].units = vec![public_unit(10015, 338, Some(0))];
-            app.game.battlefield_owner = [Some(0), None];
+            app.game.battlefield_owner = vec![Some(0), None];
             click_unit(app, 10015);
         }
         706 => click(app, 1285.0, 462.0),
@@ -7671,7 +7677,7 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
         }
         708 => {
             expansion_fixture(app, 345);
-            app.game.battlefields = [3, 3];
+            app.game.battlefields = vec![3, 3];
             app.game.players[0].xp = 1;
             let mut crowd = public_unit(10020, 345, None);
             crowd.ready = false;
@@ -8058,7 +8064,7 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
             expansion_fixture(app, 226);
             app.game = Game::new(3, 3, 1818, Difficulty::Easy);
             app.game.start_match().unwrap();
-            app.game.battlefields = [3, 3];
+            app.game.battlefields = vec![3, 3];
             app.fields = [3, 3];
             app.player_deck = 3;
             app.opponent_deck = 3;
@@ -8073,7 +8079,7 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
             second.damage = 5;
             app.game.players[0].units = vec![attacker];
             app.game.players[1].units = vec![first, second];
-            app.game.battlefield_owner = [Some(1), None];
+            app.game.battlefield_owner = vec![Some(1), None];
             app.damage_order.clear();
             app.game
                 .apply(Action::Move {
@@ -8234,7 +8240,7 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
             unit.buff = 9_007_199_254_740_993 - 8;
             app.game.players[0].units = vec![unit];
             app.game.players[1].units = vec![public_unit(10036, 69, Some(1))];
-            app.game.battlefield_owner = [Some(0), Some(1)];
+            app.game.battlefield_owner = vec![Some(0), Some(1)];
             click(app, 315.0, 760.0);
         }
         759 => click_unit(app, 10036),
@@ -8353,7 +8359,7 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
                 public_unit(11005, 69, None),
                 public_unit(11006, 69, Some(1)),
             ];
-            app.game.battlefield_owner = [Some(0), Some(0)];
+            app.game.battlefield_owner = vec![Some(0), Some(0)];
             click(app, 610.0, 661.0);
         }
         770 => click(app, 315.0, 760.0),

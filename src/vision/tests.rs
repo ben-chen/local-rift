@@ -5,8 +5,8 @@ use crate::continuous::{PassiveEffect, PassiveKeyword};
 fn position() -> Game {
     let mut game = Game::new_for_agents(3, 3, 22003, Difficulty::Tactical);
     game.start_match().unwrap();
-    game.battlefields = [2, 2];
-    game.battlefield_owner = [None; 2];
+    game.battlefields = vec![2, 2];
+    game.battlefield_owner = vec![None; 2];
     for player in &mut game.players {
         player.units.clear();
         player.gear.clear();

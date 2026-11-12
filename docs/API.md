@@ -23,7 +23,7 @@ Replace `choose_action(view, suggestions, rng)` in that example with your policy
 
 The initial session is in `mulligan` phase, with decks `[0,1]`, seed `1`, Tactical AI, and player `0` going first. `info` reports protocol version `1`; `catalog` reports separate preset, legend, card, domain, and battlefield IDs.
 
-The repository's `assets/data/full_catalog.json` is a separate inventory with schema version `2`; it is not the bot protocol or the playable `catalog` response. It preserves raw printing fields and adds reviewed `effective` facts, resolution references, and unresolved-field diagnostics. Deck validation uses those effective facts and rejects unresolved gameplay or variant fields, including conflicts on alternate printings. Source review alone never registers a playable card. Inventory-only identity `kind` preserves complete type sets as sorted `+`-joined strings, such as `gear+unit`; the corresponding printing’s `effective.types` retains both types. This does not add a playable bot-protocol card kind. Main-card IDs are append-only; the latest additions are 421–425. Existing IDs and sourced preset lists retain their identities, while eligible-card and chosen-champion lists expand with supported cards. Additive Temporary status, token identity, evaluated passive values and target queries retain protocol version `1`. See [the inventory review contract](CATALOG_REVIEW.md) for evidence and remaining variant-review limits.
+The repository's `assets/data/full_catalog.json` is a separate inventory with schema version `2`; it is not the bot protocol or the playable `catalog` response. It preserves raw printing fields and adds reviewed `effective` facts, resolution references, and unresolved-field diagnostics. Deck validation uses those effective facts and rejects unresolved gameplay or variant fields, including conflicts on alternate printings. Source review alone never registers a playable card. Inventory-only identity `kind` preserves complete type sets as sorted `+`-joined strings, such as `gear+unit`; the corresponding printing’s `effective.types` retains both types. This does not add a playable bot-protocol card kind. Main-card IDs are append-only; the latest additions are 435–440. Existing IDs and sourced preset lists retain their identities, while eligible-card and chosen-champion lists expand with supported cards. Additive Temporary status, token identity, evaluated passive values and target queries retain protocol version `1`. See [the inventory review contract](CATALOG_REVIEW.md) for evidence and remaining variant-review limits.
 
 ```json
 {"id":"hello","command":"info"}
@@ -57,16 +57,17 @@ Every successful mutation increments the session revision by one. Reset also inc
 | `quote_payment` | `revision`, `player`, exactly one of `action` or `action_id` | Suggested and available power sources, exact Power obligations; no mutation |
 | `play_choices` | `revision`, `player`, exactly one of `action` or `action_id` | Available Repeat instances, Accelerate/bonus costs, original zone, and typed cost plan |
 | `target_candidates` | `revision`, `player`, structured `action`, `execution` | Pure action-aware target view for the next unfilled slot; see below |
+| `trigger_target_candidates` | `revision`, `player`; optional ordered `targets` prefix | Pure next-slot choices for pending trigger/legend targets; includes `can_confirm` |
 | `cost_plan` | `revision`, `player`, exactly one of `action` or `action_id` | Cost components, modifiers, applied discount order, final Energy, typed Power and XP obligations |
 | `validate` | `revision`, `player`, exactly one of `action` or `action_id` | `{legal:true}`, or an error; no mutation |
 | `apply` | `revision`, `player`, exactly one of `action` or `action_id` | Apply one legal action and return public summary |
 | `step_ai` | `revision`, `player` | Ask the built-in AI to take one action for the seat with priority |
 
-Reset defaults match the initial settings. `decks` is a pair of preset IDs. `battlefields` is an optional pair of catalog battlefield IDs, one contributed by each player; omit it for preset defaults. A battlefield catalog ID is different from the in-match lane slot `0` or `1`. Invalid IDs are rejected. `difficulty` is `easy`, `tactical`, or `strategic`. Strategic uses bounded public-information lookahead; it is not an expert-strength guarantee. There is no automatic mulligan for either seat through this API.
+Reset defaults match the initial settings. `decks` is a pair of preset IDs. `battlefields` is an optional pair of catalog battlefield IDs, one contributed by each player; omit it for preset defaults. A battlefield catalog ID is different from its in-match lane index. Starting fields occupy slots `0` and `1`; card effects can append more slots during play. Invalid IDs are rejected. `difficulty` is `easy`, `tactical`, or `strategic`. Strategic uses bounded public-information lookahead; it is not an expert-strength guarantee. There is no automatic mulligan for either seat through this API.
 
 A custom list can replace either seat through `custom_decks:[deck_or_null,deck_or_null]`. Omission uses presets for both seats. Each deck object contains `name`, `legend`, `chosen_champion`, `cards` (pairs of card ID and count), `runes` (six counts in catalog domain order), and `battlefield`. `legend` accepts a stable numeric registry ID or its official printing ID, such as `"ogn-265-298"`; saved/output decks normalize it to the numeric ID. Existing numeric IDs0–3 retain their identities. The selected chosen-champion variant does not change the legend.
 
-`catalog.legends` is independent of `catalog.presets`: ten legends are supported while the six sourced preset lists retain their IDs. Every legend reports its official identity/text, domains, default chosen champion, `eligible_cards`, `eligible_champions`, and a complete editable `training_deck`. For Darius, Viktor, Lux, Ambessa, Rengar, and Ezreal those are authored practice lists, not tournament/meta recommendations; `training_note` describes the origin. Pass the returned training deck through `custom_decks` to practice with that legend. `CustomDeck::from_legend` provides the same starting list in Rust; `from_preset` still copies an exact sourced preset. `catalog.presets[].legend_id` links each preset to the registry. A new legend ID must not be used as a preset ID in `reset.decks`.
+`catalog.legends` is independent of `catalog.presets`: eleven legends are supported and the seven sourced preset lists have separate stable IDs. Every legend reports its official identity/text, domains, default chosen champion, `eligible_cards`, `eligible_champions`, and a complete editable `training_deck`. For Darius, Viktor, Lux, Ambessa, Rengar, Ezreal, and Riven those are authored practice lists, not exact tournament registrations; `training_note` describes the origin. Pass the returned training deck through `custom_decks` to practice with that legend. `CustomDeck::from_legend` provides the same starting list in Rust; `from_preset` still copies an exact sourced preset. `catalog.presets[].legend_id` links each preset to the registry. A new legend ID must not be used as a preset ID in `reset.decks`.
 
 Deck validation requires at least 40 main-deck cards including the chosen champion, no more than three copies by full name, at most three Signature cards in total, matching champion tags, complete domain compatibility, exactly 12 legal runes, and an implemented legal battlefield. A `Unique` card is limited to one copy. Only implemented Standard-legal cards and legends can be selected. Zero-count rows should be omitted. Invalid decks are rejected before resetting the live match. Optional reset `battlefields` overrides the decks' selected fields. The API leaves both opening hands untouched for each agent's mulligan.
 
@@ -80,7 +81,7 @@ Suggestion IDs such as `r4:p0:a2` are opaque and valid only for that seat and re
 
 ## Actions and targets
 
-Each action is an object with a `type`. Unknown fields are errors, so misspellings cannot silently change a choice. Indices are zero-based and must be refreshed after a mutation. Unit, gear, hidden, chain, and trigger IDs identify live objects; they are not card catalog IDs. `lane:null` means base; `lane:0` or `lane:1` means a battlefield slot. Optional `lane` and `target` may be omitted. Optional boolean flags default to `false`, and omitted `targets`/`repeat_targets` default to empty arrays.
+Each action is an object with a `type`. Unknown fields are errors, so misspellings cannot silently change a choice. Indices are zero-based and must be refreshed after a mutation. Unit, gear, hidden, chain, and trigger IDs identify live objects; they are not card catalog IDs. `lane:null` means base; a nonnegative `lane` indexes the current observation's `battlefields` array. Optional `lane` and `target` may be omitted. Optional boolean flags default to `false`, and omitted `targets`/`repeat_targets` default to empty arrays.
 
 Targets have exactly one of these forms:
 
@@ -91,7 +92,7 @@ Targets have exactly one of these forms:
 {"type":"battlefield","lane":1}
 ```
 
-A battlefield target identifies physical slot `0` or `1`, independently of its controller or catalog definition. Two slots using the same battlefield card are distinct targets. It has no `player` or `battlefield_id` field, and cannot select a base. A spell's battlefield target belongs in `targets`; the action's outer `lane` keeps its existing deployment/movement meaning and is not an alias.
+A battlefield target identifies a zero-based physical slot in the current observation's `battlefields` array, independently of its controller or catalog definition. Games start with slots `0` and `1`; an effect adding a battlefield appends another slot. Two slots using the same battlefield card are distinct targets. It has no `player` or `battlefield_id` field, and cannot select a base. A spell's battlefield target belongs in `targets`; the action's outer `lane` keeps its existing deployment/movement meaning and is not an alias. A well-formed index for a nonexistent slot is an `illegal_action`; malformed indices are an `invalid_request`. Rejected actions preserve the state and revision.
 
 Each playable card's `play_targets` reports `{kind, maximum, required}`. `kind` is `unit`, `gear`, `unit_or_gear`, `spell`, `battlefield`, or `null`. This describes choices made while playing that card; delayed on-play triggers retain their own later decisions. It does not replace card-specific allegiance, location, timing, or payment validation. Firestorm requires exactly one battlefield target, including an empty field. Flurry of Blades and Avalanche have no targets; the units they damage are not individually chosen and do not add Deflect costs. Use `validate` for the complete action.
 
@@ -135,6 +136,7 @@ Each playable card's `play_targets` reports `{kind, maximum, required}`. `kind` 
 | `choose_target` | optional `target` | Select a pending unit/gear target; during Tornado Warrior's base choice, `null` chooses the legend |
 | `choose_trigger_targets` | `targets` | Finalize an ordered target array for a `trigger_targets` decision; an empty array declines an optional trigger |
 | `choose_trigger_mode` | `choice_id`, `mode` | Choose the zero-based mode of a pending `trigger_mode` occurrence before targets and responses; later instruction costs wait for resolution |
+| `equip_exhaust_unit` | `gear_id`, unit `target`, `exhaust_unit_id` | For equipment offering this cost, exhaust a ready friendly unit instead of paying its printed Equip Power; only the bearer is targeted |
 | `select_cards` | `indices` | Select exact indices for discard, Top Three, Sabotage, or a granted Flow choice from trash |
 | `play_from_trash` | `trash_index`, optional `lane`, `target` | Resolve a replay decision using default targeting |
 | `play_from_trash_targets` | `trash_index`, optional `lane`, `targets` | Resolve a replay decision with exact targets |
@@ -227,7 +229,7 @@ Charm, Ride the Wind and Siren's Song choose a unit Move destination separately
 from their unit target. The original execution uses the action's `lane` (`null`
 means the unit's base). Each Repeat can provide
 `destination:{"type":"base"}` or
-`destination:{"type":"battlefield","lane":0}` (slot 0 or 1). Omission inherits
+`destination:{"type":"battlefield","lane":0}` (any existing battlefield slot). Omission inherits
 the original destination for older callers; explicit `null` is invalid. Other
 cards reject this field. Every destination must be legal at finalization, before
 any execution resolves. `target_candidates` returns the selected execution's
@@ -374,6 +376,7 @@ The viewer sees their own hand as card IDs. The opposing hand is `null` except w
 | `empower_here` | `lane`, optional `source_id`; choose an eligible unit with `choose_target`. Hidden play abilities retain their source for location/liveness checks. |
 | `on_play_target` | `card_id`, `source_id`, `lane`; select the unit/gear required by the finalized on-play ability |
 | `trigger_targets` | `card_id`, `rule_index`, `context`, `maximum`, `required`, `candidates`; send an ordered array using `choose_trigger_targets`. Candidate membership alone does not establish that a combination or slot is legal; validate the complete action. Zero targets declines an optional trigger. |
+| `trigger_return` | Public `card_id`, retained `chain_id`, and exact unit `target`, with `timing:"resolution"` and `optional:true`. Send `choose` with `accept:true` to return it, or `false` to leave it. No response action is allowed while this instruction resolves. |
 | `legend` | `trigger` describes Irelia's ready/refresh choice; `choose` |
 | `legend_targets` | Rengar’s mandatory unit choice; `source` identifies the legend, `required` and `maximum` are 1, and `candidates` contains legal targets; submit `choose_trigger_targets` |
 | `battlefield_order` | `lanes`, `combat`; the turn player chooses one listed lane using `choose_battlefield`; non-combat showdowns precede staged combats |
@@ -469,6 +472,22 @@ Passive contributions add `computed_might_exact:string|null`: the exact evaluate
 
 ### Gear interaction targets
 
+`trigger_target_candidates` previews a pending `trigger_targets` or `legend_targets` choice. Omit `targets` or send `[]` to start; send the ordered prefix to query the next slot. It returns `targets`, `maximum`, `required`, `next_slot:{index,kind}` (null when full), filtered `candidates`, and `can_confirm`. Unlike the coarse candidate pool in an observation, this query checks allegiance, location, protection, previous slots and available Deflect resources. A valid prefix can still have no legal continuation; `can_confirm` checks the complete action on a clone. No costs are spent and no targets are committed. Invalid prefixes, stale revisions and the wrong actor are rejected without changing state. As with other queries, re-query after state changes.
+
+```json
+{"command":"trigger_target_candidates","revision":4,"player":0,"targets":[{"type":"battlefield","lane":0}]}
+```
+
+Blade of the Exile (card 438) uses the existing `equip` action for its 1 Any Power option. Its ordinary card-play cost remains 3 Energy and 1 Calm-or-Chaos Power. The equipment catalog reports `equip_domain:"Any"` and `alternate_cost:{type:"exhaust_friendly_unit",ready_required:true,may_be_bearer:true,targets_unit:false,action:"equip_exhaust_unit"}`. For that alternative, the selected `exhaust_unit_id` belongs to the acting player and can identify the bearer or a different ready friendly unit at any location. It is a cost, not an additional target. The `cost_plan` response adds `object_costs:[{type:"exhaust_unit",player,unit_id}]`; its normal resource fields still include any applicable modifiers. The alternative does not spend the printed Equip Power. Piltovan Forge's Energy reduction does not remove either the Power cost or the exhaustion cost.
+
+```json
+{"command":"apply","revision":4,"player":0,"action":{"type":"equip_exhaust_unit","gear_id":20,"target":{"type":"unit","player":0,"unit_id":7},"exhaust_unit_id":9}}
+```
+
+Queries and payment previews do not exhaust the unit or queue its triggers. At finalization the unit exhausts and triggers such as Reckless Innovator are processed; the pending Equip ability then attaches on resolution. Its chain targets contain only the bearer. A failed or countered Equip does not refund the exhaustion, and the cost unit leaving afterward does not invalidate the bearer. Attached equipment cannot activate Equip again. Both alternatives use the same public gear attachment, +3 Might, and Ganking observations. Invalid identities, wrong ownership, already-exhausted cost units, unsupported equipment and surplus exact Power payment are rejected atomically. Staged payment preserves readiness until completion; once a fully payable ability is finalized, it cannot be cancelled merely to avoid its cost.
+
+Bedeviling Stranger (card 437) reports `target_rule.battlefield_first:true`: choose a battlefield, then one enemy unit there. Both choices are mandatory before responses even when that field currently has fewer than four units. When the trigger resolves, it rechecks the targets and counts all units at the chosen field. With at least four units, `trigger_return` offers the later optional return and `resolution_progress.chain_id` identifies the retained trigger. Declining does not refund Deflect paid during finalization. A countered trigger or invalid target has no return choice. A play from Hidden restricts both targets to the entry battlefield, and the effect mistargets if its physical source leaves before resolution (Core811.1.d.3.a). The same source-departure restriction does not apply to an ordinary hand play. The Sonecon Stuttgart preset includes this card in its complete Riven registration.
+
 `trigger_targets` decisions now include an additive `target_rule` object: `kind` (`unit`, `gear`, or `unit_or_gear`), `allegiance`, nullable `maximum_printed_energy`, and `energy_at_most_live_source_might`. Use the returned physical `candidates` and submit `choose_trigger_targets` with ordered targets. A gear target is `{"type":"gear","player":1,"gear_id":700}`; its ID is distinct from its card definition and bearer. An optional trigger reports `required: 0`, allowing an empty list to decline. The normal revision checks and atomic validation still apply.
 
 Detonate/Brittle Steel play queries report `gear`; Decree of Unity reports `unit_or_gear` and restricts candidates to enemy Chaos objects. Gold and unit tokens use their own domainless, zero-Energy identity. `target_candidates`, `quote_payment`, and `apply` share those rules. Gear-trigger observations expose printed Energy restrictions separately from the live candidate list; bots must re-query after state changes.
@@ -486,7 +505,7 @@ Retreat’s target query accepts friendly units in base or at a battlefield. A l
 
 ### Banish-origin instructed plays
 
-Portal Rescue, Temporal Breach, Thrill of the Hunt and Arcane Shift use the existing `pending_play` decision and `finalize_pending_play` action. Their `kind` values are `portal_rescue`, `temporal_breach`, `thrill_of_the_hunt` and `arcane_shift`. The decision and its `pending_card_plays` row additionally expose `origin:{type:"banish"}` and `instruction:{base_cost_waiver:"all",destination:...}`. Destination is `{mode:"base"}`, `{mode:"fixed",lane:null|0|1}`, `{mode:"any_battlefield"}` or `{mode:"normal"}`, respectively. These additions apply only to the new Banish-origin cases; the three older Trash kinds retain their wire shape.
+Portal Rescue, Temporal Breach, Thrill of the Hunt and Arcane Shift use the existing `pending_play` decision and `finalize_pending_play` action. Their `kind` values are `portal_rescue`, `temporal_breach`, `thrill_of_the_hunt` and `arcane_shift`. The decision and its `pending_card_plays` row additionally expose `origin:{type:"banish"}` and `instruction:{base_cost_waiver:"all",destination:...}`. Destination is `{mode:"base"}`, `{mode:"fixed",lane:null|N}`, `{mode:"any_battlefield"}` or `{mode:"normal"}`, respectively; `N` is an existing battlefield slot. These additions apply only to the new Banish-origin cases; the three older Trash kinds retain their wire shape.
 
 The child is already absent from Banishment while pending. Count it exactly once in `pending_card_plays`, including while paying additional costs; quotes report Banish origin and a zero printed base cost. Optional/additional costs remain payable. The unit's owner receives this mandatory decision, including an opposing Temporal Breach target. `choose:false` is legal only when finalization is impossible and restores the child to Banishment, leaving completed parent effects intact. Tokens disappear and do not create a pending card. Prescribed battlefield locations permit enemy-held fields; Arcane Shift uses ordinary placement restrictions.
 
@@ -534,7 +553,7 @@ Mystic Poro (193) and Divining Shells (242) now use this explicit Vision chain r
 
 Live gear adds public `deploy_status:{characteristic,printed_abilities_active,opponent_hold_trigger_active}`. The Deploy characteristic remains referenceable when an attached gear's printed rules are inactive. This is a live typed rule fact; a card merely mentioning Deploy in its text does not acquire that characteristic. The field is identical in both seat observations. Use `gear.lane` for its current physical location and `gear.id` to distinguish separate copies with the same `card_id`.
 
-Play Deploy gear with an explicit battlefield `lane` through the existing `play_card`, `play_card_targets`, or instructed `finalize_pending_play` action. Both battlefield indices are available regardless of control or occupants; Base (`lane:null`) is not a legal Deploy destination. Gear entry itself does not establish control, contest a field, or begin combat. Its opponent-Hold destruction is a separate respondable trigger; an opponent merely conquering the field does not trigger it. There is no generic gear `move` action.
+Play Deploy gear with an explicit battlefield `lane` through the existing `play_card`, `play_card_targets`, or instructed `finalize_pending_play` action. All current battlefield indices are available regardless of control or occupants; Base (`lane:null`) is not a legal Deploy destination. Gear entry itself does not establish control, contest a field, or begin combat. Its opponent-Hold destruction is a separate respondable trigger; an opponent merely conquering the field does not trigger it. There is no generic gear `move` action.
 
 `play_choices` adds `modes`, an ordered array of `{index,label,target_kinds}`. Select a card's base execution mode in `with_play_choices.choices.mode`; each Repeat retains its independent `repeats[].choices.mode`. Non-modal cards reject a supplied mode. For backward-compatible non-modal serialization, an absent base mode is omitted from output; the parser also accepts `null` as absent. A real Command mode is required to finalize Command: Attack. Its stable mode indices are:
 
@@ -807,3 +826,70 @@ Resolution removes Empowered, then checks live Might and kills at 3 or less.
 Responses, Deflect, death replacements, and physical-target revalidation apply.
 Its printed Flow costs 4 Energy and 2 Order Power and banishes the played card,
 including when countered. Flow does not grant Action or Reaction timing.
+
+
+### Riven, Broken Blade (card 439)
+
+The exhaust trigger uses the existing `trigger_mode` decision and stable mode indices:
+`0` Buff the source, `1` spend its Buff to Stun one enemy, and `2` spend its Buff to Ready the source.
+Its options additionally expose `available`, `once_each_turn`, and `used_this_turn`.
+An unavailable mode can be previously used or have no payable legal target; clients must retain its
+original index. The source unit's public `trigger_modes_chosen_this_turn` lists its used indices,
+even between trigger decisions. Copies track their choices independently; changing control of the
+same object preserves that history, replaying creates a new object, and the next turn resets it.
+
+Modes 1 and 2 expose `resolution_object_cost` with `type:"spend_source_buff"`, its `player` and
+`unit_id`, and `targets_unit:false`. This cost is not part of initial payment or targeting. Stun
+chooses its enemy and pays any Deflect before responses. A Buff is not required yet when choosing
+the mode. On resolution the live controlled source must have an actual Buff counter for the linked
+effect to happen; temporary Might and Empowered do not count. An absent source cannot spend a
+replacement copy's Buff. If Stun's only target has become invalid, that entire linked instruction,
+including its cost, is ignored. A counter leaves the Buff intact but does not restore the chosen mode.
+Neither Buff nor Ready implicitly targets the source. No unused legal mode removes the pending
+trigger without offering a decline action. A missing Buff at resolution does not change the selected
+mode or offer another choice.
+
+This implements the Radiance FAQ's resolution-time Buff cost and exhaust-before-move trigger order.
+The linked instruction's mistargeting behavior is derived from Core Rules 359.3.e.7 and 740.4.a.
+The complete Sonecon Stuttgart registration uses this champion with The Exile.
+
+### The Exile (legend 10)
+
+The legend catalog includes `rad-149-167`, with Riven, Broken Blade as its default
+chosen champion and an authored editable training deck. Its passive needs no activation.
+A `play_choices` result for a qualifying unit play includes `legend_entry_ready` with
+`{"type":"legend","player":N,"legend_id":10}`. The property is omitted when this
+legend does not grant ready entry. Unit tokens qualify; gear and spells do not.
+This read-only preview checks the selected play location. A missing property does not
+rule out other ready-entry effects, such as a printed rule or paid Accelerate.
+
+The engine retains The Exile's replacement from finalization, including suspended
+resource payments. Base plays receive no benefit. It does not grant permission to play
+at uncontrolled battlefields or ready units already on the board. A Baron play retains
+the ready-entry replacement from its originally chosen controlled battlefield even
+when its own entry replacement sends it to a newly added Baron Pit.
+
+
+### Baron Nashor and token battlefields
+
+The ordinary `catalog.battlefields` list remains the legal starting-field registry.
+`catalog.token_battlefields` contains auxiliary game pieces; Baron Pit is ID1000
+(`unl-t01`) and has `can_start_game:false`. Reset and registered-match setup reject
+it as a starting choice. Its creation appends a physical slot to the observation's
+`battlefields` array and every corresponding ownership/scoring array.
+
+For a Baron play that creates the Pit, `play_choices.entry_replacement` reports
+`{source_card_id:440,battlefield_id:1000,lane:2,adds_battlefield:true}` on a normal
+two-field board. The slot is the destination of the entry replacement, while the
+action's `lane` remains the chosen play location for cost and ready-entry facts.
+This preview does not mutate the game. During `begin_payment`, the Pit already
+exists publicly and Baron is still pending. Completing payment preserves this
+play's replacement without adding another Pit; Undo or refusing the finalization
+restores the previous board. When a Pit already existed before this play, the
+replacement property is absent and Baron enters at the chosen play location.
+
+Baron Pit permits Standard Move into its physical slot from any other location,
+without granting Ganking for moves out. Clients should use legal actions rather
+than assuming two locations or inferring permission from Ganking alone. Rematches
+restore the original two starting battlefields. The Sonecon Stuttgart preset provides
+the complete Riven registration for single-game and best-of-three practice.

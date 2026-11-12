@@ -136,6 +136,17 @@ const LEGENDS: &[LegendDef] = &[
         accent: [99, 185, 227],
         art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/d0e143d9edbc14971b2a7b463b3c25b2b6a0c098-744x1039.png?accountingTag=RB",
     },
+    LegendDef {
+        id: 10,
+        official_id: "rad-149-167",
+        name: "The Exile",
+        champion: "Riven",
+        domains: [Domain::Calm, Domain::Chaos],
+        text: "Units you play to battlefields you control enter ready.",
+        default_champion: 439,
+        accent: [171, 218, 124],
+        art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/342befcaab98642a2348bd2f6fdb92c68563b6d7-744x1039.png?accountingTag=RB",
+    },
 ];
 
 #[cfg(test)]
@@ -152,7 +163,7 @@ mod tests {
         let catalog: Value =
             serde_json::from_str(include_str!("../assets/data/full_catalog.json")).unwrap();
         let main_cards = cards();
-        assert_eq!(legends().len(), 10);
+        assert_eq!(legends().len(), 11);
         assert_eq!(
             manifest["legends"].as_array().unwrap().len(),
             legends().len()

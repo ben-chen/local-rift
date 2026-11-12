@@ -4,8 +4,8 @@ use super::*;
 fn position() -> Game {
     let mut g = Game::new(3, 3, 18018, Difficulty::Tactical);
     g.start_match().unwrap();
-    g.battlefields = [7, 9];
-    g.battlefield_owner = [None; 2];
+    g.battlefields = vec![7, 9];
+    g.battlefield_owner = vec![None; 2];
     for p in &mut g.players {
         p.units.clear();
         p.gear.clear();

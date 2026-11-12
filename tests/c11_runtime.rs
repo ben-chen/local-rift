@@ -8,8 +8,8 @@ use local_rift::trigger_rules::{self, TriggerTextArea};
 fn game() -> Game {
     let mut g = Game::new_for_agents(3, 3, 92234, Difficulty::Tactical);
     g.start_match().unwrap();
-    g.battlefields = [2, 2];
-    g.battlefield_owner = [None; 2];
+    g.battlefields = vec![2, 2];
+    g.battlefield_owner = vec![None; 2];
     for p in 0..2 {
         g.legend[p].ready = false;
         let state = &mut g.players[p];
@@ -686,8 +686,8 @@ fn unattached_equipment_observers_do_not_gain_bearer_events() {
 fn total_energy_discounts_do_not_erase_xp_costs() {
     let mut g = game();
     g.players[0].xp = 1;
-    g.battlefields = [8, 8]; // two controlled Piltovan cost passives
-    g.battlefield_owner = [Some(0), Some(0)];
+    g.battlefields = vec![8, 8]; // two controlled Piltovan cost passives
+    g.battlefield_owner = vec![Some(0), Some(0)];
     let t = unit(&mut g, 0, 1000, 69, None);
     gear(&mut g, 2000, 348);
     let a = Action::Equip {

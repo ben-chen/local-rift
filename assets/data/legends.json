@@ -283,6 +283,34 @@
         "Pandart Studio"
       ],
       "preset_index": null
+    },
+    {
+      "id": 10,
+      "official_id": "rad-149-167",
+      "name": "The Exile",
+      "champion": "Riven",
+      "domains": [
+        "Calm",
+        "Chaos"
+      ],
+      "text": "Units you play to battlefields you control enter ready.",
+      "rules_html": "<p>Units you play to battlefields you control enter ready.</p>",
+      "default_champion": 439,
+      "default_champion_official_id": "rad-043-167",
+      "accent": [
+        171,
+        218,
+        124
+      ],
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/342befcaab98642a2348bd2f6fdb92c68563b6d7-744x1039.png?accountingTag=RB",
+      "art_path": "assets/art/legend_10.png",
+      "tags": [
+        "Riven"
+      ],
+      "illustrators": [
+        "Grafit Studio"
+      ],
+      "preset_index": 6
     }
   ]
 }

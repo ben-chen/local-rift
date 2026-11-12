@@ -358,6 +358,7 @@ fn advice(game: &Game, level: AdviceLevel) -> Vec<&'static str> {
 fn checked_advice(game: &Game, level: AdviceLevel) -> Result<Vec<&'static str>, String> {
     game.validate_numeric_state()?;
     let beginner = level == AdviceLevel::Beginner;
+    let exile = game.legend[0].kind == local_rift::legends::LegendKind::Riven;
     let mut tips = Vec::new();
     let human = &game.players[0];
     let enemy = &game.players[1];
@@ -449,6 +450,50 @@ fn checked_advice(game: &Game, level: AdviceLevel) -> Result<Vec<&'static str>, 
             "Decree of Strength reveals their whole hand. Choose one Mind card if available; they recycle it to the bottom of their deck. This is a normal-timing spell."
         } else {
             "Use Decree of Strength before committing to a point. Remove the Mind answer that threatens your plan, and remember the cards they keep, even if none was Mind."
+        });
+    }
+    if human.hand.contains(&440) {
+        tips.push(if beginner {
+            "Baron creates a Pit if none exists and enters there. He protects himself from enemy choices and gives your other units +2 Might, even at other locations."
+        } else if exile && game.battlefields.iter().enumerate().any(|(lane, id)| {
+            *id == 7 && game.battlefield_owner[lane] == Some(0)
+        }) {
+            "A controlled Hunters' Circle discounts Baron. The Exile readies him even if a new Pit redirects his entry. Count every field when planning your final point."
+        } else if exile {
+            "Choose a field you control when playing Baron: The Exile readies him even if he enters a new Pit instead. Account for the extra field when planning your final point."
+        } else {
+            "Baron strengthens your other units across the board. His protection stops enemy choices, but area effects can still hit him. Plan for the new Pit's routes and scoring."
+        });
+    }
+    if game
+        .battlefields
+        .contains(&local_rift::battlefields::BARON_PIT_ID)
+    {
+        tips.push(if beginner {
+            "Ready units can move into Baron Pit from any field. Moving out still needs Ganking or a return to base. The Pit stays after Baron leaves."
+        } else {
+            "The Pit gives both players a new route into the fight. Cover that route, and include this extra field when planning the conquests needed for your final point."
+        });
+    }
+    if human.hand.contains(&435) {
+        tips.push(if beginner {
+            "An Offer You Can’t Refuse kills any gear, including yours. That gear’s controller plays exhausted Gold. Action allows showdowns, but not responses on a closed chain."
+        } else {
+            "Offer can remove attached equipment or Deploy gear, but gives its controller Gold for a later turn. Compare the immediate battlefield gain against that resource."
+        });
+    }
+    if human.hand.contains(&438) || human.gear.iter().any(|g| !g.token && g.card_id == 438) {
+        tips.push(if beginner {
+            "Blade equips for 1 Any Power or by exhausting a ready friendly unit. The cost unit can be the bearer or another unit. Pay before responses; attach when Equip resolves."
+        } else {
+            "Exhausting Innovator can gain value while saving Power, but costs its move. A failed Equip keeps the cost spent. Attached equipment cannot equip again."
+        });
+    }
+    if human.hand.contains(&436) || human.units.iter().any(|u| !u.token && u.card_id == 436) {
+        tips.push(if beginner {
+            "Blitzcrank can pull an enemy when played to a battlefield. Tank takes combat damage first. When he holds, he returns to your hand; returning is not dying."
+        } else {
+            "Use Blitzcrank's pull to separate a defender or expose a unit at base. Plan for his mandatory return after holding: the point stays, but his battlefield may need another defender."
         });
     }
     if human.hand.contains(&434) || human.discard.contains(&434) {
@@ -553,7 +598,7 @@ fn checked_advice(game: &Game, level: AdviceLevel) -> Result<Vec<&'static str>, 
             "Reserve Hush for a high-Power spell. Discounts do not change printed Power, and Hush itself needs 1 energy plus 2 Calm power."
         });
     }
-    let contested = (0..2).find(|&lane| game.contested(lane));
+    let contested = (0..game.battlefield_count()).find(|&lane| game.contested(lane));
     if let Some(lane) = contested {
         if beginner {
             tips.push("Both sides have units here. Check combat damage totals and legal responses before resolving, then choose your damage order.");
@@ -599,7 +644,7 @@ fn checked_advice(game: &Game, level: AdviceLevel) -> Result<Vec<&'static str>, 
         tips.push("Recycling for power spends future access to runes, too. Check generated power before recycling another matching rune.");
     } else if recent.iter().any(|line| line.contains("is defeated")) {
         tips.push(if beginner {
-            "A unit was defeated. Take a fresh look at both battlefields; the open route may matter more than the last trade."
+            "A unit was defeated. Take a fresh look at the battlefields; the open route may matter more than the last trade."
         } else {
             "After a trade, reassess who threatens the next hold. Saving a card can be worthwhile if your board already covers that point."
         });
@@ -612,8 +657,12 @@ fn checked_advice(game: &Game, level: AdviceLevel) -> Result<Vec<&'static str>, 
         tips.push("After combat cleanup, damage is cleared. Recheck the survivors and the next point before spending another card.");
     }
     if human_has_hold {
-        tips.push(if beginner {
-            "You may play a unit exhausted at a battlefield you control, or at base. A held field can be reinforced without moving from base first."
+        tips.push(if exile && beginner {
+            "The Exile lets units you play to your controlled field enter ready. They can move this turn. Units played at Base do not get this legend's benefit."
+        } else if exile {
+            "Keep a unit on your field, then play reinforcements there ready. They can defend or move toward another point; losing control removes this benefit for later plays."
+        } else if beginner {
+            "You may play a unit at a battlefield you control, or at Base. Units normally enter exhausted; card effects can let them enter ready."
         } else {
             "Deploying into a controlled field reinforces a hold immediately. Deploying at base preserves a choice of destinations next turn."
         });
@@ -646,8 +695,8 @@ fn checked_advice(game: &Game, level: AdviceLevel) -> Result<Vec<&'static str>, 
             }
         }
     }
-    let empty_field =
-        (0..2).any(|lane| game.lane_count(0, lane) == 0 && game.lane_count(1, lane) == 0);
+    let empty_field = (0..game.battlefield_count())
+        .any(|lane| game.lane_count(0, lane) == 0 && game.lane_count(1, lane) == 0);
     if ready_at_base && empty_field {
         tips.push(if beginner {
             "A ready unit and an empty battlefield: a lovely starting point. Select the unit, then the field, to try a standard move."
@@ -688,7 +737,11 @@ fn checked_advice(game: &Game, level: AdviceLevel) -> Result<Vec<&'static str>, 
         });
     }
     if affordable_unit {
-        tips.push(if beginner {
+        tips.push(if exile && human_has_hold && beginner {
+            "You can afford a unit. With The Exile, playing it to your controlled field lets it enter ready, so consider what it could do this turn."
+        } else if exile && human_has_hold {
+            "A ready reinforcement can change this turn's attacks. Compare the benefit with saving resources for a response, and preserve control for your next unit play."
+        } else if beginner {
             "You can afford a unit. Most units enter exhausted, so think of deploying now as preparing your next turn's moves."
         } else {
             "You have an affordable deployment. Compare its next-turn pressure with preserving runes for an immediate, useful effect."
@@ -940,6 +993,13 @@ fn checked_advice(game: &Game, level: AdviceLevel) -> Result<Vec<&'static str>, 
         tips.push("A turn's best trade may be a point, not a unit. Count the next scoring opportunities on both sides before choosing a fight.");
         tips.push("Real matchups depend on printed timing, legends, and keywords. Practice results here are not a ranking of the tournament decks.");
     }
+    if game.legend[0].kind == local_rift::legends::LegendKind::Riven {
+        tips.push(if beginner {
+            "The Exile is passive: units, including tokens, enter ready when played to a battlefield you control. Playing to Base does not gain this benefit."
+        } else {
+            "Keep an anchor on a field before deploying reinforcements. Ready entry can save Accelerate costs and let a new unit move immediately; protect that field for later plays."
+        });
+    }
     tips.push(archetype_tip(game));
     Ok(tips)
 }
@@ -971,6 +1031,16 @@ fn response_window_advice(
             }
         }
         return Ok(Some(match decision {
+            Decision::TriggerReturn { .. } => vec![if beginner {
+                "Responses have finished. Bedeviling Stranger found at least four units there; return the chosen enemy or leave it. Returning is not killing."
+            } else {
+                "Returning can clear a scorer, but lets the opponent replay its entry effect. This late choice keeps any Deflect already paid; declining gives no refund."
+            }],
+            Decision::TriggerTargets { card_id: 437, .. } => vec![if beginner {
+                "Choose a battlefield, then an enemy there before responses. The four-unit condition and your choice to return it are checked when the ability resolves."
+            } else {
+                "Count both players' units after responses. From Hidden, the target battlefield is fixed to Stranger's entry field; removing Stranger makes that Hidden play effect mistarget."
+            }],
             Decision::DrawLook { kind, .. } => vec![
                 if beginner {
                     "Only you see this look. Choose a copy, then confirm to reveal and draw it; you may instead recycle all. Clicking alone changes nothing."
@@ -1069,6 +1139,11 @@ fn response_window_advice(
                 "Choose Gold or a paid draw before responses. Gold enters exhausted. If you choose draw, you decide whether to pay 1 Chaos Power when the ability resolves."
             } else {
                 "Choose draw when you need cards, or Gold for future Power. Your mode is fixed before responses, but the draw's payment waits until resolution. A counter prevents that payment."
+            }],
+            Decision::TriggerMode { card_id: 439, .. } => vec![if beginner {
+                "Each Riven can choose each mode once per turn. Choose before responses; spend her Buff only when the effect resolves. Without her Buff then, Stun or Ready does nothing."
+            } else {
+                "Plan Riven's three modes across moves and equipment costs. A counter still uses the chosen mode. Removing her Buff before resolution stops the linked Stun or Ready."
             }],
             Decision::TriggerMode { .. } => vec![
                 "Choose this ability's mode before responses. Base costs are paid now; costs later in its instructions wait until resolution.",
@@ -1481,6 +1556,9 @@ fn response_window_advice(
 fn archetype_tip(game: &Game) -> &'static str {
     use local_rift::legends::LegendKind;
     match game.legend[0].kind {
+        LegendKind::Riven => {
+            "Play units to a battlefield you control to have them enter ready. Keep an anchor there so later units can arrive ready and move toward another point."
+        }
         LegendKind::Rengar => {
             "Each unit you play gives a unit +1 Might this turn. Spread your units across locations while concentrating bonuses where they change combat."
         }
@@ -1639,6 +1717,114 @@ pub fn draw_mote(center: Vec2, scale: f32, time: f32, accent: Color) {
 mod tests {
     use super::*;
     use local_rift::game::{Difficulty, Unit};
+
+    #[test]
+    fn riven_exile_coaches_entry_rules_and_field_strategy_at_different_levels() {
+        let mut g = Game::new_for_agents(3, 3, 149, Difficulty::Easy);
+        g.start_match().unwrap();
+        g.legend[0] = local_rift::legends::LegendState::from_legend(10).unwrap();
+        g.battlefield_owner[0] = Some(0);
+        g.players[0].hand = vec![439];
+        g.players[0].set_rune_setup([0; 6], [0; 6]).unwrap();
+        g.players[0].energy = 4;
+        g.players[0].energy_pool = 4;
+        let beginner = advice(&g, AdviceLevel::Beginner);
+        let advanced = advice(&g, AdviceLevel::Advanced);
+        assert!(beginner.iter().any(|tip| tip.contains("including tokens")));
+        assert!(
+            advanced
+                .iter()
+                .any(|tip| tip.contains("save Accelerate costs"))
+        );
+        assert_ne!(beginner, advanced);
+        assert!(
+            beginner
+                .iter()
+                .any(|tip| tip.contains("They can move this turn"))
+        );
+        assert!(!beginner.iter().any(
+            |tip| tip.contains("unit exhausted") || tip.contains("Most units enter exhausted")
+        ));
+        for tip in beginner.iter().chain(&advanced) {
+            assert!(tip.chars().count() <= 180, "{tip}");
+        }
+    }
+
+    #[test]
+    fn baron_advice_explains_new_routes_without_reading_opponent_hands() {
+        use local_rift::game::Action;
+        let mut g = Game::new_for_agents(3, 3, 147, Difficulty::Easy);
+        g.start_match().unwrap();
+        g.players[0].hand = vec![440];
+        g.players[0].set_rune_setup([0; 6], [0; 6]).unwrap();
+        g.players[0].energy = 20;
+        g.players[0].energy_pool = 20;
+        g.players[0].power_pool = [4; 6];
+        for played in [false, true] {
+            if played {
+                g.apply(Action::PlayCardWithTargets {
+                    hand_index: 0,
+                    lane: None,
+                    targets: vec![],
+                })
+                .unwrap();
+                for _ in 0..20 {
+                    if !g.in_window() {
+                        break;
+                    }
+                    let action = if matches!(g.decision, Some(Decision::Legend { .. })) {
+                        Action::Choose { accept: false }
+                    } else {
+                        Action::Pass
+                    };
+                    g.apply(action).unwrap();
+                }
+                assert!(!g.in_window());
+            }
+            let mut other = g.clone();
+            other.players[1].hand = vec![440, 53, 299];
+            other.players[1].deck.reverse();
+            let beginner = advice(&g, AdviceLevel::Beginner);
+            let advanced = advice(&g, AdviceLevel::Advanced);
+            assert_ne!(beginner, advanced);
+            assert!(beginner.iter().any(|t| t.contains(if played {
+                "Pit stays"
+            } else {
+                "Baron creates"
+            })));
+            assert!(advanced.iter().any(|t| t.contains(if played {
+                "both players"
+            } else {
+                "area effects"
+            })));
+            assert!(!advanced.iter().any(|t| t.contains("The Exile")));
+            for level in [AdviceLevel::Beginner, AdviceLevel::Advanced] {
+                assert_eq!(advice(&g, level), advice(&other, level));
+                for tip in advice(&g, level) {
+                    assert!(tip.chars().count() <= 180, "{tip}");
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn baron_coaching_uses_the_actual_legend_and_controlled_fields() {
+        let mut g = Game::new_for_agents(3, 3, 147, Difficulty::Easy);
+        g.start_match().unwrap();
+        g.players[0].hand = vec![440];
+        g.legend[0] = local_rift::legends::LegendState::from_legend(10).unwrap();
+        g.battlefields[0] = 7;
+        for owner in [None, Some(1), Some(0)] {
+            g.battlefield_owner[0] = owner;
+            let advanced = advice(&g, AdviceLevel::Advanced);
+            assert!(advanced.iter().any(|t| t.contains("The Exile")));
+            assert_eq!(
+                advanced.iter().any(|t| t.contains("Hunters' Circle")),
+                owner == Some(0)
+            );
+            assert!(advanced.iter().all(|t| t.chars().count() <= 180));
+        }
+    }
 
     fn game() -> Game {
         Game::new(0, 1, 72, Difficulty::Easy)

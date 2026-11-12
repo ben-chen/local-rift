@@ -91,7 +91,7 @@ pub(crate) fn run_frame(app: &mut App, frame: u32) -> bool {
                 .ok()
                 .map(|v| v.parse::<usize>().unwrap())
                 .unwrap_or(5);
-            assert!([0, 2, 4, 5].contains(&wanted));
+            assert!(local_rift::match_series::Registration::from_preset(wanted).is_ok());
             if app.opponent_deck == wanted {
                 advance();
             } else {
@@ -441,8 +441,8 @@ pub(crate) fn run_frame(app: &mut App, frame: u32) -> bool {
             assert!(!app.in_match && app.native_match.is_none() && !app.series_lobby);
             app.game = Game::new_for_agents(3, 3, 113434, Difficulty::Tactical);
             app.game.start_match().unwrap();
-            app.game.battlefields = [3, 3];
-            app.game.battlefield_owner = [None; 2];
+            app.game.battlefields = vec![3, 3];
+            app.game.battlefield_owner = vec![None; 2];
             for p in &mut app.game.players {
                 p.units.clear();
                 p.gear.clear();

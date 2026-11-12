@@ -13,7 +13,7 @@ fn position(owner: usize) -> Session {
     })
     .unwrap();
     s.start(0).unwrap();
-    s.game.battlefield_owner = [None; 2];
+    s.game.battlefield_owner = vec![None; 2];
     for p in &mut s.game.players {
         p.hand.clear();
         p.units.clear();
@@ -146,10 +146,13 @@ fn target_query(s: &mut Session, action: Value, execution: usize) -> Value {
 #[test]
 fn deploy_entries_are_public_at_each_field_without_establishing_control() {
     for owner in 0..2 {
-        for lane in 0..2 {
+        for lane in 0..3 {
             for controller in [None, Some(owner), Some(1 - owner)] {
                 for card in 401..=408 {
                     let mut s = position(owner);
+                    if lane == 2 {
+                        s.game.add_battlefield(9);
+                    }
                     if let Some(controller) = controller {
                         s.game.players[controller]
                             .units
@@ -163,10 +166,11 @@ fn deploy_entries_are_public_at_each_field_without_establishing_control() {
                         json!({"type":"play_card","hand_index":0,"lane":null}),
                         "illegal_action",
                     );
+                    let missing_lane = s.game.battlefield_count();
                     reject(
                         &mut s,
-                        json!({"type":"play_card","hand_index":0,"lane":2}),
-                        "invalid_request",
+                        json!({"type":"play_card","hand_index":0,"lane":missing_lane}),
+                        "illegal_action",
                     );
                     apply(
                         &mut s,
@@ -986,7 +990,7 @@ fn hunting_blind_rejects_same_location_and_moves_a_different_enemy_unit() {
     for owner in 0..2 {
         let mut s = position(owner);
         s.game.players[1 - owner].units = vec![unit(24_001, Some(0)), unit(24_002, Some(1))];
-        s.game.battlefield_owner = [Some(1 - owner); 2];
+        s.game.battlefield_owner = vec![Some(1 - owner); 2];
         s.game.players[owner].hand = vec![404];
         apply(&mut s, json!({"type":"play_card","hand_index":0,"lane":0}));
         assert_eq!(views(&s)[owner]["decision"]["type"], "trigger_targets");

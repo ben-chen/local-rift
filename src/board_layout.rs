@@ -10,14 +10,44 @@ pub const BASES: [Rect; 2] = [
     Rect::new(245.0, 178.0, 883.0, 76.0),
 ];
 
-pub fn unit_capacity(has_independent_gear: bool) -> usize {
-    if has_independent_gear { 3 } else { 5 }
+pub fn fields(count: usize) -> Vec<Rect> {
+    if count == 2 {
+        return FIELDS.to_vec();
+    }
+    let width = (883.0 - 13.0 * count.saturating_sub(1) as f32) / count.max(1) as f32;
+    (0..count)
+        .map(|lane| Rect::new(245.0 + lane as f32 * (width + 13.0), 258.0, width, 232.0))
+        .collect()
 }
 
+fn unit_region(field: Rect, has_gear: bool) -> f32 {
+    let width = field.w - 51.0;
+    width
+        - if has_gear {
+            gear_width(field) + 16.0
+        } else {
+            0.0
+        }
+}
+
+fn gear_width(field: Rect) -> f32 {
+    ((field.w - 57.0) * 0.5).clamp(24.0, 132.0)
+}
+
+pub fn unit_capacity_at(field: Rect, has_gear: bool) -> usize {
+    (unit_region(field, has_gear) / 76.0)
+        .floor()
+        .clamp(1.0, 5.0) as usize
+}
+
+#[cfg(test)]
 pub fn unit_rects(lane: usize, owner: usize, total: usize, has_gear: bool) -> Vec<Rect> {
-    let field = FIELDS[lane];
-    let count = total.min(unit_capacity(has_gear));
-    let region_width = if has_gear { 236.0 } else { 384.0 };
+    unit_rects_at(FIELDS[lane], owner, total, has_gear)
+}
+
+pub fn unit_rects_at(field: Rect, owner: usize, total: usize, has_gear: bool) -> Vec<Rect> {
+    let count = total.min(unit_capacity_at(field, has_gear));
+    let region_width = unit_region(field, has_gear);
     let width = (region_width / count.max(1) as f32 - 6.0).min(132.0);
     (0..count)
         .map(|index| {
@@ -35,11 +65,15 @@ pub fn unit_rects(lane: usize, owner: usize, total: usize, has_gear: bool) -> Ve
 }
 
 pub fn gear_rect(lane: usize, owner: usize) -> Rect {
-    let field = FIELDS[lane];
+    gear_rect_at(FIELDS[lane], owner)
+}
+
+pub fn gear_rect_at(field: Rect, owner: usize) -> Rect {
+    let width = gear_width(field);
     Rect::new(
-        field.x + 291.0,
+        field.x + field.w - width - 12.0,
         field.y + if owner == 1 { 66.0 } else { 150.0 },
-        132.0,
+        width,
         76.0,
     )
 }
@@ -47,6 +81,44 @@ pub fn gear_rect(lane: usize, owner: usize) -> Rect {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn dynamic_fields_keep_cards_and_gear_inside_each_distinct_field() {
+        for count in 2..=4 {
+            let fields = fields(count);
+            assert_eq!(fields.len(), count);
+            for (index, &field) in fields.iter().enumerate() {
+                assert!(field.x >= 245.0 && field.x + field.w <= 1128.01);
+                assert!(
+                    fields[index + 1..]
+                        .iter()
+                        .all(|other| !overlaps(field, *other))
+                );
+                for owner in 0..2 {
+                    let gear = gear_rect_at(field, owner);
+                    for has_gear in [false, true] {
+                        let units = unit_rects_at(field, owner, 30, has_gear);
+                        assert!(!units.is_empty());
+                        for (slot, unit) in units.iter().enumerate() {
+                            assert!(unit.w >= 45.0 && unit.h >= 60.0);
+                            assert!(unit.x >= field.x && unit.x + unit.w <= field.x + field.w);
+                            assert!(
+                                unit.y >= field.y + 62.0 && unit.y + unit.h <= field.y + field.h
+                            );
+                            assert!(
+                                units[slot + 1..]
+                                    .iter()
+                                    .all(|other| !overlaps(*unit, *other))
+                            );
+                            assert!(!has_gear || !overlaps(*unit, gear));
+                        }
+                    }
+                    assert!(gear.x >= field.x && gear.x + gear.w <= field.x + field.w);
+                    assert!(!overlaps(gear, gear_rect_at(field, 1 - owner)));
+                }
+            }
+        }
+    }
 
     fn overlaps(a: Rect, b: Rect) -> bool {
         a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h

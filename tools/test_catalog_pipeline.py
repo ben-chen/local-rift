@@ -40,21 +40,21 @@ class CatalogPipelineTests(unittest.TestCase):
     def test_resolved_history_is_separate_from_remaining_variant_reviews(self):
         counts = self.snapshot['counts']
         self.assertEqual((counts['reviewed_field_resolutions'], counts['resolved_source_issue_groups'],
-                          counts['unresolved_source_issue_groups']), (139, 54, 0))
+                          counts['unresolved_source_issue_groups']), (142, 57, 0))
         self.assertEqual(counts['unresolved_gameplay_identities'], 0)
-        self.assertEqual(counts['unreviewed_variant_identities'], 93)
-        self.assertEqual(counts['unreviewed_variants_by_field'], {'tags': 33, 'rules_text': 82})
+        self.assertEqual(counts['unreviewed_variant_identities'], 91)
+        self.assertEqual(counts['unreviewed_variants_by_field'], {'tags': 33, 'rules_text': 80})
         self.assertEqual(counts['pinned_runtime_variant_identities'], 0)
         self.assertEqual(counts['standard_legal_by_kind'],
                          {'battlefield': 69, 'gear': 131, 'gear+unit': 1, 'legend': 58, 'rune': 6, 'spell': 268, 'unit': 546})
         self.assertTrue(all(r['status'] == 'resolved_by_review' for r in self.snapshot['source_issue_reviews']))
-        self.assertEqual(counts['reviewed_variant_identities'], 31)
-        self.assertEqual(counts['reviewed_variant_printings'], 94)
-        self.assertEqual(counts['field_reviewed_printings'], 89)
+        self.assertEqual(counts['reviewed_variant_identities'], 33)
+        self.assertEqual(counts['reviewed_variant_printings'], 99)
+        self.assertEqual(counts['field_reviewed_printings'], 92)
         for card in self.snapshot['cards']:
             if card['implementation']['playable_in_client']:
                 self.assertEqual(card['source_review']['unresolved_variant_fields'], [])
-        self.assertEqual(counts['implemented_legal_identities'], 468)
+        self.assertEqual(counts['implemented_legal_identities'], 475)
 
     def test_required_fields_gate_every_mapping_kind_and_alternates(self):
         cases = [

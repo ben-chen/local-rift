@@ -47,7 +47,7 @@ fn ambush_chain(rengars: usize) -> Game {
     game.players[0].hand = vec![7, 9]; // Discipline and Flash.
     game.players[1].hand = vec![30; rengars];
     game.players[0].units = vec![defender(100, 0), defender(101, 1)];
-    game.battlefield_owner = [Some(0), Some(0)];
+    game.battlefield_owner = vec![Some(0), Some(0)];
     game.apply(Action::PlayCardWithTargets {
         hand_index: 0,
         lane: None,

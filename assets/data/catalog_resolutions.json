@@ -63,7 +63,7 @@
     }
   },
   "evidence_manifest_path": "assets/data/catalog_evidence/images.json",
-  "evidence_manifest_sha256": "91999160384f5944210498c98ba31f86c64bb641e497dc45d765bf6be93086a5",
+  "evidence_manifest_sha256": "36e0aded5345c1173edf545bf60bb30f67894835569191d267e39d1b3e7fa3d3",
   "evidence_checks": {
     "historical_c6_review": {
       "all8_archives_verified": true,
@@ -92,12 +92,12 @@
     "Live page checks fetch current gallery and legality pages but do not freshly download image evidence; the stored visual review remains dated."
   ],
   "stats": {
-    "historical_issue_groups": 54,
-    "reviewed_printings": 89,
-    "field_resolutions": 139,
-    "overrides": 112,
+    "historical_issue_groups": 57,
+    "reviewed_printings": 92,
+    "field_resolutions": 142,
+    "overrides": 115,
     "confirmations": 27,
-    "artwork_confirmed": 125,
+    "artwork_confirmed": 128,
     "rule_derived": 14,
     "c7_new_field_resolutions": 39,
     "c7_new_printings": 31,
@@ -117,7 +117,9 @@
     "c27_new_field_resolutions": 1,
     "c27_new_printings": 1,
     "innovator_new_field_resolutions": 1,
-    "innovator_new_printings": 1
+    "innovator_new_printings": 1,
+    "riven_new_field_resolutions": 3,
+    "riven_new_printings": 3
   },
   "historical_issues": [
     {
@@ -1526,6 +1528,103 @@
       "runtime_support": "source_review_only",
       "discovery_basis": "confirmed_artwork",
       "discovered_on": "2026-11-11"
+    },
+    {
+      "review_issue_id": "rad-043-167-tags",
+      "raw_issue": {
+        "kind": "official_artwork_field_mismatch",
+        "field": "tags",
+        "official_ids": [
+          "rad-043-167"
+        ],
+        "values": [
+          {
+            "official_id": "rad-043-167",
+            "raw_value": [
+              "Riven"
+            ],
+            "printed_value": [
+              "Riven",
+              "Noxus"
+            ]
+          }
+        ],
+        "detail": "The full original official face visibly prints Riven / Noxus on its type/tag line. The gallery omits Noxus. Preserve raw facts and correct only the effective tags; no runtime support is granted."
+      },
+      "printing_ids": [
+        "rad-043-167"
+      ],
+      "resolution_ids": [
+        "rad-043-167:tags"
+      ],
+      "proposed_status": "reviewed",
+      "runtime_support": "source_review_only",
+      "discovery_basis": "confirmed_artwork",
+      "discovered_on": "2026-11-12"
+    },
+    {
+      "review_issue_id": "rad-043a-167-tags",
+      "raw_issue": {
+        "kind": "official_artwork_field_mismatch",
+        "field": "tags",
+        "official_ids": [
+          "rad-043a-167"
+        ],
+        "values": [
+          {
+            "official_id": "rad-043a-167",
+            "raw_value": [
+              "Riven"
+            ],
+            "printed_value": [
+              "Riven",
+              "Noxus"
+            ]
+          }
+        ],
+        "detail": "The full original official face visibly prints Riven / Noxus on its type/tag line. The gallery omits Noxus. Preserve raw facts and correct only the effective tags; no runtime support is granted."
+      },
+      "printing_ids": [
+        "rad-043a-167"
+      ],
+      "resolution_ids": [
+        "rad-043a-167:tags"
+      ],
+      "proposed_status": "reviewed",
+      "runtime_support": "source_review_only",
+      "discovery_basis": "confirmed_artwork",
+      "discovered_on": "2026-11-12"
+    },
+    {
+      "review_issue_id": "rad-107-167-tags",
+      "raw_issue": {
+        "kind": "official_artwork_field_mismatch",
+        "field": "tags",
+        "official_ids": [
+          "rad-107-167"
+        ],
+        "values": [
+          {
+            "official_id": "rad-107-167",
+            "raw_value": [],
+            "printed_value": [
+              "Shadow Isles",
+              "Demon"
+            ]
+          }
+        ],
+        "detail": "The full original official face visibly prints Shadow Isles / Demon on its type/tag line. The gallery omits both tags. Preserve raw facts and correct only the effective tags; no runtime support is granted."
+      },
+      "printing_ids": [
+        "rad-107-167"
+      ],
+      "resolution_ids": [
+        "rad-107-167:tags"
+      ],
+      "proposed_status": "reviewed",
+      "runtime_support": "source_review_only",
+      "discovery_basis": "confirmed_artwork",
+      "discovered_on": "2026-11-12"
     }
   ],
   "raw_printings": [
@@ -5017,6 +5116,128 @@
         "Six More Vodka"
       ],
       "review_draft_sha256": "d142a648375fc67d213b8a9144ead50d2cc96c1816ed2bdcf96616f4067d4ed1"
+    },
+    {
+      "rules_text": "When I become exhausted, choose one that hasn't been chosen this turn —\n[Buff] me. (Give me a +1 Might buff if I don't have one.)\nSpend my buff to [Stun] an enemy unit. (It doesn't deal combat damage this turn.)\nSpend my buff to ready me.",
+      "name": "Riven, Broken Blade",
+      "might_bonus": null,
+      "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/0c9ac0da1c144f46a1e0c5423f51f9b8f6ba295b-744x1039.png?accountingTag=RB",
+      "domains": [
+        "calm"
+      ],
+      "equipment_text": "",
+      "equipment_html": "",
+      "accessibility_types": [
+        "unit"
+      ],
+      "set": "RAD",
+      "power": null,
+      "tags": [
+        "Riven"
+      ],
+      "illustrators": [
+        "JunHuan"
+      ],
+      "type_labels_conflict": false,
+      "super_types": [
+        "champion"
+      ],
+      "rarity": "rare",
+      "collector_number": 43,
+      "might": 4,
+      "types": [
+        "unit"
+      ],
+      "official_id": "rad-043-167",
+      "structured_types": [
+        "unit"
+      ],
+      "rules_html": "<p>When I become exhausted, choose one that hasn't been chosen this turn —</p><ul><li>[Buff] me. (Give me a +1 :rb_might: buff if I don't have one.)</li><li>Spend my buff to [Stun] an enemy unit. (It doesn't deal combat damage this turn.)</li><li>Spend my buff to ready me.</li></ul>",
+      "type_source": "cardType.type",
+      "image_accessibility_text": "Riftbound Unit: Riven, Broken Blade. When I become exhausted, choose one that hasn't been chosen this turn —\n- [Buff] me. (Give me a +1 [S] buff if I don't have one.)\n- Spend my buff to [Stun] an enemy unit. (It doesn't deal combat damage this turn.)\n- Spend my buff to ready me.",
+      "energy": 4,
+      "public_code": "RAD-043/167",
+      "review_draft_sha256": "1c089480bb67b33e04431c779fcff25bbb6efa88354ed0d88bd66f1db1081cde"
+    },
+    {
+      "rules_text": "When I become exhausted, choose one that hasn't been chosen this turn —\n[Buff] me.\nSpend my buff to [Stun] an enemy unit.\nSpend my buff to ready me.",
+      "name": "Riven, Broken Blade",
+      "might_bonus": null,
+      "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/9870e0f591e2ca04bea2274209e8df3d4435213b-744x1039.png?accountingTag=RB",
+      "domains": [
+        "calm"
+      ],
+      "equipment_text": "",
+      "equipment_html": "",
+      "accessibility_types": [
+        "unit"
+      ],
+      "set": "RAD",
+      "power": null,
+      "tags": [
+        "Riven"
+      ],
+      "illustrators": [
+        "Ziyan Lin"
+      ],
+      "type_labels_conflict": false,
+      "super_types": [
+        "champion"
+      ],
+      "rarity": "showcase",
+      "collector_number": 43,
+      "might": 4,
+      "types": [
+        "unit"
+      ],
+      "official_id": "rad-043a-167",
+      "structured_types": [
+        "unit"
+      ],
+      "rules_html": "<p>When I become exhausted, choose one that hasn't been chosen this turn —</p><ul><li>[Buff] me.</li><li>Spend my buff to [Stun] an enemy unit.</li><li>Spend my buff to ready me.</li></ul>",
+      "type_source": "cardType.type",
+      "image_accessibility_text": "Riftbound Unit: Riven, Broken Blade. When I become exhausted, choose one that hasn't been chosen this turn —\n- [Buff] me.\n- Spend my buff to [Stun] an enemy unit.\n- Spend my buff to ready me.",
+      "energy": 4,
+      "public_code": "RAD-043a/167",
+      "review_draft_sha256": "6fbc3282aec8ffa9843629ce1a71c1c6ccb42f14ba1d9837ca19aa6513fbc1a9"
+    },
+    {
+      "rules_text": "[Hidden] (Hide now for [Any Power] to react with later for [0 Energy].)\nWhen you play me, choose a battlefield. If there are 4 or more units there, you may return an enemy unit there to its owner's hand.",
+      "name": "Bedeviling Stranger",
+      "might_bonus": null,
+      "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/d112a706fe957e5cea58ea1e4366ac02e3ba292b-744x1039.png?accountingTag=RB",
+      "domains": [
+        "chaos"
+      ],
+      "equipment_text": "",
+      "equipment_html": "",
+      "accessibility_types": [
+        "unit"
+      ],
+      "set": "RAD",
+      "power": null,
+      "tags": [],
+      "illustrators": [
+        "Kudos Productions"
+      ],
+      "type_labels_conflict": false,
+      "super_types": [],
+      "rarity": "rare",
+      "collector_number": 107,
+      "might": 2,
+      "types": [
+        "unit"
+      ],
+      "official_id": "rad-107-167",
+      "structured_types": [
+        "unit"
+      ],
+      "rules_html": "<p>[Hidden] (Hide now for :rb_rune_rainbow: to react with later for :rb_energy_0:.)<br />When you play me, choose a battlefield. If there are 4 or more units there, you may return an enemy unit there to its owner's hand.</p>",
+      "type_source": "cardType.type",
+      "image_accessibility_text": "Riftbound Unit: Bedeviling Stranger. [Hidden] (Hide now for [A] to react with later for [0].)\nWhen you play me, choose a battlefield. If there are 4 or more units there, you may return an enemy unit there to its owner's hand.",
+      "energy": 2,
+      "public_code": "RAD-107/167",
+      "review_draft_sha256": "fca5e6800f86dee2044895a8e6633bf65d1b54a535d2bcda7ac977fe644bcbc1"
     }
   ],
   "resolutions": [
@@ -9717,6 +9938,107 @@
           "sha256": "cb6f6be20c39b4e5a8cf690d3430532449e57185aaa01ab79979709f39ad4c3c",
           "bytes": 779325,
           "location": "Printed UNIT / PILTOVER type/tag line below artwork"
+        }
+      ],
+      "enables_runtime_support": false
+    },
+    {
+      "id": "rad-043-167:tags",
+      "official_id": "rad-043-167",
+      "name": "Riven, Broken Blade",
+      "field": "tags",
+      "reviewed_on": "2026-11-12",
+      "basis": "confirmed_artwork",
+      "operation": "override",
+      "expected_raw_value": [
+        "Riven"
+      ],
+      "raw_source_field": "tags",
+      "expected_raw_source_value": [
+        "Riven"
+      ],
+      "effective_value": [
+        "Riven",
+        "Noxus"
+      ],
+      "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+      "expected_printing_sha256": "1c089480bb67b33e04431c779fcff25bbb6efa88354ed0d88bd66f1db1081cde",
+      "printing_hash_encoding": "UTF-8 JSON sorted keys; ensure_ascii=false; separators=(',', ':')",
+      "reason": "The full original official face visibly prints Riven / Noxus on its type/tag line. The gallery omits Noxus. Preserve raw facts and correct only the effective tags; no runtime support is granted.",
+      "evidence": [
+        {
+          "kind": "official_card_image",
+          "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/0c9ac0da1c144f46a1e0c5423f51f9b8f6ba295b-744x1039.png?accountingTag=RB",
+          "local_path": "assets/data/catalog_evidence/images/rad-043-167.png",
+          "sha256": "e1eeccd4286ed7421a7126ad606eef6d3b3fe192f61e6dddd6d651b89568207a",
+          "bytes": 830179,
+          "location": "Printed type/tag line below the artwork"
+        }
+      ],
+      "enables_runtime_support": false
+    },
+    {
+      "id": "rad-043a-167:tags",
+      "official_id": "rad-043a-167",
+      "name": "Riven, Broken Blade",
+      "field": "tags",
+      "reviewed_on": "2026-11-12",
+      "basis": "confirmed_artwork",
+      "operation": "override",
+      "expected_raw_value": [
+        "Riven"
+      ],
+      "raw_source_field": "tags",
+      "expected_raw_source_value": [
+        "Riven"
+      ],
+      "effective_value": [
+        "Riven",
+        "Noxus"
+      ],
+      "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+      "expected_printing_sha256": "6fbc3282aec8ffa9843629ce1a71c1c6ccb42f14ba1d9837ca19aa6513fbc1a9",
+      "printing_hash_encoding": "UTF-8 JSON sorted keys; ensure_ascii=false; separators=(',', ':')",
+      "reason": "The full original official face visibly prints Riven / Noxus on its type/tag line. The gallery omits Noxus. Preserve raw facts and correct only the effective tags; no runtime support is granted.",
+      "evidence": [
+        {
+          "kind": "official_card_image",
+          "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/9870e0f591e2ca04bea2274209e8df3d4435213b-744x1039.png?accountingTag=RB",
+          "local_path": "assets/data/catalog_evidence/images/rad-043a-167.png",
+          "sha256": "9899ab8c795ab7d9dbc5c8bcb6bc2a657f86254207f582ea4924ceb4efb07ac0",
+          "bytes": 1051940,
+          "location": "Printed type/tag line below the artwork"
+        }
+      ],
+      "enables_runtime_support": false
+    },
+    {
+      "id": "rad-107-167:tags",
+      "official_id": "rad-107-167",
+      "name": "Bedeviling Stranger",
+      "field": "tags",
+      "reviewed_on": "2026-11-12",
+      "basis": "confirmed_artwork",
+      "operation": "override",
+      "expected_raw_value": [],
+      "raw_source_field": "tags",
+      "expected_raw_source_value": [],
+      "effective_value": [
+        "Shadow Isles",
+        "Demon"
+      ],
+      "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+      "expected_printing_sha256": "fca5e6800f86dee2044895a8e6633bf65d1b54a535d2bcda7ac977fe644bcbc1",
+      "printing_hash_encoding": "UTF-8 JSON sorted keys; ensure_ascii=false; separators=(',', ':')",
+      "reason": "The full original official face visibly prints Shadow Isles / Demon on its type/tag line. The gallery omits both tags. Preserve raw facts and correct only the effective tags; no runtime support is granted.",
+      "evidence": [
+        {
+          "kind": "official_card_image",
+          "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/d112a706fe957e5cea58ea1e4366ac02e3ba292b-744x1039.png?accountingTag=RB",
+          "local_path": "assets/data/catalog_evidence/images/rad-107-167.png",
+          "sha256": "5a0503ca0036983004020f6d9b15cf8392b7e23f479087f77b1be0fb5a862dca",
+          "bytes": 746486,
+          "location": "Printed type/tag line below the artwork"
         }
       ],
       "enables_runtime_support": false

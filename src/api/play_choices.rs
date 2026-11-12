@@ -82,9 +82,7 @@ fn parse_destination(value: &Value) -> Result<MoveDestination, ApiError> {
         "battlefield" => {
             keys(obj, &["type", "lane"])?;
             let lane = index(obj, "lane")?;
-            if lane >= crate::game::BATTLEFIELDS {
-                return Err(ApiError::invalid("Choose a battlefield on this board."));
-            }
+            // The game validates this against its current physical field count.
             Ok(MoveDestination::Battlefield { lane })
         }
         _ => Err(ApiError::invalid(
@@ -127,7 +125,7 @@ pub(super) fn cost_to_json(cost: &CostValue) -> Value {
 }
 
 pub(super) fn plan_to_json(plan: &CostPlanView) -> Value {
-    json!({"components":plan.components.iter().map(|component|json!({"id":component.id.to_string(),
+    let mut view = json!({"components":plan.components.iter().map(|component|json!({"id":component.id.to_string(),
         "label":component.label,"cost":cost_to_json(&component.cost),"optional":component.optional})).collect::<Vec<_>>(),
         "modifiers":plan.modifiers.iter().map(|modifier|json!({"id":modifier.id.to_string(),"label":modifier.label,
             "source":chain_source_to_json(modifier.source),"energy":modifier.energy,"energy_exact":modifier.energy.to_string(),
@@ -139,7 +137,19 @@ pub(super) fn plan_to_json(plan: &CostPlanView) -> Value {
         "energy":plan.energy,"xp":plan.xp,"xp_exact":plan.xp.to_string(),"power":plan.power.iter().map(|cost|json!({"amount":cost.amount,
             "domains":cost.domains.iter().map(|d|d.name().to_lowercase()).collect::<Vec<_>>(),
             "spell_eligible":cost.spell_eligible})).collect::<Vec<_>>(),
-        "applied_order":plan.applied_order.iter().map(selection_to_json).collect::<Vec<_>>()})
+        "applied_order":plan.applied_order.iter().map(selection_to_json).collect::<Vec<_>>()});
+    if !plan.object_costs.is_empty() {
+        view["object_costs"] = json!(
+            plan.object_costs
+                .iter()
+                .map(|cost| match cost {
+                    crate::play::ObjectCost::ExhaustUnit { player, unit_id } =>
+                        json!({"type":"exhaust_unit","player":player,"unit_id":unit_id}),
+                })
+                .collect::<Vec<_>>()
+        );
+    }
+    view
 }
 
 pub(super) fn view_to_json(view: &PlayChoiceView) -> Value {
@@ -151,6 +161,14 @@ pub(super) fn view_to_json(view: &PlayChoiceView) -> Value {
         "accelerate":view.accelerate.as_ref().map(|option|json!({"label":option.label,"cost":cost_to_json(&option.cost)})),
         "bonus":view.bonus.as_ref().map(|option|json!({"label":option.label,"cost":cost_to_json(&option.cost)})),
         "costs":plan_to_json(&view.costs)});
+    if let Some(source) = view.legend_entry_ready {
+        value["legend_entry_ready"] = chain_source_to_json(source);
+    }
+    if let Some(lane) = view.baron_pit_entry {
+        value["entry_replacement"] = json!({"source_card_id":440,
+            "battlefield_id":crate::battlefields::BARON_PIT_ID,"lane":lane,
+            "adds_battlefield":true});
+    }
     if !view.show_off.is_empty() {
         value["show_off"] = json!(
             view.show_off
@@ -484,7 +502,7 @@ mod tests {
         value["choices"]["cost_order"][0]["power_allocations"] =
             json!(vec![json!({"component_id":0,"amount":0}); 1025]);
         malformed.push(value);
-        malformed.push(json!({"type":"finalize_token_play","lane":2,"accelerate":false}));
+        malformed.push(json!({"type":"finalize_token_play","lane":-1,"accelerate":false}));
         let mut nested = json!({"type":"end_turn"});
         for _ in 0..MAX_ACTION_DEPTH {
             nested = json!({"type":"with_play_choices","action":nested,"choices":{}});

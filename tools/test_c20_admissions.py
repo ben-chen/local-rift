@@ -29,12 +29,12 @@ class C20AdmissionTests(unittest.TestCase):
         cls.manifest = json.loads((catalog.ROOT / 'assets/data/catalog_resolutions.json').read_text())
         runtime = copy.deepcopy(catalog.load_runtime_manifest())
         runtime['cards'] = runtime['cards'][:395]; runtime['decks'] = runtime['decks'][:4]
-        with patch.object(catalog, 'load_runtime_manifest', return_value=runtime), patch.object(catalog, 'load_battlefield_manifest', return_value=history.legacy_battlefields()):
+        with history.pre_riven_runtime(runtime), patch.object(catalog, 'load_battlefield_manifest', return_value=history.legacy_battlefields()):
             cls.snapshot = catalog.make_catalog(cls.origin, cls.archives)
         cls.printings = {p['official_id']: p for p in cls.snapshot['printings']}
         cls.identities = {p['identity']: p for p in cls.snapshot['cards']}
         runtime['cards'] = runtime['cards'][:BASE]; runtime['decks'] = runtime['decks'][:4]
-        with patch.object(catalog, 'load_runtime_manifest', return_value=runtime), patch.object(catalog, 'load_battlefield_manifest', return_value=history.legacy_battlefields()):
+        with history.pre_riven_runtime(runtime), patch.object(catalog, 'load_battlefield_manifest', return_value=history.legacy_battlefields()):
             cls.source_only = catalog.make_catalog(cls.origin, cls.archives)
 
     def apply(self, manifest=None, raw=None):
@@ -143,7 +143,7 @@ class C20AdmissionTests(unittest.TestCase):
         self.assertEqual(digest(runtime['decks'][:4]), pin['presets_sha256'])
         prefix = history.pre_registration_carddefs_source().split('        CardDef {\n            id: 389,', 1)[0]
         self.assertEqual(catalog.sha(prefix.encode()), pin['carddefs_source_prefix_sha256'])
-        self.assertEqual(catalog.sha((root / 'assets/data/legends.json').read_bytes()), pin['legends_manifest_sha256'])
+        self.assertEqual(catalog.sha(history.pre_riven_evidence_bytes('assets/data/legends.json')), pin['legends_manifest_sha256'])
         self.assertEqual(catalog.sha(history.pre_rengar_recipe_source_bytes()), pin['training_recipe_source_sha256'])
         for key, old in self.correction['preserved_source_cohorts'].items():
             self.assertEqual(digest(self.manifest[key][:old['count']]), old['canonical_sha256'])
@@ -205,7 +205,7 @@ class C20AdmissionTests(unittest.TestCase):
                     catalog.make_catalog(self.origin, self.archives)
 
     def test_ten_existing_legend_homes_and_no_new_champion_eligibility(self):
-        legends = catalog.load_legend_manifest(); self.assertEqual(len(legends), 10)
+        legends = history.pre_riven_legends(); self.assertEqual(len(legends), 10)
         for record in self.proof['records']:
             e = record['effective']; self.assertEqual(e['super_types'], [])
             self.assertTrue(any(set(e['domains']) <= {d.lower() for d in l['domains']} for l in legends))

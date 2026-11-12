@@ -79,7 +79,7 @@ class ClocktowerSourceReviewTests(unittest.TestCase):
         old = p['preserved_runtime']
         self.assertEqual(digest(self.runtime['cards']), old['cards_sha256'])
         self.assertEqual(digest(self.runtime['decks'][:4]), old['presets_sha256'])
-        self.assertEqual(catalog.sha((catalog.ROOT / 'assets/data/legends.json').read_bytes()), old['legends_manifest_sha256'])
+        self.assertEqual(catalog.sha(history.pre_riven_evidence_bytes('assets/data/legends.json')), old['legends_manifest_sha256'])
         self.assertEqual(catalog.sha(history.pre_rengar_recipe_source_bytes()), old['training_recipe_source_sha256'])
 
     def test_changed_raw_prerequisites_are_rejected(self):

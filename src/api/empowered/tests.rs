@@ -9,7 +9,7 @@ fn position() -> Session {
     })
     .unwrap();
     session.start(0).unwrap();
-    session.game.battlefields = [3, 3];
+    session.game.battlefields = vec![3, 3];
     for player in &mut session.game.players {
         player.units.clear();
         player.gear.clear();

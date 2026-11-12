@@ -11,8 +11,8 @@ fn position_with_preset(owner: usize, preset: usize) -> Game {
     let mut g = Game::new_for_agents(preset, preset, 429100, Difficulty::Tactical);
     g.choose_starting_player(owner).unwrap();
     g.start_match().unwrap();
-    g.battlefields = [2, 2];
-    g.battlefield_owner = [None; 2];
+    g.battlefields = vec![2, 2];
+    g.battlefield_owner = vec![None; 2];
     for p in &mut g.players {
         p.hand.clear();
         p.units.clear();

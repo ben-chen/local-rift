@@ -206,7 +206,7 @@ impl Game {
         }));
             if self.decision.is_none() {
                 for (hand_index, &id) in self.players[actor].hand.iter().enumerate() {
-                    for lane in [None, Some(0), Some(1)] {
+                    for lane in self.board_locations() {
                         if self.validate_play_structure(id, lane).is_err() {
                             continue;
                         }
@@ -294,7 +294,7 @@ impl Game {
                         .collect::<Result<Vec<_>, String>>()?;
                     keyed.sort_by_key(|&(might, id, _)| (might, id));
                     ready = keyed.into_iter().map(|(_, _, u)| u).collect();
-                    for lane in 0..BATTLEFIELDS {
+                    for lane in 0..self.battlefield_count() {
                         for count in 2..=ready.len().min(8) {
                             for group in [&ready[..count], &ready[ready.len() - count..]] {
                                 candidates.push(Action::MoveGroup {
@@ -397,14 +397,14 @@ impl Game {
                         + self.catalog[gear.card_id].cost as i128 * 5
                         + i128::from(gear.attached_to.is_some()) * 8;
                 }
-                for lane in 0..BATTLEFIELDS {
+                for lane in 0..self.battlefield_count() {
                     if self.battlefield_owner[lane] == Some(owner)
                         && self.lane_count(owner, lane) > 0
                     {
                         let defending = self.lane_might(owner, lane)? as i128;
                         let mut threat = 0_i128;
                         for unit in &self.players[1 - owner].units {
-                            if unit.lane.is_none() || self.unit_keywords(unit)?.ganking {
+                            if self.standard_move_route_allowed(unit, Some(lane))? {
                                 threat += i128::from(self.unit_might(unit)?);
                             }
                         }
@@ -833,7 +833,7 @@ mod c20_draw_privacy_tests {
         let mut game = Game::new_for_agents(0, 0, 20021, Difficulty::Strategic);
         game.choose_starting_player(actor).unwrap();
         game.start_match().unwrap();
-        game.battlefield_owner = [None; 2];
+        game.battlefield_owner = vec![None; 2];
         for player in &mut game.players {
             player.hand.clear();
             player.units.clear();
@@ -1107,8 +1107,8 @@ mod c21_predict_privacy_tests {
                 let mut first = Game::new_for_agents(3, 3, 21032, Difficulty::Strategic);
                 first.choose_starting_player(actor).unwrap();
                 first.start_match().unwrap();
-                first.battlefields = [2, 2];
-                first.battlefield_owner = [None; 2];
+                first.battlefields = vec![2, 2];
+                first.battlefield_owner = vec![None; 2];
                 for player in &mut first.players {
                     player.units.clear();
                     player.gear.clear();

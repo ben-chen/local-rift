@@ -107,7 +107,7 @@ mod tests {
         game.start_match().unwrap();
         game.players[0].units = vec![unit(100, 259, None), unit(101, 259, None)];
         game.players[1].units = vec![unit(102, 69, Some(0)), unit(103, 69, Some(1))];
-        game.battlefields = [3, 2];
+        game.battlefields = vec![3, 2];
         game
     }
     fn target(id: u32) -> Target {

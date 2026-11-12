@@ -6,6 +6,7 @@ import unittest
 from unittest.mock import patch
 import catalog_review as review
 import import_catalog as catalog
+import admission_history as history
 
 
 class OriannaAdmissionTests(unittest.TestCase):
@@ -54,11 +55,11 @@ class OriannaAdmissionTests(unittest.TestCase):
         images=json.loads((catalog.ROOT/'assets/data/catalog_evidence/variant_images.json').read_text())
         self.assertEqual(catalog.sha(review.canonical_bytes(reviews[:p['review_count']])),p['reviews_sha256'])
         self.assertEqual(catalog.sha(review.canonical_bytes(images[:p['image_count']])),p['images_sha256'])
-        self.assertEqual(catalog.sha((catalog.ROOT/'assets/data/catalog_resolutions.json').read_bytes()),p['field_manifest_sha256'])
+        self.assertEqual(catalog.sha(history.pre_riven_evidence_bytes('assets/data/catalog_resolutions.json')),p['field_manifest_sha256'])
 
     def test_variant_review_alone_does_not_admit_orianna(self):
         runtime=copy.deepcopy(catalog.load_runtime_manifest());runtime['cards']=runtime['cards'][:430]
-        with patch.object(catalog,'load_runtime_manifest',return_value=runtime):
+        with history.pre_riven_runtime(runtime):
             snapshot=catalog.make_catalog(self.origin,self.archives)
         identity=next(c for c in snapshot['cards'] if c['identity']=='rad-042-167')
         self.assertEqual(identity['source_review']['status'],'reviewed_variants')

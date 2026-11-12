@@ -9,7 +9,7 @@ use local_rift::rules::{self, PlayTargetKind};
 fn game() -> Game {
     let mut g = Game::new_for_agents(3, 3, 87331, Difficulty::Tactical);
     g.start_match().unwrap();
-    g.battlefields = [2, 2]; // Minefield has no passive damage modifier.
+    g.battlefields = vec![2, 2]; // Minefield has no passive damage modifier.
     for p in 0..2 {
         g.legend[p].ready = false;
         let state = &mut g.players[p];
@@ -25,7 +25,7 @@ fn game() -> Game {
         state.power_pool = [20; 6];
         state.any_power = 0;
     }
-    g.battlefield_owner = [None; 2];
+    g.battlefield_owner = vec![None; 2];
     g
 }
 fn unit(g: &mut Game, p: usize, id: u32, card: usize, lane: Option<usize>) -> Target {

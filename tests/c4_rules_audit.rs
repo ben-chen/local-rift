@@ -8,8 +8,8 @@ use local_rift::play::{ExecutionChoices, PlayChoices, RepeatSelection};
 fn position() -> Game {
     let mut game = Game::new_for_agents(3, 3, 44017, Difficulty::Tactical);
     game.start_match().unwrap();
-    game.battlefields = [3, 3];
-    game.battlefield_owner = [None, None];
+    game.battlefields = vec![3, 3];
+    game.battlefield_owner = vec![None, None];
     for player in &mut game.players {
         player.hand.clear();
         player.champion = None;

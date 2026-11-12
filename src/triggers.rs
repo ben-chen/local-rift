@@ -32,6 +32,9 @@ pub struct TriggerState {
     pub completed_cards: [u16; 2],
     pub xp_gained: [bool; 2],
     pub first_used: Vec<(TriggerSource, usize)>,
+    /// Physical source ID, printed card, trigger index, mode. Control changes
+    /// do not reset choices; leaving and replaying creates a different ID.
+    pub modes_used: Vec<(u32, CardId, usize, usize)>,
     pub combat_seen: Vec<u32>,
     pub(crate) hidden_play: bool,
 }
@@ -41,6 +44,7 @@ impl TriggerState {
         self.completed_cards = [0; 2];
         self.xp_gained = [false; 2];
         self.first_used.clear();
+        self.modes_used.clear();
     }
 }
 #[derive(Clone, Copy, PartialEq, Eq)]
@@ -773,17 +777,44 @@ impl Game {
             ));
         }
     }
-    fn trigger_rule_target_valid(
+    pub(super) fn trigger_rule_target_valid(
         &self,
         card_id: CardId,
         index: usize,
         context: TriggerContext,
         target: Target,
         slot: usize,
+        choices: &[Target],
     ) -> Result<bool, String> {
         Ok({
             let rule = metadata::selected_rule(card_id, index, context.mode)
                 .expect("validated trigger mode");
+            if rule.targets.battlefield_first {
+                if slot == 0 {
+                    let Target::Battlefield { lane } = target else {
+                        return Ok(false);
+                    };
+                    return Ok(lane < self.battlefields.len()
+                        && !context
+                            .source
+                            .unit_id
+                            .or(context.source.gear_id)
+                            .and_then(|id| self.hidden_play_origin(id))
+                            .is_some_and(|origin| {
+                                origin != lane || self.source_location(context.source).is_none()
+                            }));
+                }
+                let Some(Target::Battlefield { lane }) = choices.first() else {
+                    return Ok(false);
+                };
+                if self
+                    .board_target_facts(target)
+                    .and_then(|facts| facts.location.battlefield())
+                    != Some(*lane)
+                {
+                    return Ok(false);
+                }
+            }
             let Some(facts) = self.board_target_facts(target) else {
                 return Ok(false);
             };
@@ -1007,6 +1038,7 @@ impl Game {
                 *context,
                 target,
                 prior.len(),
+                prior,
             )? {
                 return Ok(false);
             }
@@ -1033,7 +1065,7 @@ impl Game {
             }
             _ => rules::PlayTargetKind::Unit,
         };
-        Ok(self
+        let mut candidates: Vec<_> = self
             .players
             .iter()
             .enumerate()
@@ -1050,13 +1082,21 @@ impl Game {
                     }))
             })
             .filter(|&target| self.board_target_matches_kind(target, kind))
-            .collect())
+            .collect();
+        if self
+            .trigger_target_rule()
+            .is_some_and(|rule| rule.battlefield_first)
+        {
+            candidates
+                .extend((0..self.battlefields.len()).map(|lane| Target::Battlefield { lane }));
+        }
+        Ok(candidates)
     }
     pub(super) fn trigger_target_actions(&self) -> Result<Vec<Action>, String> {
         self.trigger_target_actions_mode(true)
     }
 
-    fn trigger_target_actions_mode(&self, costs: bool) -> Result<Vec<Action>, String> {
+    pub(super) fn trigger_target_actions_mode(&self, costs: bool) -> Result<Vec<Action>, String> {
         Ok({
             let Some((max, min)) = self.trigger_target_bounds() else {
                 return Ok(Vec::new());
@@ -1243,7 +1283,9 @@ impl Game {
         // Core406: final legality follows payment. The enclosing transaction
         // restores the entire attempted finalization if it cannot complete.
         for (slot, &target) in targets.iter().enumerate() {
-            if !self.trigger_rule_target_valid(card_id, rule_index, context, target, slot)? {
+            if !self
+                .trigger_rule_target_valid(card_id, rule_index, context, target, slot, &targets)?
+            {
                 return Err("A pinned trigger target is no longer legal.".into());
             }
         }
@@ -1316,6 +1358,16 @@ impl Game {
         Ok(())
     }
     pub(super) fn discard_unfinalizable_trigger(&mut self) -> Result<(), String> {
+        if matches!(self.decision, Some(Decision::TriggerMode { .. })) {
+            for mode in 0..self.trigger_mode_options().len() {
+                if self.trigger_mode_available(mode)? {
+                    return Ok(());
+                }
+            }
+            self.decision = None;
+            self.push_log("No unused legal mode remains for this triggered ability.".into());
+            return Ok(());
+        }
         if !matches!(
             self.decision,
             Some(Decision::TriggerTargets { .. } | Decision::LegendTargets { .. })
@@ -1401,13 +1453,52 @@ impl Game {
             metadata::selected_rule(card_id, index, context.mode).expect("validated trigger mode");
         let mut selected = Vec::new();
         for (slot, &target) in targets.iter().enumerate() {
-            if self.trigger_rule_target_valid(card_id, index, context, target, slot)? {
+            if self.trigger_rule_target_valid(card_id, index, context, target, slot, targets)? {
                 selected.push(target);
             }
         }
         let targets = selected;
         for effect in rule.effects {
             match *effect {
+                Effect::SpendSourceBuffTo(effect) => {
+                    // Core359.3.e.7 / 740.4.a: this is one linked instruction.
+                    // If its only target is invalid, the cost is also ignored.
+                    if effect == metadata::SourceBuffEffect::StunTargets && targets.is_empty() {
+                        continue;
+                    }
+                    let Some(source @ Target::Unit { unit_id, .. }) =
+                        Self::source_target(context.source)
+                    else {
+                        continue;
+                    };
+                    if self.unit_ref(source).is_none() || !self.buffed_units.contains(&unit_id) {
+                        continue;
+                    }
+                    // A Buff is a single counter, distinct from other lasting Might.
+                    let unit = self.unit_mut(source).unwrap();
+                    unit.buff = unit
+                        .buff
+                        .checked_sub(1)
+                        .ok_or("A Buff counter is missing its Might contribution.")?;
+                    self.buffed_units.retain(|&id| id != unit_id);
+                    match effect {
+                        metadata::SourceBuffEffect::StunTargets => {
+                            for &target in &targets {
+                                if let Some(unit) = self.unit_mut(target) {
+                                    unit.stunned = true;
+                                }
+                            }
+                        }
+                        metadata::SourceBuffEffect::ReadySource => {
+                            self.ready_unit_by(player, context.source.player, unit_id);
+                        }
+                    }
+                }
+                Effect::OptionalReturnAtCrowdedBattlefield { .. } => {
+                    unreachable!(
+                        "optional return retains its chain item until its resolution choice finishes"
+                    )
+                }
                 Effect::AttachSourceGear => {
                     if let Some(gear_id) = context.source.gear_id {
                         for &target in &targets {
@@ -1447,6 +1538,11 @@ impl Game {
                             player: context.source.player,
                             gear_id,
                         }]);
+                    }
+                }
+                Effect::ReturnSourceUnit => {
+                    if let Some(target) = Self::source_target(context.source) {
+                        self.return_unit_to_hand(target);
                     }
                 }
                 Effect::MoveTargetsToEventDestination => {

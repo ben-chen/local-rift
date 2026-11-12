@@ -28,8 +28,8 @@ fn position(legend: usize) -> Session {
     })
     .unwrap();
     session.start(0).unwrap();
-    session.game.battlefields = [3, 3];
-    session.game.battlefield_owner = [None; 2];
+    session.game.battlefields = vec![3, 3];
+    session.game.battlefield_owner = vec![None; 2];
     for player in &mut session.game.players {
         player.hand.clear();
         player.units.clear();

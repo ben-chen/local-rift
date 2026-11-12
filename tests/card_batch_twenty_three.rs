@@ -109,7 +109,10 @@ fn all_three_have_four_legal_main_deck_homes_and_no_chosen_champion_eligibility(
     for legend in legends() {
         let original = CustomDeck::from_legend(legend.id).unwrap();
         assert_eq!(original.card_count(), 40);
-        assert!(original.cards.iter().all(|(id, _)| *id < 398));
+        // Riven (legend10) was introduced after this historical batch.
+        if legend.id < 10 {
+            assert!(original.cards.iter().all(|(id, _)| *id < 398));
+        }
         let mut expanded = original.clone();
         for id in 398..401 {
             let legal = homes.contains(&legend.id);

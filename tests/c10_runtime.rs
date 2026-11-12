@@ -6,8 +6,8 @@ use local_rift::rules::{self, EntryReadyRule};
 fn game() -> Game {
     let mut g = Game::new_for_agents(3, 3, 92234, Difficulty::Tactical);
     g.start_match().unwrap();
-    g.battlefields = [2, 2];
-    g.battlefield_owner = [None; 2];
+    g.battlefields = vec![2, 2];
+    g.battlefield_owner = vec![None; 2];
     for p in 0..2 {
         g.legend[p].ready = false;
         let state = &mut g.players[p];

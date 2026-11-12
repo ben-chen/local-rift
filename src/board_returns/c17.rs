@@ -149,7 +149,7 @@ fn c17_temporal_owner_and_exact_location_override_ordinary_deployment() {
         for location in [None, Some(0), Some(1)] {
             let mut g = position();
             let target = unit(&mut g, owner, 71, false, location);
-            g.battlefield_owner = [Some(1 - owner); 2];
+            g.battlefield_owner = vec![Some(1 - owner); 2];
             start_replay(&mut g, 381, target);
             assert_eq!(g.priority(), owner);
             assert_eq!(
@@ -206,7 +206,7 @@ fn c17_thrill_requires_any_battlefield_even_enemy_held_and_cannot_decline() {
     for lane in 0..2 {
         let mut g = position();
         let target = unit(&mut g, 0, 71, false, None);
-        g.battlefield_owner = [Some(1); 2];
+        g.battlefield_owner = vec![Some(1); 2];
         start_replay(&mut g, 382, target);
         assert!(!g.can_decline_trash_play().unwrap());
         assert!(g.apply(Action::Choose { accept: false }).is_err());

@@ -98,7 +98,7 @@ impl Game {
                             .is_some_and(|s| s.characteristic)
                 })
                 .map_or_else(Vec::new, |gear| {
-                    (0..BATTLEFIELDS)
+                    (0..self.battlefield_count())
                         .filter(|&lane| self.gear_location(actor, gear.id) != Some(lane))
                         .map(|lane| Target::Battlefield { lane })
                         .collect()

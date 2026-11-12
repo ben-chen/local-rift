@@ -8,7 +8,7 @@ fn reset(app: &mut App, card: usize) {
     app.game.players[1].units.clear();
     app.game.players[0].gear.clear();
     app.game.players[1].gear.clear();
-    app.game.battlefield_owner = [None; 2];
+    app.game.battlefield_owner = vec![None; 2];
     app.field_gear_filter = None;
     app.inspect = None;
     app.inspect_scroll = 0;
@@ -71,7 +71,7 @@ fn dense(app: &mut App) {
         temporary: false,
         token: false,
     });
-    app.game.battlefield_owner = [None; 2];
+    app.game.battlefield_owner = vec![None; 2];
     app.game.players[0].hand = vec![410];
     app.selection = None;
     app.tray = super::super::Tray::Board;

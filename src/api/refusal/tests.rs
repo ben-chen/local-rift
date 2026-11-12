@@ -11,7 +11,7 @@ fn position(owner: usize) -> Session {
     })
     .unwrap();
     s.start(0).unwrap();
-    s.game.battlefield_owner = [None; 2];
+    s.game.battlefield_owner = vec![None; 2];
     for p in &mut s.game.players {
         p.hand.clear();
         p.units.clear();

@@ -5,8 +5,8 @@ fn position(owner: usize) -> Game {
     let mut g = Game::new_for_agents(3, 3, 432432, Difficulty::Tactical);
     g.choose_starting_player(owner).unwrap();
     g.start_match().unwrap();
-    g.battlefields = [2, 2];
-    g.battlefield_owner = [Some(owner), Some(owner)];
+    g.battlefields = vec![2, 2];
+    g.battlefield_owner = vec![Some(owner), Some(owner)];
     for p in &mut g.players {
         p.units.clear();
         p.gear.clear();

@@ -7,10 +7,10 @@ use local_rift::payment::PowerPayment;
 fn position() -> Game {
     let mut game = Game::new_for_agents(3, 3, 3772, Difficulty::Tactical);
     game.start_match().unwrap();
-    game.battlefields = [0, 0];
+    game.battlefields = vec![0, 0];
     game.legend[0].ready = false;
     game.legend[1].ready = false;
-    game.battlefield_owner = [None; 2];
+    game.battlefield_owner = vec![None; 2];
     for player in &mut game.players {
         player.hand.clear();
         player.units.clear();

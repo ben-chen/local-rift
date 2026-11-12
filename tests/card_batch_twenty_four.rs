@@ -94,21 +94,24 @@ fn complete_single_printings_keep_raw_domain_errors_and_nullable_costs() {
 fn all_ten_have_exact_legend_homes_without_changing_presets_or_champions() {
     let homes: [&[usize]; 10] = [
         &[3, 4, 8],
-        &[0, 1],
+        &[0, 1, 10],
         &[2, 4, 5, 6, 7],
-        &[0, 1],
+        &[0, 1, 10],
         &[1, 7, 8],
         &[1, 7, 8],
         &[3, 5, 6, 9],
-        &[0, 2, 9],
+        &[0, 2, 9, 10],
         &[1, 7, 8],
-        &[0, 1],
+        &[0, 1, 10],
     ];
     let mut covered = BTreeSet::new();
     for legend in legends() {
         let original = CustomDeck::from_legend(legend.id).unwrap();
         assert_eq!(original.card_count(), 40);
-        assert!(original.cards.iter().all(|(id, _)| *id < 401));
+        // Riven (legend10) was introduced after this historical batch.
+        if legend.id < 10 {
+            assert!(original.cards.iter().all(|(id, _)| *id < 401));
+        }
         let mut expanded = original.clone();
         for id in 401..411 {
             let legal = homes[id - 401].contains(&legend.id);

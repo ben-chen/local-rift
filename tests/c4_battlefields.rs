@@ -12,7 +12,7 @@ fn position(fields: [usize; 2]) -> Game {
     game.choose_battlefield(0, fields[0]).unwrap();
     game.choose_battlefield(1, fields[1]).unwrap();
     game.start_match().unwrap();
-    game.battlefield_owner = [None; 2];
+    game.battlefield_owner = vec![None; 2];
     for p in 0..2 {
         game.legend[p].ready = false;
         let player = &mut game.players[p];
@@ -206,9 +206,9 @@ fn ornn_forge_discounts_first_nontoken_gear_even_if_control_was_gained_later() {
     assert_eq!(g.play_history.non_token_gears[0], 1);
     let second = hand(&mut g, 117, None);
     assert_eq!(g.cost_plan(&second).unwrap().energy, 4);
-    g.battlefield_owner = [None, None];
+    g.battlefield_owner = vec![None, None];
     assert_eq!(g.cost_plan(&second).unwrap().energy, 4);
-    g.battlefield_owner = [Some(0), Some(0)];
+    g.battlefield_owner = vec![Some(0), Some(0)];
     assert_eq!(g.cost_plan(&second).unwrap().energy, 4); // reacquiring control never resets history
 }
 

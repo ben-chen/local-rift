@@ -1,5 +1,5 @@
 //! Checked dynamic combat values. Printed constants retain their compact types.
-use crate::game::{BATTLEFIELDS, Game, Unit, UnitKeywords};
+use crate::game::{Game, Unit, UnitKeywords};
 use crate::rules::{self, StaticAbility};
 pub type Might = u64;
 pub type SignedMight = i64;
@@ -214,7 +214,7 @@ impl Game {
 
     pub fn try_lane_might(&self, player: usize, lane: usize) -> Result<Might, String> {
         let state = self.players.get(player).ok_or("Invalid player.")?;
-        if lane >= BATTLEFIELDS {
+        if lane >= self.battlefield_count() {
             return Err("Invalid battlefield.".into());
         }
         state
@@ -235,6 +235,7 @@ impl Game {
     /// Validate derived quantities without performing cleanup or changing state.
     /// A lethal unit may legally remain while its parent effect is resolving.
     pub fn validate_numeric_state(&self) -> Result<(), String> {
+        self.validate_battlefield_state()?;
         for state in &self.players {
             state.validate_rune_objects()?;
         }
@@ -242,7 +243,7 @@ impl Game {
             for unit in &self.players[player].units {
                 self.try_unit_stats(unit)?;
             }
-            for lane in 0..BATTLEFIELDS {
+            for lane in 0..self.battlefield_count() {
                 self.try_lane_might(player, lane)?;
             }
         }

@@ -6,7 +6,7 @@ use crate::game::Unit;
 fn orianna_api_explains_public_gear_requirement_and_updates_after_ally_movement() {
     for owner in 0..2 {
         let mut s = position(owner);
-        s.game.battlefield_owner = [Some(owner), Some(owner)];
+        s.game.battlefield_owner = vec![Some(owner), Some(owner)];
         unit(&mut s, owner, 430, 43000, Some(0));
         let ally = unit(&mut s, owner, 71, 43001, None);
         let first = observed_unit(&s, owner, 43000);
@@ -77,7 +77,7 @@ fn position(actor: usize) -> Session {
     })
     .unwrap();
     s.start(0).unwrap();
-    s.game.battlefield_owner = [Some(1 - actor), None];
+    s.game.battlefield_owner = vec![Some(1 - actor), None];
     for state in &mut s.game.players {
         state.units.clear();
         state.gear.clear();
@@ -837,7 +837,7 @@ fn gust_api_separates_public_trash_cost_from_the_single_unit_target() {
 fn edge_api_keeps_hidden_identity_private_then_exposes_delayed_attachment() {
     for owner in 0..2 {
         let mut s = position(owner);
-        s.game.battlefield_owner = [Some(owner), None];
+        s.game.battlefield_owner = vec![Some(owner), None];
         let target = unit(&mut s, owner, 430, 43200, Some(0));
         let away = unit(&mut s, owner, 71, 43201, None);
         s.game.players[owner].hand = vec![432];

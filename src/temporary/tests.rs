@@ -14,8 +14,8 @@ fn position(legend: usize) -> Game {
     )
     .unwrap();
     g.start_match().unwrap();
-    g.battlefields = [7, 9];
-    g.battlefield_owner = [None; 2];
+    g.battlefields = vec![7, 9];
+    g.battlefield_owner = vec![None; 2];
     for p in &mut g.players {
         p.units.clear();
         p.gear.clear();
@@ -288,7 +288,7 @@ fn hidden_smoke_repeat_keeps_each_original_slot_after_the_first_target_leaves() 
     let d = unit(&mut g, 69, Some(1));
     g.grant_temporary(a);
     g.grant_temporary(c);
-    g.battlefield_owner = [Some(0); 2];
+    g.battlefield_owner = vec![Some(0); 2];
     g.players[0].hidden.push(crate::hidden::HiddenCard {
         id: 9000,
         card_id: 354,

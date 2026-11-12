@@ -7,8 +7,8 @@ fn position(actor: usize) -> Game {
     g.start_match().unwrap();
     g.active = actor;
     g.priority_player = actor;
-    g.battlefields = [0, 0];
-    g.battlefield_owner = [Some(1 - actor), None];
+    g.battlefields = vec![0, 0];
+    g.battlefield_owner = vec![Some(1 - actor), None];
     for p in &mut g.players {
         p.units.clear();
         p.gear.clear();
@@ -510,7 +510,7 @@ fn actual_eclipse_then_flurry_kills_source_before_its_ability_without_last_known
 fn tusker_move_to_base_still_references_shield_and_can_damage_remote_field() {
     for p in 0..2 {
         let mut g = position(p);
-        g.battlefield_owner = [Some(p), Some(1 - p)];
+        g.battlefield_owner = vec![Some(p), Some(1 - p)];
         let source = unit(&mut g, p, 416, Some(0));
         let target = unit(&mut g, 1 - p, 70, Some(1));
         cast(&mut g, 9, None, vec![source]);

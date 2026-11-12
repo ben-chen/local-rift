@@ -125,7 +125,10 @@ fn check_invariants(game: &Game) -> Result<(), String> {
             if !ids.insert(unit.id) {
                 return Err(format!("duplicate unit identifier {}", unit.id));
             }
-            if unit.lane.is_some_and(|lane| lane >= 2) {
+            if unit
+                .lane
+                .is_some_and(|lane| lane >= game.battlefield_count())
+            {
                 return Err(format!("unit {} is in an unknown battlefield", unit.id));
             }
             // CR321 defers cleanup until a resolving physical spell finishes,
@@ -175,7 +178,7 @@ fn check_invariants(game: &Game) -> Result<(), String> {
             if !ids.insert(hidden.id) {
                 return Err(format!("duplicate hidden-card identifier {}", hidden.id));
             }
-            if hidden.lane >= 2 || !hidden_lanes.insert(hidden.lane) {
+            if hidden.lane >= game.battlefield_count() || !hidden_lanes.insert(hidden.lane) {
                 return Err("invalid or multiply occupied facedown battlefield slot".into());
             }
         }

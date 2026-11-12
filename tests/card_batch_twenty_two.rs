@@ -115,12 +115,15 @@ fn both_ornn_printings_preserve_champion_supertype_and_matching_rules() {
 
 #[test]
 fn all_three_fit_existing_main_decks_without_changing_champions_or_authored_lists() {
-    let homes = [vec![0, 1], vec![3, 5, 6, 9], vec![0, 2, 9]];
+    let homes = [vec![0, 1, 10], vec![3, 5, 6, 9], vec![0, 2, 9, 10]];
     let mut covered = BTreeSet::new();
     for legend in legends() {
         let original = CustomDeck::from_legend(legend.id).unwrap();
         assert_eq!(original.card_count(), 40);
-        assert!(original.cards.iter().all(|(id, _)| *id < 395));
+        // Riven (legend10) was introduced after this historical batch.
+        if legend.id < 10 {
+            assert!(original.cards.iter().all(|(id, _)| *id < 395));
+        }
         let mut expanded = original.clone();
         for (offset, allowed) in homes.iter().enumerate() {
             let id = 395 + offset;

@@ -86,7 +86,10 @@ fn six_cards_fit_existing_legends_without_changing_training_or_presets() {
     for legend in legends() {
         let original = CustomDeck::from_legend(legend.id).unwrap();
         assert_eq!(original.card_count(), 40);
-        assert!(original.cards.iter().all(|(id, _)| *id < 389));
+        // Riven (legend10) was introduced after this historical batch.
+        if legend.id < 10 {
+            assert!(original.cards.iter().all(|(id, _)| *id < 389));
+        }
         let mut expanded = original.clone();
         for card in &cards[389..395] {
             let compatible = card.domains.iter().all(|d| legend.domains.contains(d));

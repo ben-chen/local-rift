@@ -90,6 +90,8 @@ pub enum HereLocationBasis {
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct TargetRule {
     pub kind: PlayTargetKind,
+    /// Slot zero chooses a battlefield; later slots choose objects there.
+    pub battlefield_first: bool,
     pub min: u8,
     pub max: u8,
     pub allegiance: Allegiance,
@@ -108,6 +110,7 @@ pub struct TargetRule {
 impl TargetRule {
     pub const NONE: Self = Self {
         kind: PlayTargetKind::Unit,
+        battlefield_first: false,
         min: 0,
         max: 0,
         allegiance: Allegiance::None,
@@ -153,9 +156,15 @@ pub enum SourceDamageRecipients {
 }
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Effect {
+    /// One linked instruction: spend the live source's Buff on resolution.
+    SpendSourceBuffTo(SourceBuffEffect),
     Banish(Operand),
     KillSourceGear,
     ReturnSourceGear,
+    ReturnSourceUnit,
+    OptionalReturnAtCrowdedBattlefield {
+        minimum_units: usize,
+    },
     MoveTargetsToSourceBattlefield,
     MoveTargetsToEventDestination,
     DrawIfOtherFriendlyMightAtLeast(u64),
@@ -216,6 +225,12 @@ pub enum Effect {
     },
     Points(u8),
 }
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum SourceBuffEffect {
+    StunTargets,
+    ReadySource,
+}
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum TriggerTextArea {
     Rules,
@@ -244,6 +259,7 @@ pub struct TriggerMode {
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct TriggerRule {
     pub modes: &'static [TriggerMode],
+    pub modes_once_each_turn: bool,
     pub text_area: TriggerTextArea,
     pub event: Event,
     pub conditions: &'static [Condition],
@@ -279,6 +295,7 @@ const fn rule(
 ) -> TriggerRule {
     TriggerRule {
         modes: &[],
+        modes_once_each_turn: false,
         text_area: TriggerTextArea::Rules,
         event,
         conditions,
@@ -357,6 +374,83 @@ pub fn trigger_rules(card_id: usize) -> &'static [TriggerRule] {
         )
     };
     match card_id {
+        439 => {
+            const {
+                &[TriggerRule {
+                    modes_once_each_turn: true,
+                    modes: &[
+                        TriggerMode {
+                            label: "Buff Riven",
+                            rule: rule(
+                                SelfExhausted,
+                                &[],
+                                false,
+                                TargetRule::NONE,
+                                &[Buff(Source)],
+                            ),
+                        },
+                        TriggerMode {
+                            label: "Spend Buff · stun enemy",
+                            rule: rule(
+                                SelfExhausted,
+                                &[],
+                                false,
+                                TargetRule {
+                                    allegiance: Allegiance::Enemy,
+                                    ..ANY
+                                },
+                                &[SpendSourceBuffTo(SourceBuffEffect::StunTargets)],
+                            ),
+                        },
+                        TriggerMode {
+                            label: "Spend Buff · ready Riven",
+                            rule: rule(
+                                SelfExhausted,
+                                &[],
+                                false,
+                                TargetRule::NONE,
+                                &[SpendSourceBuffTo(SourceBuffEffect::ReadySource)],
+                            ),
+                        },
+                    ],
+                    ..rule(SelfExhausted, &[], false, TargetRule::NONE, &[])
+                }]
+            }
+        }
+        437 => {
+            const {
+                &[rule(
+                    SelfPlayed,
+                    &[],
+                    false,
+                    TargetRule {
+                        battlefield_first: true,
+                        min: 2,
+                        max: 2,
+                        allegiance: Allegiance::Enemy,
+                        ..ANY
+                    },
+                    &[OptionalReturnAtCrowdedBattlefield { minimum_units: 4 }],
+                )]
+            }
+        }
+        436 => {
+            const {
+                &[
+                    rule(
+                        SelfPlayed,
+                        &[ToBattlefield],
+                        true,
+                        TargetRule {
+                            allegiance: Allegiance::Enemy,
+                            ..ANY
+                        },
+                        &[MoveTargetsToSourceBattlefield],
+                    ),
+                    rule(SelfHold, &[], false, TargetRule::NONE, &[ReturnSourceUnit]),
+                ]
+            }
+        }
         429 => {
             const {
                 &[TriggerRule {

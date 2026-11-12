@@ -6,8 +6,8 @@ fn position(attacker: usize) -> Game {
     g.start_match().unwrap();
     g.active = attacker;
     g.priority_player = attacker;
-    g.battlefields = [3, 3]; // Void Gate: no extra combat/Conquer trigger.
-    g.battlefield_owner = [Some(1 - attacker), None];
+    g.battlefields = vec![3, 3]; // Void Gate: no extra combat/Conquer trigger.
+    g.battlefield_owner = vec![Some(1 - attacker), None];
     for p in &mut g.players {
         p.units.clear();
         p.gear.clear();

@@ -224,8 +224,8 @@ impl Game {
         }
         Ok(best.map(|(_, action)| action))
     }
-    pub fn star_spring_used(&self) -> [[bool; 2]; 2] {
-        self.spring_used
+    pub fn star_spring_used(&self) -> &[Vec<bool>; 2] {
+        &self.spring_used
     }
 
     pub fn delayed_battlefield_triggers(&self) -> &[DelayedBattlefieldTrigger] {
@@ -299,7 +299,7 @@ impl Game {
     }
 
     pub(super) fn battlefield_spell_played(&mut self, player: usize) {
-        for lane in 0..BATTLEFIELDS {
+        for lane in 0..self.battlefield_count() {
             if self.battlefields[lane] == 13 {
                 self.queue_field_targets(player, lane, BattlefieldTargetKind::AbandonedHall);
             }

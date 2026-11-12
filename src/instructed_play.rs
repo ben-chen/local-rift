@@ -76,12 +76,16 @@ impl InstructedPlayKind {
 }
 
 impl PlayInstruction {
-    pub(crate) fn validate_destination(self, lane: Option<usize>) -> Result<(), String> {
+    pub(crate) fn validate_destination(
+        self,
+        lane: Option<usize>,
+        battlefield_count: usize,
+    ) -> Result<(), String> {
         let allowed = match self.destination {
             PlayDestination::Normal => true,
             PlayDestination::Base => lane.is_none(),
             PlayDestination::Exact(location) => lane == location,
-            PlayDestination::AnyBattlefield => lane.is_some_and(|l| l < BATTLEFIELDS),
+            PlayDestination::AnyBattlefield => lane.is_some_and(|l| l < battlefield_count),
         };
         if allowed {
             Ok(())

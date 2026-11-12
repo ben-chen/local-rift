@@ -7,7 +7,7 @@ use local_rift::game::{
 fn position() -> Game {
     let mut game = Game::new(3, 3, 471, Difficulty::Tactical);
     game.start_match().unwrap();
-    game.battlefields = [0, 0];
+    game.battlefields = vec![0, 0];
     for player in &mut game.players {
         player.hand.clear();
         player.units.clear();

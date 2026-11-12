@@ -10,7 +10,7 @@ pub(crate) fn run_frame(app: &mut App, frame: u32) -> bool {
             app.browse_deck = 0;
             app.deck_scroll = 0;
             app.ui.input_override = None;
-            assert_eq!(app.game.presets.len(), 6);
+            assert_eq!(app.game.presets.len(), 7);
         }
         1 => {
             capture(app, "RIFT_SMOKE_PRESET_FIRST_PAGE_SCREENSHOT");
@@ -229,12 +229,94 @@ pub(crate) fn run_frame(app: &mut App, frame: u32) -> bool {
             assert_eq!(editor.deck.legend, 0);
             assert_eq!(editor.deck.battlefield, 13);
             capture(app, "RIFT_SMOKE_ARITO_EDITOR");
+            app.screen = Screen::Decks;
+            app.browse_deck = 5;
+            app.preset_tab = crate::preset_ui::PresetTab::Main;
+            click(app, 970.0, 250.0);
+        }
+        35 => {
+            assert_eq!(app.browse_deck, 6);
+            assert_eq!(app.game.presets[6].legend_id, 10);
+            capture(app, "RIFT_SMOKE_SONECON_MAIN");
+            click(app, 340.0, 748.0);
+        }
+        36 => {
+            assert_eq!(app.player_deck, 6);
+            assert_eq!(app.fields[0], 11);
+            click(app, 500.0, 748.0);
+        }
+        37 => {
+            assert_eq!(app.opponent_deck, 6);
+            assert_eq!(app.fields[1], 11);
+            click(app, 875.0, 440.0);
+        }
+        38 => {
+            assert!(app.preset_tab == crate::preset_ui::PresetTab::Sideboard);
+            capture(app, "RIFT_SMOKE_SONECON_SIDEBOARD");
+            click(app, 1080.0, 440.0);
+        }
+        39 => {
+            assert!(app.preset_tab == crate::preset_ui::PresetTab::Battlefields);
+            capture(app, "RIFT_SMOKE_SONECON_FIELDS");
+            click(app, 420.0, 800.0);
+        }
+        40 => {
+            assert!(matches!(app.screen, Screen::Practice));
+            assert_eq!(app.setup_legend(0).id, 10);
+            assert_eq!(app.setup_legend(1).id, 10);
+            capture(app, "RIFT_SMOKE_SONECON_MATCHUP");
+            app.starting_player = 0;
+            click(app, 1330.0, 46.0);
+        }
+        41 => {
+            assert!(app.in_match && app.game.phase == Phase::Mulligan);
+            assert_eq!(app.game.battlefields, [11, 11]);
+            for player in &app.game.players {
+                assert_eq!(player.champion, Some(439));
+                assert_eq!(player.hand.len() + player.deck.len(), 39);
+                assert_eq!(
+                    player
+                        .hand
+                        .iter()
+                        .chain(&player.deck)
+                        .filter(|&&id| id == 440)
+                        .count(),
+                    1
+                );
+                assert!(!player.hand.iter().chain(&player.deck).any(|&id| id == 435));
+            }
+            capture(app, "RIFT_SMOKE_SONECON_MULLIGAN");
+            click(app, 1283.0, 514.0);
+        }
+        42 => {
+            assert_eq!(app.game.phase, Phase::Playing);
+            assert_eq!(app.game.active, 0);
+            capture(app, "RIFT_SMOKE_SONECON_FIRST_TURN");
+            app.in_match = false;
+            app.screen = Screen::Practice;
+            click(app, 1110.0, 46.0);
+        }
+        43 => {
+            assert!(app.series_lobby);
+            capture(app, "RIFT_SMOKE_SONECON_REGISTRATION");
+            app.series_chooser = 0;
+            click(app, 1200.0, 800.0);
+        }
+        44 => {
+            assert!(app.in_match && app.native_match.is_some());
+            let view = app.native_match.as_ref().unwrap().state.observe(0).unwrap();
+            assert_eq!(
+                view["registration"]["battlefields"],
+                serde_json::json!([11, 7, 12])
+            );
+            assert_eq!(view["deck"]["legend"], 10);
+            capture(app, "RIFT_SMOKE_SONECON_REGISTERED_FIELDS");
             println!(
-                "PASS: 35 preset UI stages; both Irelia and Rengar, source sections, field rules and selections, exact editable copies, mulligans and first turns."
+                "PASS: 45 preset UI stages; Irelia, Rengar and Sonecon Riven, exact lists, sideboards, fields, mulligans, first turns and match registration."
             );
             return true;
         }
-        _ => panic!("preset smoke exceeded 35 stages"),
+        _ => panic!("preset smoke exceeded 45 stages"),
     }
     false
 }

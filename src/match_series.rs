@@ -310,7 +310,10 @@ impl MatchSeries {
     pub fn finish_completed_game(&mut self, game: &Game) -> Result<(), String> {
         self.require(SeriesPhase::Game)?;
         let winner = game.winner.ok_or("The game has not finished.")?;
-        if game.battlefields.map(Some) != self.fields
+        if game
+            .battlefields
+            .get(..2)
+            .is_none_or(|fields| fields.iter().copied().map(Some).ne(self.fields))
             || Some(game.first_player) != self.first_player
         {
             return Err("The completed game does not match this setup.".into());

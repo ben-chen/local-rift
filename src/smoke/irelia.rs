@@ -8,8 +8,8 @@ fn setup(app: &mut App) {
     app.game = Game::new_for_agents(3, 3, 424424, Difficulty::Easy);
     app.game.choose_starting_player(1).unwrap();
     app.game.start_match().unwrap();
-    app.game.battlefields = [2, 2];
-    app.game.battlefield_owner = [None; 2];
+    app.game.battlefields = vec![2, 2];
+    app.game.battlefield_owner = vec![None; 2];
     for p in &mut app.game.players {
         p.units.clear();
         p.gear.clear();
@@ -37,7 +37,7 @@ fn setup(app: &mut App) {
         app.game.decision,
         Some(Decision::TriggerObjectCost { player: 0, .. })
     ));
-    app.fields = app.game.battlefields;
+    app.fields = std::array::from_fn(|i| app.game.battlefields[i]);
     app.ai_worker.invalidate();
     app.inspect = None;
     app.field_inspect = None;
@@ -52,8 +52,8 @@ fn backoff_setup(app: &mut App) {
     expansion_fixture(app, 428);
     app.game = Game::new_for_agents(3, 3, 428428, Difficulty::Easy);
     app.game.start_match().unwrap();
-    app.game.battlefields = [2, 2];
-    app.game.battlefield_owner = [Some(0), None];
+    app.game.battlefields = vec![2, 2];
+    app.game.battlefield_owner = vec![Some(0), None];
     for p in &mut app.game.players {
         p.units.clear();
         p.gear.clear();
@@ -70,7 +70,7 @@ fn backoff_setup(app: &mut App) {
     app.game.players[1].units = vec![public_unit(42801, 73, None)];
     app.game.players[0].hand = vec![428];
     app.game.players[0].deck = vec![71, 70];
-    app.fields = app.game.battlefields;
+    app.fields = std::array::from_fn(|i| app.game.battlefields[i]);
     app.selection = None;
     app.targets.clear();
     app.play_draft = None;
@@ -160,8 +160,8 @@ pub(crate) fn run_frame(app: &mut App, frame: u32) -> bool {
             expansion_fixture(app, 425);
             app.game = Game::new_for_agents(3, 3, 425425, Difficulty::Easy);
             app.game.start_match().unwrap();
-            app.game.battlefields = [2, 2];
-            app.game.battlefield_owner = [None; 2];
+            app.game.battlefields = vec![2, 2];
+            app.game.battlefield_owner = vec![None; 2];
             for p in &mut app.game.players {
                 p.units.clear();
                 p.gear.clear();
@@ -178,7 +178,7 @@ pub(crate) fn run_frame(app: &mut App, frame: u32) -> bool {
             app.game.players[0].units = vec![unit];
             app.game.players[0].hand = vec![425];
             app.game.players[0].deck = vec![71; 10];
-            app.fields = app.game.battlefields;
+            app.fields = std::array::from_fn(|i| app.game.battlefields[i]);
             app.ai_worker.invalidate();
             app.prefs.exact_payment = false;
             app.companion.set_level(AdviceLevel::Beginner);
@@ -241,8 +241,8 @@ pub(crate) fn run_frame(app: &mut App, frame: u32) -> bool {
             expansion_fixture(app, 426);
             app.game = Game::new_for_agents(3, 3, 426426, Difficulty::Easy);
             app.game.start_match().unwrap();
-            app.game.battlefields = [2, 2];
-            app.game.battlefield_owner = [None; 2];
+            app.game.battlefields = vec![2, 2];
+            app.game.battlefield_owner = vec![None; 2];
             for p in &mut app.game.players {
                 p.units.clear();
                 p.gear.clear();
@@ -260,7 +260,7 @@ pub(crate) fn run_frame(app: &mut App, frame: u32) -> bool {
                 .set_rune_setup([0, 2, 0, 0, 0, 0], [0; 6])
                 .unwrap();
             app.game.players[0].energy = 2;
-            app.fields = app.game.battlefields;
+            app.fields = std::array::from_fn(|i| app.game.battlefields[i]);
             app.ai_worker.invalidate();
             app.prefs.exact_payment = false;
             app.companion.set_level(AdviceLevel::Beginner);
@@ -319,8 +319,8 @@ pub(crate) fn run_frame(app: &mut App, frame: u32) -> bool {
             expansion_fixture(app, 427);
             app.game = Game::new_for_agents(3, 3, 427427, Difficulty::Easy);
             app.game.start_match().unwrap();
-            app.game.battlefields = [2, 2];
-            app.game.battlefield_owner = [None; 2];
+            app.game.battlefields = vec![2, 2];
+            app.game.battlefield_owner = vec![None; 2];
             for p in &mut app.game.players {
                 p.units.clear();
                 p.gear.clear();
@@ -361,7 +361,7 @@ pub(crate) fn run_frame(app: &mut App, frame: u32) -> bool {
                 expires_turn: app.game.turn,
                 kind: local_rift::play::PlayGrantKind::RepeatNextSpell,
             });
-            app.fields = app.game.battlefields;
+            app.fields = std::array::from_fn(|i| app.game.battlefields[i]);
             app.selection = None;
             app.play_draft = None;
             app.targets.clear();

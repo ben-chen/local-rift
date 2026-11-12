@@ -4,8 +4,8 @@ use local_rift::game::{Action, ChainAbility, Decision, Difficulty, Game, Showdow
 fn position() -> Game {
     let mut g = Game::new(3, 3, 103151, Difficulty::Tactical);
     g.start_match().unwrap();
-    g.battlefields = [0, 0];
-    g.battlefield_owner = [None; 2];
+    g.battlefields = vec![0, 0];
+    g.battlefield_owner = vec![None; 2];
     for p in &mut g.players {
         p.hand.clear();
         p.units.clear();
@@ -369,7 +369,7 @@ fn hidden_blastcone_fae_targets_its_entry_field_and_rechecks_source_and_target()
     for remove_source in [false, true] {
         let mut g = position();
         g.players[0].units = vec![unit(100, 70, Some(0)), unit(101, 70, Some(1))];
-        g.battlefield_owner = [Some(0), Some(0)];
+        g.battlefield_owner = vec![Some(0), Some(0)];
         g.players[0].hand = vec![146];
         g.apply(Action::Hide {
             hand_index: 0,

@@ -51,3 +51,9 @@ jobs:
           XDG_DATA_HOME="$RUNNER_TEMP/local-rift-ai-small" xvfb-run -a ./target/release/local-rift --ui-smoke-ai --small
           XDG_DATA_HOME="$RUNNER_TEMP/local-rift-irelia" xvfb-run -a ./target/release/local-rift --ui-smoke-irelia
           XDG_DATA_HOME="$RUNNER_TEMP/local-rift-irelia-small" xvfb-run -a ./target/release/local-rift --ui-smoke-irelia --small
+          XDG_DATA_HOME="$RUNNER_TEMP/local-rift-riven" xvfb-run -a ./target/release/local-rift --ui-smoke-riven
+          XDG_DATA_HOME="$RUNNER_TEMP/local-rift-riven-small" xvfb-run -a ./target/release/local-rift --ui-smoke-riven --small
+          XDG_DATA_HOME="$RUNNER_TEMP/local-rift-blade" xvfb-run -a ./target/release/local-rift --ui-smoke-blade
+          XDG_DATA_HOME="$RUNNER_TEMP/local-rift-blade-small" xvfb-run -a ./target/release/local-rift --ui-smoke-blade --small
+          XDG_DATA_HOME="$RUNNER_TEMP/local-rift-riven-champion" xvfb-run -a ./target/release/local-rift --ui-smoke-riven-champion
+          XDG_DATA_HOME="$RUNNER_TEMP/local-rift-riven-champion-small" xvfb-run -a ./target/release/local-rift --ui-smoke-riven-champion --small

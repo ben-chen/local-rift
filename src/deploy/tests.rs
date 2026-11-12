@@ -7,8 +7,8 @@ fn position(player: usize) -> Game {
     g.start_match().unwrap();
     g.active = player;
     g.priority_player = player;
-    g.battlefields = [3, 3];
-    g.battlefield_owner = [None; 2];
+    g.battlefields = vec![3, 3];
+    g.battlefield_owner = vec![None; 2];
     for p in &mut g.players {
         p.units.clear();
         p.gear.clear();

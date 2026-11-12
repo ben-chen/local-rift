@@ -38,7 +38,7 @@ class C19AdmissionTests(unittest.TestCase):
         cls.manifest, cls.data = catalog.read_archives()
         runtime = copy.deepcopy(catalog.load_runtime_manifest())
         runtime['cards'] = runtime['cards'][:389]; runtime['decks'] = runtime['decks'][:4]
-        with patch.object(catalog, 'load_runtime_manifest', return_value=runtime), patch.object(catalog, 'load_battlefield_manifest', return_value=history.legacy_battlefields()):
+        with history.pre_riven_runtime(runtime), patch.object(catalog, 'load_battlefield_manifest', return_value=history.legacy_battlefields()):
             cls.snapshot = catalog.make_catalog(cls.manifest, cls.data)
         cls.proof = json.loads((catalog.ROOT / PROOF).read_text())
         cls.raw = {p['official_id']: p for p in catalog.project_gallery(cls.data['gallery'])[0]}
@@ -149,7 +149,7 @@ class C19AdmissionTests(unittest.TestCase):
         self.assertEqual(digest(runtime['decks'][:4]), pin['presets_sha256'])
         rust_prefix = history.pre_registration_carddefs_source().split('        CardDef {\n            id: 385,', 1)[0]
         self.assertEqual(catalog.sha(rust_prefix.encode()), pin['carddefs_source_prefix_sha256'])
-        self.assertEqual(catalog.sha((root / 'assets/data/legends.json').read_bytes()), pin['legends_manifest_sha256'])
+        self.assertEqual(catalog.sha(history.pre_riven_evidence_bytes('assets/data/legends.json')), pin['legends_manifest_sha256'])
         self.assertEqual(catalog.sha(history.pre_rengar_recipe_source_bytes()), pin['training_recipe_source_sha256'])
         reviewed = json.loads((root / 'assets/data/catalog_resolutions.json').read_text())
         identities = json.loads((root / 'assets/data/catalog_identity_reviews.json').read_text())
@@ -195,7 +195,7 @@ class C19AdmissionTests(unittest.TestCase):
                     catalog.make_catalog(self.manifest, self.data)
 
     def test_existing_legend_homes_without_new_champions(self):
-        legends = catalog.load_legend_manifest()
+        legends = history.pre_riven_legends()
         self.assertEqual(len(legends), 10)
         for record in self.proof['records']:
             facts = record['effective']

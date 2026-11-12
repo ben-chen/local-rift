@@ -23,8 +23,14 @@ pub use combat::{CombatResolution, CombatResult, CombatStep};
 #[path = "backoff_tests.rs"]
 mod backoff_tests;
 #[cfg(test)]
+#[path = "baron_tests.rs"]
+mod baron_tests;
+#[cfg(test)]
 #[path = "combat_card_tests.rs"]
 mod combat_card_tests;
+#[cfg(test)]
+#[path = "dynamic_field_tests.rs"]
+mod dynamic_field_tests;
 #[cfg(test)]
 #[path = "edge_tests.rs"]
 mod edge_tests;
@@ -37,6 +43,9 @@ mod innovator_tests;
 #[cfg(test)]
 #[path = "orianna_tests.rs"]
 mod orianna_tests;
+#[cfg(test)]
+#[path = "riven_pool_tests.rs"]
+mod riven_pool_tests;
 #[cfg(test)]
 #[path = "siren_tests.rs"]
 mod siren_tests;
@@ -82,6 +91,8 @@ mod strategic;
 pub mod temporary;
 #[path = "trigger_modes.rs"]
 mod trigger_modes;
+#[path = "trigger_return.rs"]
+mod trigger_return;
 #[path = "triggers.rs"]
 pub mod triggers;
 use triggers::{EventSnapshot, Occurrence};
@@ -92,7 +103,7 @@ pub mod field_triggers;
 use field_triggers::{BattlefieldSource, BattlefieldTargetKind, DelayedBattlefieldTrigger};
 
 pub const VICTORY_SCORE: u8 = 8;
-pub const BATTLEFIELDS: usize = 2;
+pub const STARTING_BATTLEFIELDS: usize = 2;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Difficulty {
@@ -281,6 +292,11 @@ pub enum Action {
         gear_id: u32,
         target: Target,
         trash_indices: Vec<usize>,
+    },
+    EquipExhaustUnit {
+        gear_id: u32,
+        target: Target,
+        exhaust_unit_id: u32,
     },
     ActivateGear {
         gear_id: u32,
@@ -650,6 +666,12 @@ pub enum Decision {
         rule_index: usize,
         context: TriggerContext,
     },
+    TriggerReturn {
+        player: usize,
+        chain_id: u32,
+        card_id: CardId,
+        target: Target,
+    },
     TriggerMode {
         player: usize,
         choice_id: u32,
@@ -883,6 +905,7 @@ impl Decision {
             | Self::TriggerPayment { player, .. }
             | Self::TriggerMode { player, .. }
             | Self::TriggerTargets { player, .. }
+            | Self::TriggerReturn { player, .. }
             | Self::LegendTargets { player }
             | Self::BattlefieldOrder { player, .. }
             | Self::TrashTarget { player, .. }
@@ -923,7 +946,7 @@ impl Decision {
 pub struct Unit {
     pub id: u32,
     pub card_id: CardId,
-    /// `None` is this unit's owner's base; `Some(0..2)` is a battlefield.
+    /// `None` is this unit's owner's base; `Some(slot)` is a physical battlefield slot.
     pub lane: Option<usize>,
     pub ready: bool,
     pub damage: u64,
@@ -1037,18 +1060,18 @@ pub struct Game {
     pub winner: Option<usize>,
     pub difficulty: Difficulty,
     pub log: Vec<String>,
-    pub battlefield_owner: [Option<usize>; BATTLEFIELDS],
+    pub battlefield_owner: Vec<Option<usize>>,
     /// A battlefield scores at most once for the active player per turn,
     /// whether that score came from holding or conquering.
-    pub scored_this_turn: [bool; BATTLEFIELDS],
-    pub player_scored_this_turn: [[bool; BATTLEFIELDS]; 2],
+    pub scored_this_turn: Vec<bool>,
+    pub player_scored_this_turn: [Vec<bool>; 2],
     pub mulligan_used: bool,
     pub mulligans_used: [bool; 2],
     pub chain: Vec<ChainItem>,
     pub showdown: Option<Showdown>,
     pub decision: Option<Decision>,
     pub legend: [LegendState; 2],
-    pub battlefields: [usize; 2],
+    pub battlefields: Vec<usize>,
     pub empowered_units: Vec<u32>,
     pub(crate) granted_temporary_gear: Vec<u32>,
     granted_temporary_units: Vec<u32>,
@@ -1070,7 +1093,7 @@ pub struct Game {
     pub(crate) finalization_payment_origin: Option<Box<Game>>,
     temporary_empower: Vec<(usize, usize, Option<u32>)>,
     ending_turn: bool,
-    spring_used: [[bool; 2]; 2],
+    spring_used: [Vec<bool>; 2],
     delayed_battlefield_triggers: Vec<DelayedBattlefieldTrigger>,
     pending_decisions: VecDeque<Decision>,
     pending_triggers: Vec<PendingTrigger>,
@@ -1292,17 +1315,16 @@ impl Game {
                 "Welcome. Keep your four cards, or replace up to two before the match.".into(),
                 "Inspect a card for its official rules and the implementation status of every interaction.".into(),
             ],
-            battlefield_owner: [None; 2],
-            scored_this_turn: [false; 2],
-            player_scored_this_turn: [[false; 2]; 2],
+            battlefield_owner: Vec::new(),
+            scored_this_turn: Vec::new(),
+            player_scored_this_turn: std::array::from_fn(|_| Vec::new()),
             mulligan_used: false,
             mulligans_used: [false;2],
             chain: Vec::new(),
             showdown: None,
             decision: None,
             legend,
-            battlefields: std::array::from_fn(|player|custom_decks[player].as_ref()
-                .map_or_else(||default_battlefield(selected_decks[player]),|deck|deck.battlefield)),
+            battlefields: Vec::new(),
             empowered_units: Vec::new(),
             granted_temporary_gear: Vec::new(),
             granted_temporary_units: Vec::new(),
@@ -1321,7 +1343,7 @@ impl Game {
             finalization_payment_origin: None,
             temporary_empower: Vec::new(),
             ending_turn: false,
-            spring_used:[[false;2];2],
+            spring_used:std::array::from_fn(|_| Vec::new()),
             delayed_battlefield_triggers:Vec::new(),
             pending_decisions: VecDeque::new(),
             pending_triggers: Vec::new(),
@@ -1357,6 +1379,13 @@ impl Game {
             ai_steps_this_turn: 0,
             ai_resource_witness: None,
         };
+        for player in 0..STARTING_BATTLEFIELDS {
+            let id = game.custom_decks[player].as_ref().map_or_else(
+                || default_battlefield(game.selected_decks[player]),
+                |deck| deck.battlefield,
+            );
+            game.add_battlefield(id);
+        }
         if ai_mulligan {
             let choices: Vec<_> = game.players[1]
                 .hand
@@ -1377,7 +1406,7 @@ impl Game {
 
     pub fn rematch(&mut self, seed: u64) {
         let first_player = self.first_player;
-        let battlefields = self.battlefields;
+        let battlefields = self.battlefields[..STARTING_BATTLEFIELDS].to_vec();
         *self = Self::new_with_custom(
             self.selected_decks,
             self.custom_decks.clone(),
@@ -1389,6 +1418,51 @@ impl Game {
         self.battlefields = battlefields;
         self.choose_starting_player(first_player)
             .expect("previous starting player is valid");
+    }
+
+    pub(crate) fn validate_battlefield_state(&self) -> Result<(), String> {
+        let count = self.battlefield_count();
+        if count < crate::game::STARTING_BATTLEFIELDS
+            || self.battlefield_owner.len() != count
+            || self.scored_this_turn.len() != count
+            || self
+                .player_scored_this_turn
+                .iter()
+                .any(|row| row.len() != count)
+            || self.spring_used.iter().any(|row| row.len() != count)
+            || self
+                .play_history
+                .units_or_gears_here
+                .iter()
+                .any(|row| row.len() != count)
+        {
+            return Err("Battlefield state does not match the physical board.".into());
+        }
+        Ok(())
+    }
+
+    pub fn battlefield_count(&self) -> usize {
+        self.battlefields.len()
+    }
+
+    /// Physical board locations, before an individual action's legality checks.
+    pub fn board_locations(&self) -> impl Iterator<Item = Option<usize>> + use<> {
+        std::iter::once(None).chain((0..self.battlefield_count()).map(Some))
+    }
+
+    /// Append a physical field without replacing either starting battlefield or
+    /// resetting existing score/cost history. Entry and conquest happen separately.
+    pub(crate) fn add_battlefield(&mut self, id: usize) -> usize {
+        let lane = self.battlefield_count();
+        self.battlefields.push(id);
+        self.battlefield_owner.push(None);
+        self.scored_this_turn.push(false);
+        for player in 0..2 {
+            self.player_scored_this_turn[player].push(false);
+            self.spring_used[player].push(false);
+            self.play_history.units_or_gears_here[player].push(0);
+        }
+        lane
     }
 
     /// The player currently allowed to act. `active` remains the turn owner.
@@ -1698,7 +1772,9 @@ impl Game {
     }
 
     pub fn contested(&self, lane: usize) -> bool {
-        lane < BATTLEFIELDS && self.lane_count(0, lane) > 0 && self.lane_count(1, lane) > 0
+        lane < self.battlefield_count()
+            && self.lane_count(0, lane) > 0
+            && self.lane_count(1, lane) > 0
     }
 
     pub fn can_afford(&self, player: usize, card: &CardDef) -> Result<bool, String> {
@@ -2089,6 +2165,11 @@ impl Game {
                 target,
                 trash_indices,
             } => self.gear_equip_with_trash(player, gear_id, target, &trash_indices)?,
+            Action::EquipExhaustUnit {
+                gear_id,
+                target,
+                exhaust_unit_id,
+            } => self.gear_equip_exhaust_unit(player, gear_id, target, exhaust_unit_id)?,
             Action::ActivateGear { gear_id } => self.gear_activate(player, gear_id)?,
             Action::ActivateLegend { target } => self.activate_legend(target)?,
             Action::SelectCards { indices } => self.select_cards(&indices)?,
@@ -2125,7 +2206,7 @@ impl Game {
                 }
                 // The explicit combat button teaches grouping; ending the turn
                 // also resolves any staged battles, so the game cannot stall.
-                for lane in 0..BATTLEFIELDS {
+                for lane in 0..self.battlefield_count() {
                     if self.contested(lane) {
                         self.resolve_combat(lane, self.active)?;
                         return Ok(());
@@ -2145,13 +2226,29 @@ impl Game {
         Ok(())
     }
 
+    /// Location permission only; readiness, costs and timing are checked by the action.
+    pub fn standard_move_route_allowed(
+        &self,
+        unit: &Unit,
+        lane: Option<usize>,
+    ) -> Result<bool, String> {
+        if lane == unit.lane || lane.is_some_and(|lane| lane >= self.battlefield_count()) {
+            return Ok(false);
+        }
+        Ok(unit.lane.is_none()
+            || lane.is_none()
+            || lane
+                .is_some_and(|lane| self.battlefields[lane] == crate::battlefields::BARON_PIT_ID)
+            || self.unit_keywords(unit)?.ganking)
+    }
+
     fn move_group(&mut self, unit_ids: &[u32], lane: Option<usize>) -> Result<(), String> {
         let player = self.active;
         if unit_ids.is_empty() {
             return Err("Select at least one unit to move.".into());
         }
-        if lane.is_some_and(|l| l >= BATTLEFIELDS) {
-            return Err("Choose one of the two battlefields.".into());
+        if lane.is_some_and(|l| l >= self.battlefield_count()) {
+            return Err("Choose a battlefield on this board.".into());
         }
         let mut indices = Vec::with_capacity(unit_ids.len());
         for &id in unit_ids {
@@ -2173,8 +2270,8 @@ impl Game {
             if unit.lane == lane {
                 return Err("A selected unit is already at the destination.".into());
             }
-            if unit.lane.is_some() && lane.is_some() && !self.unit_keywords(unit)?.ganking {
-                return Err("Only a unit with Ganking may move between battlefields.".into());
+            if !self.standard_move_route_allowed(unit, lane)? {
+                return Err("Moving between battlefields requires Ganking or a destination that permits it.".into());
             }
             indices.push(index);
         }
@@ -2662,7 +2759,7 @@ impl Game {
         if fixed.is_some_and(|fixed| fixed != lane)
             || (fixed.is_none()
                 && lane.is_some_and(|lane| {
-                    lane >= BATTLEFIELDS || self.battlefield_owner[lane] != Some(player)
+                    lane >= self.battlefield_count() || self.battlefield_owner[lane] != Some(player)
                 }))
         {
             return Err("Choose a legal location for this token play.".into());
@@ -2693,6 +2790,9 @@ impl Game {
         if self.resolution_frame.is_some() || self.chain.last().is_some_and(|i| i.ability.is_none())
         {
             return self.resolve_spell_executions();
+        }
+        if self.begin_trigger_return()? {
+            return Ok(());
         }
         let item = self.chain.last().expect("resolving chain");
         if let Some(ChainAbility::CardTrigger {
@@ -3090,7 +3190,9 @@ impl Game {
     }
 
     pub(crate) fn after_resolution(&mut self) -> Result<(), String> {
-        if self.resolving_trigger_payment().is_some() {
+        if self.resolving_trigger_payment().is_some()
+            || matches!(self.decision, Some(Decision::TriggerReturn { .. }))
+        {
             return Ok(());
         }
         if self.predict_tail.is_some() {
@@ -3189,7 +3291,7 @@ impl Game {
         }
         // CR323.5–6: staged fields do not retain an absent controller in an
         // open state. Only an ongoing showdown/combat preserves that control.
-        for lane in 0..BATTLEFIELDS {
+        for lane in 0..self.battlefield_count() {
             if !self
                 .showdown
                 .as_ref()
@@ -3224,7 +3326,7 @@ impl Game {
             self.priority_player = self.active;
             // Reconcile externally restored board positions too; real plays
             // record the Contested applier when each unit enters the field.
-            for lane in 0..BATTLEFIELDS {
+            for lane in 0..self.battlefield_count() {
                 if self.contested(lane)
                     && !self.pending_entries.iter().any(|&(field, _)| field == lane)
                 {
@@ -3236,7 +3338,7 @@ impl Game {
             if self.open_staged_battlefield()? {
                 return Ok(());
             }
-            for lane in 0..BATTLEFIELDS {
+            for lane in 0..self.battlefield_count() {
                 self.refresh_control(lane)?;
             }
             self.advance_triggers()?;
@@ -3254,6 +3356,9 @@ impl Game {
 
     fn choose(&mut self, accept: bool) -> Result<(), String> {
         let decision = self.decision.clone().ok_or("There is no pending choice.")?;
+        if matches!(decision, Decision::TriggerReturn { .. }) {
+            return self.finish_trigger_return(accept);
+        }
         if matches!(decision, Decision::Payment { .. }) {
             if accept {
                 self.complete_payment()?;
@@ -3480,6 +3585,7 @@ impl Game {
             | Decision::TriggerTargets { .. }
             | Decision::LegendTargets { .. }
             | Decision::BattlefieldOrder { .. }
+            | Decision::TriggerReturn { .. }
             | Decision::TrashTarget { .. }
             | Decision::PendingPlay { .. }
             | Decision::TokenPlacement { .. }
@@ -4149,7 +4255,7 @@ impl Game {
         {
             return Err("Not enough power to pay Deflect.".into());
         }
-        if lane >= BATTLEFIELDS {
+        if lane >= self.battlefield_count() {
             return Err("Choose a battlefield.".into());
         }
         Ok(targets)
@@ -4770,11 +4876,17 @@ impl Game {
                         .map_or_else(Vec::new, |(_, g)| g.clone());
                     let prior = self.active_play.take();
                     self.active_play = Some(ActivePlay {
+                        entry_lane: None,
                         rune_targets: vec![],
                         show_off: Vec::new(),
                         player: token.player,
                         card_id: token.card_id,
                         origin: PlayOrigin::Token,
+                        legend_entry_ready: self.legend_readies_play(
+                            token.player,
+                            !token.gear,
+                            lane,
+                        ),
                         choices: PlayChoices::default(),
                         costs: CostPlanView::default(),
                         grants,
@@ -5271,7 +5383,7 @@ impl Game {
             }
             let mut actions = Vec::new();
             let mut capacity = None;
-            for lane in [None, Some(0), Some(1)] {
+            for lane in self.board_locations() {
                 let mut groups = vec![Vec::new()];
                 for _ in 0..required {
                     let mut next = Vec::new();
@@ -5378,7 +5490,7 @@ impl Game {
                 return Ok(true);
             }
             for index in 0..self.players[self.priority()].discard.len() {
-                for lane in [None, Some(0), Some(1)] {
+                for lane in self.board_locations() {
                     if crate::numeric::legal_result(
                         self.clone().play_from_trash(index, lane, None),
                     )? {
@@ -5523,7 +5635,7 @@ impl Game {
             return Err("Choose Matriarch's unit now; its optional play costs are chosen when the ability resolves.".into());
         }
         if let Some(instruction) = instruction {
-            instruction.validate_destination(lane)?;
+            instruction.validate_destination(lane, self.battlefield_count())?;
         }
         let flows = self.flow_costs(player, trash_index);
         if flow_source.is_some() && decision.is_some() {
@@ -5920,15 +6032,18 @@ impl Game {
                         }
                         out
                     }
-                    Decision::TriggerMode { choice_id, .. } => self
-                        .trigger_mode_options()
-                        .iter()
-                        .enumerate()
-                        .map(|(mode, _)| Action::ChooseTriggerMode {
-                            choice_id: *choice_id,
-                            mode,
-                        })
-                        .collect(),
+                    Decision::TriggerMode { choice_id, .. } => {
+                        let mut actions = Vec::new();
+                        for mode in 0..self.trigger_mode_options().len() {
+                            if self.trigger_mode_available(mode)? {
+                                actions.push(Action::ChooseTriggerMode {
+                                    choice_id: *choice_id,
+                                    mode,
+                                });
+                            }
+                        }
+                        actions
+                    }
                     Decision::TriggerPayment {
                         choice_id,
                         card_id,
@@ -6088,7 +6203,7 @@ impl Game {
                         } else {
                             std::iter::once(None)
                                 .chain(
-                                    (0..BATTLEFIELDS)
+                                    (0..self.battlefield_count())
                                         .filter(|&l| self.battlefield_owner[l] == Some(player))
                                         .map(Some),
                                 )
@@ -6106,7 +6221,7 @@ impl Game {
                     Decision::TokenPlacement { player, .. } => {
                         std::iter::once(Action::PlaceToken { lane: None })
                             .chain(
-                                (0..BATTLEFIELDS)
+                                (0..self.battlefield_count())
                                     .filter(|&lane| self.battlefield_owner[lane] == Some(*player))
                                     .map(|lane| Action::PlaceToken { lane: Some(lane) }),
                             )
@@ -6183,11 +6298,12 @@ impl Game {
                     | Decision::ReplaySpell { .. }
                     | Decision::ReviveUnit { .. } => (0..self.players[player].discard.len())
                         .flat_map(|trash_index| {
-                            [None, Some(0), Some(1)].map(move |lane| Action::PlayFromTrash {
-                                trash_index,
-                                lane,
-                                target: None,
-                            })
+                            self.board_locations()
+                                .map(move |lane| Action::PlayFromTrash {
+                                    trash_index,
+                                    lane,
+                                    target: None,
+                                })
                         })
                         .chain(std::iter::once(Action::Choose { accept: false }))
                         .collect(),
@@ -6325,31 +6441,16 @@ impl Game {
                 if !unit.ready || self.movement_locked(self.priority(), unit.id) {
                     continue;
                 }
-                if unit.lane.is_none() {
-                    for lane in 0..BATTLEFIELDS {
+                for lane in self.board_locations() {
+                    if self.standard_move_route_allowed(unit, lane)? {
                         actions.push(Action::Move {
                             unit_id: unit.id,
-                            lane: Some(lane),
+                            lane,
                         });
-                    }
-                } else {
-                    actions.push(Action::Move {
-                        unit_id: unit.id,
-                        lane: None,
-                    });
-                    if self.unit_keywords(unit)?.ganking {
-                        for lane in 0..BATTLEFIELDS {
-                            if unit.lane != Some(lane) {
-                                actions.push(Action::Move {
-                                    unit_id: unit.id,
-                                    lane: Some(lane),
-                                });
-                            }
-                        }
                     }
                 }
             }
-            for lane in 0..BATTLEFIELDS {
+            for lane in 0..self.battlefield_count() {
                 if self.contested(lane) {
                     actions.push(Action::Attack { lane });
                 }
@@ -6459,7 +6560,7 @@ impl Game {
         if self.priority() == 1 {
             return "Watch your opponent's turn, or pause to inspect the board.".into();
         }
-        if (0..BATTLEFIELDS).any(|l| self.contested(l)) {
+        if (0..self.battlefield_count()).any(|l| self.contested(l)) {
             return "Resolve this battlefield showdown before continuing.".into();
         }
         if self.players[0]
@@ -6547,7 +6648,7 @@ impl Game {
                 && (line.starts_with("[Reaction]") || line.starts_with("[Quick-Draw]"))
         }) || (ambush
             && lane.is_some_and(|l| {
-                l < BATTLEFIELDS
+                l < self.battlefield_count()
                     && (self.lane_count(actor, l) > 0
                         || (enemy_field && self.lane_count(1 - actor, l) > 0))
             }));
@@ -6569,7 +6670,7 @@ impl Game {
                 rules::effect(id),
                 OfficialEffect::MoveEnemy | OfficialEffect::MoveFriendlyAndReady
             );
-            let legal_unit_location = lane < BATTLEFIELDS
+            let legal_unit_location = lane < self.battlefield_count()
                 && card.kind == CardKind::Unit
                 && (instruction.is_some_and(|i| {
                     matches!(
@@ -6583,7 +6684,9 @@ impl Game {
                         && self.showdown.as_ref().is_some_and(|combat| {
                             combat.combat && combat.attacker == actor && combat.lane == lane
                         })));
-            if lane >= BATTLEFIELDS || (!movement_spell && !legal_unit_location && !deploy_gear) {
+            if lane >= self.battlefield_count()
+                || (!movement_spell && !legal_unit_location && !deploy_gear)
+            {
                 return Err("Deploy a unit at your base or a battlefield you control.".into());
             }
         }
@@ -6889,7 +6992,7 @@ impl Game {
         Ok({
             if player >= self.players.len()
                 || card_id >= self.catalog.len()
-                || lane.is_some_and(|l| l >= BATTLEFIELDS)
+                || lane.is_some_and(|l| l >= self.battlefield_count())
             {
                 return Ok(vec![]);
             }
@@ -6898,7 +7001,7 @@ impl Game {
             }
             let targets: Vec<_> = match rules::play_target_spec(card_id).kind {
                 Some(rules::PlayTargetKind::Rune) => vec![],
-                Some(rules::PlayTargetKind::Battlefield) => (0..BATTLEFIELDS)
+                Some(rules::PlayTargetKind::Battlefield) => (0..self.battlefield_count())
                     .map(|lane| Target::Battlefield { lane })
                     .collect(),
                 Some(rules::PlayTargetKind::Spell) => self
@@ -6968,7 +7071,7 @@ impl Game {
         Ok({
             if card_id >= self.catalog.len()
                 || player >= self.players.len()
-                || lane.is_some_and(|l| l >= BATTLEFIELDS)
+                || lane.is_some_and(|l| l >= self.battlefield_count())
                 || prior.len() >= rules::play_target_spec(card_id).maximum
             {
                 return Ok(false);
@@ -7024,7 +7127,7 @@ impl Game {
         };
         player == actor
             || !(unit.protected
-                || (!unit.token && unit.card_id == 31)
+                || (!unit.token && matches!(unit.card_id, 31 | 440))
                 || (!unit.token
                     && unit.card_id == 2
                     && !self
@@ -7044,7 +7147,7 @@ impl Game {
         Ok({
             if actor >= self.players.len()
                 || id >= self.catalog.len()
-                || destination.is_some_and(|lane| lane >= BATTLEFIELDS)
+                || destination.is_some_and(|lane| lane >= self.battlefield_count())
             {
                 return Ok(false);
             }
@@ -7075,7 +7178,7 @@ impl Game {
                     ..
                 } => {
                     return Ok(
-                        matches!(target, Target::Battlefield { lane } if lane < BATTLEFIELDS),
+                        matches!(target, Target::Battlefield { lane } if lane < self.battlefield_count()),
                     );
                 }
                 OfficialEffect::Counter(_) => {
@@ -7163,7 +7266,8 @@ impl Game {
                 }
                 OfficialEffect::MoveFriendlyToBase { .. } => unit.lane.is_some(),
                 OfficialEffect::MoveEnemy | OfficialEffect::MoveFriendlyAndReady => {
-                    unit.lane != destination && destination.is_none_or(|l| l < BATTLEFIELDS)
+                    unit.lane != destination
+                        && destination.is_none_or(|l| l < self.battlefield_count())
                 }
                 OfficialEffect::SwapMight => unit.lane.is_some(),
                 OfficialEffect::ReadyAnother => true,
@@ -7356,6 +7460,12 @@ impl Game {
             self.players[player].name, card.name
         ));
         if card.kind == CardKind::Unit {
+            let lane = self
+                .active_play
+                .as_ref()
+                .filter(|play| play.player == player && play.card_id == id)
+                .and_then(|play| play.entry_lane)
+                .or(lane);
             let entering = self.create_unit(player, id, false, 0);
             self.players[player].units.last_mut().unwrap().lane = lane;
             let legion_active = !rules::static_abilities(id).contains(&StaticAbility::LegionOnPlay)
@@ -7684,12 +7794,18 @@ impl Game {
                 let targets = self.board_objects();
                 self.return_board_targets(&targets);
             }
-            OfficialEffect::KillGear { controller_draw } => {
+            OfficialEffect::KillGear {
+                controller_draw,
+                controller_gold,
+            } => {
                 if let Some(&target) = valid.first()
                     && let board_targets::GearKillResult::Resolved { controller, .. } =
                         self.kill_gear_target(target)
                 {
                     self.draw(controller, controller_draw)?;
+                    if controller_gold {
+                        self.queue_token_play(controller, id, 0, Some(None), true);
+                    }
                 }
             }
             OfficialEffect::KillEnemyDomain { .. } => {
@@ -8343,12 +8459,16 @@ impl Game {
         self.turns_taken[self.active] += 1;
         self.ai_steps_this_turn = 0;
         self.cards_played = [0; 2];
-        self.play_history = PlayHistory::default();
-        self.spring_used = [[false; 2]; 2];
+        self.play_history = PlayHistory {
+            units_or_gears_here: std::array::from_fn(|_| vec![0; self.battlefield_count()]),
+            ..Default::default()
+        };
+        self.spring_used = std::array::from_fn(|_| vec![false; self.battlefield_count()]);
         self.trigger_state.begin_turn();
         self.pyke_triggered.clear();
-        self.scored_this_turn = [false; 2];
-        self.player_scored_this_turn = [[false; 2]; 2];
+        self.scored_this_turn = vec![false; self.battlefield_count()];
+        self.player_scored_this_turn =
+            std::array::from_fn(|_| vec![false; self.battlefield_count()]);
         let player = self.active;
         self.push_log(format!(
             "Turn {} · {}",
@@ -8382,7 +8502,7 @@ impl Game {
             }
             StartStage::Holding => {
                 self.pending_start = Some(StartStage::Channel);
-                for lane in 0..BATTLEFIELDS {
+                for lane in 0..self.battlefield_count() {
                     if self.battlefield_owner[lane] == Some(player)
                         && self.lane_count(player, lane) > 0
                         && !self.contested(lane)
@@ -8515,7 +8635,7 @@ impl Game {
         total: u64,
     ) -> Result<Vec<(u32, u64)>, String> {
         Ok({
-            if player > 1 || lane >= BATTLEFIELDS {
+            if player > 1 || lane >= self.battlefield_count() {
                 return Ok(Vec::new());
             }
             let mut order: Vec<_> = self.players[1 - player]
@@ -9115,7 +9235,7 @@ impl Game {
         if self.player_scored_this_turn[player][lane] || self.winner.is_some() {
             return Ok(());
         }
-        let all_other_scored = (0..BATTLEFIELDS)
+        let all_other_scored = (0..self.battlefield_count())
             .filter(|&l| l != lane)
             .all(|l| self.player_scored_this_turn[player][l]);
         self.player_scored_this_turn[player][lane] = true;
@@ -9123,7 +9243,7 @@ impl Game {
             self.scored_this_turn[lane] = true;
         }
         if !holding && self.players[player].score >= VICTORY_SCORE - 1 && !all_other_scored {
-            self.push_log(format!("Final-point rule: {} draws instead. Hold a battlefield or score the other battlefield this turn to win.", self.players[player].name));
+            self.push_log(format!("Final-point rule: {} draws instead. Hold a battlefield or score every other battlefield this turn to win.", self.players[player].name));
             self.draw(player, 1)?;
             return Ok(());
         }
@@ -9292,6 +9412,74 @@ impl Game {
                     return Ok(action);
                 }
                 let preferred = match decision {
+                    Decision::TriggerMode {
+                        player,
+                        choice_id,
+                        card_id: 439,
+                        context,
+                        ..
+                    } => {
+                        let buffed = context
+                            .source
+                            .unit_id
+                            .is_some_and(|id| self.buffed_units.contains(&id));
+                        let preference = if !buffed {
+                            [0, 2, 1]
+                        } else if self.showdown.is_some() || self.active != *player {
+                            [1, 2, 0]
+                        } else {
+                            [2, 1, 0]
+                        };
+                        preference
+                            .into_iter()
+                            .map(|mode| Action::ChooseTriggerMode {
+                                choice_id: *choice_id,
+                                mode,
+                            })
+                            .find(|action| actions.contains(action))
+                    }
+                    Decision::TriggerTargets { card_id: 439, .. } => {
+                        let mut scored = Vec::new();
+                        for action in &actions {
+                            if let Action::ChooseTriggerTargets { targets } = action
+                                && let Some(unit) =
+                                    targets.first().and_then(|&target| self.unit_ref(target))
+                            {
+                                let value = if unit.stunned {
+                                    0
+                                } else {
+                                    i128::from(self.unit_might(unit)?) * 4
+                                        + if unit.lane.is_some() { 25 } else { 0 }
+                                        + if unit.ready { 10 } else { 0 }
+                                };
+                                scored.push((value, action));
+                            }
+                        }
+                        scored
+                            .into_iter()
+                            .max_by_key(|(score, _)| *score)
+                            .map(|(_, action)| action.clone())
+                    }
+                    Decision::TriggerReturn { .. } => Some(Action::Choose { accept: true }),
+                    Decision::TriggerTargets {
+                        player,
+                        card_id: 437,
+                        ..
+                    } => {
+                        let mut scored = Vec::new();
+                        for action in &actions {
+                            if let Action::ChooseTriggerTargets { targets } = action {
+                                scored.push((
+                                    self.trigger_return_target_score(*player, targets)?,
+                                    action,
+                                ));
+                            }
+                        }
+                        scored
+                            .into_iter()
+                            .max_by_key(|(score, _)| *score)
+                            .map(|(_, action)| action.clone())
+                    }
                     Decision::RecycleRevealedHand { opponent, .. } => actions
                         .iter()
                         .filter_map(|action| {
@@ -9775,7 +9963,7 @@ impl Game {
             let base_power: u128 = ready_values.iter().map(|(n, _)| u128::from(*n)).sum();
             if !ready_base.is_empty() {
                 let mut targets: Vec<(i128, usize)> = Vec::new();
-                for lane in 0..BATTLEFIELDS {
+                for lane in 0..self.battlefield_count() {
                     let friendly = self.lane_might(player, lane)?;
                     let opposing = self.lane_might(enemy, lane)?;
                     let ours = self.lane_count(player, lane);
@@ -9799,7 +9987,7 @@ impl Game {
                     let wins = fresh_score
                         && can_win
                         && self.players[player].score >= VICTORY_SCORE.saturating_sub(1)
-                        && (0..BATTLEFIELDS).all(|other| {
+                        && (0..self.battlefield_count()).all(|other| {
                             other == lane || self.player_scored_this_turn[player][other]
                         });
                     targets.push((
@@ -9836,7 +10024,7 @@ impl Game {
                     });
                 }
             }
-            for lane in 0..BATTLEFIELDS {
+            for lane in 0..self.battlefield_count() {
                 if self.contested(lane) {
                     return Ok(Action::Attack { lane });
                 }
@@ -9967,17 +10155,19 @@ impl Game {
                         Ok::<_, String>(sum + self.return_target_score(actor, target)?)
                     })?
                     .max(0),
-                OfficialEffect::KillGear { controller_draw } => {
-                    targets.first().map_or(0, |&target| {
-                        let draw = i128::from(controller_draw) * 10;
-                        self.gear_kill_score(actor, target)
-                            + if matches!(target, Target::Gear { player, .. } if player == actor) {
-                                draw
-                            } else {
-                                -draw
-                            }
-                    })
-                }
+                OfficialEffect::KillGear {
+                    controller_draw,
+                    controller_gold,
+                } => targets.first().map_or(0, |&target| {
+                    let draw =
+                        i128::from(controller_draw) * 10 + if controller_gold { 10 } else { 0 };
+                    self.gear_kill_score(actor, target)
+                        + if matches!(target, Target::Gear { player, .. } if player == actor) {
+                            draw
+                        } else {
+                            -draw
+                        }
+                }),
                 OfficialEffect::KillEnemyDomain { .. } => {
                     targets.first().map_or(Ok::<i128, String>(0), |&target| {
                         if let Some(unit) = self.unit_ref(target) {
@@ -12189,7 +12379,7 @@ mod tests {
     #[test]
     fn bellows_controller_can_keep_smaller_legal_target_group() {
         let mut g = game();
-        g.battlefields = [0, 1];
+        g.battlefields = vec![0, 1];
         let a = unit(&mut g, 1, 4, Some(0), false);
         let b = unit(&mut g, 1, 4, Some(0), false);
         let c = unit(&mut g, 1, 4, Some(0), false);
@@ -12236,7 +12426,7 @@ mod tests {
     #[test]
     fn tentacles_can_be_placed_independently_without_intermediate_responses() {
         let mut g = game();
-        g.battlefields = [0, 1];
+        g.battlefields = vec![0, 1];
         unit(&mut g, 0, 3, Some(0), false);
         g.battlefield_owner[0] = Some(0);
         g.players[0].hand = vec![48];

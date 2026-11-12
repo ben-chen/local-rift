@@ -27,7 +27,7 @@ fn position(score: u8, card_id: usize) -> Game {
             banish_on_death: false,
         })
         .collect();
-    game.battlefield_owner = [Some(1), Some(1)];
+    game.battlefield_owner = vec![Some(1), Some(1)];
     game.players[1].score = score;
     game
 }

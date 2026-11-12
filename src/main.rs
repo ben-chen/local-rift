@@ -7,6 +7,7 @@ mod deck_editor;
 mod deck_look_ui;
 mod deploy_ui;
 mod draw_look_ui;
+mod equipment_ui;
 mod field_ui;
 mod gust_ui;
 mod play_ui;
@@ -251,7 +252,7 @@ struct App {
     mulligan: HashSet<usize>,
     art: Vec<Option<Texture2D>>,
     legend_art: Vec<Option<Texture2D>>,
-    field_art: Vec<Option<Texture2D>>,
+    field_art: std::collections::BTreeMap<usize, Texture2D>,
     legend_picker: Option<usize>,
     legend_hover: Option<usize>,
     deck_load_errors: Vec<String>,
@@ -325,6 +326,7 @@ struct App {
     field_inspect: Option<usize>,
     field_picker: Option<FieldPicker>,
     equipment_inspect: Option<(usize, u32)>,
+    equipment_cost: Option<equipment_ui::ExhaustDraft>,
     equipment_scroll: usize,
     trigger_choice_key: Option<String>,
     token_draft_id: Option<u32>,
@@ -401,13 +403,11 @@ impl App {
                 *slot = Some(texture);
             }
         }
-        let mut field_art = vec![None; local_rift::battlefields::BATTLEFIELDS.len()];
+        let mut field_art = std::collections::BTreeMap::new();
         for &(id, bytes) in FIELD_ART {
-            if let Some(slot) = field_art.get_mut(id) {
-                let texture = Texture2D::from_file_with_format(bytes, None);
-                texture.set_filter(FilterMode::Linear);
-                *slot = Some(texture);
-            }
+            let texture = Texture2D::from_file_with_format(bytes, None);
+            texture.set_filter(FilterMode::Linear);
+            field_art.insert(id, texture);
         }
         Self {
             ai_worker: ai_worker::AiWorker::default(),
@@ -506,6 +506,7 @@ impl App {
             field_inspect: None,
             field_picker: None,
             equipment_inspect: None,
+            equipment_cost: None,
             equipment_scroll: 0,
             trigger_choice_key: None,
             token_draft_id: None,
@@ -574,6 +575,7 @@ impl App {
         self.ability_costs.clear();
         self.conversion_key = None;
         self.equipment_inspect = None;
+        self.equipment_cost = None;
         self.trigger_choice_key = None;
         self.token_draft_id = None;
         self.show_journal = false;
@@ -736,6 +738,7 @@ impl App {
                 self.damage_amounts = None;
                 self.damage_editor = None;
                 self.selection = None;
+                self.equipment_cost = None;
                 self.play_draft = None;
                 self.group.clear();
                 self.targets.clear();
@@ -1448,7 +1451,11 @@ impl App {
                 Some(Selection::Unit(id)) => Some(id),
                 _ => None,
             },
-            owners: self.game.battlefield_owner,
+            owners: if self.in_match {
+                self.game.battlefield_owner.clone()
+            } else {
+                vec![None; 2]
+            },
             time: if self.prefs.animation {
                 get_time() as f32
             } else {
@@ -1518,7 +1525,10 @@ impl App {
                     self.current_targets().contains(&Target::Unit {
                         player: owner,
                         unit_id: *id,
-                    }) || self.ability_targets.contains(&Target::Unit {
+                    }) || matches!(self.game.decision,
+                        Some(Decision::TriggerReturn { target: Target::Unit { player, unit_id }, .. })
+                        if player == owner && unit_id == *id)
+                    || self.ability_targets.contains(&Target::Unit {
                         player: owner,
                         unit_id: *id,
                     }) && matches!(self.selection, Some(Selection::Ability(..))),
@@ -1534,7 +1544,10 @@ impl App {
                 }) || self.card_target_candidate(Target::Unit {
                     player: owner,
                     unit_id: *id,
-                })? {
+                })? || self.equipment_cost_candidate(Target::Unit {
+                    player: owner,
+                    unit_id: *id,
+                }) {
                     self.ui.border(
                         Rect::new(
                             card_rect.x - 3.0,
@@ -1543,6 +1556,29 @@ impl App {
                             card_rect.h + 6.0,
                         ),
                         TEAL,
+                    );
+                }
+                if owner == 0
+                    && self
+                        .selected_equipment_cost()
+                        .is_some_and(|draft| draft.unit_id == Some(*id))
+                {
+                    let color = Color::from_rgba(178, 139, 244, 255);
+                    self.ui.border(
+                        Rect::new(
+                            card_rect.x - 3.0,
+                            card_rect.y - 3.0,
+                            card_rect.w + 6.0,
+                            card_rect.h + 6.0,
+                        ),
+                        color,
+                    );
+                    self.ui.bold(
+                        "EXHAUST COST",
+                        card_rect.x + 28.0,
+                        card_rect.y + 13.0,
+                        7.0,
+                        color,
                     );
                 }
                 if self.game.trigger_target_bounds().is_some()
@@ -1741,7 +1777,13 @@ impl App {
                 && self.game.priority() == 0
                 && self.game.phase == Phase::Playing
             {
-                if self.targeting_battlefield() {
+                if self.targeting_battlefield()
+                    || (self
+                        .game
+                        .trigger_target_rule()
+                        .is_some_and(|rule| rule.battlefield_first)
+                        && self.targets.contains(&Target::Battlefield { lane: i }))
+                {
                     self.toggle_target(Target::Battlefield { lane: i });
                 } else if let Some(Selection::Unit(id)) = self.selection {
                     self.move_selection(id, Some(i));
@@ -2406,16 +2448,34 @@ impl App {
                 .title("Choose ability targets", 1178.0, 366.0, 20.0, TEXT);
             self.ui
                 .ellipsis(source_name, 1178.0, 392.0, 212.0, 12.0, GOLD);
-            self.ui.wrapped_lines(
-                &format!("{} / {maximum} selected. Choose highlighted {} in order, then confirm. Click a chosen target to undo.{}", self.targets.len(),
-                    match self.game.trigger_target_rule().map(|r|r.kind) {
+            let instructions = if self
+                .game
+                .trigger_target_rule()
+                .is_some_and(|r| r.battlefield_first)
+            {
+                format!(
+                    "{} / {maximum} selected. Choose a battlefield, then an enemy there. Confirm both targets. Click a chosen target to undo.",
+                    self.targets.len()
+                )
+            } else {
+                format!(
+                    "{} / {maximum} selected. Choose highlighted {} in order, then confirm. Click a chosen target to undo.{}",
+                    self.targets.len(),
+                    match self.game.trigger_target_rule().map(|r| r.kind) {
                         Some(local_rift::rules::PlayTargetKind::Gear) => "gear in either Loadout",
-                        Some(local_rift::rules::PlayTargetKind::UnitOrGear) => "units or Loadout gear here",
+                        Some(local_rift::rules::PlayTargetKind::UnitOrGear) =>
+                            "units or Loadout gear here",
                         _ => "units",
                     },
-                    if required == 0 { " Choosing none declines." } else { " Choose all required targets." }),
-                1178.0, 416.0, 209.0, 11.0, TEXT, 4,
-            );
+                    if required == 0 {
+                        " Choosing none declines."
+                    } else {
+                        " Choose all required targets."
+                    }
+                )
+            };
+            self.ui
+                .wrapped_lines(&instructions, 1178.0, 416.0, 209.0, 11.0, TEXT, 4);
             if let Some(rule) = self.game.trigger_target_rule() {
                 let limit = if let Some(location) = self.game.trigger_target_location() {
                     use local_rift::game::board_targets::BoardLocation;
@@ -2483,6 +2543,8 @@ impl App {
             self.ui.wrapped_lines(
                 if card_id == 429 {
                     "Choose Gold or draw now. The opponent can respond before you pay for the draw."
+                } else if card_id == 439 {
+                    "Choose an unused mode. Buff is spent only on resolution. Stun needs an enemy target; you can choose without a Buff yet."
                 } else {
                     "Choose the effect before responses. Pay any base cost now; costs inside the effect wait until it resolves."
                 },
@@ -2498,7 +2560,7 @@ impl App {
                     Rect::new(1178.0, 448.0 + mode as f32 * 48.0, 212.0, 40.0),
                     option.label,
                     false,
-                    true,
+                    self.game.trigger_mode_available(mode)?,
                 ) {
                     self.action(Action::ChooseTriggerMode { choice_id, mode });
                 }
@@ -2632,9 +2694,14 @@ impl App {
                 12.0,
                 MUTED,
             );
-            for (index, lane) in [None, Some(0), Some(1)].into_iter().enumerate() {
+            for (index, lane) in self.game.board_locations().enumerate() {
                 if self.ui.button(
-                    Rect::new(1178.0, 455.0 + index as f32 * 35.0, 212.0, 29.0),
+                    play_ui::location_button(
+                        index,
+                        self.game.battlefield_count() + 1,
+                        Rect::new(1178.0, 455.0, 212.0, 105.0),
+                        35.0,
+                    ),
                     &lane
                         .map(|lane| format!("Field {}", lane + 1))
                         .unwrap_or_else(|| "Your base".into()),
@@ -2765,6 +2832,7 @@ impl App {
             return Ok(());
         }
         let (title,body)=match &decision{
+            Decision::TriggerReturn { target, .. } => ("Return this enemy?", format!("{} can return to its owner's hand. Responses have finished; you may return it or leave it on the board.", target_label(&self.game, *target))),
             Decision::TriggerObjectCost { context, .. } => ("Banish Prefect?", format!("Banish Prefect now. Then banish {} after responses. Decline to keep Prefect.", context.subject.map(|t| target_label(&self.game, t)).unwrap_or_else(|| "the played gear".into()))),
             Decision::TriggerMode { .. } | Decision::TriggerPayment { .. } | Decision::BattlefieldTargets { .. } | Decision::BattlefieldCost { .. } | Decision::BattlefieldPayment { .. } => unreachable!(),
             Decision::BanishPlay{card_id,..}=>("Play from Banish",format!("Play {} now? Base energy is waived; power and extra costs still apply. Declining leaves it in Banish.",self.game.catalog[*card_id].name)),
@@ -2807,6 +2875,7 @@ impl App {
         let simple = matches!(
             decision,
             Decision::RevealHand { .. }
+                | Decision::TriggerReturn { .. }
                 | Decision::TriggerObjectCost { .. }
                 | Decision::BanishPlay { .. }
                 | Decision::OptionalPlay { .. }
@@ -2831,6 +2900,8 @@ impl App {
                 Rect::new(1178.0, 490.0, 212.0, 32.0),
                 if matches!(decision, Decision::RevealHand { .. }) {
                     "Continue"
+                } else if matches!(decision, Decision::TriggerReturn { .. }) {
+                    "Return to hand"
                 } else if matches!(decision, Decision::TriggerObjectCost { .. }) {
                     "Banish Prefect · accept"
                 } else if matches!(decision, Decision::OptionalPlay { .. }) {
@@ -2858,6 +2929,8 @@ impl App {
                 Rect::new(1178.0, 531.0, 212.0, 31.0),
                 if matches!(decision, Decision::Predict { .. }) {
                     "Keep on top"
+                } else if matches!(decision, Decision::TriggerReturn { .. }) {
+                    "Leave on board"
                 } else if matches!(decision, Decision::BanishPlay { .. }) {
                     "Leave in Banish"
                 } else {
@@ -2963,6 +3036,9 @@ impl App {
         }
     }
     fn try_toggle_target(&mut self, target: Target) -> Result<(), String> {
+        if self.equipment_cost_click(target) {
+            return Ok(());
+        }
         if self.field_object_click(target) {
             return Ok(());
         }
@@ -3041,6 +3117,13 @@ impl App {
         Ok(())
     }
     fn targeting_battlefield(&self) -> bool {
+        if self
+            .game
+            .trigger_target_rule()
+            .is_some_and(|r| r.battlefield_first)
+        {
+            return self.targets.is_empty();
+        }
         self.current_targets()
             .iter()
             .any(|target| matches!(target, Target::Battlefield { .. }))
@@ -3053,6 +3136,9 @@ impl App {
                 .is_some_and(|slot| slot.kind == local_rift::rules::PlayTargetKind::Battlefield)
     }
     fn card_target_candidate(&self, target: Target) -> Result<bool, String> {
+        if self.game.trigger_target_bounds().is_some() {
+            return self.game.valid_trigger_target(target, &self.targets);
+        }
         let Some((action, execution)) = self.selected_target_query(true)? else {
             return Ok(false);
         };
@@ -4480,7 +4566,7 @@ impl App {
         self.ui
             .wrapped_lines(field.name, 648.0, 268.0, 440.0, 24.0, TEXT, 2);
         self.ui.text("OFFICIAL RULES", 648.0, 326.0, 10.0, GOLD);
-        if let Some(texture) = self.field_art.get(field.id).and_then(Option::as_ref) {
+        if let Some(texture) = self.field_art.get(&field.id) {
             let height = 150.0 * texture.height() / texture.width();
             self.ui
                 .image(texture, Rect::new(648.0, 340.0, 150.0, height), None, WHITE);
@@ -4634,7 +4720,7 @@ impl App {
                     .text("More in Board >", base.x + 11.0, base.y + 58.0, 8.0, GOLD);
             }
         }
-        for lane in 0..2 {
+        for lane in 0..hits.battlefields.len() {
             let r = self.ui.logical(hits.battlefields[lane]);
             let field_id = if self.in_match {
                 self.game.battlefields[lane]
@@ -4661,7 +4747,12 @@ impl App {
                     .nth(self.chain_cursor)
                     .is_some_and(|item| chain_field_targets(item).contains(&lane));
             let selected = pending
-                || (self.targeting_battlefield() && self.current_targets().contains(&target));
+                || ((self.targeting_battlefield()
+                    || self
+                        .game
+                        .trigger_target_rule()
+                        .is_some_and(|r| r.battlefield_first))
+                    && self.current_targets().contains(&target));
             let candidate = self.targeting_battlefield() && self.card_target_candidate(target)?;
             if self.in_match && (selected || candidate) {
                 self.ui.border(
@@ -4701,6 +4792,9 @@ impl App {
             self.ui.wrapped_lines(
                 field
                     .official_text
+                    .lines()
+                    .find(|line| !line.starts_with('('))
+                    .unwrap_or(field.official_text)
                     .split(" (")
                     .next()
                     .unwrap_or(field.official_text),
@@ -6626,7 +6720,15 @@ impl App {
                     let ready = unit.ready;
                     let movement_locked = self.game.movement_locked(0, id);
                     let lane = unit.lane;
-                    let ganking = self.game.unit_keywords(unit)?.ganking;
+                    let movement_choices = (0..self.game.battlefield_count())
+                        .map(Some)
+                        .chain(std::iter::once(None))
+                        .map(|destination| {
+                            self.game
+                                .standard_move_route_allowed(unit, destination)
+                                .map(|allowed| (destination, allowed))
+                        })
+                        .collect::<Result<Vec<_>, String>>()?;
                     self.ui
                         .ellipsis(&self.game.unit_name(unit), 1178.0, 359.0, 212.0, 16.0, TEXT);
                     self.ui.text(
@@ -6648,41 +6750,30 @@ impl App {
                             GOLD
                         },
                     );
-                    if self.ui.button(
-                        Rect::new(1178.0, 403.0, 212.0, 34.0),
-                        "Move to field 1",
-                        false,
-                        ready
-                            && !movement_locked
-                            && (lane.is_none() || ganking)
-                            && self.game.chain.is_empty()
-                            && self.game.showdown.is_none(),
-                    ) {
-                        self.move_selection(id, Some(0));
-                    }
-                    if self.ui.button(
-                        Rect::new(1178.0, 445.0, 212.0, 34.0),
-                        "Move to field 2",
-                        false,
-                        ready
-                            && !movement_locked
-                            && (lane.is_none() || ganking)
-                            && self.game.chain.is_empty()
-                            && self.game.showdown.is_none(),
-                    ) {
-                        self.move_selection(id, Some(1));
-                    }
-                    if self.ui.button(
-                        Rect::new(1178.0, 487.0, 212.0, 34.0),
-                        "Return to base",
-                        false,
-                        ready
-                            && !movement_locked
-                            && lane.is_some()
-                            && self.game.chain.is_empty()
-                            && self.game.showdown.is_none(),
-                    ) {
-                        self.move_selection(id, None);
+                    for (index, &(destination, allowed)) in movement_choices.iter().enumerate() {
+                        let mut rect = play_ui::location_button(
+                            index,
+                            movement_choices.len(),
+                            Rect::new(1178.0, 403.0, 212.0, 118.0),
+                            42.0,
+                        );
+                        rect.h = 34.0;
+                        let label = destination.map_or_else(
+                            || "Return to base".to_owned(),
+                            |lane| format!("Move to field {}", lane + 1),
+                        );
+                        if self.ui.button(
+                            rect,
+                            &label,
+                            false,
+                            ready
+                                && !movement_locked
+                                && allowed
+                                && self.game.chain.is_empty()
+                                && self.game.showdown.is_none(),
+                        ) {
+                            self.move_selection(id, destination);
+                        }
                     }
                     let group_available = self.game.players[0]
                         .units
@@ -6894,7 +6985,20 @@ impl App {
                             MUTED,
                         );
                     }
-                    let entry_hint = entry_ready_hint(&self.game, 0, card_id);
+                    let entry_hint = self
+                        .selected_play_action()
+                        .and_then(|action| self.game.play_choices(&action).ok())
+                        .and_then(
+                            |view| match (view.baron_pit_entry, view.legend_entry_ready) {
+                                (Some(_), Some(_)) => {
+                                    Some("New Baron Pit · enters ready".to_owned())
+                                }
+                                (Some(_), None) => Some("Enters at the new Baron Pit".to_owned()),
+                                (None, Some(_)) => Some("The Exile: enters ready".to_owned()),
+                                _ => None,
+                            },
+                        )
+                        .or_else(|| entry_ready_hint(&self.game, 0, card_id));
                     self.ui.ellipsis(
                         entry_hint
                             .as_deref()
@@ -6996,7 +7100,8 @@ impl App {
                             && pending.is_none()
                             && card.official_text.starts_with("[Hidden]")
                         {
-                            for lane in 0..2 {
+                            for lane in 0..self.game.battlefield_count() {
+                                let step = 220.0 / self.game.battlefield_count() as f32;
                                 let valid = if champion {
                                     self.game.hidden_can_hide_champion(0, lane)
                                 } else {
@@ -7004,7 +7109,7 @@ impl App {
                                 }
                                 .is_ok();
                                 if self.ui.button(
-                                    Rect::new(1178.0 + lane as f32 * 110.0, 454.0, 102.0, 28.0),
+                                    Rect::new(1178.0 + lane as f32 * step, 454.0, step - 8.0, 28.0),
                                     &format!("Hide at {}", lane + 1),
                                     false,
                                     valid,
@@ -7068,12 +7173,14 @@ impl App {
                         && (flows.len() < 2 || self.flow_source.is_some())
                         && self.can_begin_payment(&action);
                     let affordable = payable_now || begin_payment;
+                    let destination_label = self
+                        .destination
+                        .map(|lane| format!("Play at field {}", lane + 1));
                     let label = if selecting_revive {
                         "Choose this unit to revive"
                     } else if card.kind == CardKind::Unit || deploy_ui::is_deploy(card_id) {
                         match self.destination {
-                            Some(0) => "Play at field 1",
-                            Some(_) => "Play at field 2",
+                            Some(_) => destination_label.as_deref().unwrap(),
                             None if deploy_ui::is_deploy(card_id) => "Choose a battlefield below",
                             None => "Play at base",
                         }
@@ -7105,7 +7212,7 @@ impl App {
                         && !selecting_revive
                         && !fixed_location
                     {
-                        for lane in 0..2 {
+                        for lane in 0..self.game.battlefield_count() {
                             let action = if pending.is_some() {
                                 Action::FinalizePendingPlay {
                                     lane: Some(lane),
@@ -7184,13 +7291,10 @@ impl App {
                     }
                     if show_fields {
                         for (lane, action, ready, can_pay) in field_actions {
+                            let step = 220.0 / self.game.battlefield_count() as f32;
                             if self.ui.button(
-                                Rect::new(1178.0 + lane as f32 * 110.0, 534.0, 102.0, 27.0),
-                                if lane == 0 {
-                                    "To field 1"
-                                } else {
-                                    "To field 2"
-                                },
+                                Rect::new(1178.0 + lane as f32 * step, 534.0, step - 8.0, 27.0),
+                                &format!("To field {}", lane + 1),
                                 false,
                                 ready || can_pay,
                             ) {
@@ -7389,6 +7493,11 @@ impl App {
                     .find(|g| g.id == id)
                     .cloned()
                 {
+                    if local_rift::rules::equipment(gear.card_id)
+                        .is_some_and(|r| r.equip_exhaust_unit)
+                    {
+                        return self.alternate_equip_panel(&gear);
+                    }
                     self.ui
                         .ellipsis(self.game.gear_name(&gear), 1178.0, 359.0, 210.0, 16.0, TEXT);
                     self.ui.wrapped_lines(
@@ -7791,14 +7900,7 @@ impl App {
                     "Finish your token plays."
                 } else if payment_waiting {
                     "A resource choice is waiting."
-                } else if matches!(
-                    self.game.decision,
-                    Some(
-                        Decision::EmpowerPlayed { .. }
-                            | Decision::DeckLookPlay { .. }
-                            | Decision::DrawLook { .. }
-                    )
-                ) {
+                } else if self.game.decision.is_some() {
                     "A choice is waiting."
                 } else if self.game.in_window() {
                     "A response window is open."
@@ -7822,6 +7924,12 @@ impl App {
                 } else if matches!(self.game.decision, Some(Decision::EmpowerPlayed { player:0, .. })) {
                     "Accept or decline the Empower offer on the right before responses begin."
                 } else if matches!(self.game.decision, Some(Decision::DeckLookPlay { .. } | Decision::EmpowerPlayed { .. } | Decision::DrawLook { .. })) {
+                    "Your opponent is making a choice. You can inspect the public board while waiting."
+                } else if matches!(self.game.decision, Some(Decision::TriggerReturn { player:0, .. })) {
+                    "Return the highlighted enemy or leave it using the controls on the right."
+                } else if self.game.decision.is_some() && self.game.priority() == 0 {
+                    "Follow the choice panel on the right before play continues."
+                } else if self.game.decision.is_some() {
                     "Your opponent is making a choice. You can inspect the public board while waiting."
                 } else if self.game.in_window() && self.game.priority() == 0 {
                     "Use an available response, or pass priority when you're ready."
@@ -7929,12 +8037,19 @@ impl App {
             self.ui.pill(
                 x + 14.0,
                 130.0,
-                if p.registration.is_some() {
+                if p.source_url.contains("/convergence-4/") {
                     "CONVERGENCE IV · OCT 2026"
-                } else if index == 3 {
-                    "HISTORICAL · MAY 2026"
+                } else if p
+                    .source_url
+                    .ends_with("/best-ofs-for-the-european-championship/")
+                {
+                    "STUTTGART · NOV 2026"
+                } else if p.source_url.ends_with("/vancouvers-top-decks/") {
+                    "VANCOUVER · MAY 2026"
+                } else if p.source_url.ends_with("/los-angeles-top-decks/") {
+                    "LOS ANGELES · SEP 2026"
                 } else {
-                    "COMPETITIVE · SEP 2026"
+                    "TOURNAMENT LIST"
                 },
                 if index == 3 { GOLD } else { TEAL },
             );
@@ -8046,10 +8161,10 @@ impl App {
         for (i,(title,body)) in [
             ("Build your opening","Each player draws 4 cards. Replace up to 2 once. Your chosen champion waits outside your deck, ready to deploy when you can pay its cost."),
             ("Let runes do the work","Channel 2 runes each turn (the second player gets 3 on their first turn). Exhaust runes for energy; recycle matching-domain runes for power. Payment is automatic."),
-            ("Play units, then advance","Units enter exhausted at your base or a controlled battlefield. They ready next turn. Select ready units, then move together; ordinary moves exhaust them."),
+            ("Play units, then advance","Units normally enter exhausted at your base or a controlled battlefield; card effects can let them enter ready. Select ready units, then move together; ordinary moves exhaust them."),
             ("Take a battlefield","Move ready units together into an unowned or enemy battlefield to open a showdown. Both players can respond. Two passes resolve it; combat damage is simultaneous."),
             ("Hold what you conquer","Conquering earns 1 point. Holding at the start of your turn earns 1 point. Each battlefield can score for you only once during a turn. First to 8 wins."),
-            ("Earn the final point","Holding can win immediately. To win by conquering, you must have scored both battlefields this turn. Otherwise your conquest draws a card instead.")
+            ("Earn the final point","Holding can win immediately. To win by conquering, you must have scored every battlefield this turn. Otherwise your conquest draws a card instead.")
         ].iter().enumerate(){let col=i%3;let row=i/3;let x=245.0+col as f32*396.0;let y=117.0+row as f32*215.0;self.ui.rect(Rect::new(x,y,373.0,192.0),PANEL);self.ui.title(&format!("0{}",i+1),x+20.0,y+40.0,27.0,GOLD);self.ui.bold(title,x+70.0,y+37.0,14.0,TEXT);self.ui.wrapped(body,x+20.0,y+72.0,330.0,12.0,MUTED);}
         self.ui.rect(Rect::new(245.0, 561.0, 767.0, 285.0), PANEL);
         self.ui.text(
@@ -8435,6 +8550,17 @@ impl App {
     }
 }
 fn chain_field_targets(item: &local_rift::game::ChainItem) -> Vec<usize> {
+    // Triggered abilities use their finalized target list, not spell executions.
+    if item.executions.is_empty() {
+        return item
+            .targets
+            .iter()
+            .filter_map(|target| match target {
+                Target::Battlefield { lane } => Some(*lane),
+                _ => None,
+            })
+            .collect();
+    }
     item.executions
         .iter()
         .filter_map(|execution| {
@@ -8524,7 +8650,11 @@ fn equipment_cost_label(rule: &local_rift::rules::EquipmentRule) -> String {
         costs.push(format!(
             "{} {} power",
             rule.equip_power,
-            rule.equip_domain.name()
+            if rule.equip_any_power {
+                "Any"
+            } else {
+                rule.equip_domain.name()
+            }
         ));
     }
     if rule.equip_xp > 0 {
@@ -8533,14 +8663,19 @@ fn equipment_cost_label(rule: &local_rift::rules::EquipmentRule) -> String {
     if rule.recycle_trash > 0 {
         costs.push(format!("recycle {} trash cards", rule.recycle_trash));
     }
-    format!(
+    let label = format!(
         "Equip: {}",
         if costs.is_empty() {
             "no resource cost".into()
         } else {
             costs.join(" + ")
         }
-    )
+    );
+    if rule.equip_exhaust_unit {
+        format!("{label} or exhaust a friendly unit")
+    } else {
+        label
+    }
 }
 
 fn entry_ready_hint(game: &Game, owner: usize, card_id: usize) -> Option<String> {
@@ -8580,8 +8715,16 @@ fn card_brief(game: &Game, id: usize) -> String {
         return "Choose: move Deploy gear, or inspect five for Gear".into();
     }
     match local_rift::rules::effect(id) {
-        KillGear { controller_draw: 0 } => "Kill a gear".into(),
-        KillGear { controller_draw } => {
+        KillGear {
+            controller_gold: true,
+            ..
+        } => "Kill gear · its controller gets exhausted Gold".into(),
+        KillGear {
+            controller_draw: 0, ..
+        } => "Kill a gear".into(),
+        KillGear {
+            controller_draw, ..
+        } => {
             format!("Kill gear · its controller draws {controller_draw}")
         }
         BattlePreparations => "+2 Might · show gear to ready up to 2 runes".into(),
@@ -8690,6 +8833,9 @@ fn legend_activation_label(id: usize) -> &'static str {
 }
 fn legend_practice_tip(id: usize) -> &'static str {
     match id {
+        10 => {
+            "Units played to a battlefield you control enter ready, including unit tokens. Keep an anchor there to ready later reinforcements. Playing to Base does not get this benefit."
+        }
         8 => {
             "Every unit play, including a token, triggers Rengar. Choose a unit for +1 Might until this turn ends. Concentrate bonuses where they change a combat."
         }
@@ -9141,6 +9287,27 @@ fn live_unit_description(game: &Game, owner: usize, unit_id: u32) -> Option<Stri
     }
     if game.buffed_units.contains(&unit_id) {
         lines.push("BUFFED · has a Buff counter. Its +1 might is included above; temporary might and Empowered are separate.".into());
+    }
+    if !unit.token && unit.card_id == 439 {
+        let modes = ["Buff", "Stun", "Ready"];
+        let used = modes
+            .iter()
+            .enumerate()
+            .filter_map(|(mode, label)| {
+                game.trigger_state
+                    .modes_used
+                    .contains(&(unit_id, 439, 0, mode))
+                    .then_some(*label)
+            })
+            .collect::<Vec<_>>();
+        lines.push(format!(
+            "RIVEN · modes used this turn: {}. Each resets next turn.",
+            if used.is_empty() {
+                "none".into()
+            } else {
+                used.join(", ")
+            }
+        ));
     }
     let contributions = match game.passive_contributions(local_rift::empower::BoardObject::Unit {
         player: owner,
@@ -10094,7 +10261,7 @@ mod live_preview_tests {
     #[test]
     fn battlefield_target_labels_distinguish_duplicate_definitions() {
         let mut game = Game::new(3, 2, 7, Difficulty::Easy);
-        game.battlefields = [0, 0];
+        game.battlefields = vec![0, 0];
         let left = target_label(&game, Target::Battlefield { lane: 0 });
         let right = target_label(&game, Target::Battlefield { lane: 1 });
         assert!(left.starts_with("Field 1 · ") && right.starts_with("Field 2 · "));
@@ -10318,6 +10485,9 @@ async fn main() {
     let preview_hover = args.iter().any(|arg| arg == "--hover-preview");
     let series_smoke = args.iter().any(|a| a == "--ui-smoke-series");
     let irelia_smoke = args.iter().any(|a| a == "--ui-smoke-irelia");
+    let riven_smoke = args.iter().any(|a| a == "--ui-smoke-riven");
+    let blade_smoke = args.iter().any(|a| a == "--ui-smoke-blade");
+    let riven_champion_smoke = args.iter().any(|a| a == "--ui-smoke-riven-champion");
     let preset_smoke = args.iter().any(|a| a == "--ui-smoke-presets");
     let ai_smoke = args.iter().any(|a| a == "--ui-smoke-ai");
     let focused_deploy_smoke = args.iter().any(|a| a == "--ui-smoke-c24");
@@ -10326,6 +10496,9 @@ async fn main() {
     let focused_field_smoke = args.iter().any(|a| a == "--ui-smoke-c28");
     let focused_source_damage_smoke = args.iter().any(|a| a == "--ui-smoke-c27");
     let smoke_test = series_smoke
+        || riven_champion_smoke
+        || blade_smoke
+        || riven_smoke
         || irelia_smoke
         || preset_smoke
         || focused_field_smoke
@@ -10360,6 +10533,12 @@ async fn main() {
         }
         let smoke_done = if series_smoke {
             smoke::run_series_frame(&mut app, frames)
+        } else if riven_champion_smoke {
+            smoke::run_riven_champion_frame(&mut app, frames)
+        } else if blade_smoke {
+            smoke::run_blade_frame(&mut app, frames)
+        } else if riven_smoke {
+            smoke::run_riven_frame(&mut app, frames)
         } else if irelia_smoke {
             smoke::run_irelia_frame(&mut app, frames)
         } else if preset_smoke {

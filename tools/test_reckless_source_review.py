@@ -8,6 +8,7 @@ from unittest.mock import patch
 
 import catalog_review as review
 import import_catalog as catalog
+import admission_history as history
 
 
 class RecklessSourceTests(unittest.TestCase):
@@ -58,7 +59,7 @@ class RecklessSourceTests(unittest.TestCase):
     def test_source_correction_alone_does_not_register_a_card(self):
         runtime = copy.deepcopy(catalog.load_runtime_manifest())
         runtime['cards'] = runtime['cards'][:self.proof['runtime_base_count']]
-        with patch.object(catalog, 'load_runtime_manifest', return_value=runtime):
+        with history.pre_riven_runtime(runtime):
             snapshot = catalog.make_catalog(self.origin, self.archives)
         identity = next(c for c in snapshot['cards'] if c['identity'] == 'rad-105-167')
         self.assertTrue(identity['standard_legal'])

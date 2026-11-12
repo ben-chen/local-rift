@@ -8,8 +8,8 @@ fn position(card: usize, energy: u16) -> Game {
     game.start_match().unwrap();
     game.legend[0].ready = false;
     game.legend[1].ready = false;
-    game.battlefields = [0, 0];
-    game.battlefield_owner = [None; 2];
+    game.battlefields = vec![0, 0];
+    game.battlefield_owner = vec![None; 2];
     for state in &mut game.players {
         state.hand.clear();
         state.units.clear();

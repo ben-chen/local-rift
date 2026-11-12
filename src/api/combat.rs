@@ -38,7 +38,7 @@ mod tests {
         })
         .unwrap();
         s.start(0).unwrap();
-        s.game.battlefield_owner = [Some(1 - attacker), None];
+        s.game.battlefield_owner = vec![Some(1 - attacker), None];
         for state in &mut s.game.players {
             state.units.clear();
             state.gear.clear();

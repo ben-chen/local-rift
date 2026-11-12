@@ -11,8 +11,8 @@ fn reset(app: &mut App, field: usize) {
     expansion_fixture(app, 70);
     app.game = Game::new_for_agents(3, 3, 280028, Difficulty::Easy);
     app.game.start_match().unwrap();
-    app.game.battlefields = [field, 0];
-    app.game.battlefield_owner = [None; 2];
+    app.game.battlefields = vec![field, 0];
+    app.game.battlefield_owner = vec![None; 2];
     for p in &mut app.game.players {
         p.units.clear();
         p.gear.clear();
@@ -30,7 +30,7 @@ fn reset(app: &mut App, field: usize) {
     }
     app.game.players[0].units = vec![public_unit(UNIT, 70, None), public_unit(OTHER, 70, None)];
     app.ai_worker.invalidate();
-    app.fields = app.game.battlefields;
+    app.fields = std::array::from_fn(|i| app.game.battlefields[i]);
     app.inspect = None;
     app.field_inspect = None;
     app.rune_menu = None;

@@ -24,6 +24,7 @@ pub(super) struct UiDraft {
     conversion_amount: u16,
     conversion_editor: Option<String>,
     conversion_key: Option<String>,
+    equipment_cost: Option<equipment_ui::ExhaustDraft>,
 }
 #[derive(Clone)]
 pub(super) struct SuspendedPayment {
@@ -53,6 +54,7 @@ impl App {
             conversion_amount: self.conversion_amount,
             conversion_editor: self.conversion_editor.clone(),
             conversion_key: self.conversion_key.clone(),
+            equipment_cost: self.equipment_cost,
         }
     }
     pub(super) fn restore_ui_draft(&mut self, draft: UiDraft) {
@@ -71,6 +73,7 @@ impl App {
         self.conversion_amount = draft.conversion_amount;
         self.conversion_editor = draft.conversion_editor;
         self.conversion_key = draft.conversion_key;
+        self.equipment_cost = draft.equipment_cost;
         self.trigger_choice_key = self
             .game
             .decision

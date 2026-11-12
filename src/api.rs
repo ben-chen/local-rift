@@ -30,6 +30,8 @@ mod numeric;
 mod play_choices;
 mod progression;
 mod refusal;
+#[cfg(test)]
+mod riven_pool_tests;
 mod runes;
 mod series;
 #[cfg(test)]
@@ -431,6 +433,10 @@ impl Session {
                 if game.movement_prevented(1-owner, owner, unit.id) {
                     unit_view["movement_restriction"] = json!({"scope":"any_player","expires":"end_of_turn"});
                 }
+                if !unit.token && unit.card_id == 439 {
+                    unit_view["trigger_modes_chosen_this_turn"] = json!((0..3).filter(|mode|
+                        game.trigger_state.modes_used.contains(&(unit.id, 439, 0, *mode))).collect::<Vec<_>>());
+                }
                 Ok(unit_view)
             }).collect::<Result<Vec<_>,ApiError>>()?;
             let gear: Vec<_> = state.gear.iter().map(|gear| Ok(json!({
@@ -605,7 +611,7 @@ impl Session {
                 keys(object, &["command", "id"])?;
                 Ok(
                     json!({"protocol":PROTOCOL_VERSION,"name":"Local Rift","summary":self.summary(),
-                    "commands":["validate_registration","series_suggest","series_step_ai","series_begin","series_sideboard","series_battlefield","series_play_order","series_concede","series_draw","info","catalog","validate_deck","reset","observe","suggest","quote_payment","play_choices","cost_plan","target_candidates","validate","apply","mulligan","start","step_ai"],
+                    "commands":["validate_registration","series_suggest","series_step_ai","series_begin","series_sideboard","series_battlefield","series_play_order","series_concede","series_draw","info","catalog","validate_deck","reset","observe","suggest","quote_payment","play_choices","cost_plan","target_candidates","trigger_target_candidates","validate","apply","mulligan","start","step_ai"],
                     "suggestions_exhaustive":false,"max_request_bytes":MAX_REQUEST_BYTES}),
                 )
             }
@@ -713,6 +719,14 @@ impl Session {
                 keys(object, &["command", "id", "revision", "player"])?;
                 self.step_ai(player(object)?, unsigned(object, "revision")?)?;
                 Ok(self.summary())
+            }
+            "trigger_target_candidates" => {
+                keys(object, &["command", "id", "revision", "player", "targets"])?;
+                self.trigger_target_candidates(
+                    player(object)?,
+                    unsigned(object, "revision")?,
+                    targets(object, "targets")?,
+                )
             }
             "target_candidates" => {
                 keys(
@@ -846,6 +860,7 @@ fn legend_name(kind: LegendKind) -> &'static str {
         LegendKind::Ambessa => "ambessa",
         LegendKind::Rengar => "rengar",
         LegendKind::Ezreal => "ezreal",
+        LegendKind::Riven => "riven",
     }
 }
 
@@ -909,7 +924,10 @@ pub fn catalog() -> Value {
             "strategy":p.strategy,"learning_notes":p.learning_notes,"source_url":p.source_url,
             "registration":p.registration.map(|registration|json!({"pilot":registration.pilot,"event":registration.event,
                 "date":registration.date,"placing":registration.placing,"battlefields":registration.battlefields,"sideboard":registration.sideboard}))})).collect::<Vec<_>>(),
-        "battlefields":BATTLEFIELDS.iter().map(|b|json!({"id":b.id,"name":b.name,"official_text":b.official_text})).collect::<Vec<_>>()})
+        "battlefields":BATTLEFIELDS.iter().map(|b|json!({"id":b.id,"name":b.name,"official_text":b.official_text})).collect::<Vec<_>>(),
+        "token_battlefields":crate::battlefields::TOKEN_BATTLEFIELDS.iter().map(|b|json!({
+            "id":b.id,"name":b.name,"official_id":b.source_id,"official_text":b.official_text,
+            "can_start_game":false})).collect::<Vec<_>>()})
 }
 
 pub fn ability_source_to_json(source: AbilitySource) -> Value {
@@ -1043,6 +1061,13 @@ fn action_json_at_depth(action: &Action, depth: usize) -> Value {
             "choice_id":choice_id,"recycle":recycle,"top_order":top_order}),
         Action::Equip { gear_id, target } => {
             json!({"type":"equip","gear_id":gear_id,"target":target_to_json(target)})
+        }
+        Action::EquipExhaustUnit {
+            gear_id,
+            target,
+            exhaust_unit_id,
+        } => {
+            json!({"type":"equip_exhaust_unit","gear_id":gear_id,"target":target_to_json(target),"exhaust_unit_id":exhaust_unit_id})
         }
         Action::EquipWithTrash {
             gear_id,
@@ -1246,14 +1271,8 @@ fn player(obj: &Map<String, Value>) -> Result<usize, ApiError> {
     Ok(p)
 }
 fn field(obj: &Map<String, Value>, key: &str) -> Result<usize, ApiError> {
-    let value = index(obj, key)?;
-    if value >= 2 {
-        Err(ApiError::invalid(format!(
-            "{key} must be battlefield slot 0 or 1."
-        )))
-    } else {
-        Ok(value)
-    }
+    // Physical slots are state-dependent once a card adds a battlefield.
+    index(obj, key)
 }
 fn lane(obj: &Map<String, Value>) -> Result<Option<usize>, ApiError> {
     if obj.get("lane").is_none_or(Value::is_null) {
@@ -1629,6 +1648,14 @@ fn parse_action_at_depth(value: &Value, depth: usize) -> Result<Action, ApiError
                 gear_id: id32(o, "gear_id")?,
                 target: parse_target(required(o, "target")?)?,
                 trash_indices: usize_list(o, "trash_indices")?,
+            }
+        }
+        "equip_exhaust_unit" => {
+            fields!("gear_id", "target", "exhaust_unit_id");
+            Action::EquipExhaustUnit {
+                gear_id: id32(o, "gear_id")?,
+                target: parse_target(required(o, "target")?)?,
+                exhaust_unit_id: id32(o, "exhaust_unit_id")?,
             }
         }
         "activate_gear" => {
@@ -2082,17 +2109,46 @@ fn decision_to_json(game: &Game, decision: &Decision, viewer: usize) -> Result<V
             rule_index,
             context,
             ..
-        } => json!({
-            "type":"trigger_mode","choice_id":choice_id,"card_id":card_id,"rule_index":rule_index,
-            "context":trigger_context_to_json(context),"chosen_before_responses":true,
-            "options":game.trigger_mode_options().iter().enumerate().map(|(index, mode)|json!({
+        } => {
+            let parent = &crate::trigger_rules::trigger_rules(*card_id)[*rule_index];
+            let mut options = Vec::new();
+            for (index, mode) in game.trigger_mode_options().iter().enumerate() {
+                let mut option = json!({
                 "index":index,"label":mode.label,"base_cost":mode.rule.base_cost.map(|cost|json!({
                     "energy":cost.energy,"power":cost.power,"domain":cost.domain.map(|domain|format!("{domain:?}").to_lowercase())
                 })),"resolution_cost":mode.rule.resolution_cost.map(|cost|json!({
                     "energy":cost.energy,"power":cost.power,"domain":cost.domain.map(|domain|format!("{domain:?}").to_lowercase())
                 }))
-            })).collect::<Vec<_>>()
-        }),
+                });
+                if parent.modes_once_each_turn {
+                    option["available"] = json!(
+                        game.trigger_mode_available(index)
+                            .map_err(ApiError::illegal)?
+                    );
+                    option["once_each_turn"] = json!(true);
+                    option["used_this_turn"] = json!(
+                        context
+                            .source
+                            .unit_id
+                            .or(context.source.gear_id)
+                            .is_some_and(|id| game.trigger_state.modes_used.contains(&(
+                                id,
+                                *card_id,
+                                *rule_index,
+                                index
+                            )))
+                    );
+                }
+                if mode.rule.effects.iter().any(|effect| {
+                    matches!(effect, crate::trigger_rules::Effect::SpendSourceBuffTo(_))
+                }) {
+                    option["resolution_object_cost"] = json!({"type":"spend_source_buff","unit_id":context.source.unit_id,"player":context.source.player,"targets_unit":false});
+                }
+                options.push(option);
+            }
+            json!({"type":"trigger_mode","choice_id":choice_id,"card_id":card_id,"rule_index":rule_index,
+                "context":trigger_context_to_json(context),"chosen_before_responses":true,"options":options})
+        }
         Decision::TriggerPayment {
             choice_id,
             card_id,
@@ -2151,6 +2207,7 @@ fn decision_to_json(game: &Game, decision: &Decision, viewer: usize) -> Result<V
             json!({"type":"trigger_targets","card_id":card_id,"rule_index":rule_index,
                 "context":trigger_context_to_json(context),"maximum":maximum,"required":required,
                 "target_rule":rule.map(|r|json!({"kind":targeting::target_kind(r.kind),
+                    "battlefield_first":r.battlefield_first,
                     "allegiance":format!("{:?}",r.allegiance).to_lowercase(),
                     "battlefield":r.battlefield,
                     "maximum_printed_energy":r.max_energy,
@@ -2162,6 +2219,15 @@ fn decision_to_json(game: &Game, decision: &Decision, viewer: usize) -> Result<V
                     "energy_at_most_live_source_might":r.relative_energy==crate::trigger_rules::RelativeEnergyConstraint::AtMostSourceMight})),
                 "candidates":game.trigger_target_candidates().map_err(ApiError::illegal)?.iter().map(target_to_json).collect::<Vec<_>>()})
         }
+        Decision::TriggerReturn {
+            card_id,
+            chain_id,
+            target,
+            ..
+        } => json!({
+            "type":"trigger_return", "card_id":card_id, "chain_id":chain_id,
+            "target":target_to_json(target), "timing":"resolution", "optional":true,
+        }),
         Decision::TrashTarget {
             source_card_id,
             gear_id,
@@ -2568,6 +2634,11 @@ mod tests {
                 target: unit,
                 trash_indices: vec![4, 2],
             },
+            Action::EquipExhaustUnit {
+                gear_id: 9,
+                target: unit,
+                exhaust_unit_id: 19,
+            },
             Action::ActivateGear { gear_id: 3 },
             Action::ActivateAbility {
                 source: AbilitySource::Unit {
@@ -2737,7 +2808,7 @@ mod tests {
     #[test]
     fn activated_api_distinguishes_source_copies_and_ability_indices() {
         let mut session = playing();
-        session.game.battlefields = [0, 0];
+        session.game.battlefields = vec![0, 0];
         session.game.players[0].units = [700, 701]
             .into_iter()
             .map(|id| Unit {
@@ -3938,7 +4009,7 @@ mod tests {
     #[test]
     fn bots_can_submit_explicit_targets_and_grouped_destinations() {
         let mut session = playing();
-        session.game.battlefields = [0, 1];
+        session.game.battlefields = vec![0, 1];
         session.game.players[0].hand = vec![53];
         session.game.players[0]
             .set_rune_setup([5, 0, 0, 0, 0, 0], [0; 6])
@@ -4040,7 +4111,7 @@ mod tests {
     #[test]
     fn bots_can_choose_combat_order_and_invalid_allocation_is_atomic() {
         let mut session = playing();
-        session.game.battlefields = [0, 1];
+        session.game.battlefields = vec![0, 1];
         session.game.players[0].units = vec![unit(100, None, 4)];
         session.game.players[1].units = vec![unit(200, Some(0), 2), unit(201, Some(0), 2)];
         session.game.battlefield_owner[0] = Some(1);
@@ -4256,8 +4327,8 @@ mod tests {
                 .unwrap();
                 session.game.choose_starting_player(owner).unwrap();
                 session.start(0).unwrap();
-                session.game.battlefields = [2, 2];
-                session.game.battlefield_owner = [Some(owner); 2];
+                session.game.battlefields = vec![2, 2];
+                session.game.battlefield_owner = vec![Some(owner); 2];
                 for state in &mut session.game.players {
                     state.units.clear();
                     state.gear.clear();

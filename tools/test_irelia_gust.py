@@ -5,6 +5,7 @@ import struct
 import unittest
 from unittest.mock import patch
 import import_catalog as catalog
+import admission_history as history
 import catalog_review as review
 
 class GustAdmissionTests(unittest.TestCase):
@@ -38,10 +39,10 @@ class GustAdmissionTests(unittest.TestCase):
         p=self.proof['preserved_runtime_prefix'];runtime=catalog.load_runtime_manifest()
         self.assertEqual(catalog.sha(review.canonical_bytes(runtime['cards'][:p['card_count']])),p['cards_sha256'])
         self.assertEqual(catalog.sha(review.canonical_bytes(runtime['decks'][:p['preset_count']])),p['presets_sha256'])
-        for path,digest in self.proof['preserved_source_reviews'].items():self.assertEqual(catalog.sha((catalog.ROOT/path).read_bytes()),digest)
+        for path,digest in self.proof['preserved_source_reviews'].items():self.assertEqual(catalog.sha(history.pre_riven_evidence_bytes(path)),digest)
 
     def test_source_evidence_alone_does_not_register_playable_support(self):
         runtime=copy.deepcopy(catalog.load_runtime_manifest());runtime['cards']=runtime['cards'][:431]
-        with patch.object(catalog,'load_runtime_manifest',return_value=runtime):snapshot=catalog.make_catalog(self.origin,self.archives)
+        with history.pre_riven_runtime(runtime):snapshot=catalog.make_catalog(self.origin,self.archives)
         identity=next(x for x in snapshot['cards'] if x['identity']=='ven-101-166')
         self.assertFalse(identity['implementation']['playable_in_client'])

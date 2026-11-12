@@ -1,0 +1,186 @@
+{
+  "name": "Riven / Sonecon Stuttgart",
+  "champion": "Riven, The Exile",
+  "chosen": "Riven, Broken Blade",
+  "domains": [
+    "Calm",
+    "Chaos"
+  ],
+  "accent": [
+    171,
+    218,
+    124
+  ],
+  "strategy": "Establish a controlled battlefield, then use ready entrants, equipment and movement to pressure points. Sonecon’s runner-up Stuttgart list, November 2026.",
+  "difficulty": "Advanced",
+  "source_url": "https://playriftbound.com/en-us/news/organizedplay/best-ofs-for-the-european-championship/",
+  "pilot": "Sonecon",
+  "event": "European Regional Championship, Stuttgart",
+  "placing": 2,
+  "runes": {
+    "Calm": 6,
+    "Chaos": 6
+  },
+  "battlefields": [
+    "Emperor's Dais",
+    "Hunters' Circle",
+    "Star Spring"
+  ],
+  "cards": [
+    {
+      "id": 439,
+      "name": "Riven, Broken Blade",
+      "count": 1
+    },
+    {
+      "id": 258,
+      "name": "Astral Heron",
+      "count": 3
+    },
+    {
+      "id": 440,
+      "name": "Baron Nashor",
+      "count": 1
+    },
+    {
+      "id": 426,
+      "name": "Battle Preparations",
+      "count": 1
+    },
+    {
+      "id": 437,
+      "name": "Bedeviling Stranger",
+      "count": 2
+    },
+    {
+      "id": 438,
+      "name": "Blade of the Exile",
+      "count": 3
+    },
+    {
+      "id": 436,
+      "name": "Blitzcrank, Impassive",
+      "count": 2
+    },
+    {
+      "id": 6,
+      "name": "Defy",
+      "count": 2
+    },
+    {
+      "id": 7,
+      "name": "Discipline",
+      "count": 3
+    },
+    {
+      "id": 8,
+      "name": "En Garde",
+      "count": 1
+    },
+    {
+      "id": 11,
+      "name": "Gust",
+      "count": 2
+    },
+    {
+      "id": 12,
+      "name": "Not So Fast",
+      "count": 1
+    },
+    {
+      "id": 80,
+      "name": "Rebuke",
+      "count": 1
+    },
+    {
+      "id": 429,
+      "name": "Reckless Innovator",
+      "count": 2
+    },
+    {
+      "id": 15,
+      "name": "Scuttle Crab",
+      "count": 2
+    },
+    {
+      "id": 16,
+      "name": "Star-Crossed",
+      "count": 1
+    },
+    {
+      "id": 17,
+      "name": "Stellacorn Herder",
+      "count": 3
+    },
+    {
+      "id": 44,
+      "name": "Switcheroo",
+      "count": 2
+    },
+    {
+      "id": 18,
+      "name": "Tideturner",
+      "count": 2
+    },
+    {
+      "id": 47,
+      "name": "Traveling Merchant",
+      "count": 2
+    },
+    {
+      "id": 21,
+      "name": "Zhonya's Hourglass",
+      "count": 3
+    }
+  ],
+  "chosen_champion": 439,
+  "legend_name": "Riven, The Exile",
+  "legend_text": "Units you play to battlefields you control enter ready.",
+  "legend_id": "rad-149-167",
+  "legend_text_html": "<p>Units you play to battlefields you control enter ready.</p>",
+  "legend_keywords": [],
+  "learning_notes": "The Exile readies units played to fields you control. Blade grants +3 Might and Ganking; its Equip cost can exhaust a friendly unit. Riven’s exhaust trigger offers Buff, spend Buff to Stun, or spend Buff to ready, once each per turn. Baron adds a persistent field.",
+  "sideboard": [
+    {
+      "id": 1,
+      "name": "Abandon",
+      "count": 1
+    },
+    {
+      "id": 435,
+      "name": "An Offer You Can't Refuse",
+      "count": 2
+    },
+    {
+      "id": 421,
+      "name": "Decree of Focus",
+      "count": 2
+    },
+    {
+      "id": 423,
+      "name": "Hush",
+      "count": 1
+    },
+    {
+      "id": 424,
+      "name": "Ravenbloom Prefect",
+      "count": 1
+    },
+    {
+      "id": 80,
+      "name": "Rebuke",
+      "count": 1
+    },
+    {
+      "id": 429,
+      "name": "Reckless Innovator",
+      "count": 1
+    },
+    {
+      "id": 20,
+      "name": "Vex, Apathetic",
+      "count": 1
+    }
+  ],
+  "date": "November 2026"
+}

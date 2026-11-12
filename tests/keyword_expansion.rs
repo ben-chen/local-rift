@@ -10,8 +10,8 @@ use local_rift::rules;
 fn position() -> Game {
     let mut game = Game::new(3, 3, 880102, Difficulty::Tactical);
     game.start_match().unwrap();
-    game.battlefields = [0, 0];
-    game.battlefield_owner = [None; 2];
+    game.battlefields = vec![0, 0];
+    game.battlefield_owner = vec![None; 2];
     for player in &mut game.players {
         player.hand.clear();
         player.units.clear();

@@ -132,7 +132,7 @@ impl Game {
         // Core811.1.d.1.a overrides ordinary gear's Base-only entry when
         // played from Hidden. Cleanup323.6 subsequently recalls non-Deploy gear.
         let hidden = self.trigger_state.hidden_play;
-        if lane.is_some_and(|lane| lane >= crate::game::BATTLEFIELDS)
+        if lane.is_some_and(|lane| lane >= self.battlefield_count())
             || (deploy && lane.is_none())
             || (!deploy && lane.is_some() && !hidden)
         {
@@ -210,6 +210,30 @@ impl Game {
         gear_id: u32,
         target: Target,
     ) -> Result<(), String> {
+        self.gear_equip_target_valid(player, gear_id, target)?;
+        let gear = self.players[player]
+            .gear
+            .iter()
+            .find(|gear| gear.id == gear_id)
+            .unwrap();
+        let rule = rules::equipment(gear.card_id).unwrap();
+        self.clone()
+            .pay_action_cost(&Action::Equip { gear_id, target })?;
+        if self.players[player].discard.len() < rule.recycle_trash as usize {
+            return Err(format!(
+                "Equip also requires recycling {} cards from your trash.",
+                rule.recycle_trash
+            ));
+        }
+        Ok(())
+    }
+
+    fn gear_equip_target_valid(
+        &self,
+        player: usize,
+        gear_id: u32,
+        target: Target,
+    ) -> Result<(), String> {
         if self.phase != Phase::Playing || player >= self.players.len() {
             return Err("Equipment can be used during a match.".into());
         }
@@ -230,16 +254,77 @@ impl Game {
         if !self.gear_friendly_target(player, target) {
             return Err("Choose a unit you control to equip.".into());
         }
-        let rule = rules::equipment(gear.card_id).unwrap();
-        let state = &self.players[player];
-        self.clone()
-            .pay_action_cost(&Action::Equip { gear_id, target })?;
-        if state.discard.len() < rule.recycle_trash as usize {
-            return Err(format!(
-                "Equip also requires recycling {} cards from your trash.",
-                rule.recycle_trash
-            ));
+        Ok(())
+    }
+
+    pub(crate) fn validate_equip_exhaust_unit(
+        &self,
+        player: usize,
+        gear_id: u32,
+        unit_id: u32,
+    ) -> Result<(), String> {
+        let state = self
+            .players
+            .get(player)
+            .ok_or("Invalid equipment controller.")?;
+        let gear = state
+            .gear
+            .iter()
+            .find(|g| g.id == gear_id && !g.token)
+            .ok_or("That equipment is missing.")?;
+        if !rules::equipment(gear.card_id).is_some_and(|r| r.equip_exhaust_unit) {
+            return Err("This equipment does not offer an exhaust-unit cost.".into());
         }
+        if !state.units.iter().any(|u| u.id == unit_id && u.ready) {
+            return Err("Choose a ready unit you control to exhaust for Equip.".into());
+        }
+        Ok(())
+    }
+
+    pub fn gear_can_equip_exhaust_unit(
+        &self,
+        player: usize,
+        gear_id: u32,
+        target: Target,
+        exhaust_unit_id: u32,
+    ) -> Result<(), String> {
+        self.gear_equip_target_valid(player, gear_id, target)?;
+        self.validate_equip_exhaust_unit(player, gear_id, exhaust_unit_id)?;
+        self.clone().pay_action_cost(&Action::EquipExhaustUnit {
+            gear_id,
+            target,
+            exhaust_unit_id,
+        })
+    }
+
+    pub(crate) fn gear_equip_exhaust_unit(
+        &mut self,
+        player: usize,
+        gear_id: u32,
+        target: Target,
+        exhaust_unit_id: u32,
+    ) -> Result<(), String> {
+        self.gear_can_equip_exhaust_unit(player, gear_id, target, exhaust_unit_id)?;
+        let card_id = self.players[player]
+            .gear
+            .iter()
+            .find(|g| g.id == gear_id)
+            .unwrap()
+            .card_id;
+        // Resource costs (including modifiers) precede the chosen non-resource
+        // cost. This unit is not a target; its Exhaust event still triggers.
+        self.pay_action_cost(&Action::EquipExhaustUnit {
+            gear_id,
+            target,
+            exhaust_unit_id,
+        })?;
+        self.exhaust_unit(player, exhaust_unit_id);
+        self.queue_ability(
+            player,
+            card_id,
+            vec![target],
+            ChainAbility::Equip { gear_id, target },
+        );
         Ok(())
     }
 
@@ -642,6 +727,20 @@ impl Game {
                     player,
                     unit_id: unit.id,
                 };
+                if rules::equipment(gear.card_id).is_some_and(|r| r.equip_exhaust_unit) {
+                    for cost_unit in state.units.iter().filter(|u| u.ready) {
+                        if self
+                            .gear_can_equip_exhaust_unit(player, gear.id, target, cost_unit.id)
+                            .is_ok()
+                        {
+                            actions.push(Action::EquipExhaustUnit {
+                                gear_id: gear.id,
+                                target,
+                                exhaust_unit_id: cost_unit.id,
+                            });
+                        }
+                    }
+                }
                 if self.gear_can_equip(player, gear.id, target).is_err() {
                     continue;
                 }

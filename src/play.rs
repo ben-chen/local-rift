@@ -66,12 +66,19 @@ impl ExecutionChoices {
     pub fn destination_lane(&self, original: Option<usize>) -> Option<usize> {
         self.destination.map_or(original, MoveDestination::lane)
     }
-    fn validate_destination(&self, card_id: CardId) -> Result<(), String> {
+    fn validate_destination(
+        &self,
+        card_id: CardId,
+        battlefield_count: usize,
+    ) -> Result<(), String> {
         if let Some(destination) = self.destination {
             if !rules::chooses_move_destination(card_id) {
                 return Err("This spell does not choose a unit Move destination.".into());
             }
-            if destination.lane().is_some_and(|lane| lane >= BATTLEFIELDS) {
+            if destination
+                .lane()
+                .is_some_and(|lane| lane >= battlefield_count)
+            {
                 return Err("Choose a battlefield on this board.".into());
             }
         }
@@ -148,12 +155,17 @@ pub struct CostModifier {
 }
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct CostPlanView {
+    pub object_costs: Vec<ObjectCost>,
     pub xp: crate::xp::XpAmount,
     pub components: Vec<CostComponent>,
     pub modifiers: Vec<CostModifier>,
     pub energy: u32,
     pub power: Vec<crate::payment::PowerCost>,
     pub applied_order: Vec<CostSelection>,
+}
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub enum ObjectCost {
+    ExhaustUnit { player: usize, unit_id: u32 },
 }
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct PlayModeOption {
@@ -163,6 +175,10 @@ pub struct PlayModeOption {
 }
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct PlayChoiceView {
+    /// A legend's ready-entry replacement established by this play location.
+    pub legend_entry_ready: Option<ChainSource>,
+    /// Newly added physical slot that replaces Baron's chosen entry location.
+    pub baron_pit_entry: Option<usize>,
     pub show_off: Vec<super::show_off::ShowOffOption>,
     pub modes: Vec<PlayModeOption>,
     pub card_id: CardId,
@@ -198,7 +214,7 @@ pub struct PlayHistory {
     pub ezreal_progress: [u8; 2],
     pub non_token_gears: [u16; 2],
     pub gear_activations: [u16; 2],
-    pub units_or_gears_here: [[u16; 2]; 2], // [player][physical lane]
+    pub units_or_gears_here: [Vec<u16>; 2], // [player][physical lane]
 }
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct ResolutionProgress {
@@ -227,6 +243,10 @@ pub(crate) struct ActivePlay {
     pub player: usize,
     pub card_id: CardId,
     pub origin: PlayOrigin,
+    /// The Exile's replacement is established at the chosen play location
+    /// (Core 355.2 / Radiance FAQ), before costs or entry redirection.
+    pub legend_entry_ready: bool,
+    pub entry_lane: Option<usize>,
     pub choices: PlayChoices,
     pub costs: CostPlanView,
     pub grants: Vec<PlayGrant>,
@@ -872,11 +892,16 @@ impl Game {
         let shown = self.capture_show_off(action, intent.id, &intent.legacy.show_off)?;
         // Previews accept incomplete drafts, not malformed choices. Keep this on
         // the live board: only cost facts use the frozen/post-departure snapshot.
-        if intent.lane.is_some_and(|lane| lane >= BATTLEFIELDS) {
+        if intent
+            .lane
+            .is_some_and(|lane| lane >= self.battlefield_count())
+        {
             return Err("Choose a battlefield on this board.".into());
         }
         for repeat in &intent.legacy.repeats {
-            repeat.choices.validate_destination(intent.id)?;
+            repeat
+                .choices
+                .validate_destination(intent.id, self.battlefield_count())?;
         }
         for (mode, group, lane) in
             std::iter::once((intent.legacy.mode, &intent.targets, intent.lane)).chain(
@@ -956,7 +981,8 @@ impl Game {
             }),
             _ => None,
         };
-        let costs = self.play_cost_snapshot(action).card_cost_plan(
+        let snapshot = self.play_cost_snapshot(action);
+        let costs = snapshot.card_cost_plan(
             &intent,
             &intent.legacy,
             &grants,
@@ -965,6 +991,25 @@ impl Game {
             bonus.as_ref(),
         )?;
         Ok(PlayChoiceView {
+            baron_pit_entry: if intent.id == 440 && !intent.token {
+                self.baron_entry_preview()
+            } else {
+                None
+            },
+            legend_entry_ready: snapshot
+                .legend_readies_play(
+                    self.priority(),
+                    if intent.token {
+                        !rules::token_is_gear(intent.id)
+                    } else {
+                        self.catalog[intent.id].kind == CardKind::Unit
+                    },
+                    intent.lane,
+                )
+                .then_some(ChainSource::Legend {
+                    player: self.priority(),
+                    legend_id: self.legend_id(self.priority()),
+                }),
             show_off: self.show_off_options(action, intent.id),
             modes: Self::play_modes(intent.id),
             card_id: intent.id,
@@ -1059,7 +1104,8 @@ impl Game {
         }
         let mut all_targets = intent.targets.clone();
         for r in &choices.repeats {
-            r.choices.validate_destination(intent.id)?;
+            r.choices
+                .validate_destination(intent.id, self.battlefield_count())?;
             all_targets.extend(&r.choices.targets);
         }
         let deflect = self.deflect_cost(p, &all_targets)?;
@@ -1458,6 +1504,11 @@ impl Game {
                 return Err("Hidden Repeat targets must be at the hidden battlefield.".into());
             }
         }
+        let entry_lane = if intent.id == 440 && !intent.token {
+            probe.finalize_baron_entry()?
+        } else {
+            None
+        };
         let cost_snapshot = probe.play_cost_snapshot(&action);
         let costs = cost_snapshot.card_cost_plan(
             &intent,
@@ -1482,11 +1533,21 @@ impl Game {
             vec![]
         };
         probe.active_play = Some(ActivePlay {
+            entry_lane,
             rune_targets,
             show_off: shown,
             player: probe.priority(),
             card_id: intent.id,
             origin: intent.origin,
+            legend_entry_ready: cost_snapshot.legend_readies_play(
+                probe.priority(),
+                if intent.token {
+                    !rules::token_is_gear(intent.id)
+                } else {
+                    probe.catalog[intent.id].kind == CardKind::Unit
+                },
+                intent.lane,
+            ),
             choices: choices.clone(),
             costs,
             grants,
@@ -1552,6 +1613,14 @@ impl Game {
                         execution: 0,
                         executions: 1,
                     })
+            })
+            .or(match self.decision {
+                Some(Decision::TriggerReturn { chain_id, .. }) => Some(ResolutionProgress {
+                    chain_id,
+                    execution: 0,
+                    executions: 1,
+                }),
+                _ => None,
             })
     }
 }
@@ -1826,6 +1895,7 @@ pub(crate) fn solve_cost_plan(
         .collect();
     power.sort_by_key(|c| c.domains.len());
     Ok(CostPlanView {
+        object_costs: Vec::new(),
         xp,
         components,
         modifiers,
@@ -1858,7 +1928,8 @@ impl Game {
                 a.player == player
                     && a.card_id == card_id
                     && (a.origin == PlayOrigin::Token) == token
-                    && (a.choices.accelerate
+                    && (a.legend_entry_ready
+                        || a.choices.accelerate
                         || a.grants.iter().any(|g| {
                             matches!(
                                 g.kind,
@@ -2202,6 +2273,9 @@ impl Game {
                 )
             }
             Action::Equip { gear_id, target }
+            | Action::EquipExhaustUnit {
+                gear_id, target, ..
+            }
             | Action::EquipWithTrash {
                 gear_id, target, ..
             } => {
@@ -2212,6 +2286,13 @@ impl Game {
                     .find(|g| g.id == *gear_id && !g.token)
                     .ok_or("No such equipment.")?;
                 let r = rules::equipment(g.card_id).ok_or("No Equip ability.")?;
+                let exhaust = matches!(action, Action::EquipExhaustUnit { .. });
+                if let Action::EquipExhaustUnit {
+                    exhaust_unit_id, ..
+                } = action
+                {
+                    self.validate_equip_exhaust_unit(p, *gear_id, *exhaust_unit_id)?;
+                }
                 (
                     p,
                     AbilitySource::Gear {
@@ -2220,9 +2301,13 @@ impl Game {
                     },
                     g.card_id,
                     r.equip_energy.into(),
-                    r.equip_power.into(),
+                    if exhaust { 0 } else { r.equip_power.into() },
                     r.equip_xp,
-                    vec![r.equip_domain],
+                    if r.equip_any_power {
+                        ALL_DOMAINS.to_vec()
+                    } else {
+                        vec![r.equip_domain]
+                    },
                     false,
                     vec![*target],
                 )
@@ -2349,7 +2434,17 @@ impl Game {
                 ));
             }
         }
-        solve_cost_plan(components, modifiers, selection, false, 0)
+        let mut plan = solve_cost_plan(components, modifiers, selection, false, 0)?;
+        if let Action::EquipExhaustUnit {
+            exhaust_unit_id, ..
+        } = action
+        {
+            plan.object_costs.push(ObjectCost::ExhaustUnit {
+                player,
+                unit_id: *exhaust_unit_id,
+            });
+        }
+        Ok(plan)
     }
 
     pub(crate) fn pay_action_cost(&mut self, action: &Action) -> Result<(), String> {
@@ -2433,8 +2528,7 @@ impl Game {
                         .ok()
                         .is_some_and(|intent| rules::chooses_move_destination(intent.id))
                     {
-                        [None, Some(0), Some(1)]
-                            .into_iter()
+                        self.board_locations()
                             .map(|destination| {
                                 let mut movement = action.clone();
                                 match &mut movement {
@@ -2449,7 +2543,7 @@ impl Game {
                         rules::play_target_spec(intent.id).kind
                             == Some(rules::PlayTargetKind::Battlefield)
                     }) {
-                        (0..BATTLEFIELDS)
+                        (0..self.battlefield_count())
                             .map(|lane| {
                                 let mut targeted = action.clone();
                                 match &mut targeted {
@@ -2494,7 +2588,7 @@ impl Game {
                     continue;
                 }
                 if rules::static_abilities(intent.id).contains(&StaticAbility::Deploy) {
-                    for lane in 0..BATTLEFIELDS {
+                    for lane in 0..self.battlefield_count() {
                         let mut candidate = action.clone();
                         match &mut candidate {
                             Action::PlayCard {
@@ -2531,7 +2625,7 @@ impl Game {
                 let repeat_choices: Vec<ExecutionChoices> =
                     if rules::chooses_move_destination(view.card_id) {
                         let mut choices = Vec::new();
-                        for lane in [None, Some(0), Some(1)] {
+                        for lane in self.board_locations() {
                             for target in self.card_target_candidates(p, view.card_id, lane, &[])? {
                                 choices.push(ExecutionChoices {
                                     targets: vec![target],

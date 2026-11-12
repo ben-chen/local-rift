@@ -7,7 +7,7 @@ use crate::play::{ExecutionChoices, PlayChoices, RepeatSelection};
 fn backoff_api_preserves_hidden_privacy_origin_and_the_hand_only_draw() {
     for from_hidden in [false, true] {
         let mut session = position();
-        session.game.battlefields = [2, 2];
+        session.game.battlefields = vec![2, 2];
         session.game.battlefield_owner[0] = Some(0);
         session.game.players[0].units = vec![unit(500, 73, Some(0), false)];
         session.game.players[0].hand = vec![428];
@@ -81,6 +81,8 @@ fn move_destination_wire_is_explicit_strict_and_preserves_legacy_omission() {
         None,
         Some(MoveDestination::Base),
         Some(MoveDestination::Battlefield { lane: 1 }),
+        Some(MoveDestination::Battlefield { lane: 2 }),
+        Some(MoveDestination::Battlefield { lane: usize::MAX }),
     ] {
         let action = Action::WithPlayChoices {
             action: Box::new(Action::PlayCardWithTargets {
@@ -115,7 +117,7 @@ fn move_destination_wire_is_explicit_strict_and_preserves_legacy_omission() {
             json!({"type":"base","lane":0}),
             json!({"type":"battlefield"}),
             json!({"type":"battlefield","lane":-1}),
-            json!({"type":"battlefield","lane":2}),
+            json!({"type":"battlefield","lane":18446744073709551616.0}),
             json!({"type":"battlefield","lane":0.5}),
             json!({"type":"battlefield","lane":"1"}),
         ] {
@@ -225,14 +227,19 @@ fn siren_api_exposes_public_history_and_independent_destinations_without_mutatin
 }
 
 fn position() -> Session {
+    position_for_actor(0)
+}
+
+fn position_for_actor(actor: usize) -> Session {
     let mut session = Session::new(ResetOptions {
         decks: [3, 3],
+        first_player: actor,
         ..ResetOptions::default()
     })
     .unwrap();
     session.start(0).unwrap();
-    session.game.battlefields = [3, 3];
-    session.game.battlefield_owner = [None; 2];
+    session.game.battlefields = vec![3, 3];
+    session.game.battlefield_owner = vec![None; 2];
     for player in &mut session.game.players {
         player.hand.clear();
         player.units.clear();
@@ -332,8 +339,9 @@ fn firestorm(lane: usize) -> Action {
 }
 
 #[test]
-fn battlefield_target_wire_requires_a_physical_slot_and_no_extra_identity() {
-    for lane in 0..2 {
+fn battlefield_target_wire_requires_a_slot_index_and_no_extra_identity() {
+    // Existence belongs to game-state validation; added fields use the same wire shape.
+    for lane in [0, 1, 2, 3, usize::MAX] {
         let target = Target::Battlefield { lane };
         let wire = json!({"type":"battlefield","lane":lane});
         assert_eq!(target_to_json(&target), wire);
@@ -346,8 +354,7 @@ fn battlefield_target_wire_requires_a_physical_slot_and_no_extra_identity() {
         json!({"type":"battlefield","lane":0.5}),
         json!({"type":"battlefield","lane":"1"}),
         json!({"type":"battlefield","lane":true}),
-        json!({"type":"battlefield","lane":2}),
-        json!({"type":"battlefield","lane":u64::MAX}),
+        json!({"type":"battlefield","lane":18446744073709551616.0}),
         json!({"type":"battlefield","lane":0,"player":0}),
         json!({"type":"battlefield","lane":0,"battlefield_id":3}),
         json!({"type":"battlefield","lane":0,"unit_id":12}),
@@ -360,6 +367,110 @@ fn battlefield_target_wire_requires_a_physical_slot_and_no_extra_identity() {
         json!({"type":"spell","chain_id":5}),
     ] {
         assert_eq!(target_to_json(&parse_target(&old).unwrap()), old);
+    }
+}
+
+#[test]
+fn dynamic_fields_api_area_targets_follow_the_current_board() {
+    for actor in 0..2 {
+        for count in 2..=4 {
+            let mut session = position_for_actor(actor);
+            for _ in 2..count {
+                session.game.add_battlefield(9);
+            }
+            session.game.players[actor].hand = vec![299];
+            session.game.players[1 - actor].units = (0..count)
+                .map(|lane| unit(700 + lane as u32, 72, Some(lane), false))
+                .collect();
+            let before = [session.observe(0).unwrap(), session.observe(1).unwrap()];
+            let revision = session.revision();
+            for missing in [count, usize::MAX] {
+                for command in ["validate", "apply"] {
+                    let result = session.handle(json!({"command":command,"player":actor,
+                        "revision":revision,"action":action_to_json(&firestorm(missing))}));
+                    assert_eq!(result["error"]["code"], "illegal_action", "{result}");
+                    assert_eq!(session.revision(), revision);
+                    assert_eq!(
+                        [session.observe(0).unwrap(), session.observe(1).unwrap()],
+                        before
+                    );
+                }
+            }
+            apply(&mut session, firestorm(count - 1));
+            resolve_chain(&mut session);
+            assert_eq!(session.game.players[1 - actor].units.len(), count - 1);
+            assert!(
+                session.game.players[1 - actor]
+                    .units
+                    .iter()
+                    .all(|u| u.lane != Some(count - 1))
+            );
+        }
+    }
+}
+
+#[test]
+fn dynamic_fields_api_repeat_destinations_require_an_existing_field() {
+    use crate::play::{MoveDestination, PlayGrant, PlayGrantKind};
+    for actor in 0..2 {
+        let mut session = position_for_actor(actor);
+        let lane = session.game.add_battlefield(9);
+        session.game.players[1 - actor].units = vec![unit(750, 73, None, false)];
+        let target = Target::Unit {
+            player: 1 - actor,
+            unit_id: 750,
+        };
+        session
+            .game
+            .move_effect(actor, target, Some(0), false)
+            .unwrap();
+        session.game.players[actor].hand = vec![427];
+        session.game.play_grants.push(PlayGrant {
+            id: 9900,
+            player: actor,
+            expires_turn: session.game.turn,
+            source: ChainSource::Card { card_id: 427 },
+            kind: PlayGrantKind::RepeatNextSpell,
+        });
+        let original = Action::PlayCardWithTargets {
+            hand_index: 0,
+            lane: None,
+            targets: vec![target],
+        };
+        let option_id = session.game.play_choices(&original).unwrap().repeats[0].id;
+        let action = Action::WithPlayChoices {
+            action: Box::new(original),
+            choices: PlayChoices {
+                repeats: vec![RepeatSelection {
+                    option_id,
+                    choices: ExecutionChoices {
+                        destination: Some(MoveDestination::Battlefield { lane }),
+                        targets: vec![target],
+                        ..Default::default()
+                    },
+                }],
+                ..Default::default()
+            },
+        };
+        let before = [session.observe(0).unwrap(), session.observe(1).unwrap()];
+        let revision = session.revision();
+        for missing in [lane + 1, usize::MAX] {
+            let mut invalid = action_to_json(&action);
+            invalid["choices"]["repeats"][0]["choices"]["destination"]["lane"] = json!(missing);
+            for command in ["validate", "apply"] {
+                let result = session.handle(json!({"command":command,"player":actor,
+                    "revision":revision,"action":invalid}));
+                assert_eq!(result["error"]["code"], "illegal_action", "{result}");
+                assert_eq!(session.revision(), revision);
+                assert_eq!(
+                    [session.observe(0).unwrap(), session.observe(1).unwrap()],
+                    before
+                );
+            }
+        }
+        apply(&mut session, action);
+        resolve_chain(&mut session);
+        assert_eq!(session.game.players[1 - actor].units[0].lane, Some(lane));
     }
 }
 

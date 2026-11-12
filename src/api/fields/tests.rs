@@ -39,7 +39,7 @@ fn position(owner: usize, field: usize) -> Session {
         p.energy = 41;
         p.power_pool = [8; 6];
     }
-    s.game.battlefield_owner = [None; 2];
+    s.game.battlefield_owner = vec![None; 2];
     s
 }
 fn views(s: &Session) -> [Value; 2] {

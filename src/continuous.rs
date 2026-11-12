@@ -80,6 +80,15 @@ pub fn passive_rules(id: CardId) -> &'static [PassiveRule] {
     use PassiveEffect::*;
     use PassiveKeyword::*;
     match id {
+        440 => {
+            const {
+                &[PassiveRule {
+                    condition: SourceCondition::Always,
+                    recipients: Recipients::OtherFriendlyUnits,
+                    effect: Might(2),
+                }]
+            }
+        }
         401 => {
             const {
                 &[PassiveRule {

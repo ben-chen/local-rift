@@ -5,8 +5,8 @@ use crate::game::Unit;
 fn session(owner: usize, top: usize) -> Session {
     let mut s = Session::new(ResetOptions::default()).unwrap();
     s.start(0).unwrap();
-    s.game.battlefields = [7, 9];
-    s.game.battlefield_owner = [None; 2];
+    s.game.battlefields = vec![7, 9];
+    s.game.battlefield_owner = vec![None; 2];
     for p in &mut s.game.players {
         p.hand.clear();
         p.units.clear();

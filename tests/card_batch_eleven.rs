@@ -182,9 +182,9 @@ fn tracker_uses_reviewed_fury_and_bilgewater_without_rewriting_raw_facts() {
         deck.cards.push((333, 1));
         assert_eq!(deck.validate().is_ok(), legal, "legend {}", legend.id);
     }
-    // The current issue history includes the later Reckless Innovator tag review.
-    assert_eq!(source["counts"]["source_quality_issues"], 54);
-    assert_eq!(source["counts"]["resolved_source_issue_groups"], 54);
+    // The current issue history includes the later Reckless Innovator, Riven and Blitzcrank tag reviews.
+    assert_eq!(source["counts"]["source_quality_issues"], 57);
+    assert_eq!(source["counts"]["resolved_source_issue_groups"], 57);
 }
 
 #[test]

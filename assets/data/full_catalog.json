@@ -146,64 +146,64 @@
     "unresolved_type_conflict_identities": 0,
     "implemented_legal_by_kind": {
       "battlefield": 17,
-      "gear": 75,
-      "legend": 10,
+      "gear": 76,
+      "legend": 11,
       "rune": 6,
-      "spell": 121,
-      "unit": 239
+      "spell": 122,
+      "unit": 243
     },
-    "implemented_main_cards": 435,
-    "implemented_legends": 10,
+    "implemented_main_cards": 441,
+    "implemented_legends": 11,
     "implemented_battlefields": 17,
-    "implemented_legal_identities": 468,
-    "unimplemented_legal_identities": 611,
+    "implemented_legal_identities": 475,
+    "unimplemented_legal_identities": 604,
     "errata_entries": 67,
     "identities_with_errata": 67,
-    "source_quality_issues": 54,
-    "reviewed_field_resolutions": 139,
-    "resolved_source_issue_groups": 54,
+    "source_quality_issues": 57,
+    "reviewed_field_resolutions": 142,
+    "resolved_source_issue_groups": 57,
     "unresolved_source_issue_groups": 0,
     "unresolved_gameplay_identities": 0,
-    "unreviewed_variant_identities": 93,
+    "unreviewed_variant_identities": 91,
     "unreviewed_variants_by_field": {
-      "rules_text": 82,
+      "rules_text": 80,
       "tags": 33
     },
     "pinned_runtime_variant_identities": 0,
-    "reviewed_variant_identities": 31,
-    "reviewed_variant_printings": 94,
-    "field_reviewed_printings": 89
+    "reviewed_variant_identities": 33,
+    "reviewed_variant_printings": 99,
+    "field_reviewed_printings": 92
   },
   "unimplemented_by_observed_keyword": {
     "ADD": 1,
     "Accelerate": 16,
-    "Action": 59,
-    "Add": 21,
+    "Action": 58,
+    "Add": 20,
     "Ambush": 9,
     "Assault": 13,
     "Backline": 2,
-    "Buff": 9,
+    "Buff": 8,
     "Deathknell": 10,
     "Deflect": 26,
     "Deploy": 14,
     "Disarm": 6,
     "Empower": 13,
     "Empowered": 15,
-    "Equip": 26,
+    "Equip": 25,
     "Flow": 7,
-    "Ganking": 30,
-    "Hidden": 29,
+    "Ganking": 29,
+    "Hidden": 28,
     "Hunt": 1,
     "Legion": 3,
     "Mighty": 9,
     "Predict": 5,
     "Quick-Draw": 2,
-    "Reaction": 62,
+    "Reaction": 61,
     "Repeat": 10,
     "Shield": 10,
     "Show Off": 5,
-    "Stun": 15,
-    "Tank": 21,
+    "Stun": 14,
+    "Tank": 20,
     "Temporary": 9,
     "Unique": 3,
     "Vision": 4,
@@ -1285,8 +1285,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 435,
+        "official_id": "rad-101-167",
+        "playable_in_client": true
       }
     },
     {
@@ -2904,13 +2906,13 @@
       "rules_text_status": "official_gallery_printing_text",
       "conflicting_fields": [],
       "source_review": {
-        "status": "unreviewed_variants",
+        "status": "reviewed_variants",
         "resolution_ids": [],
         "unresolved_gameplay_fields": [],
         "variant_diagnostics": [
           {
             "field": "rules_text",
-            "status": "unreviewed_variant_difference",
+            "status": "reviewed_variant_difference",
             "values": [
               {
                 "official_id": "unl-147-219",
@@ -2924,17 +2926,21 @@
                 "official_id": "unl-238-219",
                 "value": "As you play me, add the Baron Pit battlefield token to the board if it's not there already. If you do, I enter there.\nI can't be chosen by enemy spells and abilities.\nOther friendly units have +2 Might."
               }
-            ]
+            ],
+            "disposition": "reminder_equivalent"
           }
         ],
-        "reviewed_variant_fields": [],
-        "unresolved_variant_fields": [
+        "reviewed_variant_fields": [
           "rules_text"
-        ]
+        ],
+        "unresolved_variant_fields": [],
+        "identity_review_id": "riven-unl-147-219"
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 440,
+        "official_id": "unl-147-219",
+        "playable_in_client": true
       }
     },
     {
@@ -2964,8 +2970,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_battlefield_token",
+        "runtime_id": 1000,
+        "official_id": "unl-t01",
+        "playable_in_client": true
       }
     },
     {
@@ -3201,16 +3209,20 @@
       "rules_text_status": "official_gallery_printing_text",
       "conflicting_fields": [],
       "source_review": {
-        "status": "no_detected_conflicts",
-        "resolution_ids": [],
+        "status": "reviewed_corrections",
+        "resolution_ids": [
+          "rad-107-167:tags"
+        ],
         "unresolved_gameplay_fields": [],
         "variant_diagnostics": [],
         "reviewed_variant_fields": [],
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 437,
+        "official_id": "rad-107-167",
+        "playable_in_client": true
       }
     },
     {
@@ -3629,8 +3641,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 438,
+        "official_id": "rad-150-167",
+        "playable_in_client": true
       }
     },
     {
@@ -4016,8 +4030,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 436,
+        "official_id": "ogn-067-298",
+        "playable_in_client": true
       }
     },
     {
@@ -29890,13 +29906,16 @@
       "rules_text_status": "official_gallery_printing_text",
       "conflicting_fields": [],
       "source_review": {
-        "status": "unreviewed_variants",
-        "resolution_ids": [],
+        "status": "reviewed_variants",
+        "resolution_ids": [
+          "rad-043-167:tags",
+          "rad-043a-167:tags"
+        ],
         "unresolved_gameplay_fields": [],
         "variant_diagnostics": [
           {
             "field": "rules_text",
-            "status": "unreviewed_variant_difference",
+            "status": "reviewed_variant_difference",
             "values": [
               {
                 "official_id": "rad-043-167",
@@ -29906,17 +29925,21 @@
                 "official_id": "rad-043a-167",
                 "value": "When I become exhausted, choose one that hasn't been chosen this turn —\n[Buff] me.\nSpend my buff to [Stun] an enemy unit.\nSpend my buff to ready me."
               }
-            ]
+            ],
+            "disposition": "reminder_equivalent"
           }
         ],
-        "reviewed_variant_fields": [],
-        "unresolved_variant_fields": [
+        "reviewed_variant_fields": [
           "rules_text"
-        ]
+        ],
+        "unresolved_variant_fields": [],
+        "identity_review_id": "riven-rad-043-167"
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 439,
+        "official_id": "rad-043-167",
+        "playable_in_client": true
       }
     },
     {
@@ -36826,8 +36849,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_preset_legend",
+        "runtime_id": 10,
+        "official_id": "rad-149-167",
+        "playable_in_client": true
       }
     },
     {
@@ -68207,14 +68232,17 @@
         "might": 4,
         "might_bonus": null,
         "tags": [
-          "Riven"
+          "Riven",
+          "Noxus"
         ],
         "rules_html": "<p>When I become exhausted, choose one that hasn't been chosen this turn —</p><ul><li>[Buff] me. (Give me a +1 :rb_might: buff if I don't have one.)</li><li>Spend my buff to [Stun] an enemy unit. (It doesn't deal combat damage this turn.)</li><li>Spend my buff to ready me.</li></ul>",
         "rules_text": "When I become exhausted, choose one that hasn't been chosen this turn —\n[Buff] me. (Give me a +1 Might buff if I don't have one.)\nSpend my buff to [Stun] an enemy unit. (It doesn't deal combat damage this turn.)\nSpend my buff to ready me.",
         "equipment_html": "",
         "equipment_text": ""
       },
-      "resolution_ids": [],
+      "resolution_ids": [
+        "rad-043-167:tags"
+      ],
       "unresolved_gameplay_fields": []
     },
     {
@@ -68272,14 +68300,17 @@
         "might": 4,
         "might_bonus": null,
         "tags": [
-          "Riven"
+          "Riven",
+          "Noxus"
         ],
         "rules_html": "<p>When I become exhausted, choose one that hasn't been chosen this turn —</p><ul><li>[Buff] me.</li><li>Spend my buff to [Stun] an enemy unit.</li><li>Spend my buff to ready me.</li></ul>",
         "rules_text": "When I become exhausted, choose one that hasn't been chosen this turn —\n[Buff] me.\nSpend my buff to [Stun] an enemy unit.\nSpend my buff to ready me.",
         "equipment_html": "",
         "equipment_text": ""
       },
-      "resolution_ids": [],
+      "resolution_ids": [
+        "rad-043a-167:tags"
+      ],
       "unresolved_gameplay_fields": []
     },
     {
@@ -72553,13 +72584,18 @@
         "power": null,
         "might": 2,
         "might_bonus": null,
-        "tags": [],
+        "tags": [
+          "Shadow Isles",
+          "Demon"
+        ],
         "rules_html": "<p>[Hidden] (Hide now for :rb_rune_rainbow: to react with later for :rb_energy_0:.)<br />When you play me, choose a battlefield. If there are 4 or more units there, you may return an enemy unit there to its owner's hand.</p>",
         "rules_text": "[Hidden] (Hide now for [Any Power] to react with later for [0 Energy].)\nWhen you play me, choose a battlefield. If there are 4 or more units there, you may return an enemy unit there to its owner's hand.",
         "equipment_html": "",
         "equipment_text": ""
       },
-      "resolution_ids": [],
+      "resolution_ids": [
+        "rad-107-167:tags"
+      ],
       "unresolved_gameplay_fields": []
     },
     {
@@ -130342,6 +130378,64 @@
         }
       ],
       "detail": "The complete official face prints UNIT / PILTOVER below the artwork, while the raw gallery tags are empty. Preserve the raw data and override only effective tags to Piltover; this source correction does not enable runtime support."
+    },
+    {
+      "kind": "official_artwork_field_mismatch",
+      "field": "tags",
+      "official_ids": [
+        "rad-043-167"
+      ],
+      "values": [
+        {
+          "official_id": "rad-043-167",
+          "raw_value": [
+            "Riven"
+          ],
+          "printed_value": [
+            "Riven",
+            "Noxus"
+          ]
+        }
+      ],
+      "detail": "The full original official face visibly prints Riven / Noxus on its type/tag line. The gallery omits Noxus. Preserve raw facts and correct only the effective tags; no runtime support is granted."
+    },
+    {
+      "kind": "official_artwork_field_mismatch",
+      "field": "tags",
+      "official_ids": [
+        "rad-043a-167"
+      ],
+      "values": [
+        {
+          "official_id": "rad-043a-167",
+          "raw_value": [
+            "Riven"
+          ],
+          "printed_value": [
+            "Riven",
+            "Noxus"
+          ]
+        }
+      ],
+      "detail": "The full original official face visibly prints Riven / Noxus on its type/tag line. The gallery omits Noxus. Preserve raw facts and correct only the effective tags; no runtime support is granted."
+    },
+    {
+      "kind": "official_artwork_field_mismatch",
+      "field": "tags",
+      "official_ids": [
+        "rad-107-167"
+      ],
+      "values": [
+        {
+          "official_id": "rad-107-167",
+          "raw_value": [],
+          "printed_value": [
+            "Shadow Isles",
+            "Demon"
+          ]
+        }
+      ],
+      "detail": "The full original official face visibly prints Shadow Isles / Demon on its type/tag line. The gallery omits both tags. Preserve raw facts and correct only the effective tags; no runtime support is granted."
     }
   ],
   "source_issue_reviews": [
@@ -131662,6 +131756,94 @@
           }
         ],
         "detail": "The complete official face prints UNIT / PILTOVER below the artwork, while the raw gallery tags are empty. Preserve the raw data and override only effective tags to Piltover; this source correction does not enable runtime support."
+      }
+    },
+    {
+      "review_issue_id": "rad-043-167-tags",
+      "official_ids": [
+        "rad-043-167"
+      ],
+      "resolution_ids": [
+        "rad-043-167:tags"
+      ],
+      "status": "resolved_by_review",
+      "raw_issue": {
+        "kind": "official_artwork_field_mismatch",
+        "field": "tags",
+        "official_ids": [
+          "rad-043-167"
+        ],
+        "values": [
+          {
+            "official_id": "rad-043-167",
+            "raw_value": [
+              "Riven"
+            ],
+            "printed_value": [
+              "Riven",
+              "Noxus"
+            ]
+          }
+        ],
+        "detail": "The full original official face visibly prints Riven / Noxus on its type/tag line. The gallery omits Noxus. Preserve raw facts and correct only the effective tags; no runtime support is granted."
+      }
+    },
+    {
+      "review_issue_id": "rad-043a-167-tags",
+      "official_ids": [
+        "rad-043a-167"
+      ],
+      "resolution_ids": [
+        "rad-043a-167:tags"
+      ],
+      "status": "resolved_by_review",
+      "raw_issue": {
+        "kind": "official_artwork_field_mismatch",
+        "field": "tags",
+        "official_ids": [
+          "rad-043a-167"
+        ],
+        "values": [
+          {
+            "official_id": "rad-043a-167",
+            "raw_value": [
+              "Riven"
+            ],
+            "printed_value": [
+              "Riven",
+              "Noxus"
+            ]
+          }
+        ],
+        "detail": "The full original official face visibly prints Riven / Noxus on its type/tag line. The gallery omits Noxus. Preserve raw facts and correct only the effective tags; no runtime support is granted."
+      }
+    },
+    {
+      "review_issue_id": "rad-107-167-tags",
+      "official_ids": [
+        "rad-107-167"
+      ],
+      "resolution_ids": [
+        "rad-107-167:tags"
+      ],
+      "status": "resolved_by_review",
+      "raw_issue": {
+        "kind": "official_artwork_field_mismatch",
+        "field": "tags",
+        "official_ids": [
+          "rad-107-167"
+        ],
+        "values": [
+          {
+            "official_id": "rad-107-167",
+            "raw_value": [],
+            "printed_value": [
+              "Shadow Isles",
+              "Demon"
+            ]
+          }
+        ],
+        "detail": "The full original official face visibly prints Shadow Isles / Demon on its type/tag line. The gallery omits both tags. Preserve raw facts and correct only the effective tags; no runtime support is granted."
       }
     }
   ],
@@ -136366,6 +136548,107 @@
         }
       ],
       "enables_runtime_support": false
+    },
+    {
+      "id": "rad-043-167:tags",
+      "official_id": "rad-043-167",
+      "name": "Riven, Broken Blade",
+      "field": "tags",
+      "reviewed_on": "2026-11-12",
+      "basis": "confirmed_artwork",
+      "operation": "override",
+      "expected_raw_value": [
+        "Riven"
+      ],
+      "raw_source_field": "tags",
+      "expected_raw_source_value": [
+        "Riven"
+      ],
+      "effective_value": [
+        "Riven",
+        "Noxus"
+      ],
+      "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+      "expected_printing_sha256": "1c089480bb67b33e04431c779fcff25bbb6efa88354ed0d88bd66f1db1081cde",
+      "printing_hash_encoding": "UTF-8 JSON sorted keys; ensure_ascii=false; separators=(',', ':')",
+      "reason": "The full original official face visibly prints Riven / Noxus on its type/tag line. The gallery omits Noxus. Preserve raw facts and correct only the effective tags; no runtime support is granted.",
+      "evidence": [
+        {
+          "kind": "official_card_image",
+          "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/0c9ac0da1c144f46a1e0c5423f51f9b8f6ba295b-744x1039.png?accountingTag=RB",
+          "local_path": "assets/data/catalog_evidence/images/rad-043-167.png",
+          "sha256": "e1eeccd4286ed7421a7126ad606eef6d3b3fe192f61e6dddd6d651b89568207a",
+          "bytes": 830179,
+          "location": "Printed type/tag line below the artwork"
+        }
+      ],
+      "enables_runtime_support": false
+    },
+    {
+      "id": "rad-043a-167:tags",
+      "official_id": "rad-043a-167",
+      "name": "Riven, Broken Blade",
+      "field": "tags",
+      "reviewed_on": "2026-11-12",
+      "basis": "confirmed_artwork",
+      "operation": "override",
+      "expected_raw_value": [
+        "Riven"
+      ],
+      "raw_source_field": "tags",
+      "expected_raw_source_value": [
+        "Riven"
+      ],
+      "effective_value": [
+        "Riven",
+        "Noxus"
+      ],
+      "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+      "expected_printing_sha256": "6fbc3282aec8ffa9843629ce1a71c1c6ccb42f14ba1d9837ca19aa6513fbc1a9",
+      "printing_hash_encoding": "UTF-8 JSON sorted keys; ensure_ascii=false; separators=(',', ':')",
+      "reason": "The full original official face visibly prints Riven / Noxus on its type/tag line. The gallery omits Noxus. Preserve raw facts and correct only the effective tags; no runtime support is granted.",
+      "evidence": [
+        {
+          "kind": "official_card_image",
+          "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/9870e0f591e2ca04bea2274209e8df3d4435213b-744x1039.png?accountingTag=RB",
+          "local_path": "assets/data/catalog_evidence/images/rad-043a-167.png",
+          "sha256": "9899ab8c795ab7d9dbc5c8bcb6bc2a657f86254207f582ea4924ceb4efb07ac0",
+          "bytes": 1051940,
+          "location": "Printed type/tag line below the artwork"
+        }
+      ],
+      "enables_runtime_support": false
+    },
+    {
+      "id": "rad-107-167:tags",
+      "official_id": "rad-107-167",
+      "name": "Bedeviling Stranger",
+      "field": "tags",
+      "reviewed_on": "2026-11-12",
+      "basis": "confirmed_artwork",
+      "operation": "override",
+      "expected_raw_value": [],
+      "raw_source_field": "tags",
+      "expected_raw_source_value": [],
+      "effective_value": [
+        "Shadow Isles",
+        "Demon"
+      ],
+      "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+      "expected_printing_sha256": "fca5e6800f86dee2044895a8e6633bf65d1b54a535d2bcda7ac977fe644bcbc1",
+      "printing_hash_encoding": "UTF-8 JSON sorted keys; ensure_ascii=false; separators=(',', ':')",
+      "reason": "The full original official face visibly prints Shadow Isles / Demon on its type/tag line. The gallery omits both tags. Preserve raw facts and correct only the effective tags; no runtime support is granted.",
+      "evidence": [
+        {
+          "kind": "official_card_image",
+          "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/d112a706fe957e5cea58ea1e4366ac02e3ba292b-744x1039.png?accountingTag=RB",
+          "local_path": "assets/data/catalog_evidence/images/rad-107-167.png",
+          "sha256": "5a0503ca0036983004020f6d9b15cf8392b7e23f479087f77b1be0fb5a862dca",
+          "bytes": 746486,
+          "location": "Printed type/tag line below the artwork"
+        }
+      ],
+      "enables_runtime_support": false
     }
   ],
   "review_evidence": {
@@ -136384,10 +136667,10 @@
         "uncompressed_bytes": 3986973
       }
     },
-    "reviewed_printings": 89,
-    "field_resolutions": 139,
-    "historical_issue_groups": 54,
-    "image_evidence": 89,
+    "reviewed_printings": 92,
+    "field_resolutions": 142,
+    "historical_issue_groups": 57,
+    "image_evidence": 92,
     "live_image_bytes_checked": false
   },
   "reviewed_identity_reviews": [
@@ -136905,6 +137188,42 @@
       "errata": []
     },
     {
+      "id": "riven-rad-043-167",
+      "identity": "rad-043-167",
+      "name": "Riven, Broken Blade",
+      "status": "complete",
+      "reviewed_variant_fields": [
+        "rules_text"
+      ],
+      "raw_variant_fields": [
+        "rules_text"
+      ],
+      "effective_variant_fields": [
+        "rules_text"
+      ],
+      "member_ids": [
+        "rad-043-167",
+        "rad-043a-167"
+      ],
+      "field_reviews": [
+        {
+          "field": "rules_text",
+          "disposition": "reminder_equivalent",
+          "reason": "Both complete faces retain the exhaustion trigger, per-turn choice restriction and all three identical Buff, spend-to-Stun and spend-to-ready choices. The alternate omits only the italic Buff and Stun reminders. Both faces print Riven / Noxus; separately evidenced corrections restore the omitted Noxus tags.",
+          "rules": [
+            "135.2.d.1",
+            "135.2.d.2",
+            "135.2.d.3",
+            "424.1",
+            "427.1",
+            "702.1"
+          ],
+          "resolution_ids": []
+        }
+      ],
+      "errata": []
+    },
+    {
       "id": "c7-sfd-036-221",
       "identity": "sfd-036-221",
       "name": "Lonely Poro",
@@ -137163,6 +137482,42 @@
             "135.2.d.3",
             "811",
             "826"
+          ],
+          "resolution_ids": []
+        }
+      ],
+      "errata": []
+    },
+    {
+      "id": "riven-unl-147-219",
+      "identity": "unl-147-219",
+      "name": "Baron Nashor",
+      "status": "complete",
+      "reviewed_variant_fields": [
+        "rules_text"
+      ],
+      "raw_variant_fields": [
+        "rules_text"
+      ],
+      "effective_variant_fields": [
+        "rules_text"
+      ],
+      "member_ids": [
+        "unl-147-219",
+        "unl-147a-219",
+        "unl-238-219"
+      ],
+      "field_reviews": [
+        {
+          "field": "rules_text",
+          "disposition": "reminder_equivalent",
+          "reason": "All three complete faces retain the same Baron Pit creation and entry replacement, enemy-spell/ability choice restriction, and +2 Might for other friendly units. Alternate/showcase faces omit only the italic Baron Pit movement reminder. Each prints Unit / The Void, 10 Energy, 3 Chaos Power and 12 Might.",
+          "rules": [
+            "135.2.d.1",
+            "135.2.d.2",
+            "135.2.d.3",
+            "187.9",
+            "369.3"
           ],
           "resolution_ids": []
         }
@@ -137632,10 +137987,10 @@
   ],
   "identity_review_evidence": {
     "printing_projection_version": 1,
-    "reviewed_identities": 31,
-    "reviewed_printings": 94,
-    "reviewed_fields": 37,
-    "image_evidence": 94,
+    "reviewed_identities": 33,
+    "reviewed_printings": 99,
+    "reviewed_fields": 39,
+    "image_evidence": 99,
     "origin_archives": {
       "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9": {
         "url": "https://playriftbound.com/en-us/card-gallery/",

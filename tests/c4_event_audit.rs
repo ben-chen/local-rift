@@ -8,8 +8,8 @@ use local_rift::play::PlayGrantKind;
 fn position() -> Game {
     let mut g = Game::new_for_agents(3, 3, 64417, Difficulty::Tactical);
     g.start_match().unwrap();
-    g.battlefields = [3, 3];
-    g.battlefield_owner = [None, None];
+    g.battlefields = vec![3, 3];
+    g.battlefield_owner = vec![None, None];
     for p in 0..2 {
         g.legend[p].ready = false;
         let s = &mut g.players[p];

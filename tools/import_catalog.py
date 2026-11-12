@@ -79,6 +79,11 @@ def load_battlefield_manifest():
     return json.loads((ROOT / "assets/data/battlefields.json").read_text())["battlefields"]
 
 
+def load_battlefield_token_manifest():
+    """Auxiliary field tokens are implemented game pieces, not starting choices."""
+    return json.loads((ROOT / "assets/data/battlefield_tokens.json").read_text())["battlefields"]
+
+
 def sha(value):
     return hashlib.sha256(value).hexdigest()
 
@@ -395,6 +400,7 @@ def make_catalog(manifest, data, *, review_manifest=None, identity_review_manife
                       for key, variants in groups.items()}
     runtime = load_runtime_manifest()
     fields = load_battlefield_manifest()
+    field_tokens = load_battlefield_token_manifest()
     mappings = {}
     def add_mapping(official_id, kind, runtime_id, expected_name=None):
         require(official_id in raw_by_id, f"Runtime card absent from official gallery: {official_id}")
@@ -458,17 +464,23 @@ def make_catalog(manifest, data, *, review_manifest=None, identity_review_manife
         status = "implemented_preset_legend" if official_id in preset_legend_ids else "implemented_legend"
         add_mapping(official_id, status, entry["id"], entry["name"])
     require([v["id"] for v in fields] == list(range(len(fields))), "Battlefield registry IDs must be unique, ordered, and contiguous")
-    for field in fields:
+    token_ids = [v["id"] for v in field_tokens]
+    require(all(type(v) is int and v >= 1000 for v in token_ids) and len(token_ids) == len(set(token_ids)),
+            "Battlefield token IDs must be unique in the auxiliary range")
+    for field in fields + field_tokens:
+        is_token = field["id"] in token_ids
         official_id = field["source_id"]
         require(official_id in printing_by_id, f"Battlefield absent from official gallery: {official_id}")
         printing = printing_by_id[official_id]
         require(printing["effective"]["types"] == ["battlefield"], f"Battlefield registry maps a non-battlefield: {official_id}")
+        require(("token" in printing["effective"]["super_types"]) == is_token,
+                f"Battlefield token/starting-choice mismatch: {official_id}")
         require(field["name"] == printing["name"], f"Battlefield source name mismatch: {official_id}")
         require(field["official_html"] == printing["effective"]["rules_html"], f"Battlefield source text mismatch: {official_id}")
         if "official_text" in field:
             require(field["official_text"] == printing["effective"]["rules_text"], f"Battlefield readable source text mismatch: {official_id}")
         require(field["image_url"] == printing["image_url"], f"Battlefield source artwork mismatch: {official_id}")
-        add_mapping(official_id, "implemented_battlefield", field["id"], field["name"])
+        add_mapping(official_id, "implemented_battlefield_token" if is_token else "implemented_battlefield", field["id"], field["name"])
     cards = []
     for key, variants in sorted(groups.items(), key=lambda pair: pair[1][0]["name"].casefold()):
         canonical = variants[0]

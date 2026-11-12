@@ -176,7 +176,7 @@ mod tests {
         game.players[0].energy_pool = 20;
         game.players[0].energy = 20;
         game.players[0].power_pool = [20; 6];
-        game.battlefield_owner = [None; 2];
+        game.battlefield_owner = vec![None; 2];
         game
     }
 

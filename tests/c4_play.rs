@@ -7,10 +7,10 @@ use local_rift::play::{CostScope, CostSelection, ExecutionChoices, PlayChoices, 
 fn position() -> Game {
     let mut game = Game::new_for_agents(3, 3, 3772, Difficulty::Tactical);
     game.start_match().unwrap();
-    game.battlefields = [3, 3];
+    game.battlefields = vec![3, 3];
     game.legend[0].ready = false;
     game.legend[1].ready = false;
-    game.battlefield_owner = [None; 2];
+    game.battlefield_owner = vec![None; 2];
     for player in &mut game.players {
         player.hand.clear();
         player.units.clear();
@@ -510,7 +510,7 @@ fn stargazer_uses_exact_trash_objects_flow_for_instructed_play_optional_costs() 
 #[test]
 fn explicit_power_reduction_allocates_across_distinct_repeat_components() {
     let mut g = position();
-    g.battlefields = [0, 0];
+    g.battlefields = vec![0, 0];
     unit(&mut g, 0, 7001, 258, Some(0));
     cast(&mut g, 9, vec![]);
     resolve(&mut g);

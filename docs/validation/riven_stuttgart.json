@@ -1,0 +1,406 @@
+{
+  "status": "Validated release",
+  "reviewed_on": "2026-11-12",
+  "base_commit": "2a95ef645c339a348fcb99e48eeaa60a96ee9401",
+  "scope": [
+    "Six main cards (IDs 435–440): Offer, Blitzcrank, Stranger, Blade, Riven and Baron.",
+    "The Exile legend (ID 10) and auxiliary Baron Pit (ID 1000).",
+    "Exact Sonecon Stuttgart registration as preset 6; original six presets preserved.",
+    "Dynamic battlefield state, movement, scoring, payment and observations.",
+    "Native ordered trigger targeting and alternate Equip payment, plus matching bot API.",
+    "Beginner/Advanced explanations, source-specific event badges and complete rule inspection."
+  ],
+  "coverage": {
+    "implemented_main_cards": 441,
+    "implemented_legal_identities": 475,
+    "unimplemented_legal_identities": 604
+  },
+  "source_admission": {
+    "path": "assets/data/card_admissions/riven/admissions.json",
+    "sha256": "b1711b6cb2a695f1045b06f91a9e87ddf4d29296f8c8c2a1c4dc8b8f5274a223",
+    "original_faces_viewed": 12
+  },
+  "preset_admission": {
+    "path": "assets/data/preset_admissions/riven_stuttgart_2026_11/admission.json",
+    "sha256": "8e25ae43e46ad6a5cc367657550b19c7e30bbea1afa399a4149c847f22cc6790",
+    "source": "https://playriftbound.com/en-us/news/organizedplay/best-ofs-for-the-european-championship/"
+  },
+  "validation": {
+    "full_rust": {
+      "completed_at": "2026-11-12T22:03:15.514522+00:00",
+      "status": "completed",
+      "session": 3292,
+      "exit_code": 0,
+      "command": "cargo test --all-targets --no-fail-fast",
+      "rust": "1.100.0",
+      "source_manifest": "sonecon-source-v3-manifest.json",
+      "completed_test_targets": 110,
+      "totals": {
+        "passed": 1743,
+        "failed": 0,
+        "ignored": 0,
+        "measured": 0,
+        "filtered_out": 0
+      },
+      "log": {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/sonecon-full-v1.log",
+        "sha256": "7204674339655ae43d38252c3a6c0326a38eb6e7b47050a0eb6da2e74ec048ea"
+      }
+    },
+    "card_source_suite": {
+      "status": "completed",
+      "exit_code": 0,
+      "tests": 278,
+      "log": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/sonecon-source-suite-v2.log",
+      "sha256": "fe7cdfdd053a6868242bfec1775b8d1e6a4862f503f3b92ccc23266fbe2fb081"
+    },
+    "clippy_all_targets": {
+      "status": "passed",
+      "warnings_denied": true,
+      "log": {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/sonecon-clippy-v2.log",
+        "sha256": "a20e71f84ca057b38b831d4571f4e33f92b0c7dc315a7a35d8395907fd1e8a6f"
+      }
+    },
+    "focused_engine": {
+      "single_games": 84,
+      "registered_matches": 12,
+      "registered_games": 29,
+      "log": {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/sonecon-runtime-v1.log",
+        "sha256": "0eeb8636f9e9f54907ef6a8a8f10372c1cb5698cf188657933a16e4b1224895f"
+      },
+      "note": "The final full Rust suite also includes all three Sonecon registration/game tests."
+    },
+    "development_api": {
+      "matches": 12,
+      "games": 29,
+      "both_seats_all_six_main_cards_observed": true,
+      "completed_matches_with_baron_pit": 3,
+      "receipt": {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/sonecon-api-coverage.json",
+        "sha256": "a06b4314dd8c6fd6046f475f6fa63f455da31b3402b0b971b4c0290e502c255c"
+      }
+    },
+    "installed_api": {
+      "checked_at": "2026-11-12T22:05:58.658530+00:00",
+      "matches": 12,
+      "games": 29,
+      "all_command_response_trace_hashes_equal": true,
+      "all_results_and_coverage_equal": true,
+      "development_binary_sha256": "87ea6a6600fbdb295725b1b91653ffb1bcfbfb1cdf8b779592eb14216275fde9",
+      "installed_binary_sha256": "265509c369e7b58b4aff559c77fe635c5da02465e1661d6ff4951d898e149775",
+      "installed_package": "/nix/store/d03rn47s3jdfs92cd8ppfyxp6wnjrswd-local-rift-0.1.0",
+      "receipts": [
+        {
+          "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/sonecon-api-coverage.json",
+          "sha256": "a06b4314dd8c6fd6046f475f6fa63f455da31b3402b0b971b4c0290e502c255c"
+        },
+        {
+          "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/sonecon-api-installed-v1.json",
+          "sha256": "8509276d263b886aa8a15d0296951458a4aa1152bd455f7f3302daaa0311845f"
+        }
+      ]
+    },
+    "installed_native": {
+      "completed_at": "2026-11-12T22:07:15.836559+00:00",
+      "session": 7145,
+      "exit_code": 0,
+      "package": "/nix/store/d03rn47s3jdfs92cd8ppfyxp6wnjrswd-local-rift-0.1.0",
+      "runs": 16,
+      "captures": 138,
+      "host_ld_library_path_removed": true,
+      "binary_sha256": "9a3d360df8e94b0392b5cd66ee676df7a058b9018427c5466d6313ccbd064f88",
+      "cases": [
+        {
+          "small": false,
+          "capture": true,
+          "exit": 0,
+          "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/ui-sonecon-installed-v1-False-True",
+          "screenshots": 24,
+          "binary_sha256": "faddfd8dc88b64eea8385a0461c31e2547c954fec3391953481fb831bd3cb8be",
+          "unwrapped_binary_sha256": "9a3d360df8e94b0392b5cd66ee676df7a058b9018427c5466d6313ccbd064f88",
+          "host_ld_library_path_removed": true
+        },
+        {
+          "small": true,
+          "capture": true,
+          "exit": 0,
+          "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/ui-sonecon-installed-v1-True-True",
+          "screenshots": 24,
+          "binary_sha256": "faddfd8dc88b64eea8385a0461c31e2547c954fec3391953481fb831bd3cb8be",
+          "unwrapped_binary_sha256": "9a3d360df8e94b0392b5cd66ee676df7a058b9018427c5466d6313ccbd064f88",
+          "host_ld_library_path_removed": true
+        },
+        {
+          "small": false,
+          "capture": false,
+          "exit": 0,
+          "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/ui-sonecon-installed-v1-False-False",
+          "screenshots": 0,
+          "binary_sha256": "faddfd8dc88b64eea8385a0461c31e2547c954fec3391953481fb831bd3cb8be",
+          "unwrapped_binary_sha256": "9a3d360df8e94b0392b5cd66ee676df7a058b9018427c5466d6313ccbd064f88",
+          "host_ld_library_path_removed": true
+        },
+        {
+          "small": true,
+          "capture": false,
+          "exit": 0,
+          "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/ui-sonecon-installed-v1-True-False",
+          "screenshots": 0,
+          "binary_sha256": "faddfd8dc88b64eea8385a0461c31e2547c954fec3391953481fb831bd3cb8be",
+          "unwrapped_binary_sha256": "9a3d360df8e94b0392b5cd66ee676df7a058b9018427c5466d6313ccbd064f88",
+          "host_ld_library_path_removed": true
+        },
+        {
+          "small": false,
+          "capture": true,
+          "exit": 0,
+          "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/ui-baron-installed-v1-False-True",
+          "screenshots": 22,
+          "binary_sha256": "faddfd8dc88b64eea8385a0461c31e2547c954fec3391953481fb831bd3cb8be",
+          "unwrapped_binary_sha256": "9a3d360df8e94b0392b5cd66ee676df7a058b9018427c5466d6313ccbd064f88",
+          "host_ld_library_path_removed": true
+        },
+        {
+          "small": true,
+          "capture": true,
+          "exit": 0,
+          "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/ui-baron-installed-v1-True-True",
+          "screenshots": 22,
+          "binary_sha256": "faddfd8dc88b64eea8385a0461c31e2547c954fec3391953481fb831bd3cb8be",
+          "unwrapped_binary_sha256": "9a3d360df8e94b0392b5cd66ee676df7a058b9018427c5466d6313ccbd064f88",
+          "host_ld_library_path_removed": true
+        },
+        {
+          "small": false,
+          "capture": false,
+          "exit": 0,
+          "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/ui-baron-installed-v1-False-False",
+          "screenshots": 0,
+          "binary_sha256": "faddfd8dc88b64eea8385a0461c31e2547c954fec3391953481fb831bd3cb8be",
+          "unwrapped_binary_sha256": "9a3d360df8e94b0392b5cd66ee676df7a058b9018427c5466d6313ccbd064f88",
+          "host_ld_library_path_removed": true
+        },
+        {
+          "small": true,
+          "capture": false,
+          "exit": 0,
+          "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/ui-baron-installed-v1-True-False",
+          "screenshots": 0,
+          "binary_sha256": "faddfd8dc88b64eea8385a0461c31e2547c954fec3391953481fb831bd3cb8be",
+          "unwrapped_binary_sha256": "9a3d360df8e94b0392b5cd66ee676df7a058b9018427c5466d6313ccbd064f88",
+          "host_ld_library_path_removed": true
+        },
+        {
+          "small": false,
+          "capture": true,
+          "exit": 0,
+          "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/ui-blade-installed-v1-False-True",
+          "screenshots": 11,
+          "binary_sha256": "faddfd8dc88b64eea8385a0461c31e2547c954fec3391953481fb831bd3cb8be",
+          "unwrapped_binary_sha256": "9a3d360df8e94b0392b5cd66ee676df7a058b9018427c5466d6313ccbd064f88",
+          "host_ld_library_path_removed": true
+        },
+        {
+          "small": true,
+          "capture": true,
+          "exit": 0,
+          "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/ui-blade-installed-v1-True-True",
+          "screenshots": 11,
+          "binary_sha256": "faddfd8dc88b64eea8385a0461c31e2547c954fec3391953481fb831bd3cb8be",
+          "unwrapped_binary_sha256": "9a3d360df8e94b0392b5cd66ee676df7a058b9018427c5466d6313ccbd064f88",
+          "host_ld_library_path_removed": true
+        },
+        {
+          "small": false,
+          "capture": false,
+          "exit": 0,
+          "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/ui-blade-installed-v1-False-False",
+          "screenshots": 0,
+          "binary_sha256": "faddfd8dc88b64eea8385a0461c31e2547c954fec3391953481fb831bd3cb8be",
+          "unwrapped_binary_sha256": "9a3d360df8e94b0392b5cd66ee676df7a058b9018427c5466d6313ccbd064f88",
+          "host_ld_library_path_removed": true
+        },
+        {
+          "small": true,
+          "capture": false,
+          "exit": 0,
+          "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/ui-blade-installed-v1-True-False",
+          "screenshots": 0,
+          "binary_sha256": "faddfd8dc88b64eea8385a0461c31e2547c954fec3391953481fb831bd3cb8be",
+          "unwrapped_binary_sha256": "9a3d360df8e94b0392b5cd66ee676df7a058b9018427c5466d6313ccbd064f88",
+          "host_ld_library_path_removed": true
+        },
+        {
+          "small": false,
+          "capture": true,
+          "exit": 0,
+          "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/ui-stranger-installed-v1-False-True",
+          "screenshots": 12,
+          "binary_sha256": "faddfd8dc88b64eea8385a0461c31e2547c954fec3391953481fb831bd3cb8be",
+          "unwrapped_binary_sha256": "9a3d360df8e94b0392b5cd66ee676df7a058b9018427c5466d6313ccbd064f88",
+          "host_ld_library_path_removed": true
+        },
+        {
+          "small": true,
+          "capture": true,
+          "exit": 0,
+          "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/ui-stranger-installed-v1-True-True",
+          "screenshots": 12,
+          "binary_sha256": "faddfd8dc88b64eea8385a0461c31e2547c954fec3391953481fb831bd3cb8be",
+          "unwrapped_binary_sha256": "9a3d360df8e94b0392b5cd66ee676df7a058b9018427c5466d6313ccbd064f88",
+          "host_ld_library_path_removed": true
+        },
+        {
+          "small": false,
+          "capture": false,
+          "exit": 0,
+          "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/ui-stranger-installed-v1-False-False",
+          "screenshots": 0,
+          "binary_sha256": "faddfd8dc88b64eea8385a0461c31e2547c954fec3391953481fb831bd3cb8be",
+          "unwrapped_binary_sha256": "9a3d360df8e94b0392b5cd66ee676df7a058b9018427c5466d6313ccbd064f88",
+          "host_ld_library_path_removed": true
+        },
+        {
+          "small": true,
+          "capture": false,
+          "exit": 0,
+          "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/ui-stranger-installed-v1-True-False",
+          "screenshots": 0,
+          "binary_sha256": "faddfd8dc88b64eea8385a0461c31e2547c954fec3391953481fb831bd3cb8be",
+          "unwrapped_binary_sha256": "9a3d360df8e94b0392b5cd66ee676df7a058b9018427c5466d6313ccbd064f88",
+          "host_ld_library_path_removed": true
+        }
+      ],
+      "actual_visual_review": [
+        {
+          "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/ui-sonecon-installed-v1-True-True/rift_smoke_sonecon_main.png",
+          "sha256": "d8f501724097cf5ec0b7403dcb132144f754ac8d2891466d0511b7585bbebd9e",
+          "finding": "Correct event badges and seven-preset pagination; Riven main-card rows and controls fit."
+        },
+        {
+          "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/ui-sonecon-installed-v1-True-True/rift_smoke_sonecon_registration.png",
+          "sha256": "5d0550d48cc730d5a1832a5a507a7c9fe814e58864413ee879548ee39b24a2cd",
+          "finding": "Both full registrations, fields, difficulty and opening-choice controls fit."
+        },
+        {
+          "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/ui-baron-installed-v1-True-True/rift_champion_baron_move_choices.png",
+          "sha256": "029f0f0c96950340d3bbe0e3f8e478248d423327f46a71b80fdff7f7596cff65",
+          "finding": "Three readable fields with card artwork and four distinct destination controls."
+        },
+        {
+          "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/ui-baron-installed-v1-True-True/rift_champion_baron_pit_rules.png",
+          "sha256": "c5107d02519df071d8c005ab05d448b9936e3ef96c76822cbb0286e300791bf8",
+          "finding": "Entire Pit text and return control fit."
+        },
+        {
+          "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/ui-blade-installed-v1-True-True/rift_blade_independent_choices.png",
+          "sha256": "9ca90ab16f5465e9d1c44d8e4722e54f6082c0d66f5c04e94049f21776174369",
+          "finding": "Bearer and exhaust-cost selections remain distinct; cost options and confirmation fit."
+        },
+        {
+          "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/ui-blade-installed-v1-True-True/rift_blade_attached.png",
+          "sha256": "ad2b1bcb4a7b61c931b4f7758832f8c96b310c037c9ba2e81a78279f6368edc7",
+          "finding": "Visible equipment strip on bearer; hover shows current Might, Ganking, attachment and scrollable full text."
+        },
+        {
+          "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/ui-stranger-installed-v1-True-True/rift_riven_stranger_return.png",
+          "sha256": "c895ebb420af171ddfc8ceb56a9420b1e35617679299ca17f20969f7a350c6b9",
+          "finding": "Resolution choice shows both return and leave controls, highlighted target and unobtrusive Beginner advice."
+        },
+        {
+          "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/ui-stranger-installed-v1-True-True/rift_riven_stranger_advanced.png",
+          "sha256": "623cbdd8d8ea21c6c888c7d10108e5442fff068ffc1eb9e4277eb0685369e749",
+          "finding": "Advanced commentary explains tempo, replay risk and nonrefundable Deflect while both actions remain available."
+        },
+        {
+          "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/ui-baron-installed-v1-True-True/rift_champion_exile_lesson.png",
+          "sha256": "2818dfce204e8412974525f151ad8d48bdd8abc8ca9eea7c75fdb633bcbe0910",
+          "finding": "Complete corrected Exile/Blade/Riven/Baron lesson fits the small inspection panel."
+        }
+      ]
+    },
+    "nix_flake": {
+      "status": "completed",
+      "session": 66879,
+      "exit_code": 0,
+      "completed_at": "2026-11-12T22:12:15.837064+00:00",
+      "system": "x86_64-linux",
+      "command": "nix flake check path:nix-source-sonecon-v1 --no-update-lock-file --print-build-logs",
+      "source": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/nix-source-sonecon-v1",
+      "outputs": {
+        "catalog": "/nix/store/h4f867jrdkn31915bki84x8w7hjyj7ss-local-rift-catalog-check",
+        "package": "/nix/store/d03rn47s3jdfs92cd8ppfyxp6wnjrswd-local-rift-0.1.0",
+        "simulation": "/nix/store/di4wy48y6fx17sra0x5acgipjdn6a9hs-local-rift-simulation-check"
+      },
+      "rust_tests": 1743,
+      "source_tests": 278,
+      "source_test_seconds": 257.259,
+      "simulation": {
+        "single_games": 1176,
+        "pairings": 49,
+        "difficulty_levels": 3,
+        "alternating_first_player": true,
+        "maximum_actions": 391,
+        "maximum_turns": 28,
+        "elapsed_seconds": 149.45,
+        "path": "/nix/store/di4wy48y6fx17sra0x5acgipjdn6a9hs-local-rift-simulation-check",
+        "sha256": "19eb22f713604d6aea4a544ac7fdabea6156ff69f912261bb5df850cc3c2d722",
+        "output": "Easy: 392 completed; first player 225 wins, second player 167 wins\nTactical: 392 completed; first player 225 wins, second player 167 wins\nStrategic: 392 completed; first player 203 wins, second player 189 wins\nPASS: 1176 complete matches across 49 pairings and 3 AI levels, alternating starting player by seed\nMaximum: 391 actions, 28 turns; average 169.6 actions; elapsed 149.45s\nAll matches checked card/rune conservation, energy accounting, unique valid units, and winner consistency after every action.\n"
+      },
+      "log": {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/sonecon-nix-v1.log",
+        "sha256": "96e559e2b87dedd462a500fd89ade45d8103d17b07599fa5348372a431935e16"
+      },
+      "untested_systems": [
+        "aarch64-linux",
+        "aarch64-darwin"
+      ]
+    }
+  },
+  "source_bridge": {
+    "base_commit": "2a95ef645c339a348fcb99e48eeaa60a96ee9401",
+    "source_manifest": {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/sonecon-source-v3-manifest.json",
+      "sha256": "ab555d1d32f4ae5b706065263a11682c60c5982bcde0f0d3f0564b959a58b622"
+    },
+    "verified_files": 1239,
+    "metadata_changes": [
+      {
+        "path": "README.md",
+        "frozen_sha256": "2ac2eb59bfdaed1ef3324b3a5d2ce248f259d79c002f05c3130932db0fa0efd7",
+        "workspace_sha256": "3e57842a7526f79e54d1a7d82ffe93ff0b0cb60e909a73250bbbf65743e85a13"
+      },
+      {
+        "path": "assets/data/card_admissions/riven/README.md",
+        "frozen_sha256": "51d481008d5cef093bb2fafab42c78b018c96bf7af62343539dded5a674a5b0f",
+        "workspace_sha256": "2e083066f70558766eaecae233d7afb5d13c4fbbaa86bc454e89e721ab1e9190"
+      },
+      {
+        "path": "docs/API.md",
+        "frozen_sha256": "0ca9a295cdd4dc903f0af146612879fed6fe94df2c51fc67d50f6c9abf1f31ef",
+        "workspace_sha256": "433e332d43fe806bd764333e1e1ba796419923c95978d1a4145d626e7aee8037"
+      },
+      {
+        "path": "docs/RULES.md",
+        "frozen_sha256": "edb9307888fa0f67bc0caf141231716cbf99dc14c4e74cca6238d741b99d5a8d",
+        "workspace_sha256": "47f25ac03558db6341ab4579092f7707334f9b7c13c3d40ed567712f29522370"
+      },
+      {
+        "path": "docs/RULES_AUDIT.md",
+        "frozen_sha256": "a4016f2504e42fd7a1d94e82944da6e8396c23f462a153c0698053df2024c555",
+        "workspace_sha256": "6c871e37529db6b61ad424eb25fbc6ea826b41f0463939b6c7f75a961bec4414"
+      }
+    ],
+    "added_receipt": "docs/validation/riven_stuttgart.json",
+    "note": "Compiled source, tests, card data, assets and build configuration match the frozen candidate. Only these explanatory Markdown files and this new validation receipt differ. Runtime does not load these documents."
+  },
+  "limitations": [
+    "475 of 1,079 tracked legal identities are supported; 604 remain unimplemented.",
+    "Full Standard equivalence and tournament-strength AI are not established by these tests.",
+    "Native interaction checks include controlled positions; complete registered games are counted separately.",
+    "Match practice remains untimed; tournament judge procedures and native draw agreements are outside this release.",
+    "Installed validation covers x86_64-linux; aarch64-linux and aarch64-darwin were not built in this run."
+  ]
+}

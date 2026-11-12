@@ -1,0 +1,1275 @@
+{
+  "schema_version": 1,
+  "reviewed_on": "2026-11-12",
+  "scope": "Six main cards, The Exile legend and auxiliary Baron Pit for the exact Sonecon Stuttgart registration. This does not certify all Standard rules.",
+  "gallery": {
+    "url": "https://playriftbound.com/en-us/card-gallery/",
+    "archive": "assets/data/catalog_sources/gallery.html.gz",
+    "sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+    "uncompressed_bytes": 3986973
+  },
+  "records": [
+    {
+      "identity": "rad-101-167",
+      "runtime_id": 435,
+      "implementation_status": "implemented_main_card",
+      "printing_cohort": [
+        "rad-101-167"
+      ],
+      "standard_legal": true,
+      "auxiliary": false,
+      "errata": [],
+      "printed_facts": {
+        "types": [
+          "spell"
+        ],
+        "super_types": [],
+        "domains": [
+          "chaos"
+        ],
+        "energy": 2,
+        "power": 0,
+        "might": null,
+        "might_bonus": null,
+        "tags": [],
+        "observation": "Action spell. Kills a gear; that gear’s controller plays exhausted Gold. The reminder names the Gold Reaction ability that kills and exhausts it for Any Power."
+      },
+      "printings": [
+        {
+          "official_id": "rad-101-167",
+          "raw_printing": {
+            "collector_number": 101,
+            "super_types": [],
+            "set": "RAD",
+            "type_source": "cardType.type",
+            "equipment_text": "",
+            "rules_text": "[Action] (Play on your turn or in showdowns.)\nKill a gear. Its controller plays a Gold gear token exhausted. (It has \"[Reaction][>] Kill this, [Exhaust]: [Add] [Any Power].\")",
+            "image_accessibility_text": "Riftbound Spell: An Offer You Can't Refuse. [Action] (Play on your turn or in showdowns.)\nKill a gear. Its controller plays a Gold gear token exhausted. (It has \"[Reaction][>] Kill this, [T]: [Add] [A].\")",
+            "domains": [
+              "chaos"
+            ],
+            "might": null,
+            "rarity": "uncommon",
+            "name": "An Offer You Can't Refuse",
+            "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/f724f95257abeacee82c774eff64973b56035357-744x1039.png?accountingTag=RB",
+            "might_bonus": null,
+            "official_id": "rad-101-167",
+            "energy": 2,
+            "public_code": "RAD-101/167",
+            "type_labels_conflict": true,
+            "illustrators": [
+              "Kudos Productions"
+            ],
+            "accessibility_types": [
+              "spell"
+            ],
+            "structured_types": [
+              "gear"
+            ],
+            "tags": [],
+            "equipment_html": "",
+            "power": null,
+            "rules_html": "<p>[Action] (Play on your turn or in showdowns.)<br />Kill a gear. Its controller plays a Gold gear token exhausted. (It has &quot;[Reaction][&gt;] Kill this, :rb_exhaust:: [Add] :rb_rune_rainbow:.&quot;)</p>",
+            "types": [
+              "gear"
+            ]
+          },
+          "raw_printing_sha256": "0b63ee90ba8919a437dfd42224403fe7ffa378aee613356aa94a254832c47b8e",
+          "effective": {
+            "types": [
+              "spell"
+            ],
+            "super_types": [],
+            "domains": [
+              "chaos"
+            ],
+            "energy": 2,
+            "power": null,
+            "might": null,
+            "might_bonus": null,
+            "tags": [],
+            "rules_html": "<p>[Action] (Play on your turn or in showdowns.)<br />Kill a gear. Its controller plays a Gold gear token exhausted. (It has &quot;[Reaction][&gt;] Kill this, :rb_exhaust:: [Add] :rb_rune_rainbow:.&quot;)</p>",
+            "rules_text": "[Action] (Play on your turn or in showdowns.)\nKill a gear. Its controller plays a Gold gear token exhausted. (It has \"[Reaction][>] Kill this, [Exhaust]: [Add] [Any Power].\")",
+            "equipment_html": "",
+            "equipment_text": ""
+          },
+          "resolution_ids": [
+            "rad-101-167:types"
+          ],
+          "original_image": {
+            "path": "assets/data/catalog_evidence/images/rad-101-167.png",
+            "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/f724f95257abeacee82c774eff64973b56035357-744x1039.png?accountingTag=RB",
+            "sha256": "99830a3cf41e5714212b0b5225d1a94209324fbd6a6605e4f411c8370919360a",
+            "bytes": 657114,
+            "dimensions": [
+              744,
+              1039
+            ],
+            "actual_full_face_viewed": true
+          }
+        }
+      ],
+      "runtime_image": {
+        "path": "assets/art/card_435.png",
+        "sha256": "50e9973135d686007c8ec48e39c9a1810f397f002141e6d0fc4cb4e3ae2368c9",
+        "bytes": 148033,
+        "dimensions": [
+          280,
+          391
+        ]
+      }
+    },
+    {
+      "identity": "ogn-067-298",
+      "runtime_id": 436,
+      "implementation_status": "implemented_main_card",
+      "printing_cohort": [
+        "ogn-067-298"
+      ],
+      "standard_legal": true,
+      "auxiliary": false,
+      "errata": [],
+      "printed_facts": {
+        "types": [
+          "unit"
+        ],
+        "super_types": [
+          "champion"
+        ],
+        "domains": [
+          "calm"
+        ],
+        "energy": 5,
+        "power": 1,
+        "might": 5,
+        "might_bonus": null,
+        "tags": [
+          "Blitzcrank",
+          "Zaun",
+          "Mech"
+        ],
+        "observation": "Tank. Optional enemy movement to the battlefield where Blitzcrank was played. Mandatory return to owner’s hand when he holds."
+      },
+      "printings": [
+        {
+          "official_id": "ogn-067-298",
+          "raw_printing": {
+            "collector_number": 67,
+            "super_types": [
+              "champion"
+            ],
+            "set": "OGN",
+            "type_source": "cardType.type",
+            "equipment_text": "",
+            "rules_text": "[Tank] (I must be assigned combat damage first.)\nWhen you play me to a battlefield, you may move an enemy unit to here.\nWhen I hold, return me to my owner's hand.",
+            "image_accessibility_text": "Riftbound Unit: Blitzcrank, Impassive. [Tank] (I must be assigned combat damage first.)\nWhen you play me to a battlefield, you may move an enemy unit to here.\nWhen I hold, return me to my owner's hand.",
+            "domains": [
+              "calm"
+            ],
+            "might": 5,
+            "rarity": "rare",
+            "name": "Blitzcrank, Impassive",
+            "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/654dcc4aef0a0b5a0c6e928d7aae397a52c3ab17-744x1039.png?accountingTag=RB",
+            "might_bonus": null,
+            "official_id": "ogn-067-298",
+            "energy": 5,
+            "public_code": "OGN-067/298",
+            "type_labels_conflict": false,
+            "illustrators": [
+              "League Splash Team"
+            ],
+            "accessibility_types": [
+              "unit"
+            ],
+            "structured_types": [
+              "unit"
+            ],
+            "tags": [
+              "Mech",
+              "Blitzcrank",
+              "Zaun"
+            ],
+            "equipment_html": "",
+            "power": 1,
+            "rules_html": "<p>[Tank] (I must be assigned combat damage first.)<br />When you play me to a battlefield, you may move an enemy unit to here.<br />When I hold, return me to my owner's hand.</p>",
+            "types": [
+              "unit"
+            ]
+          },
+          "raw_printing_sha256": "c98df1b27001ac58979cd54079ec42f363f7bf308d4438d56a2bda258d098c2c",
+          "effective": {
+            "types": [
+              "unit"
+            ],
+            "super_types": [
+              "champion"
+            ],
+            "domains": [
+              "calm"
+            ],
+            "energy": 5,
+            "power": 1,
+            "might": 5,
+            "might_bonus": null,
+            "tags": [
+              "Mech",
+              "Blitzcrank",
+              "Zaun"
+            ],
+            "rules_html": "<p>[Tank] (I must be assigned combat damage first.)<br />When you play me to a battlefield, you may move an enemy unit to here.<br />When I hold, return me to my owner's hand.</p>",
+            "rules_text": "[Tank] (I must be assigned combat damage first.)\nWhen you play me to a battlefield, you may move an enemy unit to here.\nWhen I hold, return me to my owner's hand.",
+            "equipment_html": "",
+            "equipment_text": ""
+          },
+          "resolution_ids": [],
+          "original_image": {
+            "path": "assets/data/card_admissions/riven/faces/ogn-067-298.png",
+            "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/654dcc4aef0a0b5a0c6e928d7aae397a52c3ab17-744x1039.png?accountingTag=RB",
+            "sha256": "97a65533e1ca5a43f45080e07b704ee6b9c3670bf961ee3a1b4dd61e379bea8b",
+            "bytes": 1043005,
+            "dimensions": [
+              744,
+              1039
+            ],
+            "actual_full_face_viewed": true
+          }
+        }
+      ],
+      "runtime_image": {
+        "path": "assets/art/card_436.png",
+        "sha256": "dd05c51ede6aa4b522cef9f6d4b41d96067dbd3e4e229b4c8a27d36c76a43fcb",
+        "bytes": 231468,
+        "dimensions": [
+          280,
+          391
+        ]
+      }
+    },
+    {
+      "identity": "rad-107-167",
+      "runtime_id": 437,
+      "implementation_status": "implemented_main_card",
+      "printing_cohort": [
+        "rad-107-167"
+      ],
+      "standard_legal": true,
+      "auxiliary": false,
+      "errata": [],
+      "printed_facts": {
+        "types": [
+          "unit"
+        ],
+        "super_types": [],
+        "domains": [
+          "chaos"
+        ],
+        "energy": 2,
+        "power": 0,
+        "might": 2,
+        "might_bonus": null,
+        "tags": [
+          "Shadow Isles",
+          "Demon"
+        ],
+        "observation": "Hidden. On play choose a battlefield; if it has four or more units, optionally return an enemy there to its owner’s hand. Printed tags are Shadow Isles and Demon, not Device."
+      },
+      "printings": [
+        {
+          "official_id": "rad-107-167",
+          "raw_printing": {
+            "collector_number": 107,
+            "super_types": [],
+            "set": "RAD",
+            "type_source": "cardType.type",
+            "equipment_text": "",
+            "rules_text": "[Hidden] (Hide now for [Any Power] to react with later for [0 Energy].)\nWhen you play me, choose a battlefield. If there are 4 or more units there, you may return an enemy unit there to its owner's hand.",
+            "image_accessibility_text": "Riftbound Unit: Bedeviling Stranger. [Hidden] (Hide now for [A] to react with later for [0].)\nWhen you play me, choose a battlefield. If there are 4 or more units there, you may return an enemy unit there to its owner's hand.",
+            "domains": [
+              "chaos"
+            ],
+            "might": 2,
+            "rarity": "rare",
+            "name": "Bedeviling Stranger",
+            "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/d112a706fe957e5cea58ea1e4366ac02e3ba292b-744x1039.png?accountingTag=RB",
+            "might_bonus": null,
+            "official_id": "rad-107-167",
+            "energy": 2,
+            "public_code": "RAD-107/167",
+            "type_labels_conflict": false,
+            "illustrators": [
+              "Kudos Productions"
+            ],
+            "accessibility_types": [
+              "unit"
+            ],
+            "structured_types": [
+              "unit"
+            ],
+            "tags": [],
+            "equipment_html": "",
+            "power": null,
+            "rules_html": "<p>[Hidden] (Hide now for :rb_rune_rainbow: to react with later for :rb_energy_0:.)<br />When you play me, choose a battlefield. If there are 4 or more units there, you may return an enemy unit there to its owner's hand.</p>",
+            "types": [
+              "unit"
+            ]
+          },
+          "raw_printing_sha256": "fca5e6800f86dee2044895a8e6633bf65d1b54a535d2bcda7ac977fe644bcbc1",
+          "effective": {
+            "types": [
+              "unit"
+            ],
+            "super_types": [],
+            "domains": [
+              "chaos"
+            ],
+            "energy": 2,
+            "power": null,
+            "might": 2,
+            "might_bonus": null,
+            "tags": [
+              "Shadow Isles",
+              "Demon"
+            ],
+            "rules_html": "<p>[Hidden] (Hide now for :rb_rune_rainbow: to react with later for :rb_energy_0:.)<br />When you play me, choose a battlefield. If there are 4 or more units there, you may return an enemy unit there to its owner's hand.</p>",
+            "rules_text": "[Hidden] (Hide now for [Any Power] to react with later for [0 Energy].)\nWhen you play me, choose a battlefield. If there are 4 or more units there, you may return an enemy unit there to its owner's hand.",
+            "equipment_html": "",
+            "equipment_text": ""
+          },
+          "resolution_ids": [
+            "rad-107-167:tags"
+          ],
+          "original_image": {
+            "path": "assets/data/catalog_evidence/images/rad-107-167.png",
+            "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/d112a706fe957e5cea58ea1e4366ac02e3ba292b-744x1039.png?accountingTag=RB",
+            "sha256": "5a0503ca0036983004020f6d9b15cf8392b7e23f479087f77b1be0fb5a862dca",
+            "bytes": 746486,
+            "dimensions": [
+              744,
+              1039
+            ],
+            "actual_full_face_viewed": true
+          }
+        }
+      ],
+      "runtime_image": {
+        "path": "assets/art/card_437.png",
+        "sha256": "bb7d398c6089a5bf98a87ba13197e2c0d463d88920ba25d804059534b6979f21",
+        "bytes": 183576,
+        "dimensions": [
+          280,
+          391
+        ]
+      }
+    },
+    {
+      "identity": "rad-150-167",
+      "runtime_id": 438,
+      "implementation_status": "implemented_main_card",
+      "printing_cohort": [
+        "rad-150-167"
+      ],
+      "standard_legal": true,
+      "auxiliary": false,
+      "errata": [],
+      "printed_facts": {
+        "types": [
+          "gear"
+        ],
+        "super_types": [
+          "signature"
+        ],
+        "domains": [
+          "calm",
+          "chaos"
+        ],
+        "energy": 3,
+        "power": 1,
+        "might": null,
+        "might_bonus": 3,
+        "tags": [
+          "Riven",
+          "Equipment"
+        ],
+        "observation": "One hybrid Calm/Chaos Power. Equip costs one Any Power OR exhaust a friendly unit. Equipment panel gives +3 Might and Ganking. No Energy-generation ability is printed."
+      },
+      "printings": [
+        {
+          "official_id": "rad-150-167",
+          "raw_printing": {
+            "collector_number": 150,
+            "super_types": [
+              "signature"
+            ],
+            "set": "RAD",
+            "type_source": "cardType.type",
+            "equipment_text": "[Ganking] (I can move from battlefield to battlefield.)",
+            "rules_text": "[Equip] — [Any Power] or exhaust a friendly unit. (Pay the cost: Attach this to a unit you control.)",
+            "image_accessibility_text": "Riftbound Gear: Blade of the Exile. [Equip] — [A] or exhaust a friendly unit. (Pay the cost: Attach this to a unit you control.)",
+            "domains": [
+              "calm",
+              "chaos"
+            ],
+            "might": 3,
+            "rarity": "epic",
+            "name": "Blade of the Exile",
+            "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/04aaded01b23641e496e39f51882ccfe89715492-744x1040.png?accountingTag=RB",
+            "might_bonus": 3,
+            "official_id": "rad-150-167",
+            "energy": 3,
+            "public_code": "RAD-150/167",
+            "type_labels_conflict": false,
+            "illustrators": [
+              "Polar Engine Studio"
+            ],
+            "accessibility_types": [
+              "gear"
+            ],
+            "structured_types": [
+              "gear"
+            ],
+            "tags": [
+              "Equipment",
+              "Riven"
+            ],
+            "equipment_html": "<p>[Ganking] (I can move from battlefield to battlefield.)</p>",
+            "power": 1,
+            "rules_html": "<p>[Equip] — :rb_rune_rainbow: or exhaust a friendly unit. (Pay the cost: Attach this to a unit you control.)</p>",
+            "types": [
+              "gear"
+            ]
+          },
+          "raw_printing_sha256": "66384fc8d82aa85228df1f4325a0b37e5a286f8532e14defefb4c982951a0e7c",
+          "effective": {
+            "types": [
+              "gear"
+            ],
+            "super_types": [
+              "signature"
+            ],
+            "domains": [
+              "calm",
+              "chaos"
+            ],
+            "energy": 3,
+            "power": 1,
+            "might": 3,
+            "might_bonus": 3,
+            "tags": [
+              "Equipment",
+              "Riven"
+            ],
+            "rules_html": "<p>[Equip] — :rb_rune_rainbow: or exhaust a friendly unit. (Pay the cost: Attach this to a unit you control.)</p>",
+            "rules_text": "[Equip] — [Any Power] or exhaust a friendly unit. (Pay the cost: Attach this to a unit you control.)",
+            "equipment_html": "<p>[Ganking] (I can move from battlefield to battlefield.)</p>",
+            "equipment_text": "[Ganking] (I can move from battlefield to battlefield.)"
+          },
+          "resolution_ids": [],
+          "original_image": {
+            "path": "assets/data/card_admissions/riven/faces/rad-150-167.png",
+            "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/04aaded01b23641e496e39f51882ccfe89715492-744x1040.png?accountingTag=RB",
+            "sha256": "2da06b97e7d52bea3a5fc27617a54a1aff6dc5d6bdee34d1b38962d0a9a7b358",
+            "bytes": 1336085,
+            "dimensions": [
+              744,
+              1040
+            ],
+            "actual_full_face_viewed": true
+          }
+        }
+      ],
+      "runtime_image": {
+        "path": "assets/art/card_438.png",
+        "sha256": "9edd3fed94f31f083c40e6e522b543d87ffb5f70a96519e835a4fc8c5a5417f8",
+        "bytes": 268469,
+        "dimensions": [
+          280,
+          391
+        ]
+      }
+    },
+    {
+      "identity": "rad-043-167",
+      "runtime_id": 439,
+      "implementation_status": "implemented_main_card",
+      "printing_cohort": [
+        "rad-043-167",
+        "rad-043a-167"
+      ],
+      "standard_legal": true,
+      "auxiliary": false,
+      "errata": [],
+      "printed_facts": {
+        "types": [
+          "unit"
+        ],
+        "super_types": [
+          "champion"
+        ],
+        "domains": [
+          "calm"
+        ],
+        "energy": 4,
+        "power": 0,
+        "might": 4,
+        "might_bonus": null,
+        "tags": [
+          "Riven",
+          "Noxus"
+        ],
+        "observation": "Exhaust trigger: choose a mode not already chosen this turn. Buff self; spend own Buff to Stun an enemy unit; or spend own Buff to ready self. Alternate omits Buff and Stun reminders; functional text matches."
+      },
+      "printings": [
+        {
+          "official_id": "rad-043-167",
+          "raw_printing": {
+            "collector_number": 43,
+            "super_types": [
+              "champion"
+            ],
+            "set": "RAD",
+            "type_source": "cardType.type",
+            "equipment_text": "",
+            "rules_text": "When I become exhausted, choose one that hasn't been chosen this turn —\n[Buff] me. (Give me a +1 Might buff if I don't have one.)\nSpend my buff to [Stun] an enemy unit. (It doesn't deal combat damage this turn.)\nSpend my buff to ready me.",
+            "image_accessibility_text": "Riftbound Unit: Riven, Broken Blade. When I become exhausted, choose one that hasn't been chosen this turn —\n- [Buff] me. (Give me a +1 [S] buff if I don't have one.)\n- Spend my buff to [Stun] an enemy unit. (It doesn't deal combat damage this turn.)\n- Spend my buff to ready me.",
+            "domains": [
+              "calm"
+            ],
+            "might": 4,
+            "rarity": "rare",
+            "name": "Riven, Broken Blade",
+            "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/0c9ac0da1c144f46a1e0c5423f51f9b8f6ba295b-744x1039.png?accountingTag=RB",
+            "might_bonus": null,
+            "official_id": "rad-043-167",
+            "energy": 4,
+            "public_code": "RAD-043/167",
+            "type_labels_conflict": false,
+            "illustrators": [
+              "JunHuan"
+            ],
+            "accessibility_types": [
+              "unit"
+            ],
+            "structured_types": [
+              "unit"
+            ],
+            "tags": [
+              "Riven"
+            ],
+            "equipment_html": "",
+            "power": null,
+            "rules_html": "<p>When I become exhausted, choose one that hasn't been chosen this turn —</p><ul><li>[Buff] me. (Give me a +1 :rb_might: buff if I don't have one.)</li><li>Spend my buff to [Stun] an enemy unit. (It doesn't deal combat damage this turn.)</li><li>Spend my buff to ready me.</li></ul>",
+            "types": [
+              "unit"
+            ]
+          },
+          "raw_printing_sha256": "1c089480bb67b33e04431c779fcff25bbb6efa88354ed0d88bd66f1db1081cde",
+          "effective": {
+            "types": [
+              "unit"
+            ],
+            "super_types": [
+              "champion"
+            ],
+            "domains": [
+              "calm"
+            ],
+            "energy": 4,
+            "power": null,
+            "might": 4,
+            "might_bonus": null,
+            "tags": [
+              "Riven",
+              "Noxus"
+            ],
+            "rules_html": "<p>When I become exhausted, choose one that hasn't been chosen this turn —</p><ul><li>[Buff] me. (Give me a +1 :rb_might: buff if I don't have one.)</li><li>Spend my buff to [Stun] an enemy unit. (It doesn't deal combat damage this turn.)</li><li>Spend my buff to ready me.</li></ul>",
+            "rules_text": "When I become exhausted, choose one that hasn't been chosen this turn —\n[Buff] me. (Give me a +1 Might buff if I don't have one.)\nSpend my buff to [Stun] an enemy unit. (It doesn't deal combat damage this turn.)\nSpend my buff to ready me.",
+            "equipment_html": "",
+            "equipment_text": ""
+          },
+          "resolution_ids": [
+            "rad-043-167:tags"
+          ],
+          "original_image": {
+            "path": "assets/data/catalog_evidence/images/rad-043-167.png",
+            "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/0c9ac0da1c144f46a1e0c5423f51f9b8f6ba295b-744x1039.png?accountingTag=RB",
+            "sha256": "e1eeccd4286ed7421a7126ad606eef6d3b3fe192f61e6dddd6d651b89568207a",
+            "bytes": 830179,
+            "dimensions": [
+              744,
+              1039
+            ],
+            "actual_full_face_viewed": true
+          }
+        },
+        {
+          "official_id": "rad-043a-167",
+          "raw_printing": {
+            "collector_number": 43,
+            "super_types": [
+              "champion"
+            ],
+            "set": "RAD",
+            "type_source": "cardType.type",
+            "equipment_text": "",
+            "rules_text": "When I become exhausted, choose one that hasn't been chosen this turn —\n[Buff] me.\nSpend my buff to [Stun] an enemy unit.\nSpend my buff to ready me.",
+            "image_accessibility_text": "Riftbound Unit: Riven, Broken Blade. When I become exhausted, choose one that hasn't been chosen this turn —\n- [Buff] me.\n- Spend my buff to [Stun] an enemy unit.\n- Spend my buff to ready me.",
+            "domains": [
+              "calm"
+            ],
+            "might": 4,
+            "rarity": "showcase",
+            "name": "Riven, Broken Blade",
+            "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/9870e0f591e2ca04bea2274209e8df3d4435213b-744x1039.png?accountingTag=RB",
+            "might_bonus": null,
+            "official_id": "rad-043a-167",
+            "energy": 4,
+            "public_code": "RAD-043a/167",
+            "type_labels_conflict": false,
+            "illustrators": [
+              "Ziyan Lin"
+            ],
+            "accessibility_types": [
+              "unit"
+            ],
+            "structured_types": [
+              "unit"
+            ],
+            "tags": [
+              "Riven"
+            ],
+            "equipment_html": "",
+            "power": null,
+            "rules_html": "<p>When I become exhausted, choose one that hasn't been chosen this turn —</p><ul><li>[Buff] me.</li><li>Spend my buff to [Stun] an enemy unit.</li><li>Spend my buff to ready me.</li></ul>",
+            "types": [
+              "unit"
+            ]
+          },
+          "raw_printing_sha256": "6fbc3282aec8ffa9843629ce1a71c1c6ccb42f14ba1d9837ca19aa6513fbc1a9",
+          "effective": {
+            "types": [
+              "unit"
+            ],
+            "super_types": [
+              "champion"
+            ],
+            "domains": [
+              "calm"
+            ],
+            "energy": 4,
+            "power": null,
+            "might": 4,
+            "might_bonus": null,
+            "tags": [
+              "Riven",
+              "Noxus"
+            ],
+            "rules_html": "<p>When I become exhausted, choose one that hasn't been chosen this turn —</p><ul><li>[Buff] me.</li><li>Spend my buff to [Stun] an enemy unit.</li><li>Spend my buff to ready me.</li></ul>",
+            "rules_text": "When I become exhausted, choose one that hasn't been chosen this turn —\n[Buff] me.\nSpend my buff to [Stun] an enemy unit.\nSpend my buff to ready me.",
+            "equipment_html": "",
+            "equipment_text": ""
+          },
+          "resolution_ids": [
+            "rad-043a-167:tags"
+          ],
+          "original_image": {
+            "path": "assets/data/catalog_evidence/images/rad-043a-167.png",
+            "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/9870e0f591e2ca04bea2274209e8df3d4435213b-744x1039.png?accountingTag=RB",
+            "sha256": "9899ab8c795ab7d9dbc5c8bcb6bc2a657f86254207f582ea4924ceb4efb07ac0",
+            "bytes": 1051940,
+            "dimensions": [
+              744,
+              1039
+            ],
+            "actual_full_face_viewed": true
+          }
+        }
+      ],
+      "runtime_image": {
+        "path": "assets/art/card_439.png",
+        "sha256": "85b0e7032039a0f543b7282ee218b3c3450b51c769c16e7b3674ed7891d70d6a",
+        "bytes": 177730,
+        "dimensions": [
+          280,
+          391
+        ]
+      }
+    },
+    {
+      "identity": "rad-149-167",
+      "runtime_id": 10,
+      "implementation_status": "implemented_preset_legend",
+      "printing_cohort": [
+        "rad-149-167",
+        "rad-173-167"
+      ],
+      "standard_legal": true,
+      "auxiliary": false,
+      "errata": [],
+      "printed_facts": {
+        "types": [
+          "legend"
+        ],
+        "super_types": [],
+        "domains": [
+          "calm",
+          "chaos"
+        ],
+        "energy": null,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "tags": [
+          "Riven"
+        ],
+        "observation": "Both legend faces say units you play to battlefields you control enter ready. No activated ability or exhaust cost is printed."
+      },
+      "printings": [
+        {
+          "official_id": "rad-149-167",
+          "raw_printing": {
+            "collector_number": 149,
+            "super_types": [],
+            "set": "RAD",
+            "type_source": "cardType.type",
+            "equipment_text": "",
+            "rules_text": "Units you play to battlefields you control enter ready.",
+            "image_accessibility_text": "Riftbound Legend: The Exile. Units you play to battlefields you control enter ready.",
+            "domains": [
+              "calm",
+              "chaos"
+            ],
+            "might": null,
+            "rarity": "rare",
+            "name": "The Exile",
+            "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/342befcaab98642a2348bd2f6fdb92c68563b6d7-744x1039.png?accountingTag=RB",
+            "might_bonus": null,
+            "official_id": "rad-149-167",
+            "energy": null,
+            "public_code": "RAD-149/167",
+            "type_labels_conflict": false,
+            "illustrators": [
+              "Grafit Studio"
+            ],
+            "accessibility_types": [
+              "legend"
+            ],
+            "structured_types": [
+              "legend"
+            ],
+            "tags": [
+              "Riven"
+            ],
+            "equipment_html": "",
+            "power": null,
+            "rules_html": "<p>Units you play to battlefields you control enter ready.</p>",
+            "types": [
+              "legend"
+            ]
+          },
+          "raw_printing_sha256": "9bd048b947eb8501be335effc95244fddf4cec271566602f5c9306c0ccd69aeb",
+          "effective": {
+            "types": [
+              "legend"
+            ],
+            "super_types": [],
+            "domains": [
+              "calm",
+              "chaos"
+            ],
+            "energy": null,
+            "power": null,
+            "might": null,
+            "might_bonus": null,
+            "tags": [
+              "Riven"
+            ],
+            "rules_html": "<p>Units you play to battlefields you control enter ready.</p>",
+            "rules_text": "Units you play to battlefields you control enter ready.",
+            "equipment_html": "",
+            "equipment_text": ""
+          },
+          "resolution_ids": [],
+          "original_image": {
+            "path": "assets/data/card_admissions/riven/faces/rad-149-167.png",
+            "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/342befcaab98642a2348bd2f6fdb92c68563b6d7-744x1039.png?accountingTag=RB",
+            "sha256": "cebfd4db3c8d32d91908559a4ac80fc75951862828792cbb79012f104f99f01d",
+            "bytes": 1202880,
+            "dimensions": [
+              744,
+              1039
+            ],
+            "actual_full_face_viewed": true
+          }
+        },
+        {
+          "official_id": "rad-173-167",
+          "raw_printing": {
+            "collector_number": 173,
+            "super_types": [],
+            "set": "RAD",
+            "type_source": "cardType.type",
+            "equipment_text": "",
+            "rules_text": "Units you play to battlefields you control enter ready.",
+            "image_accessibility_text": "Riftbound Legend: The Exile. Units you play to battlefields you control enter ready.",
+            "domains": [
+              "calm",
+              "chaos"
+            ],
+            "might": null,
+            "rarity": "showcase",
+            "name": "The Exile",
+            "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/8cec0480427b3646cb48cb2e3fe3a02b629f7aeb-744x1039.png?accountingTag=RB",
+            "might_bonus": null,
+            "official_id": "rad-173-167",
+            "energy": null,
+            "public_code": "RAD-173/167",
+            "type_labels_conflict": false,
+            "illustrators": [],
+            "accessibility_types": [
+              "legend"
+            ],
+            "structured_types": [
+              "legend"
+            ],
+            "tags": [
+              "Riven"
+            ],
+            "equipment_html": "",
+            "power": null,
+            "rules_html": "<p>Units you play to battlefields you control enter ready.</p>",
+            "types": [
+              "legend"
+            ]
+          },
+          "raw_printing_sha256": "f78466bc8d188c914e30eda1c978e03c3a2e91e32c608ab31d933092895779c2",
+          "effective": {
+            "types": [
+              "legend"
+            ],
+            "super_types": [],
+            "domains": [
+              "calm",
+              "chaos"
+            ],
+            "energy": null,
+            "power": null,
+            "might": null,
+            "might_bonus": null,
+            "tags": [
+              "Riven"
+            ],
+            "rules_html": "<p>Units you play to battlefields you control enter ready.</p>",
+            "rules_text": "Units you play to battlefields you control enter ready.",
+            "equipment_html": "",
+            "equipment_text": ""
+          },
+          "resolution_ids": [],
+          "original_image": {
+            "path": "assets/data/card_admissions/riven/faces/rad-173-167.png",
+            "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/8cec0480427b3646cb48cb2e3fe3a02b629f7aeb-744x1039.png?accountingTag=RB",
+            "sha256": "4ce17a6b6c73fb1e9b44953118dcfe0ed76fce4833385c256280791ae986878e",
+            "bytes": 1123168,
+            "dimensions": [
+              744,
+              1039
+            ],
+            "actual_full_face_viewed": true
+          }
+        }
+      ],
+      "runtime_image": {
+        "path": "assets/art/legend_10.png",
+        "sha256": "cebfd4db3c8d32d91908559a4ac80fc75951862828792cbb79012f104f99f01d",
+        "bytes": 1202880,
+        "dimensions": [
+          744,
+          1039
+        ]
+      }
+    },
+    {
+      "identity": "unl-147-219",
+      "runtime_id": 440,
+      "implementation_status": "implemented_main_card",
+      "printing_cohort": [
+        "unl-147-219",
+        "unl-147a-219",
+        "unl-238-219"
+      ],
+      "standard_legal": true,
+      "auxiliary": false,
+      "errata": [],
+      "printed_facts": {
+        "types": [
+          "unit"
+        ],
+        "super_types": [],
+        "domains": [
+          "chaos"
+        ],
+        "energy": 10,
+        "power": 3,
+        "might": 12,
+        "might_bonus": null,
+        "tags": [
+          "The Void"
+        ],
+        "observation": "As-play Pit creation if absent, then entry there only if this play added it. Cannot be chosen by enemy spells or abilities. Other friendly units have +2 Might. Alternates omit only the Pit movement reminder."
+      },
+      "printings": [
+        {
+          "official_id": "unl-147-219",
+          "raw_printing": {
+            "collector_number": 147,
+            "super_types": [],
+            "set": "UNL",
+            "type_source": "cardType.type",
+            "equipment_text": "",
+            "rules_text": "As you play me, add the Baron Pit battlefield token to the board if it's not there already. If you do, I enter there. (It has \"Units can move here from anywhere.\")\nI can't be chosen by enemy spells and abilities.\nOther friendly units have +2 Might.",
+            "image_accessibility_text": "Riftbound Unit: Baron Nashor. As you play me, add the Baron Pit battlefield token to the board if it's not there already. If you do, I enter there. (It has \"Units can move here from anywhere.\")\nI can't be chosen by enemy spells and abilities.\nOther friendly units have +2 [S].",
+            "domains": [
+              "chaos"
+            ],
+            "might": 12,
+            "rarity": "epic",
+            "name": "Baron Nashor",
+            "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/59946969e8d21869c3ffe801a3ffbdd8165a873f-744x1039.png?accountingTag=RB",
+            "might_bonus": null,
+            "official_id": "unl-147-219",
+            "energy": 10,
+            "public_code": "UNL-147/219",
+            "type_labels_conflict": false,
+            "illustrators": [
+              "黯荧岛Dark Glow"
+            ],
+            "accessibility_types": [
+              "unit"
+            ],
+            "structured_types": [
+              "unit"
+            ],
+            "tags": [
+              "The Void"
+            ],
+            "equipment_html": "",
+            "power": 3,
+            "rules_html": "<p>As you play me, add the Baron Pit battlefield token to the board if it's not there already. If you do, I enter there. (It has &quot;Units can move here from anywhere.&quot;)<br />I can't be chosen by enemy spells and abilities.<br />Other friendly units have +2 :rb_might:.</p>",
+            "types": [
+              "unit"
+            ]
+          },
+          "raw_printing_sha256": "ba500ade3c3347b5c3dbe5138d664b371a4e84da44058cd83fe08737c09a6729",
+          "effective": {
+            "types": [
+              "unit"
+            ],
+            "super_types": [],
+            "domains": [
+              "chaos"
+            ],
+            "energy": 10,
+            "power": 3,
+            "might": 12,
+            "might_bonus": null,
+            "tags": [
+              "The Void"
+            ],
+            "rules_html": "<p>As you play me, add the Baron Pit battlefield token to the board if it's not there already. If you do, I enter there. (It has &quot;Units can move here from anywhere.&quot;)<br />I can't be chosen by enemy spells and abilities.<br />Other friendly units have +2 :rb_might:.</p>",
+            "rules_text": "As you play me, add the Baron Pit battlefield token to the board if it's not there already. If you do, I enter there. (It has \"Units can move here from anywhere.\")\nI can't be chosen by enemy spells and abilities.\nOther friendly units have +2 Might.",
+            "equipment_html": "",
+            "equipment_text": ""
+          },
+          "resolution_ids": [],
+          "original_image": {
+            "path": "assets/data/catalog_evidence/images/unl-147-219.png",
+            "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/59946969e8d21869c3ffe801a3ffbdd8165a873f-744x1039.png?accountingTag=RB",
+            "sha256": "f649c58a5fd6ae9cc3fe099383b33e572e6d481425e6415fe18a190cb08d9c14",
+            "bytes": 1130249,
+            "dimensions": [
+              744,
+              1039
+            ],
+            "actual_full_face_viewed": true
+          }
+        },
+        {
+          "official_id": "unl-147a-219",
+          "raw_printing": {
+            "collector_number": 147,
+            "super_types": [],
+            "set": "UNL",
+            "type_source": "cardType.type",
+            "equipment_text": "",
+            "rules_text": "As you play me, add the Baron Pit battlefield token to the board if it's not there already. If you do, I enter there.\nI can't be chosen by enemy spells and abilities.\nOther friendly units have +2 Might.",
+            "image_accessibility_text": "Riftbound Unit: Baron Nashor. As you play me, add the Baron Pit battlefield token to the board if it's not there already. If you do, I enter there.\nI can't be chosen by enemy spells and abilities.\nOther friendly units have +2 [S].",
+            "domains": [
+              "chaos"
+            ],
+            "might": 12,
+            "rarity": "epic",
+            "name": "Baron Nashor",
+            "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/97d0f7aa81f67bf8f4a19099c648a23a2df169ae-744x1039.png?accountingTag=RB",
+            "might_bonus": null,
+            "official_id": "unl-147a-219",
+            "energy": 10,
+            "public_code": "UNL-147a/219",
+            "type_labels_conflict": false,
+            "illustrators": [
+              "黯荧岛Dark Glow"
+            ],
+            "accessibility_types": [
+              "unit"
+            ],
+            "structured_types": [
+              "unit"
+            ],
+            "tags": [
+              "The Void"
+            ],
+            "equipment_html": "",
+            "power": 3,
+            "rules_html": "<p>As you play me, add the Baron Pit battlefield token to the board if it's not there already. If you do, I enter there.<br />I can't be chosen by enemy spells and abilities.<br />Other friendly units have +2 :rb_might:.</p>",
+            "types": [
+              "unit"
+            ]
+          },
+          "raw_printing_sha256": "5c31f42e9319cfb40fdcc6f12f54e0433c1d0b906a0a2051a22cb1ff84ad7980",
+          "effective": {
+            "types": [
+              "unit"
+            ],
+            "super_types": [],
+            "domains": [
+              "chaos"
+            ],
+            "energy": 10,
+            "power": 3,
+            "might": 12,
+            "might_bonus": null,
+            "tags": [
+              "The Void"
+            ],
+            "rules_html": "<p>As you play me, add the Baron Pit battlefield token to the board if it's not there already. If you do, I enter there.<br />I can't be chosen by enemy spells and abilities.<br />Other friendly units have +2 :rb_might:.</p>",
+            "rules_text": "As you play me, add the Baron Pit battlefield token to the board if it's not there already. If you do, I enter there.\nI can't be chosen by enemy spells and abilities.\nOther friendly units have +2 Might.",
+            "equipment_html": "",
+            "equipment_text": ""
+          },
+          "resolution_ids": [],
+          "original_image": {
+            "path": "assets/data/catalog_evidence/images/unl-147a-219.png",
+            "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/97d0f7aa81f67bf8f4a19099c648a23a2df169ae-744x1039.png?accountingTag=RB",
+            "sha256": "ca31efc7e78a9aa07df098cbe5a923b42a95424b777a81c0c08c46b3fa5d3b9a",
+            "bytes": 1149080,
+            "dimensions": [
+              744,
+              1039
+            ],
+            "actual_full_face_viewed": true
+          }
+        },
+        {
+          "official_id": "unl-238-219",
+          "raw_printing": {
+            "collector_number": 238,
+            "super_types": [],
+            "set": "UNL",
+            "type_source": "cardType.type",
+            "equipment_text": "",
+            "rules_text": "As you play me, add the Baron Pit battlefield token to the board if it's not there already. If you do, I enter there.\nI can't be chosen by enemy spells and abilities.\nOther friendly units have +2 Might.",
+            "image_accessibility_text": "Riftbound Unit: Baron Nashor. As you play me, add the Baron Pit battlefield token to the board if it's not there already. If you do, I enter there.\nI can't be chosen by enemy spells and abilities.\nOther friendly units have +2 [S].",
+            "domains": [
+              "chaos"
+            ],
+            "might": 12,
+            "rarity": "epic",
+            "name": "Baron Nashor",
+            "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/7e8d207a8057b97f9059ea6025a16e59229dc54d-744x1039.png?accountingTag=RB",
+            "might_bonus": null,
+            "official_id": "unl-238-219",
+            "energy": 10,
+            "public_code": "UNL-238/219",
+            "type_labels_conflict": false,
+            "illustrators": [
+              "張漁 ·ZHANG YU"
+            ],
+            "accessibility_types": [
+              "unit"
+            ],
+            "structured_types": [
+              "unit"
+            ],
+            "tags": [
+              "The Void"
+            ],
+            "equipment_html": "",
+            "power": 3,
+            "rules_html": "<p>As you play me, add the Baron Pit battlefield token to the board if it's not there already. If you do, I enter there.<br />I can't be chosen by enemy spells and abilities.<br />Other friendly units have +2 :rb_might:.</p>",
+            "types": [
+              "unit"
+            ]
+          },
+          "raw_printing_sha256": "e137f055a6c42e706629e85eaccc701bd97d2f78bfc0df1ae75a97b4bb57c675",
+          "effective": {
+            "types": [
+              "unit"
+            ],
+            "super_types": [],
+            "domains": [
+              "chaos"
+            ],
+            "energy": 10,
+            "power": 3,
+            "might": 12,
+            "might_bonus": null,
+            "tags": [
+              "The Void"
+            ],
+            "rules_html": "<p>As you play me, add the Baron Pit battlefield token to the board if it's not there already. If you do, I enter there.<br />I can't be chosen by enemy spells and abilities.<br />Other friendly units have +2 :rb_might:.</p>",
+            "rules_text": "As you play me, add the Baron Pit battlefield token to the board if it's not there already. If you do, I enter there.\nI can't be chosen by enemy spells and abilities.\nOther friendly units have +2 Might.",
+            "equipment_html": "",
+            "equipment_text": ""
+          },
+          "resolution_ids": [],
+          "original_image": {
+            "path": "assets/data/catalog_evidence/images/unl-238-219.png",
+            "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/7e8d207a8057b97f9059ea6025a16e59229dc54d-744x1039.png?accountingTag=RB",
+            "sha256": "bc6d7594587195163db437e052a79a457f22e30152feff8c881607e0ae489113",
+            "bytes": 2014578,
+            "dimensions": [
+              744,
+              1039
+            ],
+            "actual_full_face_viewed": true
+          }
+        }
+      ],
+      "runtime_image": {
+        "path": "assets/art/card_440.png",
+        "sha256": "f649c58a5fd6ae9cc3fe099383b33e572e6d481425e6415fe18a190cb08d9c14",
+        "bytes": 1130249,
+        "dimensions": [
+          744,
+          1039
+        ]
+      }
+    },
+    {
+      "identity": "unl-t01",
+      "runtime_id": 1000,
+      "implementation_status": "implemented_battlefield_token",
+      "printing_cohort": [
+        "unl-t01"
+      ],
+      "standard_legal": false,
+      "auxiliary": true,
+      "errata": [],
+      "printed_facts": {
+        "types": [
+          "battlefield"
+        ],
+        "super_types": [
+          "token"
+        ],
+        "domains": [],
+        "energy": null,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "tags": [],
+        "observation": "Token battlefield, excluded from game setup. Units can move here from anywhere. Double-ended printed rules match."
+      },
+      "printings": [
+        {
+          "official_id": "unl-t01",
+          "raw_printing": {
+            "collector_number": 1,
+            "super_types": [
+              "token"
+            ],
+            "set": "UNL",
+            "type_source": "cardType.type",
+            "equipment_text": "",
+            "rules_text": "(You can't start the game with a token battlefield.)\nUnits can move here from anywhere.",
+            "image_accessibility_text": "Riftbound Battlefield: Baron Pit. (You can't start the game with a token battlefield.)\nUnits can move here from anywhere.",
+            "domains": [
+              "colorless"
+            ],
+            "might": null,
+            "rarity": "common",
+            "name": "Baron Pit",
+            "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/e44f173629322a4e0c32d3f8902c294d4482ef42-1039x744.png?accountingTag=RB",
+            "might_bonus": null,
+            "official_id": "unl-t01",
+            "energy": null,
+            "public_code": "UNL-T01",
+            "type_labels_conflict": false,
+            "illustrators": [
+              "Fish Art Studio"
+            ],
+            "accessibility_types": [
+              "battlefield"
+            ],
+            "structured_types": [
+              "battlefield"
+            ],
+            "tags": [],
+            "equipment_html": "",
+            "power": null,
+            "rules_html": "<p>(You can't start the game with a token battlefield.)<br />Units can move here from anywhere.</p>",
+            "types": [
+              "battlefield"
+            ]
+          },
+          "raw_printing_sha256": "185b6fe15fa8fdd9a5030befc268e286858a80dd19ed9d078bc29428479bc526",
+          "effective": {
+            "types": [
+              "battlefield"
+            ],
+            "super_types": [
+              "token"
+            ],
+            "domains": [
+              "colorless"
+            ],
+            "energy": null,
+            "power": null,
+            "might": null,
+            "might_bonus": null,
+            "tags": [],
+            "rules_html": "<p>(You can't start the game with a token battlefield.)<br />Units can move here from anywhere.</p>",
+            "rules_text": "(You can't start the game with a token battlefield.)\nUnits can move here from anywhere.",
+            "equipment_html": "",
+            "equipment_text": ""
+          },
+          "resolution_ids": [],
+          "original_image": {
+            "path": "assets/data/card_admissions/riven/faces/unl-t01.png",
+            "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/e44f173629322a4e0c32d3f8902c294d4482ef42-1039x744.png?accountingTag=RB",
+            "sha256": "bd3cc1b4ebf84ee80f8558614a86c9c6650b41ec80c55ee8185335a67bea49a9",
+            "bytes": 720989,
+            "dimensions": [
+              1039,
+              744
+            ],
+            "actual_full_face_viewed": true
+          }
+        }
+      ],
+      "runtime_image": {
+        "path": "assets/art/battlefield_1000.png",
+        "sha256": "bd3cc1b4ebf84ee80f8558614a86c9c6650b41ec80c55ee8185335a67bea49a9",
+        "bytes": 720989,
+        "dimensions": [
+          1039,
+          744
+        ]
+      }
+    }
+  ],
+  "preserved_runtime_prefix": {
+    "card_count": 435,
+    "cards_sha256": "a5900479b0c1ca394896cf46200226138d42d4ce6483dfd1de837cbf207ba587",
+    "preset_count": 6,
+    "presets_sha256": "7dcd344ff63ab33041734445f0756bfecca308ea9cef97c97db8ad1bf0e53d70"
+  }
+}

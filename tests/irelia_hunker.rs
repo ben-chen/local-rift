@@ -6,8 +6,8 @@ fn position(owner: usize) -> Game {
     let mut g = Game::new_for_agents(3, 3, 113421, Difficulty::Tactical);
     g.choose_starting_player(owner).unwrap();
     g.start_match().unwrap();
-    g.battlefields = [2, 2];
-    g.battlefield_owner = [None; 2];
+    g.battlefields = vec![2, 2];
+    g.battlefield_owner = vec![None; 2];
     for p in &mut g.players {
         p.hand.clear();
         p.units.clear();
@@ -196,7 +196,7 @@ fn friendly_flash_can_choose_locked_unit_and_still_moves_the_other_target() {
     let mut g = position(0);
     let a = unit(&mut g, 0, 500, 73, Some(0));
     let b = unit(&mut g, 0, 501, 73, Some(1));
-    g.battlefield_owner = [Some(0); 2];
+    g.battlefield_owner = vec![Some(0); 2];
     cast(&mut g, HUNKER, vec![a]);
     resolve(&mut g);
     cast(&mut g, 9, vec![a, b]);

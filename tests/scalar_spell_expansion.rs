@@ -6,8 +6,8 @@ use local_rift::hidden::HiddenCard;
 fn position() -> Game {
     let mut game = Game::new(3, 3, 782, Difficulty::Tactical);
     game.start_match().unwrap();
-    game.battlefields = [0, 0];
-    game.battlefield_owner = [None; 2];
+    game.battlefields = vec![0, 0];
+    game.battlefield_owner = vec![None; 2];
     for state in &mut game.players {
         state.hand.clear();
         state.units.clear();
@@ -292,7 +292,7 @@ fn right_of_conquest_draws_sequentially_without_drawing_itself_on_burnout() {
     game.players[0].deck = vec![72];
     game.players[0].discard = vec![70, 73];
     game.players[0].units = vec![unit(100, 70, Some(0)), unit(101, 70, Some(1))];
-    game.battlefield_owner = [Some(0); 2];
+    game.battlefield_owner = vec![Some(0); 2];
     cast(&mut game, 224, vec![]);
     settle(&mut game);
     let mut hand = game.players[0].hand.clone();

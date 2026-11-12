@@ -22,7 +22,7 @@ fn position(app: &mut App) {
     app.game.start_match().unwrap();
     app.game.apply(Action::EndTurn).unwrap();
     app.ai_worker.invalidate();
-    app.fields = app.game.battlefields;
+    app.fields = std::array::from_fn(|i| app.game.battlefields[i]);
     app.inspect = None;
     app.lesson = None;
     app.confirm_restart = false;

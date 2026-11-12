@@ -7,8 +7,8 @@ const ENEMY: u32 = 26002;
 fn position(card: usize) -> Game {
     let mut game = Game::new_for_agents(3, 3, 260026, Difficulty::Easy);
     game.start_match().unwrap();
-    game.battlefields = [0, 0];
-    game.battlefield_owner = [Some(1), None];
+    game.battlefields = vec![0, 0];
+    game.battlefield_owner = vec![Some(1), None];
     for player in &mut game.players {
         player.units.clear();
         player.gear.clear();
@@ -34,7 +34,7 @@ fn position(card: usize) -> Game {
 fn reset(app: &mut App, card: usize) {
     expansion_fixture(app, card);
     app.game = position(card);
-    app.fields = app.game.battlefields;
+    app.fields = std::array::from_fn(|i| app.game.battlefields[i]);
     app.inspect = None;
     app.field_inspect = None;
     app.field_gear_filter = None;

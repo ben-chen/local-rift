@@ -6,8 +6,8 @@ fn position(player: usize) -> Game {
     let mut g = Game::new_for_agents(3, 3, 25025, Difficulty::Tactical);
     g.choose_starting_player(player).unwrap();
     g.start_match().unwrap();
-    g.battlefields = [3, 3];
-    g.battlefield_owner = [None; 2];
+    g.battlefields = vec![3, 3];
+    g.battlefield_owner = vec![None; 2];
     for p in &mut g.players {
         p.units.clear();
         p.gear.clear();
@@ -270,7 +270,7 @@ fn c25_irelia_and_temple_direct_add_is_undone_when_declining_finalization() {
         for temple in [false, true] {
             for explicit in [false, true] {
                 let mut g = position(player);
-                g.battlefields = [0, 3];
+                g.battlefields = vec![0, 3];
                 g.legend[player].kind = crate::legends::LegendKind::Irelia;
                 g.decision = Some(if temple {
                     Decision::Battlefield { player, lane: 0 }

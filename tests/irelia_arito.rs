@@ -128,5 +128,5 @@ fn exact_arito_deck_completes_every_preset_level_seat_and_starter() {
             }
         }
     }
-    assert_eq!(games, 72);
+    assert_eq!(games, presets().len() * 12);
 }

@@ -7,8 +7,8 @@ use local_rift::gear::GearState;
 fn position() -> Game {
     let mut g = Game::new(3, 3, 3543, Difficulty::Tactical);
     g.start_match().unwrap();
-    g.battlefields = [0, 0];
-    g.battlefield_owner = [None; 2];
+    g.battlefields = vec![0, 0];
+    g.battlefield_owner = vec![None; 2];
     for p in &mut g.players {
         p.hand.clear();
         p.units.clear();

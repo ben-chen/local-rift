@@ -130,7 +130,7 @@ fn reset(app: &mut App, card: usize) {
 fn prepare_child(app: &mut App) {
     reset(app, 15);
     app.game = clocktower_child();
-    app.fields = app.game.battlefields;
+    app.fields = std::array::from_fn(|i| app.game.battlefields[i]);
     CHILD_ORIGIN.with(|origin| {
         *origin.borrow_mut() = Some((
             app.game.players[0].banish.clone(),

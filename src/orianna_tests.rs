@@ -7,8 +7,8 @@ fn position(actor: usize) -> Game {
     g.start_match().unwrap();
     g.active = actor;
     g.priority_player = actor;
-    g.battlefields = [2, 2];
-    g.battlefield_owner = [Some(1 - actor), None];
+    g.battlefields = vec![2, 2];
+    g.battlefield_owner = vec![Some(1 - actor), None];
     for p in &mut g.players {
         p.units.clear();
         p.gear.clear();
@@ -157,7 +157,7 @@ fn orianna_uses_attached_gear_location_even_when_its_printed_abilities_are_inact
 fn orianna_equipping_and_moving_an_ally_changes_combat_permission_without_targeting_her() {
     for owner in 0..2 {
         let mut g = position(owner);
-        g.battlefield_owner = [Some(owner), Some(owner)];
+        g.battlefield_owner = vec![Some(owner), Some(owner)];
         let ori = unit(&mut g, owner, 430, Some(0));
         let ally = unit(&mut g, owner, 71, None);
         cast(&mut g, 3, vec![]);

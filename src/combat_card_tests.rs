@@ -7,8 +7,8 @@ fn position(actor: usize) -> Game {
     g.start_match().unwrap();
     g.active = actor;
     g.priority_player = actor;
-    g.battlefields = [0, 0];
-    g.battlefield_owner = [Some(1 - actor), None];
+    g.battlefields = vec![0, 0];
+    g.battlefield_owner = vec![Some(1 - actor), None];
     for p in &mut g.players {
         p.units.clear();
         p.gear.clear();
@@ -152,7 +152,7 @@ fn rengar_permission_is_not_ambush_a_staged_field_or_a_defender_permission() {
             let mut g = position(actor);
             unit(&mut g, actor, 71, Some(0));
             unit(&mut g, 1 - actor, 70, Some(0));
-            g.battlefield_owner = [None; 2];
+            g.battlefield_owner = vec![None; 2];
             g.showdown = Some(Showdown {
                 lane: 0,
                 attacker: 1 - actor,
@@ -196,7 +196,11 @@ fn rengar_respects_costs_closed_assignments_and_mandatory_destinations() {
                 cost: BaseCostWaiver::All,
                 destination,
             };
-            assert!(instruction.validate_destination(Some(0)).is_err());
+            assert!(
+                instruction
+                    .validate_destination(Some(0), g.battlefield_count())
+                    .is_err()
+            );
         }
         pair(&mut g);
         assert!(matches!(g.decision, Some(Decision::CombatDamage { .. })));

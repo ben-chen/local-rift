@@ -514,7 +514,7 @@ impl App {
                 self.notify(error);
             }
         }
-        self.ui.wrapped("Complete registrations: Xeno Irelia, Arito Irelia, Kennen and Rengar. Other presets and custom lists remain available for single games.",260.0,801.0,730.0,12.0,MUTED);
+        self.ui.wrapped("Complete registrations: Xeno Irelia, Arito Irelia, Kennen, Rengar and Sonecon Riven. Other presets and custom lists remain available for single games.",260.0,801.0,730.0,12.0,MUTED);
     }
     pub(super) fn draw_native_match(&mut self) -> Result<(), String> {
         let series = self.native_match.as_ref().ok_or("No active match.")?;
@@ -681,7 +681,7 @@ impl App {
             let rect = Rect::new(x, 191.0, 362.0, 473.0);
             self.ui.rect(rect, PANEL);
             self.ui.border(rect, if selected { TEAL } else { LINE });
-            if let Some(Some(art)) = self.field_art.get(id) {
+            if let Some(art) = self.field_art.get(&id) {
                 self.ui.image(
                     art,
                     Rect::new(x + 12.0, 203.0, 338.0, 175.0),

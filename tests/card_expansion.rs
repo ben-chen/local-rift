@@ -23,8 +23,8 @@ const EXPANSION: [&str; 12] = [
 fn position() -> Game {
     let mut game = Game::new(3, 3, 4711, Difficulty::Tactical);
     game.start_match().unwrap();
-    game.battlefields = [0, 0]; // Sunken Temple: no damage modifier.
-    game.battlefield_owner = [None; 2];
+    game.battlefields = vec![0, 0]; // Sunken Temple: no damage modifier.
+    game.battlefield_owner = vec![None; 2];
     for player in &mut game.players {
         player.hand.clear();
         player.units.clear();

@@ -5,6 +5,8 @@ Runtime equivalence of the first eight recipes is checked independently against
 C15 API output by tests/c16_legends.rs.
 """
 import json
+from contextlib import contextmanager
+from unittest.mock import patch
 import import_catalog as catalog
 
 PREDECESSOR = catalog.ROOT / 'assets/data/card_admissions/c16/predecessor'
@@ -103,3 +105,70 @@ def pre_registration_carddefs_source():
             raise AssertionError('The additive preset registration schema changed')
         source = source.replace(addition, '', 1)
     return source
+
+
+RIVEN_PREDECESSOR = catalog.ROOT / 'assets/data/card_admissions/riven/predecessor'
+
+
+def pre_riven_evidence_bytes(path):
+    """Check the unchanged historical records, then return their original bytes.
+
+    New legends and source reviews append records. Original admission hashes
+    still check the archived whole files; every archived record and authority
+    must also remain present in the current files.
+    """
+    filename = path.removeprefix('assets/data/')
+    allowed = {
+        'legends.json': (['legends'], []),
+        'catalog_resolutions.json': (
+            ['resolutions', 'raw_printings', 'historical_issues'],
+            ['evidence_manifest_sha256', 'stats']),
+        'catalog_identity_reviews.json': (['reviews'], ['image_index']),
+        'catalog_evidence/images.json': None,
+        'catalog_evidence/variant_images.json': None,
+    }
+    if filename not in allowed or path != 'assets/data/' + filename:
+        raise ValueError('Not a pre-Riven evidence path')
+    payload = (RIVEN_PREDECESSOR / filename).read_bytes()
+    archived = json.loads(payload)
+    current = json.loads((catalog.ROOT / path).read_bytes())
+    spec = allowed[filename]
+    if spec is None:
+        if current[:len(archived)] != archived:
+            raise AssertionError(f'A preserved evidence record changed: {path}')
+    else:
+        arrays, derived = spec
+        for key in arrays:
+            if current[key][:len(archived[key])] != archived[key]:
+                raise AssertionError(f'A preserved {key} record changed: {path}')
+        authority = lambda value: {k: v for k, v in value.items() if k not in arrays + derived}
+        if authority(current) != authority(archived):
+            raise AssertionError(f'A preserved authority changed: {path}')
+        if filename == 'catalog_resolutions.json':
+            images = pre_riven_evidence_bytes(archived['evidence_manifest_path'])
+            if catalog.sha(images) != archived['evidence_manifest_sha256']:
+                raise AssertionError('The archived field image-index hash changed')
+        elif filename == 'catalog_identity_reviews.json':
+            if current['image_index']['local_path'] != archived['image_index']['local_path']:
+                raise AssertionError('The identity image-index location changed')
+            pre_riven_evidence_bytes(archived['image_index']['local_path'])
+    return payload
+
+
+def pre_riven_legends():
+    return json.loads(pre_riven_evidence_bytes('assets/data/legends.json'))['legends']
+
+
+@contextmanager
+def pre_riven_runtime(runtime):
+    """Pair a historical card pool with its ten independently pinned legends."""
+    if len(runtime['cards']) > 435:
+        raise AssertionError('Use the current legend registry for post-Riven cards')
+    legends = pre_riven_legends()
+    # A later preset cannot refer to a legend/champion absent from this fixture.
+    # Preserve the exact earlier recipes; only omit the subsequently added list.
+    runtime = {**runtime, 'decks': [d for d in runtime['decks']
+                                   if d['legend_id'] != 'rad-149-167']}
+    with patch.object(catalog, 'load_runtime_manifest', return_value=runtime), \
+            patch.object(catalog, 'load_legend_manifest', return_value=legends):
+        yield

@@ -9,8 +9,8 @@ use local_rift::legends::{LegendKind, LegendState};
 fn position() -> Game {
     let mut game = Game::new_for_agents(3, 3, 55017, Difficulty::Tactical);
     game.start_match().unwrap();
-    game.battlefields = [3, 3];
-    game.battlefield_owner = [None; 2];
+    game.battlefields = vec![3, 3];
+    game.battlefield_owner = vec![None; 2];
     for player in &mut game.players {
         player.hand.clear();
         player.champion = None;
@@ -464,7 +464,7 @@ fn akali_keeps_event_battlefield_after_returning_to_base_and_leaving_board() {
     // removal. Her live Empowered clause is separate from that saved event.
     for removed in [false, true] {
         let mut g = position();
-        g.battlefields = [4, 4]; // No Void Gate bonus in this source-local comparison.
+        g.battlefields = vec![4, 4]; // No Void Gate bonus in this source-local comparison.
         let akali = unit(&mut g, 0, 900, 288, Some(0));
         let victim = unit(&mut g, 1, 901, 69, Some(0));
         let other = unit(&mut g, 1, 902, 69, None);

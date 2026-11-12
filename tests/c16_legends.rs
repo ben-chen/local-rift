@@ -17,7 +17,7 @@ fn position(legend: usize) -> Game {
     )
     .unwrap();
     g.start_match().unwrap();
-    g.battlefields = [0, 0];
+    g.battlefields = vec![0, 0];
     for p in &mut g.players {
         p.hand.clear();
         p.units.clear();

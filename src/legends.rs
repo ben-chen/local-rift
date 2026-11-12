@@ -18,6 +18,7 @@ pub enum LegendKind {
     Ambessa,
     Rengar,
     Ezreal,
+    Riven,
 }
 
 impl LegendKind {
@@ -33,6 +34,7 @@ impl LegendKind {
             Self::Ambessa => 7,
             Self::Rengar => 8,
             Self::Ezreal => 9,
+            Self::Riven => 10,
         }
     }
 
@@ -48,6 +50,7 @@ impl LegendKind {
             7 => Self::Ambessa,
             8 => Self::Rengar,
             9 => Self::Ezreal,
+            10 => Self::Riven,
             _ => return None,
         })
     }
@@ -208,6 +211,18 @@ pub enum LegendTrigger {
 }
 
 impl Game {
+    /// Evaluate against the finalization snapshot, never the eventual entry
+    /// location. The Exile affects unit tokens as well as unit cards.
+    pub(crate) fn legend_readies_play(
+        &self,
+        player: usize,
+        unit: bool,
+        lane: Option<usize>,
+    ) -> bool {
+        unit && self.legend[player].kind == LegendKind::Riven
+            && lane.is_some_and(|lane| self.battlefield_owner.get(lane) == Some(&Some(player)))
+    }
+
     /// Progress toward Ezreal's two qualifying choices, deliberately capped at
     /// the printed threshold. This is not a total targeting-event counter.
     pub fn ezreal_progress(&self, player: usize) -> u8 {
@@ -392,7 +407,7 @@ impl Game {
         if player == actor {
             return true;
         }
-        if unit.protected || (!unit.token && unit.card_id == 31) {
+        if unit.protected || (!unit.token && matches!(unit.card_id, 31 | 440)) {
             return false;
         }
         if !unit.token
@@ -562,7 +577,7 @@ impl Game {
                 }
                 Some(
                     if self.players[player].score >= 7
-                        && (0..2).any(|lane| {
+                        && (0..self.battlefield_count()).any(|lane| {
                             !self.player_scored_this_turn[player][lane]
                                 && self.battlefield_owner[lane] != Some(player)
                                 && self.lane_count(1 - player, lane) == 0

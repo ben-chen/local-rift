@@ -4,8 +4,8 @@ use local_rift::game::{Action, Decision, Difficulty, FlowSource, Game};
 fn position() -> Game {
     let mut game = Game::new_for_agents(3, 3, 991, Difficulty::Tactical);
     game.start_match().unwrap();
-    game.battlefields = [3, 3];
-    game.battlefield_owner = [None; 2];
+    game.battlefields = vec![3, 3];
+    game.battlefield_owner = vec![None; 2];
     game.legend[0].ready = false;
     game.legend[1].ready = false;
     for player in &mut game.players {

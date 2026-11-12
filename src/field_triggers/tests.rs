@@ -8,8 +8,8 @@ fn position(player: usize, field: usize) -> Game {
     g.start_match().unwrap();
     g.active = player;
     g.priority_player = player;
-    g.battlefields = [field, 0];
-    g.battlefield_owner = [Some(player), None];
+    g.battlefields = vec![field, 0];
+    g.battlefield_owner = vec![Some(player), None];
     for p in &mut g.players {
         p.units.clear();
         p.gear.clear();
@@ -1040,7 +1040,7 @@ fn spring_ignores_movement_and_tokens_and_tracks_each_physical_field_until_next_
     for p in 0..2 {
         let mut g = position(p, 12);
         g.battlefields[1] = 12;
-        g.battlefield_owner = [Some(p), Some(p)];
+        g.battlefield_owner = vec![Some(p), Some(p)];
         unit(&mut g, p, 71, Some(0));
         unit(&mut g, p, 71, Some(1));
         let mover = unit(&mut g, p, 71, None);
@@ -1049,7 +1049,7 @@ fn spring_ignores_movement_and_tokens_and_tracks_each_physical_field_until_next_
             lane: Some(0),
         })
         .unwrap();
-        assert_eq!(g.star_spring_used(), [[false; 2]; 2]);
+        assert_eq!(g.star_spring_used(), &[vec![false; 2], vec![false; 2]]);
         // Canonical fixed token creation, without inventing a non-token play.
         g.queue_token_play(p, 178, 2, Some(Some(0)), false);
         g.after_resolution().unwrap();
@@ -1059,7 +1059,7 @@ fn spring_ignores_movement_and_tokens_and_tracks_each_physical_field_until_next_
                 .iter()
                 .any(|u| u.token && u.lane == Some(0))
         );
-        assert_eq!(g.star_spring_used(), [[false; 2]; 2]);
+        assert_eq!(g.star_spring_used(), &[vec![false; 2], vec![false; 2]]);
         for lane in 0..2 {
             cast(&mut g, 71, Some(lane), vec![]);
             let Some(Decision::BattlefieldTargets {
@@ -1079,7 +1079,7 @@ fn spring_ignores_movement_and_tokens_and_tracks_each_physical_field_until_next_
         assert_eq!(g.star_spring_used()[1 - p], [false; 2]);
         // Canonical start-turn checkpoint resets both players' opportunities.
         g.start_turn().unwrap();
-        assert_eq!(g.star_spring_used(), [[false; 2]; 2]);
+        assert_eq!(g.star_spring_used(), &[vec![false; 2], vec![false; 2]]);
     }
 }
 
