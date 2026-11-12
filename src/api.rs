@@ -347,7 +347,7 @@ impl Session {
                 "tags":tags,
                 "lane":unit.lane, "ready":unit.ready, "might":stats.might, "might_exact":stats.might.to_string(),
                 "signed_might":stats.signed_might,"signed_might_exact":stats.signed_might.to_string(),
-                "combat_contribution":combat_contribution::to_json(game.unit_combat_contribution(unit).map_err(ApiError::illegal)?),
+                "combat_contribution":combat_contribution::for_unit(game, unit)?,
                 "damage":unit.damage,"damage_exact":unit.damage.to_string(),
                 "buff":unit.buff,"buff_exact":unit.buff.to_string(), "temporary_buff":unit.temporary_buff,
                 "temporary_buff_exact":unit.temporary_buff.to_string(), "stunned":unit.stunned,

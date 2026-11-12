@@ -150,13 +150,13 @@
       "legend": 10,
       "rune": 6,
       "spell": 119,
-      "unit": 237
+      "unit": 238
     },
-    "implemented_main_cards": 430,
+    "implemented_main_cards": 431,
     "implemented_legends": 10,
     "implemented_battlefields": 17,
-    "implemented_legal_identities": 463,
-    "unimplemented_legal_identities": 616,
+    "implemented_legal_identities": 464,
+    "unimplemented_legal_identities": 615,
     "errata_entries": 67,
     "identities_with_errata": 67,
     "source_quality_issues": 54,
@@ -164,14 +164,14 @@
     "resolved_source_issue_groups": 54,
     "unresolved_source_issue_groups": 0,
     "unresolved_gameplay_identities": 0,
-    "unreviewed_variant_identities": 94,
+    "unreviewed_variant_identities": 93,
     "unreviewed_variants_by_field": {
-      "rules_text": 83,
+      "rules_text": 82,
       "tags": 33
     },
     "pinned_runtime_variant_identities": 0,
-    "reviewed_variant_identities": 30,
-    "reviewed_variant_printings": 92,
+    "reviewed_variant_identities": 31,
+    "reviewed_variant_printings": 94,
     "field_reviewed_printings": 89
   },
   "unimplemented_by_observed_keyword": {
@@ -200,7 +200,7 @@
     "Quick-Draw": 2,
     "Reaction": 62,
     "Repeat": 10,
-    "Shield": 11,
+    "Shield": 10,
     "Show Off": 5,
     "Stun": 15,
     "Tank": 21,
@@ -24946,13 +24946,13 @@
       "rules_text_status": "official_gallery_printing_text",
       "conflicting_fields": [],
       "source_review": {
-        "status": "unreviewed_variants",
+        "status": "reviewed_variants",
         "resolution_ids": [],
         "unresolved_gameplay_fields": [],
         "variant_diagnostics": [
           {
             "field": "rules_text",
-            "status": "unreviewed_variant_difference",
+            "status": "reviewed_variant_difference",
             "values": [
               {
                 "official_id": "rad-042-167",
@@ -24962,17 +24962,21 @@
                 "official_id": "rad-042a-167",
                 "value": "[Shield]\nI don't deal combat damage unless there's a friendly gear here."
               }
-            ]
+            ],
+            "disposition": "reminder_equivalent"
           }
         ],
-        "reviewed_variant_fields": [],
-        "unresolved_variant_fields": [
+        "reviewed_variant_fields": [
           "rules_text"
-        ]
+        ],
+        "unresolved_variant_fields": [],
+        "identity_review_id": "irelia-rad-042-167"
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 430,
+        "official_id": "rad-042-167",
+        "playable_in_client": true
       }
     },
     {
@@ -136856,6 +136860,43 @@
       "errata": []
     },
     {
+      "id": "irelia-rad-042-167",
+      "identity": "rad-042-167",
+      "name": "Orianna, Exquisite",
+      "status": "complete",
+      "reviewed_variant_fields": [
+        "rules_text"
+      ],
+      "raw_variant_fields": [
+        "rules_text"
+      ],
+      "effective_variant_fields": [
+        "rules_text"
+      ],
+      "member_ids": [
+        "rad-042-167",
+        "rad-042a-167"
+      ],
+      "field_reviews": [
+        {
+          "field": "rules_text",
+          "disposition": "reminder_equivalent",
+          "reason": "Both complete official faces print Shield and the identical restriction on dealing combat damage unless a friendly gear is here. RAD042 includes only the italic Shield reminder that RAD042a omits. Both faces agree on Champion Unit, Calm, 3 Energy, no Power, 4 Might and Orianna/Piltover tags; no operative instruction differs.",
+          "rules": [
+            "135.2.d.1",
+            "135.2.d.2",
+            "135.2.d.3",
+            "814.1",
+            "814.1.b.3",
+            "814.1.c",
+            "814.1.d"
+          ],
+          "resolution_ids": []
+        }
+      ],
+      "errata": []
+    },
+    {
       "id": "c7-sfd-036-221",
       "identity": "sfd-036-221",
       "name": "Lonely Poro",
@@ -137583,10 +137624,10 @@
   ],
   "identity_review_evidence": {
     "printing_projection_version": 1,
-    "reviewed_identities": 30,
-    "reviewed_printings": 92,
-    "reviewed_fields": 36,
-    "image_evidence": 92,
+    "reviewed_identities": 31,
+    "reviewed_printings": 94,
+    "reviewed_fields": 37,
+    "image_evidence": 94,
     "origin_archives": {
       "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9": {
         "url": "https://playriftbound.com/en-us/card-gallery/",

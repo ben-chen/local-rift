@@ -531,3 +531,22 @@ first privacy assertion omitted explicit Reveal Hand/Sabotage permissions.
 Correcting those checks did not change the engine's draw or visibility rules.
 This card admission does not certify the remaining Standard pool or expert AI
 strength.
+
+
+### Orianna: conditional combat damage, November 11, 2026
+
+The two complete official faces retain the same Shield keyword and restriction
+on combat damage unless friendly gear is here. The alternate face omits only
+Shield's reminder. Core 135.2.d.1–3 supports that specific reminder equivalence;
+814.1.b.3/c/d supplies Shield 1 and its defender designation requirement.
+Core 719.3/a places attached gear at its bearer's location, while 719.4 keeps
+readiness independent. Friendly uses controller identity (740.1.a).
+
+The shared combat-contribution query now evaluates this live gear condition
+without reducing Might or suppressing Shield. Focused tests cover both seats,
+all board locations, friendly/enemy gear, ready/exhausted gear, Gold, attachments
+on self and allies, actual Equip and Move actions, gear removal during a showdown,
+combat lethality, Fight, and token isolation. API observations explain the live
+condition identically to both viewers and remain read-only. The first API fixture
+attempted passes after a permanent play that opens no response window; it was
+corrected to pass only while a chain exists, without changing game behavior.

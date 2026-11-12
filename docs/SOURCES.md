@@ -19,7 +19,7 @@ The original lists' exact counts and reference metadata are in `assets/data/deck
 
 ## Card facts and artwork
 
-All 430 runtime card names, energy costs, power costs, printed might, domains, card types, rules text, and keyword annotations come from the embedded public card data and explicitly reviewed source corrections for the [official Riftbound Card Gallery](https://playriftbound.com/en-us/card-gallery/) on October 24, 2026. The manifest records the original card identifier and CDN image URL for each card. An ordinary printing was preferred where available. The full inventory preserves conflicting printing values rather than assuming alternate printings always agree. It preserves 23 official records whose structured type contradicts their accessibility label. A separate, dated visual review now supplies explicit effective facts for those records and the other original source-issue groups, while keeping both raw claims. Every resolution has exact raw prerequisites and archived artwork evidence; an unresolved gameplay field still blocks runtime mapping. The source review does not add playable cards. See [Catalog review](CATALOG_REVIEW.md) and [Card coverage](CARD_COVERAGE.md).
+All 431 runtime card names, energy costs, power costs, printed might, domains, card types, rules text, and keyword annotations come from the embedded public card data and explicitly reviewed source corrections for the [official Riftbound Card Gallery](https://playriftbound.com/en-us/card-gallery/) on October 24, 2026. The manifest records the original card identifier and CDN image URL for each card. An ordinary printing was preferred where available. The full inventory preserves conflicting printing values rather than assuming alternate printings always agree. It preserves 23 official records whose structured type contradicts their accessibility label. A separate, dated visual review now supplies explicit effective facts for those records and the other original source-issue groups, while keeping both raw claims. Every resolution has exact raw prerequisites and archived artwork evidence; an unresolved gameplay field still blocks runtime mapping. The source review does not add playable cards. See [Catalog review](CATALOG_REVIEW.md) and [Card coverage](CARD_COVERAGE.md).
 
 Images under `assets/art/` are the gallery's official Riot CDN card images, resized by its image service to 280–360 pixels wide as PNG (supported by the default Macroquad image decoder). `card_0.png` through `card_429.png` match catalog IDs; `champion_0.png` through `champion_3.png` are aliases of cards 0, 22, 33, and 49. The game does not need a network connection to load the bundled assets. These images are not original art created for this project.
 
@@ -95,7 +95,7 @@ The original cohort in the [complete identity manifest](../assets/data/catalog_i
 
 The review records 15 corrected-transcription field dispositions, 18 reminder equivalences, and two bounded rule-derived equivalences. Viktor's “in your base” versus “to your base” and Lonely Poro's Deathknell separator are interpreted under their cited general rules, not presented as named official FAQ rulings or rewritten into identical text. Rengar's historical printed variants remain separate from its pinned current Unleashed erratum. [Variant review](VARIANT_REVIEW.md) details these distinctions.
 
-Raw gallery values and historical conflicts remain preserved. A reviewed source correction never makes an identity playable by itself; reviewing existing playable variants adds no new admission. Supernova is subsequently admitted in the separately implemented C8 batch using its existing correction, while every other inventory-only identity still requires its own runtime implementation. The 42 raw tag-set and 110 raw rules-text divergences span 124 identities. Following the October 26 Pyke review, 30 are completely reviewed; 94 remain unreviewed, comprising 93 Standard-legal identities plus auxiliary Gold. The temporary compatibility baseline has been removed. Unresolved variant fields block mapping rather than inheriting an exception. [Catalog review](CATALOG_REVIEW.md) describes field evidence and its limits.
+Raw gallery values and historical conflicts remain preserved. A reviewed source correction never makes an identity playable by itself; reviewing existing playable variants adds no new admission. Supernova is subsequently admitted in the separately implemented C8 batch using its existing correction, while every other inventory-only identity still requires its own runtime implementation. The 42 raw tag-set and 110 raw rules-text divergences span 124 identities. Following the November 11 Orianna review, 31 are completely reviewed; 93 remain unreviewed, comprising 92 Standard-legal identities plus auxiliary Gold. The temporary compatibility baseline has been removed. Unresolved variant fields block mapping rather than inheriting an exception. [Catalog review](CATALOG_REVIEW.md) describes field evidence and its limits.
 
 The original visual review is dated October 24, 2026; later additions retain their own dated observations. The [field image index](../assets/data/catalog_evidence/images.json) now covers 88 images; the [identity image index](../assets/data/catalog_evidence/variant_images.json) covers 92, sharing 31 files. Both retain exact official Riot CDN URLs, hashes and sizes. The immutable gallery, October 9 Core PDF and applicable Unleashed erratum page are retained separately. Live checks verify current page facts, image URLs, errata records and the Rules Hub Core link, while rechecking local evidence bytes. They do not freshly download remote images or PDFs. A changed prerequisite or corrupted evidence fails before refresh replaces outputs.
 
@@ -190,3 +190,21 @@ keeps the full face and resized runtime artwork, exact costs, rules text, and
 unchanged predecessor cards and five tournament recipes. Availability in custom
 Irelia decks is separate from evidence that a particular newer list is a current
 meta preset.
+
+
+## Orianna, Exquisite: November 11, 2026
+
+Runtime ID430 uses both official RAD-042/167 and RAD-042a/167 faces from the
+accepted gallery snapshot. Both complete originals were individually inspected;
+the alternate omits only Shield's reminder. The identity review preserves both
+printed strings, raw facts and all preceding review objects. No new field
+correction or erratum is applied. The current Rules Hub's legality facts and
+Core Rules link, plus the Radiance errata article, were compared with the
+accepted sources again on November 11; their parsed facts remain unchanged.
+
+The [admission evidence](../assets/data/card_admissions/irelia_orianna/README.md)
+records the full faces, offline artwork, and unchanged predecessor cards and
+five preset recipes. The [validation record](validation/irelia_orianna.json)
+separates source review, focused rules tests, complete games, API observations
+and native interface checks. A newer Irelia list attributed to Arito at
+Convergence IV is a priority lead, not a newly verified tournament preset.

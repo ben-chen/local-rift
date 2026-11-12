@@ -29,8 +29,8 @@
   },
   "image_index": {
     "local_path": "assets/data/catalog_evidence/variant_images.json",
-    "sha256": "b3e1960864095e2032603d204aa22e04d27c2ff5ee498310453ff26e97e59116",
-    "bytes": 93755
+    "sha256": "c3a466807391bfebf9b12ee979fd887b75d248c77c803574d632d283072479a8",
+    "bytes": 96030
   },
   "reviews": [
     {
@@ -1768,6 +1768,51 @@
             "135.2.d.3",
             "810",
             "811"
+          ],
+          "resolution_ids": []
+        }
+      ],
+      "errata": []
+    },
+    {
+      "id": "irelia-rad-042-167",
+      "identity": "rad-042-167",
+      "name": "Orianna, Exquisite",
+      "reviewed_on": "2026-11-11",
+      "status": "complete",
+      "enables_runtime_support": false,
+      "core_authority_id": "core",
+      "members": [
+        {
+          "official_id": "rad-042-167",
+          "raw_sha256": "f337aa6b62e4f46bf9b17031c19aba6cd10f8884c76d81ed1d8f7b7740ea72c7",
+          "effective_sha256": "f337aa6b62e4f46bf9b17031c19aba6cd10f8884c76d81ed1d8f7b7740ea72c7",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {},
+          "image_id": "rad-042-167"
+        },
+        {
+          "official_id": "rad-042a-167",
+          "raw_sha256": "965853f5f8b0c4abbe33940d188f13eb7efc1305d646dc1121bbc1c81c1c83cb",
+          "effective_sha256": "965853f5f8b0c4abbe33940d188f13eb7efc1305d646dc1121bbc1c81c1c83cb",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {},
+          "image_id": "rad-042a-167"
+        }
+      ],
+      "fields": [
+        {
+          "field": "rules_text",
+          "disposition": "reminder_equivalent",
+          "reason": "Both complete official faces print Shield and the identical restriction on dealing combat damage unless a friendly gear is here. RAD042 includes only the italic Shield reminder that RAD042a omits. Both faces agree on Champion Unit, Calm, 3 Energy, no Power, 4 Might and Orianna/Piltover tags; no operative instruction differs.",
+          "rules": [
+            "135.2.d.1",
+            "135.2.d.2",
+            "135.2.d.3",
+            "814.1",
+            "814.1.b.3",
+            "814.1.c",
+            "814.1.d"
           ],
           "resolution_ids": []
         }

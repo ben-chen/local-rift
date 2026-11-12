@@ -11101,6 +11101,32 @@
       "tags": [
         "Piltover"
       ]
+    },
+    {
+      "id": 430,
+      "name": "Orianna, Exquisite",
+      "official_id": "rad-042-167",
+      "energy": 3,
+      "power": 0,
+      "might": 4,
+      "domains": [
+        "Calm"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/3e608c51698b6fb0cc6a00335dbd1bca84f57c73-744x1039.png?w=280&q=85&fm=png",
+      "source_url": "https://riftbound.leagueoflegends.com/en-us/card-gallery/",
+      "official_text": "[Shield] (+1 Might while I'm a defender.)\nI don't deal combat damage unless there's a friendly gear here.",
+      "official_text_html": "<p>[Shield] (+1 :rb_might: while I'm a defender.)<br />I don't deal combat damage unless there's a friendly gear here.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Shield"
+      ],
+      "tags": [
+        "Piltover",
+        "Orianna"
+      ]
     }
   ],
   "official_text_note": "Official card/legend rules text from the Riot Card Gallery, retrieved 2026-10-24 and corrected by cited errata. Resource icon tokens are expanded to readable bracketed names. Raw card and equipment HTML is preserved separately. Official text does not establish full implementation fidelity."

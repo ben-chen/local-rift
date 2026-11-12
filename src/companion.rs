@@ -445,6 +445,18 @@ fn checked_advice(game: &Game, level: AdviceLevel) -> Result<Vec<&'static str>, 
         });
     }
 
+    if human.hand.contains(&430)
+        || human
+            .units
+            .iter()
+            .any(|unit| !unit.token && unit.card_id == 430)
+    {
+        tips.push(if beginner {
+            "Orianna needs friendly gear at her location to deal combat damage. Gear on another friendly unit there counts. Her Might and Shield still apply without gear."
+        } else {
+            "Keep gear beside Orianna through combat damage. Removing or moving her last nearby gear can stop her damage; moving an equipped ally there can enable it."
+        });
+    }
     if human.hand.contains(&429)
         || human
             .units
@@ -1581,6 +1593,25 @@ mod tests {
 
     fn game() -> Game {
         Game::new(0, 1, 72, Difficulty::Easy)
+    }
+
+    #[test]
+    fn orianna_coaching_teaches_nearby_equipment_without_using_hidden_information() {
+        let mut g = game();
+        g.start_match().unwrap();
+        g.players[0].hand = vec![430];
+        let mut hidden = g.clone();
+        hidden.players[1].hand = vec![430, 3, 21];
+        hidden.players[1].deck.reverse();
+        for level in [AdviceLevel::Beginner, AdviceLevel::Advanced] {
+            let tips = advice(&g, level);
+            assert!(
+                tips.iter()
+                    .any(|tip| tip.contains("Orianna") && tip.contains("gear"))
+            );
+            assert!(tips.iter().all(|tip| tip.chars().count() <= 180));
+            assert_eq!(tips, advice(&hidden, level));
+        }
     }
 
     #[test]

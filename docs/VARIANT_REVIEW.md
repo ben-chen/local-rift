@@ -16,7 +16,7 @@ These **35 field dispositions** cover nine tag fields and 26 rules-text fields; 
 
 ## Evidence and applicability
 
-The original cohort in the [variant image index](../assets/data/catalog_evidence/variant_images.json) contains **90 exact original Riot CDN images, 86,696,094 bytes**. The October 26 Pyke addition below brings the current index to 92 images totaling 88,732,930 bytes. Each was individually inspected for matching identity/collector footer and the relevant tag or text feature. The index retains the original URL, exact bytes/SHA-256, and visual observations. No runtime thumbnail or OCR inference substitutes for the original image. Riftbound and the artwork belong to Riot Games; this project is unaffiliated.
+The original cohort in the [variant image index](../assets/data/catalog_evidence/variant_images.json) contains **90 exact original Riot CDN images, 86,696,094 bytes**. The October 26 Pyke addition below brought the index to 92 images totaling 88,732,930 bytes. The November 11 Orianna addition below brings the current index to 94 images. Each was individually inspected for matching identity/collector footer and the relevant tag or text feature. The index retains the original URL, exact bytes/SHA-256, and visual observations. No runtime thumbnail or OCR inference substitutes for the original image. Riftbound and the artwork belong to Riot Games; this project is unaffiliated.
 
 The field-resolution index remains separate: it covered 69 printing records and 112 entries at C7 publication. The later Tracker review brought it to 70 printing records and 114 entries; the subsequent Momentary Companion tag correction brought it to 71 records and 115 entries. The subsequent Stalwart Goatherd and Patched Porobot review brings it to 73 records and 117 entries. There are still 31 images shared with the 90-member identity index. Shared image files are stored once. The original 112 entries and 37 historical issue groups remain unchanged, with five separately evidenced artwork-discovery groups added. These additions do not change any of the 29 complete identity reviews. [Catalog review](CATALOG_REVIEW.md) describes that layer.
 
@@ -85,11 +85,21 @@ The official [October 9 Core PDF](https://cmsassets.rgpub.io/sanity/files/dsfx76
 
 The [C28 admission proof](../assets/data/card_admissions/c28/README.md) records both complete original faces, `unl-028-219` and `unl-028a-219`. They retain Hidden, Ganking, the optional one-Fury-Power additional play cost, and the same conditional Ready then +2 Might instruction. The alternate face omits only the Hidden and Ganking reminders. Its exact differing text remains in the catalog; Core 135.2.d.1–3, 810 and 811 support this specific reminder-equivalent disposition. No scalar, type, domain, tag, or operative text correction is made.
 
-The source-only checkpoint adds one identity review and two images while leaving runtime mappings unchanged. Subsequent source registration is separately recorded; neither establishes executable acceptance. The original 29 review objects and 90 image records remain exact prefixes. Current totals are 30 complete identity reviews, 92 printings and 36 field dispositions: 15 corrected transcriptions, 19 reminder equivalences and two rule-derived equivalences.
+The source-only checkpoint adds one identity review and two images while leaving runtime mappings unchanged. Subsequent source registration is separately recorded; neither establishes executable acceptance. The original 29 review objects and 90 image records remain exact prefixes. At that checkpoint, totals were 30 complete identity reviews, 92 printings and 36 field dispositions: 15 corrected transcriptions, 19 reminder equivalences and two rule-derived equivalences.
+
+## November 11 addition: Orianna, Exquisite
+
+Both complete faces, `rad-042-167` and `rad-042a-167`, print Shield and the same
+friendly-gear-here restriction on combat damage. The alternate omits only the
+Shield reminder. Stats, types, domain and tags agree. The [admission evidence](../assets/data/card_admissions/irelia_orianna/README.md)
+pins both images, exact raw/effective printing records, and the unchanged 30-review
+and 92-image prefixes. Core 135.2.d.1–3 and 814 support this reminder-equivalent
+review. Source review alone preserves runtime coverage; registration is separate.
+Totals are now 31 identity reviews, 94 printings and 37 field dispositions.
 
 ## Remaining review and checks
 
-The raw history retains 124 identities with variant diagnostics: 123 Standard-legal identities and auxiliary Gold. The 30 identity reviews now leave **94 unreviewed identities: 93 Standard-legal identities plus Gold**. Other source facts are not declared clean merely because they lack a diagnostic. Every new admission still needs accurate facts and a separate executable implementation.
+The raw history retains 124 identities with variant diagnostics: 123 Standard-legal identities and auxiliary Gold. The 31 identity reviews now leave **93 unreviewed identities: 92 Standard-legal identities plus Gold**. Other source facts are not declared clean merely because they lack a diagnostic. Every new admission still needs accurate facts and a separate executable implementation.
 
 Run the offline importer check and the Python review tests to verify the exact local evidence and current applicability. Live page checks additionally verify current parsed facts/errata and the Rules Hub Core link, ignoring unrelated website markup. **They do not freshly download remote image or PDF bytes.** An unchanged URL can conceal changed remote content, so the visual/rules evidence remains dated and a separate fresh fetch is needed to reassess those bytes.
 

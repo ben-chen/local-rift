@@ -692,3 +692,5 @@ object leaves play afterward. Costs, targets and Show Off cannot be changed once
 payment is staged. Automatic Power payment preserves chosen rune targets; manually
 recycling a target before finalization requires Undo/refusal or a different play.
 Invalid input or payment completion preserves the current state and revision.
+
+Orianna, Exquisite's `combat_contribution` adds `requirement: {"type":"friendly_gear_here","met":false}`. `met` is true when the requirement is satisfied. The object is absent on units without that printed requirement. The value uses public physical gear locations, including attachments on another friendly unit, and changes immediately as gear moves or leaves. `prevents_combat_damage` remains independent of `stunned`; `might` retains the full reference value either way. The optional requirement is explanatory and read-only.

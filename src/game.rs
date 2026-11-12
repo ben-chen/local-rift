@@ -29,6 +29,9 @@ mod combat_card_tests;
 #[path = "innovator_tests.rs"]
 mod innovator_tests;
 #[cfg(test)]
+#[path = "orianna_tests.rs"]
+mod orianna_tests;
+#[cfg(test)]
 #[path = "siren_tests.rs"]
 mod siren_tests;
 #[cfg(test)]

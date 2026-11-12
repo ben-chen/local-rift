@@ -6548,6 +6548,21 @@ pub fn cards() -> Vec<CardDef> {
             tags: &["Piltover"],
             art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/b7ff5684309bcd346e6b3534e0d1f38ec1a38726-744x1039.png?w=280&q=85&fm=png",
         },
+        CardDef {
+            id: 430,
+            official_id: "rad-042-167",
+            name: "Orianna, Exquisite",
+            cost: 3,
+            power_cost: 0,
+            might: 4,
+            domain: Domain::Calm,
+            domains: &[Domain::Calm],
+            kind: CardKind::Unit,
+            official_text: "[Shield] (+1 Might while I'm a defender.)\nI don't deal combat damage unless there's a friendly gear here.",
+            keywords: &["Shield"],
+            tags: &["Piltover", "Orianna"],
+            art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/3e608c51698b6fb0cc6a00335dbd1bca84f57c73-744x1039.png?w=280&q=85&fm=png",
+        },
     ]
 }
 
@@ -6747,7 +6762,7 @@ mod tests {
     #[test]
     fn presets_are_complete_and_references_are_consistent() {
         let catalog = cards();
-        assert_eq!(catalog.len(), 430);
+        assert_eq!(catalog.len(), 431);
         for (index, card) in catalog.iter().enumerate() {
             assert_eq!(index, card.id);
             assert!(!card.official_id.is_empty());

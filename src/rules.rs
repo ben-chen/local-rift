@@ -270,6 +270,7 @@ pub fn effect(id: usize) -> OfficialEffect {
         427 => MoveEnemy,
         428 => StunAndDrawFromHand,
         429 => None,
+        430 => None,
         424 => None,
         422 => DrawThenChannel {
             draw: 1,
@@ -1127,6 +1128,7 @@ pub fn requirements(id: usize) -> &'static [Mechanic] {
         427 => &[Chain, Move],
         428 => &[Chain, Hidden, Stun],
         429 => &[Chain, Accelerate, Gold, Tokens, OptionalCosts],
+        430 => &[Chain, Gear, Shield],
         372 | 373 => &[Chain, Gear, Bounce],
         374 => &[Chain, Gear, DeathTriggers],
         375 => &[Chain, Bounce],
@@ -1559,6 +1561,8 @@ pub enum StaticAbility {
     MayPlayToAttackedBattlefield,
     /// Retain Might for every other purpose but do not deal combat damage.
     NoCombatDamage,
+    /// Combat damage is prevented while no friendly gear shares this location.
+    NoCombatDamageWithoutFriendlyGearHere,
     /// Battlefield-only gear entry, cleanup Recall exemption and enemy Hold death trigger.
     Deploy,
     Assault(u8),
@@ -1593,6 +1597,7 @@ pub fn static_abilities(id: usize) -> &'static [StaticAbility] {
     match id {
         411 => &[Assault(2), MayPlayToAttackedBattlefield],
         412 | 414 => &[NoCombatDamage],
+        430 => &[Shield(1), NoCombatDamageWithoutFriendlyGearHere],
         415 => &[Assault(1)],
         416 => &[Shield(3), Tank],
         422 => &[OpponentNearVictoryEnergyDiscount {
@@ -2039,7 +2044,7 @@ mod tests {
     #[test]
     fn all_catalog_entries_have_official_classification() {
         let cards = cards();
-        assert_eq!(cards.len(), 430);
+        assert_eq!(cards.len(), 431);
         for card in cards {
             assert_ne!(
                 effect(card.id),
@@ -2049,7 +2054,7 @@ mod tests {
             );
             assert_ne!(support_status(card.id), SupportStatus::UnknownCard);
         }
-        assert_eq!(effect(430), OfficialEffect::Unsupported);
+        assert_eq!(effect(431), OfficialEffect::Unsupported);
     }
 
     #[test]

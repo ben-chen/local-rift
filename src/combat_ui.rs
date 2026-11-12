@@ -82,12 +82,25 @@ pub fn unit_description(contribution: local_rift::numeric::CombatContribution) -
         contribution.damage
     )];
     if contribution.prevents_combat_damage {
-        lines.push("NO COMBAT DAMAGE · Printed ability. Current Might still applies to its damage ability and the damage needed to kill it.".into());
+        lines.push("NO COMBAT DAMAGE · Printed ability. Current Might still determines lethal damage and the values read by other effects.".into());
         if !contribution.stunned {
             lines.push("Not Stunned: its printed ability prevents combat damage.".into());
         }
     }
     lines
+}
+
+pub fn gear_requirement_description(
+    game: &Game,
+    unit: &local_rift::game::Unit,
+) -> Option<&'static str> {
+    game.unit_combat_gear_requirement(unit).map(|met| {
+        if met {
+            "FRIENDLY GEAR HERE · Combat requirement met. Gear attached to any friendly unit here counts, as does unattached gear here. Stun can still prevent combat damage."
+        } else {
+            "NEEDS FRIENDLY GEAR HERE · Deals no combat damage. Gear at another location or controlled by the opponent does not count. Might and Shield still apply."
+        }
+    })
 }
 
 pub fn unit_badge(

@@ -39,7 +39,8 @@ impl Game {
     pub fn unit_combat_contribution(&self, unit: &Unit) -> Result<CombatContribution, String> {
         let might = self.unit_might(unit)?;
         let prevents_combat_damage = !unit.token
-            && rules::static_abilities(unit.card_id).contains(&StaticAbility::NoCombatDamage);
+            && (rules::static_abilities(unit.card_id).contains(&StaticAbility::NoCombatDamage)
+                || self.unit_combat_gear_requirement(unit) == Some(false));
         Ok(CombatContribution {
             might,
             damage: if unit.stunned || prevents_combat_damage {
@@ -50,6 +51,34 @@ impl Game {
             stunned: unit.stunned,
             prevents_combat_damage,
         })
+    }
+
+    /// Some reports whether this unit's printed friendly-gear-here requirement
+    /// is currently fulfilled. None means the unit has no such requirement.
+    /// Attached gear shares its bearer's location (CR719.3); readiness and the
+    /// gear's own active abilities do not affect its presence there.
+    pub fn unit_combat_gear_requirement(&self, unit: &Unit) -> Option<bool> {
+        if unit.token
+            || !rules::static_abilities(unit.card_id)
+                .contains(&StaticAbility::NoCombatDamageWithoutFriendlyGearHere)
+        {
+            return None;
+        }
+        let present = self
+            .players
+            .iter()
+            .enumerate()
+            .find(|(_, state)| state.units.iter().any(|u| u.id == unit.id))
+            .is_some_and(|(owner, state)| {
+                state.gear.iter().any(|gear| {
+                    // An invalid dangling attachment has no location, rather
+                    // than being mistaken for a gear at Base.
+                    gear.attached_to
+                        .is_none_or(|id| state.units.iter().any(|u| u.id == id))
+                        && self.gear_location(owner, gear.id) == unit.lane
+                })
+            });
+        Some(present)
     }
 
     pub fn unit_keywords(&self, unit: &Unit) -> Result<UnitKeywords, String> {

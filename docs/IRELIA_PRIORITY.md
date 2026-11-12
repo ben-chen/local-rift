@@ -52,10 +52,22 @@ Irelia-ready interactions use the same rules through the client and bot API.
 The [validation record](validation/irelia_innovator.json) separates complete
 games, focused interactions, source review and native interface checks.
 
-Next, reconcile the remaining cards in newer Irelia lists against dated
-tournament sources before choosing another admission or preset. Continue the
-end-to-end Irelia rules audit, including tournament match flow and sideboarding;
-card-pool coverage alone does not make that match experience complete.
+Orianna, Exquisite is now implemented and validated for custom practice. Her
+combat contribution follows the physical location of friendly gear, including
+gear on another friendly unit, without reducing her Might or Shield. Her
+[validation record](validation/irelia_orianna.json) includes both gear conditions,
+movement and removal, native inspection, API views, and all three AI levels.
+
+The next priority is **Gust Monk**, the remaining unimplemented main-deck card
+in the [list attributed to Arito at Convergence IV](https://riftbench.com/decks/TD-convergence-4-0002)
+(October 31; attributed second place). It contains three Orianna and one Gust
+Monk. The [organizer's event page](https://topdeck.gg/event/convergence-4) confirms
+the event and Radiance card pool; the primary standings and full deck provenance
+still need independent confirmation before admitting a preset. The current five
+preset recipes remain unchanged.
+
+Continue the end-to-end Irelia rules audit, including tournament match flow and
+sideboarding; card-pool coverage alone does not make that match experience complete.
 
 For each addition, exercise legal targeting, costs, responses, resolution after
 targets change, Irelia's choose/ready triggers, bot-visible actions and UI hints.

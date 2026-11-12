@@ -8474,6 +8474,9 @@ fn card_brief(game: &Game, id: usize) -> String {
     if id == 429 {
         return "On exhaust: Gold exhausted, or pay 1 Chaos to draw 1".into();
     }
+    if id == 430 {
+        return "Shield · Needs friendly gear here to deal combat damage".into();
+    }
     if id == 410 {
         return "Choose: move Deploy gear, or inspect five for Gear".into();
     }
@@ -9016,6 +9019,9 @@ fn live_unit_description(game: &Game, owner: usize, unit_id: u32) -> Option<Stri
                 "Cannot calculate this unit's combat contribution: {error}"
             ));
         }
+    }
+    if let Some(requirement) = combat_ui::gear_requirement_description(game, unit) {
+        lines.push(requirement.into());
     }
     match combat_ui::source_damage_description(game, unit) {
         Ok(description) => lines.extend(description),

@@ -626,6 +626,64 @@ pub(crate) fn run_frame(app: &mut App, frame: u32) -> bool {
             assert!(app.game.players[0].gear.is_empty() && app.game.players[0].hand.is_empty());
             assert_eq!(app.game.players[0].power_pool[4], 10);
             capture(app, "RIFT_IRELIA_INNOVATOR_DECLINED");
+        }
+        78 => {
+            backoff_setup(app);
+            app.game.players[0].hand.clear();
+            app.game.players[0].units = vec![
+                public_unit(43000, 430, Some(0)),
+                public_unit(43001, 71, Some(0)),
+            ];
+            app.game.players[1].units.clear();
+        }
+        79 => {
+            let unit = &app.game.players[0].units[0];
+            assert_eq!(app.game.unit_combat_contribution(unit).unwrap().damage, 0);
+            capture_unit(app, 43000, "RIFT_IRELIA_ORIANNA_NO_GEAR");
+            let rect = unit_rect(app, 43000);
+            app.ui.input_override = Some((rect.center(), false, true));
+        }
+        80 => {
+            assert_eq!(app.inspect, Some(430));
+            assert!(
+                crate::live_unit_description(&app.game, 0, 43000)
+                    .unwrap()
+                    .contains("NEEDS FRIENDLY GEAR HERE")
+            );
+            capture(app, "RIFT_IRELIA_ORIANNA_INSPECT");
+            click(app, 940.0, 700.0);
+        }
+        81 => {
+            assert!(app.inspect.is_none());
+            app.game.players[0].gear.push(local_rift::gear::GearState {
+                id: 43002,
+                card_id: 3,
+                lane: None,
+                attached_to: Some(43001),
+                ready: false,
+                temporary: false,
+                token: false,
+            });
+            app.companion.set_level(AdviceLevel::Advanced);
+        }
+        82 => {
+            assert_eq!(
+                app.game
+                    .unit_combat_contribution(&app.game.players[0].units[0])
+                    .unwrap()
+                    .damage,
+                4
+            );
+            capture_unit(app, 43000, "RIFT_IRELIA_ORIANNA_WITH_GEAR");
+            let rect = unit_rect(app, 43000);
+            app.ui.input_override = Some((rect.center(), false, true));
+        }
+        83 => {
+            assert_eq!(app.inspect, Some(430));
+            let text = crate::live_unit_description(&app.game, 0, 43000).unwrap();
+            assert!(text.contains("FRIENDLY GEAR HERE · Combat requirement met"));
+            assert!(text.contains("Combat contribution: 4 damage"));
+            capture(app, "RIFT_IRELIA_ORIANNA_ENABLED_INSPECT");
             return true;
         }
         _ => {}

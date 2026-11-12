@@ -2,7 +2,7 @@
 
 Snapshot checked **2026-10-24**. The official gallery contains **1,408 printing records** grouped into **1,103 distinct full-name identities**. After excluding **12 auxiliary token/tracker identities** and **12 banned identities**, **1,079 identities are legal in Standard/1v1 Constructed**. The separate 2v2 list leaves **1,078**.
 
-**This client does not yet implement every legal card.** It currently maps **430 main-deck cards, 10 independently registered legends, 17 battlefields, and 6 rune resource types** (463 legal identities). **616 legal identities remain unimplemented and are not playable.** Importing this snapshot does not register cards with the engine. Full inventory coverage is not full rules support.
+**This client does not yet implement every legal card.** It currently maps **431 main-deck cards, 10 independently registered legends, 17 battlefields, and 6 rune resource types** (464 legal identities). **615 legal identities remain unimplemented and are not playable.** Importing this snapshot does not register cards with the engine. Full inventory coverage is not full rules support.
 
 ## Scope and authority
 
@@ -31,7 +31,7 @@ Numbered positions include token slots where the publisher numbers them within a
 | Legend | 58 | 10 | 48 |
 | Rune | 6 | 6 | 0 |
 | Spell | 268 | 119 | 149 |
-| Unit | 546 | 237 | 309 |
+| Unit | 546 | 238 | 308 |
 
 Each row is a disjoint complete type set. A reviewed Unit Gear has both types (Core 178) and is counted once in `gear+unit`, rather than once in each single-type row. Patched Porobot is the first explicitly reviewed dual-type correction; this is not a complete visual audit of every gallery type. No dual-type card is currently admitted to the engine.
 
@@ -104,7 +104,7 @@ The original 37 parser issue groups remain unchanged. Another 17 issues were dis
 
 The same reviewed evidence corrects missing/wrong domains, printed tags, Runeblade Anvil's activation power glyph, and Rousing Display's trailing editorial text. Individually reviewed Device-tag exclusions are explicitly rule-derived and retain their Core Rules evidence. Every resolution names exact raw prerequisites, its immutable origin gallery, complete printing hash, and local official image evidence. A changed printing or corrupted evidence fails validation; publisher fixes require a deliberate review update. See [the review contract and evidence](CATALOG_REVIEW.md).
 
-**Alternate-printing review remains incomplete:** 94 identities have unreviewed differences (33 tag sets and 83 rules-text variants, with overlap). Reminder omissions and possible gameplay differences are recorded without automatic normalization. The 30 already-playable affected identities now have complete individual reviews of all 92 printings, replacing their old compatibility exceptions. The [variant review](VARIANT_REVIEW.md) preserves genuine printed differences and identifies exact transcription corrections, reminder equivalence, and two narrowly justified wording/separator interpretations. Any mapping with an unreviewed variant difference is rejected. Changes to reviewed printings, corrections, membership, local evidence, current Core Rules link, or applicable errata require renewed review, even if a difference disappears.
+**Alternate-printing review remains incomplete:** 93 identities have unreviewed differences (33 tag sets and 82 rules-text variants, with overlap). Reminder omissions and possible gameplay differences are recorded without automatic normalization. The 31 already-playable affected identities now have complete individual reviews of all 94 printings, replacing their old compatibility exceptions. The [variant review](VARIANT_REVIEW.md) preserves genuine printed differences and identifies exact transcription corrections, reminder equivalence, and two narrowly justified wording/separator interpretations. Any mapping with an unreviewed variant difference is rejected. Changes to reviewed printings, corrections, membership, local evidence, current Core Rules link, or applicable errata require renewed review, even if a difference disappears.
 
 The gallery's auxiliary entries are incomplete as a complete token catalog: official rules/card text mentions additional tokens such as Tentacle, Mech, and Bomb. Tokens cannot be included in legal constructed decks and are excluded from the 1,079 denominator; a full engine still needs every rules-created token and marker. These source corrections enable no new playable cards.
 
@@ -565,6 +565,7 @@ Current pages are archived under `assets/data/catalog_sources/`; immutable revie
 | 427 | Siren's Song | `rad-098-167` |
 | 428 | Back Off | `unl-042-219` |
 | 429 | Reckless Innovator | `rad-105-167` |
+| 430 | Orianna, Exquisite | `rad-042-167` |
 
 ## Implemented legend ID mapping
 

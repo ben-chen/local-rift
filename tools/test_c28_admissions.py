@@ -140,7 +140,7 @@ class C28AdmissionTests(unittest.TestCase):
         self.assertIn('ready up to 2 runes at the end', fields[14]['corrected_text'])
 
     def test_pyke_reminder_equivalence_is_explicit_without_rewriting_raw_strings(self):
-        entry = self.review_manifest['reviews'][-1]
+        entry = next(row for row in self.review_manifest['reviews'] if row['id'] == 'c28-unl-028-219')
         self.assertEqual((entry['id'], entry['identity']), ('c28-unl-028-219', UNITS[-1]))
         self.assertFalse(entry['enables_runtime_support'])
         self.assertEqual([m['official_id'] for m in entry['members']], ['unl-028-219', 'unl-028a-219'])
@@ -154,7 +154,7 @@ class C28AdmissionTests(unittest.TestCase):
         for text in [first['rules_text'], second['rules_text']]:
             self.assertIn('You may pay [Fury Power] as an additional cost to play me.', text)
             self.assertIn('if you paid the additional cost, ready me and give me +2 Might this turn.', text)
-        changed = copy.deepcopy(self.review_manifest); changed['reviews'].pop()
+        changed = copy.deepcopy(self.review_manifest); changed['reviews'].remove(entry)
         with self.assertRaisesRegex(ValueError, 'variant|review'):
             catalog.make_catalog(self.origin, self.archives, identity_review_manifest=changed)
 
@@ -174,7 +174,7 @@ class C28AdmissionTests(unittest.TestCase):
                 self.assertFalse(card['implementation']['playable_in_client'])
         self.assertEqual(tuple(source_only['counts'][k] for k in [
             'reviewed_variant_identities', 'reviewed_variant_printings', 'unreviewed_variant_identities']),
-            (30, 92, 94))
+            (31, 94, 93))
 
     def test_all_previous_runtime_records_and_review_prefixes_are_unchanged(self):
         root = catalog.ROOT; runtime = catalog.load_runtime_manifest(); pin = self.proof['preserved_runtime_prefix']

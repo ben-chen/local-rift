@@ -1512,5 +1512,47 @@
       "printed_reminder_spans": [],
       "observation": "Complete alternate face UNL028a/219: same type/tags/domain/stats and both operative additional-cost/conditional-play sentences as base printing. Hidden/Ganking present without reminder text. Rule text variance is reminder omission, not changed instructions. No equipment panel."
     }
+  },
+  {
+    "official_id": "rad-042-167",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/3e608c51698b6fb0cc6a00335dbd1bca84f57c73-744x1039.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/rad-042-167.png",
+    "sha256": "c3dce56815fae72651600ab02b62d577f4a3db930653170230071e0788cdf67f",
+    "bytes": 921464,
+    "visual_review": {
+      "reviewed_on": "2026-11-11",
+      "method": "Individual complete original official face inspection: footer/name/type/domain/cost/Might/tags and rules panel.",
+      "collector_footer": "RAD · 042/167",
+      "printed_type": "Champion Unit",
+      "printed_tags_in_face_order": [
+        "Orianna",
+        "Piltover"
+      ],
+      "printed_rules_text": "[Shield] (+1 Might while I'm a defender.)\nI don't deal combat damage unless there's a friendly gear here.",
+      "printed_reminder_spans": [
+        "(+1 Might while I'm a defender.)"
+      ],
+      "observation": "Calm Champion Unit; 3 Energy, no printed Power, 4 Might; Orianna/Piltover. Shield and the same friendly-gear-here combat-damage restriction on both faces. Base face includes the Shield reminder."
+    }
+  },
+  {
+    "official_id": "rad-042a-167",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/eeda2acfac6215104d70976c679c93f6f09fc351-744x1039.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/rad-042a-167.png",
+    "sha256": "7a13c9ba988270e4b11f2cf4238e963f6711fae43fff813e72101ab13ad27c8e",
+    "bytes": 874765,
+    "visual_review": {
+      "reviewed_on": "2026-11-11",
+      "method": "Individual complete original official face inspection: footer/name/type/domain/cost/Might/tags and rules panel.",
+      "collector_footer": "RAD · 042a/167",
+      "printed_type": "Champion Unit",
+      "printed_tags_in_face_order": [
+        "Orianna",
+        "Piltover"
+      ],
+      "printed_rules_text": "[Shield]\nI don't deal combat damage unless there's a friendly gear here.",
+      "printed_reminder_spans": [],
+      "observation": "Calm Champion Unit; 3 Energy, no printed Power, 4 Might; Orianna/Piltover. Shield and the same friendly-gear-here combat-damage restriction on both faces. Alternate face omits only the Shield reminder."
+    }
   }
 ]

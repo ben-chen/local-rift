@@ -306,7 +306,7 @@ The fifth preset is the sourced Los Angeles Rengar winning list. Copying that pr
 
 ## Remaining fidelity limits
 
-Ten supported legends, seventeen battlefield choices, and 430 main-deck cards are available through five supplied presets and the custom deck editor. The original four presets and all ten authored or preset-derived training recipes remain unchanged; the fifth tournament preset is separate. Additional supported cards can be added through the editor where eligible. There is no sideboarding, tournament match structure, multiplayer mode, or full card-set coverage. The presets are dated tournament lists, not a ranking of the current metagame.
+Ten supported legends, seventeen battlefield choices, and 431 main-deck cards are available through five supplied presets and the custom deck editor. The original four presets and all ten authored or preset-derived training recipes remain unchanged; the fifth tournament preset is separate. Additional supported cards can be added through the editor where eligible. There is no sideboarding, tournament match structure, multiplayer mode, or full card-set coverage. The presets are dated tournament lists, not a ranking of the current metagame.
 
 The desktop and bot API expose exact damage allocations and power-source payments. The default automatic payment remains available; energy can be prepared by exhausting chosen rune domains before a play. These controls share engine validation, but broader card and interaction coverage is still required.
 
@@ -493,3 +493,22 @@ cost skips this occurrence without producing Gold. Undoing a staged payment
 returns to the same selected mode and restores that payment attempt. The native
 controls and bot API expose the same public choices. The Gold reminder's
 Reaction keyword does not grant Reaction timing to the unit card.
+
+
+## Orianna, Exquisite and nearby gear
+
+Orianna retains her 4 printed Might and Shield even when she cannot deal combat
+damage. Her combat contribution is zero while no friendly gear shares her
+location. When defending, Shield supplies +1 Might regardless of that condition;
+lethal damage and noncombat Fight effects still use her full current Might.
+
+A gear attached to Orianna or any other friendly unit at the same location counts.
+Unattached gear there, including Gold, also counts. The gear may be exhausted,
+and its own printed abilities may be inactive while attached. Enemy gear, gear
+elsewhere, and facedown cards do not count. Moving an equipped ally or removing
+gear before combat damage immediately changes the condition. Stun independently
+prevents combat damage even when gear is present.
+
+The board retains the zero-combat badge, and the live inspector explains whether
+the nearby gear requirement is met. The bot API exposes that same public condition
+alongside Might and combat damage. Mote explains the interaction at both levels.

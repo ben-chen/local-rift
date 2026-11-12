@@ -2,6 +2,72 @@
 use super::*;
 use crate::game::Unit;
 
+#[test]
+fn orianna_api_explains_public_gear_requirement_and_updates_after_ally_movement() {
+    for owner in 0..2 {
+        let mut s = position(owner);
+        s.game.battlefield_owner = [Some(owner), Some(owner)];
+        unit(&mut s, owner, 430, 43000, Some(0));
+        let ally = unit(&mut s, owner, 71, 43001, None);
+        let first = observed_unit(&s, owner, 43000);
+        assert_eq!(first["might"], 4);
+        assert_eq!(first["keywords"]["shield"], 1);
+        assert_eq!(
+            first["combat_contribution"]["requirement"],
+            json!({"type":"friendly_gear_here","met":false})
+        );
+        assert_eq!(first["combat_contribution"]["damage"], 0);
+        assert!(
+            observed_unit(&s, owner, 43001)["combat_contribution"]
+                .get("requirement")
+                .is_none()
+        );
+        s.game.players[owner].hand.push(3);
+        submit(
+            &mut s,
+            Action::PlayCardWithTargets {
+                hand_index: 0,
+                lane: None,
+                targets: vec![],
+            },
+        );
+        while !s.game.chain.is_empty() {
+            submit(&mut s, Action::Pass);
+        }
+        let gear_id = s.game.players[owner].gear[0].id;
+        submit(
+            &mut s,
+            Action::Equip {
+                gear_id,
+                target: ally,
+            },
+        );
+        while !s.game.chain.is_empty() {
+            submit(&mut s, Action::Pass);
+        }
+        assert_eq!(
+            observed_unit(&s, owner, 43000)["combat_contribution"]["requirement"]["met"],
+            false
+        );
+        let action = Action::Move {
+            unit_id: 43001,
+            lane: Some(0),
+        };
+        let before = observed_unit(&s, owner, 43000);
+        assert_eq!(query(&mut s, "validate", &action)["ok"], true);
+        assert_eq!(observed_unit(&s, owner, 43000), before);
+        submit(&mut s, action);
+        let after = observed_unit(&s, owner, 43000);
+        assert_eq!(after["combat_contribution"]["requirement"]["met"], true);
+        assert_eq!(after["combat_contribution"]["damage"], 4);
+        assert_eq!(
+            after["combat_contribution"]["prevents_combat_damage"],
+            false
+        );
+        assert_eq!(after["might"], before["might"]);
+    }
+}
+
 fn position(actor: usize) -> Session {
     let mut s = Session::new(ResetOptions {
         decks: [3, 3],
