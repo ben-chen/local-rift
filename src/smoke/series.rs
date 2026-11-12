@@ -40,6 +40,11 @@ fn play_to_end(app: &mut App) {
             break;
         }
         assert!(app.game.step_ai().unwrap());
+        app.native_match
+            .as_mut()
+            .unwrap()
+            .observe_game(&app.game)
+            .unwrap();
     }
     assert!(app.game.winner.is_some());
     GAMES.set(GAMES.get() + 1);
@@ -157,6 +162,7 @@ pub(crate) fn run_frame(app: &mut App, frame: u32) -> bool {
             STAGE.set(49);
         }
         14 => {
+            assert!(!app.series_coach_tip().unwrap().starts_with("Consider "));
             assert_eq!(draft(app).deck.card_count(), 39);
             snapshot(app, "INVALID");
             click(app, 1200.0, 817.0);
@@ -425,6 +431,16 @@ pub(crate) fn run_frame(app: &mut App, frame: u32) -> bool {
         49 => {
             assert_eq!(app.companion.level(), AdviceLevel::Advanced);
             snapshot(app, "SIDEBOARD_ADVANCED");
+            app.prefs.coach = false;
+            click(app, 775.0, 815.0);
+            STAGE.set(54);
+        }
+        54 => {
+            assert!(app.prefs.coach, "an explicit review wakes Mote");
+            let tip = app.series_coach_tip().unwrap();
+            assert!(tip.starts_with("Consider ") || tip.starts_with("No clear swap"));
+            assert_eq!(draft(app).deck.card_count(), 40);
+            snapshot(app, "SIDEBOARD_HINT");
             if card_control(app, 0, 0, false) {
                 STAGE.set(14);
             }

@@ -178,6 +178,12 @@ impl Session {
             .ok_or_else(|| ApiError::new("revision_exhausted", "Create a new session."))?;
         let mut series = self.series.clone();
         if let Some(run) = &mut series {
+            for (p, scout) in run.scouting.iter_mut().enumerate() {
+                scout
+                    .observe_game(&self.game, p)
+                    .map_err(ApiError::illegal)?;
+                scout.observe_game(&game, p).map_err(ApiError::illegal)?;
+            }
             run.state.clear_draw_offers();
             if game.winner.is_some() {
                 run.state
@@ -586,6 +592,8 @@ impl Session {
         match command {
             "validate_registration"
             | "series_begin"
+            | "series_suggest"
+            | "series_step_ai"
             | "series_sideboard"
             | "series_battlefield"
             | "series_play_order"
@@ -595,7 +603,7 @@ impl Session {
                 keys(object, &["command", "id"])?;
                 Ok(
                     json!({"protocol":PROTOCOL_VERSION,"name":"Local Rift","summary":self.summary(),
-                    "commands":["validate_registration","series_begin","series_sideboard","series_battlefield","series_play_order","series_concede","series_draw","info","catalog","validate_deck","reset","observe","suggest","quote_payment","play_choices","cost_plan","target_candidates","validate","apply","mulligan","start","step_ai"],
+                    "commands":["validate_registration","series_suggest","series_step_ai","series_begin","series_sideboard","series_battlefield","series_play_order","series_concede","series_draw","info","catalog","validate_deck","reset","observe","suggest","quote_payment","play_choices","cost_plan","target_candidates","validate","apply","mulligan","start","step_ai"],
                     "suggestions_exhaustive":false,"max_request_bytes":MAX_REQUEST_BYTES}),
                 )
             }

@@ -92,7 +92,8 @@ impl Registration {
         }
         result
     }
-    fn configure(
+    /// Validate a proposed main deck against this immutable registered pool.
+    pub fn configure(
         &self,
         cards: Vec<(CardId, u8)>,
         chosen: CardId,

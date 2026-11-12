@@ -34,4 +34,5 @@ pub use game::vision;
 
 pub mod runes;
 
+pub mod match_ai;
 pub mod match_series;

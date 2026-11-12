@@ -642,3 +642,19 @@ chooses its first available field; tests do not establish expert matchup
 planning. Custom registrations and draw agreements are still API-only. Timed
 rounds, judge procedures, broader in-game fidelity and full card coverage remain
 unfinished. See [native validation](validation/native_match_series.json).
+
+## Match scouting review — November 12, 2026
+
+The live [Rules Hub](https://playriftbound.com/en-us/rules-hub/) still links the
+October 9 Core and Tournament Rules. Reviewed the new planner against public
+zone/privacy rules (CR107–108, 128), end-of-game reveal (CR422.4), and registered
+sideboarding (TR403). The initial scouting draft wrongly excluded facedown cards
+revealed at game end. It now records those identities after a scoring win,
+validated concession or mutually agreed draw, while a pending draw offer and
+rejected requests disclose nothing. Hidden hands and future deck/rune order
+remain outside scouting. Token source IDs do not count as observed deck cards.
+
+Recommendations pass through the same registered-pool and exact-main validation
+as manual choices; first-game sideboarding and reused fields remain prohibited.
+Balance preferences are AI heuristics and impose no extra rules on human edits.
+This focused review does not close the outstanding full-engine audit cases.

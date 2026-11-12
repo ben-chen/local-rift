@@ -100,6 +100,8 @@ Siren's Song validation is recorded in [its acceptance receipt](validation/ireli
 The native app, shared match controller and bot API now support untimed
 best-of-three practice with the complete Arito registration. Native setup,
 sideboarding, field reveal, play order, results and match coaching use the shared
-controller. Next: improve matchup and sideboard policies, expose additional
-complete registrations, and continue the end-to-end rules audit. Card-library
+controller. Tactical and Strategic match AI now evaluates the six Arito sideboard
+roles using revealed-card scouting, with optional Mote review of the human draft.
+Next: measure and improve matchup decisions, expose additional complete
+registrations, and continue the end-to-end rules audit. Card-library
 completeness remains a separate active goal.

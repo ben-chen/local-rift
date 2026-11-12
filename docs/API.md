@@ -746,6 +746,8 @@ same conventions as game commands. Registration validation is read-only.
 |---|---|---|
 | `validate_registration` | `registration` | Validated registration; no mutation |
 | `series_begin` | `registrations` (two objects), `designated_player`, optional `seed`, `difficulty` | New registered match, before field selection |
+| `series_suggest` | `player`, optional `policy` (`adaptive` or `keep`) | Read-only own plan, reasons and scouting history; no revision change |
+| `series_step_ai` | `player`, optional `policy` | Revision-checked submission of one legal sideboard, field or play-order choice |
 | `series_sideboard` | `player`, `cards` pairs, `chosen_champion` | Lock that player's legal main list; sideboard is the remaining registered pool |
 | `series_battlefield` | `player`, `battlefield` | Commit an unused field privately; reveal when both have committed |
 | `series_play_order` | `player`, `first_player` | The designated player chooses play order; creates the opening hands |
@@ -774,3 +776,14 @@ Concessions have no fabricated final point score. Game draw agreement is exposed
 after setup, preserves configuration and starting player, and creates a fresh
 mulligan without sideboarding. Draws and match concessions do not fabricate game
 wins. A new series always starts from the original registrations.
+
+`series_suggest` returns `plan` (main `cards`, `chosen_champion`, derived
+`sideboard`, available `battlefield`, preferred `first_player`, one-copy `swaps`
+and `reasons`) plus this seat's `scouting`. It may be inspected during a game,
+but only `series_step_ai` during the appropriate setup phase can submit choices.
+The designated-player and already-submitted guards are the same as manual
+commands. Suggestions remain private to the requested seat; mutation responses
+do not publish sideboard plans. Both policies choose first, while `keep` also
+keeps the deck and takes its next unused field. Easy difficulty uses that baseline
+even with `adaptive`. A trusted coordinator must route these responses only to
+the requesting seat, as with `observe`.

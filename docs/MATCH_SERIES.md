@@ -37,10 +37,23 @@ reminders or Advanced planning advice in the sidebar throughout setup.
 
 The native app currently offers only the complete Arito registration for this
 mode. Custom match registrations remain available through Rust and the bot API.
-The native AI keeps its main deck between games, chooses the next unused field
-in its registration and chooses first when designated; all three difficulty
-levels apply during game play. Matchup-specific AI sideboarding remains future
-work. Native draw-agreement controls are not yet exposed; the API supports them.
+The Easy opponent keeps its main deck and chooses its next unused field.
+Tactical and Strategic opponents remember revealed cards between games and
+consider up to two or four one-copy swaps respectively, with the same limit on
+total changes from the original registered main deck. They preserve Irelia’s
+core targeting, readying, movement and draw package as well as the
+registered unit, early-unit and gear counts and limit increases in Energy costs.
+The current role evaluations cover the six cards in Arito's sideboard: gear
+answers, Vex, Decree of Focus, Gust and Abandon. Unknown sideboard roles are not
+inferred from card text. Field choices use the current own deck's composition.
+Sunken Temple's estimate includes Irelia's buffs and equipment rather than only
+printed Might. All levels still choose first when designated; matchup-specific play/draw policy
+and expert-strength sideboarding remain unfinished.
+
+**Mote: review my sideboard** gives an optional suggestion for your current legal
+list, using only cards your seat saw. It does not move cards or submit choices.
+Editing a card or champion clears the suggestion so stale advice is not retained.
+The review button is disabled while your draft is illegal. Native draw-agreement controls are not yet exposed; the API supports them.
 The app does not save an unfinished match for later resumption.
 
 ## Run a complete match
@@ -51,7 +64,8 @@ python3 tools/series_bot.py --api target/release/rift-api --difficulty tactical
 ```
 
 The example runs the sourced Arito Irelia list against itself and prints the
-match score and game history. It keeps both sideboards unchanged. Replace
+match score and game history. It keeps both sideboards unchanged by default;
+add `--adaptive` to use the shared match planner for both seats. Replace
 `choose_sideboard(view)` and `choose_field(view)` in the example to try another
 policy; each receives only that player's observation. This demonstrates the
 protocol, not advanced matchup strategy.
@@ -125,3 +139,41 @@ and October 9 Core Rules. References: CR103, 110–118 and 488;
 TR403, 404, 406, 407, 410 and 601.1. The source hash, reviewed PDF pages and
 implementation boundaries are recorded with validation. Event-specific opening
 rule trials do not replace the published Standard opening.
+
+## Scouting and policy limits
+
+Scouting stores distinct revealed identities, not inferred copy counts. It reads
+public units, non-token gear, trash, banish, chosen champions, actual spells on
+the chain, pending public card plays, and explicit hand/deck/facedown reveals.
+Repeated observations do not manufacture additional evidence. Token source IDs
+are not treated as cards in a deck. Hidden hands, future deck/rune order, preset
+identity, opposing registrations and private sideboards are never planner inputs.
+Facedown cards revealed at game end are remembered, as required by CR 422.4,
+including games ended by concession or an agreed draw.
+Some effects resolve between snapshots; this memory can miss information and is
+not a reconstruction of the opponent's deck. It persists through games and draws
+and resets when a new match starts.
+
+The planner uses deterministic heuristics, not a trained matchup model. A revealed
+card does not prove it remains in the opponent's list after sideboarding. Its
+balance checks preserve counts, not every synergy. Suggestions are starting
+points for practice, not established optimal tournament plans.
+
+Run a paired comparison with the unchanged-deck baseline:
+
+```sh
+python3 tools/benchmark_match_ai.py --api target/release/rift-api --output comparison.json
+```
+
+This alternates policies with identical seeds, seats and in-game difficulty.
+Non-Arito rivals have explicitly authored registrations with empty sideboards;
+they are not presented as verified tournament match registrations. Simulated
+wins measure these particular opponents and seeds, not human playing strength.
+
+The November 12 evaluation used 32 fresh paired scenarios (64 matches, 151 games)
+after one policy revision on a separate earlier cohort. The revised policy won
+12/32 matches; keeping the original list won 9/32. Every paired first game had
+the same result. These are limited simulated results on four included rivals,
+not statistical proof of stronger play or validation against human experts.
+See [the validation record](validation/match_ai.json) for the retained earlier
+negative result, fresh-cohort setup, tests and visual checks.

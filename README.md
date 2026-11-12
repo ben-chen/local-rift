@@ -153,6 +153,15 @@ tests**, **269 source checks**, **six controller matches (14 games)** and **20
 release UI runs** passed. The match UI runs cover three AI levels and two window
 sizes; twelve runs each play a complete match. Card coverage is unchanged.
 
+Tactical and Strategic match opponents now remember revealed cards and consider
+legal sideboard swaps while preserving Irelia's core engine. **Mote: review my
+sideboard** offers an optional suggestion without moving your cards. The bot API
+exposes the same planner and scouting history. The [match-AI validation
+record](docs/validation/match_ai.json) includes a fresh 32-pair comparison: the
+adaptive policy won 12 matches and the unchanged-deck baseline won 9. This limited
+simulation does not establish tournament or expert strength. Card coverage and
+the remaining rules limitations are unchanged.
+
 ## Included presets
 
 | Deck | Real archetype reference | Published source |

@@ -1,5 +1,6 @@
 //! Revision-checked match coordination; player observations never expose rivals' pools.
 use super::*;
+use crate::match_ai::{MatchPolicy, Scouting, recommend};
 use crate::match_series::{MatchSeries, Registration, SeriesPhase, card_rows};
 
 #[derive(Clone, Debug)]
@@ -7,7 +8,9 @@ pub(super) struct SeriesRun {
     pub state: MatchSeries,
     pub seed: u64,
     pub difficulty: Difficulty,
+    pub scouting: [Scouting; 2],
 }
+
 impl Session {
     pub(super) fn require_series_game(&self) -> Result<(), ApiError> {
         if self
@@ -42,6 +45,7 @@ impl Session {
             state,
             seed,
             difficulty,
+            scouting: std::array::from_fn(|_| Scouting::default()),
         });
         self.revision = next;
         Ok(())
@@ -59,6 +63,16 @@ impl Session {
         let old_phase = series.state.phase();
         let old_number = series.state.game_number();
         f(&mut series.state).map_err(ApiError::illegal)?;
+        if old_phase == SeriesPhase::Game
+            && (series.state.phase() != SeriesPhase::Game
+                || old_number != series.state.game_number())
+        {
+            for (p, scout) in series.scouting.iter_mut().enumerate() {
+                scout
+                    .observe_game_end(&self.game, p)
+                    .map_err(ApiError::illegal)?;
+            }
+        }
         let game = if series.state.phase() == SeriesPhase::Game
             && (old_phase != SeriesPhase::Game || old_number != series.state.game_number())
         {
@@ -78,10 +92,13 @@ impl Session {
             .revision
             .checked_add(1)
             .ok_or_else(|| ApiError::new("revision_exhausted", "Create a new session."))?;
-        self.series = Some(series);
         if let Some(game) = game {
+            for (p, scout) in series.scouting.iter_mut().enumerate() {
+                scout.observe_game(&game, p).map_err(ApiError::illegal)?;
+            }
             self.game = game;
         }
+        self.series = Some(series);
         self.revision = next;
         Ok(())
     }
@@ -141,6 +158,53 @@ impl Session {
         o: &Map<String, Value>,
     ) -> Result<Value, ApiError> {
         match command {
+            "series_suggest" | "series_step_ai" => {
+                if command == "series_suggest" {
+                    keys(o, &["command", "id", "player", "policy"])?;
+                } else {
+                    keys(o, &["command", "id", "revision", "player", "policy"])?;
+                    self.require_revision(unsigned(o, "revision")?)?;
+                }
+                let p = player(o)?;
+                let policy = match optional_string(o, "policy")?.unwrap_or("adaptive") {
+                    "adaptive" => MatchPolicy::Adaptive,
+                    "keep" => MatchPolicy::Keep,
+                    _ => return Err(ApiError::invalid("policy must be adaptive or keep.")),
+                };
+                let run = self.series.as_ref().ok_or_else(|| {
+                    ApiError::new("wrong_phase", "Begin a registered match first.")
+                })?;
+                let view = run.state.observe(p).map_err(ApiError::illegal)?;
+                let plan = recommend(&view, p, &run.scouting[p], run.difficulty, policy)
+                    .map_err(ApiError::illegal)?;
+                if command == "series_suggest" {
+                    return Ok(json!({"plan":plan.to_json(),"scouting":run.scouting[p].to_json()}));
+                }
+                let revision = unsigned(o, "revision")?;
+                match run.state.phase() {
+                    SeriesPhase::Sideboarding => self.series_sideboard(
+                        p,
+                        revision,
+                        plan.deck.cards,
+                        plan.deck.chosen_champion,
+                    )?,
+                    SeriesPhase::Battlefields => self.series_battlefield(
+                        p,
+                        revision,
+                        plan.battlefield
+                            .ok_or_else(|| ApiError::illegal("No unused battlefield."))?,
+                    )?,
+                    SeriesPhase::PlayOrder => {
+                        self.series_play_order(p, revision, plan.first_player)?
+                    }
+                    _ => {
+                        return Err(ApiError::new(
+                            "wrong_phase",
+                            "Match AI setup is available during sideboarding, battlefield selection and play-order choice.",
+                        ));
+                    }
+                }
+            }
             "validate_registration" => {
                 keys(o, &["command", "id", "registration"])?;
                 let r = Registration::from_json(required(o, "registration")?)
@@ -242,5 +306,59 @@ impl Session {
             _ => return Err(ApiError::invalid("Unknown series command.")),
         }
         Ok(self.summary())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::hidden::HiddenCard;
+
+    #[test]
+    fn game_end_reveals_enter_scouting_only_after_a_successful_concession_or_draw() {
+        for ending in ["game", "match", "draw"] {
+            let mut session = Session::new(Default::default()).unwrap();
+            let r = Registration::from_preset(5).unwrap();
+            session
+                .begin_series(0, [r.clone(), r], 1, Difficulty::Tactical, 0)
+                .unwrap();
+            session
+                .series_battlefield(0, session.revision(), 13)
+                .unwrap();
+            session
+                .series_battlefield(1, session.revision(), 13)
+                .unwrap();
+            session.series_play_order(0, session.revision(), 0).unwrap();
+            session.game.players[1].hidden.push(HiddenCard {
+                id: 100,
+                card_id: 432,
+                lane: 0,
+                hidden_turn: 1,
+                revealed: false,
+            });
+            let known = |s: &Session| s.series.as_ref().unwrap().scouting[0].to_json();
+            assert_eq!(known(&session)["seen_cards"], json!([0]));
+            assert!(
+                session
+                    .series_concede(0, session.revision() - 1, false)
+                    .is_err()
+            );
+            assert_eq!(known(&session)["seen_cards"], json!([0]));
+            if ending == "draw" {
+                session
+                    .series_draw(0, session.revision(), false, true)
+                    .unwrap();
+                assert_eq!(known(&session)["seen_cards"], json!([0]));
+                session
+                    .series_draw(1, session.revision(), false, true)
+                    .unwrap();
+                assert_eq!(session.series.as_ref().unwrap().state.game_number(), 2);
+            } else {
+                session
+                    .series_concede(0, session.revision(), ending == "match")
+                    .unwrap();
+            }
+            assert_eq!(known(&session)["seen_cards"], json!([0, 432]));
+        }
     }
 }

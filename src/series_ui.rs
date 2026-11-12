@@ -1,7 +1,9 @@
 //! Native match practice shares registration and transitions with the bot API.
 use super::*;
 use local_rift::{
+    cards::cards,
     deck::CustomDeck,
+    match_ai::{MatchPolicy, Scouting, recommend},
     match_series::{MatchSeries, Registration, SeriesPhase},
 };
 
@@ -53,6 +55,8 @@ pub(super) struct NativeMatch {
     pub draft: Option<SideboardDraft>,
     pub(super) pages: [usize; 2],
     pub field_choice: Option<usize>,
+    scouting: [Scouting; 2],
+    sideboard_hint: Option<String>,
 }
 impl NativeMatch {
     fn new(
@@ -69,26 +73,39 @@ impl NativeMatch {
             draft: None,
             pages: [0; 2],
             field_choice: None,
+            scouting: std::array::from_fn(|_| Scouting::default()),
+            sideboard_hint: None,
         };
         result.prepare_opponent()?;
         Ok(result)
     }
-    /// The opponent's setup policy receives its own observation only. It keeps
-    /// its current main deck and chooses its next available registered field.
+    /// The shared planner receives this seat's own registration and scouting.
     fn prepare_opponent(&mut self) -> Result<(), String> {
         let view = self.state.observe(1)?;
         if self.state.phase() == SeriesPhase::Sideboarding && view["sideboard_ready"][1] == false {
-            let draft = SideboardDraft::from_state(&self.state, 1)?;
+            let plan = recommend(
+                &view,
+                1,
+                &self.scouting[1],
+                self.difficulty,
+                MatchPolicy::Adaptive,
+            )?;
             self.state
-                .submit_sideboard(1, draft.deck.cards, draft.deck.chosen_champion)?;
+                .submit_sideboard(1, plan.deck.cards, plan.deck.chosen_champion)?;
         }
         let view = self.state.observe(1)?;
         if self.state.phase() == SeriesPhase::Battlefields
             && view["battlefield_committed"][1] == false
         {
-            let field = view["available_battlefields"][0]
-                .as_u64()
-                .ok_or("No available battlefield.")? as usize;
+            let field = recommend(
+                &view,
+                1,
+                &self.scouting[1],
+                self.difficulty,
+                MatchPolicy::Adaptive,
+            )?
+            .battlefield
+            .ok_or("No available battlefield.")?;
             self.state.choose_battlefield(1, field)?;
         }
         Ok(())
@@ -112,7 +129,51 @@ impl NativeMatch {
     fn finish_game(&mut self, game: &Game) -> Result<(), String> {
         let mut candidate = self.state.clone();
         candidate.finish_completed_game(game)?;
+        self.observe_game(game)?;
         self.state = candidate;
+        self.result_pending = true;
+        Ok(())
+    }
+    pub(super) fn observe_game(&mut self, game: &Game) -> Result<(), String> {
+        let mut scouts = self.scouting.clone();
+        for (p, scout) in scouts.iter_mut().enumerate() {
+            scout.observe_game(game, p)?;
+        }
+        self.scouting = scouts;
+        Ok(())
+    }
+    fn review_sideboard(&mut self) -> Result<(), String> {
+        let draft = self.draft.as_ref().ok_or("No sideboard draft.")?;
+        draft.validate(&self.state)?;
+        let mut view = self.state.observe(0)?;
+        view["deck"] = draft.deck.to_json();
+        let plan = recommend(
+            &view,
+            0,
+            &self.scouting[0],
+            Difficulty::Strategic,
+            MatchPolicy::Adaptive,
+        )?;
+        let catalog = cards();
+        self.sideboard_hint = Some(if let Some(swap) = plan.swaps.first() {
+            format!(
+                "Consider {} for {}. {}",
+                catalog[swap.inside].name, catalog[swap.out].name, swap.reason
+            )
+        } else {
+            "No clear swap from the revealed cards. Keep your plan intact; unseen cards may still change the matchup.".into()
+        });
+        Ok(())
+    }
+    fn concede_game(&mut self, game: &Game, player: usize) -> Result<(), String> {
+        let mut candidate = self.state.clone();
+        candidate.concede_game(player)?;
+        let mut scouts = self.scouting.clone();
+        for (p, scout) in scouts.iter_mut().enumerate() {
+            scout.observe_game_end(game, p)?;
+        }
+        self.state = candidate;
+        self.scouting = scouts;
         self.result_pending = true;
         Ok(())
     }
@@ -155,6 +216,9 @@ impl App {
         let Some(series) = self.native_match.as_mut() else {
             return Ok(());
         };
+        if series.state.phase() == SeriesPhase::Game {
+            series.observe_game(&self.game)?;
+        }
         if series.state.phase() == SeriesPhase::Game && self.game.winner.is_some() {
             series.finish_game(&self.game)?;
             self.ai_worker.invalidate();
@@ -222,6 +286,7 @@ impl App {
         }
         series.prepare_opponent()?;
         series.draft = Some(SideboardDraft::from_state(&series.state, 0)?);
+        series.sideboard_hint = None;
         series.pages = [0; 2];
         series.result_pending = false;
         Ok(())
@@ -250,7 +315,7 @@ impl App {
             self.prefs.difficulty,
         );
     }
-    pub(super) fn series_coach_tip(&self) -> Option<&'static str> {
+    pub(super) fn series_coach_tip(&self) -> Option<&str> {
         let advanced = self.companion.level() == AdviceLevel::Advanced;
         if self.series_lobby {
             return Some(if advanced {
@@ -260,6 +325,12 @@ impl App {
             });
         }
         let series = self.native_match.as_ref()?;
+        if series.state.phase() == SeriesPhase::Sideboarding
+            && !series.result_pending
+            && let Some(hint) = &series.sideboard_hint
+        {
+            return Some(hint);
+        }
         if series.result_pending || series.state.phase() == SeriesPhase::Complete {
             return Some(if advanced {
                 "Review what decided the last game: early board access, interaction, or a resource bottleneck. Make the next swap address that specific problem."
@@ -401,7 +472,7 @@ impl App {
                 self.prefs.save();
             }
         }
-        self.ui.wrapped("The AI keeps its registered main deck between games. Difficulty changes its play; matchup-specific AI sideboarding is still in development.",260.0,680.0,540.0,12.0,MUTED);
+        self.ui.wrapped("Tactical and Strategic opponents use revealed cards to consider sideboard swaps and choose fields for their deck. Easy keeps its list. All levels choose first when designated.",260.0,680.0,540.0,12.0,MUTED);
         self.ui
             .text("WHO GETS THE OPENING CHOICE?", 838.0, 599.0, 11.0, MUTED);
         if self.ui.button(
@@ -812,6 +883,7 @@ impl App {
                         .unwrap()
                         .deck
                         .chosen_champion = id;
+                    self.native_match.as_mut().unwrap().sideboard_hint = None;
                 }
                 if self.ui.button(
                     Rect::new(x + 460.0, y + 3.0, 80.0, 31.0),
@@ -826,6 +898,7 @@ impl App {
                         .as_mut()
                         .unwrap()
                         .transfer(id, pile == 1)?;
+                    self.native_match.as_mut().unwrap().sideboard_hint = None;
                 }
             }
             for (i, label) in ["<", ">"].into_iter().enumerate() {
@@ -864,6 +937,23 @@ impl App {
         ) {
             let series = self.native_match.as_mut().unwrap();
             series.draft = Some(SideboardDraft::from_state(&series.state, 0)?);
+            series.sideboard_hint = None;
+        }
+        if self.ui.button(
+            Rect::new(550.0, 793.0, 450.0, 46.0),
+            if self.prefs.coach {
+                "Mote: review my sideboard"
+            } else {
+                "Wake Mote & review sideboard"
+            },
+            false,
+            validity.is_ok(),
+        ) {
+            self.native_match.as_mut().unwrap().review_sideboard()?;
+            if !self.prefs.coach {
+                self.prefs.coach = true;
+                self.prefs.save();
+            }
         }
         if self.ui.button(
             Rect::new(1030.0, 793.0, 357.0, 46.0),
@@ -903,7 +993,7 @@ impl App {
             true,
         ) {
             let series = self.native_match.as_mut().unwrap();
-            match series.state.concede_game(0) {
+            match series.concede_game(&self.game, 0) {
                 Ok(()) => {
                     series.result_pending = true;
                     self.series_concede = false;
@@ -1030,6 +1120,7 @@ mod tests {
                             break;
                         }
                         assert!(game.step_ai().unwrap());
+                        native.observe_game(&game).unwrap();
                     }
                     assert!(game.winner.is_some());
                     native.finish_game(&game).unwrap();

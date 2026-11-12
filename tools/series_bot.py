@@ -3,7 +3,8 @@
 
 The coordinator is trusted to route each seat only its own observation. Replace
 choose_sideboard and choose_field to experiment with external opponent policies.
-The default sideboard policy keeps the list; this is an integration example,
+The default sideboard policy keeps the list; --adaptive uses the shared planner.
+This is an integration example,
 not a claim of tournament-strength sideboarding.
 """
 import argparse
@@ -22,7 +23,7 @@ def choose_field(view):
 
 
 def run_match(api, registrations, seed=1, difficulty='tactical', designated_player=0,
-              sideboard_policy=choose_sideboard, first_player=None, trace=None):
+              sideboard_policy=choose_sideboard, first_player=None, trace=None, setup_policies=None):
     process = subprocess.Popen([str(api)], stdin=subprocess.PIPE, stdout=subprocess.PIPE,
                                text=True, bufsize=1)
     revision = 0
@@ -31,7 +32,7 @@ def run_match(api, registrations, seed=1, difficulty='tactical', designated_play
     def request(command, **args):
         nonlocal revision, requests
         payload = {'command': command, **args}
-        if command not in ('observe', 'catalog', 'info', 'validate_registration'):
+        if command not in ('observe', 'catalog', 'info', 'validate_registration', 'series_suggest'):
             payload['revision'] = revision
         process.stdin.write(json.dumps(payload) + '\n')
         process.stdin.flush()
@@ -62,17 +63,26 @@ def run_match(api, registrations, seed=1, difficulty='tactical', designated_play
             if phase == 'sideboarding':
                 for p in range(2):
                     if not state['sideboard_ready'][p]:
-                        cards, chosen = sideboard_policy(views[p])
-                        request('series_sideboard', player=p, cards=cards, chosen_champion=chosen)
+                        if setup_policies:
+                            request('series_step_ai', player=p, policy=setup_policies[p])
+                        else:
+                            cards, chosen = sideboard_policy(views[p])
+                            request('series_sideboard', player=p, cards=cards, chosen_champion=chosen)
             elif phase == 'battlefields':
                 # Each choice uses the pre-reveal view: neither sees the other's field.
                 for p in range(2):
                     if not state['battlefield_committed'][p]:
-                        request('series_battlefield', player=p, battlefield=choose_field(views[p]))
+                        if setup_policies:
+                            request('series_step_ai', player=p, policy=setup_policies[p])
+                        else:
+                            request('series_battlefield', player=p, battlefield=choose_field(views[p]))
             elif phase == 'play_order':
                 chooser = state['designated_player']
-                request('series_play_order', player=chooser,
-                        first_player=chooser if first_player is None else first_player)
+                if setup_policies and first_player is None:
+                    request('series_step_ai', player=chooser, policy=setup_policies[chooser])
+                else:
+                    request('series_play_order', player=chooser,
+                            first_player=chooser if first_player is None else first_player)
             elif phase == 'game':
                 game = views[0]
                 if game['phase'] == 'mulligan':
@@ -105,9 +115,11 @@ def main():
     parser.add_argument('--difficulty', choices=['easy','tactical','strategic'], default='tactical')
     parser.add_argument('--designated-player', type=int, choices=[0,1], default=0,
                         help='Seat selected by the agreed random method, or by playoff seeding.')
+    parser.add_argument('--adaptive', action='store_true', help='Use the built-in scouting and match setup policy for both seats.')
     args = parser.parse_args()
     registrations = json.loads(args.registrations.read_text()) if args.registrations else [{'preset':5},{'preset':5}]
-    result = run_match(args.api.resolve(), registrations, args.seed, args.difficulty, args.designated_player)
+    result = run_match(args.api.resolve(), registrations, args.seed, args.difficulty, args.designated_player,
+                       setup_policies=["adaptive", "adaptive"] if args.adaptive else None)
     print(json.dumps(result, indent=2))
 
 
