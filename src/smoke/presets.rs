@@ -10,7 +10,7 @@ pub(crate) fn run_frame(app: &mut App, frame: u32) -> bool {
             app.browse_deck = 0;
             app.deck_scroll = 0;
             app.ui.input_override = None;
-            assert_eq!(app.game.presets.len(), 5);
+            assert_eq!(app.game.presets.len(), 6);
         }
         1 => {
             capture(app, "RIFT_SMOKE_PRESET_FIRST_PAGE_SCREENSHOT");
@@ -122,12 +122,119 @@ pub(crate) fn run_frame(app: &mut App, frame: u32) -> bool {
             app.game.validate_numeric_state().unwrap();
             capture(app, "RIFT_SMOKE_PRESET_FIRST_TURN_SCREENSHOT");
             app.ui.input_override = None;
+        }
+        19 => {
+            app.in_match = false;
+            app.screen = Screen::Decks;
+            app.browse_deck = 4;
+            app.deck_scroll = 0;
+            click(app, 650.0, 250.0);
+        }
+        20 => {
+            assert_eq!(app.browse_deck, 5);
+            assert_eq!(app.game.presets[5].legend_id, 0);
+            capture(app, "RIFT_SMOKE_ARITO_MAIN");
+            click(app, 875.0, 440.0);
+        }
+        21 => {
+            assert!(app.preset_tab == crate::preset_ui::PresetTab::Sideboard);
+            capture(app, "RIFT_SMOKE_ARITO_SIDEBOARD");
+            click(app, 800.0, 480.0);
+        }
+        22 => {
+            assert_eq!(app.inspect, Some(424));
+            capture(app, "RIFT_SMOKE_ARITO_SIDE_INSPECT");
+            click(app, 940.0, 700.0);
+        }
+        23 => {
+            assert!(app.inspect.is_none());
+            click(app, 1080.0, 440.0);
+        }
+        24 => {
+            assert!(app.preset_tab == crate::preset_ui::PresetTab::Battlefields);
+            capture(app, "RIFT_SMOKE_ARITO_FIELDS");
+            click(app, 1320.0, 485.0);
+        }
+        25 => {
+            assert_eq!(app.field_inspect, Some(13));
+            capture(app, "RIFT_SMOKE_ARITO_FIELD_INSPECT");
+            click(app, 690.0, 502.0);
+        }
+        26 => {
+            assert!(app.field_inspect.is_none());
+            click(app, 340.0, 748.0);
+        }
+        27 => {
+            assert_eq!(app.player_deck, 5);
+            assert_eq!(app.fields[0], 13);
+            click(app, 500.0, 748.0);
+        }
+        28 => {
+            assert_eq!(app.opponent_deck, 5);
+            assert_eq!(app.fields[1], 13);
+            click(app, 1320.0, 632.0);
+        }
+        29 => {
+            assert_eq!(app.fields[0], 0);
+            click(app, 1320.0, 777.0);
+        }
+        30 => {
+            assert_eq!(app.fields[1], 14);
+            capture(app, "RIFT_SMOKE_ARITO_CHOSEN_FIELDS");
+            click(app, 420.0, 800.0);
+        }
+        31 => {
+            assert!(matches!(app.screen, Screen::Practice));
+            assert_eq!(app.setup_legend(0).id, 0);
+            assert_eq!(app.setup_legend(1).id, 0);
+            capture(app, "RIFT_SMOKE_ARITO_MATCHUP");
+            app.starting_player = 0;
+            click(app, 1330.0, 46.0);
+        }
+        32 => {
+            assert!(app.in_match && app.game.phase == Phase::Mulligan);
+            assert_eq!([app.player_deck, app.opponent_deck], [5, 5]);
+            assert_eq!(app.game.battlefields, [0, 14]);
+            for seat in 0..2 {
+                assert_eq!(app.game.legend_id(seat), 0);
+                assert_eq!(app.game.players[seat].champion, Some(0));
+                assert_eq!(app.game.players[seat].hand.len(), 4);
+                assert_eq!(
+                    app.game.players[seat]
+                        .hand
+                        .iter()
+                        .chain(&app.game.players[seat].deck)
+                        .filter(|&&c| c == 432)
+                        .count(),
+                    2
+                );
+            }
+            capture(app, "RIFT_SMOKE_ARITO_MULLIGAN");
+            click(app, 1283.0, 514.0);
+        }
+        33 => {
+            assert_eq!(app.game.phase, Phase::Playing);
+            assert_eq!(app.game.active, 0);
+            assert_eq!(app.game.battlefields, [0, 14]);
+            capture(app, "RIFT_SMOKE_ARITO_FIRST_TURN");
+            app.in_match = false;
+            app.screen = Screen::Decks;
+            app.browse_deck = 5;
+            app.preset_tab = crate::preset_ui::PresetTab::Main;
+            click(app, 420.0, 657.0);
+        }
+        34 => {
+            let editor = app.deck_editor.as_ref().unwrap();
+            assert_eq!(editor.deck.cards, app.game.presets[5].cards);
+            assert_eq!(editor.deck.legend, 0);
+            assert_eq!(editor.deck.battlefield, 13);
+            capture(app, "RIFT_SMOKE_ARITO_EDITOR");
             println!(
-                "PASS: 19 preset UI stages; pagination, both seats, editable exact copy, mulligan and first turn."
+                "PASS: 35 preset UI stages; both Irelia and Rengar, source sections, field rules and selections, exact editable copies, mulligans and first turns."
             );
             return true;
         }
-        _ => panic!("preset smoke exceeded 19 stages"),
+        _ => panic!("preset smoke exceeded 35 stages"),
     }
     false
 }

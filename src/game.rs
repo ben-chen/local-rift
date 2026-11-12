@@ -26,6 +26,9 @@ mod backoff_tests;
 #[path = "combat_card_tests.rs"]
 mod combat_card_tests;
 #[cfg(test)]
+#[path = "edge_tests.rs"]
+mod edge_tests;
+#[cfg(test)]
 #[path = "gust_tests.rs"]
 mod gust_tests;
 #[cfg(test)]
@@ -6658,6 +6661,11 @@ impl Game {
             return Err("Choose a gear on the board.".into());
         }
         if self.catalog[id].kind == CardKind::Gear {
+            if id == 432 && !provided.is_empty() {
+                return Err(
+                    "Choose Edge of Night's attachment target after it enters from Hidden.".into(),
+                );
+            }
             if rules::static_abilities(id).contains(&StaticAbility::Deploy) {
                 if !provided.is_empty() {
                     return Err(

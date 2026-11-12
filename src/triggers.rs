@@ -300,6 +300,7 @@ impl Game {
         }
         rule.conditions.iter().all(|condition| match *condition {
             Condition::OptionalPlayCostPaid => event.optional_play_cost_paid,
+            Condition::PlayedFromHidden => event.hidden,
             Condition::SourceEmpowered => source
                 .unit_id
                 .or(source.gear_id)
@@ -1358,6 +1359,13 @@ impl Game {
         let targets = selected;
         for effect in rule.effects {
             match *effect {
+                Effect::AttachSourceGear => {
+                    if let Some(gear_id) = context.source.gear_id {
+                        for &target in &targets {
+                            self.gear_resolve_equip(player, gear_id, target);
+                        }
+                    }
+                }
                 Effect::GrantAssault(amount) => {
                     for target in &targets {
                         if let Target::Unit { unit_id, .. } = target {

@@ -445,6 +445,16 @@ fn checked_advice(game: &Game, level: AdviceLevel) -> Result<Vec<&'static str>, 
         });
     }
 
+    if human.hand.contains(&432)
+        || human.gear.iter().any(|g| !g.token && g.card_id == 432)
+        || human.hidden.iter().any(|h| h.card_id == 432)
+    {
+        tips.push(if beginner {
+            "Edge of Night gives +2 Might when attached. Hide it now, then reveal it on a later turn to attach to your unit at that battlefield without paying Equip."
+        } else {
+            "Edge of Night can enable Orianna and trigger Irelia's choose effects. Its free attachment can be answered; keep the gear and target safe through responses."
+        });
+    }
     if human.hand.contains(&431) || human.units.iter().any(|u| !u.token && u.card_id == 431) {
         tips.push(if beginner {
             "Gust Monk can cost 1 extra Energy. Then banish a card from either trash to give a unit Assault 2 this turn: +2 Might only while it attacks."
@@ -1049,6 +1059,11 @@ fn response_window_advice(
             Decision::TriggerMode { .. } => vec![
                 "Choose this ability's mode before paying its costs. The opponent can respond after those choices and payments are complete.",
             ],
+            Decision::TriggerTargets { card_id: 432, .. } => vec![if beginner {
+                "Choose your unit at the battlefield where Edge of Night was hidden. The gear returns to base first, then attaches when this ability resolves."
+            } else {
+                "The target must stay at Edge of Night's original battlefield. A counter, removal of the gear, or moving the target away prevents the free attachment."
+            }],
             Decision::TriggerPayment { card_id: 431, .. } => vec![if beginner {
                 "Banish a card from either trash as the cost now. Only the unit is a target. The opponent can respond before Assault 2 is gained; declining keeps Gust Monk."
             } else {
@@ -1605,6 +1620,22 @@ mod tests {
 
     fn game() -> Game {
         Game::new(0, 1, 72, Difficulty::Easy)
+    }
+
+    #[test]
+    fn edge_coaching_teaches_hidden_attachment_without_opponent_private_information() {
+        let mut g = game();
+        g.start_match().unwrap();
+        g.players[0].hand = vec![432];
+        let mut hidden = g.clone();
+        hidden.players[1].hand = vec![432, 12];
+        hidden.players[1].deck.reverse();
+        for level in [AdviceLevel::Beginner, AdviceLevel::Advanced] {
+            let tips = advice(&g, level);
+            assert!(tips.iter().any(|tip| tip.contains("Edge of Night")));
+            assert!(tips.iter().all(|tip| tip.chars().count() <= 180));
+            assert_eq!(tips, advice(&hidden, level));
+        }
     }
 
     #[test]

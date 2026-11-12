@@ -37,7 +37,7 @@ class GustAdmissionTests(unittest.TestCase):
     def test_all_predecessor_cards_presets_and_source_reviews_are_unchanged(self):
         p=self.proof['preserved_runtime_prefix'];runtime=catalog.load_runtime_manifest()
         self.assertEqual(catalog.sha(review.canonical_bytes(runtime['cards'][:p['card_count']])),p['cards_sha256'])
-        self.assertEqual(catalog.sha(review.canonical_bytes(runtime['decks'])),p['presets_sha256'])
+        self.assertEqual(catalog.sha(review.canonical_bytes(runtime['decks'][:p['preset_count']])),p['presets_sha256'])
         for path,digest in self.proof['preserved_source_reviews'].items():self.assertEqual(catalog.sha((catalog.ROOT/path).read_bytes()),digest)
 
     def test_source_evidence_alone_does_not_register_playable_support(self):

@@ -183,7 +183,7 @@ class C28AdmissionTests(unittest.TestCase):
         self.assertEqual(digest(catalog.load_battlefield_manifest()[:11]), pin['battlefields_sha256'])
         self.assertEqual(digest(runtime['decks'][:4]), pin['presets_sha256'])
         self.assertEqual(len(runtime['decks'][:pin['preset_count']]), 4)
-        prefix = (root / 'src/cards.rs').read_text().split('        CardDef {\n            id: 417,', 1)[0]
+        prefix = history.pre_registration_carddefs_source().split('        CardDef {\n            id: 417,', 1)[0]
         self.assertEqual(catalog.sha(prefix.encode()), pin['carddefs_source_prefix_sha256'])
         for path, key in [('assets/data/legends.json', 'legends_manifest_sha256'),
                           ('src/deck.rs', 'training_recipe_source_sha256')]:

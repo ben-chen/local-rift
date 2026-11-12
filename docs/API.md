@@ -712,3 +712,25 @@ The new action supports validation, exact Power payment, payment quotes, and
 pinned copy's index. If it leaves or the trash is recycled by burnout, payment
 cannot substitute a different copy; Undo/refusal restore the payment boundary.
 Existing resource-only trigger observations retain their prior object shape.
+
+## Preset registrations and Edge of Night
+
+`catalog.presets[].registration` is `null` for the five older presets. Preset 5
+adds an object containing `pilot`, `event`, `date`, `placing`, `battlefields`
+(array of battlefield IDs), and `sideboard` (array of `[card_id, count]` pairs).
+The top-level `catalog.as_of` dates the card-data snapshot; `registration.date`
+is the event date. Preset 5 still uses legend ID 0. Its main `cards` include the chosen champion
+once, for 40 total cards; sideboard entries are separate metadata. The existing
+reset battlefield choices select among the registered options 13, 0 and 14.
+This metadata does not create a best-of-three or sideboarding action.
+
+Edge of Night is card 432. Its ordinary play takes no attachment target; later
+Equip uses the existing equipment action with one Chaos Power. Playing it from
+Hidden first puts the gear in play, then emits a `trigger_targets` decision.
+Use `choose_trigger_targets` with one friendly unit at the original Hidden
+battlefield. A target supplied prematurely with the play is rejected atomically.
+The gear may already be at base while this decision or its chain item waits;
+that does not redirect targeting to base. The attachment and +2 Might are
+visible only on resolution, through the existing equipment and unit views.
+Both viewers see the public decision; the facedown identity remains private
+before reveal. Validation is read-only and uses the same restrictions.

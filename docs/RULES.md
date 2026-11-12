@@ -306,7 +306,7 @@ The fifth preset is the sourced Los Angeles Rengar winning list. Copying that pr
 
 ## Remaining fidelity limits
 
-Ten supported legends, seventeen battlefield choices, and 432 main-deck cards are available through five supplied presets and the custom deck editor. The original four presets and all ten authored or preset-derived training recipes remain unchanged; the fifth tournament preset is separate. Additional supported cards can be added through the editor where eligible. There is no sideboarding, tournament match structure, multiplayer mode, or full card-set coverage. The presets are dated tournament lists, not a ranking of the current metagame.
+Ten supported legends, seventeen battlefield choices, and 433 main-deck cards are available through six supplied presets and the custom deck editor. The original five presets and all ten authored or preset-derived training recipes remain unchanged; Arito’s exact Irelia tournament preset is separate. Additional supported cards can be added through the editor where eligible. There is no sideboarding, tournament match structure, multiplayer mode, or full card-set coverage. The presets are dated tournament lists, not a ranking of the current metagame.
 
 The desktop and bot API expose exact damage allocations and power-source payments. The default automatic payment remains available; energy can be prepared by exhausting chosen rune domains before a play. These controls share engine validation, but broader card and interaction coverage is still required.
 
@@ -532,3 +532,27 @@ trashes. Each cost card can be inspected before payment. Staged payment tracks
 the chosen physical copy through preceding removals; a departed copy cannot be
 replaced by another at the same index. Undo and refusal restore payment-resource
 actions while keeping the completed unit play. The bot API uses the same choices.
+
+## Edge of Night and the registered Irelia list
+
+Edge of Night costs 3 Energy and gives its bearer +2 Might. Playing it normally
+leaves it unattached at base; its separate Equip ability costs one Chaos Power.
+Hiding costs one Power and is not a play. On a later turn, playing it from Hidden
+ignores its base cost and triggers an attachment to one friendly unit at the
+battlefield where it was hidden.
+
+Unattached non-Deploy gear returns to base during cleanup. This does not change
+the Hidden ability’s original battlefield restriction: the Spiritforged erratum
+makes “(here)” reminder text. Choose the attachment target after the gear enters;
+the attachment happens only after responses. A missing gear source or a target
+that leaves the original battlefield cannot be attached by that ability.
+Equipment then follows its bearer; when the bearer leaves, it detaches. Nearby
+friendly attached gear satisfies Orianna’s combat requirement. Mote explains
+these distinctions at Beginner and Advanced levels without blocking input.
+
+Arito’s sixth preset preserves the exact 40-card main list, with the chosen
+Irelia included in that count. Its ten sideboard cards are displayed separately
+and are never shuffled into the main deck. Its three registered battlefield
+choices can be inspected and selected for either preset seat before a game.
+Between-game sideboarding is not yet available; use a custom copy to practice
+individual swaps.

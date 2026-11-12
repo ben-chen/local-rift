@@ -146,7 +146,8 @@ pub fn battlefield(id: usize) -> &'static BattlefieldDef {
 /// Bundled presets default to a battlefield from their published source list.
 pub fn default_battlefield(deck: usize) -> usize {
     match deck {
-        4 => 1, // Rengar: Seat of Power.
+        4 => 1,  // Rengar: Seat of Power.
+        5 => 13, // Arito Irelia: Abandoned Hall.
         _ => deck.min(3),
     }
 }

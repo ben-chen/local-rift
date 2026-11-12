@@ -803,6 +803,96 @@ pub(crate) fn run_frame(app: &mut App, frame: u32) -> bool {
             assert!(app.game.chain.is_empty());
             assert!(app.game.players[0].units.iter().any(|u| u.card_id == 431));
             capture(app, "RIFT_IRELIA_GUST_DECLINED");
+        }
+        99 => {
+            backoff_setup(app);
+            app.inspect = None;
+            app.game.players[0].hand = vec![432];
+            app.game.players[0].units[0].card_id = 430;
+            app.tray = crate::Tray::Hand;
+            app.hand_scroll = 0;
+        }
+        100 => {
+            capture(app, "RIFT_IRELIA_EDGE_HAND");
+            click(app, 310.0, 760.0);
+        }
+        101 => {
+            assert!(matches!(app.selection, Some(Selection::Hand(0))));
+            click(app, 1225.0, 467.0);
+        }
+        102 => {
+            assert_eq!(app.game.players[0].hidden.len(), 1);
+            assert!(app.game.players[0].gear.is_empty());
+            capture(app, "RIFT_IRELIA_EDGE_HIDDEN");
+            app.game.apply(Action::EndTurn).unwrap();
+            for _ in 0..20 {
+                if !app.game.in_window() {
+                    break;
+                }
+                app.game.apply(Action::Pass).unwrap();
+            }
+            app.game
+                .apply(Action::Move {
+                    unit_id: 42801,
+                    lane: Some(0),
+                })
+                .unwrap();
+            app.game.apply(Action::Pass).unwrap();
+            assert_eq!(app.game.priority(), 0);
+            app.selection = None;
+            app.targets.clear();
+            click(app, 610.0, 661.0);
+        }
+        103 => click(app, 315.0, 760.0),
+        104 => {
+            assert!(matches!(app.selection, Some(Selection::Hidden(_))));
+            capture(app, "RIFT_IRELIA_EDGE_REVEAL");
+            click(app, 1285.0, 535.0);
+        }
+        105 => {
+            assert!(matches!(
+                app.game.decision,
+                Some(Decision::TriggerTargets { card_id: 432, .. })
+            ));
+            assert_eq!(app.game.players[0].gear[0].lane, None);
+            assert_eq!(app.game.players[0].gear[0].attached_to, None);
+            capture(app, "RIFT_IRELIA_EDGE_TARGET");
+            click_unit(app, 42800);
+        }
+        106 => {
+            assert_eq!(app.targets.len(), 1);
+            click(app, 1285.0, 510.0);
+        }
+        107 => {
+            assert!(app.game.decision.is_none());
+            assert!(app.game.chain.iter().any(|item| item.card_id == 432));
+            capture(app, "RIFT_IRELIA_EDGE_CHAIN");
+            app.game.apply(Action::Pass).unwrap();
+            app.game.apply(Action::Pass).unwrap();
+        }
+        108 => {
+            assert_eq!(app.game.players[0].gear[0].attached_to, Some(42800));
+            assert_eq!(app.game.gear_might_bonus(42800).unwrap(), 2);
+            assert!(
+                app.game
+                    .unit_combat_contribution(&app.game.players[0].units[0])
+                    .unwrap()
+                    .damage
+                    > 0
+            );
+            app.companion.set_level(AdviceLevel::Advanced);
+            capture_unit(app, 42800, "RIFT_IRELIA_EDGE_EQUIPPED");
+            let rect = unit_rect(app, 42800);
+            app.ui.input_override = Some((rect.center(), false, true));
+        }
+        109 => {
+            assert_eq!(app.inspect, Some(430));
+            capture(app, "RIFT_IRELIA_EDGE_BEARER_INSPECT");
+            click(app, 940.0, 700.0);
+        }
+        110 => {
+            app.inspect_printed_card(432);
+            capture(app, "RIFT_IRELIA_EDGE_INSPECT");
             return true;
         }
         _ => {}

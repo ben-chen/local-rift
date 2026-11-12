@@ -60,6 +60,7 @@ pub enum Condition {
     SecondDraw,
     SourceEmpowered,
     OptionalPlayCostPaid,
+    PlayedFromHidden,
     SourceAtEventBattlefield,
     ControllerControlsSourceBattlefield,
 }
@@ -169,6 +170,7 @@ pub enum Effect {
     },
     GiveTemporary(Operand),
     GrantAssault(u8),
+    AttachSourceGear,
     Xp(Amount),
     Draw(u8),
     DrawBoth(u8),
@@ -436,6 +438,17 @@ pub fn trigger_rules(card_id: usize) -> &'static [TriggerRule] {
                     false,
                     TargetRule::NONE,
                     &[Draw(1)],
+                )]
+            }
+        }
+        432 => {
+            const {
+                &[rule(
+                    SelfPlayed,
+                    &[PlayedFromHidden],
+                    false,
+                    FRIENDLY,
+                    &[AttachSourceGear],
                 )]
             }
         }

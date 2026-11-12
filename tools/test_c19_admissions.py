@@ -147,7 +147,7 @@ class C19AdmissionTests(unittest.TestCase):
         self.assertEqual(pin['card_count'], BASE)
         self.assertEqual(digest(runtime['cards'][:BASE]), pin['cards_sha256'])
         self.assertEqual(digest(runtime['decks'][:4]), pin['presets_sha256'])
-        rust_prefix = (root / 'src/cards.rs').read_text().split('        CardDef {\n            id: 385,', 1)[0]
+        rust_prefix = history.pre_registration_carddefs_source().split('        CardDef {\n            id: 385,', 1)[0]
         self.assertEqual(catalog.sha(rust_prefix.encode()), pin['carddefs_source_prefix_sha256'])
         self.assertEqual(catalog.sha((root / 'assets/data/legends.json').read_bytes()), pin['legends_manifest_sha256'])
         self.assertEqual(catalog.sha(history.pre_rengar_recipe_source_bytes()), pin['training_recipe_source_sha256'])

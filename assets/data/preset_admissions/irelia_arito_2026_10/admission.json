@@ -1,0 +1,72 @@
+{
+  "status": "admitted",
+  "preset_id": 5,
+  "legend_id": 0,
+  "source": {
+    "reviewed_on": "2026-11-11",
+    "method": "Read original organizer standings and rendered deck page; reread every displayed deck entry, count, rune and battlefield for this preset. No downloaded raw list export is claimed.",
+    "standings_url": "https://topdeck.gg/bracket/convergence-4",
+    "deck_url": "https://topdeck.gg/deck/convergence-4/3Mb0hLsUTwgBYrpAauGOaRvDhnq1",
+    "event": "Convergence IV",
+    "date": "2026-10-31",
+    "players": 272,
+    "player": "Arito",
+    "place": 2,
+    "record": "8-2-0",
+    "legend": "Irelia, Blade Dancer",
+    "chosen_champion": "Irelia, Fervent",
+    "runes": {
+      "Calm Rune": 6,
+      "Chaos Rune": 6
+    },
+    "battlefields": [
+      "Abandoned Hall",
+      "Sunken Temple",
+      "Targon's Peak"
+    ],
+    "mainboard_excluding_chosen": {
+      "Gust Monk": 1,
+      "Lonely Poro": 1,
+      "Scuttle Crab": 1,
+      "Tideturner": 3,
+      "Orianna, Exquisite": 3,
+      "Stellacorn Herder": 3,
+      "Vex, Apathetic": 1,
+      "Charm": 2,
+      "Defiant Dance": 3,
+      "Defy": 3,
+      "En Garde": 1,
+      "Hunker Down": 1,
+      "Twilight Shroud": 1,
+      "Battle Preparations": 1,
+      "Discipline": 3,
+      "Not So Fast": 1,
+      "Rebuke": 1,
+      "Ride the Wind": 2,
+      "Star-Crossed": 1,
+      "Guardian Angel": 2,
+      "Boots of Swiftness": 2,
+      "Edge of Night": 2
+    },
+    "sideboard": {
+      "Ravenbloom Prefect": 2,
+      "Adaptatron": 2,
+      "Vex, Apathetic": 1,
+      "Decree of Focus": 2,
+      "Gust": 2,
+      "Abandon": 1
+    },
+    "scope": "Exact preset 5, with its separate ten-card sideboard and three registered battlefield choices; no best-of-three sideboarding workflow yet."
+  },
+  "default_battlefield_id": 13,
+  "battlefield_ids": [
+    13,
+    0,
+    14
+  ],
+  "preserved_card_count": 432,
+  "preserved_cards_sha256": "53fb8c020222f563db523cd57711beafbdde1ecf248b9119c5243625cac621b8",
+  "preserved_preset_count": 5,
+  "preserved_presets_sha256": "55f81fe597de35b0c4dee12d87ad36ae72463cbfb5ae576d00f87104cd5914d5",
+  "source_correction": "The predecessor priority note overlooked two Edge of Night copies. This exact-list admission includes Edge of Night explicitly; no replacement card is used."
+}

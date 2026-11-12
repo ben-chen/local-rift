@@ -1,0 +1,186 @@
+{
+  "name": "Irelia / Arito Convergence IV",
+  "champion": "Irelia, Blade Dancer",
+  "chosen": "Irelia, Fervent",
+  "domains": [
+    "Calm",
+    "Chaos"
+  ],
+  "accent": [
+    105,
+    226,
+    203
+  ],
+  "strategy": "Build around Orianna and equipment, then use Irelia’s ready effects and movement to contest points. Arito’s runner-up list at Convergence IV, October 31, 2026.",
+  "difficulty": "Advanced",
+  "source_url": "https://topdeck.gg/deck/convergence-4/3Mb0hLsUTwgBYrpAauGOaRvDhnq1",
+  "pilot": "Arito",
+  "event": "Convergence IV, October 31, 2026",
+  "placing": 2,
+  "runes": {
+    "Calm": 6,
+    "Chaos": 6
+  },
+  "battlefields": [
+    "Abandoned Hall",
+    "Sunken Temple",
+    "Targon's Peak"
+  ],
+  "cards": [
+    {
+      "id": 0,
+      "name": "Irelia, Fervent",
+      "count": 1
+    },
+    {
+      "id": 431,
+      "name": "Gust Monk",
+      "count": 1
+    },
+    {
+      "id": 25,
+      "name": "Lonely Poro",
+      "count": 1
+    },
+    {
+      "id": 15,
+      "name": "Scuttle Crab",
+      "count": 1
+    },
+    {
+      "id": 18,
+      "name": "Tideturner",
+      "count": 3
+    },
+    {
+      "id": 430,
+      "name": "Orianna, Exquisite",
+      "count": 3
+    },
+    {
+      "id": 17,
+      "name": "Stellacorn Herder",
+      "count": 3
+    },
+    {
+      "id": 20,
+      "name": "Vex, Apathetic",
+      "count": 1
+    },
+    {
+      "id": 4,
+      "name": "Charm",
+      "count": 2
+    },
+    {
+      "id": 5,
+      "name": "Defiant Dance",
+      "count": 3
+    },
+    {
+      "id": 6,
+      "name": "Defy",
+      "count": 3
+    },
+    {
+      "id": 8,
+      "name": "En Garde",
+      "count": 1
+    },
+    {
+      "id": 425,
+      "name": "Hunker Down",
+      "count": 1
+    },
+    {
+      "id": 19,
+      "name": "Twilight Shroud",
+      "count": 1
+    },
+    {
+      "id": 426,
+      "name": "Battle Preparations",
+      "count": 1
+    },
+    {
+      "id": 7,
+      "name": "Discipline",
+      "count": 3
+    },
+    {
+      "id": 12,
+      "name": "Not So Fast",
+      "count": 1
+    },
+    {
+      "id": 80,
+      "name": "Rebuke",
+      "count": 1
+    },
+    {
+      "id": 14,
+      "name": "Ride the Wind",
+      "count": 2
+    },
+    {
+      "id": 16,
+      "name": "Star-Crossed",
+      "count": 1
+    },
+    {
+      "id": 10,
+      "name": "Guardian Angel",
+      "count": 2
+    },
+    {
+      "id": 3,
+      "name": "Boots of Swiftness",
+      "count": 2
+    },
+    {
+      "id": 432,
+      "name": "Edge of Night",
+      "count": 2
+    }
+  ],
+  "chosen_champion": 0,
+  "legend_name": "Irelia, Blade Dancer",
+  "legend_text": "When you choose a friendly unit, you may exhaust me and pay [Any Power] to ready it.\nWhen you conquer, you may pay [1 Energy] to ready me.",
+  "legend_id": "sfd-195-221",
+  "legend_text_html": "<p>When you choose a friendly unit, you may exhaust me and pay :rb_rune_rainbow: to ready it.<br />When you conquer, you may pay :rb_energy_1: to ready me.</p>",
+  "legend_keywords": [],
+  "learning_notes": "Orianna needs friendly gear at her location to deal combat damage. Edge of Night can attach after a Hidden reveal, and Gust Monk trades a trash card for temporary Assault. Save Power for Irelia’s ready ability and protect units through responses. The ten-card sideboard offers matchup options; change a custom copy to practice a sideboard plan.",
+  "sideboard": [
+    {
+      "id": 424,
+      "name": "Ravenbloom Prefect",
+      "count": 2
+    },
+    {
+      "id": 369,
+      "name": "Adaptatron",
+      "count": 2
+    },
+    {
+      "id": 20,
+      "name": "Vex, Apathetic",
+      "count": 1
+    },
+    {
+      "id": 421,
+      "name": "Decree of Focus",
+      "count": 2
+    },
+    {
+      "id": 11,
+      "name": "Gust",
+      "count": 2
+    },
+    {
+      "id": 1,
+      "name": "Abandon",
+      "count": 1
+    }
+  ],
+  "date": "2026-10-31"
+}

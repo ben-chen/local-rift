@@ -1,0 +1,100 @@
+{
+  "status": "admitted",
+  "runtime_id": 432,
+  "identity": "sfd-139-221",
+  "printing_cohort": [
+    "sfd-139-221"
+  ],
+  "errata": [
+    {
+      "article_heading": "Edge of Night",
+      "text": "[Hidden] (Hide now for [A] to react with later for [0].)\nWhen you play this from face down, attach it to a unit you control (here).\n[Equip] [C] ([C]: Attach this to a unit you control.)",
+      "source_url": "https://playriftbound.com/en-us/news/rules-and-releases/riftbound-spiritforged-errata/"
+    }
+  ],
+  "raw_printing": {
+    "official_id": "sfd-139-221",
+    "public_code": "SFD-139/221",
+    "name": "Edge of Night",
+    "set": "SFD",
+    "collector_number": 139,
+    "types": [
+      "gear"
+    ],
+    "type_source": "cardType.type",
+    "structured_types": [
+      "gear"
+    ],
+    "accessibility_types": [
+      "gear"
+    ],
+    "type_labels_conflict": false,
+    "super_types": [],
+    "domains": [
+      "chaos"
+    ],
+    "energy": 3,
+    "power": null,
+    "might": 2,
+    "might_bonus": 2,
+    "rules_html": "<p>[Hidden] (Hide now for :rb_rune_rainbow: to react with later for :rb_energy_0:.)<br />When you play this from face down, attach it to a unit you control here.<br />[Equip] :rb_rune_chaos: (:rb_rune_chaos:: Attach this to a unit you control.)</p>",
+    "rules_text": "[Hidden] (Hide now for [Any Power] to react with later for [0 Energy].)\nWhen you play this from face down, attach it to a unit you control here.\n[Equip] [Chaos Power] ([Chaos Power]: Attach this to a unit you control.)",
+    "equipment_html": "",
+    "equipment_text": "",
+    "tags": [
+      "Equipment"
+    ],
+    "rarity": "rare",
+    "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/b3e385162bf3566618bb58b7a866eef846beefba-744x1039.png?accountingTag=RB",
+    "image_accessibility_text": "Riftbound Gear: Edge of Night. [Hidden] (Hide now for [A] to react with later for [0].)\nWhen you play this from face down, attach it to a unit you control here.\n[Equip] [C] ([C]: Attach this to a unit you control.)",
+    "illustrators": [
+      "黯荧岛Dark Glow"
+    ]
+  },
+  "raw_printing_sha256": "4e6b686f0297035b289945402c2954576c0a73d034a2c2342fd614fff6a94144",
+  "effective": {
+    "types": [
+      "gear"
+    ],
+    "super_types": [],
+    "domains": [
+      "chaos"
+    ],
+    "energy": 3,
+    "power": null,
+    "might": 2,
+    "might_bonus": 2,
+    "tags": [
+      "Equipment"
+    ],
+    "rules_html": "<p>[Hidden] (Hide now for :rb_rune_rainbow: to react with later for :rb_energy_0:.)<br />When you play this from face down, attach it to a unit you control here.<br />[Equip] :rb_rune_chaos: (:rb_rune_chaos:: Attach this to a unit you control.)</p>",
+    "rules_text": "[Hidden] (Hide now for [Any Power] to react with later for [0 Energy].)\nWhen you play this from face down, attach it to a unit you control here.\n[Equip] [Chaos Power] ([Chaos Power]: Attach this to a unit you control.)",
+    "equipment_html": "",
+    "equipment_text": ""
+  },
+  "resolution_ids": [],
+  "runtime_rules_text": "[Hidden] (Hide now for [Any Power] to react with later for [0 Energy].)\nWhen you play this from face down, attach it to a unit you control (here).\n[Equip] [Chaos Power] ([Chaos Power]: Attach this to a unit you control.)",
+  "runtime_rules_basis": "Explicit Spiritforged erratum; Any and Chaos Power icons expanded. Parenthesized here is reminder text, not a live source-location restriction.",
+  "original_image": {
+    "path": "assets/data/card_admissions/irelia_edge/sfd-139-221.png",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/b3e385162bf3566618bb58b7a866eef846beefba-744x1039.png?accountingTag=RB",
+    "sha256": "a5fb6d56415be625c53805d2c4eefb72c2b22168d6745d5c6ad964459a94d511",
+    "actual_full_face_viewed": true
+  },
+  "runtime_image": {
+    "path": "assets/art/card_432.png",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/b3e385162bf3566618bb58b7a866eef846beefba-744x1039.png?w=280&q=85&fm=png",
+    "sha256": "9d26756db68cc88fa61b1fc9dc48ad741d0e764d61f5450ec2701b49ffda27d3"
+  },
+  "preserved_runtime_prefix": {
+    "card_count": 432,
+    "preset_count": 5,
+    "cards_sha256": "53fb8c020222f563db523cd57711beafbdde1ecf248b9119c5243625cac621b8",
+    "presets_sha256": "55f81fe597de35b0c4dee12d87ad36ae72463cbfb5ae576d00f87104cd5914d5"
+  },
+  "preserved_source_reviews": {
+    "assets/data/catalog_resolutions.json": "d3c20a87520f89b5a41fafc519588806758d10709943c287a46ef8b6c8990475",
+    "assets/data/catalog_identity_reviews.json": "3892ffe5685f54087c8f4d95529f28a686a0cc155ddd0435a11f859d2266ebfe",
+    "assets/data/catalog_evidence/variant_images.json": "c3a466807391bfebf9b12ee979fd887b75d248c77c803574d632d283072479a8"
+  }
+}

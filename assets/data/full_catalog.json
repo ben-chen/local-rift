@@ -146,17 +146,17 @@
     "unresolved_type_conflict_identities": 0,
     "implemented_legal_by_kind": {
       "battlefield": 17,
-      "gear": 74,
+      "gear": 75,
       "legend": 10,
       "rune": 6,
       "spell": 119,
       "unit": 239
     },
-    "implemented_main_cards": 432,
+    "implemented_main_cards": 433,
     "implemented_legends": 10,
     "implemented_battlefields": 17,
-    "implemented_legal_identities": 465,
-    "unimplemented_legal_identities": 614,
+    "implemented_legal_identities": 466,
+    "unimplemented_legal_identities": 613,
     "errata_entries": 67,
     "identities_with_errata": 67,
     "source_quality_issues": 54,
@@ -189,10 +189,10 @@
     "Disarm": 6,
     "Empower": 13,
     "Empowered": 16,
-    "Equip": 27,
+    "Equip": 26,
     "Flow": 8,
     "Ganking": 30,
-    "Hidden": 30,
+    "Hidden": 29,
     "Hunt": 1,
     "Legion": 3,
     "Mighty": 9,
@@ -10494,8 +10494,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 432,
+        "official_id": "sfd-139-221",
+        "playable_in_client": true
       }
     },
     {

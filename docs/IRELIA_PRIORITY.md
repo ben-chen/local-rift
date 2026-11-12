@@ -67,12 +67,19 @@ tracking during payment, temporary Assault and Beginner/Advanced advice.
 The primary [Convergence IV standings](https://topdeck.gg/bracket/convergence-4)
 and [Arito deck list](https://topdeck.gg/deck/convergence-4/3Mb0hLsUTwgBYrpAauGOaRvDhnq1)
 were independently read on November 11. They confirm second place, an 8–2–0
-record and a 272-player event on October 31. The deck has three Orianna and one
-Gust Monk; its remaining main-card gap is now covered. Its full displayed main,
-sideboard, runes and battlefields are recorded in the Gust Monk validation record.
-The next priority is admitting and testing this exact Irelia preset, then
-continuing the match-flow and sideboarding work. The current five preset recipes
-remain unchanged.
+record and a 272-player event on October 31. The previous note incorrectly said
+Gust Monk completed its main card pool: **two Edge of Night were still missing**.
+Edge of Night is now implemented with the Spiritforged erratum, Hidden-origin
+targeting, ordinary Equip and explicit attachment timing. The exact list is the
+sixth preset, **Irelia / Arito Convergence IV**: 40 main cards including the chosen
+champion, ten sideboard cards, twelve runes and three registered battlefields.
+The original five recipes and all ten legend training recipes remain unchanged.
+
+The deck library separates main deck, sideboard and battlefield inspection.
+The sideboard is currently a reference for custom practice; best-of-three match
+sideboarding remains the next match-flow priority. See the
+[combined validation record](validation/irelia_arito.json) for the precise tested
+scope and remaining limits.
 
 Continue the end-to-end Irelia rules audit, including tournament match flow and
 sideboarding; card-pool coverage alone does not make that match experience complete.

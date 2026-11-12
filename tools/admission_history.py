@@ -75,3 +75,31 @@ def pre_rengar_recipe_source_bytes():
     if catalog.sha(data) != proof['predecessor_training_recipe_sha256']:
         raise AssertionError('The preserved pre-Rengar training source changed')
     return data
+
+
+def pre_registration_carddefs_source():
+    """Project only the additive preset schema out of old whole-prefix pins.
+
+    These historical checks hash the cards.rs prelude as well as CardDef values.
+    Preset registration changes that prelude, but no card definition. Remove
+    only the two exact additions; keep every card byte and all other prelude
+    bytes checked by the original, unchanged proof hashes. Runtime preset and
+    training-list equivalence is covered separately by the Rust recipe tests.
+    """
+    source = (catalog.ROOT / 'src/cards.rs').read_text()
+    additions = [
+        "#[derive(Clone, Copy, Debug)]\npub struct PresetRegistration {\n"
+        "    pub pilot: &'static str,\n"
+        "    pub event: &'static str,\n"
+        "    pub date: &'static str,\n"
+        "    pub placing: u16,\n"
+        "    pub battlefields: &'static [usize],\n"
+        "    pub sideboard: &'static [(CardId, u8)],\n}\n\n",
+        "    /// Separately verified event registration; absent on older preset records.\n"
+        "    pub registration: Option<PresetRegistration>,\n",
+    ]
+    for addition in additions:
+        if source.count(addition) != 1:
+            raise AssertionError('The additive preset registration schema changed')
+        source = source.replace(addition, '', 1)
+    return source

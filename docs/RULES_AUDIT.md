@@ -570,3 +570,30 @@ copy tracking through removals and burnout. Public API checks distinguish the
 cost from targets and reject stale/wrong-player requests without mutation.
 An initial Irelia readiness fixture used Kai'Sa's legend; it now explicitly uses
 Irelia's legend and accepts its paid ready trigger, with no engine change.
+
+### Edge of Night and exact Irelia registration, November 11, 2026
+
+The full SFD-139/221 face and the Spiritforged erratum establish Hidden, Equip
+one Chaos Power and +2 Might. The official FAQ explicitly explains the cleanup
+recall: unattached non-Deploy gear returns to base while its triggered ability
+waits. Core 811.1.d.1.a, 323.6 and 811.1.d.3/a preserve the original Hidden
+battlefield’s target restriction. “(here)” is reminder text rather than a live
+source-location restriction. A missing source or departed/off-field target
+cannot attach; Core 716–719 governs the resulting equipment relationship.
+
+Focused checks cover normal play and paid Equip, Hidden payment and later free
+play, both controllers and both battlefields, delayed attachment, invalid and
+unfinalizable targets, source/target departure, Orianna and Irelia interactions,
+and both players’ public API views. A premature attachment target supplied with
+the gear play was incorrectly accepted by the generic gear input path; it now
+rejects atomically. An initial test incorrectly expected an opponent’s Not So
+Fast to counter an ability choosing only its controller’s unit. The corrected
+test verifies rejection of that illegal counter, not successful countering.
+
+The original organizer deck page was reread entry by entry. It includes two
+Edge of Night, contradicting the prior claim that Gust Monk completed the main
+card pool. The new preset uses the exact 39 main-deck entries plus one chosen
+Irelia, ten sideboard cards, six Calm and six Chaos runes, and three registered
+battlefields. Sideboard inspection is separate from unfinished match-sideboarding
+support. Historical accepted receipts remain intact; the correction is explicit
+in this admission and the current priority document.

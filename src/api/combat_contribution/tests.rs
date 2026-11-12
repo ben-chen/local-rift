@@ -832,3 +832,75 @@ fn gust_api_separates_public_trash_cost_from_the_single_unit_target() {
         assert_eq!(observed_unit(&s, owner, 43100)["keywords"]["assault"], 2);
     }
 }
+
+#[test]
+fn edge_api_keeps_hidden_identity_private_then_exposes_delayed_attachment() {
+    for owner in 0..2 {
+        let mut s = position(owner);
+        s.game.battlefield_owner = [Some(owner), None];
+        let target = unit(&mut s, owner, 430, 43200, Some(0));
+        let away = unit(&mut s, owner, 71, 43201, None);
+        s.game.players[owner].hand = vec![432];
+        submit(
+            &mut s,
+            Action::Hide {
+                hand_index: 0,
+                lane: 0,
+            },
+        );
+        let hidden_id = s.game.players[owner].hidden[0].id;
+        assert_eq!(
+            s.observe(owner).unwrap()["players"][owner]["hidden"][0]["card_id"],
+            432
+        );
+        assert!(s.observe(1 - owner).unwrap()["players"][owner]["hidden"][0]["card_id"].is_null());
+        s.game.turn += 1;
+        let reveal = Action::PlayHidden {
+            hidden_id,
+            targets: vec![],
+        };
+        let revision = s.revision();
+        let before = [s.observe(0).unwrap(), s.observe(1).unwrap()];
+        assert_eq!(query(&mut s, "validate", &reveal)["ok"], true);
+        assert_eq!(s.revision(), revision);
+        assert_eq!(before, [s.observe(0).unwrap(), s.observe(1).unwrap()]);
+        submit(&mut s, reveal);
+        for viewer in 0..2 {
+            let view = s.observe(viewer).unwrap();
+            assert_eq!(view["decision"]["type"], "trigger_targets");
+            assert_eq!(view["decision"]["card_id"], 432);
+            assert_eq!(view["players"][owner]["gear"][0]["card_id"], 432);
+            assert!(view["players"][owner]["gear"][0]["attached_to"].is_null());
+        }
+        assert_eq!(
+            query(
+                &mut s,
+                "validate",
+                &Action::ChooseTriggerTargets {
+                    targets: vec![away]
+                }
+            )["ok"],
+            false
+        );
+        submit(
+            &mut s,
+            Action::ChooseTriggerTargets {
+                targets: vec![target],
+            },
+        );
+        assert_eq!(
+            observed_unit(&s, owner, 43200)["combat_contribution"]["damage"],
+            0
+        );
+        settle_chain(&mut s);
+        for viewer in 0..2 {
+            let view = s.observe(viewer).unwrap();
+            assert_eq!(view["players"][owner]["gear"][0]["attached_to"], 43200);
+        }
+        assert_eq!(observed_unit(&s, owner, 43200)["might"], 6);
+        assert_eq!(
+            observed_unit(&s, owner, 43200)["combat_contribution"]["damage"],
+            6
+        );
+    }
+}

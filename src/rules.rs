@@ -271,6 +271,7 @@ pub fn effect(id: usize) -> OfficialEffect {
         428 => StunAndDrawFromHand,
         429 => None,
         430 | 431 => None,
+        432 => Equipment,
         424 => None,
         422 => DrawThenChannel {
             draw: 1,
@@ -1130,6 +1131,7 @@ pub fn requirements(id: usize) -> &'static [Mechanic] {
         429 => &[Chain, Accelerate, Gold, Tokens, OptionalCosts],
         430 => &[Chain, Gear, Shield],
         431 => &[Chain, OptionalCosts, Assault, Banish],
+        432 => &[Chain, Gear, Equip, Hidden],
         372 | 373 => &[Chain, Gear, Bounce],
         374 => &[Chain, Gear, DeathTriggers],
         375 => &[Chain, Bounce],
@@ -1410,6 +1412,7 @@ pub struct EquipmentRule {
 
 pub fn equipment(id: usize) -> Option<EquipmentRule> {
     let (might, equip_domain, recycle_trash, quick_draw, ability) = match id {
+        432 => (2, Domain::Chaos, 0, false, EquipmentAbility::None),
         348 => (2, Domain::Order, 0, false, EquipmentAbility::None),
         3 => (2, Domain::Chaos, 0, false, EquipmentAbility::Ganking),
         10 => (1, Domain::Calm, 0, false, EquipmentAbility::GuardianAngel),
@@ -2045,7 +2048,7 @@ mod tests {
     #[test]
     fn all_catalog_entries_have_official_classification() {
         let cards = cards();
-        assert_eq!(cards.len(), 432);
+        assert_eq!(cards.len(), 433);
         for card in cards {
             assert_ne!(
                 effect(card.id),
@@ -2055,7 +2058,7 @@ mod tests {
             );
             assert_ne!(support_status(card.id), SupportStatus::UnknownCard);
         }
-        assert_eq!(effect(432), OfficialEffect::Unsupported);
+        assert_eq!(effect(433), OfficialEffect::Unsupported);
     }
 
     #[test]

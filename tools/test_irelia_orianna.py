@@ -48,7 +48,7 @@ class OriannaAdmissionTests(unittest.TestCase):
     def test_predecessor_cards_presets_and_review_prefixes_are_unchanged(self):
         runtime=catalog.load_runtime_manifest();p=self.proof['preserved_runtime_prefix']
         self.assertEqual(catalog.sha(review.canonical_bytes(runtime['cards'][:p['card_count']])),p['cards_sha256'])
-        self.assertEqual(catalog.sha(review.canonical_bytes(runtime['decks'])),p['presets_sha256'])
+        self.assertEqual(catalog.sha(review.canonical_bytes(runtime['decks'][:p['preset_count']])),p['presets_sha256'])
         p=self.proof['preserved_source_review_prefix']
         reviews=json.loads((catalog.ROOT/'assets/data/catalog_identity_reviews.json').read_text())['reviews']
         images=json.loads((catalog.ROOT/'assets/data/catalog_evidence/variant_images.json').read_text())

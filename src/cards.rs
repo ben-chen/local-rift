@@ -73,10 +73,22 @@ pub struct CardDef {
     pub art_url: &'static str,
 }
 
+#[derive(Clone, Copy, Debug)]
+pub struct PresetRegistration {
+    pub pilot: &'static str,
+    pub event: &'static str,
+    pub date: &'static str,
+    pub placing: u16,
+    pub battlefields: &'static [usize],
+    pub sideboard: &'static [(CardId, u8)],
+}
+
 #[derive(Clone, Debug)]
 pub struct DeckPreset {
     /// Stable legend registry ID; independent of the preset list index.
     pub legend_id: usize,
+    /// Separately verified event registration; absent on older preset records.
+    pub registration: Option<PresetRegistration>,
     pub name: &'static str,
     pub legend_name: &'static str,
     pub legend_text: &'static str,
@@ -6578,6 +6590,21 @@ pub fn cards() -> Vec<CardDef> {
             tags: &["Yordle", "Bandle City"],
             art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/93a194c0c1f055c0b3bc3c0717cbe488749fed92-744x1039.png?w=280&q=85&fm=png",
         },
+        CardDef {
+            id: 432,
+            official_id: "sfd-139-221",
+            name: "Edge of Night",
+            cost: 3,
+            power_cost: 0,
+            might: 2,
+            domain: Domain::Chaos,
+            domains: &[Domain::Chaos],
+            kind: CardKind::Gear,
+            official_text: "[Hidden] (Hide now for [Any Power] to react with later for [0 Energy].)\nWhen you play this from face down, attach it to a unit you control (here).\n[Equip] [Chaos Power] ([Chaos Power]: Attach this to a unit you control.)",
+            keywords: &["Hidden", "Equip"],
+            tags: &["Equipment"],
+            art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/b3e385162bf3566618bb58b7a866eef846beefba-744x1039.png?w=280&q=85&fm=png",
+        },
     ]
 }
 
@@ -6585,6 +6612,7 @@ pub fn presets() -> Vec<DeckPreset> {
     vec![
         DeckPreset {
             legend_id: 0,
+            registration: None,
             name: "Irelia / Blade Dance",
             legend_name: "Irelia, Blade Dancer",
             legend_text: "When you choose a friendly unit, you may exhaust me and pay [Any Power] to ready it.\nWhen you conquer, you may pay [1 Energy] to ready me.",
@@ -6624,6 +6652,7 @@ pub fn presets() -> Vec<DeckPreset> {
         },
         DeckPreset {
             legend_id: 1,
+            registration: None,
             name: "Master Yi / Wuju",
             legend_name: "Master Yi, Wuju Bladesman",
             legend_text: "While a friendly unit defends alone, it gets +2 Might.",
@@ -6659,6 +6688,7 @@ pub fn presets() -> Vec<DeckPreset> {
         },
         DeckPreset {
             legend_id: 2,
+            registration: None,
             name: "Kennen / Tempest",
             legend_name: "Kennen, Heart of the Tempest",
             legend_text: "When you play a card from anywhere other than your hand, empower me.\n[Action] —  Disempower me, [Exhaust]: Give a unit [Assault 2] this turn. (+2 Might while it's an attacker.)",
@@ -6697,6 +6727,7 @@ pub fn presets() -> Vec<DeckPreset> {
         },
         DeckPreset {
             legend_id: 3,
+            registration: None,
             name: "Kai'Sa / Void Control",
             legend_name: "Kai'Sa, Daughter of the Void",
             legend_text: "[Exhaust]: [Reaction] — [Add] [Any Power]. Use only to play spells. (Abilities that add resources can't be reacted to.)",
@@ -6734,6 +6765,7 @@ pub fn presets() -> Vec<DeckPreset> {
         },
         DeckPreset {
             legend_id: 8,
+            registration: None,
             name: "Rengar / Pridestalker",
             legend_name: "Rengar, Pridestalker",
             legend_text: "When you play a unit, give a unit +1 Might this turn.",
@@ -6767,6 +6799,54 @@ pub fn presets() -> Vec<DeckPreset> {
             accent: [216, 158, 102],
             chosen_champion: 30,
         },
+        DeckPreset {
+            legend_id: 0,
+            registration: Some(PresetRegistration {
+                pilot: "Arito",
+                event: "Convergence IV",
+                date: "2026-10-31",
+                placing: 2,
+                battlefields: &[13, 0, 14],
+                sideboard: &[(424, 2), (369, 2), (20, 1), (421, 2), (11, 2), (1, 1)],
+            }),
+            name: "Irelia / Arito Convergence IV",
+            legend_name: "Irelia, Blade Dancer",
+            legend_text: "When you choose a friendly unit, you may exhaust me and pay [Any Power] to ready it.\nWhen you conquer, you may pay [1 Energy] to ready me.",
+            learning_notes: "Orianna needs friendly gear at her location to deal combat damage. Edge of Night can attach after a Hidden reveal, and Gust Monk trades a trash card for temporary Assault. Save Power for Irelia’s ready ability and protect units through responses. The ten-card sideboard offers matchup options; change a custom copy to practice a sideboard plan.",
+            champion: "Irelia, Blade Dancer",
+            domains: [Domain::Calm, Domain::Chaos],
+            rune_counts: [6, 6],
+            strategy: "Build around Orianna and equipment, then use Irelia’s ready effects and movement to contest points. Arito’s runner-up list at Convergence IV, October 31, 2026.",
+            difficulty: "Advanced",
+            cards: vec![
+                (0, 1),
+                (431, 1),
+                (25, 1),
+                (15, 1),
+                (18, 3),
+                (430, 3),
+                (17, 3),
+                (20, 1),
+                (4, 2),
+                (5, 3),
+                (6, 3),
+                (8, 1),
+                (425, 1),
+                (19, 1),
+                (426, 1),
+                (7, 3),
+                (12, 1),
+                (80, 1),
+                (14, 2),
+                (16, 1),
+                (10, 2),
+                (3, 2),
+                (432, 2),
+            ],
+            source_url: "https://topdeck.gg/deck/convergence-4/3Mb0hLsUTwgBYrpAauGOaRvDhnq1",
+            accent: [105, 226, 203],
+            chosen_champion: 0,
+        },
     ]
 }
 
@@ -6777,7 +6857,7 @@ mod tests {
     #[test]
     fn presets_are_complete_and_references_are_consistent() {
         let catalog = cards();
-        assert_eq!(catalog.len(), 432);
+        assert_eq!(catalog.len(), 433);
         for (index, card) in catalog.iter().enumerate() {
             assert_eq!(index, card.id);
             assert!(!card.official_id.is_empty());

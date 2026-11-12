@@ -827,7 +827,9 @@ pub fn catalog() -> Value {
             "legend_name":p.legend_name,"legend_text":p.legend_text,"chosen_champion":p.chosen_champion,
             "eligible_cards":crate::deck::eligible_cards(p.legend_id),"eligible_champions":crate::deck::eligible_champions(p.legend_id),
             "domains":p.domains.map(|d|d.name()),"rune_counts":p.rune_counts,"cards":p.cards,
-            "strategy":p.strategy,"learning_notes":p.learning_notes,"source_url":p.source_url})).collect::<Vec<_>>(),
+            "strategy":p.strategy,"learning_notes":p.learning_notes,"source_url":p.source_url,
+            "registration":p.registration.map(|registration|json!({"pilot":registration.pilot,"event":registration.event,
+                "date":registration.date,"placing":registration.placing,"battlefields":registration.battlefields,"sideboard":registration.sideboard}))})).collect::<Vec<_>>(),
         "battlefields":BATTLEFIELDS.iter().map(|b|json!({"id":b.id,"name":b.name,"official_text":b.official_text})).collect::<Vec<_>>()})
 }
 

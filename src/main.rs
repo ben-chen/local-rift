@@ -11,6 +11,7 @@ mod field_ui;
 mod gust_ui;
 mod play_ui;
 mod predict_ui;
+mod preset_ui;
 use companion::{AdviceLevel, Companion, draw_mote};
 use deck_editor::DeckEditor;
 mod scene;
@@ -257,6 +258,7 @@ struct App {
     next_ai: f64,
     orbit: f32,
     deck_scroll: usize,
+    preset_tab: preset_ui::PresetTab,
     hand_scroll: usize,
     inspect: Option<usize>,
     lesson: Option<usize>,
@@ -433,6 +435,7 @@ impl App {
             next_ai: 0.0,
             orbit: 0.0,
             deck_scroll: 0,
+            preset_tab: preset_ui::PresetTab::Main,
             hand_scroll: 0,
             inspect: None,
             lesson: None,
@@ -901,12 +904,10 @@ impl App {
         if self.screen == Screen::Decks && self.ui.mouse().y > 430.0 && self.hover_card.is_none() {
             let wheel = mouse_wheel().1;
             if wheel < 0.0 {
-                self.deck_scroll = self.deck_scroll.saturating_add(1).min(
-                    self.game.presets[self.browse_deck]
-                        .cards
-                        .len()
-                        .saturating_sub(14),
-                );
+                self.deck_scroll = self
+                    .deck_scroll
+                    .saturating_add(1)
+                    .min(self.preset_list_len().saturating_sub(14));
             } else if wheel > 0.0 {
                 self.deck_scroll = self.deck_scroll.saturating_sub(1);
             }
@@ -7794,7 +7795,9 @@ impl App {
             self.ui.pill(
                 x + 14.0,
                 130.0,
-                if index == 3 {
+                if p.registration.is_some() {
+                    "CONVERGENCE IV · OCT 2026"
+                } else if index == 3 {
                     "HISTORICAL · MAY 2026"
                 } else {
                     "COMPETITIVE · SEP 2026"
@@ -7891,71 +7894,7 @@ impl App {
         ) {
             self.screen = Screen::Practice;
         }
-        self.ui.text("THE LIST", 634.0, 444.0, 10.0, GOLD);
-        self.ui.text("40 CARDS", 1314.0, 444.0, 10.0, MUTED);
-        let list = self.game.presets[self.browse_deck].cards.clone();
-        for (j, (id, count)) in list.iter().skip(self.deck_scroll).take(14).enumerate() {
-            let col = j / 7;
-            let row = j % 7;
-            let x = 634.0 + col as f32 * 396.0;
-            let y = 463.0 + row as f32 * 51.0;
-            let card = self.game.catalog[*id];
-            let r = Rect::new(x, y, 377.0, 43.0);
-            self.ui.rect(
-                r,
-                if self.ui.hover(r) {
-                    Color::new(0.09, 0.14, 0.16, 1.0)
-                } else {
-                    PANEL
-                },
-            );
-            self.ui
-                .rect(Rect::new(x, y, 3.0, 43.0), rgb(card.domain.color()));
-            self.ui
-                .bold(&card.cost.to_string(), x + 14.0, y + 27.0, 15.0, TEAL);
-            self.ui
-                .ellipsis(card.name, x + 42.0, y + 19.0, 290.0, 11.0, TEXT);
-            self.ui
-                .text(card.kind.name(), x + 42.0, y + 34.0, 9.0, MUTED);
-            self.ui
-                .text(&format!("×{count}"), x + 345.0, y + 27.0, 12.0, GOLD);
-            if self.ui.hover(r) {
-                self.hover_candidate = Some(*id);
-            }
-            if self.ui.clicked(r) {
-                self.inspect_printed_card(*id);
-            }
-        }
-        let max = list.len().saturating_sub(14);
-        self.ui.text(
-            &format!(
-                "{}–{} of {} unique cards · click to inspect",
-                self.deck_scroll + 1,
-                (self.deck_scroll + 14).min(list.len()),
-                list.len()
-            ),
-            634.0,
-            845.0,
-            10.0,
-            MUTED,
-        );
-        if self.ui.button(
-            Rect::new(1310.0, 822.0, 42.0, 31.0),
-            "Up",
-            false,
-            self.deck_scroll > 0,
-        ) {
-            self.deck_scroll = self.deck_scroll.saturating_sub(7);
-        }
-        if self.ui.button(
-            Rect::new(1362.0, 822.0, 42.0, 31.0),
-            "Dn",
-            false,
-            self.deck_scroll < max,
-        ) {
-            self.deck_scroll = (self.deck_scroll + 7).min(max);
-        }
-        self.ui.text("Official Riot tournament snapshots and card text. Hover to read a card; click to pin its full details.",245.0,883.0,10.0,MUTED);
+        self.draw_preset_contents();
     }
     fn guide(&mut self) {
         self.header(
