@@ -382,3 +382,328 @@ fn token_play_consumes_circle_first_unit_or_gear_history() {
     let next = hand(&mut g, 69, Some(0));
     assert_eq!(g.cost_plan(&next).unwrap().energy, 7);
 }
+
+fn circle_position(player: usize) -> Game {
+    let mut g = position([7, 7]);
+    if player == 1 {
+        g.apply(Action::EndTurn).unwrap();
+        settle(&mut g);
+    }
+    g.players[player].set_rune_setup([0; 6], [0; 6]).unwrap();
+    g.players[player].energy_pool = 30;
+    g.players[player].energy = 30;
+    g.players[player].power_pool = [10; 6];
+    unit(&mut g, player, 9950, 69, Some(0));
+    unit(&mut g, player, 9951, 69, Some(1));
+    g
+}
+
+#[test]
+fn circle_unit_and_deploy_gear_share_one_discount_in_either_order_and_seat() {
+    for player in 0..2 {
+        for gear_first in [false, true] {
+            let mut g = circle_position(player);
+            let (first, first_cost, next, next_cost) = if gear_first {
+                (401, 0, 69, 7)
+            } else {
+                (69, 6, 401, 1)
+            };
+            let play = hand(&mut g, first, Some(0));
+            assert_eq!(g.cost_plan(&play).unwrap().energy, first_cost);
+            let energy = g.players[player].energy;
+            g.apply(play).unwrap();
+            assert_eq!(
+                u32::from(g.players[player].energy),
+                u32::from(energy) - first_cost
+            );
+            settle(&mut g);
+            assert_eq!(g.play_history.units_or_gears_here[player], [1, 0]);
+            let play = hand(&mut g, next, Some(0));
+            assert_eq!(g.cost_plan(&play).unwrap().energy, next_cost);
+            g.apply(play).unwrap();
+            settle(&mut g);
+            assert_eq!(g.play_history.units_or_gears_here[player], [2, 0]);
+            let other_field = hand(&mut g, 69, Some(1));
+            assert_eq!(g.cost_plan(&other_field).unwrap().energy, 6);
+        }
+    }
+}
+
+#[test]
+fn circle_hiding_is_not_playing_but_a_free_hidden_unit_uses_the_discount() {
+    for player in 0..2 {
+        let mut g = circle_position(player);
+        let hand_index = g.players[player].hand.len();
+        g.players[player].hand.push(108); // Pakaa Cub: Hidden, no play trigger.
+        g.apply(Action::Hide {
+            hand_index,
+            lane: 0,
+        })
+        .unwrap();
+        let hidden_id = g.players[player].hidden[0].id;
+        assert_eq!(g.play_history.units_or_gears_here[player], [0, 0]);
+        let probe = hand(&mut g, 69, Some(0));
+        assert_eq!(g.cost_plan(&probe).unwrap().energy, 6);
+        for _ in 0..2 {
+            g.apply(Action::EndTurn).unwrap();
+            settle(&mut g);
+        }
+        assert_eq!(g.active, player);
+        let reveal = Action::PlayHidden {
+            hidden_id,
+            targets: vec![],
+        };
+        assert_eq!(g.cost_plan(&reveal).unwrap().energy, 0);
+        let energy = g.players[player].energy;
+        g.apply(reveal).unwrap();
+        settle(&mut g);
+        assert_eq!(g.players[player].energy, energy);
+        assert_eq!(g.play_history.units_or_gears_here[player], [1, 0]);
+        let gear = hand(&mut g, 401, Some(0));
+        assert_eq!(g.cost_plan(&gear).unwrap().energy, 1);
+    }
+}
+
+#[test]
+fn circle_each_players_allowance_returns_on_their_next_turn() {
+    let mut g = position([7, 7]);
+    unit(&mut g, 0, 9960, 69, Some(0));
+    unit(&mut g, 1, 9961, 69, Some(1));
+    for player in [0, 1, 0] {
+        assert_eq!(g.active, player);
+        assert_eq!(g.play_history.units_or_gears_here, [[0; 2]; 2]);
+        let first = hand(&mut g, 401, Some(player));
+        assert_eq!(g.cost_plan(&first).unwrap().energy, 0);
+        g.apply(first).unwrap();
+        settle(&mut g);
+        assert_eq!(g.play_history.units_or_gears_here[player][player], 1);
+        g.apply(Action::EndTurn).unwrap();
+        settle(&mut g);
+    }
+}
+
+#[test]
+fn circle_unit_and_gear_moves_do_not_use_a_play_discount() {
+    let mut g = circle_position(0);
+    unit(&mut g, 0, 9962, 69, None);
+    g.apply(Action::Move {
+        unit_id: 9962,
+        lane: Some(0),
+    })
+    .unwrap();
+    settle(&mut g);
+    gear(&mut g, 9963, 401);
+    g.players[0].gear[0].lane = Some(1);
+    let action = hand(&mut g, 410, Some(0));
+    let Action::PlayCardWithTargets { hand_index, .. } = action else {
+        unreachable!()
+    };
+    g.apply(Action::WithPlayChoices {
+        action: Box::new(Action::PlayCardWithTargets {
+            hand_index,
+            lane: None,
+            targets: vec![
+                Target::Gear {
+                    player: 0,
+                    gear_id: 9963,
+                },
+                Target::Battlefield { lane: 0 },
+            ],
+        }),
+        choices: PlayChoices {
+            mode: Some(0),
+            ..Default::default()
+        },
+    })
+    .unwrap();
+    settle(&mut g);
+    assert_eq!(g.players[0].gear[0].lane, Some(0));
+    assert_eq!(g.play_history.units_or_gears_here[0], [0, 0]);
+    let first = hand(&mut g, 69, Some(0));
+    assert_eq!(g.cost_plan(&first).unwrap().energy, 6);
+}
+
+#[test]
+fn circle_quotes_and_cancelled_or_failed_payments_do_not_spend_the_allowance() {
+    let mut g = circle_position(0);
+    let first = hand(&mut g, 69, Some(0));
+    let before = format!("{g:?}");
+    for _ in 0..3 {
+        assert_eq!(g.cost_plan(&first).unwrap().energy, 6);
+        assert_eq!(format!("{g:?}"), before);
+    }
+    g.apply(Action::BeginPayment {
+        action: Box::new(first.clone()),
+    })
+    .unwrap();
+    assert_eq!(g.play_history.units_or_gears_here[0], [0, 0]);
+    g.apply(Action::Choose { accept: false }).unwrap();
+    assert_eq!(format!("{g:?}"), before);
+    g.players[0].energy_pool = 0;
+    g.players[0].energy = 0;
+    let unfunded = format!("{g:?}");
+    assert!(g.apply(first.clone()).is_err());
+    assert_eq!(format!("{g:?}"), unfunded);
+    g.players[0].energy_pool = 6;
+    g.players[0].energy = 6;
+    g.apply(Action::BeginPayment {
+        action: Box::new(first),
+    })
+    .unwrap();
+    g.apply(Action::CompletePayment).unwrap();
+    settle(&mut g);
+    assert_eq!(g.players[0].energy, 0);
+    assert_eq!(g.play_history.units_or_gears_here[0], [1, 0]);
+}
+
+#[test]
+fn circle_instructed_free_replay_uses_the_allowance_at_the_actual_destination() {
+    for player in 0..2 {
+        let mut g = circle_position(player);
+        let hand_index = g.players[player].hand.len();
+        g.players[player].hand.push(381); // Temporal Breach replays to the same location.
+        g.apply(Action::PlayCardWithTargets {
+            hand_index,
+            lane: None,
+            targets: vec![Target::Unit {
+                player,
+                unit_id: 9950,
+            }],
+        })
+        .unwrap();
+        g.apply(Action::Pass).unwrap();
+        g.apply(Action::Pass).unwrap();
+        assert!(matches!(
+            g.decision,
+            Some(Decision::PendingPlay { card_id: 69, .. })
+        ));
+        assert_eq!(g.play_history.units_or_gears_here[player], [0, 0]);
+        let replay = Action::FinalizePendingPlay {
+            lane: Some(0),
+            targets: vec![],
+            repeat_targets: vec![],
+            repeat: false,
+            accelerate: false,
+            bonus: false,
+        };
+        assert_eq!(g.cost_plan(&replay).unwrap().energy, 0);
+        g.apply(replay).unwrap();
+        settle(&mut g);
+        assert_eq!(g.play_history.units_or_gears_here[player], [1, 0]);
+        assert!(!g.players[player].units.iter().any(|unit| unit.id == 9950));
+        let next = hand(&mut g, 401, Some(0));
+        assert_eq!(g.cost_plan(&next).unwrap().energy, 1);
+        let elsewhere = hand(&mut g, 401, Some(1));
+        assert_eq!(g.cost_plan(&elsewhere).unwrap().energy, 0);
+    }
+}
+
+#[test]
+fn circle_reduces_hidden_accelerate_energy_after_the_base_cost_is_ignored() {
+    let mut g = circle_position(0);
+    g.battlefields[1] = 5; // Firelights' Hideout grants Accelerate on conquest.
+    g.battlefield_owner[1] = None;
+    g.players[0].units.retain(|unit| unit.id != 9951);
+    let hand_index = g.players[0].hand.len();
+    g.players[0].hand.push(108);
+    g.apply(Action::Hide {
+        hand_index,
+        lane: 0,
+    })
+    .unwrap();
+    let hidden_id = g.players[0].hidden[0].id;
+    for _ in 0..2 {
+        g.apply(Action::EndTurn).unwrap();
+        settle(&mut g);
+    }
+    unit(&mut g, 0, 9970, 69, None);
+    g.apply(Action::Move {
+        unit_id: 9970,
+        lane: Some(1),
+    })
+    .unwrap();
+    settle(&mut g);
+    assert!(
+        g.play_grants
+            .iter()
+            .any(|grant| grant.kind == PlayGrantKind::AccelerateNextUnit)
+    );
+    // The fixture legend has different rune domains; fund the Cub's printed domain.
+    g.players[0].power_pool = [1; 6];
+    let action = Action::WithPlayChoices {
+        action: Box::new(Action::PlayHidden {
+            hidden_id,
+            targets: vec![],
+        }),
+        choices: PlayChoices {
+            accelerate: true,
+            ..Default::default()
+        },
+    };
+    // CR356: ignore base cost, add Accelerate, then apply Circle's total discount.
+    let plan = g.cost_plan(&action).unwrap();
+    assert_eq!(plan.energy, 0);
+    assert_eq!(plan.power.iter().map(|cost| cost.amount).sum::<u16>(), 1);
+    assert!(
+        plan.modifiers
+            .iter()
+            .any(|modifier| modifier.label == "Hunters' Circle")
+    );
+    g.apply(action).unwrap();
+    settle(&mut g);
+    assert!(
+        g.players[0]
+            .units
+            .iter()
+            .any(|unit| unit.card_id == 108 && unit.ready)
+    );
+    assert_eq!(g.play_history.units_or_gears_here[0], [1, 0]);
+}
+
+#[test]
+fn circle_hidden_play_on_opponents_turn_does_not_spend_the_next_own_turn_discount() {
+    let mut g = circle_position(0);
+    let hand_index = g.players[0].hand.len();
+    g.players[0].hand.push(108);
+    g.apply(Action::Hide {
+        hand_index,
+        lane: 0,
+    })
+    .unwrap();
+    let hidden_id = g.players[0].hidden[0].id;
+    g.apply(Action::EndTurn).unwrap();
+    settle(&mut g);
+    let spell_index = g.players[1].hand.len();
+    g.players[1].hand.push(7);
+    g.apply(Action::PlayCardWithTargets {
+        hand_index: spell_index,
+        lane: None,
+        targets: vec![Target::Unit {
+            player: 0,
+            unit_id: 9950,
+        }],
+    })
+    .unwrap();
+    g.apply(Action::Pass).unwrap();
+    assert_eq!(g.priority(), 0);
+    let reveal = Action::PlayHidden {
+        hidden_id,
+        targets: vec![],
+    };
+    assert!(
+        !g.cost_plan(&reveal)
+            .unwrap()
+            .modifiers
+            .iter()
+            .any(|modifier| modifier.label == "Hunters' Circle")
+    );
+    g.apply(reveal).unwrap();
+    settle(&mut g);
+    assert_eq!(g.play_history.units_or_gears_here[0], [1, 0]);
+    g.apply(Action::EndTurn).unwrap();
+    settle(&mut g);
+    assert_eq!(g.active, 0);
+    assert_eq!(g.play_history.units_or_gears_here[0], [0, 0]);
+    let first = hand(&mut g, 69, Some(0));
+    assert_eq!(g.cost_plan(&first).unwrap().energy, 6);
+}

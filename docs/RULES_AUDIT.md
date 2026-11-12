@@ -472,3 +472,31 @@ This cohort does not implement individual damage/kill attribution or control tra
 ### October opening-rule playtests
 
 Riot's [October 15 announcement](https://playriftbound.com/en-us/news/organizedplay/testing-start-of-game-rules/), rechecked October 26, explicitly describes selected-event playtests rather than a global rules update. The proposed second-player point, extra draw, and Predict bonuses therefore do not alter this client's Standard opening. The published Core remains authoritative. Tournament series, three-battlefield selection, sideboarding, and expert-strength matchup evaluation remain separate unfinished requirements.
+
+
+### Hunters' Circle: Irelia follow-up, November 11, 2026
+
+Hunters' Circle was already implemented as battlefield 7; the earlier Irelia queue
+mistakenly listed it as a missing card. This audit rechecked the complete
+[official face](https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/e7e25d90506d805f1996e7f751cb5b6baa8ec305-1039x744.png?accountingTag=RB)
+and its existing cost/history paths. Its allowance is shared by units and gear,
+separate for each player and physical battlefield, and applies only on that
+player's turn. It neither requires control nor grants a new legal play location.
+
+Core 356 applies ignored base costs before additional costs and total discounts;
+356.4.f expressly permits reducing additional costs to zero. A Hidden unit can
+therefore use Circle to reduce the Energy added by Accelerate while still paying
+its matching Power. The free play still consumes the first-play allowance.
+Hiding is not playing, and moving a unit or Deploy gear does not consume it.
+A zero-cost token or instructed replay does count at its actual play destination.
+
+Eight new public-action regressions cover both seats and both Unit/Gear orders,
+separate fields, own-turn resets, Hidden on either player's turn, free replays,
+unit and gear movement, read-only cost quotes, cancelled and failed payment,
+and the Hidden/Accelerate interaction. All 19 tests in the battlefield target
+pass. Existing token and no-control cases are included. The fixtures intentionally
+supply cross-domain cards and resources; they establish interaction behavior,
+not tournament deck legality. No gameplay code changed. The exact source pins,
+fixture corrections and validation scope are in the
+[audit record](validation/irelia_circle.json). This is not a renewed full-client
+or full-Standard certification.

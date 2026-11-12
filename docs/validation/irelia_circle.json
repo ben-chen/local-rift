@@ -1,0 +1,90 @@
+{
+  "reviewed_on": "2026-11-11",
+  "base_commit": "6411bd141a3bff35eb6491e2a6202496045030bf",
+  "scope": "Renewed Hunters' Circle interaction audit; eight new tests, no runtime or catalog changes",
+  "battlefield_runtime_id": 7,
+  "official_id": "rad-163-167",
+  "rules_authority": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/5c7946f7c3b8c6e0faff85ab6dadc6d2e721ea94.pdf",
+  "official_face": {
+    "path": "assets/data/battlefield_audits/irelia_circle/rad-163-167.png",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/e7e25d90506d805f1996e7f751cb5b6baa8ec305-1039x744.png?accountingTag=RB",
+    "sha256": "0659fc100a23ba270712dfbc47b9152fbbd782ef5183e17432f84634c616eb90",
+    "actually_viewed": true,
+    "reviewer": "root"
+  },
+  "catalog": {
+    "sha256": "9de5845e23215cb56e2957efd4fa48aaf82dbf9a7bfbf5ccac12cdb8411b17df",
+    "implementation": {
+      "status": "implemented_battlefield",
+      "runtime_id": 7,
+      "official_id": "rad-163-167",
+      "playable_in_client": true
+    },
+    "printing_cohort": [
+      "rad-163-167"
+    ],
+    "errata": [],
+    "source_review": {
+      "status": "no_detected_conflicts",
+      "resolution_ids": [],
+      "unresolved_gameplay_fields": [],
+      "variant_diagnostics": [],
+      "reviewed_variant_fields": [],
+      "unresolved_variant_fields": []
+    }
+  },
+  "validation": {
+    "target": "cargo test --test c4_battlefields",
+    "passed": 19,
+    "failed": 0,
+    "new_tests": 8,
+    "existing_tests": 11,
+    "format": true,
+    "clippy": "cargo clippy --test c4_battlefields -- -D warnings",
+    "runtime_and_catalog_unchanged_from_published_base": true
+  },
+  "rules_covered": [
+    "One shared Unit/Gear allowance in either order, for each player and physical field. Zero-Energy Deploy gear consumes it.",
+    "Hiding is not Play. A later free Hidden Unit play consumes the allowance, while another field retains its own.",
+    "Both players regain the allowance on their own turn. A Hidden play on the opponent's turn has no Circle modifier and does not consume the next turn's allowance.",
+    "Actual unit and Deploy-gear Moves do not consume the allowance. Cost quotations and cancelled or failed payments leave history unchanged. Completed finalization consumes it.",
+    "An instructed free Temporal Breach replay counts at its actual destination, creating a new unit object.",
+    "Core 356.1.b, 356.2.b, 356.4.d/f and 356.6: Hidden ignores base cost; Accelerate adds costs; Circle reduces total Energy to zero while matching Power remains.",
+    "Existing tests retain token-play consumption, lack of a control requirement, off-turn exclusion and no invented Deploy permission."
+  ],
+  "fixture_corrections": [
+    "Cost-plan Energy is u32 while the resource view is u16; comparison now widens the resource value.",
+    "Starting the fixture in seat 1 channels runes. Clear those before setting an exact generated-Energy balance.",
+    "Command: Attack chooses a Battlefield target in its Move mode, not Action.lane.",
+    "The Hidden/Accelerate fixture supplies matching power after turn cleanup; the test legend does not provide the Cub's rune domain."
+  ],
+  "limitations": [
+    "Controlled cross-domain fixtures validate rules interactions, not legal deck construction.",
+    "No new card, preset, AI strength or interface feature is claimed.",
+    "No new whole-suite test total is claimed; the published base separately records 1538 Rust tests and 254 catalog/source tests.",
+    "Only the named interactions were renewed; this is not complete Standard certification."
+  ],
+  "logs": {
+    "irelia-circle-focused1.log": {
+      "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-circle-focused1.log",
+      "sha256": "79f6dd89b936e08b2e45cd261544bb35da11c8f6eee4b2b4aae11c7f722160f6"
+    },
+    "irelia-circle-focused2.log": {
+      "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-circle-focused2.log",
+      "sha256": "bcf8ba2f2aa081a3dfe4ede476b4f4a9087155035353165da10dd29ac4085c81"
+    },
+    "irelia-circle-focused3.log": {
+      "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-circle-focused3.log",
+      "sha256": "384a327bec2b9ea3856b2eee56ad40462e7640ab5cc6bdc9c7b15be388a12d90"
+    },
+    "irelia-circle-fmt.log": {
+      "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-circle-fmt.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "irelia-circle-clippy.log": {
+      "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-circle-clippy.log",
+      "sha256": "bb70c270d7be536d4e51da3af02a88b2eba6ea5af651df5fb40f404c5169db1b"
+    }
+  },
+  "test_source_sha256": "9297d09c94afec9441cad87bce1fdae4ae511f19f60c5e6ff7726a5eeafcdc99"
+}
