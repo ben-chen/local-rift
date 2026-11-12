@@ -52,7 +52,7 @@ Every successful mutation increments the session revision by one. Reset also inc
 | `reset` | `revision`; optional `seed`, `decks`, `custom_decks`, `difficulty`, `first_player`, `battlefields` | New match in mulligan phase |
 | `observe` | `player` | Observation filtered for that seat |
 | `mulligan` | `revision`, `player`, `indices` | Replace up to two distinct opening-hand positions, once per seat |
-| `start` | `revision` | Begin match; an unused mulligan means keep that hand |
+| `start` | `revision` | Begin play; standalone games implicitly keep unused mulligans, registered matches require both players to submit first |
 | `suggest` | `player` | `{exhaustive:false, actions:[{id, action}, ...]}`; empty when this seat cannot act |
 | `quote_payment` | `revision`, `player`, exactly one of `action` or `action_id` | Suggested and available power sources, exact Power obligations; no mutation |
 | `play_choices` | `revision`, `player`, exactly one of `action` or `action_id` | Available Repeat instances, Accelerate/bonus costs, original zone, and typed cost plan |
@@ -66,7 +66,7 @@ Reset defaults match the initial settings. `decks` is a pair of preset IDs. `bat
 
 A custom list can replace either seat through `custom_decks:[deck_or_null,deck_or_null]`. Omission uses presets for both seats. Each deck object contains `name`, `legend`, `chosen_champion`, `cards` (pairs of card ID and count), `runes` (six counts in catalog domain order), and `battlefield`. `legend` accepts a stable numeric registry ID or its official printing ID, such as `"ogn-265-298"`; saved/output decks normalize it to the numeric ID. Existing numeric IDs0–3 retain their identities. The selected chosen-champion variant does not change the legend.
 
-`catalog.legends` is independent of `catalog.presets`: ten legends are supported while the five sourced preset lists retain their original IDs. Every legend reports its official identity/text, domains, default chosen champion, `eligible_cards`, `eligible_champions`, and a complete editable `training_deck`. For Darius, Viktor, Lux, Ambessa, Rengar, and Ezreal those are authored practice lists, not tournament/meta recommendations; `training_note` describes the origin. Pass the returned training deck through `custom_decks` to practice with that legend. `CustomDeck::from_legend` provides the same starting list in Rust; `from_preset` still copies an exact sourced preset. `catalog.presets[].legend_id` links each preset to the registry. A new legend ID must not be used as a preset ID in `reset.decks`.
+`catalog.legends` is independent of `catalog.presets`: ten legends are supported while the six sourced preset lists retain their IDs. Every legend reports its official identity/text, domains, default chosen champion, `eligible_cards`, `eligible_champions`, and a complete editable `training_deck`. For Darius, Viktor, Lux, Ambessa, Rengar, and Ezreal those are authored practice lists, not tournament/meta recommendations; `training_note` describes the origin. Pass the returned training deck through `custom_decks` to practice with that legend. `CustomDeck::from_legend` provides the same starting list in Rust; `from_preset` still copies an exact sourced preset. `catalog.presets[].legend_id` links each preset to the registry. A new legend ID must not be used as a preset ID in `reset.decks`.
 
 Deck validation requires at least 40 main-deck cards including the chosen champion, no more than three copies by full name, at most three Signature cards in total, matching champion tags, complete domain compatibility, exactly 12 legal runes, and an implemented legal battlefield. A `Unique` card is limited to one copy. Only implemented Standard-legal cards and legends can be selected. Zero-count rows should be omitted. Invalid decks are rejected before resetting the live match. Optional reset `battlefields` overrides the decks' selected fields. The API leaves both opening hands untouched for each agent's mulligan.
 
@@ -734,3 +734,43 @@ that does not redirect targeting to base. The attachment and +2 Might are
 visible only on resolution, through the existing equipment and unit views.
 Both viewers see the public decision; the facedown identity remains private
 before reveal. Validation is read-only and uses the same restrictions.
+
+## Registered match commands
+
+See [MATCH_SERIES.md](MATCH_SERIES.md) for the full lifecycle and restrictions.
+These commands add untimed best-of-three coordination without changing standalone
+sessions. All mutations require the current `revision`; IDs and actors use the
+same conventions as game commands. Registration validation is read-only.
+
+| Command | Additional request fields | Result |
+|---|---|---|
+| `validate_registration` | `registration` | Validated registration; no mutation |
+| `series_begin` | `registrations` (two objects), `designated_player`, optional `seed`, `difficulty` | New registered match, before field selection |
+| `series_sideboard` | `player`, `cards` pairs, `chosen_champion` | Lock that player's legal main list; sideboard is the remaining registered pool |
+| `series_battlefield` | `player`, `battlefield` | Commit an unused field privately; reveal when both have committed |
+| `series_play_order` | `player`, `first_player` | The designated player chooses play order; creates the opening hands |
+| `series_concede` | `player`, `scope` (`game` or `match`) | Explicit concession |
+| `series_draw` | `player`, `scope`, boolean `accept` | Offer/withdraw agreement; both seats must agree |
+
+A registration is either `{"preset":5}` or
+`{"deck":CUSTOM_DECK,"sideboard":[[424,2],[369,2],[20,1],[421,2],[11,2],[1,1]],"battlefields":[13,0,14]}`.
+The main `deck` must contain exactly 40 cards; the shown sideboard is valid with
+Arito's main list. Do not apply that example sideboard to an arbitrary deck
+without checking combined copy limits and the legend's identity.
+
+`observe.series.phase` progresses through `battlefields`, `play_order`, `game`,
+`sideboarding`, and `complete`. `wins`, `game_number`, `designated_player`,
+`first_player`, readiness flags, draw offers and `history` describe progress.
+`series.players` contains public seat information. The separate `registration`,
+`deck`, `sideboard`, and `available_battlefields` fields belong only to the viewer.
+Before a game exists, ordinary game action methods refuse requests and
+`suggest` is empty. No previous-game private view is returned during setup.
+
+During `game`, use existing `mulligan`, `start`, `observe`, `apply`, `validate`,
+`suggest`, payment and AI methods. Series mulligans must be explicitly submitted
+in turn order, including an empty `indices` array to keep. `start` requires both
+mulligans. A completed game automatically records its actual winner and scores.
+Concessions have no fabricated final point score. Game draw agreement is exposed
+after setup, preserves configuration and starting player, and creates a fresh
+mulligan without sideboarding. Draws and match concessions do not fabricate game
+wins. A new series always starts from the original registrations.

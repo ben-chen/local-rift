@@ -10,7 +10,7 @@ Choose a preset or a saved custom deck for each player. Presets contain 40 cards
 
 Each player has a 12-card rune deck using the preset’s **published domain split**, preserved in the source manifest. Choose whether you or the AI starts. The second player channels an extra rune on their first turn.
 
-Each player brings one battlefield. The client offers seventeen official choices; its two battlefield panels display the selected names and effect text. The default follows each player’s chosen deck. The battlefield picker shows artwork and full rules before selection. The deck editor can copy a preset, adjust supported cards, rune counts, chosen champion, and battlefield, and save a separate list for you or the AI. It validates the main deck, champion tag, full domain identity, three-copy and Signature limits, and exactly 12 runes. There is no sideboarding.
+Each player brings one battlefield. The client offers seventeen official choices; its two battlefield panels display the selected names and effect text. The default follows each player’s chosen deck. The battlefield picker shows artwork and full rules before selection. The deck editor can copy a preset, adjust supported cards, rune counts, chosen champion, and battlefield, and save a separate list for you or the AI. It validates the main deck, champion tag, full domain identity, three-copy and Signature limits, and exactly 12 runes. The native client has no between-game sideboarding screen yet; registered match sideboarding is available through the shared engine and bot API.
 
 ## Turns and resources
 
@@ -306,7 +306,7 @@ The fifth preset is the sourced Los Angeles Rengar winning list. Copying that pr
 
 ## Remaining fidelity limits
 
-Ten supported legends, seventeen battlefield choices, and 433 main-deck cards are available through six supplied presets and the custom deck editor. The original five presets and all ten authored or preset-derived training recipes remain unchanged; Arito’s exact Irelia tournament preset is separate. Additional supported cards can be added through the editor where eligible. There is no sideboarding, tournament match structure, multiplayer mode, or full card-set coverage. The presets are dated tournament lists, not a ranking of the current metagame.
+Ten supported legends, seventeen battlefield choices, and 433 main-deck cards are available through six supplied presets and the custom deck editor. The original five presets and all ten authored or preset-derived training recipes remain unchanged; Arito’s exact Irelia tournament preset is separate. Additional supported cards can be added through the editor where eligible. The shared engine and bot API support untimed best-of-three match structure and sideboarding; the native interface, timed tournament rounds, multiplayer and full card-set coverage remain unfinished. The presets are dated tournament lists, not a ranking of the current metagame.
 
 The desktop and bot API expose exact damage allocations and power-source payments. The default automatic payment remains available; energy can be prepared by exhausting chosen rune domains before a play. These controls share engine validation, but broader card and interaction coverage is still required.
 
@@ -554,5 +554,16 @@ Arito’s sixth preset preserves the exact 40-card main list, with the chosen
 Irelia included in that count. Its ten sideboard cards are displayed separately
 and are never shuffled into the main deck. Its three registered battlefield
 choices can be inspected and selected for either preset seat before a game.
-Between-game sideboarding is not yet available; use a custom copy to practice
-individual swaps.
+The native between-game sideboarding screen is not yet available; use a custom
+copy to practice individual swaps in the app, or the registered bot API below.
+
+## Registered matches through the bot API
+
+The shared match controller and bot API now implement the sequence described in
+[MATCH_SERIES.md](MATCH_SERIES.md): fixed registration, exact 40-card main decks,
+one-for-one sideboarding, private simultaneous battlefield selection, the losing
+player's next play-order choice, ordered mulligans and first-to-two game wins.
+Sideboard card identities stay private; their counts remain visible. Drawn games
+retain both deck configurations, fields and starting player without sideboarding.
+The native sideboard tabs remain reference-only until their match flow is wired
+to this controller. Timed rounds and judge procedures remain outside this version.

@@ -96,3 +96,8 @@ they must not overwrite newly published identities.
 Battle Preparations validation is recorded in [its acceptance receipt](validation/irelia_preparations.json).
 
 Siren's Song validation is recorded in [its acceptance receipt](validation/irelia_siren.json).
+
+The shared match controller and bot API now support untimed best-of-three practice
+with the complete Arito registration. The immediate next step is connecting the
+native setup, sideboard editor and match results to it, then evaluating sideboard
+and matchup policies. Card-library completeness remains a separate active goal.

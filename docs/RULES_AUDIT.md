@@ -597,3 +597,27 @@ Irelia, ten sideboard cards, six Calm and six Chaos runes, and three registered
 battlefields. Sideboard inspection is separate from unfinished match-sideboarding
 support. Historical accepted receipts remain intact; the correction is explicit
 in this admission and the current priority document.
+
+
+### Registered best-of-three coordination, November 11, 2026
+
+The current Rules Hub links the October 9 Tournament Rules, with PDF SHA-256
+`ce07da4fb632526afbbce7f058287a57e7444fa6bde17b0938ff52ce3fab3d07`.
+TR601.1 requires exactly forty main cards and at most ten sideboard cards;
+TR403.3–4 preserves combined named-card limits and one-for-one swaps, with
+fixed legend/runes/battlefields. Core103.5 requires distinct battlefield names.
+Core488.5–6 and TR407 govern field use, two wins and the loser's play-order choice.
+Core117 supplies mulligan order. TR403.10, 406.1.b, 407.4 and 410 cover draws.
+
+The coordinator delays hand creation until both field choices reveal and play
+order is chosen. It retains each registration unchanged, derives sideboards as
+the remainder of that pool, and publishes new chosen champions only after both
+sideboarding submissions. API refusals preserve revision and both player views.
+Conceding before battlefield reveal neither consumes nor exposes a private
+choice. An intentional game draw keeps configurations and skips sideboarding;
+match draws/concessions do not fabricate individual game wins.
+
+This is an untimed engine/API implementation. Native match screens, timed round
+end procedures, judge penalties, best-of-five and pre-setup game-draw requests
+remain unfinished. The example bot keeps its sideboard by default; test-scripted
+swaps and completed games are not evidence of expert sideboarding decisions.

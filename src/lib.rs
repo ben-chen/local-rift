@@ -33,3 +33,5 @@ pub use game::temporary;
 pub use game::vision;
 
 pub mod runes;
+
+pub mod match_series;

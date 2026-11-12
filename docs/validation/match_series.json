@@ -1,0 +1,1916 @@
+{
+  "reviewed_on": "2026-11-11",
+  "base_commit": "8c1920243017a75d13f9386342a511563e2f3ada",
+  "scope": "Untimed Standard best-of-three coordination in the shared Rust engine and JSON bot API, with fixed registrations, sideboarding, private battlefield commitments, play order, ordered mulligans, completed-game scoring, concessions and intentional draws.",
+  "implementation": [
+    "src/match_series.rs",
+    "src/api/series.rs",
+    "src/deck.rs",
+    "src/api.rs",
+    "tools/series_bot.py"
+  ],
+  "rust": {
+    "scope": "All 106 Cargo all-targets test harnesses, run with eight independent workers",
+    "targets": 106,
+    "passed": 1609,
+    "failures": 0,
+    "results": [
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/activated_matches-3a69bb274ef8e1f8",
+        "sha256": "831fa97d8259fbaf2b057704184e5f9f06521b69916a08503b928763b8792f01",
+        "exit": 0,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/activated_matches-3a69bb274ef8e1f8.log",
+        "log_sha256": "8832d77fe250add82704b9b47a145b6009381a5ab66614b9b94723ce5064acb3",
+        "seconds": 125.52
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/c10_matches-98ec2f8af50d2b82",
+        "sha256": "6434c69e1fd5cdb3a01640acd006b8274172fa44d548b278920093f7650cf8ad",
+        "exit": 0,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/c10_matches-98ec2f8af50d2b82.log",
+        "log_sha256": "075aae640a45fd77b8e6c169865893d0f1340a87738842a2689998e39fc8d9eb",
+        "seconds": 116.15
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/c11_matches-e1676949712656ac",
+        "sha256": "6bb86d29dac2d3dcd1fededc63a97ba35e289e8a44c12350762b8c35013d89ca",
+        "exit": 0,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/c11_matches-e1676949712656ac.log",
+        "log_sha256": "7230830e63cea3db18eaa830bee9922c68d4afc7bcf23fafe26d36de415ae897",
+        "seconds": 96.2
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/c12_matches-62d00d989e5149df",
+        "sha256": "e28f4341924a37aaf29d03d06d2557422661a44ec007f38301e9b630ca0f26d0",
+        "exit": 0,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/c12_matches-62d00d989e5149df.log",
+        "log_sha256": "ebf42e08771b1290fdbf244ca7151f528b9ade3ec726e841fc3465e85231d320",
+        "seconds": 27.61
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/c13_matches-b557e1100fc3a853",
+        "sha256": "b1fd78cf2aa934eb4d0ff8370a4ea15f3694074490e136e66ba2cc33b24c9476",
+        "exit": 0,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/c13_matches-b557e1100fc3a853.log",
+        "log_sha256": "78df17b580f09295467b964af5f5dfa3f1a87d62da65be963a05828232d1d338",
+        "seconds": 20.92
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/c14_matches-ff9056db1809a6dc",
+        "sha256": "e6b63e05480510f04b47f95315520a90d5f08c21249df6a60e6d9bec6c3b68b0",
+        "exit": 0,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/c14_matches-ff9056db1809a6dc.log",
+        "log_sha256": "7da95195631d079f343fb2db6bc68e04c19745b1420c670f5bbf1256ff2c8349",
+        "seconds": 36.83
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/c15_matches-90888b81d36c6378",
+        "sha256": "cd769e3904d2ffa2aeaf65ff421767c2d23a67883d56612d781eee01353d3cae",
+        "exit": 0,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/c15_matches-90888b81d36c6378.log",
+        "log_sha256": "7ceb5af758dc3e2ba8679c67d68b6f07016f6f2cd5a777cab7a82c58fa979391",
+        "seconds": 30.26
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/c16_matches-d4bcbc3f825ad235",
+        "sha256": "1780d0557d8f88203b6b2945583d910c82fb994ac32e09560c2221b5f1ef0fa2",
+        "exit": 0,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/c16_matches-d4bcbc3f825ad235.log",
+        "log_sha256": "6965599c3951c72e259383ee560999a819e7fca39dc885f15e3cdb128ae8b5ed",
+        "seconds": 125.54
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/c17_matches-44eb512612fdf494",
+        "sha256": "211a1f7efffd869c203a9e4ec97503ddd5e6ad0c133152a7433687eb0e3ce6fa",
+        "exit": 0,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/c17_matches-44eb512612fdf494.log",
+        "log_sha256": "0862221ce08aa8176ec971518699b12cd6479b01f5a7f23b9226f7bc29886fca",
+        "seconds": 69.45
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/c18_matches-0f20b6c75380dade",
+        "sha256": "2f62453ffdd2bfbe40feff435dcc79af07e33f6cb27bb7cdae6a19eb96279936",
+        "exit": 0,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/c18_matches-0f20b6c75380dade.log",
+        "log_sha256": "7e74939f5edad9cd3ef4d7c93de0b3991effabadeed5c77316eabf057b6018a2",
+        "seconds": 49.52
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/c19_matches-233437d97e3377e2",
+        "sha256": "cb56aa914e6515b48201fabd9ef292247a4546787bd68bc9711c8e00b78659a6",
+        "exit": 0,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/c19_matches-233437d97e3377e2.log",
+        "log_sha256": "d895d48526ac31b20a0dcaaff673acbb7795a865edcb9e8cb773e44ca067d233",
+        "seconds": 54.12
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/c20_matches-1109d6b99370cbdf",
+        "sha256": "4685b36ddf683e7e5f117fbd24b37b66cd1ac3fd36113c42a6b96252a9c46d5b",
+        "exit": 0,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/c20_matches-1109d6b99370cbdf.log",
+        "log_sha256": "713c9dacfe06abaabeb4f1f1b7d45f1cedab308bf7952af4d68770ca1772ab8c",
+        "seconds": 48.95
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/c21_matches-0b6b5eda31d93fba",
+        "sha256": "5ccca9e5ec366cb36fa50bef1ea77145d5d760aa0b1331f24d20c84631bc8e8b",
+        "exit": 0,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/c21_matches-0b6b5eda31d93fba.log",
+        "log_sha256": "42b754c029d8e78f54d2b8c47903625df922c83a86024c35f072ea503162e25e",
+        "seconds": 49.67
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/c22_matches-0ba47aaa9b289e37",
+        "sha256": "ca642575c1f1802643cc42fcfbf79e581c52b6a50bee6e1caed7e30561b1573f",
+        "exit": 0,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/c22_matches-0ba47aaa9b289e37.log",
+        "log_sha256": "c6e66d967d8e8db2546de875e5f6367df3de7de9740636559c10ba5bc4d5edd4",
+        "seconds": 17.94
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/c24_matches-ac239c8d95d1460d",
+        "sha256": "c2d34ffaa403902d06c860acd9c51a17ca566bb825972cedb7884a8cbcd8a23e",
+        "exit": 0,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/c24_matches-ac239c8d95d1460d.log",
+        "log_sha256": "ac2f03fe0cfffb73b805d7b167df7d27179711cb4f25a27c7a0dfa65d15e872a",
+        "seconds": 38.46
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/c26_matches-a2ab4de6a700380e",
+        "sha256": "7cafd661ea99e9482f2a4e317defaa319825d48d0afa5188edf24d4c86350303",
+        "exit": 0,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/c26_matches-a2ab4de6a700380e.log",
+        "log_sha256": "177729f1d3fba20216768532ce9c4b13c209c19b7dbb0f86d14f7b9a021fa8ba",
+        "seconds": 12.13
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/c27_matches-07bbc3c48ccc1848",
+        "sha256": "feafba5092997b1c31afc1d575227df860ed42d2eec43f8e6ba3e5619e30f948",
+        "exit": 0,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/c27_matches-07bbc3c48ccc1848.log",
+        "log_sha256": "f22f636881cae0fc10d5e74c9ac4db68f77e55506aef19c7b2d715cbb9ec4732",
+        "seconds": 16.48
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/c28_matches-ca0d4bf0a7ff014e",
+        "sha256": "fa7a96447f60f5290441d029d64bf0aa6fb0ffa9f9bc13eac533562f69b5cdde",
+        "exit": 0,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/c28_matches-ca0d4bf0a7ff014e.log",
+        "log_sha256": "bf83e450900417fc5cab66f94711be42da5c8c9a5c00d708d2677cbea0865b70",
+        "seconds": 27.02
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/c4_matches-85202f9be6751671",
+        "sha256": "edd4266e257e87568334a68ed484dcd66b1d29340d156e8813863020c3edeb37",
+        "exit": 0,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/c4_matches-85202f9be6751671.log",
+        "log_sha256": "068e5e20252f78a7748a15855a275e53db2658319058a5145eea61a8d906fd64",
+        "seconds": 98.14
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/c5_matches-a05985aaf6a4ed6b",
+        "sha256": "5cf92c591b47a641ef6ef4027532f5f8ed94d17fbe5ddfcce732a79ea5ad3dbc",
+        "exit": 0,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/c5_matches-a05985aaf6a4ed6b.log",
+        "log_sha256": "ea41ff5e8d6df0b361801fc95b8a2395c423561158f5aac4d1c6501aaa036c41",
+        "seconds": 109.34
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/c8_matches-537dbdf01b6dcbe6",
+        "sha256": "4431c28b7f6d4886c33660a589d1318527f1f0a82db69d968cb6c0718be92708",
+        "exit": 0,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/c8_matches-537dbdf01b6dcbe6.log",
+        "log_sha256": "0c10673be786182180a7b077aa903c57ccb87275bf3f419f6a3c51d7559cb319",
+        "seconds": 103.12
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/c9_matches-359449f3e3b46c2d",
+        "sha256": "a92c1db06563818cf5fbbcc6a1fabdc1a2221248ddff551fd549f45c6a574151",
+        "exit": 0,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/c9_matches-359449f3e3b46c2d.log",
+        "log_sha256": "5ec91ed892ea338d90d37196b5efdb557231ce71d3c4e3c7bc803c266ace20b0",
+        "seconds": 102.72
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/conversion_matches-972b2c1bacbe2007",
+        "sha256": "41a1484b5408a0db1886132d35a128ca6d3a1cc1a570750830c70571bde63dd8",
+        "exit": 0,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/conversion_matches-972b2c1bacbe2007.log",
+        "log_sha256": "3d1f023e8a83d2f225466ea8029054e000e17067b84708726edfa838a0b935bd",
+        "seconds": 128.98
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/empowered_matches-ca2c35664c15eb1c",
+        "sha256": "b57fcdad4f2fe3d747d6a427466b16a9da0aa7a2292b643644771f4d1b6fa0c3",
+        "exit": 0,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/empowered_matches-ca2c35664c15eb1c.log",
+        "log_sha256": "56d6017ab66f1075d86c20c260925d47ad238e01829abded54a12c7a26537cb2",
+        "seconds": 100.07
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/activated_abilities-ac5e2e2507938427",
+        "sha256": "400581b0358c5705c86ee1f6cc314c5dc6bec6750e34d9f8ef0c4a39ee04b204",
+        "exit": 0,
+        "passed": 23,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/activated_abilities-ac5e2e2507938427.log",
+        "log_sha256": "e1f011659a4e7a00cace6e3e01f538a87ef4d57e8749a7096a1af0a970a6043d",
+        "seconds": 0.19
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/api_custom_decks-aabed456028f2ebf",
+        "sha256": "b22701b6fcfc76f5703d37b3f60e13021e4b7e4b792bfab23d493b7cd50e82c5",
+        "exit": 0,
+        "passed": 5,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/api_custom_decks-aabed456028f2ebf.log",
+        "log_sha256": "beb2023e559c6ac2d58ded83a3e87028cf6e6a4f9e721bea84f279eb12613e73",
+        "seconds": 0.64
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/c10_runtime-a3c8b363fe62ff63",
+        "sha256": "513916332299f9816571b35c062a7659fcd9ba08d686bd35367ee99f785f0703",
+        "exit": 0,
+        "passed": 19,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/c10_runtime-a3c8b363fe62ff63.log",
+        "log_sha256": "5f504aba9a882ae491ab7aaeb914adba0f4c1e120d82512617e4c6c29de57cde",
+        "seconds": 0.09
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/c11_runtime-85465e6aba4d1e9c",
+        "sha256": "33ca51683312e77562b69ff8e0c2a00a8ff2e7a0c407a2f895e50cf97c5e7bbb",
+        "exit": 0,
+        "passed": 23,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/c11_runtime-85465e6aba4d1e9c.log",
+        "log_sha256": "4e2fa66255ce76351fc531ed8a6f3b868a5ec6b3f3b1173b3819e81820d1a834",
+        "seconds": 0.1
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/c16_legends-28e6bc14a114f5b9",
+        "sha256": "85f45aff4d524b97f41771ca19755f580e33611e43a9e8697d4006c516db9e01",
+        "exit": 0,
+        "passed": 14,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/c16_legends-28e6bc14a114f5b9.log",
+        "log_sha256": "fd2d68dae0259d296751746531e0f1661a128240fcdcbb0ca40106955841560f",
+        "seconds": 0.11
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/c4_battlefields-cf626a527d41ba45",
+        "sha256": "4cf51a8e34b4c49b7b4e090e3b12c6e91af1db1cc2563bca233b7e35307877bc",
+        "exit": 0,
+        "passed": 19,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/c4_battlefields-cf626a527d41ba45.log",
+        "log_sha256": "991384b445638fcf93c63411004267a9cec0047564f3f19614e7a139a5a02a60",
+        "seconds": 0.08
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/c4_event_audit-f77643db74ac38cd",
+        "sha256": "224717dccfe1373a869e712c2d631745a56590c820a09a949a012e93e4aafc98",
+        "exit": 0,
+        "passed": 9,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/c4_event_audit-f77643db74ac38cd.log",
+        "log_sha256": "d18a5a43b4ae85b872403b79524552a8cb440e2d2753fabca5eee3452f67807a",
+        "seconds": 0.08
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/c4_play-a3f1a7b2d93498dd",
+        "sha256": "11c670bba7919bf03ecbb425dd6487db9b150fc183e3e33beec8e5bf21e1d0b8",
+        "exit": 0,
+        "passed": 24,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/c4_play-a3f1a7b2d93498dd.log",
+        "log_sha256": "446c28d13264dfc96c9614dade7fde7152003c3754fa9f100045bc4647eda7d2",
+        "seconds": 0.29
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/c4_query_audit-8949aa7e10789517",
+        "sha256": "ac6cf84a53a101ba79bdf4ce75732d76bb9108bd965f406cfbf1590584a5ef31",
+        "exit": 0,
+        "passed": 2,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/c4_query_audit-8949aa7e10789517.log",
+        "log_sha256": "9febf2613d52dff7b2bf7df970ff49ea4fced39175b99c693ce99b5c38f98906",
+        "seconds": 0.09
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/c4_rules_audit-2c031494fc20b97b",
+        "sha256": "5ccb8b01d7bbdb28a57227abd76bfc58a8f8e140f3d08c5d470e4b2c02b80310",
+        "exit": 0,
+        "passed": 6,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/c4_rules_audit-2c031494fc20b97b.log",
+        "log_sha256": "6ee8b9086a8ab8bedfcad209e84acc503a2280a06f11971a676f7ad3eb6c709a",
+        "seconds": 0.07
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/c5_empower_runtime-043ea20362850ca5",
+        "sha256": "35330bdaee804cefd479925ad2ddc9b70513e589971336a019f385e104751d7b",
+        "exit": 0,
+        "passed": 23,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/c5_empower_runtime-043ea20362850ca5.log",
+        "log_sha256": "476246a854202de6ae482260b162ed7d2c76f2489ed31fad1f7f4d6f0a9cd30a",
+        "seconds": 0.18
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/c5_rules_audit-d5b02d91bd1c0a0b",
+        "sha256": "278cd71f18a8a2f07abc09b5cbb072a33adb83d31aad3af475461a3df3843965",
+        "exit": 0,
+        "passed": 9,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/c5_rules_audit-d5b02d91bd1c0a0b.log",
+        "log_sha256": "502523845df56c8103854761c67a6de6b1edb897da6259290b8ca2754d472061",
+        "seconds": 0.1
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/c8_runtime-17b44d22047330f1",
+        "sha256": "5432ea5668a54528f5ad8eab1e3301bf750c1ea10a4fd758cbfce685b2e15dba",
+        "exit": 0,
+        "passed": 21,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/c8_runtime-17b44d22047330f1.log",
+        "log_sha256": "266d3b0092888fcc86e61d01bc93aa08e73df3bd04655112d49d68182644e9fc",
+        "seconds": 0.08
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/c9_runtime-53be03aa0616d346",
+        "sha256": "1277fe3dd071b83c9dd07e8067fe9dcfa3bf2160cbc3c2a71a222ed4fc27e5bc",
+        "exit": 0,
+        "passed": 31,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/c9_runtime-53be03aa0616d346.log",
+        "log_sha256": "8bc65f5d21beda9f244e0b043890fc85af069a59a8becf720b12b3bc1841a224",
+        "seconds": 0.1
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/card_batch_eight-230508b9d5b2861d",
+        "sha256": "6b70f18f74fcea4870f51ce2ae9389315ace4d7c2882a1c94f406cf4b5c95a03",
+        "exit": 0,
+        "passed": 4,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/card_batch_eight-230508b9d5b2861d.log",
+        "log_sha256": "ed51a80f41afb4f8e7dd11b559f179ced4dc20f072bf1ce29d5864cc70827926",
+        "seconds": 0.29
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/card_batch_eighteen-9608dfc6c0d2fdcf",
+        "sha256": "22a750f8a19bfc1767fd5da87287e0e13b379cb022e1e219a8f9b565509fe0ba",
+        "exit": 0,
+        "passed": 2,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/card_batch_eighteen-9608dfc6c0d2fdcf.log",
+        "log_sha256": "3c8be403f7ce3a9a1bab1c6d4c7a01824127369fec78a326cfac55aacc2faa07",
+        "seconds": 0.18
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/card_batch_eleven-30df25492fc57c9a",
+        "sha256": "063e6a5eb8a94ad0e4025ea83d249a5af9dfd4e7901c5ea89222e84a4df5a6b1",
+        "exit": 0,
+        "passed": 4,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/card_batch_eleven-30df25492fc57c9a.log",
+        "log_sha256": "d1af79a9512cd1a7e8a4f3fd27ed52dd1b3e11cfab32263ce7478df9e0d5004b",
+        "seconds": 0.18
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/card_batch_fifteen-c2715db9e50e18ed",
+        "sha256": "10277f296683a49a9746397c7ceaeebbf7da0b615411b83a928cff5fbdddecd2",
+        "exit": 0,
+        "passed": 2,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/card_batch_fifteen-c2715db9e50e18ed.log",
+        "log_sha256": "3316aa46b5da4b3bdf2c5769085ba9f30d846b6dc6b864272a1ae0a1c237aba4",
+        "seconds": 0.23
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/card_batch_five-31c8b557c7d4888f",
+        "sha256": "c779fbbf01ac4ed13ee49beb40beb316a47295a055347292a0e11b533c6dea04",
+        "exit": 0,
+        "passed": 3,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/card_batch_five-31c8b557c7d4888f.log",
+        "log_sha256": "515e139912f18c8acba4628eaa6aefb864518b3e582b9b821cdfcdd4d1aa7006",
+        "seconds": 0.18
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/card_batch_four-bcbad10359e76cd5",
+        "sha256": "0cef89f29328414ee0fad1c68668890efda938530c977a7ba44e99a56af6aec8",
+        "exit": 0,
+        "passed": 3,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/card_batch_four-bcbad10359e76cd5.log",
+        "log_sha256": "39db4f1c1b8f392f3c669cf19ed734f68c600660d1ef7936a54a6f76090051e7",
+        "seconds": 1.39
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/card_batch_fourteen-d19e77d27eed56d5",
+        "sha256": "8d0025dc12e9a8fa0f1e04d2a9d9a6bbdd213cbaa196d6bb3574758a890fa3cf",
+        "exit": 0,
+        "passed": 2,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/card_batch_fourteen-d19e77d27eed56d5.log",
+        "log_sha256": "085533e4d03bca358e6f1bd11300bfaa152e43c62f4167377b3ed6bdf5af4c58",
+        "seconds": 0.28
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/card_batch_nine-11bbc5ac082b3fb6",
+        "sha256": "f7f9fa8f97ccf8aee9b0175b18e736ea52a24e4e89b43fc86b44e1777adeaea9",
+        "exit": 0,
+        "passed": 5,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/card_batch_nine-11bbc5ac082b3fb6.log",
+        "log_sha256": "f73d192c5c8e47090330324f2e7f11e42245e17c7518747052861dea1be510bf",
+        "seconds": 0.18
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/card_batch_nineteen-248076295e57eb07",
+        "sha256": "94d3fe7bc3736de3cbedf2ec25e4713f9ebab97480337d0f2ed92304d0513dac",
+        "exit": 0,
+        "passed": 2,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/card_batch_nineteen-248076295e57eb07.log",
+        "log_sha256": "c1f63eff41318ba16b5abef5101135ff879485b16eccb429f4843ff554eee94f",
+        "seconds": 0.17
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/card_batch_seven-0b69620abf0ba7b7",
+        "sha256": "93de39674e3d6f21682bdc2ff915a0ae4b32bd0a2ce6a3048296add9b93976bf",
+        "exit": 0,
+        "passed": 4,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/card_batch_seven-0b69620abf0ba7b7.log",
+        "log_sha256": "237ba8d88372b2b04ef87747216f4c0b49e0c145225da7aa9a918e2e7595e0e2",
+        "seconds": 0.18
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/card_batch_seventeen-5872b0238323e72f",
+        "sha256": "443170646143508ec74698128b79c6365bb2fb98bc9d0fc6c391b2fb3006de22",
+        "exit": 0,
+        "passed": 2,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/card_batch_seventeen-5872b0238323e72f.log",
+        "log_sha256": "546662c9026a58da89f1ae1a50fe97df679c2febd68b967c2e6346645b5d60d9",
+        "seconds": 0.18
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/card_batch_six-170a17a5dc2db085",
+        "sha256": "9f658a112b34f28939d280404b529cba6116a3014f4a5e7b7e197136fae01c9c",
+        "exit": 0,
+        "passed": 3,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/card_batch_six-170a17a5dc2db085.log",
+        "log_sha256": "fbc51ba4ec5d1a0d4ad5b2fa489629785c8ea078279248ed1186b65098f80019",
+        "seconds": 0.19
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/card_batch_sixteen-4e8b0752fd95fe86",
+        "sha256": "0eeceb6531a94f950f7c9e7b90d05cb3ced6d952e0dd824b28de0588ce55229b",
+        "exit": 0,
+        "passed": 2,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/card_batch_sixteen-4e8b0752fd95fe86.log",
+        "log_sha256": "3c820f4c1732723e6c1cb188af2207c0d98f0761082a838aed71eb4b75c7bb51",
+        "seconds": 0.17
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/card_batch_ten-1e08e4479fd81539",
+        "sha256": "eb50921d78992a4bef5e148ed5e4c65571d4ffe314888071d7ef0980f51c2aea",
+        "exit": 0,
+        "passed": 4,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/card_batch_ten-1e08e4479fd81539.log",
+        "log_sha256": "fbf9ecbfca7966603f4502e55fde72d2cde696cdebaea50bcadab017183842b3",
+        "seconds": 0.18
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/card_batch_thirteen-6d3abe8f56166881",
+        "sha256": "7df8844f05f31652f1a3993b9f469a90ae31f0221fd93a4f6b578f7a23197cd4",
+        "exit": 0,
+        "passed": 4,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/card_batch_thirteen-6d3abe8f56166881.log",
+        "log_sha256": "5baa2643f3cecb3626886b56cecdcbe884f9a8b5e34046b3e99fa26f2275c2a3",
+        "seconds": 0.18
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/card_batch_three-1de663b5f6f38b0b",
+        "sha256": "f0ef3723872fae93e5b3d313518a8caae0ee210928eff80170b334efac37545b",
+        "exit": 0,
+        "passed": 3,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/card_batch_three-1de663b5f6f38b0b.log",
+        "log_sha256": "132b74ba2368dc7c406789f35dd11a869dd94506b7bb031e2cb5a083ecf1be43",
+        "seconds": 1.14
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/card_batch_twelve-9c0928bce16cf3b2",
+        "sha256": "b239559b24863d7f0374e416b13d91d60391468d0a6b0b0a08920b7dda351b98",
+        "exit": 0,
+        "passed": 3,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/card_batch_twelve-9c0928bce16cf3b2.log",
+        "log_sha256": "63aed5a6c805fc01a6ec2328a68800988c93a1c3f7300f63aacb4691ae65b26a",
+        "seconds": 0.18
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/card_batch_twenty-1647230ff71e3655",
+        "sha256": "31e8dc1c8c6acf42f11b3cd7459b43067a53fe2fec147ac0fe9e6357446d5ccb",
+        "exit": 0,
+        "passed": 3,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/card_batch_twenty-1647230ff71e3655.log",
+        "log_sha256": "f4b73a707bb1ff9f96d87ff6d288fe4f124c88015f35b1563731a59f47c29be9",
+        "seconds": 0.18
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/card_batch_twenty_five-c3ab0258bd8a756c",
+        "sha256": "42e5b365f6d257d2eddaad19d34a08d5a2b9a40a70313279121d38f1cc4697d6",
+        "exit": 0,
+        "passed": 4,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/card_batch_twenty_five-c3ab0258bd8a756c.log",
+        "log_sha256": "2aa4523625b933333f403d2e46ce3898d0343d6128717cff38d29ee4a9f887c7",
+        "seconds": 0.17
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/card_batch_twenty_four-959ddab43b7f1f8d",
+        "sha256": "106ae3fbbbc673c08b72c6ddb873f3f9ccadbbc366780fe71c25730846389926",
+        "exit": 0,
+        "passed": 4,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/card_batch_twenty_four-959ddab43b7f1f8d.log",
+        "log_sha256": "8207b504ee6a8487d17d78beca5510262c9401f44c49d6cdc1d3e1a2f3d79eb3",
+        "seconds": 0.23
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/card_batch_twenty_one-057449a9a924393f",
+        "sha256": "0516d832abd4da2b76d0c37fde813fc7b0289c0acfbd8ba78c751f046521ed51",
+        "exit": 0,
+        "passed": 4,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/card_batch_twenty_one-057449a9a924393f.log",
+        "log_sha256": "d741276052850e410bf984033e97e26df367a851ab0d71d96c06212987ef01b5",
+        "seconds": 0.18
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/card_batch_twenty_seven-0681bd4f3d2bf42e",
+        "sha256": "488272067dfba396965a6691c1ba5801fcd00e9b873c452ab8b3db28c9c39dd6",
+        "exit": 0,
+        "passed": 3,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/card_batch_twenty_seven-0681bd4f3d2bf42e.log",
+        "log_sha256": "0f7ad0c5f598873e5c84a78d8c2c40feda4762adf40da682c6ba891ef3e923bb",
+        "seconds": 0.17
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/card_batch_twenty_six-eeae9cfedc96c433",
+        "sha256": "e3c27aeca793a1e7d28f707e417bbfa9d024094f2444a4a184185f824279c76e",
+        "exit": 0,
+        "passed": 3,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/card_batch_twenty_six-eeae9cfedc96c433.log",
+        "log_sha256": "9b13203d2e51db05aff04a847c0f9bd6600e658c4f89610b252d05b8e5df25ee",
+        "seconds": 0.17
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/card_batch_twenty_three-9b257e889d504dfe",
+        "sha256": "a2b74e47825f033057db80873cdb376ae22217e7e258850022796fc2d9c2127a",
+        "exit": 0,
+        "passed": 4,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/card_batch_twenty_three-9b257e889d504dfe.log",
+        "log_sha256": "354ac30f7a1a929a5a98fa8afdbe9105c478bd4738304b1b72b2304528f9ba92",
+        "seconds": 0.17
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/card_batch_twenty_two-2c0997c898933277",
+        "sha256": "e5fc75c97e934061a8bda80b9071fcd711d857d933b48ced21fff4ac108093d5",
+        "exit": 0,
+        "passed": 4,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/card_batch_twenty_two-2c0997c898933277.log",
+        "log_sha256": "ff5b1e4075cac52e6c4784b0072316982039f501f4bdc62f0cb34272ddd51e47",
+        "seconds": 0.17
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/card_batch_two-feae370609441680",
+        "sha256": "d9a74258c78af2fb9b9e50e26e8c93703c6c06c31ad4e7e943dca2e34501e0f9",
+        "exit": 0,
+        "passed": 4,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/card_batch_two-feae370609441680.log",
+        "log_sha256": "f8ca8a7186e86d8d467ddd4227bdd40a195db5c6ba6483a83df531efed7148c3",
+        "seconds": 2.41
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/card_expansion-5963b13cd47fa4f4",
+        "sha256": "158d90348dc88ecdf15525be9f6cad3a7152c824651fa6b2c047276a4d981329",
+        "exit": 0,
+        "passed": 17,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/card_expansion-5963b13cd47fa4f4.log",
+        "log_sha256": "6d0f1c958a26a0ff5ae9fa3754fb0309baf5a3458d2c36d9c06b74ec361ab086",
+        "seconds": 0.07
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/catalog_coverage-f191bf9ab61a3bef",
+        "sha256": "8c0a5ded1eabd49392c59ff08e05f846c603414f0eb2fe8b289db89439aaee58",
+        "exit": 0,
+        "passed": 3,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/catalog_coverage-f191bf9ab61a3bef.log",
+        "log_sha256": "477fb6c82ecb8b8b04618d9d7ad59d1ede2bf1126b5f7bf528c86ceb4cedd16a",
+        "seconds": 0.23
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/catalog_review-dddbbd9d21d18230",
+        "sha256": "2c987e940b1bb3bffd9b598b2753539e4695db5166268a61b8ffa63a2e3f9b53",
+        "exit": 0,
+        "passed": 11,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/catalog_review-dddbbd9d21d18230.log",
+        "log_sha256": "9aa0c9c92df3ffefcd37c53507a441e67f3108fbbc8a39abe1da08d1bea4d00a",
+        "seconds": 0.29
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/conformance-acb7258f7a4d8322",
+        "sha256": "1ea3350d240c46a5bd8793983ce98df4e7000f7aa0259036d1673db7683034c5",
+        "exit": 0,
+        "passed": 10,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/conformance-acb7258f7a4d8322.log",
+        "log_sha256": "fdc5cd7cd070b7dbfbd722944a065ad1c3f8e4295a13994d694cac88bb006123",
+        "seconds": 0.07
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/conversion_abilities-7983716fb78b0e23",
+        "sha256": "79392d50ebcea8bacc7ea9080726cd247dfa9dbffaa9fac63116ffe6ba8b08a5",
+        "exit": 0,
+        "passed": 14,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/conversion_abilities-7983716fb78b0e23.log",
+        "log_sha256": "173d3003dbfafee8c9b62ef553f32b7b2f4238843ee15676b46a45c33186de32",
+        "seconds": 0.08
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/custom_decks-8ac35caaae157c37",
+        "sha256": "3d06bcca7f704f8974e128c4fc5a223977c7fc827bda85deb4446555c3a4a8a7",
+        "exit": 0,
+        "passed": 15,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/custom_decks-8ac35caaae157c37.log",
+        "log_sha256": "ab196676c2b3bf7feaab5f996b3450e9bd2b6cded08c29b813aaca0390742aae",
+        "seconds": 12.27
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/empowered_abilities-f5c694999a4c5a3b",
+        "sha256": "f9eab4fc328d212d99852318cb1f70e9eb07f99a144b02f6e010e6f8289c8abc",
+        "exit": 0,
+        "passed": 23,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/empowered_abilities-f5c694999a4c5a3b.log",
+        "log_sha256": "21381f21938d419b9988d0121a740fa827543502743f34b15d610af2a40dd23f",
+        "seconds": 0.18
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/equipment_abilities-3e2736d1e9dff261",
+        "sha256": "72a0eecce0c7355deb4db3e7679c5f0f8fac5aaa750c0a4a386cb954e4a035d1",
+        "exit": 0,
+        "passed": 5,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/equipment_abilities-3e2736d1e9dff261.log",
+        "log_sha256": "46bf35ce27553ec908951fa7ad900ab994d4a58ca618af7059f3e5d269e852d1",
+        "seconds": 0.09
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/event_triggers-f6a9c669f77647f6",
+        "sha256": "3d475a6506289e328c0690e73fec8966445e51352a6f9a6a32c60b93fde5f704",
+        "exit": 0,
+        "passed": 30,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/event_triggers-f6a9c669f77647f6.log",
+        "log_sha256": "f223f19f850f4003014240d340e3cac1aa38b9abe77c61b8005110987c8f327b",
+        "seconds": 0.07
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/flow_costs-49caf59d3052a88f",
+        "sha256": "d5aa25e9c547d32bcf397cedb2f9c48cde17455da542541ae1072800d11bc366",
+        "exit": 0,
+        "passed": 5,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/flow_costs-49caf59d3052a88f.log",
+        "log_sha256": "8895589372901630ebd74f40f0d3d0dc319fb5c7c88c70352c1d5a3e3adc5ffa",
+        "seconds": 0.08
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/holding-4080668c06d675c1",
+        "sha256": "e2adcdacf258806aa65442572723cfbea64b781070815884197dd278004a6092",
+        "exit": 0,
+        "passed": 4,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/holding-4080668c06d675c1.log",
+        "log_sha256": "061e805a677ce8ce6a14d1d127f99a27628ebb23125819b0403b338deb420b3e",
+        "seconds": 0.07
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/irelia_arito-57c77e8759ce41b9",
+        "sha256": "55c5ee9f18b99b0c8288677ccb34b7d27418a80d391f05ea09cef20c699588f9",
+        "exit": 0,
+        "passed": 3,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/irelia_arito-57c77e8759ce41b9.log",
+        "log_sha256": "7d89b485661eb83eeda4eb21b6165e74a16b4556922d74f504c138a988fa8ff2",
+        "seconds": 18.23
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/irelia_backoff-e0300c96a31eb3db",
+        "sha256": "502da53388cf697f7fc4cf81f67e050bdaf069cd559ad729c7ba7f2bddfa0fc6",
+        "exit": 0,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/irelia_backoff-e0300c96a31eb3db.log",
+        "log_sha256": "57142095cdbe370c1cff102169dbe2635e7ceca4f62582929cc8aac1d99bc03d",
+        "seconds": 15.51
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/irelia_focus-6360dfd726c65675",
+        "sha256": "ac8e4c09eb4f7ded25779e188f0b255a594b7daf727c7e961bc904c0d8d5ee45",
+        "exit": 0,
+        "passed": 9,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/irelia_focus-6360dfd726c65675.log",
+        "log_sha256": "e42211be9bef95933c54dcf5c1a5aebfbca7242672adb5276fa56ae454b8dc8c",
+        "seconds": 10.42
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/irelia_gust-5292c085079be3f6",
+        "sha256": "06eb504575872b61f8c13300150ccd418f53b3f7c3f6006b4675e9396ae10f71",
+        "exit": 0,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/irelia_gust-5292c085079be3f6.log",
+        "log_sha256": "4b578f4d27a6fc511ffe07f7b37246cce35991d9d6ab0b89ef62bf2d121b8d59",
+        "seconds": 13.67
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/irelia_hunker-9e98fe39a5884b6b",
+        "sha256": "3c4a7b73f95265a639038d07e3ed530aee2eed37c3c7f325729f66107695ab73",
+        "exit": 0,
+        "passed": 10,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/irelia_hunker-9e98fe39a5884b6b.log",
+        "log_sha256": "05fe711de91c1c47336a6d766a40f320ecaf35e96eb97b9444ea571d386b0af9",
+        "seconds": 21.33
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/irelia_innovator-9c686011f6a68811",
+        "sha256": "c7b59882b6d1ecfa2e167b0d7d206ac1cdb8c85384251fb3cd3aa8aa002de4a4",
+        "exit": 0,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/irelia_innovator-9c686011f6a68811.log",
+        "log_sha256": "cd4f0e245892fa3c956bdcfd9f90a659ea825c937466a14e209c8fa722c1924a",
+        "seconds": 17.61
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/irelia_next-4dfd316375b698e8",
+        "sha256": "444ef98bae174e0c587bc82075757fc101b6893d4a8937a0847a593f20ff4190",
+        "exit": 0,
+        "passed": 7,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/irelia_next-4dfd316375b698e8.log",
+        "log_sha256": "32edae9560e8abf7b84c7633bb52f642a5afb6d143cc1306ba6dd7ac0a834364",
+        "seconds": 10.26
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/irelia_orianna-72f395e6903ff7dd",
+        "sha256": "e2702a6a70d2340d77a682ea7c802cb1306c4746e880ab5a5fbbf82278b26c82",
+        "exit": 0,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/irelia_orianna-72f395e6903ff7dd.log",
+        "log_sha256": "60c59d075820164191c242506c46a54b3d495f7cfafc84b3fcec5cdf00ab2910",
+        "seconds": 17.42
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/irelia_preparations-1d6d5495718a99a1",
+        "sha256": "6088dfc0abd6d39310418d00de0c02eb0a502d3ea8c2c8011774009deb3477af",
+        "exit": 0,
+        "passed": 14,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/irelia_preparations-1d6d5495718a99a1.log",
+        "log_sha256": "ecbeede5d706ae248edd7ccc00151aa1326138a1ddd48d3d277cf8ca46ade964",
+        "seconds": 16.53
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/irelia_raven-6bae301aa55527a3",
+        "sha256": "12a650d387d28f248fd3f2e9540bc7082c8ef4b47d329c09269b5dc6783a8926",
+        "exit": 0,
+        "passed": 11,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/irelia_raven-6bae301aa55527a3.log",
+        "log_sha256": "5df59aba17b1d18559016cdbad36d2a8ea5fc6057aad52d592aef1ae66ab8442",
+        "seconds": 18.58
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/irelia_siren-36998ca0c8de6263",
+        "sha256": "ffdd92c9ac34cbcc6c13789575787ca89adcb9cf5f01483f52952de6687b098f",
+        "exit": 0,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/irelia_siren-36998ca0c8de6263.log",
+        "log_sha256": "03c829bbbfda8f311deb1a59998ff0281d69566a92710fc3b3d1699d18b6dc49",
+        "seconds": 17.01
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/keyword_expansion-5d9f54f1c2cac28d",
+        "sha256": "10ebcaa8cf082d49042c1583442384770e2b2ca7358fbe0ea3932fb2aed2d5db",
+        "exit": 0,
+        "passed": 17,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/keyword_expansion-5d9f54f1c2cac28d.log",
+        "log_sha256": "f165e355d0e66a180e1bdcd7e7e410bb5f9bb8499adfdb3a57a679450026054b",
+        "seconds": 0.07
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/legend_decks-155b504a491a67a4",
+        "sha256": "188db1a4b149ae8700a38d57c78bac5ccaea69edd9a5ee97dbc8b0864535dff9",
+        "exit": 0,
+        "passed": 7,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/legend_decks-155b504a491a67a4.log",
+        "log_sha256": "2ed892ec565ecdddcde303c92e085189e3561029a547d8ec40227e159b194600",
+        "seconds": 0.18
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/legend_foundation-91cbe66e985d5301",
+        "sha256": "f38b0352e27f1fa201f905ab4653e245108e9de57f077c18b36c1e7297f68732",
+        "exit": 0,
+        "passed": 15,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/legend_foundation-91cbe66e985d5301.log",
+        "log_sha256": "4623c59ed22eb831cd312d774a05a347d1f92c11cf737cf52a42d54a542ad887",
+        "seconds": 0.18
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/local_rift-f3b4ec23503e7f7c",
+        "sha256": "d702ef896cdcb6aceb5341a6e4a4c8cf528e6798eb873c401939460474ba5244",
+        "exit": 0,
+        "passed": 124,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/local_rift-f3b4ec23503e7f7c.log",
+        "log_sha256": "14f73a5997fac3963a43f0d259e197b85f6ac3e9ef40135dd9c7de720acd7bd1",
+        "seconds": 0.22
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/local_rift-f945c4cb8e79f7c9",
+        "sha256": "d1b47f17418ba4037c8dd2d6f87b8a7ee374de30b7e71fd1c035c47972bfc2b5",
+        "exit": 0,
+        "passed": 782,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/local_rift-f945c4cb8e79f7c9.log",
+        "log_sha256": "5598e6a996c08aaec904b1d2e8fa2797f08b6a73bde4ac31d6c1b9a684009159",
+        "seconds": 8.52
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/match_series-54ef19bf17967960",
+        "sha256": "b150b31c53e1d720860d379a71cc5662324c7f516515a5d0944eeead872aca96",
+        "exit": 0,
+        "passed": 11,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/match_series-54ef19bf17967960.log",
+        "log_sha256": "c54edea82a0e41df88510ca301334dc75899ea6438cbeb690d8a8ccb2ecb8554",
+        "seconds": 14.84
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/nested_plays-237faf22c862f8e1",
+        "sha256": "c263445030be1477304e4a7caf2e48d056245a02e43fb2afedcfa4e861e597ab",
+        "exit": 0,
+        "passed": 9,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/nested_plays-237faf22c862f8e1.log",
+        "log_sha256": "63c127b40f5091a21ee149bc34f9cd9f32d7421424bfd84c0504e04a33d0d37a",
+        "seconds": 0.07
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/numeric_runtime-dafb06482bd7e0de",
+        "sha256": "e78d03a723fc5469a95652f0493dca9c96c438e5ebeefecd411014afabeaacce",
+        "exit": 0,
+        "passed": 21,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/numeric_runtime-dafb06482bd7e0de.log",
+        "log_sha256": "3eadb19ad29f2fbc8bd37b641cc2259b1d183580936ff0d8136f5f34b97c855c",
+        "seconds": 0.17
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/payment_plans-c496f964ff2cddba",
+        "sha256": "a98626d6a25f5a6a2a1589df5d2257cfc557bb1fd041c67ce68fee54dea8a32e",
+        "exit": 0,
+        "passed": 9,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/payment_plans-c496f964ff2cddba.log",
+        "log_sha256": "0f8637aad222bc3653f8c79ccd0a6bd42a6a1474b6d06833f6374e3850f4e84c",
+        "seconds": 0.09
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/payments-cd8424839e4d0ab6",
+        "sha256": "49e9f1c6eecc47f3adef443cf5e4b3b4263506cdb3c5278facbb065bbdbbe5fe",
+        "exit": 0,
+        "passed": 9,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/payments-cd8424839e4d0ab6.log",
+        "log_sha256": "a2a38d7daffad4daf39658054558eed70424d8822d09a947abe04b7bee6ffcf9",
+        "seconds": 3.03
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/rengar_preset-f2221ddfe07b4307",
+        "sha256": "e25acb4a4b187d184a6470bb960949fb3221ea61844e4b751f1a208cc8aee037",
+        "exit": 0,
+        "passed": 5,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/rengar_preset-f2221ddfe07b4307.log",
+        "log_sha256": "f4d69f245f12051fa585ea7a7cc203cc2529029731497c6c2c021e2e12cc0422",
+        "seconds": 0.18
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/repeat_flow_expansion-902ef2267ba369c3",
+        "sha256": "1450c420a2968b8a6b692e96864eed1d74108fb9401fe1d7ad6e33952736d17a",
+        "exit": 0,
+        "passed": 8,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/repeat_flow_expansion-902ef2267ba369c3.log",
+        "log_sha256": "f3b3efabb867c15cf41240197f102d17b79dd86f2aa686959087fe2fd09408ee",
+        "seconds": 0.08
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/rift_api-72e371709eef4ad5",
+        "sha256": "43deda2c99458259b560c2c46e9d3afe23bc372b4bd186af34c609dc75d242c1",
+        "exit": 0,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/rift_api-72e371709eef4ad5.log",
+        "log_sha256": "762e1caf62c9f91b0abf5a88209ed91b34efc7307416467c93c987c8f9cad082",
+        "seconds": 0.06
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/rules_audit-90089c4901cfbbda",
+        "sha256": "fe58f0657850a397ee29a7d542ee3d77d5beecba25091844c1bdca17cd943e5d",
+        "exit": 0,
+        "passed": 9,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/rules_audit-90089c4901cfbbda.log",
+        "log_sha256": "92445c5158bfaae03f23d9be26a734fd50883294a385cf4c025077e5e63ac341",
+        "seconds": 0.07
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/scalar_spell_expansion-da899810b1663eb6",
+        "sha256": "75505fa4ab8a564df5396034b36590a0304dc09b8320d6919b38d02372ebd31c",
+        "exit": 0,
+        "passed": 17,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/scalar_spell_expansion-da899810b1663eb6.log",
+        "log_sha256": "2ae5d50fc102d1c73b940f62737f714202c7d0d2c766d5c422eb89209c2215fa",
+        "seconds": 0.07
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/simulate-aa3cf87772bde5b6",
+        "sha256": "1505b0c64d2c711da7165edc637ae9e45223b975128ecd14a609b1d31cc5edc0",
+        "exit": 0,
+        "passed": 0,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/simulate-aa3cf87772bde5b6.log",
+        "log_sha256": "df166913f47ff1f04202cae9b31df67ed272d692d99a0023a8117dc3029100dd",
+        "seconds": 0.01
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/spell_expansion-21db5de186b72374",
+        "sha256": "d8a94dd29c1aa9538d913da7b168329bd47b1629fd479e4bdb6997ef6103fb39",
+        "exit": 0,
+        "passed": 12,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/spell_expansion-21db5de186b72374.log",
+        "log_sha256": "9391709078b79984100a9f063d63a372fa1cfefaddc56ef34f5a181c770c5ee0",
+        "seconds": 0.08
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/staged_battlefields-daf921129dad9bf1",
+        "sha256": "c82bbb118de3809ebe5ada3b9c77e45a705c05acabf68c8fc07ddde548b05881",
+        "exit": 0,
+        "passed": 6,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/staged_battlefields-daf921129dad9bf1.log",
+        "log_sha256": "d94bd38ecaf6b194a7c68bb4a0ef7215aa363d56d24cd576d44afff6e2531347",
+        "seconds": 0.07
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/strategic_api-3878645bb9f495b0",
+        "sha256": "15304aac29c839a7a17dd53ea6e0a4b4cefb4b7ddd8ec2002456cc4453b37b81",
+        "exit": 0,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/strategic_api-3878645bb9f495b0.log",
+        "log_sha256": "d4ae2c3b77017298371e1acd7375ad03ba53f4d3218e1056b792802e8013902d",
+        "seconds": 0.12
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/third_unit_expansion-f1eddbf627324600",
+        "sha256": "1288769ee8322719af4ab98b390cc2eae8dd63c4227c764379677fee890265d1",
+        "exit": 0,
+        "passed": 13,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-targets/third_unit_expansion-f1eddbf627324600.log",
+        "log_sha256": "c689350639177bc6e958b89382de9346189486ed1c2b12572f41db62a1cb8571",
+        "seconds": 0.07
+      }
+    ]
+  },
+  "focused_rust": {
+    "passed": 11,
+    "failed": 0,
+    "included_in_full_suite": true,
+    "complete_matches": 36,
+    "actual_games": 91,
+    "opposing_registrations": [
+      "Master Yi authored practice registration",
+      "Rengar authored practice registration",
+      "Arito sourced Irelia registration"
+    ],
+    "levels": [
+      "easy",
+      "tactical",
+      "strategic"
+    ],
+    "both_designated_seats": true,
+    "both_starting_players": true,
+    "scope": "Matches run to actual engine winners. Irelia swaps Edge of Night for Ravenbloom Prefect before game two; Master Yi and Rengar use explicit legal empty-sideboard registrations, not invented tournament sideboards. Focused reruns are not counted as extra distinct games."
+  },
+  "python": {
+    "passed": 269,
+    "failed": 0,
+    "scope": "Full existing tools source-check suite; no added Python unit tests. The new example is exercised by the release API campaign."
+  },
+  "api": {
+    "matches": 12,
+    "games": 29,
+    "sideboard_submissions_with_swap": 24,
+    "binary": "/home/benchen/.cache/local-rift-builds/series-target/release/rift-api",
+    "binary_sha256": "034cac6760fa13b9bbb6aa94c5e4ac9ac6b785305aa88a813ca778d0a2c7160b",
+    "results": [
+      {
+        "wins": [
+          2,
+          0
+        ],
+        "winner": 0,
+        "history": [
+          {
+            "battlefields": [
+              13,
+              13
+            ],
+            "first_player": 0,
+            "number": 1,
+            "scores": [
+              8,
+              6
+            ],
+            "winner": 0
+          },
+          {
+            "battlefields": [
+              0,
+              0
+            ],
+            "first_player": 0,
+            "number": 2,
+            "scores": [
+              8,
+              5
+            ],
+            "winner": 0
+          }
+        ],
+        "requests": 1120,
+        "seed": 810000,
+        "difficulty": "easy",
+        "designated_player": 0,
+        "selected_first_player": 0
+      },
+      {
+        "wins": [
+          2,
+          0
+        ],
+        "winner": 0,
+        "history": [
+          {
+            "battlefields": [
+              13,
+              13
+            ],
+            "first_player": 1,
+            "number": 1,
+            "scores": [
+              8,
+              6
+            ],
+            "winner": 0
+          },
+          {
+            "battlefields": [
+              0,
+              0
+            ],
+            "first_player": 1,
+            "number": 2,
+            "scores": [
+              8,
+              5
+            ],
+            "winner": 0
+          }
+        ],
+        "requests": 1246,
+        "seed": 810001,
+        "difficulty": "easy",
+        "designated_player": 0,
+        "selected_first_player": 1
+      },
+      {
+        "wins": [
+          2,
+          1
+        ],
+        "winner": 0,
+        "history": [
+          {
+            "battlefields": [
+              13,
+              13
+            ],
+            "first_player": 0,
+            "number": 1,
+            "scores": [
+              4,
+              8
+            ],
+            "winner": 1
+          },
+          {
+            "battlefields": [
+              0,
+              0
+            ],
+            "first_player": 0,
+            "number": 2,
+            "scores": [
+              8,
+              5
+            ],
+            "winner": 0
+          },
+          {
+            "battlefields": [
+              14,
+              14
+            ],
+            "first_player": 0,
+            "number": 3,
+            "scores": [
+              8,
+              3
+            ],
+            "winner": 0
+          }
+        ],
+        "requests": 1691,
+        "seed": 810002,
+        "difficulty": "easy",
+        "designated_player": 1,
+        "selected_first_player": 0
+      },
+      {
+        "wins": [
+          1,
+          2
+        ],
+        "winner": 1,
+        "history": [
+          {
+            "battlefields": [
+              13,
+              13
+            ],
+            "first_player": 1,
+            "number": 1,
+            "scores": [
+              8,
+              5
+            ],
+            "winner": 0
+          },
+          {
+            "battlefields": [
+              0,
+              0
+            ],
+            "first_player": 1,
+            "number": 2,
+            "scores": [
+              4,
+              8
+            ],
+            "winner": 1
+          },
+          {
+            "battlefields": [
+              14,
+              14
+            ],
+            "first_player": 1,
+            "number": 3,
+            "scores": [
+              4,
+              8
+            ],
+            "winner": 1
+          }
+        ],
+        "requests": 1661,
+        "seed": 810003,
+        "difficulty": "easy",
+        "designated_player": 1,
+        "selected_first_player": 1
+      },
+      {
+        "wins": [
+          0,
+          2
+        ],
+        "winner": 1,
+        "history": [
+          {
+            "battlefields": [
+              13,
+              13
+            ],
+            "first_player": 0,
+            "number": 1,
+            "scores": [
+              4,
+              9
+            ],
+            "winner": 1
+          },
+          {
+            "battlefields": [
+              0,
+              0
+            ],
+            "first_player": 0,
+            "number": 2,
+            "scores": [
+              3,
+              8
+            ],
+            "winner": 1
+          }
+        ],
+        "requests": 1036,
+        "seed": 810100,
+        "difficulty": "tactical",
+        "designated_player": 0,
+        "selected_first_player": 0
+      },
+      {
+        "wins": [
+          1,
+          2
+        ],
+        "winner": 1,
+        "history": [
+          {
+            "battlefields": [
+              13,
+              13
+            ],
+            "first_player": 1,
+            "number": 1,
+            "scores": [
+              8,
+              6
+            ],
+            "winner": 0
+          },
+          {
+            "battlefields": [
+              0,
+              0
+            ],
+            "first_player": 1,
+            "number": 2,
+            "scores": [
+              3,
+              8
+            ],
+            "winner": 1
+          },
+          {
+            "battlefields": [
+              14,
+              14
+            ],
+            "first_player": 1,
+            "number": 3,
+            "scores": [
+              7,
+              8
+            ],
+            "winner": 1
+          }
+        ],
+        "requests": 1976,
+        "seed": 810101,
+        "difficulty": "tactical",
+        "designated_player": 0,
+        "selected_first_player": 1
+      },
+      {
+        "wins": [
+          0,
+          2
+        ],
+        "winner": 1,
+        "history": [
+          {
+            "battlefields": [
+              13,
+              13
+            ],
+            "first_player": 0,
+            "number": 1,
+            "scores": [
+              1,
+              8
+            ],
+            "winner": 1
+          },
+          {
+            "battlefields": [
+              0,
+              0
+            ],
+            "first_player": 0,
+            "number": 2,
+            "scores": [
+              5,
+              8
+            ],
+            "winner": 1
+          }
+        ],
+        "requests": 862,
+        "seed": 810102,
+        "difficulty": "tactical",
+        "designated_player": 1,
+        "selected_first_player": 0
+      },
+      {
+        "wins": [
+          0,
+          2
+        ],
+        "winner": 1,
+        "history": [
+          {
+            "battlefields": [
+              13,
+              13
+            ],
+            "first_player": 1,
+            "number": 1,
+            "scores": [
+              7,
+              8
+            ],
+            "winner": 1
+          },
+          {
+            "battlefields": [
+              0,
+              0
+            ],
+            "first_player": 1,
+            "number": 2,
+            "scores": [
+              4,
+              8
+            ],
+            "winner": 1
+          }
+        ],
+        "requests": 1360,
+        "seed": 810103,
+        "difficulty": "tactical",
+        "designated_player": 1,
+        "selected_first_player": 1
+      },
+      {
+        "wins": [
+          1,
+          2
+        ],
+        "winner": 1,
+        "history": [
+          {
+            "battlefields": [
+              13,
+              13
+            ],
+            "first_player": 0,
+            "number": 1,
+            "scores": [
+              6,
+              8
+            ],
+            "winner": 1
+          },
+          {
+            "battlefields": [
+              0,
+              0
+            ],
+            "first_player": 0,
+            "number": 2,
+            "scores": [
+              8,
+              6
+            ],
+            "winner": 0
+          },
+          {
+            "battlefields": [
+              14,
+              14
+            ],
+            "first_player": 0,
+            "number": 3,
+            "scores": [
+              5,
+              8
+            ],
+            "winner": 1
+          }
+        ],
+        "requests": 1691,
+        "seed": 810200,
+        "difficulty": "strategic",
+        "designated_player": 0,
+        "selected_first_player": 0
+      },
+      {
+        "wins": [
+          1,
+          2
+        ],
+        "winner": 1,
+        "history": [
+          {
+            "battlefields": [
+              13,
+              13
+            ],
+            "first_player": 1,
+            "number": 1,
+            "scores": [
+              9,
+              5
+            ],
+            "winner": 0
+          },
+          {
+            "battlefields": [
+              0,
+              0
+            ],
+            "first_player": 1,
+            "number": 2,
+            "scores": [
+              5,
+              8
+            ],
+            "winner": 1
+          },
+          {
+            "battlefields": [
+              14,
+              14
+            ],
+            "first_player": 1,
+            "number": 3,
+            "scores": [
+              4,
+              8
+            ],
+            "winner": 1
+          }
+        ],
+        "requests": 1769,
+        "seed": 810201,
+        "difficulty": "strategic",
+        "designated_player": 0,
+        "selected_first_player": 1
+      },
+      {
+        "wins": [
+          0,
+          2
+        ],
+        "winner": 1,
+        "history": [
+          {
+            "battlefields": [
+              13,
+              13
+            ],
+            "first_player": 0,
+            "number": 1,
+            "scores": [
+              5,
+              8
+            ],
+            "winner": 1
+          },
+          {
+            "battlefields": [
+              0,
+              0
+            ],
+            "first_player": 0,
+            "number": 2,
+            "scores": [
+              3,
+              8
+            ],
+            "winner": 1
+          }
+        ],
+        "requests": 1177,
+        "seed": 810202,
+        "difficulty": "strategic",
+        "designated_player": 1,
+        "selected_first_player": 0
+      },
+      {
+        "wins": [
+          0,
+          2
+        ],
+        "winner": 1,
+        "history": [
+          {
+            "battlefields": [
+              13,
+              13
+            ],
+            "first_player": 1,
+            "number": 1,
+            "scores": [
+              1,
+              8
+            ],
+            "winner": 1
+          },
+          {
+            "battlefields": [
+              0,
+              0
+            ],
+            "first_player": 1,
+            "number": 2,
+            "scores": [
+              6,
+              8
+            ],
+            "winner": 1
+          }
+        ],
+        "requests": 865,
+        "seed": 810203,
+        "difficulty": "strategic",
+        "designated_player": 1,
+        "selected_first_player": 1
+      }
+    ],
+    "scope": "Twelve complete API-driven Arito mirror matches, three levels, both designated seats and both first-player choices. Each seat swaps one Edge of Night for Ravenbloom Prefect before game two; no draw or concession is substituted for completing games."
+  },
+  "checks": [
+    "cargo fmt --all --check",
+    "cargo clippy --all-targets -- -D warnings",
+    "offline catalog check"
+  ],
+  "release": {
+    "command": "cargo build --release --bins",
+    "exit_code": 0,
+    "client_sha256": "22ccd2f028f6534eeb82a19271ca1de01495eda0bfcafaa126f981c26969e516",
+    "api_sha256": "034cac6760fa13b9bbb6aa94c5e4ac9ac6b785305aa88a813ca778d0a2c7160b",
+    "source_note": "All source, test, tool and asset bytes match the frozen inputs used for the full suites and release/API runs. Documentation and this receipt were completed after those runs."
+  },
+  "rules_review": {
+    "hub": "https://playriftbound.com/en-us/rules-hub/",
+    "tournament_pdf": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/861752822d217edf37d9febaeaf77a7d924c1bb6.pdf",
+    "tournament_date": "2026-10-09",
+    "pdf_sha256": "ce07da4fb632526afbbce7f058287a57e7444fa6bde17b0938ff52ce3fab3d07",
+    "pdf_bytes": 17509551,
+    "method": "The current official Rules Hub and October tournament changelog were browsed. The linked official Tournament Rules PDF was downloaded, text-extracted and selected pages visually reviewed; the previously accepted October 9 Core Rules were reread for setup and match references.",
+    "visually_reviewed_pdf_pages_1_based": [
+      8,
+      9,
+      10,
+      24
+    ],
+    "references": [
+      "CR103",
+      "CR110-118",
+      "CR488",
+      "TR402",
+      "TR403",
+      "TR404",
+      "TR406",
+      "TR407",
+      "TR410",
+      "TR601.1"
+    ],
+    "findings": [
+      "Tournament registrations require exactly forty main cards including the chosen champion, up to ten sideboard cards, twelve runes and three differently named legal battlefields.",
+      "Named-card limits cover the main and sideboard together. Between games, main and side exchange one for one; the registered legend, runes and battlefield set cannot change. Chosen champions may change to eligible cards in the resulting main deck.",
+      "Both battlefield choices remain private until committed. Play order is chosen before opening hands and mulligans proceed in turn order.",
+      "A decisive game retires both revealed battlefields. The previous loser chooses the next starting player. Two game wins finish the match.",
+      "A drawn game preserves the deck configurations, fields and starting player, gives no game win and opens no sideboarding window.",
+      "The agreed random method or playoff ranking supplies the first designated player to the host. Reproducible shuffling seeds do not substitute for that choice.",
+      "Event-specific opening-rule trials do not replace the current published Standard opening."
+    ]
+  },
+  "behavior_checks": [
+    "Illegal registration, stale revision, outside-pool swaps, illegal copy counts, unavailable cards, changed immutable fields and wrong-phase requests are rejected without changing either player observation.",
+    "Opponent card pools, sideboards and unrevealed field choices remain private. New chosen champions reveal only after both sideboard submissions.",
+    "Game actions cannot run during sideboarding or setup, and old game hands are absent from those observations. Registered matches require explicit mulligans from both seats in turn order.",
+    "Concessions before field reveal do not expose or retire a private choice. Match concessions and draws do not fabricate individual game wins.",
+    "Mutually accepted game draws begin fresh shuffles and mulligans with the retained setup. Successful game actions clear pending draw offers.",
+    "Standalone reset removes the series and retains the previous individual-game protocol behavior."
+  ],
+  "findings_resolved": [
+    "Initial compilation required an explicit Vec type on the collected sideboard remainder. All successful build and test evidence follows this correction."
+  ],
+  "coverage": {
+    "implemented_legal_identities": 466,
+    "accepted_legal_identities": 1079,
+    "unavailable_legal_identities": 613,
+    "presets": 6,
+    "complete_preset_match_registrations": 1,
+    "card_pool_changed": false
+  },
+  "limitations": [
+    "The native app still runs individual games. Its match setup, between-game sideboarding and match-results screens are not integrated or visually tested by this update.",
+    "Only sourced preset 5 includes a complete runtime match registration. Other presets require explicitly supplied legal registrations.",
+    "Timed tournament rounds, end-of-time procedures, judge penalties, best-of-five and game-draw requests before setup remain unfinished.",
+    "The example bot keeps its sideboard by default. Scripted test swaps are not evidence of advanced matchup strategy or expert-strength AI.",
+    "Supported card coverage and remaining in-game fidelity limits are unchanged. This update does not establish complete Standard rules parity or individual combat damage attribution.",
+    "The accepted catalog remains dated; no fresh full-gallery acceptance is claimed.",
+    "The local coordinator is trusted to route observations and player actions. This is not an authenticated multiplayer server.",
+    "Acceptance was on x86-64 Linux. No new independent Nix validation was run; the last separately validated Nix source remains commit 6411bd141a3bff35eb6491e2a6202496045030bf."
+  ],
+  "logs": {
+    "tested-source.json": {
+      "path": "/home/benchen/.cache/local-rift-work/series-2026-11-11/tested-source.json",
+      "sha256": "ef5db2737bbb28d66eb0f33be8390f26a35f3f87e2f32502c5bd595df4a33433"
+    },
+    "rust-results.json": {
+      "path": "/home/benchen/.cache/local-rift-work/series-2026-11-11/rust-results.json",
+      "sha256": "8d668cb0c79613d96586339bc809b5f29e28d5a66cd2efca6bbbf8307fb7cb89"
+    },
+    "test-artifacts.jsonl": {
+      "path": "/home/benchen/.cache/local-rift-work/series-2026-11-11/test-artifacts.jsonl",
+      "sha256": "e03bd072d456ffa1d06abd600089755e8bb4d8a017446e534dca269f26f3c38d"
+    },
+    "test-build.log": {
+      "path": "/home/benchen/.cache/local-rift-work/series-2026-11-11/test-build.log",
+      "sha256": "738c7ed5c2a2df621ba81735096197d4bd80b1427e9aedae60fda108277f858d"
+    },
+    "python1.log": {
+      "path": "/home/benchen/.cache/local-rift-work/series-2026-11-11/python1.log",
+      "sha256": "b883e5a2e975cc8882d7ad69e96455dfe45646310a64a367c58d0e82179ce7ed"
+    },
+    "focused1.log": {
+      "path": "/home/benchen/.cache/local-rift-work/series-2026-11-11/focused1.log",
+      "sha256": "0227b9c26453eb2243e05e82bbe58504f562c243bf7b795dc5ae074879ef0739"
+    },
+    "api-results.json": {
+      "path": "/home/benchen/.cache/local-rift-work/series-2026-11-11/api-results.json",
+      "sha256": "9384cb57c6b370984261b0a0af5ec6a94c13e0bb5cf4e195f2d0c97073be064e"
+    },
+    "api-campaign.log": {
+      "path": "/home/benchen/.cache/local-rift-work/series-2026-11-11/api-campaign.log",
+      "sha256": "b140d0496fc15d77bf38e19ab7604bdc22d101d79604c0bc7f2528e167112eaf"
+    },
+    "api-trace.jsonl.gz": {
+      "path": "/home/benchen/.cache/local-rift-work/series-2026-11-11/api-trace.jsonl.gz",
+      "sha256": "3d5db26a36a0f8b933dc4d0b49254e93aafefc87e0facf350701d52b0f78c625"
+    },
+    "api_campaign.py": {
+      "path": "/home/benchen/.cache/local-rift-work/series-2026-11-11/api_campaign.py",
+      "sha256": "0c8019d29542b728c26c2f265fe89d26cdaf1f285c292e87ac4640f9af30f16c"
+    },
+    "run_all_tests.py": {
+      "path": "/home/benchen/.cache/local-rift-work/series-2026-11-11/run_all_tests.py",
+      "sha256": "80efab2c9a748706e9da26dba529ba57890a6b5f2b494a2c3b9142c0ee8b2d07"
+    },
+    "release1.log": {
+      "path": "/home/benchen/.cache/local-rift-work/series-2026-11-11/release1.log",
+      "sha256": "e5d5528b97aa3960f4ee74ee62d8934242777e28b42c1aa44325efa4befdbbee"
+    },
+    "clippy1.log": {
+      "path": "/home/benchen/.cache/local-rift-work/series-2026-11-11/clippy1.log",
+      "sha256": "96e89c59442236fe1a5ac693d50ebe4129712900680936f23ae77964526c8b9d"
+    },
+    "fmt.log": {
+      "path": "/home/benchen/.cache/local-rift-work/series-2026-11-11/fmt.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "catalog.log": {
+      "path": "/home/benchen/.cache/local-rift-work/series-2026-11-11/catalog.log",
+      "sha256": "138a6de73ce2e79eb9e8dc2a7e9dad9010e2dc820a1f3f1155ea1956c5fde585"
+    },
+    "check1.log": {
+      "path": "/home/benchen/.cache/local-rift-work/series-2026-11-11/check1.log",
+      "sha256": "50d25a55c54587dde4fc0b5cd346f6115695c4479913c0573421c7488b7a6c8c"
+    },
+    "check2.log": {
+      "path": "/home/benchen/.cache/local-rift-work/series-2026-11-11/check2.log",
+      "sha256": "7b4d9f3da301a05150fc84364c1971ff9f928a1ea974a22db722c29604e189ea"
+    },
+    "tournament-2026-10-09.txt": {
+      "path": "/home/benchen/.cache/local-rift-work/series-2026-11-11/tournament-2026-10-09.txt",
+      "sha256": "52290c14bb5c38a835bcdddb9ed83018b1959648e763c7c6c483c508ed22d5bd"
+    }
+  }
+}

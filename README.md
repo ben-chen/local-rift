@@ -136,7 +136,16 @@ The latest [Irelia validation](docs/validation/irelia_arito.json) covers the exa
 Arito Convergence IV preset and Edge of Night: **1,598 Rust tests**, **269 source
 checks**, **72 exact-list games**, **24 bot API games**, and **eight native UI
 runs** passed. Sideboard and battlefield tabs expose the registered choices;
-between-game sideboarding is still unfinished.
+the native between-game sideboarding screen is still unfinished.
+
+Registered best-of-three matches are now available through the **Rust and bot
+API**, including legal sideboarding, private battlefield selection and match
+scores. The native match screens are still in progress. See
+[match practice](docs/MATCH_SERIES.md) for the complete example and current limits.
+The [match validation](docs/validation/match_series.json) passed **1,609 Rust
+tests**, **269 source checks**, **36 engine matches (91 games)** and **12 release
+bot API matches (29 games)**. This update does not add native match screens or
+expand the supported card pool.
 
 ## Included presets
 

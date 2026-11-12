@@ -517,6 +517,57 @@ impl CustomDeck {
             .sum()
     }
 
+    /// Standard tournament registration: the main deck is exactly forty, and
+    /// named-card/Unique limits cover the combined main and sideboard pool.
+    pub(crate) fn validate_sideboard(&self, sideboard: &[(CardId, u8)]) -> Result<(), String> {
+        self.validate()?;
+        if self.card_count() != 40 {
+            return Err("A match main deck must contain exactly 40 cards.".into());
+        }
+        if sideboard
+            .iter()
+            .map(|(_, n)| usize::from(*n))
+            .sum::<usize>()
+            > 10
+        {
+            return Err("A Standard sideboard may contain at most 10 cards.".into());
+        }
+        let catalog = cards();
+        let legend = legend_facts(self.legend).expect("validated legend");
+        let mut side_ids = HashSet::new();
+        let mut copies = HashMap::new();
+        for &(id, n) in &self.cards {
+            *copies.entry(catalog[id].name).or_insert(0usize) += usize::from(n);
+        }
+        for &(id, n) in sideboard {
+            let card = catalog
+                .get(id)
+                .ok_or("This sideboard contains an unavailable card ID.")?;
+            if n == 0 || !side_ids.insert(id) {
+                return Err("Combine duplicate sideboard rows and remove empty rows.".into());
+            }
+            let facts = inventory()
+                .printings
+                .get(card.official_id)
+                .ok_or("Missing official card identity.")?;
+            if support_status(id) == SupportStatus::UnknownCard || !compatible(facts, legend) {
+                return Err(format!(
+                    "{} is not a supported legal Main Deck card for this legend.",
+                    card.name
+                ));
+            }
+            let total = copies.entry(card.name).or_insert(0);
+            *total += usize::from(n);
+            if *total > if facts.unique { 1 } else { 3 } {
+                return Err(format!(
+                    "Too many copies of {} across main deck and sideboard.",
+                    card.name
+                ));
+            }
+        }
+        Ok(())
+    }
+
     pub fn validate(&self) -> Result<(), String> {
         if self.name.trim().is_empty()
             || self.name.chars().count() > 100

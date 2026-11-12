@@ -31,6 +31,7 @@ mod play_choices;
 mod progression;
 mod refusal;
 mod runes;
+mod series;
 mod targeting;
 mod temporary;
 mod vision;
@@ -112,6 +113,7 @@ pub struct ActionSuggestion {
 pub struct Session {
     game: Game,
     revision: u64,
+    series: Option<series::SeriesRun>,
 }
 
 impl fmt::Debug for Session {
@@ -134,6 +136,7 @@ impl Session {
         Ok(Self {
             game: make_game(options)?,
             revision: 0,
+            series: None,
         })
     }
     pub fn revision(&self) -> u64 {
@@ -152,6 +155,7 @@ impl Session {
     }
     fn require_actor(&self, player: usize) -> Result<(), ApiError> {
         valid_player(player)?;
+        self.require_series_game()?;
         if self.game.phase != Phase::Playing {
             return Err(ApiError::new(
                 "wrong_phase",
@@ -172,6 +176,16 @@ impl Session {
             .revision
             .checked_add(1)
             .ok_or_else(|| ApiError::new("revision_exhausted", "Create a new session."))?;
+        let mut series = self.series.clone();
+        if let Some(run) = &mut series {
+            run.state.clear_draw_offers();
+            if game.winner.is_some() {
+                run.state
+                    .finish_completed_game(&game)
+                    .map_err(ApiError::illegal)?;
+            }
+        }
+        self.series = series;
         self.game = game;
         self.revision = next;
         Ok(())
@@ -182,6 +196,7 @@ impl Session {
         f: impl FnOnce(&mut Game) -> Result<(), String>,
     ) -> Result<(), ApiError> {
         self.require_revision(revision)?;
+        self.require_series_game()?;
         let mut candidate = self.game.clone();
         match catch_unwind(AssertUnwindSafe(|| f(&mut candidate))) {
             Ok(Ok(())) => self.commit(candidate),
@@ -195,7 +210,11 @@ impl Session {
 
     pub fn reset(&mut self, revision: u64, options: ResetOptions) -> Result<(), ApiError> {
         self.require_revision(revision)?;
-        self.commit(make_game(options)?)
+        let mut candidate = self.clone();
+        candidate.series = None;
+        candidate.commit(make_game(options)?)?;
+        *self = candidate;
+        Ok(())
     }
     pub fn mulligan(
         &mut self,
@@ -204,10 +223,34 @@ impl Session {
         indices: &[usize],
     ) -> Result<(), ApiError> {
         valid_player(player)?;
+        if self.series.is_some() {
+            self.require_revision(revision)?;
+            self.require_series_game()?;
+            let first = self.game.first_player;
+            let expected = if !self.game.mulligans_used[first] {
+                first
+            } else {
+                1 - first
+            };
+            if player != expected {
+                return Err(ApiError::new(
+                    "wrong_player",
+                    "Mulligans are taken in turn order.",
+                ));
+            }
+        }
         self.transaction(revision, |game| game.mulligan_player(player, indices))
     }
     /// Beginning a match treats each unused mulligan as keeping that hand.
     pub fn start(&mut self, revision: u64) -> Result<(), ApiError> {
+        self.require_revision(revision)?;
+        self.require_series_game()?;
+        if self.series.is_some() && self.game.mulligans_used != [true; 2] {
+            return Err(ApiError::new(
+                "wrong_phase",
+                "Both players must keep or replace their opening hand first.",
+            ));
+        }
         self.transaction(revision, Game::start_match)
     }
     pub fn apply_action(
@@ -267,7 +310,10 @@ impl Session {
     /// through `apply_action`, even if no suggestion describes them.
     pub fn suggestions(&self, player: usize) -> Result<Vec<ActionSuggestion>, ApiError> {
         valid_player(player)?;
-        if self.game.phase != Phase::Playing || self.game.priority() != player {
+        if self.require_series_game().is_err()
+            || self.game.phase != Phase::Playing
+            || self.game.priority() != player
+        {
             return Ok(Vec::new());
         }
         self.game
@@ -316,12 +362,26 @@ impl Session {
     }
 
     fn summary(&self) -> Value {
-        json!({"phase": phase_name(self.game.phase), "turn": self.game.turn,
-            "active": self.game.active, "priority": self.game.priority(), "winner": self.game.winner})
+        let mut summary = if self.require_series_game().is_err() {
+            json!({"phase":"series"})
+        } else {
+            json!({"phase": phase_name(self.game.phase), "turn": self.game.turn,
+                "active": self.game.active, "priority": self.game.priority(), "winner": self.game.winner})
+        };
+        if let Some(run) = &self.series {
+            summary["series"] = run.state.summary();
+        }
+        summary
     }
 
     pub fn observe(&self, viewer: usize) -> Result<Value, ApiError> {
         valid_player(viewer)?;
+        if self.require_series_game().is_err() {
+            return Ok(
+                json!({"protocol":PROTOCOL_VERSION,"revision":self.revision,"viewer":viewer,"phase":"series",
+                "series":self.series.as_ref().expect("series phase").state.observe(viewer).map_err(ApiError::illegal)?}),
+            );
+        }
         let game = &self.game;
         let can_refuse_payment = game.can_refuse_payment().map_err(ApiError::illegal)?;
         game.validate_numeric_state().map_err(ApiError::illegal)?;
@@ -435,8 +495,7 @@ impl Session {
             if !item.show_off.is_empty() { value["show_off"] = play_choices::shown_to_json(&item.show_off); }
             value
         }).collect();
-        Ok(
-            json!({"protocol":PROTOCOL_VERSION,"revision":self.revision,"viewer":viewer,
+        let mut view = json!({"protocol":PROTOCOL_VERSION,"revision":self.revision,"viewer":viewer,
             "phase":phase_name(game.phase),"turn":game.turn,"active":game.active,
             "first_player":game.first_player,"priority":game.priority(),"winner":game.winner,
             "mulligans_used":game.mulligans_used,"players":players,"battlefields":game.battlefields,
@@ -482,8 +541,11 @@ impl Session {
                 value
             }),
             "required_trash_play":game.required_trash_play,
-            "can_decline_trash_play":game.can_decline_trash_play().map_err(ApiError::illegal)?}),
-        )
+            "can_decline_trash_play":game.can_decline_trash_play().map_err(ApiError::illegal)?});
+        if let Some(run) = &self.series {
+            view["series"] = run.state.observe(viewer).map_err(ApiError::illegal)?;
+        }
+        Ok(view)
     }
 
     /// One request produces one response. Parse errors also preserve revision.
@@ -522,11 +584,18 @@ impl Session {
         let object = object(request)?;
         let command = string(object, "command")?;
         match command {
+            "validate_registration"
+            | "series_begin"
+            | "series_sideboard"
+            | "series_battlefield"
+            | "series_play_order"
+            | "series_concede"
+            | "series_draw" => self.series_request(command, object),
             "info" => {
                 keys(object, &["command", "id"])?;
                 Ok(
                     json!({"protocol":PROTOCOL_VERSION,"name":"Local Rift","summary":self.summary(),
-                    "commands":["info","catalog","validate_deck","reset","observe","suggest","quote_payment","play_choices","cost_plan","target_candidates","validate","apply","mulligan","start","step_ai"],
+                    "commands":["validate_registration","series_begin","series_sideboard","series_battlefield","series_play_order","series_concede","series_draw","info","catalog","validate_deck","reset","observe","suggest","quote_payment","play_choices","cost_plan","target_candidates","validate","apply","mulligan","start","step_ai"],
                     "suggestions_exhaustive":false,"max_request_bytes":MAX_REQUEST_BYTES}),
                 )
             }
