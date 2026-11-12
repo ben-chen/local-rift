@@ -76,8 +76,8 @@ champion, ten sideboard cards, twelve runes and three registered battlefields.
 The original five recipes and all ten legend training recipes remain unchanged.
 
 The deck library separates main deck, sideboard and battlefield inspection.
-The sideboard is currently a reference for custom practice; best-of-three match
-sideboarding remains the next match-flow priority. See the
+The native Best of three mode now uses this complete registration for legal
+sideboarding. The original card and preset admission is recorded in the
 [combined validation record](validation/irelia_arito.json) for the precise tested
 scope and remaining limits.
 
@@ -97,7 +97,9 @@ Battle Preparations validation is recorded in [its acceptance receipt](validatio
 
 Siren's Song validation is recorded in [its acceptance receipt](validation/irelia_siren.json).
 
-The shared match controller and bot API now support untimed best-of-three practice
-with the complete Arito registration. The immediate next step is connecting the
-native setup, sideboard editor and match results to it, then evaluating sideboard
-and matchup policies. Card-library completeness remains a separate active goal.
+The native app, shared match controller and bot API now support untimed
+best-of-three practice with the complete Arito registration. Native setup,
+sideboarding, field reveal, play order, results and match coaching use the shared
+controller. Next: improve matchup and sideboard policies, expose additional
+complete registrations, and continue the end-to-end rules audit. Card-library
+completeness remains a separate active goal.

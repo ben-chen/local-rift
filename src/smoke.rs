@@ -19,8 +19,10 @@ mod c27;
 mod c28;
 mod irelia;
 mod presets;
+mod series;
 pub(super) use irelia::run_frame as run_irelia_frame;
 pub(super) use presets::run_frame as run_preset_frame;
+pub(super) use series::run_frame as run_series_frame;
 
 thread_local! {
     static ADD_CHAIN_SNAPSHOT: std::cell::RefCell<Vec<u32>> = const { std::cell::RefCell::new(Vec::new()) };

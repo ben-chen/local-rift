@@ -135,17 +135,23 @@ The client saves completed wins/losses and coach, advice level, animation, and d
 The latest [Irelia validation](docs/validation/irelia_arito.json) covers the exact
 Arito Convergence IV preset and Edge of Night: **1,598 Rust tests**, **269 source
 checks**, **72 exact-list games**, **24 bot API games**, and **eight native UI
-runs** passed. Sideboard and battlefield tabs expose the registered choices;
-the native between-game sideboarding screen is still unfinished.
+runs** passed. Sideboard and battlefield tabs expose the registered choices.
+The native **Best of three** mode now uses that complete registration for match
+practice, including legal swaps between games.
 
-Registered best-of-three matches are now available through the **Rust and bot
-API**, including legal sideboarding, private battlefield selection and match
-scores. The native match screens are still in progress. See
-[match practice](docs/MATCH_SERIES.md) for the complete example and current limits.
+Registered best-of-three matches are available in the **native app, Rust engine
+and bot API**, including legal sideboarding, private battlefield selection and
+match scores. In Practice, choose **Best of three**, select the complete Arito
+registration for each seat, then follow the setup steps. Mote explains match
+rules or planning at your chosen advice level. See
+[match practice](docs/MATCH_SERIES.md) for instructions and current limits.
 The [match validation](docs/validation/match_series.json) passed **1,609 Rust
 tests**, **269 source checks**, **36 engine matches (91 games)** and **12 release
-bot API matches (29 games)**. This update does not add native match screens or
-expand the supported card pool.
+bot API matches (29 games)**. The subsequent native interface is documented in
+[its validation record](docs/validation/native_match_series.json): **1,612 Rust
+tests**, **269 source checks**, **six controller matches (14 games)** and **20
+release UI runs** passed. The match UI runs cover three AI levels and two window
+sizes; twelve runs each play a complete match. Card coverage is unchanged.
 
 ## Included presets
 
@@ -160,7 +166,7 @@ expand the supported card pool.
 
 The four Los Angeles lists were rechecked against Riot’s published source on **October 26, 2026**. Kai'Sa is an older competitive archetype included for variety. These are dated source lists, not an assertion about the newly released Radiance metagame. The full 40-card main lists are preserved. All 433 supported main-deck cards have executable printed-effect mappings. Arito’s exact 40-card list was independently checked against its original organizer deck page on November 11, including two Edge of Night, three Orianna and one Gust Monk. All ten registered legend powers, persistent equipment, Hidden, Flow, Repeat, Accelerate, and Empower are implemented. The additional unit and gear activations include explicit targets, trash-recycling, sacrifice and Disempower costs, response windows, and resource conversions during permitted payments. The engine exposes trigger order, on-play targets, death replacements, and rune activation as choices. Coverage and remaining interface limits are described in [RULES.md](docs/RULES.md); this is still an unofficial implementation under development.
 
-Use **Prev** and **Next** in the deck library to browse all six presets. Each preset can be selected for either seat or copied into the editor. Arito’s preset has **Main deck**, **Sideboard**, and **Battlefields** tabs. Inspect all ten sideboard cards and all three battlefield rules; after selecting the preset for a seat, choose its battlefield there. Sideboard changes can be practiced by customizing a copy. Registered best-of matches and between-game sideboarding are not implemented.
+Use **Prev** and **Next** in the deck library to browse all six presets. Each preset can be selected for either seat or copied into the editor. Arito’s preset has **Main deck**, **Sideboard**, and **Battlefields** tabs. Inspect all ten sideboard cards and all three battlefield rules; after selecting the preset for a seat, choose its battlefield there. Choose **Best of three** in Practice to use the complete Arito registration and sideboard between games. Other presets and saved custom lists still use single-game practice until they have complete native registrations.
 
 Counts, card IDs, original rune splits, and source URLs are recorded in [`assets/data/decks.json`](assets/data/decks.json). The [official tournament sources](docs/SOURCES.md) explain provenance and historical legality.
 

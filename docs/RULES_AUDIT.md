@@ -621,3 +621,24 @@ This is an untimed engine/API implementation. Native match screens, timed round
 end procedures, judge penalties, best-of-five and pre-setup game-draw requests
 remain unfinished. The example bot keeps its sideboard by default; test-scripted
 swaps and completed games are not evidence of expert sideboarding decisions.
+
+### Native registered match flow, November 11, 2026
+
+The native app now delegates its registration and between-game transitions to
+`MatchSeries`, using the same October 9 rules audit as the engine/API admission.
+It creates no new opening hands until fields reveal and play order is chosen.
+AI mulligans use only its own hand and occur before or after the human's choice
+according to turn order. The sideboard editor validates a disposable controller
+copy before enabling confirmation, preserving the exact registered pool.
+
+The opponent commits a field using only its own observation before the human
+confirms. Setup coaching uses the current public step; it does not inspect the
+opponent's pool. UI state and pending AI work are cleared between games.
+Completed game results are recorded once, independently of the displayed match
+score. A new match restores the starting registration and available fields.
+
+Native scope remains the sourced Arito registration. The AI keeps its list and
+chooses its first available field; tests do not establish expert matchup
+planning. Custom registrations and draw agreements are still API-only. Timed
+rounds, judge procedures, broader in-game fidelity and full card coverage remain
+unfinished. See [native validation](validation/native_match_series.json).

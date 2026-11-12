@@ -12,6 +12,7 @@ mod gust_ui;
 mod play_ui;
 mod predict_ui;
 mod preset_ui;
+mod series_ui;
 use companion::{AdviceLevel, Companion, draw_mote};
 use deck_editor::DeckEditor;
 mod scene;
@@ -237,6 +238,10 @@ struct App {
     game: Game,
     screen: Screen,
     in_match: bool,
+    native_match: Option<series_ui::NativeMatch>,
+    series_lobby: bool,
+    series_chooser: usize,
+    series_concede: bool,
     player_deck: usize,
     opponent_deck: usize,
     browse_deck: usize,
@@ -410,6 +415,10 @@ impl App {
             game,
             screen: Screen::Practice,
             in_match: false,
+            native_match: None,
+            series_lobby: false,
+            series_chooser: 2,
+            series_concede: false,
             player_deck: selected[0],
             opponent_deck: selected[1],
             browse_deck: selected[0],
@@ -527,8 +536,30 @@ impl App {
             game.choose_battlefield(player, self.fields[player])
                 .expect("valid selected battlefield");
         }
-        self.ai_worker.invalidate();
+        self.native_match = None;
+        self.series_lobby = false;
+        self.install_game(game);
+    }
+    fn install_game(&mut self, game: Game) {
         self.game = game;
+        self.clear_game_controls();
+        self.in_match = true;
+        self.recorded = false;
+        self.confirm_restart = false;
+        self.next_ai = get_time() + 0.7;
+    }
+    fn clear_game_controls(&mut self) {
+        self.ai_worker.invalidate();
+        self.inspect = None;
+        self.field_inspect = None;
+        self.hover_rect = None;
+        self.hover_object = None;
+        self.hover_object_candidate = None;
+        self.hover_token = None;
+        self.rune_menu = None;
+        self.cost_editor = None;
+        self.show_play_effects = false;
+        self.conversion_editor = None;
         self.predict_draft = None;
         self.deck_look_draft = None;
         self.draw_look_draft = None;
@@ -561,9 +592,6 @@ impl App {
         self.targets.clear();
         self.selection = None;
         self.mulligan.clear();
-        self.in_match = true;
-        self.recorded = false;
-        self.confirm_restart = false;
         self.hand_scroll = 0;
     }
     fn notify(&mut self, s: impl Into<String>) {
@@ -725,6 +753,19 @@ impl App {
     fn update(&mut self) {
         self.ui.resize();
         self.ai_worker.poll();
+        if let Err(error) = self.update_native_match() {
+            self.notify(error);
+            return;
+        }
+        if (self.screen == Screen::Practice && self.native_match_pending()) || self.series_concede {
+            if is_key_pressed(KeyCode::Escape) {
+                self.inspect = None;
+                self.field_inspect = None;
+                self.confirm_restart = false;
+                self.series_concede = false;
+            }
+            return;
+        }
         if self.game.validate_numeric_state().is_err() {
             return;
         }
@@ -999,7 +1040,8 @@ impl App {
         {
             self.inspect = self.hover_card;
         }
-        self.ui.enabled = !self.show_play_effects
+        self.ui.enabled = !self.series_concede
+            && !self.show_play_effects
             && self.cost_editor.is_none()
             && self.field_picker.is_none()
             && self.legend_picker.is_none()
@@ -1061,6 +1103,7 @@ impl App {
         self.draw_cost_editor();
         self.draw_play_effects();
         self.saved_deck_notice();
+        self.draw_series_concession();
         self.ui.enabled = true;
         Ok(())
     }
@@ -1160,12 +1203,19 @@ impl App {
                 }
             }
             u.rect(Rect::new(22.0, 627.0, 171.0, 170.0), PANEL);
-            u.wrapped(self.companion.message(), 34.0, 650.0, 147.0, 11.0, TEXT);
+            u.wrapped(
+                self.series_coach_tip().unwrap_or(self.companion.message()),
+                34.0,
+                650.0,
+                147.0,
+                11.0,
+                TEXT,
+            );
             if u.button(
                 Rect::new(34.0, 761.0, 147.0, 26.0),
                 "Another thought",
                 false,
-                true,
+                self.series_coach_tip().is_none(),
             ) {
                 self.companion.next_tip(&self.game);
             }
@@ -1291,6 +1341,36 @@ impl App {
         }
     }
     fn practice(&mut self) -> Result<(), String> {
+        if self.series_lobby {
+            self.draw_series_lobby();
+            return Ok(());
+        }
+        if self.native_match_pending() {
+            return self.draw_native_match();
+        }
+        if !self.in_match
+            && self.ui.button(
+                Rect::new(1030.0, 25.0, 195.0, 42.0),
+                "Best of three  >",
+                false,
+                true,
+            )
+        {
+            self.series_lobby = true;
+            self.clear_game_controls();
+            return Ok(());
+        }
+        if self.native_match.is_some()
+            && self.ui.button(
+                Rect::new(830.0, 34.0, 175.0, 32.0),
+                "Concede game",
+                false,
+                true,
+            )
+        {
+            self.series_concede = true;
+        }
+
         self.header(
             if self.in_match {
                 "A little closer to mastery."
@@ -1710,7 +1790,9 @@ impl App {
             self.setup_panel();
             self.matchup();
         }
-        if self.in_match && self.game.winner.is_some() {
+        // Registered games transition once in update; the winning click must
+        // never reach the standalone game's restart controls in this frame.
+        if self.in_match && self.game.winner.is_some() && self.native_match.is_none() {
             self.victory();
         }
         Ok(())
@@ -6258,7 +6340,20 @@ impl App {
             10.0,
             MUTED,
         );
-        self.ui.bold("CONQUER · HOLD", 1178.0, 165.0, 13.0, TEXT);
+        let match_label = self.native_match.as_ref().map(|m| {
+            let v = m.state.summary();
+            format!(
+                "GAME {} · MATCH {} — {}",
+                v["game_number"], v["wins"][0], v["wins"][1]
+            )
+        });
+        self.ui.bold(
+            match_label.as_deref().unwrap_or("CONQUER · HOLD"),
+            1178.0,
+            165.0,
+            13.0,
+            TEXT,
+        );
         self.ui.wrapped(
             "Score by taking and holding battlefields. Reach 8 points and lead to win.",
             1178.0,
@@ -6319,15 +6414,8 @@ impl App {
             ) {
                 let mut indices = self.mulligan.iter().copied().collect::<Vec<_>>();
                 indices.sort_unstable();
-                match self.game.mulligan(&indices) {
-                    Ok(()) => {
-                        self.ai_worker.invalidate();
-                        if let Err(e) = self.game.start_match() {
-                            self.notify(e);
-                        }
-                        self.mulligan.clear();
-                    }
-                    Err(e) => self.notify(e),
+                if let Err(error) = self.finish_opening_hand(&indices) {
+                    self.notify(error);
                 }
             }
         } else if matches!(self.game.decision, Some(Decision::RevealedCard { .. })) {
@@ -8202,7 +8290,9 @@ impl App {
         self.ui.rect(Rect::new(492.0, 310.0, 500.0, 245.0), PANEL);
         self.ui.border(Rect::new(492.0, 310.0, 500.0, 245.0), LINE);
         self.ui.title("A fresh start?", 520.0, 356.0, 30.0, TEXT);
-        self.ui.wrapped("Return to setup and choose your next matchup. This unfinished game will not affect your practice record.",520.0,394.0,435.0,13.0,MUTED);
+        self.ui.wrapped(if self.native_match.is_some() {
+            "Leave this match and return to setup. Completed games stay in your practice record; the unfinished game is discarded."
+        } else { "Return to setup and choose your next matchup. This unfinished game will not affect your practice record." },520.0,394.0,435.0,13.0,MUTED);
         if self.ui.button(
             Rect::new(520.0, 479.0, 207.0, 44.0),
             "Keep playing",
@@ -8217,6 +8307,14 @@ impl App {
             true,
             true,
         ) {
+            if self.native_match.is_some() {
+                self.leave_native_match();
+                self.confirm_restart = false;
+                return;
+            }
+            self.native_match = None;
+            self.series_lobby = false;
+            self.series_concede = false;
             self.in_match = false;
             self.selection = None;
             self.confirm_restart = false;
@@ -10172,6 +10270,7 @@ async fn main() {
         app.inspect = Some(id);
     }
     let preview_hover = args.iter().any(|arg| arg == "--hover-preview");
+    let series_smoke = args.iter().any(|a| a == "--ui-smoke-series");
     let irelia_smoke = args.iter().any(|a| a == "--ui-smoke-irelia");
     let preset_smoke = args.iter().any(|a| a == "--ui-smoke-presets");
     let ai_smoke = args.iter().any(|a| a == "--ui-smoke-ai");
@@ -10180,7 +10279,8 @@ async fn main() {
     let focused_combat_card_smoke = args.iter().any(|a| a == "--ui-smoke-c26");
     let focused_field_smoke = args.iter().any(|a| a == "--ui-smoke-c28");
     let focused_source_damage_smoke = args.iter().any(|a| a == "--ui-smoke-c27");
-    let smoke_test = irelia_smoke
+    let smoke_test = series_smoke
+        || irelia_smoke
         || preset_smoke
         || focused_field_smoke
         || ai_smoke
@@ -10212,7 +10312,9 @@ async fn main() {
             app.hover_card = app.game.players[0].hand.first().copied();
             app.hover_since = -1.0;
         }
-        let smoke_done = if irelia_smoke {
+        let smoke_done = if series_smoke {
+            smoke::run_series_frame(&mut app, frames)
+        } else if irelia_smoke {
             smoke::run_irelia_frame(&mut app, frames)
         } else if preset_smoke {
             smoke::run_preset_frame(&mut app, frames)

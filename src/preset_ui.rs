@@ -188,7 +188,7 @@ impl App {
 
     fn preset_source_footer(&mut self) {
         let note = if self.preset_tab == PresetTab::Sideboard {
-            "Sideboard reference · customize a copy to practice swaps. Between-game sideboarding is not available yet."
+            "Registered sideboard · choose Best of three in Practice to exchange cards between games."
         } else {
             "Sourced tournament lists and official card text. Hover to read a card; click to pin its full details."
         };

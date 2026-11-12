@@ -1,0 +1,1620 @@
+{
+  "reviewed_on": "2026-11-11",
+  "base_commit": "a2c4ea71f2a28e3415ea26b4a083e4a9d159fd2e",
+  "scope": "Native untimed best-of-three practice using the sourced Arito Irelia registration, with sideboard edits, private field commitment, revealed fields/champions, play-order choice, ordered mulligans, real game results, concessions and match coaching.",
+  "rust": {
+    "scope": "All 106 all-targets harnesses passed; after two native-only input corrections, the complete 127-test native harness was rebuilt and rerun. The other 105 executables, their library sources and tests remain byte-identical to the full run.",
+    "targets": 106,
+    "passed": 1612,
+    "failures": 0,
+    "results": [
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/activated_matches-3a69bb274ef8e1f8",
+        "sha256": "7538b50160badf36e35a025a208eac14131f67c908cb7f68646a7f83bf9c0fe6",
+        "exit": 0,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/activated_matches-3a69bb274ef8e1f8.log",
+        "log_sha256": "11f06eea62b170819d7b09b892ffda5d98899df4ebbab4fb4e4641a3d643b576",
+        "seconds": 109.13
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/c10_matches-98ec2f8af50d2b82",
+        "sha256": "1e40264583225f19b8938fbaccd749ae9aa3cd921bac307717ca346a80d631cb",
+        "exit": 0,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/c10_matches-98ec2f8af50d2b82.log",
+        "log_sha256": "1a8262d4915bb0f1100b64bb426bc4922f01a7bac91160dfad7b975548004f25",
+        "seconds": 111.56
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/c11_matches-e1676949712656ac",
+        "sha256": "841aa68b305f17c7886b810a37c94c5adf539c47a21ea7ecfa9bed75981b5e3f",
+        "exit": 0,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/c11_matches-e1676949712656ac.log",
+        "log_sha256": "8dbb8ac4802ff06b274547052d66ed19ac650643bd07fdc045a80330bfc981e6",
+        "seconds": 111.53
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/c12_matches-62d00d989e5149df",
+        "sha256": "99d4a8fe3262e36aef8ae7e9cf68f8c26fdd23893e1fed50c8f02c16e4fb2a24",
+        "exit": 0,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/c12_matches-62d00d989e5149df.log",
+        "log_sha256": "c885c272d94df744d2a9df33745843c808567d63d609d7c827543ea6c5d2e676",
+        "seconds": 25.59
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/c13_matches-b557e1100fc3a853",
+        "sha256": "a1b8bc33ba8984f6596dbe0d6133d57e4a131c163f17865832a098cd36d11fc6",
+        "exit": 0,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/c13_matches-b557e1100fc3a853.log",
+        "log_sha256": "528b78c15d8dfe025478c1602e3eebec1d766fbe0ca2028301e2e0a6c6ffc84f",
+        "seconds": 26.96
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/c14_matches-ff9056db1809a6dc",
+        "sha256": "acf3cd033e44ef768c7a4e16a8656e48a37562863d6ff62fcea0130b28de5231",
+        "exit": 0,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/c14_matches-ff9056db1809a6dc.log",
+        "log_sha256": "3279176ace33c5c6f62607ee5d1ff48e7035123e33d80e5714e2f1280b14ea50",
+        "seconds": 27.46
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/c15_matches-90888b81d36c6378",
+        "sha256": "04736da8e71fd2640d09f608bcb52baca183fbe48a919b243c5685e3bdb570e2",
+        "exit": 0,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/c15_matches-90888b81d36c6378.log",
+        "log_sha256": "829ebd57be5ee51425f6d80d0320f2df74eaa9b6d1b1c773b0d17890ed1ee444",
+        "seconds": 26.9
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/c16_matches-d4bcbc3f825ad235",
+        "sha256": "c584fc946c67ca7dfae3eb8795cdff0eadfee0f943e6c93948b19330e2963824",
+        "exit": 0,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/c16_matches-d4bcbc3f825ad235.log",
+        "log_sha256": "ffdfa9039d261a10f7a242492a9c96ba8aa146e9a678f3f44de0cea1dc91ef40",
+        "seconds": 104.75
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/c17_matches-44eb512612fdf494",
+        "sha256": "474cd434d84c10f57381ca87c2619b9f2f0b1504e90a7f3b3c5022f2433591a0",
+        "exit": 0,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/c17_matches-44eb512612fdf494.log",
+        "log_sha256": "ffa1eb4ef47aa099bb2afd194f1a3dec404679ea8571b2cf3357a14dc1f912db",
+        "seconds": 70.56
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/c18_matches-0f20b6c75380dade",
+        "sha256": "72c727d7f1b9162b48e6cfcf38ca4db21805b5e0c159d5b5291c2bae430270f7",
+        "exit": 0,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/c18_matches-0f20b6c75380dade.log",
+        "log_sha256": "0e5b056670702e97d4c5a02895bad3c3e899d929fb857463a32fdd41c97056a8",
+        "seconds": 48.56
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/c19_matches-233437d97e3377e2",
+        "sha256": "11038d48d3810eabb4de8e511f5bd7328eafb07d10d366269dc7d3eecc71b34e",
+        "exit": 0,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/c19_matches-233437d97e3377e2.log",
+        "log_sha256": "90b82426cd5eb1174913469613e0c525b1f28dd7b96279b23b3475aed5d0c781",
+        "seconds": 67.15
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/c20_matches-1109d6b99370cbdf",
+        "sha256": "32804e44b9249ac283cbbe55811feacb7de0751dd7638de726d755994581aeed",
+        "exit": 0,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/c20_matches-1109d6b99370cbdf.log",
+        "log_sha256": "952035f29ad12e97d197db505d685e19bb61597122f0079a2b9af2aaf9a45713",
+        "seconds": 53.33
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/c21_matches-0b6b5eda31d93fba",
+        "sha256": "30a2942c23db0223c9c612e0f6e07f391cc1237af909f271dda95a7602d70bf6",
+        "exit": 0,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/c21_matches-0b6b5eda31d93fba.log",
+        "log_sha256": "a763d5a7913b1e0e69ef9e1faf672d66df8ffbd74341830eb367a06ec9b46498",
+        "seconds": 52.58
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/c22_matches-0ba47aaa9b289e37",
+        "sha256": "74e9a3216a1363054f94c2ed68bf81763ae43b71e2e88d3f5126b572fa6ccc38",
+        "exit": 0,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/c22_matches-0ba47aaa9b289e37.log",
+        "log_sha256": "9d3ec6207e167853e0336073a4216c18f78f5e97b9c116c39ca6caea94be40a3",
+        "seconds": 12.15
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/c24_matches-ac239c8d95d1460d",
+        "sha256": "66f2cb3e08a91833486433a8998ac9380de2fa1f83b8d892aaff515fbf1f1fc0",
+        "exit": 0,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/c24_matches-ac239c8d95d1460d.log",
+        "log_sha256": "f64ce56e90dcd82fc2fecb2c03a8d38242f9ff5181b5fcb87b66830ba0bc038e",
+        "seconds": 48.45
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/c26_matches-a2ab4de6a700380e",
+        "sha256": "085cf678c7d49d57ad74a127d7568afe87d33f5c45923bc80841096dce4abb84",
+        "exit": 0,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/c26_matches-a2ab4de6a700380e.log",
+        "log_sha256": "918cddad2930ee104c796cc26064649725f4598d079632fb3367ca55fd15b6d6",
+        "seconds": 12.45
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/c27_matches-07bbc3c48ccc1848",
+        "sha256": "9e4307fe56beb87a31130102e41803060e8b09ddc29a98ecdd905a272eaf5333",
+        "exit": 0,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/c27_matches-07bbc3c48ccc1848.log",
+        "log_sha256": "64269a5cb7b6b04e30eb2059c6261ae1f8eb5ae0ba42b83d59d761ac628d0e99",
+        "seconds": 18.43
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/c28_matches-ca0d4bf0a7ff014e",
+        "sha256": "57303c41a206085e8c659ce8faaf5e247955d5cbf0ddd658485fa252f8857ecb",
+        "exit": 0,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/c28_matches-ca0d4bf0a7ff014e.log",
+        "log_sha256": "754aecb611165a9fbb835779cb25d272df90b8cd6e4c81ce4a71c16b69c690b7",
+        "seconds": 24.09
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/c4_matches-85202f9be6751671",
+        "sha256": "7e93eaab9dea29865f6bca2f0f085de53d5cdb77e46a7367332013e4ce091c1d",
+        "exit": 0,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/c4_matches-85202f9be6751671.log",
+        "log_sha256": "13d88a962ab91f2825ca1b6aab7bf198bc8d1ba25dc543028542c3e5221e1ce7",
+        "seconds": 113.74
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/c5_matches-a05985aaf6a4ed6b",
+        "sha256": "c3a8454a67ea6088cbfa96abf0f8c2cb6eec3a5e9d85e0cc31448bd5eab16aae",
+        "exit": 0,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/c5_matches-a05985aaf6a4ed6b.log",
+        "log_sha256": "eea6760566547e6517bb16a4ecdbcd9f5774b12b5a37eec3692a6181f92a4a50",
+        "seconds": 105.71
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/c8_matches-537dbdf01b6dcbe6",
+        "sha256": "96de5b218a1f464fc95c93c22ae32b06c02928338b9c80d9b0c38f697821bbdb",
+        "exit": 0,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/c8_matches-537dbdf01b6dcbe6.log",
+        "log_sha256": "189014ed4efa1b3df36f5a9505fdef7cfb9c9a7da6262225281ffd3902acfced",
+        "seconds": 116.94
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/c9_matches-359449f3e3b46c2d",
+        "sha256": "ef74f4cf2d65c482b55f1fa240900f3f078ee8f47ff90650e8c610997454ef6a",
+        "exit": 0,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/c9_matches-359449f3e3b46c2d.log",
+        "log_sha256": "1d377bed0f0cc27c2e1230cb4e028a458a3b6daab353c0d2d14a2d52541100f8",
+        "seconds": 123.93
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/conversion_matches-972b2c1bacbe2007",
+        "sha256": "b8ba4d63e86193bf08183835b961fa9ae36ff1243d49df2e0f33fd1e0a5d70a1",
+        "exit": 0,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/conversion_matches-972b2c1bacbe2007.log",
+        "log_sha256": "47da217667237232a7b53b92d7ec60dd093bb1d26a9f2262d9b096109de0d0d8",
+        "seconds": 128.9
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/empowered_matches-ca2c35664c15eb1c",
+        "sha256": "d2920097ebb6c73a92b9f1248b31b67913d5abba44ad1065822e6e76d3755790",
+        "exit": 0,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/empowered_matches-ca2c35664c15eb1c.log",
+        "log_sha256": "c823bb2264b1b7771babf4790730b2c76ef71939f6bda098b74d8216f26047bc",
+        "seconds": 108.42
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/activated_abilities-ac5e2e2507938427",
+        "sha256": "42bb0315bb21b15aeeacb17022e6dcc65baab1f6146df87ccbf82306f4fdd5e8",
+        "exit": 0,
+        "passed": 23,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/activated_abilities-ac5e2e2507938427.log",
+        "log_sha256": "ef9543d1d21fc3f15800714327f71803c50d6f29ee7d8f1c7aa42f1657430ffa",
+        "seconds": 0.12
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/api_custom_decks-aabed456028f2ebf",
+        "sha256": "5f8e7f9cfa82d30e9091cafd4042011e5f29f7a4bb6cb170c98639e40b9ecbc1",
+        "exit": 0,
+        "passed": 5,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/api_custom_decks-aabed456028f2ebf.log",
+        "log_sha256": "0fa1d8ae699ce3353242a2a989a4db5371bb062a79537c79cdba3cabd19d88b4",
+        "seconds": 0.53
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/c10_runtime-a3c8b363fe62ff63",
+        "sha256": "43a07863239cb7b92c5e67e383c5f127a5263e8bc59e95710e0ec0783ff01ebc",
+        "exit": 0,
+        "passed": 19,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/c10_runtime-a3c8b363fe62ff63.log",
+        "log_sha256": "66e2eafc723b919a6f059c1b8c4718599ea390de74d6d7833faddc9b71f49916",
+        "seconds": 0.07
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/c11_runtime-85465e6aba4d1e9c",
+        "sha256": "074acbe5c63937ffe18788e95d068e166c4be8e20b316b79ded128af6013d58a",
+        "exit": 0,
+        "passed": 23,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/c11_runtime-85465e6aba4d1e9c.log",
+        "log_sha256": "88e8d3f7e086d1b679a1f75ee6e057bff690ed34e9e04fc8d3a297084ea32d8d",
+        "seconds": 0.09
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/c16_legends-28e6bc14a114f5b9",
+        "sha256": "22c5c18479433b77e4a7d5a0122cb6b03b9d67d135b25f4df8569f5885c7307c",
+        "exit": 0,
+        "passed": 14,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/c16_legends-28e6bc14a114f5b9.log",
+        "log_sha256": "ef4ab7d469a628d985ed5e8b27a0aa4be092b17feb70fd1de7c2694a762b8670",
+        "seconds": 0.18
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/c4_battlefields-cf626a527d41ba45",
+        "sha256": "fcc04f35fc474631d7a5ec08824fb8de1604b04bacac9077858c9ad438301b0c",
+        "exit": 0,
+        "passed": 19,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/c4_battlefields-cf626a527d41ba45.log",
+        "log_sha256": "9aaeacc225e95ac81b84cf426dc3c0a39191cd660fe85eb9a5ea269f51742edb",
+        "seconds": 0.07
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/c4_event_audit-f77643db74ac38cd",
+        "sha256": "c40506c12d61df2090d16fc0c16a39fff2506d9065c75d7fe69c72c77d991327",
+        "exit": 0,
+        "passed": 9,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/c4_event_audit-f77643db74ac38cd.log",
+        "log_sha256": "3f871e64f1dffee5211e2b311f1eeaeb1bd824cb2e1ecf3f9d107e32df6829f6",
+        "seconds": 0.07
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/c4_play-a3f1a7b2d93498dd",
+        "sha256": "594ca7275cdc5c5a9ef71d10fcc441dca68ae8aa7316aaf22fea6985fc8c3f70",
+        "exit": 0,
+        "passed": 24,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/c4_play-a3f1a7b2d93498dd.log",
+        "log_sha256": "2fd0a6823e80a4db2552532257c2402e732c1a44fa7c32127bc08731b9b08a1a",
+        "seconds": 0.23
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/c4_query_audit-8949aa7e10789517",
+        "sha256": "d5ed87683b974c2ef92cbadfe9876dc05080f8515b93e4dc35f0d0e48ab0a027",
+        "exit": 0,
+        "passed": 2,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/c4_query_audit-8949aa7e10789517.log",
+        "log_sha256": "9febf2613d52dff7b2bf7df970ff49ea4fced39175b99c693ce99b5c38f98906",
+        "seconds": 0.06
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/c4_rules_audit-2c031494fc20b97b",
+        "sha256": "635b636bb5be624e588dcd1f1ed250844d09077218b55821b3cd9ff193ffcdc2",
+        "exit": 0,
+        "passed": 6,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/c4_rules_audit-2c031494fc20b97b.log",
+        "log_sha256": "fb59c226f8f5948365379c436154f5a72148e273d85f9b18c7f789de4369673e",
+        "seconds": 0.06
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/c5_empower_runtime-043ea20362850ca5",
+        "sha256": "ac796f789478225ae50039759031725668c1a4b20b26a7e25efc558faf77b725",
+        "exit": 0,
+        "passed": 23,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/c5_empower_runtime-043ea20362850ca5.log",
+        "log_sha256": "8db97e2d0e0d7d128d3a5168f97c5a01efecaf5b46ccdfce6ed239ed1816ae09",
+        "seconds": 0.12
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/c5_rules_audit-d5b02d91bd1c0a0b",
+        "sha256": "e9e2b272cc41c308bc271d83e4bbe263fa0a64ffa882400717926a0d8f92f76c",
+        "exit": 0,
+        "passed": 9,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/c5_rules_audit-d5b02d91bd1c0a0b.log",
+        "log_sha256": "dc189eea865cf1626359fb1d9bec5868fa2ef4f98af77a8943f35d46251cba4a",
+        "seconds": 0.09
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/c8_runtime-17b44d22047330f1",
+        "sha256": "268c33b990d2f13c7662cc96786190e739131053fa86947fa3f16b9e036d6673",
+        "exit": 0,
+        "passed": 21,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/c8_runtime-17b44d22047330f1.log",
+        "log_sha256": "b7ff7b4de63c045b6f2c25344694d2195c342d94ac6317d165fe2e663f6dbbf5",
+        "seconds": 0.08
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/c9_runtime-53be03aa0616d346",
+        "sha256": "703d647ca1acfb9043003177dde8b161fead1362af2e908ebce61c9f87d14024",
+        "exit": 0,
+        "passed": 31,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/c9_runtime-53be03aa0616d346.log",
+        "log_sha256": "44cd2d9d34d33ed4b7f028fe9d2806925b1447619fbeef201af68eb2f587e4d8",
+        "seconds": 0.07
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/card_batch_eight-230508b9d5b2861d",
+        "sha256": "0d2a68b20d794ae3c6545247855c52abef9e4b4acca21891e982efe0eccf4aba",
+        "exit": 0,
+        "passed": 4,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/card_batch_eight-230508b9d5b2861d.log",
+        "log_sha256": "a594b674ee7f7d0a2a1fdb7284e5758d671ad9275bdcfdceff96e6efe27c82f4",
+        "seconds": 0.28
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/card_batch_eighteen-9608dfc6c0d2fdcf",
+        "sha256": "3aa5e85f583c85bd0040ffee121cdcd9c86a60afd31dd820dda4841e11c9c2c2",
+        "exit": 0,
+        "passed": 2,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/card_batch_eighteen-9608dfc6c0d2fdcf.log",
+        "log_sha256": "0ddcf75dbda3a4c43ddc3cb566574d8f2bdb00dada47629f2c7daaa5c2c1ae3d",
+        "seconds": 0.17
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/card_batch_eleven-30df25492fc57c9a",
+        "sha256": "dbd13144afd11e3e7fcce79fed987c449483b234bdd470e5dd39f7da96a18fba",
+        "exit": 0,
+        "passed": 4,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/card_batch_eleven-30df25492fc57c9a.log",
+        "log_sha256": "7d2df53b0da995ad7b1a18649bdb9b0b973ee8dcbf4771758601bacd0ecf94f8",
+        "seconds": 0.18
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/card_batch_fifteen-c2715db9e50e18ed",
+        "sha256": "8da06bc9a94449b3c474d7b66afdae5d80290d93eddde051731608523ccc483e",
+        "exit": 0,
+        "passed": 2,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/card_batch_fifteen-c2715db9e50e18ed.log",
+        "log_sha256": "e1e940459b9338b2089fcf998bfe38d4f527c7bf07877ea38e54429be34183b0",
+        "seconds": 0.23
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/card_batch_five-31c8b557c7d4888f",
+        "sha256": "cfee3ecb5b7e6f3b170da88c9e6c36b151d811ac02ee9add5bb1aaa07a3e8baf",
+        "exit": 0,
+        "passed": 3,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/card_batch_five-31c8b557c7d4888f.log",
+        "log_sha256": "407af5f3657f41d7d20f09add7a528b845b40b9762d732d27045e0026f461472",
+        "seconds": 0.19
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/card_batch_four-bcbad10359e76cd5",
+        "sha256": "fb51ec2c669a4eedb80bc2c7c80d90a22ec6c17c28996a9e120e16ff47a74119",
+        "exit": 0,
+        "passed": 3,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/card_batch_four-bcbad10359e76cd5.log",
+        "log_sha256": "7e1928ae78625f11048b6d134e503c714bcb4b0f906d54e5592e836e57b6e3de",
+        "seconds": 1.23
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/card_batch_fourteen-d19e77d27eed56d5",
+        "sha256": "89c5ff6faac65797490e3c49bfcf36b4f6dbe339101fc311cccef058c2df6153",
+        "exit": 0,
+        "passed": 2,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/card_batch_fourteen-d19e77d27eed56d5.log",
+        "log_sha256": "0857347214a8addfb5fa70eeaa98631aeeeba5cc3407b46648f769169bc192ed",
+        "seconds": 0.22
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/card_batch_nine-11bbc5ac082b3fb6",
+        "sha256": "f99420bba955e7484e916614813493bea719908a76f860568f6c69fee92e2ec4",
+        "exit": 0,
+        "passed": 5,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/card_batch_nine-11bbc5ac082b3fb6.log",
+        "log_sha256": "ca94f240b570bdbe721e280c1918ab9f7df1c59fff7c67fa08e1446515857a3b",
+        "seconds": 0.19
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/card_batch_nineteen-248076295e57eb07",
+        "sha256": "c661e55a0e520bbdbca7b0d6eea8829b438b163a8920161be1c322518b5f4b45",
+        "exit": 0,
+        "passed": 2,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/card_batch_nineteen-248076295e57eb07.log",
+        "log_sha256": "85fd9a3e1041ed507726ca82abf98d8a528ae4f30d1b90c2cc5f23cc90d2f572",
+        "seconds": 0.19
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/card_batch_seven-0b69620abf0ba7b7",
+        "sha256": "f7a6a98cc677d2f8e59f8cb3c78d161fdb7cd630abf8d6d71cb4751efb21a74e",
+        "exit": 0,
+        "passed": 4,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/card_batch_seven-0b69620abf0ba7b7.log",
+        "log_sha256": "911cb8944dc71702745b19f802c10112e968daa16fc7f0fd21e89acdaa0ea551",
+        "seconds": 0.18
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/card_batch_seventeen-5872b0238323e72f",
+        "sha256": "05dd0884b2c60410288cc0df0314435cb05bdeba19b9a76a5e871b8f41a7344a",
+        "exit": 0,
+        "passed": 2,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/card_batch_seventeen-5872b0238323e72f.log",
+        "log_sha256": "546662c9026a58da89f1ae1a50fe97df679c2febd68b967c2e6346645b5d60d9",
+        "seconds": 0.16
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/card_batch_six-170a17a5dc2db085",
+        "sha256": "1a17cd5c36261c244ad858418ed9960022cdc11028dcdf2f0bcf406be659990f",
+        "exit": 0,
+        "passed": 3,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/card_batch_six-170a17a5dc2db085.log",
+        "log_sha256": "e69812645d778f4bc7b319c4511242d835d871faf304a94597dc67ff054109f6",
+        "seconds": 0.12
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/card_batch_sixteen-4e8b0752fd95fe86",
+        "sha256": "6e03cfe2a1d59074ccf798aea829fb51707eabd703bd3b3b174e14d29b367b5d",
+        "exit": 0,
+        "passed": 2,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/card_batch_sixteen-4e8b0752fd95fe86.log",
+        "log_sha256": "2962f72de158fe412b189055a8967a304aff24ef47f087c049ca6b8d353839b3",
+        "seconds": 0.17
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/card_batch_ten-1e08e4479fd81539",
+        "sha256": "ede690f1360a779f8220d825dd1ffb539736c10bd30f5842a4f1ace605277d06",
+        "exit": 0,
+        "passed": 4,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/card_batch_ten-1e08e4479fd81539.log",
+        "log_sha256": "8145d91824d11b2f90a4a21108aa9be8a36d3c08b6c81d6c9040b4388f910afd",
+        "seconds": 0.18
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/card_batch_thirteen-6d3abe8f56166881",
+        "sha256": "9d18313d842c1762406bca2d57be45c05d9f8df4f530e83e397f2bcd3ee5d36e",
+        "exit": 0,
+        "passed": 4,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/card_batch_thirteen-6d3abe8f56166881.log",
+        "log_sha256": "7340098946eb7bbffedd5c0fa6aa3a5f9b25dd3edec84846d8b018a84fbfb390",
+        "seconds": 0.18
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/card_batch_three-1de663b5f6f38b0b",
+        "sha256": "97dc9265c5d91c61a66d76f1b1568dc1cdad867d134a992fb1c13b9fa570eb7c",
+        "exit": 0,
+        "passed": 3,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/card_batch_three-1de663b5f6f38b0b.log",
+        "log_sha256": "babbace7eceafa94da04ad41e745315d7fbbacafd2f26814e641ace831d125ff",
+        "seconds": 1.51
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/card_batch_twelve-9c0928bce16cf3b2",
+        "sha256": "5e55066408fef9c47022edaf28cb979534f747b84ea36586edec8de2d2fcaf31",
+        "exit": 0,
+        "passed": 3,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/card_batch_twelve-9c0928bce16cf3b2.log",
+        "log_sha256": "5375f78f57855c78b1c567fc712a12cd2249bec5933bae877729a83b4fa85700",
+        "seconds": 0.19
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/card_batch_twenty-1647230ff71e3655",
+        "sha256": "d77ebf0c7cd0e278e2445d4c6de123993fadd8218028975fcdcdb10c607f89b3",
+        "exit": 0,
+        "passed": 3,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/card_batch_twenty-1647230ff71e3655.log",
+        "log_sha256": "83e5677ebffaf1cf59ced334cac34c57c2be8adb246a0116b69198b7c7f504ed",
+        "seconds": 0.22
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/card_batch_twenty_five-c3ab0258bd8a756c",
+        "sha256": "a8db36548293d6b764af86f34a23dcc8ad569ab98c09e606cec24703879f7421",
+        "exit": 0,
+        "passed": 4,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/card_batch_twenty_five-c3ab0258bd8a756c.log",
+        "log_sha256": "ec6a1500646da64c282ffc47ae5b8e3ea8ed93b4db0fabadf7d2234a8ca1d19c",
+        "seconds": 0.19
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/card_batch_twenty_four-959ddab43b7f1f8d",
+        "sha256": "ea60a8c446676039b685240eae65e609bb6fc2f18d740d87f8af7bc25c5cf2a0",
+        "exit": 0,
+        "passed": 4,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/card_batch_twenty_four-959ddab43b7f1f8d.log",
+        "log_sha256": "3bd3edddd79b67805fc679931a64c456737e0a6294ee548ebf062d53a78a954b",
+        "seconds": 0.27
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/card_batch_twenty_one-057449a9a924393f",
+        "sha256": "ce4aaa835d83a01af53abd1616131c5401d61665db9364757ad79e27c85a8dc3",
+        "exit": 0,
+        "passed": 4,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/card_batch_twenty_one-057449a9a924393f.log",
+        "log_sha256": "165cc6f2f581b663e57d01ca0555bb57152dd3823ab36e8b6f06578c6edf487f",
+        "seconds": 0.17
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/card_batch_twenty_seven-0681bd4f3d2bf42e",
+        "sha256": "0fe6b4b2a46768f2b71111affda8b7c45916754c998bbc205770704b31c06fa7",
+        "exit": 0,
+        "passed": 3,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/card_batch_twenty_seven-0681bd4f3d2bf42e.log",
+        "log_sha256": "f9e3fe343ac6e3ac99a09fe22993d06d955d00856e6cbd42f4b8caa38ed929bb",
+        "seconds": 0.18
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/card_batch_twenty_six-eeae9cfedc96c433",
+        "sha256": "5fed7fa7d5bd518f6948dd8ba19381b9207425e80e1464a39def35710db1a1b3",
+        "exit": 0,
+        "passed": 3,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/card_batch_twenty_six-eeae9cfedc96c433.log",
+        "log_sha256": "afe5ff6c33e0ff3d9592848b682ff64d8d85c1ab022ba5b92a98f273683bfaba",
+        "seconds": 0.17
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/card_batch_twenty_three-9b257e889d504dfe",
+        "sha256": "6968ca287cb5a49802f5e2b2ca63aa63fa5425bfc26724c16ff7552d4756ad35",
+        "exit": 0,
+        "passed": 4,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/card_batch_twenty_three-9b257e889d504dfe.log",
+        "log_sha256": "c5ce2732c704822040cc421a218f92d1c97c6f48b1af26dbeacb859c05466407",
+        "seconds": 0.17
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/card_batch_twenty_two-2c0997c898933277",
+        "sha256": "e32dc97df56f590e1ce1e9f0f8d6d03e47d804049f156bee3024b1ae67875b0c",
+        "exit": 0,
+        "passed": 4,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/card_batch_twenty_two-2c0997c898933277.log",
+        "log_sha256": "27dbbec64973688b8cbbb0bb9bb2b254fe034d0c3349ebbfb292cbef120de212",
+        "seconds": 0.24
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/card_batch_two-feae370609441680",
+        "sha256": "c90be5d2c3b0030dba790bf83aa36da5a6ca610e631dc22178bc98343aad7b18",
+        "exit": 0,
+        "passed": 4,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/card_batch_two-feae370609441680.log",
+        "log_sha256": "c32dd0867d092bd745015ddc7850f2a00cfef59bee111f6533770dc3608dbfa3",
+        "seconds": 2.09
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/card_expansion-5963b13cd47fa4f4",
+        "sha256": "aaf4674508e4c1c272f2127dc2c8be0ec603995b9f2b3d86e81640d8da69fbdd",
+        "exit": 0,
+        "passed": 17,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/card_expansion-5963b13cd47fa4f4.log",
+        "log_sha256": "18e55ae00a47eacd3d0f7527f721cfc218265bf705a4c707ff8db16008747bbc",
+        "seconds": 0.06
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/catalog_coverage-f191bf9ab61a3bef",
+        "sha256": "d2b1eb02d054abab641ad82fc978dd272a0b9bee1de86721c53987571e62559b",
+        "exit": 0,
+        "passed": 3,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/catalog_coverage-f191bf9ab61a3bef.log",
+        "log_sha256": "547d0b0f063d25c7c0c8d865903546889a9a5715344d9ba0284dad1d7d6ddd98",
+        "seconds": 0.18
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/catalog_review-dddbbd9d21d18230",
+        "sha256": "2af02f5f3eba799cab50a0ba73dc6925ef8fc38d4e265e72bfe489ea959b9130",
+        "exit": 0,
+        "passed": 11,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/catalog_review-dddbbd9d21d18230.log",
+        "log_sha256": "6eac98f10e7b16bd385b34707e5a39f23b1d68f96d1d7ad84e6561d47675343d",
+        "seconds": 0.28
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/conformance-acb7258f7a4d8322",
+        "sha256": "886cdf3625358775b7ca63740410792b0cc17c212f97aff3827fa68e449823f9",
+        "exit": 0,
+        "passed": 10,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/conformance-acb7258f7a4d8322.log",
+        "log_sha256": "30aae1eba279a45fa17e0722b21aa7383ddf92d3918b2ed4ef688d0ec663b1e4",
+        "seconds": 0.07
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/conversion_abilities-7983716fb78b0e23",
+        "sha256": "edf83e0d9e7586c9842c79d45325bcf28a21491afcc33d3753ca2ce979fe45f2",
+        "exit": 0,
+        "passed": 14,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/conversion_abilities-7983716fb78b0e23.log",
+        "log_sha256": "3ec40508eafd57b4a41eb565e750c27e9103100a9395f4f4ae97f325c14375da",
+        "seconds": 0.07
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/custom_decks-8ac35caaae157c37",
+        "sha256": "41dfa3c8e2c0934da6d4e6878213a3f742b7978e6e8d50969a9a5fb9e457d7e6",
+        "exit": 0,
+        "passed": 15,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/custom_decks-8ac35caaae157c37.log",
+        "log_sha256": "6fe070e44648d83ebd53842f9f0d8007cec4d52c0dd06c37832471d6d21eac07",
+        "seconds": 11.06
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/empowered_abilities-f5c694999a4c5a3b",
+        "sha256": "ef292bbc3d1d825abaa33da2ae8881fb77778bf7061e7cba740053da1339ce68",
+        "exit": 0,
+        "passed": 23,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/empowered_abilities-f5c694999a4c5a3b.log",
+        "log_sha256": "11b8527b5be0c776bd164bf2f7484566925c34267510e29458cf096e16f71d3d",
+        "seconds": 0.18
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/equipment_abilities-3e2736d1e9dff261",
+        "sha256": "9522dedfd50c674d42d78d7f92b3be914eb02f46a79341312865f3f903d4df7a",
+        "exit": 0,
+        "passed": 5,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/equipment_abilities-3e2736d1e9dff261.log",
+        "log_sha256": "575cb0ea50397b6b7d69a26eebe6d37a5a9c5ff715dd91c138ccb58ef198db57",
+        "seconds": 0.06
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/event_triggers-f6a9c669f77647f6",
+        "sha256": "d80ddecd71cab5083825dd93e538b50474087617a4c755af7eef04e836023d35",
+        "exit": 0,
+        "passed": 30,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/event_triggers-f6a9c669f77647f6.log",
+        "log_sha256": "a498057ccca8868cb930455806b41dabbda89c01b3829dfff30c6ecf3b1be726",
+        "seconds": 0.07
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/flow_costs-49caf59d3052a88f",
+        "sha256": "74648cf0478b9ca1fc553daafea25b20f17f73e554a8fdbf320f6c7eba6ec3f9",
+        "exit": 0,
+        "passed": 5,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/flow_costs-49caf59d3052a88f.log",
+        "log_sha256": "8895589372901630ebd74f40f0d3d0dc319fb5c7c88c70352c1d5a3e3adc5ffa",
+        "seconds": 0.06
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/holding-4080668c06d675c1",
+        "sha256": "cafa1adae29642bb596603865c09b61844f8a3aa6b9ff595684f4c7adb871271",
+        "exit": 0,
+        "passed": 4,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/holding-4080668c06d675c1.log",
+        "log_sha256": "0f7708af729922b47d322660dce71b7209cfb1f150ccce80e10284a23a13cdf9",
+        "seconds": 0.06
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/irelia_arito-57c77e8759ce41b9",
+        "sha256": "5172718219e2078d5482741019e0264fa40ffb13d1316c541f1e882cdc9cf1fb",
+        "exit": 0,
+        "passed": 3,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/irelia_arito-57c77e8759ce41b9.log",
+        "log_sha256": "ce15941445b0a7fda98c89ec296969a7b37972cb8e3cb534dc1cf88c6dcf9f0e",
+        "seconds": 19.36
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/irelia_backoff-e0300c96a31eb3db",
+        "sha256": "e152b3cfaf971f48a8b2fb9412f104ba59f38a68ecc68ac94a40e75f84610e55",
+        "exit": 0,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/irelia_backoff-e0300c96a31eb3db.log",
+        "log_sha256": "82b97eda6d60608626f620f07ec892f7c182d9fcb5454e9b58fb7a356dd94bab",
+        "seconds": 20.3
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/irelia_focus-6360dfd726c65675",
+        "sha256": "c143530e37c5e33b0483332a54998889a8895aae3ae486f0abba19b174ffee3f",
+        "exit": 0,
+        "passed": 9,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/irelia_focus-6360dfd726c65675.log",
+        "log_sha256": "9cbbd5c753349b1d424cde0ef9613ce76f0b2a731fdef29be2bcee2411ad985b",
+        "seconds": 11.22
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/irelia_gust-5292c085079be3f6",
+        "sha256": "2d85d6e539169e6690097f67f06d806f84060a238ca2ccb9ac85d5e694bb7c65",
+        "exit": 0,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/irelia_gust-5292c085079be3f6.log",
+        "log_sha256": "10c11a5b3bc5f4ab5ba670dcfbd2ddc1978d89f4585d516df006e38a76ababbb",
+        "seconds": 18.57
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/irelia_hunker-9e98fe39a5884b6b",
+        "sha256": "885d3073baa5f873b73c2a92ce9f1b2dd7884e2a661680285d591dbdfcce79e5",
+        "exit": 0,
+        "passed": 10,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/irelia_hunker-9e98fe39a5884b6b.log",
+        "log_sha256": "7ff11ddfdcb5866da28abbc92b36901944a3f44c6651008c298cca3979b02893",
+        "seconds": 17.28
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/irelia_innovator-9c686011f6a68811",
+        "sha256": "a4a9a375e7847c4ef5fed77284fb25cafc081a3844e72c651ae8c2ea2bfc4e86",
+        "exit": 0,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/irelia_innovator-9c686011f6a68811.log",
+        "log_sha256": "f05a37767f0e297b43980baf5087ed88c3af815cd5ec56f8b38cb751641a94c0",
+        "seconds": 15.28
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/irelia_next-4dfd316375b698e8",
+        "sha256": "4f3a1ef3132398de85827b6a648685b8e96c15ed25930e44c8de2da68d80c630",
+        "exit": 0,
+        "passed": 7,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/irelia_next-4dfd316375b698e8.log",
+        "log_sha256": "2c351aa08c080e093bb137ecc0cf2f7afe09907c4a864fdd70ccc743b87778bf",
+        "seconds": 7.34
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/irelia_orianna-72f395e6903ff7dd",
+        "sha256": "d3e6553e6534cdf67db6122a6ffdfe70719ad4cf0e9053c9e3c8ef53bb70ce52",
+        "exit": 0,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/irelia_orianna-72f395e6903ff7dd.log",
+        "log_sha256": "e3f858cd34ee1ada376cc19f6e21ec05c0d700fa9fac0b90f44b379f3cabf526",
+        "seconds": 17.36
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/irelia_preparations-1d6d5495718a99a1",
+        "sha256": "1cbfa852493cb4852aad24ec5691514ddf743436ce0fefcaf35962563b60ce95",
+        "exit": 0,
+        "passed": 14,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/irelia_preparations-1d6d5495718a99a1.log",
+        "log_sha256": "99d1689d912ca2a631e9526ec2bc9e1a68294de6fea7532426d25dbdf78b591b",
+        "seconds": 18.89
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/irelia_raven-6bae301aa55527a3",
+        "sha256": "985cf6c751472a950480b7208b24cd95b7d021f790bfa6a56dd6d75e13b8be44",
+        "exit": 0,
+        "passed": 11,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/irelia_raven-6bae301aa55527a3.log",
+        "log_sha256": "cc87b5d1ae6fc41aebb2cecb52821a77fd4b1a609bbe0d46d5e29f5ed145ec48",
+        "seconds": 17.98
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/irelia_siren-36998ca0c8de6263",
+        "sha256": "5d73b6e4cc7e9260e83dc64c4d0f0b3b561977f67c07102aebc5e0778b886cb5",
+        "exit": 0,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/irelia_siren-36998ca0c8de6263.log",
+        "log_sha256": "e22e35799d006007236b29269a920be70b8d6750c1db5513893f89473e4a1532",
+        "seconds": 16.21
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/keyword_expansion-5d9f54f1c2cac28d",
+        "sha256": "8afb075dde60d67b5a3106986afb63ef6f3309046ebfe95a16517378f66bf2b6",
+        "exit": 0,
+        "passed": 17,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/keyword_expansion-5d9f54f1c2cac28d.log",
+        "log_sha256": "c7958e0236ef8fcc986dbfb3889110f27cffdc5becffbb83dcdbcd67da3db13c",
+        "seconds": 0.05
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/legend_decks-155b504a491a67a4",
+        "sha256": "5478ee74814f5f0919ba8747c1921d0af854ec8121c1241ca25633c9b58f3f87",
+        "exit": 0,
+        "passed": 7,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/legend_decks-155b504a491a67a4.log",
+        "log_sha256": "fb9fc525d2b6e3b90ff9b16c387e50ffd5fc67f7f5dbeba7dc0709c7721c0ba7",
+        "seconds": 0.18
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/legend_foundation-91cbe66e985d5301",
+        "sha256": "50cf4b293534075d6b0a30a37ca0b511e92c41444a1a3e61a8644338ea46910a",
+        "exit": 0,
+        "passed": 15,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/legend_foundation-91cbe66e985d5301.log",
+        "log_sha256": "1522f54b6447aa2ef905947a9e618e90f0960cccb24d0e509fecebfd4fc30e83",
+        "seconds": 0.17
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/local_rift-f3b4ec23503e7f7c",
+        "sha256": "587c88b8563269c2b382f30851c419fe6307cef26e3760a9338d84041f9364e5",
+        "exit": 0,
+        "passed": 127,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/native-tests-final2.log",
+        "log_sha256": "466676d741decc6171a01910654351662c8a05de055c22506752dbc99b3c9eea",
+        "seconds": 2.61
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/local_rift-f945c4cb8e79f7c9",
+        "sha256": "7b6fcf003f4ad17ee10ba6ca335a3efa8b83e9d36cc634d539862b1457ff2d3d",
+        "exit": 0,
+        "passed": 782,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/local_rift-f945c4cb8e79f7c9.log",
+        "log_sha256": "ebc5b6d75cf9930fa94f751c52a076681f44870213d31e5707e2cb8aee5c245c",
+        "seconds": 9.05
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/match_series-54ef19bf17967960",
+        "sha256": "530df20026ce07cee18e40d7c4941f89a922410ed85cd785f33fc57fe387e782",
+        "exit": 0,
+        "passed": 11,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/match_series-54ef19bf17967960.log",
+        "log_sha256": "c224e28317eb79a8bc402060c5de7a59acc94e04b93e21c900c294f15912213d",
+        "seconds": 16.36
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/nested_plays-237faf22c862f8e1",
+        "sha256": "90be61b45d403b0240789c015082398ab29d14a1aa3e6af44441eb6da8c36b6c",
+        "exit": 0,
+        "passed": 9,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/nested_plays-237faf22c862f8e1.log",
+        "log_sha256": "96db942d3444fb0a7793ad211d46fc863c6188f44bb7abd23c7fc8092fba0396",
+        "seconds": 0.09
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/numeric_runtime-dafb06482bd7e0de",
+        "sha256": "caa4dda9b4952c2827650c26245631b6cc45f9c592d9b3d8334bfc93c92f8171",
+        "exit": 0,
+        "passed": 21,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/numeric_runtime-dafb06482bd7e0de.log",
+        "log_sha256": "4d560d75015391f23438cd36b681c2bc8078c92e9aa55dabc7b04bd574a98585",
+        "seconds": 0.19
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/payment_plans-c496f964ff2cddba",
+        "sha256": "0cae141d2beb60a65bf0710e1c63c446bc7fe56d755e0e56ad94c4561f901c8f",
+        "exit": 0,
+        "passed": 9,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/payment_plans-c496f964ff2cddba.log",
+        "log_sha256": "69e6aa053d4331c2cff6dbb8e950b8f6944a6fc0822de16c298b6b68bfb98b92",
+        "seconds": 0.07
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/payments-cd8424839e4d0ab6",
+        "sha256": "6cad5780c090af45a3ad6fefa7fdf6359dbde0b03b3a7050459da53fac0e6a6f",
+        "exit": 0,
+        "passed": 9,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/payments-cd8424839e4d0ab6.log",
+        "log_sha256": "3c38ae824bb9e97ac7c509e59f29c01ea51a44da91604e0d318805066c020974",
+        "seconds": 2.69
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/rengar_preset-f2221ddfe07b4307",
+        "sha256": "1b6a0235e30eb07873345bf3bbf019758dcb0512b0cd273b4a5eddf61c4a7cdb",
+        "exit": 0,
+        "passed": 5,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/rengar_preset-f2221ddfe07b4307.log",
+        "log_sha256": "f4d69f245f12051fa585ea7a7cc203cc2529029731497c6c2c021e2e12cc0422",
+        "seconds": 0.16
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/repeat_flow_expansion-902ef2267ba369c3",
+        "sha256": "2a4d76ab093738a66fe873f274c772d281f7babd85e55c826e10bfb6aedec2fd",
+        "exit": 0,
+        "passed": 8,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/repeat_flow_expansion-902ef2267ba369c3.log",
+        "log_sha256": "43e9560f428f7c69147af915e8cbbf517b6086cd5f4cccc0bdef39d78491b192",
+        "seconds": 0.06
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/rift_api-72e371709eef4ad5",
+        "sha256": "bb077a6c6c870f605adb446611b922dd5a94e1a178a024d7ff42551ad23d8e24",
+        "exit": 0,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/rift_api-72e371709eef4ad5.log",
+        "log_sha256": "762e1caf62c9f91b0abf5a88209ed91b34efc7307416467c93c987c8f9cad082",
+        "seconds": 0.05
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/rules_audit-90089c4901cfbbda",
+        "sha256": "f794b1cb66ffcaf795d00e81646fa65f1efa1887fcf98e3c945203b787e6c29a",
+        "exit": 0,
+        "passed": 9,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/rules_audit-90089c4901cfbbda.log",
+        "log_sha256": "8395b0d8ca0ada0fa5cdd6131b55b675a22636d5df7088d10c2d88e16f3205be",
+        "seconds": 0.06
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/scalar_spell_expansion-da899810b1663eb6",
+        "sha256": "4b750355768b0358e4f50d107e584801bde668268aa37fe4d7e8d1d021446638",
+        "exit": 0,
+        "passed": 17,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/scalar_spell_expansion-da899810b1663eb6.log",
+        "log_sha256": "3954d408f9005c7838b0b492b67e0339120a38ac592c18b8d66122a2314c0afa",
+        "seconds": 0.05
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/simulate-aa3cf87772bde5b6",
+        "sha256": "4dd3c2ba717fb00f82d7b22d792a0ec6dc769c65861b14da413da5bd8dd0ace4",
+        "exit": 0,
+        "passed": 0,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/simulate-aa3cf87772bde5b6.log",
+        "log_sha256": "df166913f47ff1f04202cae9b31df67ed272d692d99a0023a8117dc3029100dd",
+        "seconds": 0.01
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/spell_expansion-21db5de186b72374",
+        "sha256": "8959b7eeee329d226d3b511d36ed4149483d6d24fdc959f36d426044cfc11648",
+        "exit": 0,
+        "passed": 12,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/spell_expansion-21db5de186b72374.log",
+        "log_sha256": "c31e78fe4a18e70efe75f9dc241ef6373854e1feef988d9ce463daf41b5a25dd",
+        "seconds": 0.06
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/staged_battlefields-daf921129dad9bf1",
+        "sha256": "259107a9b353d1377534b49c0fbe6c8017ffc437bd214e2b2ab21a7fa7be9a5d",
+        "exit": 0,
+        "passed": 6,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/staged_battlefields-daf921129dad9bf1.log",
+        "log_sha256": "f958882ef010bf6d05da6cd12b4dd8641e69f22fac15e23f9b195395b6a4aa29",
+        "seconds": 0.06
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/strategic_api-3878645bb9f495b0",
+        "sha256": "59ec1944223fb15060dd6064fad30db29f754f89351f9ec10297e64d14d14c50",
+        "exit": 0,
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/strategic_api-3878645bb9f495b0.log",
+        "log_sha256": "5ed248692e89b6b5c1fc53ecd5ee19162546343018e44f28b2fd7fac30379734",
+        "seconds": 0.11
+      },
+      {
+        "executable": "/home/benchen/.cache/local-rift-builds/series-target/debug/deps/third_unit_expansion-f1eddbf627324600",
+        "sha256": "14099606e33158d0d1bd637d179f9cc514969badee8290b7898b07c03790cdbf",
+        "exit": 0,
+        "passed": 13,
+        "failed": 0,
+        "ignored": 0,
+        "log": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-targets/third_unit_expansion-f1eddbf627324600.log",
+        "log_sha256": "c23542c197d2ded10b42d34339e728ec3fb254da0e8414a063e671fd003b664a",
+        "seconds": 0.06
+      }
+    ]
+  },
+  "python": {
+    "passed": 269,
+    "failed": 0,
+    "scope": "Full existing source/catalog checks. Test/tool/card data inputs are unchanged by the two subsequent native input corrections."
+  },
+  "native_controller": {
+    "tests_added": 3,
+    "included_in_rust_total": true,
+    "complete_matches": 6,
+    "actual_games": 14,
+    "levels": [
+      "easy",
+      "tactical",
+      "strategic"
+    ],
+    "both_initial_designated_seats": true,
+    "scope": "Six independently seeded Arito mirror matches reach actual game winners. Sideboard swaps are applied before game two. The alternative-champion unit test explicitly authors a variant registration; it does not alter or mislabel Arito’s preset."
+  },
+  "native_interface": {
+    "runs": [
+      {
+        "level": "easy",
+        "small": false,
+        "capture": true,
+        "exit": 0,
+        "path": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/ui-final2-easy-normal-capture",
+        "binary_sha256": "b62bb91c8838701c83cf67c6c12ee0a121bbcf3dad87bb8253b0b10c56ac0998",
+        "log_sha256": "7a2927343bc3836bc30e8328d39e6e7704af1201ed5570bc159fd14393497902",
+        "actual_games_completed": 3,
+        "frames": 58
+      },
+      {
+        "level": "easy",
+        "small": false,
+        "capture": false,
+        "exit": 0,
+        "path": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/ui-final2-easy-normal-plain",
+        "binary_sha256": "b62bb91c8838701c83cf67c6c12ee0a121bbcf3dad87bb8253b0b10c56ac0998",
+        "log_sha256": "7a2927343bc3836bc30e8328d39e6e7704af1201ed5570bc159fd14393497902",
+        "actual_games_completed": 3,
+        "frames": 58
+      },
+      {
+        "level": "easy",
+        "small": true,
+        "capture": true,
+        "exit": 0,
+        "path": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/ui-final2-easy-small-capture",
+        "binary_sha256": "b62bb91c8838701c83cf67c6c12ee0a121bbcf3dad87bb8253b0b10c56ac0998",
+        "log_sha256": "7a2927343bc3836bc30e8328d39e6e7704af1201ed5570bc159fd14393497902",
+        "actual_games_completed": 3,
+        "frames": 58
+      },
+      {
+        "level": "easy",
+        "small": true,
+        "capture": false,
+        "exit": 0,
+        "path": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/ui-final2-easy-small-plain",
+        "binary_sha256": "b62bb91c8838701c83cf67c6c12ee0a121bbcf3dad87bb8253b0b10c56ac0998",
+        "log_sha256": "7a2927343bc3836bc30e8328d39e6e7704af1201ed5570bc159fd14393497902",
+        "actual_games_completed": 3,
+        "frames": 58
+      },
+      {
+        "level": "tactical",
+        "small": false,
+        "capture": true,
+        "exit": 0,
+        "path": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/ui-final2-tactical-normal-capture",
+        "binary_sha256": "b62bb91c8838701c83cf67c6c12ee0a121bbcf3dad87bb8253b0b10c56ac0998",
+        "log_sha256": "7a2927343bc3836bc30e8328d39e6e7704af1201ed5570bc159fd14393497902",
+        "actual_games_completed": 3,
+        "frames": 58
+      },
+      {
+        "level": "tactical",
+        "small": false,
+        "capture": false,
+        "exit": 0,
+        "path": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/ui-final2-tactical-normal-plain",
+        "binary_sha256": "b62bb91c8838701c83cf67c6c12ee0a121bbcf3dad87bb8253b0b10c56ac0998",
+        "log_sha256": "7a2927343bc3836bc30e8328d39e6e7704af1201ed5570bc159fd14393497902",
+        "actual_games_completed": 3,
+        "frames": 58
+      },
+      {
+        "level": "tactical",
+        "small": true,
+        "capture": true,
+        "exit": 0,
+        "path": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/ui-final2-tactical-small-capture",
+        "binary_sha256": "b62bb91c8838701c83cf67c6c12ee0a121bbcf3dad87bb8253b0b10c56ac0998",
+        "log_sha256": "7a2927343bc3836bc30e8328d39e6e7704af1201ed5570bc159fd14393497902",
+        "actual_games_completed": 3,
+        "frames": 58
+      },
+      {
+        "level": "tactical",
+        "small": true,
+        "capture": false,
+        "exit": 0,
+        "path": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/ui-final2-tactical-small-plain",
+        "binary_sha256": "b62bb91c8838701c83cf67c6c12ee0a121bbcf3dad87bb8253b0b10c56ac0998",
+        "log_sha256": "7a2927343bc3836bc30e8328d39e6e7704af1201ed5570bc159fd14393497902",
+        "actual_games_completed": 3,
+        "frames": 58
+      },
+      {
+        "level": "strategic",
+        "small": false,
+        "capture": true,
+        "exit": 0,
+        "path": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/ui-final2-strategic-normal-capture",
+        "binary_sha256": "b62bb91c8838701c83cf67c6c12ee0a121bbcf3dad87bb8253b0b10c56ac0998",
+        "log_sha256": "7a2927343bc3836bc30e8328d39e6e7704af1201ed5570bc159fd14393497902",
+        "actual_games_completed": 3,
+        "frames": 58
+      },
+      {
+        "level": "strategic",
+        "small": false,
+        "capture": false,
+        "exit": 0,
+        "path": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/ui-final2-strategic-normal-plain",
+        "binary_sha256": "b62bb91c8838701c83cf67c6c12ee0a121bbcf3dad87bb8253b0b10c56ac0998",
+        "log_sha256": "7a2927343bc3836bc30e8328d39e6e7704af1201ed5570bc159fd14393497902",
+        "actual_games_completed": 3,
+        "frames": 58
+      },
+      {
+        "level": "strategic",
+        "small": true,
+        "capture": true,
+        "exit": 0,
+        "path": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/ui-final2-strategic-small-capture",
+        "binary_sha256": "b62bb91c8838701c83cf67c6c12ee0a121bbcf3dad87bb8253b0b10c56ac0998",
+        "log_sha256": "7a2927343bc3836bc30e8328d39e6e7704af1201ed5570bc159fd14393497902",
+        "actual_games_completed": 3,
+        "frames": 58
+      },
+      {
+        "level": "strategic",
+        "small": true,
+        "capture": false,
+        "exit": 0,
+        "path": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/ui-final2-strategic-small-plain",
+        "binary_sha256": "b62bb91c8838701c83cf67c6c12ee0a121bbcf3dad87bb8253b0b10c56ac0998",
+        "log_sha256": "7a2927343bc3836bc30e8328d39e6e7704af1201ed5570bc159fd14393497902",
+        "actual_games_completed": 3,
+        "frames": 58
+      }
+    ],
+    "actual_game_executions": 36,
+    "distinct_seeded_match_scenarios": 3,
+    "scope": "Each difficulty uses the same fixed seed and completes one three-game match, repeated at two window sizes with and without captures. These are twelve executed matches, not twelve distinct seeded scenarios. Separate concession fixtures occur only after the played match has finished.",
+    "captured_images": 108
+  },
+  "single_game_regressions": {
+    "runs": [
+      {
+        "mode": "irelia",
+        "small": false,
+        "screenshots": true,
+        "exit": 0,
+        "path": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/irelia-arito-ui-isolated-retry-irelia-normal-capture",
+        "binary_sha256": "b62bb91c8838701c83cf67c6c12ee0a121bbcf3dad87bb8253b0b10c56ac0998",
+        "prior_attempt": {
+          "mode": "irelia",
+          "small": false,
+          "screenshots": true,
+          "exit": 1,
+          "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-arito-ui-native-series-final2-irelia-normal-capture",
+          "binary_sha256": "b62bb91c8838701c83cf67c6c12ee0a121bbcf3dad87bb8253b0b10c56ac0998",
+          "log_sha256": "36c8430ce7e674a5c8917c40b53151958e200a8e30a348caa1e8e307edb32e36"
+        },
+        "log_sha256": "1d00480580d407474a10f4b1e5ec20ad0c707c169d430bac43fd89c1519458b9"
+      },
+      {
+        "mode": "irelia",
+        "small": false,
+        "screenshots": false,
+        "exit": 0,
+        "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-arito-ui-native-series-final2-irelia-normal-plain",
+        "binary_sha256": "b62bb91c8838701c83cf67c6c12ee0a121bbcf3dad87bb8253b0b10c56ac0998",
+        "log_sha256": "1d00480580d407474a10f4b1e5ec20ad0c707c169d430bac43fd89c1519458b9"
+      },
+      {
+        "mode": "irelia",
+        "small": true,
+        "screenshots": true,
+        "exit": 0,
+        "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-arito-ui-native-series-final2-irelia-small-capture",
+        "binary_sha256": "b62bb91c8838701c83cf67c6c12ee0a121bbcf3dad87bb8253b0b10c56ac0998",
+        "log_sha256": "1d00480580d407474a10f4b1e5ec20ad0c707c169d430bac43fd89c1519458b9"
+      },
+      {
+        "mode": "irelia",
+        "small": true,
+        "screenshots": false,
+        "exit": 0,
+        "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-arito-ui-native-series-final2-irelia-small-plain",
+        "binary_sha256": "b62bb91c8838701c83cf67c6c12ee0a121bbcf3dad87bb8253b0b10c56ac0998",
+        "log_sha256": "1d00480580d407474a10f4b1e5ec20ad0c707c169d430bac43fd89c1519458b9"
+      },
+      {
+        "mode": "presets",
+        "small": false,
+        "screenshots": true,
+        "exit": 0,
+        "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-arito-ui-native-series-final2-presets-normal-capture",
+        "binary_sha256": "b62bb91c8838701c83cf67c6c12ee0a121bbcf3dad87bb8253b0b10c56ac0998",
+        "log_sha256": "27a1e545e2e7f010e2ec7be9d6c93367e46dda1440b51f46e4f45e7217064a23"
+      },
+      {
+        "mode": "presets",
+        "small": false,
+        "screenshots": false,
+        "exit": 0,
+        "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-arito-ui-native-series-final2-presets-normal-plain",
+        "binary_sha256": "b62bb91c8838701c83cf67c6c12ee0a121bbcf3dad87bb8253b0b10c56ac0998",
+        "log_sha256": "27a1e545e2e7f010e2ec7be9d6c93367e46dda1440b51f46e4f45e7217064a23"
+      },
+      {
+        "mode": "presets",
+        "small": true,
+        "screenshots": true,
+        "exit": 0,
+        "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-arito-ui-native-series-final2-presets-small-capture",
+        "binary_sha256": "b62bb91c8838701c83cf67c6c12ee0a121bbcf3dad87bb8253b0b10c56ac0998",
+        "log_sha256": "27a1e545e2e7f010e2ec7be9d6c93367e46dda1440b51f46e4f45e7217064a23"
+      },
+      {
+        "mode": "presets",
+        "small": true,
+        "screenshots": false,
+        "exit": 0,
+        "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-arito-ui-native-series-final2-presets-small-plain",
+        "binary_sha256": "b62bb91c8838701c83cf67c6c12ee0a121bbcf3dad87bb8253b0b10c56ac0998",
+        "log_sha256": "27a1e545e2e7f010e2ec7be9d6c93367e46dda1440b51f46e4f45e7217064a23"
+      }
+    ],
+    "captured_images": 146,
+    "scope": "Existing Irelia interactions and sourced-preset selection/editor controls at both window sizes, with and without capture."
+  },
+  "visual_review": [
+    {
+      "path": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/ui-final2-tactical-small-capture/sideboard_advanced.png",
+      "sha256": "ed6910b079a071556a630498a31d879fd99bb9f22e0d85f779d7bf3db617e0a4",
+      "finding": "At 1152 by 720 the complete visible card rows, copy counts, chosen champion, paging, undo and confirmation fit; Advanced Mote advice stays in the sidebar."
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/ui-final2-tactical-normal-capture/fields.png",
+      "sha256": "3ef39a04330f09183d9a3d61f2a7867a36299c1640f3afc56496820380a89a77",
+      "finding": "All three registered battlefield faces and effect text are visible, with separate full-rules and select controls; confirmation is disabled before selection."
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/ui-final2-tactical-small-capture/complete.png",
+      "sha256": "8fb78a38f7cb95c94519d7827455f89b8f901c1de8d2c00d13ca4c17757ac765",
+      "finding": "The completed three-game history and game point scores are separate from the two-win match markers; the new-match control is visible."
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/ui-final2-tactical-normal-capture/board.png",
+      "sha256": "8a51b022d9830d68aa2c224520cd3037822c10e8a9140738c60928e333d2dd05",
+      "finding": "The active game retains physical rune reserves, side point tracks, hand card art and readable location rules, with the game number/match score and explicit concession control."
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/ui-final2-tactical-small-capture/card_rules.png",
+      "sha256": "8d69fa14172457d7f37e9072a9968c971c7062417056b637141417b849837410",
+      "finding": "Sideboard card inspection shows the full Irelia face and complete official rules, with a visible close control."
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/ui-final2-tactical-small-capture/lobby_editor.png",
+      "sha256": "afebf80f9fb2cd10df7f7af1f4e6263229b48c9a5f5e3776f7e682d5c1f47c78",
+      "finding": "The normal deck editor remains usable after navigating away from the match lobby; the scrolled list and return/save controls are visible."
+    }
+  ],
+  "checks": [
+    "cargo fmt --all --check",
+    "cargo clippy --all-targets -- -D warnings",
+    "offline catalog check"
+  ],
+  "release": {
+    "command": "cargo build --release --bins",
+    "client_sha256": "b62bb91c8838701c83cf67c6c12ee0a121bbcf3dad87bb8253b0b10c56ac0998",
+    "api_sha256": "034cac6760fa13b9bbb6aa94c5e4ac9ac6b785305aa88a813ca778d0a2c7160b",
+    "exit": 0
+  },
+  "source_bridge": {
+    "full_suite_input": "tested-source.json",
+    "final_input": "tested-source3.json",
+    "changed_after_full_build": [
+      "src/main.rs",
+      "src/smoke/series.rs"
+    ],
+    "revalidation": "The complete native test harness, strict all-targets Clippy, release binaries, all twelve series UI runs and eight existing UI runs were rerun after the final native corrections. The unchanged engine/API and integration test artifacts retain their verified hashes."
+  },
+  "rules_review": {
+    "basis": "docs/validation/match_series.json",
+    "standard_rules_date": "2026-10-09",
+    "references": [
+      "CR103",
+      "CR110-118",
+      "CR488",
+      "TR403",
+      "TR406",
+      "TR407",
+      "TR410",
+      "TR601.1"
+    ],
+    "native_contracts": [
+      "Use the shared MatchSeries validator and lifecycle without changing the registered main/side pool, legend, runes or battlefield set.",
+      "Opponent setup reads only its own observation and commits its battlefield before the human confirmation; both fields then reveal together.",
+      "Create hands only after play-order choice. The AI mulligan uses only its own hand and takes place in turn order relative to the human.",
+      "Keep the main deck at exactly forty with an eligible chosen champion. Invalid edits disable submission; preview validation cannot commit a choice.",
+      "Record each actual game once, show match wins separately from point scores, retire used fields and give the next play-order choice to the previous loser.",
+      "Starting a fresh match restores its original registration and available fields. Explicit concessions award a game win; leaving an unfinished match is a separate confirmed action."
+    ]
+  },
+  "findings_resolved": [
+    "One Irelia capture run lost its X display before any UI checks began. A separate fresh-display rerun of that same release binary passed; the failed attempt and log hash remain attached to its replacement record.",
+    "Initial compilation required native integration methods to be visible to their parent module; test AI calls were corrected to the existing engine step_ai interface.",
+    "A test incorrectly expected another Irelia champion in Arito’s real sideboard. The positive champion-change test now uses an explicitly authored legal registration; the native UI campaign keeps the exact sourced preset.",
+    "Strict Clippy found one collapsible conditional; the final source passes with warnings denied.",
+    "Review found setup pausing input for unrelated app screens. The final gate applies only to Practice; a native click test enters and scrolls the deck editor from match setup.",
+    "Review found a winning-frame click could reach the old standalone result controls. Registered games no longer render that result panel; the native campaign clicks the old restart coordinates after each actual game win and verifies the series remains intact."
+  ],
+  "limitations": [
+    "Native match registration currently offers only the complete Arito Irelia preset. Other presets and saved custom lists remain available for single games; explicit custom registrations are available through Rust/API.",
+    "The AI keeps its main deck between games, selects its first unused registered field and chooses to start when designated. Its three difficulty levels govern in-game play; this update does not establish expert matchup or sideboarding strength.",
+    "Native draw-agreement controls and resumable match saves are not implemented. The existing API supports intentional draws after game setup.",
+    "Timed tournament rounds, judge procedures, best-of-five, broader in-game fidelity and full card coverage remain unfinished.",
+    "The card pool stays at 466 of 1079 accepted legal identities; 613 remain unavailable. No new full-gallery acceptance is claimed.",
+    "Acceptance uses x86-64 Linux software rendering. No new independent Nix validation was run; the last separately validated Nix source remains 6411bd141a3bff35eb6491e2a6202496045030bf."
+  ],
+  "logs": {
+    "tested-source.json": {
+      "path": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/tested-source.json",
+      "sha256": "2f60a8e6778c3576a803c805d639b392210f555089870d548bef125f751cb9d1"
+    },
+    "tested-source2.json": {
+      "path": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/tested-source2.json",
+      "sha256": "247768cb111c32cd7280aa46e457fdf20a445b342cc9e1a1ef369e8cc8fcf5ca"
+    },
+    "tested-source3.json": {
+      "path": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/tested-source3.json",
+      "sha256": "3a2f4f2719af43beff4fec24e3159f4351ea0a3d2394d275100e254e59fb65d9"
+    },
+    "rust-results.json": {
+      "path": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/rust-results.json",
+      "sha256": "db15c61c0343928b0ef9bd89143d270fa13fc354d4b1a17689cc5a32c50c6a8c"
+    },
+    "verified-before-native-rebuild.json": {
+      "path": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/verified-before-native-rebuild.json",
+      "sha256": "05ce14f20be05272f0f3b34cb007981d684d6d3a55dad5012ca7398c58d90c06"
+    },
+    "native-tests-final.log": {
+      "path": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/native-tests-final.log",
+      "sha256": "599d3828e134786144e78429282bb443befd5741e2f681f615b65896baaf3e5e"
+    },
+    "native-tests-final2.log": {
+      "path": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/native-tests-final2.log",
+      "sha256": "466676d741decc6171a01910654351662c8a05de055c22506752dbc99b3c9eea"
+    },
+    "python1.log": {
+      "path": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/python1.log",
+      "sha256": "b1d4e75a03a8ede8046b123362b7cbd26b4226d5657f037ddc4ed42279adb300"
+    },
+    "focused1.log": {
+      "path": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/focused1.log",
+      "sha256": "062d9489ac3d32080ddfe7770cf2e92a5d957d8654705a3aedb9bc6ccc3db355"
+    },
+    "focused2.log": {
+      "path": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/focused2.log",
+      "sha256": "672242de6d51ef9b44a1bd96f857fccd787538d0d057ecebe19f0ecd058e3125"
+    },
+    "focused3.log": {
+      "path": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/focused3.log",
+      "sha256": "051c01675957f57a09c17d3de45e7fdeaa22b2ae75146d2ae1261f5735077e51"
+    },
+    "clippy1.log": {
+      "path": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/clippy1.log",
+      "sha256": "0a4322c204a766ef9578a5ef61d0436198224eec361179f23342416865f3c2d0"
+    },
+    "clippy2.log": {
+      "path": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/clippy2.log",
+      "sha256": "acca53bae67e6bf890e49a724d1577dedf4985c2ec82d78a8be59c2e070422a1"
+    },
+    "clippy-final2.log": {
+      "path": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/clippy-final2.log",
+      "sha256": "2ee65314e7158a5452e27683cb4ce864e671a124fca9eb1ebe7bede917268381"
+    },
+    "release-final2.log": {
+      "path": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/release-final2.log",
+      "sha256": "fe131246c150d7b561e9a1f2f5c43078220788f27ffc17fd346f8b23b75d95a7"
+    },
+    "fmt-final.log": {
+      "path": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/fmt-final.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "catalog.log": {
+      "path": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/catalog.log",
+      "sha256": "138a6de73ce2e79eb9e8dc2a7e9dad9010e2dc820a1f3f1155ea1956c5fde585"
+    },
+    "ui-final2.json": {
+      "path": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/ui-final2.json",
+      "sha256": "d150205b5d880dc6f300737ef4508bdb7d6fb4679a2a3a6ef285af38de0af826"
+    },
+    "ui-final2.log": {
+      "path": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/ui-final2.log",
+      "sha256": "11924d5dc8af8024ec0cfca9209d089f8afc9e4df74266f8a1d033bfd4535478"
+    },
+    "regression-ui-final2.log": {
+      "path": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/regression-ui-final2.log",
+      "sha256": "ed34ede4cafc52f821df6c0a0b60eaa48d22ceef7c10701e833af264764b4b1e"
+    },
+    "run_all_tests.py": {
+      "path": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/run_all_tests.py",
+      "sha256": "de3dc635ab096e8de4f4702b729f526c13cbe55c431ece290c206ebb887ddb2a"
+    },
+    "run_ui.py": {
+      "path": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/run_ui.py",
+      "sha256": "dd1417fc1694415804c2529b04231df85ecda0f09349d38d5dcabca89a050731"
+    },
+    "display-retry.log": {
+      "path": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/display-retry.log",
+      "sha256": "e63b89151585ae9aeb97b474ae69770db398fef023fb803c3fe71c577865a3b1"
+    },
+    "irelia-arito-ui-isolated-retry.json": {
+      "path": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/irelia-arito-ui-isolated-retry.json",
+      "sha256": "156d68ed7b0804a451672335be9101436fc5b3be9d15c0f36812906b159d53d4"
+    },
+    "visual-review.json": {
+      "path": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/visual-review.json",
+      "sha256": "5ae1918518ca0c4154d5b1a23d103f1e6b3331a991185e803b2b0a69a971da12"
+    },
+    "regression-ui-final-accepted.json": {
+      "path": "/home/benchen/.cache/local-rift-work/native-series-2026-11-11/regression-ui-final-accepted.json",
+      "sha256": "10b2218067a6672c842ae04ffb5b2bcbe9ed8c68aeb187a8b1275776dcea2551"
+    }
+  }
+}

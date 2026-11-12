@@ -1,9 +1,47 @@
 # Registered best-of-three practice
 
-The shared Rust engine and JSON bot API support **untimed Standard best-of-three
-matches**. The native client still runs individual practice games; its match
-setup and sideboarding screens are the next integration step. Timed tournament
-rounds, judge penalties and best-of-five are not implemented.
+The native app, shared Rust engine and JSON bot API support **untimed Standard
+best-of-three matches** within the implemented card pool and in-game rules scope.
+Timed tournament rounds, judge penalties and best-of-five are not implemented.
+
+## Play in the app
+
+1. From **Practice**, choose **Best of three**. Select **Use Arito Irelia
+   registration** for each seat if your selected list is incomplete. The app
+   displays the 40-card main deck count, ten-card sideboard count and all three
+   registered battlefields. Click a field to read its rules.
+2. Choose the AI difficulty and how to designate the opening chooser. **Coin
+   toss** makes that choice randomly; the other options explicitly designate a
+   seat for practice. Choose **Register & choose battlefield**.
+3. Select an unused battlefield and confirm. The AI commits before your choice
+   is revealed. Both fields then appear together with the chosen champions.
+4. If designated, choose first or second; otherwise the AI chooses first.
+   Opening hands are then drawn. Choose up to two replacements or keep your hand.
+   The AI takes its own mulligan in the correct turn order.
+5. Play to a game winner. The result screen shows match wins separately from
+   point scores, plus the fields and result of each completed game.
+6. Choose **Continue to sideboarding**. **Out >** moves one copy from main to
+   sideboard, and **< In** moves one back. Click a card name for its full rules,
+   or hover to preview it. The arrows page through the complete lists.
+7. Keep exactly 40 main cards and an eligible chosen champion. **Choose** marks
+   an eligible champion in the main deck. The confirmation button stays disabled
+   while the list is illegal. **Undo this game's edits** restores the list from
+   before this sideboarding window. Confirming locks the submitted choice.
+8. Choose an unused field; the previous loser chooses play order. Repeat until
+   one player wins two games. A new match restores the original registrations.
+
+**Concede game** has a confirmation step and awards the opponent one game win.
+**Leave match** discards the unfinished game after confirmation. Completed game
+wins and losses remain in the practice record. Mote provides Beginner rules
+reminders or Advanced planning advice in the sidebar throughout setup.
+
+The native app currently offers only the complete Arito registration for this
+mode. Custom match registrations remain available through Rust and the bot API.
+The native AI keeps its main deck between games, chooses the next unused field
+in its registration and chooses first when designated; all three difficulty
+levels apply during game play. Matchup-specific AI sideboarding remains future
+work. Native draw-agreement controls are not yet exposed; the API supports them.
+The app does not save an unfinished match for later resumption.
 
 ## Run a complete match
 
@@ -74,8 +112,9 @@ API is not an authenticated multiplayer server. Existing standalone `reset`,
 `start` and gameplay commands keep their previous behavior; `reset` leaves the
 series and starts a standalone practice game.
 
-See [API.md](API.md#registered-match-commands) for commands and
-[the validation record](validation/match_series.json) for tested scope.
+See [API.md](API.md#registered-match-commands) for commands,
+[engine/API validation](validation/match_series.json) and
+[native validation](validation/native_match_series.json) for tested scope.
 
 ## Rules audit
 
