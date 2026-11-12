@@ -50,14 +50,16 @@ struct PaymentCard {
     origin: PaymentOrigin,
 }
 
-/// The result of refusing a supported frozen finalization cost. Ordinary refusal
-/// and Undo are equivalent; pending objects also need to leave the chain.
+/// The result of refusing a supported frozen cost. Finalization refusal rolls
+/// back the play; instruction refusal skips its effect and retains Add actions.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum PaymentRefusalKind {
     Ordinary,
     PendingCard,
     PendingToken,
     Trigger,
+    /// Skip a dependent effect of an already resolving ability; keep Add actions.
+    Instruction,
 }
 
 /// The selected card is publicly announced and physically in the pending zone.
@@ -107,6 +109,11 @@ impl PaymentPlan {
         }
         use PaymentRefusalKind::*;
         match action {
+            Action::ResolveTriggerPayment { pay: true, .. }
+                if self.original.resolving_trigger_payment().is_some() =>
+            {
+                Some(Instruction)
+            }
             Action::FinalizePendingPlay { .. } => Some(PendingCard),
             Action::FinalizeTokenPlay { .. } | Action::PlaceToken { .. } => Some(PendingToken),
             Action::PlayFromTrash { .. }
@@ -159,7 +166,10 @@ fn pending_trigger_finalization(game: &Game) -> bool {
     match game.decision {
         Some(
             Decision::BattlefieldPayment { .. }
-            | Decision::TriggerPayment { .. }
+            | Decision::TriggerPayment {
+                resolving_chain_id: None,
+                ..
+            }
             | Decision::TriggerTargets { .. }
             | Decision::LegendTargets { .. }
             | Decision::OnPlayTarget { .. }
@@ -274,7 +284,13 @@ impl Game {
     pub(crate) fn checkpoint_trigger_payment_add(&mut self, action: &Action) {
         if self.trigger_payment_origin.is_none()
             && self.payment_plan.is_none()
-            && matches!(self.decision, Some(Decision::TriggerPayment { .. }))
+            && matches!(
+                self.decision,
+                Some(Decision::TriggerPayment {
+                    resolving_chain_id: None,
+                    ..
+                })
+            )
             && matches!(
                 action,
                 Action::ActivateGear { .. }
@@ -294,7 +310,7 @@ impl Game {
         }
     }
 
-    /// Only the public pinned trigger-finalization choice is exposed, including
+    /// Only the public pinned trigger payment choice is exposed, including
     /// while Add instructions or the exact-payment plan temporarily suspend it.
     pub fn trigger_payment_context(&self) -> Option<Decision> {
         self.decision
@@ -314,6 +330,14 @@ impl Game {
                     .as_ref()
                     .and_then(|plan| plan.original.trigger_payment_context())
             })
+    }
+    pub(crate) fn resolving_trigger_payment(&self) -> Option<u32> {
+        match self.trigger_payment_context() {
+            Some(Decision::TriggerPayment {
+                resolving_chain_id, ..
+            }) => resolving_chain_id,
+            _ => None,
+        }
     }
     pub fn battlefield_payment_context(&self) -> Option<Decision> {
         self.decision
@@ -822,9 +846,22 @@ impl Game {
 
     pub(crate) fn refuse_payment(&mut self) -> Result<(), String> {
         if !self.can_refuse_payment()? {
-            return Err("Only a supported pending finalization cost can be refused; finish nested instructions first.".into());
+            return Err(
+                "Only a supported pending cost can be refused; finish nested instructions first."
+                    .into(),
+            );
         }
         let kind = self.payment_plan.as_ref().unwrap().refusal_kind().unwrap();
+        if kind == PaymentRefusalKind::Instruction {
+            // Unlike Undo, refusal of a resolving instruction preserves Add
+            // actions and their occurrences (Core445.2.b). No cost was paid yet.
+            let plan = self.payment_plan.take().unwrap();
+            self.decision = plan.original.decision.clone();
+            let Some(Decision::TriggerPayment { choice_id, .. }) = self.decision else {
+                return Err("The instruction payment choice is missing.".into());
+            };
+            return self.resolve_trigger_payment(choice_id, false);
+        }
         self.cancel_payment()?;
         if kind == PaymentRefusalKind::Ordinary {
             return Ok(());
@@ -845,7 +882,7 @@ impl Game {
                 }
                 self.after_resolution()
             }
-            PaymentRefusalKind::Ordinary => unreachable!(),
+            PaymentRefusalKind::Ordinary | PaymentRefusalKind::Instruction => unreachable!(),
         }
     }
 

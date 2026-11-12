@@ -69,9 +69,10 @@ impl Scouting {
             Some(Decision::RevealHand {
                 opponent, cards, ..
             }) if *opponent == enemy => self.seen.extend(cards),
-            Some(Decision::Sabotage { opponent, .. }) if *opponent == enemy => {
-                self.seen.extend(&state.hand)
-            }
+            Some(
+                Decision::Sabotage { opponent, .. }
+                | Decision::RecycleRevealedHand { opponent, .. },
+            ) if *opponent == enemy => self.seen.extend(&state.hand),
             Some(Decision::RevealedCard {
                 player, card_id, ..
             }) if *player == enemy => {
@@ -132,6 +133,8 @@ struct Evidence {
     gears: usize,
     spells: usize,
     fury: usize,
+    mind: usize,
+    empower_units: usize,
     small: usize,
     units: usize,
 }
@@ -157,13 +160,33 @@ impl Evidence {
                 })
                 .count(),
             small: scout.small_field_peak,
+            mind: known
+                .iter()
+                .filter(|c| c.domains.contains(&Domain::Mind))
+                .count(),
+            empower_units: known
+                .iter()
+                .filter(|c| {
+                    c.kind == CardKind::Unit
+                        && crate::rules::requirements(c.id)
+                            .contains(&crate::rules::Mechanic::Empower)
+                })
+                .count(),
             units: scout.unit_peak,
         }
     }
-    /// Reviewed roles in the Arito sideboard; unknown sideboard cards are kept
+    /// Reviewed roles in the sourced sideboards; unknown sideboard cards are kept
     /// neutral rather than assigned capabilities by a text substring guess.
     fn role(&self, id: CardId) -> Option<(i32, &'static str)> {
         match id {
+            433 if self.mind > 0 => Some((
+                40 + 10 * self.mind.min(3) as i32,
+                "Revealed Mind cards give Decree of Strength possible hand targets; it cannot recycle cards of other domains.",
+            )),
+            434 if self.small > 0 || self.empower_units > 0 => Some((
+                40 + 10 * (self.small + self.empower_units).min(3) as i32,
+                "Small units or units with Empower were revealed. Lacerate removes Empowered, then checks current Might; Flow offers another use.",
+            )),
             424 | 369 if self.gears > 0 => Some((
                 35 + 10 * self.gears.min(3) as i32,
                 "Revealed non-token gear gives this gear answer a target.",
@@ -227,7 +250,7 @@ fn value(id: CardId, count: u8, evidence: &Evidence, catalog: &[CardDef]) -> i32
         // Diminishing returns apply to narrow answers, not a deck's broad
         // three-copy staples. Multiple copies are not evidence of redundancy.
         role - i32::from(count.saturating_sub(1)) * 10
-    } else if matches!(id, 1 | 11 | 421) {
+    } else if matches!(id, 1 | 11 | 421 | 433 | 434) {
         15
     } else {
         base

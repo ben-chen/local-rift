@@ -221,8 +221,8 @@ pub enum TriggerTextArea {
     Rules,
     Equipment,
 }
-/// A cost appearing first in a triggered instruction is paid during
-/// finalization (Core 204.1.c, 404.1.b.1), before responses.
+/// Resource quantities for a trigger cost. Its position in the instruction
+/// determines whether it is a base cost or a resolving cost (Core 383.3.b).
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct TriggerBaseCost {
     pub energy: u16,
@@ -234,8 +234,8 @@ pub enum TriggerObjectCost {
     BanishSource,
     BanishFromAnyTrash,
 }
-/// A triggered ability chooses its mode during finalization, before paying
-/// that mode's costs and before either player can respond to the ability.
+/// A triggered ability chooses its mode during finalization. A cost later in
+/// its instructions is still paid on resolution (Core 355.3, 383.3.b).
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct TriggerMode {
     pub label: &'static str,
@@ -249,6 +249,8 @@ pub struct TriggerRule {
     pub conditions: &'static [Condition],
     pub optional: bool,
     pub base_cost: Option<TriggerBaseCost>,
+    /// Pay on resolution before these dependent effects, after responses.
+    pub resolution_cost: Option<TriggerBaseCost>,
     pub object_cost: Option<TriggerObjectCost>,
     pub targets: TargetRule,
     pub effects: &'static [Effect],
@@ -282,6 +284,7 @@ const fn rule(
         conditions,
         optional,
         base_cost: None,
+        resolution_cost: None,
         object_cost: None,
         targets,
         effects,
@@ -378,7 +381,7 @@ pub fn trigger_rules(card_id: usize) -> &'static [TriggerRule] {
                         TriggerMode {
                             label: "Pay 1 Chaos Power to draw 1",
                             rule: TriggerRule {
-                                base_cost: Some(TriggerBaseCost {
+                                resolution_cost: Some(TriggerBaseCost {
                                     energy: 0,
                                     power: 1,
                                     domain: Some(crate::cards::Domain::Chaos),

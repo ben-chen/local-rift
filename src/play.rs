@@ -1545,6 +1545,14 @@ impl Game {
                     executions: 1,
                 })
             })
+            .or_else(|| {
+                self.resolving_trigger_payment()
+                    .map(|chain_id| ResolutionProgress {
+                        chain_id,
+                        execution: 0,
+                        executions: 1,
+                    })
+            })
     }
 }
 
@@ -2082,6 +2090,7 @@ impl Game {
                 choice_id: current,
                 base_cost,
                 deflect,
+                resolving_chain_id,
                 ..
             }) = self.trigger_payment_context()
             else {
@@ -2092,7 +2101,12 @@ impl Game {
             }
             let mut components = vec![CostComponent {
                 id: 1,
-                label: "Trigger base cost".into(),
+                label: if resolving_chain_id.is_some() {
+                    "Resolving instruction cost"
+                } else {
+                    "Trigger base cost"
+                }
+                .into(),
                 cost: base_cost,
                 optional: false,
             }];
@@ -2601,6 +2615,23 @@ impl Game {
             result
         })
     }
+    /// AI-only pruning; the spell remains legal on large or friendly units.
+    /// Payment wrappers must be checked too, before committing resources.
+    pub(crate) fn ai_avoids_empty_removal(&self, action: &Action) -> Result<bool, String> {
+        let Ok(intent) = self.card_intent(action) else {
+            return Ok(false);
+        };
+        if intent.id != 434 {
+            return Ok(false);
+        }
+        let value = if intent.targets.is_empty() {
+            self.ai_card_score(intent.id)?
+        } else {
+            self.canonical_action_score(action)?
+        };
+        Ok(value <= 0)
+    }
+
     pub(crate) fn canonical_action_score(&self, action: &Action) -> Result<i128, String> {
         Ok({
             let Ok(intent) = self.card_intent(action) else {
@@ -2611,6 +2642,22 @@ impl Game {
                 + i128::from(intent.legacy.bonus) * 5;
             let score = if intent.id == 426 {
                 self.preparations_score(&intent.targets, &intent.legacy.show_off)
+            } else if let OfficialEffect::DisempowerThenKill { maximum } = rules::effect(intent.id)
+            {
+                intent
+                    .targets
+                    .iter()
+                    .chain(
+                        intent
+                            .legacy
+                            .repeats
+                            .iter()
+                            .flat_map(|r| &r.choices.targets),
+                    )
+                    .map(|&target| self.disempower_kill_score(self.priority(), target, maximum))
+                    .collect::<Result<Vec<_>, _>>()?
+                    .into_iter()
+                    .sum()
             } else if intent.id == 410 {
                 self.command_choice_score(self.priority(), intent.legacy.mode, &intent.targets)
             } else if matches!(rules::effect(intent.id), OfficialEffect::AreaDamage { .. }) {

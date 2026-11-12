@@ -1,0 +1,541 @@
+{
+  "status": "accepted_checkpoint",
+  "reviewed_on": "2026-11-12",
+  "base_commit": "9e32947ff01c521db858cad92ad416b6973de94f",
+  "scope": "Complete the exact Xeno Irelia, DSG AwesumRosum Kennen and DSG Prismaticism Rengar Los Angeles registrations; add Decree of Strength and Lacerate with shared engine, API, AI and native support. Correct Innovator instruction-payment timing and prevent a choice click from also ending the turn.",
+  "coverage": {
+    "standard_legal_snapshot_identities": 1079,
+    "mapped_identities": 468,
+    "main_cards": 435,
+    "legends": 10,
+    "battlefields": 17,
+    "runes": 6,
+    "unimplemented": 611
+  },
+  "registrations": {
+    "complete_native_presets": [
+      0,
+      2,
+      4,
+      5
+    ],
+    "newly_complete": [
+      0,
+      2,
+      4
+    ],
+    "primary_source": "https://playriftbound.com/en-us/news/organizedplay/los-angeles-top-decks/",
+    "publication_date": "2026-09-30",
+    "event_date_precision": "September 2026; publication day is not asserted as event day",
+    "source_receipt": "assets/data/preset_admissions/series_los_angeles/registrations.json",
+    "all_six_preceding_main_deck_recipes_preserved": true
+  },
+  "rules_review": {
+    "hub": "https://playriftbound.com/en-us/rules-hub/",
+    "core": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/5c7946f7c3b8c6e0faff85ab6dadc6d2e721ea94.pdf",
+    "edition": "2026-10-09",
+    "sections": [
+      "321",
+      "417",
+      "425",
+      "442",
+      "443",
+      "829"
+    ],
+    "errata": "https://playriftbound.com/en-us/news/announcements/vendetta-errata-updates/",
+    "finding": "Neither added card has an identified current erratum. Live hub and Vendetta page reviewed; this is a focused audit, not a fresh acceptance of the full gallery."
+  },
+  "innovator_correction": {
+    "supersedes": "Only the pre-response draw-payment interpretation in docs/validation/irelia_innovator.json; its card/source admission remains historical.",
+    "rules": {
+      "core": "355.3;383.3.b;445.2.b;445.2.c",
+      "faq": "https://playriftbound.com/en-us/news/organizedplay/radiance-rules-faq-and-clarifications/",
+      "hub": "https://playriftbound.com/en-us/rules-hub/",
+      "hub_checked": "2026-11-12; still links October9 Core",
+      "inference": "FAQ names Riven Broken Blade; applying its choose-one reasoning and general rule to Innovator is explicit inference."
+    },
+    "semantics": "Choose mode before responses; pay draw cost during resolution. Skip keeps Add actions and skips draw; Undo restores the staged payment. Source departure preserves the finalized mode.",
+    "ui_fix": "Priority controls require availability before rendering the choice panel, preventing Skip from also ending the turn.",
+    "counter_test_limit": "Counter removal is an engine primitive test; admitted Not So Fast cannot legally target this untargeted trigger."
+  },
+  "validation": {
+    "rust": {
+      "passed": 1657,
+      "failed": 0,
+      "harnesses": 109,
+      "receipt": {
+        "path": "/home/benchen/.cache/local-rift-work/registrations-2026-11-12/timing-rust-results.json",
+        "sha256": "83d30c998d5a894c10dee427202dc2157f3f61be1129d12d6cb2500fc04ddc35"
+      },
+      "final_native_bridge": {
+        "passed": 128,
+        "log": {
+          "path": "/home/benchen/.cache/local-rift-work/registrations-2026-11-12/timing-native-final-tests.log",
+          "sha256": "1dde6b1196548c31edfde518da73c2304d6a1251cab5bd479ed61c615bea5ff7"
+        },
+        "scope": "Only native main.rs and ability_ui.rs differ after frozen3; final native binary tests/UI must be rerun. Shared library and all API/integration binaries unchanged. The full109runner reads executable paths; exclude its main.rs harness from immutable3 claims if rebuilt concurrently, use final128native tests as explicit bridge."
+      }
+    },
+    "focused_innovator": {
+      "passed": 22,
+      "log": {
+        "path": "/home/benchen/.cache/local-rift-work/registrations-2026-11-12/innovator-timing-expanded-v3.log",
+        "sha256": "70277c670a6a1f1a117881820712da92b63d9aaf5d597c236afcd190bf69dde4"
+      }
+    },
+    "release_api": {
+      "irelia_games": 24,
+      "series_matches": 18,
+      "series_games": 46,
+      "irelia_receipt": {
+        "path": "/home/benchen/.cache/local-rift-work/registrations-2026-11-12/timing-innovator-api/irelia-innovator-api-final-results.json",
+        "sha256": "b1c090a8a1587dc5af811faa64e2e9af811700701edecd5b9cd537868696c128"
+      },
+      "series_receipt": {
+        "path": "/home/benchen/.cache/local-rift-work/registrations-2026-11-12/timing-api-matches.json",
+        "sha256": "8d839495157b8d09b957e73277d75bc53e96ed614a6f38298da7f16a0bacb207"
+      }
+    },
+    "release_native": {
+      "irelia": [
+        {
+          "small": false,
+          "capture": true,
+          "exit": 0,
+          "path": "/home/benchen/.cache/local-rift-work/registrations-2026-11-12/ui-timing-final-irelia-False-True",
+          "binary_sha256": "c8874804a3a1bbc3bc55589b38eb116f33206b835548c3c2e531842510c7ae24",
+          "screenshots": 13
+        },
+        {
+          "small": false,
+          "capture": false,
+          "exit": 0,
+          "path": "/home/benchen/.cache/local-rift-work/registrations-2026-11-12/ui-timing-final-irelia-False-False",
+          "binary_sha256": "c8874804a3a1bbc3bc55589b38eb116f33206b835548c3c2e531842510c7ae24",
+          "screenshots": 0
+        },
+        {
+          "small": true,
+          "capture": true,
+          "exit": 0,
+          "path": "/home/benchen/.cache/local-rift-work/registrations-2026-11-12/ui-timing-final-irelia-True-True",
+          "binary_sha256": "c8874804a3a1bbc3bc55589b38eb116f33206b835548c3c2e531842510c7ae24",
+          "screenshots": 13
+        },
+        {
+          "small": true,
+          "capture": false,
+          "exit": 0,
+          "path": "/home/benchen/.cache/local-rift-work/registrations-2026-11-12/ui-timing-final-irelia-True-False",
+          "binary_sha256": "c8874804a3a1bbc3bc55589b38eb116f33206b835548c3c2e531842510c7ae24",
+          "screenshots": 0
+        }
+      ],
+      "registered_match_pilot": [
+        {
+          "opponent": 2,
+          "level": "tactical",
+          "small": false,
+          "capture": true,
+          "exit": 0,
+          "path": "/home/benchen/.cache/local-rift-work/registrations-2026-11-12/ui-pilot-timing-final-2-tactical-False-True",
+          "binary_sha256": "c8874804a3a1bbc3bc55589b38eb116f33206b835548c3c2e531842510c7ae24"
+        }
+      ],
+      "visual_review": {
+        "native_runs": [
+          {
+            "small": false,
+            "capture": true,
+            "exit": 0,
+            "path": "/home/benchen/.cache/local-rift-work/registrations-2026-11-12/ui-timing-final-irelia-False-True",
+            "binary_sha256": "c8874804a3a1bbc3bc55589b38eb116f33206b835548c3c2e531842510c7ae24",
+            "screenshots": 13
+          },
+          {
+            "small": false,
+            "capture": false,
+            "exit": 0,
+            "path": "/home/benchen/.cache/local-rift-work/registrations-2026-11-12/ui-timing-final-irelia-False-False",
+            "binary_sha256": "c8874804a3a1bbc3bc55589b38eb116f33206b835548c3c2e531842510c7ae24",
+            "screenshots": 0
+          },
+          {
+            "small": true,
+            "capture": true,
+            "exit": 0,
+            "path": "/home/benchen/.cache/local-rift-work/registrations-2026-11-12/ui-timing-final-irelia-True-True",
+            "binary_sha256": "c8874804a3a1bbc3bc55589b38eb116f33206b835548c3c2e531842510c7ae24",
+            "screenshots": 13
+          },
+          {
+            "small": true,
+            "capture": false,
+            "exit": 0,
+            "path": "/home/benchen/.cache/local-rift-work/registrations-2026-11-12/ui-timing-final-irelia-True-False",
+            "binary_sha256": "c8874804a3a1bbc3bc55589b38eb116f33206b835548c3c2e531842510c7ae24",
+            "screenshots": 0
+          }
+        ],
+        "actual_reviewed_screenshots": [
+          {
+            "path": "/home/benchen/.cache/local-rift-work/registrations-2026-11-12/ui-timing-final-irelia-True-True/rift_irelia_innovator_modes.png",
+            "sha256": "d64c29494ed3bf1565edfb4c2376e177544941bcad51d2661f579899a546094e",
+            "review": "Actually viewed: timing text fits, control labels readable, skipped draw retains Any1 and Turn01."
+          },
+          {
+            "path": "/home/benchen/.cache/local-rift-work/registrations-2026-11-12/ui-timing-final-irelia-True-True/rift_irelia_innovator_skip_effect.png",
+            "sha256": "4d5b2d5a5b15f67d72830a874e857d9fcffb1b9b5521edad65fc61cee49ad49c",
+            "review": "Actually viewed: timing text fits, control labels readable, skipped draw retains Any1 and Turn01."
+          },
+          {
+            "path": "/home/benchen/.cache/local-rift-work/registrations-2026-11-12/ui-timing-final-irelia-True-True/rift_irelia_innovator_skipped_keep_add.png",
+            "sha256": "e140f8bf5a9900acf87fbdc3329f993ada210baf18eff65e35c3aa22515c5981",
+            "review": "Actually viewed: timing text fits, control labels readable, skipped draw retains Any1 and Turn01."
+          },
+          {
+            "path": "/home/benchen/.cache/local-rift-work/registrations-2026-11-12/ui-timing-final-irelia-False-True/rift_irelia_innovator_payment.png",
+            "sha256": "926bdbbd4bb7628a05fef5bfea438482850b4d7c9003a49e551ca989c3d7f12c",
+            "review": "Actually viewed: timing text fits, control labels readable, skipped draw retains Any1 and Turn01."
+          }
+        ],
+        "series_native_receipt": "/home/benchen/.cache/local-rift-work/registrations-2026-11-12/ui-pilot-timing-final.json",
+        "finding": "Initial real-click regression exposed Skip also hitting newly revealed End turn. Final guard requires the priority control to have existed before this frame\u2019s choice; final116-frame native campaign passes at both sizes with/without captures.",
+        "screenshots": 26
+      }
+    },
+    "format_log": {
+      "path": "/home/benchen/.cache/local-rift-work/registrations-2026-11-12/timing-native-final-fmt.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "clippy_log": {
+      "path": "/home/benchen/.cache/local-rift-work/registrations-2026-11-12/timing-native-final-clippy.log",
+      "sha256": "207c43aae59f7603fb4e3935ff98b439039a04d67e2a5d70baf09607dc5284a7"
+    },
+    "baseline_before_timing_correction": {
+      "rust_passed": 1650,
+      "catalog_passed": 272,
+      "registered_native_runs": 12,
+      "registered_native_games": 36,
+      "registered_native_captures": 90,
+      "nix": {
+        "status": "passed baseline candidate-v2; final release pending Innovator timing correction",
+        "package_output": "/nix/store/gfbyr2pl6fpgi77fxiaxwnchl2yg5h8s-local-rift-0.1.0",
+        "derivation": "/nix/store/54ni5fv366zk5ma42ykri1w93iranjyv-local-rift-0.1.0.drv",
+        "test_result_lines": 110,
+        "rust_passed": 1650,
+        "rust_failed": 0,
+        "log": "/home/benchen/.cache/local-rift-work/registrations-2026-11-12/nix-package-v2-build.log",
+        "log_sha256": "116400f1ededabeb003f778485f1cb314ef500735cf000baf3dd712206205fe2",
+        "catalog_output": "/nix/store/6yrm9c9s22dc4ga4cdrl4gyl562xw2n5-local-rift-catalog-check",
+        "catalog_tests": 272,
+        "installed_smoke": "Deferred until corrected candidate; no installed smoke acceptance claimed.",
+        "simulation_output": "/nix/store/86g7cfk4l157ckky2vpfkfwmw51n6qpd-local-rift-simulation-check",
+        "simulation_games": 864,
+        "simulation_pairings": 36,
+        "simulation_ai_levels": 3,
+        "combined_checks_exit": 0
+      },
+      "scope": "Historical candidate2 evidence only; final package and installed validation are separate."
+    },
+    "nix_package": {
+      "output": "/nix/store/wixrf988b07xk6zrg8qqxxpjkzxrcnjs-local-rift-0.1.0",
+      "derivation": "/nix/store/n1f9lx0335kb0kwabp6ghsjknjbqv0r3-local-rift-0.1.0.drv",
+      "rust_passed": 1657,
+      "rust_failed": 0,
+      "log": {
+        "path": "/home/benchen/.cache/local-rift-work/registrations-2026-11-12/nix-v4-package-complete.log",
+        "sha256": "79d08c58674e3b524d277b2ff202b7e6f019d3f59c86babd15d19dd5ddd9b3ae"
+      },
+      "note": "All three final candidate4 x86_64-linux checks completed successfully; installed smoke uses this exact package."
+    },
+    "installed": {
+      "host_ld_library_path_removed": true,
+      "native_irelia_runs": 4,
+      "native_irelia_captures": 26,
+      "native_registered_runs": 12,
+      "native_registered_games": 36,
+      "native_registered_captures": 90,
+      "irelia_ui": {
+        "path": "/home/benchen/.cache/local-rift-work/registrations-2026-11-12/ui-installed-timing-v2-irelia.json",
+        "sha256": "3b1d584c113d148fcbf90b689c05774e852af0ab644fb8b1bfa4b6cb1555f5d2"
+      },
+      "registered_ui": {
+        "path": "/home/benchen/.cache/local-rift-work/registrations-2026-11-12/ui-installed-timing-final.json",
+        "sha256": "170f9c78339e994b8aa3a9607ef328372dc74d9420f2aab9c3b585d14e3ffce2"
+      },
+      "comparison": {
+        "irelia_api_games": 24,
+        "irelia_wire_bytes_equal": true,
+        "decompressed_wire_sha256": "c6dc13b4ffe5d25fa14698db31f61c573e228ed790f1420f6c77c75860ec8beb",
+        "registered_matches": 18,
+        "registered_games": 46,
+        "registered_results_and_command_counts_equal": true,
+        "nix_rust_passed": 1657,
+        "nix_rust_failed": 0
+      },
+      "actual_visual_review": [
+        {
+          "path": "/home/benchen/.cache/local-rift-work/registrations-2026-11-12/ui-installed-timing-v2-irelia-True-True/rift_irelia_innovator_modes.png",
+          "sha256": "be030fabca83a7e9387c595c26db9852b6efb76d28509d323b8e2ba97dd6cb3c",
+          "review": "Small mode panel clearly explains choosing before responses and paying later; no clipped text."
+        },
+        {
+          "path": "/home/benchen/.cache/local-rift-work/registrations-2026-11-12/ui-installed-timing-v2-irelia-True-True/rift_irelia_innovator_skipped_keep_add.png",
+          "sha256": "b3f186de197b2dff54b02f380a2a3342b2e70bcf887f5745628b5ed1cedfcebe",
+          "review": "Small skipped-payment result retains Any1 and Turn01; footer appears without consuming the preceding click."
+        },
+        {
+          "path": "/home/benchen/.cache/local-rift-work/registrations-2026-11-12/ui-installed-timing-v2-irelia-False-True/rift_irelia_innovator_payment.png",
+          "sha256": "b9e4ad1c4d081ee1d83563ef0ddff984a025a5ff556a37cd3c73099edc623005",
+          "review": "Normal payment panel shows resolving chain, Pay and Skip, full explanation, and Advanced Mote guidance."
+        },
+        {
+          "path": "/home/benchen/.cache/local-rift-work/registrations-2026-11-12/ui-installed-timing-final-0-easy-True-True/lobby.png",
+          "sha256": "5432a397cd8c1bc42ed77f2f82bfdb6f325d6e310cb5cf8b1f80dbc1dd979e18",
+          "review": "Small match setup shows Arito and Xeno registrations, fields, difficulty and opening-choice controls without overlap."
+        },
+        {
+          "path": "/home/benchen/.cache/local-rift-work/registrations-2026-11-12/ui-installed-timing-final-0-easy-True-True/decree_reveal.png",
+          "sha256": "a738a638a00a3b6ef0c64fb6fe128ecbd03c733cfef024769f79795c26983a54",
+          "review": "Small Decree panel shows whole revealed hand, eligible Mind labels and disabled continue-without-target; instructions fit."
+        },
+        {
+          "path": "/home/benchen/.cache/local-rift-work/registrations-2026-11-12/ui-installed-timing-final-4-tactical-False-True/lacerate_rules.png",
+          "sha256": "590ae6dd7ac483c19d933f687a1a4418222b1678c99529eab317f14335efde13",
+          "review": "Normal inspector shows complete Lacerate text, Flow costs, official art and return control without clipping."
+        }
+      ],
+      "irelia_api": {
+        "path": "/home/benchen/.cache/local-rift-work/registrations-2026-11-12/installed-timing-innovator-api/irelia-innovator-api-final-results.json",
+        "sha256": "c327edcd4e0313ada515efbe5c9b714a4c507ad1eb5d197009024caf913f5a2a"
+      },
+      "registered_api": {
+        "path": "/home/benchen/.cache/local-rift-work/registrations-2026-11-12/installed-timing-api-matches.json",
+        "sha256": "7e9ce0bfb95a2cb922ca51ee3ef5cdb36669b5635cf229d0b6847bf1d20eb3b5"
+      }
+    },
+    "nix_checks": {
+      "command_exit": 0,
+      "results": [
+        {
+          "drvPath": "/nix/store/n1f9lx0335kb0kwabp6ghsjknjbqv0r3-local-rift-0.1.0.drv",
+          "outputs": {
+            "out": "/nix/store/wixrf988b07xk6zrg8qqxxpjkzxrcnjs-local-rift-0.1.0"
+          }
+        },
+        {
+          "drvPath": "/nix/store/src1b9p6rv5jkf88viyhzy5zdcrs03jq-local-rift-catalog-check.drv",
+          "outputs": {
+            "out": "/nix/store/0825rbnv2b34qsarzh8p0y4zahx7zia2-local-rift-catalog-check"
+          }
+        },
+        {
+          "drvPath": "/nix/store/krn1xndixhmy13g9pz2yplrcshhxc5kp-local-rift-simulation-check.drv",
+          "outputs": {
+            "out": "/nix/store/n64lyx6bcircvcvihsidss48wzaqd0i3-local-rift-simulation-check"
+          }
+        }
+      ],
+      "result_receipt": {
+        "path": "/home/benchen/.cache/local-rift-work/registrations-2026-11-12/nix-v4-result.json",
+        "sha256": "dda6076cf4165e95a77bde07b9c7d66e03ce5783e37cab2ed96a75e11f38507b"
+      },
+      "catalog_passed": 272,
+      "catalog_failed": 0,
+      "catalog_log": {
+        "path": "/home/benchen/.cache/local-rift-work/registrations-2026-11-12/nix-v4-catalog-complete.log",
+        "sha256": "73448f1777f8476d0dc8cbf441fce2c5420e2a61ca9f324f1753cb42b1c2a738"
+      },
+      "simulation_games": 864,
+      "simulation_pairings": 36,
+      "simulation_ai_levels": 3,
+      "simulation": {
+        "path": "/nix/store/n64lyx6bcircvcvihsidss48wzaqd0i3-local-rift-simulation-check",
+        "sha256": "f82a7634d997ecb7260fc69e4a4a18a7b8f2ab8afd02c2f62d532c4cfcd1568d"
+      },
+      "simulation_output": "Easy: 288 completed; first player 169 wins, second player 119 wins\nTactical: 288 completed; first player 171 wins, second player 117 wins\nStrategic: 288 completed; first player 143 wins, second player 145 wins\nPASS: 864 complete matches across 36 pairings and 3 AI levels, alternating starting player by seed\nMaximum: 353 actions, 28 turns; average 173.1 actions; elapsed 109.04s\nAll matches checked card/rune conservation, energy accounting, unique valid units, and winner consistency after every action.\n"
+    }
+  },
+  "release_binaries": {
+    "local-rift": {
+      "path": "/home/benchen/.cache/local-rift-builds/timing-target/release/local-rift",
+      "sha256": "c8874804a3a1bbc3bc55589b38eb116f33206b835548c3c2e531842510c7ae24"
+    },
+    "rift-api": {
+      "path": "/home/benchen/.cache/local-rift-builds/timing-target/release/rift-api",
+      "sha256": "9bf7cbb1d0a8ccfcc5e2c711932683b44f3620f7f0e9249a3257e71db03b99c5"
+    },
+    "simulate": {
+      "path": "/home/benchen/.cache/local-rift-builds/timing-target/release/simulate",
+      "sha256": "156d943e8ea492455cdb442d9ce319a84bd5459f67536baf3c9fdefa19354ce4"
+    }
+  },
+  "source_bridge": {
+    "candidate": 4,
+    "manifest": {
+      "path": "/home/benchen/.cache/local-rift-work/registrations-2026-11-12/timing-source-v4.json",
+      "sha256": "4391fc5790f93186b72aef984a28aabe5f2de69fd07aeab94d572f37fbe6db75"
+    },
+    "metadata_changes": [
+      {
+        "path": "README.md",
+        "frozen_sha256": "aaea67cdab688525bc10d325ac3dc532634615c27586806868fee226024bddee",
+        "published_sha256": "4e1432fe6d294230f17e7a76db831dd757d2326f56effa81a94b3ea8fd9597cd"
+      },
+      {
+        "path": "assets/data/card_admissions/irelia_innovator/README.md",
+        "frozen_sha256": "360abde8ebaf463402e083f748da3c25d7aab66c6f2813e47a323544b4ccf169",
+        "published_sha256": "d48238d5b710f28c545214ad6e02a2e577f7c5189baf6ac4df0c5d771eda4ae1"
+      },
+      {
+        "path": "assets/data/card_admissions/series_sideboards/README.md",
+        "frozen_sha256": "10a729a7d66cb524f2fa138ef9eb3e51ec8bb33e89ade8272776a79827e64fda",
+        "published_sha256": "1c3003fde451a825b34a95cdfacf87dc41558fd2bbaf01fbfe1971384dca6965"
+      },
+      {
+        "path": "assets/data/preset_admissions/series_los_angeles/README.md",
+        "frozen_sha256": "558d1fb8c73cf32de0ae21753cb656bf1308b00c443801211019435881f9aeb0",
+        "published_sha256": "27c306765bd2e956b4ea010f48a4186faf226d70105518703e046eb9dfe70835"
+      },
+      {
+        "path": "docs/IRELIA_PRIORITY.md",
+        "frozen_sha256": "19ff7514d9885a7d4d217239782840a80550476ee9d90dd83b4d5790c67921ea",
+        "published_sha256": "5b7692fe946ada9fcaaf842011e408f1f1b0e1f2518d4ccf6b21afa6dda85db0"
+      },
+      {
+        "path": "docs/MATCH_SERIES.md",
+        "frozen_sha256": "14441c29a0d3b171f26d4997d579b73db80ff72ad25c26267fd57e2364834ed8",
+        "published_sha256": "b400e60c0b2312fcc68bcba9b7635eecfbaaa656638500651ae8b1f051dfb989"
+      },
+      {
+        "path": "docs/RULES_AUDIT.md",
+        "frozen_sha256": "a960867e45bdc8c2369d31d7ba2c01dda8476f42adf48f67b8194bda6072efe3",
+        "published_sha256": "156ab4dc2421f52c02513dc2704589a8f16da0c3534f48d47bc6d5520e07c87f"
+      }
+    ],
+    "verified_input_count": 1161,
+    "runtime_manifest_sha256": "a17110ba9228a17b2f7cd943bdf7aecd22c29ca2446f0978a85056a011b49a07",
+    "changed_runtime_inputs": {
+      "assets/art/card_433.png": "d5465ce095838c577d237543efcb82e30da6e0bb482a9eb4401bd8ba5a4b4c0c",
+      "assets/art/card_434.png": "d044d0d8ebeabbfcce37c124619a953cf263b2b8a718f1dbf6d7b1be31ffec32",
+      "assets/data/card_admissions/irelia_innovator/README.md": "360abde8ebaf463402e083f748da3c25d7aab66c6f2813e47a323544b4ccf169",
+      "assets/data/card_admissions/series_sideboards/README.md": "10a729a7d66cb524f2fa138ef9eb3e51ec8bb33e89ade8272776a79827e64fda",
+      "assets/data/card_admissions/series_sideboards/admissions.json": "f1bd7e0581bc10ddbecb1d302f74270e248d93e8474a14063064f45547d6c245",
+      "assets/data/card_admissions/series_sideboards/ven-085-166.png": "80bab34468ef28d520bdd0369424fe73f80ecbe84705908779be5fe91e17d875",
+      "assets/data/card_admissions/series_sideboards/ven-127-166.png": "4421bd0081e10f4acafcb632983c31cccac830ad75f08e4c7d7db562b23ec42d",
+      "assets/data/decks.json": "72e0c659b1e30fd8c2c8877ddd75288b0d04fd5054d735b510f08406dc740d28",
+      "assets/data/full_catalog.json": "eaeca59336962fd19e1b19f69c9a2917f844f5bc53bc61d2e4444e3f188dbcdf",
+      "assets/data/preset_admissions/series_los_angeles/README.md": "558d1fb8c73cf32de0ae21753cb656bf1308b00c443801211019435881f9aeb0",
+      "assets/data/preset_admissions/series_los_angeles/registrations.json": "cb02203e8273962ef4887d4a676919b9a1fe24129af5a29edd10d5ce947e9f33",
+      "assets/data/preset_admissions/series_los_angeles/source.html.gz": "a0a3d49610bbb479af5705cda14d5d780a7d949cd59dcff0b3c31c5294b45990",
+      "src/ability_ui.rs": "2d7f43f1570bdaf9546c6814007bb86c0683116c778a495143cdb3934fff6503",
+      "src/api.rs": "893f2165cccbe1b3a20cf4d10477bf24a5fea2173ce0a218728b7b3718657994",
+      "src/api/refusal.rs": "db38a8fc0f8c066e547fa6e9f5a63c90466a314dc4194af19cd6c2a0f003e19f",
+      "src/api/series_sideboard_tests.rs": "e492e49fd54b41d48357fbf2dd6bfb63badcb8384a81de803f41a37ca5a69b31",
+      "src/cards.rs": "6aea5670196303a91535d53cc8fffe465785491a0e439a4a6897a70726f78264",
+      "src/companion.rs": "85b76d93e4e2b07678280d81ecef67127d09af770c7750ff2e1c354e25e9b9fe",
+      "src/deploy_ui.rs": "e8c85284030fa50e96b8bf0acbaf391312c670f9235bcdab77e84395a4db8535",
+      "src/game.rs": "5207e51aabb099724af98ccd32f14c7c9656d9b6a32d645451f53e73319e8005",
+      "src/innovator_tests.rs": "1eaf7596df6c032a993addf5f6b1a33f3249e54ff857391afba3a2936a1b4ba0",
+      "src/main.rs": "72c63213d01bb371ae4908c00cd6b5a77cf8c85d9108673beac2cf58e07deeaf",
+      "src/match_ai.rs": "67e8c2b9626782b68604f1bb52721658ea20f3a1f0877b562226648ab2d0177f",
+      "src/payment_plan.rs": "5b9f1d3da854f9ee397f3f12095242e2c3ab45c711ca4877feb41815bf9d1035",
+      "src/play.rs": "5691f6443e77a9a383a84d1f5e2d1858277988a22d27b6516b227e6c5d90875c",
+      "src/rules.rs": "47de9aa92e394fcc6c1c4281afcd329575ced35a0c103f02c70e5f45103e6b6a",
+      "src/series_ui.rs": "2090c59e2d90dd5eed46f0966677662d5c025602699872178f5c3ea4187b131e",
+      "src/smoke/irelia.rs": "c0a74372abc08dd5fcc204f6c0d2237d6d72ea739622416b20d102b49df674e5",
+      "src/smoke/series.rs": "cf52028331689d7c749ab4efd9b1c032f643e11cc9f095014f3c24f5dc597933",
+      "src/strategic.rs": "9db5d1fb1f3f1bb0bbed765a400146246c82cf7ed27fa66c87d40cbfc81dfc40",
+      "src/trigger_modes.rs": "81a85855e160ed82ad40722a33064bb2336da13d44e27db57ffa7a08be1792d9",
+      "src/trigger_rules.rs": "b51f72f7b25d00dfe86c1c7175e7cf546b869776542dde5cbbce957487c332aa",
+      "src/triggers.rs": "f2c8914b4072a579f59e863e880125095a173d2626eddcac3bad7985c2349948",
+      "tests/catalog_review.rs": "c91ef1da8efc18cdc53c9ead57f22fe3beec880a07ff098f8f1ed09ebf636b70",
+      "tests/match_series.rs": "78b6b43f3cc008326765cc1f884a75690ef00d8fbda06dcd93814aff0891c4c0",
+      "tests/registered_matches.rs": "b48c10aeec25b8cdbee29bcd5520bf7d7ce16cab896b042ed9a1a4663bff34bf",
+      "tests/series_sideboards.rs": "bba9210e302fdf220efbecd9add6b7491f5a339f2c173286bcbde64a531f6f18",
+      "tools/test_catalog_pipeline.py": "26a0258105a8a92cb0e279776266b6bb52ecb41c1f9842276995544d08d31930",
+      "tools/test_import_catalog.py": "b937a1b92c3311cc2bf3bb6c80597adbf1e87fd9cd57c4141552e3593d0513a7",
+      "tools/test_series_registrations.py": "6a16f50e556443b6f8733b25f311d8d16c83c68eb080ae23f6a75b30c7721375"
+    },
+    "note": "Compiled source, tests, card data and assets match frozen candidate4. Only the explicitly listed explanatory Markdown files and this new acceptance receipt were changed afterward. Historical receipts are unchanged."
+  },
+  "retained_attempts": [
+    {
+      "artifact": {
+        "path": "/home/benchen/.cache/local-rift-work/registrations-2026-11-12/candidate-v1/rust-results.json",
+        "sha256": "fd7ea7f4e17679f8c6d22426ce3354ceeec1a150f1c07965664df4639d62cdaa"
+      },
+      "reason": "Five assertions retained old catalog counts or unknown-ID boundary; corrected expectations preserve preceding source/preset facts."
+    },
+    {
+      "artifact": {
+        "path": "/home/benchen/.cache/local-rift-work/registrations-2026-11-12/candidate-v1/nix.log",
+        "sha256": "eaaab9866d62a796dc6296984a66076d2008f39ddf0f9b811742d4ed30c15b80"
+      },
+      "reason": "Candidate-v1 release compiled, then two library assertions used old catalog counts. Not accepted."
+    },
+    {
+      "artifact": {
+        "path": "/home/benchen/.cache/local-rift-work/registrations-2026-11-12/python.log",
+        "sha256": "df8b8e3ac75507ddfca7c2a652d38e230559a050b4fb9b931546b37ddbf25c42"
+      },
+      "reason": "Initial source suite retained old catalog counts; final 272-test run passes."
+    },
+    {
+      "artifact": {
+        "path": "/home/benchen/.cache/local-rift-work/registrations-2026-11-12/ai-no-effect.log",
+        "sha256": "13c06f8528fc76c139bacdeaee39b826e70eb24e13b8c1a83a0c007cd110204f"
+      },
+      "reason": "Additional scenario exposed AI spending Lacerate on unaffected large unit. Fixed AI-only candidate pruning before hand/Flow payment, with all-level regression."
+    },
+    {
+      "artifact": {
+        "path": "/home/benchen/.cache/local-rift-work/registrations-2026-11-12/innovator-timing-red.log",
+        "sha256": "90765d1d9797c22b90cf144d62915b8cec7c4b177634cc758d4735d866768d8b"
+      },
+      "reason": "Pre-fix draw-payment timing regression failed as expected."
+    },
+    {
+      "artifact": {
+        "path": "/home/benchen/.cache/local-rift-work/registrations-2026-11-12/innovator-timing-expanded.log",
+        "sha256": "0443e383cd138bcda2d1f9abbbb256be1ba6106f92a77a6c7ca6d08cd0e74176"
+      },
+      "reason": "Test compilation failed due to an integer type mismatch; fixed test compilation, then all22 focused checks passed."
+    },
+    {
+      "artifact": {
+        "path": "/home/benchen/.cache/local-rift-work/registrations-2026-11-12/ui-timing-irelia-False-True/run.log",
+        "sha256": "6844f3f5cd998396ae3567b6bc28513c3c426d6ccdd7b5f826d50eed1058c391"
+      },
+      "reason": "decision_panel consumed refusal but footer then revealed End turn under same click; main.rs rendered actionable footer from mutated state"
+    },
+    {
+      "artifact": {
+        "path": "/home/benchen/.cache/local-rift-work/registrations-2026-11-12/nix-v3.log",
+        "sha256": "2023bdd3052e8da656a6f58ca5e6d609145a8ec3a85c7ad50a181ec582476563"
+      },
+      "reason": "Explicitly cancelled superseded source after native click-through discovery; exit1 is cancelled, not accepted or an engine-test failure."
+    },
+    {
+      "artifact": {
+        "path": "/home/benchen/.cache/local-rift-work/registrations-2026-11-12/ui-installed-timing-final-irelia-False-True/run.log",
+        "sha256": "e94cfdf644a73e05a488262f1be75e1790b87ecd0ac7a71922fccf6c2ba24490"
+      },
+      "reason": "First installed Irelia run lost its X display after9captures while two native runners ran concurrently; log reports X connection broken and no game assertion. Isolated display210 rerun passes all4cases without source or package changes. Concurrent registered12runs and both API campaigns passed; original aggregate failure remains preserved.",
+      "original_aggregate": {
+        "path": "/home/benchen/.cache/local-rift-work/registrations-2026-11-12/installed-acceptance-state.json",
+        "sha256": "f318582922e596e4582a1bf65e38dcfb4ca189dbd7914c5ba2196970b7d11bf4"
+      }
+    }
+  ],
+  "limitations": [
+    "468 mapped identities do not establish complete Standard support; 611 legal snapshot identities remain unavailable.",
+    "The historical KaiSa full registration includes a banned battlefield and remains unavailable for native best-of-three. Master Yi still needs Alpha Strike, Repulse and Unyielding Spirit.",
+    "The full accepted gallery snapshot remains dated October 24 with October 26 legality rechecks. This batch checks its two faces and dated LA registrations, not a full live-gallery refresh.",
+    "Opponent decisions and sideboard roles remain heuristics; these tests do not establish expert or tournament strength.",
+    "No timed rounds, judge penalties or best-of-five.",
+    "Only x86_64 Linux was exercised; other declared flake platforms remain untested.",
+    "Source/metadata changes alone do not prove rules correctness; remaining interactions and unsupported cards remain part of the active project goal."
+  ]
+}

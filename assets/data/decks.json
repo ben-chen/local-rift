@@ -11363,6 +11363,51 @@
       "tags": [
         "Equipment"
       ]
+    },
+    {
+      "id": 433,
+      "name": "Decree of Strength",
+      "official_id": "ven-085-166",
+      "energy": 1,
+      "power": 0,
+      "might": 0,
+      "domains": [
+        "Body"
+      ],
+      "kind": "Spell",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/12106889f9f76914421f38e8958a248462637a22-744x1039.png?w=280&q=85&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "Choose an opponent. They reveal their hand and you choose a Mind ([Mind Power]) card from it. They recycle that card.",
+      "official_text_html": "<p>Choose an opponent. They reveal their hand and you choose a Mind (:rb_rune_mind:) card from it. They recycle that card.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [],
+      "tags": []
+    },
+    {
+      "id": 434,
+      "name": "Lacerate",
+      "official_id": "ven-127-166",
+      "energy": 2,
+      "power": 1,
+      "might": 0,
+      "domains": [
+        "Order"
+      ],
+      "kind": "Spell",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/f21bbd09545d949f095756281e5506128eb4809d-744x1039.png?w=280&q=85&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "Choose a unit. If it's [Empowered], disempower it. Then kill it if it has 3 Might or less.\n[Flow] [4 Energy][Order Power][Order Power] (You may play this from your trash for its Flow cost. Then banish it.)",
+      "official_text_html": "<p>Choose a unit. If it's [Empowered], disempower it. Then kill it if it has 3 :rb_might: or less.<br />[Flow] :rb_energy_4::rb_rune_order::rb_rune_order: (You may play this from your trash for its Flow cost. Then banish it.)</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Empowered",
+        "Flow"
+      ],
+      "tags": []
     }
   ],
   "official_text_note": "Official card/legend rules text from the Riot Card Gallery, retrieved 2026-10-24 and corrected by cited errata. Resource icon tokens are expanded to readable bracketed names. Raw card and equipment HTML is preserved separately. Official text does not establish full implementation fidelity."

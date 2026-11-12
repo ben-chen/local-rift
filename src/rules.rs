@@ -130,6 +130,10 @@ pub enum OfficialEffect {
         max_might: Option<u8>,
     },
     KillAllUnits,
+    /// Choose any unit; test its live Might only after removing Empowered.
+    DisempowerThenKill {
+        maximum: u8,
+    },
     Channel {
         count: u8,
         exhausted: bool,
@@ -193,6 +197,7 @@ pub enum OfficialEffect {
     DrawForMighty,
     /// Reveal opponent's hand, choose a non-unit, recycle it.
     DisruptHand,
+    RecycleRevealedHand(Domain),
     Draw(u8),
     /// Discard first, then draw. This is mandatory, not merely net card gain.
     Loot {
@@ -272,6 +277,8 @@ pub fn effect(id: usize) -> OfficialEffect {
         429 => None,
         430 | 431 => None,
         432 => Equipment,
+        433 => RecycleRevealedHand(Domain::Mind),
+        434 => DisempowerThenKill { maximum: 3 },
         424 => None,
         422 => DrawThenChannel {
             draw: 1,
@@ -685,7 +692,7 @@ pub fn chooses_move_destination(id: usize) -> bool {
 pub fn targeting(id: usize) -> Targeting {
     use Allegiance::*;
     let allegiance = match id {
-        290..=296 | 335 | 349 | 428 => Any,
+        290..=296 | 335 | 349 | 428 | 434 => Any,
         4 | 32 | 144 | 145 | 365 | 427 => Enemy,
         362 | 364 | 372 | 378 | 379 | 381 => Any,
         8 | 9 | 14 | 19 | 27 | 85 | 137 | 228 | 350 | 353 | 354 | 377 | 380 | 382 | 421 | 425 => {
@@ -729,6 +736,7 @@ pub fn target_bounds(id: usize) -> (usize, usize) {
             ..
         }
         | Kill { .. }
+        | DisempowerThenKill { .. }
         | KillGear { .. }
         | ReturnGear
         | ReturnAndChannel
@@ -1132,6 +1140,8 @@ pub fn requirements(id: usize) -> &'static [Mechanic] {
         430 => &[Chain, Gear, Shield],
         431 => &[Chain, OptionalCosts, Assault, Banish],
         432 => &[Chain, Gear, Equip, Hidden],
+        433 => &[Chain, HandInspection],
+        434 => &[Chain, Empower, Flow],
         372 | 373 => &[Chain, Gear, Bounce],
         374 => &[Chain, Gear, DeathTriggers],
         375 => &[Chain, Bounce],
@@ -1844,6 +1854,11 @@ pub struct FlowCost {
 /// A card played using Flow is banished afterwards instead of going to trash.
 pub fn flow_cost(id: usize) -> Option<FlowCost> {
     match id {
+        434 => Some(FlowCost {
+            energy: 4,
+            any_power: 2,
+            colored: true,
+        }),
         364 => Some(FlowCost {
             energy: 4,
             any_power: 1,
@@ -2048,7 +2063,7 @@ mod tests {
     #[test]
     fn all_catalog_entries_have_official_classification() {
         let cards = cards();
-        assert_eq!(cards.len(), 433);
+        assert_eq!(cards.len(), 435);
         for card in cards {
             assert_ne!(
                 effect(card.id),
@@ -2058,7 +2073,7 @@ mod tests {
             );
             assert_ne!(support_status(card.id), SupportStatus::UnknownCard);
         }
-        assert_eq!(effect(433), OfficialEffect::Unsupported);
+        assert_eq!(effect(435), OfficialEffect::Unsupported);
     }
 
     #[test]

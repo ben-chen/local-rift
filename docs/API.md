@@ -131,10 +131,10 @@ Each playable card's `play_targets` reports `{kind, maximum, required}`. `kind` 
 | `choose` | `accept` | Accept/decline a binary decision; Predict accepts recycling the top card |
 | `resolve_predict` | `choice_id`, `recycle`, `top_order` | Complete a multi-card Predict; the two index arrays partition the looked-at occurrences, with `top_order[0]` drawn next |
 | `resolve_draw_look` | `choice_id`, `index` | Reveal and draw one eligible inspected occurrence, or use explicit `index:null` to recycle all |
-| `resolve_trigger_payment` | `choice_id`, `pay` | Explicitly accept or decline a pending trigger's frozen base/Deflect cost before it becomes a finalized chain item |
+| `resolve_trigger_payment` | `choice_id`, `pay` | Accept or decline the trigger's cost at the decision's explicit `timing`: `finalization` or `resolution` |
 | `choose_target` | optional `target` | Select a pending unit/gear target; during Tornado Warrior's base choice, `null` chooses the legend |
 | `choose_trigger_targets` | `targets` | Finalize an ordered target array for a `trigger_targets` decision; an empty array declines an optional trigger |
-| `choose_trigger_mode` | `choice_id`, `mode` | Choose the zero-based mode of a pending `trigger_mode` occurrence before targets, costs, and responses |
+| `choose_trigger_mode` | `choice_id`, `mode` | Choose the zero-based mode of a pending `trigger_mode` occurrence before targets and responses; later instruction costs wait for resolution |
 | `select_cards` | `indices` | Select exact indices for discard, Top Three, Sabotage, or a granted Flow choice from trash |
 | `play_from_trash` | `trash_index`, optional `lane`, `target` | Resolve a replay decision using default targeting |
 | `play_from_trash_targets` | `trash_index`, optional `lane`, `targets` | Resolve a replay decision with exact targets |
@@ -294,11 +294,11 @@ Each action is a separate `apply` request with the current revision and acting p
 
 The top-level `payment_plan` remains available during nested conversions. It contains `player`, fixed `energy`, ordered `power` obligations, a public `pending_card` ID when it moved a card from its source zone, and the normalized `action` for the acting player only (`null` for the opponent). Count `pending_card` once for physical-card conservation; its source zone already excludes it. An instructed card already listed in `pending_card_plays` has no second payment-plan card. The action retains its originally selected source index; it is an intent description, not an index into the temporarily shortened zone. Targets and choices remain fixed, but the engine checks their legality again when completing.
 
-The plan also exposes `refusal_kind` and `can_refuse` to both seats. The kind is `"ordinary"`, `"pending_card"`, `"pending_token"`, `"trigger"`, or `null`; it describes the fixed finalization-cost scope, not immediate availability. Emperor’s Dais also has its nonstandard return-unit base cost, described below. It remains populated during nested resource instructions, while `can_refuse:false` prevents interrupting those instructions. `decision.type:"payment"` reports both `can_cancel` and `can_refuse`. These fields expose no rollback snapshots or private historical cards.
+The plan also exposes `refusal_kind` and `can_refuse` to both seats. The kind is `"ordinary"`, `"pending_card"`, `"pending_token"`, `"trigger"`, `"instruction"`, or `null`; it describes the fixed cost scope, not immediate availability. Emperor’s Dais also has its nonstandard return-unit base cost, described below. It remains populated during nested resource instructions, while `can_refuse:false` prevents interrupting those instructions. `decision.type:"payment"` reports both `can_cancel` and `can_refuse`. These fields expose no rollback snapshots or private historical cards.
 
 During a payment decision, `choose` with `accept:false` undoes the payment attempt and restores the original decision, including Add actions performed inside the plan. This is permitted for a positive Energy/Power finalization cost even when fully funded, and retains the existing undo path when completion is impossible. For an ordinary card or activation, undo and refusal have the same outcome. For a pending card, token, or trigger, undo returns to its original choice without consuming it.
 
-`refuse_payment` instead ends the selected finalization after rolling back the attempt. A pending card leaves the chain and returns to its exact recorded origin occurrence; a pending token disappears without creating an off-chain card; a trigger is consumed without creating a finalized ability. Already completed parent effects and unrelated pending work remain intact. Reserved grants and direct Add actions in the pending finalization's rollback boundary are restored. The ordinary resource-cost rule requires positive frozen Energy/Power: zero costs and sole-XP obligations cannot be refused under that rule. Emperor’s Dais separately retains an optional nonstandard return-unit base cost, so its trigger can still be declined if its Energy component is reduced to zero. Costs inside already resolving instructions, such as CounterTax, do not gain finalization refusal. Missing plans, wrong seats, stale revisions, malformed fields and premature refusal during nested Add reject atomically.
+`refuse_payment` instead ends the selected finalization after rolling back the attempt. A pending card leaves the chain and returns to its exact recorded origin occurrence; a pending token disappears without creating an off-chain card; a trigger is consumed without creating a finalized ability. Already completed parent effects and unrelated pending work remain intact. Reserved grants and direct Add actions in the pending finalization's rollback boundary are restored. The ordinary resource-cost rule requires positive frozen Energy/Power: zero costs and sole-XP obligations cannot be refused under that rule. Emperor’s Dais separately retains an optional nonstandard return-unit base cost, so its trigger can still be declined if its Energy component is reduced to zero. For `refusal_kind:"instruction"`, refusal skips the dependent effect of the resolving trigger and preserves completed Add actions; Undo still restores the staged attempt. CounterTax retains its separate choice and does not gain finalization refusal. Missing plans, wrong seats, stale revisions, malformed fields and premature refusal during nested Add reject atomically.
 
 ## Observations and decisions
 
@@ -356,8 +356,8 @@ The viewer sees their own hand as card IDs. The opposing hand is `null` except w
 | --- | --- |
 | `predict` | Owner sees `card_id`; `choose` recycles it when true, keeps it on top when false |
 | `draw_look` | Public source, kind, choice ID and count; only the owner sees top-first `cards` and eligible occurrence indices. Use `resolve_draw_look`. |
-| `trigger_payment` | Public choice ID, card/rule, physical source context, selected targets, base cost, and separate Deflect. Use `resolve_trigger_payment` before this pending trigger becomes respondable. |
-| `trigger_mode` | Public `choice_id`, card/rule and physical source `context`, with `options` containing `index`, `label`, and nullable `base_cost`. Use `choose_trigger_mode`; this mandatory choice has no decline action. |
+| `trigger_payment` | Public choice ID, card/rule, physical source context, targets, `cost`, `timing`, nullable `resolving_chain_id`, nullable `base_cost`, and separate Deflect. Use `resolve_trigger_payment` at the indicated step. |
+| `trigger_mode` | Public `choice_id`, card/rule and physical source `context`, with `options` containing `index`, `label`, nullable `base_cost`, and nullable `resolution_cost`. Use `choose_trigger_mode`; this mandatory choice has no decline action. |
 | `revealed_card` | Public source, card ID and completed `outcome` (`draw`, `recycle`, or `trash`); acknowledge with `choose` and `accept:true`. This record is not a card zone. |
 | `predict_cards` | Public `choice_id` and actual `count`; only owner sees `cards`. Submit the exact index partition and kept order with `resolve_predict`. |
 | `counter_tax` | `chain_id`, energy `cost`; `choose`, with resource actions allowed before payment |
@@ -557,7 +557,7 @@ Passive metadata adds `condition:"friendly_deploy_gear_here"` for the existentia
 
 Concert Poster and Portable Portal begin their triggered effects with an optional cost. That cost is paid during trigger finalization under Core 204.1.c and 403–407, before the trigger becomes a respondable chain item. It is not a later payment choice during resolution. Portal first uses the existing optional `trigger_targets` decision; an empty list declines the optional ability, while selecting its target advances to payment. Poster has no targets and advances directly to payment.
 
-The public `trigger_payment` decision includes `player`, `choice_id`, `card_id`, `rule_index`, `context`, ordered `targets`, `base_cost`, and separate generic `deflect`. `context.source` identifies the exact physical source with `{player,unit_id,gear_id}`. The cost uses `{energy,power,domains,xp,xp_exact}` and is the trigger's full frozen base price, not an incremental balance or the gear's earlier play price. Deflect is separate so clients can explain the target's added obligation without double-counting it. Use `cost_plan` or `quote_payment` for the accepting action's total resource requirements and exact valid sources; spell-only power is ineligible for ability costs.
+The public `trigger_payment` decision includes `player`, `choice_id`, `card_id`, `rule_index`, `context`, ordered `targets`, `cost`, `timing`, `resolving_chain_id`, `base_cost`, `paid_before_responses`, and separate generic `deflect`. For a base cost, `timing` is `"finalization"`, `resolving_chain_id` is null, and `base_cost` equals `cost`. `context.source` identifies the exact physical source with `{player,unit_id,gear_id}`. The cost uses `{energy,power,domains,xp,xp_exact}` and is the trigger's full frozen base price, not an incremental balance or the gear's earlier play price. Deflect is separate so clients can explain the target's added obligation without double-counting it. Use `cost_plan` or `quote_payment` for the accepting action's total resource requirements and exact valid sources; spell-only power is ineligible for ability costs.
 
 ```json
 {"type":"resolve_trigger_payment","choice_id":123,"pay":true}
@@ -566,11 +566,11 @@ The public `trigger_payment` decision includes `player`, `choice_id`, `card_id`,
 
 `pay` must be an explicit Boolean. Declining spends nothing and removes the pending trigger without an effect or a finalized chain item. Accepting pays the frozen cost, rechecks the pinned targets, and finalizes the ordinary trigger with its normal response window. The token or Ready effect happens only when that finalized trigger resolves. Losing the target or being countered later does not refund the paid cost. There is no automatic replacement target.
 
-Reckless Innovator (card429) creates a `trigger_mode` choice on each actual Ready-to-Exhausted transition. Mode 0 plays a Gold token exhausted; mode 1 proceeds to a `trigger_payment` decision costing one Chaos Power. `context.mode` is included only after a modal choice and remains present on the finalized chain ability, even if the physical source leaves play. Declining payment ends that occurrence without switching modes. Choice IDs reject stale submissions; the chosen mode, cost, source, and resulting public Gold are visible to both seats. Drawn card identities remain private. The Gold reminder text does not grant Reaction timing to the unit card.
+Reckless Innovator (card429) creates a `trigger_mode` choice on each actual Ready-to-Exhausted transition. Mode 0 plays a Gold token exhausted; mode 1 finalizes without payment and opens responses. Only when that ability resolves does `trigger_payment` request one Chaos Power. This decision has `timing:"resolution"`, `paid_before_responses:false`, `base_cost:null`, and the retained parent ID in `resolving_chain_id`; `cost` describes the payment. `resolution_progress` identifies the same parent, including during nested Add or payment controls. The response window does not reopen between payment and draw. `context.mode` is included only after a modal choice and remains present on the finalized chain ability, even if the physical source leaves play. Declining payment skips the draw without switching modes and preserves completed Add actions. A staged `refuse_payment` reports `refusal_kind:"instruction"` with the same outcome; Undo restores only the staged attempt. Choice IDs reject stale submissions; the chosen mode, cost, source, and resulting public Gold are visible to both seats. Drawn card identities remain private. The Gold reminder text does not grant Reaction timing to the unit card.
 
 The nullable top-level `trigger_payment_context` preserves that same public decision through a nested payment plan or Add continuation. It is identical in both seat observations and contains no hidden instructions. Distinct copies of the same card remain distinguishable by their source object IDs and originally selected targets. The opponent still sees `payment_plan.action:null`; exposing the already-public trigger context does not expose a private hand action.
 
-Wrap the accepting action in `with_power_payment` to choose exact power sources, or `begin_payment` to use permitted Add/resource actions before `complete_payment`. Beginning a plan preserves the original choice ID and fixed source, targets, and cost. For a positive resource cost, `choose` with `accept:false` cancels this plan even when fully funded, once any nested resource instruction has finished. It restores the original pending trigger and the state from before the plan, including rollback of its Add actions. The controller can then explicitly decline the trigger cost. A zero resource cost cannot be declined. Declining the pending trigger also undoes Add actions performed directly during that trigger's payment before a plan began; it preserves the already completed source play and pinned target choices. Successful payment retains its Add effects and clears this rollback boundary. Successful acceptance or decline consumes the choice ID. Missing, stale, wrong-seat, malformed, insufficient, invalid-source, or invalid-target attempts reject without changing the revision or either observation.
+Wrap the accepting action in `with_power_payment` to choose exact power sources, or `begin_payment` to use permitted Add/resource actions before `complete_payment`. Beginning a plan preserves the original choice ID and fixed source, targets, and cost. For a positive resource cost, `choose` with `accept:false` cancels this plan even when fully funded, once any nested resource instruction has finished. It restores the original pending trigger and the state from before the plan, including rollback of its Add actions. The controller can then explicitly decline the trigger cost. A zero resource cost cannot be declined. For a finalization cost, declining the pending trigger also undoes Add actions performed directly during that trigger's payment before a plan began; it preserves the already completed source play and pinned target choices. Successful payment retains its Add effects and clears this rollback boundary. Successful acceptance or decline consumes the choice ID. Missing, stale, wrong-seat, malformed, insufficient, invalid-source, or invalid-target attempts reject without changing the revision or either observation.
 
 ## Physical runes and battlefield choices
 
@@ -715,11 +715,13 @@ Existing resource-only trigger observations retain their prior object shape.
 
 ## Preset registrations and Edge of Night
 
-`catalog.presets[].registration` is `null` for the five older presets. Preset 5
-adds an object containing `pilot`, `event`, `date`, `placing`, `battlefields`
+`catalog.presets[].registration` is populated for presets 0 (Xeno Irelia),
+2 (Kennen), 4 (Rengar), and 5 (Arito Irelia), and remains `null` for presets 1
+and 3. The object contains `pilot`, `event`, `date`, `placing`, `battlefields`
 (array of battlefield IDs), and `sideboard` (array of `[card_id, count]` pairs).
 The top-level `catalog.as_of` dates the card-data snapshot; `registration.date`
-is the event date. Preset 5 still uses legend ID 0. Its main `cards` include the chosen champion
+is the sourced event date or month; the LA registrations use `September 2026`.
+Preset 5 still uses legend ID 0. Its main `cards` include the chosen champion
 once, for 40 total cards; sideboard entries are separate metadata. The existing
 reset battlefield choices select among the registered options 13, 0 and 14.
 This metadata does not create a best-of-three or sideboarding action.
@@ -754,7 +756,7 @@ same conventions as game commands. Registration validation is read-only.
 | `series_concede` | `player`, `scope` (`game` or `match`) | Explicit concession |
 | `series_draw` | `player`, `scope`, boolean `accept` | Offer/withdraw agreement; both seats must agree |
 
-A registration is either `{"preset":5}` or
+A registration is either `{"preset":N}` for a complete preset (0, 2, 4, 5) or
 `{"deck":CUSTOM_DECK,"sideboard":[[424,2],[369,2],[20,1],[421,2],[11,2],[1,1]],"battlefields":[13,0,14]}`.
 The main `deck` must contain exactly 40 cards; the shown sideboard is valid with
 Arito's main list. Do not apply that example sideboard to an arbitrary deck
@@ -787,3 +789,21 @@ do not publish sideboard plans. Both policies choose first, while `keep` also
 keeps the deck and takes its next unused field. Easy difficulty uses that baseline
 even with `adaptive`. A trusted coordinator must route these responses only to
 the requesting seat, as with `observe`.
+
+### LA sideboard choices
+
+Decree of Strength (433) has normal spell timing and no unit target. In this
+two-player client its chosen opponent is the other seat. Resolution exposes
+`decision.type = "recycle_revealed_hand"`, `opponent`, `domain = "Mind"`, the
+whole revealed `cards` list, and `eligible_indices`. Submit `select_cards` with
+exactly one eligible index, or an empty list when none exist. The opponent
+recycles that physical card to the bottom of their deck. Both player views show
+the revealed hand during this decision and hide it from the opponent again
+afterward. Repeat creates a new choice over the remaining hand.
+
+Lacerate (434) uses one ordinary unit target of either allegiance, in base or at
+a battlefield. Neither Empowered nor starting Might restricts target legality.
+Resolution removes Empowered, then checks live Might and kills at 3 or less.
+Responses, Deflect, death replacements, and physical-target revalidation apply.
+Its printed Flow costs 4 Energy and 2 Order Power and banishes the played card,
+including when countered. Flow does not grant Action or Reaction timing.

@@ -69,24 +69,37 @@ pub(crate) fn run_frame(app: &mut App, frame: u32) -> bool {
                 Ok("strategic") => Difficulty::Strategic,
                 _ => Difficulty::Tactical,
             };
-            app.player_deck = 0;
-            app.opponent_deck = 1;
+            app.player_deck = 1;
+            app.opponent_deck = 3;
             click(app, 1110.0, 46.0);
             advance();
         }
         1 => {
             assert!(app.series_lobby);
-            snapshot(app, "LOBBY_INCOMPLETE");
-            click(app, 520.0, 477.0);
-            advance();
+            if app.player_deck == 1 {
+                snapshot(app, "LOBBY_INCOMPLETE");
+            }
+            if app.player_deck == 5 {
+                advance();
+            } else {
+                click(app, 520.0, 534.0);
+            }
         }
         2 => {
             assert_eq!(app.player_deck, 5);
-            click(app, 1100.0, 477.0);
-            advance();
+            let wanted = std::env::var("RIFT_SERIES_OPPONENT")
+                .ok()
+                .map(|v| v.parse::<usize>().unwrap())
+                .unwrap_or(5);
+            assert!([0, 2, 4, 5].contains(&wanted));
+            if app.opponent_deck == wanted {
+                advance();
+            } else {
+                click(app, 1100.0, 534.0);
+            }
         }
         3 => {
-            assert_eq!(app.opponent_deck, 5);
+            assert!(local_rift::match_series::Registration::from_preset(app.opponent_deck).is_ok());
             app.series_chooser = 0;
             snapshot(app, "LOBBY");
             click(app, 1200.0, 800.0);
@@ -426,6 +439,110 @@ pub(crate) fn run_frame(app: &mut App, frame: u32) -> bool {
         }
         48 => {
             assert!(!app.in_match && app.native_match.is_none() && !app.series_lobby);
+            app.game = Game::new_for_agents(3, 3, 113434, Difficulty::Tactical);
+            app.game.start_match().unwrap();
+            app.game.battlefields = [3, 3];
+            app.game.battlefield_owner = [None; 2];
+            for p in &mut app.game.players {
+                p.units.clear();
+                p.gear.clear();
+                p.hidden.clear();
+                p.hand.clear();
+                p.discard.clear();
+                p.champion = None;
+                p.set_rune_setup([0; 6], [0; 6]).unwrap();
+                p.energy_pool = 50;
+                p.energy = 50;
+                p.power_pool = [20; 6];
+            }
+            app.in_match = true;
+            app.hand_scroll = 0;
+            app.selection = None;
+            app.targets.clear();
+            app.game.players[0].hand = vec![433];
+            app.game.players[1].hand = vec![7, 283, 79];
+            app.game
+                .apply(Action::PlayCardWithTargets {
+                    hand_index: 0,
+                    lane: None,
+                    targets: vec![],
+                })
+                .unwrap();
+            app.game.apply(Action::Pass).unwrap();
+            app.game.apply(Action::Pass).unwrap();
+            STAGE.set(55);
+        }
+        55 => {
+            assert!(matches!(
+                app.game.decision,
+                Some(Decision::RecycleRevealedHand { .. })
+            ));
+            snapshot(app, "DECREE_REVEAL");
+            click(app, 310.0, 760.0);
+            advance();
+        }
+        56 => {
+            assert_eq!(app.inspect, Some(7));
+            assert_eq!(app.game.players[1].hand, vec![7, 283, 79]);
+            click(app, 940.0, 700.0);
+            advance();
+        }
+        57 => {
+            assert!(app.inspect.is_none());
+            click(app, 465.0, 760.0);
+            advance();
+        }
+        58 => {
+            assert_eq!(app.game.players[1].hand, vec![7, 79]);
+            assert_eq!(app.game.players[1].deck[0], 283);
+            assert!(app.game.decision.is_none());
+            app.game.players[0].hand = vec![433];
+            app.game.players[1].hand = vec![7];
+            app.game
+                .apply(Action::PlayCardWithTargets {
+                    hand_index: 0,
+                    lane: None,
+                    targets: vec![],
+                })
+                .unwrap();
+            app.game.apply(Action::Pass).unwrap();
+            app.game.apply(Action::Pass).unwrap();
+            snapshot(app, "DECREE_EMPTY");
+            click(app, 1285.0, 546.0);
+            advance();
+        }
+        59 => {
+            assert!(app.game.decision.is_none());
+            app.game.players[1].units.push(public_unit(9000, 283, None));
+            app.game.empowered_units.push(9000);
+            app.game.players[0].hand = vec![434];
+            app.game
+                .apply(Action::PlayCardWithTargets {
+                    hand_index: 0,
+                    lane: None,
+                    targets: vec![Target::Unit {
+                        player: 1,
+                        unit_id: 9000,
+                    }],
+                })
+                .unwrap();
+            snapshot(app, "LACERATE_CHAIN");
+            app.inspect_printed_card(434);
+            advance();
+        }
+        60 => {
+            assert_eq!(app.inspect, Some(434));
+            snapshot(app, "LACERATE_RULES");
+            click(app, 940.0, 700.0);
+            advance();
+        }
+        61 => {
+            assert!(app.inspect.is_none());
+            app.game.apply(Action::Pass).unwrap();
+            app.game.apply(Action::Pass).unwrap();
+            assert!(app.game.players[1].units.is_empty());
+            assert!(!app.game.unit_empowered(9000));
+            snapshot(app, "LACERATE_RESOLVED");
             return true;
         }
         49 => {

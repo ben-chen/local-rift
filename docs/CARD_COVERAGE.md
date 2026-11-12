@@ -2,7 +2,7 @@
 
 Snapshot checked **2026-10-24**. The official gallery contains **1,408 printing records** grouped into **1,103 distinct full-name identities**. After excluding **12 auxiliary token/tracker identities** and **12 banned identities**, **1,079 identities are legal in Standard/1v1 Constructed**. The separate 2v2 list leaves **1,078**.
 
-**This client does not yet implement every legal card.** It currently maps **433 main-deck cards, 10 independently registered legends, 17 battlefields, and 6 rune resource types** (466 legal identities). **613 legal identities remain unimplemented and are not playable.** Importing this snapshot does not register cards with the engine. Full inventory coverage is not full rules support.
+**This client does not yet implement every legal card.** It currently maps **435 main-deck cards, 10 independently registered legends, 17 battlefields, and 6 rune resource types** (468 legal identities). **611 legal identities remain unimplemented and are not playable.** Importing this snapshot does not register cards with the engine. Full inventory coverage is not full rules support.
 
 ## Scope and authority
 
@@ -30,7 +30,7 @@ Numbered positions include token slots where the publisher numbers them within a
 | Gear + Unit | 1 | 0 | 1 |
 | Legend | 58 | 10 | 48 |
 | Rune | 6 | 6 | 0 |
-| Spell | 268 | 119 | 149 |
+| Spell | 268 | 121 | 147 |
 | Unit | 546 | 239 | 307 |
 
 Each row is a disjoint complete type set. A reviewed Unit Gear has both types (Core 178) and is counted once in `gear+unit`, rather than once in each single-type row. Patched Porobot is the first explicitly reviewed dual-type correction; this is not a complete visual audit of every gallery type. No dual-type card is currently admitted to the engine.
@@ -568,6 +568,8 @@ Current pages are archived under `assets/data/catalog_sources/`; immutable revie
 | 430 | Orianna, Exquisite | `rad-042-167` |
 | 431 | Gust Monk | `ven-101-166` |
 | 432 | Edge of Night | `sfd-139-221` |
+| 433 | Decree of Strength | `ven-085-166` |
+| 434 | Lacerate | `ven-127-166` |
 
 ## Implemented legend ID mapping
 

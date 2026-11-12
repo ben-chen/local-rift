@@ -444,6 +444,20 @@ fn checked_advice(game: &Game, level: AdviceLevel) -> Result<Vec<&'static str>, 
             "Save Decree of Focus for a Fury threat. Removing that threat can invalidate its target. Choosing Irelia still triggers her abilities, even if Decree later fails."
         });
     }
+    if human.hand.contains(&433) {
+        tips.push(if beginner {
+            "Decree of Strength reveals their whole hand. Choose one Mind card if available; they recycle it to the bottom of their deck. This is a normal-timing spell."
+        } else {
+            "Use Decree of Strength before committing to a point. Remove the Mind answer that threatens your plan, and remember the cards they keep, even if none was Mind."
+        });
+    }
+    if human.hand.contains(&434) || human.discard.contains(&434) {
+        tips.push(if beginner {
+            "Lacerate removes Empowered, then kills at 3 Might or less. Any unit is a legal target. Flow costs 4 Energy and 2 Order Power, then banishes it."
+        } else {
+            "Lacerate checks Might after responses and disempowering. A buff can save the unit, but it still loses Empowered abilities. Flow still uses normal spell timing."
+        });
+    }
 
     if human.hand.contains(&432)
         || human.gear.iter().any(|g| !g.token && g.card_id == 432)
@@ -1052,12 +1066,12 @@ fn response_window_advice(
                 "Compare that gear's value with keeping your Prefect for combat and scoring. If the gear leaves in response, your paid cost is not refunded."
             }],
             Decision::TriggerMode { card_id: 429, .. } => vec![if beginner {
-                "Choose Gold or a paid draw. Gold enters exhausted, so it cannot pay costs yet. Drawing costs 1 Chaos Power before the ability can be answered."
+                "Choose Gold or a paid draw before responses. Gold enters exhausted. If you choose draw, you decide whether to pay 1 Chaos Power when the ability resolves."
             } else {
-                "Choose a paid draw when you need cards now; choose Gold to save future Power. Your mode and any payment are fixed before the opponent responds."
+                "Choose draw when you need cards, or Gold for future Power. Your mode is fixed before responses, but the draw's payment waits until resolution. A counter prevents that payment."
             }],
             Decision::TriggerMode { .. } => vec![
-                "Choose this ability's mode before paying its costs. The opponent can respond after those choices and payments are complete.",
+                "Choose this ability's mode before responses. Base costs are paid now; costs later in its instructions wait until resolution.",
             ],
             Decision::TriggerTargets { card_id: 432, .. } => vec![if beginner {
                 "Choose your unit at the battlefield where Edge of Night was hidden. The gear returns to base first, then attaches when this ability resolves."
@@ -1070,9 +1084,9 @@ fn response_window_advice(
                 "Remove a useful card from the opponent's trash when possible. The banish is paid before responses; a counter or lost target will not refund it."
             }],
             Decision::TriggerPayment { card_id: 429, .. } => vec![if beginner {
-                "You chose draw 1. Pay 1 Chaos Power before the opponent responds. Declining skips this ability; it does not create Gold instead."
+                "The ability is resolving. Pay 1 Chaos Power to draw now, or skip the draw. You can use Add abilities to pay; skipping does not create Gold instead."
             } else {
-                "The draw mode is fixed. Compare the card with keeping that Chaos Power for a response. Declining ends this occurrence without switching to Gold."
+                "The response window has closed. Compare drawing with saving your Chaos Power. Skipping keeps completed resource actions and does not switch the chosen mode to Gold."
             }],
             Decision::TriggerPayment { .. } => vec![
                 "Choose whether to pay this trigger's base cost. Payment happens before responses; declining keeps the ability off the chain.",
@@ -1089,6 +1103,10 @@ fn response_window_advice(
             {
                 use local_rift::payment_plan::PaymentRefusalKind;
                 match game.payment_plan_view(0).unwrap().refusal_kind.unwrap() {
+                    PaymentRefusalKind::Instruction => vec![
+                        "This cost belongs to an ability already resolving. Finish to pay and continue its effect; Skip this effect declines the cost and keeps completed Add actions.",
+                        "Undo returns to the payment choice and restores resource steps taken since opening this payment. It does not reopen responses or change the chosen mode.",
+                    ],
                     PaymentRefusalKind::Ordinary => vec![
                         "You may refuse this positive resource cost even when you can afford it. Undo restores this attempt and its resource steps; nothing from the action resolves.",
                         "Finishing pays the fixed cost before responses. A later counter gives no refund, so leave resources for the exchange you expect.",
@@ -1371,6 +1389,10 @@ fn response_window_advice(
                 "Sabotage reveals their hand for this choice. Pick a non-unit to recycle, if one is available; the remaining cards stay in their hand.",
                 "Use the revealed information to protect your next point. A response that stops your plan may matter more than the most expensive card.",
             ],
+            Decision::RecycleRevealedHand { .. } => vec![
+                "Choose one Mind card if available, including a unit or a card with multiple domains. They recycle it to the bottom of their deck; it does not go to trash.",
+                "Use the revealed hand to plan your next point. Recycle the Mind card that most threatens that plan, and remember the answers they keep.",
+            ],
             Decision::RevealHand { .. } => vec![
                 "Scuttle Crab reveals the opponent's hand and lets you inspect their facedown cards this turn. Read that information before planning your next point.",
                 "A revealed answer is useful information. Keep enough resources to respond if it would stop your most important attack or hold.",
@@ -1623,6 +1645,30 @@ mod tests {
     }
 
     #[test]
+    fn sideboard_spells_have_concise_coaching_without_hidden_hand_access() {
+        let mut g = game();
+        g.start_match().unwrap();
+        g.players[0].hand = vec![433, 434];
+        let mut other = g.clone();
+        other.players[1].hand = vec![79, 283];
+        other.players[1].deck.reverse();
+        for level in [AdviceLevel::Beginner, AdviceLevel::Advanced] {
+            let tips = advice(&g, level);
+            assert_eq!(tips, advice(&other, level));
+            assert!(tips.iter().any(|s| s.contains("Decree of Strength")));
+            assert!(tips.iter().any(|s| s.contains("Lacerate")));
+            assert!(tips.iter().all(|s| s.chars().count() <= 180));
+            g.decision = Some(Decision::RecycleRevealedHand {
+                player: 0,
+                opponent: 1,
+                domain: local_rift::cards::Domain::Mind,
+            });
+            assert!(advice(&g, level).iter().all(|s| s.chars().count() <= 180));
+            g.decision = None;
+        }
+    }
+
+    #[test]
     fn edge_coaching_teaches_hidden_attachment_without_opponent_private_information() {
         let mut g = game();
         g.start_match().unwrap();
@@ -1711,6 +1757,16 @@ mod tests {
                     mode: 1,
                 })
                 .unwrap();
+                assert!(g.decision.is_none());
+                g.apply(Action::Pass).unwrap();
+                g.apply(Action::Pass).unwrap();
+                assert!(matches!(
+                    g.decision,
+                    Some(Decision::TriggerPayment {
+                        resolving_chain_id: Some(_),
+                        ..
+                    })
+                ));
             }
             let mut hidden_change = g.clone();
             hidden_change.players[1].hand = vec![429, 70, 6];
@@ -2645,6 +2701,7 @@ mod tests {
         g.decision = Some(Decision::TriggerPayment {
             player: 0,
             choice_id: 24000,
+            resolving_chain_id: None,
             card_id: 403,
             rule_index: 1,
             context: local_rift::game::TriggerContext {

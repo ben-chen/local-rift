@@ -40,6 +40,7 @@ impl App {
             ref targets,
             ref base_cost,
             deflect,
+            resolving_chain_id,
             ..
         } = decision
         else {
@@ -48,8 +49,18 @@ impl App {
         if card_id == 431 {
             return self.gust_trash_payment_panel(choice_id, targets, deflect);
         }
-        self.ui
-            .title("Pay for this trigger?", 1178.0, 366.0, 20.0, TEXT);
+        let resolving = resolving_chain_id.is_some();
+        self.ui.title(
+            if resolving {
+                "Pay to draw?"
+            } else {
+                "Pay for this trigger?"
+            },
+            1178.0,
+            366.0,
+            20.0,
+            TEXT,
+        );
         self.ui.wrapped_lines(
             &trigger_payment_source(&self.game, &decision).unwrap(),
             1178.0,
@@ -103,6 +114,8 @@ impl App {
             Rect::new(1178.0, 493.0, 212.0, 34.0),
             if can_begin {
                 "Begin payment · use resources"
+            } else if resolving {
+                "Pay · draw 1"
             } else {
                 "Pay · finalize ability"
             },
@@ -117,7 +130,11 @@ impl App {
         }
         if self.ui.button(
             Rect::new(1178.0, 534.0, 212.0, 27.0),
-            "Decline this ability",
+            if resolving {
+                "Skip this draw"
+            } else {
+                "Decline this ability"
+            },
             false,
             true,
         ) {
@@ -126,7 +143,11 @@ impl App {
                 pay: false,
             });
         }
-        self.ui.wrapped_lines("Paid before responses. A later counter gives no refund. Use Add abilities in Board / Loadout before finishing.",
+        self.ui.wrapped_lines(if resolving {
+            "Resolving now. Use Add abilities to pay. Skipping keeps completed resource actions; it does not switch to Gold."
+        } else {
+            "Paid before responses. A later counter gives no refund. Use Add abilities in Board / Loadout before finishing."
+        },
             1178.0, 579.0, 212.0, 10.0, MUTED, 4);
         Ok(())
     }

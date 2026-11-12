@@ -6,8 +6,8 @@ Timed tournament rounds, judge penalties and best-of-five are not implemented.
 
 ## Play in the app
 
-1. From **Practice**, choose **Best of three**. Select **Use Arito Irelia
-   registration** for each seat if your selected list is incomplete. The app
+1. From **Practice**, choose **Best of three**. Use **Next registered deck**
+   on each seat to choose a complete list. The app
    displays the 40-card main deck count, ten-card sideboard count and all three
    registered battlefields. Click a field to read its rules.
 2. Choose the AI difficulty and how to designate the opening chooser. **Coin
@@ -35,16 +35,20 @@ Timed tournament rounds, judge penalties and best-of-five are not implemented.
 wins and losses remain in the practice record. Mote provides Beginner rules
 reminders or Advanced planning advice in the sidebar throughout setup.
 
-The native app currently offers only the complete Arito registration for this
-mode. Custom match registrations remain available through Rust and the bot API.
+The native app offers four complete registrations: Xeno Irelia (preset 0),
+Kennen (2), Rengar (4), and Arito Irelia (5). Use **Next registered deck** on
+either seat in match setup. The LA lists include the exact published sideboards
+and battlefields; their date is recorded as September 2026, not the article’s
+September 30 publication date. Custom match registrations remain available through Rust and the bot API.
 The Easy opponent keeps its main deck and chooses its next unused field.
 Tactical and Strategic opponents remember revealed cards between games and
 consider up to two or four one-copy swaps respectively, with the same limit on
 total changes from the original registered main deck. They preserve Irelia’s
 core targeting, readying, movement and draw package as well as the
 registered unit, early-unit and gear counts and limit increases in Energy costs.
-The current role evaluations cover the six cards in Arito's sideboard: gear
-answers, Vex, Decree of Focus, Gust and Abandon. Unknown sideboard roles are not
+The current role evaluations cover gear answers, Vex, Decree of Focus, Gust,
+Abandon, Decree of Strength against revealed Mind cards, and Lacerate against
+revealed small units or units with Empower. Unknown sideboard roles are not
 inferred from card text. Field choices use the current own deck's composition.
 Sunken Temple's estimate includes Irelia's buffs and equipment rather than only
 printed Might. All levels still choose first when designated; matchup-specific play/draw policy
@@ -79,9 +83,10 @@ protocol, not advanced matchup strategy.
 - `battlefields`: three different supported legal battlefield IDs, including
   the deck's default battlefield.
 
-Only preset 5 currently carries a complete runtime match registration. Older
-presets remain available for ordinary games and can supply an explicit custom
-registration; the API does not invent their missing registered sideboards.
+Presets 0, 2, 4, and 5 carry complete runtime match registrations. Master Yi (1)
+and the historical Kai'Sa list (3) remain available for ordinary games and can
+supply an explicit legal custom registration; the API does not invent missing
+registered sideboards or include banned battlefields.
 
 ## Match sequence
 

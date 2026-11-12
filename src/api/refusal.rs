@@ -1,4 +1,4 @@
-//! Public classification of a selected finalization's resource-cost refusal.
+//! Public classification of finalization and resolving-instruction refusal.
 use super::*;
 
 pub(super) fn kind_to_json(kind: crate::payment_plan::PaymentRefusalKind) -> Value {
@@ -8,6 +8,7 @@ pub(super) fn kind_to_json(kind: crate::payment_plan::PaymentRefusalKind) -> Val
         PaymentRefusalKind::PendingCard => "pending_card",
         PaymentRefusalKind::PendingToken => "pending_token",
         PaymentRefusalKind::Trigger => "trigger",
+        PaymentRefusalKind::Instruction => "instruction",
     })
 }
 

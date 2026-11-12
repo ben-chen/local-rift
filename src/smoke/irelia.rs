@@ -586,24 +586,28 @@ pub(crate) fn run_frame(app: &mut App, frame: u32) -> bool {
             click(app, 1285.0, 516.0);
         }
         69 => {
-            assert!(
-                matches!(app.game.decision, Some(Decision::TriggerPayment { context, .. }) if context.mode == Some(1))
-            );
+            assert!(app.game.decision.is_none());
+            assert_eq!(app.game.chain.len(), 1);
             assert_eq!(app.game.players[0].power_pool[4], 10);
-            assert!(app.game.chain.is_empty());
-            capture(app, "RIFT_IRELIA_INNOVATOR_PAYMENT");
+            capture(app, "RIFT_IRELIA_INNOVATOR_RESPONSES");
+            app.game.apply(Action::Pass).unwrap();
+            app.game.apply(Action::Pass).unwrap();
         }
-        70 => click(app, 1285.0, 510.0),
+        70 => {
+            assert!(matches!(app.game.decision, Some(Decision::TriggerPayment {
+                context, resolving_chain_id: Some(_), ..
+            }) if context.mode == Some(1)));
+            assert_eq!(app.game.players[0].power_pool[4], 10);
+            assert_eq!(app.game.chain.len(), 1);
+            capture(app, "RIFT_IRELIA_INNOVATOR_PAYMENT");
+            click(app, 1285.0, 510.0);
+        }
         71 => {
             assert!(app.game.decision.is_none());
-            assert!(
-                matches!(app.game.chain.last().unwrap().ability, Some(ChainAbility::CardTrigger { context, .. }) if context.mode == Some(1))
-            );
+            assert!(app.game.chain.is_empty());
             assert_eq!(app.game.players[0].power_pool[4], 9);
-            assert!(app.game.players[0].hand.is_empty());
+            assert_eq!(app.game.players[0].hand, vec![70]);
             capture(app, "RIFT_IRELIA_INNOVATOR_PAID");
-            app.game.apply(Action::Pass).unwrap();
-            app.game.apply(Action::Pass).unwrap();
         }
         72 => {
             assert_eq!(app.game.players[0].hand, vec![70]);
@@ -620,7 +624,11 @@ pub(crate) fn run_frame(app: &mut App, frame: u32) -> bool {
             innovator_setup(app);
         }
         75 => click(app, 1285.0, 516.0),
-        76 => click(app, 1285.0, 548.0),
+        76 => {
+            app.game.apply(Action::Pass).unwrap();
+            app.game.apply(Action::Pass).unwrap();
+            click(app, 1285.0, 548.0);
+        }
         77 => {
             assert!(app.game.decision.is_none() && app.game.chain.is_empty());
             assert!(app.game.players[0].gear.is_empty() && app.game.players[0].hand.is_empty());
@@ -893,6 +901,73 @@ pub(crate) fn run_frame(app: &mut App, frame: u32) -> bool {
         110 => {
             app.inspect_printed_card(432);
             capture(app, "RIFT_IRELIA_EDGE_INSPECT");
+        }
+        111 => {
+            innovator_setup(app);
+            let Some(Decision::TriggerMode { choice_id, .. }) = app.game.decision else {
+                panic!()
+            };
+            app.game
+                .apply(Action::ChooseTriggerMode { choice_id, mode: 1 })
+                .unwrap();
+            app.game.apply(Action::Pass).unwrap();
+            app.game.apply(Action::Pass).unwrap();
+            app.game.players[0].power_pool = [0; 6];
+            app.game.players[0].gear.push(GearState {
+                id: 42901,
+                card_id: 13,
+                lane: None,
+                attached_to: None,
+                ready: true,
+                temporary: false,
+                token: true,
+            });
+            let Some(Decision::TriggerPayment { choice_id, .. }) = app.game.decision else {
+                panic!()
+            };
+            assert!(app.begin_ui_payment(Action::ResolveTriggerPayment {
+                choice_id,
+                pay: true
+            }));
+            app.game
+                .apply(Action::ActivateGear { gear_id: 42901 })
+                .unwrap();
+        }
+        112 => {
+            assert_eq!(
+                app.game.payment_plan_view(0).unwrap().refusal_kind,
+                Some(local_rift::payment_plan::PaymentRefusalKind::Instruction)
+            );
+            assert_eq!(app.game.players[0].any_power, 1);
+            capture(app, "RIFT_IRELIA_INNOVATOR_UNDO_OR_SKIP");
+            click(app, 1285.0, 548.0);
+        }
+        113 => {
+            assert_eq!(app.game.players[0].gear.len(), 1);
+            assert_eq!(app.game.players[0].any_power, 0);
+            assert_eq!(app.game.chain.len(), 1);
+            capture(app, "RIFT_IRELIA_INNOVATOR_UNDONE");
+            let Some(Decision::TriggerPayment { choice_id, .. }) = app.game.decision else {
+                panic!()
+            };
+            assert!(app.begin_ui_payment(Action::ResolveTriggerPayment {
+                choice_id,
+                pay: true
+            }));
+            app.game
+                .apply(Action::ActivateGear { gear_id: 42901 })
+                .unwrap();
+        }
+        114 => {
+            capture(app, "RIFT_IRELIA_INNOVATOR_SKIP_EFFECT");
+            click(app, 1285.0, 578.0);
+        }
+        115 => {
+            assert!(app.game.chain.is_empty() && app.game.decision.is_none());
+            assert!(app.game.players[0].gear.is_empty());
+            assert!(app.game.players[0].hand.is_empty());
+            assert_eq!(app.game.players[0].any_power, 1);
+            capture(app, "RIFT_IRELIA_INNOVATOR_SKIPPED_KEEP_ADD");
             return true;
         }
         _ => {}

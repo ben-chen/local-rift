@@ -6605,6 +6605,36 @@ pub fn cards() -> Vec<CardDef> {
             tags: &["Equipment"],
             art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/b3e385162bf3566618bb58b7a866eef846beefba-744x1039.png?w=280&q=85&fm=png",
         },
+        CardDef {
+            id: 433,
+            official_id: "ven-085-166",
+            name: "Decree of Strength",
+            cost: 1,
+            power_cost: 0,
+            might: 0,
+            domain: Domain::Body,
+            domains: &[Domain::Body],
+            kind: CardKind::Spell,
+            official_text: "Choose an opponent. They reveal their hand and you choose a Mind ([Mind Power]) card from it. They recycle that card.",
+            keywords: &[],
+            tags: &[],
+            art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/12106889f9f76914421f38e8958a248462637a22-744x1039.png?w=280&q=85&fm=png",
+        },
+        CardDef {
+            id: 434,
+            official_id: "ven-127-166",
+            name: "Lacerate",
+            cost: 2,
+            power_cost: 1,
+            might: 0,
+            domain: Domain::Order,
+            domains: &[Domain::Order],
+            kind: CardKind::Spell,
+            official_text: "Choose a unit. If it's [Empowered], disempower it. Then kill it if it has 3 Might or less.\n[Flow] [4 Energy][Order Power][Order Power] (You may play this from your trash for its Flow cost. Then banish it.)",
+            keywords: &["Empowered", "Flow"],
+            tags: &[],
+            art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/f21bbd09545d949f095756281e5506128eb4809d-744x1039.png?w=280&q=85&fm=png",
+        },
     ]
 }
 
@@ -6612,7 +6642,23 @@ pub fn presets() -> Vec<DeckPreset> {
     vec![
         DeckPreset {
             legend_id: 0,
-            registration: None,
+            registration: Some(PresetRegistration {
+                pilot: "Xeno",
+                event: "Los Angeles Regional Qualifier",
+                date: "September 2026",
+                placing: 2,
+                battlefields: &[13, 0, 14],
+                sideboard: &[
+                    (369, 2),
+                    (2, 1),
+                    (421, 1),
+                    (12, 1),
+                    (13, 1),
+                    (424, 2),
+                    (44, 1),
+                    (20, 1),
+                ],
+            }),
             name: "Irelia / Blade Dance",
             legend_name: "Irelia, Blade Dancer",
             legend_text: "When you choose a friendly unit, you may exhaust me and pay [Any Power] to ready it.\nWhen you conquer, you may pay [1 Energy] to ready me.",
@@ -6688,7 +6734,24 @@ pub fn presets() -> Vec<DeckPreset> {
         },
         DeckPreset {
             legend_id: 2,
-            registration: None,
+            registration: Some(PresetRegistration {
+                pilot: "DSG AwesumRosum",
+                event: "Los Angeles Regional Qualifier",
+                date: "September 2026",
+                placing: 13,
+                battlefields: &[2, 15, 16],
+                sideboard: &[
+                    (365, 1),
+                    (36, 1),
+                    (37, 1),
+                    (434, 1),
+                    (424, 2),
+                    (80, 1),
+                    (41, 1),
+                    (16, 1),
+                    (48, 1),
+                ],
+            }),
             name: "Kennen / Tempest",
             legend_name: "Kennen, Heart of the Tempest",
             legend_text: "When you play a card from anywhere other than your hand, empower me.\n[Action] —  Disempower me, [Exhaust]: Give a unit [Assault 2] this turn. (+2 Might while it's an attacker.)",
@@ -6765,7 +6828,22 @@ pub fn presets() -> Vec<DeckPreset> {
         },
         DeckPreset {
             legend_id: 8,
-            registration: None,
+            registration: Some(PresetRegistration {
+                pilot: "DSG Prismaticism",
+                event: "Los Angeles Regional Qualifier",
+                date: "September 2026",
+                placing: 1,
+                battlefields: &[11, 1, 12],
+                sideboard: &[
+                    (364, 2),
+                    (51, 1),
+                    (433, 2),
+                    (54, 2),
+                    (368, 1),
+                    (420, 1),
+                    (29, 1),
+                ],
+            }),
             name: "Rengar / Pridestalker",
             legend_name: "Rengar, Pridestalker",
             legend_text: "When you play a unit, give a unit +1 Might this turn.",
@@ -6857,7 +6935,7 @@ mod tests {
     #[test]
     fn presets_are_complete_and_references_are_consistent() {
         let catalog = cards();
-        assert_eq!(catalog.len(), 433);
+        assert_eq!(catalog.len(), 435);
         for (index, card) in catalog.iter().enumerate() {
             assert_eq!(index, card.id);
             assert!(!card.official_id.is_empty());

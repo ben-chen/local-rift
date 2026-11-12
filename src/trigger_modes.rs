@@ -1,4 +1,4 @@
-//! Modal triggers choose before costs; the selected mode survives source departure.
+//! Modal triggers choose before responses; later instruction costs resolve afterward; the selected mode survives source departure.
 use super::*;
 use crate::trigger_rules;
 

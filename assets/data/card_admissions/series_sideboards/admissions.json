@@ -1,0 +1,187 @@
+{
+  "status": "admitted",
+  "reviewed_on": "2026-11-12",
+  "preserved_runtime_prefix": {
+    "card_count": 433,
+    "cards_sha256": "50b30a4cf36228b53b37262c29dd02fecff148015c4588a84cb956f4e1ef2879",
+    "preset_count": 6,
+    "presets_sha256": "7dcd344ff63ab33041734445f0756bfecca308ea9cef97c97db8ad1bf0e53d70"
+  },
+  "cards": [
+    {
+      "runtime_id": 433,
+      "identity": "ven-085-166",
+      "printing_cohort": [
+        "ven-085-166"
+      ],
+      "errata": [],
+      "raw_printing": {
+        "tags": [],
+        "rarity": "rare",
+        "rules_text": "Choose an opponent. They reveal their hand and you choose a Mind ([Mind Power]) card from it. They recycle that card.",
+        "official_id": "ven-085-166",
+        "illustrators": [
+          "Envar Studio"
+        ],
+        "public_code": "VEN-085/166",
+        "collector_number": 85,
+        "type_source": "cardType.type",
+        "might": null,
+        "equipment_text": "",
+        "set": "VEN",
+        "rules_html": "<p>Choose an opponent. They reveal their hand and you choose a Mind (:rb_rune_mind:) card from it. They recycle that card.</p>",
+        "might_bonus": null,
+        "type_labels_conflict": false,
+        "domains": [
+          "body"
+        ],
+        "name": "Decree of Strength",
+        "energy": 1,
+        "types": [
+          "spell"
+        ],
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/12106889f9f76914421f38e8958a248462637a22-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Spell: Decree of Strength. Choose an opponent. They reveal their hand and you choose a Mind ([B]) card from it. They recycle that card.",
+        "accessibility_types": [
+          "spell"
+        ],
+        "structured_types": [
+          "spell"
+        ],
+        "power": null,
+        "equipment_html": "",
+        "super_types": []
+      },
+      "raw_printing_sha256": "cd32e66e637f904a73177cfb49784a97927726a16b12a287db4073290c1052a4",
+      "effective": {
+        "types": [
+          "spell"
+        ],
+        "super_types": [],
+        "domains": [
+          "body"
+        ],
+        "energy": 1,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>Choose an opponent. They reveal their hand and you choose a Mind (:rb_rune_mind:) card from it. They recycle that card.</p>",
+        "rules_text": "Choose an opponent. They reveal their hand and you choose a Mind ([Mind Power]) card from it. They recycle that card.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "gallery_raw_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+      "visual_review": "Full original face reviewed: name, normal timing, energy/power cost, domain, rules, Flow cost where present, and no additional tags.",
+      "original_image": {
+        "path": "assets/data/card_admissions/series_sideboards/ven-085-166.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/12106889f9f76914421f38e8958a248462637a22-744x1039.png?accountingTag=RB",
+        "sha256": "80bab34468ef28d520bdd0369424fe73f80ecbe84705908779be5fe91e17d875",
+        "dimensions": [
+          744,
+          1039
+        ],
+        "actual_full_face_viewed": true
+      },
+      "runtime_image": {
+        "path": "assets/art/card_433.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/12106889f9f76914421f38e8958a248462637a22-744x1039.png?w=280&q=85&fm=png",
+        "sha256": "d5465ce095838c577d237543efcb82e30da6e0bb482a9eb4401bd8ba5a4b4c0c",
+        "dimensions": [
+          280,
+          391
+        ]
+      }
+    },
+    {
+      "runtime_id": 434,
+      "identity": "ven-127-166",
+      "printing_cohort": [
+        "ven-127-166"
+      ],
+      "errata": [],
+      "raw_printing": {
+        "tags": [],
+        "rarity": "common",
+        "rules_text": "Choose a unit. If it's [Empowered], disempower it. Then kill it if it has 3 Might or less.\n[Flow] [4 Energy][Order Power][Order Power] (You may play this from your trash for its Flow cost. Then banish it.)",
+        "official_id": "ven-127-166",
+        "illustrators": [
+          "Polar Engine Studio"
+        ],
+        "public_code": "VEN-127/166",
+        "collector_number": 127,
+        "type_source": "cardType.type",
+        "might": null,
+        "equipment_text": "",
+        "set": "VEN",
+        "rules_html": "<p>Choose a unit. If it's [Empowered], disempower it. Then kill it if it has 3 :rb_might: or less.<br />[Flow] :rb_energy_4::rb_rune_order::rb_rune_order: (You may play this from your trash for its Flow cost. Then banish it.)</p>",
+        "might_bonus": null,
+        "type_labels_conflict": false,
+        "domains": [
+          "order"
+        ],
+        "name": "Lacerate",
+        "energy": 2,
+        "types": [
+          "spell"
+        ],
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/f21bbd09545d949f095756281e5506128eb4809d-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Spell: Lacerate. Choose a unit. If it's [Empowered], disempower it. Then kill it if it has 3 [S] or less.\n[Flow] [4][C][C] (You may play this from your trash for its Flow cost. Then banish it.)",
+        "accessibility_types": [
+          "spell"
+        ],
+        "structured_types": [
+          "spell"
+        ],
+        "power": 1,
+        "equipment_html": "",
+        "super_types": []
+      },
+      "raw_printing_sha256": "e502b3071548848c160b89cee8c4cbf57b29039d09e4f3bb227f348abfc7bb14",
+      "effective": {
+        "types": [
+          "spell"
+        ],
+        "super_types": [],
+        "domains": [
+          "order"
+        ],
+        "energy": 2,
+        "power": 1,
+        "might": null,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>Choose a unit. If it's [Empowered], disempower it. Then kill it if it has 3 :rb_might: or less.<br />[Flow] :rb_energy_4::rb_rune_order::rb_rune_order: (You may play this from your trash for its Flow cost. Then banish it.)</p>",
+        "rules_text": "Choose a unit. If it's [Empowered], disempower it. Then kill it if it has 3 Might or less.\n[Flow] [4 Energy][Order Power][Order Power] (You may play this from your trash for its Flow cost. Then banish it.)",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "gallery_raw_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+      "visual_review": "Full original face reviewed: name, normal timing, energy/power cost, domain, rules, Flow cost where present, and no additional tags.",
+      "original_image": {
+        "path": "assets/data/card_admissions/series_sideboards/ven-127-166.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/f21bbd09545d949f095756281e5506128eb4809d-744x1039.png?accountingTag=RB",
+        "sha256": "4421bd0081e10f4acafcb632983c31cccac830ad75f08e4c7d7db562b23ec42d",
+        "dimensions": [
+          744,
+          1039
+        ],
+        "actual_full_face_viewed": true
+      },
+      "runtime_image": {
+        "path": "assets/art/card_434.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/f21bbd09545d949f095756281e5506128eb4809d-744x1039.png?w=280&q=85&fm=png",
+        "sha256": "d044d0d8ebeabbfcce37c124619a953cf263b2b8a718f1dbf6d7b1be31ffec32",
+        "dimensions": [
+          280,
+          391
+        ]
+      }
+    }
+  ],
+  "preserved_source_reviews": {
+    "assets/data/catalog_resolutions.json": "d3c20a87520f89b5a41fafc519588806758d10709943c287a46ef8b6c8990475",
+    "assets/data/catalog_identity_reviews.json": "3892ffe5685f54087c8f4d95529f28a686a0cc155ddd0435a11f859d2266ebfe",
+    "assets/data/catalog_evidence/variant_images.json": "c3a466807391bfebf9b12ee979fd887b75d248c77c803574d632d283072479a8"
+  }
+}

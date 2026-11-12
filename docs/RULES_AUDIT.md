@@ -509,11 +509,21 @@ confirms two modes, with no once-per-turn restriction. Core 415 distinguishes
 Exhaust from exhausted entry and ignores an instruction to Exhaust an already
 exhausted object. Accelerate changes entry; it does not create an Exhaust event.
 
-Mode selection precedes costs (403.2). The draw instruction supplies the selected
-trigger's base cost (204.1.c, 404.1.b.1), paid before responses. Positive-cost
-refusal ends that occurrence under 405.2, without falling back to Gold. Source
-departure does not change the selected mode. The original source identity is
-retained for each occurrence; simultaneous copies choose and pay separately.
+The November 12 timing audit corrects the original admission: choose the mode
+before responses (355.3), but pay the draw's Chaos Power during resolution.
+Core 383.3.b and Riot's [Radiance FAQ](https://playriftbound.com/en-us/news/organizedplay/radiance-rules-faq-and-clarifications/)
+place costs after the first instruction in resolution. The FAQ names Riven,
+Broken Blade; applying its general choose-one reasoning to Innovator is an
+inference, not an Innovator-specific published ruling. The original validation
+receipt remains historical evidence and does not validate its incorrect timing.
+
+The resolving trigger stays on the chain while its payment is pending. Declining
+skips the dependent draw under 445.2.b without choosing Gold, undoing a finalized
+ability, or rolling back completed Add actions. Undo payment separately restores
+the staged attempt. Reaction Add abilities remain usable under 445.2.c; nested
+instructions must finish first. Source departure does not change the chosen mode.
+Ordinary trigger base costs, including Gust Monk and Deploy gear, retain their
+pre-response finalization and rollback behavior.
 
 Focused tests exercise both seats, ordinary and accelerated entry, actual
 movement, repeated ready/exhaust transitions, Irelia's paid ready trigger, and
@@ -658,3 +668,37 @@ Recommendations pass through the same registered-pool and exact-main validation
 as manual choices; first-game sideboarding and reused fields remain prohibited.
 Balance preferences are AI heuristics and impose no extra rules on human edits.
 This focused review does not close the outstanding full-engine audit cases.
+
+## LA registrations and sideboard spells — November 12, 2026
+
+A fresh comparison against Riot's Los Angeles article verifies the Xeno Irelia,
+DSG AwesumRosum Kennen and DSG Prismaticism Rengar registrations, including
+all sideboard copies and battlefields. Decree of Strength and Lacerate complete
+the missing sideboard identities. The six preceding main-deck recipes remain
+byte-equivalent in the runtime manifest.
+
+Decree is a mandatory domain-filtered choice within a public hand reveal,
+followed by its owner's recycle to deck bottom (Core 417, 425). Native controls
+mark only Mind cards as selectable; other revealed cards remain inspectable.
+Both bot views see the reveal, then hide the opponent's hand again after the
+choice. Repeats inspect the updated hand. Scouting retains only legally seen
+identities. Sabotage's shared recycle log now correctly names the recycling owner.
+
+Lacerate permits any unit target, then removes Empowered before testing live
+Might (442–443). The test covers loss of Empowered Might, keywords and
+Deathknell, buff/debuff responses, Deflect paid before disempower, departed
+physical targets, Guardian Angel and Irelia's separate choose trigger. Cleanup
+cannot interrupt this resolving chain item (321). Flow is 4 Energy and 2 Order
+Power; it does not grant timing and still banishes a countered spell (829).
+
+The current Rules Hub still links the October 9 Core and Tournament PDFs;
+Vendetta errata does not amend either added card. This focused audit does not
+resolve the outstanding full-gallery refresh or certify full Standard parity.
+
+An additional AI-only scenario found that the candidate list could include a
+zero-value Lacerate even when a human play would do nothing. The heuristic and
+Strategic candidate selectors now exclude these plays before starting payment,
+including Flow. Legal human targets remain unchanged. A regression covers all
+three difficulties and both spell origins.
+
+The November 12 [registered-opponent and Innovator correction acceptance](validation/registered_opponents.json) records 1,657 Rust tests, 272 source/catalog tests, 864 Nix simulations, matching 70-game API campaigns and the installed native checks. The original Innovator admission remains historical; its pre-response payment interpretation is superseded.

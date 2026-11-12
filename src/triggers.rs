@@ -1094,11 +1094,30 @@ impl Game {
         context: TriggerContext,
         targets: Vec<Target>,
     ) -> Result<Decision, String> {
-        let cost = metadata::selected_rule(card_id, rule_index, context.mode)
-            .expect("validated trigger mode")
-            .base_cost
-            .ok_or("This trigger has no base cost.")?;
-        let deflect = self.deflect_cost(context.source.player, &targets)?.into();
+        self.trigger_cost_decision(card_id, rule_index, context, targets, None)
+    }
+
+    pub(super) fn trigger_cost_decision(
+        &mut self,
+        card_id: CardId,
+        rule_index: usize,
+        context: TriggerContext,
+        targets: Vec<Target>,
+        resolving_chain_id: Option<u32>,
+    ) -> Result<Decision, String> {
+        let rule = metadata::selected_rule(card_id, rule_index, context.mode)
+            .ok_or("Invalid trigger mode.")?;
+        let cost = if resolving_chain_id.is_some() {
+            rule.resolution_cost
+        } else {
+            rule.base_cost
+        }
+        .ok_or("This trigger has no cost at this step.")?;
+        let deflect = if resolving_chain_id.is_some() {
+            0
+        } else {
+            self.deflect_cost(context.source.player, &targets)?.into()
+        };
         let choice_id = self.next_chain_id;
         self.next_chain_id = self
             .next_chain_id
@@ -1112,6 +1131,7 @@ impl Game {
             context,
             targets,
             deflect,
+            resolving_chain_id,
             base_cost: CostValue {
                 xp: 0,
                 energy: cost.energy,
@@ -1146,12 +1166,41 @@ impl Game {
             targets,
             base_cost,
             deflect,
+            resolving_chain_id,
         }) = self.decision.clone()
         else {
             return Err("No triggered ability is awaiting payment.".into());
         };
         if current != choice_id {
             return Err("This trigger payment choice is stale.".into());
+        }
+        if let Some(id) = resolving_chain_id {
+            if !self.chain.last().is_some_and(|item| {
+                item.id == id
+                    && item.card_id == card_id
+                    && item.player == player
+                    && matches!(item.ability, Some(ChainAbility::CardTrigger {
+                        rule_index: index, context: selected
+                    }) if index == rule_index && selected == context)
+            }) {
+                return Err("The resolving trigger no longer matches this payment.".into());
+            }
+            if trash.is_some() {
+                return Err("This instruction has no trash cost.".into());
+            }
+            if pay {
+                self.pay_action_cost(&Action::ResolveTriggerPayment { choice_id, pay })?;
+                self.decision = None;
+                return self.resolve_top_chain_with_paid_trigger(Some(id));
+            }
+            if base_cost.energy == 0 && base_cost.power == 0 {
+                return Err("A zero resource cost cannot be declined.".into());
+            }
+            // Core445.2.b: declining an instruction skips its dependent effect.
+            // Completed Add abilities remain; the finalized trigger is not undone.
+            self.decision = None;
+            self.chain.pop();
+            return self.after_resolution();
         }
         let requires_trash = metadata::selected_rule(card_id, rule_index, context.mode)
             .expect("validated trigger mode")

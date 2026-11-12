@@ -1,0 +1,605 @@
+{
+  "status": "admitted",
+  "source_url": "https://playriftbound.com/en-us/news/organizedplay/los-angeles-top-decks/",
+  "source_archive": "assets/data/preset_admissions/series_los_angeles/source.html.gz",
+  "source_raw_sha256": "623274470fcd7b28e1691b087e632c8d189e68026f2ad2a5b95eec5a1126b582",
+  "reviewed_on": "2026-11-12",
+  "article_published_on": "2026-09-30",
+  "registrations": [
+    {
+      "preset": 0,
+      "pilot": "Xeno",
+      "event": "Los Angeles Regional Qualifier",
+      "date": "September 2026",
+      "placing": 2,
+      "source_copies": 2,
+      "source_list": {
+        "Legend": [
+          {
+            "name": "Irelia, Blade Dancer",
+            "count": 1
+          }
+        ],
+        "Champion": [
+          {
+            "name": "Irelia, Fervent",
+            "count": 1
+          }
+        ],
+        "Main Deck": [
+          {
+            "name": "Abandon",
+            "count": 1
+          },
+          {
+            "name": "Akali, Silent",
+            "count": 1
+          },
+          {
+            "name": "Boots of Swiftness",
+            "count": 2
+          },
+          {
+            "name": "Charm",
+            "count": 2
+          },
+          {
+            "name": "Defiant Dance",
+            "count": 3
+          },
+          {
+            "name": "Defy",
+            "count": 3
+          },
+          {
+            "name": "Discipline",
+            "count": 3
+          },
+          {
+            "name": "En Garde",
+            "count": 2
+          },
+          {
+            "name": "Flash",
+            "count": 1
+          },
+          {
+            "name": "Guardian Angel",
+            "count": 1
+          },
+          {
+            "name": "Gust",
+            "count": 1
+          },
+          {
+            "name": "Not So Fast",
+            "count": 1
+          },
+          {
+            "name": "Pyke, Returned",
+            "count": 1
+          },
+          {
+            "name": "Ride the Wind",
+            "count": 2
+          },
+          {
+            "name": "Scuttle Crab",
+            "count": 3
+          },
+          {
+            "name": "Star-Crossed",
+            "count": 2
+          },
+          {
+            "name": "Stellacorn Herder",
+            "count": 3
+          },
+          {
+            "name": "Tideturner",
+            "count": 3
+          },
+          {
+            "name": "Twilight Shroud",
+            "count": 1
+          },
+          {
+            "name": "Vex, Apathetic",
+            "count": 1
+          },
+          {
+            "name": "Zhonya's Hourglass",
+            "count": 2
+          }
+        ],
+        "Battlefields": [
+          {
+            "name": "Abandoned Hall",
+            "count": 1
+          },
+          {
+            "name": "Sunken Temple",
+            "count": 1
+          },
+          {
+            "name": "Targon's Peak",
+            "count": 1
+          }
+        ],
+        "Rune Pool": [
+          {
+            "name": "Calm Rune",
+            "count": 6
+          },
+          {
+            "name": "Chaos Rune",
+            "count": 6
+          }
+        ],
+        "Sideboard": [
+          {
+            "name": "Adaptatron",
+            "count": 2
+          },
+          {
+            "name": "Akali, Silent",
+            "count": 1
+          },
+          {
+            "name": "Decree of Focus",
+            "count": 1
+          },
+          {
+            "name": "Not So Fast",
+            "count": 1
+          },
+          {
+            "name": "Pyke, Returned",
+            "count": 1
+          },
+          {
+            "name": "Ravenbloom Prefect",
+            "count": 2
+          },
+          {
+            "name": "Switcheroo",
+            "count": 1
+          },
+          {
+            "name": "Vex, Apathetic",
+            "count": 1
+          }
+        ]
+      },
+      "sideboard": [
+        [
+          369,
+          2
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          421,
+          1
+        ],
+        [
+          12,
+          1
+        ],
+        [
+          13,
+          1
+        ],
+        [
+          424,
+          2
+        ],
+        [
+          44,
+          1
+        ],
+        [
+          20,
+          1
+        ]
+      ],
+      "battlefields": [
+        13,
+        0,
+        14
+      ]
+    },
+    {
+      "preset": 2,
+      "pilot": "DSG AwesumRosum",
+      "event": "Los Angeles Regional Qualifier",
+      "date": "September 2026",
+      "placing": 13,
+      "source_copies": 1,
+      "source_list": {
+        "Legend": [
+          {
+            "name": "Kennen, Heart of the Tempest",
+            "count": 1
+          }
+        ],
+        "Champion": [
+          {
+            "name": "Kennen, Storm of Shuriken",
+            "count": 1
+          }
+        ],
+        "Main Deck": [
+          {
+            "name": "Carrion Dredger",
+            "count": 1
+          },
+          {
+            "name": "Ezreal, Prodigy",
+            "count": 2
+          },
+          {
+            "name": "Fizz, Trickster",
+            "count": 1
+          },
+          {
+            "name": "Flash",
+            "count": 2
+          },
+          {
+            "name": "Gust",
+            "count": 2
+          },
+          {
+            "name": "Hard Bargain",
+            "count": 1
+          },
+          {
+            "name": "Last Rites",
+            "count": 2
+          },
+          {
+            "name": "Lightning Rush",
+            "count": 3
+          },
+          {
+            "name": "Rhasa the Sunderer",
+            "count": 3
+          },
+          {
+            "name": "Ride the Wind",
+            "count": 2
+          },
+          {
+            "name": "Salvage",
+            "count": 1
+          },
+          {
+            "name": "Seal of Discord",
+            "count": 3
+          },
+          {
+            "name": "Shadow Order Disciple",
+            "count": 3
+          },
+          {
+            "name": "Star-Crossed",
+            "count": 1
+          },
+          {
+            "name": "Switcheroo",
+            "count": 2
+          },
+          {
+            "name": "Tail-Cloaked Matriarch",
+            "count": 3
+          },
+          {
+            "name": "Tideturner",
+            "count": 1
+          },
+          {
+            "name": "Tornado Warrior",
+            "count": 2
+          },
+          {
+            "name": "Traveling Merchant",
+            "count": 3
+          },
+          {
+            "name": "Up from the Deep",
+            "count": 1
+          }
+        ],
+        "Battlefields": [
+          {
+            "name": "Minefield",
+            "count": 1
+          },
+          {
+            "name": "Shadow Temple",
+            "count": 1
+          },
+          {
+            "name": "Zaun Warrens",
+            "count": 1
+          }
+        ],
+        "Rune Pool": [
+          {
+            "name": "Chaos Rune",
+            "count": 9
+          },
+          {
+            "name": "Order Rune",
+            "count": 3
+          }
+        ],
+        "Sideboard": [
+          {
+            "name": "Decree of Unity",
+            "count": 1
+          },
+          {
+            "name": "Fizz, Trickster",
+            "count": 1
+          },
+          {
+            "name": "Hard Bargain",
+            "count": 1
+          },
+          {
+            "name": "Lacerate",
+            "count": 1
+          },
+          {
+            "name": "Ravenbloom Prefect",
+            "count": 2
+          },
+          {
+            "name": "Rebuke",
+            "count": 1
+          },
+          {
+            "name": "Salvage",
+            "count": 1
+          },
+          {
+            "name": "Star-Crossed",
+            "count": 1
+          },
+          {
+            "name": "Up from the Deep",
+            "count": 1
+          }
+        ]
+      },
+      "sideboard": [
+        [
+          365,
+          1
+        ],
+        [
+          36,
+          1
+        ],
+        [
+          37,
+          1
+        ],
+        [
+          434,
+          1
+        ],
+        [
+          424,
+          2
+        ],
+        [
+          80,
+          1
+        ],
+        [
+          41,
+          1
+        ],
+        [
+          16,
+          1
+        ],
+        [
+          48,
+          1
+        ]
+      ],
+      "battlefields": [
+        2,
+        15,
+        16
+      ]
+    },
+    {
+      "preset": 4,
+      "pilot": "DSG Prismaticism",
+      "event": "Los Angeles Regional Qualifier",
+      "date": "September 2026",
+      "placing": 1,
+      "source_copies": 2,
+      "source_list": {
+        "Legend": [
+          {
+            "name": "Rengar, Pridestalker",
+            "count": 1
+          }
+        ],
+        "Champion": [
+          {
+            "name": "Rengar, Trophy Hunter",
+            "count": 1
+          }
+        ],
+        "Main Deck": [
+          {
+            "name": "Darius, Trifarian",
+            "count": 1
+          },
+          {
+            "name": "Ferrous Forerunner",
+            "count": 1
+          },
+          {
+            "name": "First Mate",
+            "count": 2
+          },
+          {
+            "name": "Grim Apothecary",
+            "count": 3
+          },
+          {
+            "name": "Inferna",
+            "count": 3
+          },
+          {
+            "name": "Irresistible Faefolk",
+            "count": 3
+          },
+          {
+            "name": "Kai'Sa, Survivor",
+            "count": 3
+          },
+          {
+            "name": "Kinkou Initiate",
+            "count": 3
+          },
+          {
+            "name": "Nidalee, Cat Form",
+            "count": 2
+          },
+          {
+            "name": "Noxus Hopeful",
+            "count": 3
+          },
+          {
+            "name": "Pakaa Cub",
+            "count": 1
+          },
+          {
+            "name": "Pit Rookie",
+            "count": 3
+          },
+          {
+            "name": "Punch First",
+            "count": 3
+          },
+          {
+            "name": "Pyke, Dockside Butcher",
+            "count": 1
+          },
+          {
+            "name": "Rampage",
+            "count": 2
+          },
+          {
+            "name": "Sabotage",
+            "count": 3
+          },
+          {
+            "name": "Thrill of the Hunt",
+            "count": 2
+          }
+        ],
+        "Battlefields": [
+          {
+            "name": "Emperor's Dais",
+            "count": 1
+          },
+          {
+            "name": "Seat of Power",
+            "count": 1
+          },
+          {
+            "name": "Star Spring",
+            "count": 1
+          }
+        ],
+        "Rune Pool": [
+          {
+            "name": "Body Rune",
+            "count": 8
+          },
+          {
+            "name": "Fury Rune",
+            "count": 4
+          }
+        ],
+        "Sideboard": [
+          {
+            "name": "Brittle Steel",
+            "count": 2
+          },
+          {
+            "name": "Brynhir Thundersong",
+            "count": 1
+          },
+          {
+            "name": "Decree of Strength",
+            "count": 2
+          },
+          {
+            "name": "Ferrous Forerunner",
+            "count": 2
+          },
+          {
+            "name": "Noxian Demolitionist",
+            "count": 1
+          },
+          {
+            "name": "Pyke, Dockside Butcher",
+            "count": 1
+          },
+          {
+            "name": "Rampage",
+            "count": 1
+          }
+        ]
+      },
+      "sideboard": [
+        [
+          364,
+          2
+        ],
+        [
+          51,
+          1
+        ],
+        [
+          433,
+          2
+        ],
+        [
+          54,
+          2
+        ],
+        [
+          368,
+          1
+        ],
+        [
+          420,
+          1
+        ],
+        [
+          29,
+          1
+        ]
+      ],
+      "battlefields": [
+        11,
+        1,
+        12
+      ]
+    }
+  ]
+}

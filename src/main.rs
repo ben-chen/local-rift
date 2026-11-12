@@ -2481,7 +2481,11 @@ impl App {
                 TEXT,
             );
             self.ui.wrapped_lines(
-                "Choose one effect. Pay its cost before the opponent can respond.",
+                if card_id == 429 {
+                    "Choose Gold or draw now. The opponent can respond before you pay for the draw."
+                } else {
+                    "Choose the effect before responses. Pay any base cost now; costs inside the effect wait until it resolves."
+                },
                 1178.0,
                 390.0,
                 210.0,
@@ -2783,6 +2787,7 @@ impl App {
             Decision::Discard{count,..}=>("Choose a discard",format!("Select {count} card(s) below, then confirm. These go to your trash before you draw.")),
             Decision::TopThree{..}=>("Lightning Rush","Choose one of your top three cards below to draw. The rest go to your trash. You may choose none.".into()),
             Decision::Sabotage{..}=>("Sabotage","Your opponent's hand is revealed below. Choose a non-unit card to recycle.".into()),
+            Decision::RecycleRevealedHand{domain,..}=>("Decree of Strength",format!("Your opponent's whole hand is revealed. Choose one {} card to put on the bottom of their deck, if available.",domain.name())),
             Decision::GrantFlow{..}=>("Tempest's echo","Choose a spell in your trash below. It gains Flow equal to its printed cost for this turn.".into()),
             Decision::LastRites{..}=>("Last Rites","Choose a unit from your trash below to play, paying its cost. You may skip.".into()),
             Decision::ReplaySpell{..}=>("Fizz's trick","Choose a spell in your trash with energy cost 3 or less. You still pay power. It recycles after being played.".into()),
@@ -2880,6 +2885,7 @@ impl App {
                 if matches!(
                     decision,
                     Decision::Sabotage { .. }
+                        | Decision::RecycleRevealedHand { .. }
                         | Decision::GrantFlow { .. }
                         | Decision::TrashTarget { .. }
                 ) {
@@ -2893,6 +2899,12 @@ impl App {
                         .hand
                         .iter()
                         .any(|id| self.game.catalog[*id].kind != CardKind::Unit),
+                    Decision::RecycleRevealedHand {
+                        opponent, domain, ..
+                    } => !self.game.players[opponent]
+                        .hand
+                        .iter()
+                        .any(|id| self.game.catalog[*id].domains.contains(&domain)),
                     Decision::LastRites { .. } | Decision::ReplaySpell { .. } => {
                         self.game.can_decline_trash_play()?
                     }
@@ -2912,6 +2924,7 @@ impl App {
                 if matches!(
                     decision,
                     Decision::Sabotage { .. }
+                        | Decision::RecycleRevealedHand { .. }
                         | Decision::GrantFlow { .. }
                         | Decision::TrashTarget { .. }
                 ) {
@@ -4097,6 +4110,9 @@ impl App {
             Decision::Discard { .. } => self.game.players[0].hand.clone(),
             Decision::TopThree { cards, .. } | Decision::RevealHand { cards, .. } => cards.clone(),
             Decision::Sabotage { opponent, .. } => self.game.players[*opponent].hand.clone(),
+            Decision::RecycleRevealedHand { opponent, .. } => {
+                self.game.players[*opponent].hand.clone()
+            }
             Decision::ReviveUnit { .. }
             | Decision::GrantFlow { .. }
             | Decision::LastRites { .. }
@@ -4118,9 +4134,34 @@ impl App {
                 self.game.catalog[*id].name,
                 self.choices.contains(&index),
             );
+            let revealed_eligible = match decision {
+                Decision::RecycleRevealedHand { domain, .. } => {
+                    Some(self.game.catalog[*id].domains.contains(&domain))
+                }
+                _ => None,
+            };
+            if let Some(eligible) = revealed_eligible {
+                self.ui.border(r, if eligible { TEAL } else { MUTED });
+                self.ui
+                    .rect(Rect::new(r.x + 3.0, r.y + 3.0, r.w - 6.0, 19.0), PANEL);
+                self.ui.text(
+                    if eligible {
+                        "MIND · CHOOSE"
+                    } else {
+                        "READ ONLY"
+                    },
+                    r.x + 9.0,
+                    r.y + 17.0,
+                    9.0,
+                    if eligible { TEAL } else { MUTED },
+                );
+            }
             if self.ui.clicked(r) {
                 match decision {
                     Decision::RevealHand { .. } => self.inspect_printed_card(*id),
+                    Decision::RecycleRevealedHand { .. } if revealed_eligible == Some(false) => {
+                        self.inspect_printed_card(*id)
+                    }
                     Decision::Discard { count, .. } => {
                         if let Some(i) = self.choices.iter().position(|x| *x == index) {
                             self.choices.remove(i);
@@ -6399,6 +6440,10 @@ impl App {
         }
         self.ui
             .line(vec2(1178.0, 345.0), vec2(1390.0, 345.0), 1.0, LINE);
+        // Resolving a choice can reveal the priority button beneath the click
+        // that resolved it. That newly available action needs a fresh input.
+        let priority_control_was_available =
+            self.game.phase == Phase::Playing && self.game.decision.is_none();
         if self.game.phase == Phase::Mulligan {
             self.ui.title("A good opening.", 1178.0, 366.0, 22.0, TEXT);
             self.ui.wrapped("Choose up to 2 cards to replace, or keep your hand. Your champion starts in its own zone.",1178.0,397.0,208.0,12.0,MUTED);
@@ -6472,7 +6517,8 @@ impl App {
         } else {
             self.selection_panel()?;
         }
-        if self.game.phase == Phase::Playing
+        if priority_control_was_available
+            && self.game.phase == Phase::Playing
             && self.game.decision.is_none()
             && self.ui.button(
                 Rect::new(1178.0, 574.0, 212.0, 44.0),

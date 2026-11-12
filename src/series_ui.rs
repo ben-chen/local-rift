@@ -442,15 +442,27 @@ impl App {
                 }
                 Err(error) => {
                     self.ui.wrapped(&error, x + 150.0, 335.0, 375.0, 12.0, GOLD);
-                    if self.ui.button(
-                        Rect::new(x + 20.0, 457.0, 512.0, 44.0),
-                        "Use Arito Irelia registration",
-                        true,
-                        true,
-                    ) {
-                        self.select_preset(seat, 5);
-                    }
                 }
+            }
+            let available: Vec<_> = self
+                .game
+                .presets
+                .iter()
+                .enumerate()
+                .filter(|(_, preset)| preset.registration.is_some())
+                .map(|(id, _)| id)
+                .collect();
+            if self.ui.button(
+                Rect::new(x + 20.0, 522.0, 512.0, 27.0),
+                "Next registered deck  >",
+                false,
+                !available.is_empty(),
+            ) {
+                let next = available
+                    .iter()
+                    .position(|&id| id == selected)
+                    .map_or(0, |index| (index + 1) % available.len());
+                self.select_preset(seat, available[next]);
             }
         }
         self.ui.text("OPPONENT", 260.0, 599.0, 11.0, MUTED);
@@ -502,7 +514,7 @@ impl App {
                 self.notify(error);
             }
         }
-        self.ui.wrapped("Only Arito's preset currently includes a complete tournament registration. Other presets and custom lists remain available for single games.",260.0,801.0,730.0,12.0,MUTED);
+        self.ui.wrapped("Complete registrations: Xeno Irelia, Arito Irelia, Kennen and Rengar. Other presets and custom lists remain available for single games.",260.0,801.0,730.0,12.0,MUTED);
     }
     pub(super) fn draw_native_match(&mut self) -> Result<(), String> {
         let series = self.native_match.as_ref().ok_or("No active match.")?;

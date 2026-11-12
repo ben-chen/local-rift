@@ -32,6 +32,8 @@ mod progression;
 mod refusal;
 mod runes;
 mod series;
+#[cfg(test)]
+mod series_sideboard_tests;
 mod targeting;
 mod temporary;
 mod vision;
@@ -394,7 +396,7 @@ impl Session {
         let players: Vec<_> = game.players.iter().enumerate().map(|(owner, state)| {
             let public_hand = match &game.decision {
                 Some(Decision::RevealHand { opponent, cards, .. }) if *opponent == owner => Some(cards.clone()),
-                Some(Decision::Sabotage { opponent, .. }) if *opponent == owner => Some(state.hand.clone()),
+                Some(Decision::Sabotage { opponent, .. } | Decision::RecycleRevealedHand { opponent, .. }) if *opponent == owner => Some(state.hand.clone()),
                 _ => None,
             };
             let hand = if owner == viewer { Some(state.hand.clone()) } else { public_hand };
@@ -2086,6 +2088,8 @@ fn decision_to_json(game: &Game, decision: &Decision, viewer: usize) -> Result<V
             "options":game.trigger_mode_options().iter().enumerate().map(|(index, mode)|json!({
                 "index":index,"label":mode.label,"base_cost":mode.rule.base_cost.map(|cost|json!({
                     "energy":cost.energy,"power":cost.power,"domain":cost.domain.map(|domain|format!("{domain:?}").to_lowercase())
+                })),"resolution_cost":mode.rule.resolution_cost.map(|cost|json!({
+                    "energy":cost.energy,"power":cost.power,"domain":cost.domain.map(|domain|format!("{domain:?}").to_lowercase())
                 }))
             })).collect::<Vec<_>>()
         }),
@@ -2097,12 +2101,17 @@ fn decision_to_json(game: &Game, decision: &Decision, viewer: usize) -> Result<V
             targets,
             base_cost,
             deflect,
+            resolving_chain_id,
             ..
         } => {
             let mut value = json!({"type":"trigger_payment","choice_id":choice_id,"card_id":card_id,
                 "rule_index":rule_index,"context":trigger_context_to_json(context),
                 "targets":targets.iter().map(target_to_json).collect::<Vec<_>>(),
-                "base_cost":play_choices::cost_to_json(base_cost),"deflect":deflect});
+                "cost":play_choices::cost_to_json(base_cost),
+                "base_cost":resolving_chain_id.is_none().then(|| play_choices::cost_to_json(base_cost)),
+                "timing":if resolving_chain_id.is_some() { "resolution" } else { "finalization" },
+                "resolving_chain_id":resolving_chain_id,
+                "paid_before_responses":resolving_chain_id.is_none(),"deflect":deflect});
             if crate::trigger_rules::selected_rule(*card_id, *rule_index, context.mode).is_some_and(
                 |r| {
                     r.object_cost
@@ -2245,6 +2254,18 @@ fn decision_to_json(game: &Game, decision: &Decision, viewer: usize) -> Result<V
         }
         Decision::Sabotage { opponent, .. } => {
             json!({"type":"sabotage","opponent":opponent,"cards":game.players[*opponent].hand})
+        }
+        Decision::RecycleRevealedHand {
+            opponent, domain, ..
+        } => {
+            let hand = &game.players[*opponent].hand;
+            let eligible: Vec<_> = hand
+                .iter()
+                .enumerate()
+                .filter(|(_, id)| game.catalog[**id].domains.contains(domain))
+                .map(|(index, _)| index)
+                .collect();
+            json!({"type":"recycle_revealed_hand","opponent":opponent,"domain":domain.name(),"cards":hand,"eligible_indices":eligible})
         }
         Decision::BurnForMight { unit_id, .. } => {
             json!({"type":"burn_for_might","unit_id":unit_id})
@@ -4146,8 +4167,86 @@ mod tests {
         assert_eq!(session.observe(0).unwrap(), before);
     }
 
+    fn check_innovator_instruction_plan_api(original: &Session, owner: usize, payment_id: u32) {
+        for end in [
+            Action::CompletePayment,
+            Action::RefusePayment,
+            Action::Choose { accept: false },
+        ] {
+            let mut session = original.clone();
+            session.game.players[owner].power_pool = [0; 6];
+            session.game.players[owner]
+                .gear
+                .push(crate::gear::GearState {
+                    id: 901,
+                    card_id: 13,
+                    lane: None,
+                    attached_to: None,
+                    ready: true,
+                    temporary: false,
+                    token: true,
+                });
+            let before = [session.observe(0).unwrap(), session.observe(1).unwrap()];
+            submit(
+                &mut session,
+                Action::BeginPayment {
+                    action: Box::new(Action::ResolveTriggerPayment {
+                        choice_id: payment_id,
+                        pay: true,
+                    }),
+                },
+            );
+            submit(&mut session, Action::ActivateGear { gear_id: 901 });
+            for viewer in 0..2 {
+                let view = session.observe(viewer).unwrap();
+                assert_eq!(view["payment_plan"]["refusal_kind"], "instruction");
+                assert_eq!(view["payment_plan"]["can_refuse"], true);
+                assert_eq!(view["trigger_payment_context"]["timing"], "resolution");
+                assert_eq!(view["trigger_payment_context"]["choice_id"], payment_id);
+                assert_eq!(
+                    view["resolution_progress"]["chain_id"],
+                    view["trigger_payment_context"]["resolving_chain_id"]
+                );
+                assert_eq!(view["players"][owner]["hand_count"], 0);
+                if viewer != owner {
+                    assert_eq!(view["payment_plan"]["action"], Value::Null);
+                }
+            }
+            let quote = session.handle(json!({"command":"quote_payment","player":owner,
+                "revision":session.revision(),"action":{"type":"complete_payment"}}));
+            assert_eq!(quote["ok"], true, "{quote}");
+            submit(&mut session, end.clone());
+            if matches!(end, Action::Choose { .. }) {
+                for (viewer, saved) in before.iter().enumerate() {
+                    let mut view = session.observe(viewer).unwrap();
+                    view["revision"] = saved["revision"].clone();
+                    assert_eq!(&view, saved);
+                }
+                submit(
+                    &mut session,
+                    Action::ResolveTriggerPayment {
+                        choice_id: payment_id,
+                        pay: false,
+                    },
+                );
+                assert_eq!(session.game.players[owner].gear.len(), 1);
+            } else {
+                assert!(session.game.players[owner].gear.is_empty());
+            }
+            assert_eq!(
+                session.game.players[owner].any_power,
+                u16::from(matches!(end, Action::RefusePayment))
+            );
+            assert_eq!(
+                session.game.players[owner].hand.len(),
+                usize::from(matches!(end, Action::CompletePayment))
+            );
+            assert!(session.game.chain.is_empty() && session.game.decision.is_none());
+        }
+    }
+
     #[test]
-    fn innovator_api_exposes_modes_pays_before_responses_and_preserves_private_draws() {
+    fn innovator_api_exposes_modes_pays_on_resolution_and_preserves_private_draws() {
         for owner in 0usize..2 {
             for chosen in 0..2 {
                 let mut session = Session::new(ResetOptions {
@@ -4197,7 +4296,7 @@ mod tests {
                     assert!(choice["context"].get("mode").is_none());
                     assert_eq!(choice["options"][0]["base_cost"], Value::Null);
                     assert_eq!(
-                        choice["options"][1]["base_cost"],
+                        choice["options"][1]["resolution_cost"],
                         json!({"energy":0,"power":1,"domain":"chaos"})
                     );
                     assert_eq!(observed["chain"], json!([]));
@@ -4221,11 +4320,28 @@ mod tests {
                 };
                 assert_eq!(parse_action(&action_to_json(&action)).unwrap(), action);
                 submit(&mut session, action);
+                for viewer in 0..2 {
+                    let observed = session.observe(viewer).unwrap();
+                    assert_eq!(observed["chain"][0]["ability"]["context"]["mode"], chosen);
+                    assert_eq!(observed["players"][owner]["power_pool"][4], 1);
+                    assert_eq!(observed["players"][owner]["hand_count"], 0);
+                    assert_eq!(observed["decision"], Value::Null);
+                    assert!(session.game.players[owner].gear.is_empty());
+                }
+                pass_twice(&mut session);
                 if chosen == 1 {
                     let observed = session.observe(1 - owner).unwrap();
                     assert_eq!(observed["decision"]["type"], "trigger_payment");
                     assert_eq!(observed["decision"]["context"]["mode"], 1);
-                    assert_eq!(observed["chain"], json!([]));
+                    assert_eq!(observed["decision"]["timing"], "resolution");
+                    assert_eq!(observed["decision"]["paid_before_responses"], false);
+                    assert_eq!(observed["decision"]["base_cost"], Value::Null);
+                    assert_eq!(observed["decision"]["cost"]["power"], 1);
+                    assert_eq!(observed["chain"].as_array().unwrap().len(), 1);
+                    assert_eq!(
+                        observed["resolution_progress"]["chain_id"],
+                        observed["decision"]["resolving_chain_id"]
+                    );
                     assert_eq!(observed["players"][owner]["power_pool"][4], 1);
                     assert_eq!(observed["players"][owner]["hand_count"], 0);
                     let payment_id = observed["decision"]["choice_id"].as_u64().unwrap() as u32;
@@ -4233,6 +4349,8 @@ mod tests {
                         &mut session,
                         json!({"type":"choose_trigger_mode","choice_id":choice_id,"mode":0}),
                     );
+                    rejected_wire_action(&mut session, json!({"type":"pass"}));
+                    check_innovator_instruction_plan_api(&session, owner, payment_id);
                     submit(
                         &mut session,
                         Action::ResolveTriggerPayment {
@@ -4240,15 +4358,11 @@ mod tests {
                             pay: true,
                         },
                     );
+                    rejected_wire_action(
+                        &mut session,
+                        json!({"type":"resolve_trigger_payment","choice_id":payment_id,"pay":true}),
+                    );
                 }
-                for viewer in 0..2 {
-                    let observed = session.observe(viewer).unwrap();
-                    assert_eq!(observed["chain"][0]["ability"]["context"]["mode"], chosen);
-                    assert_eq!(observed["players"][owner]["power_pool"][4], 1 - chosen);
-                    assert_eq!(observed["players"][owner]["hand_count"], 0);
-                    assert!(session.game.players[owner].gear.is_empty());
-                }
-                pass_twice(&mut session);
                 assert_eq!(
                     session.game.players[owner].gear.len(),
                     usize::from(chosen == 0)

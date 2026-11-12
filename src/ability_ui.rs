@@ -434,6 +434,7 @@ fn refusal_label(kind: Option<PaymentRefusalKind>) -> Option<&'static str> {
         Some(PaymentRefusalKind::PendingCard) => Some("Decline this play"),
         Some(PaymentRefusalKind::PendingToken) => Some("Decline this token"),
         Some(PaymentRefusalKind::Trigger) => Some("Decline this trigger"),
+        Some(PaymentRefusalKind::Instruction) => Some("Skip this effect"),
         Some(PaymentRefusalKind::Ordinary) | None => None,
     }
 }
@@ -666,7 +667,11 @@ impl App {
                 return Ok(());
             }
             self.ui.wrapped_lines(
-                "Undo returns to this choice. Decline ends only this play or trigger.",
+                if plan.refusal_kind == Some(PaymentRefusalKind::Instruction) {
+                    "Skip keeps Add actions. Undo restores this payment attempt."
+                } else {
+                    "Undo returns to this choice. Decline ends only this play or trigger."
+                },
                 1178.0,
                 605.0,
                 212.0,

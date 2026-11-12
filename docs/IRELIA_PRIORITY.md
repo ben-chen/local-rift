@@ -1,6 +1,6 @@
 # Irelia implementation priority
 
-Updated November 11, 2026. Irelia cards take priority over the saved Azir draft.
+Updated November 12, 2026. Irelia cards take priority over the saved Azir draft.
 
 The first checkpoint is the union of Xeno's second-place and TM2's fifth-place
 Irelia lists in Riot's [Los Angeles results](https://playriftbound.com/en-us/news/organizedplay/los-angeles-top-decks/).
@@ -47,10 +47,12 @@ pass alongside all eleven existing tests in the battlefield test target.
 
 Reckless Innovator is now implemented and validated. Its printed Piltover tag
 is preserved as a reviewed correction of the gallery's empty tag list. Its
-exhaustion choice, pre-response draw cost, exhausted Gold, and repeated
+exhaustion choice, resolving draw cost, exhausted Gold, and repeated
 Irelia-ready interactions use the same rules through the client and bot API.
-The [validation record](validation/irelia_innovator.json) separates complete
-games, focused interactions, source review and native interface checks.
+The original [validation record](validation/irelia_innovator.json) separates complete
+games, focused interactions, source review and native interface checks. Its
+pre-response payment interpretation is superseded by the November 12 timing
+correction in [the rules audit](RULES_AUDIT.md).
 
 Orianna, Exquisite is now implemented and validated for custom practice. Her
 combat contribution follows the physical location of friendly gear, including
@@ -105,3 +107,12 @@ roles using revealed-card scouting, with optional Mote review of the human draft
 Next: measure and improve matchup decisions, expose additional complete
 registrations, and continue the end-to-end rules audit. Card-library
 completeness remains a separate active goal.
+
+Match practice now includes the exact Xeno LA registration and complete
+Kennen and Rengar opponents from Riot’s same September article.
+Decree of Strength and Lacerate fill their final sideboard gaps. The main-deck
+recipes remain unchanged. Master Yi still needs Alpha Strike, Repulse and
+Unyielding Spirit; the historical Kai’Sa registration contains a now-banned
+battlefield and is not admitted as a complete current Standard registration.
+
+The [registered-opponent and timing checkpoint](validation/registered_opponents.json) records final Nix acceptance, installed UI checks and matching native/packaged API games for these registrations and the corrected Innovator sequence.

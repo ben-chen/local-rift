@@ -126,7 +126,7 @@ impl Game {
             }
             let hand_visible = owner == actor
                 || matches!(self.decision,
-                Some(Decision::Sabotage { opponent, .. } | Decision::RevealHand { opponent, .. })
+                Some(Decision::Sabotage { opponent, .. } | Decision::RevealHand { opponent, .. } | Decision::RecycleRevealedHand { opponent, .. })
                     if opponent == owner);
             if !hand_visible {
                 for id in &mut state.players[owner].hand {
@@ -309,6 +309,9 @@ impl Game {
             candidates.extend(self.canonical_play_candidates(32)?);
             let mut unique = Vec::new();
             for action in candidates {
+                if self.ai_avoids_empty_removal(&action)? {
+                    continue;
+                }
                 if !unique.contains(&action) && self.clone().apply(action.clone()).is_ok() {
                     unique.push(action);
                 }

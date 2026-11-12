@@ -641,6 +641,8 @@ pub enum Decision {
         targets: Vec<Target>,
         base_cost: CostValue,
         deflect: u16,
+        /// None is finalization; Some retains an ability already resolving.
+        resolving_chain_id: Option<u32>,
     },
     TriggerTargets {
         player: usize,
@@ -763,6 +765,11 @@ pub enum Decision {
     Sabotage {
         player: usize,
         opponent: usize,
+    },
+    RecycleRevealedHand {
+        player: usize,
+        opponent: usize,
+        domain: Domain,
     },
     BurnForMight {
         player: usize,
@@ -906,6 +913,7 @@ impl Decision {
             | Self::Discard { player, .. }
             | Self::TopThree { player, .. }
             | Self::Sabotage { player, .. }
+            | Self::RecycleRevealedHand { player, .. }
             | Self::BurnForMight { player, .. } => *player,
         }
     }
@@ -2678,11 +2686,33 @@ impl Game {
     }
 
     fn resolve_top_chain(&mut self) -> Result<(), String> {
+        self.resolve_top_chain_with_paid_trigger(None)
+    }
+
+    fn resolve_top_chain_with_paid_trigger(&mut self, paid: Option<u32>) -> Result<(), String> {
         if self.resolution_frame.is_some() || self.chain.last().is_some_and(|i| i.ability.is_none())
         {
             return self.resolve_spell_executions();
         }
         let item = self.chain.last().expect("resolving chain");
+        if let Some(ChainAbility::CardTrigger {
+            rule_index,
+            context,
+        }) = item.ability
+            && crate::trigger_rules::selected_rule(item.card_id, rule_index, context.mode)
+                .is_some_and(|rule| rule.resolution_cost.is_some())
+            && paid != Some(item.id)
+        {
+            let (id, card_id, targets) = (item.id, item.card_id, item.targets.clone());
+            self.decision = Some(self.trigger_cost_decision(
+                card_id,
+                rule_index,
+                context,
+                targets,
+                Some(id),
+            )?);
+            return Ok(());
+        }
         if let Some(ChainAbility::Activated {
             source,
             card_id,
@@ -3060,6 +3090,9 @@ impl Game {
     }
 
     pub(crate) fn after_resolution(&mut self) -> Result<(), String> {
+        if self.resolving_trigger_payment().is_some() {
+            return Ok(());
+        }
         if self.predict_tail.is_some() {
             if self.decision.is_some() {
                 return Ok(());
@@ -3282,6 +3315,7 @@ impl Game {
                 | Decision::CombatDamage { .. }
                 | Decision::Discard { .. }
                 | Decision::Sabotage { .. }
+                | Decision::RecycleRevealedHand { .. }
                 | Decision::GrantFlow { .. }
         ) {
             return Err("Select the required cards to continue.".into());
@@ -3486,6 +3520,7 @@ impl Game {
             | Decision::DeckLookPlay { .. }
             | Decision::Discard { .. }
             | Decision::Sabotage { .. }
+            | Decision::RecycleRevealedHand { .. }
             | Decision::TopThree { .. }
             | Decision::GrantFlow { .. } => unreachable!(),
             Decision::Predict { player, card_id } => {
@@ -5136,19 +5171,31 @@ impl Game {
                     self.players[player].name
                 ));
             }
-            Decision::Sabotage { player, opponent } => {
-                let available = self.players[opponent]
-                    .hand
-                    .iter()
-                    .any(|&id| self.catalog[id].kind != CardKind::Unit);
+            Decision::Sabotage { opponent, .. }
+            | Decision::RecycleRevealedHand { opponent, .. } => {
+                let domain = match decision {
+                    Decision::RecycleRevealedHand { domain, .. } => Some(domain),
+                    _ => None,
+                };
+                let eligible = |id: usize| {
+                    domain.map_or(self.catalog[id].kind != CardKind::Unit, |domain| {
+                        self.catalog[id].domains.contains(&domain)
+                    })
+                };
+                let available = self.players[opponent].hand.iter().any(|&id| eligible(id));
                 if (available && indices.len() != 1)
                     || (!available && !indices.is_empty())
                     || indices.first().is_some_and(|&i| {
                         i >= self.players[opponent].hand.len()
-                            || self.catalog[self.players[opponent].hand[i]].kind == CardKind::Unit
+                            || !eligible(self.players[opponent].hand[i])
                     })
                 {
-                    return Err("Choose one revealed non-unit card, if available.".into());
+                    return Err(match domain {
+                        Some(domain) => {
+                            format!("Choose one revealed {} card, if available.", domain.name())
+                        }
+                        None => "Choose one revealed non-unit card, if available.".into(),
+                    });
                 }
                 self.decision = None;
                 if let Some(&index) = indices.first() {
@@ -5156,7 +5203,7 @@ impl Game {
                     self.players[opponent].deck.insert(0, card);
                     self.push_log(format!(
                         "{} recycles the revealed {}.",
-                        self.players[player].name, self.catalog[card].name
+                        self.players[opponent].name, self.catalog[card].name
                     ));
                 }
             }
@@ -6117,12 +6164,15 @@ impl Game {
                             indices: Vec::new(),
                         }))
                         .collect(),
-                    Decision::Sabotage { opponent, .. } => (0..self.players[*opponent].hand.len())
-                        .map(|i| Action::SelectCards { indices: vec![i] })
-                        .chain(std::iter::once(Action::SelectCards {
-                            indices: Vec::new(),
-                        }))
-                        .collect(),
+                    Decision::Sabotage { opponent, .. }
+                    | Decision::RecycleRevealedHand { opponent, .. } => {
+                        (0..self.players[*opponent].hand.len())
+                            .map(|i| Action::SelectCards { indices: vec![i] })
+                            .chain(std::iter::once(Action::SelectCards {
+                                indices: Vec::new(),
+                            }))
+                            .collect()
+                    }
                     Decision::GrantFlow { .. } => (0..self.players[player].discard.len())
                         .map(|i| Action::SelectCards { indices: vec![i] })
                         .chain(std::iter::once(Action::SelectCards {
@@ -6762,6 +6812,10 @@ impl Game {
                     candidates.push((self.friendly_return_score(actor, target)?, target));
                     continue;
                 }
+                if let OfficialEffect::DisempowerThenKill { maximum } = effect {
+                    candidates.push((self.disempower_kill_score(actor, target, maximum)?, target));
+                    continue;
+                }
                 if let OfficialEffect::BanishSmallOrReturn { maximum } = effect {
                     candidates.push((self.banish_or_return_score(actor, target, maximum)?, target));
                     continue;
@@ -6777,6 +6831,7 @@ impl Game {
                         | OfficialEffect::Bounce { .. }
                         | OfficialEffect::MoveEnemy
                         | OfficialEffect::Kill { .. }
+                        | OfficialEffect::DisempowerThenKill { .. }
                         | OfficialEffect::Stun
                         | OfficialEffect::StunAndDrawFromHand
                 ) || matches!(effect, OfficialEffect::ModifyMight { amount, .. } if amount < 0)
@@ -7696,6 +7751,28 @@ impl Game {
                     self.kill_unit(target)?;
                 }
             }
+            OfficialEffect::DisempowerThenKill { maximum } => {
+                if let Some(
+                    &target @ Target::Unit {
+                        player: owner,
+                        unit_id,
+                    },
+                ) = valid.first()
+                {
+                    self.disempower_by(
+                        player,
+                        empower::BoardObject::Unit {
+                            player: owner,
+                            unit_id,
+                        },
+                    );
+                    if let Some(unit) = self.unit_ref(target)
+                        && self.unit_might(unit)? <= u64::from(maximum)
+                    {
+                        self.kill_unit(target)?;
+                    }
+                }
+            }
             OfficialEffect::Stun | OfficialEffect::StunAndDrawFromHand => {
                 for target in valid {
                     if let Some(unit) = self.unit_mut(target) {
@@ -7789,6 +7866,18 @@ impl Game {
                 self.push_log(format!(
                     "{} reveals their hand for Sabotage.",
                     self.players[1 - player].name
+                ));
+            }
+            OfficialEffect::RecycleRevealedHand(domain) => {
+                self.enqueue_decision(Decision::RecycleRevealedHand {
+                    player,
+                    opponent: 1 - player,
+                    domain,
+                });
+                self.push_log(format!(
+                    "{} reveals their hand for {}.",
+                    self.players[1 - player].name,
+                    self.catalog[id].name
                 ));
             }
             OfficialEffect::Loot { discard, draw } => self.enqueue_decision(Decision::Discard {
@@ -9203,6 +9292,18 @@ impl Game {
                     return Ok(action);
                 }
                 let preferred = match decision {
+                    Decision::RecycleRevealedHand { opponent, .. } => actions
+                        .iter()
+                        .filter_map(|action| {
+                            let Action::SelectCards { indices } = action else {
+                                return None;
+                            };
+                            let &index = indices.first()?;
+                            let card = self.catalog[self.players[*opponent].hand[index]];
+                            Some((i32::from(card.cost) * 2 + i32::from(card.might) * 3, action))
+                        })
+                        .max_by_key(|(score, _)| *score)
+                        .map(|(_, action)| action.clone()),
                     Decision::TriggerPayment {
                         player,
                         card_id: 431,
@@ -9446,23 +9547,14 @@ impl Game {
                         card_id: 429,
                         ..
                     } => {
-                        let mut draw = self.clone();
-                        let mut can_draw = false;
-                        if draw
-                            .apply(Action::ChooseTriggerMode {
-                                choice_id: *choice_id,
-                                mode: 1,
-                            })
-                            .is_ok()
-                            && let Some(Decision::TriggerPayment { choice_id, .. }) = draw.decision
-                        {
-                            can_draw = crate::numeric::legal_result(draw.apply(
-                                Action::ResolveTriggerPayment {
-                                    choice_id,
-                                    pay: true,
-                                },
-                            ))?;
-                        }
+                        // Estimate affordability from the current public resources.
+                        // The actual payment is reconsidered after responses.
+                        let can_draw = crate::numeric::legal_result(self.clone().consume_power(
+                            *player,
+                            &[Domain::Chaos],
+                            1,
+                            false,
+                        ))?;
                         Some(Action::ChooseTriggerMode {
                             choice_id: *choice_id,
                             mode: usize::from(can_draw && self.players[*player].hand.len() <= 3),
@@ -9654,7 +9746,13 @@ impl Game {
                     },
                 ));
             }
-            if let Some((_, action)) = plays
+            let mut useful = Vec::new();
+            for entry in plays {
+                if !self.ai_avoids_empty_removal(&entry.1)? {
+                    useful.push(entry);
+                }
+            }
+            if let Some((_, action)) = useful
                 .into_iter()
                 .filter(|(_, action)| self.clone().apply(action.clone()).is_ok())
                 .max_by_key(|(score, _)| *score)
@@ -9745,6 +9843,36 @@ impl Game {
             }
             Action::EndTurn
         })
+    }
+
+    fn disempower_kill_score(
+        &self,
+        actor: usize,
+        target: Target,
+        maximum: u8,
+    ) -> Result<i128, String> {
+        let Target::Unit { player, unit_id } = target else {
+            return Ok(0);
+        };
+        let Some(unit) = self.unit_ref(target) else {
+            return Ok(0);
+        };
+        let before = self.unit_might(unit)?;
+        let mut after = self.clone();
+        let removed = after.disempower_by(actor, empower::BoardObject::Unit { player, unit_id });
+        let might = after.unit_might(
+            after
+                .unit_ref(target)
+                .expect("disempower preserves physical unit"),
+        )?;
+        let value = if might <= u64::from(maximum) {
+            70 + i128::from(before) * 4 + i128::from(self.catalog[unit.card_id].cost) * 2
+        } else if removed {
+            8 + i128::from(before.saturating_sub(might)) * 8
+        } else {
+            0
+        };
+        Ok(if player == actor { -value } else { value })
     }
 
     fn ai_card_score(&self, id: CardId) -> Result<i128, String> {
@@ -9912,6 +10040,14 @@ impl Game {
                         0
                     }
                 }
+                OfficialEffect::DisempowerThenKill { maximum } => targets
+                    .iter()
+                    .map(|&target| self.disempower_kill_score(actor, target, maximum))
+                    .collect::<Result<Vec<_>, _>>()?
+                    .into_iter()
+                    .max()
+                    .unwrap_or(0)
+                    .max(0),
                 OfficialEffect::Stun | OfficialEffect::StunAndDrawFromHand => {
                     if in_combat
                         && targets.iter().any(|t| {
@@ -10086,7 +10222,7 @@ impl Game {
                         0
                     }
                 }
-                OfficialEffect::DisruptHand => {
+                OfficialEffect::DisruptHand | OfficialEffect::RecycleRevealedHand(_) => {
                     if !self.players[1 - actor].hand.is_empty() {
                         30
                     } else {
