@@ -1,0 +1,541 @@
+{
+  "reviewed_on": "2026-11-11",
+  "commit": "6411bd141a3bff35eb6491e2a6202496045030bf",
+  "scope": "Published gameplay through Back Off. Excludes the later Hunters Circle test-only audit and the unpublished Reckless Innovator draft.",
+  "system": "x86_64-linux",
+  "command": "nix flake check --no-write-lock-file -L",
+  "exit_code": 0,
+  "other_platforms": "aarch64-linux and aarch64-darwin were not tested",
+  "package": "/nix/store/nzya7qpnwbq2mxazyqzipp71vxfnhrfl-local-rift-0.1.0",
+  "derivation": "/nix/store/k669gjapmbv4x6iw7kk1ssvdmgk37iac-local-rift-0.1.0.drv",
+  "source_verification": {
+    "source": "/nix/store/lgf6718ab9lwv15s38z0vcb70ciangd1-source",
+    "matched_tracked_files": 1116,
+    "method": "Every tracked file included by the flake fileset matched its Git blob at the pinned commit",
+    "manifest_sha256": "321b241931fa12ce0f13653698813bdf17547aa5f0f2c4a900f8e8b1725a6483"
+  },
+  "rust_tests": {
+    "passed": 1538,
+    "failed": 0
+  },
+  "python_tests": {
+    "passed": 254,
+    "failed": 0
+  },
+  "offline_catalog_check": "passed",
+  "inventory": {
+    "main_cards": 429,
+    "mapped_legal_identities": 462
+  },
+  "simulation": {
+    "completed_games": 600,
+    "pairings": 25,
+    "levels": 3,
+    "starting_players": "alternating by seed",
+    "elapsed_seconds": 135.06,
+    "maximum_actions": 353,
+    "maximum_turns": 28,
+    "path": "/nix/store/n96yw72qhfcc74yslda2nd1bb3h07v00-local-rift-simulation-check",
+    "sha256": "5a7cee124f737786038e64717d7c872377c0963902504afbe8c85eb143524156",
+    "report": "Easy: 200 completed; first player 129 wins, second player 71 wins\nTactical: 200 completed; first player 129 wins, second player 71 wins\nStrategic: 200 completed; first player 105 wins, second player 95 wins\nPASS: 600 complete matches across 25 pairings and 3 AI levels, alternating starting player by seed\nMaximum: 353 actions, 28 turns; average 168.7 actions; elapsed 135.06s\nAll matches checked card/rune conservation, energy accounting, unique valid units, and winner consistency after every action.\n"
+  },
+  "binaries": {
+    "simulate": "9fe48480738e7ed437faaa48b6858da79f932aeb977cae9c1610a77ec6d0be18",
+    "rift-api": "05ded0b54a06f6c3cc71ee096b59e91a4a7b3e597284fcbd178f362b52c059b8",
+    ".local-rift-wrapped": "2e79a25105857d4f532f32da836f9449c2202d13cecdd05f183530776eb49274",
+    "local-rift": "5e25c51935e72a9a06617ec5c2cd6c1eb92db9166febb16f3fd250613a2574d9"
+  },
+  "native_ui": {
+    "runs": [
+      {
+        "small": false,
+        "screenshots": true,
+        "exit": 0,
+        "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-backoff-ui-nix-1-normal-capture",
+        "binary_sha256": "5e25c51935e72a9a06617ec5c2cd6c1eb92db9166febb16f3fd250613a2574d9"
+      },
+      {
+        "small": false,
+        "screenshots": false,
+        "exit": 0,
+        "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-backoff-ui-nix-1-normal-plain",
+        "binary_sha256": "5e25c51935e72a9a06617ec5c2cd6c1eb92db9166febb16f3fd250613a2574d9"
+      },
+      {
+        "small": true,
+        "screenshots": true,
+        "exit": 0,
+        "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-backoff-ui-nix-1-small-capture",
+        "binary_sha256": "5e25c51935e72a9a06617ec5c2cd6c1eb92db9166febb16f3fd250613a2574d9"
+      },
+      {
+        "small": true,
+        "screenshots": false,
+        "exit": 0,
+        "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-backoff-ui-nix-1-small-plain",
+        "binary_sha256": "5e25c51935e72a9a06617ec5c2cd6c1eb92db9166febb16f3fd250613a2574d9"
+      }
+    ],
+    "frames_per_run": 64,
+    "captures": 58,
+    "graphics": "Nix wrapper with inherited LD_LIBRARY_PATH removed; software OpenGL under Xvfb",
+    "actual_images_viewed_by_root": [
+      {
+        "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-backoff-ui-nix-1-normal-capture/backoff_hand.png",
+        "sha256": "63170a31acdc0982fffae698b68301d06f098e0f6cfd303b5a6dc77e03f9c909"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-backoff-ui-nix-1-small-capture/backoff_inspect.png",
+        "sha256": "1afb4bc769f9620117c3f262f77bf27de4bff4d37b17f4c69fad96f476b21120"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-backoff-ui-nix-1-small-capture/backoff_reveal.png",
+        "sha256": "24818de100df476419c8e204b70e1dbb7aa6e5adcee5ccbcad08af72cc69c39d"
+      }
+    ],
+    "findings": "Hand play, Hidden reveal, draw distinctions, complete inspection, controls and companion remain readable at both sizes; actual control assertions pass in capture and plain runs."
+  },
+  "api": {
+    "games": 24,
+    "results": [
+      {
+        "level": "easy",
+        "opponent": 1,
+        "seat": 0,
+        "starter": 0,
+        "seed": 428004,
+        "winner": 1,
+        "scores": [
+          4,
+          9
+        ],
+        "actions": 161
+      },
+      {
+        "level": "easy",
+        "opponent": 1,
+        "seat": 0,
+        "starter": 1,
+        "seed": 428005,
+        "winner": 1,
+        "scores": [
+          3,
+          8
+        ],
+        "actions": 98
+      },
+      {
+        "level": "easy",
+        "opponent": 1,
+        "seat": 1,
+        "starter": 0,
+        "seed": 428006,
+        "winner": 0,
+        "scores": [
+          8,
+          4
+        ],
+        "actions": 143
+      },
+      {
+        "level": "easy",
+        "opponent": 1,
+        "seat": 1,
+        "starter": 1,
+        "seed": 428007,
+        "winner": 0,
+        "scores": [
+          9,
+          2
+        ],
+        "actions": 124
+      },
+      {
+        "level": "easy",
+        "opponent": 3,
+        "seat": 0,
+        "starter": 0,
+        "seed": 428012,
+        "winner": 1,
+        "scores": [
+          5,
+          8
+        ],
+        "actions": 183
+      },
+      {
+        "level": "easy",
+        "opponent": 3,
+        "seat": 0,
+        "starter": 1,
+        "seed": 428013,
+        "winner": 1,
+        "scores": [
+          6,
+          8
+        ],
+        "actions": 211
+      },
+      {
+        "level": "easy",
+        "opponent": 3,
+        "seat": 1,
+        "starter": 0,
+        "seed": 428014,
+        "winner": 0,
+        "scores": [
+          8,
+          6
+        ],
+        "actions": 222
+      },
+      {
+        "level": "easy",
+        "opponent": 3,
+        "seat": 1,
+        "starter": 1,
+        "seed": 428015,
+        "winner": 1,
+        "scores": [
+          6,
+          8
+        ],
+        "actions": 241
+      },
+      {
+        "level": "tactical",
+        "opponent": 1,
+        "seat": 0,
+        "starter": 0,
+        "seed": 428104,
+        "winner": 0,
+        "scores": [
+          8,
+          7
+        ],
+        "actions": 222
+      },
+      {
+        "level": "tactical",
+        "opponent": 1,
+        "seat": 0,
+        "starter": 1,
+        "seed": 428105,
+        "winner": 1,
+        "scores": [
+          3,
+          8
+        ],
+        "actions": 121
+      },
+      {
+        "level": "tactical",
+        "opponent": 1,
+        "seat": 1,
+        "starter": 0,
+        "seed": 428106,
+        "winner": 1,
+        "scores": [
+          4,
+          8
+        ],
+        "actions": 173
+      },
+      {
+        "level": "tactical",
+        "opponent": 1,
+        "seat": 1,
+        "starter": 1,
+        "seed": 428107,
+        "winner": 0,
+        "scores": [
+          9,
+          3
+        ],
+        "actions": 119
+      },
+      {
+        "level": "tactical",
+        "opponent": 3,
+        "seat": 0,
+        "starter": 0,
+        "seed": 428112,
+        "winner": 1,
+        "scores": [
+          3,
+          8
+        ],
+        "actions": 111
+      },
+      {
+        "level": "tactical",
+        "opponent": 3,
+        "seat": 0,
+        "starter": 1,
+        "seed": 428113,
+        "winner": 1,
+        "scores": [
+          4,
+          9
+        ],
+        "actions": 132
+      },
+      {
+        "level": "tactical",
+        "opponent": 3,
+        "seat": 1,
+        "starter": 0,
+        "seed": 428114,
+        "winner": 0,
+        "scores": [
+          8,
+          5
+        ],
+        "actions": 192
+      },
+      {
+        "level": "tactical",
+        "opponent": 3,
+        "seat": 1,
+        "starter": 1,
+        "seed": 428115,
+        "winner": 0,
+        "scores": [
+          8,
+          4
+        ],
+        "actions": 175
+      },
+      {
+        "level": "strategic",
+        "opponent": 1,
+        "seat": 0,
+        "starter": 0,
+        "seed": 428204,
+        "winner": 1,
+        "scores": [
+          6,
+          8
+        ],
+        "actions": 182
+      },
+      {
+        "level": "strategic",
+        "opponent": 1,
+        "seat": 0,
+        "starter": 1,
+        "seed": 428205,
+        "winner": 1,
+        "scores": [
+          3,
+          9
+        ],
+        "actions": 114
+      },
+      {
+        "level": "strategic",
+        "opponent": 1,
+        "seat": 1,
+        "starter": 0,
+        "seed": 428206,
+        "winner": 0,
+        "scores": [
+          9,
+          1
+        ],
+        "actions": 62
+      },
+      {
+        "level": "strategic",
+        "opponent": 1,
+        "seat": 1,
+        "starter": 1,
+        "seed": 428207,
+        "winner": 0,
+        "scores": [
+          9,
+          4
+        ],
+        "actions": 111
+      },
+      {
+        "level": "strategic",
+        "opponent": 3,
+        "seat": 0,
+        "starter": 0,
+        "seed": 428212,
+        "winner": 0,
+        "scores": [
+          8,
+          5
+        ],
+        "actions": 164
+      },
+      {
+        "level": "strategic",
+        "opponent": 3,
+        "seat": 0,
+        "starter": 1,
+        "seed": 428213,
+        "winner": 1,
+        "scores": [
+          3,
+          8
+        ],
+        "actions": 141
+      },
+      {
+        "level": "strategic",
+        "opponent": 3,
+        "seat": 1,
+        "starter": 0,
+        "seed": 428214,
+        "winner": 0,
+        "scores": [
+          8,
+          3
+        ],
+        "actions": 62
+      },
+      {
+        "level": "strategic",
+        "opponent": 3,
+        "seat": 1,
+        "starter": 1,
+        "seed": 428215,
+        "winner": 0,
+        "scores": [
+          8,
+          3
+        ],
+        "actions": 159
+      }
+    ],
+    "object_cost_choices": 0,
+    "public_movement_observations": 1345,
+    "backoff_public_origin_observations": {
+      "{\"lane\": 0, \"type\": \"hidden\"}": 70,
+      "{\"type\": \"hand\"}": 41,
+      "{\"lane\": 1, \"type\": \"hidden\"}": 16
+    },
+    "observed_priority_chain_cards": [
+      421,
+      422,
+      423,
+      428
+    ],
+    "requests": 8840,
+    "binary": "/nix/store/nzya7qpnwbq2mxazyqzipp71vxfnhrfl-local-rift-0.1.0/bin/rift-api",
+    "binary_sha256": "05ded0b54a06f6c3cc71ee096b59e91a4a7b3e597284fcbd178f362b52c059b8",
+    "recipe": {
+      "battlefield": 0,
+      "cards": [
+        [
+          0,
+          1
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          3,
+          2
+        ],
+        [
+          4,
+          2
+        ],
+        [
+          5,
+          3
+        ],
+        [
+          7,
+          3
+        ],
+        [
+          8,
+          2
+        ],
+        [
+          9,
+          1
+        ],
+        [
+          10,
+          1
+        ],
+        [
+          12,
+          1
+        ],
+        [
+          13,
+          1
+        ],
+        [
+          14,
+          2
+        ],
+        [
+          15,
+          3
+        ],
+        [
+          16,
+          2
+        ],
+        [
+          18,
+          3
+        ],
+        [
+          20,
+          1
+        ],
+        [
+          21,
+          2
+        ],
+        [
+          421,
+          3
+        ],
+        [
+          422,
+          2
+        ],
+        [
+          423,
+          1
+        ],
+        [
+          428,
+          3
+        ]
+      ],
+      "chosen_champion": 0,
+      "legend": 0,
+      "name": "Irelia 40-card API verification",
+      "runes": [
+        0,
+        6,
+        0,
+        0,
+        6,
+        0
+      ]
+    },
+    "scope": "24 games through JSON API, both Irelia seats and both starters, all AI levels, presets 1 and 3. Exact 40-card authored variant, unchanged sourced presets."
+  },
+  "api_comparison": {
+    "same_results_as_native_release": true,
+    "native_record_sha256": "3032f0f65d02958dad3e625985969e4abb713d3bd2f1fb3f3465ce61e6b250a6",
+    "packaged_record_sha256": "c7907051469f287015f6d78875d5af66e9c5eaa5c348dd88575bbc91840c8b6d"
+  },
+  "flake_log": {
+    "path": "/home/benchen/.cache/local-rift-work/resume-2026-11-11/irelia-backoff-nix-check.log",
+    "sha256": "a5da75b34fde08c39b09370cf9a2398c258c0c9d61d7f1b047a29fa2603d2fdf"
+  }
+}
