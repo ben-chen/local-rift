@@ -6755,6 +6755,51 @@ pub fn cards() -> Vec<CardDef> {
             tags: &[],
             art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/ca56ad44ec24db67e10a4ee18f5c7f3756c83d94-744x1039.png?w=280&q=85&fm=png",
         },
+        CardDef {
+            id: 443,
+            official_id: "unl-192-219",
+            name: "Alpha Strike",
+            cost: 3,
+            power_cost: 1,
+            might: 0,
+            domain: Domain::Calm,
+            domains: &[Domain::Calm, Domain::Body],
+            kind: CardKind::Spell,
+            official_text: "[Action] (Play on your turn or in showdowns.)\nChoose a friendly unit. It deals damage equal to its Might split among enemy units at battlefields. Then for each unit this kills, do this: Gain 1 XP.",
+            keywords: &["Action"],
+            tags: &["Master Yi"],
+            art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/154940caa774fd8219625cf051ddcb230ffc7f02-744x1039.png?w=280&q=85&fm=png",
+        },
+        CardDef {
+            id: 444,
+            official_id: "sfd-042-221",
+            name: "Brutalizer",
+            cost: 2,
+            power_cost: 0,
+            might: 1,
+            domain: Domain::Calm,
+            domains: &[Domain::Calm],
+            kind: CardKind::Gear,
+            official_text: "[Equip] [Calm Power] ([Calm Power]: Attach this to a unit you control.)\nWhile attached: If this was attached to me this turn, I have an additional +2 Might.",
+            keywords: &["Equip"],
+            tags: &["Equipment"],
+            art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/3a0de7eec3de501f79f33c09b43c7fe42721d10d-744x1039.png?w=280&q=80&fm=png",
+        },
+        CardDef {
+            id: 445,
+            official_id: "ven-027-166",
+            name: "Hand Hammer",
+            cost: 2,
+            power_cost: 0,
+            might: 1,
+            domain: Domain::Calm,
+            domains: &[Domain::Calm],
+            kind: CardKind::Gear,
+            official_text: "[Equip] [Calm Power] ([Calm Power]: Attach this to a unit you control.)\nWhile attached: I have +2 Might while I'm at a battlefield with exactly one other unit you control.",
+            keywords: &["Equip"],
+            tags: &["Equipment"],
+            art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/524fedb9116db0eb62380c03e0853c342c53daeb-744x1039.png?w=280&q=80&fm=png",
+        },
     ]
 }
 
@@ -7110,7 +7155,7 @@ mod tests {
     #[test]
     fn presets_are_complete_and_references_are_consistent() {
         let catalog = cards();
-        assert_eq!(catalog.len(), 443);
+        assert_eq!(catalog.len(), 446);
         for (index, card) in catalog.iter().enumerate() {
             assert_eq!(index, card.id);
             assert!(!card.official_id.is_empty());

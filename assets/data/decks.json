@@ -11796,6 +11796,82 @@
         "Reaction"
       ],
       "tags": []
+    },
+    {
+      "id": 443,
+      "name": "Alpha Strike",
+      "official_id": "unl-192-219",
+      "energy": 3,
+      "power": 1,
+      "might": 0,
+      "domains": [
+        "Calm",
+        "Body"
+      ],
+      "kind": "Spell",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/154940caa774fd8219625cf051ddcb230ffc7f02-744x1039.png?w=280&q=85&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Action] (Play on your turn or in showdowns.)\nChoose a friendly unit. It deals damage equal to its Might split among enemy units at battlefields. Then for each unit this kills, do this: Gain 1 XP.",
+      "official_text_html": "<p>[Action] (Play on your turn or in showdowns.)<br />Choose a friendly unit. It deals damage equal to its Might split among enemy units at battlefields. Then for each unit this kills, do this: Gain 1 XP.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Action"
+      ],
+      "tags": [
+        "Master Yi"
+      ]
+    },
+    {
+      "id": 444,
+      "name": "Brutalizer",
+      "official_id": "sfd-042-221",
+      "energy": 2,
+      "power": 0,
+      "might": 1,
+      "might_bonus": 1,
+      "domains": [
+        "Calm"
+      ],
+      "kind": "Gear",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/3a0de7eec3de501f79f33c09b43c7fe42721d10d-744x1039.png?w=280&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Equip] [Calm Power] ([Calm Power]: Attach this to a unit you control.)\nWhile attached: If this was attached to me this turn, I have an additional +2 Might.",
+      "official_text_html": "<p>[Equip] :rb_rune_calm: (:rb_rune_calm:: Attach this to a unit you control.)</p>",
+      "equipment_effect": "If this was attached to me this turn, I have an additional +2 Might.",
+      "equipment_effect_html": "<p>If this was attached to me this turn, I have an additional +2 :rb_might:.</p>",
+      "keywords": [
+        "Equip"
+      ],
+      "tags": [
+        "Equipment"
+      ]
+    },
+    {
+      "id": 445,
+      "name": "Hand Hammer",
+      "official_id": "ven-027-166",
+      "energy": 2,
+      "power": 0,
+      "might": 1,
+      "might_bonus": 1,
+      "domains": [
+        "Calm"
+      ],
+      "kind": "Gear",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/524fedb9116db0eb62380c03e0853c342c53daeb-744x1039.png?w=280&q=80&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Equip] [Calm Power] ([Calm Power]: Attach this to a unit you control.)\nWhile attached: I have +2 Might while I'm at a battlefield with exactly one other unit you control.",
+      "official_text_html": "<p>[Equip] :rb_rune_calm: (:rb_rune_calm:: Attach this to a unit you control.)</p>",
+      "equipment_effect": "I have +2 Might while I'm at a battlefield with exactly one other unit you control.",
+      "equipment_effect_html": "<p>I have +2 :rb_might: while I'm at a battlefield with exactly one other unit you control.</p>",
+      "keywords": [
+        "Equip"
+      ],
+      "tags": [
+        "Equipment"
+      ]
     }
   ],
   "official_text_note": "Official card/legend rules text from the Riot Card Gallery, retrieved 2026-10-24 and corrected by cited errata. Resource icon tokens are expanded to readable bracketed names. Raw card and equipment HTML is preserved separately. Official text does not establish full implementation fidelity."

@@ -1,14 +1,15 @@
 # Master Yi opponent expansion
 
-This batch adds Unyielding Spirit (OGN-145/298, runtime 441) and Repulse
-(UNL-106/219, runtime 442). Alpha Strike remains unavailable in this release;
-the complete SWAGALISK Los Angeles registration is not enabled yet. The
-[validation record](../../../../docs/validation/master_yi_reactions.json) covers
-the engine, bot API, companion, native controls and installed Nix package.
+Unyielding Spirit (OGN-145/298, runtime 441), Repulse (UNL-106/219, runtime 442),
+and Alpha Strike (UNL-192/219, runtime 443) have completed their release checks.
+The complete SWAGALISK Los Angeles registration is being verified separately.
+See [Spirit/Repulse acceptance](../../../../docs/validation/master_yi_reactions.json),
+[Alpha/equipment acceptance](../../../../docs/validation/alpha_equipment.json),
+and [Alpha Strike's rules audit](../../../../docs/ALPHA_STRIKE_AUDIT.md).
 
 The complete official face, reviewed gallery fields, printing cohort and artwork
 hashes are recorded in `admissions.json`. The original 441 main cards and seven
-preset recipes are preserved by their prior manifest hashes. Neither card has a
+preset recipes are preserved by their prior manifest hashes. None of these cards has a
 current reviewed erratum. Riot's retired Origins FAQ is historical context and
 does not supply an invented text override.
 

@@ -16,7 +16,7 @@ class MasterYiAdmissions(unittest.TestCase):
     def test_official_face_facts_printing_cohort_and_no_invented_erratum(self):
         raw = {p['official_id']: p for p in catalog.project_gallery(self.archives['gallery'])[0]}
         effective = {p['official_id']: p for p in self.snapshot['printings']}
-        self.assertEqual([r['official_id'] for r in self.proof['records']], ['ogn-145-298', 'unl-106-219'])
+        self.assertEqual([r['official_id'] for r in self.proof['records']], ['ogn-145-298', 'unl-106-219', 'unl-192-219'])
         for record in self.proof['records']:
             pid = record['official_id']
             self.assertEqual(record['raw_printing'], raw[pid])
@@ -47,9 +47,9 @@ class MasterYiAdmissions(unittest.TestCase):
             card = manifest['cards'][runtime_id]
             self.assertEqual(card['official_id'], record['official_id'])
             self.assertEqual(card['kind'], 'Spell')
-            self.assertEqual(card['domains'], ['Body'])
-            self.assertEqual(card['keywords'], ['Reaction'])
-            self.assertEqual(card['tags'], [])
+            self.assertEqual(card['domains'], [domain.title() for domain in record['effective']['domains']])
+            self.assertEqual(card['keywords'], ['Action'] if runtime_id == 443 else ['Reaction'])
+            self.assertEqual(card['tags'], record['effective']['tags'])
             for key in ['energy', 'power', 'might']:
                 self.assertEqual(card[key], record['effective'][key] or 0)
             self.assertEqual(card['official_text'], record['effective']['rules_text'])

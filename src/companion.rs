@@ -521,6 +521,35 @@ fn checked_advice(game: &Game, level: AdviceLevel) -> Result<Vec<&'static str>, 
             "Edge of Night can enable Orianna and trigger Irelia's choose effects. Its free attachment can be answered; keep the gear and target safe through responses."
         });
     }
+    if human.hand.contains(&444) || human.gear.iter().any(|g| !g.token && g.card_id == 444) {
+        let expired_only = !human.hand.contains(&444)
+            && human
+                .gear
+                .iter()
+                .filter(|g| !g.token && g.card_id == 444)
+                .all(|g| {
+                    g.attached_to.is_some()
+                        && game
+                            .gear_attachment_status(0, g.id)
+                            .is_some_and(|s| !s.attached_this_turn)
+                });
+        tips.push(if expired_only && beginner {
+            "Brutalizer's extra +2 has expired; this attachment now gives +1 Might. Attached equipment cannot use Equip again."
+        } else if expired_only {
+            "Brutalizer's extra +2 has expired. Count only its printed +1 Might; starting another turn does not create a new attachment."
+        } else if beginner {
+            "Brutalizer gives +1 Might while attached, plus +2 until this turn ends if it attached to this unit this turn. Equipping takes effect after responses."
+        } else {
+            "Use Brutalizer's temporary +2 for a fight this turn. Losing the equipment before combat resolves can turn a winning trade into a loss."
+        });
+    }
+    if human.hand.contains(&445) || human.gear.iter().any(|g| !g.token && g.card_id == 445) {
+        tips.push(if beginner {
+            "Hand Hammer gives +1 Might, plus +2 at a battlefield with exactly two friendly units. A friendly token counts; units in base don't."
+        } else {
+            "Moving a third ally in, or moving the only partner out, switches off Hand Hammer's +2. Check the bearer's marked damage before changing the group."
+        });
+    }
     if human.hand.contains(&431) || human.units.iter().any(|u| !u.token && u.card_id == 431) {
         tips.push(if beginner {
             "Gust Monk can cost 1 extra Energy. Then banish a card from either trash to give a unit Assault 2 this turn: +2 Might only while it attacks."
@@ -1335,6 +1364,19 @@ fn response_window_advice(
                 },
                 "Consider which field's score or triggers will affect the next fight. Choosing a field opens its normal response window.",
             ],
+            Decision::SplitDamage { keep, targets, .. } => vec![
+                if beginner {
+                    "Alpha Strike is resolving. Divide the chosen unit's current Might among the selected enemies, giving at least 1 damage to each retained target."
+                } else {
+                    "Allocate for the next point: remove an important scorer or finish several damaged units for XP. Tank, Backline and combat's lethal-first order do not constrain this split."
+                },
+                if *keep < targets.len() {
+                    "The damage total fell below the target count. Retain exactly as many targets as there are damage points, giving each 1; assign 0 to the others."
+                } else {
+                    "Every still-valid chosen enemy must receive at least 1 damage. Use the full total; you cannot add a new target during resolution."
+                },
+                "This is unit damage. Unyielding Spirit does not prevent it. XP rewards follow actual kills and go onto the chain, where players can respond.",
+            ],
             Decision::CombatDamage { .. } if dual_rank => {
                 vec![
                     "A unit has both Tank and Backline. You choose first or last for that unit, never the middle group. Deal lethal before assigning to the next unit.",
@@ -1745,6 +1787,94 @@ pub fn draw_mote(center: Vec2, scale: f32, time: f32, accent: Color) {
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn conditional_equipment_advice_updates_after_real_attachment_bonus_expires() {
+        let mut g = Game::new_for_agents(3, 3, 444, Difficulty::Easy);
+        g.start_match().unwrap();
+        g.players[0].hand = vec![444];
+        g.players[0].units = vec![Unit {
+            id: 44401,
+            card_id: 69,
+            lane: None,
+            ready: true,
+            damage: 0,
+            buff: 0,
+            temporary_buff: 0,
+            token: false,
+            protected: false,
+            stunned: false,
+            banish_on_death: false,
+        }];
+        g.players[0].set_rune_setup([0; 6], [0; 6]).unwrap();
+        g.players[0].energy = 20;
+        g.players[0].energy_pool = 20;
+        g.players[0].power_pool = [10; 6];
+        g.apply(local_rift::game::Action::PlayCard {
+            hand_index: 0,
+            lane: None,
+            target: None,
+        })
+        .unwrap();
+        while !g.chain.is_empty() {
+            g.apply(local_rift::game::Action::Pass).unwrap();
+        }
+        let gear_id = g.players[0].gear[0].id;
+        g.apply(local_rift::game::Action::Equip {
+            gear_id,
+            target: Target::Unit {
+                player: 0,
+                unit_id: 44401,
+            },
+        })
+        .unwrap();
+        while !g.chain.is_empty() {
+            g.apply(local_rift::game::Action::Pass).unwrap();
+        }
+        for level in [AdviceLevel::Beginner, AdviceLevel::Advanced] {
+            assert!(
+                advice(&g, level)
+                    .iter()
+                    .any(|tip| tip.contains("Brutalizer") && !tip.contains("expired"))
+            );
+        }
+        g.apply(local_rift::game::Action::EndTurn).unwrap();
+        for level in [AdviceLevel::Beginner, AdviceLevel::Advanced] {
+            let tips = advice(&g, level);
+            let tip = tips.iter().find(|tip| tip.contains("Brutalizer")).unwrap();
+            assert!(tip.contains("expired") && tip.contains("+1 Might"));
+            assert!(tip.chars().count() <= 180);
+        }
+    }
+    #[test]
+    fn conditional_equipment_advice_is_brief_private_and_distinguishes_rules_from_strategy() {
+        let mut g = Game::new_for_agents(3, 3, 444445, Difficulty::Easy);
+        g.start_match().unwrap();
+        g.players[0].hand = vec![444, 445];
+        let before = format!("{g:?}");
+        for name in ["Brutalizer", "Hand Hammer"] {
+            let beginner = advice(&g, AdviceLevel::Beginner);
+            let advanced = advice(&g, AdviceLevel::Advanced);
+            let basic = beginner.iter().find(|tip| tip.contains(name)).unwrap();
+            let expert = advanced.iter().find(|tip| tip.contains(name)).unwrap();
+            assert_ne!(basic, expert);
+            assert!(basic.chars().count() <= 180);
+            assert!(expert.chars().count() <= 180);
+        }
+        assert_eq!(
+            format!("{g:?}"),
+            before,
+            "Reading advice cannot change play"
+        );
+        g.players[0].hand.clear();
+        g.players[1].hand = vec![444, 445];
+        for level in [AdviceLevel::Beginner, AdviceLevel::Advanced] {
+            assert!(
+                advice(&g, level)
+                    .iter()
+                    .all(|tip| !tip.contains("Brutalizer") && !tip.contains("Hand Hammer"))
+            );
+        }
+    }
     #[test]
     fn repulse_advice_is_brief_private_and_available_during_responses() {
         let mut g = Game::new_for_agents(3, 3, 442, Difficulty::Easy);
@@ -3471,6 +3601,40 @@ mod tests {
                     player,
                     lane: 0,
                     total: 4,
+                },
+                Decision::SplitDamage {
+                    player,
+                    card_id: 443,
+                    source: Target::Unit { player, unit_id: 1 },
+                    total: 4,
+                    targets: vec![
+                        Target::Unit {
+                            player: 1 - player,
+                            unit_id: 2,
+                        },
+                        Target::Unit {
+                            player: 1 - player,
+                            unit_id: 3,
+                        },
+                    ],
+                    keep: 2,
+                },
+                Decision::SplitDamage {
+                    player,
+                    card_id: 443,
+                    source: Target::Unit { player, unit_id: 1 },
+                    total: 1,
+                    targets: vec![
+                        Target::Unit {
+                            player: 1 - player,
+                            unit_id: 2,
+                        },
+                        Target::Unit {
+                            player: 1 - player,
+                            unit_id: 3,
+                        },
+                    ],
+                    keep: 1,
                 },
                 Decision::Legend {
                     player,

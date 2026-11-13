@@ -169,7 +169,17 @@ chooses your battlefield unit, then an eligible enemy spell or ability. Its
 choices account for every Repeat execution. Both cards include complete previews
 and optional advice. See the [reaction-card validation](docs/validation/master_yi_reactions.json)
 for the source, rules, game, UI and package checks. The complete Master Yi
-registration still requires Alpha Strike; its existing main-deck preset is unchanged.
+registration is being verified separately; its existing main-deck preset is unchanged.
+
+Alpha Strike, Brutalizer and Hand Hammer are available in the card library and deck editor.
+Alpha Strike asks you to choose a friendly source and enemy battlefield units,
+then divide damage when it resolves. Its XP rewards resolve separately.
+Brutalizer's temporary attachment bonus and Hand Hammer's two-unit condition
+appear in the unit inspector, alongside the visible equipment strip. These
+three additions passed 1,815 Rust tests, 282 source checks, 1,176 preset simulations
+and installed-client checks. All 432 installed API game traces match the native
+build. See the [release validation](docs/validation/alpha_equipment.json) and
+[Alpha Strike rules audit](docs/ALPHA_STRIKE_AUDIT.md).
 
 ## Included presets
 
@@ -183,7 +193,7 @@ registration still requires Alpha Strike; its existing main-deck preset is uncha
 | Irelia / Arito Convergence IV | Orianna, equipment, ready effects, and movement | Arito, Convergence IV runner-up, October 31, 2026 |
 | Riven / Sonecon Stuttgart | Ready entrants, equipment, movement, and Baron Pit | Sonecon, European Regional Championship runner-up, November 2026 |
 
-The four Los Angeles lists were rechecked against Riot’s published source on **October 26, 2026**. Kai'Sa is an older competitive archetype included for variety. These are dated source lists. The Riven preset separately reproduces Sonecon’s exact Stuttgart main deck, sideboard, runes and three fields from Riot’s November 11 article, rechecked on November 12. Baron can add a third battlefield during play; the board, movement choices, scoring and bot API include it. The full 40-card main lists are preserved. All 443 supported main-deck cards have executable printed-effect mappings. Arito’s exact 40-card list was independently checked against its original organizer deck page on November 11, including two Edge of Night, three Orianna and one Gust Monk. All eleven registered legend powers, persistent equipment, Hidden, Flow, Repeat, Accelerate, and Empower are implemented. The additional unit and gear activations include explicit targets, trash-recycling, sacrifice and Disempower costs, response windows, and resource conversions during permitted payments. The engine exposes trigger order, on-play targets, death replacements, and rune activation as choices. Coverage and remaining interface limits are described in [RULES.md](docs/RULES.md); this is still an unofficial implementation under development.
+The four Los Angeles lists were rechecked against Riot’s published source on **October 26, 2026**. Kai'Sa is an older competitive archetype included for variety. These are dated source lists. The Riven preset separately reproduces Sonecon’s exact Stuttgart main deck, sideboard, runes and three fields from Riot’s November 11 article, rechecked on November 12. Baron can add a third battlefield during play; the board, movement choices, scoring and bot API include it. The full 40-card main lists are preserved. All 446 supported main-deck cards have executable printed-effect mappings. Arito’s exact 40-card list was independently checked against its original organizer deck page on November 11, including two Edge of Night, three Orianna and one Gust Monk. All eleven registered legend powers, persistent equipment, Hidden, Flow, Repeat, Accelerate, and Empower are implemented. The additional unit and gear activations include explicit targets, trash-recycling, sacrifice and Disempower costs, response windows, and resource conversions during permitted payments. The engine exposes trigger order, on-play targets, death replacements, and rune activation as choices. Coverage and remaining interface limits are described in [RULES.md](docs/RULES.md); this is still an unofficial implementation under development.
 
 Use **Prev** and **Next** in the deck library to browse all seven presets. Each preset can be selected for either seat or copied into the editor. The complete Xeno Irelia, Arito Irelia, Kennen, Rengar, and Sonecon Riven registrations have **Main deck**, **Sideboard**, and **Battlefields** tabs. Inspect all ten sideboard cards and all three battlefield rules; after selecting the preset for a seat, choose its battlefield there. Choose **Best of three** in Practice and **Next registered deck** for either seat to practice these complete lists with sideboarding. Other presets and saved custom lists remain available for single-game practice.
 

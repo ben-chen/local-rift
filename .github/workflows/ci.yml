@@ -62,3 +62,7 @@ jobs:
           XDG_DATA_HOME="$RUNNER_TEMP/local-rift-unyielding-small" xvfb-run -a ./target/release/local-rift --ui-smoke-unyielding --small
           XDG_DATA_HOME="$RUNNER_TEMP/local-rift-repulse" xvfb-run -a ./target/release/local-rift --ui-smoke-repulse
           XDG_DATA_HOME="$RUNNER_TEMP/local-rift-repulse-small" xvfb-run -a ./target/release/local-rift --ui-smoke-repulse --small
+          XDG_DATA_HOME="$RUNNER_TEMP/local-rift-alpha" xvfb-run -a ./target/release/local-rift --ui-smoke-alpha
+          XDG_DATA_HOME="$RUNNER_TEMP/local-rift-alpha-small" xvfb-run -a ./target/release/local-rift --ui-smoke-alpha --small
+          XDG_DATA_HOME="$RUNNER_TEMP/local-rift-conditional-equipment" xvfb-run -a ./target/release/local-rift --ui-smoke-conditional-equipment
+          XDG_DATA_HOME="$RUNNER_TEMP/local-rift-conditional-equipment-small" xvfb-run -a ./target/release/local-rift --ui-smoke-conditional-equipment --small

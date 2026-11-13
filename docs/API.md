@@ -280,6 +280,43 @@ or prevent damage explicitly dealt by units such as Challenge. Other instruction
 still resolve. Playing this Reaction requires no targets and uses the existing
 `play_card_targets` action with an empty `targets` array.
 
+Gear observations include public `attached_this_turn`: true only when that
+physical equipment actually attached to its current bearer during this turn.
+Paying Equip or queuing it does not set the flag; losing the bearer clears its
+meaning, and the history expires at turn end. Brutalizer (444) exposes the
+`bearer_attachment_this_turn` passive condition. Hand Hammer (445) exposes
+`bearer_exactly_one_other_friendly_unit_here`. Both contribute an additional
+2 Might when active, separate from their printed 1 Might bonus. Live unit
+`passive_contributions` identify the exact gear copy, current condition and
+`computed_might_exact`, including inactive contributions. Friendly tokens count
+for Hand Hammer; base units and enemies do not. These identities remain in the
+unpublished development batch until its acceptance work is complete.
+
+### Alpha Strike choices (development)
+
+Alpha Strike (443) chooses its friendly source first, followed by distinct enemy
+units at battlefields. Query `target_candidates` after each choice; the maximum
+depends on the source's current Might. Each selected Repeat has its own targets
+in `with_play_choices`, but the spell remains one physical chain item.
+
+During resolution, both observers see `decision.type: "split_damage"`, its
+acting `player`, original legal `targets`, `total_exact`, `required_recipients`,
+and `lethal_first: false`. Submit `assign_damage` with `[unit_id, amount]` pairs.
+Use canonical decimal strings for amounts beyond safe JSON integer precision.
+Every retained recipient requires a positive amount, and the sum must equal
+the total. Reduced Might can require choosing a smaller subset of the original
+recipients. No combat damage ordering applies.
+
+A second split decision can follow the first without a response window or
+intermediate lethal cleanup. Use the new revision for every submission;
+replayed, wrong-player or invalid allocations leave the session unchanged.
+Only after the whole parent finishes do actual deaths create separate public
+chain abilities `{type: "xp", amount: 1}`. `order_triggers` can precede their
+finalization. Each ability has a distinct chain ID and its own response window;
+the player's XP changes when that ability resolves. The
+[development audit](ALPHA_STRIKE_AUDIT.md) records the Repeat interpretation,
+tests and remaining acceptance work.
+
 ## Choosing power sources
 
 Automatic payment remains the default. Request `quote_payment` with the intended action, including its targets and optional costs. The result contains `suggested`, `available`, and `costs`. A quote validates on a disposable match copy and neither advances play nor changes the revision.

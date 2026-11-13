@@ -74,8 +74,14 @@ use deck_plays::DeckKillContinuation;
 mod instructed_play;
 use instructed_play::PendingOrigin;
 pub use instructed_play::{BaseCostWaiver, PlayDestination, PlayInstruction};
+#[cfg(test)]
+#[path = "alpha_strike_tests.rs"]
+mod alpha_strike_tests;
 #[path = "board_targets.rs"]
 pub mod board_targets;
+#[cfg(test)]
+#[path = "conditional_equipment_tests.rs"]
+mod conditional_equipment_tests;
 #[path = "damage.rs"]
 pub mod damage;
 #[path = "empower.rs"]
@@ -89,6 +95,8 @@ mod linked_counters;
 pub mod play;
 #[path = "show_off.rs"]
 pub mod show_off;
+#[path = "split_damage.rs"]
+mod split_damage;
 use play::*;
 
 #[path = "scalar_spells.rs"]
@@ -742,6 +750,15 @@ pub enum Decision {
         lane: usize,
         total: u64,
     },
+    /// Noncombat division happens only during resolution (CR355.14).
+    SplitDamage {
+        player: usize,
+        card_id: CardId,
+        source: Target,
+        total: u64,
+        targets: Vec<Target>,
+        keep: usize,
+    },
     RevealHand {
         player: usize,
         opponent: usize,
@@ -925,6 +942,7 @@ impl Decision {
             | Self::OnPlayTarget { player, .. }
             | Self::DeathReplacement { player, .. }
             | Self::CombatDamage { player, .. }
+            | Self::SplitDamage { player, .. }
             | Self::RevealHand { player, .. }
             | Self::BattlefieldTargets { player, .. }
             | Self::BattlefieldCost { player, .. }
@@ -1057,6 +1075,9 @@ pub struct Game {
     damage_context: Option<damage::DamageContext>,
     /// Global Unyielding Spirit effect; expires after the ending triggers finish.
     pub spell_ability_damage_prevented: bool,
+    alpha_kill_watches: Vec<split_damage::AlphaKillWatch>,
+    /// Actual physical gear/bearer attachment transitions in this turn.
+    pub(crate) gear_attachments_this_turn: Vec<(u32, u32)>,
 
     pub trigger_state: TriggerState,
     pub catalog: Vec<CardDef>,
@@ -1313,6 +1334,8 @@ impl Game {
             play_grants:Vec::new(),
             active_play:None,selected_cost_order:Vec::new(),reserved_play_grants:Vec::new(),payment_play_grants:Vec::new(),resolution_frame:None,predict_tail:None,damage_context:None,
             spell_ability_damage_prevented: false,
+            alpha_kill_watches: Vec::new(),
+            gear_attachments_this_turn: Vec::new(),
             catalog,
             presets,
             players,
@@ -2194,7 +2217,13 @@ impl Game {
                 lane,
                 target,
             } => self.play_from_trash(trash_index, lane, target)?,
-            Action::AssignDamage { assignments } => self.assign_combat_damage(assignments)?,
+            Action::AssignDamage { assignments } => {
+                if matches!(self.decision, Some(Decision::SplitDamage { .. })) {
+                    self.assign_split_damage(assignments)?;
+                } else {
+                    self.assign_combat_damage(assignments)?;
+                }
+            }
             Action::Pass => self.pass()?,
             Action::ResolveDrawLook { choice_id, index } => {
                 self.resolve_draw_look(choice_id, index)?
@@ -3260,6 +3289,7 @@ impl Game {
         if matches!(self.decision, Some(Decision::DeathReplacement { .. })) {
             return Ok(());
         }
+        self.alpha_kill_watches.clear();
         if self
             .combat_resolution
             .is_some_and(|c| c.step == CombatStep::Cleanup)
@@ -3429,6 +3459,7 @@ impl Game {
                 | Decision::RevivePlay { .. }
                 | Decision::DeathReplacement { .. }
                 | Decision::CombatDamage { .. }
+                | Decision::SplitDamage { .. }
                 | Decision::Discard { .. }
                 | Decision::Sabotage { .. }
                 | Decision::RecycleRevealedHand { .. }
@@ -3608,7 +3639,7 @@ impl Game {
             | Decision::DeathReplacement { .. } => {
                 return Err("Choose a replacement effect.".into());
             }
-            Decision::CombatDamage { .. } => unreachable!(),
+            Decision::CombatDamage { .. } | Decision::SplitDamage { .. } => unreachable!(),
             Decision::RevealHand { .. } => {}
             Decision::Battlefield { player, lane } => {
                 self.resolve_battlefield_choice(player, lane, accept)?
@@ -6241,6 +6272,14 @@ impl Game {
                     Decision::ResolutionTargets { groups, .. } => (0..groups.len())
                         .map(|index| Action::ChooseResolutionGroup { index })
                         .collect(),
+                    Decision::SplitDamage {
+                        total,
+                        targets,
+                        keep,
+                        ..
+                    } => vec![Action::AssignDamage {
+                        assignments: self.automatic_split_assignment(targets, *total, *keep)?,
+                    }],
                     Decision::OrderTriggers { options, .. } => options
                         .iter()
                         .map(|o| Action::OrderTrigger { trigger_id: o.id })
@@ -6764,6 +6803,9 @@ impl Game {
         if id == 442 {
             return self.prepare_repulse_targets(actor, provided, automatic);
         }
+        if id == 443 {
+            return self.prepare_alpha_targets(actor, provided, automatic);
+        }
         // Targeted play triggers choose after the permanent is on the board.
         if rules::on_play_requires_target(id)
             || rules::equipment(id).is_some_and(|gear| gear.quick_draw)
@@ -7016,6 +7058,9 @@ impl Game {
             if card_id == 442 {
                 return Ok(self.repulse_candidates(player, prior));
             }
+            if card_id == 443 {
+                return self.alpha_candidates(player, prior);
+            }
             let targets: Vec<_> = match rules::play_target_spec(card_id).kind {
                 Some(rules::PlayTargetKind::Rune) => vec![],
                 Some(rules::PlayTargetKind::Battlefield) => (0..self.battlefield_count())
@@ -7107,6 +7152,9 @@ impl Game {
                     .validate_repulse_targets(player, &targets, true)
                     .is_ok());
             }
+            if card_id == 443 {
+                return Ok(self.alpha_candidates(player, prior)?.contains(&target));
+            }
             for (i, &earlier) in prior.iter().enumerate() {
                 if !self.target_append_valid(player, card_id, lane, earlier, &prior[..i])? {
                     return Ok(false);
@@ -7192,6 +7240,9 @@ impl Game {
                     }
                     _ => false,
                 });
+            }
+            if id == 443 {
+                return Ok(self.alpha_slot_valid(actor, target, slot));
             }
             match rules::effect(id) {
                 OfficialEffect::BanishSmallOrGear { maximum, .. } => {
@@ -7712,6 +7763,9 @@ impl Game {
             self.resolve_repulse(player, &targets);
             return Ok(());
         }
+        if id == 443 {
+            return self.begin_alpha_split(player, &targets);
+        }
         if id == 257 {
             self.grant_play(
                 player,
@@ -8109,6 +8163,9 @@ impl Game {
             OfficialEffect::Repulse => {
                 unreachable!("Linked counter resolves before independent target filtering")
             }
+            OfficialEffect::AlphaStrike => {
+                unreachable!("Split damage resolves its ordered source before target filtering")
+            }
             OfficialEffect::None | OfficialEffect::Unsupported => {}
             OfficialEffect::Counter(_) => {} // Executed by the chain resolver.
             OfficialEffect::DrawThenChannel { draw, channel } => {
@@ -8487,6 +8544,7 @@ impl Game {
         }
         self.silenced = [false; 2];
         self.spell_ability_damage_prevented = false;
+        self.gear_attachments_this_turn.clear();
         self.movement_locks.clear();
         self.immobile_units.clear();
         self.moved_units.clear();
@@ -9138,6 +9196,7 @@ impl Game {
                 event
             })
             .collect();
+        self.capture_alpha_kills(&dying);
         self.capture_death_triggers(&dying);
         let mut deaths = Vec::new();
         let pykes: [Vec<u32>; 2] = [0, 1].map(|p| {
@@ -10176,6 +10235,7 @@ impl Game {
                     }
                 }
                 OfficialEffect::PreventSpellAndAbilityDamage => self.damage_prevention_score()?,
+                OfficialEffect::AlphaStrike => self.alpha_ai_score(actor, &targets)?,
                 OfficialEffect::ArcaneShift => {
                     targets
                         .first()

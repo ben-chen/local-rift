@@ -17,6 +17,8 @@ pub enum SourceCondition {
     ControllerRunesAtLeast(u8),
     ControllerXpAtLeast(u8),
     ControllerGainedXpThisTurn,
+    BearerAttachmentThisTurn,
+    BearerExactlyOneOtherFriendlyUnitHere,
 }
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Recipients {
@@ -80,6 +82,24 @@ pub fn passive_rules(id: CardId) -> &'static [PassiveRule] {
     use PassiveEffect::*;
     use PassiveKeyword::*;
     match id {
+        444 => {
+            const {
+                &[PassiveRule {
+                    condition: SourceCondition::BearerAttachmentThisTurn,
+                    recipients: Recipients::AttachedBearer,
+                    effect: Might(2),
+                }]
+            }
+        }
+        445 => {
+            const {
+                &[PassiveRule {
+                    condition: SourceCondition::BearerExactlyOneOtherFriendlyUnitHere,
+                    recipients: Recipients::AttachedBearer,
+                    effect: Might(2),
+                }]
+            }
+        }
         440 => {
             const {
                 &[PassiveRule {
@@ -482,6 +502,23 @@ impl Game {
                     }
                     let source_active = match rule.condition {
                         SourceCondition::Always => true,
+                        SourceCondition::BearerAttachmentThisTurn => match source {
+                            BoardObject::Gear { player, gear_id } => self
+                                .gear_attachment_status(player, gear_id)
+                                .is_some_and(|s| s.attached_this_turn),
+                            _ => false,
+                        },
+                        SourceCondition::BearerExactlyOneOtherFriendlyUnitHere => attachment
+                            .and_then(|id| self.players[owner].units.iter().find(|u| u.id == id))
+                            .and_then(|u| u.lane)
+                            .is_some_and(|lane| {
+                                self.players[owner]
+                                    .units
+                                    .iter()
+                                    .filter(|u| u.lane == Some(lane))
+                                    .count()
+                                    == 2
+                            }),
                         SourceCondition::FriendlyDeployGearHere => self
                             .passive_object_location(source)
                             .and_then(|location| location.battlefield())

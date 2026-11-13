@@ -1,5 +1,5 @@
 {
-  "status": "development; Unyielding Spirit and Repulse; Alpha Strike pending",
+  "status": "Accepted card implementation; see docs/validation/alpha_equipment.json. Complete Master Yi/Azir registrations are separate.",
   "records": [
     {
       "runtime_id": 441,
@@ -162,6 +162,95 @@
         "reviewed_on": "2026-11-12",
         "original_image_sha256": "a654fb5f0caf7184123735f35e308eb7a467097409e2f051207444da693e9b47"
       }
+    },
+    {
+      "runtime_id": 443,
+      "official_id": "unl-192-219",
+      "raw_printing": {
+        "official_id": "unl-192-219",
+        "public_code": "UNL-192/219",
+        "name": "Alpha Strike",
+        "set": "UNL",
+        "collector_number": 192,
+        "types": [
+          "spell"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "spell"
+        ],
+        "accessibility_types": [
+          "spell"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [
+          "signature"
+        ],
+        "domains": [
+          "calm",
+          "body"
+        ],
+        "energy": 3,
+        "power": 1,
+        "might": null,
+        "might_bonus": null,
+        "rules_html": "<p>[Action] (Play on your turn or in showdowns.)<br />Choose a friendly unit. It deals damage equal to its Might split among enemy units at battlefields. Then for each unit this kills, do this: Gain 1 XP.</p>",
+        "rules_text": "[Action] (Play on your turn or in showdowns.)\nChoose a friendly unit. It deals damage equal to its Might split among enemy units at battlefields. Then for each unit this kills, do this: Gain 1 XP.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [
+          "Master Yi"
+        ],
+        "rarity": "epic",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/154940caa774fd8219625cf051ddcb230ffc7f02-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Spell: Alpha Strike. [Action] (Play on your turn or in showdowns.)\nChoose a friendly unit. It deals damage equal to its Might split among enemy units at battlefields. Then for each unit this kills, do this: Gain 1 XP.",
+        "illustrators": [
+          "莺之歌"
+        ]
+      },
+      "raw_printing_sha256": "d873f10b662dccbff616d7d86f615f3339fffaf2341216c8e4662bc0e9c3934e",
+      "effective": {
+        "types": [
+          "spell"
+        ],
+        "super_types": [
+          "signature"
+        ],
+        "domains": [
+          "calm",
+          "body"
+        ],
+        "energy": 3,
+        "power": 1,
+        "might": null,
+        "might_bonus": null,
+        "tags": [
+          "Master Yi"
+        ],
+        "rules_html": "<p>[Action] (Play on your turn or in showdowns.)<br />Choose a friendly unit. It deals damage equal to its Might split among enemy units at battlefields. Then for each unit this kills, do this: Gain 1 XP.</p>",
+        "rules_text": "[Action] (Play on your turn or in showdowns.)\nChoose a friendly unit. It deals damage equal to its Might split among enemy units at battlefields. Then for each unit this kills, do this: Gain 1 XP.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "resolution_ids": [],
+      "printing_cohort": [
+        "unl-192-219"
+      ],
+      "errata": [],
+      "original_image": {
+        "path": "assets/data/card_admissions/master_yi/unl-192-219.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/154940caa774fd8219625cf051ddcb230ffc7f02-744x1039.png?accountingTag=RB",
+        "sha256": "4eb895b0f7d412de02efa8674187afaeb14ce99caedc7d55ce48e7c49f9176c1"
+      },
+      "runtime_image": {
+        "path": "assets/art/card_443.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/154940caa774fd8219625cf051ddcb230ffc7f02-744x1039.png?w=280&q=85&fm=png",
+        "sha256": "aa3fceeeeb9d42fe986ce9d4d52a0da65e4181299241455e6dd857c1352c46c1"
+      },
+      "visual_review": {
+        "actual_full_face_viewed": true,
+        "notes": "3Energy,1hybridCalm/BodyPower,Action,SignatureSpell,MasterYi. Exact rules text reviewed; engine still under validation."
+      }
     }
   ],
   "preserved_runtime_prefix": {
@@ -176,7 +265,12 @@
     "355.9",
     "359.3.e.3",
     "359.3.e.4",
-    "359.3.e.9.a"
+    "359.3.e.9.a",
+    "355.14",
+    "388",
+    "389",
+    "429.5.c",
+    "429.5.d"
   ],
   "historical_faq_note": "The Origins FAQ is obsolete; no invented erratum is applied. Current gallery text and Core Rules determine this effect.",
   "repulse_review_note": "The April Unleashed FAQ is historical after subsequent Core updates; its physical-target example agrees with current Core359.3.e.3–4 and is not treated as overriding current rules."

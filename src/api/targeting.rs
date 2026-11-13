@@ -131,6 +131,17 @@ pub(super) fn play_targets_to_json(card_id: crate::cards::CardId) -> Value {
              "includes_repeat_choices":true,"rechecked_on_resolution":true}
         ]);
     }
+    if card_id == 443 {
+        value["maximum"] = Value::Null;
+        value["maximum_rule"] =
+            json!("one source plus at most its current Might in enemy battlefield units");
+        value["ordered_slots"] = json!([
+            {"index":0,"kind":"unit","controller":"friendly"},
+            {"from_index":1,"kind":"unit","controller":"enemy","location":"battlefield","distinct":true}
+        ]);
+        value["damage_assignment"] = json!({"timing":"resolution","positive_per_retained_target":true,
+            "excess_targets":"drop_exact_excess_if_damage_decreases","dealer":"chosen_unit"});
+    }
     if let Some(domain) = crate::rules::targeting(card_id).threatened_by_domain {
         value["condition"] = json!({
             "type":"in_combat_with_unit_or_chosen_by_spell",

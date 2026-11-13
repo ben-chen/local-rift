@@ -834,6 +834,8 @@ impl Game {
                 },
                 required: 1,
             }
+        } else if intent.id == 443 {
+            self.alpha_target_spec(self.priority(), &targets)?
         } else {
             Self::execution_target_spec(intent.id, mode, targets.len())
         };

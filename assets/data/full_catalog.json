@@ -146,17 +146,17 @@
     "unresolved_type_conflict_identities": 0,
     "implemented_legal_by_kind": {
       "battlefield": 17,
-      "gear": 76,
+      "gear": 78,
       "legend": 11,
       "rune": 6,
-      "spell": 124,
+      "spell": 125,
       "unit": 243
     },
-    "implemented_main_cards": 443,
+    "implemented_main_cards": 446,
     "implemented_legends": 11,
     "implemented_battlefields": 17,
-    "implemented_legal_identities": 477,
-    "unimplemented_legal_identities": 602,
+    "implemented_legal_identities": 480,
+    "unimplemented_legal_identities": 599,
     "errata_entries": 67,
     "identities_with_errata": 67,
     "source_quality_issues": 57,
@@ -177,7 +177,7 @@
   "unimplemented_by_observed_keyword": {
     "ADD": 1,
     "Accelerate": 16,
-    "Action": 58,
+    "Action": 57,
     "Add": 20,
     "Ambush": 9,
     "Assault": 13,
@@ -189,7 +189,7 @@
     "Disarm": 6,
     "Empower": 13,
     "Empowered": 15,
-    "Equip": 25,
+    "Equip": 23,
     "Flow": 7,
     "Ganking": 29,
     "Hidden": 28,
@@ -904,8 +904,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 443,
+        "official_id": "unl-192-219",
+        "playable_in_client": true
       }
     },
     {
@@ -4953,8 +4955,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 444,
+        "official_id": "sfd-042-221",
+        "playable_in_client": true
       }
     },
     {
@@ -15222,8 +15226,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 445,
+        "official_id": "ven-027-166",
+        "playable_in_client": true
       }
     },
     {

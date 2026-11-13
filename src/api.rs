@@ -44,6 +44,11 @@ mod vision;
 mod xp_costs;
 
 #[cfg(test)]
+mod alpha_tests;
+#[cfg(test)]
+mod conditional_equipment_tests;
+
+#[cfg(test)]
 mod board_effects;
 
 pub const PROTOCOL_VERSION: u32 = 1;
@@ -444,6 +449,7 @@ impl Session {
             let gear: Vec<_> = state.gear.iter().map(|gear| Ok(json!({
                 "id":gear.id, "card_id":gear.card_id, "name":game.gear_name(gear), "token":gear.token,
                 "attached_to":gear.attached_to, "lane":game.gear_location(owner,gear.id),
+                "attached_this_turn":game.gear_attachment_status(owner,gear.id).is_some_and(|s|s.attached_this_turn),
                 "ready":gear.ready, "temporary":gear.temporary,"empowered":game.unit_empowered(gear.id),
                 "temporary_status":game.gear_temporary_status(owner,gear.id).map(temporary::status_to_json),
                 "deploy_status":game.gear_deploy_status(owner,gear.id).map(deploy::status_to_json),
@@ -2298,6 +2304,19 @@ fn decision_to_json(game: &Game, decision: &Decision, viewer: usize) -> Result<V
         }
         Decision::CombatDamage { lane, total, .. } => {
             json!({"type":"combat_damage","lane":lane,"total":total,"total_exact":total.to_string()})
+        }
+        Decision::SplitDamage {
+            card_id,
+            source,
+            total,
+            targets,
+            keep,
+            ..
+        } => {
+            json!({"type":"split_damage","card_id":card_id,"source":target_to_json(source),
+                "total":total,"total_exact":total.to_string(),"targets":targets.iter().map(target_to_json).collect::<Vec<_>>(),
+                "required_recipients":keep,"minimum_per_recipient":1,"lethal_first":false,
+                "action_type":"assign_damage"})
         }
         Decision::RevealHand {
             opponent, cards, ..

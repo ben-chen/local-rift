@@ -474,6 +474,12 @@ pub(super) fn target_view_hint(game: &Game, view: &PlayTargetView) -> String {
         };
     };
     let noun = match slot.kind {
+        local_rift::rules::PlayTargetKind::Unit if view.card_id == 443 && slot.index == 0 => {
+            "your damage-dealing unit, in base or at a battlefield"
+        }
+        local_rift::rules::PlayTargetKind::Unit if view.card_id == 443 => {
+            "a different enemy battlefield unit; divide damage after responses"
+        }
         local_rift::rules::PlayTargetKind::Unit if view.card_id == 442 => {
             "a friendly battlefield unit chosen by one eligible enemy spell or ability"
         }
@@ -1140,7 +1146,7 @@ impl App {
         } else {
             &draft.choices.repeats[draft.execution - 1].choices.targets
         };
-        let hint = if matches!(view.card_id, 426 | 442) || movement {
+        let hint = if matches!(view.card_id, 426 | 442 | 443) || movement {
             let action = Action::WithPlayChoices {
                 action: Box::new(strip_options(self.selected_play_action().unwrap())),
                 choices: draft.choices.clone(),

@@ -1,0 +1,128 @@
+{
+  "status": "passed",
+  "date": "2026-11-13T03:10:39.620683+00:00",
+  "base_commit": "834b62ff5509914d3df7a6d0efc240bc1021affe",
+  "cards": [
+    {
+      "id": 443,
+      "name": "Alpha Strike",
+      "official_id": "unl-192-219"
+    },
+    {
+      "id": 444,
+      "name": "Brutalizer",
+      "official_id": "sfd-042-221"
+    },
+    {
+      "id": 445,
+      "name": "Hand Hammer",
+      "official_id": "ven-027-166"
+    }
+  ],
+  "coverage": {
+    "main_cards": 446,
+    "legends": 11,
+    "battlefields": 17,
+    "runes": 6,
+    "implemented_legal": 480,
+    "catalogued_legal": 1079
+  },
+  "preserved_main_cards": 443,
+  "preserved_presets": 7,
+  "scope": "Card implementation and the tested interactions. Complete Master Yi registration and Azir support remain separate. Alpha Repeat reward interpretation is rule-derived, not an explicit official Alpha FAQ ruling. Full Standard parity and expert AI strength are not established.",
+  "validation": {
+    "full_rust_tests": 1815,
+    "source_checks": 282,
+    "native_and_nix_same_tests_not_added": true,
+    "strict_all_target_clippy": true,
+    "preset_simulations": 1176,
+    "preset_pairings": 49,
+    "ai_levels": 3,
+    "native_api_games": 432,
+    "installed_api_games": 432,
+    "every_native_installed_trace_identical": true,
+    "installed_ui_runs": 8,
+    "installed_ui_captures": 40,
+    "ui_sizes": [
+      [
+        1440,
+        900
+      ],
+      [
+        1152,
+        720
+      ]
+    ],
+    "all_runtime_and_build_inputs_match_tested_snapshot": true,
+    "release_status_note_checks": {
+      "source_tests": 4,
+      "catalog_check": true,
+      "format_check": true,
+      "whitespace_check": true
+    }
+  },
+  "nix": {
+    "package": "/nix/store/mssjqvj30yysd1av656ivjr5y32k9sjj-local-rift-0.1.0",
+    "catalog": "/nix/store/27qzw4hj7y05ivn8p963nl1zs9zp67y4-local-rift-catalog-check",
+    "simulation": "/nix/store/p1cphzlwa6widc6nxssh7vlgjsy4nazi-local-rift-simulation-check"
+  },
+  "installed": {
+    "status": "passed",
+    "package": "/nix/store/mssjqvj30yysd1av656ivjr5y32k9sjj-local-rift-0.1.0",
+    "source_manifest": "alpha-equipment-source-manifest-v8.json",
+    "ui_runs": 8,
+    "ui_captures": 40,
+    "api": [
+      {
+        "kind": "alpha",
+        "games": 288,
+        "every_trace_identical": true,
+        "native_binary_sha256": "bf3c2dde5781711b90f70817661e57bcffb212c371e6d6269a152702a653e0ea",
+        "installed_binary_sha256": "18c5f967ed43c932b64686a6ce2814aa2dafc0da318219ace93aab6549cc16d7"
+      },
+      {
+        "kind": "equipment",
+        "games": 144,
+        "every_trace_identical": true,
+        "native_binary_sha256": "bf3c2dde5781711b90f70817661e57bcffb212c371e6d6269a152702a653e0ea",
+        "installed_binary_sha256": "18c5f967ed43c932b64686a6ce2814aa2dafc0da318219ace93aab6549cc16d7"
+      }
+    ]
+  },
+  "evidence_sha256": {
+    "alpha-equipment-source-manifest-v8.json": "6ca84606b27018f4d8917f5397bf041369e867454aaa8db3339b3253b06ac329",
+    "alpha-equipment-full-v2.log": "51c9d17834b36edf54d5b8bc081653021d61f8bb00646cf8cf59dae57411c730",
+    "alpha-equipment-nix-v1.log": "3bcfdde4a5a69a70679030cd66ee353b2205450b4c7d31d77f7affdebcb87f8f",
+    "alpha-equipment-installed-comparison-v1.json": "8e20a3c695ac7312baeb6964e2c07764fc175d20f2d2fb168dbab1eabf4b9467",
+    "alpha-parent-api-v1.json": "7127f34102258bdd9e0ef4510659328fd4ea34b021f20f8e4fa4a2ef8ed35fec",
+    "alpha-equipment-api-v1.json": "9358ed560fef933d9c45e5da4c16c1a3838b613674ebafbf70880922c21b3c3f",
+    "alpha-equipment-release-checks-v1.log": "dadd106e1732c45d54c9df51a79fde307fd8340ac59aa6c5087d23b58d51be81"
+  },
+  "release_differences_from_tested_snapshot": [
+    "README.md",
+    "assets/data/card_admissions/azir_equipment/README.md",
+    "assets/data/card_admissions/azir_equipment/admissions.json",
+    "assets/data/card_admissions/master_yi/README.md",
+    "assets/data/card_admissions/master_yi/admissions.json",
+    "docs/ALPHA_STRIKE_AUDIT.md",
+    "docs/IRELIA_PRIORITY.md",
+    "docs/validation/alpha_equipment.json"
+  ],
+  "excluded_drafts": [
+    "complete Master Yi registration",
+    "general physical damage/kill attribution",
+    "resource capacity fix",
+    "Hidden Blade",
+    "Deathgrip",
+    "Guards!"
+  ],
+  "reproduce": [
+    "cargo test --all-targets --locked",
+    "python3 -m unittest discover -s tools -p test_*.py",
+    "python3 tools/import_catalog.py --check",
+    "cargo clippy --all-targets -- -D warnings",
+    "python3 tools/check_alpha_api.py target/release/rift-api alpha.json",
+    "python3 tools/check_conditional_equipment_api.py target/release/rift-api equipment.json",
+    "nix flake check"
+  ]
+}

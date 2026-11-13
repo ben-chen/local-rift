@@ -1,0 +1,214 @@
+{
+  "status": "Accepted card implementation; see docs/validation/alpha_equipment.json. Complete Master Yi/Azir registrations are separate.",
+  "reviewed_on": "2026-11-12",
+  "preserved_runtime_prefix": {
+    "card_count": 444,
+    "preset_count": 7,
+    "cards_sha256": "26d50354ae4bb5a199f7e19d64e94364ab207ca1d365a3f429fee3fd5cfaa4a0",
+    "presets_sha256": "e975739d803427e54928d6e6cd03d1ce51d7ad108f4e247b8a000acf037a5cdb"
+  },
+  "records": [
+    {
+      "official_id": "sfd-042-221",
+      "name": "Brutalizer",
+      "raw_printing": {
+        "official_id": "sfd-042-221",
+        "public_code": "SFD-042/221",
+        "name": "Brutalizer",
+        "set": "SFD",
+        "collector_number": 42,
+        "types": [
+          "gear"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "gear"
+        ],
+        "accessibility_types": [
+          "gear"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "calm"
+        ],
+        "energy": 2,
+        "power": null,
+        "might": 1,
+        "might_bonus": 1,
+        "rules_html": "<p>[Equip] :rb_rune_calm: (:rb_rune_calm:: Attach this to a unit you control.)</p>",
+        "rules_text": "[Equip] [Calm Power] ([Calm Power]: Attach this to a unit you control.)",
+        "equipment_html": "<p>If this was attached to me this turn, I have an additional +2 :rb_might:.</p>",
+        "equipment_text": "If this was attached to me this turn, I have an additional +2 Might.",
+        "tags": [
+          "Equipment"
+        ],
+        "rarity": "uncommon",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/3a0de7eec3de501f79f33c09b43c7fe42721d10d-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Gear: Brutalizer. [Equip] [C] ([C]: Attach this to a unit you control.)",
+        "illustrators": [
+          "黯荧岛Dark Glow"
+        ]
+      },
+      "raw_printing_sha256": "1b00cb2cb399ed42a0e341c5d41ab0d470c58e7e43dcb5a618a9e29ab8e6f1bf",
+      "effective": {
+        "types": [
+          "gear"
+        ],
+        "super_types": [],
+        "domains": [
+          "calm"
+        ],
+        "energy": 2,
+        "power": null,
+        "might": 1,
+        "might_bonus": 1,
+        "tags": [
+          "Equipment"
+        ],
+        "rules_html": "<p>[Equip] :rb_rune_calm: (:rb_rune_calm:: Attach this to a unit you control.)</p>",
+        "rules_text": "[Equip] [Calm Power] ([Calm Power]: Attach this to a unit you control.)",
+        "equipment_html": "<p>If this was attached to me this turn, I have an additional +2 :rb_might:.</p>",
+        "equipment_text": "If this was attached to me this turn, I have an additional +2 Might."
+      },
+      "effective_projection_sha256": "1b00cb2cb399ed42a0e341c5d41ab0d470c58e7e43dcb5a618a9e29ab8e6f1bf",
+      "existing_field_resolution_ids": [],
+      "original_image": {
+        "path": "assets/data/card_admissions/azir_equipment/sfd-042-221.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/3a0de7eec3de501f79f33c09b43c7fe42721d10d-744x1039.png?accountingTag=RB",
+        "sha256": "d0262efad60bd522f25ce9bd074846523b40c86d72e5397030e5a53dfe087963",
+        "bytes": 758254
+      },
+      "visual_observation": {
+        "official_id": "sfd-042-221",
+        "image": "sfd-042-221.png",
+        "sha256": "d0262efad60bd522f25ce9bd074846523b40c86d72e5397030e5a53dfe087963",
+        "actual_full_face_viewed": true,
+        "observation": "Complete SFD042 Calm Gear / Equipment: 2 Energy, no play Power, Equip one Calm Power. Separate bottom panel has +1 Might and additional +2 Might if attached to bearer this turn.",
+        "reviewed_again_on": "2026-11-12"
+      },
+      "runtime_id": 444,
+      "printing_cohort": [
+        "sfd-042-221"
+      ],
+      "alternate_printings": [],
+      "errata": [],
+      "runtime_image": {
+        "path": "assets/art/card_444.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/3a0de7eec3de501f79f33c09b43c7fe42721d10d-744x1039.png?w=280&q=80&fm=png",
+        "sha256": "7da97c266c1a24225a1e32ccd4451f0f62a0527b70523d1e9e5da061af9b1b65",
+        "bytes": 158918,
+        "width": 280,
+        "height": 391
+      },
+      "runtime_rules_text": "[Equip] [Calm Power] ([Calm Power]: Attach this to a unit you control.)\nWhile attached: If this was attached to me this turn, I have an additional +2 Might.",
+      "legal_main_deck_legend_ids": [
+        0,
+        1,
+        10
+      ],
+      "chosen_champion_legend_ids": []
+    },
+    {
+      "official_id": "ven-027-166",
+      "name": "Hand Hammer",
+      "raw_printing": {
+        "official_id": "ven-027-166",
+        "public_code": "VEN-027/166",
+        "name": "Hand Hammer",
+        "set": "VEN",
+        "collector_number": 27,
+        "types": [
+          "gear"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "gear"
+        ],
+        "accessibility_types": [
+          "gear"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "calm"
+        ],
+        "energy": 2,
+        "power": null,
+        "might": 1,
+        "might_bonus": 1,
+        "rules_html": "<p>[Equip] :rb_rune_calm: (:rb_rune_calm:: Attach this to a unit you control.)</p>",
+        "rules_text": "[Equip] [Calm Power] ([Calm Power]: Attach this to a unit you control.)",
+        "equipment_html": "<p>I have +2 :rb_might: while I'm at a battlefield with exactly one other unit you control.</p>",
+        "equipment_text": "I have +2 Might while I'm at a battlefield with exactly one other unit you control.",
+        "tags": [
+          "Equipment"
+        ],
+        "rarity": "common",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/524fedb9116db0eb62380c03e0853c342c53daeb-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Gear: Hand Hammer. [Equip] [C] ([C]: Attach this to a unit you control.)",
+        "illustrators": [
+          "Kudos Productions"
+        ]
+      },
+      "raw_printing_sha256": "e047456a7932680aa9ee6a0c7789310e668d9ad8b26727eacc4e1d095270d2bb",
+      "effective": {
+        "types": [
+          "gear"
+        ],
+        "super_types": [],
+        "domains": [
+          "calm"
+        ],
+        "energy": 2,
+        "power": null,
+        "might": 1,
+        "might_bonus": 1,
+        "tags": [
+          "Equipment"
+        ],
+        "rules_html": "<p>[Equip] :rb_rune_calm: (:rb_rune_calm:: Attach this to a unit you control.)</p>",
+        "rules_text": "[Equip] [Calm Power] ([Calm Power]: Attach this to a unit you control.)",
+        "equipment_html": "<p>I have +2 :rb_might: while I'm at a battlefield with exactly one other unit you control.</p>",
+        "equipment_text": "I have +2 Might while I'm at a battlefield with exactly one other unit you control."
+      },
+      "effective_projection_sha256": "e047456a7932680aa9ee6a0c7789310e668d9ad8b26727eacc4e1d095270d2bb",
+      "existing_field_resolution_ids": [],
+      "original_image": {
+        "path": "assets/data/card_admissions/azir_equipment/ven-027-166.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/524fedb9116db0eb62380c03e0853c342c53daeb-744x1039.png?accountingTag=RB",
+        "sha256": "0c278bbbce411f6f136e3fb0858c4238c43efa29d03c7bae2643059dffbb30b6",
+        "bytes": 739110
+      },
+      "visual_observation": {
+        "official_id": "ven-027-166",
+        "image": "ven-027-166.png",
+        "sha256": "0c278bbbce411f6f136e3fb0858c4238c43efa29d03c7bae2643059dffbb30b6",
+        "actual_full_face_viewed": true,
+        "observation": "Complete VEN027 Calm Gear / Equipment: 2 Energy, no play Power, Equip one Calm Power. Separate bottom panel has +1 Might and +2 Might while bearer is at a battlefield with exactly one other friendly unit.",
+        "reviewed_again_on": "2026-11-12"
+      },
+      "runtime_id": 445,
+      "printing_cohort": [
+        "ven-027-166"
+      ],
+      "alternate_printings": [],
+      "errata": [],
+      "runtime_image": {
+        "path": "assets/art/card_445.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/524fedb9116db0eb62380c03e0853c342c53daeb-744x1039.png?w=280&q=80&fm=png",
+        "sha256": "9ac906a328f553ec12a8ab7abd21f1aefc18f37e797b3859a81de7cf7a4df0f1",
+        "bytes": 162337,
+        "width": 280,
+        "height": 391
+      },
+      "runtime_rules_text": "[Equip] [Calm Power] ([Calm Power]: Attach this to a unit you control.)\nWhile attached: I have +2 Might while I'm at a battlefield with exactly one other unit you control.",
+      "legal_main_deck_legend_ids": [
+        0,
+        1,
+        10
+      ],
+      "chosen_champion_legend_ids": []
+    }
+  ]
+}

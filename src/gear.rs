@@ -40,6 +40,12 @@ impl GearState {
 /// attachment suppresses printed text, but not a granted ability (CR135.4.b).
 pub type GearTemporaryStatus = crate::temporary::TemporaryStatus;
 
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct GearAttachmentStatus {
+    pub unit_id: Option<u32>,
+    pub attached_this_turn: bool,
+}
+
 /// Characteristics remain referenceable when attachment suppresses printed text.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct GearDeployStatus {
@@ -49,6 +55,61 @@ pub struct GearDeployStatus {
 }
 
 impl Game {
+    pub fn gear_attachment_status(
+        &self,
+        player: usize,
+        gear_id: u32,
+    ) -> Option<GearAttachmentStatus> {
+        let gear = self
+            .players
+            .get(player)?
+            .gear
+            .iter()
+            .find(|g| g.id == gear_id)?;
+        Some(GearAttachmentStatus {
+            unit_id: gear.attached_to,
+            attached_this_turn: gear.attached_to.is_some_and(|unit_id| {
+                self.gear_attachments_this_turn
+                    .contains(&(gear_id, unit_id))
+            }),
+        })
+    }
+
+    /// Core435.1.f-g: attaching to a different unit detaches the old bearer;
+    /// attaching to the same bearer again does nothing. Callers enforce their
+    /// own timing, targeting and payment requirements before this transition.
+    pub(crate) fn attach_equipment(&mut self, player: usize, gear_id: u32, unit_id: u32) -> bool {
+        if !self
+            .players
+            .get(player)
+            .is_some_and(|p| p.units.iter().any(|u| u.id == unit_id))
+        {
+            return false;
+        }
+        let Some(gear) = self.players[player]
+            .gear
+            .iter_mut()
+            .find(|g| g.id == gear_id)
+        else {
+            return false;
+        };
+        // Equip is authoritative here. Some reviewed gallery entries (including
+        // Nazuman Ntofo) omit the Equipment tag despite having a printed Equip.
+        if gear.token
+            || rules::equipment(gear.card_id).is_none()
+            || gear.attached_to == Some(unit_id)
+        {
+            return false;
+        }
+        gear.attached_to = Some(unit_id);
+        let name = self.catalog[gear.card_id].name;
+        self.gear_attachments_this_turn
+            .retain(|(id, _)| *id != gear_id);
+        self.gear_attachments_this_turn.push((gear_id, unit_id));
+        self.push_log(format!("{name} attaches to unit #{unit_id}."));
+        true
+    }
+
     pub fn gear_deploy_status(&self, player: usize, gear_id: u32) -> Option<GearDeployStatus> {
         let gear = self
             .players
@@ -401,9 +462,7 @@ impl Game {
         if gear.attached_to.is_some() || gear.token || rules::equipment(gear.card_id).is_none() {
             return;
         }
-        gear.attached_to = Some(unit_id);
-        let name = self.catalog[gear.card_id].name;
-        self.push_log(format!("{} attaches to unit #{}.", name, unit_id));
+        self.attach_equipment(player, gear_id, unit_id);
     }
 
     pub fn gear_can_activate(&self, player: usize, gear_id: u32) -> bool {

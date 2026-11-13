@@ -2164,6 +2164,9 @@ impl App {
                 .filter(|(_, amount)| *amount > 0)
                 .collect());
         }
+        if let Some(Decision::SplitDamage { targets, keep, .. }) = &self.game.decision {
+            return self.game.automatic_split_assignment(targets, total, *keep);
+        }
         let suggested = self.game.automatic_damage_assignment(0, lane, total)?;
         let mut order = self.damage_order.clone();
         for (id, _) in &suggested {
@@ -2234,16 +2237,35 @@ impl App {
         }
     }
     fn combat_tray(&mut self, lane: usize, total: DamageAmount) -> Result<(), String> {
+        let split_targets = match &self.game.decision {
+            Some(Decision::SplitDamage { targets, .. }) => Some(targets.clone()),
+            _ => None,
+        };
+        let split = split_targets.is_some();
+        if split && self.damage_amounts.is_none() {
+            self.damage_amounts = Some(self.damage_assignment(lane, total)?);
+        }
         let units = self.game.players[1]
             .units
             .iter()
-            .filter(|u| u.lane == Some(lane))
+            .filter(|u| {
+                split_targets
+                    .as_ref()
+                    .map_or(u.lane == Some(lane), |targets| {
+                        targets.contains(&Target::Unit {
+                            player: 1,
+                            unit_id: u.id,
+                        })
+                    })
+            })
             .cloned()
             .collect::<Vec<_>>();
         let manual = self.damage_amounts.is_some();
         if self.ui.button(
             Rect::new(780.0, 648.0, 170.0, 29.0),
-            if manual {
+            if split {
+                "Reset split"
+            } else if manual {
                 "Exact amounts  >"
             } else {
                 "Edit amounts  >"
@@ -2251,7 +2273,10 @@ impl App {
             manual,
             true,
         ) {
-            self.damage_amounts = if manual {
+            self.damage_amounts = if split {
+                self.damage_amounts = None;
+                Some(self.damage_assignment(lane, total)?)
+            } else if manual {
                 None
             } else {
                 Some(self.damage_assignment(lane, total)?)
@@ -2276,6 +2301,22 @@ impl App {
                     .rect(Rect::new(r.x + 2.0, r.y + 2.0, 136.0, 94.0), BG);
                 self.ui.diamond(vec2(r.x + 70.0, r.y + 38.0), 18.0, TEAL);
             }
+            if split && let Some(field) = unit.lane {
+                let position = self.game.players[1]
+                    .units
+                    .iter()
+                    .filter(|other| other.lane == Some(field))
+                    .position(|other| other.id == unit.id)
+                    .unwrap_or(0)
+                    + 1;
+                self.ui.text(
+                    &format!("Field {} · unit {position}", field + 1),
+                    r.x + 9.0,
+                    r.y + 107.0,
+                    8.0,
+                    MUTED,
+                );
+            }
             let amount = allocation
                 .iter()
                 .find(|(id, _)| *id == unit.id)
@@ -2286,7 +2327,9 @@ impl App {
                 .saturating_sub(unit.damage)
                 .max(1);
             let keywords = self.game.unit_keywords(unit)?;
-            let role = if keywords.tank && keywords.backline {
+            let role = if split {
+                ""
+            } else if keywords.tank && keywords.backline {
                 " · FIRST / LAST"
             } else if keywords.tank {
                 " · TANK"
@@ -2295,11 +2338,15 @@ impl App {
             } else {
                 ""
             };
-            let order = allocation
-                .iter()
-                .position(|(id, _)| *id == unit.id)
-                .map(|n| format!("#{} · ", n + 1))
-                .unwrap_or_default();
+            let order = if split {
+                String::new()
+            } else {
+                allocation
+                    .iter()
+                    .position(|(id, _)| *id == unit.id)
+                    .map(|n| format!("#{} · ", n + 1))
+                    .unwrap_or_default()
+            };
             self.ui
                 .rect(Rect::new(r.x + 2.0, r.y + 68.0, 136.0, 28.0), PANEL);
             if amount > 999_999 {
@@ -2374,7 +2421,7 @@ impl App {
                     .text("Click to choose order", r.x + 9.0, r.y + 161.0, 9.0, MUTED);
             }
             let card_face = Rect::new(r.x, r.y, r.w, 123.0);
-            if self.ui.clicked(card_face) {
+            if self.ui.clicked(card_face) && !split {
                 if let Some(amounts) = &mut self.damage_amounts {
                     amounts.retain(|(id, _)| *id != unit.id);
                     amounts.push((unit.id, amount));
@@ -2736,9 +2783,24 @@ impl App {
             }
             return Ok(());
         }
-        if let Decision::CombatDamage { lane, total, .. } = decision {
-            self.ui
-                .title("Assign combat damage", 1178.0, 366.0, 20.0, TEXT);
+        let damage_choice = match &decision {
+            Decision::CombatDamage { lane, total, .. } => Some((*lane, *total)),
+            Decision::SplitDamage { total, .. } => Some((usize::MAX, *total)),
+            _ => None,
+        };
+        if let Some((lane, total)) = damage_choice {
+            let split = matches!(decision, Decision::SplitDamage { .. });
+            self.ui.title(
+                if split {
+                    "Divide unit damage"
+                } else {
+                    "Assign combat damage"
+                },
+                1178.0,
+                366.0,
+                20.0,
+                TEXT,
+            );
             let allocation = self.damage_assignment(lane, total)?;
             let assigned: u128 = allocation
                 .iter()
@@ -2811,6 +2873,14 @@ impl App {
                     format!(
                         "{error} Edit the amounts below; confirming keeps an invalid draft here."
                     )
+                } else if let Decision::SplitDamage {
+                    keep, ref targets, ..
+                } = decision
+                {
+                    format!(
+                        "Give at least 1 damage to exactly {keep} of {} targets. Set other amounts to 0. This split has no combat ordering restrictions.",
+                        targets.len()
+                    )
                 } else if dual_rank {
                     "Tank + Backline: choose first or last for that unit. Click art to change order; lethal before the next unit.".to_owned()
                 } else if self.damage_amounts.is_some() {
@@ -2853,7 +2923,7 @@ impl App {
             Decision::TriggerObjectCost { context, .. } => ("Banish Prefect?", format!("Banish Prefect now. Then banish {} after responses. Decline to keep Prefect.", context.subject.map(|t| target_label(&self.game, t)).unwrap_or_else(|| "the played gear".into()))),
             Decision::TriggerMode { .. } | Decision::TriggerPayment { .. } | Decision::BattlefieldTargets { .. } | Decision::BattlefieldCost { .. } | Decision::BattlefieldPayment { .. } => unreachable!(),
             Decision::BanishPlay{card_id,..}=>("Play from Banish",format!("Play {} now? Base energy is waived; power and extra costs still apply. Declining leaves it in Banish.",self.game.catalog[*card_id].name)),
-            Decision::DrawLook{..}|Decision::RevealedCard{..}|Decision::DeckLookPlay{..}|Decision::RevealedDeck{..}|Decision::EmpowerPlayed{..}|Decision::PredictCards{..}|Decision::Payment{..}|Decision::ResourceConversion{..}|Decision::TriggerTargets{..}|Decision::LegendTargets{..}|Decision::CombatDamage{..}|Decision::TokenPlacement{..}|Decision::TokenPlay{..}|Decision::BattlefieldOrder{..}|Decision::RevivePlay{..}|Decision::PendingPlay{..}=>unreachable!(),
+            Decision::DrawLook{..}|Decision::RevealedCard{..}|Decision::DeckLookPlay{..}|Decision::RevealedDeck{..}|Decision::EmpowerPlayed{..}|Decision::PredictCards{..}|Decision::Payment{..}|Decision::ResourceConversion{..}|Decision::TriggerTargets{..}|Decision::LegendTargets{..}|Decision::CombatDamage{..}|Decision::SplitDamage{..}|Decision::TokenPlacement{..}|Decision::TokenPlay{..}|Decision::BattlefieldOrder{..}|Decision::RevivePlay{..}|Decision::PendingPlay{..}=>unreachable!(),
             Decision::TrashTarget{..}=>("Choose a trash target","Choose an eligible card below before this ability enters the chain. Opponents may respond before the chosen card is played.".into()),
             Decision::OptionalPlay{card_id,..}=>("Use this triggered ability?",format!("{} offers a play from your trash. Accept and choose the ability's target, or decline now. Choose the card's own targets and costs after the ability resolves.",self.game.catalog[*card_id].name)),
             Decision::ResolutionTargets{..}=>("Choose the location", "Responses separated your targets. Choose which legal group below this spell should affect.".into()),
@@ -3914,6 +3984,10 @@ impl App {
         }
         if let Decision::CombatDamage { lane, total, .. } = decision {
             self.combat_tray(lane, total)?;
+            return Ok(true);
+        }
+        if let Decision::SplitDamage { total, .. } = decision {
+            self.combat_tray(usize::MAX, total)?;
             return Ok(true);
         }
         if let Decision::ResolutionTargets {
@@ -8733,6 +8807,9 @@ fn card_brief(game: &Game, id: usize) -> String {
     }
     match local_rift::rules::effect(id) {
         Repulse => "Friendly unit at a field · counter its linked enemy spell / ability".into(),
+        AlphaStrike => {
+            "Choose your unit and enemy battlefield units · divide its Might on resolution".into()
+        }
         PreventSpellAndAbilityDamage => {
             "Prevent spell / ability damage · both players · this turn".into()
         }
@@ -9185,6 +9262,12 @@ fn passive_description(
                     controller.xp
                 ),
                 SourceCondition::Always => String::new(),
+                SourceCondition::BearerAttachmentThisTurn => {
+                    " · this equipment attached to this bearer this turn".into()
+                }
+                SourceCondition::BearerExactlyOneOtherFriendlyUnitHere => {
+                    " · while bearer is at a battlefield with exactly one other friendly unit".into()
+                }
             };
             let recipients = match rule.recipients {
                 Recipients::OtherFriendlyUnitsHere => {
@@ -10509,6 +10592,8 @@ async fn main() {
     let riven_smoke = args.iter().any(|a| a == "--ui-smoke-riven");
     let unyielding_smoke = args.iter().any(|a| a == "--ui-smoke-unyielding");
     let repulse_smoke = args.iter().any(|a| a == "--ui-smoke-repulse");
+    let alpha_smoke = args.iter().any(|a| a == "--ui-smoke-alpha");
+    let conditional_equipment_smoke = args.iter().any(|a| a == "--ui-smoke-conditional-equipment");
     let blade_smoke = args.iter().any(|a| a == "--ui-smoke-blade");
     let riven_champion_smoke = args.iter().any(|a| a == "--ui-smoke-riven-champion");
     let preset_smoke = args.iter().any(|a| a == "--ui-smoke-presets");
@@ -10519,6 +10604,8 @@ async fn main() {
     let focused_field_smoke = args.iter().any(|a| a == "--ui-smoke-c28");
     let focused_source_damage_smoke = args.iter().any(|a| a == "--ui-smoke-c27");
     let smoke_test = series_smoke
+        || conditional_equipment_smoke
+        || alpha_smoke
         || repulse_smoke
         || unyielding_smoke
         || riven_champion_smoke
@@ -10556,7 +10643,11 @@ async fn main() {
             app.hover_card = app.game.players[0].hand.first().copied();
             app.hover_since = -1.0;
         }
-        let smoke_done = if repulse_smoke {
+        let smoke_done = if conditional_equipment_smoke {
+            smoke::run_conditional_equipment_frame(&mut app, frames)
+        } else if alpha_smoke {
+            smoke::run_alpha_frame(&mut app, frames)
+        } else if repulse_smoke {
             smoke::run_repulse_frame(&mut app, frames)
         } else if unyielding_smoke {
             smoke::run_unyielding_frame(&mut app, frames)

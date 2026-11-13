@@ -70,6 +70,7 @@ pub struct PlayTargetSpec {
 pub enum OfficialEffect {
     /// Choose a friendly battlefield unit, then a linked enemy chain item.
     Repulse,
+    AlphaStrike,
     /// Unyielding Spirit: both players' spell/ability damage is prevented this turn.
     PreventSpellAndAbilityDamage,
     BattlePreparations,
@@ -277,13 +278,14 @@ pub fn effect(id: usize) -> OfficialEffect {
     match id {
         441 => PreventSpellAndAbilityDamage,
         442 => Repulse,
+        443 => AlphaStrike,
         425 => ReadyAndPreventMovement { draw: 1 },
         426 => BattlePreparations,
         427 => MoveEnemy,
         428 => StunAndDrawFromHand,
         429 => None,
         430 | 431 => None,
-        432 | 438 => Equipment,
+        432 | 438 | 444 | 445 => Equipment,
         433 => RecycleRevealedHand(Domain::Mind),
         434 => DisempowerThenKill { maximum: 3 },
         435 => KillGear {
@@ -747,6 +749,7 @@ pub fn target_bounds(id: usize) -> (usize, usize) {
     match effect(id) {
         BattlePreparations => (3, 1),
         Repulse => (2, 2),
+        AlphaStrike => (usize::MAX, 2),
         AreaDamage {
             selector: AreaSelector::EnemyAtTargetBattlefield,
             ..
@@ -801,6 +804,7 @@ pub fn play_target_spec(id: CardId) -> PlayTargetSpec {
         } else {
             match effect(id) {
                 OfficialEffect::Repulse => (Some(Unit), 2, 2),
+                OfficialEffect::AlphaStrike => (Some(Unit), usize::MAX, 2),
                 OfficialEffect::KillGear { .. } | OfficialEffect::ReturnGear => (Some(Gear), 1, 1),
                 OfficialEffect::KillEnemyDomain { .. }
                 | OfficialEffect::BanishSmallOrGear { .. } => (Some(UnitOrGear), 1, 1),
@@ -1114,6 +1118,14 @@ pub fn requirements(id: usize) -> &'static [Mechanic] {
     match id {
         441 => &[Chain, Protection],
         442 => &[Chain, Counterspell, MultipleTargets, ChooseReadyTriggers],
+        444 | 445 => &[Gear, Equip, Chain, ChooseReadyTriggers],
+        443 => &[
+            Chain,
+            MultipleTargets,
+            ChooseReadyTriggers,
+            DeathTriggers,
+            Xp,
+        ],
         401 => &[Deploy, Gear, Assault, ConquerHoldTriggers],
         402 => &[Deploy, Gear, Chain, ConquerHoldTriggers],
         403 => &[
@@ -1456,6 +1468,7 @@ pub struct EquipmentRule {
 
 pub fn equipment(id: usize) -> Option<EquipmentRule> {
     let (might, equip_domain, recycle_trash, quick_draw, ability) = match id {
+        444 | 445 => (1, Domain::Calm, 0, false, EquipmentAbility::None),
         438 => (3, Domain::Chaos, 0, false, EquipmentAbility::Ganking),
         432 => (2, Domain::Chaos, 0, false, EquipmentAbility::None),
         348 => (2, Domain::Order, 0, false, EquipmentAbility::None),
@@ -2102,7 +2115,7 @@ mod tests {
     #[test]
     fn all_catalog_entries_have_official_classification() {
         let cards = cards();
-        assert_eq!(cards.len(), 443);
+        assert_eq!(cards.len(), 446);
         for card in cards {
             assert_ne!(
                 effect(card.id),
@@ -2112,7 +2125,7 @@ mod tests {
             );
             assert_ne!(support_status(card.id), SupportStatus::UnknownCard);
         }
-        assert_eq!(effect(443), OfficialEffect::Unsupported);
+        assert_eq!(effect(446), OfficialEffect::Unsupported);
     }
 
     #[test]
