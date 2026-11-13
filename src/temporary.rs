@@ -154,7 +154,9 @@ impl Game {
                 self.kill_unit(Target::Unit { player, unit_id })?
             }
             BoardObject::Gear { player, gear_id } => {
-                self.gear_destroy(player, gear_id);
+                if self.gear_destroy(player, gear_id) {
+                    self.record_kill(Target::Gear { player, gear_id }, true);
+                }
             }
             BoardObject::Legend { .. } => {}
         }

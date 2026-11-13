@@ -306,9 +306,30 @@ fn source_damage_applies_ability_bonuses_to_each_positive_packet() {
         let a = unit(&mut g, 1 - p, 70, Some(0));
         let b = unit(&mut g, 1 - p, 70, Some(0));
         move_to(&mut g, s, Some(0));
+        let chain_id = g.chain.last().unwrap().id;
         settle(&mut g);
         assert_eq!(damage(&g, a), 6);
         assert_eq!(damage(&g, b), 6);
+        let Target::Unit { unit_id, .. } = s else {
+            unreachable!()
+        };
+        let ledger = g.last_damage_ledger().unwrap();
+        assert_eq!(ledger.damage.len(), 2);
+        for packet in &ledger.damage {
+            assert_eq!(packet.player, p);
+            assert_eq!(
+                packet.sources,
+                vec![
+                    damage::DamageSource::Chain {
+                        chain_id,
+                        player: p,
+                        card_id: 414,
+                        ability: true
+                    },
+                    damage::DamageSource::Object(ChainSource::Unit { player: p, unit_id }),
+                ]
+            );
+        }
     }
 }
 

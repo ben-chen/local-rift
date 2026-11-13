@@ -492,43 +492,64 @@ impl Game {
             .unwrap();
         let is_gold = self.players[player].gear[index].is_gold();
         let card_id = self.players[player].gear[index].card_id;
+        let output = if is_gold {
+            rules::ResourceGear {
+                energy: 0,
+                power: 1,
+                domain: None,
+            }
+        } else {
+            rules::resource_gear(card_id).expect("validated resource gear")
+        };
+        // Validate every destination before paying Exhaust/Kill. The numeric
+        // boundary is a host limitation, never a rule that clips an Add action.
+        let state = &self.players[player];
+        let energy_pool = state
+            .energy_pool
+            .checked_add(output.energy.into())
+            .ok_or_else(|| crate::numeric::capacity("generated Energy"))?;
+        let energy = state
+            .energy
+            .checked_add(output.energy.into())
+            .ok_or_else(|| crate::numeric::capacity("available Energy"))?;
+        let slot = output.domain.map(domain_index);
+        let power = slot
+            .map_or(state.any_power, |slot| state.power_pool[slot])
+            .checked_add(output.power.into())
+            .ok_or_else(|| crate::numeric::capacity("generated Power"))?;
+        let activations = self.play_history.gear_activations[player]
+            .checked_add(1)
+            .ok_or_else(|| crate::numeric::capacity("gear activations this turn"))?;
         self.players[player].gear[index].ready = false;
         if is_gold {
             self.gear_destroy(player, gear_id);
-            self.players[player].any_power = self.players[player].any_power.saturating_add(1);
+        }
+        let state = &mut self.players[player];
+        state.energy_pool = energy_pool;
+        state.energy = energy;
+        if let Some(slot) = slot {
+            state.power_pool[slot] = power;
+        } else {
+            state.any_power = power;
+        }
+        if is_gold {
             self.push_log(format!(
                 "{} spends Gold to add one Any power.",
                 self.players[player].name
             ));
         } else {
-            let ability = rules::resource_gear(card_id).expect("validated resource gear");
-            self.players[player].energy_pool = self.players[player]
-                .energy_pool
-                .saturating_add(ability.energy.into());
-            self.players[player].energy = self.players[player]
-                .energy
-                .saturating_add(ability.energy.into());
-            if let Some(domain) = ability.domain {
-                let slot = domain_index(domain);
-                self.players[player].power_pool[slot] =
-                    self.players[player].power_pool[slot].saturating_add(ability.power.into());
-            } else {
-                self.players[player].any_power = self.players[player]
-                    .any_power
-                    .saturating_add(ability.power.into());
-            }
             self.push_log(format!(
                 "{} exhausts {} to add {} energy and {} {}power.",
                 self.players[player].name,
                 self.catalog[card_id].name,
-                ability.energy,
-                ability.power,
-                ability
+                output.energy,
+                output.power,
+                output
                     .domain
                     .map_or(String::new(), |domain| format!("{} ", domain.name()))
             ));
         }
-        self.play_history.gear_activations[player] += 1;
+        self.play_history.gear_activations[player] = activations;
         self.gear_ability_used(player);
         Ok(())
     }

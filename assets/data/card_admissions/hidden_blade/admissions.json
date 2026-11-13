@@ -1,0 +1,98 @@
+{
+  "reviewed_on": "2026-11-12",
+  "status": "Accepted card implementation; see docs/validation/hidden_blade.json.",
+  "preserved_runtime_prefix": {
+    "card_count": 446,
+    "preset_count": 7,
+    "cards_sha256": "1dd3176c33dd9e1dcd956165e6ce69b13e206a47c2f329719ef2946d993e3e7c",
+    "presets_sha256": "e975739d803427e54928d6e6cd03d1ce51d7ad108f4e247b8a000acf037a5cdb"
+  },
+  "core_sections": [
+    "359.3.e.14",
+    "370",
+    "429",
+    "437",
+    "811"
+  ],
+  "records": [
+    {
+      "official_id": "ogn-213-298",
+      "runtime_id": 446,
+      "raw_printing": {
+        "official_id": "ogn-213-298",
+        "public_code": "OGN-213/298",
+        "name": "Hidden Blade",
+        "set": "OGN",
+        "collector_number": 213,
+        "types": [
+          "spell"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "spell"
+        ],
+        "accessibility_types": [
+          "spell"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "order"
+        ],
+        "energy": 2,
+        "power": 1,
+        "might": null,
+        "might_bonus": null,
+        "rules_html": "<p>[Hidden] (Hide now for :rb_rune_rainbow: to react with later for :rb_energy_0:.)<br />[Action] (Play on your turn or in showdowns.)<br />Kill a unit at a battlefield. Its controller draws 2.</p>",
+        "rules_text": "[Hidden] (Hide now for [Any Power] to react with later for [0 Energy].)\n[Action] (Play on your turn or in showdowns.)\nKill a unit at a battlefield. Its controller draws 2.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [],
+        "rarity": "common",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/0437ab8a0b67f43ef5483a103bbae9e57fd05822-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Spell: Hidden Blade. [Hidden] (Hide now for [A] to react with later for [0].)\n[Action] (Play on your turn or in showdowns.)\nKill a unit at a battlefield. Its controller draws 2.",
+        "illustrators": [
+          "Rafael Zanchetin"
+        ]
+      },
+      "raw_printing_sha256": "0e94e85be21d51a7f2256e29f8a7a04a859c8b160a46618d81c06243d09f4d5b",
+      "effective": {
+        "types": [
+          "spell"
+        ],
+        "super_types": [],
+        "domains": [
+          "order"
+        ],
+        "energy": 2,
+        "power": 1,
+        "might": null,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>[Hidden] (Hide now for :rb_rune_rainbow: to react with later for :rb_energy_0:.)<br />[Action] (Play on your turn or in showdowns.)<br />Kill a unit at a battlefield. Its controller draws 2.</p>",
+        "rules_text": "[Hidden] (Hide now for [Any Power] to react with later for [0 Energy].)\n[Action] (Play on your turn or in showdowns.)\nKill a unit at a battlefield. Its controller draws 2.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "resolution_ids": [],
+      "errata": [],
+      "printing_cohort": [
+        "ogn-213-298"
+      ],
+      "visual_review": {
+        "actual_full_face_viewed": true,
+        "notes": "Original face: 2 Energy, 1 Order Power, Hidden, Action, battlefield unit Kill and controller Draw2. Engine validation pending."
+      },
+      "original_image": {
+        "path": "assets/data/card_admissions/hidden_blade/ogn-213-298.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/0437ab8a0b67f43ef5483a103bbae9e57fd05822-744x1039.png?accountingTag=RB",
+        "sha256": "55a7c5e2eb8a6157b0584513a10de41a0438ab57ad13df45cdb7669719834fe7"
+      },
+      "runtime_image": {
+        "path": "assets/art/card_446.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/0437ab8a0b67f43ef5483a103bbae9e57fd05822-744x1039.png?w=280&q=85&fm=png",
+        "sha256": "b198f5c01eebf0dfb9f1b79176f2980667459ff431f3c096197b8bb886b62bba"
+      }
+    }
+  ]
+}

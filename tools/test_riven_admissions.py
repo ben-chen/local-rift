@@ -83,7 +83,7 @@ class RivenAdmissionTests(unittest.TestCase):
         for entry in self.proof['records']:
             self.assertFalse(records[entry['identity']]['implementation']['playable_in_client'])
         self.assertEqual(before['counts']['implemented_legal_identities'], 468)
-        self.assertEqual(self.snapshot['counts']['implemented_legal_identities'], 480)
+        self.assertEqual(self.snapshot['counts']['implemented_legal_identities'], 481)
         runtime = catalog.load_runtime_manifest()
         pin = self.proof['preserved_runtime_prefix']
         for key, count, digest in [('cards', 'card_count', 'cards_sha256'), ('decks', 'preset_count', 'presets_sha256')]:

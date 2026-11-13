@@ -737,10 +737,22 @@ impl Game {
         let am = self.unit_might(first)?;
         let bm = self.unit_might(second)?;
         // Snapshot both dealers before marking either packet; cleanup waits for the instruction.
-        let ad = crate::numeric::add_u64(first.damage, bm, "Fight damage")?;
-        let bd = crate::numeric::add_u64(second.damage, am, "Fight damage")?;
-        self.unit_mut(a).unwrap().damage = ad;
-        self.unit_mut(b).unwrap().damage = bd;
+        crate::numeric::add_u64(first.damage, bm, "Fight damage")?;
+        crate::numeric::add_u64(second.damage, am, "Fight damage")?;
+        for (source, target, amount) in [(b, a, bm), (a, b, am)] {
+            let Target::Unit { player, .. } = source else {
+                unreachable!()
+            };
+            self.deal_damage(
+                damage::DamageContext {
+                    player,
+                    bonus_damage: 0,
+                    dealer: damage::DamageDealer::Unit { source },
+                },
+                target,
+                amount,
+            )?;
+        }
         Ok(())
     }
     pub(super) fn sync_combat_triggers(&mut self) {
@@ -1686,10 +1698,7 @@ impl Game {
                         .map(|&target| Ok((target, self.damage_amount(context, target, amount)?)))
                         .collect::<Result<Vec<_>, String>>()?;
                     for (target, amount) in packets {
-                        if let Some(unit) = self.unit_mut(target) {
-                            unit.damage =
-                                crate::numeric::add_u64(unit.damage, amount, "marked damage")?;
-                        }
+                        self.mark_dealt_damage(context, target, amount)?;
                     }
                 }
                 Effect::Bounce => {

@@ -1,0 +1,135 @@
+{
+  "status": "passed",
+  "date": "2026-11-13T03:25:43.120132+00:00",
+  "base_commit": "124d6a50472e13dfe892d9a4864003be1128ab70",
+  "card": {
+    "id": 446,
+    "name": "Hidden Blade",
+    "official_id": "ogn-213-298"
+  },
+  "scope": [
+    "Hidden Blade card, independent post-Kill Draw and replacement ordering",
+    "Physical Deal and supported Kill records shared with Alpha rewards and API observations",
+    "Atomic resource-capacity failure for Gold and seven resource gear abilities",
+    "Clear stale invalid-drop feedback after a successful drop"
+  ],
+  "remaining_attribution_limits": [
+    "Some legacy effect creator identities",
+    "Reflexive ancestor identities",
+    "Kill costs",
+    "Replacement-caused gear deaths",
+    "Immediate resource action causal scopes",
+    "Control transfer and future damage replacement/redirection"
+  ],
+  "coverage": {
+    "main_cards": 447,
+    "legends": 11,
+    "battlefields": 17,
+    "runes": 6,
+    "legal_identities": 481,
+    "catalogued_legal": 1079,
+    "presets": 7,
+    "complete_registrations": 6
+  },
+  "preserved": {
+    "prior_main_cards": 446,
+    "all_seven_preset_recipes": true
+  },
+  "validation": {
+    "full_nix_rust_tests": 1842,
+    "source_checks": 284,
+    "strict_clippy_rust_1_99_and_1_100": true,
+    "engine_card_games": 84,
+    "native_api_card_games": 84,
+    "installed_api_card_games": 84,
+    "native_registered_api_matches": 48,
+    "native_registered_api_games": 119,
+    "installed_registered_api_matches": 48,
+    "installed_registered_api_games": 119,
+    "all_installed_api_traces_equal_native": true,
+    "installed_ui_runs": 10,
+    "installed_ui_captures": 12,
+    "installed_ui_full_games": 5,
+    "ui_sizes": [
+      [
+        1440,
+        900
+      ],
+      [
+        1152,
+        720
+      ]
+    ],
+    "installed_visual_review": [
+      "Small full card inspector: complete official text and art",
+      "Small response window: live chain, paid resources, no stale error, unobtrusive Mote"
+    ]
+  },
+  "nix": {
+    "package": "/nix/store/aw7s3s24f7ksbfgb73j63l9ls3df5dmm-local-rift-0.1.0",
+    "catalog": "/nix/store/0jsqzif901sd0a22kxaybgsg6giy8yd0-local-rift-catalog-check",
+    "simulation": "/nix/store/vz93665w9j49l4wxa6xqh1nwfyhfgxmb-local-rift-simulation-check"
+  },
+  "installed": {
+    "status": "passed",
+    "package": "/nix/store/aw7s3s24f7ksbfgb73j63l9ls3df5dmm-local-rift-0.1.0",
+    "source_manifest": "hidden-blade-source-manifest-v2.json",
+    "ui_runs": 10,
+    "ui_captures": 12,
+    "ui_games": 5,
+    "api": [
+      {
+        "kind": "card",
+        "games": 84,
+        "every_trace_identical_to_native": true,
+        "native_binary_sha256": "682f0746a3ad0fc61cede6cfd75c32c15d84779e76f0b32ad02ba41950cc8726",
+        "installed_binary_sha256": "8e3af64eb3e0940cf16d6803b34c44e7d5f3fca9dd476129fd056e67d3ace7a4"
+      },
+      {
+        "kind": "registration",
+        "matches": 48,
+        "every_trace_identical_to_native": true,
+        "native_binary_sha256": "682f0746a3ad0fc61cede6cfd75c32c15d84779e76f0b32ad02ba41950cc8726",
+        "installed_binary_sha256": "8e3af64eb3e0940cf16d6803b34c44e7d5f3fca9dd476129fd056e67d3ace7a4"
+      }
+    ]
+  },
+  "release_documentation_differences": [
+    "README.md",
+    "assets/data/card_admissions/azir_equipment/README.md",
+    "assets/data/card_admissions/azir_equipment/admissions.json",
+    "assets/data/card_admissions/hidden_blade/admissions.json",
+    "assets/data/card_admissions/master_yi/README.md",
+    "assets/data/card_admissions/master_yi/admissions.json",
+    "assets/data/preset_admissions/series_los_angeles/README.md",
+    "docs/ALPHA_STRIKE_AUDIT.md",
+    "docs/API.md",
+    "docs/IRELIA_PRIORITY.md",
+    "docs/MATCH_SERIES.md",
+    "docs/PRESET_AUDIT.md",
+    "docs/RULES.md",
+    "docs/RULES_AUDIT.md",
+    "docs/validation/hidden_blade.json"
+  ],
+  "preserved_prior_receipts": [
+    "docs/validation/alpha_equipment.json",
+    "docs/validation/master_yi_registration.json"
+  ],
+  "evidence_sha256": {
+    "hidden-blade-source-manifest-v2.json": "84d02231aeae1b786bd64ece7a17edbdb95ab23fb3496a64a2b6886ccf4c4139",
+    "hidden-blade-nix-v1.log": "9acd53baa7a1080dfe8435b950b06c28950d6660d2ed856214c3b87330bbff5b",
+    "hidden-blade-installed-comparison-v1.json": "78834a9255d1fb3275434f020d3da2dc1c3eca1028167d02f90c60fa87cefb38",
+    "hidden-blade-source-full-v1.log": "d4b8de2b797c8314690e43a2bb490b482d54e564a6b9569117fcc25532e11793",
+    "hidden-blade-api-v1.json": "ce8bd4dc5cf4460b6112391031ace86bbd00c33d24e7ccc37204512900ddc679",
+    "hidden-blade-registration-api-v1.json": "d521c3eb6e401f3de7d900c4140a2e08758b910dd2ac061f669e6f982c93c90f"
+  },
+  "reproduce": [
+    "cargo test --all-targets --locked",
+    "python3 -m unittest discover -s tools -p test_*.py",
+    "python3 tools/import_catalog.py --check",
+    "cargo clippy --all-targets -- -D warnings",
+    "nix flake check",
+    "python3 tools/check_hidden_blade_api.py target/release/rift-api report.json"
+  ],
+  "limits": "Tests verify these implementations and observed examples, not complete Standard parity or expert AI strength."
+}

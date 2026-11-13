@@ -96,6 +96,7 @@ fn master_yi_planner_uses_revealed_damage_units_and_gear_for_specific_answers() 
         (443, small_board()),
         (441, revealed("Shock Blast")),
         (442, revealed("Charm")),
+        (442, revealed("Hidden Blade")),
         (366, revealed("Boots of Swiftness")),
     ] {
         let view = s.observe(0).unwrap();
@@ -128,7 +129,7 @@ fn master_yi_planner_uses_revealed_damage_units_and_gear_for_specific_answers() 
 #[test]
 fn master_yi_planner_does_not_mistake_unit_damage_or_untargeted_damage_for_spell_targets() {
     let view = sideboarding().observe(0).unwrap();
-    for name in ["Alpha Strike", "Challenge", "Thermo Beam"] {
+    for name in ["Alpha Strike", "Challenge", "Thermo Beam", "Hidden Blade"] {
         let plan = recommend(
             &view,
             0,

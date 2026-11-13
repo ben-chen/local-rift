@@ -236,7 +236,12 @@ fn unyielding_prevents_bonus_packets_even_above_the_numeric_storage_limit() {
     g.deal_damage(context, target, u64::MAX).unwrap();
     assert_eq!(g.unit_ref(target).unwrap().damage, 0);
     let unit_context = damage::DamageContext {
-        dealer: damage::DamageDealer::Unit,
+        dealer: damage::DamageDealer::Unit {
+            source: Target::Unit {
+                player: 0,
+                unit_id: 100,
+            },
+        },
         ..context
     };
     assert_eq!(g.damage_amount(unit_context, target, 7).unwrap(), 7);

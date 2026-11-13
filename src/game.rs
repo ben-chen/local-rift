@@ -38,6 +38,9 @@ mod edge_tests;
 #[path = "gust_tests.rs"]
 mod gust_tests;
 #[cfg(test)]
+#[path = "hidden_blade_tests.rs"]
+mod hidden_blade_tests;
+#[cfg(test)]
 #[path = "innovator_tests.rs"]
 mod innovator_tests;
 #[cfg(test)]
@@ -1073,6 +1076,8 @@ pub struct Game {
     resolution_frame: Option<ResolutionFrame>,
     predict_tail: Option<PredictContinuation>,
     damage_context: Option<damage::DamageContext>,
+    damage_ledger: Option<damage::DamageLedger>,
+    last_damage_ledger: Option<damage::DamageLedger>,
     /// Global Unyielding Spirit effect; expires after the ending triggers finish.
     pub spell_ability_damage_prevented: bool,
     alpha_kill_watches: Vec<split_damage::AlphaKillWatch>,
@@ -1111,6 +1116,8 @@ pub struct Game {
     pending_cleanup_deaths: Option<Vec<(usize, u32)>>,
     pending_instruction_deaths: Option<Vec<(usize, u32)>>,
     pending_deck_kill: Option<DeckKillContinuation>,
+    /// Dependent Draw after a valid Kill instruction and all its replacements.
+    pending_kill_controller_draw: Option<(usize, u8)>,
     pub buffed_units: Vec<u32>,
     pub optional_power_discount: [u8; 2],
     pub required_trash_play: bool,
@@ -1335,6 +1342,8 @@ impl Game {
             active_play:None,selected_cost_order:Vec::new(),reserved_play_grants:Vec::new(),payment_play_grants:Vec::new(),resolution_frame:None,predict_tail:None,damage_context:None,
             spell_ability_damage_prevented: false,
             alpha_kill_watches: Vec::new(),
+            damage_ledger: None,
+            last_damage_ledger: None,
             gear_attachments_this_turn: Vec::new(),
             catalog,
             presets,
@@ -1366,6 +1375,7 @@ impl Game {
             pending_cleanup_deaths: None,
             pending_instruction_deaths: None,
             pending_deck_kill: None,
+            pending_kill_controller_draw: None,
             buffed_units: Vec::new(),
             optional_power_discount: [0;2],
             required_trash_play:false,
@@ -1524,6 +1534,38 @@ impl Game {
 
     pub fn chain_source(&self, item: &ChainItem) -> ChainSource {
         match item.ability {
+            Some(ChainAbility::Activated {
+                source: AbilitySource::Unit { player, unit_id },
+                ..
+            })
+            | Some(ChainAbility::CardTrigger {
+                context:
+                    TriggerContext {
+                        source:
+                            TriggerSource {
+                                player,
+                                unit_id: Some(unit_id),
+                                ..
+                            },
+                        ..
+                    },
+                ..
+            }) => ChainSource::Unit { player, unit_id },
+            Some(ChainAbility::Activated {
+                source: AbilitySource::Gear { player, gear_id },
+                ..
+            }) => ChainSource::Gear { player, gear_id },
+            Some(ChainAbility::Equip { gear_id, .. })
+            | Some(ChainAbility::QuickDrawAttach { gear_id, .. }) => ChainSource::Gear {
+                player: item.player,
+                gear_id,
+            },
+            Some(ChainAbility::Empower { unit_id }) | Some(ChainAbility::Swap { unit_id, .. }) => {
+                ChainSource::Unit {
+                    player: item.player,
+                    unit_id,
+                }
+            }
             Some(ChainAbility::Vision {
                 source: empower::BoardObject::Unit { player, unit_id },
                 ..
@@ -2947,6 +2989,7 @@ impl Game {
             }
         }
         let item = self.chain.pop().unwrap();
+        self.begin_damage_parent(&item);
         let loot_finished = self.pending_loot == Some(item.id);
         if loot_finished {
             self.pending_loot = None;
@@ -3252,6 +3295,7 @@ impl Game {
             }
         }
         self.finish_deck_kill();
+        self.finish_kill_controller_draw()?;
         // The parent still owes Banish/play/recycle while a private selection
         // is pending. Cleanup cannot remove other damaged units mid-effect.
         if matches!(
@@ -3290,6 +3334,7 @@ impl Game {
             return Ok(());
         }
         self.alpha_kill_watches.clear();
+        self.finish_damage_parent();
         if self
             .combat_resolution
             .is_some_and(|c| c.step == CombatStep::Cleanup)
@@ -6990,6 +7035,7 @@ impl Game {
                         | OfficialEffect::Bounce { .. }
                         | OfficialEffect::MoveEnemy
                         | OfficialEffect::Kill { .. }
+                        | OfficialEffect::KillAndDrawController { .. }
                         | OfficialEffect::DisempowerThenKill { .. }
                         | OfficialEffect::Stun
                         | OfficialEffect::StunAndDrawFromHand
@@ -7327,6 +7373,7 @@ impl Game {
                 OfficialEffect::BanishSmallOrReturn { .. } => unit.lane.is_some(),
                 OfficialEffect::ArcaneShift => slot == 0 || unit.lane.is_some(),
                 OfficialEffect::GiveTemporary => unit.lane.is_some(),
+                OfficialEffect::KillAndDrawController { .. } => unit.lane.is_some(),
                 OfficialEffect::Kill {
                     battlefield_only,
                     max_might,
@@ -7667,9 +7714,7 @@ impl Game {
             .map(|t| Ok((t, self.damage_amount(context, t, amount.into())?)))
             .collect::<Result<Vec<_>, String>>()?;
         for (target, amount) in packets {
-            if let Some(unit) = self.unit_mut(target) {
-                unit.damage = crate::numeric::add_u64(unit.damage, amount, "marked damage")?;
-            }
+            self.mark_dealt_damage(context, target, amount)?;
         }
 
         Ok(())
@@ -7967,6 +8012,22 @@ impl Game {
                     self.kill_unit(target)?;
                 }
             }
+            OfficialEffect::KillAndDrawController { draw } => {
+                if let Some(
+                    &target @ Target::Unit {
+                        player: controller, ..
+                    },
+                ) = valid.first()
+                {
+                    // CR359.3.e.14: target validity gates both instructions;
+                    // actual death does not gate the dependent controller Draw.
+                    // Capture the controller before departure or replacement.
+                    debug_assert!(self.pending_kill_controller_draw.is_none());
+                    self.pending_kill_controller_draw = Some((controller, draw));
+                    self.kill_unit(target)?;
+                    self.finish_kill_controller_draw()?;
+                }
+            }
             OfficialEffect::DisempowerThenKill { maximum } => {
                 if let Some(
                     &target @ Target::Unit {
@@ -8119,8 +8180,15 @@ impl Game {
                     player: owner,
                     gear_id,
                 }) = targets.first()
+                    && self.gear_destroy(owner, gear_id)
                 {
-                    self.gear_destroy(owner, gear_id);
+                    self.record_kill(
+                        Target::Gear {
+                            player: owner,
+                            gear_id,
+                        },
+                        true,
+                    );
                 }
                 self.draw(player, 1)?;
             }
@@ -8182,19 +8250,15 @@ impl Game {
                 ..
             } => {
                 for target in valid {
-                    let damage_amount = self.damage_amount(
-                        self.current_damage_context()
-                            .unwrap_or(damage::DamageContext {
-                                player,
-                                bonus_damage: 0,
-                                dealer: damage::DamageDealer::Ability,
-                            }),
-                        target,
-                        amount.into(),
-                    )?;
+                    let context = self
+                        .current_damage_context()
+                        .unwrap_or(damage::DamageContext {
+                            player,
+                            bonus_damage: 0,
+                            dealer: damage::DamageDealer::Ability,
+                        });
+                    self.deal_damage(context, target, amount.into())?;
                     if let Some(unit) = self.unit_mut(target) {
-                        unit.damage =
-                            crate::numeric::add_u64(unit.damage, damage_amount, "marked damage")?;
                         unit.banish_on_death |= banish_on_death;
                     }
                 }
@@ -8293,10 +8357,7 @@ impl Game {
             }
             OfficialEffect::Fight { .. } => {
                 if valid.len() == 2 {
-                    let first = self.unit_might(self.unit_ref(valid[0]).unwrap())?;
-                    let second = self.unit_might(self.unit_ref(valid[1]).unwrap())?;
-                    self.mark_damage(valid[0], second)?;
-                    self.mark_damage(valid[1], first)?;
+                    self.fight_units(valid[0], valid[1])?;
                 }
             }
             OfficialEffect::ReadyAnother => {
@@ -8407,7 +8468,9 @@ impl Game {
     ) -> Result<(), String> {
         match ability {
             TriggeredAbility::DestroyGear { gear_id } => {
-                self.gear_destroy(player, gear_id);
+                if self.gear_destroy(player, gear_id) {
+                    self.record_kill(Target::Gear { player, gear_id }, true);
+                }
             }
             TriggeredAbility::SwapChoice { unit_id } => {
                 self.enqueue_decision(Decision::SwapUnit { player, unit_id })
@@ -8908,18 +8971,36 @@ impl Game {
 
     fn finish_combat(&mut self) -> Result<(), String> {
         let combat = self.pending_combat.take().expect("completed assignments");
-        for player in 0..2 {
+        self.begin_combat_damage(combat.lane);
+        // CR418.6.c: the opposing combat group is the source of its pooled
+        // damage; assignment does not invent a per-unit share of that pool.
+        let sources: [Vec<_>; 2] = [0, 1].map(|player| {
+            self.players[player]
+                .units
+                .iter()
+                .filter(|unit| unit.lane == Some(combat.lane))
+                .map(|unit| {
+                    damage::DamageSource::Object(ChainSource::Unit {
+                        player,
+                        unit_id: unit.id,
+                    })
+                })
+                .collect()
+        });
+        for (player, dealers) in sources.iter().enumerate() {
             for &(id, amount) in combat.assignments[player]
                 .as_ref()
                 .expect("both sides assigned")
             {
-                if let Some(unit) = self.players[1 - player]
-                    .units
-                    .iter_mut()
-                    .find(|u| u.id == id)
-                {
-                    unit.damage = crate::numeric::add_u64(unit.damage, amount, "combat damage")?;
-                }
+                self.mark_combat_damage(
+                    player,
+                    Target::Unit {
+                        player: 1 - player,
+                        unit_id: id,
+                    },
+                    amount,
+                    dealers,
+                )?;
             }
         }
         self.combat_resolution = Some(CombatResolution {
@@ -9031,6 +9112,15 @@ impl Game {
         Ok(())
     }
 
+    fn finish_kill_controller_draw(&mut self) -> Result<(), String> {
+        if self.pending_instruction_deaths.is_none()
+            && let Some((controller, count)) = self.pending_kill_controller_draw.take()
+        {
+            self.draw(controller, count)?;
+        }
+        Ok(())
+    }
+
     /// One instruction produces one fixed simultaneous death action (CR370.1).
     /// Replacement actions complete before the remaining original victims die.
     fn kill_units(&mut self, targets: &[Target]) -> Result<(), String> {
@@ -9105,7 +9195,7 @@ impl Game {
             hook.might = killed_might;
         }
         if !doomed.is_empty() {
-            self.remove_death_set(doomed);
+            self.remove_death_set(doomed, true);
             self.trigger_batch += 1;
         }
 
@@ -9167,7 +9257,7 @@ impl Game {
                 })
                 .collect::<Vec<_>>();
             if !doomed.is_empty() {
-                self.remove_death_set(doomed);
+                self.remove_death_set(doomed, false);
                 self.trigger_batch += 1;
             }
             if self
@@ -9182,7 +9272,7 @@ impl Game {
 
         Ok(())
     }
-    fn remove_death_set(&mut self, doomed: Vec<(usize, Unit)>) {
+    fn remove_death_set(&mut self, doomed: Vec<(usize, Unit)>, instruction: bool) {
         let dying: Vec<_> = doomed
             .iter()
             .filter(|(_, u)| !u.banish_on_death)
@@ -9196,6 +9286,7 @@ impl Game {
                 event
             })
             .collect();
+        self.record_unit_kills(&dying, instruction);
         self.capture_alpha_kills(&dying);
         self.capture_death_triggers(&dying);
         let mut deaths = Vec::new();
@@ -10352,6 +10443,16 @@ impl Game {
                         0
                     }
                 }
+                OfficialEffect::KillAndDrawController { draw } => targets
+                    .iter()
+                    .filter_map(|target| match target {
+                        Target::Unit { player, .. } if *player != actor => {
+                            Some(100 - i128::from(draw) * 18)
+                        }
+                        _ => None,
+                    })
+                    .max()
+                    .unwrap_or(0),
                 OfficialEffect::DisempowerThenKill { maximum } => targets
                     .iter()
                     .map(|&target| self.disempower_kill_score(actor, target, maximum))

@@ -550,6 +550,13 @@ fn checked_advice(game: &Game, level: AdviceLevel) -> Result<Vec<&'static str>, 
             "Moving a third ally in, or moving the only partner out, switches off Hand Hammer's +2. Check the bearer's marked damage before changing the group."
         });
     }
+    if human.hand.contains(&446) || human.hidden.iter().any(|card| card.card_id == 446) {
+        tips.push(if beginner {
+            "Hidden Blade kills a unit at a battlefield, then its controller draws 2. A death replacement can save the unit, but its controller still draws."
+        } else {
+            "Hidden Blade gives the target's controller two cards. Weigh that refill against winning the field. Moving the target to base before resolution stops both instructions."
+        });
+    }
     if human.hand.contains(&431) || human.units.iter().any(|u| !u.token && u.card_id == 431) {
         tips.push(if beginner {
             "Gust Monk can cost 1 extra Energy. Then banish a card from either trash to give a unit Assault 2 this turn: +2 Might only while it attacks."
@@ -1787,6 +1794,41 @@ pub fn draw_mote(center: Vec2, scale: f32, time: f32, accent: Color) {
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn hidden_blade_advice_is_brief_optional_and_does_not_peek() {
+        let mut game = Game::new_for_agents(2, 2, 446, Difficulty::Easy);
+        game.start_match().unwrap();
+        game.players[0].hand = vec![446];
+        let before = format!("{game:?}");
+        let mut messages = Vec::new();
+        for level in [AdviceLevel::Beginner, AdviceLevel::Advanced] {
+            let tips = advice(&game, level);
+            let tip = *tips
+                .iter()
+                .find(|tip| tip.contains("Hidden Blade"))
+                .unwrap();
+            assert!(tip.chars().count() <= 180);
+            messages.push(tip);
+        }
+        assert_ne!(messages[0], messages[1]);
+        assert_eq!(format!("{game:?}"), before);
+        game.players[0].hand.clear();
+        game.players[1].hand = vec![446];
+        game.players[1].hidden.push(local_rift::hidden::HiddenCard {
+            id: 44690,
+            card_id: 446,
+            lane: 0,
+            hidden_turn: 0,
+            revealed: false,
+        });
+        for level in [AdviceLevel::Beginner, AdviceLevel::Advanced] {
+            assert!(
+                advice(&game, level)
+                    .iter()
+                    .all(|tip| !tip.contains("Hidden Blade"))
+            );
+        }
+    }
     #[test]
     fn conditional_equipment_advice_updates_after_real_attachment_bonus_expires() {
         let mut g = Game::new_for_agents(3, 3, 444, Difficulty::Easy);

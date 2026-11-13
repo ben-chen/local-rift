@@ -8,7 +8,6 @@ pub(super) struct AlphaKillWatch {
     /// than creating another spell with an independent kill attribution.
     chain_id: u32,
     clauses: usize,
-    recipients: Vec<Target>,
 }
 
 impl Game {
@@ -216,7 +215,6 @@ impl Game {
                 player,
                 chain_id,
                 clauses: 1,
-                recipients: Vec::new(),
             });
         }
         if total == 0 {
@@ -254,6 +252,7 @@ impl Game {
     fn finish_split_assignment(&mut self, assignments: Vec<(u32, u64)>) -> Result<(), String> {
         let Some(Decision::SplitDamage {
             player,
+            source,
             total,
             targets,
             keep,
@@ -293,22 +292,11 @@ impl Game {
                 damage::DamageContext {
                     player,
                     bonus_damage: 0,
-                    dealer: damage::DamageDealer::Unit,
+                    dealer: damage::DamageDealer::Unit { source },
                 },
                 target,
                 amount,
             )?;
-        }
-        let chain_id = self.alpha_parent_id()?;
-        let watch = self
-            .alpha_kill_watches
-            .iter_mut()
-            .find(|watch| watch.chain_id == chain_id)
-            .ok_or("Alpha Strike's physical parent has no kill observer.")?;
-        for target in recipients {
-            if !watch.recipients.contains(&target) {
-                watch.recipients.push(target);
-            }
         }
         self.decision = None;
         Ok(())
@@ -358,14 +346,18 @@ impl Game {
 
     pub(super) fn capture_alpha_kills(&mut self, dying: &[(usize, Unit)]) {
         let mut rewards = Vec::new();
-        for watch in &mut self.alpha_kill_watches {
+        for watch in &self.alpha_kill_watches {
             for &(player, ref unit) in dying {
                 let target = Target::Unit {
                     player,
                     unit_id: unit.id,
                 };
-                if watch.recipients.contains(&target) {
-                    watch.recipients.retain(|candidate| *candidate != target);
+                if self.pending_damage_ledger().is_some_and(|ledger| {
+                    ledger.kills.iter().any(|kill| kill.target == target && kill.credits.iter().any(|credit| {
+                        credit.sources.iter().any(|source| matches!(source,
+                            damage::DamageSource::Chain { chain_id, .. } if *chain_id == watch.chain_id))
+                    }))
+                }) {
                     rewards.extend(std::iter::repeat_n(watch.player, watch.clauses));
                 }
             }

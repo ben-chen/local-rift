@@ -149,14 +149,14 @@
       "gear": 78,
       "legend": 11,
       "rune": 6,
-      "spell": 125,
+      "spell": 126,
       "unit": 243
     },
-    "implemented_main_cards": 446,
+    "implemented_main_cards": 447,
     "implemented_legends": 11,
     "implemented_battlefields": 17,
-    "implemented_legal_identities": 480,
-    "unimplemented_legal_identities": 599,
+    "implemented_legal_identities": 481,
+    "unimplemented_legal_identities": 598,
     "errata_entries": 67,
     "identities_with_errata": 67,
     "source_quality_issues": 57,
@@ -177,7 +177,7 @@
   "unimplemented_by_observed_keyword": {
     "ADD": 1,
     "Accelerate": 16,
-    "Action": 57,
+    "Action": 56,
     "Add": 20,
     "Ambush": 9,
     "Assault": 13,
@@ -192,7 +192,7 @@
     "Equip": 23,
     "Flow": 7,
     "Ganking": 29,
-    "Hidden": 28,
+    "Hidden": 27,
     "Hunt": 1,
     "Legion": 3,
     "Mighty": 9,
@@ -16226,8 +16226,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 446,
+        "official_id": "ogn-213-298",
+        "playable_in_client": true
       }
     },
     {

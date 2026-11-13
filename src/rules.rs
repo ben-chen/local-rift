@@ -135,6 +135,10 @@ pub enum OfficialEffect {
         battlefield_only: bool,
         max_might: Option<u8>,
     },
+    /// A valid battlefield target's controller draws even if its death is replaced.
+    KillAndDrawController {
+        draw: u8,
+    },
     KillAllUnits,
     /// Choose any unit; test its live Might only after removing Empowered.
     DisempowerThenKill {
@@ -279,6 +283,7 @@ pub fn effect(id: usize) -> OfficialEffect {
         441 => PreventSpellAndAbilityDamage,
         442 => Repulse,
         443 => AlphaStrike,
+        446 => KillAndDrawController { draw: 2 },
         425 => ReadyAndPreventMovement { draw: 1 },
         426 => BattlePreparations,
         427 => MoveEnemy,
@@ -709,7 +714,7 @@ pub fn chooses_move_destination(id: usize) -> bool {
 pub fn targeting(id: usize) -> Targeting {
     use Allegiance::*;
     let allegiance = match id {
-        290..=296 | 335 | 349 | 428 | 434 => Any,
+        290..=296 | 335 | 349 | 428 | 434 | 446 => Any,
         4 | 32 | 144 | 145 | 365 | 427 => Enemy,
         362 | 364 | 372 | 378 | 379 | 381 | 435 => Any,
         8 | 9 | 14 | 19 | 27 | 85 | 137 | 228 | 350 | 353 | 354 | 377 | 380 | 382 | 421 | 425 => {
@@ -755,6 +760,7 @@ pub fn target_bounds(id: usize) -> (usize, usize) {
             ..
         }
         | Kill { .. }
+        | KillAndDrawController { .. }
         | DisempowerThenKill { .. }
         | KillGear { .. }
         | ReturnGear
@@ -1119,6 +1125,7 @@ pub fn requirements(id: usize) -> &'static [Mechanic] {
         441 => &[Chain, Protection],
         442 => &[Chain, Counterspell, MultipleTargets, ChooseReadyTriggers],
         444 | 445 => &[Gear, Equip, Chain, ChooseReadyTriggers],
+        446 => &[Chain, Hidden, DeathTriggers, DeathReplacement],
         443 => &[
             Chain,
             MultipleTargets,
@@ -1660,7 +1667,7 @@ pub fn static_abilities(id: usize) -> &'static [StaticAbility] {
     use StaticAbility::*;
     match id {
         436 => &[Tank],
-        437 => &[Hidden],
+        437 | 446 => &[Hidden],
         411 => &[Assault(2), MayPlayToAttackedBattlefield],
         412 | 414 => &[NoCombatDamage],
         430 => &[Shield(1), NoCombatDamageWithoutFriendlyGearHere],
@@ -2115,7 +2122,7 @@ mod tests {
     #[test]
     fn all_catalog_entries_have_official_classification() {
         let cards = cards();
-        assert_eq!(cards.len(), 446);
+        assert_eq!(cards.len(), 447);
         for card in cards {
             assert_ne!(
                 effect(card.id),
@@ -2125,7 +2132,7 @@ mod tests {
             );
             assert_ne!(support_status(card.id), SupportStatus::UnknownCard);
         }
-        assert_eq!(effect(446), OfficialEffect::Unsupported);
+        assert_eq!(effect(447), OfficialEffect::Unsupported);
     }
 
     #[test]

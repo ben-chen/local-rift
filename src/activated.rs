@@ -1318,7 +1318,7 @@ impl Game {
                 };
                 if let Some(amount) = amount {
                     for target in valid {
-                        let amount = self.damage_amount(
+                        self.deal_damage(
                             crate::game::damage::DamageContext {
                                 player,
                                 bonus_damage: 0,
@@ -1327,10 +1327,6 @@ impl Game {
                             target,
                             amount,
                         )?;
-                        if let Some(unit) = self.unit_mut(target) {
-                            unit.damage =
-                                crate::numeric::add_u64(unit.damage, amount, "marked damage")?;
-                        }
                     }
                 }
             }

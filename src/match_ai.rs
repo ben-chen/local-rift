@@ -180,6 +180,7 @@ impl Evidence {
                             crate::rules::effect(c.id),
                             Effect::Damage { .. }
                                 | Effect::Kill { .. }
+                                | Effect::KillAndDrawController { .. }
                                 | Effect::DisempowerThenKill { .. }
                                 | Effect::Stun
                                 | Effect::StunAndDrawFromHand

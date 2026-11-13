@@ -98,6 +98,9 @@ impl Game {
             .into_iter()
             .map(|(player, gear_id)| {
                 let killed = self.remove_gear_from_board(player, gear_id);
+                if killed {
+                    self.record_kill(Target::Gear { player, gear_id }, true);
+                }
                 (
                     Target::Gear { player, gear_id },
                     GearKillResult::Resolved {

@@ -450,7 +450,10 @@ Dashing's printed restriction excludes his current Might from his side's assigne
 
 His Attack/Defend ability preserves the first-designation rule (383.4.e/f). Its source-relative Might and Here are evaluated at resolution (359.3.f), without invented last-known values after departure (359.3.e.12). Chosen target legality and Deflect remain finalization requirements. Negative referenced Might becomes zero (143.2.c), and zero deals no damage (418.1.e). Fight effects are noncombat Deal actions (418.6.b.3/418.7), even if they resolve during a combat response window. The paid self-Move is Action-speed and respondable, uses the physical source, requires a battlefield origin and retains its specified base destination; the Action marker belongs to that activation, not the card's play timing.
 
-The engine still applies combat damage as a pooled assignment and has no separate ledger of each physical unit's combat damage or kill credit. Current admitted death observers depend on death occurrence or controller. Core 418.6.c and 429.5.c.2 still require explicit source attribution before future cards depending on individual combat damage or kills can be admitted. The numeric contribution helper does not establish that future behavior or complete Standard conformance.
+At C26 admission, combat damage was a pooled assignment without physical source
+or kill credit. The later damage-attribution follow-up below records the physical
+groups required by Core418.6.c and429.5.c.2. It does not invent per-unit numerical
+shares within that pool or certify future source-sensitive card behavior.
 
 
 ### Live source references and untargeted damage (C27)
@@ -761,3 +764,83 @@ regression, desktop review and installed Nix acceptance are recorded in the
 [release receipt](validation/riven_stuttgart.json): 1,743 Rust tests, 278 source
 checks, 1,176 additional simulated games, 16 installed native runs with 138
 captures, and 12 installed API matches whose complete traces match the development build.
+
+
+### Physical damage attribution follow-up
+
+The Rules Hub was rechecked on November12,2026 and still links the October9
+Core Rules. The shared ledger follows418.1.e,418.6,429.5 and467–468. A positive
+Deal records its responsible player, physical sources, actual amount and victim.
+Zero, fully prevented and absent-target packets create no Deal record. Repeat
+keeps one physical chain parent through every execution and ensuing cleanup.
+
+Fight and Alpha Strike identify the chosen units as damage dealers, so they
+retain unit prevention/bonus rules. Fight records each unit's own controller,
+including the opponent of the caster. Under429.5.c, subsequent lethal cleanup
+credits the causing spell or ability and the responsible Deal player. Combat
+instead credits the opposite physical combat group. Damage and Kill sources
+are deliberately separate. A later Might reduction cannot inherit kill credit
+from an earlier spell's marked damage.
+
+Actual primary Kill instructions record physical unit and gear victims without
+inventing damage. Death replacements finish before unit kill records are added;
+recall and banishment do not count as unit deaths. Alpha's independently
+respondable XP clauses consume the shared kill records. Activated and
+metadata-driven unit/gear abilities retain their physical creators even after
+departure, instead of exposing only a catalog definition as the source.
+
+The new focused tests cover both seats for Fight, Repeat, prevention, old damage,
+direct Kill, gear Kill, pooled combat and suspended death replacement. The Iron
+Ballista departure case deliberately removes its source in a controlled fixture;
+it is not presented as a legal Reaction sequence. Public protocol checks cover
+both views, exact quantities and atomic rejection during Alpha allocation.
+The full Alpha cleanup-cascade tests remain required after this refactor.
+
+This foundation is not a complete attribution implementation. Legacy effects
+whose parent stores only a card definition still lack a physical creator.
+Reflexive abilities need retained ancestor identities beyond their own chain ID.
+Kill costs, replacement-caused gear deaths and immediate resource actions need
+explicit causal scopes; they must not be inferred from the enclosing spell.
+Control transfer and future damage replacement/redirection also remain open.
+The API reports only the captured scope, and an empty credit list means that no
+source credit was established. Source-sensitive new cards remain inadmissible
+until their particular paths and triggers are implemented and audited.
+
+### Resource capacity follow-up
+
+Gold and the seven immediate resource gear abilities now check every generated
+resource total and their activation history before paying Exhaust or Kill.
+Previously, a saturated numeric total silently discarded some of the printed
+output while still consuming the source. That behavior was reproduced for both
+players with Gold and every supported resource gear.
+
+An amount outside the host representation returns the existing `engine_capacity`
+error and restores the attempted action. This is a client limitation, not a
+printed Riftbound resource cap. Controlled boundary tests cover colored Power,
+Any Power, generated and available Energy, activation history, exact final
+representable output, and complete state preservation on failure. They are
+boundary fixtures, not claims that ordinary tournament games reach these totals.
+
+### Hidden Blade
+
+The inspected OGN-213 face and archived gallery agree on Hidden, Action, the
+2 Energy + 1 Order Power cost, a battlefield-unit Kill and that unit's
+controller drawing two. There is no applicable erratum in the accepted source
+catalog. The new mapping preserves all existing card IDs and preset recipes.
+
+Core 359.3.e.14 expressly uses Hidden Blade to distinguish an invalid reference
+from a replaced action. The unit must still be a legal battlefield target when
+this execution starts. Otherwise both its Kill and linked controller Draw are
+ignored. For a valid target, its controller is retained before departure. The
+Kill instruction, including replacement choices, finishes before Draw; a saved
+unit still grants its controller the two draws. Repeat revalidates separately,
+so killing the same physical target twice cannot grant a second Draw.
+
+Controlled both-seat fixtures exercise friendly and enemy targets, actual Flash
+and Retreat responses, ordered Hourglass replacements, Hidden's field/cost
+restrictions, Repeat and complete rollback when a deferred Draw exceeds host
+capacity. JSON checks separately exercise wrong-seat/stale-choice rejection and
+private drawn cards. Whole-game testing uses an authored legal Kennen
+substitution, not a claimed Azir registration. Native, Nix and installed acceptance
+passed; [the validation record](validation/hidden_blade.json) identifies the exact
+scope, including the source-attribution limitations listed above.

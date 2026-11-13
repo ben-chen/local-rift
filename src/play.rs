@@ -1943,6 +1943,8 @@ impl Game {
 
     pub(crate) fn resolve_spell_executions(&mut self) -> Result<(), String> {
         if self.resolution_frame.is_none() {
+            let item = self.chain.last().ok_or("No spell to resolve.")?.clone();
+            self.begin_damage_parent(&item);
             let item = self.chain.last_mut().ok_or("No spell to resolve.")?;
             if item.executions.is_empty() {
                 item.executions.push(ExecutionChoices {

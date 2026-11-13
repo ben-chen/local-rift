@@ -11872,6 +11872,30 @@
       "tags": [
         "Equipment"
       ]
+    },
+    {
+      "id": 446,
+      "name": "Hidden Blade",
+      "official_id": "ogn-213-298",
+      "energy": 2,
+      "power": 1,
+      "might": 0,
+      "domains": [
+        "Order"
+      ],
+      "kind": "Spell",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/0437ab8a0b67f43ef5483a103bbae9e57fd05822-744x1039.png?w=280&q=85&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Hidden] (Hide now for [Any Power] to react with later for [0 Energy].)\n[Action] (Play on your turn or in showdowns.)\nKill a unit at a battlefield. Its controller draws 2.",
+      "official_text_html": "<p>[Hidden] (Hide now for :rb_rune_rainbow: to react with later for :rb_energy_0:.)<br />[Action] (Play on your turn or in showdowns.)<br />Kill a unit at a battlefield. Its controller draws 2.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Hidden",
+        "Action"
+      ],
+      "tags": []
     }
   ],
   "official_text_note": "Official card/legend rules text from the Riot Card Gallery, retrieved 2026-10-24 and corrected by cited errata. Resource icon tokens are expanded to readable bracketed names. Raw card and equipment HTML is preserved separately. Official text does not establish full implementation fidelity."

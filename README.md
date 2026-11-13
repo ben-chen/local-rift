@@ -187,6 +187,19 @@ and installed-client checks. All 432 installed API game traces match the native
 build. See the [release validation](docs/validation/alpha_equipment.json) and
 [Alpha Strike rules audit](docs/ALPHA_STRIKE_AUDIT.md).
 
+Hidden Blade is available for custom practice, including Hidden play, death
+replacement choices, complete card inspection and optional Mote advice. Invalid
+targets stop its instructions; a valid target saved by a death replacement still
+lets its controller draw two. Successful drag-and-drop now clears an earlier
+invalid-drop message.
+
+The engine and API also record physical damage sources and supported Kill
+credits. Resource abilities reject an unrepresentable total before consuming
+their source. These changes passed 1,842 Rust tests and 284 source checks;
+84 packaged card-test games and 48 registered matches reproduce native traces.
+See [the validation](docs/validation/hidden_blade.json) and the remaining
+attribution scope in [the rules audit](docs/RULES_AUDIT.md).
+
 ## Included presets
 
 | Deck | Real archetype reference | Published source |

@@ -425,7 +425,23 @@ fn lux_and_a_unit_observing_the_same_spell_can_be_ordered_as_one_event() {
         .iter()
         .map(|item| game.chain_source(item))
         .collect();
-    assert!(sources.contains(&ChainSource::Card { card_id: 182 }));
+    assert!(sources.contains(&ChainSource::Unit {
+        player: 0,
+        unit_id: 100,
+    }));
+    assert_eq!(
+        game.chain
+            .iter()
+            .find(|item| game.chain_source(item)
+                == ChainSource::Unit {
+                    player: 0,
+                    unit_id: 100
+                })
+            .unwrap()
+            .card_id,
+        182,
+        "The physical unit source retains its card definition"
+    );
     assert!(sources.contains(&ChainSource::Legend {
         player: 0,
         legend_id: 6

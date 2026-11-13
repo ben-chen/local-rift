@@ -2,11 +2,18 @@
 use super::{CardId, Game, Target};
 use crate::numeric::{DamageAmount, add_u64, capacity};
 
+#[path = "damage/attribution.rs"]
+mod attribution;
+pub use attribution::*;
+#[cfg(test)]
+#[path = "damage/attribution_tests.rs"]
+mod attribution_tests;
+
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum DamageDealer {
     Spell { card_id: CardId },
     Ability,
-    Unit,
+    Unit { source: Target },
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -27,7 +34,7 @@ impl Game {
         target: Target,
         amount: DamageAmount,
     ) -> Result<DamageAmount, String> {
-        if amount == 0 || context.dealer == DamageDealer::Unit {
+        if amount == 0 || matches!(context.dealer, DamageDealer::Unit { .. }) {
             return Ok(amount);
         }
         let mut total = u128::from(amount) + u128::from(context.bonus_damage);
@@ -85,7 +92,7 @@ impl Game {
             return Ok(());
         }
         let amount = self.damage_amount(context, target, amount)?;
-        self.mark_damage(target, amount)
+        self.mark_dealt_damage(context, target, amount)
     }
 }
 
@@ -160,7 +167,12 @@ mod tests {
         let context = DamageContext {
             player: 0,
             bonus_damage: 9,
-            dealer: DamageDealer::Unit,
+            dealer: DamageDealer::Unit {
+                source: Target::Unit {
+                    player: 0,
+                    unit_id: 100,
+                },
+            },
         };
         assert_eq!(game.damage_amount(context, target(102), 3).unwrap(), 3);
         game.deal_damage(context, target(102), 3).unwrap();

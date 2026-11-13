@@ -23,6 +23,7 @@ use std::panic::{AssertUnwindSafe, catch_unwind};
 
 mod combat;
 mod combat_contribution;
+mod damage_attribution;
 mod deploy;
 mod empowered;
 mod fields;
@@ -47,6 +48,8 @@ mod xp_costs;
 mod alpha_tests;
 #[cfg(test)]
 mod conditional_equipment_tests;
+#[cfg(test)]
+mod hidden_blade_tests;
 
 #[cfg(test)]
 mod board_effects;
@@ -564,6 +567,10 @@ impl Session {
             }),
             "required_trash_play":game.required_trash_play,
             "can_decline_trash_play":game.can_decline_trash_play().map_err(ApiError::illegal)?});
+        view["damage_attribution"] = json!({
+            "pending":game.pending_damage_ledger().map(damage_attribution::to_json),
+            "last":game.last_damage_ledger().map(damage_attribution::to_json)
+        });
         view["turn_effects"] = if game.spell_ability_damage_prevented {
             json!([{
                 "type":"prevent_spell_and_ability_damage", "source_card_id":441,
@@ -2890,8 +2897,9 @@ mod tests {
         let pending = session.observe(1).unwrap();
         assert_eq!(
             pending["chain"][0]["source"],
-            json!({"type":"card","card_id":239})
+            json!({"type":"unit","player":0,"unit_id":700})
         );
+        assert_eq!(pending["chain"][0]["card_id"], 239);
         assert_eq!(
             pending["chain"][0]["ability"],
             json!({"type":"activated",

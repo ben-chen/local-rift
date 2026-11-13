@@ -2,6 +2,47 @@
 use super::*;
 use crate::game::Unit;
 
+#[test]
+fn physical_damage_ledger_is_public_and_rejected_allocations_leave_it_unchanged() {
+    for actor in 0..2 {
+        let (mut s, source, a, b) = position(actor, 4);
+        apply(&mut s, play(vec![source, a, b]));
+        let chain_id = s.game.chain.last().unwrap().id;
+        apply(&mut s, Action::Pass);
+        apply(&mut s, Action::Pass);
+        let before = views(&s);
+        let pending = &before[actor]["damage_attribution"]["pending"];
+        assert_eq!(pending["parent"]["source"]["chain_id"], chain_id);
+        assert_eq!(pending["damage"], json!([]));
+        let rejected = request(
+            &mut s,
+            "apply",
+            json!({"type":"assign_damage","assignments":[[9002,1],[9003,2]]}),
+        );
+        assert_eq!(rejected["ok"], false);
+        assert_eq!(views(&s), before);
+        apply(
+            &mut s,
+            Action::AssignDamage {
+                assignments: vec![(9002, 1), (9003, 3)],
+            },
+        );
+        let view = views(&s);
+        assert_eq!(view[0]["damage_attribution"], view[1]["damage_attribution"]);
+        assert!(view[0]["damage_attribution"]["pending"].is_null());
+        let last = &view[0]["damage_attribution"]["last"];
+        assert_eq!(last["parent"]["source"]["card_id"], 443);
+        assert_eq!(last["damage"].as_array().unwrap().len(), 2);
+        assert_eq!(last["damage"][0]["amount_exact"], "1");
+        assert_eq!(last["damage"][1]["amount_exact"], "3");
+        assert_eq!(
+            last["damage"][0]["sources"],
+            json!([target_to_json(&source)])
+        );
+        assert_eq!(last["kills"], json!([]));
+    }
+}
+
 fn position(actor: usize, might: i64) -> (Session, Target, Target, Target) {
     let mut s = Session::new(ResetOptions {
         decks: [3, 3],

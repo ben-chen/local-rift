@@ -6800,6 +6800,21 @@ pub fn cards() -> Vec<CardDef> {
             tags: &["Equipment"],
             art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/524fedb9116db0eb62380c03e0853c342c53daeb-744x1039.png?w=280&q=80&fm=png",
         },
+        CardDef {
+            id: 446,
+            official_id: "ogn-213-298",
+            name: "Hidden Blade",
+            cost: 2,
+            power_cost: 1,
+            might: 0,
+            domain: Domain::Order,
+            domains: &[Domain::Order],
+            kind: CardKind::Spell,
+            official_text: "[Hidden] (Hide now for [Any Power] to react with later for [0 Energy].)\n[Action] (Play on your turn or in showdowns.)\nKill a unit at a battlefield. Its controller draws 2.",
+            keywords: &["Hidden", "Action"],
+            tags: &[],
+            art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/0437ab8a0b67f43ef5483a103bbae9e57fd05822-744x1039.png?w=280&q=85&fm=png",
+        },
     ]
 }
 
@@ -7170,7 +7185,7 @@ mod tests {
     #[test]
     fn presets_are_complete_and_references_are_consistent() {
         let catalog = cards();
-        assert_eq!(catalog.len(), 446);
+        assert_eq!(catalog.len(), 447);
         for (index, card) in catalog.iter().enumerate() {
             assert_eq!(index, card.id);
             assert!(!card.official_id.is_empty());

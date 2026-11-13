@@ -105,9 +105,12 @@ lethal damage from the first execution does not remove units before the second
 allocation, rejected/stale commands leave both views unchanged, and reactions
 can resolve above XP rewards without granting XP early.
 
-This is an Alpha-specific observer, not the general physical damage and kill
-source ledger still missing from the engine. New prevention/replacement
-mechanisms must preserve actual Deal attribution when that ledger is added.
+The later [attribution checkpoint](validation/hidden_blade.json) replaces this
+observer’s private recipient list with a shared physical Deal/Kill ledger. Alpha
+retains its physical parent and number of non-ignored reward clauses. Unit-dealt
+packets identify the unit; cleanup credit identifies the causing spell. The
+remaining origin, cost and replacement gaps are listed in the rules audit’s
+damage-attribution follow-up; passing this checkpoint does not close those gaps.
 
 ## Acceptance and remaining work
 
@@ -118,7 +121,7 @@ matches the frozen tested source; only release documentation and proof status
 labels differ, as recorded in the acceptance record.
 
 Review the physical-parent derivation above if a new official ruling or Core
-revision appears. The general damage-source gap remains explicit in
+revision appears. The remaining damage-source gaps are explicit in
 [the rules audit](RULES_AUDIT.md). Complete SWAGALISK registration acceptance is
 recorded separately in [Master Yi validation](validation/master_yi_registration.json);
 the existing main-deck recipe remains unchanged.

@@ -953,3 +953,40 @@ without granting Ganking for moves out. Clients should use legal actions rather
 than assuming two locations or inferring permission from Ganking alone. Rematches
 restore the original two starting battlefields. The Sonecon Stuttgart preset provides
 the complete Riven registration for single-game and best-of-three practice.
+
+
+### Damage attribution
+
+`chain[].source` now identifies physical sources for activated unit/gear
+abilities and metadata-driven unit triggers, alongside the existing legend and
+battlefield identities. `chain[].card_id` remains the catalog/art reference.
+Consumers must handle the documented source union rather than assume that
+every ordinary ability has a `type:"card"` source.
+
+Observations include `damage_attribution.pending` and `damage_attribution.last`.
+The pending record follows a resolving physical parent through repeated
+instructions and death-replacement choices. The last record is the most recently
+completed parent and cleanup, not a cumulative match history. Collect observations
+after each action if your bot needs a history; a later parent replaces `last`.
+
+Each record contains `parent`, `damage` and `kills`. A damage packet supplies its
+responsible `player`, public `target`, numeric `amount`, decimal `amount_exact`,
+and `sources`. A spell or ability source carries `chain_id`, `player` and
+`card_id`; physical unit/gear sources use the normal object shape. An ability can
+have both its own chain identity and its physical creator. Unit-dealt effects
+contain the unit source without adding the causing spell as a damage dealer.
+
+A kill supplies its target, `kind` (`instruction`, `cleanup` or `combat_cleanup`)
+and zero or more `credits`, each with a responsible player and source list.
+Cleanup credit can differ from the Deal source; for example, Challenge's damage
+is dealt by its chosen units while its ensuing cleanup kills refer to the
+physical spell. Combat refers to the opposing physical group, without fabricated
+per-unit damage amounts. Prevented damage and replaced unit deaths are omitted.
+
+These fields expose public events equally to both seats. They currently cover
+resolved damage, primary unit/gear Kill instructions and their cleanup. They are
+not a complete death feed: kill costs, replacement-caused gear deaths and some
+legacy effect ancestors still require causal tracking. A null origin or empty
+credit list must not be treated as evidence that the game rules forbid a source.
+See the rules audit's attribution follow-up before using this data to implement
+additional source-sensitive cards.
