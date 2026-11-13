@@ -67,7 +67,8 @@
     "master-yi-registration-installed-comparison-v1.json": "f954508a807a2b53687f511531d5a36c40cc533f6de117ab7feaa2598379951d",
     "master-yi-registration-api-v1.json": "39fe3b8ee6cb626cc729b4a87f6232b06b6688959fefea61dd911de006fd0a2f",
     "ui-master-yi-registration-v2.json": "a89b48896dc66f67f9d7e70a5e404f2fdd79bd9c17f443a97a54ae5a29532de1",
-    "master-yi-registration-progress.json": "b63dfc19bcacdbdc3ee2b5427ce16a3d0251f5c5e4fb89e0f3d85c7855bb6d2f"
+    "master-yi-registration-clippy-rust100-v1.log": "cc37fae537fb6547e96df29f59fd6f6545f523f21adef640618afd5a66cb9486",
+    "master-yi-registration-library-native-v1.log": "bccfd003c511f2dd8f78a1fcc7e0c7fef45f2cbae1a373c08abd6eaafa158ebe"
   },
   "reproduce": [
     "cargo test --all-targets --locked",
