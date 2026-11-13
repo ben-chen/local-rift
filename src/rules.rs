@@ -68,6 +68,7 @@ pub struct PlayTargetSpec {
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum OfficialEffect {
+    Deathgrip,
     /// Choose a friendly battlefield unit, then a linked enemy chain item.
     Repulse,
     AlphaStrike,
@@ -284,6 +285,7 @@ pub fn effect(id: usize) -> OfficialEffect {
         442 => Repulse,
         443 => AlphaStrike,
         446 => KillAndDrawController { draw: 2 },
+        447 => Deathgrip,
         425 => ReadyAndPreventMovement { draw: 1 },
         426 => BattlePreparations,
         427 => MoveEnemy,
@@ -717,9 +719,8 @@ pub fn targeting(id: usize) -> Targeting {
         290..=296 | 335 | 349 | 428 | 434 | 446 => Any,
         4 | 32 | 144 | 145 | 365 | 427 => Enemy,
         362 | 364 | 372 | 378 | 379 | 381 | 435 => Any,
-        8 | 9 | 14 | 19 | 27 | 85 | 137 | 228 | 350 | 353 | 354 | 377 | 380 | 382 | 421 | 425 => {
-            Friendly
-        }
+        8 | 9 | 14 | 19 | 27 | 85 | 137 | 228 | 350 | 353 | 354 | 377 | 380 | 382 | 421 | 425
+        | 447 => Friendly,
         16 | 29 | 82 | 217 | 218 | 383 => Mixed,
         5 | 7 | 11 | 23 | 26 | 28 | 41 | 44 | 50 | 52 | 53 | 55 | 61 | 62 | 63 | 66 | 67 | 74
         | 75 | 76 | 79 | 80 | 81 | 83 | 99 | 135 | 136 | 141 | 142 | 143 | 146 | 216 | 219
@@ -736,7 +737,7 @@ pub fn targeting(id: usize) -> Targeting {
         },
         distinct: matches!(
             id,
-            5 | 9 | 16 | 44 | 50 | 61 | 82 | 83 | 85 | 137 | 217 | 218 | 354
+            5 | 9 | 16 | 44 | 50 | 61 | 82 | 83 | 85 | 137 | 217 | 218 | 354 | 447
         ),
         same_location: matches!(id, 44 | 50),
         different_locations: id == 354,
@@ -753,7 +754,7 @@ pub fn target_bounds(id: usize) -> (usize, usize) {
     }
     match effect(id) {
         BattlePreparations => (3, 1),
-        Repulse => (2, 2),
+        Repulse | Deathgrip => (2, 2),
         AlphaStrike => (usize::MAX, 2),
         AreaDamage {
             selector: AreaSelector::EnemyAtTargetBattlefield,
@@ -1126,6 +1127,13 @@ pub fn requirements(id: usize) -> &'static [Mechanic] {
         442 => &[Chain, Counterspell, MultipleTargets, ChooseReadyTriggers],
         444 | 445 => &[Gear, Equip, Chain, ChooseReadyTriggers],
         446 => &[Chain, Hidden, DeathTriggers, DeathReplacement],
+        447 => &[
+            Chain,
+            MultipleTargets,
+            ChooseReadyTriggers,
+            DeathTriggers,
+            DeathReplacement,
+        ],
         443 => &[
             Chain,
             MultipleTargets,
@@ -2122,7 +2130,7 @@ mod tests {
     #[test]
     fn all_catalog_entries_have_official_classification() {
         let cards = cards();
-        assert_eq!(cards.len(), 447);
+        assert_eq!(cards.len(), 448);
         for card in cards {
             assert_ne!(
                 effect(card.id),
@@ -2132,7 +2140,7 @@ mod tests {
             );
             assert_ne!(support_status(card.id), SupportStatus::UnknownCard);
         }
-        assert_eq!(effect(447), OfficialEffect::Unsupported);
+        assert_eq!(effect(448), OfficialEffect::Unsupported);
     }
 
     #[test]

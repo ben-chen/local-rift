@@ -11896,6 +11896,29 @@
         "Action"
       ],
       "tags": []
+    },
+    {
+      "id": 447,
+      "name": "Deathgrip",
+      "official_id": "sfd-163-221",
+      "energy": 2,
+      "power": 0,
+      "might": 0,
+      "domains": [
+        "Order"
+      ],
+      "kind": "Spell",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/695304200c6fd3b287bd319ac564d31936b23d66-744x1039.png?w=280&q=85&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Reaction] (Play any time, even before spells and abilities resolve.)\nKill a friendly unit. If you do, give +Might equal to its Might to another friendly unit this turn.\n\nDraw 1.",
+      "official_text_html": "<p>[Reaction] (Play any time, even before spells and abilities resolve.)<br />Kill a friendly unit to give +:rb_might: equal to its Might to another friendly unit this turn. Draw 1.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Reaction"
+      ],
+      "tags": []
     }
   ],
   "official_text_note": "Official card/legend rules text from the Riot Card Gallery, retrieved 2026-10-24 and corrected by cited errata. Resource icon tokens are expanded to readable bracketed names. Raw card and equipment HTML is preserved separately. Official text does not establish full implementation fidelity."

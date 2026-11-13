@@ -844,3 +844,15 @@ private drawn cards. Whole-game testing uses an authored legal Kennen
 substitution, not a claimed Azir registration. Native, Nix and installed acceptance
 passed; [the validation record](validation/hidden_blade.json) identifies the exact
 scope, including the source-attribution limitations listed above.
+
+## Deathgrip — November 12, 2026
+
+Deathgrip uses the Spiritforged erratum and FAQ rather than its original
+Kill-to wording. Two distinct friendly targets are finalized before responses;
+actual death gates the temporary Might transfer, while Draw1 is independent.
+Ordered death replacements suspend the entire remaining instruction sequence.
+Successful removal captures current Might before gear/aura departure; target
+slots and Repeat executions remain separate. Source proof and limitations are
+recorded in `assets/data/card_admissions/deathgrip/README.md`. Native, source,
+Nix and installed acceptance passed. The [validation record](validation/deathgrip.json)
+identifies the tested source, actual games and remaining scope.

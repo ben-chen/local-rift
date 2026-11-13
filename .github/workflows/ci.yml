@@ -42,6 +42,7 @@ jobs:
           python3 tools/check_master_yi_reactions_api.py target/release/rift-api "$RUNNER_TEMP/local-rift-reactions.json"
           python3 tools/check_master_yi_registration_api.py target/release/rift-api "$RUNNER_TEMP/local-rift-yi-matches.json"
           python3 tools/check_hidden_blade_api.py target/release/rift-api "$RUNNER_TEMP/local-rift-hidden-blade.json"
+          python3 tools/check_deathgrip_api.py target/release/rift-api "$RUNNER_TEMP/local-rift-deathgrip.json"
       - name: Exercise desktop controls at both window sizes
         env:
           LIBGL_ALWAYS_SOFTWARE: "1"
@@ -70,5 +71,7 @@ jobs:
           XDG_DATA_HOME="$RUNNER_TEMP/local-rift-conditional-equipment-small" xvfb-run -a ./target/release/local-rift --ui-smoke-conditional-equipment --small
           XDG_DATA_HOME="$RUNNER_TEMP/local-rift-hidden-blade" xvfb-run -a ./target/release/local-rift --ui-smoke-hidden-blade
           XDG_DATA_HOME="$RUNNER_TEMP/local-rift-hidden-blade-small" xvfb-run -a ./target/release/local-rift --ui-smoke-hidden-blade --small
+          XDG_DATA_HOME="$RUNNER_TEMP/local-rift-deathgrip" xvfb-run -a ./target/release/local-rift --ui-smoke-deathgrip
+          XDG_DATA_HOME="$RUNNER_TEMP/local-rift-deathgrip-small" xvfb-run -a ./target/release/local-rift --ui-smoke-deathgrip --small
           RIFT_SERIES_PLAYER=1 RIFT_SERIES_OPPONENT=5 XDG_DATA_HOME="$RUNNER_TEMP/local-rift-yi-series" xvfb-run -a ./target/release/local-rift --ui-smoke-series
           RIFT_SERIES_PLAYER=5 RIFT_SERIES_OPPONENT=1 XDG_DATA_HOME="$RUNNER_TEMP/local-rift-yi-series-small" xvfb-run -a ./target/release/local-rift --ui-smoke-series --small

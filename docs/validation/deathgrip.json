@@ -1,0 +1,133 @@
+{
+  "status": "passed",
+  "date": "2026-11-13T04:09:49.741616+00:00",
+  "base_commit": "331b222f06b78f8c1136294923cbbb26316b0ec6",
+  "card": {
+    "id": 447,
+    "name": "Deathgrip",
+    "official_id": "sfd-163-221"
+  },
+  "scope": [
+    "Two distinct friendly targets finalized before responses",
+    "Current Might transfer requires actual death",
+    "Independent Draw after ordered death replacement decisions",
+    "Repeat executions keep distinct targets and state",
+    "Atomic capacity rejection",
+    "Native controls, Beginner/Advanced advice and JSON API"
+  ],
+  "coverage": {
+    "main_cards": 448,
+    "legends": 11,
+    "battlefields": 17,
+    "runes": 6,
+    "legal_identities": 482,
+    "catalogued_legal": 1079,
+    "presets": 7,
+    "complete_registrations": 6
+  },
+  "preserved": {
+    "prior_main_cards": 447,
+    "all_seven_preset_recipes": true,
+    "prior_receipts": {
+      "docs/validation/alpha_equipment.json": "0769dd47b0951efcddb3a79277661c2d998d15b3bcd52a5a134f1585ba60788d",
+      "docs/validation/master_yi_registration.json": "06c3870616591fd0a15d431137ce1e6125a88dfea0f7e7d2380b1f4263c2de87",
+      "docs/validation/hidden_blade.json": "b61487e3667926ef4eb4eecdcae9f8658394df17767d0e2fc00ddc301b5471fc"
+    }
+  },
+  "validation": {
+    "full_nix_rust_tests": 1852,
+    "source_checks": 286,
+    "strict_all_target_clippy_rust_1_100": true,
+    "engine_card_games": 84,
+    "native_api_card_games": 84,
+    "installed_api_card_games": 84,
+    "native_registered_api_matches": 48,
+    "native_registered_api_games": 119,
+    "installed_registered_api_matches": 48,
+    "installed_registered_api_games": 119,
+    "all_installed_api_traces_equal_native": true,
+    "installed_ui_runs": 10,
+    "installed_ui_captures": 12,
+    "installed_ui_full_games": 5,
+    "ui_sizes": [
+      [
+        1440,
+        900
+      ],
+      [
+        1152,
+        720
+      ]
+    ],
+    "installed_visual_review": [
+      "Small complete card inspector and operative erratum",
+      "Small response board: both target copies, chain, resources and unobtrusive Mote"
+    ]
+  },
+  "nix": {
+    "package": "/nix/store/jnr9hx9vm25asf14ay3lkm76lk3ag934-local-rift-0.1.0",
+    "catalog": "/nix/store/mjcb5bhshr8hrlycsynrql8yqr8lwklr-local-rift-catalog-check",
+    "simulation": "/nix/store/r6zmpd4cqhl4dq9zvsszj6ns7n85r63f-local-rift-simulation-check"
+  },
+  "installed": {
+    "status": "passed",
+    "package": "/nix/store/jnr9hx9vm25asf14ay3lkm76lk3ag934-local-rift-0.1.0",
+    "source_manifest": "deathgrip-source-manifest-v1.json",
+    "ui_runs": 10,
+    "ui_captures": 12,
+    "ui_games": 5,
+    "api": [
+      {
+        "kind": "card",
+        "games": 84,
+        "every_trace_identical_to_native": true,
+        "native_binary_sha256": "2f2805fc55759353fbef605d12079f1a7b4d51d78c438c7b89a1660455ca6fc9",
+        "installed_binary_sha256": "d617600e2a2dc249efcd4ef2b6dd281c3a3377c8c920c127aba8026e5c8fe76a"
+      },
+      {
+        "kind": "registration",
+        "matches": 48,
+        "every_trace_identical_to_native": true,
+        "native_binary_sha256": "2f2805fc55759353fbef605d12079f1a7b4d51d78c438c7b89a1660455ca6fc9",
+        "installed_binary_sha256": "d617600e2a2dc249efcd4ef2b6dd281c3a3377c8c920c127aba8026e5c8fe76a"
+      }
+    ]
+  },
+  "release_documentation_differences": [
+    "README.md",
+    "assets/data/card_admissions/azir_equipment/README.md",
+    "assets/data/card_admissions/azir_equipment/admissions.json",
+    "assets/data/card_admissions/deathgrip/admissions.json",
+    "assets/data/card_admissions/hidden_blade/admissions.json",
+    "assets/data/card_admissions/master_yi/README.md",
+    "assets/data/card_admissions/master_yi/admissions.json",
+    "assets/data/preset_admissions/series_los_angeles/README.md",
+    "docs/ALPHA_STRIKE_AUDIT.md",
+    "docs/API.md",
+    "docs/IRELIA_PRIORITY.md",
+    "docs/MATCH_SERIES.md",
+    "docs/PRESET_AUDIT.md",
+    "docs/RULES.md",
+    "docs/RULES_AUDIT.md",
+    "docs/validation/deathgrip.json"
+  ],
+  "evidence_sha256": {
+    "deathgrip-source-manifest-v1.json": "fc98b879cb91b584c38ce4ed6e5c2b7b9949c18c0a62e5131172eb3b0f00ffc8",
+    "deathgrip-nix-v1.log": "15d8c5480a74db78927c67681b3cebfb9864f22a04d02303ce97af334dfb7982",
+    "deathgrip-installed-comparison-v1.json": "87b1274f605430d9d83bcdcb476d04e65a2109a0992da4c4de1eaf68fddb6c37",
+    "deathgrip-source-full-v2.log": "f326b4e45de885bdf2df0d0952cedc40cb1bd87aae1e9ef766a35ffc03c29b11",
+    "deathgrip-api-v1.json": "a5f516a566e6a287b06e05589588df0e8b8b075baedb110669a3a0fd4b9f662b",
+    "deathgrip-registration-api-v1.json": "29051390ec6ae1b473e9532bcc081be1bd8bebdde00d862e2f21fec3ae3d9338",
+    "deathgrip-clippy-v1.log": "d8348ed27969121fa1e74e7186406da1ddd66dbbb7e87592a53739157dac7328",
+    "ui-deathgrip-v1.json": "f8eb0395f68f748d1c9796f3392183141aa971d76ec1248c40009e68ce4acb0b"
+  },
+  "reproduce": [
+    "cargo test --all-targets --locked",
+    "python3 -m unittest discover -s tools -p test_*.py",
+    "python3 tools/import_catalog.py --check",
+    "cargo clippy --all-targets -- -D warnings",
+    "nix flake check",
+    "python3 tools/check_deathgrip_api.py target/release/rift-api report.json"
+  ],
+  "limits": "Tests establish the listed behavior and examples, not complete Standard parity, a complete Azir registration, or expert AI strength."
+}

@@ -1,0 +1,106 @@
+{
+  "reviewed_on": "2026-11-12",
+  "status": "Accepted card implementation; see docs/validation/deathgrip.json.",
+  "preserved_runtime_prefix": {
+    "card_count": 447,
+    "preset_count": 7,
+    "cards_sha256": "9fe9143e2b87ca590c2fb4f66f658fdf94c4fbad8474a398ce7562f0361f5a81",
+    "presets_sha256": "e975739d803427e54928d6e6cd03d1ce51d7ad108f4e247b8a000acf037a5cdb"
+  },
+  "core_sections": [
+    "359.3.e.13",
+    "359.3.e.14.b",
+    "370",
+    "429",
+    "437"
+  ],
+  "faq_url": "https://playriftbound.com/en-us/news/rules-and-releases/riftbound-spiritforged-faq/",
+  "records": [
+    {
+      "official_id": "sfd-163-221",
+      "runtime_id": 447,
+      "raw_printing": {
+        "official_id": "sfd-163-221",
+        "public_code": "SFD-163/221",
+        "name": "Deathgrip",
+        "set": "SFD",
+        "collector_number": 163,
+        "types": [
+          "spell"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "spell"
+        ],
+        "accessibility_types": [
+          "spell"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "order"
+        ],
+        "energy": 2,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "rules_html": "<p>[Reaction] (Play any time, even before spells and abilities resolve.)<br />Kill a friendly unit to give +:rb_might: equal to its Might to another friendly unit this turn. Draw 1.</p>",
+        "rules_text": "[Reaction] (Play any time, even before spells and abilities resolve.)\nKill a friendly unit to give +Might equal to its Might to another friendly unit this turn. Draw 1.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [],
+        "rarity": "uncommon",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/695304200c6fd3b287bd319ac564d31936b23d66-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Spell: Deathgrip. [Reaction] (Play any time, even before spells and abilities resolve.)\nKill a friendly unit to give +[M] equal to its Might to another friendly unit this turn. Draw 1.",
+        "illustrators": [
+          "Polar Engine Studio"
+        ]
+      },
+      "raw_printing_sha256": "2ee18ceac64fac2362ba9ce2badc9d3ef383074195ea620e8e5d84951d76c5cf",
+      "effective": {
+        "types": [
+          "spell"
+        ],
+        "super_types": [],
+        "domains": [
+          "order"
+        ],
+        "energy": 2,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>[Reaction] (Play any time, even before spells and abilities resolve.)<br />Kill a friendly unit to give +:rb_might: equal to its Might to another friendly unit this turn. Draw 1.</p>",
+        "rules_text": "[Reaction] (Play any time, even before spells and abilities resolve.)\nKill a friendly unit to give +Might equal to its Might to another friendly unit this turn. Draw 1.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "resolution_ids": [],
+      "errata": [
+        {
+          "article_heading": "Deathgrip",
+          "text": "[Reaction] (Play any time, even before spells and abilities resolve.)\nKill a friendly unit. If you do, give +[M] equal to its Might to another friendly unit this turn.\nDraw 1.",
+          "source_url": "https://playriftbound.com/en-us/news/rules-and-releases/riftbound-spiritforged-errata/"
+        }
+      ],
+      "printing_cohort": [
+        "sfd-163-221"
+      ],
+      "operative_text": "[Reaction] (Play any time, even before spells and abilities resolve.)\nKill a friendly unit. If you do, give +Might equal to its Might to another friendly unit this turn.\n\nDraw 1.",
+      "visual_review": {
+        "actual_full_face_viewed": true,
+        "notes": "Original 744x1039 official face inspected: Order Spell, 2 Energy, no Power, Reaction. Printed Kill-to wording is superseded by the separately preserved official erratum. Draw1 is independent; both units are distinct targets, Kill occurs at resolution and actual death gates Might."
+      },
+      "original_image": {
+        "path": "assets/data/card_admissions/deathgrip/sfd-163-221.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/695304200c6fd3b287bd319ac564d31936b23d66-744x1039.png?accountingTag=RB",
+        "sha256": "f08b0102be94f5c6e14346f1f111e8833310be1c04ae4aecb75b784ed3a3fd2c"
+      },
+      "runtime_image": {
+        "path": "assets/art/card_447.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/695304200c6fd3b287bd319ac564d31936b23d66-744x1039.png?w=280&q=85&fm=png",
+        "sha256": "b342903e97fc67191094a22e222c7141cf1918ccab6c2920444774a5026d304d"
+      }
+    }
+  ]
+}

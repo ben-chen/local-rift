@@ -8892,6 +8892,7 @@ fn card_brief(game: &Game, id: usize) -> String {
                 .map(|might| format!(" · might {might} or less"))
                 .unwrap_or_default()
         ),
+        Deathgrip => "Kill yours · grant its Might to another this turn · draw 1".into(),
         KillAndDrawController { draw } => {
             format!("Kill a battlefield unit · its controller draws {draw}")
         }
@@ -10600,6 +10601,7 @@ async fn main() {
     let repulse_smoke = args.iter().any(|a| a == "--ui-smoke-repulse");
     let alpha_smoke = args.iter().any(|a| a == "--ui-smoke-alpha");
     let conditional_equipment_smoke = args.iter().any(|a| a == "--ui-smoke-conditional-equipment");
+    let deathgrip_smoke = args.iter().any(|a| a == "--ui-smoke-deathgrip");
     let hidden_blade_smoke = args.iter().any(|a| a == "--ui-smoke-hidden-blade");
     let blade_smoke = args.iter().any(|a| a == "--ui-smoke-blade");
     let riven_champion_smoke = args.iter().any(|a| a == "--ui-smoke-riven-champion");
@@ -10611,6 +10613,7 @@ async fn main() {
     let focused_field_smoke = args.iter().any(|a| a == "--ui-smoke-c28");
     let focused_source_damage_smoke = args.iter().any(|a| a == "--ui-smoke-c27");
     let smoke_test = series_smoke
+        || deathgrip_smoke
         || hidden_blade_smoke
         || conditional_equipment_smoke
         || alpha_smoke
@@ -10651,7 +10654,9 @@ async fn main() {
             app.hover_card = app.game.players[0].hand.first().copied();
             app.hover_since = -1.0;
         }
-        let smoke_done = if hidden_blade_smoke {
+        let smoke_done = if deathgrip_smoke {
+            smoke::run_deathgrip_frame(&mut app, frames)
+        } else if hidden_blade_smoke {
             smoke::run_hidden_blade_frame(&mut app, frames)
         } else if conditional_equipment_smoke {
             smoke::run_conditional_equipment_frame(&mut app, frames)

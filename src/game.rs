@@ -29,6 +29,9 @@ mod baron_tests;
 #[path = "combat_card_tests.rs"]
 mod combat_card_tests;
 #[cfg(test)]
+#[path = "deathgrip_tests.rs"]
+mod deathgrip_tests;
+#[cfg(test)]
 #[path = "dynamic_field_tests.rs"]
 mod dynamic_field_tests;
 #[cfg(test)]
@@ -73,6 +76,9 @@ mod deck_draws;
 #[path = "deck_plays.rs"]
 mod deck_plays;
 use deck_plays::DeckKillContinuation;
+#[path = "deathgrip.rs"]
+mod deathgrip;
+use deathgrip::DeathgripContinuation;
 #[path = "instructed_play.rs"]
 mod instructed_play;
 use instructed_play::PendingOrigin;
@@ -1116,6 +1122,7 @@ pub struct Game {
     pending_cleanup_deaths: Option<Vec<(usize, u32)>>,
     pending_instruction_deaths: Option<Vec<(usize, u32)>>,
     pending_deck_kill: Option<DeckKillContinuation>,
+    pending_deathgrip: Option<DeathgripContinuation>,
     /// Dependent Draw after a valid Kill instruction and all its replacements.
     pending_kill_controller_draw: Option<(usize, u8)>,
     pub buffed_units: Vec<u32>,
@@ -1375,6 +1382,7 @@ impl Game {
             pending_cleanup_deaths: None,
             pending_instruction_deaths: None,
             pending_deck_kill: None,
+            pending_deathgrip: None,
             pending_kill_controller_draw: None,
             buffed_units: Vec::new(),
             optional_power_discount: [0;2],
@@ -3295,6 +3303,7 @@ impl Game {
             }
         }
         self.finish_deck_kill();
+        self.finish_deathgrip()?;
         self.finish_kill_controller_draw()?;
         // The parent still owes Banish/play/recycle while a private selection
         // is pending. Cleanup cannot remove other damaged units mid-effect.
@@ -7024,6 +7033,25 @@ impl Game {
                     candidates.push((self.banish_or_return_score(actor, target, maximum)?, target));
                     continue;
                 }
+                if effect == OfficialEffect::Deathgrip {
+                    let might = i128::from(self.unit_might(unit)?);
+                    let fighting = self
+                        .showdown
+                        .as_ref()
+                        .is_some_and(|w| unit.lane == Some(w.lane));
+                    let rank = if targets.is_empty() {
+                        // Prefer an expendable body outside this fight. Larger
+                        // survivors are poor sacrifices despite their boost.
+                        -might * 8 - i128::from(self.catalog[unit.card_id].cost) * 4
+                            + if unit.token { 25 } else { 0 }
+                            + if unit.damage > 0 { 10 } else { 0 }
+                            - if fighting { 40 } else { 0 }
+                    } else {
+                        might + if fighting { 100 } else { 0 }
+                    };
+                    candidates.push((rank, target));
+                    continue;
+                }
                 let hostile = matches!(
                     effect,
                     OfficialEffect::BanishSmallOrGear { .. }
@@ -8012,6 +8040,7 @@ impl Game {
                     self.kill_unit(target)?;
                 }
             }
+            OfficialEffect::Deathgrip => self.begin_deathgrip(player, &targets)?,
             OfficialEffect::KillAndDrawController { draw } => {
                 if let Some(
                     &target @ Target::Unit {
@@ -9193,6 +9222,26 @@ impl Game {
         if let Some(hook) = self.pending_deck_kill.as_mut() {
             hook.killed = killed_might.is_some();
             hook.might = killed_might;
+        }
+        let sacrifice = self
+            .pending_deathgrip
+            .as_ref()
+            .and_then(|tail| tail.sacrifice);
+        let killed_might = doomed
+            .iter()
+            .find(|(player, unit)| {
+                sacrifice
+                    == Some(Target::Unit {
+                        player: *player,
+                        unit_id: unit.id,
+                    })
+            })
+            .map(|(_, unit)| self.unit_might(unit))
+            .transpose()?;
+        if let Some(tail) = self.pending_deathgrip.as_mut() {
+            // CR359.3.e.13: reference immediately before actual departure,
+            // including gear/auras. A replaced death supplies no value.
+            tail.killed_might = killed_might;
         }
         if !doomed.is_empty() {
             self.remove_death_set(doomed, true);
@@ -10439,6 +10488,32 @@ impl Game {
                         .any(|t| matches!(t, Target::Unit { player, .. } if *player != actor))
                     {
                         100
+                    } else {
+                        0
+                    }
+                }
+                OfficialEffect::Deathgrip => {
+                    if targets.len() == 2 {
+                        match (self.unit_ref(targets[0]), self.unit_ref(targets[1])) {
+                            (Some(sacrifice), Some(recipient))
+                                if in_combat
+                                    && self
+                                        .showdown
+                                        .as_ref()
+                                        .is_some_and(|w| recipient.lane == Some(w.lane)) =>
+                            {
+                                let boost = i128::from(self.unit_might(sacrifice)?);
+                                let lost_fighter = self
+                                    .showdown
+                                    .as_ref()
+                                    .is_some_and(|w| sacrifice.lane == Some(w.lane));
+                                (45 + boost * 5
+                                    - i128::from(self.catalog[sacrifice.card_id].cost) * 6
+                                    - if lost_fighter { 60 } else { 0 })
+                                .max(0)
+                            }
+                            _ => 0,
+                        }
                     } else {
                         0
                     }

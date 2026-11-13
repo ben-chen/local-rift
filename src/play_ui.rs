@@ -474,6 +474,12 @@ pub(super) fn target_view_hint(game: &Game, view: &PlayTargetView) -> String {
         };
     };
     let noun = match slot.kind {
+        local_rift::rules::PlayTargetKind::Unit if view.card_id == 447 && slot.index == 0 => {
+            "a friendly unit to kill when Deathgrip resolves"
+        }
+        local_rift::rules::PlayTargetKind::Unit if view.card_id == 447 => {
+            "a different friendly unit to receive its Might this turn"
+        }
         local_rift::rules::PlayTargetKind::Unit if view.card_id == 443 && slot.index == 0 => {
             "your damage-dealing unit, in base or at a battlefield"
         }

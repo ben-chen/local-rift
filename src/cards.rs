@@ -6815,6 +6815,21 @@ pub fn cards() -> Vec<CardDef> {
             tags: &[],
             art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/0437ab8a0b67f43ef5483a103bbae9e57fd05822-744x1039.png?w=280&q=85&fm=png",
         },
+        CardDef {
+            id: 447,
+            official_id: "sfd-163-221",
+            name: "Deathgrip",
+            cost: 2,
+            power_cost: 0,
+            might: 0,
+            domain: Domain::Order,
+            domains: &[Domain::Order],
+            kind: CardKind::Spell,
+            official_text: "[Reaction] (Play any time, even before spells and abilities resolve.)\nKill a friendly unit. If you do, give +Might equal to its Might to another friendly unit this turn.\n\nDraw 1.",
+            keywords: &["Reaction"],
+            tags: &[],
+            art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/695304200c6fd3b287bd319ac564d31936b23d66-744x1039.png?w=280&q=85&fm=png",
+        },
     ]
 }
 
@@ -7185,7 +7200,7 @@ mod tests {
     #[test]
     fn presets_are_complete_and_references_are_consistent() {
         let catalog = cards();
-        assert_eq!(catalog.len(), 447);
+        assert_eq!(catalog.len(), 448);
         for (index, card) in catalog.iter().enumerate() {
             assert_eq!(index, card.id);
             assert!(!card.official_id.is_empty());

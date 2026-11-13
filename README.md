@@ -200,6 +200,14 @@ their source. These changes passed 1,842 Rust tests and 284 source checks;
 See [the validation](docs/validation/hidden_blade.json) and the remaining
 attribution scope in [the rules audit](docs/RULES_AUDIT.md).
 
+Deathgrip is available in custom practice decks. Choose two different friendly
+units before responses; an actual death transfers the first unit’s current Might
+for the turn, and drawing a card is a separate instruction. Death replacements
+finish before the draw. Beginner and Advanced Mote advice explain these choices.
+Its [validation record](docs/validation/deathgrip.json) includes 1,852 Rust tests,
+286 source checks, and matching native/packaged traces across 84 card-test games
+and 48 registered matches.
+
 ## Included presets
 
 | Deck | Real archetype reference | Published source |
