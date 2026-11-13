@@ -142,7 +142,7 @@ practice, including legal swaps between games.
 Registered best-of-three matches are available in the **native app, Rust engine
 and bot API**, including legal sideboarding, private battlefield selection and
 match scores. In Practice, choose **Best of three**, then select Xeno Irelia,
-Arito Irelia, Kennen, Rengar, or Sonecon Riven for either seat and follow the setup steps. Mote explains match
+Arito Irelia, Master Yi, Kennen, Rengar, or Sonecon Riven for either seat and follow the setup steps. Mote explains match
 rules or planning at your chosen advice level. See
 [match practice](docs/MATCH_SERIES.md) for instructions and current limits.
 The [match validation](docs/validation/match_series.json) passed **1,609 Rust
@@ -169,7 +169,13 @@ chooses your battlefield unit, then an eligible enemy spell or ability. Its
 choices account for every Repeat execution. Both cards include complete previews
 and optional advice. See the [reaction-card validation](docs/validation/master_yi_reactions.json)
 for the source, rules, game, UI and package checks. The complete Master Yi
-registration is being verified separately; its existing main-deck preset is unchanged.
+registration is now available for best-of-three practice, with its exact ten-card
+sideboard and three battlefields. Its main deck is unchanged. The
+[registration validation](docs/validation/master_yi_registration.json) records
+1,819 Rust tests, 48 native and packaged API matches (119 games each), and six
+packaged interface runs. Every packaged API trace matches the native build.
+Mote and the stronger AI levels consider sideboard options using revealed cards;
+these heuristics do not establish expert-level strategy.
 
 Alpha Strike, Brutalizer and Hand Hammer are available in the card library and deck editor.
 Alpha Strike asks you to choose a friendly source and enemy battlefield units,

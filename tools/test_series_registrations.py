@@ -61,7 +61,7 @@ class SeriesRegistrations(unittest.TestCase):
         parser = ArticleLines(); parser.feed(catalog.body(raw))
         lines = [x.strip() for x in ''.join(parser.parts).splitlines() if x.strip()]
         fields = catalog.load_battlefield_manifest()
-        self.assertEqual([x['preset'] for x in self.regs['registrations']], [0, 2, 4])
+        self.assertEqual([x['preset'] for x in self.regs['registrations']], [0, 1, 2, 4])
         for reg in self.regs['registrations']:
             copies = []
             for start, line in enumerate(lines):

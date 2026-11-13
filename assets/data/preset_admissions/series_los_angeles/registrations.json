@@ -212,6 +212,187 @@
       ]
     },
     {
+      "preset": 1,
+      "pilot": "SWAGALISK",
+      "placing": 6,
+      "source_copies": 1,
+      "source_list": {
+        "Legend": [
+          {
+            "name": "Master Yi, Wuju Bladesman",
+            "count": 1
+          }
+        ],
+        "Champion": [
+          {
+            "name": "Master Yi, Tempered",
+            "count": 1
+          }
+        ],
+        "Main Deck": [
+          {
+            "name": "Akali, Silent",
+            "count": 1
+          },
+          {
+            "name": "Charm",
+            "count": 3
+          },
+          {
+            "name": "Defy",
+            "count": 3
+          },
+          {
+            "name": "Discipline",
+            "count": 3
+          },
+          {
+            "name": "En Garde",
+            "count": 2
+          },
+          {
+            "name": "First Mate",
+            "count": 3
+          },
+          {
+            "name": "Legion Marauder",
+            "count": 1
+          },
+          {
+            "name": "Lonely Poro",
+            "count": 2
+          },
+          {
+            "name": "Onslaught",
+            "count": 1
+          },
+          {
+            "name": "Pit Rookie",
+            "count": 3
+          },
+          {
+            "name": "Punch First",
+            "count": 3
+          },
+          {
+            "name": "Rampage",
+            "count": 2
+          },
+          {
+            "name": "Rengar, Trophy Hunter",
+            "count": 3
+          },
+          {
+            "name": "Ruin Runner",
+            "count": 1
+          },
+          {
+            "name": "Sabotage",
+            "count": 3
+          },
+          {
+            "name": "Scuttle Crab",
+            "count": 3
+          },
+          {
+            "name": "Zhonya's Hourglass",
+            "count": 2
+          }
+        ],
+        "Battlefields": [
+          {
+            "name": "Emperor's Dais",
+            "count": 1
+          },
+          {
+            "name": "Seat of Power",
+            "count": 1
+          },
+          {
+            "name": "Star Spring",
+            "count": 1
+          }
+        ],
+        "Rune Pool": [
+          {
+            "name": "Body Rune",
+            "count": 7
+          },
+          {
+            "name": "Calm Rune",
+            "count": 5
+          }
+        ],
+        "Sideboard": [
+          {
+            "name": "Alpha Strike",
+            "count": 1
+          },
+          {
+            "name": "Decree of Focus",
+            "count": 1
+          },
+          {
+            "name": "Decree of Strength",
+            "count": 2
+          },
+          {
+            "name": "Disarming Rake",
+            "count": 3
+          },
+          {
+            "name": "Repulse",
+            "count": 1
+          },
+          {
+            "name": "Ruin Runner",
+            "count": 1
+          },
+          {
+            "name": "Unyielding Spirit",
+            "count": 1
+          }
+        ]
+      },
+      "sideboard": [
+        [
+          443,
+          1
+        ],
+        [
+          421,
+          1
+        ],
+        [
+          433,
+          2
+        ],
+        [
+          366,
+          3
+        ],
+        [
+          442,
+          1
+        ],
+        [
+          31,
+          1
+        ],
+        [
+          441,
+          1
+        ]
+      ],
+      "battlefields": [
+        11,
+        1,
+        12
+      ],
+      "event": "Los Angeles Regional Qualifier",
+      "date": "September 2026"
+    },
+    {
       "preset": 2,
       "pilot": "DSG AwesumRosum",
       "event": "Los Angeles Regional Qualifier",

@@ -792,15 +792,18 @@ Existing resource-only trigger observations retain their prior object shape.
 ## Preset registrations and Edge of Night
 
 `catalog.presets[].registration` is populated for presets 0 (Xeno Irelia),
-2 (Kennen), 4 (Rengar), and 5 (Arito Irelia), and remains `null` for presets 1
-and 3. The object contains `pilot`, `event`, `date`, `placing`, `battlefields`
+1 (Master Yi), 2 (Kennen), 4 (Rengar), 5 (Arito Irelia), and 6 (Sonecon Riven).
+It remains `null` for historical Kai'Sa (3). The object contains `pilot`, `event`, `date`, `placing`, `battlefields`
 (array of battlefield IDs), and `sideboard` (array of `[card_id, count]` pairs).
 The top-level `catalog.as_of` dates the card-data snapshot; `registration.date`
 is the sourced event date or month; the LA registrations use `September 2026`.
 Preset 5 still uses legend ID 0. Its main `cards` include the chosen champion
 once, for 40 total cards; sideboard entries are separate metadata. The existing
 reset battlefield choices select among the registered options 13, 0 and 14.
-This metadata does not create a best-of-three or sideboarding action.
+Begin a registered match explicitly with `series_begin`; ordinary `reset`
+continues to create a single game. Master Yi's exact registration has sideboard
+`[[443,1],[421,1],[433,2],[366,3],[442,1],[31,1],[441,1]]` and battlefields
+`[11,1,12]`. Its published main list and rune split remain unchanged.
 
 Edge of Night is card 432. Its ordinary play takes no attachment target; later
 Equip uses the existing equipment action with one Chaos Power. Playing it from
@@ -832,7 +835,7 @@ same conventions as game commands. Registration validation is read-only.
 | `series_concede` | `player`, `scope` (`game` or `match`) | Explicit concession |
 | `series_draw` | `player`, `scope`, boolean `accept` | Offer/withdraw agreement; both seats must agree |
 
-A registration is either `{"preset":N}` for a complete preset (0, 2, 4, 5) or
+A registration is either `{"preset":N}` for a complete preset (0, 1, 2, 4, 5, 6) or
 `{"deck":CUSTOM_DECK,"sideboard":[[424,2],[369,2],[20,1],[421,2],[11,2],[1,1]],"battlefields":[13,0,14]}`.
 The main `deck` must contain exactly 40 cards; the shown sideboard is valid with
 Arito's main list. Do not apply that example sideboard to an arbitrary deck

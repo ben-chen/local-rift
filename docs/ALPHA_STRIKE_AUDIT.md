@@ -120,7 +120,8 @@ labels differ, as recorded in the acceptance record.
 Review the physical-parent derivation above if a new official ruling or Core
 revision appears. The general damage-source gap remains explicit in
 [the rules audit](RULES_AUDIT.md). Complete SWAGALISK registration acceptance is
-separate and still pending; the existing main-deck recipe remains unchanged.
+recorded separately in [Master Yi validation](validation/master_yi_registration.json);
+the existing main-deck recipe remains unchanged.
 No Azir preset or legend is enabled by this release.
 
 No expert-strength claim is made for the allocation heuristic or AI opponents.

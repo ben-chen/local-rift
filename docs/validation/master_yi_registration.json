@@ -1,0 +1,79 @@
+{
+  "status": "passed",
+  "date": "2026-11-13T03:18:14.923811+00:00",
+  "base_commit": "5b525a7d19456807ba01044518de91a026716add",
+  "preset": 1,
+  "pilot": "SWAGALISK",
+  "source": "https://playriftbound.com/en-us/news/organizedplay/los-angeles-top-decks/",
+  "event": "Los Angeles, September 2026, sixth place",
+  "scope": "Exact ten-card sideboard and three-field registration; unchanged 40-card main deck and 12 runes. Both Irelia recipes and all 446 main-card implementations remain unchanged. Match sideboard advice uses revealed information. Full Standard parity and expert AI strength are not established.",
+  "coverage": {
+    "legal_identities": 480,
+    "presets": 7,
+    "complete_registrations": 6
+  },
+  "nix": {
+    "package": "/nix/store/dpa8zzp1hr0d6hcxakf0mjmcciil4g2z-local-rift-0.1.0",
+    "catalog": "/nix/store/6bv92a2pkklq2yg03rb7y8fg5d9kk0wj-local-rift-catalog-check",
+    "simulation": "/nix/store/ahbj1zkwyy7dmrffk2112yi799q6qq7f-local-rift-simulation-check"
+  },
+  "installed": {
+    "status": "passed",
+    "package": "/nix/store/dpa8zzp1hr0d6hcxakf0mjmcciil4g2z-local-rift-0.1.0",
+    "source_manifest": "master-yi-registration-source-manifest-v2.json",
+    "ui_runs": 6,
+    "ui_captures": 96,
+    "ui_games": 15,
+    "api_matches": 48,
+    "api_games": 119,
+    "every_api_trace_identical_to_native": true,
+    "native_api_sha256": "d7dd3f95883b981088f4152eb92c695576b363f8776584456afdd22116951574",
+    "installed_api_sha256": "78144bc394ab9441d458a731db1d172ac24a58f0dbffaad27193b3c45512ec83"
+  },
+  "validation": {
+    "full_nix_rust_tests": 1819,
+    "strict_clippy_rust_1_99_and_1_100": true,
+    "native_api_matches": 48,
+    "native_api_games": 119,
+    "installed_api_matches": 48,
+    "installed_api_games": 119,
+    "native_ui_runs": 12,
+    "native_ui_games": 28,
+    "native_ui_captures": 288,
+    "installed_ui_runs": 6,
+    "installed_ui_games": 15,
+    "installed_ui_captures": 96,
+    "native_and_installed_api_traces_identical": true,
+    "catalog_and_preset_simulation_nix_checks": "passed"
+  },
+  "release_documentation_differences": [
+    "README.md",
+    "assets/data/card_admissions/azir_equipment/README.md",
+    "assets/data/card_admissions/azir_equipment/admissions.json",
+    "assets/data/card_admissions/master_yi/README.md",
+    "assets/data/card_admissions/master_yi/admissions.json",
+    "assets/data/preset_admissions/series_los_angeles/README.md",
+    "docs/ALPHA_STRIKE_AUDIT.md",
+    "docs/IRELIA_PRIORITY.md",
+    "docs/MATCH_SERIES.md",
+    "docs/PRESET_AUDIT.md",
+    "docs/RULES.md",
+    "docs/validation/master_yi_registration.json"
+  ],
+  "preserved_prior_receipt": "docs/validation/alpha_equipment.json",
+  "evidence_sha256": {
+    "master-yi-registration-source-manifest-v2.json": "2061336d082572c3e1bd4e32e7f16146d16306427717e53587770b9ab74825e3",
+    "master-yi-registration-nix-v3.log": "f31173fa5c7e627cd7b4ef732becb34d97f59575bedb7df62085fe3d151fa9e8",
+    "master-yi-registration-installed-comparison-v1.json": "f954508a807a2b53687f511531d5a36c40cc533f6de117ab7feaa2598379951d",
+    "master-yi-registration-api-v1.json": "39fe3b8ee6cb626cc729b4a87f6232b06b6688959fefea61dd911de006fd0a2f",
+    "ui-master-yi-registration-v2.json": "a89b48896dc66f67f9d7e70a5e404f2fdd79bd9c17f443a97a54ae5a29532de1",
+    "master-yi-registration-progress.json": "b63dfc19bcacdbdc3ee2b5427ce16a3d0251f5c5e4fb89e0f3d85c7855bb6d2f"
+  },
+  "reproduce": [
+    "cargo test --all-targets --locked",
+    "python3 tools/test_series_registrations.py",
+    "python3 tools/import_catalog.py --check",
+    "nix flake check",
+    "python3 tools/check_master_yi_registration_api.py target/release/rift-api report.json"
+  ]
+}

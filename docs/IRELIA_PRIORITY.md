@@ -116,8 +116,8 @@ prevention, while Repulse adds linked unit and chain targeting, including Repeat
 choices and physical-copy tracking. Both include bot API support, native controls
 and Beginner/Advanced companion advice. Their acceptance evidence is recorded in
 [reaction-card validation](validation/master_yi_reactions.json).
-Master Yi’s complete registration is being verified separately from the
-accepted Alpha Strike card implementation. The historical Kai’Sa registration contains a now-banned
+Master Yi’s complete registration has passed native and installed acceptance;
+see [its validation](validation/master_yi_registration.json). The historical Kai’Sa registration contains a now-banned
 battlefield and is not admitted as a complete current Standard registration.
 
 The [registered-opponent and timing checkpoint](validation/registered_opponents.json) records final Nix acceptance, installed UI checks and matching native/packaged API games for these registrations and the corrected Innovator sequence.
@@ -126,5 +126,6 @@ Alpha Strike is available with resolution-time allocation, public bot choices,
 native controls and companion advice. Its physical-parent Repeat interpretation
 remains explicit in [the rules audit](ALPHA_STRIKE_AUDIT.md). Brutalizer and Hand
 Hammer have visible live bonuses and attachment history. The [release validation](validation/alpha_equipment.json)
-records completed native and installed checks. These additions do not enable
-Master Yi's complete registration or an Azir preset. Both Irelia recipes remain unchanged.
+records completed native and installed checks. Master Yi now supplies another
+registered opponent for Irelia match practice. No Azir preset is added, and both
+Irelia recipes remain unchanged.

@@ -54,6 +54,22 @@ fn play_to_end(app: &mut App) {
 }
 pub(crate) fn run_frame(app: &mut App, frame: u32) -> bool {
     assert!(frame < 180, "native match UI did not finish");
+    let own_preset = std::env::var("RIFT_SERIES_PLAYER")
+        .ok()
+        .map(|v| v.parse::<usize>().unwrap())
+        .unwrap_or(5);
+    assert!(
+        [1, 5].contains(&own_preset),
+        "This scenario supports Irelia or Master Yi"
+    );
+    let registration = local_rift::match_series::Registration::from_preset(own_preset).unwrap();
+    let champion = registration.deck.chosen_champion;
+    let fields = registration.battlefields;
+    let (swap_out, swap_in) = if own_preset == 1 {
+        (7, 443)
+    } else {
+        (432, 424)
+    };
     let stage = STAGE.get();
     println!("Series UI frame {frame} stage {stage}");
     app.ui.input_override = None;
@@ -69,24 +85,24 @@ pub(crate) fn run_frame(app: &mut App, frame: u32) -> bool {
                 Ok("strategic") => Difficulty::Strategic,
                 _ => Difficulty::Tactical,
             };
-            app.player_deck = 1;
+            app.player_deck = 3;
             app.opponent_deck = 3;
             click(app, 1110.0, 46.0);
             advance();
         }
         1 => {
             assert!(app.series_lobby);
-            if app.player_deck == 1 {
+            if app.player_deck == 3 {
                 snapshot(app, "LOBBY_INCOMPLETE");
             }
-            if app.player_deck == 5 {
+            if app.player_deck == own_preset {
                 advance();
             } else {
                 click(app, 520.0, 534.0);
             }
         }
         2 => {
-            assert_eq!(app.player_deck, 5);
+            assert_eq!(app.player_deck, own_preset);
             let wanted = std::env::var("RIFT_SERIES_OPPONENT")
                 .ok()
                 .map(|v| v.parse::<usize>().unwrap())
@@ -115,7 +131,7 @@ pub(crate) fn run_frame(app: &mut App, frame: u32) -> bool {
             advance();
         }
         5 => {
-            assert_eq!(app.field_inspect, Some(13));
+            assert_eq!(app.field_inspect, Some(fields[0]));
             snapshot(app, "FIELD_RULES");
             click(app, 690.0, 502.0);
             advance();
@@ -126,7 +142,10 @@ pub(crate) fn run_frame(app: &mut App, frame: u32) -> bool {
             advance();
         }
         7 => {
-            assert_eq!(app.native_match.as_ref().unwrap().field_choice, Some(13));
+            assert_eq!(
+                app.native_match.as_ref().unwrap().field_choice,
+                Some(fields[0])
+            );
             click(app, 1200.0, 814.0);
             advance();
         }
@@ -192,43 +211,43 @@ pub(crate) fn run_frame(app: &mut App, frame: u32) -> bool {
         }
         16 => {
             assert_eq!(draft(app).deck.card_count(), 40);
-            if card_control(app, 432, 0, false) {
+            if card_control(app, swap_out, 0, false) {
                 advance();
             }
         }
         17 => {
             assert_eq!(draft(app).deck.card_count(), 39);
-            if card_control(app, 424, 1, false) {
+            if card_control(app, swap_in, 1, false) {
                 advance();
             }
         }
         18 => {
             assert_eq!(draft(app).deck.card_count(), 40);
-            if card_control(app, 0, 0, false) {
+            if card_control(app, champion, 0, false) {
                 advance();
             }
         }
         19 => {
-            if card_control(app, 0, 1, false) {
+            if card_control(app, champion, 1, false) {
                 advance();
             }
         }
         20 => {
             assert_eq!(draft(app).deck.card_count(), 40);
-            assert_eq!(draft(app).deck.chosen_champion, 0);
-            if card_control(app, 0, 0, true) {
+            assert_eq!(draft(app).deck.chosen_champion, champion);
+            if card_control(app, champion, 0, true) {
                 advance();
             }
         }
         21 => {
-            assert_eq!(draft(app).deck.chosen_champion, 0);
+            assert_eq!(draft(app).deck.chosen_champion, champion);
             snapshot(app, "CHAMPION");
             let n = app.native_match.as_ref().unwrap();
             let i = draft(app)
                 .deck
                 .cards
                 .iter()
-                .position(|&(id, _)| id == 0)
+                .position(|&(id, _)| id == champion)
                 .unwrap()
                 % 10;
             assert_eq!(
@@ -237,7 +256,7 @@ pub(crate) fn run_frame(app: &mut App, frame: u32) -> bool {
                     .deck
                     .cards
                     .iter()
-                    .position(|&(id, _)| id == 0)
+                    .position(|&(id, _)| id == champion)
                     .unwrap()
                     / 10
             );
@@ -245,7 +264,7 @@ pub(crate) fn run_frame(app: &mut App, frame: u32) -> bool {
             advance();
         }
         22 => {
-            assert_eq!(app.inspect, Some(0));
+            assert_eq!(app.inspect, Some(champion));
             snapshot(app, "CARD_RULES");
             click(app, 940.0, 700.0);
             advance();
@@ -270,7 +289,10 @@ pub(crate) fn run_frame(app: &mut App, frame: u32) -> bool {
             advance();
         }
         26 => {
-            assert_eq!(app.native_match.as_ref().unwrap().field_choice, Some(0));
+            assert_eq!(
+                app.native_match.as_ref().unwrap().field_choice,
+                Some(fields[1])
+            );
             click(app, 1200.0, 814.0);
             advance();
         }
@@ -280,7 +302,7 @@ pub(crate) fn run_frame(app: &mut App, frame: u32) -> bool {
                 SeriesPhase::PlayOrder
             );
             let v = app.native_match.as_ref().unwrap().state.observe(0).unwrap();
-            assert_eq!(v["players"][0]["chosen_champion"], 0);
+            assert_eq!(v["players"][0]["chosen_champion"], champion);
             snapshot(app, "SECOND_REVEAL");
             click(
                 app,
@@ -295,7 +317,7 @@ pub(crate) fn run_frame(app: &mut App, frame: u32) -> bool {
         }
         28 => {
             assert_eq!(app.game.phase, Phase::Mulligan);
-            assert_eq!(app.game.players[0].champion, Some(0));
+            assert_eq!(app.game.players[0].champion, Some(champion));
             assert!(app.selection.is_none() && app.targets.is_empty());
             click(app, 1283.0, 514.0);
             advance();
@@ -332,7 +354,10 @@ pub(crate) fn run_frame(app: &mut App, frame: u32) -> bool {
             advance();
         }
         33 => {
-            assert_eq!(app.native_match.as_ref().unwrap().field_choice, Some(14));
+            assert_eq!(
+                app.native_match.as_ref().unwrap().field_choice,
+                Some(fields[2])
+            );
             click(app, 1200.0, 814.0);
             advance();
         }
@@ -377,7 +402,7 @@ pub(crate) fn run_frame(app: &mut App, frame: u32) -> bool {
         }
         39 => {
             let v = app.native_match.as_ref().unwrap().state.observe(0).unwrap();
-            assert_eq!(v["deck"]["chosen_champion"], 0);
+            assert_eq!(v["deck"]["chosen_champion"], champion);
             assert_eq!(v["available_battlefields"].as_array().unwrap().len(), 3);
             click(app, 525.0, 598.0);
             advance();
@@ -558,7 +583,7 @@ pub(crate) fn run_frame(app: &mut App, frame: u32) -> bool {
             assert!(tip.starts_with("Consider ") || tip.starts_with("No clear swap"));
             assert_eq!(draft(app).deck.card_count(), 40);
             snapshot(app, "SIDEBOARD_HINT");
-            if card_control(app, 0, 0, false) {
+            if card_control(app, champion, 0, false) {
                 STAGE.set(14);
             }
         }

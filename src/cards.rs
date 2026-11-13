@@ -6863,7 +6863,22 @@ pub fn presets() -> Vec<DeckPreset> {
         },
         DeckPreset {
             legend_id: 1,
-            registration: None,
+            registration: Some(PresetRegistration {
+                pilot: "SWAGALISK",
+                event: "Los Angeles Regional Qualifier",
+                date: "September 2026",
+                placing: 6,
+                battlefields: &[11, 1, 12],
+                sideboard: &[
+                    (443, 1),
+                    (421, 1),
+                    (433, 2),
+                    (366, 3),
+                    (442, 1),
+                    (31, 1),
+                    (441, 1),
+                ],
+            }),
             name: "Master Yi / Wuju",
             legend_name: "Master Yi, Wuju Bladesman",
             legend_text: "While a friendly unit defends alone, it gets +2 Might.",

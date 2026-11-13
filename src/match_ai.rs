@@ -132,6 +132,8 @@ impl MatchPlan {
 struct Evidence {
     gears: usize,
     spells: usize,
+    damage_spells: usize,
+    unit_interactions: usize,
     fury: usize,
     mind: usize,
     empower_units: usize,
@@ -140,6 +142,7 @@ struct Evidence {
 }
 impl Evidence {
     fn new(scout: &Scouting, catalog: &[CardDef]) -> Self {
+        use crate::rules::OfficialEffect as Effect;
         let known: Vec<_> = scout
             .seen
             .iter()
@@ -152,6 +155,47 @@ impl Evidence {
                 .count()
                 .max(scout.gear_peak),
             spells: known.iter().filter(|c| c.kind == CardKind::Spell).count(),
+            // Classify reviewed spell instructions, not text substrings or
+            // unseen deck contents. Alpha and Fight explicitly deal unit damage.
+            damage_spells: known
+                .iter()
+                .filter(|c| {
+                    c.kind == CardKind::Spell
+                        && matches!(
+                            crate::rules::effect(c.id),
+                            Effect::Damage { .. }
+                                | Effect::AreaDamage { .. }
+                                | Effect::ExhaustFriendlyAndDamage { .. }
+                                | Effect::DamageAndGold { .. }
+                                | Effect::ContextualDamage(_)
+                                | Effect::ArcaneShift
+                        )
+                })
+                .count(),
+            unit_interactions: known
+                .iter()
+                .filter(|c| {
+                    c.kind == CardKind::Spell
+                        && matches!(
+                            crate::rules::effect(c.id),
+                            Effect::Damage { .. }
+                                | Effect::Kill { .. }
+                                | Effect::DisempowerThenKill { .. }
+                                | Effect::Stun
+                                | Effect::StunAndDrawFromHand
+                                | Effect::Bounce { .. }
+                                | Effect::BounceBoth
+                                | Effect::MoveEnemy
+                                | Effect::SwapMight
+                                | Effect::Fight { .. }
+                                | Effect::EmpoweredFight { .. }
+                                | Effect::DamageAndGold { .. }
+                                | Effect::ContextualDamage(_)
+                                | Effect::AlphaStrike
+                                | Effect::BanishSmallOrReturn { .. }
+                        )
+                })
+                .count(),
             fury: known
                 .iter()
                 .filter(|c| {
@@ -179,6 +223,22 @@ impl Evidence {
     /// neutral rather than assigned capabilities by a text substring guess.
     fn role(&self, id: CardId) -> Option<(i32, &'static str)> {
         match id {
+            443 if self.small >= 2 => Some((
+                45 + 5 * self.small.min(4) as i32,
+                "Several small battlefield units were visible. Alpha Strike can divide a friendly unit's Might among them; keep a source and compare current Might before casting.",
+            )),
+            441 if self.damage_spells > 0 => Some((
+                40 + 10 * self.damage_spells.min(3) as i32,
+                "Spell damage was revealed. Unyielding Spirit can prevent spell and ability damage for the turn for both players; it does not stop unit-dealt damage or other instructions.",
+            )),
+            442 if self.unit_interactions > 0 => Some((
+                40 + 8 * self.unit_interactions.min(3) as i32,
+                "Unit-targeting interaction was revealed. Repulse needs your unit at a battlefield and an enemy spell or ability choosing it without choosing another friendly unit.",
+            )),
+            366 if self.gears > 0 => Some((
+                35 + 10 * self.gears.min(3) as i32,
+                "Non-token gear was revealed. Disarming Rake adds a unit and an optional play ability that can kill a gear; the ability allows responses.",
+            )),
             433 if self.mind > 0 => Some((
                 40 + 10 * self.mind.min(3) as i32,
                 "Revealed Mind cards give Decree of Strength possible hand targets; it cannot recycle cards of other domains.",
@@ -250,7 +310,7 @@ fn value(id: CardId, count: u8, evidence: &Evidence, catalog: &[CardDef]) -> i32
         // Diminishing returns apply to narrow answers, not a deck's broad
         // three-copy staples. Multiple copies are not evidence of redundancy.
         role - i32::from(count.saturating_sub(1)) * 10
-    } else if matches!(id, 1 | 11 | 421 | 433 | 434) {
+    } else if matches!(id, 1 | 11 | 421 | 433 | 434 | 441..=443) {
         15
     } else {
         base

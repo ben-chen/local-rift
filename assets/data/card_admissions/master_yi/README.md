@@ -2,7 +2,8 @@
 
 Unyielding Spirit (OGN-145/298, runtime 441), Repulse (UNL-106/219, runtime 442),
 and Alpha Strike (UNL-192/219, runtime 443) have completed their release checks.
-The complete SWAGALISK Los Angeles registration is being verified separately.
+The complete SWAGALISK Los Angeles registration has passed
+[separate acceptance](../../../../docs/validation/master_yi_registration.json).
 See [Spirit/Repulse acceptance](../../../../docs/validation/master_yi_reactions.json),
 [Alpha/equipment acceptance](../../../../docs/validation/alpha_equipment.json),
 and [Alpha Strike's rules audit](../../../../docs/ALPHA_STRIKE_AUDIT.md).

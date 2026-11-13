@@ -78,7 +78,7 @@ fn decree_reveal_is_public_only_during_choice_and_failed_choices_are_atomic() {
 fn catalog_exposes_complete_registrations_and_exact_lacerate_target_and_flow_cost() {
     let cat = catalog();
     // Source registration validation is exercised by the same public reset API.
-    for p in [0, 2, 4, 5] {
+    for p in [0, 1, 2, 4, 5, 6] {
         let mut s = Session::default();
         let reply=s.handle(json!({"command":"series_begin","revision":0,"registrations":[{"preset":p},{"preset":5}],"designated_player":0}));
         assert_eq!(reply["ok"], true, "preset {p}: {reply}");

@@ -40,6 +40,7 @@ jobs:
           python3 examples/random_bot.py --binary target/release/rift-api --seed 43 --first-player 1
           python3 examples/random_bot.py --binary target/release/rift-api --seed 44 --difficulty strategic
           python3 tools/check_master_yi_reactions_api.py target/release/rift-api "$RUNNER_TEMP/local-rift-reactions.json"
+          python3 tools/check_master_yi_registration_api.py target/release/rift-api "$RUNNER_TEMP/local-rift-yi-matches.json"
       - name: Exercise desktop controls at both window sizes
         env:
           LIBGL_ALWAYS_SOFTWARE: "1"
@@ -66,3 +67,5 @@ jobs:
           XDG_DATA_HOME="$RUNNER_TEMP/local-rift-alpha-small" xvfb-run -a ./target/release/local-rift --ui-smoke-alpha --small
           XDG_DATA_HOME="$RUNNER_TEMP/local-rift-conditional-equipment" xvfb-run -a ./target/release/local-rift --ui-smoke-conditional-equipment
           XDG_DATA_HOME="$RUNNER_TEMP/local-rift-conditional-equipment-small" xvfb-run -a ./target/release/local-rift --ui-smoke-conditional-equipment --small
+          RIFT_SERIES_PLAYER=1 RIFT_SERIES_OPPONENT=5 XDG_DATA_HOME="$RUNNER_TEMP/local-rift-yi-series" xvfb-run -a ./target/release/local-rift --ui-smoke-series
+          RIFT_SERIES_PLAYER=5 RIFT_SERIES_OPPONENT=1 XDG_DATA_HOME="$RUNNER_TEMP/local-rift-yi-series-small" xvfb-run -a ./target/release/local-rift --ui-smoke-series --small

@@ -514,7 +514,7 @@ impl App {
                 self.notify(error);
             }
         }
-        self.ui.wrapped("Complete registrations: Xeno Irelia, Arito Irelia, Kennen, Rengar and Sonecon Riven. Other presets and custom lists remain available for single games.",260.0,801.0,730.0,12.0,MUTED);
+        self.ui.wrapped("Complete registrations: Xeno Irelia, Arito Irelia, Master Yi, Kennen, Rengar and Sonecon Riven. Other presets and custom lists remain available for single games.",260.0,801.0,730.0,12.0,MUTED);
     }
     pub(super) fn draw_native_match(&mut self) -> Result<(), String> {
         let series = self.native_match.as_ref().ok_or("No active match.")?;

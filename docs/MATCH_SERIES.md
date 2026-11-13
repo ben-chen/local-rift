@@ -35,8 +35,8 @@ Timed tournament rounds, judge penalties and best-of-five are not implemented.
 wins and losses remain in the practice record. Mote provides Beginner rules
 reminders or Advanced planning advice in the sidebar throughout setup.
 
-The native app offers four complete registrations: Xeno Irelia (preset 0),
-Kennen (2), Rengar (4), and Arito Irelia (5). Use **Next registered deck** on
+The native app offers six complete registrations: Xeno Irelia (preset 0),
+Master Yi (1), Kennen (2), Rengar (4), Arito Irelia (5), and Sonecon Riven (6). Use **Next registered deck** on
 either seat in match setup. The LA lists include the exact published sideboards
 and battlefields; their date is recorded as September 2026, not the article’s
 September 30 publication date. Custom match registrations remain available through Rust and the bot API.
@@ -83,10 +83,28 @@ protocol, not advanced matchup strategy.
 - `battlefields`: three different supported legal battlefield IDs, including
   the deck's default battlefield.
 
-Presets 0, 2, 4, and 5 carry complete runtime match registrations. Master Yi (1)
-and the historical Kai'Sa list (3) remain available for ordinary games and can
-supply an explicit legal custom registration; the API does not invent missing
-registered sideboards or include banned battlefields.
+Presets 0, 1, 2, 4, 5 and 6 carry complete runtime match registrations. The
+historical Kai'Sa list (3) remains available for ordinary games and can supply
+an explicit legal custom registration; its banned historical battlefield is
+not included in a Standard registration.
+
+## Master Yi match practice
+
+Master Yi uses SWAGALISK's sixth-place Los Angeles list: its unchanged 40-card
+main deck, five Calm and seven Body runes, ten sideboard cards, and Emperor's
+Dais, Seat of Power and Star Spring. Alpha Strike, Repulse and Unyielding Spirit
+begin in the sideboard. You can inspect them before registering and exchange
+cards only after the first game, using the normal Out/In controls.
+
+The adviser considers Alpha Strike after multiple small battlefield units were
+seen, Repulse after unit-targeting interaction, Unyielding Spirit after spell
+damage, and Disarming Rake after non-token gear. It distinguishes unit-dealt
+damage from spell damage and area effects from effects that choose units.
+These are conservative heuristics based on revealed information, not a claim of
+optimal matchup play. Mote's review explains a proposed swap without submitting
+it. The [registration validation](validation/master_yi_registration.json) records
+completed source, rules, native and packaged match checks, including both seats,
+all difficulty levels, manual sideboarding and adaptive opponents.
 
 ## Match sequence
 

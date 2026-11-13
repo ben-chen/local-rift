@@ -79,7 +79,7 @@ fn registration_enforces_exact_main_sideboard_combined_copies_and_three_legal_fi
     let r = registration();
     r.validate().unwrap();
     assert_eq!(Registration::from_json(&r.to_json()).unwrap(), r);
-    assert!(Registration::from_preset(1).is_err());
+    assert!(Registration::from_preset(3).is_err()); // Historical Kai'Sa has a banned field.
     let mut bad = r.clone();
     bad.deck.cards.push((422, 1));
     bad.deck.validate().unwrap();
