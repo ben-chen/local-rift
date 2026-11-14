@@ -1,10 +1,12 @@
 # Card and preset provenance
 
-Checked **October 26, 2026**. This is a personal, offline, unofficial practice prototype. Riftbound, its characters, card names, and official card artwork belong to Riot Games. The client is not endorsed by Riot Games.
+The base inventory was captured on **October 24, 2026**; later source admissions and reviews are dated below. This is a personal, offline, unofficial practice client. Riftbound, its characters, card names, and official card artwork belong to Riot Games. The client is not endorsed by Riot Games.
+
+Dated sections preserve the scope and remaining work at each admission checkpoint. For current support, use [Implemented rules](RULES.md), [Card coverage](CARD_COVERAGE.md), and the linked validation records. A source-backed identity or deck list is distinct from verified gameplay behavior.
 
 ## What the presets contain
 
-Each preset reproduces the published **40-card main-deck composition**, including the chosen champion. At setup, the chosen champion is removed from the shuffled deck into its own playable zone. The published rune split is also used at setup. Published battlefield choices remain provenance metadata and are directly inspectable in the new Arito preset’s registration tab. Before a game, each player selects one of seventeen reviewed official fields. The original choices and later additions are recorded below. Each preset defaults to a field from its published list. Runtime support for legend and card abilities is identified separately from these source facts.
+Each preset reproduces the published **40-card main-deck composition**, including the chosen champion. At setup, the chosen champion is removed from the shuffled deck into its own playable zone. The published rune split is also used at setup. Complete registered presets include their published sideboard and three battlefield choices; the deck library and match setup expose these separately from single-game field selection. Before a game, each player selects one of seventeen reviewed official fields. The original choices and later additions are recorded below. Each preset defaults to a field from its published list. Runtime support for legend and card abilities is identified separately from these source facts.
 
 | Preset | Published pilot and result | Source |
 |---|---|---|
@@ -15,15 +17,17 @@ Each preset reproduces the published **40-card main-deck composition**, includin
 | Rengar / Pridestalker | DSG Prismaticism, 1st, Los Angeles Regional Qualifier, September 2026 | [Riot: Los Angeles’ Top Decks](https://playriftbound.com/en-us/news/organizedplay/los-angeles-top-decks/) |
 | Irelia / Arito Convergence IV | Arito, 2nd (8–2–0), Convergence IV, October 31, 2026 | [Organizer deck page](https://topdeck.gg/deck/convergence-4/3Mb0hLsUTwgBYrpAauGOaRvDhnq1) and [standings](https://topdeck.gg/bracket/convergence-4) |
 
-Irelia, Master Yi, and Kennen are recent competitive archetypes with primary-source tournament evidence. Kai'Sa is a **historical competitive example** included for a different play style, not a claim that this May list is currently top tier. Radiance released October 23; these are dated, reproducible presets, not a forecast of that new metagame.
+| Riven / Sonecon Stuttgart | Sonecon, 2nd, European Regional Championship, Stuttgart, November 2026 | [Riot: European Championship highlights](https://playriftbound.com/en-us/news/organizedplay/best-ofs-for-the-european-championship/) |
 
-The original lists' exact counts and reference metadata are in `assets/data/decks.json`. No sideboard changes are applied. Kai'Sa's original battlefield metadata includes **The Arena's Greatest**, which is now banned; it is retained only as historical provenance and is not a selectable battlefield. Consult the [official Rules Hub](https://playriftbound.com/en-us/rules-hub/) for current legality.
+Irelia, Master Yi, and Kennen have primary-source tournament evidence for the dated events above. Kai'Sa is a **historical competitive example** included for a different play style, not a claim that this May list is currently top tier. Radiance released October 23; these are dated, reproducible presets, not a forecast of that new metagame.
+
+The original lists' exact counts and reference metadata are in `assets/data/decks.json`. Saved tournament recipes remain intact. Registered best-of-three practice allows legal sideboarding between games and restores the original registration for a new match. Kai'Sa's original battlefield metadata includes **The Arena's Greatest**, which is banned in the accepted catalog snapshot; it is retained only as historical provenance and is not a selectable battlefield. Consult the [official Rules Hub](https://playriftbound.com/en-us/rules-hub/) for current legality.
 
 ## Card facts and artwork
 
-All 433 runtime card names, energy costs, power costs, printed might, domains, card types, rules text, and keyword annotations come from the embedded public card data and explicitly reviewed source corrections for the [official Riftbound Card Gallery](https://playriftbound.com/en-us/card-gallery/) on October 24, 2026. The manifest records the original card identifier and CDN image URL for each card. An ordinary printing was preferred where available. The full inventory preserves conflicting printing values rather than assuming alternate printings always agree. It preserves 23 official records whose structured type contradicts their accessibility label. A separate, dated visual review now supplies explicit effective facts for those records and the other original source-issue groups, while keeping both raw claims. Every resolution has exact raw prerequisites and archived artwork evidence; an unresolved gameplay field still blocks runtime mapping. The source review does not add playable cards. See [Catalog review](CATALOG_REVIEW.md) and [Card coverage](CARD_COVERAGE.md).
+Runtime card facts come from the archived October 24, 2026 [official Riftbound Card Gallery](https://playriftbound.com/en-us/card-gallery/), reviewed source corrections, and the card admissions and operative errata recorded below. [Card coverage](CARD_COVERAGE.md) owns the current counts and identity mapping. The manifest records the original card identifier and CDN image URL for each card. An ordinary printing was preferred where available. The full inventory preserves conflicting printing values rather than assuming alternate printings always agree. It preserves 23 official records whose structured type contradicts their accessibility label. A separate, dated visual review now supplies explicit effective facts for those records and the other original source-issue groups, while keeping both raw claims. Every resolution has exact raw prerequisites and archived artwork evidence; an unresolved gameplay field still blocks runtime mapping. The source review does not add playable cards. See [Catalog review](CATALOG_REVIEW.md) and [Card coverage](CARD_COVERAGE.md).
 
-Images under `assets/art/` are the gallery's official Riot CDN card images, resized by its image service to 280–360 pixels wide as PNG (supported by the default Macroquad image decoder). `card_0.png` through `card_432.png` match catalog IDs; `champion_0.png` through `champion_3.png` are aliases of cards 0, 22, 33, and 49. The game does not need a network connection to load the bundled assets. These images are not original art created for this project.
+Card images under `assets/art/` use official Riot CDN artwork; the manifests and individual admissions record their source URLs and any image-service resizing. `card_<id>.png` names match runtime card IDs; `champion_0.png` through `champion_3.png` are aliases of cards 0, 22, 33, and 49. The token-art section below documents token images separately. The game does not need a network connection to load the bundled assets. These images are not original art created for this project.
 
 Runtime IDs 0–68 preserve the original preset catalog. IDs 69–80 append five vanilla units (Mega-Mech, Mountain Drake, Playful Phantom, Shipyard Skulker, and Vanguard Sergeant) and seven spells (Incinerate, Falling Comet, Primal Strength, Progress Day, Premonition, Moonlight Affliction, and Rebuke). These additions come from the same official gallery snapshot and do not alter the sourced tournament lists. Their five empty rules-text fields are intentional: those vanilla units have no printed abilities. `CardDef.official_id` exposes each stable official printing identifier independently of its runtime index.
 
@@ -247,8 +251,8 @@ records Arito’s exact 40-card main composition, ten sideboard cards, twelve ru
 and three battlefields. Both the organizer standings and the complete rendered
 deck entries were read, with no exported raw deck file claimed. This corrects the
 previous overlooked Edge of Night gap. The [validation record](validation/irelia_arito.json)
-distinguishes source facts, actual games and UI checks from unfinished tournament
-match structure and sideboarding.
+distinguishes that checkpoint’s source facts and UI checks from tournament
+match support added later; current registered play is described in [Match practice](MATCH_SERIES.md).
 
 The [Master Yi reaction-card admission](../assets/data/card_admissions/master_yi/README.md)
 adds Unyielding Spirit and Repulse from complete official faces, preserving raw
@@ -259,7 +263,8 @@ for live physical targets across all Repeat executions. Retired FAQs supply no
 text override. The preceding 441 main cards and all seven sourced main recipes
 remain unchanged. The [validation record](validation/master_yi_reactions.json)
 separates authored card-use games from preset simulations and packaged UI/API
-checks; complete SWAGALISK registration and Alpha Strike remain outstanding.
+checks. At that checkpoint, complete SWAGALISK registration and Alpha Strike
+were outstanding; their later acceptance is recorded in [the registration record](validation/master_yi_registration.json).
 
 
 ## Token artwork
