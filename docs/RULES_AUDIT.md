@@ -874,5 +874,8 @@ Guards has passed its native and installed rules/API acceptance; this combined
 release adds token artwork and inspection. Token previews use the physical unit
 or Gold copy, current state and token rules, rather than the creating card’s
 printed effects. An inspector stays explicit when its token has departed.
-Combined package acceptance is pending; this does not complete the Azir list or
-all Standard interactions.
+Combined acceptance now passes 1,867 Rust tests, 300 source checks, 1,176 preset
+simulations, ten installed desktop cases and exact API-record comparisons for
+84 Guards games and 48 registered matches. The [combined record](validation/guards_tokens.json)
+pins the tested revision and six representative visual reviews. This does not
+complete the Azir list or all Standard interactions.

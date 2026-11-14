@@ -1,6 +1,6 @@
 {
-  "status": "Native integration passed; combined immutable package acceptance pending",
-  "recorded_at": "2026-11-14T01:27:42.453356+00:00",
+  "status": "Combined immutable package, installed desktop and complete API acceptance passed; publication pending",
+  "recorded_at": "2026-11-14T02:42:14.138849+00:00",
   "base_commit": "3963c29ab4131b7cc2aa2186dc09f10102d26645",
   "scope": [
     "Guards! optional reflexive Ready of its exact created token",
@@ -91,14 +91,16 @@
     ]
   },
   "release_runner": {
-    "gate_tests_passed": 5,
+    "gate_tests_passed": 7,
     "guards_against": [
       "Mutable or empty acceptance plans",
       "UI exit without completion",
       "Missing or misnamed captures",
       "Series without required actual games",
       "Trace changes with unchanged winner",
-      "Host-library overrides in UI cases"
+      "Host-library overrides in UI cases",
+      "Missing build/display prerequisites detected before packaging",
+      "Full source and output paths retained through installed acceptance"
     ]
   },
   "artwork": {
@@ -109,15 +111,82 @@
     "display": "Artwork crops with live English engine rules; original source faces preserved"
   },
   "remaining": [
-    "Complete combined immutable Nix package, catalog and simulation checks",
-    "Verify installed core, token, Guards and full Irelia series UI at both sizes",
-    "Compare installed full card and registered-match API records against accepted native baselines",
-    "Publish accepted commit and collect GitHub CI"
+    "Publish accepted changes with the integrated format release and collect GitHub CI"
   ],
   "limitations": [
     "Not full Standard rules parity or all legal card support",
     "Guards adds a card, not a complete Azir registration",
     "Simulation consistency does not establish tournament AI strength",
     "Only x86_64 Linux acceptance is performed here"
-  ]
+  ],
+  "packaged_acceptance": {
+    "revision": "d23e26bf7f121afa34dadc368c411c951133a6a1",
+    "platform": "x86_64-linux",
+    "package": "/nix/store/axxl8c7ayvqvhwfs6m65n6qil1fmpsdf-local-rift-0.1.0",
+    "source": "/nix/store/rxfm7kkshdmvx9jk89a9kdngxx34ana6-source",
+    "nix_seconds": 1199.31,
+    "rust_tests": 1867,
+    "rust_skipped": 0,
+    "rust_nextest_seconds": 873.984,
+    "source_tests": 300,
+    "source_seconds": 320.328,
+    "doctests": "passed; none defined",
+    "preset_simulations": 1176,
+    "ui_cases": 10,
+    "captures": 60,
+    "actual_registered_ui_games": 5,
+    "registered_ui_presets": {
+      "normal": [
+        5,
+        1
+      ],
+      "small": [
+        0,
+        1
+      ]
+    },
+    "ui_host_library_override": false,
+    "api": [
+      {
+        "name": "guards-api",
+        "seconds": 22.26,
+        "records": 84,
+        "records_key": "games",
+        "full_records_equal": true,
+        "baseline_sha256": "a93264a61b9577a65face118811c8518fc8b09604a07de150638a4ef4c0907b2",
+        "report_sha256": "0bc1a8e1c941432b980ceed9de098e99e3064de7b8cc29347adfe0a81e76f7c0"
+      },
+      {
+        "name": "registered-api",
+        "seconds": 28.079,
+        "records": 48,
+        "records_key": "matches",
+        "full_records_equal": true,
+        "baseline_sha256": "7371421495045d9d8df8e9ec548250666c63ec2eea5395768dcb45bd891f6f88",
+        "report_sha256": "7346e36627826414543d99be44329ad17425bfb27f7728b48a2c9d5eecb1cfd9"
+      }
+    ],
+    "visual_review": "Six representative final installed captures reviewed; 60 captures generated and checked. Pixel hashes differ from v3; no claim of pixel equivalence or visual review of every capture.",
+    "earlier_attempts": [
+      {
+        "revision": "aeb9944d6d02c7d048bc114fe98e9bcc94a0df3a",
+        "outcome": "Nix tests passed; installed UI could not start because full source was missing. Filtered inputs did not retain it."
+      },
+      {
+        "revision": "2ea640cf41199d3905e1b75d90b57d1c84018bd3",
+        "outcome": "Source root could not be realized from cached metadata. Runner now explicitly archives the source first."
+      },
+      {
+        "revision": "0759f0a06ebb5f05078a40509362d346ca6f4d26",
+        "outcome": "Nine installed UI cases passed; small Xeno series fixture rejected unsupported preset 0 before play. Scenario extended without changing game rules."
+      }
+    ],
+    "evidence_sha256": {
+      "guards-tokens-release-v4/status.json": "4931a4bbf934f44287fabd2cbee0925b74a66847567d903248b96f253dcac0df",
+      "guards-tokens-release-v4/nix.log": "edc8662a68c04341a9accbea2e154fd53b043f2f90661efef47e697834471f2e",
+      "guards-tokens-release-plan-v4.json": "ce5432f1edbd8c081dd96a6a4738daeef60bec5bc60df4b15ebafa15de23c652",
+      "guards-release-visual-review-v4.json": "3d65f8ab90b6d4a2ec6974556d78f642f38b66991277c4e7331135ae4bb397d6",
+      "guards-release-capture-comparison-v1.json": "4e402727245c3a437e8e08bdcd5ca8f177885ac9658cf364592cf42cf0d22fe7"
+    }
+  }
 }

@@ -143,5 +143,23 @@
     "profile_sha256": "dbfbdd1c5ba84074e9d2fa3d9170c90b1d62251e1dcab899c28f2545afd4bbef",
     "review_sha256": "ea712e5034a1f65d70d8260ca83d393d5e1c28de7558c69e1bcb041fc09b733d",
     "interpretation": "Most time is in repeated production validation, including altered-source rejection tests. Retain these checks; broad evidence caching is not introduced. Profiling adds overhead and is not a CI-time comparison."
+  },
+  "packaged_nextest": {
+    "revision": "d23e26bf7f121afa34dadc368c411c951133a6a1",
+    "status": "passed",
+    "use_nextest": true,
+    "test_threads": 4,
+    "retries": 0,
+    "rust_tests": 1867,
+    "rust_skipped": 0,
+    "rust_seconds": 873.984,
+    "doctests": "separate command passed; none defined",
+    "nix_package_catalog_simulation_seconds": 1199.31,
+    "source_tests": 300,
+    "preset_simulations": 1176,
+    "installed_ui_cases": 10,
+    "installed_api_full_records_equal": true,
+    "limits": "Observed on this candidate with other local work running. The earlier cargo package took 2158.978 seconds at a different revision; these are not a controlled speed comparison. All checks retained.",
+    "evidence_sha256": "4931a4bbf934f44287fabd2cbee0925b74a66847567d903248b96f253dcac0df"
   }
 }
