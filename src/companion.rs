@@ -1600,10 +1600,18 @@ fn response_window_advice(
     if !game.chain.is_empty() {
         let mut tips = vec![];
         if game.priority() == 0 {
-            tips.push(if beginner {
+            let waiting_for_reset = !game.legend[0].ready
+                && matches!(game.chain.as_slice(), [item]
+                    if item.player == 0 && matches!(item.ability,
+                        Some(local_rift::game::ChainAbility::Legend(local_rift::legends::LegendAbility::IreliaRefresh))));
+            tips.push(if waiting_for_reset && beginner {
+                "Pass priority; after both players pass, Irelia's reset readies the legend. Wait for that before choosing a friendly unit. Reassess if the opponent responds."
+            } else if waiting_for_reset {
+                "Let the reset resolve before spending your choosing spell; the exhausted legend cannot pay its ready cost yet. Reassess if the opponent responds."
+            } else if beginner {
                 "You have priority. A spell or ability waits on the chain: play a legal reaction or pass. Two consecutive passes resolve the newest item first."
             } else {
-                "You have priority. Spend interaction on the effect that changes the point or trade; saving every spell can empty your resources."
+                "You have priority. Spend interaction on the effect that changes the point or trade; answering every spell can empty your resources."
             });
             let friendly_target = game.chain.last().is_some_and(|item| {
                 item.player == 1

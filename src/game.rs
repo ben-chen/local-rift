@@ -18,6 +18,8 @@ use std::collections::VecDeque;
 mod combat;
 #[path = "deploy.rs"]
 mod deploy;
+#[path = "irelia_ai.rs"]
+mod irelia_ai;
 pub use combat::{CombatResolution, CombatResult, CombatStep};
 #[cfg(test)]
 #[path = "backoff_tests.rs"]
@@ -10104,8 +10106,22 @@ impl Game {
                 return Ok(Action::EndTurn);
             }
 
+            // Let our paid Irelia reset resolve before spending the friendly
+            // choosing play it is meant to enable. Only wait for this lone
+            // friendly ability: an opponent's response must still be evaluated.
+            if !self.legend[player].ready
+                && matches!(self.chain.as_slice(), [item]
+                    if item.player == player
+                        && matches!(item.ability, Some(ChainAbility::Legend(LegendAbility::IreliaRefresh))))
+            {
+                return Ok(Action::Pass);
+            }
+
             // Only the active player's hand is read. The opponent contributes its
             // public units and score, never its hand or deck order.
+            if let Some(action) = self.irelia_winning_route()? {
+                return Ok(action);
+            }
             let mut plays: Vec<(i128, Action)> = Vec::new();
             for action in self.canonical_play_candidates(24)? {
                 plays.push((self.canonical_action_score(&action)?, action));

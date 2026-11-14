@@ -405,7 +405,12 @@ fn run(case: Position, player: usize, level: Difficulty) -> Value {
         }
     }
     let success = if case.win {
-        game.winner == Some(player) && game.turn == original.turn
+        game.winner == Some(player)
+            && game.turn == original.turn
+            && (!matches!(case.start, Start::Open)
+                || (game.players[player].hand == original.players[player].hand
+                    && game.players[player].runes == original.players[player].runes
+                    && game.players[player].energy == original.players[player].energy))
     } else {
         game.players[player].energy == original.players[player].energy
             && game.players[player].runes == original.players[player].runes
@@ -422,8 +427,11 @@ fn run(case: Position, player: usize, level: Difficulty) -> Value {
     };
     json!({
         "position":case.id, "seat":player, "difficulty":format!("{level:?}"),
-        "objective":if case.win { "win_this_turn" } else { "decline_without_spending" },
-        "must_pass":case.must_pass, "success":success, "ai_steps":steps,
+        "objective":if matches!(case.start, Start::Open) { "win_without_spending" }
+            else if case.win { "win_this_turn" } else { "decline_without_spending" },
+        "must_pass":case.must_pass || level == Difficulty::Strategic
+            || (case.win && !matches!(case.start, Start::Open)),
+        "success":success, "ai_steps":steps,
         "step_ms":times, "first_step":first, "advice":advice,
         "failed_trace":if success { Value::Null } else { json!(trace) },
         "final_log":if success { Value::Null } else { json!(game.log) },
@@ -475,4 +483,60 @@ fn measured_irelia_decisions_and_companion() {
         failures.is_empty(),
         "established regression failed: {failures:?}"
     );
+}
+
+#[test]
+fn waiting_for_irelia_reset_does_not_ignore_an_enemy_response() {
+    for player in 0..2 {
+        for level in [Difficulty::Easy, Difficulty::Tactical] {
+            let mut game = setup(POSITIONS[6], player, level);
+            game.players[player].hand = vec![1]; // Abandon can answer their Gust.
+            game.players[1 - player].hand = vec![11];
+            game.players[1 - player].energy = 1;
+            game.players[1 - player].energy_pool = 1;
+            game.apply(Action::Choose { accept: true }).unwrap();
+            if player == 0 {
+                for level in [AdviceLevel::Beginner, AdviceLevel::Advanced] {
+                    let mut mote = Companion::new(level);
+                    mote.observe(&game);
+                    assert!(mote.message().contains("reset") && mote.message().contains("before"));
+                    assert!(mote.message().chars().count() <= 180);
+                }
+            }
+            let chain = game.chain.clone();
+            game.step_ai().unwrap();
+            assert_eq!(game.chain, chain, "wait for the lone friendly reset");
+            assert_eq!(game.priority(), 1 - player);
+            game.apply(Action::PlayCard {
+                hand_index: 0,
+                lane: None,
+                target: Some(Target::Unit {
+                    player,
+                    unit_id: 62000,
+                }),
+            })
+            .unwrap();
+            assert_eq!(game.priority(), 1 - player, "the caster retains priority");
+            game.apply(Action::Pass).unwrap();
+            assert_eq!(game.priority(), player);
+            if player == 0 {
+                for level in [AdviceLevel::Beginner, AdviceLevel::Advanced] {
+                    let mut mote = Companion::new(level);
+                    mote.observe(&game);
+                    assert!(
+                        !mote.message().contains("reset"),
+                        "reassess the new enemy spell"
+                    );
+                }
+            }
+            game.step_ai().unwrap();
+            assert!(
+                game.chain.iter().any(|item| item.player == player
+                    && item.card_id == 1
+                    && item.ability.is_none()),
+                "{player}/{level:?}: opponent response was ignored: {:?}",
+                game.log
+            );
+        }
+    }
 }

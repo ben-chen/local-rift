@@ -326,6 +326,21 @@ When a seeded AI game exposes a rules bug, preserve the relevant legal actions
 as a replay. A rule regression should keep testing that interaction when the AI
 learns a different line; policy tests should assert the AI's decisions separately.
 
+The small Irelia decision benchmark pairs explicit legal solutions with opponent
+execution and Mote's Beginner/Advanced commentary. Run it without a graphics window:
+
+```sh
+RIFT_IRELIA_BENCHMARK_REPORT=/tmp/irelia-decisions.json cargo test --locked --bin local-rift practice_benchmark:: -- --nocapture
+```
+
+Its twelve authored positions run in both seats at all three difficulty levels.
+The report separates successes, known misses, decision times and required regression
+gates; a passing test does not mean every measured objective was achieved. It checks
+hidden-information independence and read-only, brief advice. The scripted opponent
+passes except in the separate response regression. These are development positions,
+not held-out matchup evidence, complete games, human learning tests or a strength
+rating. Timing is observational and has no machine-dependent pass threshold.
+
 `python3 tools/check_release.py --plan plan.json --output /path/to/new-results`
 builds and verifies one committed revision. The JSON plan has a full `revision`
 SHA, `ui` cases (`name`, smoke-mode `args`, optional `captures` environment-variable
