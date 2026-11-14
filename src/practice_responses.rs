@@ -217,10 +217,9 @@ fn witness(case: Case, player: usize, original: &Game) {
 
 #[test]
 fn repeated_gust_can_still_return_its_other_target_after_a_buff() {
-    use local_rift::game::ChainSource;
-    use local_rift::play::{
-        ExecutionChoices, PlayChoices, PlayGrant, PlayGrantKind, RepeatSelection,
-    };
+    use local_rift::cards::Domain;
+    use local_rift::game::domain_index;
+    use local_rift::play::{ExecutionChoices, PlayChoices, RepeatSelection};
 
     let mut game = setup(
         Position {
@@ -243,19 +242,15 @@ fn repeated_gust_can_still_return_its_other_target_after_a_buff() {
         player.energy = 2;
         player.energy_pool = 2;
     }
-    // Authored public midgame grant. The Academy's real Hold trigger is
-    // separately covered in c4_battlefields; the spell below pays real Repeat.
-    game.battlefields[0] = 4;
-    game.play_grants.push(PlayGrant {
-        id: 64001,
-        player: 1,
-        source: ChainSource::Battlefield {
-            lane: 0,
-            battlefield_id: 4,
-        },
-        expires_turn: game.turn,
-        kind: PlayGrantKind::RepeatNextSpell,
-    });
+    // Syndra grants Repeat during this showdown, including on the opponent's
+    // turn. Pay her real additional 2 Energy and 1 Chaos Power below.
+    let mut syndra = unit(64001, 266, true);
+    syndra.lane = Some(1);
+    game.players[1].units.push(syndra);
+    game.battlefield_owner[1] = Some(1);
+    game.players[1].energy = 3;
+    game.players[1].energy_pool = 3;
+    game.players[1].power_pool[domain_index(Domain::Chaos)] = 1;
     game.apply(Action::MoveGroup {
         unit_ids: vec![RUNNER, PARTNER],
         lane: Some(1),
@@ -289,6 +284,7 @@ fn repeated_gust_can_still_return_its_other_target_after_a_buff() {
     })
     .unwrap();
     assert_eq!(game.players[1].energy, 0);
+    assert_eq!(game.players[1].power_pool[domain_index(Domain::Chaos)], 0);
     game.apply(Action::Pass).unwrap();
     play_buff(&mut game, 0);
     while game.chain.last().is_some_and(|item| item.card_id != 11) {

@@ -384,12 +384,14 @@ Timing is observational and has no machine-dependent pass threshold. The optiona
 API campaign separately measures complete-match and dated-format stability.
 
 The same focused run writes `responses.json` for four additional Irelia positions
-where the opponent can recast Gust after Abandon returns it. Each position has
+with an opponent that recasts returned Gust whenever legal. Each position has
 an independently specified legal winning line, both seats and all three levels.
 The report separates winning from winning without unnecessary spending, and
 retains misses. Mote explains Gust’s resolution-time Might check, the counter’s
-return-to-hand risk and when passing preserves resources. These are development
-scenarios; they do not rate general opponent strength.
+return-to-hand risk and when passing preserves resources. Additional regressions
+cover replay departures and Syndra's Repeat with different targets. The
+[response validation](docs/validation/irelia_responses.json) records the scoped
+evidence. These development scenarios do not rate general opponent strength.
 
 `python3 tools/check_release.py --plan plan.json --output /path/to/new-results`
 builds and verifies one committed revision. The JSON plan has a full `revision`

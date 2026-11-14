@@ -1,5 +1,5 @@
 {
-  "status": "Response benchmarks and initial native coaching checks pass; integrated preflight, final lint and immutable package acceptance remain pending.",
+  "status": "Integrated preflight, final benchmark and strict lint pass; native captures reviewed at both sizes. Immutable installed acceptance remains pending.",
   "base_revision": "d09f3fe7f03c8dcd4c74c550fb6adfa206c2aba2",
   "reviewed_on": "2026-11-14",
   "behavior": "Mote explains Gust target rechecks, Abandon replay risk, public banish/recycle departures, and other Repeat targets. Commentary remains optional and read-only. Opponent policy and the rules engine are unchanged.",
@@ -34,7 +34,34 @@
     "final_benchmark_tests": 6,
     "earlier_companion_tests": 54,
     "earlier_python_runner_tests": 5,
-    "earlier_strict_clippy": "Passed before the Repeat follow-up; final integrated lint pending."
+    "earlier_strict_clippy": "Passed before the Repeat follow-up; final integrated lint pending.",
+    "integrated_preflight": {
+      "source": {
+        "revision": "820bb1b56d074a7ca31a72ddd50e63cc74142f41",
+        "tracked_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "untracked_sha256": {},
+        "dirty": false
+      },
+      "tests": {
+        "passed": 201,
+        "seconds": 15.509,
+        "suites": [
+          "local-rift",
+          "local-rift::bin/local-rift",
+          "local-rift::c4_play",
+          "local-rift::catalog_coverage",
+          "local-rift::catalog_review",
+          "local-rift::irelia_arito",
+          "local-rift::irelia_decisions",
+          "local-rift::registered_matches"
+        ]
+      },
+      "elapsed_seconds": 52.162,
+      "report": "irelia-responses-integrated-v1/status.json"
+    },
+    "final_benchmark_seconds": 0.22,
+    "strict_clippy": "Passed after the final Syndra fixture refinement; 0.79 seconds.",
+    "scope_note": "The 201-test integrated run predates only a refinement of the Repeat fixture: it now uses Syndra in a real showdown and pays 2 Energy and 1 Chaos Power, rather than an authored Academy grant. All six benchmark tests passed again afterward; runtime code is unchanged."
   },
   "native": {
     "status": "passed",
@@ -58,7 +85,8 @@
     "Fixture expected 4 Might for isolated Pyke after En Garde; printed 3 plus 2 is 5.",
     "Fixture omitted the opponent priority pass after the buff; corrected real action sequence.",
     "Expected red coaching test exposed missing Gust-specific response advice.",
-    "Expected red Repeat regression reproduced the false statement that Gust had no legal target when its second execution remained valid."
+    "Expected red Repeat regression reproduced the false statement that Gust had no legal target when its second execution remained valid.",
+    "Review replaced the initial synthetic Academy Repeat grant with Syndra in a showdown; this avoids implying that an own-turn Hold grant survives into the opponent turn."
   ],
   "limits": [
     "Authored development positions, not held-out strength evaluation or proof of learning outcomes.",
@@ -68,7 +96,7 @@
   "files_sha256": {
     "src/companion.rs": "b83328320544043aad4ef2b156cd5c4c7ba45f5320a47c9cf4a187ffc3d61b4e",
     "src/practice_benchmark.rs": "9775a3aaeffd12d639ad41606b5a192cda780d3da76fc49f488c77da677d7bc5",
-    "src/practice_responses.rs": "8c731e5f8990cc47ef19cedf27d1ffd5436d8edda42caafd32e19efd7a4ad154",
+    "src/practice_responses.rs": "98f8068f318b71f857256ba3ceabf631edb9decc10c4c3a00c610ced5653311b",
     "src/smoke/irelia.rs": "7890e8cb520dfa4655d645f7a91fe848343a8fa64ef7ce20f2f416e128b25dce",
     "src/smoke/irelia_responses.rs": "183d32318feeddf6cea166558abb9c68e075a32caeefe7186413dce74e0c8a92"
   },
@@ -79,6 +107,11 @@
     "irelia-responses-companion-v1.log": "588c977fa6d6b65229d9b2f0d57def07875e472e4334de116ee53fc4a5dcefda",
     "irelia-responses-repeat-red-v1.log": "d175ff7371f8110bb4851e2a69c0d37e32fcdb10e1298f5cb29a6bf41af2151d",
     "irelia-responses-native-v1/status.json": "ed327f2a0e8ec7be330c47e0dde0f42b50cc9fedb805b84674e3218ce1f66f1f",
-    "irelia-responses-clippy-v1.log": "b8070b134de5286c5bd9deb1bb80c6a2abab05118f6140deffa3ef15680ee85e"
+    "irelia-responses-clippy-v1.log": "b8070b134de5286c5bd9deb1bb80c6a2abab05118f6140deffa3ef15680ee85e",
+    "irelia-responses-integrated-v1/status.json": "db6b3381124415dc0731a555457e69af23f101a399e0f6fece47e20b38b23fe7",
+    "irelia-responses-integrated-v1/junit.xml": "69d6333e793c64ffad8155e1c8c6322583d286a098bd92aabff7721411a55699",
+    "irelia-responses-coach-v4.log": "909a1af8b895b22aa8dd75a2cc8d0ca86d17e3b27138e52bcc261bbdfa47129a",
+    "irelia-responses-coach-v4.json": "8b017491048cc225664bc7d61aad6b562eaa1326b0f223f1204c22026ff1f8b6",
+    "irelia-responses-integrated-clippy-v2.log": "2810eb62b90ffa67b53585c7f24e84a026b7258baa7e1db65b428f50081a8053"
   }
 }
