@@ -217,15 +217,36 @@
     "format-release-v1/status.json": "5c7079135932c1e9a7562c824245adadea627076bf5a477a1a268eac80bcc791",
     "format-release-visual-review-v1.json": "65d63ae4f4c0780bc9406ba3a69f1f70895b8ac6f9f957aa935874e87c4a7121"
   },
-  "remaining": [
-    "Publish accepted changes and collect GitHub CI",
-    "Polish the clipped decorative headline in the small turn-effect layout; format and controls remain visible."
-  ],
+  "remaining": [],
   "limitations": [
     "Desktop defaults to the local current date; omitted API date intentionally preserves the accepted catalog snapshot for existing bot clients.",
     "Future dates use known announcements and do not predict later changes",
     "Global dates do not apply to the announced Korea or Traditional Chinese release exceptions",
     "This does not add new cards or establish complete Standard rules parity"
   ],
-  "reproduce_matches": "python3 tools/check_format_api.py /path/to/rift-api /path/to/results.json"
+  "reproduce_matches": "python3 tools/check_format_api.py /path/to/rift-api /path/to/results.json",
+  "github": {
+    "commit": "07e764505875a3c2530dfd3e1e0f47ecfce3ff10",
+    "run_id": 43549576318,
+    "job_id": 132308661059,
+    "status": "completed",
+    "conclusion": "success",
+    "url": "https://github.com/ben-chen/local-rift/actions/runs/43549576318",
+    "rust_tests": 1882,
+    "rust_skipped": 0,
+    "rust_seconds": 1270.347,
+    "source_tests": 303,
+    "preset_simulations": 1176,
+    "native_ui_runs": 34,
+    "native_series_actual_games": 5,
+    "log_sha256": "4596a220b34a05377a359d53f3e43a43056dda7f8baf32f3a0ff4d6b23bf6483"
+  },
+  "capture_followup": {
+    "scope": "UI test capture scheduling; production layout unchanged",
+    "branch": "codex/frame-captures",
+    "checks": "Both window sizes passed with and without PNG output; six captures generated, both turn-effect captures visually reviewed",
+    "result": "Moving the second capture to a separate frame removes heading clipping at both sizes. The old screenshot is not evidence of a persistent live layout defect.",
+    "report_sha256": "cbeca9dcdbd3ef20cfe21ae5a5f9622a895e4b0cc25896675c2aaa0c04b1194e",
+    "integration": "Included in a772656825bee468ee12bd1ec8738171f44ca468; final installed format checks running with the Irelia acceptance"
+  }
 }

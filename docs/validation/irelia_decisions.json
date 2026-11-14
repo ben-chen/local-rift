@@ -1,7 +1,7 @@
 {
-  "status": "Expanded Irelia decisions, source-backed Ready semantics, companion and complete-match checks passed; final installed acceptance pending",
-  "source_commit": "5cc1476bc762bef4f64c1ccb102c73f3c978f801",
-  "reviewed_at": "2026-11-14T03:43:58.630124+00:00",
+  "status": "Irelia decisions passed isolated focused checks; failed full-suite AI-dependent setup replaced with its original legal replay; corrected full package acceptance running",
+  "source_commit": "a772656825bee468ee12bd1ec8738171f44ca468",
+  "reviewed_at": "2026-11-14T04:03:23.943969+00:00",
   "scope": [
     "Avoid paying to ready an already-ready Irelia legend without changing human legality",
     "Search the reset, choosing play and move, retaining Pass while the reset awaits responses",
@@ -48,7 +48,21 @@
       "interpretation": "The six Irelia match traces changed with the new policy; all three authored Rengar records remain identical. This is not a claim of unchanged policy traces."
     },
     "final_api_date_pairs_equal": true,
-    "final_api_binary_sha256": "784458b8121372b492da932b79dfcc509d38c112391e37294d5f76af99b0f8f2"
+    "final_api_binary_sha256": "784458b8121372b492da932b79dfcc509d38c112391e37294d5f76af99b0f8f2",
+    "replay_followup": {
+      "tests": 33,
+      "skipped": 0,
+      "seconds": 0.208,
+      "scope": "All 24 c4_play regressions and all nine Irelia decisions, using an isolated worktree build directory",
+      "clippy": "all targets passed with warnings denied",
+      "fixture": "Original seed 117 actions recovered from published 07e7645; all 34 setup actions and the final Predict choice are explicit. Original suspended-resolution, lethal Vex and final cleanup assertions retained."
+    },
+    "format_capture_followup": {
+      "runs": 4,
+      "captures": 6,
+      "visually_reviewed": 2,
+      "scope": "Normal and small format smoke, with and without image output. Splitting the effect capture into a new animation frame removes the clipped heading without changing production layout."
+    }
   },
   "regressions_observed": [
     "Baseline Easy/Tactical spend energy on an already-ready legend",
@@ -78,7 +92,10 @@
     "src/game.rs": "d3e1fa534eed686b7b7a9aafc5d69ed55d7dd9a7f11d80c5b001006175f3b4f0",
     "src/strategic.rs": "923562aaa1dbf46dab0ca119d2436081451abfb26b3dc898ba4c90fe8710f9fe",
     "src/companion.rs": "c5b0a6feb9ad8f32c47c4e1436463dd0cc181c9ea2cf5bc52c6c9fe360a49d68",
-    "tests/irelia_decisions.rs": "75400e0a4f84a0ce3927665ca8ede87b00129e4bc88b0b56ebd3a960f3d4e96f"
+    "tests/irelia_decisions.rs": "75400e0a4f84a0ce3927665ca8ede87b00129e4bc88b0b56ebd3a960f3d4e96f",
+    ".config/nextest.toml": "489e148ec564ecd1ec32820515642e5c5b0986b530cb83b8fa1d2a9930636df7",
+    "tests/c4_play.rs": "e49615b2cb0fe75d73f20b4060a98286e25a2ebf5dfa5f5290303552a762206b",
+    "src/smoke/format.rs": "70b50871a4cb37706af343c7c5ca0a72ba42b9cf17ddbc5b8453f86a3b85263c"
   },
   "evidence_sha256": {
     "irelia-decisions-before-v2.log": "cafc499183e98e6c8b1aa38ab638ba0d202154e3507be049bc516566db8adb5d",
@@ -99,20 +116,28 @@
     "irelia-decisions-clippy-v2.log": "ddbcd6a058a1d86769c8e9e182dbe430308b9c105988983eb03355e808d3be5a",
     "irelia-decisions-api-v2.json": "fb43277ddd24fd346ed2d99ebb0d36eb86959e4a8ddca44a1dadbf1ef21fc24d",
     "irelia-decisions-release-v1/status.json": "5a11f9bc3c9620e78eca4c5c90c8e770019f68f99c0e016a19aaa23b97fefe1d",
-    "irelia-decisions-release-superseded-v1.json": "fba97f4930f0ed110996192514b824f59c0b0567ca1e6fe4013631d90b6ee50f"
+    "irelia-decisions-release-superseded-v1.json": "fba97f4930f0ed110996192514b824f59c0b0567ca1e6fe4013631d90b6ee50f",
+    "seed117-trace-v1.log": "c467fbfbc705c9cd84cb991b9006504d3b74d0ca7aae5e8656c78f2f674189f7",
+    "irelia-replay-focused-v1.log": "24369786cfde2ecd5bb605b0e708d428fd67dbec9f489711c61b4a93ba0b029b",
+    "irelia-replay-focused-v2.log": "89719bdb45eabb97700ae266cd66bc45aa87e612d5f04bad63dada26eb3736cf",
+    "irelia-replay-focused-v2-junit.xml": "d35265d1c05ef17a7709fea3efc8570368a162521b2cbda8e1d8ef5662851763",
+    "irelia-replay-clippy-v1.log": "3eab4b898b99256733e09e9129d1edefae78a600dd94319268531b24a5f52de9",
+    "irelia-decisions-release-v2/status.json": "770f2eac947aae711a3490c488e8b76c037f43c5978d467bb9302908ed46cb55",
+    "format-frame-captures-v1/status.json": "cbeca9dcdbd3ef20cfe21ae5a5f9622a895e4b0cc25896675c2aaa0c04b1194e"
   },
   "remaining": [
     "Immutable full package and installed UI/API acceptance",
     "Publication and exact GitHub CI result"
   ],
   "release_in_progress": {
-    "revision": "5cc1476bc762bef4f64c1ccb102c73f3c978f801",
-    "plan_sha256": "d61f90304a3e642af4d53b7372a173bc9eab962294e8c25bd450f894a9a244bb",
+    "revision": "a772656825bee468ee12bd1ec8738171f44ca468",
+    "pid": 1643983,
+    "plan_sha256": "1f078ccf9da6976adc80ca11d2844a9dbacd4a098a43f30ac65c2d462cff5e74",
     "expected_rust_tests": 1893,
     "expected_source_tests": 303,
     "expected_preset_simulations": 1176,
-    "expected_ui_cases": 6,
-    "expected_captures": 4,
+    "expected_ui_cases": 8,
+    "expected_captures": 6,
     "expected_api_records": 9
   },
   "rules_review": {
@@ -137,6 +162,27 @@
       "runner_status": "failed",
       "runner_error": "KeyboardInterrupt()",
       "reason": "Additional independent positions found redundant unit-ready Power payments, and primary rules review required clearer companion wording. Stopped the old live build to include these in the same AI release; not a timeout or a test failure."
+    },
+    {
+      "revision": "5cc1476bc762bef4f64c1ccb102c73f3c978f801",
+      "name": "irelia-decisions-release-v2",
+      "status": "failed",
+      "rust_tests": 1893,
+      "rust_passed": 1892,
+      "rust_failed": 1,
+      "rust_skipped": 0,
+      "rust_seconds": 870.408,
+      "source_tests": 303,
+      "failed_test": "strategic_seed117_cleans_lethal_vex_after_pending_eclipse_predict",
+      "reason": "The updated policy no longer reaches the original Predict position after 34 AI decisions. The explicit original-action replay passes on the current engine. No gameplay behavior was changed to satisfy the old route.",
+      "installed_checks": "Not reached after the Nix package check failed."
     }
-  ]
+  ],
+  "engine_source_commit": "5cc1476bc762bef4f64c1ccb102c73f3c978f801",
+  "build_isolation": {
+    "discarded_result": "irelia-replay-focused-v1.log",
+    "evidence": "Diagnostic SEED117_REPLAY_ACTION lines from the instrumented baseline appeared in the newer tests, proving the wrong local library was linked. Five Irelia checks failed against that baseline.",
+    "correction": "Project build outputs cleared and the 33 checks rebuilt in this worktree own target directory; all passed. Future comparisons use separate project target directories. Immutable Nix acceptance was isolated and all nine Irelia tests passed there.",
+    "target_directory": "/home/benchen/.cache/local-rift-work/irelia-decisions/target"
+  }
 }
