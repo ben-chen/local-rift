@@ -1,5 +1,5 @@
 {
-  "status": "Local validation and exact published commit full GitHub suite passed; documentation-only remote confirmation pending",
+  "status": "Local validation, the full GitHub suite and the documentation-only fast path passed",
   "date": "2026-11-14T01:14:53.171136+00:00",
   "scope": [
     "Documentation-only CI path, with conservative full-check fallback",
@@ -95,7 +95,6 @@
     "validation-flake-eval-v1.log": "0e8bd08264597b7e7e8b88567a2eb94c85390652b0dd88fc51675e2e7a493254"
   },
   "remaining": [
-    "Run a documentation-only follow-up through GitHub to confirm the fast path remotely",
     "Continue shared source fixtures, reusable validation reporting, token UI acceptance and Standard rules/card coverage"
   ],
   "github": {
@@ -121,5 +120,28 @@
       "expires_at": "2027-02-12T01:15:26Z",
       "note": "Artifact retention verified; test count and pass result read from the immutable job log."
     }
+  },
+  "github_documentation_only": {
+    "commit": "fcc4410703aedc4b8d0653dfe33920a2bcfd9555",
+    "run_id": 43542724506,
+    "job_id": 132286740858,
+    "status": "passed",
+    "url": "https://github.com/ben-chen/local-rift/actions/runs/43542724506",
+    "scope_step": "passed",
+    "full_checks": false,
+    "build_tests_api_and_ui_steps": "skipped as intended for documentation only",
+    "job_log_span_seconds": 9.925,
+    "log_sha256": "92b2ece931743df7e2330d88058deb78b284257375707b145c739a39919ae55d"
+  },
+  "source_suite_profile": {
+    "source_commit": "3963c29ab4131b7cc2aa2186dc09f10102d26645",
+    "passed": 291,
+    "profiled_wall_seconds": 427.967,
+    "catalog_builds": 194,
+    "class_setup_seconds": 76.17,
+    "test_method_seconds": 351.724,
+    "profile_sha256": "dbfbdd1c5ba84074e9d2fa3d9170c90b1d62251e1dcab899c28f2545afd4bbef",
+    "review_sha256": "ea712e5034a1f65d70d8260ca83d393d5e1c28de7558c69e1bcb041fc09b733d",
+    "interpretation": "Most time is in repeated production validation, including altered-source rejection tests. Retain these checks; broad evidence caching is not introduced. Profiling adds overhead and is not a CI-time comparison."
   }
 }
