@@ -856,3 +856,23 @@ slots and Repeat executions remain separate. Source proof and limitations are
 recorded in `assets/data/card_admissions/deathgrip/README.md`. Native, source,
 Nix and installed acceptance passed. The [validation record](validation/deathgrip.json)
 identifies the tested source, actual games and remaining scope.
+
+
+## Guards! and token inspection — November 13, 2026
+
+The official Unleashed erratum makes Guards!’s optional Ready a separate reflexive
+ability. The Soldier becomes a pending play before that ability is finalized.
+The optional Order Power is paid before the response window; resolution readies
+the exact created token without choosing it. A refused play or departed token
+does not substitute another Soldier or refund the payment. Hidden fixes the
+token’s destination while leaving the later ability payment intact. Repeated
+executions keep their own physical-token links. The [source admission](../assets/data/card_admissions/guards/README.md)
+records Core 354.3, 355.10.d, 388–389, 404.1.b.1 and 811.1.d.5 and the official
+erratum link.
+
+Guards has passed its native and installed rules/API acceptance; this combined
+release adds token artwork and inspection. Token previews use the physical unit
+or Gold copy, current state and token rules, rather than the creating card’s
+printed effects. An inspector stays explicit when its token has departed.
+Combined package acceptance is pending; this does not complete the Azir list or
+all Standard interactions.

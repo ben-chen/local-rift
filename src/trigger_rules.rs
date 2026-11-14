@@ -6,6 +6,8 @@ use crate::rules::{Allegiance, PlayTargetKind, TokenPlacement};
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Event {
+    /// Explicitly queued by a resolving instruction; never observes board events.
+    Reflexive,
     ControllerBeginning,
     ControllerEnding,
     SelfPlayed,
@@ -374,6 +376,18 @@ pub fn trigger_rules(card_id: usize) -> &'static [TriggerRule] {
         )
     };
     match card_id {
+        448 => {
+            const {
+                &[TriggerRule {
+                    base_cost: Some(TriggerBaseCost {
+                        energy: 0,
+                        power: 1,
+                        domain: Some(crate::cards::Domain::Order),
+                    }),
+                    ..rule(Reflexive, &[], true, TargetRule::NONE, &[Ready(Subject)])
+                }]
+            }
+        }
         439 => {
             const {
                 &[TriggerRule {

@@ -1,0 +1,123 @@
+{
+  "status": "Native integration passed; combined immutable package acceptance pending",
+  "recorded_at": "2026-11-14T01:27:42.453356+00:00",
+  "base_commit": "3963c29ab4131b7cc2aa2186dc09f10102d26645",
+  "scope": [
+    "Guards! optional reflexive Ready of its exact created token",
+    "Own artwork and live inspection for seven existing token identities",
+    "Reusable immutable-revision release verification"
+  ],
+  "coverage": {
+    "accepted_snapshot_legal_identities": 1079,
+    "implemented_legal_identities": 483,
+    "main_cards": 449,
+    "presets": 7,
+    "preset_recipes_changed": false
+  },
+  "prior_guards_acceptance": {
+    "source_manifest": "guards-source-manifest-v3.json",
+    "source_manifest_sha256": "364a6eb6456e2af33867a17b016753ce661075fa05cc8db6c08a87983f5be82a",
+    "package": "/nix/store/f1nl1cxpwhgs26rzqrdy17c8mw2x9gaa-local-rift-0.1.0",
+    "rust_tests_passed": 1865,
+    "source_tests_passed": 288,
+    "installed_card_api_games": 84,
+    "installed_registered_matches": 48,
+    "full_native_installed_records_equal": true,
+    "existing_rust_sources_changed_since_accepted_manifest": [
+      "src/main.rs",
+      "src/smoke.rs"
+    ],
+    "new_token_sources": [
+      "src/token_ui.rs",
+      "src/smoke/tokens.rs"
+    ]
+  },
+  "combined_native": {
+    "client_tests_passed": 143,
+    "clippy": "passed with warnings denied",
+    "catalog_check": "passed",
+    "ui": {
+      "status": "passed",
+      "binary_sha256": "fbd5f0fe7bffe3f1e0194133e9cb12aebce9254cf9c18807db16d9f4b19246b7",
+      "runs": [
+        {
+          "kind": "core",
+          "size": "normal",
+          "exit": 0,
+          "seconds": 24.433,
+          "captures": 0
+        },
+        {
+          "kind": "core",
+          "size": "small",
+          "exit": 0,
+          "seconds": 19.367,
+          "captures": 0
+        },
+        {
+          "kind": "guards",
+          "size": "normal",
+          "exit": 0,
+          "seconds": 4.534,
+          "captures": 0
+        },
+        {
+          "kind": "guards",
+          "size": "small",
+          "exit": 0,
+          "seconds": 4.588,
+          "captures": 2
+        },
+        {
+          "kind": "tokens",
+          "size": "normal",
+          "exit": 0,
+          "seconds": 5.14,
+          "captures": 0
+        },
+        {
+          "kind": "tokens",
+          "size": "small",
+          "exit": 0,
+          "seconds": 5.044,
+          "captures": 5
+        }
+      ]
+    },
+    "visual_review": [
+      "Small board: six token artworks and attached equipment",
+      "Small live Soldier inspector: printed and current Might, damage, gear and full rules",
+      "Small Guards payment: specific token, Order cost and nonblocking advanced Mote"
+    ]
+  },
+  "release_runner": {
+    "gate_tests_passed": 5,
+    "guards_against": [
+      "Mutable or empty acceptance plans",
+      "UI exit without completion",
+      "Missing or misnamed captures",
+      "Series without required actual games",
+      "Trace changes with unchanged winner",
+      "Host-library overrides in UI cases"
+    ]
+  },
+  "artwork": {
+    "manifest": "assets/data/token_art.json",
+    "existing_token_types": 7,
+    "original_english_faces": 4,
+    "original_chinese_faces": 3,
+    "display": "Artwork crops with live English engine rules; original source faces preserved"
+  },
+  "remaining": [
+    "Complete combined immutable Nix package, catalog and simulation checks",
+    "Verify installed core, token, Guards and full Irelia series UI at both sizes",
+    "Compare installed full card and registered-match API records against accepted native baselines",
+    "Publish accepted commit and collect GitHub CI"
+  ],
+  "limitations": [
+    "Not full Standard rules parity or all legal card support",
+    "Guards adds a card, not a complete Azir registration",
+    "Simulation consistency does not establish tournament AI strength",
+    "Only x86_64 Linux acceptance is performed here"
+  ]
+}

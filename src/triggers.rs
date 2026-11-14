@@ -247,6 +247,7 @@ impl Game {
             Occurrence::UnitPlayed | Occurrence::GearPlayed | Occurrence::SpellPlayed
         ) && !event.token;
         let event_ok = match rule.event {
+            Event::Reflexive => false,
             Event::ControllerBeginning => own && event.kind == Occurrence::ControllerBeginning,
             Event::ControllerEnding => own && event.kind == Occurrence::ControllerEnding,
             Event::SelfPlayed => {

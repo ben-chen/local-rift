@@ -14,6 +14,7 @@ mod play_ui;
 mod predict_ui;
 mod preset_ui;
 mod series_ui;
+mod token_ui;
 use companion::{AdviceLevel, Companion, draw_mote};
 use deck_editor::DeckEditor;
 mod scene;
@@ -251,6 +252,8 @@ struct App {
     selection: Option<Selection>,
     mulligan: HashSet<usize>,
     art: Vec<Option<Texture2D>>,
+    token_art: token_ui::TokenArt,
+    pinned_token: Option<token_ui::PinnedToken>,
     legend_art: Vec<Option<Texture2D>>,
     field_art: std::collections::BTreeMap<usize, Texture2D>,
     legend_picker: Option<usize>,
@@ -427,6 +430,8 @@ impl App {
             selection: None,
             mulligan: HashSet::new(),
             art,
+            token_art: token_ui::TokenArt::new(),
+            pinned_token: None,
             legend_art,
             field_art,
             legend_picker: None,
@@ -552,6 +557,7 @@ impl App {
     fn clear_game_controls(&mut self) {
         self.ai_worker.invalidate();
         self.inspect = None;
+        self.pinned_token = None;
         self.field_inspect = None;
         self.hover_rect = None;
         self.hover_object = None;
@@ -763,6 +769,7 @@ impl App {
         if (self.screen == Screen::Practice && self.native_match_pending()) || self.series_concede {
             if is_key_pressed(KeyCode::Escape) {
                 self.inspect = None;
+                self.pinned_token = None;
                 self.field_inspect = None;
                 self.confirm_restart = false;
                 self.series_concede = false;
@@ -936,6 +943,7 @@ impl App {
             }
         } else if is_key_pressed(KeyCode::Escape) {
             self.inspect = None;
+            self.pinned_token = None;
             self.field_inspect = None;
             self.equipment_inspect = None;
             self.lesson = None;
@@ -1039,9 +1047,17 @@ impl App {
         self.drop_zones.clear();
         if self.hover_rect.is_some_and(|r| r.contains(self.ui.mouse()))
             && self.ui.secondary_pressed()
-            && self.hover_token.is_none()
         {
-            self.inspect = self.hover_card;
+            if self.hover_token.is_some() {
+                if let (Some((owner, object_id)), Some(source_card)) =
+                    (self.hover_object, self.hover_card)
+                {
+                    self.pin_token(owner, object_id, source_card);
+                }
+            } else {
+                self.pinned_token = None;
+                self.inspect = self.hover_card;
+            }
         }
         self.ui.enabled = !self.series_concede
             && !self.show_play_effects
@@ -1664,7 +1680,7 @@ impl App {
                     hit_unit = true;
                     if self.ui.secondary_pressed() {
                         if token {
-                            self.notify(token_rules(card_id));
+                            self.pin_token(owner, *id, card_id);
                         } else {
                             self.hover_object = Some((owner, *id));
                             self.inspect = Some(card_id);
@@ -3390,9 +3406,10 @@ impl App {
             self.ui
                 .rect(Rect::new(r.x + 3.0, r.y + 128.0, r.w - 6.0, 45.0), PANEL);
             if unit.token {
-                self.ui
-                    .rect(Rect::new(r.x + 2.0, r.y + 2.0, 136.0, 96.0), BG);
-                self.ui.diamond(vec2(r.x + 70.0, r.y + 45.0), 22.0, TEAL);
+                self.token_picture(
+                    Rect::new(r.x + 2.0, r.y + 2.0, 136.0, 96.0),
+                    &self.game.unit_name(unit),
+                );
             }
             self.ui.text(
                 &format!(
@@ -3437,9 +3454,14 @@ impl App {
                     });
                 }
             }
-            if self.ui.hover(r) && self.ui.secondary_pressed() && !unit.token {
-                self.hover_object = Some((*owner, unit.id));
-                self.inspect = Some(unit.card_id);
+            if self.ui.hover(r) && self.ui.secondary_pressed() {
+                if unit.token {
+                    self.pin_token(*owner, unit.id, unit.card_id);
+                } else {
+                    self.pinned_token = None;
+                    self.hover_object = Some((*owner, unit.id));
+                    self.inspect = Some(unit.card_id);
+                }
             }
             let gear_hovered = self.gear_badges(Rect::new(r.x, r.y, r.w, 112.0), *owner, unit.id);
             let source = AbilitySource::Unit {
@@ -3676,10 +3698,7 @@ impl App {
                     self.selection == Some(Selection::Gear(gear.id)),
                 );
                 if gear.is_gold() {
-                    self.ui
-                        .rect(Rect::new(r.x + 2.0, r.y + 2.0, r.w - 4.0, 96.0), BG);
-                    self.ui
-                        .diamond(vec2(r.x + r.w / 2.0, r.y + 47.0), 26.0, GOLD);
+                    self.token_picture(Rect::new(r.x + 2.0, r.y + 2.0, r.w - 4.0, 96.0), "Gold");
                     self.ui
                         .rect(Rect::new(r.x + 3.0, r.y + 124.0, r.w - 6.0, 50.0), PANEL);
                     self.ui
@@ -3805,7 +3824,7 @@ impl App {
                 }
                 if self.ui.hover(r) && self.ui.secondary_pressed() {
                     if gear.is_gold() {
-                        self.notify(GOLD_RULES);
+                        self.pin_token(owner, gear.id, gear.card_id);
                     } else {
                         self.inspect = Some(gear.card_id);
                         self.hover_object = Some((owner, gear.id));
@@ -4049,10 +4068,7 @@ impl App {
                 let token = name != self.game.catalog[option.card_id].name;
                 let r = self.tile(option.card_id, slot, name, false);
                 if token {
-                    self.ui
-                        .rect(Rect::new(r.x + 2.0, r.y + 2.0, r.w - 4.0, 96.0), BG);
-                    self.ui
-                        .diamond(vec2(r.x + r.w / 2.0, r.y + 45.0), 22.0, TEAL);
+                    self.token_picture(Rect::new(r.x + 2.0, r.y + 2.0, r.w - 4.0, 96.0), name);
                 }
                 self.ui
                     .rect(Rect::new(r.x + 3.0, r.y + 128.0, r.w - 6.0, 47.0), PANEL);
@@ -5365,7 +5381,9 @@ impl App {
         );
         self.ui.rect(r, PANEL);
         let art = Rect::new(r.x + 2.0, r.y + 3.0, r.w - 4.0, r.h - 23.0);
-        if !token && let Some(tex) = self.art.get(id).and_then(Option::as_ref) {
+        if token {
+            self.token_picture(art, name);
+        } else if let Some(tex) = self.art.get(id).and_then(Option::as_ref) {
             let bounds = Rect::new(
                 tex.width() * 0.08,
                 tex.height() * 0.12,
@@ -5823,7 +5841,21 @@ impl App {
             110.0,
         );
         self.ui.rect(ghost, PANEL);
-        if let Some(tex) = self.art.get(card_id).and_then(Option::as_ref) {
+        let token_name = if let DragSource::Units { ids, .. } = &drag.source {
+            ids.first()
+                .and_then(|id| {
+                    self.game.players[0]
+                        .units
+                        .iter()
+                        .find(|u| u.id == *id && u.token)
+                })
+                .map(|u| self.game.unit_name(u))
+        } else {
+            None
+        };
+        if let Some(name) = token_name {
+            self.token_picture(ghost, &name);
+        } else if let Some(tex) = self.art.get(card_id).and_then(Option::as_ref) {
             self.ui
                 .image(tex, ghost, None, Color::new(1.0, 1.0, 1.0, 0.85));
         }
@@ -5891,8 +5923,10 @@ impl App {
         self.ui.rect(r, PANEL);
         self.ui.border(r, TEAL);
         if let Some(token) = &self.hover_token {
-            self.ui
-                .diamond(vec2(r.x + r.w / 2.0, r.y + 65.0), 32.0, TEAL);
+            self.token_picture(
+                Rect::new(r.x + 1.0, r.y + 1.0, r.w - 2.0, 111.0),
+                &token.name,
+            );
             self.ui
                 .title(&token.name, r.x + 18.0, r.y + 139.0, 23.0, TEXT);
             self.ui.bold(
@@ -5919,7 +5953,7 @@ impl App {
                 &mut self.hover_scroll,
             );
             self.ui.text(
-                "Tokens are represented by their own rules.",
+                "Right-click to keep this token's details open.",
                 r.x + 18.0,
                 r.y + r.h - 24.0,
                 10.0,
@@ -8382,11 +8416,19 @@ impl App {
     }
     /// A printed copy in a hand, deck, trash, or reveal is not a live board object.
     fn inspect_printed_card(&mut self, id: usize) {
+        self.pinned_token = None;
         self.hover_object = None;
         self.inspect = Some(id);
     }
 
     fn inspector(&mut self, id: usize) {
+        if let Some(token) = self.pinned_token.clone().filter(|token| {
+            token.source_card == id && self.hover_object == Some((token.owner, token.object_id))
+        }) {
+            self.token_inspector(token);
+            return;
+        }
+        self.pinned_token = None;
         self.ui.rect(
             Rect::new(0.0, 0.0, 1440.0, 900.0),
             Color::new(0.0, 0.015, 0.02, 0.88),
@@ -8477,6 +8519,7 @@ impl App {
             true,
         ) {
             self.inspect = None;
+            self.pinned_token = None;
         }
         self.ui
             .text("Official card art © Riot Games", 372.0, 705.0, 10.0, MUTED);
@@ -8893,6 +8936,7 @@ fn card_brief(game: &Game, id: usize) -> String {
                 .unwrap_or_default()
         ),
         Deathgrip => "Kill yours · grant its Might to another this turn · draw 1".into(),
+        Guards => "Play a Sand Soldier · may pay 1 Order to ready it after responses".into(),
         KillAndDrawController { draw } => {
             format!("Kill a battlefield unit · its controller draws {draw}")
         }
@@ -10602,6 +10646,8 @@ async fn main() {
     let alpha_smoke = args.iter().any(|a| a == "--ui-smoke-alpha");
     let conditional_equipment_smoke = args.iter().any(|a| a == "--ui-smoke-conditional-equipment");
     let deathgrip_smoke = args.iter().any(|a| a == "--ui-smoke-deathgrip");
+    let guards_smoke = args.iter().any(|a| a == "--ui-smoke-guards");
+    let tokens_smoke = args.iter().any(|a| a == "--ui-smoke-tokens");
     let hidden_blade_smoke = args.iter().any(|a| a == "--ui-smoke-hidden-blade");
     let blade_smoke = args.iter().any(|a| a == "--ui-smoke-blade");
     let riven_champion_smoke = args.iter().any(|a| a == "--ui-smoke-riven-champion");
@@ -10613,6 +10659,8 @@ async fn main() {
     let focused_field_smoke = args.iter().any(|a| a == "--ui-smoke-c28");
     let focused_source_damage_smoke = args.iter().any(|a| a == "--ui-smoke-c27");
     let smoke_test = series_smoke
+        || tokens_smoke
+        || guards_smoke
         || deathgrip_smoke
         || hidden_blade_smoke
         || conditional_equipment_smoke
@@ -10654,7 +10702,11 @@ async fn main() {
             app.hover_card = app.game.players[0].hand.first().copied();
             app.hover_since = -1.0;
         }
-        let smoke_done = if deathgrip_smoke {
+        let smoke_done = if tokens_smoke {
+            smoke::run_tokens_frame(&mut app, frames)
+        } else if guards_smoke {
+            smoke::run_guards_frame(&mut app, frames)
+        } else if deathgrip_smoke {
             smoke::run_deathgrip_frame(&mut app, frames)
         } else if hidden_blade_smoke {
             smoke::run_hidden_blade_frame(&mut app, frames)

@@ -1,0 +1,112 @@
+{
+  "reviewed_on": "2026-11-12",
+  "scope": "Art-only mapping to existing token specifications. No card/legend/battlefield admission, cost, domain or gameplay metadata changes.",
+  "display": "Render artwork crop only with live English token rules and characteristics from the engine. Preserve the original printed faces unchanged.",
+  "records": [
+    {
+      "key": "sprite",
+      "printing": "unl-t07",
+      "name": "Sprite",
+      "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/1a90578f055e01515ebfb069dc3dbdba08d24da0-744x1039.png?accountingTag=RB",
+      "source": "accepted official English gallery",
+      "language": "en",
+      "path": "assets/art/token_sprite.png",
+      "sha256": "fdf0eabcef08e7585c8ff5afcc20fae8c1a07cb5714fb32e0b6c0132a0384416",
+      "dimensions": [
+        744,
+        1039
+      ],
+      "actual_full_face_viewed": true
+    },
+    {
+      "key": "gold",
+      "printing": "sfd-t03",
+      "name": "Gold",
+      "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/e878c39b562a4e870e93b819c6d85cdf3fdc5238-744x1039.png?accountingTag=RB",
+      "source": "accepted official English gallery",
+      "language": "en",
+      "path": "assets/art/token_gold.png",
+      "sha256": "2d012980c52b0b2de6e6bbe5ac6380dd718c133765dac0b4882caeb3f91d9d39",
+      "dimensions": [
+        744,
+        1039
+      ],
+      "actual_full_face_viewed": true
+    },
+    {
+      "key": "bird",
+      "printing": "unl-t02",
+      "name": "Bird",
+      "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/949a2e43263a9fe0d957595325c7e2ebe06bf85f-744x1039.png?accountingTag=RB",
+      "source": "accepted official English gallery",
+      "language": "en",
+      "path": "assets/art/token_bird.png",
+      "sha256": "e50c0dd47b63c1882d4bec4be2c77addba0e016746d47370f89b965a713d7674",
+      "dimensions": [
+        744,
+        1039
+      ],
+      "actual_full_face_viewed": true
+    },
+    {
+      "key": "recruit",
+      "printing": "ven-t04",
+      "name": "Recruit",
+      "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/08b9ccf225fc2ae9eb9b5668e5361b09789210ee-744x1039.png?accountingTag=RB",
+      "source": "accepted official English gallery",
+      "language": "en",
+      "path": "assets/art/token_recruit.png",
+      "sha256": "2be6711c2ec3e14a29e14286452ff06e56ab76c01b68c7c094cbd2dfbe14e413",
+      "dimensions": [
+        744,
+        1039
+      ],
+      "actual_full_face_viewed": true
+    },
+    {
+      "key": "sand_soldier",
+      "printing": "SFD-T02",
+      "name": "Sand Soldier",
+      "url": "https://cdn.playloltcg.com/lol/card/20251217/ed7625dd888a48d9bd5ec9bd5e17f068.png",
+      "source": "official Chinese image, found through https://riftref.org/cards/sfd-t02/",
+      "language": "zh",
+      "path": "assets/art/token_sand_soldier.png",
+      "sha256": "876a7f331b51b9b5264e21fb18a10e72caf0b7b52e11602be29eef32d1710b36",
+      "dimensions": [
+        744,
+        1039
+      ],
+      "actual_full_face_viewed": true
+    },
+    {
+      "key": "mech",
+      "printing": "SFD-T01",
+      "name": "Mech",
+      "url": "https://cdn.playloltcg.com/lol/card/20251217/7470cf9a79de4c25aab72e17e4266c25.png",
+      "source": "official Chinese image, found through https://riftref.org/cards/sfd-t01/",
+      "language": "zh",
+      "path": "assets/art/token_mech.png",
+      "sha256": "2fd16cc885d89d18f38e425ec622b5fa7e3d41f0d00b635bf6d33e89c763a7a4",
+      "dimensions": [
+        744,
+        1039
+      ],
+      "actual_full_face_viewed": true
+    },
+    {
+      "key": "tentacle",
+      "printing": "VEN-T06",
+      "name": "Tentacle",
+      "url": "https://cdn.playloltcg.com/lol/card/20260709/5efe1735da024365998811f390274f41.png",
+      "source": "official Chinese image, found through https://riftref.org/cards/ven-t06/",
+      "language": "zh",
+      "path": "assets/art/token_tentacle.png",
+      "sha256": "caf24d717af216ba989dfd7385d15b3067e899d2783754f25d66eb0db41ca9c9",
+      "dimensions": [
+        744,
+        1040
+      ],
+      "actual_full_face_viewed": true
+    }
+  ]
+}

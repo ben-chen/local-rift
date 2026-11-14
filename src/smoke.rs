@@ -14,6 +14,10 @@ mod ai;
 mod blade;
 mod conditional_equipment;
 mod deathgrip;
+mod guards;
+mod tokens;
+pub(super) use guards::run_frame as run_guards_frame;
+pub(super) use tokens::run_frame as run_tokens_frame;
 mod hidden_blade;
 pub(super) use conditional_equipment::run_frame as run_conditional_equipment_frame;
 pub(super) use deathgrip::run_frame as run_deathgrip_frame;
@@ -3577,10 +3581,17 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
             app.ui.input_override = Some((vec2(615.0, 760.0), false, true));
         }
         264 => {
-            assert!(
-                app.inspect.is_none(),
-                "Gold never opens its source card's inspector"
-            );
+            let pinned = app
+                .pinned_token
+                .as_ref()
+                .expect("Gold opens its own inspector");
+            assert_eq!((pinned.owner, pinned.object_id), (0, 900));
+            assert!(pinned.preview.gear);
+            assert_eq!(pinned.preview.name, "Gold");
+            assert!(pinned.preview.rules.contains("kill this Gold"));
+            click(app, 960.0, 700.0);
+            app.draw();
+            assert!(app.inspect.is_none() && app.pinned_token.is_none());
             app.hover_rect = None;
             click(app, 615.0, 760.0);
         }

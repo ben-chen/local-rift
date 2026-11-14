@@ -1,0 +1,106 @@
+{
+  "reviewed_on": "2026-11-12",
+  "status": "Development; runtime acceptance pending.",
+  "preserved_runtime_prefix": {
+    "card_count": 448,
+    "preset_count": 7,
+    "cards_sha256": "76e47182fc0ca9d728c7249e97452f30f5e6c2096f07c9ef657be3515cbcd740",
+    "presets_sha256": "e975739d803427e54928d6e6cd03d1ce51d7ad108f4e247b8a000acf037a5cdb"
+  },
+  "core_sections": [
+    "354.3",
+    "355.10.d",
+    "388",
+    "389",
+    "404.1.b.1",
+    "811.1.d.5"
+  ],
+  "records": [
+    {
+      "official_id": "sfd-154-221",
+      "runtime_id": 448,
+      "raw_printing": {
+        "official_id": "sfd-154-221",
+        "public_code": "SFD-154/221",
+        "name": "Guards!",
+        "set": "SFD",
+        "collector_number": 154,
+        "types": [
+          "spell"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "spell"
+        ],
+        "accessibility_types": [
+          "spell"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "order"
+        ],
+        "energy": 3,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "rules_html": "<p>[Hidden] (Hide now for :rb_rune_rainbow: to react with later for :rb_energy_0:.)<br />Play a 2 :rb_might: Sand Soldier unit token. You may pay :rb_rune_order: to ready it.</p>",
+        "rules_text": "[Hidden] (Hide now for [Any Power] to react with later for [0 Energy].)\nPlay a 2 Might Sand Soldier unit token. You may pay [Order Power] to ready it.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [],
+        "rarity": "common",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/1dc4fef81d018c6cf14f0344b51ebcdec968aab9-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Spell: Guards!. [Hidden] (Hide now for [A] to react with later for [0].)\nPlay a 2 [S] Sand Soldier unit token. You may pay [C] to ready it.",
+        "illustrators": [
+          "Kudos Productions"
+        ]
+      },
+      "raw_printing_sha256": "87ad721ace84037067cea27243122c0c8c25c73fdaefb64607dcd06e8e410a78",
+      "effective": {
+        "types": [
+          "spell"
+        ],
+        "super_types": [],
+        "domains": [
+          "order"
+        ],
+        "energy": 3,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>[Hidden] (Hide now for :rb_rune_rainbow: to react with later for :rb_energy_0:.)<br />Play a 2 :rb_might: Sand Soldier unit token. You may pay :rb_rune_order: to ready it.</p>",
+        "rules_text": "[Hidden] (Hide now for [Any Power] to react with later for [0 Energy].)\nPlay a 2 Might Sand Soldier unit token. You may pay [Order Power] to ready it.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "resolution_ids": [],
+      "errata": [
+        {
+          "article_heading": "Guards!",
+          "text": "[Hidden] (Hide now for [A] to react with later for [0].)\nPlay a 2 [M] Sand Soldier unit token. Then do this: You may pay [C] to ready it.",
+          "source_url": "https://playriftbound.com/en-us/news/rules-and-releases/unleashed-errata-updates/"
+        }
+      ],
+      "printing_cohort": [
+        "sfd-154-221"
+      ],
+      "operative_text": "[Hidden] (Hide now for [Any Power] to react with later for [0 Energy].)\nPlay a 2 Might Sand Soldier unit token. Then do this: You may pay [Order Power] to ready it.",
+      "visual_review": {
+        "actual_full_face_viewed": true,
+        "notes": "Original full face inspected: Order Spell, 3 Energy, no Power, Hidden, 2 Might Sand Soldier and optional Order Power Ready. Official Unleashed erratum adds a separate reflexive trigger; printed text is retained separately."
+      },
+      "original_image": {
+        "path": "assets/data/card_admissions/guards/sfd-154-221.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/1dc4fef81d018c6cf14f0344b51ebcdec968aab9-744x1039.png?accountingTag=RB",
+        "sha256": "e7a5bd6a3260cb9c433dd108af9ae5578547922b2a33a0fd4533ad06d94b9a4a"
+      },
+      "runtime_image": {
+        "path": "assets/art/card_448.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/1dc4fef81d018c6cf14f0344b51ebcdec968aab9-744x1039.png?w=280&q=85&fm=png",
+        "sha256": "0f6bba9449d46771c97d79ffb64044f854bc0dfc1a42cacb4501c72b72fa47b6"
+      }
+    }
+  ]
+}

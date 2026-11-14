@@ -51,6 +51,8 @@ mod conditional_equipment_tests;
 #[cfg(test)]
 mod deathgrip_tests;
 #[cfg(test)]
+mod guards_tests;
+#[cfg(test)]
 mod hidden_blade_tests;
 
 #[cfg(test)]

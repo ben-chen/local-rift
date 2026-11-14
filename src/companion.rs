@@ -550,6 +550,13 @@ fn checked_advice(game: &Game, level: AdviceLevel) -> Result<Vec<&'static str>, 
             "Moving a third ally in, or moving the only partner out, switches off Hand Hammer's +2. Check the bearer's marked damage before changing the group."
         });
     }
+    if human.hand.contains(&448) || human.hidden.iter().any(|h| h.card_id == 448) {
+        tips.push(if beginner {
+            "Guards! plays a 2-Might Sand Soldier, then offers a separate ready ability for 1 Order Power. Playing it from Hidden waives the spell cost, not this later payment."
+        } else {
+            "Hide Guards! to bring a Soldier into that battlefield during a response. Save 1 Order Power if you need its separate ready ability for a later move."
+        });
+    }
     if human.hand.contains(&447) {
         tips.push(if beginner {
             "Deathgrip chooses two different friendly units. The first dies on resolution. If its death is prevented, no Might transfers; you still draw 1."
@@ -1209,6 +1216,11 @@ fn response_window_advice(
             } else {
                 "The target must stay at Edge of Night's original battlefield. A counter, removal of the gear, or moving the target away prevents the free attachment."
             }],
+            Decision::TriggerPayment { card_id: 448, .. } => vec![if beginner {
+                "Guards!' separate ability costs 1 Order Power. Paying puts Ready on the chain; opponents can respond before the created Soldier readies. Decline to keep your power."
+            } else {
+                "Check the created Soldier before paying for Guards!. An absent or already-ready Soldier gains nothing. Its paid ability follows that exact token through responses."
+            }],
             Decision::TriggerPayment { card_id: 431, .. } => vec![if beginner {
                 "Banish a card from either trash as the cost now. Only the unit is a target. The opponent can respond before Assault 2 is gained; declining keeps Gust Monk."
             } else {
@@ -1801,6 +1813,86 @@ pub fn draw_mote(center: Vec2, scale: f32, time: f32, accent: Color) {
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn guards_advice_is_brief_optional_and_does_not_peek() {
+        let mut game = Game::new_for_agents(3, 3, 448, Difficulty::Easy);
+        game.start_match().unwrap();
+        game.players[0].hand = vec![448];
+        let before = format!("{game:?}");
+        let messages: Vec<_> = [AdviceLevel::Beginner, AdviceLevel::Advanced]
+            .into_iter()
+            .map(|level| {
+                let tips = advice(&game, level);
+                let tip = *tips.iter().find(|tip| tip.contains("Guards!")).unwrap();
+                assert!(tip.chars().count() <= 180);
+                tip
+            })
+            .collect();
+        assert_ne!(messages[0], messages[1]);
+        assert_eq!(format!("{game:?}"), before);
+        game.players[0].hand.clear();
+        game.players[1].hand = vec![448];
+        game.players[1].hidden.push(local_rift::hidden::HiddenCard {
+            id: 44890,
+            card_id: 448,
+            lane: 0,
+            hidden_turn: 0,
+            revealed: false,
+        });
+        for level in [AdviceLevel::Beginner, AdviceLevel::Advanced] {
+            assert!(
+                advice(&game, level)
+                    .iter()
+                    .all(|tip| !tip.contains("Guards!"))
+            );
+        }
+    }
+    #[test]
+    fn guards_payment_advice_survives_response_window_routing() {
+        use local_rift::game::Action;
+        let mut game = Game::new_for_agents(3, 3, 448, Difficulty::Easy);
+        game.choose_starting_player(0).unwrap();
+        game.start_match().unwrap();
+        game.battlefields = vec![9, 9];
+        game.battlefield_owner = vec![None; 2];
+        for player in &mut game.players {
+            player.units.clear();
+            player.gear.clear();
+            player.hidden.clear();
+            player.hand.clear();
+            player.champion = None;
+            player.set_rune_setup([0; 6], [0; 6]).unwrap();
+            player.energy = 10;
+            player.energy_pool = 10;
+            player.power_pool = [10; 6];
+        }
+        game.players[0].hand = vec![448];
+        game.apply(Action::PlayCardWithTargets {
+            hand_index: 0,
+            lane: None,
+            targets: vec![],
+        })
+        .unwrap();
+        game.apply(Action::Pass).unwrap();
+        game.apply(Action::Pass).unwrap();
+        game.apply(Action::PlaceToken { lane: None }).unwrap();
+        assert!(matches!(
+            game.decision,
+            Some(Decision::TriggerPayment { card_id: 448, .. })
+        ));
+        let before = format!("{game:?}");
+        let mut changed_private = game.clone();
+        changed_private.players[1].hand = vec![86, 446, 448];
+        changed_private.players[1].deck.reverse();
+        assert_eq!(fingerprint(&game), fingerprint(&changed_private));
+        for level in [AdviceLevel::Beginner, AdviceLevel::Advanced] {
+            let tips = advice(&game, level);
+            assert!(tips[0].contains("Guards!"));
+            assert!(tips.iter().all(|tip| tip.chars().count() <= 180));
+            assert_eq!(tips, advice(&changed_private, level));
+        }
+        assert_eq!(format!("{game:?}"), before);
+    }
     #[test]
     fn deathgrip_advice_is_brief_optional_and_does_not_peek() {
         let mut game = Game::new_for_agents(2, 2, 447, Difficulty::Easy);

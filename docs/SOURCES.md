@@ -260,3 +260,18 @@ text override. The preceding 441 main cards and all seven sourced main recipes
 remain unchanged. The [validation record](validation/master_yi_reactions.json)
 separates authored card-use games from preset simulations and packaged UI/API
 checks; complete SWAGALISK registration and Alpha Strike remain outstanding.
+
+
+## Token artwork
+
+The [token artwork manifest](../assets/data/token_art.json) records the original
+URLs, printing identifiers, language, dimensions and SHA-256 hashes for Sand
+Soldier, Sprite, Bird, Tentacle, Mech, Recruit and Gold. Each complete original
+face was inspected. Sprite, Bird, Recruit and Gold use the official English
+gallery; Sand Soldier, Mech and Tentacle use original images from the official
+Chinese card CDN, located through the manifest’s linked card pages.
+
+The renderer crops the artwork area and uses the engine’s English token identity
+and live rules. It does not display the Chinese printed text as English rules,
+copy the creating spell’s cost, or register these auxiliary tokens as new legal
+main-deck cards. The downloaded originals remain unchanged.

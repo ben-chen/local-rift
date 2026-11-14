@@ -6830,6 +6830,21 @@ pub fn cards() -> Vec<CardDef> {
             tags: &[],
             art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/695304200c6fd3b287bd319ac564d31936b23d66-744x1039.png?w=280&q=85&fm=png",
         },
+        CardDef {
+            id: 448,
+            official_id: "sfd-154-221",
+            name: "Guards!",
+            cost: 3,
+            power_cost: 0,
+            might: 0,
+            domain: Domain::Order,
+            domains: &[Domain::Order],
+            kind: CardKind::Spell,
+            official_text: "[Hidden] (Hide now for [Any Power] to react with later for [0 Energy].)\nPlay a 2 Might Sand Soldier unit token. Then do this: You may pay [Order Power] to ready it.",
+            keywords: &["Hidden"],
+            tags: &[],
+            art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/1dc4fef81d018c6cf14f0344b51ebcdec968aab9-744x1039.png?w=280&q=85&fm=png",
+        },
     ]
 }
 
@@ -7200,7 +7215,7 @@ mod tests {
     #[test]
     fn presets_are_complete_and_references_are_consistent() {
         let catalog = cards();
-        assert_eq!(catalog.len(), 448);
+        assert_eq!(catalog.len(), 449);
         for (index, card) in catalog.iter().enumerate() {
             assert_eq!(index, card.id);
             assert!(!card.official_id.is_empty());

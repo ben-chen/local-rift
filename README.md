@@ -73,6 +73,12 @@ The opponent thinks in the background. You can inspect cards, open Learn to play
 
 Both players use the same rune layout: upright runes are ready, sideways runes are exhausted, and the rune deck shows how many remain to be channeled. Use your rune controls to exhaust or recycle a chosen domain before a play, or let payment activate runes automatically. Enable **Power: choose sources** to choose exactly which generated power and runes pay for each action. Generated energy, colored power, flexible power, and spell-only power are shown separately. Battlefield effects remain visible on the mat, with a **Rules** button for the full explanation. A gold strip beneath each equipped unit shows its gear. Click a gear name to inspect it, or the **N gear** count to open all attachments. Sparse unit rows expand to make names and artwork easier to read. Board thumbnails crop the artwork proportionally instead of stretching it; hover for the full card.
 
+Sand Soldier, Sprite, Bird, Tentacle, Mech, Recruit and Gold tokens have their own
+official artwork on the board and in previews. Right-click a token to keep its
+details open: current Might, damage, keywords, attached equipment and its own
+rules. Dragging a unit token keeps that token's artwork. A token that leaves the
+board is identified as departed in its inspector.
+
 Deploy gear has its own illustrated row at each battlefield. Click the field’s gear count to open those exact copies in Loadout; attached equipment remains visible beneath its bearer. Gear can occupy a battlefield without controlling or contesting it. Command: Attack offers separate Move and Gear-draw modes, and each Repeat keeps its own choices. Optional paid gear triggers show their source and targets before payment. **Undo payment** returns to that choice; **Decline** skips the optional trigger. Mote explains each step at your selected advice level.
 
 A unit’s **Might** and **combat damage** are shown separately when they differ. Ezreal, Dashing keeps his Might for lethal damage and his printed ability while contributing zero combat damage. Orianna, Exquisite deals combat damage only while friendly gear shares her location; gear attached to another friendly unit there counts. Her inspector shows whether that requirement is met. Stun is shown as its own reason for contributing zero. Hover or pin the unit to read the complete explanation. Rengar, Pouncing’s destination controls retain an attacked battlefield while you remain its attacking player, even after your last unit leaves.
@@ -208,6 +214,14 @@ Its [validation record](docs/validation/deathgrip.json) includes 1,852 Rust test
 286 source checks, and matching native/packaged traces across 84 card-test games
 and 48 registered matches.
 
+Guards! is available for custom practice. It creates a Sand Soldier, then offers
+a separate optional Order Power payment to ready that exact token. Opponents get
+a response opportunity after payment. Its Hidden and Repeat behavior follows
+the official erratum; Mote explains the choices at both advice levels. This adds
+a card to the supported pool, without changing the seven tournament recipes.
+The [combined validation record](docs/validation/guards_tokens.json) distinguishes
+the accepted Guards rules from the final token-art package checks.
+
 ## Included presets
 
 | Deck | Real archetype reference | Published source |
@@ -296,6 +310,22 @@ does not retry failed tests. It retains a JUnit report in
 `target/nextest/ci/junit.xml`. This runs the full suite; the separate Cargo command
 keeps documentation tests covered. During implementation, use a focused test
 filter for the changed mechanic, then run full regression on the final candidate.
+
+`python3 tools/check_release.py --plan plan.json --output /path/to/new-results`
+builds and verifies one committed revision. The JSON plan has a full `revision`
+SHA, `ui` cases (`name`, smoke-mode `args`, optional `captures` environment-variable
+names), and `api` cases (`name`, a `check_*.py` script in `tools/`, a passing native
+`baseline` JSON path, and its `records_key`). Series UI cases require
+`minimum_games` of at least two. Optional UI `env` settings accept only `RIFT_`
+variables; every run gets isolated preferences. Use `--xvfb /path/to/xvfb-run`
+when it is not on PATH.
+
+The runner builds the package, catalog and simulation checks from that immutable
+revision, then uses the installed binaries. It preserves the plan and baselines,
+checks actual UI completion and exact capture names, and compares full API records
+including trace hashes. `status.json` records the live stage and final outcome.
+Existing result directories are refused. Visual review and independently expected
+rules scenarios remain necessary; matching builds do not establish rules parity.
 
 GitHub checks cache Rust dependencies. Documentation-only changes validate changed
 JSON receipts and whitespace without rebuilding the game. The generated

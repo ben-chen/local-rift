@@ -38,6 +38,9 @@ mod dynamic_field_tests;
 #[path = "edge_tests.rs"]
 mod edge_tests;
 #[cfg(test)]
+#[path = "guards_tests.rs"]
+mod guards_tests;
+#[cfg(test)]
 #[path = "gust_tests.rs"]
 mod gust_tests;
 #[cfg(test)]
@@ -79,6 +82,9 @@ use deck_plays::DeckKillContinuation;
 #[path = "deathgrip.rs"]
 mod deathgrip;
 use deathgrip::DeathgripContinuation;
+#[path = "linked_tokens.rs"]
+mod linked_tokens;
+use linked_tokens::LinkedTokenReady;
 #[path = "instructed_play.rs"]
 mod instructed_play;
 use instructed_play::PendingOrigin;
@@ -1123,6 +1129,7 @@ pub struct Game {
     pending_instruction_deaths: Option<Vec<(usize, u32)>>,
     pending_deck_kill: Option<DeckKillContinuation>,
     pending_deathgrip: Option<DeathgripContinuation>,
+    linked_token_readies: Vec<LinkedTokenReady>,
     /// Dependent Draw after a valid Kill instruction and all its replacements.
     pending_kill_controller_draw: Option<(usize, u8)>,
     pub buffed_units: Vec<u32>,
@@ -1383,6 +1390,7 @@ impl Game {
             pending_instruction_deaths: None,
             pending_deck_kill: None,
             pending_deathgrip: None,
+            linked_token_readies: Vec::new(),
             pending_kill_controller_draw: None,
             buffed_units: Vec::new(),
             optional_power_discount: [0;2],
@@ -4825,6 +4833,7 @@ impl Game {
             if token.entry_ready {
                 self.players[token.player].units.last_mut().unwrap().ready = true;
             }
+            self.link_created_token(&token, entering);
             self.on_unit_played(token.player, entering);
         }
     }
@@ -4904,7 +4913,8 @@ impl Game {
             .iter()
             .position(|t| t.option.id == trigger_id)
             .expect("offered trigger");
-        let trigger = self.pending_triggers.remove(index);
+        let mut trigger = self.pending_triggers.remove(index);
+        self.finalize_linked_token(&mut trigger);
         self.pending_occurrence_id = Some(trigger.option.id);
         self.trigger_batch += 1;
         match trigger.effect {
@@ -8041,6 +8051,7 @@ impl Game {
                 }
             }
             OfficialEffect::Deathgrip => self.begin_deathgrip(player, &targets)?,
+            OfficialEffect::Guards => self.queue_guards(player),
             OfficialEffect::KillAndDrawController { draw } => {
                 if let Some(
                     &target @ Target::Unit {
@@ -9746,6 +9757,19 @@ impl Game {
                         .max_by_key(|(score, _)| *score)
                         .map(|(_, action)| action.clone()),
                     Decision::TriggerPayment {
+                        card_id: 448,
+                        context,
+                        ..
+                    } => {
+                        let useful = context
+                            .subject
+                            .and_then(|t| self.unit_ref(t))
+                            .is_some_and(|u| !u.ready);
+                        actions.iter().find(|a| matches!(a, Action::ResolveTriggerPayment { pay, .. } if *pay == useful))
+                            .or_else(|| actions.iter().find(|a| matches!(a, Action::ResolveTriggerPayment { pay: false, .. })))
+                            .cloned()
+                    }
+                    Decision::TriggerPayment {
                         player,
                         card_id: 431,
                         targets,
@@ -10492,6 +10516,7 @@ impl Game {
                         0
                     }
                 }
+                OfficialEffect::Guards => 65,
                 OfficialEffect::Deathgrip => {
                     if targets.len() == 2 {
                         match (self.unit_ref(targets[0]), self.unit_ref(targets[1])) {

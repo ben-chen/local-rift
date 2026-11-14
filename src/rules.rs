@@ -69,6 +69,7 @@ pub struct PlayTargetSpec {
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum OfficialEffect {
     Deathgrip,
+    Guards,
     /// Choose a friendly battlefield unit, then a linked enemy chain item.
     Repulse,
     AlphaStrike,
@@ -286,6 +287,7 @@ pub fn effect(id: usize) -> OfficialEffect {
         443 => AlphaStrike,
         446 => KillAndDrawController { draw: 2 },
         447 => Deathgrip,
+        448 => Guards,
         425 => ReadyAndPreventMovement { draw: 1 },
         426 => BattlePreparations,
         427 => MoveEnemy,
@@ -1127,6 +1129,7 @@ pub fn requirements(id: usize) -> &'static [Mechanic] {
         442 => &[Chain, Counterspell, MultipleTargets, ChooseReadyTriggers],
         444 | 445 => &[Gear, Equip, Chain, ChooseReadyTriggers],
         446 => &[Chain, Hidden, DeathTriggers, DeathReplacement],
+        448 => &[Chain, Hidden, Tokens, OptionalCosts, ChooseReadyTriggers],
         447 => &[
             Chain,
             MultipleTargets,
@@ -1675,7 +1678,7 @@ pub fn static_abilities(id: usize) -> &'static [StaticAbility] {
     use StaticAbility::*;
     match id {
         436 => &[Tank],
-        437 | 446 => &[Hidden],
+        437 | 446 | 448 => &[Hidden],
         411 => &[Assault(2), MayPlayToAttackedBattlefield],
         412 | 414 => &[NoCombatDamage],
         430 => &[Shield(1), NoCombatDamageWithoutFriendlyGearHere],
@@ -2034,7 +2037,7 @@ pub fn token_spec(id: usize) -> Option<TokenSpec> {
             tag: Some("Fae"),
             temporary: true,
         }),
-        178 | 220 => Some(TokenSpec {
+        178 | 220 | 448 => Some(TokenSpec {
             name: "Sand Soldier",
             might: 2,
             count: 1,
@@ -2130,7 +2133,7 @@ mod tests {
     #[test]
     fn all_catalog_entries_have_official_classification() {
         let cards = cards();
-        assert_eq!(cards.len(), 448);
+        assert_eq!(cards.len(), 449);
         for card in cards {
             assert_ne!(
                 effect(card.id),
@@ -2140,7 +2143,7 @@ mod tests {
             );
             assert_ne!(support_status(card.id), SupportStatus::UnknownCard);
         }
-        assert_eq!(effect(448), OfficialEffect::Unsupported);
+        assert_eq!(effect(449), OfficialEffect::Unsupported);
     }
 
     #[test]

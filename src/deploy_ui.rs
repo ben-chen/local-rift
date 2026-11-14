@@ -51,7 +51,9 @@ impl App {
         }
         let resolving = resolving_chain_id.is_some();
         self.ui.title(
-            if resolving {
+            if card_id == 448 {
+                "Ready the Soldier?"
+            } else if resolving {
                 "Pay to draw?"
             } else {
                 "Pay for this trigger?"
@@ -88,6 +90,11 @@ impl App {
                     .get(mode)
             }) {
                 format!("Chosen: {}", mode.label)
+            } else if card_id == 448 {
+                context.subject.map_or_else(
+                    || "The created token is absent.".into(),
+                    |target| format!("Ready the created {}", target_label(&self.game, target)),
+                )
             } else if targets.is_empty() {
                 "No chosen targets.".into()
             } else {
@@ -114,6 +121,8 @@ impl App {
             Rect::new(1178.0, 493.0, 212.0, 34.0),
             if can_begin {
                 "Begin payment · use resources"
+            } else if card_id == 448 {
+                "Pay · ready after responses"
             } else if resolving {
                 "Pay · draw 1"
             } else {

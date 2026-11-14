@@ -149,14 +149,14 @@
       "gear": 78,
       "legend": 11,
       "rune": 6,
-      "spell": 127,
+      "spell": 128,
       "unit": 243
     },
-    "implemented_main_cards": 448,
+    "implemented_main_cards": 449,
     "implemented_legends": 11,
     "implemented_battlefields": 17,
-    "implemented_legal_identities": 482,
-    "unimplemented_legal_identities": 597,
+    "implemented_legal_identities": 483,
+    "unimplemented_legal_identities": 596,
     "errata_entries": 67,
     "identities_with_errata": 67,
     "source_quality_issues": 57,
@@ -192,7 +192,7 @@
     "Equip": 23,
     "Flow": 7,
     "Ganking": 29,
-    "Hidden": 27,
+    "Hidden": 26,
     "Hunt": 1,
     "Legion": 3,
     "Mighty": 9,
@@ -14876,8 +14876,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 448,
+        "official_id": "sfd-154-221",
+        "playable_in_client": true
       }
     },
     {
