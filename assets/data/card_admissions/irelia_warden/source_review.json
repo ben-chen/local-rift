@@ -1,0 +1,143 @@
+{
+  "status": "Printed source reviewed; runtime implementation pending.",
+  "reviewed_on": "2026-11-14",
+  "base_revision": "35d1c8c5bde3ab8a4b377ee5d1e3f9cf2905d309",
+  "preserved_runtime_prefix": {
+    "card_count": 464,
+    "preset_count": 7,
+    "cards_sha256": "4de48eab28a47c38d93f478b47ad318abea88c569ff94159b78fc290df30130e",
+    "presets_sha256": "e975739d803427e54928d6e6cd03d1ce51d7ad108f4e247b8a000acf037a5cdb"
+  },
+  "records": [
+    {
+      "official_id": "ogn-070-298",
+      "raw_printing": {
+        "official_id": "ogn-070-298",
+        "public_code": "OGN-070/298",
+        "name": "Mageseeker Warden",
+        "set": "OGN",
+        "collector_number": 70,
+        "types": [
+          "unit"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "unit"
+        ],
+        "accessibility_types": [
+          "unit"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "calm"
+        ],
+        "energy": 6,
+        "power": 1,
+        "might": 5,
+        "might_bonus": null,
+        "rules_html": "<p>While I'm at a battlefield, opponents can only play units to their base.<br />While I'm at a battlefield, spells and abilities can't ready enemy units and gear.</p>",
+        "rules_text": "While I'm at a battlefield, opponents can only play units to their base.\nWhile I'm at a battlefield, spells and abilities can't ready enemy units and gear.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [
+          "Demacia"
+        ],
+        "rarity": "rare",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/ae844b929f817cdf76fe40c7bf5d5fc02062bdac-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Unit: Mageseeker Warden. While I'm at a battlefield, opponents can only play units to their base.\nWhile I'm at a battlefield, spells and abilities can't ready enemy units and gear.",
+        "illustrators": [
+          "Six More Vodka"
+        ]
+      },
+      "raw_printing_sha256": "b40d6874abf469fe7bf9d787ec7c73cbc709773581e14b2120846e966309d940",
+      "effective": {
+        "types": [
+          "unit"
+        ],
+        "super_types": [],
+        "domains": [
+          "calm"
+        ],
+        "energy": 6,
+        "power": 1,
+        "might": 5,
+        "might_bonus": null,
+        "tags": [
+          "Demacia"
+        ],
+        "rules_html": "<p>While I'm at a battlefield, opponents can only play units to their base.<br />While I'm at a battlefield, spells and abilities can't ready enemy units and gear.</p>",
+        "rules_text": "While I'm at a battlefield, opponents can only play units to their base.\nWhile I'm at a battlefield, spells and abilities can't ready enemy units and gear.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "resolution_ids": [],
+      "original_image": {
+        "path": "assets/data/card_admissions/irelia_warden/ogn-070-298.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/ae844b929f817cdf76fe40c7bf5d5fc02062bdac-744x1039.png?accountingTag=RB",
+        "bytes": 853046,
+        "sha256": "6a151fe0616534d6826aa101ad1da1b2ffcb339dd14a82eee79876511e8ff66d",
+        "dimensions": [
+          744,
+          1039
+        ]
+      },
+      "visual_review": {
+        "actual_full_face_viewed": true,
+        "printed_facts": {
+          "types": [
+            "unit"
+          ],
+          "super_types": [],
+          "domains": [
+            "calm"
+          ],
+          "energy": 6,
+          "power": 1,
+          "might": 5,
+          "might_bonus": null,
+          "tags": [
+            "Demacia"
+          ]
+        },
+        "observations": [
+          "6 Energy, 1 Calm Power, 5 Might, Unit, Demacia.",
+          "Both static restrictions operate while this unit is at any battlefield; they do not require control of its battlefield.",
+          "Opponents can play units only to their base. This is not a movement prohibition.",
+          "Spells and abilities cannot ready enemy units and gear; the text does not forbid normal Awakening or entering ready."
+        ]
+      }
+    }
+  ],
+  "rules_review": {
+    "core_edition": "2026-10-09",
+    "core_url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/5c7946f7c3b8c6e0faff85ab6dadc6d2e721ea94.pdf",
+    "core_sha256": "94d41fee86f88b61c4157c0389c0595d990b98e5b42555c99d9f649ee64d1fec",
+    "sections": [
+      "355.17.b (explicit Mageseeker Warden example)",
+      "416.1-3",
+      "149.1",
+      "354.3",
+      "185-186"
+    ],
+    "hub_verified_on": "2026-11-14"
+  },
+  "irelia_relevance": {
+    "source": "https://riftbound.org/meta/irelia-blade-dancer/841-jackson-sipila",
+    "observed": "One Mageseeker Warden in the ten-card sideboard of the Jackson Sipila Irelia list, attributed to October 23, 2026 LDXP Sacramento Radiance-Win-A-Case.",
+    "limits": "Secondary listing only; the primary registration and placing have not been independently verified. This is a card-priority lead, not a new preset or claim of meta prevalence.",
+    "other_lists_checked": [
+      "https://anzid.gg/decks/irelia-20261017/",
+      "https://anzid.gg/decks/irelia-jim-20261014/",
+      "https://riftbound.org/meta/irelia-blade-dancer/3059-doncapucino"
+    ]
+  },
+  "implementation_requirements": [
+    "One live restriction query keyed by affected controller, with source identity and explanatory text for API and UI.",
+    "Enforce base-only unit play for Hand, Champion, Hidden, instructed plays and tokens, including conflicting fixed destinations, without affecting gear, movement or non-play board returns.",
+    "Block spell/ability Ready for enemy units and gear everywhere; preserve normal Awakening, entry state, legends and runes. Do not filter otherwise legal targets solely because an effect cannot ready them.",
+    "Re-evaluate live control and source location at resolution; removing or recalling the Warden ends its restrictions, and multiple Wardens are handled.",
+    "Preserve cost payment and independent spell effects; no Ready event or Irelia growth from prevented Ready.",
+    "Exercise both seats, actual responses, pending plays, rollback, bot observations, complete games, unobtrusive coaching and readable native previews."
+  ]
+}
