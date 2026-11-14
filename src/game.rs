@@ -10064,6 +10064,13 @@ impl Game {
                     Decision::CounterTax { player, cost, .. } => Some(Action::Choose {
                         accept: self.players[*player].energy >= (*cost).into(),
                     }),
+                    Decision::Legend {
+                        player,
+                        trigger: LegendTrigger::IreliaConquer,
+                    } => Some(Action::Choose {
+                        // Policy only: humans may still pay for an already-ready legend.
+                        accept: !self.legend[*player].ready,
+                    }),
                     Decision::EmpowerPlayed { .. }
                     | Decision::OptionalPlay { .. }
                     | Decision::BanishPlay { .. }

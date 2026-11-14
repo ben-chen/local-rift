@@ -1452,11 +1452,21 @@ fn response_window_advice(
                 "Declining an optional legend trigger is fine. The original card still waits on the chain if it has not resolved.",
             ],
             Decision::Legend {
+                player,
                 trigger: LegendTrigger::IreliaConquer,
-                ..
             } => vec![
-                "Conquest offers Irelia a reset: pay 1 energy to ready her legend. That can prepare another friendly-unit choice later this turn.",
-                "Check whether the legend is already ready. Paying is optional; a useful future ready matters more than using every trigger.",
+                if game.legend[*player].ready {
+                    if beginner {
+                        "Your Irelia legend is already ready. Paying 1 Energy would ready it again; you can decline and keep that Energy."
+                    } else {
+                        "Your legend is already ready. Decline this reset unless you have a specific response sequence that will exhaust it before the reset resolves."
+                    }
+                } else if beginner {
+                    "Your Irelia legend is exhausted. You may pay 1 Energy to ready it after responses, preparing another friendly-unit choice. Declining is allowed."
+                } else {
+                    "Your legend is exhausted. A reset can enable another unit ready and move. Budget 1 Energy now, plus a friendly-targeting play and 1 Power."
+                },
+                "The reset readies the legend, not a unit. To ready a unit later, choose it with a spell or ability, then pay Irelia's separate cost.",
             ],
             Decision::LastRites { .. } => vec![
                 "Last Rites lets you play a unit from your trash. Its normal costs still matter; choose an affordable unit or decline.",
@@ -2991,6 +3001,41 @@ mod tests {
                 .chain(&empowered)
                 .chain(&advanced)
                 .all(|tip| tip.chars().count() <= 180)
+        );
+    }
+
+    #[test]
+    fn irelia_reset_advice_tracks_readiness_without_acting_or_peeking() {
+        let mut game = Game::new_for_agents(0, 1, 51001, Difficulty::Tactical);
+        game.start_match().unwrap();
+        game.decision = Some(Decision::Legend {
+            player: 0,
+            trigger: LegendTrigger::IreliaConquer,
+        });
+        for level in [AdviceLevel::Beginner, AdviceLevel::Advanced] {
+            let mut mote = Companion::new(level);
+            for ready in [true, false] {
+                game.legend[0].ready = ready;
+                let before = format!("{game:?}");
+                mote.observe(&game);
+                assert!(
+                    mote.message()
+                        .contains(if ready { "already ready" } else { "exhausted" })
+                );
+                let tips = advice(&game, level);
+                assert!(tips.iter().all(|tip| tip.chars().count() <= 180));
+                assert!(tips.iter().any(|tip| tip.contains("separate cost")));
+                let mut private = game.clone();
+                private.players[1].hand = vec![1, 12, 21];
+                private.players[1].deck.reverse();
+                assert_eq!(fingerprint(&game), fingerprint(&private));
+                assert_eq!(tips, advice(&private, level));
+                assert_eq!(format!("{game:?}"), before);
+            }
+        }
+        assert_ne!(
+            advice(&game, AdviceLevel::Beginner),
+            advice(&game, AdviceLevel::Advanced)
         );
     }
 

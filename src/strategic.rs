@@ -97,9 +97,34 @@ impl Game {
                 })
                 .collect();
             choices.sort_by_key(|choice| std::cmp::Reverse(choice.0));
-            // A second own action catches sequences such as ready-then-attack or
-            // resource-ability-then-play. The small beam bounds UI work per choice.
-            for choice in choices.iter_mut().take(2) {
+            // A conquest reset sets up a choosing play, then a move. Keep that
+            // horizon while the reset awaits responses too: casting the choosing
+            // spell before the legend readies leaves its ready trigger unpayable.
+            // Other decisions retain the usual horizon and scoring weights.
+            let followup_depth = if matches!(
+                belief.decision,
+                Some(Decision::Legend {
+                    trigger: LegendTrigger::IreliaConquer,
+                    ..
+                })
+            ) || belief.chain.iter().any(|item| {
+                item.player == actor
+                    && matches!(
+                        item.ability,
+                        Some(ChainAbility::Legend(LegendAbility::IreliaRefresh))
+                    )
+            }) {
+                2
+            } else {
+                1
+            };
+            // Preserve waiting for the pending reset even if immediate buffs
+            // crowd Pass out of the two best static board scores. Also retain up
+            // to two ready effects that open an unscored battlefield route: their
+            // immediate resource cost can hide the value of the following move.
+            // This searches at most five roots with fixed per-level limits.
+            let mut mobility_roots = 0;
+            for (index, choice) in choices.iter_mut().enumerate() {
                 let state = &choice.2;
                 if state.winner.is_none()
                     && state.turn == belief.turn
@@ -107,26 +132,18 @@ impl Game {
                     && state.decision.is_none()
                     && !state.in_window()
                 {
-                    let mut best = choice.0;
-                    for next in state.strategic_candidates(FOLLOWUP_LIMIT)? {
-                        let mut result = state.clone();
-                        if result.apply(next.clone()).is_ok() {
-                            if result.strategic_settle(belief.turn).is_err() {
-                                continue;
-                            }
-                            best = best.max(
-                                (if next == Action::EndTurn {
-                                    state.strategic_value(actor)?
-                                } else {
-                                    match result.strategic_value(actor) {
-                                        Ok(value) => value,
-                                        Err(_) => continue,
-                                    }
-                                }) - action_penalty(&choice.1)
-                                    - action_penalty(&next),
-                            );
+                    if index >= 2 && !(followup_depth == 2 && choice.1 == Action::Pass) {
+                        if mobility_roots >= 2
+                            || !state.strategic_new_scoring_route(&belief, actor)?
+                        {
+                            continue;
                         }
+                        mobility_roots += 1;
                     }
+                    let best = choice.0.max(
+                        state.strategic_followup_value(actor, belief.turn, followup_depth)?
+                            - action_penalty(&choice.1),
+                    );
                     choice.0 = (choice.0 * 2 + best) / 3;
                 }
             }
@@ -414,6 +431,70 @@ impl Game {
         }
 
         Ok(())
+    }
+
+    fn strategic_new_scoring_route(&self, before: &Self, actor: usize) -> Result<bool, String> {
+        for unit in &self.players[actor].units {
+            if !unit.ready
+                || self.movement_locked(actor, unit.id)
+                || !before.players[actor]
+                    .units
+                    .iter()
+                    .any(|old| old.id == unit.id && !old.ready)
+            {
+                continue;
+            }
+            for lane in 0..self.battlefield_count() {
+                if !self.player_scored_this_turn[actor][lane]
+                    && self.battlefield_owner[lane] != Some(actor)
+                    && self.lane_count(1 - actor, lane) == 0
+                    && self.standard_move_route_allowed(unit, Some(lane))?
+                {
+                    return Ok(true);
+                }
+            }
+        }
+        Ok(false)
+    }
+
+    /// Search only the sampled belief state, never the live hidden information.
+    fn strategic_followup_value(
+        &self,
+        actor: usize,
+        starting_turn: u32,
+        depth: u8,
+    ) -> Result<i128, String> {
+        let current = self.strategic_value(actor)?;
+        if depth == 0
+            || self.winner.is_some()
+            || self.turn != starting_turn
+            || self.priority() != actor
+            || self.decision.is_some()
+            || self.in_window()
+        {
+            return Ok(current);
+        }
+        let mut best = current;
+        for next in self.strategic_candidates(FOLLOWUP_LIMIT)? {
+            let mut result = self.clone();
+            if result.apply(next.clone()).is_err()
+                || result.strategic_settle(starting_turn).is_err()
+            {
+                continue;
+            }
+            // Keep EndTurn at the same turn horizon as the other candidates.
+            let value = if next == Action::EndTurn {
+                current
+            } else if let Ok(value) =
+                result.strategic_followup_value(actor, starting_turn, depth - 1)
+            {
+                value
+            } else {
+                continue;
+            };
+            best = best.max(value - action_penalty(&next));
+        }
+        Ok(best)
     }
 
     fn strategic_value(&self, actor: usize) -> Result<i128, String> {
