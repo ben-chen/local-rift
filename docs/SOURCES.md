@@ -16,7 +16,6 @@ Each preset reproduces the published **40-card main-deck composition**, includin
 | Kai'Sa / Void Control | Sinzari, 15th, Vancouver Regional Qualifier, May 2026 | [Riot: Vancouver's Top Decks](https://playriftbound.com/en-us/news/organizedplay/vancouvers-top-decks/) |
 | Rengar / Pridestalker | DSG Prismaticism, 1st, Los Angeles Regional Qualifier, September 2026 | [Riot: Los Angeles’ Top Decks](https://playriftbound.com/en-us/news/organizedplay/los-angeles-top-decks/) |
 | Irelia / Arito Convergence IV | Arito, 2nd (8–2–0), Convergence IV, October 31, 2026 | [Organizer deck page](https://topdeck.gg/deck/convergence-4/3Mb0hLsUTwgBYrpAauGOaRvDhnq1) and [standings](https://topdeck.gg/bracket/convergence-4) |
-
 | Riven / Sonecon Stuttgart | Sonecon, 2nd, European Regional Championship, Stuttgart, November 2026 | [Riot: European Championship highlights](https://playriftbound.com/en-us/news/organizedplay/best-ofs-for-the-european-championship/) |
 
 Irelia, Master Yi, and Kennen have primary-source tournament evidence for the dated events above. Kai'Sa is a **historical competitive example** included for a different play style, not a claim that this May list is currently top tier. Radiance released October 23; these are dated, reproducible presets, not a forecast of that new metagame.
