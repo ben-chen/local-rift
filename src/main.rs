@@ -9,6 +9,8 @@ mod deploy_ui;
 mod draw_look_ui;
 mod equipment_ui;
 mod field_ui;
+mod format_ui;
+use format_ui::{FormatChoice, FormatPicker};
 mod gust_ui;
 mod play_ui;
 mod predict_ui;
@@ -153,6 +155,7 @@ struct Preferences {
     animation: bool,
     difficulty: Difficulty,
     exact_payment: bool,
+    format: FormatChoice,
     use_custom: [bool; 2],
     wins: u32,
     losses: u32,
@@ -187,6 +190,9 @@ impl Preferences {
                 _ => Difficulty::Easy,
             },
             exact_payment: value("exact_payment") == Some("true"),
+            format: value("format")
+                .and_then(|v| FormatChoice::parse(v).ok())
+                .unwrap_or_default(),
             use_custom: [
                 value("custom_you") == Some("true"),
                 value("custom_ai") == Some("true"),
@@ -197,7 +203,7 @@ impl Preferences {
     }
     fn to_text(&self) -> String {
         format!(
-            "coach={}\nadvanced={}\nanimation={}\ndifficulty={}\nexact_payment={}\ncustom_you={}\ncustom_ai={}\nwins={}\nlosses={}\n",
+            "coach={}\nadvanced={}\nanimation={}\ndifficulty={}\nexact_payment={}\nformat={}\ncustom_you={}\ncustom_ai={}\nwins={}\nlosses={}\n",
             self.coach,
             self.advanced,
             self.animation,
@@ -207,6 +213,7 @@ impl Preferences {
                 Difficulty::Strategic => "strategic",
             },
             self.exact_payment,
+            self.format.key(),
             self.use_custom[0],
             self.use_custom[1],
             self.wins,
@@ -328,6 +335,7 @@ struct App {
     field_hover: Option<usize>,
     field_inspect: Option<usize>,
     field_picker: Option<FieldPicker>,
+    format_picker: Option<FormatPicker>,
     equipment_inspect: Option<(usize, u32)>,
     equipment_cost: Option<equipment_ui::ExhaustDraft>,
     equipment_scroll: usize,
@@ -510,6 +518,7 @@ impl App {
             field_hover: None,
             field_inspect: None,
             field_picker: None,
+            format_picker: None,
             equipment_inspect: None,
             equipment_cost: None,
             equipment_scroll: 0,
@@ -518,6 +527,14 @@ impl App {
         }
     }
     fn reset(&mut self) {
+        let format_date = match self.prefs.format.resolve() {
+            Ok(date) => date,
+            Err(error) => {
+                self.notify(error);
+                self.open_format_picker(false);
+                return;
+            }
+        };
         let candidate = Game::new_with_custom(
             [self.player_deck, self.opponent_deck],
             self.active_custom_decks(),
@@ -542,6 +559,11 @@ impl App {
             game.choose_battlefield(player, field)
                 .expect("valid selected battlefield");
         }
+        if let Err(error) = game.choose_format_date(format_date.as_deref()) {
+            self.notify(error);
+            self.open_format_picker(false);
+            return;
+        }
         self.native_match = None;
         self.series_lobby = false;
         self.install_game(game);
@@ -549,6 +571,8 @@ impl App {
     fn install_game(&mut self, game: Game) {
         self.game = game;
         self.clear_game_controls();
+        self.toast.clear();
+        self.toast_until = 0.0;
         self.in_match = true;
         self.recorded = false;
         self.confirm_restart = false;
@@ -793,11 +817,13 @@ impl App {
         }
         if self.legend_picker.is_some()
             || self.field_picker.is_some()
+            || self.format_picker.is_some()
             || !self.deck_load_errors.is_empty()
         {
             if is_key_pressed(KeyCode::Escape) {
                 self.legend_picker = None;
                 self.field_picker = None;
+                self.format_picker = None;
             }
             return;
         }
@@ -1063,6 +1089,7 @@ impl App {
             && !self.show_play_effects
             && self.cost_editor.is_none()
             && self.field_picker.is_none()
+            && self.format_picker.is_none()
             && self.legend_picker.is_none()
             && self.deck_load_errors.is_empty()
             && self.inspect.is_none()
@@ -1123,6 +1150,7 @@ impl App {
         self.draw_play_effects();
         self.saved_deck_notice();
         self.draw_series_concession();
+        self.draw_format_picker();
         self.ui.enabled = true;
         Ok(())
     }
@@ -1390,6 +1418,7 @@ impl App {
             self.series_concede = true;
         }
 
+        let format_label = format_ui::game_format_label(self.game.format_date());
         self.header(
             if self.in_match {
                 "A little closer to mastery."
@@ -1398,6 +1427,8 @@ impl App {
             },
             if self.in_match && self.game.spell_ability_damage_prevented {
                 ""
+            } else if self.in_match {
+                &format_label
             } else {
                 "A quiet place to learn. An opponent that's always ready."
             },
@@ -1442,6 +1473,7 @@ impl App {
                 12.0,
                 GOLD,
             );
+            self.ui.text(&format_label, 245.0, 85.0, 9.0, MUTED);
         }
         let mut units = Vec::new();
         for player in 0..2 {
@@ -4466,20 +4498,19 @@ impl App {
         );
         self.ui
             .line(vec2(1178.0, 402.0), vec2(1390.0, 402.0), 1.0, LINE);
-        self.ui
-            .text("THE GOAL IS SIMPLE", 1178.0, 428.0, 10.0, GOLD);
-        for (i, s) in [
-            "Play units using your runes.",
-            "Conquer and hold battlefields.",
-            "Be the first to reach 8 points.",
-        ]
-        .iter()
-        .enumerate()
-        {
-            let y = 455.0 + i as f32 * 29.0;
-            self.ui.text(&format!("0{}", i + 1), 1178.0, y, 10.0, TEAL);
-            self.ui.text(s, 1202.0, y, 10.5, TEXT);
-        }
+        self.ui.text("PRACTICE FORMAT", 1178.0, 428.0, 10.0, GOLD);
+        self.format_button(Rect::new(1178.0, 441.0, 212.0, 34.0), false);
+        self.ui.wrapped(
+            &format!(
+                "Global 1v1 · format reviewed {}. Open to check both lists.",
+                local_rift::legality::format_calendar().reviewed_on
+            ),
+            1178.0,
+            494.0,
+            210.0,
+            10.0,
+            MUTED,
+        );
         if self.ui.button(
             Rect::new(1178.0, 533.0, 212.0, 30.0),
             &format!(
@@ -10537,6 +10568,28 @@ async fn main() {
         .and_then(|i| args.get(i + 1))
         .cloned();
     let mut app = App::new();
+    if let Some(index) = args.iter().position(|arg| arg == "--format") {
+        match args
+            .get(index + 1)
+            .ok_or_else(|| "Supply today, snapshot, or YYYY-MM-DD after --format.".to_owned())
+            .and_then(|value| FormatChoice::parse(value))
+        {
+            Ok(choice) => app.prefs.format = choice,
+            Err(error) => {
+                eprintln!("{error}");
+                return;
+            }
+        }
+    } else if args
+        .iter()
+        .any(|arg| arg.starts_with("--ui-smoke") && arg != "--ui-smoke-format")
+    {
+        // Existing scenarios exercise dated source lists, explicitly in their
+        // historical format. The format smoke separately exercises dated gates.
+        app.prefs.format = FormatChoice::Snapshot;
+        println!("Native fixture format: historical catalog snapshot");
+    }
+
     if args.iter().any(|a| a == "--decks") {
         app.screen = Screen::Decks;
     }
@@ -10545,7 +10598,9 @@ async fn main() {
     }
     if args.iter().any(|a| a == "--match") {
         app.reset();
-        app.game.start_match().unwrap();
+        if app.in_match {
+            app.game.start_match().unwrap();
+        }
     }
     if args.iter().any(|arg| arg == "--energy-preview") {
         app.in_match = true;
@@ -10638,6 +10693,7 @@ async fn main() {
         app.inspect = Some(id);
     }
     let preview_hover = args.iter().any(|arg| arg == "--hover-preview");
+    let format_smoke = args.iter().any(|a| a == "--ui-smoke-format");
     let series_smoke = args.iter().any(|a| a == "--ui-smoke-series");
     let irelia_smoke = args.iter().any(|a| a == "--ui-smoke-irelia");
     let riven_smoke = args.iter().any(|a| a == "--ui-smoke-riven");
@@ -10658,7 +10714,8 @@ async fn main() {
     let focused_combat_card_smoke = args.iter().any(|a| a == "--ui-smoke-c26");
     let focused_field_smoke = args.iter().any(|a| a == "--ui-smoke-c28");
     let focused_source_damage_smoke = args.iter().any(|a| a == "--ui-smoke-c27");
-    let smoke_test = series_smoke
+    let smoke_test = format_smoke
+        || series_smoke
         || tokens_smoke
         || guards_smoke
         || deathgrip_smoke
@@ -10702,7 +10759,9 @@ async fn main() {
             app.hover_card = app.game.players[0].hand.first().copied();
             app.hover_since = -1.0;
         }
-        let smoke_done = if tokens_smoke {
+        let smoke_done = if format_smoke {
+            smoke::run_format_frame(&mut app, frames)
+        } else if tokens_smoke {
             smoke::run_tokens_frame(&mut app, frames)
         } else if guards_smoke {
             smoke::run_guards_frame(&mut app, frames)

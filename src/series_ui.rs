@@ -51,6 +51,7 @@ pub(super) struct NativeMatch {
     pub state: MatchSeries,
     seed: u64,
     difficulty: Difficulty,
+    pub(super) format_date: Option<String>,
     pub result_pending: bool,
     pub draft: Option<SideboardDraft>,
     pub(super) pages: [usize; 2],
@@ -64,11 +65,23 @@ impl NativeMatch {
         seed: u64,
         difficulty: Difficulty,
         chooser: usize,
+        format_date: Option<String>,
     ) -> Result<Self, String> {
+        if let Some(date) = format_date.as_deref() {
+            for (seat, reg) in regs.iter().enumerate() {
+                local_rift::legality::validate_registration_at(reg, date).map_err(|error| {
+                    format!(
+                        "{} registration: {error}",
+                        if seat == 0 { "Your" } else { "Opponent" }
+                    )
+                })?;
+            }
+        }
         let mut result = Self {
             state: MatchSeries::new(regs, chooser)?,
             seed,
             difficulty,
+            format_date,
             result_pending: false,
             draft: None,
             pages: [0; 2],
@@ -117,10 +130,11 @@ impl NativeMatch {
             return Err("The opponent chooses to play first.".into());
         }
         candidate.choose_play_order(chooser, first)?;
-        let game = candidate.new_game(
+        let mut game = candidate.new_game(
             self.seed.wrapping_add(candidate.game_number() - 1),
             self.difficulty,
         )?;
+        game.choose_format_date(self.format_date.as_deref())?;
         self.state = candidate;
         self.draft = None;
         self.field_choice = None;
@@ -187,7 +201,7 @@ impl App {
                 .as_ref()
                 .is_some_and(|m| m.result_pending || m.state.phase() != SeriesPhase::Game)
     }
-    fn match_registration(&self, seat: usize) -> Result<Registration, String> {
+    pub(super) fn match_registration(&self, seat: usize) -> Result<Registration, String> {
         if self.prefs.use_custom[seat] {
             return Err("This saved list has no registered sideboard and three-field set. Choose a complete preset below.".into());
         }
@@ -203,9 +217,17 @@ impl App {
         chooser: usize,
     ) -> Result<(), String> {
         let regs = [self.match_registration(0)?, self.match_registration(1)?];
-        let series = NativeMatch::new(regs, match_seed, self.prefs.difficulty, chooser)?;
+        let series = NativeMatch::new(
+            regs,
+            match_seed,
+            self.prefs.difficulty,
+            chooser,
+            self.prefs.format.resolve()?,
+        )?;
         self.clear_game_controls();
         self.native_match = Some(series);
+        self.toast.clear();
+        self.toast_until = 0.0;
         self.series_lobby = false;
         self.in_match = true;
         self.screen = Screen::Practice;
@@ -496,7 +518,18 @@ impl App {
             self.series_chooser = (self.series_chooser + 1) % 3;
         }
         self.ui.wrapped("That player chooses first or second after fields reveal. The previous loser gets the choice in later games.",838.0,680.0,530.0,12.0,MUTED);
-        let legal = self.match_registration(0).is_ok() && self.match_registration(1).is_ok();
+        self.format_button(Rect::new(260.0, 731.0, 330.0, 36.0), true);
+        let legal =
+            self.setup_format_check(0, true).is_ok() && self.setup_format_check(1, true).is_ok();
+        if !legal {
+            self.ui.text(
+                "Check format for registration restrictions.",
+                615.0,
+                754.0,
+                12.0,
+                GOLD,
+            );
+        }
         if self.ui.button(
             Rect::new(1030.0, 779.0, 360.0, 48.0),
             "Register & choose battlefield  >",
@@ -512,6 +545,7 @@ impl App {
             };
             if let Err(error) = self.begin_native_match(match_seed, chooser) {
                 self.notify(error);
+                self.open_format_picker(true);
             }
         }
         self.ui.wrapped("Complete registrations: Xeno Irelia, Arito Irelia, Master Yi, Kennen, Rengar and Sonecon Riven. Other presets and custom lists remain available for single games.",260.0,801.0,730.0,12.0,MUTED);
@@ -532,8 +566,11 @@ impl App {
         self.header(
             title,
             &format!(
-                "BEST OF THREE · YOU {} — {} OPPONENT · GAME {}",
-                view["wins"][0], view["wins"][1], view["game_number"]
+                "BEST OF THREE · YOU {} — {} OPPONENT · GAME {} · {}",
+                view["wins"][0],
+                view["wins"][1],
+                view["game_number"],
+                crate::format_ui::game_format_label(series.format_date.as_deref())
             ),
         );
         if self.ui.button(
@@ -1033,12 +1070,68 @@ mod tests {
         total
     }
     #[test]
+    fn native_registration_checks_unused_cards_and_keeps_date_between_games() {
+        let original = Registration::from_preset(4).unwrap();
+        let rejected = NativeMatch::new(
+            [original.clone(), original.clone()],
+            1130,
+            Difficulty::Easy,
+            0,
+            Some("2026-11-23".into()),
+        );
+        let error = rejected
+            .err()
+            .expect("banned sideboard/fields must be rejected");
+        assert!(error.contains("Brynhir") && error.contains("battlefield"));
+        let mut legal = original.clone();
+        legal.deck.battlefield = 0;
+        legal.sideboard.retain(|(id, _)| *id != 51);
+        legal.battlefields = [0, 13, 14];
+        let error = NativeMatch::new(
+            [legal.clone(), original],
+            1130,
+            Difficulty::Easy,
+            0,
+            Some("2026-11-23".into()),
+        )
+        .err()
+        .expect("opponent registration also checked");
+        assert!(error.starts_with("Opponent registration:"), "{error}");
+        let mut native = NativeMatch::new(
+            [legal.clone(), legal],
+            1130,
+            Difficulty::Easy,
+            0,
+            Some("2026-11-23".into()),
+        )
+        .unwrap();
+        for _ in 0..2 {
+            if native.state.phase() == SeriesPhase::Sideboarding {
+                let draft = SideboardDraft::from_state(&native.state, 0).unwrap();
+                native
+                    .state
+                    .submit_sideboard(0, draft.deck.cards, draft.deck.chosen_champion)
+                    .unwrap();
+            }
+            native.prepare_opponent().unwrap();
+            let view = native.state.observe(0).unwrap();
+            let field = view["available_battlefields"][0].as_u64().unwrap() as usize;
+            native.state.choose_battlefield(0, field).unwrap();
+            let chooser = native.state.summary()["designated_player"]
+                .as_u64()
+                .unwrap() as usize;
+            let game = native.start_game(chooser).unwrap();
+            assert_eq!(game.format_date(), Some("2026-11-23"));
+            native.state.concede_game(1).unwrap();
+        }
+    }
+    #[test]
     fn sideboard_draft_preserves_pool_and_requires_eligible_chosen_champion() {
         let mut r = Registration::from_preset(5).unwrap();
         // Explicit authored variant solely to test a different eligible champion.
         r.sideboard.retain(|(id, _)| *id != 1);
         r.sideboard.push((271, 1));
-        let mut native = NativeMatch::new([r.clone(), r], 32, Difficulty::Easy, 0).unwrap();
+        let mut native = NativeMatch::new([r.clone(), r], 32, Difficulty::Easy, 0, None).unwrap();
         native.state.concede_game(1).unwrap();
         native.prepare_opponent().unwrap();
         let mut d = SideboardDraft::from_state(&native.state, 0).unwrap();
@@ -1064,7 +1157,8 @@ mod tests {
     #[test]
     fn native_setup_keeps_fields_private_and_respects_opponent_play_order() {
         let r = Registration::from_preset(5).unwrap();
-        let mut native = NativeMatch::new([r.clone(), r], 77, Difficulty::Tactical, 1).unwrap();
+        let mut native =
+            NativeMatch::new([r.clone(), r], 77, Difficulty::Tactical, 1, None).unwrap();
         let human = native.state.observe(0).unwrap();
         assert!(human["players"][1]["selected_battlefield"].is_null());
         assert_eq!(human["battlefield_committed"][1], true);
@@ -1096,6 +1190,7 @@ mod tests {
                     910000 + level as u64 * 100 + chooser as u64,
                     difficulty,
                     chooser,
+                    Some("2026-11-22".into()),
                 )
                 .unwrap();
                 while native.state.phase() != SeriesPhase::Complete {
@@ -1119,6 +1214,7 @@ mod tests {
                         .as_u64()
                         .unwrap() as usize;
                     let mut game = native.start_game(chooser).unwrap();
+                    assert_eq!(game.format_date(), Some("2026-11-22"));
                     for p in [game.first_player, 1 - game.first_player] {
                         if p == 1 {
                             App::opponent_match_mulligan(&mut game).unwrap();

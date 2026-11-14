@@ -5,6 +5,7 @@ edition = "2024"
 default-run = "local-rift"
 
 [dependencies]
+chrono = { version = "0.4.45", default-features = false, features = ["clock"] }
 macroquad = "0.4.14"
 serde_json = "1"
 

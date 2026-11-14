@@ -90,6 +90,34 @@ fn schedule() -> &'static Value {
     })
 }
 
+/// Dates exposed by the accepted source bundle, shared by desktop presentation.
+pub struct FormatCalendar {
+    pub catalog_as_of: &'static str,
+    pub reviewed_on: &'static str,
+    pub effective_dates: Vec<&'static str>,
+}
+
+pub fn format_calendar() -> FormatCalendar {
+    let mut effective_dates: Vec<_> = schedule()["updates"]
+        .as_array()
+        .expect("format updates")
+        .iter()
+        .map(|update| update["effective_on"].as_str().expect("effective date"))
+        .collect();
+    effective_dates.sort_unstable();
+    effective_dates.dedup();
+    FormatCalendar {
+        catalog_as_of: schedule()["catalog_as_of"].as_str().expect("catalog date"),
+        reviewed_on: schedule()["reviewed_on"].as_str().expect("review date"),
+        effective_dates,
+    }
+}
+
+/// Validate a requested date without needing a deck or consulting a clock.
+pub fn validate_format_date(as_of: &str) -> Result<(), String> {
+    validate_objects(as_of, Vec::new()).map(|_| ())
+}
+
 /// Validate a full Gregorian date before lexical ISO-date comparisons.
 fn date(value: &str) -> Result<&str, String> {
     let invalid = || "Use a valid format date in YYYY-MM-DD form.".to_owned();
