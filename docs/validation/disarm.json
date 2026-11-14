@@ -1,5 +1,5 @@
 {
-  "status": "Local validation passed; immutable installed acceptance pending",
+  "status": "Local and immutable installed acceptance passed; complete Standard parity and expert strength remain unproven",
   "reviewed_at": "2026-11-14T10:07:52.938983+00:00",
   "base_revision": "ed2a357",
   "cards": [
@@ -874,11 +874,11 @@
     "Historical source tests now compare exact review records rather than stale global totals; a fixture reference typo caught by the focused checks was corrected."
   ],
   "limitations": [
-    "Immutable packaged acceptance pending; not published yet.",
     "Irelia is Calm/Chaos; only Siren fits her identity. Mind cards are exercised in other decks.",
     "Two easy/tactical API series had no Disarm triggers; separate focused cases exercise all AI levels and both seats.",
     "Sourced preset recipes are unchanged; these lists do not establish current meta strength.",
-    "All legal-card coverage, complete Standard parity, novice learning and expert-strength AI remain unproven."
+    "All legal-card coverage, complete Standard parity, novice learning and expert-strength AI remain unproven.",
+    "Combined acceptance covers this pinned Disarm/Block/Yuumi candidate. It does not include the later Strategic combat improvement."
   ],
   "installed_attempts": [
     {
@@ -899,6 +899,26 @@
           "passed": 43
         }
       ]
+    },
+    {
+      "attempt": 2,
+      "status": "superseded",
+      "revision": "0b2c17f8d98057c5e9325acc6a5d720625ccd22c",
+      "cause": "Three historical Rust inventory assertions retained old totals. The run was explicitly stopped after verified failures; its partial suite is not a passing result.",
+      "repair_commit": "80f87ca",
+      "replacement": "e0d6d9a452b40982e16121c5476f6502e8669f60"
     }
-  ]
+  ],
+  "installed": {
+    "status": "passed",
+    "revision": "e0d6d9a452b40982e16121c5476f6502e8669f60",
+    "report": "turn_keywords_release.json",
+    "rust_tests": 2012,
+    "source_checks": 334,
+    "simulation_games": 1176,
+    "ui_cases": 23,
+    "captures": 148,
+    "api_comparisons": 10,
+    "full_api_records_equal": 63
+  }
 }

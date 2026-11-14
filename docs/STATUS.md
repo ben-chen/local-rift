@@ -28,6 +28,11 @@ client/API acceptance, and [workflow evidence](validation/validation_workflow.js
 separately covers the focused runner and source checks. Historical checkpoint
 notes live in [validation history](VALIDATION_HISTORY.md).
 
+The [Disarm, Block and Yuumi release](validation/turn_keywords_release.json)
+passed 2,012 Rust tests, 334 source checks, 1,176 simulated games, 23 installed
+UI cases and ten exact API comparisons. Four of its 148 captures were visually
+reviewed. This acceptance is separate from later Strategic AI changes.
+
 During implementation, run focused rule, rollback and interface regressions for
 the changed behavior. Before a commit, include affected interactions, formatting
 and lint checks. Run the full regression, source, simulation and installed-client

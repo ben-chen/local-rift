@@ -1,5 +1,5 @@
 {
-  "status": "Local rules, source, native and API validation passed; immutable installed acceptance pending",
+  "status": "Local and immutable installed acceptance passed; complete Standard parity and expert strength remain unproven",
   "reviewed_at": "2026-11-14T10:16:08.462795+00:00",
   "cards": [
     {
@@ -518,9 +518,21 @@
     "Three historical Rust inventory assertions still used pre-Disarm totals. Replaced aggregate pins with complete-record/evidence comparisons; kept individual card/source checks."
   ],
   "limitations": [
-    "Not installed or published; full immutable acceptance and earlier API trace comparisons remain.",
     "Brawl source domain corrected to Fury while raw Chaos metadata stays preserved; runtime unavailable.",
     "Seven sourced presets unchanged; these added cards are eligible Irelia options, not established meta staples.",
-    "Full Standard parity, all legal cards, expert strength and novice learning outcomes remain unproven."
-  ]
+    "Full Standard parity, all legal cards, expert strength and novice learning outcomes remain unproven.",
+    "Combined acceptance covers this pinned Disarm/Block/Yuumi candidate. It does not include the later Strategic combat improvement."
+  ],
+  "installed": {
+    "status": "passed",
+    "revision": "e0d6d9a452b40982e16121c5476f6502e8669f60",
+    "report": "turn_keywords_release.json",
+    "rust_tests": 2012,
+    "source_checks": 334,
+    "simulation_games": 1176,
+    "ui_cases": 23,
+    "captures": 148,
+    "api_comparisons": 10,
+    "full_api_records_equal": 63
+  }
 }

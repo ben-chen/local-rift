@@ -1,0 +1,519 @@
+{
+  "status": "passed",
+  "stage": "complete",
+  "pid": 2155079,
+  "revision": "e0d6d9a452b40982e16121c5476f6502e8669f60",
+  "plan_sha256": "b12b30383031a206b1cc4ea9de77da8339cb1a5c9b3da5d4f99a660b1455b70b",
+  "runner_sha256": "5631bfd578f7217542a061aea2b67e50a38da93514524eb656e4924efb3f1910",
+  "started_at": "2026-11-14T10:19:08.144929+00:00",
+  "ui": [
+    {
+      "name": "core-normal",
+      "seconds": 19.783,
+      "captures": 4,
+      "games": 0,
+      "capture_sha256": {
+        "rift_smoke_mat_screenshot.png": "86e12bda3cfe27b7ea71bf69905bd2074228075b79038a18221b10d7a79909e2",
+        "rift_smoke_resources_screenshot.png": "5339919098818942106f99998d1c7b2237eeb1e4137014ab0030c7da37a228e0",
+        "rift_smoke_journal_screenshot.png": "fcde8964a4c17e57f44d057f44adc7d10bd961cf68034e5c973341b62ed24415",
+        "rift_smoke_opponent_resources_screenshot.png": "1d5dc693a214e25c5b4e176a0a1c15891589e113b274f11bc7a5603cc3b34ce6"
+      },
+      "log_sha256": "0ad7d29b583da68ce334cc72492052b992e83a5842e770cd49fe8d5083ebecbf",
+      "host_library_path_removed": true
+    },
+    {
+      "name": "irelia-normal",
+      "seconds": 6.185,
+      "captures": 9,
+      "games": 0,
+      "capture_sha256": {
+        "rift_gust_protected_advanced.png": "319b89c6cf517bcdc649ba2e989d8fd2208885dbee94fe31d24face5db1e587d",
+        "rift_gust_response_advanced.png": "2e549d91ecc87adacc6b4f743399dceea53c5a3643e6761fa43e9c6fba3ca46c",
+        "rift_jae_inspect.png": "ed8788adcd488e6e7f22d713fbe16bc49589555581f0d5abd8d2c5b7f2a39217",
+        "rift_jae_beginner.png": "84042d732d3775001db5a55dd3222f87860f16bcfe53205489c2a0578123d46b",
+        "rift_jae_draw.png": "a84e3961a22ac55088ee442926b15f9592925324f9449432f3fa250d01bd0e0d",
+        "rift_jae_trigger.png": "5df27753479438db4f8d1f58f550a4a0977113194ffc83c3d30117356fd5064b",
+        "rift_gust_response_beginner.png": "8474131ff595776291ea5f357c2a2d8786a125e7ca5e43f3b7373ae38abb0dd4",
+        "rift_jae_advanced.png": "6cb49dfcd57de69b407aadf179d1bb70ad9d84f4b1ac8a7cbfc68e12d6704255",
+        "rift_gust_protected_beginner.png": "f8eb5d606edc98cff39d222230a8e75cd176b06a2634b9531ad5547b83d4b896"
+      },
+      "log_sha256": "5ff5c1ed3b32d2a663ff9fcffa9e1cd16c7f1cd85324c4564dc426f1f8bbe726",
+      "host_library_path_removed": true
+    },
+    {
+      "name": "format-normal",
+      "seconds": 4.474,
+      "captures": 1,
+      "games": 0,
+      "capture_sha256": {
+        "rift_format_turn_effect.png": "5c929e18eafe6c7583673d5ec8dd454b85d4e92e08f293e4a23a44c322fdcdcf"
+      },
+      "log_sha256": "b14cbbd11f96d17c40e1323d144152047249e946e633825461ea1cb1121aaf54",
+      "host_library_path_removed": true
+    },
+    {
+      "name": "core-small",
+      "seconds": 16.298,
+      "captures": 4,
+      "games": 0,
+      "capture_sha256": {
+        "rift_smoke_mat_screenshot.png": "d7ac50bd759ed20f17fa184efaca09caaa2b4f7c22b2d8296ae727cee60a380b",
+        "rift_smoke_resources_screenshot.png": "84117a2ad9bb5a011f632e3300244ea7c19b36a1c5bc4bbf79f494ddbecd7dd2",
+        "rift_smoke_journal_screenshot.png": "8b236a5487c18731bffb77d3392bf7096f00ee6cf23fd23c36df18f5e31a2adf",
+        "rift_smoke_opponent_resources_screenshot.png": "4b7b59e19687c2a96535eb84c932ccb650eef759eecb2f0496f1bd3c193d8a7d"
+      },
+      "log_sha256": "0ad7d29b583da68ce334cc72492052b992e83a5842e770cd49fe8d5083ebecbf",
+      "host_library_path_removed": true
+    },
+    {
+      "name": "irelia-small",
+      "seconds": 5.932,
+      "captures": 9,
+      "games": 0,
+      "capture_sha256": {
+        "rift_gust_protected_advanced.png": "e131b28376f1e4df018fedcd5facf0cfccc64e8c1df93f0b5531a16036084a9e",
+        "rift_gust_response_advanced.png": "36231e0e9a46362df3347186e8881c939c3d122f2413c670641d984dda4d9baf",
+        "rift_jae_inspect.png": "5cba7b07747981e666e8f72c3314f1ff3cb51184d365bb35ef1dc06085255e0f",
+        "rift_jae_beginner.png": "084556c4139b92ac211e75e15d06d4fc94767da51b48f3213a106b2383588a8c",
+        "rift_jae_draw.png": "8c20c49949a6b73ae77c4023158be8479015a741a9920c51be4690f62b8f3d18",
+        "rift_jae_trigger.png": "b327dec676ec397416994607fee19397dbb3f054ed0027f16ee40d619f3f43a6",
+        "rift_gust_response_beginner.png": "5ec3504736d0253cb0b99992b6e60930a819dcf1a4178335b3f2f7dfd3bd55cf",
+        "rift_jae_advanced.png": "f7204b63a9a70871d3eab9f9c2d9d6b605ea6d703ae91eb79a09cd1b149a3179",
+        "rift_gust_protected_beginner.png": "8e06dc1efd84f9479cb603aee0f852b697c237e4b286ae03ba2a1695dc4b562f"
+      },
+      "log_sha256": "5ff5c1ed3b32d2a663ff9fcffa9e1cd16c7f1cd85324c4564dc426f1f8bbe726",
+      "host_library_path_removed": true
+    },
+    {
+      "name": "format-small",
+      "seconds": 4.423,
+      "captures": 1,
+      "games": 0,
+      "capture_sha256": {
+        "rift_format_turn_effect.png": "2bd3d89ce2bebf01566b367868916d8d6b29df1fdda1a3340d9332aa69aa876a"
+      },
+      "log_sha256": "b14cbbd11f96d17c40e1323d144152047249e946e633825461ea1cb1121aaf54",
+      "host_library_path_removed": true
+    },
+    {
+      "name": "series-strategic",
+      "seconds": 5.224,
+      "captures": 4,
+      "games": 2,
+      "capture_sha256": {
+        "rift_series_sideboard.png": "6f35e90f624ffa0f9a9a74fd586e084fbb05706ccbadc35f60742447fe5ce23c",
+        "rift_series_lobby.png": "9f941b3c37f5818f708b17c1277082f0ae99dca96005ae9ff88359b4e3832368",
+        "rift_series_complete.png": "6b9b733be4457361bd75c2a1d88b901fdd8dac872e2a7b69493835d6a8811918",
+        "rift_series_champion.png": "eb263a29d86fab9d32b82b875796c3f145b4b17fc89f515bb95d49f5d44bf987"
+      },
+      "log_sha256": "7d9880f2c69e9570c0d248f6420a29a229143bc6ccdbc2c742450c9a041a9756",
+      "host_library_path_removed": true
+    },
+    {
+      "name": "resources-normal",
+      "seconds": 4.476,
+      "captures": 9,
+      "games": 0,
+      "capture_sha256": {
+        "rift_keeper_trigger.png": "2aea27fc941e76e5a4e16b758dcae8cff13370ecd9e6b5191e3467368144b71c",
+        "rift_meditation_cost.png": "e5ee135f3abb76bff25e415d835edd82aecb4e4e9314fde9c0326835163abbce",
+        "rift_keeper_inspect.png": "6acdfc52c4a23768496f396aa1313db9da248a2a5c22d21c92c9e0fa24b94d47",
+        "rift_keeper_cost.png": "ee83387acf8d71c4951fce8470abe41f0b059e473174e52e6bc81c5db724bed5",
+        "rift_life_cost.png": "046084304c9f8e3860b78fa326f497722ebe4664820b170d0d52ccdacb52a417",
+        "rift_life_paid.png": "4078f0756740472e10ace5f81024ec813dfd2c8c02106f2096e3d891f5d07623",
+        "rift_meditation_paid.png": "0dca600bfb2b43ecd4a5c092adad3619e79a62065c62816ae7fbe28cc2b5c4d5",
+        "rift_meditation_draw.png": "7c0550b02d2979423806dabfd6262e8209ccdb48b8528a5c0af8dff71b7ce36b",
+        "rift_life_channel.png": "d42a8b7cfffeb7b486c1f81fc81dbd7e28199e7b7277b9bdb6b0fdbbcd45cd6e"
+      },
+      "log_sha256": "5ff5c1ed3b32d2a663ff9fcffa9e1cd16c7f1cd85324c4564dc426f1f8bbe726",
+      "host_library_path_removed": true
+    },
+    {
+      "name": "resources-small",
+      "seconds": 4.372,
+      "captures": 9,
+      "games": 0,
+      "capture_sha256": {
+        "rift_keeper_trigger.png": "1fafe740907044f7ed6ce24ffd58f23b9630f7cb3b1ed8ee38c5461a2fd2f9b7",
+        "rift_meditation_cost.png": "5feddc38a933c0b60cf5111b51fce914f490098a63b71dda576f8a6149af55b7",
+        "rift_keeper_inspect.png": "46293e076474b6ba378a64059a9f86e6432e1439911ec8ef5d7be321f0efc610",
+        "rift_keeper_cost.png": "6a685654559c62b2f7ac1fbcc82930a573bb3df9dd4a5580c43b524e4d1f2b76",
+        "rift_life_cost.png": "73517e965eac89eb11d25f8b25572f61d08e0db741357cfcc0a6bc6e22bc5083",
+        "rift_life_paid.png": "70d8f3dc30ab14f9248cdefbcd3f84060d2f779a48acfbb98509b3d4767eb705",
+        "rift_meditation_paid.png": "ee02491c434b77bc7164ec0cd5b387bfedca1e09288b5744256596210965d390",
+        "rift_meditation_draw.png": "ffb2f05f7d07b52886ba74dfc37ce34d85c709d15cb66d38a9a169478bc9e06d",
+        "rift_life_channel.png": "e9dd2a1c45a3bb6c520e074cce2fe544b486511146c605e321198b89897944e8"
+      },
+      "log_sha256": "5ff5c1ed3b32d2a663ff9fcffa9e1cd16c7f1cd85324c4564dc426f1f8bbe726",
+      "host_library_path_removed": true
+    },
+    {
+      "name": "wheel-normal",
+      "seconds": 4.375,
+      "captures": 6,
+      "games": 0,
+      "capture_sha256": {
+        "rift_wheel_cost_advanced.png": "b08f14075136c6814be8e4263c8b81a9d51d193550a34c4e573af15dce75c9a1",
+        "rift_wheel_draw.png": "14231bfb0815fbcb44f0fa33cf6934cde518aa0086b942d85fd6502491216c3a",
+        "rift_wheel_cost_beginner.png": "bdf61bd8ef39ed7fb7daa8524445624ac121d4f26fc27292ad3e2db590a1830e",
+        "rift_wheel_declined.png": "add91773fb14127c677f19535f2d5c22db416022d588a3f218d72f8067e3ba81",
+        "rift_wheel_paid.png": "221ee0364a9945929984c064f663337d50ad227ac7ff3d5bc4246b7c79e9e8d9",
+        "rift_wheel_inspect.png": "f6a383b82bdf2c14831bd1f39a9bbdbba996c6199ce3f9ecaaddf5e49353a9d0"
+      },
+      "log_sha256": "5ff5c1ed3b32d2a663ff9fcffa9e1cd16c7f1cd85324c4564dc426f1f8bbe726",
+      "host_library_path_removed": true
+    },
+    {
+      "name": "wheel-small",
+      "seconds": 4.273,
+      "captures": 6,
+      "games": 0,
+      "capture_sha256": {
+        "rift_wheel_cost_advanced.png": "5f0b8ecde1e85a0660b0c5aba3195bde0585ffba3f9f31730bb6c7bf561989da",
+        "rift_wheel_draw.png": "b6feb8ab391d1588614839e1e26d3c69ff8d9ffeaddb8186f8c813931173ef4c",
+        "rift_wheel_cost_beginner.png": "69579dcc6728fe9ee212c0f6641b2d43f8b83fbd3edb7c9f49fb1804267aa2e4",
+        "rift_wheel_declined.png": "fbda0f2bbc1c92866de27cc687e98075f7559317dc84821b81b592e5ff521e10",
+        "rift_wheel_paid.png": "5ddc371a5b3df6491f32f302508f73af44eec4c8db1da3efee2852c1bf3ac432",
+        "rift_wheel_inspect.png": "b9f86bcd4110e3fd32a5a6c99b1071ab3f530a32a3f3dd73ad59050d7be8e499"
+      },
+      "log_sha256": "5ff5c1ed3b32d2a663ff9fcffa9e1cd16c7f1cd85324c4564dc426f1f8bbe726",
+      "host_library_path_removed": true
+    },
+    {
+      "name": "entourage-normal",
+      "seconds": 4.372,
+      "captures": 8,
+      "games": 0,
+      "capture_sha256": {
+        "rift_entourage_response.png": "9d54be08344410f3246243dc8b2a211808f0768b8323a23da4f59cb8db37086f",
+        "rift_entourage_ready.png": "f714802e3b2f88c850289b78b2dc2461b513c5863e4ca402a1a59f374b35f416",
+        "rift_entourage_opponent.png": "849286c27e517de956605f7b078f723a8051e7d956762f2127b93db09706bed8",
+        "rift_entourage_inspect.png": "51593d6c6f7e50e265fd31d47eed9d449a5cdc9a501811e076142d129e57a99b",
+        "rift_entourage_target_advanced.png": "afefc5928ea7704e11e1fa1825f8695ed538050fbe0c4e18d732dd7e3163c0ba",
+        "rift_entourage_exhausted.png": "653baf8642e8aa4231565710687efcd1872571639c6904a8c2707d435c573d25",
+        "rift_entourage_resolution.png": "403c6be13278925b6e4739d16938cffb546bbe925c2a6d823e4fe304f8727c3a",
+        "rift_entourage_target_beginner.png": "1447db8a95332531005475c423aeeb6a8831881458a71b9e33449029679ff80e"
+      },
+      "log_sha256": "5ff5c1ed3b32d2a663ff9fcffa9e1cd16c7f1cd85324c4564dc426f1f8bbe726",
+      "host_library_path_removed": true
+    },
+    {
+      "name": "entourage-small",
+      "seconds": 4.274,
+      "captures": 8,
+      "games": 0,
+      "capture_sha256": {
+        "rift_entourage_response.png": "99ca3d9dbc04b06a65c6e2b9a4b9ae09a803bb07f5a15638ef8528223ae9b8f4",
+        "rift_entourage_ready.png": "c034ca2b56a51c4eeea84b9424c4347ff8032bd6ee3434970039eaae1231dc99",
+        "rift_entourage_opponent.png": "7571506f8d5685624863839f1e619db575fa3994e8915fbd574b9ef616971861",
+        "rift_entourage_inspect.png": "836844d8b3ee38d737ae28bf7c779935b33946764df59a993a1250bd2fc30838",
+        "rift_entourage_target_advanced.png": "dca05be8abca4ed2af11231b78452062fd6f8eea503a6d87264ed3b0b0c7c059",
+        "rift_entourage_exhausted.png": "b727c7fa61c1c7de5030b13a291b792958c21499b695af37bea3b8f53d3b5d84",
+        "rift_entourage_resolution.png": "194e20ec59297ef13ba8f611ab737c88b979f0d532bb49e0095b7f461b1bb6e4",
+        "rift_entourage_target_beginner.png": "38a52433c0457c87c00e463e00bcd66c58563e14dab7f4b230cc0443d4b879d4"
+      },
+      "log_sha256": "5ff5c1ed3b32d2a663ff9fcffa9e1cd16c7f1cd85324c4564dc426f1f8bbe726",
+      "host_library_path_removed": true
+    },
+    {
+      "name": "sands-normal",
+      "seconds": 4.422,
+      "captures": 7,
+      "games": 0,
+      "capture_sha256": {
+        "rift_sands_no_effect.png": "0a138681ae3e92ec8f96981aa446f208fe83750523d14e0765e3cc7deeebefa3",
+        "rift_sands_advanced.png": "d8b63dd9348573e5aa0f54f543ab64b67dddb5438c8e09aefa1e514b6a734fe5",
+        "rift_sands_target.png": "8ba3233492dbdb1594e0c0e1242fae919c037fe3766ffd7a65239e07647df4c7",
+        "rift_sands_beginner.png": "59a176d3fabf986f04033def2d66751e70f8184c82aff9d0c1d7c787ed4fa29a",
+        "rift_sands_selected.png": "497646a7a8531133bacf5e26365a6c7db56682688600462d5fa30503e6aa8f85",
+        "rift_sands_inspect.png": "6d73e037121f15bef5b4a97c6bd04a1ba86f42e8c89b52d0e0154caeea1f2553",
+        "rift_sands_countered.png": "203aeefd3f85151d632bb92b5cc6953e9423cb7ced81d68384eb8978350e0af2"
+      },
+      "log_sha256": "5ff5c1ed3b32d2a663ff9fcffa9e1cd16c7f1cd85324c4564dc426f1f8bbe726",
+      "host_library_path_removed": true
+    },
+    {
+      "name": "sands-small",
+      "seconds": 4.226,
+      "captures": 7,
+      "games": 0,
+      "capture_sha256": {
+        "rift_sands_no_effect.png": "85400a1d5142a4370fcccf42b4dd88186d62a3b2c15efb27079b1172432d5d67",
+        "rift_sands_advanced.png": "2d6adcd846744ddd88e468940e385ff3a8f61f32e1011dd8d6e9932c06493d87",
+        "rift_sands_target.png": "b319c56b1da634b0eb89d5c0688a70da7179085db1d94b71bfd3f8c5609c173b",
+        "rift_sands_beginner.png": "c84a3ca07ff5f75179702bd677fd7e1ddd2ff0ba6317aac21cf6243bf93d6e6d",
+        "rift_sands_selected.png": "db8504cd0935e7e2c1b2c2d7dfd892f7bda5857ebccb61aa31685804a253054a",
+        "rift_sands_inspect.png": "7321224d83aee0b871945791f8a18099ca6b3e90d834476a581da563a6d25da7",
+        "rift_sands_countered.png": "32de56ff0e73aa82b48b06c54316935a4e2047dae2adc3beabe93fc0e58f1abd"
+      },
+      "log_sha256": "5ff5c1ed3b32d2a663ff9fcffa9e1cd16c7f1cd85324c4564dc426f1f8bbe726",
+      "host_library_path_removed": true
+    },
+    {
+      "name": "rockfall-normal",
+      "seconds": 4.374,
+      "captures": 5,
+      "games": 0,
+      "capture_sha256": {
+        "rift_rockfall_blocked.png": "ca840f56b0655f5c66321a1386c7649e26501e4c21ed8e6091522a3be1198822",
+        "rift_rockfall_beginner.png": "5c1b9b32285b9e813fa093897bf03d2a9bd649523ae884e0578e9da9f837cf39",
+        "rift_rockfall_picker.png": "63b70e76ada2843397229e61bc713c3db2b25c993eb18840ed0382e1e2a48ab9",
+        "rift_rockfall_advanced.png": "235cefab0fb5ef968ecb8cf2fd8871775a57f4b14219606da05aa11d95e4f62e",
+        "rift_rockfall_rules.png": "011cfa1bce39824e8d071b7ff9fdf27686a35c855c836ee3c5a51c1a7cdc1299"
+      },
+      "log_sha256": "3f61fd87ea894427d1484592fa5e41303143e58fd775741e07c8a3315cb80509",
+      "host_library_path_removed": true
+    },
+    {
+      "name": "rockfall-small",
+      "seconds": 4.225,
+      "captures": 5,
+      "games": 0,
+      "capture_sha256": {
+        "rift_rockfall_blocked.png": "90341a7a281d2047c1f505480509e920e706eaae3f63d1fc8a6ecac57e91ad3d",
+        "rift_rockfall_beginner.png": "88a9c866d8eec7d623263873f5be47acefa4e3581bbe7b035689b49c42c88343",
+        "rift_rockfall_picker.png": "c169d86bbc9d5c1cdad6dcd168223a04072344b61e811092047784f8c84870a3",
+        "rift_rockfall_advanced.png": "243c95d2fc13c6b6b46e7591c1072b5181e3eed866920b6f2968001d05d1de23",
+        "rift_rockfall_rules.png": "9f1f9b80b5f4c3cd4c1ad8bb9323003e66ba5ab14d65618daeb801380ded6544"
+      },
+      "log_sha256": "3f61fd87ea894427d1484592fa5e41303143e58fd775741e07c8a3315cb80509",
+      "host_library_path_removed": true
+    },
+    {
+      "name": "heavens-normal",
+      "seconds": 4.275,
+      "captures": 6,
+      "games": 0,
+      "capture_sha256": {
+        "rift_heavens_inspect.png": "02277e92124821cf9635b72d60ab07a11c889433049a093b378981581e9167e9",
+        "rift_heavens_beginner.png": "ede493f75a7a8475cc7627ff37c97db0e08f74ff47b3ddc3bc86da544422f194",
+        "rift_heavens_predict.png": "a252c6289db006788aab5c496629b8b63c3acf9d595a30bb3514f9760db3994a",
+        "rift_heavens_shield.png": "00573c3b57c47da51ce05ff03e566cb83369b58e069dc81e48c17176bf4c8ddc",
+        "rift_heavens_target.png": "6218ab4ba660608a0d8032e61ff17ad6fe233f1b6c8732664f036edc594de9b5",
+        "rift_heavens_advanced.png": "ea9e1a9fa7412a232c0571282681b0343e58242a91a90dccaddd6f0ccb97cc72"
+      },
+      "log_sha256": "5ff5c1ed3b32d2a663ff9fcffa9e1cd16c7f1cd85324c4564dc426f1f8bbe726",
+      "host_library_path_removed": true
+    },
+    {
+      "name": "heavens-small",
+      "seconds": 4.223,
+      "captures": 6,
+      "games": 0,
+      "capture_sha256": {
+        "rift_heavens_inspect.png": "b7d207872f43329568b061a30608e867155f5a005af5c31b968ea082a043d1f0",
+        "rift_heavens_beginner.png": "d706d92f56021f32ebfd2916244048bdeda0f282ce73dfe74cc09141871b073b",
+        "rift_heavens_predict.png": "99b73a8e08e363e2477a57facb268e9ffecaffea4addf9a0a6894611d7d9197a",
+        "rift_heavens_shield.png": "b0ae464021fcd4577971f168fd5b1c7ca5f881b828c378e03fff58620d7dcabb",
+        "rift_heavens_target.png": "334a3ac2e6d182619f3b40196997bb5c27c75614219281ffe1449e231ae6f2e9",
+        "rift_heavens_advanced.png": "2431a4acd87fd26856ac02e4e3067a8aedc6566fe06d2b4a2dc4711ddf82251c"
+      },
+      "log_sha256": "5ff5c1ed3b32d2a663ff9fcffa9e1cd16c7f1cd85324c4564dc426f1f8bbe726",
+      "host_library_path_removed": true
+    },
+    {
+      "name": "disarm-normal",
+      "seconds": 4.623,
+      "captures": 8,
+      "games": 0,
+      "capture_sha256": {
+        "rift_disarm_reduced.png": "397ef26cc579f57441ffcc6c0359ec88aaa97a60541f3293eb1a37bd386c1a39",
+        "rift_disarm_beginner.png": "f30ed6d8f03a1c6bc4ba03b8117af0a859bac35acb68d295f725a45cb94aefa3",
+        "rift_disarm_siren.png": "73449442a5b251e9e1f948c42a5cf3ace35290f2888d01f1de38661e7e101578",
+        "rift_disarm_ganking.png": "e6a563718ab9f8fa23fc866f35d1be339f147eee2b53e781849f1056a79e12c4",
+        "rift_disarm_sentry.png": "d243163d244706dee0111bc919a7ea5c171a012bfd0a088e5fdc16c3cb91189a",
+        "rift_disarm_response.png": "fd9c94983282d5f7fd05aecd5c280e009b1792cccb23cf801b5efa79b93d45d0",
+        "rift_disarm_advanced.png": "d853981a23ecdaa1cdb5f9822be42f9658c86b215e10f6b289516b6f8f9f29ef",
+        "rift_disarm_peddler.png": "f5ac591d2d34449c5b62e20d9bd3df8980392381aca05b89a65e22d2bfc699d7"
+      },
+      "log_sha256": "5ff5c1ed3b32d2a663ff9fcffa9e1cd16c7f1cd85324c4564dc426f1f8bbe726",
+      "host_library_path_removed": true
+    },
+    {
+      "name": "disarm-small",
+      "seconds": 4.327,
+      "captures": 8,
+      "games": 0,
+      "capture_sha256": {
+        "rift_disarm_reduced.png": "5ff493af041b2731d60f216a72d93ccbf6ffa2ec401e32f11ba6f08f694b8936",
+        "rift_disarm_beginner.png": "c0de0f2fef84105e2d8b84dcadecca0d4064f11e91cf968e507d2e13ffb5cbe9",
+        "rift_disarm_siren.png": "af021425945a3cf6ee20754d28b3347da017c4cd0298e21e2fe820bca9904343",
+        "rift_disarm_ganking.png": "629b418588f678007e9d2fdf60982c1d37dc9cc091b31a3ba25184b9e95505c0",
+        "rift_disarm_sentry.png": "13103a4e2105a8aff02bb55d4b34cf0237b8c1f0442c3ad0464ceca6ac1fc4b2",
+        "rift_disarm_response.png": "a33df87ea96004067ac6cc7567bbf98b05c095d004910c94a31e3b5f11f80939",
+        "rift_disarm_advanced.png": "4ffcdbd268ee210aa21f7bd94ca60e23575887ec011e5e29c09985b673ea9368",
+        "rift_disarm_peddler.png": "2b2fb514b28a453c8df515eef61c9d439fd2d109ce26c5da0baaf637b7dc4d47"
+      },
+      "log_sha256": "5ff5c1ed3b32d2a663ff9fcffa9e1cd16c7f1cd85324c4564dc426f1f8bbe726",
+      "host_library_path_removed": true
+    },
+    {
+      "name": "turn-keywords-normal",
+      "seconds": 4.676,
+      "captures": 9,
+      "games": 0,
+      "capture_sha256": {
+        "rift_block_beginner.png": "3815997de5c9a4a184663c7755d424e1ec9a9239eeacd6146a84ef29edf6e3fd",
+        "rift_block_target.png": "1ea72498b6470c93998900a29491b74be680cf946a3b03739943b0af6c1bcda1",
+        "rift_block_inspect.png": "693765e823691caf3e3d9c0e1868ca2517fa0b2b88a09767e4f55461e76f5b9a",
+        "rift_block_advanced.png": "0813be31de2e02f6e4ddd4aa3219206d52a835e53ce7ba812542440f12b54dab",
+        "rift_yuumi_advanced.png": "8f68cb81e3e35707cd41000265613b3dc8cceb307820d8d25e425992fc5feb18",
+        "rift_yuumi_beginner.png": "fa15ba7187d6e5b568d58081c9fac513a1175e2d422996faca8c6eafcbe17b28",
+        "rift_yuumi_granted.png": "e9bdc7940068ee3c0d9c0776bebea77d90d2eca85a796791d7b043b770462179",
+        "rift_yuumi_inspect.png": "8f1622dcae751d24b0c6d38252a30229bdde9e2e69a4150964b3a02ae5c66b50",
+        "rift_block_granted.png": "15364aaf7ffb9d0450806768295595e3246417ed4f87d5cfd874db0039851b73"
+      },
+      "log_sha256": "5ff5c1ed3b32d2a663ff9fcffa9e1cd16c7f1cd85324c4564dc426f1f8bbe726",
+      "host_library_path_removed": true
+    },
+    {
+      "name": "turn-keywords-small",
+      "seconds": 4.375,
+      "captures": 9,
+      "games": 0,
+      "capture_sha256": {
+        "rift_block_beginner.png": "5bb34f69dd9b352d77943032ed57d6ed0ca405fa85184cb28362181efd66f6d2",
+        "rift_block_target.png": "c6eedc0d26216cd44cb71752d868fcf696dc13dd43e31672b52d15a7243bb650",
+        "rift_block_inspect.png": "00af23624c9d1e2754a019737ee2cd37a52b8ad77e1d0b215a98e45010004e5e",
+        "rift_block_advanced.png": "f870b5ae08ab0351d66f96ecbae9b5feace89baf9050752c38dfce353ea617bb",
+        "rift_yuumi_advanced.png": "fa661487b173cf750408c1e1662435ba283226b86ef4ae2bcdb7cb7f2877a2bb",
+        "rift_yuumi_beginner.png": "b67defcf7d7685dc041116c348afd76b2e92f23f716ce3694a3fad64aff356eb",
+        "rift_yuumi_granted.png": "6773ba2886f693fe31c385cdb3ee548a7fe207fb37755c045483c9796525dad8",
+        "rift_yuumi_inspect.png": "f7c261c2c40715e58cb9c15af11a968525c92167fe421da6b4d73904e6fdb4d3",
+        "rift_block_granted.png": "d84460ddb5ad01706f70f7a238ea2f1cf3846f246ebc110ef4b8d39ef36c334f"
+      },
+      "log_sha256": "5ff5c1ed3b32d2a663ff9fcffa9e1cd16c7f1cd85324c4564dc426f1f8bbe726",
+      "host_library_path_removed": true
+    }
+  ],
+  "api": [
+    {
+      "name": "wheel-api",
+      "seconds": 3.971,
+      "records": 6,
+      "records_key": "records",
+      "full_records_equal": true,
+      "baseline_sha256": "828fd14ab31633c21fb904b6f15d804c1d3fb507795e430b935c298f911d0208",
+      "report_sha256": "e8bad17b5696a92e5b2a369c3e58c1856845a07bb443259ed7da474fc52b34e4"
+    },
+    {
+      "name": "resources-api",
+      "seconds": 3.22,
+      "records": 6,
+      "records_key": "records",
+      "full_records_equal": true,
+      "baseline_sha256": "c5566c4a2895c574bee2792a5424ceebdb033d48ca5faf1224909721a1645d59",
+      "report_sha256": "07878724afad4428732d9d6f8d4406f5f1b6171faff257f7fdf3b90ac28963c7"
+    },
+    {
+      "name": "jae-api",
+      "seconds": 2.769,
+      "records": 6,
+      "records_key": "records",
+      "full_records_equal": true,
+      "baseline_sha256": "e001716d3875b52623c627df0114f261871c0acd102f699d141a291cf6a93032",
+      "report_sha256": "2b75f0296e318f4215f6efafbbffadb67972e6539b423b948eff6fa95654785c"
+    },
+    {
+      "name": "format-api",
+      "seconds": 11.733,
+      "records": 9,
+      "records_key": "records",
+      "full_records_equal": true,
+      "baseline_sha256": "e0806d663da0901808670ef388b10e2c7df128fa5e1b7cc5a1eef5089a253e4c",
+      "report_sha256": "02a96ff741d695f482b41436237b597bd0b46d6540022867eca304d29482db35"
+    },
+    {
+      "name": "entourage-api",
+      "seconds": 3.37,
+      "records": 6,
+      "records_key": "records",
+      "full_records_equal": true,
+      "baseline_sha256": "6cba3992d721e06c37d619f40efa2da49ab5b47e5d5dfbdb882ad43bb7723dd6",
+      "report_sha256": "c41c7504a483e20b9e3d51682f881f3b271b96434db1c2de560e32b3d9ce20aa"
+    },
+    {
+      "name": "sands-api",
+      "seconds": 2.82,
+      "records": 6,
+      "records_key": "records",
+      "full_records_equal": true,
+      "baseline_sha256": "d5b90428c1365a94d961a4b3636098a8b7d1887111a6708e624e57fdb1d17011",
+      "report_sha256": "51f11d0690e21f630b125433d59b235f91742f54972b07ea30d2ce0ccbe38ce8"
+    },
+    {
+      "name": "rockfall-api",
+      "seconds": 3.571,
+      "records": 6,
+      "records_key": "records",
+      "full_records_equal": true,
+      "baseline_sha256": "d2c837b8bf2a4631cf30bc51c46b7e47c2cd3b0df6e4870cb9f2cd2b2fafc400",
+      "report_sha256": "c626c12412661eaf35db9a1217d4f42a90149a371a711a66cc5a3124d41c1cf6"
+    },
+    {
+      "name": "heavens-api",
+      "seconds": 3.019,
+      "records": 6,
+      "records_key": "records",
+      "full_records_equal": true,
+      "baseline_sha256": "1241213f2c9bfc3f8f9b80af3ffff0433f7dd276b4f9722bcea5ab003dd02636",
+      "report_sha256": "199b187dbe1361fa7c731d433f4c1468b4032aa58303cc60f154ff64530e6bee"
+    },
+    {
+      "name": "disarm-api",
+      "seconds": 2.919,
+      "records": 6,
+      "records_key": "records",
+      "full_records_equal": true,
+      "baseline_sha256": "e46219a287c4dca7d2b3ab2fdfe5f44bb05de2fe311cdc993256a82be84f2165",
+      "report_sha256": "bf0c9c45f72377aea75a8244454c8e7ed6c4e9bd6f5096a7c51d90afc38d9327"
+    },
+    {
+      "name": "turn-keywords-api",
+      "seconds": 3.721,
+      "records": 6,
+      "records_key": "records",
+      "full_records_equal": true,
+      "baseline_sha256": "69f42ccb3ca87a744f32b7d382df8bb6b706ac1231770a4e417bde16e5931bdc",
+      "report_sha256": "783b42173ba3a4a153bbaa686ab4aa50aea31ecce8c0aa6f424393535c3f7905"
+    }
+  ],
+  "source_gc_root": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/turn-keywords-release-v1/source",
+  "nix": {
+    "package": "/nix/store/06029jzxdpsqsmjd98dbyc3nyr4385w5-local-rift-0.1.0",
+    "catalog": "/nix/store/ra00kp5xfm16175qm1p53c6wpxpd6zmj-local-rift-catalog-check",
+    "simulation": "/nix/store/gw78d5kpchh627zjz4igdzpxsqplrimq-local-rift-simulation-check",
+    "seconds": 1374.996,
+    "gc_root_prefix": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/turn-keywords-release-v1/nix-result"
+  },
+  "source": "/nix/store/7pw89f5jnm8aa7bp1bxxkbzjkc89l5b9-source",
+  "finished_at": "2026-11-14T10:45:06.246443+00:00",
+  "evidence": {
+    "artifact_directory": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/turn-keywords-release-v1",
+    "status_sha256": "f4d252a85d17c379ea7456ad11a1ad8394633a6f7f46230e86f7306fd0a36060",
+    "nix_log_sha256": "14bec3d6edbb2195dbb7ef3d92c7558b6070ab09148ac3a1723e22451c92388c",
+    "rust_tests_passed": 2012,
+    "source_checks_passed": 334,
+    "simulation_games": 1176,
+    "simulation_report": "Easy: 392 completed; first player 231 wins, second player 161 wins\nTactical: 392 completed; first player 224 wins, second player 168 wins\nStrategic: 392 completed; first player 209 wins, second player 183 wins\nPASS: 1176 complete matches across 49 pairings and 3 AI levels, alternating starting player by seed\nMaximum: 353 actions, 26 turns; average 169.5 actions; elapsed 228.70s\nAll matches checked card/rune conservation, energy accounting, unique valid units, and winner consistency after every action.\n",
+    "actual_visual_reviews": [
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/turn-keywords-release-v1/turn-keywords-normal/rift_block_granted.png",
+        "sha256": "15364aaf7ffb9d0450806768295595e3246417ed4f87d5cfd874db0039851b73"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/turn-keywords-release-v1/turn-keywords-small/rift_yuumi_granted.png",
+        "sha256": "6773ba2886f693fe31c385cdb3ee548a7fe207fb37755c045483c9796525dad8"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/turn-keywords-release-v1/disarm-normal/rift_disarm_reduced.png",
+        "sha256": "397ef26cc579f57441ffcc6c0359ec88aaa97a60541f3293eb1a37bd386c1a39"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/turn-keywords-release-v1/disarm-small/rift_disarm_siren.png",
+        "sha256": "af021425945a3cf6ee20754d28b3347da017c4cd0298e21e2fe820bca9904343"
+      }
+    ],
+    "visual_findings": "Installed views show temporary Might, Shield and Tank grants with their expiry; long hover text remains scrollable; Siren full text is readable in the small inspector; companion occupies its separate panel. Four captures inspected, not all 148."
+  }
+}
