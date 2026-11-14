@@ -678,3 +678,20 @@ Normal Awakening and entering ready are unaffected. Removing or recalling the
 last opposing battlefield Warden before resolution permits a waiting Ready
 effect to work. Local focused tests cover these examples; full interaction
 parity and installed acceptance remain unproven.
+
+
+## Decree of Discord and collective target limits
+
+Decree of Discord chooses any number of enemy Order units across locations,
+with total current Might at most 5, including zero targets. Costs and Deflect
+use the ordinary finalization process. On resolution, targets are rechecked for
+identity, controller, domain and target prohibitions. A unit that leaves the
+board and returns is a new object.
+
+Core 355.11 requires a controller choice if the surviving targets no longer fit
+the collective limit. The client asks for a subset of those original targets.
+It rejects a selection if another original eligible target can still be added,
+including a zero-Might unit. A smaller-cardinality subset is allowed when no
+additional target fits. The same validation serves the bot API and native UI.
+Local rules, API, AI decision and native interaction scenarios pass. Installed
+acceptance remains pending; see [Decree validation](validation/irelia_discord.json).

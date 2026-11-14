@@ -410,6 +410,24 @@ cover replay departures and Syndra's Repeat with different targets. The
 [response validation](docs/validation/irelia_responses.json) records the scoped
 evidence. These development scenarios do not rate general opponent strength.
 
+For focused native checks, `tools/check_native.py` reuses the `ui` cases from the
+same release plan against an existing binary. Supply `--plan`, `--binary`,
+`--output` (a new directory), and optional repeated `--case` names. For example,
+`--case discord-normal --case discord-small` selects both Decree scenarios.
+It verifies behavioral completion, required captures and the unchanged binary
+hash, while keeping each case's data and logs isolated. Visual review is separate.
+
+Collect API baselines with the same plan after building `rift-api`:
+
+```sh
+python3 tools/check_api_baselines.py --plan /tmp/release-plan.json \
+  --binary target/debug/rift-api --output /tmp/api-baselines
+```
+
+The report compares every result record with its prior baseline and preserves
+both reports. Review differences before using the generated baseline paths in
+an installed release plan; a changed AI trace alone is not a correctness verdict.
+
 `python3 tools/check_release.py --plan plan.json --output /path/to/new-results`
 builds and verifies one committed revision. The JSON plan has a full `revision`
 SHA, `ui` cases (`name`, smoke-mode `args`, optional `captures` environment-variable

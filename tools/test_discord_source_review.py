@@ -8,6 +8,21 @@ import import_catalog as catalog
 
 
 class DiscordSourceReview(unittest.TestCase):
+    def test_runtime_preserves_reviewed_text_cost_and_art(self):
+        proof = json.loads((catalog.ROOT / 'assets/data/card_admissions/irelia_discord/source_review.json').read_text())
+        record, = proof['records']
+        card = catalog.load_runtime_manifest()['cards'][465]
+        self.assertEqual((card['official_id'], card['kind'], card['domains'], card['energy'], card['power'], card['might']),
+                         ('ven-107-166', 'Spell', ['Chaos'], 1, 1, 0))
+        self.assertEqual((card['keywords'], card['tags']), ([], []))
+        self.assertEqual(card['official_text'], record['effective']['rules_text'])
+        self.assertEqual(card['official_text_html'], record['effective']['rules_html'])
+        image = record['runtime_image']
+        data = (catalog.ROOT / image['path']).read_bytes()
+        self.assertEqual(card['art_url'], image['url'])
+        self.assertEqual((len(data), catalog.sha(data)), (image['bytes'], image['sha256']))
+        self.assertEqual(struct.unpack('>II', data[16:24]), (280, 391))
+
     def test_source_face_facts_and_prior_recipes(self):
         proof = json.loads((catalog.ROOT / 'assets/data/card_admissions/irelia_discord/source_review.json').read_text())
         record, = proof['records']

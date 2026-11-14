@@ -2109,6 +2109,9 @@ impl Game {
             item.lane = item.executions[frame.execution].destination_lane(item.lane);
             item.targets = item.executions[frame.execution].targets.clone();
             item.target = item.targets.first().copied();
+            if self.begin_target_subset(&item, frame.execution)? {
+                return Ok(());
+            }
             let groups = if item.card_id == 426 || !rules::spell_modes(item.card_id).is_empty() {
                 vec![item.targets.clone()]
             } else {

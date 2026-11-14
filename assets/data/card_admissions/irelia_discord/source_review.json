@@ -1,5 +1,5 @@
 {
-  "status": "Printed source reviewed; runtime not yet admitted.",
+  "status": "Local runtime validation passed; immutable installed acceptance pending.",
   "reviewed_on": "2026-11-14",
   "base_revision": "e39365272aaf04c6b466eaa7b6dc9deb84200a94",
   "preserved_runtime_prefix": {
@@ -98,6 +98,17 @@
           "Printed face confirms Spell, 1 Energy and 1 Chaos Power, no keywords.",
           "Return any number of enemy Order units, total Might 5 or less, to their owners' hands.",
           "Targets need not share a location; total Might is a collective restriction."
+        ]
+      },
+      "runtime_id": 465,
+      "runtime_image": {
+        "path": "assets/art/card_465.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/b0e82842acddb99c47af6793dab48164caf498c2-744x1039.png?w=280&q=85&fm=png",
+        "bytes": 202595,
+        "sha256": "60063b955fa9fd62954975a6b742c58756b7c95099fb96378b2327c661c27efa",
+        "dimensions": [
+          280,
+          391
         ]
       }
     }

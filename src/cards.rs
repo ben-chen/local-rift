@@ -7085,6 +7085,21 @@ pub fn cards() -> Vec<CardDef> {
             tags: &["Demacia"],
             art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/ae844b929f817cdf76fe40c7bf5d5fc02062bdac-744x1039.png?w=280&q=85&fm=png",
         },
+        CardDef {
+            id: 465,
+            official_id: "ven-107-166",
+            name: "Decree of Discord",
+            cost: 1,
+            power_cost: 1,
+            might: 0,
+            domain: Domain::Chaos,
+            domains: &[Domain::Chaos],
+            kind: CardKind::Spell,
+            official_text: "Return any number of enemy Order ([Order Power]) units with total Might 5 or less to their owners' hands.",
+            keywords: &[],
+            tags: &[],
+            art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/b0e82842acddb99c47af6793dab48164caf498c2-744x1039.png?w=280&q=85&fm=png",
+        },
     ]
 }
 

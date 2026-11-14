@@ -12326,6 +12326,27 @@
       "equipment_effect_html": "",
       "equipment_effect": "",
       "might_bonus": null
+    },
+    {
+      "id": 465,
+      "official_id": "ven-107-166",
+      "name": "Decree of Discord",
+      "kind": "Spell",
+      "domains": [
+        "Chaos"
+      ],
+      "energy": 1,
+      "power": 1,
+      "might": 0,
+      "keywords": [],
+      "tags": [],
+      "official_text": "Return any number of enemy Order ([Order Power]) units with total Might 5 or less to their owners' hands.",
+      "official_text_html": "<p>Return any number of enemy Order (:rb_rune_order:) units with total Might 5 or less to their owners' hands.</p>",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/b0e82842acddb99c47af6793dab48164caf498c2-744x1039.png?w=280&q=85&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null
     }
   ],
   "official_text_note": "Official card/legend rules text from the Riot Card Gallery, retrieved 2026-10-24 and corrected by cited errata. Resource icon tokens are expanded to readable bracketed names. Raw card and equipment HTML is preserved separately. Official text does not establish full implementation fidelity."

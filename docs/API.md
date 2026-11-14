@@ -194,6 +194,7 @@ Each playable card's `play_targets` reports `{kind, maximum, required}`. `kind` 
 | `order_trigger` | `trigger_id` | Finalize one of the current player's pending triggers; last finalized resolves first |
 | `choose_battlefield` | `lane` | Choose which eligible staged battlefield opens next |
 | `choose_resolution_group` | `index` | Select a listed legal target group when a resolving spell requires that choice |
+| `choose_resolution_subset` | `targets: Target[]` | Choose an inclusion-maximal subset of the original eligible targets when their total Might exceeds the resolving spell's limit |
 | `set_optional_discount` | `power` | Set how many friendly Ezreal discounts reduce power; remaining discounts reduce energy |
 | `place_token` | optional `lane` | Finalize the next token whose effect allows a destination choice at base or a battlefield you control |
 | `finalize_token_play` | optional `lane`, `accelerate` | Finalize a pending token, including an available Accelerate cost |
@@ -503,6 +504,7 @@ The viewer sees their own hand as card IDs. The opposing hand is `null` except w
 | `death_replacement` | `options:[{unit_id,gear_id}, ...]`; `choose_death_replacement` |
 | `order_triggers` | `options:[{id,card_id,label}, ...]`; `order_trigger` |
 | `resolution_targets` | `card_id`, `groups` of target objects, zero-based `execution`, legacy `repeated`; select the desired group by its index with `choose_resolution_group` |
+| `resolution_subset` | `card_id`, original eligible `candidates`, `maximum_total_might`, zero-based `execution`, `requires_maximal_subset: true`; submit `choose_resolution_subset` |
 | `token_placement` | `card_id`, `remaining`; use `place_token` separately for each remaining token |
 | `token_play` | `card_id`, `remaining`, `destination`; use `finalize_token_play`, optionally wrapped in `with_play_choices` and/or staged payment |
 
@@ -1137,3 +1139,19 @@ A spell or ability with a Ready instruction can remain playable even if that
 instruction will do nothing. Restrictions are checked at resolution, so a
 response that removes Warden can change the outcome. This metadata does not
 replace action validation or expose either player's private cards.
+
+### Collective Might targets
+
+Decree of Discord uses the ordinary target-candidate and validation queries.
+Candidates respect the remaining collective Might budget and each unit's current
+eligibility. Zero targets are permitted when playing it. No new target may be
+introduced when resolving it.
+
+If responses make the surviving original targets exceed the budget, the spell's
+controller receives `resolution_subset`. The submitted targets must be distinct,
+fit the budget, and include every other candidate that can still fit alongside
+them (Core 355.11.b.1). This is inclusion-maximality, not globally maximum
+cardinality. A zero-Might candidate cannot be omitted. `validate` checks a draft
+without advancing the revision; invalid submissions preserve the whole game.
+The bot suggestion list samples legal subsets without enumerating the powerset;
+the explicit action accepts every legal subset.

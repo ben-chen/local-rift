@@ -462,6 +462,16 @@ pub(super) fn replace_execution_targets(
 }
 
 pub(super) fn target_view_hint(game: &Game, view: &PlayTargetView) -> String {
+    if let local_rift::rules::OfficialEffect::ReturnEnemyDomainGroup {
+        domain,
+        maximum_total_might,
+    } = local_rift::rules::effect(view.card_id)
+    {
+        return format!(
+            "Choose any number of enemy {} units, total Might {maximum_total_might} or less. Zero is allowed.",
+            domain.name()
+        );
+    }
     let Some(slot) = &view.next_slot else {
         return if view.spec.maximum == 0 {
             "This execution needs no targets.".into()

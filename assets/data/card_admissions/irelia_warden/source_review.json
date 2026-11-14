@@ -1,5 +1,5 @@
 {
-  "status": "Local runtime validation passed; immutable installed acceptance pending.",
+  "status": "Installed acceptance passed for runtime e39365272aaf04c6b466eaa7b6dc9deb84200a94; see docs/validation/irelia_warden.json.",
   "reviewed_on": "2026-11-14",
   "base_revision": "35d1c8c5bde3ab8a4b377ee5d1e3f9cf2905d309",
   "preserved_runtime_prefix": {

@@ -243,9 +243,9 @@ authored coverage matches do not establish tournament provenance or expert AI.
 
 Rockfall Path adds an Irelia battlefield option identified in the secondary Murcia list. Its shared play restriction covers ordinary and instructed unit plays, Hidden and tokens, while movement remains available. The [validation record](validation/irelia_rockfall.json) records 1,055 passing library tests, both-seat rules/API scenarios, both companion levels, ten native captures at two sizes and 14 complete games across all three AI levels. Four captures were visually reviewed. The six authored best-of-three series observed 22 distinct unit arrivals by movement; they do not establish optimal play. Installed acceptance passed 1,980 Rust tests, 324 source checks, 1,176 simulated matches, 17 interface cases (102 captures) and seven complete native/package API comparisons. Four installed captures were independently viewed. The seven sourced recipes remain unchanged.
 
-## Mageseeker Warden — local implementation
+## Mageseeker Warden — installed acceptance
 
-Mageseeker Warden (OGN-070) is available as an additional Calm option locally.
+Mageseeker Warden (OGN-070) is available as an additional Calm option.
 Its two restrictions follow its current controller and battlefield location:
 opposing units can only be played to base, and spells or abilities cannot
 ready opposing units or gear. Movement, normal Awakening, and entering ready
@@ -260,5 +260,21 @@ prevalence, and does not replace any saved preset.
 
 Source evidence is retained in
 [`source_review.json`](../assets/data/card_admissions/irelia_warden/source_review.json).
-Local engine, native and API checks pass; immutable installed acceptance is
-pending. See [Warden validation](validation/irelia_warden.json).
+Local and immutable installed checks passed. See [Warden validation](validation/irelia_warden.json).
+
+
+## November 14 additional list review
+
+The [Tapur Sezgin Convergence IV listing](https://riftbound.org/meta/irelia-blade-dancer/2797-tapur-sezgin)
+contains three sideboard Decrees of Discord, Back-Alley Bar and The Candlelit
+Sanctum. The [Antonios Ampou-Ntagie listing](https://riftbound.org/meta/irelia-blade-dancer/2791-antonios-ampou-ntagie)
+contains Forgotten Monument. Only the registered deck-line data was compared;
+opponent legends displayed elsewhere on these pages are excluded.
+
+These secondary listings establish concrete additional card-priority leads.
+Their primary registrations remain unverified and no new tournament preset is
+admitted from them. Decree's original face and group-target rules have been
+reviewed in [source_review.json](../assets/data/card_admissions/irelia_discord/source_review.json).
+Its runtime and explicit subset controls passed local rules, AI, native and API
+checks; installed acceptance is pending. See [Decree validation](validation/irelia_discord.json). The three
+battlefields remain queued; this list does not replace the goal of all legal cards.

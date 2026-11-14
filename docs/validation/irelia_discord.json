@@ -1,0 +1,220 @@
+{
+  "status": "Local validation passed; immutable installed acceptance pending",
+  "reviewed_at": "2026-11-14T12:14:17.779011+00:00",
+  "source_review_commit": "b681901",
+  "base_revision": "e39365272aaf04c6b466eaa7b6dc9deb84200a94",
+  "card": {
+    "id": 465,
+    "name": "Decree of Discord",
+    "official_id": "ven-107-166"
+  },
+  "rules": {
+    "core_edition": "2026-10-09",
+    "core_url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/5c7946f7c3b8c6e0faff85ab6dadc6d2e721ea94.pdf",
+    "core_sha256": "94d41fee86f88b61c4157c0389c0595d990b98e5b42555c99d9f649ee64d1fec",
+    "sections": [
+      "355.11.a: collective restriction at finalization",
+      "355.11.b: controller chooses subset of original targets at resolution",
+      "355.11.b.1: subset is inclusion-maximal, not globally largest cardinality",
+      "355.13: zero targets permitted at finalization"
+    ],
+    "hub_verified_on": "2026-11-14",
+    "vendetta_errata_checked": true,
+    "named_in_vendetta_errata": false
+  },
+  "source_review": {
+    "path": "/home/benchen/.cache/local-rift-work/irelia-discord/assets/data/card_admissions/irelia_discord/source_review.json",
+    "sha256": "1468e48dc6abdcfd7295b67d0666b55710432cb37d72f0277be95e2c1844592c"
+  },
+  "implementation": [
+    "Distinct enemy Order unit targets across locations, with combined current Might at most five. Zero targets are legal and no arbitrary target-count cap is imposed.",
+    "At resolution, recheck target identities, current allegiance/domain and prohibitions. If the collective limit is exceeded, the controller chooses an inclusion-maximal subset of original eligible targets, including every zero-Might target.",
+    "The same explicit subset action and validator serve the native board, card-art tray, bot API and built-in AI; bounded bot suggestions do not enumerate every legal subset.",
+    "Native controls show current Might and the remaining group budget. Confirm remains unavailable while another original eligible target still fits.",
+    "Both nonblocking companion levels explain the limit and how opposing responses can change it.",
+    "Reusable native and API baseline runners consume release-plan cases; full records and previous results are preserved for review."
+  ],
+  "focused": {
+    "engine_tests": 7,
+    "api_tests": 1,
+    "library_tests_total": 1118,
+    "client_tests_total": 169,
+    "engine_complete_games": 24,
+    "forced_ai_subset_scenarios": 6,
+    "source_tests": 2,
+    "source_suite_checks": 340,
+    "strict_clippy": "passed",
+    "formatting": "passed",
+    "logs": [
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/discord-local-v2.log",
+        "sha256": "e175e281ac022f070150cf8178d72ef0dfa6fd72bb10d640f3c2195c3d6190a4"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/discord-focused-v5.log",
+        "sha256": "75ed5a35060abdf15085723bdb0d32427390daa788bee51d8ff4f2421b6458ef"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/discord-clippy-v3.log",
+        "sha256": "8d3fdf5ee2926a5842f782e11f7b43fe95b1d304fe2cdf350159b6b9d4e5af8c"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/discord-fmt-v3.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/discord-source-all-v1.log",
+        "sha256": "48f4efc1fdabe62980d6543a96f752ad4b3e67a5114a11834909c9e98ab6ed2b"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/discord-admission-v3.log",
+        "sha256": "a437854f2e8e78522f0c96c4f0f3c480c9e77e3c10cd1a7a141a0004d8c6559e"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/discord-catalog-v3.log",
+        "sha256": "078bc6ade57705da703a9c2d0c39ca45da76bbf2fa6e64bfb984a9e41aa7982f"
+      }
+    ],
+    "scope_note": "The full local library/client run preceded the final enemy-allegiance metadata correction. The final binary passed the focused rules/integration run, strict lint, native cases and all API campaigns. The complete fixed-revision regression remains an installed acceptance gate."
+  },
+  "native": {
+    "report": {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/discord-native-v3/report.json",
+      "sha256": "71122ac5978caf3ed0361dc1affeb07efcec66774ed2024606e89c58e250762b"
+    },
+    "cases": 2,
+    "captures": 18,
+    "binary_sha256": "61cf47efd6d8c823ead8fd4b6a2a4bfcfdea4c37b2e74844c5b67379e5fe3c9c",
+    "visually_reviewed": [
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/discord-native-v3/discord-small/rift_discord_subset.png",
+        "sha256": "a496052e87e8d4caca0d13154f136724044f8eabd8a882e71b911f9119e4a756"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/discord-native-v3/discord-small/rift_discord_inspect.png",
+        "sha256": "0583270562d9ebcec582b84a4acf9945ace05874f99371971bca6dcd44267484"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/discord-native-v3/discord-normal/rift_discord_include_zero.png",
+        "sha256": "b03566833d99ae8a9edf3d83bb578c78bbcc6822aadf894ad8d982c50c5d3066"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/discord-native-v3/discord-small/rift_discord_three_might.png",
+        "sha256": "cab9bdf3962c90769e57e259d664fad89f7e794227bb04a60d0c779b7a6fbb57"
+      }
+    ]
+  },
+  "external_api": {
+    "report": {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/discord-baselines-v2/report.json",
+      "sha256": "cd6a5e925d5ca58e4f82216fadcb93dd59e4046be853e776ffa179fc12344a38"
+    },
+    "campaigns": 13,
+    "full_records": 81,
+    "binary_sha256": "ee7e901d44c4148cdb1a30abe7a5f19002cda1e32cb338124ecd9c82aa7d1ad5",
+    "all_records_equal_to_previous_local_candidate": true,
+    "discord_series": 6,
+    "discord_actual_games": 14,
+    "decrees_seen": 13,
+    "decrees_with_targets": 11,
+    "prior_behavior_audit": {
+      "reviewed_at": "2026-11-14T12:12:47.913896+00:00",
+      "unchanged_prior_records": 68,
+      "changed_prior_records": [
+        {
+          "campaign": "wheel-api",
+          "index": 5,
+          "difficulty": "strategic",
+          "changed_fields": [
+            "result",
+            "trace_sha256"
+          ]
+        },
+        {
+          "campaign": "resources-api",
+          "index": 5,
+          "difficulty": "strategic",
+          "changed_fields": [
+            "paid_meditations_seen",
+            "result",
+            "trace_sha256"
+          ]
+        },
+        {
+          "campaign": "jae-api",
+          "index": 5,
+          "difficulty": "strategic",
+          "changed_fields": [
+            "result",
+            "trace_sha256"
+          ]
+        },
+        {
+          "campaign": "format-api",
+          "index": 4,
+          "difficulty": "strategic",
+          "changed_fields": [
+            "observations",
+            "result",
+            "trace_sha256"
+          ]
+        },
+        {
+          "campaign": "format-api",
+          "index": 5,
+          "difficulty": "strategic",
+          "changed_fields": [
+            "observations",
+            "result",
+            "trace_sha256"
+          ]
+        },
+        {
+          "campaign": "entourage-api",
+          "index": 5,
+          "difficulty": "strategic",
+          "changed_fields": [
+            "result",
+            "trace_sha256"
+          ]
+        },
+        {
+          "campaign": "warden-api",
+          "index": 5,
+          "difficulty": "strategic",
+          "changed_fields": [
+            "result",
+            "trace_sha256"
+          ]
+        }
+      ],
+      "new_records": 6,
+      "interpretation": "All changed prior records use Strategic. Decree expands the public eligible card pool sampled for unknown cards; this is consistent with changed Strategic traces. Complete legal games and preserved rule fixtures do not establish improved playing strength."
+    }
+  },
+  "failed_attempts": [
+    {
+      "artifact": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/discord-focused-v1.log",
+      "reason": "Fixture Might delta used the wrong integer type; corrected before execution."
+    },
+    {
+      "artifact": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/discord-focused-v2.log",
+      "reason": "Runtime CardDef registration was missing despite the manifest entry. Added the definition before validation."
+    },
+    {
+      "artifact": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/discord-focused-v3.log",
+      "reason": "The fixture treated the retained caster priority as opposing priority. Both engine and API fixtures now explicitly pass to and assert the opposing player before Discipline."
+    },
+    {
+      "artifact": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/discord-clippy-v1.log",
+      "reason": "Strict lint rejected a comparator that could use a sort key. Replaced it without changing the ordering."
+    }
+  ],
+  "remaining": [
+    "Immutable full Rust/source/simulation and installed native/API acceptance for this candidate, then publication.",
+    "Complete series prove playable legal match flow and actual Decree casts, not that the subset decision occurred naturally. That decision is separately forced and verified at every AI level in both seats.",
+    "Three further Irelia battlefield leads remain: Forgotten Monument, Back-Alley Bar, The Candlelit Sanctum.",
+    "The catalog is the accepted October 24 snapshot with explicit known format-date restrictions, not a certification that all currently legal cards are implemented.",
+    "Full Standard rules and legal-card coverage, independently measured expert opponent strength, and human learning validation remain unproven."
+  ]
+}

@@ -404,6 +404,7 @@ fn checked_advice(game: &Game, level: AdviceLevel) -> Result<Vec<&'static str>, 
         window_tips.extend(block_advice(game, beginner));
         window_tips.extend(flurry_advice(game, beginner));
         window_tips.extend(warden_advice(game, beginner));
+        window_tips.extend(discord_advice(game, beginner));
         if let Some(tip) = sands_advice(game, beginner) {
             window_tips.push(tip);
         }
@@ -436,6 +437,7 @@ fn checked_advice(game: &Game, level: AdviceLevel) -> Result<Vec<&'static str>, 
     tips.extend(block_advice(game, beginner));
     tips.extend(flurry_advice(game, beginner));
     tips.extend(warden_advice(game, beginner));
+    tips.extend(discord_advice(game, beginner));
 
     // High stakes scoring and visible threats come before routine suggestions.
     let enemy_has_hold = game.battlefield_owner.contains(&Some(1));
@@ -1443,6 +1445,10 @@ fn response_window_advice(
                 "Place each unit token at your base or a battlefield you control. A unit at a field can help defend the next hold.",
                 "Choose each location separately. Reinforce the field that matters, or keep a unit at base for a later movement.",
             ],
+            Decision::ResolutionSubset { .. } => vec![
+                "The original targets now exceed the Might limit. Choose a legal subset, including every other original target that still fits. You cannot add a new target.",
+                "Choose the subset that removes the most important defenders or scorers. Fewer units can be correct if no additional original target fits beside them.",
+            ],
             Decision::ResolutionTargets { .. } => vec![
                 "Responses moved your targets apart. Choose the legal location group you want this spell to affect; the other targets will be left alone.",
                 "The largest group is not always best. Focus the damage where it changes a trade, conquest or upcoming hold.",
@@ -1889,6 +1895,15 @@ fn sands_advice(game: &Game, beginner: bool) -> Option<&'static str> {
         })
 }
 
+fn discord_advice(game: &Game, beginner: bool) -> Option<&'static str> {
+    (game.players[0].hand.contains(&465) || game.chain.iter().any(|item| item.card_id == 465))
+        .then_some(if beginner {
+            "Decree of Discord returns enemy Order units with total Might 5 or less. Choose targets before responses; a Might increase can force you to keep a legal subset."
+        } else {
+            "Decree can clear Order defenders from several locations. Compare the point it opens with their replay cost, and allow for a Might-boosting response."
+        })
+}
+
 fn warden_advice(game: &Game, beginner: bool) -> Option<&'static str> {
     if !game.restrictions_affecting(0).is_empty() {
         Some(if beginner {
@@ -2119,6 +2134,26 @@ pub fn draw_mote(center: Vec2, scale: f32, time: f32, accent: Color) {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn discord_advice_uses_only_visible_information_and_explains_both_levels() {
+        let mut game = Game::new_for_agents(0, 0, 465, Difficulty::Easy);
+        game.start_match().unwrap();
+        game.players[0].hand = vec![465];
+        let before = format!("{game:?}");
+        for beginner in [false, true] {
+            let tip = discord_advice(&game, beginner).unwrap();
+            assert!(tip.len() < 220);
+            let mut private = game.clone();
+            private.players[1].hand = vec![465, 7];
+            private.players[1].deck.reverse();
+            assert_eq!(discord_advice(&private, beginner), Some(tip));
+            assert_eq!(format!("{game:?}"), before);
+        }
+        game.players[0].hand.clear();
+        game.players[1].hand = vec![465];
+        assert!(discord_advice(&game, true).is_none());
+    }
 
     #[test]
     fn warden_advice_is_brief_read_only_and_ignores_private_opposing_cards() {

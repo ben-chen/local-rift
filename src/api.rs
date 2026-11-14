@@ -25,6 +25,8 @@ mod combat;
 mod combat_contribution;
 mod damage_attribution;
 mod deploy;
+#[cfg(test)]
+mod discord_tests;
 mod empowered;
 mod fields;
 mod numeric;
@@ -1114,6 +1116,9 @@ fn action_json_at_depth(action: &Action, depth: usize) -> Value {
             "payment":payment_to_json(payment)}),
         Action::PlaceToken { lane } => json!({"type":"place_token","lane":lane}),
         Action::ChooseBattlefield { lane } => json!({"type":"choose_battlefield","lane":lane}),
+        Action::ChooseResolutionSubset { targets } => {
+            json!({"type":"choose_resolution_subset","targets":targets.iter().map(target_to_json).collect::<Vec<_>>()})
+        }
         Action::ChooseResolutionGroup { index } => {
             json!({"type":"choose_resolution_group","index":index})
         }
@@ -1619,6 +1624,12 @@ fn parse_action_at_depth(value: &Value, depth: usize) -> Result<Action, ApiError
             fields!("lane");
             Action::ChooseBattlefield {
                 lane: index(o, "lane")?,
+            }
+        }
+        "choose_resolution_subset" => {
+            fields!("targets");
+            Action::ChooseResolutionSubset {
+                targets: targets(o, "targets")?,
             }
         }
         "choose_resolution_group" => {
@@ -2403,6 +2414,15 @@ fn decision_to_json(game: &Game, decision: &Decision, viewer: usize) -> Result<V
             "token_id":game.current_pending_token().map(|token|token.id),
             "card_id":card_id,"remaining":remaining,"destination":match fixed_lane {
                 None=>json!({"mode":"choose"}), Some(lane)=>json!({"mode":"fixed","lane":lane})}}),
+        Decision::ResolutionSubset {
+            card_id,
+            candidates,
+            maximum,
+            execution,
+            ..
+        } => {
+            json!({"type":"resolution_subset","card_id":card_id,"candidates":candidates.iter().map(target_to_json).collect::<Vec<_>>(),"maximum_total_might":maximum,"execution":execution,"requires_maximal_subset":true})
+        }
         Decision::ResolutionTargets {
             card_id,
             groups,

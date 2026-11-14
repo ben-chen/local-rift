@@ -14,6 +14,12 @@ use crate::legends::{LegendAbility, LegendState, LegendTrigger};
 use crate::rules::{self, Allegiance, CounterKind, OfficialEffect, StaticAbility};
 use std::collections::VecDeque;
 
+#[cfg(test)]
+#[path = "discord_tests.rs"]
+mod discord_tests;
+#[path = "target_groups.rs"]
+mod target_groups;
+
 #[path = "combat.rs"]
 mod combat;
 #[path = "deploy.rs"]
@@ -308,6 +314,9 @@ pub enum Action {
     },
     PlaceToken {
         lane: Option<usize>,
+    },
+    ChooseResolutionSubset {
+        targets: Vec<Target>,
     },
     ChooseResolutionGroup {
         index: usize,
@@ -795,6 +804,13 @@ pub enum Decision {
         card_id: CardId,
         remaining: u8,
     },
+    ResolutionSubset {
+        player: usize,
+        card_id: CardId,
+        candidates: Vec<Target>,
+        maximum: u64,
+        execution: usize,
+    },
     ResolutionTargets {
         player: usize,
         card_id: CardId,
@@ -1010,6 +1026,7 @@ impl Decision {
             | Self::OptionalPlay { player, .. }
             | Self::TokenPlacement { player, .. }
             | Self::ResolutionTargets { player, .. }
+            | Self::ResolutionSubset { player, .. }
             | Self::OrderTriggers { player, .. }
             | Self::OnPlayTarget { player, .. }
             | Self::DeathReplacement { player, .. }
@@ -2042,6 +2059,7 @@ impl Game {
                     | Action::ChooseDeathReplacement { .. }
                     | Action::OrderTrigger { .. }
                     | Action::ChooseResolutionGroup { .. }
+                    | Action::ChooseResolutionSubset { .. }
                     | Action::ChooseBattlefield { .. }
                     | Action::PlaceToken { .. }
                     | Action::FinalizeTokenPlay { .. }
@@ -2074,6 +2092,7 @@ impl Game {
                 | Action::ResolveConversion { .. }
                 | Action::SetOptionalDiscount { .. }
                 | Action::ChooseResolutionGroup { .. }
+                | Action::ChooseResolutionSubset { .. }
                 | Action::PlaceToken { .. }
                 | Action::FinalizeTokenPlay { .. }
                 | Action::ActivateRuneObject { .. }
@@ -2175,6 +2194,7 @@ impl Game {
             )?,
             Action::PlaceToken { lane } => self.place_token(lane)?,
             Action::ChooseResolutionGroup { index } => self.choose_resolution_group(index)?,
+            Action::ChooseResolutionSubset { targets } => self.choose_resolution_subset(targets)?,
             Action::ChooseBattlefield { lane } => self.choose_battlefield_order(lane)?,
             Action::SetOptionalDiscount { power } => {
                 let count = self.players[player]
@@ -3613,6 +3633,7 @@ impl Game {
                 | Decision::TokenPlacement { .. }
                 | Decision::TokenPlay { .. }
                 | Decision::ResolutionTargets { .. }
+                | Decision::ResolutionSubset { .. }
                 | Decision::OrderTriggers { .. }
                 | Decision::OnPlayTarget { .. }
                 | Decision::RevivePlay { .. }
@@ -3797,6 +3818,7 @@ impl Game {
             | Decision::TokenPlacement { .. }
             | Decision::TokenPlay { .. }
             | Decision::ResolutionTargets { .. }
+            | Decision::ResolutionSubset { .. }
             | Decision::OrderTriggers { .. }
             | Decision::OnPlayTarget { .. }
             | Decision::RevivePlay { .. }
@@ -6519,6 +6541,12 @@ impl Game {
                             )
                             .collect()
                     }
+                    Decision::ResolutionSubset {
+                        player,
+                        candidates,
+                        maximum,
+                        ..
+                    } => self.resolution_subset_suggestions(*player, candidates, *maximum)?,
                     Decision::ResolutionTargets { groups, .. } => (0..groups.len())
                         .map(|index| Action::ChooseResolutionGroup { index })
                         .collect(),
@@ -7181,6 +7209,9 @@ impl Game {
                 return Err("Choose units at different locations.".into());
             }
             targets.push(target);
+            if !self.target_group_fits(id, &targets)? {
+                return Err("The chosen targets exceed the card's total Might limit.".into());
+            }
         }
         let desired = if !automatic {
             provided.len()
@@ -7218,6 +7249,10 @@ impl Game {
                     || (effect == OfficialEffect::ArcaneShift && targets.is_empty())
                 {
                     candidates.push((self.replay_target_score(actor, target)?, target));
+                    continue;
+                }
+                if matches!(effect, OfficialEffect::ReturnEnemyDomainGroup { .. }) {
+                    candidates.push((self.return_target_score(actor, target)?, target));
                     continue;
                 }
                 if effect == OfficialEffect::ReturnAndChannel {
@@ -7466,7 +7501,8 @@ impl Game {
         prior: &[Target],
     ) -> Result<bool, String> {
         Ok({
-            self.official_target_valid(player, card_id, lane, target, prior.len())?
+            self.target_group_fits(card_id, &[prior, &[target]].concat())?
+                && self.official_target_valid(player, card_id, lane, target, prior.len())?
                 && (!rules::targeting(card_id).distinct || !prior.contains(&target))
                 && (!rules::targeting(card_id).different_locations
                     || prior
@@ -7553,6 +7589,17 @@ impl Game {
                 OfficialEffect::KillGear { .. } | OfficialEffect::ReturnGear => {
                     return Ok(matches!(target, Target::Gear { .. })
                         && self.can_choose_board_target(actor, target));
+                }
+                OfficialEffect::ReturnEnemyDomainGroup {
+                    domain,
+                    maximum_total_might,
+                } => {
+                    return Ok(matches!(target, Target::Unit { .. })
+                        && self.board_target_facts(target).is_some_and(|facts| {
+                            facts.controller != actor && facts.domains.contains(&domain)
+                        })
+                        && self.can_choose_board_target(actor, target)
+                        && self.targets_fit_might_budget(&[target], maximum_total_might)?);
                 }
                 OfficialEffect::KillEnemyDomain { domain } => {
                     return Ok(self.board_target_facts(target).is_some_and(|facts| {
@@ -8202,6 +8249,15 @@ impl Game {
                         self.return_unit_to_hand(target);
                     }
                 }
+            }
+            OfficialEffect::ReturnEnemyDomainGroup {
+                maximum_total_might,
+                ..
+            } => {
+                if !self.targets_fit_might_budget(&valid, maximum_total_might)? {
+                    return Err("Choose a legal target subset before resolving this spell.".into());
+                }
+                self.return_board_targets(&valid);
             }
             OfficialEffect::ReturnGear => self.return_board_targets(&valid),
             OfficialEffect::ReturnAllBoard => {
@@ -10748,6 +10804,12 @@ impl Game {
                 OfficialEffect::ReturnGear => targets
                     .first()
                     .map_or(Ok(0), |&target| self.return_target_score(actor, target))?,
+                OfficialEffect::ReturnEnemyDomainGroup { .. } => targets
+                    .iter()
+                    .try_fold(0_i128, |sum, &target| {
+                        Ok::<_, String>(sum + self.return_target_score(actor, target)?)
+                    })?
+                    .max(0),
                 OfficialEffect::ReturnAllBoard => self
                     .board_objects()
                     .iter()

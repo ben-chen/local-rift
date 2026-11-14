@@ -18,6 +18,7 @@ mod play_ui;
 mod predict_ui;
 mod preset_ui;
 mod series_ui;
+mod target_subset_ui;
 mod token_ui;
 use companion::{AdviceLevel, Companion, draw_mote};
 use deck_editor::DeckEditor;
@@ -1741,6 +1742,7 @@ impl App {
                                 Some(
                                     Decision::TriggerTargets { .. }
                                         | Decision::LegendTargets { .. }
+                                        | Decision::ResolutionSubset { .. }
                                 )
                             )
                         {
@@ -2984,6 +2986,7 @@ impl App {
             Decision::DrawLook{..}|Decision::RevealedCard{..}|Decision::DeckLookPlay{..}|Decision::RevealedDeck{..}|Decision::EmpowerPlayed{..}|Decision::PredictCards{..}|Decision::Payment{..}|Decision::ResourceConversion{..}|Decision::TriggerTargets{..}|Decision::LegendTargets{..}|Decision::CombatDamage{..}|Decision::SplitDamage{..}|Decision::TokenPlacement{..}|Decision::TokenPlay{..}|Decision::BattlefieldOrder{..}|Decision::RevivePlay{..}|Decision::PendingPlay{..}=>unreachable!(),
             Decision::TrashTarget{..}=>("Choose a trash target","Choose an eligible card below before this ability enters the chain. Opponents may respond before the chosen card is played.".into()),
             Decision::OptionalPlay{card_id,..}=>("Use this triggered ability?",format!("{} offers a play from your trash. Accept and choose the ability's target, or decline now. Choose the card's own targets and costs after the ability resolves.",self.game.catalog[*card_id].name)),
+            Decision::ResolutionSubset { maximum, .. } => return self.subset_panel(*maximum),
             Decision::ResolutionTargets{..}=>("Choose the location", "Responses separated your targets. Choose which legal group below this spell should affect.".into()),
             Decision::OrderTriggers{..}=>("Order your triggers", "Choose which ability to put on the chain next. The last ability placed will resolve first. Pending triggers cannot be countered yet.".into()),
             Decision::OnPlayTarget{card_id,..}=>("Choose its target",format!("{} has entered play. Choose a highlighted unit for its ability, on the board or in the Board tab.",self.game.catalog[*card_id].name)),
@@ -3181,6 +3184,9 @@ impl App {
         }
     }
     fn try_toggle_target(&mut self, target: Target) -> Result<(), String> {
+        if matches!(self.game.decision, Some(Decision::ResolutionSubset { .. })) {
+            return self.toggle_subset(target);
+        }
         if self.equipment_cost_click(target) {
             return Ok(());
         }
@@ -3281,6 +3287,9 @@ impl App {
                 .is_some_and(|slot| slot.kind == local_rift::rules::PlayTargetKind::Battlefield)
     }
     fn card_target_candidate(&self, target: Target) -> Result<bool, String> {
+        if matches!(self.game.decision, Some(Decision::ResolutionSubset { .. })) {
+            return self.subset_candidate(target);
+        }
         if self.game.trigger_target_bounds().is_some() {
             return self.game.valid_trigger_target(target, &self.targets);
         }
@@ -3348,6 +3357,9 @@ impl App {
         }
     }
     fn targeting_selection(&self) -> bool {
+        if matches!(self.game.decision, Some(Decision::ResolutionSubset { .. })) {
+            return true;
+        }
         if self.field_choice_active() {
             return true;
         }
@@ -3539,7 +3551,11 @@ impl App {
                     || matches!(self.selection, Some(Selection::Ability(_, Some(_))))
                     || matches!(
                         self.game.decision,
-                        Some(Decision::TriggerTargets { .. } | Decision::LegendTargets { .. })
+                        Some(
+                            Decision::TriggerTargets { .. }
+                                | Decision::LegendTargets { .. }
+                                | Decision::ResolutionSubset { .. }
+                        )
                     )
                 {
                     self.toggle_target(target);
@@ -4050,6 +4066,10 @@ impl App {
         }
         if let Decision::SplitDamage { total, .. } = decision {
             self.combat_tray(usize::MAX, total)?;
+            return Ok(true);
+        }
+        if let Decision::ResolutionSubset { candidates, .. } = decision {
+            self.subset_tray(&candidates)?;
             return Ok(true);
         }
         if let Decision::ResolutionTargets {
@@ -5194,7 +5214,11 @@ impl App {
                     && !matches!(self.selection, Some(Selection::Gear(_))))
                     || matches!(
                         self.game.decision,
-                        Some(Decision::TriggerTargets { .. } | Decision::LegendTargets { .. })
+                        Some(
+                            Decision::TriggerTargets { .. }
+                                | Decision::LegendTargets { .. }
+                                | Decision::ResolutionSubset { .. }
+                        )
                     )
                 {
                     self.toggle_target(target);
@@ -10829,6 +10853,7 @@ async fn main() {
     let disarm_smoke = args.iter().any(|a| a == "--ui-smoke-disarm");
     let flurry_smoke = args.iter().any(|a| a == "--ui-smoke-flurry");
     let warden_smoke = args.iter().any(|a| a == "--ui-smoke-warden");
+    let discord_smoke = args.iter().any(|a| a == "--ui-smoke-discord");
     let turn_keywords_smoke = args.iter().any(|a| a == "--ui-smoke-turn-keywords");
     let rockfall_smoke = args.iter().any(|a| a == "--ui-smoke-rockfall");
     let riven_smoke = args.iter().any(|a| a == "--ui-smoke-riven");
@@ -10852,6 +10877,7 @@ async fn main() {
     let focused_source_damage_smoke = args.iter().any(|a| a == "--ui-smoke-c27");
     let smoke_test = format_smoke
         || warden_smoke
+        || discord_smoke
         || turn_keywords_smoke
         || flurry_smoke
         || disarm_smoke
@@ -10948,6 +10974,8 @@ async fn main() {
             smoke::run_disarm_frame(&mut app, frames)
         } else if flurry_smoke {
             smoke::run_flurry_frame(&mut app, frames)
+        } else if discord_smoke {
+            smoke::run_discord_frame(&mut app, frames)
         } else if warden_smoke {
             smoke::run_warden_frame(&mut app, frames)
         } else if turn_keywords_smoke {

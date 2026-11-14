@@ -93,6 +93,10 @@ pub struct PlayTargetSpec {
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum OfficialEffect {
+    ReturnEnemyDomainGroup {
+        domain: Domain,
+        maximum_total_might: u64,
+    },
     ChooseOne(&'static [SpellMode]),
     Deathgrip,
     Guards,
@@ -299,6 +303,7 @@ pub enum Allegiance {
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct Targeting {
+    pub maximum_total_might: Option<u64>,
     pub allegiance: Allegiance,
     /// The unit must currently be in combat with an enemy unit of this domain,
     /// or be chosen by an enemy spell of this domain still on the chain.
@@ -316,6 +321,10 @@ pub struct Targeting {
 pub fn effect(id: usize) -> OfficialEffect {
     use OfficialEffect::*;
     match id {
+        465 => ReturnEnemyDomainGroup {
+            domain: Domain::Order,
+            maximum_total_might: 5,
+        },
         464 => None,
         441 => PreventSpellAndAbilityDamage,
         442 => Repulse,
@@ -789,7 +798,7 @@ pub fn targeting(id: usize) -> Targeting {
     use Allegiance::*;
     let allegiance = match id {
         290..=296 | 335 | 349 | 428 | 434 | 446 | 457 | 461 => Any,
-        4 | 32 | 144 | 145 | 365 | 427 => Enemy,
+        4 | 32 | 144 | 145 | 365 | 427 | 465 => Enemy,
         362 | 364 | 372 | 378 | 379 | 381 | 435 => Any,
         8 | 9 | 14 | 19 | 27 | 85 | 137 | 228 | 350 | 353 | 354 | 377 | 380 | 382 | 421 | 425
         | 447 => Friendly,
@@ -800,6 +809,13 @@ pub fn targeting(id: usize) -> Targeting {
         _ => None,
     };
     Targeting {
+        maximum_total_might: match effect(id) {
+            OfficialEffect::ReturnEnemyDomainGroup {
+                maximum_total_might,
+                ..
+            } => Some(maximum_total_might),
+            _ => Option::None,
+        },
         allegiance,
         moved_this_turn: id == 427,
         threatened_by_domain: if id == 421 {
@@ -809,7 +825,7 @@ pub fn targeting(id: usize) -> Targeting {
         },
         distinct: matches!(
             id,
-            5 | 9 | 16 | 44 | 50 | 61 | 82 | 83 | 85 | 137 | 217 | 218 | 354 | 447
+            5 | 9 | 16 | 44 | 50 | 61 | 82 | 83 | 85 | 137 | 217 | 218 | 354 | 447 | 465
         ),
         same_location: matches!(id, 44 | 50),
         different_locations: id == 354,
@@ -825,6 +841,7 @@ pub fn target_bounds(id: usize) -> (usize, usize) {
         return (2, 2);
     }
     match effect(id) {
+        ReturnEnemyDomainGroup { .. } => (usize::MAX, 0),
         BattlePreparations => (3, 1),
         Repulse | Deathgrip => (2, 2),
         AlphaStrike => (usize::MAX, 2),
@@ -1200,6 +1217,7 @@ pub enum Mechanic {
 pub fn requirements(id: usize) -> &'static [Mechanic] {
     use Mechanic::*;
     match id {
+        465 => &[Chain, MultipleTargets, Bounce],
         464 => &[PlayRestrictions, ReadyPrevention],
         441 => &[Chain, Protection],
         442 => &[Chain, Counterspell, MultipleTargets, ChooseReadyTriggers],
