@@ -10071,10 +10071,22 @@ impl Game {
                         // Policy only: humans may still pay for an already-ready legend.
                         accept: !self.legend[*player].ready,
                     }),
+                    Decision::Legend {
+                        player,
+                        trigger: LegendTrigger::IreliaChoose { unit_id },
+                    } => Some(Action::Choose {
+                        // Core 416.1.b-c: a unit already ready creates no Ready
+                        // event. Keep the Power and legend for a useful choice.
+                        accept: self
+                            .unit_ref(Target::Unit {
+                                player: *player,
+                                unit_id: *unit_id,
+                            })
+                            .is_some_and(|unit| !unit.ready),
+                    }),
                     Decision::EmpowerPlayed { .. }
                     | Decision::OptionalPlay { .. }
                     | Decision::BanishPlay { .. }
-                    | Decision::Legend { .. }
                     | Decision::BurnForMight { .. } => Some(Action::Choose { accept: true }),
                     _ => None,
                 };

@@ -248,3 +248,133 @@ fn strategic_preserves_energy_without_a_followup_for_the_exhausted_legend() {
         assert!(game.chain.is_empty());
     }
 }
+
+fn unit_ready_choice(player: usize, card_id: usize, ready: bool, level: Difficulty) -> Game {
+    let mut game = conquest(player, true, level, true);
+    game.apply(Action::Choose { accept: false }).unwrap();
+    resolve(&mut game);
+    let unit = game.players[player]
+        .units
+        .iter_mut()
+        .find(|u| u.id == 51002)
+        .unwrap();
+    unit.card_id = card_id;
+    unit.ready = ready;
+    game.apply(Action::PlayCardWithTargets {
+        hand_index: 0,
+        lane: None,
+        targets: vec![Target::Unit {
+            player,
+            unit_id: 51002,
+        }],
+    })
+    .unwrap();
+    for _ in 0..8 {
+        if matches!(game.decision, Some(Decision::Legend {
+            player: owner, trigger: LegendTrigger::IreliaChoose { unit_id: 51002 },
+        }) if owner == player)
+        {
+            return game;
+        }
+        assert!(matches!(
+            game.decision,
+            Some(Decision::OrderTriggers { .. })
+        ));
+        let action = game.legal_actions().unwrap()[0].clone();
+        game.apply(action).unwrap();
+    }
+    panic!("Irelia's choice was not reached");
+}
+
+#[test]
+fn all_levels_preserve_power_and_legend_for_already_ready_units() {
+    // Core 416.1.b-c: an already-ready unit cannot produce another Ready event.
+    // This includes Irelia, Fervent; her when-chosen bonus is independent.
+    for player in 0..2 {
+        for card in [0, 2, 13, 17] {
+            // Irelia, Akali, Pyke, Stellacorn Herder.
+            for level in [
+                Difficulty::Easy,
+                Difficulty::Tactical,
+                Difficulty::Strategic,
+            ] {
+                let mut game = unit_ready_choice(player, card, true, level);
+                let runes = game.players[player].total_runes();
+                game.step_ai().unwrap();
+                assert_eq!(
+                    game.players[player].total_runes(),
+                    runes,
+                    "{player}/{card}/{level:?}"
+                );
+                assert!(game.legend[player].ready);
+                assert!(!game.chain.iter().any(|item| matches!(
+                    item.ability,
+                    Some(ChainAbility::Legend(LegendAbility::IreliaReady { .. }))
+                )));
+            }
+        }
+    }
+}
+
+#[test]
+fn all_levels_pay_to_ready_an_exhausted_unit_for_the_winning_route() {
+    for player in 0..2 {
+        for card in [0, 2, 13, 17] {
+            for level in [
+                Difficulty::Easy,
+                Difficulty::Tactical,
+                Difficulty::Strategic,
+            ] {
+                let mut game = unit_ready_choice(player, card, false, level);
+                let runes = game.players[player].total_runes();
+                game.step_ai().unwrap();
+                assert_eq!(
+                    game.players[player].total_runes(),
+                    runes - 1,
+                    "{player}/{card}/{level:?}"
+                );
+                assert!(!game.legend[player].ready);
+                resolve(&mut game);
+                game.apply(Action::Move {
+                    unit_id: 51002,
+                    lane: Some(1),
+                })
+                .unwrap();
+                resolve(&mut game);
+                assert_eq!(game.winner, Some(player));
+            }
+        }
+    }
+}
+
+#[test]
+fn human_redundant_ready_is_legal_but_does_not_repeat_fervents_bonus() {
+    for player in 0..2 {
+        let mut accepted = unit_ready_choice(player, 0, true, Difficulty::Tactical);
+        let mut declined = accepted.clone();
+        accepted.apply(Action::Choose { accept: true }).unwrap();
+        declined.apply(Action::Choose { accept: false }).unwrap();
+        resolve(&mut accepted);
+        resolve(&mut declined);
+        let a = accepted.players[player]
+            .units
+            .iter()
+            .find(|u| u.id == 51002)
+            .unwrap();
+        let d = declined.players[player]
+            .units
+            .iter()
+            .find(|u| u.id == 51002)
+            .unwrap();
+        assert_eq!(
+            a.temporary_buff, 3,
+            "Discipline +2 and one when-chosen bonus"
+        );
+        assert_eq!(a, d, "paying for an already-ready unit adds no Ready bonus");
+        assert_eq!(
+            accepted.players[player].total_runes() + 1,
+            declined.players[player].total_runes()
+        );
+        assert!(!accepted.legend[player].ready && declined.legend[player].ready);
+    }
+}

@@ -1441,23 +1441,51 @@ fn response_window_advice(
                 "Resource abilities can be used before paying. Board → Abilities shows unit sources; Loadout shows gear and legends.",
             ],
             Decision::Legend {
-                trigger: LegendTrigger::IreliaChoose { .. },
-                ..
-            } => vec![
-                if beginner {
-                    "Irelia can exhaust her legend and pay 1 power to ready the friendly unit you chose. Accepting puts that ability on the chain."
-                } else {
-                    "An Irelia ready can enable another move. Compare that point pressure with keeping a rune and preserving the legend for a later choice."
-                },
-                "Declining an optional legend trigger is fine. The original card still waits on the chain if it has not resolved.",
-            ],
+                player,
+                trigger: LegendTrigger::IreliaChoose { unit_id },
+            } => {
+                let target = game.players[*player]
+                    .units
+                    .iter()
+                    .find(|unit| unit.id == *unit_id);
+                vec![
+                    if target.is_none() {
+                        if beginner {
+                            "The chosen unit has left the board. This ready ability cannot help it; decline to continue resolving the original spell or ability."
+                        } else {
+                            "A returned or replayed copy is a different unit. Decline this old ready trigger; it cannot follow the original unit out of play."
+                        }
+                    } else if !game.legend[*player].ready {
+                        if beginner {
+                            "Your legend is exhausted, so you cannot pay this optional cost now. Decline; the original spell or ability can still resolve."
+                        } else {
+                            "The legend is exhausted, so its exhaust cost cannot be paid. If a reset is pending, let it resolve before making the next friendly-unit choice."
+                        }
+                    } else if target.is_some_and(|unit| unit.ready) {
+                        if beginner {
+                            "The chosen unit is already ready. You can decline to keep 1 Power and your legend ready. Readying it now creates no new Ready event."
+                        } else {
+                            "The chosen unit is already ready. Preserve the Power and legend unless your response plan exhausts that unit before this ready resolves."
+                        }
+                    } else if beginner {
+                        "The chosen unit is exhausted. Pay 1 Power and exhaust Irelia's legend to ready it after responses. This may let it move again."
+                    } else {
+                        "An Irelia ready can enable another move. Compare that point pressure with keeping a rune and preserving the legend for a later choice."
+                    },
+                    if target.is_some_and(|unit| !unit.token && unit.card_id == 0) {
+                        "Irelia, Fervent's when-chosen bonus is separate. She gains a when-readied bonus only if she actually changes from exhausted to ready."
+                    } else {
+                        "A Ready event requires the unit to change from exhausted to ready. Declining the legend's ability does not cancel the original spell or ability."
+                    },
+                ]
+            }
             Decision::Legend {
                 player,
                 trigger: LegendTrigger::IreliaConquer,
             } => vec![
                 if game.legend[*player].ready {
                     if beginner {
-                        "Your Irelia legend is already ready. Paying 1 Energy would ready it again; you can decline and keep that Energy."
+                        "Your Irelia legend is already ready. Paying 1 Energy would not change its current state; you can decline and keep that Energy."
                     } else {
                         "Your legend is already ready. Decline this reset unless you have a specific response sequence that will exhaust it before the reset resolves."
                     }
@@ -3037,6 +3065,61 @@ mod tests {
             advice(&game, AdviceLevel::Beginner),
             advice(&game, AdviceLevel::Advanced)
         );
+    }
+
+    #[test]
+    fn irelia_unit_ready_advice_separates_costs_states_and_printed_triggers() {
+        let mut game = Game::new_for_agents(0, 1, 51002, Difficulty::Tactical);
+        game.start_match().unwrap();
+        game.players[0].units = vec![Unit {
+            id: 51002,
+            card_id: 0,
+            lane: None,
+            ready: true,
+            damage: 0,
+            buff: 0,
+            temporary_buff: 0,
+            token: false,
+            protected: false,
+            stunned: false,
+            banish_on_death: false,
+        }];
+        game.decision = Some(Decision::Legend {
+            player: 0,
+            trigger: LegendTrigger::IreliaChoose { unit_id: 51002 },
+        });
+        for level in [AdviceLevel::Beginner, AdviceLevel::Advanced] {
+            let mut mote = Companion::new(level);
+            for legend_ready in [true, false] {
+                for unit_ready in [true, false] {
+                    game.legend[0].ready = legend_ready;
+                    game.players[0].units[0].ready = unit_ready;
+                    let before = format!("{game:?}");
+                    mote.observe(&game);
+                    let tips = advice(&game, level);
+                    assert!(tips.iter().all(|tip| tip.chars().count() <= 180));
+                    assert!(
+                        tips[1].contains("when-chosen") && tips[1].contains("actually changes")
+                    );
+                    if !legend_ready {
+                        assert!(mote.message().contains("legend is exhausted"));
+                    } else if unit_ready {
+                        assert!(mote.message().contains("already ready"));
+                    } else {
+                        assert!(mote.message().contains("move"));
+                    }
+                    let mut private = game.clone();
+                    private.players[1].hand = vec![1, 6, 12, 21];
+                    private.players[1].deck.reverse();
+                    assert_eq!(fingerprint(&game), fingerprint(&private));
+                    assert_eq!(tips, advice(&private, level));
+                    assert_eq!(format!("{game:?}"), before);
+                }
+            }
+        }
+        game.players[0].units.clear();
+        assert!(advice(&game, AdviceLevel::Beginner)[0].contains("left the board"));
+        assert!(advice(&game, AdviceLevel::Advanced)[0].contains("different unit"));
     }
 
     #[test]
