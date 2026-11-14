@@ -1,0 +1,72 @@
+{
+  "status": "Focused decisions, strategic/companion integration, complete matches and strict checks passed; immutable installed acceptance pending",
+  "source_commit": "51cb565fd29b791b64a87c0cbbf19b4eec564544",
+  "reviewed_at": "2026-11-14T03:08:52.756406+00:00",
+  "scope": [
+    "Avoid paying to ready an already-ready Irelia legend without changing human legality",
+    "Search the reset, choosing play and move, retaining Pass while the reset awaits responses",
+    "Keep up to two additional ready effects that open an unscored battlefield route in the bounded root search",
+    "Beginner and Advanced commentary uses the actual legend readiness, remains brief, read-only and private-information safe"
+  ],
+  "checks": {
+    "decision_tests": 6,
+    "focused_integration_tests": 84,
+    "intentionally_filtered_integration_tests": 1056,
+    "integration_seconds": 16.611,
+    "integration_suites": [
+      "strategic policy and hidden-information tests",
+      "Irelia legend rules",
+      "companion advice",
+      "Irelia decisions",
+      "Arito complete matchups",
+      "registered complete matches"
+    ],
+    "final_decision_seconds": 0.091,
+    "strict_clippy": "all targets, warnings denied; passed",
+    "formatting": "passed",
+    "api_matches": 9,
+    "api_complete_records": 9,
+    "api_scope": "Six paired Irelia snapshot/pre-ban-date matches plus three authored future-legal Rengar matches"
+  },
+  "regressions_observed": [
+    "Baseline Easy/Tactical spend energy on an already-ready legend",
+    "Baseline Strategic declines the useful reset when Power must consume a rune",
+    "Accepting the reset alone did not prove the full plan: the execution test caught casting before the reset and then overlooking the move-enabling target"
+  ],
+  "scenarios": [
+    "Both player seats and all three levels at the optional reset",
+    "Generated Power and rune payment for the useful reset",
+    "A human may legally pay for a redundant reset",
+    "Strategic actually completes reset, choose, ready and winning conquest in one turn",
+    "Equal public hand size with changed private card identities and deck order",
+    "Strategic declines an exhausted-legend reset without a useful follow-up",
+    "Both advice levels update after readiness changes without altering game state"
+  ],
+  "limitations": [
+    "Bounded midgame positions are explicitly constructed; this does not certify expert strength or complete Standard parity",
+    "The search still assumes no discretionary opponent responses while settling candidates",
+    "Only the Irelia reset receives the extra follow-up depth; a maximum of five roots and ten candidates per follow-up bound the added search",
+    "The 84-test integration result is targeted, not a full-suite pass"
+  ],
+  "reproduce": "cargo nextest run --locked --test irelia_decisions --profile ci",
+  "files_sha256": {
+    "src/game.rs": "1ce0433e521c9ce8629c3ff890c50204793db10fe78adb40ba9cc87c74dfc78c",
+    "src/strategic.rs": "923562aaa1dbf46dab0ca119d2436081451abfb26b3dc898ba4c90fe8710f9fe",
+    "src/companion.rs": "8f3467b19c07537477a0594ed9ef98a2fd07a94dbeeae005e4942af86245fa3f",
+    "tests/irelia_decisions.rs": "75edbb418ac68cb505a9622723a34671df0916759a669ac52a1f9274ea21b626"
+  },
+  "evidence_sha256": {
+    "irelia-decisions-before-v2.log": "cafc499183e98e6c8b1aa38ab638ba0d202154e3507be049bc516566db8adb5d",
+    "irelia-decisions-after-v5.log": "f30ce5e6c0c944637aa9174376ddbf7683dc063422e81753868acf30c4e310b7",
+    "irelia-decisions-integration-v1.log": "235c002bf3bb787b4bfe1c8edb7cda5c5052bbc12079e816f8464ee024501c3a",
+    "irelia-decisions-integration-v1-junit.xml": "1f4bed11bec3377c16a0d06541bcfc99d51333717edaf52256ea1c23d80c037a",
+    "irelia-decisions-final-v1.log": "30e8c5dcc1a120e7214b37eaa8fad32e84f1ffbde2e1af7e63f593ac1606baf8",
+    "irelia-decisions-final-v1-junit.xml": "a1d668fbc1422579523bd1f589d9d4b81e9ca5fe762a1804ff0405ac3c0adaf7",
+    "irelia-decisions-clippy-v1.log": "128aed263eea2c87cce4f3d9cb5bf5ce5f181da35e04128c8d3cf9aebeef2ca2",
+    "irelia-decisions-api-v1.json": "b1acaca2e87969c4f8a6657bec903545af5eb8d82d25546d687aa8c46d35cfae"
+  },
+  "remaining": [
+    "Immutable full package and installed UI/API acceptance",
+    "Publication and exact GitHub CI result"
+  ]
+}
