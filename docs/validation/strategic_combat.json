@@ -1,0 +1,124 @@
+{
+  "status": "Local behavior, library, client, affected integrations and ten API campaigns passed; immutable installed acceptance pending",
+  "reviewed_at": "2026-11-14T10:32:48.884684+00:00",
+  "base_revision": "e0d6d9a452b40982e16121c5476f6502e8669f60",
+  "problem": "Strategic combat search received only the automatic damage assignment. With 5 damage against a defending Poro (3 Might) and Playful Phantom (5 Might), it killed Poro and left Phantom, even though assigning all 5 to Phantom was legal.",
+  "change": "A bounded beam explores lethal-first orders using public unit information. Strategic evaluates these as ordinary actions and uses the highest estimated removal-value legal allocation during combat rollouts. The default UI allocation and rules validator are unchanged.",
+  "bounds": {
+    "prefixes_per_depth": 24,
+    "completed_alternatives": 24,
+    "depth": "number of opposing units at the combat battlefield",
+    "caveat": "Bounded search, not exhaustive for arbitrary boards. Root evaluation resolves real effects; rollout allocation uses a public board-value estimate."
+  },
+  "before": {
+    "regression_failed": true,
+    "log": {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/tank-ai-benchmark-v2.log",
+      "sha256": "90ee7fe52a055a8823da04ec5b64ca57368acfa05f4cb588126d6cd0bd50d7fd"
+    }
+  },
+  "focused": {
+    "tests_passed": 6,
+    "seconds": 0.13,
+    "log": {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/tank-ai-benchmark-v5.log",
+      "sha256": "6983b1642700f1009009d2fb53155b53526b11accd8940ebe2077f5c64eb31b7"
+    },
+    "coverage": [
+      "Both seats: choose larger threat and forecast the same trade",
+      "Both seats: trade against multiple units and incorporate damage already marked",
+      "96 four-defender positions compare candidate membership to independently enumerated orders validated by real actions",
+      "Both seats: Tank + Backline can be first or last, never between ordinary units",
+      "Both seats: 17-defender boards, bounded legal candidates, hidden-information independence and no mutation by planning",
+      "78 Block decision cases spanning two seats, all three difficulties, and 1 through 13 attacking Might"
+    ],
+    "block_decisions": {
+      "Relaxed": {
+        "correct": 12,
+        "cases": 26
+      },
+      "Tactical": {
+        "correct": 12,
+        "cases": 26
+      },
+      "Strategic": {
+        "correct": 26,
+        "cases": 26
+      }
+    },
+    "oracle": "Two-defender Block expectations specify surviving physical units, battlefield control and whether Block remains in hand; enemy allocations independently maximize removed printed Might. The four-defender oracle checks enumeration agreement, not independent proof of the rules validator."
+  },
+  "rules_review": {
+    "hub": "https://playriftbound.com/en-us/rules-hub/",
+    "core_edition": "2026-10-09",
+    "core_url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/5c7946f7c3b8c6e0faff85ab6dadc6d2e721ea94.pdf",
+    "sections": [
+      "467.2.c.3-9",
+      "468.1.a"
+    ],
+    "scope": "Lethal-first assignment, existing damage, final-unit excess, Tank/Backline priority and postcombat healing. No new damage replacement mechanics are admitted."
+  },
+  "corrections": [
+    "Expanded test v4 did not compile because the temporary keyword enum was imported from the wrong module; v5 corrects the test import.",
+    "All ten API runners produced passing reports. The first comparison harness assumed difficulty was stored on every record; the format runner stores it on paired groups and uses explicit easy/tactical/strategic ordering for future matches. Reconciled completed reports without rerunning games."
+  ],
+  "limitations": [
+    "No claim of expert strength or complete Standard parity.",
+    "Search can prune strategically useful orders on crowded boards; its public value heuristic does not independently price every card ability.",
+    "Rollouts still assume no further discretionary responses and settle with bounded choice policies.",
+    "Existing Relaxed and Tactical behavior is retained; measured Block misses are documented.",
+    "Full card coverage and beginner learning outcomes remain unfinished."
+  ],
+  "external_code": "No external implementation or test code copied.",
+  "regressions": {
+    "passed": 1294,
+    "failed": 0,
+    "ignored": 0,
+    "library": 1088,
+    "client": 165,
+    "integration": 41,
+    "log": {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/tank-ai-regressions-v1.log",
+      "sha256": "0578773c2a5ee6d2bd5d38af40a11332e0049dfad3111f33f4459e576fd105fd"
+    },
+    "complete_game_coverage": {
+      "arito_games": 84,
+      "block_yuumi_games": 24,
+      "registered_best_of_three_series": 18,
+      "registered_game_count": "Not captured by this passing run; successful test stdout is suppressed."
+    },
+    "scope": "All library/client tests plus c4_play, irelia_arito, irelia_decisions, registered_matches, strategic_api, turn_keywords_matches. Other integration binaries remain for the immutable release gate."
+  },
+  "quality": {
+    "clippy_all_targets": {
+      "passed": true,
+      "seconds": 18.13,
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/tank-ai-clippy-v1.log",
+      "sha256": "bc83e7c363888f5efc2b01e98d4ba74519f0caf5dce717b7b96bbc4ac8885fb8"
+    },
+    "fmt": "passed",
+    "diff_whitespace": "passed",
+    "release_api_build": {
+      "passed": true,
+      "seconds": 37.63,
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/tank-ai-api-build-v1.log",
+      "sha256": "4341bbfcf109b1c970b0867eb89fd3337d3fec759d3e0de141fd54e7689e6f8a"
+    }
+  },
+  "api": {
+    "report": {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/tank-ai-baselines-v1/report.json",
+      "sha256": "fe8646baa772c06c96ef97a901055866cb6a34e65453d7eb7bbf91f69ee0ec02"
+    },
+    "campaigns": 10,
+    "records": 63,
+    "unchanged_lower_difficulty_records": 42,
+    "changed_strategic_records": 12,
+    "limits": "Trace changes demonstrate different decisions, not improved win rates or stronger general play. Both Strategic Block/Yuumi series still observe no Yuumi trigger."
+  },
+  "source_sha256": {
+    "src/strategic.rs": "8f1b634824f1fa7e7eab5ba1cbc052a3d5245168e5b9bca95f395a2dd60d5238",
+    "src/strategic/combat.rs": "773e1090b7ff4bdac58eaa88ed321f38fb673c9c0cb143ec9c6fb20d2b93be64",
+    "src/strategic/tank_tests.rs": "adbfc82e98d8826c8f236dc5b661ea81c1a1b2555b2d225c7fcb6e9d32e165a5"
+  }
+}

@@ -10,9 +10,15 @@ const ROOT_LIMIT: usize = 48;
 const FOLLOWUP_LIMIT: usize = 10;
 const SETTLE_LIMIT: usize = 48;
 
+#[path = "strategic/combat.rs"]
+mod combat;
+
 #[cfg(test)]
 #[path = "strategic/setup_tests.rs"]
 mod setup_tests;
+#[cfg(test)]
+#[path = "strategic/tank_tests.rs"]
+mod tank_tests;
 
 impl Game {
     /// Compare the public pending chain with/without global prevention. Stop at
@@ -274,6 +280,7 @@ impl Game {
                 Action::ActivateRuneObject { .. } | Action::ActivateRune { .. } | Action::RecycleRune { .. }
             ) && !matches!(action,Action::ActivateLegend{target} if self.legend_ai_score(actor,*target).is_none())
         }));
+            candidates.extend(self.strategic_damage_candidates()?);
             if self.decision.is_none() {
                 for (hand_index, &id) in self.players[actor].hand.iter().enumerate() {
                     for lane in self.board_locations() {
@@ -454,13 +461,16 @@ impl Game {
             if self.winner.is_some() || self.turn != starting_turn {
                 break;
             }
-            let action = if self.decision.is_some() {
-                self.choose_heuristic_action()?
-            } else if self.in_window() {
-                Action::Pass
-            } else {
-                break;
-            };
+            let action =
+                if let Some(action) = self.strategic_damage_candidates()?.into_iter().next() {
+                    action
+                } else if self.decision.is_some() {
+                    self.choose_heuristic_action()?
+                } else if self.in_window() {
+                    Action::Pass
+                } else {
+                    break;
+                };
             if let Err(error) = self.apply(action) {
                 // This is a disposable rollout, but a capacity-limited branch
                 // must be discarded rather than scored as a settled position.
