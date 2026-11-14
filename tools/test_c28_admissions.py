@@ -172,9 +172,11 @@ class C28AdmissionTests(unittest.TestCase):
         for card in source_only['cards']:
             if card['identity'] in UNITS + FIELDS:
                 self.assertFalse(card['implementation']['playable_in_client'])
-        self.assertEqual(tuple(source_only['counts'][k] for k in [
-            'reviewed_variant_identities', 'reviewed_variant_printings', 'unreviewed_variant_identities']),
-            (33, 99, 91))
+        # Changing runtime admission cannot change printing reviews. Later
+        # reviewed identities may append evidence without rewriting C28 facts.
+        for key in ['reviewed_variant_identities', 'reviewed_variant_printings',
+                    'unreviewed_variant_identities']:
+            self.assertEqual(source_only['counts'][key], self.snapshot['counts'][key])
 
     def test_all_previous_runtime_records_and_review_prefixes_are_unchanged(self):
         root = catalog.ROOT; runtime = catalog.load_runtime_manifest(); pin = self.proof['preserved_runtime_prefix']

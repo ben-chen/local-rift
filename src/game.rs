@@ -52,6 +52,9 @@ mod hidden_blade_tests;
 #[path = "innovator_tests.rs"]
 mod innovator_tests;
 #[cfg(test)]
+#[path = "irelia_khazix_tests.rs"]
+mod irelia_khazix_tests;
+#[cfg(test)]
 #[path = "orianna_tests.rs"]
 mod orianna_tests;
 #[cfg(test)]

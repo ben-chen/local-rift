@@ -150,13 +150,13 @@
       "legend": 11,
       "rune": 6,
       "spell": 128,
-      "unit": 243
+      "unit": 244
     },
-    "implemented_main_cards": 449,
+    "implemented_main_cards": 450,
     "implemented_legends": 11,
     "implemented_battlefields": 17,
-    "implemented_legal_identities": 483,
-    "unimplemented_legal_identities": 596,
+    "implemented_legal_identities": 484,
+    "unimplemented_legal_identities": 595,
     "errata_entries": 67,
     "identities_with_errata": 67,
     "source_quality_issues": 57,
@@ -164,14 +164,14 @@
     "resolved_source_issue_groups": 57,
     "unresolved_source_issue_groups": 0,
     "unresolved_gameplay_identities": 0,
-    "unreviewed_variant_identities": 91,
+    "unreviewed_variant_identities": 90,
     "unreviewed_variants_by_field": {
-      "rules_text": 80,
+      "rules_text": 79,
       "tags": 33
     },
     "pinned_runtime_variant_identities": 0,
-    "reviewed_variant_identities": 33,
-    "reviewed_variant_printings": 99,
+    "reviewed_variant_identities": 34,
+    "reviewed_variant_printings": 101,
     "field_reviewed_printings": 92
   },
   "unimplemented_by_observed_keyword": {
@@ -179,7 +179,7 @@
     "Accelerate": 16,
     "Action": 56,
     "Add": 20,
-    "Ambush": 9,
+    "Ambush": 8,
     "Assault": 13,
     "Backline": 2,
     "Buff": 8,
@@ -198,7 +198,7 @@
     "Mighty": 9,
     "Predict": 5,
     "Quick-Draw": 2,
-    "Reaction": 58,
+    "Reaction": 57,
     "Repeat": 10,
     "Shield": 10,
     "Show Off": 5,
@@ -19536,13 +19536,13 @@
       "rules_text_status": "official_gallery_printing_text",
       "conflicting_fields": [],
       "source_review": {
-        "status": "unreviewed_variants",
+        "status": "reviewed_variants",
         "resolution_ids": [],
         "unresolved_gameplay_fields": [],
         "variant_diagnostics": [
           {
             "field": "rules_text",
-            "status": "unreviewed_variant_difference",
+            "status": "reviewed_variant_difference",
             "values": [
               {
                 "official_id": "unl-143-219",
@@ -19552,17 +19552,21 @@
                 "official_id": "unl-143a-219",
                 "value": "[Ambush]\nWhen I attack or defend, if an enemy unit is alone here, give me +2 Might this turn and gain 2 XP."
               }
-            ]
+            ],
+            "disposition": "reminder_equivalent"
           }
         ],
-        "reviewed_variant_fields": [],
-        "unresolved_variant_fields": [
+        "reviewed_variant_fields": [
           "rules_text"
-        ]
+        ],
+        "unresolved_variant_fields": [],
+        "identity_review_id": "irelia-khazix-unl-143-219"
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 449,
+        "official_id": "unl-143-219",
+        "playable_in_client": true
       }
     },
     {
@@ -137470,6 +137474,40 @@
       ]
     },
     {
+      "id": "irelia-khazix-unl-143-219",
+      "identity": "unl-143-219",
+      "name": "Kha'Zix, Mutating Horror",
+      "status": "complete",
+      "reviewed_variant_fields": [
+        "rules_text"
+      ],
+      "raw_variant_fields": [
+        "rules_text"
+      ],
+      "effective_variant_fields": [
+        "rules_text"
+      ],
+      "member_ids": [
+        "unl-143-219",
+        "unl-143a-219"
+      ],
+      "field_reviews": [
+        {
+          "field": "rules_text",
+          "disposition": "reminder_equivalent",
+          "reason": "Both complete original faces show Champion Unit, Kha'Zix / The Void, 4 Energy, 1 Chaos Power, 4 Might, Ambush and identical attack/defend instructions. Only the base face prints the italic Ambush reminder. The enemy must be alone; Kha'Zix may have friendly company.",
+          "rules": [
+            "135.2.d.1",
+            "135.2.d.2",
+            "135.2.d.3",
+            "822"
+          ],
+          "resolution_ids": []
+        }
+      ],
+      "errata": []
+    },
+    {
       "id": "c7-unl-145-219",
       "identity": "unl-145-219",
       "name": "Pyke, Returned",
@@ -138003,10 +138041,10 @@
   ],
   "identity_review_evidence": {
     "printing_projection_version": 1,
-    "reviewed_identities": 33,
-    "reviewed_printings": 99,
-    "reviewed_fields": 39,
-    "image_evidence": 99,
+    "reviewed_identities": 34,
+    "reviewed_printings": 101,
+    "reviewed_fields": 40,
+    "image_evidence": 101,
     "origin_archives": {
       "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9": {
         "url": "https://playriftbound.com/en-us/card-gallery/",

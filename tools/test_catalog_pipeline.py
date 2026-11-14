@@ -42,19 +42,19 @@ class CatalogPipelineTests(unittest.TestCase):
         self.assertEqual((counts['reviewed_field_resolutions'], counts['resolved_source_issue_groups'],
                           counts['unresolved_source_issue_groups']), (142, 57, 0))
         self.assertEqual(counts['unresolved_gameplay_identities'], 0)
-        self.assertEqual(counts['unreviewed_variant_identities'], 91)
-        self.assertEqual(counts['unreviewed_variants_by_field'], {'tags': 33, 'rules_text': 80})
+        self.assertEqual(counts['unreviewed_variant_identities'], 90)
+        self.assertEqual(counts['unreviewed_variants_by_field'], {'tags': 33, 'rules_text': 79})
         self.assertEqual(counts['pinned_runtime_variant_identities'], 0)
         self.assertEqual(counts['standard_legal_by_kind'],
                          {'battlefield': 69, 'gear': 131, 'gear+unit': 1, 'legend': 58, 'rune': 6, 'spell': 268, 'unit': 546})
         self.assertTrue(all(r['status'] == 'resolved_by_review' for r in self.snapshot['source_issue_reviews']))
-        self.assertEqual(counts['reviewed_variant_identities'], 33)
-        self.assertEqual(counts['reviewed_variant_printings'], 99)
+        self.assertEqual(counts['reviewed_variant_identities'], 34)
+        self.assertEqual(counts['reviewed_variant_printings'], 101)
         self.assertEqual(counts['field_reviewed_printings'], 92)
         for card in self.snapshot['cards']:
             if card['implementation']['playable_in_client']:
                 self.assertEqual(card['source_review']['unresolved_variant_fields'], [])
-        self.assertEqual(counts['implemented_legal_identities'], 483)
+        self.assertEqual(counts['implemented_legal_identities'], 484)
 
     def test_required_fields_gate_every_mapping_kind_and_alternates(self):
         cases = [

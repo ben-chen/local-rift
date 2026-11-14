@@ -360,6 +360,17 @@ impl Game {
                     .count()
                     == 1
             }),
+            Condition::EnemyAloneHere => self
+                .source_location(source)
+                .and_then(|(lane, _)| lane)
+                .is_some_and(|lane| {
+                    self.players[1 - source.player]
+                        .units
+                        .iter()
+                        .filter(|unit| unit.lane == Some(lane))
+                        .count()
+                        == 1
+                }),
             Condition::SourceAtEventBattlefield => event
                 .battlefield
                 .is_some_and(|lane| self.source_location(source) == Some((Some(lane), 0))),

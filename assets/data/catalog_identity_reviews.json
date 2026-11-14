@@ -29,8 +29,8 @@
   },
   "image_index": {
     "local_path": "assets/data/catalog_evidence/variant_images.json",
-    "sha256": "a847832fc15e3ae8139e5fe18f463a7e1082f958130ea17f5523b6a085d0d4d5",
-    "bytes": 102883
+    "sha256": "e702259d7c481f412c058edefb94f105ed09f9ca2112fc943014da9245f14083",
+    "bytes": 105453
   },
   "reviews": [
     {
@@ -1912,6 +1912,48 @@
             "135.2.d.3",
             "187.9",
             "369.3"
+          ],
+          "resolution_ids": []
+        }
+      ],
+      "errata": []
+    },
+    {
+      "id": "irelia-khazix-unl-143-219",
+      "identity": "unl-143-219",
+      "name": "Kha'Zix, Mutating Horror",
+      "reviewed_on": "2026-11-14",
+      "status": "complete",
+      "enables_runtime_support": false,
+      "core_authority_id": "core",
+      "members": [
+        {
+          "official_id": "unl-143-219",
+          "raw_sha256": "427843988479b60e9f38f07021d4a173f0d34395f46a4c1eb61c2a6c55018a58",
+          "effective_sha256": "427843988479b60e9f38f07021d4a173f0d34395f46a4c1eb61c2a6c55018a58",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {},
+          "image_id": "unl-143-219"
+        },
+        {
+          "official_id": "unl-143a-219",
+          "raw_sha256": "1d40ef74536913905f62ac3765f64e0ee6bcc5b4bf21e7cd30a9d454c4bba812",
+          "effective_sha256": "1d40ef74536913905f62ac3765f64e0ee6bcc5b4bf21e7cd30a9d454c4bba812",
+          "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+          "resolution_sha256": {},
+          "image_id": "unl-143a-219"
+        }
+      ],
+      "fields": [
+        {
+          "field": "rules_text",
+          "disposition": "reminder_equivalent",
+          "reason": "Both complete original faces show Champion Unit, Kha'Zix / The Void, 4 Energy, 1 Chaos Power, 4 Might, Ambush and identical attack/defend instructions. Only the base face prints the italic Ambush reminder. The enemy must be alone; Kha'Zix may have friendly company.",
+          "rules": [
+            "135.2.d.1",
+            "135.2.d.2",
+            "135.2.d.3",
+            "822"
           ],
           "resolution_ids": []
         }

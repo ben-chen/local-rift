@@ -6845,6 +6845,21 @@ pub fn cards() -> Vec<CardDef> {
             tags: &[],
             art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/1dc4fef81d018c6cf14f0344b51ebcdec968aab9-744x1039.png?w=280&q=85&fm=png",
         },
+        CardDef {
+            id: 449,
+            official_id: "unl-143-219",
+            name: "Kha'Zix, Mutating Horror",
+            cost: 4,
+            power_cost: 1,
+            might: 4,
+            domain: Domain::Chaos,
+            domains: &[Domain::Chaos],
+            kind: CardKind::Unit,
+            official_text: "[Ambush] (You may play me as a [Reaction] to a battlefield where you have units.)\nWhen I attack or defend, if an enemy unit is alone here, give me +2 Might this turn and gain 2 XP.",
+            keywords: &["Ambush"],
+            tags: &["Kha'Zix", "The Void"],
+            art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/8306abc5ffce45add8c75c2e215162b2d1aed320-744x1039.png?w=280&q=85&fm=png",
+        },
     ]
 }
 
@@ -7215,7 +7230,7 @@ mod tests {
     #[test]
     fn presets_are_complete_and_references_are_consistent() {
         let catalog = cards();
-        assert_eq!(catalog.len(), 449);
+        assert_eq!(catalog.len(), 450);
         for (index, card) in catalog.iter().enumerate() {
             assert_eq!(index, card.id);
             assert!(!card.official_id.is_empty());

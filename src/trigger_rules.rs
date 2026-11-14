@@ -58,6 +58,7 @@ pub enum Condition {
     StunnedHere,
     OtherFriendlyHere(u8),
     Alone,
+    EnemyAloneHere,
     FirstEachTurn,
     SecondDraw,
     SourceEmpowered,
@@ -376,6 +377,40 @@ pub fn trigger_rules(card_id: usize) -> &'static [TriggerRule] {
         )
     };
     match card_id {
+        449 => {
+            const {
+                &[
+                    rule(
+                        SelfAttack,
+                        &[EnemyAloneHere],
+                        false,
+                        TargetRule::NONE,
+                        &[
+                            Might {
+                                who: Source,
+                                amount: 2,
+                                minimum: 0,
+                            },
+                            Xp(Fixed(2)),
+                        ],
+                    ),
+                    rule(
+                        SelfDefend,
+                        &[EnemyAloneHere],
+                        false,
+                        TargetRule::NONE,
+                        &[
+                            Might {
+                                who: Source,
+                                amount: 2,
+                                minimum: 0,
+                            },
+                            Xp(Fixed(2)),
+                        ],
+                    ),
+                ]
+            }
+        }
         448 => {
             const {
                 &[TriggerRule {

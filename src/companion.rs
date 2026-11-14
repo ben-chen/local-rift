@@ -557,6 +557,18 @@ fn checked_advice(game: &Game, level: AdviceLevel) -> Result<Vec<&'static str>, 
             "Hide Guards! to bring a Soldier into that battlefield during a response. Save 1 Order Power if you need its separate ready ability for a later move."
         });
     }
+    if human.hand.contains(&449)
+        || human
+            .units
+            .iter()
+            .any(|unit| !unit.token && unit.card_id == 449)
+    {
+        tips.push(if beginner {
+            "Kha'Zix checks for one enemy when attacking or defending: +2 Might this turn and 2 XP. Friendly allies can share the field. Ambush needs a friendly unit there."
+        } else {
+            "Isolate an enemy before Kha'Zix attacks or defends. Once triggered, a later enemy arrival won't cancel the +2 Might and XP; friendly support doesn't prevent it."
+        });
+    }
     if human.hand.contains(&447) {
         tips.push(if beginner {
             "Deathgrip chooses two different friendly units. The first dies on resolution. If its death is prevented, no Might transfers; you still draw 1."
@@ -1859,6 +1871,34 @@ pub fn draw_mote(center: Vec2, scale: f32, time: f32, accent: Color) {
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn irelia_khazix_advice_explains_enemy_isolation_without_private_peeking() {
+        let mut game = Game::new_for_agents(0, 0, 449, Difficulty::Easy);
+        game.start_match().unwrap();
+        game.players[0].hand = vec![449];
+        let before = format!("{game:?}");
+        let messages: Vec<_> = [AdviceLevel::Beginner, AdviceLevel::Advanced]
+            .into_iter()
+            .map(|level| {
+                let tips = advice(&game, level);
+                let tip = *tips.iter().find(|tip| tip.contains("Kha'Zix")).unwrap();
+                assert!(tip.chars().count() <= 180);
+                tip
+            })
+            .collect();
+        assert!(messages[0].contains("one enemy") && messages[0].contains("Ambush"));
+        assert!(messages[1].contains("Once triggered") && messages[1].contains("friendly support"));
+        assert_eq!(format!("{game:?}"), before);
+        game.players[0].hand.clear();
+        game.players[1].hand = vec![449];
+        for level in [AdviceLevel::Beginner, AdviceLevel::Advanced] {
+            assert!(
+                advice(&game, level)
+                    .iter()
+                    .all(|tip| !tip.contains("Kha'Zix"))
+            );
+        }
+    }
     #[test]
     fn guards_advice_is_brief_optional_and_does_not_peek() {
         let mut game = Game::new_for_agents(3, 3, 448, Difficulty::Easy);

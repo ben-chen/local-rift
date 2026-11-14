@@ -11942,6 +11942,32 @@
         "Hidden"
       ],
       "tags": []
+    },
+    {
+      "id": 449,
+      "name": "Kha'Zix, Mutating Horror",
+      "official_id": "unl-143-219",
+      "energy": 4,
+      "power": 1,
+      "might": 4,
+      "domains": [
+        "Chaos"
+      ],
+      "kind": "Unit",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/8306abc5ffce45add8c75c2e215162b2d1aed320-744x1039.png?w=280&q=85&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_text": "[Ambush] (You may play me as a [Reaction] to a battlefield where you have units.)\nWhen I attack or defend, if an enemy unit is alone here, give me +2 Might this turn and gain 2 XP.",
+      "official_text_html": "<p>[Ambush] (You may play me as a [Reaction] to a battlefield where you have units.)<br />When I attack or defend, if an enemy unit is alone here, give me +2 :rb_might: this turn and gain 2 XP.</p>",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null,
+      "keywords": [
+        "Ambush"
+      ],
+      "tags": [
+        "Kha'Zix",
+        "The Void"
+      ]
     }
   ],
   "official_text_note": "Official card/legend rules text from the Riot Card Gallery, retrieved 2026-10-24 and corrected by cited errata. Resource icon tokens are expanded to readable bracketed names. Raw card and equipment HTML is preserved separately. Official text does not establish full implementation fidelity."

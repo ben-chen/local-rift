@@ -1,0 +1,111 @@
+{
+  "reviewed_on": "2026-11-14",
+  "status": "Development; runtime acceptance pending.",
+  "preserved_runtime_prefix": {
+    "card_count": 449,
+    "preset_count": 7,
+    "cards_sha256": "deb18e7172d79f50efb7069bb7c50fb38cc77d1bf9ea11ca1d413ce7296e0c0a",
+    "presets_sha256": "e975739d803427e54928d6e6cd03d1ce51d7ad108f4e247b8a000acf037a5cdb"
+  },
+  "core_sections": [
+    "055",
+    "383.2.a.1",
+    "383.4.e.2",
+    "383.4.f.2",
+    "740.2.a",
+    "822.1"
+  ],
+  "records": [
+    {
+      "official_id": "unl-143-219",
+      "runtime_id": 449,
+      "raw_printing": {
+        "official_id": "unl-143-219",
+        "public_code": "UNL-143/219",
+        "name": "Kha'Zix, Mutating Horror",
+        "set": "UNL",
+        "collector_number": 143,
+        "types": [
+          "unit"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "unit"
+        ],
+        "accessibility_types": [
+          "unit"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [
+          "champion"
+        ],
+        "domains": [
+          "chaos"
+        ],
+        "energy": 4,
+        "power": 1,
+        "might": 4,
+        "might_bonus": null,
+        "rules_html": "<p>[Ambush] (You may play me as a [Reaction] to a battlefield where you have units.)<br />When I attack or defend, if an enemy unit is alone here, give me +2 :rb_might: this turn and gain 2 XP.</p>",
+        "rules_text": "[Ambush] (You may play me as a [Reaction] to a battlefield where you have units.)\nWhen I attack or defend, if an enemy unit is alone here, give me +2 Might this turn and gain 2 XP.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [
+          "Kha'Zix",
+          "The Void"
+        ],
+        "rarity": "rare",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/8306abc5ffce45add8c75c2e215162b2d1aed320-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Unit: Kha'Zix, Mutating Horror. [Ambush] (You may play me as a [Reaction] to a battlefield where you have units.)\nWhen I attack or defend, if an enemy unit is alone here, give me +2 [S] this turn and gain 2 XP.",
+        "illustrators": [
+          "蛋费鸡丁"
+        ]
+      },
+      "raw_printing_sha256": "427843988479b60e9f38f07021d4a173f0d34395f46a4c1eb61c2a6c55018a58",
+      "effective": {
+        "types": [
+          "unit"
+        ],
+        "super_types": [
+          "champion"
+        ],
+        "domains": [
+          "chaos"
+        ],
+        "energy": 4,
+        "power": 1,
+        "might": 4,
+        "might_bonus": null,
+        "tags": [
+          "Kha'Zix",
+          "The Void"
+        ],
+        "rules_html": "<p>[Ambush] (You may play me as a [Reaction] to a battlefield where you have units.)<br />When I attack or defend, if an enemy unit is alone here, give me +2 :rb_might: this turn and gain 2 XP.</p>",
+        "rules_text": "[Ambush] (You may play me as a [Reaction] to a battlefield where you have units.)\nWhen I attack or defend, if an enemy unit is alone here, give me +2 Might this turn and gain 2 XP.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "resolution_ids": [],
+      "errata": [],
+      "printing_cohort": [
+        "unl-143-219",
+        "unl-143a-219"
+      ],
+      "operative_text": "[Ambush] (You may play me as a [Reaction] to a battlefield where you have units.)\nWhen I attack or defend, if an enemy unit is alone here, give me +2 Might this turn and gain 2 XP.",
+      "visual_review": {
+        "actual_full_face_viewed": true,
+        "notes": "Both complete original faces show Champion Unit, Kha'Zix / The Void, 4 Energy, 1 Chaos Power, 4 Might, Ambush and identical attack/defend instructions. Only the base face prints the italic Ambush reminder. The enemy must be alone; Kha'Zix may have friendly company."
+      },
+      "original_image": {
+        "path": "assets/data/catalog_evidence/images/unl-143-219.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/8306abc5ffce45add8c75c2e215162b2d1aed320-744x1039.png?accountingTag=RB",
+        "sha256": "3239827fd9c9f7d432809254979e64d33508e6c77b2d68b0bb43ba21c57f0d87"
+      },
+      "runtime_image": {
+        "path": "assets/art/card_449.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/8306abc5ffce45add8c75c2e215162b2d1aed320-744x1039.png?w=280&q=85&fm=png",
+        "sha256": "f333f4eacfa395cbcb8b523bb4f5fb86d17c044c0c9a746e0b8e132cfcb5231a"
+      }
+    }
+  ]
+}

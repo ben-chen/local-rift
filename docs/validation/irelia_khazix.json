@@ -1,0 +1,70 @@
+{
+  "status": "Focused rules, source and static checks passed; complete-game, API and installed UI acceptance pending",
+  "base_commit": "2fcc6e1d80b81f16b81179b8c9637371aceb226d",
+  "reviewed_on": "2026-11-14",
+  "runtime_id": 449,
+  "identity": "unl-143-219",
+  "scope": [
+    "Ambush uses existing location, timing and payment validation",
+    "First Attack/Defend against one enemy gives temporary Might and XP even with friendly company",
+    "Trigger condition stays captured across an opposing Ambush; source departure preserves independent XP",
+    "A failed first condition cannot trigger later in that combat; separate combats stack until turn end",
+    "Beginner/Advanced commentary distinguishes enemy isolation, friendly support and trigger timing"
+  ],
+  "checks": {
+    "focused_rust": 181,
+    "focused_seconds": 19.376,
+    "new_engine_test_families": 7,
+    "new_companion_test_families": 1,
+    "additional_conformance_card_and_keyword_tests": 35,
+    "additional_seconds": 0.053,
+    "source_integration": 25,
+    "additional_source_checks": 5,
+    "strict_all_target_clippy": "passed before the card-count test expectation changed; final 35-test run includes that changed assertion",
+    "clippy_seconds": 20.45,
+    "catalog_regeneration": "passed",
+    "formatting": "passed",
+    "diff_whitespace": "passed"
+  },
+  "source_review": {
+    "original_faces": 2,
+    "core_rules_date": "2026-10-09",
+    "core_url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/5c7946f7c3b8c6e0faff85ab6dadc6d2e721ea94.pdf",
+    "core_sections": [
+      "055",
+      "383.2.a.1",
+      "383.4.e.2",
+      "383.4.f.2",
+      "740.2.a",
+      "822.1"
+    ]
+  },
+  "retained_attempts": [
+    "Initial test helper returned signed Might instead of the actual unsigned reference type; fixed before behavioral testing.",
+    "Red behavior run: one expected bonus test failed at 4 versus 6 Might; the nontrigger test passed.",
+    "Historical/global review-count checks initially rejected the newly reviewed printing cohort. Global expectations now include the admission; the historical C28 check asserts admission leaves source-review counts unchanged instead of freezing unrelated future review counts.",
+    "One source-check invocation used an obsolete class name. Four requested tests passed; the missing scope test passed after correcting the invocation."
+  ],
+  "limits": [
+    "These are explicitly authored midgame positions, not proof of reachable complete-deck play.",
+    "No new tournament preset or current-meta ranking claim. Existing seven preset recipes remain unchanged.",
+    "The 181-test run retains the existing authored AI benchmark and its twelve known simpler-level misses.",
+    "Full regression, complete-game ability observation, API export/play and installed artwork/inspector checks remain pending."
+  ],
+  "remaining": [
+    "Exercise a legal Irelia list containing Kha'Zix through complete games and the API; record actual trigger occurrence.",
+    "Inspect native artwork, full card text and both coaching levels.",
+    "Run frozen full regression/catalog/package acceptance before publication."
+  ],
+  "evidence_sha256": {
+    "irelia-khazix-focused-v1/status.json": "759db89876aedfee73b033d0a0a8bbf21040f983db70cc2561f7342a7a2179aa",
+    "irelia-khazix-focused-v1/junit.xml": "0000fef1232f346a199b9356b795525fbe295abff3b8f5ce1292cc4d0514e087",
+    "irelia-khazix-conformance-v1.log": "7629b36f292fbaf6eb8cb15dcf18ed360649aed8815120c538b5a9323886b3de",
+    "irelia-khazix-conformance-v1-junit.xml": "c7cbc846dba8556a6bec6169b359c3bb28bd7f6aae8ee527d4167af0d110625d",
+    "irelia-khazix-source-integration-v1.log": "7c1259e0965bcfda0a33b96684a20f6ff295c705ed1e389b195155148adecbd6",
+    "irelia-khazix-catalog-counts-v1.log": "5e9ad8d36cb51708d95dbd4b2410f4729d0ac43ea47c5a56c3aff930e5d56245",
+    "irelia-khazix-catalog-counts-v2.log": "93d7599748a214cf91b0791f91179108c68d651c0f5f58c09760693a2cbd0b01",
+    "irelia-khazix-clippy-v1.log": "d8d13dd5af9d3fe3afac30b14c9e5da28d07f1907c815ac916f536b8e7a7ce2d",
+    "irelia-khazix-red-v2.log": "aba73848daccf12586858cf05a3a8d32c8acb52747b356a1fa276435c5dd06ce"
+  }
+}

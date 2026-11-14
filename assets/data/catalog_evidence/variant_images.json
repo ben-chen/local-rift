@@ -1656,5 +1656,47 @@
       "printed_reminder_spans": [],
       "observation": "All three complete faces retain the same Baron Pit creation and entry replacement, enemy-spell/ability choice restriction, and +2 Might for other friendly units. Alternate/showcase faces omit only the italic Baron Pit movement reminder. Each prints Unit / The Void, 10 Energy, 3 Chaos Power and 12 Might."
     }
+  },
+  {
+    "official_id": "unl-143-219",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/8306abc5ffce45add8c75c2e215162b2d1aed320-744x1039.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/unl-143-219.png",
+    "sha256": "3239827fd9c9f7d432809254979e64d33508e6c77b2d68b0bb43ba21c57f0d87",
+    "bytes": 872161,
+    "visual_review": {
+      "reviewed_on": "2026-11-14",
+      "method": "Individual visual inspection of the exact full original official face, including stats, tags, rules and collector footer.",
+      "collector_footer": "UNL-143/219",
+      "printed_type": "Champion Unit",
+      "printed_tags_in_face_order": [
+        "Kha'Zix",
+        "The Void"
+      ],
+      "printed_rules_text": "[Ambush] (You may play me as a [Reaction] to a battlefield where you have units.)\nWhen I attack or defend, if an enemy unit is alone here, give me +2 Might this turn and gain 2 XP.",
+      "printed_reminder_spans": [
+        "You may play me as a Reaction to a battlefield where you have units."
+      ],
+      "observation": "Both complete original faces show Champion Unit, Kha'Zix / The Void, 4 Energy, 1 Chaos Power, 4 Might, Ambush and identical attack/defend instructions. Only the base face prints the italic Ambush reminder. The enemy must be alone; Kha'Zix may have friendly company."
+    }
+  },
+  {
+    "official_id": "unl-143a-219",
+    "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/b1e7f8762aba8ecf571eb0c83bba8874703dc8be-744x1039.png?accountingTag=RB",
+    "local_path": "assets/data/catalog_evidence/images/unl-143a-219.png",
+    "sha256": "9a4663a32167019c0c7095d00f65e8d809704b9829cefaa14eb4da1c9c3dc98f",
+    "bytes": 783152,
+    "visual_review": {
+      "reviewed_on": "2026-11-14",
+      "method": "Individual visual inspection of the exact full original official face, including stats, tags, rules and collector footer.",
+      "collector_footer": "UNL-143a/219",
+      "printed_type": "Champion Unit",
+      "printed_tags_in_face_order": [
+        "Kha'Zix",
+        "The Void"
+      ],
+      "printed_rules_text": "[Ambush]\nWhen I attack or defend, if an enemy unit is alone here, give me +2 Might this turn and gain 2 XP.",
+      "printed_reminder_spans": [],
+      "observation": "Both complete original faces show Champion Unit, Kha'Zix / The Void, 4 Energy, 1 Chaos Power, 4 Might, Ambush and identical attack/defend instructions. Only the base face prints the italic Ambush reminder. The enemy must be alone; Kha'Zix may have friendly company."
+    }
   }
 ]
