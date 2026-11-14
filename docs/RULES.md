@@ -630,3 +630,23 @@ and current Might. Mote explains the isolation condition and response timing at
 both advice levels. The [admission evidence](../assets/data/card_admissions/irelia_khazix/README.md)
 and [validation record](validation/irelia_khazix.json) distinguish controlled
 rules examples, complete API matches and native presentation checks.
+
+## Clockwork Keeper, Meditation and Life from Stone
+
+Clockwork Keeper follows its updated official text. Its optional Calm Power is
+paid while playing the unit; paying it creates a separate draw trigger. The
+trigger still occurs if a discount reduced that chosen optional cost to zero.
+
+Meditation may exhaust a ready friendly unit as an additional cost to draw two
+instead of one. Life from Stone requires that cost, then draws one and channels
+one exhausted rune on resolution. The client offers ready friendly units,
+including unit tokens, in a separate cost tray. Selecting one does not target it
+and therefore does not trigger Irelia or Jae's spell-choice abilities. Actual
+exhaustion can trigger Reckless Innovator.
+
+The unit exhausts before the response window. Countering the spell does not
+refund the payment. Repeat executes the draw/channel instructions again without
+paying the unit cost again; Meditation retains its paid or unpaid choice for all
+executions. The same choices are available to bots through `play_choices` and
+`exhaust_unit`. See [the validation record](validation/irelia_resources.json)
+for the tested interactions and outstanding release checks.

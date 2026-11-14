@@ -402,6 +402,7 @@ fn checked_advice(game: &Game, level: AdviceLevel) -> Result<Vec<&'static str>, 
         if let Some(tip) = jae_advice(game, beginner) {
             window_tips.push(tip);
         }
+        window_tips.extend(resource_card_advice(game, beginner));
         window_tips.extend(crate::combat_ui::card_advice(game, beginner)?);
         if let Some(status) = game.combat_resolution() {
             window_tips.push(crate::combat_ui::advice(status, beginner));
@@ -572,6 +573,7 @@ fn checked_advice(game: &Game, level: AdviceLevel) -> Result<Vec<&'static str>, 
     if let Some(tip) = jae_advice(game, beginner) {
         tips.push(tip);
     }
+    tips.extend(resource_card_advice(game, beginner));
     if human.hand.contains(&447) {
         tips.push(if beginner {
             "Deathgrip chooses two different friendly units. The first dies on resolution. If its death is prevented, no Might transfers; you still draw 1."
@@ -1751,6 +1753,44 @@ fn gust_response_advice(game: &Game, beginner: bool) -> Result<Option<&'static s
     }))
 }
 
+fn resource_card_advice(game: &Game, beginner: bool) -> Vec<&'static str> {
+    let human = &game.players[0];
+    let visible = |id| {
+        human.hand.contains(&id)
+            || human
+                .units
+                .iter()
+                .any(|unit| !unit.token && unit.card_id == id)
+            || game
+                .chain
+                .iter()
+                .any(|item| item.player == 0 && item.card_id == id)
+    };
+    let mut tips = Vec::new();
+    if visible(451) {
+        tips.push(if beginner {
+            "Clockwork Keeper can cost 1 extra Calm Power. If you choose to pay it, his draw waits on a separate ability after he enters. This follows his updated rules text."
+        } else {
+            "Keeper turns spare Calm Power into a card, but recycling a rune reduces future Energy. Weigh the extra draw against your next turn's plays."
+        });
+    }
+    if visible(452) {
+        tips.push(if beginner {
+            "Meditation draws 1, or 2 if you exhaust a friendly unit as an extra cost. That cost does not target the unit, so it won't trigger Irelia or Jae."
+        } else {
+            "Meditation trades a unit's readiness for an extra draw. Preserve a needed mover, or use a unit whose next action can wait; countering the spell won't refund the cost."
+        });
+    }
+    if visible(453) {
+        tips.push(if beginner {
+            "Life from Stone requires exhausting a ready friendly unit as a cost. After responses, draw 1 and channel an exhausted rune. Paying does not target the unit."
+        } else {
+            "Life from Stone invests a unit's readiness in future resources. Its rune enters exhausted; protect your current battlefield plan before paying that cost."
+        });
+    }
+    tips
+}
+
 fn jae_advice(game: &Game, beginner: bool) -> Option<&'static str> {
     let human = &game.players[0];
     (human.hand.contains(&450)
@@ -1952,6 +1992,25 @@ pub fn draw_mote(center: Vec2, scale: f32, time: f32, accent: Color) {
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn irelia_resources_advice_is_brief_read_only_and_uses_visible_cards() {
+        let mut game = Game::new_for_agents(0, 0, 451, Difficulty::Easy);
+        game.start_match().unwrap();
+        game.players[0].hand = vec![451, 452, 453];
+        let before = format!("{game:?}");
+        let mut private = game.clone();
+        private.players[1].hand = vec![450, 451, 452, 453];
+        private.players[1].deck.reverse();
+        for beginner in [false, true] {
+            let tips = resource_card_advice(&game, beginner);
+            assert_eq!(tips.len(), 3);
+            assert!(tips.iter().all(|tip| tip.chars().count() <= 180));
+            assert_eq!(tips, resource_card_advice(&private, beginner));
+        }
+        assert_eq!(format!("{game:?}"), before);
+        private.players[0].hand.clear();
+        assert!(resource_card_advice(&private, true).is_empty());
+    }
     #[test]
     fn irelia_jae_advice_distinguishes_spell_choices_and_keeps_private_cards_private() {
         let mut game = Game::new_for_agents(0, 0, 450, Difficulty::Easy);

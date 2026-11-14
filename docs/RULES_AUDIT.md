@@ -928,3 +928,26 @@ that the draw resolves before the choosing spell and exposes only a hand count
 to the opponent. Complete dated matches supplement these scenarios; they are
 not an independent oracle for rules correctness or a measure of expert strength.
 [Validation and outstanding package checks](validation/irelia_choices.json).
+
+### Resource-card costs and draw timing — November 14, 2026
+
+Reviewed Clockwork Keeper against the [Origins errata](https://playriftbound.com/en-us/news/rules-and-releases/riftbound-origins-card-errata/)
+and the three original faces in `assets/data/card_admissions/irelia_resources/`.
+Keeper's payment and draw are separate events. Its optional cost can be reduced
+to zero while still counting as paid (Core 356.4.f.1).
+
+Meditation and Life from Stone exhaust a friendly unit as a cost, not a target
+choice (355.10.c). Resource and unit costs precede responses (357.1–2), and
+Repeat executes resolution instructions without repeating those costs (820.1.d,
+820.3). Shared play choices now preserve the paid option through every spell
+execution, validate a ready friendly physical unit, and reject stale or
+unpayable choices atomically. A resource ability cannot exhaust the selected
+unit and then spend that same exhausted unit again to finish the spell.
+
+Thirteen engine scenarios cover paid/unpaid choices, both seats, discounted
+costs, tokens, real Syndra-granted Repeat, counters, payment undo/refusal and
+Innovator's exhaustion trigger. Two protocol scenarios check candidate queries,
+private information and rejected requests; one companion scenario checks brief,
+read-only advice. Native controls and complete matches supplement these cases.
+The [validation record](validation/irelia_resources.json) states exact evidence
+and limitations; this is not a certification of complete Standard parity.

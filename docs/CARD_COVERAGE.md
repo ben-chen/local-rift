@@ -2,7 +2,7 @@
 
 Snapshot checked **2026-10-24**. The official gallery contains **1,408 printing records** grouped into **1,103 distinct full-name identities**. After excluding **12 auxiliary token/tracker identities** and **12 banned identities**, **1,079 identities are legal in Standard/1v1 Constructed**. The separate 2v2 list leaves **1,078**.
 
-**This client does not yet implement every legal card.** It currently maps **451 main-deck cards, 11 independently registered legends, 17 battlefields, and 6 rune resource types** (485 legal identities). **594 legal identities remain unimplemented and are not playable.** Importing this snapshot does not register cards with the engine. Full inventory coverage is not full rules support.
+**This client does not yet implement every legal card.** It currently maps **454 main-deck cards, 11 independently registered legends, 17 battlefields, and 6 rune resource types** (488 legal identities). **591 legal identities remain unimplemented and are not playable.** Importing this snapshot does not register cards with the engine. Full inventory coverage is not full rules support.
 
 ## Scope and authority
 
@@ -30,8 +30,8 @@ Numbered positions include token slots where the publisher numbers them within a
 | Gear + Unit | 1 | 0 | 1 |
 | Legend | 58 | 11 | 47 |
 | Rune | 6 | 6 | 0 |
-| Spell | 268 | 128 | 140 |
-| Unit | 546 | 245 | 301 |
+| Spell | 268 | 130 | 138 |
+| Unit | 546 | 246 | 300 |
 
 Each row is a disjoint complete type set. A reviewed Unit Gear has both types (Core 178) and is counted once in `gear+unit`, rather than once in each single-type row. Patched Porobot is the first explicitly reviewed dual-type correction; this is not a complete visual audit of every gallery type. No dual-type card is currently admitted to the engine.
 
@@ -586,6 +586,9 @@ Current pages are archived under `assets/data/catalog_sources/`; immutable revie
 | 448 | Guards! | `sfd-154-221` |
 | 449 | Kha'Zix, Mutating Horror | `unl-143-219` |
 | 450 | Jae Medarda | `sfd-142-221` |
+| 451 | Clockwork Keeper | `ogn-044-298` |
+| 452 | Meditation | `ogn-048-298` |
+| 453 | Life from Stone | `rad-029-167` |
 
 ## Implemented legend ID mapping
 

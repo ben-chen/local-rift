@@ -116,6 +116,9 @@ pub(super) fn choices_to_json(choices: &PlayChoices) -> Value {
     if let Some(mode) = choices.mode {
         value["mode"] = json!(mode);
     }
+    if let Some(unit_id) = choices.exhaust_unit {
+        value["exhaust_unit"] = json!(unit_id);
+    }
     value
 }
 
@@ -163,6 +166,10 @@ pub(super) fn view_to_json(view: &PlayChoiceView) -> Value {
         "costs":plan_to_json(&view.costs)});
     if let Some(source) = view.legend_entry_ready {
         value["legend_entry_ready"] = chain_source_to_json(source);
+    }
+    if let Some(cost) = &view.unit_cost {
+        value["unit_cost"] = json!({"type":"exhaust_unit", "optional":cost.optional,
+            "candidates":cost.candidates, "is_target":false});
     }
     if let Some(lane) = view.baron_pit_entry {
         value["entry_replacement"] = json!({"source_card_id":440,
@@ -257,6 +264,7 @@ pub(super) fn parse_choices(value: &Value) -> Result<PlayChoices, ApiError> {
             "cost_order",
             "mode",
             "show_off",
+            "exhaust_unit",
         ],
     )?;
     let repeats = optional_array(obj, "repeats")?
@@ -322,6 +330,11 @@ pub(super) fn parse_choices(value: &Value) -> Result<PlayChoices, ApiError> {
         .collect::<Result<Vec<_>, ApiError>>()?;
     Ok(PlayChoices {
         show_off,
+        exhaust_unit: if obj.get("exhaust_unit").is_none_or(Value::is_null) {
+            None
+        } else {
+            Some(id32(obj, "exhaust_unit")?)
+        },
         mode: if obj.get("mode").is_none_or(Value::is_null) {
             None
         } else {
@@ -369,6 +382,7 @@ mod tests {
             }),
             choices: PlayChoices {
                 show_off: vec![],
+                exhaust_unit: None,
                 mode: None,
                 repeats: vec![
                     RepeatSelection {

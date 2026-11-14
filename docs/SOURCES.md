@@ -279,3 +279,15 @@ The renderer crops the artwork area and uses the engine’s English token identi
 and live rules. It does not display the Chinese printed text as English rules,
 copy the creating spell’s cost, or register these auxiliary tokens as new legal
 main-deck cards. The downloaded originals remain unchanged.
+
+## Irelia-compatible resource cards
+
+The [resource-card manifest](../assets/data/card_admissions/irelia_resources/admissions.json)
+preserves the original English faces and gallery records for Clockwork Keeper,
+Meditation and Life from Stone, plus image hashes, current effective facts and
+the preceding 451-card/seven-preset hashes. Keeper's current rules text follows
+the [official Origins erratum](https://playriftbound.com/en-us/news/rules-and-releases/riftbound-origins-card-errata/);
+its original printing and gallery HTML remain intact. The inspector labels the
+effective wording as rules text because it may differ from the printed image.
+The other two cards have no erratum in the reviewed source bundle. This is a
+custom-pool admission, not a new sourced meta deck.

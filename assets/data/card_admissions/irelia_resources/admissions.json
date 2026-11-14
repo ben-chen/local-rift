@@ -1,0 +1,303 @@
+{
+  "status": "Official faces and current errata reviewed; local rules, API and native checks passed; installed acceptance pending",
+  "reviewed_on": "2026-11-14",
+  "preserved_runtime_prefix": {
+    "card_count": 451,
+    "preset_count": 7,
+    "cards_sha256": "c6343566bfb1603c2a4d7d4e460964f04f0d36f47aaa0565d17388d4fa063c6e",
+    "presets_sha256": "e975739d803427e54928d6e6cd03d1ce51d7ad108f4e247b8a000acf037a5cdb"
+  },
+  "records": [
+    {
+      "runtime_id": 451,
+      "official_id": "ogn-044-298",
+      "raw_printing": {
+        "official_id": "ogn-044-298",
+        "public_code": "OGN-044/298",
+        "name": "Clockwork Keeper",
+        "set": "OGN",
+        "collector_number": 44,
+        "types": [
+          "unit"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "unit"
+        ],
+        "accessibility_types": [
+          "unit"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "calm"
+        ],
+        "energy": 2,
+        "power": null,
+        "might": 2,
+        "might_bonus": null,
+        "rules_html": "<p>As you play me, you may pay :rb_rune_calm: as an additional cost. If you do, draw 1.</p>",
+        "rules_text": "As you play me, you may pay [Calm Power] as an additional cost. If you do, draw 1.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [
+          "Shurima"
+        ],
+        "rarity": "common",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/417e606418349bb25d4b07d460fa043ad85f2778-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Unit: Clockwork Keeper. As you play me, you may pay [C] as an additional cost. If you do, draw 1.",
+        "illustrators": [
+          "Polar Engine Studio"
+        ]
+      },
+      "raw_printing_sha256": "e3be90bc60e860b75a396a602c87071bf9bf3ed49bd240969eaef0152ec18498",
+      "effective": {
+        "types": [
+          "unit"
+        ],
+        "super_types": [],
+        "domains": [
+          "calm"
+        ],
+        "energy": 2,
+        "power": null,
+        "might": 2,
+        "might_bonus": null,
+        "tags": [
+          "Shurima"
+        ],
+        "rules_html": "<p>As you play me, you may pay :rb_rune_calm: as an additional cost. If you do, draw 1.</p>",
+        "rules_text": "As you play me, you may pay [Calm Power] as an additional cost. If you do, draw 1.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "errata": [
+        {
+          "article_heading": "Clockwork Keeper",
+          "text": "You may pay [C] as an additional cost to play me.\nWhen you play me, if you paid the additional cost, draw 1.",
+          "source_url": "https://playriftbound.com/en-us/news/rules-and-releases/riftbound-origins-card-errata/"
+        }
+      ],
+      "runtime_rules_text": "You may pay [Calm Power] as an additional cost to play me.\nWhen you play me, if you paid the additional cost, draw 1.",
+      "original_image": {
+        "path": "assets/data/card_admissions/irelia_resources/ogn-044-298.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/417e606418349bb25d4b07d460fa043ad85f2778-744x1039.png?accountingTag=RB",
+        "bytes": 801816,
+        "sha256": "678251bb4b137e1127f343849665a8810f599bbbf7d9aa7127483ac9f3f19e19",
+        "width": 744,
+        "height": 1039
+      },
+      "runtime_image": {
+        "path": "assets/art/card_451.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/417e606418349bb25d4b07d460fa043ad85f2778-744x1039.png?w=280&q=85&fm=png",
+        "bytes": 167855,
+        "sha256": "48ec40a08e2b79dac46b9732acf71139a45f5d7cc473a42d43e40268afa3fe47",
+        "width": 280,
+        "height": 391
+      },
+      "visual_review": {
+        "actual_full_face_viewed": true,
+        "printed_energy": 2,
+        "printed_power": 0,
+        "printed_might": 2,
+        "printed_domains": [
+          "calm"
+        ],
+        "printed_types": [
+          "unit"
+        ],
+        "printed_tags": [
+          "Shurima"
+        ],
+        "printed_rules": "As you play me, you may pay [Calm Power] as an additional cost. If you do, draw 1.",
+        "uncertainties": []
+      }
+    },
+    {
+      "runtime_id": 452,
+      "official_id": "ogn-048-298",
+      "raw_printing": {
+        "official_id": "ogn-048-298",
+        "public_code": "OGN-048/298",
+        "name": "Meditation",
+        "set": "OGN",
+        "collector_number": 48,
+        "types": [
+          "spell"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "spell"
+        ],
+        "accessibility_types": [
+          "spell"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "calm"
+        ],
+        "energy": 2,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "rules_html": "<p>[Reaction] (Play any time, even before spells and abilities resolve.)<br />As an additional cost to play this, you may exhaust a friendly unit. If you do, draw 2. Otherwise, draw 1.</p>",
+        "rules_text": "[Reaction] (Play any time, even before spells and abilities resolve.)\nAs an additional cost to play this, you may exhaust a friendly unit. If you do, draw 2. Otherwise, draw 1.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [],
+        "rarity": "common",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/7103336ab0d7f7bebdaa4155e4258d8d9beb06de-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Spell: Meditation. [Reaction] (Play any time, even before spells and abilities resolve.)\nAs an additional cost to play this, you may exhaust a friendly unit. If you do, draw 2. Otherwise, draw 1.",
+        "illustrators": [
+          "Kudos Productions"
+        ]
+      },
+      "raw_printing_sha256": "7d1311a6fd194acd5e2494df32575b42fef6a36e9a7083282ce780000fa3afff",
+      "effective": {
+        "types": [
+          "spell"
+        ],
+        "super_types": [],
+        "domains": [
+          "calm"
+        ],
+        "energy": 2,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>[Reaction] (Play any time, even before spells and abilities resolve.)<br />As an additional cost to play this, you may exhaust a friendly unit. If you do, draw 2. Otherwise, draw 1.</p>",
+        "rules_text": "[Reaction] (Play any time, even before spells and abilities resolve.)\nAs an additional cost to play this, you may exhaust a friendly unit. If you do, draw 2. Otherwise, draw 1.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "errata": [],
+      "runtime_rules_text": "[Reaction] (Play any time, even before spells and abilities resolve.)\nAs an additional cost to play this, you may exhaust a friendly unit. If you do, draw 2. Otherwise, draw 1.",
+      "original_image": {
+        "path": "assets/data/card_admissions/irelia_resources/ogn-048-298.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/7103336ab0d7f7bebdaa4155e4258d8d9beb06de-744x1039.png?accountingTag=RB",
+        "bytes": 755859,
+        "sha256": "b707a36caa1553be581077801639f7b468a827de6525a0fb56bd36ecc6154bc6",
+        "width": 744,
+        "height": 1039
+      },
+      "runtime_image": {
+        "path": "assets/art/card_452.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/7103336ab0d7f7bebdaa4155e4258d8d9beb06de-744x1039.png?w=280&q=85&fm=png",
+        "bytes": 180236,
+        "sha256": "b785a90648c6da07b45ead0a558c21f445facf7e11ee5b3523da3866991276d7",
+        "width": 280,
+        "height": 391
+      },
+      "visual_review": {
+        "actual_full_face_viewed": true,
+        "printed_energy": 2,
+        "printed_power": 0,
+        "printed_might": null,
+        "printed_domains": [
+          "calm"
+        ],
+        "printed_types": [
+          "spell"
+        ],
+        "printed_tags": [],
+        "printed_rules": "[Reaction] (Play any time, even before spells and abilities resolve.)\nAs an additional cost to play this, you may exhaust a friendly unit. If you do, draw 2. Otherwise, draw 1.",
+        "uncertainties": []
+      }
+    },
+    {
+      "runtime_id": 453,
+      "official_id": "rad-029-167",
+      "raw_printing": {
+        "official_id": "rad-029-167",
+        "public_code": "RAD-029/167",
+        "name": "Life from Stone",
+        "set": "RAD",
+        "collector_number": 29,
+        "types": [
+          "spell"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "spell"
+        ],
+        "accessibility_types": [
+          "spell"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "calm"
+        ],
+        "energy": 1,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "rules_html": "<p>[Reaction] (Play any time, even before spells and abilities resolve.)<br />As an additional cost to play this, exhaust a friendly unit.<br />Draw 1 and channel 1 rune exhausted.</p>",
+        "rules_text": "[Reaction] (Play any time, even before spells and abilities resolve.)\nAs an additional cost to play this, exhaust a friendly unit.\nDraw 1 and channel 1 rune exhausted.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [],
+        "rarity": "common",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/6a849c0425f0fecb8d00e1b9494e975c4dbbba75-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Spell: Life from Stone. [Reaction] (Play any time, even before spells and abilities resolve.)\nAs an additional cost to play this, exhaust a friendly unit.\nDraw 1 and channel 1 rune exhausted.",
+        "illustrators": [
+          "Kudos Productions"
+        ]
+      },
+      "raw_printing_sha256": "770158da0579370f0f5574106a9974c5f35856d253350a0c95dc8bc9b9cf200d",
+      "effective": {
+        "types": [
+          "spell"
+        ],
+        "super_types": [],
+        "domains": [
+          "calm"
+        ],
+        "energy": 1,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>[Reaction] (Play any time, even before spells and abilities resolve.)<br />As an additional cost to play this, exhaust a friendly unit.<br />Draw 1 and channel 1 rune exhausted.</p>",
+        "rules_text": "[Reaction] (Play any time, even before spells and abilities resolve.)\nAs an additional cost to play this, exhaust a friendly unit.\nDraw 1 and channel 1 rune exhausted.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "errata": [],
+      "runtime_rules_text": "[Reaction] (Play any time, even before spells and abilities resolve.)\nAs an additional cost to play this, exhaust a friendly unit.\nDraw 1 and channel 1 rune exhausted.",
+      "original_image": {
+        "path": "assets/data/card_admissions/irelia_resources/rad-029-167.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/6a849c0425f0fecb8d00e1b9494e975c4dbbba75-744x1039.png?accountingTag=RB",
+        "bytes": 696935,
+        "sha256": "d2fc5c2f7b6d3e0830dc259aa1e486f242b1e7b598ec3852d2a1ffb3d927d3a9",
+        "width": 744,
+        "height": 1039
+      },
+      "runtime_image": {
+        "path": "assets/art/card_453.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/6a849c0425f0fecb8d00e1b9494e975c4dbbba75-744x1039.png?w=280&q=85&fm=png",
+        "bytes": 161183,
+        "sha256": "fe9c2a21cf26290937c4dfd6bf16e3c8e0c5c84989dda3724d0eb0439d1d9509",
+        "width": 280,
+        "height": 391
+      },
+      "visual_review": {
+        "actual_full_face_viewed": true,
+        "printed_energy": 1,
+        "printed_power": 0,
+        "printed_might": null,
+        "printed_domains": [
+          "calm"
+        ],
+        "printed_types": [
+          "spell"
+        ],
+        "printed_tags": [],
+        "printed_rules": "[Reaction] (Play any time, even before spells and abilities resolve.)\nAs an additional cost to play this, exhaust a friendly unit.\nDraw 1 and channel 1 rune exhausted.",
+        "uncertainties": []
+      }
+    }
+  ]
+}

@@ -61,6 +61,9 @@ mod irelia_khazix_tests;
 #[path = "orianna_tests.rs"]
 mod orianna_tests;
 #[cfg(test)]
+#[path = "resource_card_tests.rs"]
+mod resource_card_tests;
+#[cfg(test)]
 #[path = "riven_pool_tests.rs"]
 mod riven_pool_tests;
 #[cfg(test)]
@@ -69,6 +72,9 @@ mod siren_tests;
 #[cfg(test)]
 #[path = "source_damage_tests.rs"]
 mod source_damage_tests;
+#[cfg(test)]
+#[path = "game_test_support.rs"]
+pub(crate) mod test_support;
 #[cfg(test)]
 #[path = "unyielding_tests.rs"]
 mod unyielding_tests;
@@ -3251,15 +3257,23 @@ impl Game {
                     "{} resolves {}.",
                     self.players[item.player].name, self.catalog[item.card_id].name
                 ));
-                self.resolve_operation(item.player, item.card_id, item.lane, targets, None)?;
+                self.resolve_operation_with_options(
+                    item.player,
+                    item.card_id,
+                    item.lane,
+                    targets,
+                    None,
+                    item.options,
+                )?;
                 if item.options.repeat && rules::effect(item.card_id) != OfficialEffect::ArcaneShift
                 {
-                    self.resolve_operation(
+                    self.resolve_operation_with_options(
                         item.player,
                         item.card_id,
                         item.lane,
                         item.repeat_targets.clone(),
                         None,
+                        item.options,
                     )?;
                 }
             }
@@ -7867,6 +7881,25 @@ impl Game {
         targets: Vec<Target>,
         entering: Option<u32>,
     ) -> Result<(), String> {
+        self.resolve_operation_with_options(
+            player,
+            id,
+            lane,
+            targets,
+            entering,
+            PlayOptions::default(),
+        )
+    }
+
+    fn resolve_operation_with_options(
+        &mut self,
+        player: usize,
+        id: CardId,
+        lane: Option<usize>,
+        targets: Vec<Target>,
+        entering: Option<u32>,
+        options: PlayOptions,
+    ) -> Result<(), String> {
         if id == 442 {
             self.resolve_repulse(player, &targets);
             return Ok(());
@@ -8308,6 +8341,9 @@ impl Game {
                 }
             }
             OfficialEffect::Draw(count) => self.draw(player, count)?,
+            OfficialEffect::DrawWithOptionalCost { unpaid, paid } => {
+                self.draw(player, if options.bonus { paid } else { unpaid })?;
+            }
             OfficialEffect::Damage {
                 amount,
                 draw,
@@ -10791,6 +10827,7 @@ impl Game {
                     0
                 }
                 OfficialEffect::Draw(_)
+                | OfficialEffect::DrawWithOptionalCost { .. }
                 | OfficialEffect::PredictThenDraw { .. }
                 | OfficialEffect::ChooseTopThreeBurnRest
                 | OfficialEffect::DrawLook

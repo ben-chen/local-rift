@@ -5,30 +5,7 @@ use super::*;
 const JAE: CardId = 450;
 
 fn position(actor: usize) -> Game {
-    let mut game = Game::new_for_agents(0, 0, 450001, Difficulty::Tactical);
-    game.choose_starting_player(actor).unwrap();
-    game.start_match().unwrap();
-    game.battlefields = vec![3, 3];
-    game.battlefield_owner = vec![None; 2];
-    for state in &mut game.players {
-        state.units.clear();
-        state.gear.clear();
-        state.hidden.clear();
-        state.hand.clear();
-        state.discard.clear();
-        state.banish.clear();
-        state.champion = None;
-        state.deck = vec![71; 20];
-        state.set_rune_setup([0; 6], [0; 6]).unwrap();
-        state.energy_pool = 20;
-        state.energy = 20;
-        state.power_pool = [5; 6];
-        state.any_power = 0;
-    }
-    for legend in &mut game.legend {
-        legend.ready = false;
-    }
-    game
+    test_support::position(actor, 0, 450001)
 }
 
 fn unit(game: &mut Game, owner: usize, card: CardId, lane: Option<usize>) -> Target {

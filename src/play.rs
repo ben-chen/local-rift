@@ -108,6 +108,8 @@ pub struct PlayChoices {
     pub repeats: Vec<RepeatSelection>, // ordered extra executions; each option at most once
     pub accelerate: bool,
     pub bonus: bool, // one reviewed optional card cost; labels below
+    /// Physical unit exhausted as a cost, never a spell target.
+    pub exhaust_unit: Option<u32>,
     pub cost_order: Vec<CostSelection>,
 }
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
@@ -128,6 +130,11 @@ pub struct RepeatOption {
 pub struct OptionalCostOption {
     pub label: String,
     pub cost: CostValue,
+}
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct UnitCostOption {
+    pub optional: bool,
+    pub candidates: Vec<u32>,
 }
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum CostScope {
@@ -186,6 +193,7 @@ pub struct PlayChoiceView {
     pub repeats: Vec<RepeatOption>,
     pub accelerate: Option<OptionalCostOption>,
     pub bonus: Option<OptionalCostOption>,
+    pub unit_cost: Option<UnitCostOption>,
     pub costs: CostPlanView,
 }
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -946,43 +954,7 @@ impl Game {
         let grants = self.intent_grants(&intent);
         let repeats = self.repeat_options(&intent, &grants);
         let accelerate = self.accelerate_option(&intent, &grants);
-        let bonus = match intent.id {
-            29 => Some(OptionalCostOption {
-                label: "Rampage: +2 Might".into(),
-                cost: CostValue {
-                    xp: 0,
-                    energy: 0,
-                    power: 1,
-                    domains: vec![Domain::Body],
-                },
-            }),
-            431 => Some(OptionalCostOption {
-                label: "Gust Monk: banish from either trash for Assault 2".into(),
-                cost: CostValue {
-                    energy: 1,
-                    ..Default::default()
-                },
-            }),
-            420 => Some(OptionalCostOption {
-                label: "Pyke: ready and +2 Might when played".into(),
-                cost: CostValue {
-                    xp: 0,
-                    energy: 0,
-                    power: 1,
-                    domains: vec![Domain::Fury],
-                },
-            }),
-            261 => Some(OptionalCostOption {
-                label: "Nami: stun an enemy when played".into(),
-                cost: CostValue {
-                    xp: 0,
-                    energy: 0,
-                    power: 1,
-                    domains: vec![Domain::Calm],
-                },
-            }),
-            _ => None,
-        };
+        let bonus = optional_card_cost(intent.id);
         let snapshot = self.play_cost_snapshot(action);
         let costs = snapshot.card_cost_plan(
             &intent,
@@ -1019,6 +991,7 @@ impl Game {
             repeats,
             accelerate,
             bonus,
+            unit_cost: self.unit_cost_option(intent.id),
             costs,
         })
     }
@@ -1032,6 +1005,7 @@ impl Game {
             && self.card_intent(action).is_err()
         {
             if !choices.show_off.is_empty()
+                || choices.exhaust_unit.is_some()
                 || choices.mode.is_some()
                 || !choices.repeats.is_empty()
                 || choices.accelerate
@@ -1349,13 +1323,61 @@ impl Game {
             gear_activation: false,
             targets: all_targets,
         }));
-        solve_cost_plan(
+        let mut plan = solve_cost_plan(
             components,
             modifiers,
             &choices.cost_order,
             spell,
             self.optional_power_discount[p],
-        )
+        )?;
+        plan.object_costs = self.card_object_costs(intent.id, choices, false)?;
+        Ok(plan)
+    }
+
+    fn unit_cost_option(&self, card_id: CardId) -> Option<UnitCostOption> {
+        let optional = unit_cost_optional(card_id)?;
+        Some(UnitCostOption {
+            optional,
+            candidates: self.players[self.priority()]
+                .units
+                .iter()
+                .filter(|unit| unit.ready)
+                .map(|unit| unit.id)
+                .collect(),
+        })
+    }
+
+    fn card_object_costs(
+        &self,
+        card_id: CardId,
+        choices: &PlayChoices,
+        complete: bool,
+    ) -> Result<Vec<ObjectCost>, String> {
+        let Some(optional) = unit_cost_optional(card_id) else {
+            if choices.exhaust_unit.is_some() {
+                return Err("This card has no unit-exhaustion cost.".into());
+            }
+            return Ok(vec![]);
+        };
+        let selected = !optional || choices.bonus;
+        if !selected && choices.exhaust_unit.is_some() {
+            return Err("Select the optional cost before choosing a unit to exhaust.".into());
+        }
+        let Some(unit_id) = choices.exhaust_unit else {
+            if complete && selected {
+                return Err("Choose a ready friendly unit to exhaust as a cost.".into());
+            }
+            return Ok(vec![]);
+        };
+        let player = self.priority();
+        if !self.players[player]
+            .units
+            .iter()
+            .any(|unit| unit.id == unit_id && unit.ready)
+        {
+            return Err("The exhaustion cost needs a ready unit you control.".into());
+        }
+        Ok(vec![ObjectCost::ExhaustUnit { player, unit_id }])
     }
 
     pub(crate) fn pay_active_play(
@@ -1371,6 +1393,22 @@ impl Game {
             return Some(Ok(()));
         }
         let costs = active.costs.clone();
+        for cost in &costs.object_costs {
+            let ObjectCost::ExhaustUnit {
+                player: owner,
+                unit_id,
+            } = cost;
+            if *owner != player
+                || !self.players[player]
+                    .units
+                    .iter()
+                    .any(|unit| unit.id == *unit_id && unit.ready)
+            {
+                return Some(Err(
+                    "The selected unit can no longer pay the exhaustion cost.".into(),
+                ));
+            }
+        }
         if costs.energy > u32::from(self.payment_energy_available(player)) {
             return Some(Err("Not enough energy for the selected cost plan.".into()));
         }
@@ -1389,6 +1427,10 @@ impl Game {
             {
                 return Some(Err(e));
             }
+        }
+        for cost in costs.object_costs {
+            let ObjectCost::ExhaustUnit { player, unit_id } = cost;
+            self.exhaust_unit(player, unit_id);
         }
         self.active_play.as_mut().unwrap().paid = true;
         Some(Ok(()))
@@ -1429,43 +1471,7 @@ impl Game {
         let grants = probe.intent_grants(&intent);
         let repeats = probe.repeat_options(&intent, &grants);
         let accel = probe.accelerate_option(&intent, &grants);
-        let bonus = match intent.id {
-            29 => Some(OptionalCostOption {
-                label: String::new(),
-                cost: CostValue {
-                    xp: 0,
-                    power: 1,
-                    domains: vec![Domain::Body],
-                    ..Default::default()
-                },
-            }),
-            431 => Some(OptionalCostOption {
-                label: "Gust Monk: banish from either trash for Assault 2".into(),
-                cost: CostValue {
-                    energy: 1,
-                    ..Default::default()
-                },
-            }),
-            420 => Some(OptionalCostOption {
-                label: "Pyke: ready and +2 Might when played".into(),
-                cost: CostValue {
-                    xp: 0,
-                    energy: 0,
-                    power: 1,
-                    domains: vec![Domain::Fury],
-                },
-            }),
-            261 => Some(OptionalCostOption {
-                label: String::new(),
-                cost: CostValue {
-                    xp: 0,
-                    power: 1,
-                    domains: vec![Domain::Calm],
-                    ..Default::default()
-                },
-            }),
-            _ => None,
-        };
+        let bonus = optional_card_cost(intent.id);
         Self::validate_play_mode(intent.id, choices.mode, true)?;
         if intent.id == 410 {
             probe.validate_command_attack(probe.priority(), choices.mode, &intent.targets, true)?;
@@ -1512,6 +1518,7 @@ impl Game {
             None
         };
         let cost_snapshot = probe.play_cost_snapshot(&action);
+        probe.card_object_costs(intent.id, &choices, true)?;
         let costs = cost_snapshot.card_cost_plan(
             &intent,
             &choices,
@@ -2059,7 +2066,14 @@ impl Game {
                 {
                     self.modify_might(target, 2, 0)?;
                 }
-                self.resolve_operation(item.player, item.card_id, item.lane, item.targets, None)?;
+                self.resolve_operation_with_options(
+                    item.player,
+                    item.card_id,
+                    item.lane,
+                    item.targets,
+                    None,
+                    item.options,
+                )?;
             }
             // CR359.3.e.15: Arcane Shift's final instruction banishes the
             // physical resolving spell. It cannot execute any later Repeat.
@@ -2476,6 +2490,7 @@ impl Game {
 
     fn apply_cost_choices(&mut self, action: Action, choices: PlayChoices) -> Result<(), String> {
         if !choices.show_off.is_empty()
+            || choices.exhaust_unit.is_some()
             || choices.mode.is_some()
             || !choices.repeats.is_empty()
             || choices.accelerate
@@ -2697,6 +2712,17 @@ impl Game {
                         ..Default::default()
                     });
                 }
+                if let Some(unit_cost) = &view.unit_cost {
+                    let originals = choices.clone();
+                    for choice in originals {
+                        for &unit_id in &unit_cost.candidates {
+                            let mut paid = choice.clone();
+                            paid.exhaust_unit = Some(unit_id);
+                            paid.bonus = unit_cost.optional;
+                            choices.push(paid);
+                        }
+                    }
+                }
                 for choice in choices {
                     let candidate = Action::WithPlayChoices {
                         action: Box::new(action.clone()),
@@ -2808,5 +2834,65 @@ impl Game {
                 }
             }
         }
+    }
+}
+
+fn optional_card_cost(card_id: CardId) -> Option<OptionalCostOption> {
+    match card_id {
+        29 => Some(OptionalCostOption {
+            label: "Rampage: +2 Might".into(),
+            cost: CostValue {
+                xp: 0,
+                energy: 0,
+                power: 1,
+                domains: vec![Domain::Body],
+            },
+        }),
+        431 => Some(OptionalCostOption {
+            label: "Gust Monk: banish from either trash for Assault 2".into(),
+            cost: CostValue {
+                energy: 1,
+                ..Default::default()
+            },
+        }),
+        420 => Some(OptionalCostOption {
+            label: "Pyke: ready and +2 Might when played".into(),
+            cost: CostValue {
+                xp: 0,
+                energy: 0,
+                power: 1,
+                domains: vec![Domain::Fury],
+            },
+        }),
+        261 => Some(OptionalCostOption {
+            label: "Nami: stun an enemy when played".into(),
+            cost: CostValue {
+                xp: 0,
+                energy: 0,
+                power: 1,
+                domains: vec![Domain::Calm],
+            },
+        }),
+        451 => Some(OptionalCostOption {
+            label: "Clockwork Keeper: draw 1 after entry".into(),
+            cost: CostValue {
+                power: 1,
+                domains: vec![Domain::Calm],
+                ..Default::default()
+            },
+        }),
+        452 => Some(OptionalCostOption {
+            label: "Meditation: exhaust a friendly unit to draw 2 instead".into(),
+            cost: CostValue::default(),
+        }),
+        _ => None,
+    }
+}
+
+fn unit_cost_optional(card_id: CardId) -> Option<bool> {
+    match card_id {
+        452 => Some(true),
+        453 => Some(false),
+        _ => None,
     }
 }

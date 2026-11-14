@@ -6875,6 +6875,51 @@ pub fn cards() -> Vec<CardDef> {
             tags: &["Noxus"],
             art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/92eac6bb020a068d9c1668b59ecaaeab05112b3f-744x1039.png?w=280&q=85&fm=png",
         },
+        CardDef {
+            id: 451,
+            official_id: "ogn-044-298",
+            name: "Clockwork Keeper",
+            cost: 2,
+            power_cost: 0,
+            might: 2,
+            domain: Domain::Calm,
+            domains: &[Domain::Calm],
+            kind: CardKind::Unit,
+            official_text: "You may pay [Calm Power] as an additional cost to play me.\nWhen you play me, if you paid the additional cost, draw 1.",
+            keywords: &[],
+            tags: &["Shurima"],
+            art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/417e606418349bb25d4b07d460fa043ad85f2778-744x1039.png?w=280&q=85&fm=png",
+        },
+        CardDef {
+            id: 452,
+            official_id: "ogn-048-298",
+            name: "Meditation",
+            cost: 2,
+            power_cost: 0,
+            might: 0,
+            domain: Domain::Calm,
+            domains: &[Domain::Calm],
+            kind: CardKind::Spell,
+            official_text: "[Reaction] (Play any time, even before spells and abilities resolve.)\nAs an additional cost to play this, you may exhaust a friendly unit. If you do, draw 2. Otherwise, draw 1.",
+            keywords: &["Reaction"],
+            tags: &[],
+            art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/7103336ab0d7f7bebdaa4155e4258d8d9beb06de-744x1039.png?w=280&q=85&fm=png",
+        },
+        CardDef {
+            id: 453,
+            official_id: "rad-029-167",
+            name: "Life from Stone",
+            cost: 1,
+            power_cost: 0,
+            might: 0,
+            domain: Domain::Calm,
+            domains: &[Domain::Calm],
+            kind: CardKind::Spell,
+            official_text: "[Reaction] (Play any time, even before spells and abilities resolve.)\nAs an additional cost to play this, exhaust a friendly unit.\nDraw 1 and channel 1 rune exhausted.",
+            keywords: &["Reaction"],
+            tags: &[],
+            art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/6a849c0425f0fecb8d00e1b9494e975c4dbbba75-744x1039.png?w=280&q=85&fm=png",
+        },
     ]
 }
 
@@ -7245,7 +7290,9 @@ mod tests {
     #[test]
     fn presets_are_complete_and_references_are_consistent() {
         let catalog = cards();
-        assert_eq!(catalog.len(), 450);
+        let manifest: serde_json::Value =
+            serde_json::from_str(include_str!("../assets/data/decks.json")).unwrap();
+        assert_eq!(catalog.len(), manifest["cards"].as_array().unwrap().len());
         for (index, card) in catalog.iter().enumerate() {
             assert_eq!(index, card.id);
             assert!(!card.official_id.is_empty());

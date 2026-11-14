@@ -6062,7 +6062,7 @@ impl App {
             live_object_description(&self.game, owner, object_id, id)
         }) {
             format!(
-                "{live}\n\nPRINTED RULES\n{}",
+                "{live}\n\nRULES TEXT\n{}",
                 if printed.is_empty() {
                     "No printed abilities."
                 } else {
@@ -8517,7 +8517,7 @@ impl App {
             live_object_description(&self.game, owner, object_id, id)
         }) {
             format!(
-                "{live}\n\nPRINTED RULES\n{}",
+                "{live}\n\nRULES TEXT\n{}",
                 if printed.is_empty() {
                     "No printed abilities."
                 } else {
@@ -8982,6 +8982,9 @@ fn card_brief(game: &Game, id: usize) -> String {
             }
         ),
         Draw(n) => format!("Draw {n}"),
+        DrawWithOptionalCost { unpaid, paid } => {
+            format!("Draw {unpaid}, or {paid} with the extra cost")
+        }
         Counter(_) => "Counter a spell".into(),
         DualMight => "+2 / -2 might".into(),
         Bounce { .. } | BounceBoth => "Return units to hand".into(),
@@ -10697,6 +10700,7 @@ async fn main() {
     let format_smoke = args.iter().any(|a| a == "--ui-smoke-format");
     let series_smoke = args.iter().any(|a| a == "--ui-smoke-series");
     let irelia_smoke = args.iter().any(|a| a == "--ui-smoke-irelia");
+    let resources_smoke = args.iter().any(|a| a == "--ui-smoke-resources");
     let riven_smoke = args.iter().any(|a| a == "--ui-smoke-riven");
     let unyielding_smoke = args.iter().any(|a| a == "--ui-smoke-unyielding");
     let repulse_smoke = args.iter().any(|a| a == "--ui-smoke-repulse");
@@ -10717,6 +10721,7 @@ async fn main() {
     let focused_field_smoke = args.iter().any(|a| a == "--ui-smoke-c28");
     let focused_source_damage_smoke = args.iter().any(|a| a == "--ui-smoke-c27");
     let smoke_test = format_smoke
+        || resources_smoke
         || series_smoke
         || tokens_smoke
         || guards_smoke
@@ -10790,6 +10795,8 @@ async fn main() {
             smoke::run_blade_frame(&mut app, frames)
         } else if riven_smoke {
             smoke::run_riven_frame(&mut app, frames)
+        } else if resources_smoke {
+            smoke::run_resources_frame(&mut app, frames)
         } else if irelia_smoke {
             smoke::run_irelia_frame(&mut app, frames)
         } else if preset_smoke {

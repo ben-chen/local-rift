@@ -211,6 +211,10 @@ pub enum OfficialEffect {
     DisruptHand,
     RecycleRevealedHand(Domain),
     Draw(u8),
+    DrawWithOptionalCost {
+        unpaid: u8,
+        paid: u8,
+    },
     /// Discard first, then draw. This is mandatory, not merely net card gain.
     Loot {
         discard: u8,
@@ -288,7 +292,12 @@ pub fn effect(id: usize) -> OfficialEffect {
         446 => KillAndDrawController { draw: 2 },
         447 => Deathgrip,
         448 => Guards,
-        449 | 450 => None,
+        449..=451 => None,
+        452 => DrawWithOptionalCost { unpaid: 1, paid: 2 },
+        453 => DrawThenChannel {
+            draw: 1,
+            channel: 1,
+        },
         425 => ReadyAndPreventMovement { draw: 1 },
         426 => BattlePreparations,
         427 => MoveEnemy,
@@ -1133,6 +1142,8 @@ pub fn requirements(id: usize) -> &'static [Mechanic] {
         448 => &[Chain, Hidden, Tokens, OptionalCosts, ChooseReadyTriggers],
         449 => &[Chain, Ambush, Xp],
         450 => &[Chain, ChooseReadyTriggers],
+        451 => &[Chain, OptionalCosts],
+        452 | 453 => &[Chain, OptionalCosts, ChooseReadyTriggers],
         447 => &[
             Chain,
             MultipleTargets,

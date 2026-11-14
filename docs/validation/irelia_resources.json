@@ -1,0 +1,551 @@
+{
+  "status": "Local rules, API, sources and native checks passed; installed release acceptance pending",
+  "base_revision": "d0498b8fb93a99a7073a4950c0c45b704a41b2ea",
+  "cards": [
+    {
+      "runtime_id": 451,
+      "official_id": "ogn-044-298",
+      "name": "Clockwork Keeper"
+    },
+    {
+      "runtime_id": 452,
+      "official_id": "ogn-048-298",
+      "name": "Meditation"
+    },
+    {
+      "runtime_id": 453,
+      "official_id": "rad-029-167",
+      "name": "Life from Stone"
+    }
+  ],
+  "rules_review": {
+    "date": "2026-11-14",
+    "core_edition": "2026-10-09",
+    "sections": [
+      "355.10.c",
+      "356.2",
+      "356.4.f.1",
+      "357.1",
+      "357.2",
+      "820.1.d",
+      "820.3"
+    ],
+    "keeper_errata": "https://playriftbound.com/en-us/news/rules-and-releases/riftbound-origins-card-errata/",
+    "scope": "Optional and mandatory unit costs, separate Keeper trigger, Repeat, counters, exhaustion triggers and payment rollback."
+  },
+  "focused": {
+    "new_engine_tests": 13,
+    "new_protocol_tests": 2,
+    "new_companion_tests": 1,
+    "new_tests_log": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-resources-tests-v5.log",
+    "regression_tests": 166,
+    "regression_log": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-resources-regressions-v1.log",
+    "catalog_tests": 14,
+    "catalog_log": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-resources-catalog-v2.log"
+  },
+  "sources": {
+    "new_tests": 3,
+    "preserved_prefix_regressions": 2,
+    "catalog_check": "passed",
+    "logs": [
+      "irelia-resources-sources-v1.log",
+      "irelia-resources-prefix-v1.log",
+      "irelia-resources-source-check-v1.log"
+    ]
+  },
+  "native": {
+    "status": "passed",
+    "pid": 1853969,
+    "binary_sha256": "28a5bd2ea865c53e6bfee67176647609de60a17f126c25fabb0fe0a5ee9c3f53",
+    "cases": [
+      {
+        "name": "normal",
+        "exit_code": 0,
+        "seconds": 5.635,
+        "captures": 9,
+        "games": 0,
+        "capture_sha256": {
+          "rift_keeper_trigger.png": "22b0a67c9df8d9b0ffc1d09c341fcfebb57e91c3ed4336933cc21e6b25211bde",
+          "rift_meditation_cost.png": "ec81bcffc1645f33d8598a1990710c28c7e92d7c4ef06f7da16b223a5d95e785",
+          "rift_keeper_inspect.png": "c6b90d617d3590ff36b9d0d84b3e6bd9f6fad7dc7ab35060d4e629aa42c6c5d3",
+          "rift_keeper_cost.png": "29d517988ec0b3c50bb5313ec2570f333b66d97b95b33759aea2adb7f8f5fddd",
+          "rift_life_cost.png": "3876735b2f7bb8086d4acb5b8cec979b6371c5a72cd4eb3dafb36fed94f7a81a",
+          "rift_life_paid.png": "13306263987fb654cb0e77c54a7bdccab6a65eaf8f0d8190a0173da76cb8178a",
+          "rift_meditation_paid.png": "e31be4cafe9d616e9bc5632f8085a7093307d8f890f0d8df87233d0cf4b90799",
+          "rift_meditation_draw.png": "3309ea90cb5f1b193f692850347adbf4a69ce494169bb659f1c52923945f28dc",
+          "rift_life_channel.png": "61921516cd2a6ff74797974a96b8c5a86d4d14c2e93d9251ca352d5892f087b0"
+        },
+        "log_sha256": "5ff5c1ed3b32d2a663ff9fcffa9e1cd16c7f1cd85324c4564dc426f1f8bbe726"
+      },
+      {
+        "name": "small",
+        "exit_code": 0,
+        "seconds": 5.179,
+        "captures": 9,
+        "games": 0,
+        "capture_sha256": {
+          "rift_keeper_trigger.png": "ed8a336ad87638922af4073d322b25b4817328f06091292070349ff1fc215522",
+          "rift_meditation_cost.png": "b3e34de565d14cb812a4719ec983904685c5ef1d2872118d40488a5665f60cad",
+          "rift_keeper_inspect.png": "f814b2219ab194d71ae1e06ad469e88a0aaa17707608166dd9c0f62d59869d8b",
+          "rift_keeper_cost.png": "b749db0b57054719184accb6212918c1463a8ecf2498c02c06bc3b057833cf50",
+          "rift_life_cost.png": "eb677f47b3d5c34fb7a7bb39ed893b83f3745677a1ad5bb267db3da6a3498cff",
+          "rift_life_paid.png": "8649fa978d4f027ca6c93edb83df177cf6253fbb0f4c56b6bdad654327fca3cf",
+          "rift_meditation_paid.png": "0ee4795315711dc304b54696ab4eefb5ae3969da3f2e3039efeaacc2eaff0429",
+          "rift_meditation_draw.png": "7589e4ac10b8d4a809bb5cf18fb21017240c2935a91ded31dfbda773aeaa9579",
+          "rift_life_channel.png": "cf01ab29f128f492d7a2b8b03b587271ef721f13abef168a7342c96ab933e4a1"
+        },
+        "log_sha256": "5ff5c1ed3b32d2a663ff9fcffa9e1cd16c7f1cd85324c4564dc426f1f8bbe726"
+      }
+    ]
+  },
+  "visual_review": {
+    "directory": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-resources-native-v2",
+    "original_resolution_images": [
+      "small/rift_meditation_cost.png",
+      "normal/rift_keeper_inspect.png",
+      "small/rift_life_cost.png",
+      "small/rift_life_paid.png",
+      "small/rift_keeper_inspect.png",
+      "normal/rift_life_channel.png",
+      "normal/rift_meditation_cost.png",
+      "small/rift_keeper_cost.png",
+      "normal/rift_keeper_cost.png",
+      "normal/rift_life_cost.png"
+    ],
+    "findings": [
+      "Each card cost tray fits at both window sizes.",
+      "Keeper inspector displays the complete current erratum alongside the original face at both sizes.",
+      "Cost choice leaves the unit ready; the paid response view marks it exhausted.",
+      "Life from Stone channels a visibly sideways rune on resolution.",
+      "Beginner explanations fit beside playable controls."
+    ],
+    "limits": [
+      "Only the listed captures were visually inspected.",
+      "No novice user study has been performed."
+    ]
+  },
+  "api_matches": {
+    "report": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-resources-matches-v1.json",
+    "format_date": "2026-11-13",
+    "matches": 6,
+    "games": 13,
+    "paid_meditations_seen": 10,
+    "records": [
+      {
+        "difficulty": "easy",
+        "irelia_seat": 0,
+        "first_player": 1,
+        "result": {
+          "wins": [
+            1,
+            2
+          ],
+          "winner": 1,
+          "history": [
+            {
+              "battlefields": [
+                13,
+                11
+              ],
+              "first_player": 1,
+              "number": 1,
+              "scores": [
+                5,
+                8
+              ],
+              "winner": 1
+            },
+            {
+              "battlefields": [
+                0,
+                1
+              ],
+              "first_player": 1,
+              "number": 2,
+              "scores": [
+                8,
+                3
+              ],
+              "winner": 0
+            },
+            {
+              "battlefields": [
+                14,
+                12
+              ],
+              "first_player": 1,
+              "number": 3,
+              "scores": [
+                1,
+                8
+              ],
+              "winner": 1
+            }
+          ],
+          "requests": 1289,
+          "seed": 451100,
+          "difficulty": "easy"
+        },
+        "cards": {
+          "451": {
+            "seen": 4,
+            "resolutions": 4
+          },
+          "452": {
+            "seen": 4,
+            "resolutions": 3
+          },
+          "453": {
+            "seen": 2,
+            "resolutions": 2
+          }
+        },
+        "paid_meditations_seen": 4,
+        "trace_sha256": "18b63433a9fde064b4a4cfb75c5bb45eaadffe15bfa17258044f9fd464b9fb67"
+      },
+      {
+        "difficulty": "easy",
+        "irelia_seat": 1,
+        "first_player": 0,
+        "result": {
+          "wins": [
+            2,
+            0
+          ],
+          "winner": 0,
+          "history": [
+            {
+              "battlefields": [
+                11,
+                13
+              ],
+              "first_player": 0,
+              "number": 1,
+              "scores": [
+                8,
+                2
+              ],
+              "winner": 0
+            },
+            {
+              "battlefields": [
+                1,
+                0
+              ],
+              "first_player": 0,
+              "number": 2,
+              "scores": [
+                8,
+                1
+              ],
+              "winner": 0
+            }
+          ],
+          "requests": 727,
+          "seed": 451101,
+          "difficulty": "easy"
+        },
+        "cards": {
+          "451": {
+            "seen": 1,
+            "resolutions": 1
+          },
+          "452": {
+            "seen": 0,
+            "resolutions": 0
+          },
+          "453": {
+            "seen": 1,
+            "resolutions": 1
+          }
+        },
+        "paid_meditations_seen": 0,
+        "trace_sha256": "64660e3678d87652bb8929dee1ed9ecea10b9dd24b6b783b4dbd9b450c96c7d8"
+      },
+      {
+        "difficulty": "tactical",
+        "irelia_seat": 0,
+        "first_player": 1,
+        "result": {
+          "wins": [
+            0,
+            2
+          ],
+          "winner": 1,
+          "history": [
+            {
+              "battlefields": [
+                13,
+                11
+              ],
+              "first_player": 1,
+              "number": 1,
+              "scores": [
+                3,
+                8
+              ],
+              "winner": 1
+            },
+            {
+              "battlefields": [
+                0,
+                1
+              ],
+              "first_player": 1,
+              "number": 2,
+              "scores": [
+                6,
+                8
+              ],
+              "winner": 1
+            }
+          ],
+          "requests": 1078,
+          "seed": 451110,
+          "difficulty": "tactical"
+        },
+        "cards": {
+          "451": {
+            "seen": 4,
+            "resolutions": 4
+          },
+          "452": {
+            "seen": 2,
+            "resolutions": 2
+          },
+          "453": {
+            "seen": 1,
+            "resolutions": 1
+          }
+        },
+        "paid_meditations_seen": 2,
+        "trace_sha256": "7361e039c51c9df9f5414a5e6fd3a9c052cf4e0b52a77f362ba83d4acd9156be"
+      },
+      {
+        "difficulty": "tactical",
+        "irelia_seat": 1,
+        "first_player": 0,
+        "result": {
+          "wins": [
+            2,
+            0
+          ],
+          "winner": 0,
+          "history": [
+            {
+              "battlefields": [
+                11,
+                13
+              ],
+              "first_player": 0,
+              "number": 1,
+              "scores": [
+                8,
+                4
+              ],
+              "winner": 0
+            },
+            {
+              "battlefields": [
+                1,
+                0
+              ],
+              "first_player": 0,
+              "number": 2,
+              "scores": [
+                8,
+                3
+              ],
+              "winner": 0
+            }
+          ],
+          "requests": 973,
+          "seed": 451111,
+          "difficulty": "tactical"
+        },
+        "cards": {
+          "451": {
+            "seen": 1,
+            "resolutions": 1
+          },
+          "452": {
+            "seen": 1,
+            "resolutions": 1
+          },
+          "453": {
+            "seen": 3,
+            "resolutions": 3
+          }
+        },
+        "paid_meditations_seen": 1,
+        "trace_sha256": "adc14ab9f4e59203b812250467cb5352a26d2ecb4697b16e1092ba815c91de57"
+      },
+      {
+        "difficulty": "strategic",
+        "irelia_seat": 0,
+        "first_player": 1,
+        "result": {
+          "wins": [
+            0,
+            2
+          ],
+          "winner": 1,
+          "history": [
+            {
+              "battlefields": [
+                13,
+                11
+              ],
+              "first_player": 1,
+              "number": 1,
+              "scores": [
+                2,
+                8
+              ],
+              "winner": 1
+            },
+            {
+              "battlefields": [
+                0,
+                1
+              ],
+              "first_player": 1,
+              "number": 2,
+              "scores": [
+                2,
+                9
+              ],
+              "winner": 1
+            }
+          ],
+          "requests": 769,
+          "seed": 451120,
+          "difficulty": "strategic"
+        },
+        "cards": {
+          "451": {
+            "seen": 1,
+            "resolutions": 0
+          },
+          "452": {
+            "seen": 0,
+            "resolutions": 0
+          },
+          "453": {
+            "seen": 1,
+            "resolutions": 1
+          }
+        },
+        "paid_meditations_seen": 0,
+        "trace_sha256": "09b716ea5580af002cb1e14410f5170d5b91e6d8396cd250d57ba9db5e250cc3"
+      },
+      {
+        "difficulty": "strategic",
+        "irelia_seat": 1,
+        "first_player": 0,
+        "result": {
+          "wins": [
+            2,
+            0
+          ],
+          "winner": 0,
+          "history": [
+            {
+              "battlefields": [
+                11,
+                13
+              ],
+              "first_player": 0,
+              "number": 1,
+              "scores": [
+                8,
+                6
+              ],
+              "winner": 0
+            },
+            {
+              "battlefields": [
+                1,
+                0
+              ],
+              "first_player": 0,
+              "number": 2,
+              "scores": [
+                8,
+                6
+              ],
+              "winner": 0
+            }
+          ],
+          "requests": 1081,
+          "seed": 451121,
+          "difficulty": "strategic"
+        },
+        "cards": {
+          "451": {
+            "seen": 0,
+            "resolutions": 0
+          },
+          "452": {
+            "seen": 3,
+            "resolutions": 3
+          },
+          "453": {
+            "seen": 1,
+            "resolutions": 1
+          }
+        },
+        "paid_meditations_seen": 3,
+        "trace_sha256": "9c8b44d11d8475667198b57427c6ce076adced06cd8e000cd7c87f94ecc23335"
+      }
+    ],
+    "scope": "Authored Irelia-compatible coverage list, all three levels, both seats; unchanged seven sourced presets.",
+    "limits": [
+      "Zero-use cases are preserved.",
+      "Observed card resolutions and completed matches do not establish expert strength or all Standard rules."
+    ]
+  },
+  "efficiency": [
+    "One optional-cost definition drives previews and execution.",
+    "Shared authored-position helpers now serve Jae and this batch; existing shared protocol helpers are reused.",
+    "Three cards share one native scenario and one complete-match campaign."
+  ],
+  "final_checks": {
+    "format": "passed",
+    "diff_whitespace": "passed",
+    "strict_clippy_all_targets": "passed",
+    "strict_clippy_log": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-resources-clippy-v2.log",
+    "ci_scope_tests": 5
+  },
+  "rejected_attempts": [
+    "Initial API structure literal needed the additive choice field.",
+    "Two initial scenario assertions used an invalid Syndra fixture and compared different valid action adapters; corrected to exercise the intended behavior.",
+    "Native test export visibility corrected.",
+    "Native v1 failed because hand selection is processed after sidebar drawing; v2 waits for the next rendered frame.",
+    "Strict Clippy requested a range pattern; final v2 passed.",
+    "Catalog v1 used a PATH without a linker; v2 preserved the host compiler path and passed."
+  ],
+  "remaining": [
+    "Frozen revision full Rust/source/simulation checks.",
+    "Installed native controls and exact API record comparison.",
+    "Publication after acceptance.",
+    "Continue full legal-card coverage and end-to-end rules/AI evaluation."
+  ],
+  "runtime_sources_sha256": {
+    "src/cards.rs": "5dc17a398fc4b3b5333dfdbdb49f8bbdb9902be56a3746cb95a03951a4183ade",
+    "src/game.rs": "4b15166a8132d31694d83fef473e9e70b01e0cde7ac5bee80c215e6d9a6cb425",
+    "src/play.rs": "584bca32b0f4d1ec2e784e7e35e5b2eb0ac7f47abd8b37a6105086ff446464de",
+    "src/play_ui.rs": "e2a7f26fe82e855f46d6220552c9e8c20d74dba4935bbe4fa992d976611e6928",
+    "src/rules.rs": "7fe10f492c46c48ddb1719b3e24dec3fe3d247cf63dee5751444bb3ad6d9d4c0",
+    "src/trigger_rules.rs": "8b69cbff74beccb1e0def7520456d3ba8bd2d9d1a3bb4ca9980b8ea51c724e40",
+    "src/companion.rs": "3ae752547516120c7008b76572b404c9c11b361cfdd9686554372d3be76e4779",
+    "src/main.rs": "feb62c53915cd6ee86f55f6aea869f4d310239fbfda4bc1b836abb0b35322980",
+    "src/smoke/resources.rs": "64bb2a45e8f68258a56d3c64eb2863e464f71bc7e58d302d388dfd087d2f82c6",
+    "src/api/play_choices.rs": "c9149ef44556e4239a1a3094cf02d387a49a04d971446f0fd579910e92641621",
+    "src/resource_card_tests.rs": "9f79d7a146ec751be941fd5f945917e63341cb2bfca201900e2a9fcaaa8e147c",
+    "src/api/resource_card_tests.rs": "43d9a8af0a55bf4475386ddc0fbd2b36d3e0d6826391f302f922829d21e0c448",
+    "src/game_test_support.rs": "8d8193defc7938c73ff66f9238ffdaa33307c803303ca8f263fbb755477f5435",
+    "tools/check_resource_cards_api.py": "f00c90975bf57686258cc1caab338d6c16c5f1b52e419af76c4275d31c87d0e0",
+    "tools/test_irelia_resources.py": "65d4ffd1e7e30bb1ed2041a1227d666dd3393153f45132736c04bcea0c85d7ac"
+  }
+}

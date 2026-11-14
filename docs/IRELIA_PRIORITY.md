@@ -136,3 +136,12 @@ campaign uses an explicitly authored Irelia list. His separate draw trigger,
 card inspection and Beginner/Advanced advice have local coverage described in
 [the Jae validation record](validation/irelia_choices.json). This admission does
 not establish that he is a current tournament staple.
+
+Clockwork Keeper, Meditation and Life from Stone extend the Calm card pool for
+Irelia-compatible custom practice. Keeper uses its official erratum: the optional
+Power is paid on play, and a separate trigger draws after responses. The spells
+share explicit unit-exhaustion costs, distinct from choosing spell targets.
+The [resource-card validation](validation/irelia_resources.json) records both-seat
+rules scenarios, native controls, companion advice and six complete API matches.
+The campaign uses an authored coverage list; the seven sourced presets remain
+unchanged. These additions do not claim new tournament-list provenance.

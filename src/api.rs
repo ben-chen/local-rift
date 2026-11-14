@@ -57,6 +57,8 @@ mod guards_tests;
 #[cfg(test)]
 mod hidden_blade_tests;
 #[cfg(test)]
+mod resource_card_tests;
+#[cfg(test)]
 mod spell_choice_tests;
 #[cfg(test)]
 mod test_support;

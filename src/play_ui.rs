@@ -668,6 +668,7 @@ impl App {
     fn extended_choices(&self, view: &PlayChoiceView) -> bool {
         local_rift::rules::chooses_move_destination(view.card_id)
             || !view.show_off.is_empty()
+            || view.unit_cost.is_some()
             || !view.modes.is_empty()
             || view.repeats.len()
                 > usize::from(local_rift::rules::repeat_cost(view.card_id).is_some())
@@ -731,6 +732,7 @@ impl App {
             choices,
             execution: 0,
             open: !view.show_off.is_empty()
+                || view.unit_cost.is_some()
                 || !view.modes.is_empty()
                 || local_rift::rules::chooses_move_destination(view.card_id),
             scroll: 0,
@@ -831,11 +833,13 @@ impl App {
         };
         self.ui.rect(Rect::new(245.0, 687.0, 883.0, 202.0), PANEL);
         self.ui.border(Rect::new(245.0, 687.0, 883.0, 202.0), LINE);
-        if !view.show_off.is_empty()
+        if (!view.show_off.is_empty() || view.unit_cost.is_some())
             && self.ui.button(
                 Rect::new(505.0, 690.0, 165.0, 22.0),
                 if draft.show_off_tab {
                     "See Repeat choices"
+                } else if view.unit_cost.is_some() {
+                    "See exhaustion cost"
                 } else {
                     "See Show Off choices"
                 },
@@ -846,7 +850,87 @@ impl App {
             draft.show_off_tab = !draft.show_off_tab;
             draft.scroll = 0;
         }
-        if let Some(option) = view.show_off.first().filter(|_| draft.show_off_tab) {
+        if let Some(cost) = view.unit_cost.as_ref().filter(|_| draft.show_off_tab) {
+            self.ui
+                .text("EXHAUST A FRIENDLY UNIT · cost", 260.0, 708.0, 10.0, GOLD);
+            if cost.optional {
+                if self.ui.button(
+                    Rect::new(258.0, 720.0, 412.0, 26.0),
+                    "Skip the extra cost · draw 1",
+                    !draft.choices.bonus,
+                    true,
+                ) {
+                    draft.choices.bonus = false;
+                    draft.choices.exhaust_unit = None;
+                    draft.choices.cost_order.clear();
+                }
+            } else {
+                self.ui.text(
+                    "Required · this payment does not target the unit.",
+                    264.0,
+                    739.0,
+                    12.0,
+                    MUTED,
+                );
+            }
+            let list = Rect::new(255.0, 750.0, 425.0, 132.0);
+            if self.ui.hover(list) {
+                let wheel = self.ui.wheel();
+                if wheel < 0.0 {
+                    draft.scroll = (draft.scroll + 1).min(cost.candidates.len().saturating_sub(3));
+                }
+                if wheel > 0.0 {
+                    draft.scroll = draft.scroll.saturating_sub(1);
+                }
+            }
+            if cost.candidates.is_empty() {
+                self.ui.wrapped_lines(
+                    if cost.optional {
+                        "No ready friendly units. You can still play this to draw 1."
+                    } else {
+                        "No ready friendly units. This spell needs one to pay its cost."
+                    },
+                    268.0,
+                    772.0,
+                    390.0,
+                    12.0,
+                    MUTED,
+                    3,
+                );
+            }
+            for (row, &unit_id) in cost
+                .candidates
+                .iter()
+                .skip(draft.scroll)
+                .take(3)
+                .enumerate()
+            {
+                let unit = self.game.players[self.game.priority()]
+                    .units
+                    .iter()
+                    .find(|unit| unit.id == unit_id)
+                    .unwrap();
+                let name = self.game.unit_name(unit);
+                let location = unit
+                    .lane
+                    .map_or_else(|| "Base".into(), |lane| format!("Field {}", lane + 1));
+                let rect = Rect::new(258.0, 751.0 + row as f32 * 42.0, 412.0, 38.0);
+                if self.ui.button(
+                    rect,
+                    &format!("Exhaust {name} · {location}"),
+                    draft.choices.exhaust_unit == Some(unit_id),
+                    true,
+                ) {
+                    draft.choices.exhaust_unit = Some(unit_id);
+                    draft.choices.bonus = cost.optional;
+                    draft.choices.cost_order.clear();
+                }
+                if self.ui.hover(rect) && !unit.token {
+                    self.hover_card = Some(unit.card_id);
+                    self.hover_rect = Some(rect);
+                }
+            }
+        } else if let Some(option) = view.show_off.first().filter(|_| draft.show_off_tab) {
             self.ui
                 .text("SHOW OFF A GEAR · optional", 260.0, 708.0, 10.0, GOLD);
             if self.ui.button(
@@ -1277,6 +1361,10 @@ impl App {
                     "Extra cost: stun on play"
                 } else if view.card_id == 431 {
                     "Extra 1 Energy · Assault 2"
+                } else if view.card_id == 451 {
+                    "1 Calm · draw 1 on play"
+                } else if view.unit_cost.is_some() {
+                    "Exhaust a unit · draw 2"
                 } else {
                     &optional.label
                 },
@@ -1285,10 +1373,21 @@ impl App {
             ) {
                 draft.choices.cost_order.clear();
                 draft.choices.bonus = !draft.choices.bonus;
+                if view.unit_cost.is_some() {
+                    if !draft.choices.bonus {
+                        draft.choices.exhaust_unit = None;
+                    }
+                    draft.show_off_tab = true;
+                    draft.scroll = 0;
+                }
             }
             if self.ui.hover(Rect::new(x, 836.0, 198.0, 29.0)) {
-                self.ui
-                    .text(&value_label(&optional.cost), x, 881.0, 9.0, TEAL);
+                let label = if view.unit_cost.is_some() {
+                    "Exhaust a ready friendly unit".into()
+                } else {
+                    value_label(&optional.cost)
+                };
+                self.ui.text(&label, x, 881.0, 9.0, TEAL);
             }
         }
         if !modal

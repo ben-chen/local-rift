@@ -378,6 +378,17 @@ pub fn trigger_rules(card_id: usize) -> &'static [TriggerRule] {
         )
     };
     match card_id {
+        451 => {
+            const {
+                &[rule(
+                    SelfPlayed,
+                    &[OptionalPlayCostPaid],
+                    false,
+                    TargetRule::NONE,
+                    &[Draw(1)],
+                )]
+            }
+        }
         450 => {
             const {
                 &[rule(
