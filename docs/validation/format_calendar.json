@@ -248,5 +248,22 @@
     "result": "Moving the second capture to a separate frame removes heading clipping at both sizes. The old screenshot is not evidence of a persistent live layout defect.",
     "report_sha256": "cbeca9dcdbd3ef20cfe21ae5a5f9622a895e4b0cc25896675c2aaa0c04b1194e",
     "integration": "Included in a772656825bee468ee12bd1ec8738171f44ca468; final installed format checks running with the Irelia acceptance"
+  },
+  "installed_capture_followup": {
+    "source_commit": "a772656825bee468ee12bd1ec8738171f44ca468",
+    "status": "passed",
+    "captures": [
+      {
+        "path": "format-normal/rift_format_turn_effect.png",
+        "sha256": "39d911de8299b299b6f67d06f3f18836c19daebe47b99679200d1199973a0971",
+        "observation": "Header, dated format, effect summary, rune zones and side victory tracks are visible without overlap."
+      },
+      {
+        "path": "format-small/rift_format_turn_effect.png",
+        "sha256": "d6cc732f23b2b913e10bee1f5b56860b1ec0d430b97ca2d36f1c70056bbe0b58",
+        "observation": "Header, dated format, effect summary, rune zones and side victory tracks are visible without overlap."
+      }
+    ],
+    "scope": "One capture per frame in the installed package; complete effect header visible at both supported sizes. Production layout unchanged."
   }
 }

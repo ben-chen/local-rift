@@ -1,7 +1,7 @@
 {
-  "status": "Irelia decisions passed isolated focused checks; failed full-suite AI-dependent setup replaced with its original legal replay; corrected full package acceptance running",
+  "status": "Immutable package and installed UI/API acceptance passed; publication and GitHub CI pending",
   "source_commit": "a772656825bee468ee12bd1ec8738171f44ca468",
-  "reviewed_at": "2026-11-14T04:03:23.943969+00:00",
+  "reviewed_at": "2026-11-14T04:26:30.153820+00:00",
   "scope": [
     "Avoid paying to ready an already-ready Irelia legend without changing human legality",
     "Search the reset, choosing play and move, retaining Pass while the reset awaits responses",
@@ -123,23 +123,14 @@
     "irelia-replay-focused-v2-junit.xml": "d35265d1c05ef17a7709fea3efc8570368a162521b2cbda8e1d8ef5662851763",
     "irelia-replay-clippy-v1.log": "3eab4b898b99256733e09e9129d1edefae78a600dd94319268531b24a5f52de9",
     "irelia-decisions-release-v2/status.json": "770f2eac947aae711a3490c488e8b76c037f43c5978d467bb9302908ed46cb55",
-    "format-frame-captures-v1/status.json": "cbeca9dcdbd3ef20cfe21ae5a5f9622a895e4b0cc25896675c2aaa0c04b1194e"
+    "format-frame-captures-v1/status.json": "cbeca9dcdbd3ef20cfe21ae5a5f9622a895e4b0cc25896675c2aaa0c04b1194e",
+    "irelia-decisions-release-v3/status.json": "217096d1704ee120ad228e7fb00765da6e7def35e2e0b49a483bbbcff22f801f",
+    "irelia-decisions-release-v3/nix.log": "82caa43c8fa9d8509f185b19b8ba7575276b919cb9d9b0f230c4bd4c60b55c7a",
+    "irelia-decisions-release-visual-review-v3.json": "197cb4385df03c734027325481f0a01b9f346500328aa141399f0660924d0619"
   },
   "remaining": [
-    "Immutable full package and installed UI/API acceptance",
     "Publication and exact GitHub CI result"
   ],
-  "release_in_progress": {
-    "revision": "a772656825bee468ee12bd1ec8738171f44ca468",
-    "pid": 1643983,
-    "plan_sha256": "1f078ccf9da6976adc80ca11d2844a9dbacd4a098a43f30ac65c2d462cff5e74",
-    "expected_rust_tests": 1893,
-    "expected_source_tests": 303,
-    "expected_preset_simulations": 1176,
-    "expected_ui_cases": 8,
-    "expected_captures": 6,
-    "expected_api_records": 9
-  },
   "rules_review": {
     "reviewed_at": "2026-11-14T03:43:58.630124+00:00",
     "core_rules_url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/5c7946f7c3b8c6e0faff85ab6dadc6d2e721ea94.pdf",
@@ -184,5 +175,127 @@
     "evidence": "Diagnostic SEED117_REPLAY_ACTION lines from the instrumented baseline appeared in the newer tests, proving the wrong local library was linked. Five Irelia checks failed against that baseline.",
     "correction": "Project build outputs cleared and the 33 checks rebuilt in this worktree own target directory; all passed. Future comparisons use separate project target directories. Immutable Nix acceptance was isolated and all nine Irelia tests passed there.",
     "target_directory": "/home/benchen/.cache/local-rift-work/irelia-decisions/target"
+  },
+  "release": {
+    "status": "passed",
+    "stage": "complete",
+    "pid": 1643983,
+    "revision": "a772656825bee468ee12bd1ec8738171f44ca468",
+    "plan_sha256": "1f078ccf9da6976adc80ca11d2844a9dbacd4a098a43f30ac65c2d462cff5e74",
+    "runner_sha256": "5631bfd578f7217542a061aea2b67e50a38da93514524eb656e4924efb3f1910",
+    "started_at": "2026-11-14T04:02:54.125901+00:00",
+    "ui": [
+      {
+        "name": "core-normal",
+        "seconds": 18.166,
+        "captures": 0,
+        "games": 0,
+        "capture_sha256": {},
+        "log_sha256": "0ad7d29b583da68ce334cc72492052b992e83a5842e770cd49fe8d5083ebecbf",
+        "host_library_path_removed": true
+      },
+      {
+        "name": "core-small",
+        "seconds": 15.748,
+        "captures": 0,
+        "games": 0,
+        "capture_sha256": {},
+        "log_sha256": "0ad7d29b583da68ce334cc72492052b992e83a5842e770cd49fe8d5083ebecbf",
+        "host_library_path_removed": true
+      },
+      {
+        "name": "irelia-normal",
+        "seconds": 5.576,
+        "captures": 0,
+        "games": 0,
+        "capture_sha256": {},
+        "log_sha256": "5ff5c1ed3b32d2a663ff9fcffa9e1cd16c7f1cd85324c4564dc426f1f8bbe726",
+        "host_library_path_removed": true
+      },
+      {
+        "name": "irelia-small",
+        "seconds": 5.033,
+        "captures": 0,
+        "games": 0,
+        "capture_sha256": {},
+        "log_sha256": "5ff5c1ed3b32d2a663ff9fcffa9e1cd16c7f1cd85324c4564dc426f1f8bbe726",
+        "host_library_path_removed": true
+      },
+      {
+        "name": "series-normal",
+        "seconds": 5.075,
+        "captures": 0,
+        "games": 2,
+        "capture_sha256": {},
+        "log_sha256": "7d9880f2c69e9570c0d248f6420a29a229143bc6ccdbc2c742450c9a041a9756",
+        "host_library_path_removed": true
+      },
+      {
+        "name": "series-small",
+        "seconds": 5.581,
+        "captures": 4,
+        "games": 3,
+        "capture_sha256": {
+          "rift_series_sideboard.png": "2e0bcea4ee68c99dd4cf18f96e825d1b1dc207fb52ba9d96360fcbb69ab07b37",
+          "rift_series_lobby.png": "0c0a8ddf7a51e62849019065835c3f9718ad4a7cef98a5d9e0e61e3554db598b",
+          "rift_series_complete.png": "599a198fb1ad140e82e59cfd590cf2b336a9bf7069b5aaad5753615e3dc74d60",
+          "rift_series_champion.png": "4ec9f18c06ef022b7f8cd3287b638c977be67227008292a7d94b50e8425cdb29"
+        },
+        "log_sha256": "9bbb37737b66fbbe851dd73ab79b1c8a818f314a68390296df6eac0c342d8797",
+        "host_library_path_removed": true
+      },
+      {
+        "name": "format-normal",
+        "seconds": 4.281,
+        "captures": 1,
+        "games": 0,
+        "capture_sha256": {
+          "rift_format_turn_effect.png": "39d911de8299b299b6f67d06f3f18836c19daebe47b99679200d1199973a0971"
+        },
+        "log_sha256": "b14cbbd11f96d17c40e1323d144152047249e946e633825461ea1cb1121aaf54",
+        "host_library_path_removed": true
+      },
+      {
+        "name": "format-small",
+        "seconds": 4.328,
+        "captures": 1,
+        "games": 0,
+        "capture_sha256": {
+          "rift_format_turn_effect.png": "d6cc732f23b2b913e10bee1f5b56860b1ec0d430b97ca2d36f1c70056bbe0b58"
+        },
+        "log_sha256": "b14cbbd11f96d17c40e1323d144152047249e946e633825461ea1cb1121aaf54",
+        "host_library_path_removed": true
+      }
+    ],
+    "api": [
+      {
+        "name": "irelia-format-api",
+        "seconds": 10.555,
+        "records": 9,
+        "records_key": "records",
+        "full_records_equal": true,
+        "baseline_sha256": "fb43277ddd24fd346ed2d99ebb0d36eb86959e4a8ddca44a1dadbf1ef21fc24d",
+        "report_sha256": "1fbf124334af141780821e843314a7743e5c822ea769b560b96e44dffca27afd"
+      }
+    ],
+    "source_gc_root": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-decisions-release-v3/source",
+    "nix": {
+      "package": "/nix/store/8b42fh1vvhzqma9rs7x9z8jn2016c8zk-local-rift-0.1.0",
+      "catalog": "/nix/store/y6vbb0ibpxn71g56461gpad6qs1knlkb-local-rift-catalog-check",
+      "simulation": "/nix/store/iz8l4xyg4nzahcf1r9bgfaqa4c7jr639-local-rift-simulation-check",
+      "seconds": 1296.456,
+      "gc_root_prefix": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-decisions-release-v3/nix-result"
+    },
+    "source": "/nix/store/7176yq532lxv04l6mx59lvd4qg5pk6p4-source",
+    "finished_at": "2026-11-14T04:25:49.170963+00:00",
+    "rust_tests": 1893,
+    "rust_skipped": 0,
+    "rust_seconds": 930.472,
+    "source_tests": 303,
+    "simulations": 1176,
+    "actual_ui_games": 5,
+    "actual_api_games": 25,
+    "visually_reviewed_captures": 6,
+    "visual_review_sha256": "197cb4385df03c734027325481f0a01b9f346500328aa141399f0660924d0619"
   }
 }
