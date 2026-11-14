@@ -1079,6 +1079,7 @@ struct PendingCombat {
 #[derive(Clone, Debug)]
 pub struct Game {
     applying_action: bool,
+    pub(crate) format_context: Option<std::sync::Arc<crate::legality::FormatContext>>,
     pub play_history: PlayHistory,
     pub play_grants: Vec<PlayGrant>,
     pub(crate) active_play: Option<ActivePlay>,
@@ -1359,6 +1360,7 @@ impl Game {
             damage_ledger: None,
             last_damage_ledger: None,
             gear_attachments_this_turn: Vec::new(),
+            format_context: None,
             catalog,
             presets,
             players,
@@ -1466,6 +1468,7 @@ impl Game {
 
     pub fn rematch(&mut self, seed: u64) {
         let first_player = self.first_player;
+        let format_context = self.format_context.clone();
         let battlefields = self.battlefields[..STARTING_BATTLEFIELDS].to_vec();
         *self = Self::new_with_custom(
             self.selected_decks,
@@ -1476,6 +1479,7 @@ impl Game {
         )
         .expect("previously validated decks");
         self.battlefields = battlefields;
+        self.format_context = format_context;
         self.choose_starting_player(first_player)
             .expect("previous starting player is valid");
     }

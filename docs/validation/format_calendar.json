@@ -1,12 +1,14 @@
 {
-  "status": "Backend and source validation passed; native format selection and final release acceptance pending",
-  "reviewed_at": "2026-11-14T01:45:55.725325+00:00",
+  "status": "Backend, public AI pool and complete dated-match checks passed; native format selection and final release acceptance pending",
+  "reviewed_at": "2026-11-14T02:08:27.951431+00:00",
   "base_candidate": "aeb9944d6d02c7d048bc114fe98e9bcc94a0df3a",
   "scope": [
     "Explicit global Standard dates for deck and complete registration validation",
     "Date enforcement at API single-game and match creation",
     "Public date retained through a match; invalid reset preserves the previous match",
-    "Known announced bans only; no changes to historical recipes or accepted catalog"
+    "Known announced bans only; no changes to historical recipes or accepted catalog",
+    "Validated engine format context survives rematches and later registered games",
+    "Strategic unknown-card sampling uses only the dated public legal pool; pre-ban traces are preserved"
   ],
   "source": {
     "manifest": "assets/data/format_updates.json",
@@ -18,8 +20,8 @@
     "regional_exceptions_recorded": true
   },
   "checks": {
-    "new_rust_tests": 8,
-    "all_library_tests_passed": 978,
+    "new_rust_tests": 12,
+    "all_library_tests_passed": 982,
     "focused_source_tests_passed": 3,
     "offline_catalog": "passed; accepted catalog unchanged",
     "formatting": "passed",
@@ -39,7 +41,11 @@
     "both_irelia_presets": [
       0,
       5
-    ]
+    ],
+    "previous_irelia_complete_traces_preserved": true,
+    "future_date_authored_matches": 3,
+    "future_date_actual_games": 7,
+    "future_fixture": "Rengar preset main; explicitly authored legal field registration and sideboard with Brynhir removed. No preset recipes changed."
   },
   "evidence_sha256": {
     "format-calendar-rust-v1.log": "1f4282f1516402220c0dd88f8d3df78b100c605006564a4c709270d5621ee490",
@@ -48,11 +54,17 @@
     "format-calendar-clippy-v2.log": "2413ab5a40a3db449ca4e8e5d65cb7c27b1583d49775cda552c3c88267bf3525",
     "format-calendar-build-v2.log": "1d4bfa0f56667aee289aeea524154efe87f9d9da3936253ab50db82c1c6cbbb0",
     "format-calendar-series-v1.json": "09a92412da275b4d5182a3133e322b32946ac23dd90140202fce1dd700880617",
-    "format-calendar-junit-v2.xml": "8f98b84c06d5a0baaa58cad052e11e6dc0e0fa197ad37ed066b5756f087dfaf1"
+    "format-calendar-junit-v2.xml": "8f98b84c06d5a0baaa58cad052e11e6dc0e0fa197ad37ed066b5756f087dfaf1",
+    "format-context-library-v2.log": "25cd614eb2976964f9b1367c37ef6fcb2df9e304be21e012b90926228641bcc3",
+    "format-context-clippy-v2.log": "3718e6e7727485dc77f81cc47df36e77422bd6d04698bd7d18d72218108ee28b",
+    "format-context-catalog-v2.log": "2c51d342df7c556cfab6cb83ee90aba40a12edb3c01caaaeb30ccf0d1a145ae8",
+    "format-context-source-v2.log": "ce155d9697089f241dcde88726f33980547fde850204098b7080f77732dcf5f8",
+    "format-context-api-build-v2.log": "302c5d0d6933e25f704c3654068ac9a71ede5001894805b9e83119bbf62d8d81",
+    "format-context-series-v1.json": "7d94c18bfcc4690c24561edbe7c7240cbeb081bfba6fd76efe83575f4ae33132",
+    "tools/check_format_api.py": "31f2775093677620d95829abb3a783a9c16ad74be67f2f44819cb26d93026120"
   },
   "remaining": [
     "Native format choice and current-date selection",
-    "Propagate selected format to any AI card-pool assumptions",
     "Final integrated client, source and package acceptance",
     "Publish accepted changes and collect GitHub CI"
   ],
@@ -61,5 +73,6 @@
     "Future dates use known announcements and do not predict later changes",
     "Global dates do not apply to the announced Korea or Traditional Chinese release exceptions",
     "This does not add new cards or establish complete Standard rules parity"
-  ]
+  ],
+  "reproduce_matches": "python3 tools/check_format_api.py /path/to/rift-api /path/to/results.json"
 }

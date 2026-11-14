@@ -160,6 +160,11 @@ impl Game {
             let pool: Vec<_> = crate::deck::eligible_cards(self.legend_id(owner))
                 .into_iter()
                 .filter(|&id| self.card_supported(id))
+                .filter(|&id| {
+                    self.format_context
+                        .as_ref()
+                        .is_none_or(|format| format.allows_main(id))
+                })
                 .collect();
             let sample = |rng: &mut Rng| pool[rng.next() as usize % pool.len()];
             for id in &mut player.deck {
@@ -543,6 +548,54 @@ fn action_penalty(action: &Action) -> i128 {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn dated_beliefs_use_the_public_legal_pool_and_preserve_pre_ban_sampling() {
+        let mut snapshot = Game::new_for_agents(4, 4, 811, Difficulty::Strategic);
+        let mut before = snapshot.clone();
+        before.choose_format_date(Some("2026-11-22")).unwrap();
+        let mut after = snapshot.clone();
+        after.choose_format_date(Some("2026-11-23")).unwrap();
+        for game in [&mut snapshot, &mut before, &mut after] {
+            game.start_match().unwrap();
+            game.players[0].deck = vec![69; 1_000];
+            game.players[1].deck = vec![69; 1_000];
+            game.players[1].hand = vec![69; 100];
+        }
+        let original = snapshot.strategic_belief(0);
+        let historical = before.strategic_belief(0);
+        for owner in 0..2 {
+            assert_eq!(original.players[owner].deck, historical.players[owner].deck);
+            assert_eq!(original.players[owner].hand, historical.players[owner].hand);
+        }
+        // Brynhir is in Rengar's public domain pool before the announced date.
+        assert!(historical.players[1].deck.contains(&51));
+        let future = after.strategic_belief(0);
+        for player in &future.players {
+            assert!(!player.deck.contains(&51));
+            assert!(
+                player.deck.iter().all(|&id| after
+                    .format_context
+                    .as_ref()
+                    .unwrap()
+                    .allows_main(id))
+            );
+        }
+        assert!(!future.players[1].hand.contains(&51));
+        assert_eq!(future.players[0].hand, after.players[0].hand);
+
+        // Real hidden identities must not influence sampling in dated games either.
+        let mut different_secrets = after.clone();
+        different_secrets.players[0].deck.fill(51);
+        different_secrets.players[1].deck.fill(51);
+        different_secrets.players[1].hand.fill(51);
+        let other = different_secrets.strategic_belief(0);
+        for owner in 0..2 {
+            assert_eq!(future.players[owner].deck, other.players[owner].deck);
+            assert_eq!(future.players[owner].hand, other.players[owner].hand);
+        }
+        assert_eq!(future.format_date(), Some("2026-11-23"));
+    }
 
     fn fixture() -> Game {
         let mut game = Game::new_for_agents(3, 3, 42, Difficulty::Strategic);

@@ -208,6 +208,9 @@ impl Game {
         if player >= 2 || id >= BATTLEFIELDS.len() {
             return Err("Choose one of the available battlefields.".into());
         }
+        if let Some(date) = self.format_date() {
+            crate::legality::validate_battlefield_at(id, date)?;
+        }
         self.battlefields[player] = id;
         Ok(())
     }

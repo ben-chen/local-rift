@@ -895,3 +895,11 @@ account for main deck, sideboard and fields at an explicit date, preserving the
 old match when a new list is rejected. Native format selection and automatic
 current-date selection remain required before claiming automatic support for
 the new format.
+
+The selected date now also reaches the engine's public AI card pool. Hypothetical
+draws exclude the announced bans once effective, while pre-ban sampling remains
+unchanged. The context survives rematches, rollback snapshots and each new game
+of a registered match. Direct engine setup validates both actual lists and fields;
+a later banned-field selection or a mid-game format change is rejected without
+mutation. Tests cover the effective-date boundary, private-information isolation,
+rematches and format propagation after sideboarding.

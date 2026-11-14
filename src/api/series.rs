@@ -77,15 +77,16 @@ impl Session {
         let game = if series.state.phase() == SeriesPhase::Game
             && (old_phase != SeriesPhase::Game || old_number != series.state.game_number())
         {
-            Some(
-                series
-                    .state
-                    .new_game(
-                        series.seed.wrapping_add(series.state.game_number() - 1),
-                        series.difficulty,
-                    )
-                    .map_err(ApiError::illegal)?,
-            )
+            let mut game = series
+                .state
+                .new_game(
+                    series.seed.wrapping_add(series.state.game_number() - 1),
+                    series.difficulty,
+                )
+                .map_err(ApiError::illegal)?;
+            game.choose_format_date(self.format_date.as_deref())
+                .map_err(ApiError::illegal)?;
+            Some(game)
         } else {
             None
         };

@@ -4,7 +4,83 @@ use crate::{
     battlefields::battlefield, cards::cards, deck::CustomDeck, match_series::Registration,
 };
 use serde_json::{Value, json};
-use std::sync::OnceLock;
+use std::{
+    collections::HashSet,
+    sync::{Arc, OnceLock},
+};
+
+/// Public format information shared by real positions and hypothetical AI worlds.
+/// The pool never depends on either player's private deck registration.
+#[derive(Debug)]
+pub(crate) struct FormatContext {
+    as_of: String,
+    allowed_main: Vec<bool>,
+}
+
+impl FormatContext {
+    fn new(as_of: &str) -> Result<Self, String> {
+        validate_objects(as_of, Vec::new())?;
+        let banned: HashSet<_> = schedule()["updates"]
+            .as_array()
+            .expect("format updates")
+            .iter()
+            .filter(|update| update["effective_on"].as_str().expect("effective date") <= as_of)
+            .flat_map(|update| update["banned"].as_array().expect("banned identities"))
+            .flat_map(|card| card["official_ids"].as_array().expect("printing cohort"))
+            .map(|id| id.as_str().expect("printing ID"))
+            .collect();
+        Ok(Self {
+            as_of: as_of.into(),
+            allowed_main: cards()
+                .iter()
+                .map(|card| !banned.contains(card.official_id))
+                .collect(),
+        })
+    }
+
+    pub(crate) fn allows_main(&self, card: usize) -> bool {
+        self.allowed_main.get(card).copied().unwrap_or(false)
+    }
+}
+
+impl crate::game::Game {
+    /// Choose a fixed public format before play, validating both actual lists and
+    /// their selected fields. Rejection preserves the previous format and game.
+    pub fn choose_format_date(&mut self, as_of: Option<&str>) -> Result<(), String> {
+        if self.phase != crate::game::Phase::Mulligan {
+            return Err("Choose the format before the game begins.".into());
+        }
+        let context = if let Some(date) = as_of {
+            let context = FormatContext::new(date)?;
+            for player in 0..2 {
+                let mut deck = match self.custom_deck(player) {
+                    Some(deck) => deck.clone(),
+                    None => CustomDeck::from_preset(self.selected_decks[player])?,
+                };
+                deck.battlefield = self.battlefields[player];
+                validate_deck_at(&deck, date)?;
+            }
+            Some(Arc::new(context))
+        } else {
+            None
+        };
+        self.format_context = context;
+        Ok(())
+    }
+
+    pub fn format_date(&self) -> Option<&str> {
+        self.format_context
+            .as_ref()
+            .map(|format| format.as_of.as_str())
+    }
+}
+
+pub(crate) fn validate_battlefield_at(id: usize, as_of: &str) -> Result<(), String> {
+    let field = crate::battlefields::BATTLEFIELDS
+        .get(id)
+        .ok_or("Choose an available battlefield.")?;
+    validate_objects(as_of, vec![("battlefield", field.source_id)]).map(|_| ())
+}
 
 fn schedule() -> &'static Value {
     static SCHEDULE: OnceLock<Value> = OnceLock::new();
@@ -179,6 +255,43 @@ pub fn validate_registration_at(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn game_format_changes_are_atomic_and_cannot_change_after_play_starts() {
+        use crate::game::{Difficulty, Game};
+        let mut game = Game::new_for_agents(0, 5, 91, Difficulty::Strategic);
+        game.choose_format_date(Some("2026-11-22")).unwrap();
+        let before = format!("{game:?}");
+        for date in ["2026-11-23", "2026-02-30"] {
+            assert!(game.choose_format_date(Some(date)).is_err());
+            assert_eq!(format!("{game:?}"), before);
+        }
+        game.start_match().unwrap();
+        let before = format!("{game:?}");
+        assert!(game.choose_format_date(None).is_err());
+        assert_eq!(format!("{game:?}"), before);
+    }
+
+    #[test]
+    fn game_format_survives_rematches_and_blocks_later_banned_field_selection() {
+        use crate::game::{Difficulty, Game};
+        let mut game = Game::new_for_agents(4, 4, 92, Difficulty::Strategic);
+        game.choose_format_date(Some("2026-11-23")).unwrap();
+        let before = format!("{game:?}");
+        for player in 0..2 {
+            for field in [11, 12] {
+                assert!(game.choose_battlefield(player, field).is_err());
+                assert_eq!(format!("{game:?}"), before);
+            }
+        }
+        game.start_match().unwrap();
+        game.rematch(93);
+        assert_eq!(game.format_date(), Some("2026-11-23"));
+        assert!(game.choose_battlefield(0, 11).is_err());
+        game.choose_format_date(None).unwrap();
+        game.choose_battlefield(0, 11).unwrap();
+        assert_eq!(game.format_date(), None);
+    }
 
     #[test]
     fn calendar_dates_reject_invalid_days_and_unreviewed_history() {

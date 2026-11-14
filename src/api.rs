@@ -246,24 +246,13 @@ impl Session {
         format_date: Option<&str>,
     ) -> Result<(), ApiError> {
         self.require_revision(revision)?;
-        if let Some(date) = format_date {
-            for player in 0..2 {
-                let mut deck = match &options.custom_decks[player] {
-                    Some(deck) => deck.clone(),
-                    None => {
-                        CustomDeck::from_preset(options.decks[player]).map_err(ApiError::invalid)?
-                    }
-                };
-                if let Some(fields) = options.battlefields {
-                    deck.battlefield = fields[player];
-                }
-                crate::legality::validate_deck_at(&deck, date).map_err(ApiError::invalid)?;
-            }
-        }
+        let mut game = make_game(options)?;
+        game.choose_format_date(format_date)
+            .map_err(ApiError::invalid)?;
         let mut candidate = self.clone();
         candidate.series = None;
         candidate.format_date = format_date.map(str::to_owned);
-        candidate.commit(make_game(options)?)?;
+        candidate.commit(game)?;
         *self = candidate;
         Ok(())
     }

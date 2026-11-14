@@ -75,6 +75,7 @@ fn dated_game_start_validates_both_decks_and_actual_overridden_battlefields() {
         .handle(json!({"command":"reset","revision":0,"decks":[4,4],"format_date":"2026-11-23"}));
     assert_eq!(accepted["ok"], true, "{accepted}");
     assert_eq!(session.observe(0).unwrap()["format"]["as_of"], "2026-11-23");
+    assert_eq!(session.game.format_date(), Some("2026-11-23"));
     let saved = session.observe(0).unwrap();
     let blocked = session.handle(json!({"command":"reset","revision":1,"decks":[4,4],"battlefields":[11,12],"format_date":"2026-11-23"}));
     assert_eq!(blocked["ok"], false);
@@ -83,6 +84,57 @@ fn dated_game_start_validates_both_decks_and_actual_overridden_battlefields() {
     let archived = session.handle(json!({"command":"reset","revision":1,"decks":[0,0]}));
     assert_eq!(archived["ok"], true);
     assert!(session.observe(0).unwrap().get("format").is_none());
+    assert_eq!(session.game.format_date(), None);
+}
+
+#[test]
+fn dated_series_propagates_the_same_format_into_each_new_game() {
+    use crate::match_series::Registration;
+    let mut registration = Registration::from_preset(4).unwrap();
+    registration.deck.name = "Dated Rengar controller fixture".into();
+    registration.deck.battlefield = 0;
+    registration.battlefields = [0, 13, 14];
+    registration.sideboard.retain(|&(id, _)| id != 51);
+    crate::legality::validate_registration_at(&registration, "2026-11-23").unwrap();
+    let mut session = Session::default();
+    let response = session.handle(json!({"command":"series_begin","revision":0,
+        "registrations":[registration.to_json(),registration.to_json()],
+        "designated_player":0,"format_date":"2026-11-23"}));
+    assert_eq!(response["ok"], true, "{response}");
+    for number in 1..=2 {
+        for player in 0..2 {
+            let view = session.observe(player).unwrap();
+            let field = view["series"]["available_battlefields"][0]
+                .as_u64()
+                .unwrap() as usize;
+            session
+                .series_battlefield(player, session.revision(), field)
+                .unwrap();
+        }
+        let chooser = session.observe(0).unwrap()["series"]["designated_player"]
+            .as_u64()
+            .unwrap() as usize;
+        session
+            .series_play_order(chooser, session.revision(), chooser)
+            .unwrap();
+        assert_eq!(session.game.format_date(), Some("2026-11-23"));
+        assert_eq!(session.observe(0).unwrap()["series"]["game_number"], number);
+        if number == 1 {
+            session
+                .series_concede(0, session.revision(), false)
+                .unwrap();
+            for player in 0..2 {
+                session
+                    .series_sideboard(
+                        player,
+                        session.revision(),
+                        registration.deck.cards.clone(),
+                        registration.deck.chosen_champion,
+                    )
+                    .unwrap();
+            }
+        }
+    }
 }
 
 #[test]

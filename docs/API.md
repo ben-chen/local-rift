@@ -93,6 +93,14 @@ before changing the session; single-game validation includes the actual
 and each player's observation as `format: {scope, as_of}` throughout the match.
 No card is substituted. A rejected reset preserves the previous match and date.
 
+The engine retains that date in each game, including later games in a registered
+match and rematches. Strategic AI samples unknown cards from the corresponding
+public legal pool, without consulting private registrations. Rust callers can
+use `Game::choose_format_date(Some("2026-11-23"))` before play and read
+`Game::format_date()`. This checks both actual decks and selected fields; later
+battlefield choices must remain legal. Changing the date after play starts is
+rejected. `None` explicitly selects the accepted snapshot before play.
+
 Omitting the date selects the accepted catalog snapshot and preserves the older
 response shape. Native date selection and automatic current-format selection
 remain unfinished. The schedule describes known announcements, not a guarantee
