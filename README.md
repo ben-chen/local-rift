@@ -238,7 +238,7 @@ the accepted Guards rules from the final token-art package checks.
 | Irelia / Arito Convergence IV | Orianna, equipment, ready effects, and movement | Arito, Convergence IV runner-up, October 31, 2026 |
 | Riven / Sonecon Stuttgart | Ready entrants, equipment, movement, and Baron Pit | Sonecon, European Regional Championship runner-up, November 2026 |
 
-The four Los Angeles lists were rechecked against Riot’s published source on **October 26, 2026**. Kai'Sa is an older competitive archetype included for variety. These are dated source lists. The Riven preset separately reproduces Sonecon’s exact Stuttgart main deck, sideboard, runes and three fields from Riot’s November 11 article, rechecked on November 12. Baron can add a third battlefield during play; the board, movement choices, scoring and bot API include it. The full 40-card main lists are preserved. All 446 supported main-deck cards have executable printed-effect mappings. Arito’s exact 40-card list was independently checked against its original organizer deck page on November 11, including two Edge of Night, three Orianna and one Gust Monk. All eleven registered legend powers, persistent equipment, Hidden, Flow, Repeat, Accelerate, and Empower are implemented. The additional unit and gear activations include explicit targets, trash-recycling, sacrifice and Disempower costs, response windows, and resource conversions during permitted payments. The engine exposes trigger order, on-play targets, death replacements, and rune activation as choices. Coverage and remaining interface limits are described in [RULES.md](docs/RULES.md); this is still an unofficial implementation under development.
+The four Los Angeles lists were rechecked against Riot’s published source on **October 26, 2026**. Kai'Sa is an older competitive archetype included for variety. These are dated source lists. The Riven preset separately reproduces Sonecon’s exact Stuttgart main deck, sideboard, runes and three fields from Riot’s November 11 article, rechecked on November 12. Baron can add a third battlefield during play; the board, movement choices, scoring and bot API include it. The full 40-card main lists are preserved. Playable cards have executable effect mappings; the generated coverage report lists the current supported pool. Arito’s exact 40-card list was independently checked against its original organizer deck page on November 11, including two Edge of Night, three Orianna and one Gust Monk. All eleven registered legend powers, persistent equipment, Hidden, Flow, Repeat, Accelerate, and Empower are implemented. The additional unit and gear activations include explicit targets, trash-recycling, sacrifice and Disempower costs, response windows, and resource conversions during permitted payments. The engine exposes trigger order, on-play targets, death replacements, and rune activation as choices. Coverage and remaining interface limits are described in [RULES.md](docs/RULES.md); this is still an unofficial implementation under development.
 
 Use **Prev** and **Next** in the deck library to browse all seven presets. Each preset can be selected for either seat or copied into the editor. The complete Xeno Irelia, Arito Irelia, Kennen, Rengar, and Sonecon Riven registrations have **Main deck**, **Sideboard**, and **Battlefields** tabs. Inspect all ten sideboard cards and all three battlefield rules; after selecting the preset for a seat, choose its battlefield there. Choose **Best of three** in Practice and **Next registered deck** for either seat to practice these complete lists with sideboarding. Other presets and saved custom lists remain available for single-game practice.
 
@@ -248,7 +248,21 @@ The legend picker adds **Darius / Hand of Noxus**, **Viktor / Herald of the Arca
 
 Legend identity is independent of preset choice and chosen-champion variant. Existing saved decks keep their numeric identities; invalid saved files now produce a visible load message without being overwritten.
 
-The [full card inventory](docs/CARD_COVERAGE.md) accounts for 1,079 legal Standard identities, rechecked on October 26, 2026. Current support maps 468 identities, including 435 main-deck cards, ten legends, seventeen battlefields, and six runes; 611 remain unavailable. The reproducible importer preserves official printings, bans, and errata without registering unsupported cards as playable. Its [source review](docs/CATALOG_REVIEW.md) records 139 field corrections or confirmations, backed by archived official artwork and rules. All 37 original issue groups are retained alongside seventeen later artwork-confirmed discrepancies. Original source values remain available alongside the reviewed facts. Complete [alternate-printing reviews](docs/VARIANT_REVIEW.md) now cover 31 playable identities and all 94 of their gallery printings, replacing the previous compatibility exceptions. Kennen’s missing Ionia tag is corrected in gameplay and the bot API. Another 93 identities have alternate-printing differences still awaiting review; those identities remain unavailable. Unresolved gameplay facts or variant differences prevent admission. Source corrections alone do not register playable cards. The latest Irelia admissions add [Decree of Focus](assets/data/card_admissions/irelia_focus/README.md), [Find Your Center and Hush](assets/data/card_admissions/irelia_next/README.md), [Ravenbloom Prefect](assets/data/card_admissions/irelia_raven/README.md), [Hunker Down](assets/data/card_admissions/irelia_hunker/README.md), [Battle Preparations](assets/data/card_admissions/irelia_preparations/README.md), [Siren’s Song](assets/data/card_admissions/irelia_siren/README.md), [Back Off](assets/data/card_admissions/irelia_backoff/README.md), [Reckless Innovator](assets/data/card_admissions/irelia_innovator/README.md), [Orianna, Exquisite](assets/data/card_admissions/irelia_orianna/README.md), [Gust Monk](assets/data/card_admissions/irelia_gust/README.md), and [Edge of Night](assets/data/card_admissions/irelia_edge/README.md). The preceding admission added Irresistible Faefolk; Kinkou Initiate; Nidalee, Cat Form; Pyke, Dockside Butcher; and six battlefields. Their [source evidence](assets/data/card_admissions/c28/README.md) preserves all eleven original faces, both Pyke printings, and the current Emperor’s Dais and Targon’s Peak errata. Individual runes retain their identity through exhaustion and readying; recycled runes leave play. Battlefield choices expose optional targets, resource payments and costs separately. The [Rengar preset evidence](assets/data/preset_admissions/rengar_2026_09/README.md) records the exact winning list and unchanged training recipes. The preceding admission added Yasuo, Remorseful; Graves, Blasting Through; Lucian, Gunslinger; and Armored Tusker. Their [source evidence](assets/data/card_admissions/c27/README.md) preserves all six official faces. Their abilities read current Might, Assault, or Shield when they resolve; Graves damages all enemies at his current location without choosing targets. The inspector shows these live values, and Mote explains the distinction from combat damage. The preceding admission added Rengar, Pouncing and Ezreal, Dashing. Their [source evidence](assets/data/card_admissions/c26/README.md) preserves all four official faces. Rengar can enter a battlefield where you are still the attacking player; Ezreal uses his current Might for his Attack/Defend ability while contributing no combat damage. The preceding admission added eight Deploy gear cards, Overloaded Traveler and Command: Attack, with independent battlefield gear, optional paid triggers and explicit Move or private Gear-draw modes. Their [source evidence](assets/data/card_admissions/c24/README.md) preserves all ten complete official faces and their printing cohorts. The preceding gameplay admission added Gemcraft Seer, Forecaster and Jeweled Colossus, with source-attributed Vision grants, independent entry triggers and actual token identity. Their [source evidence](assets/data/card_admissions/c22/README.md) preserves all three complete original faces. The preceding gameplay admission added Ornn, Blacksmith; Clairvoyance; and Scryer's Bloom, with private Gear selection and ordered Predict, Draw and XP instructions. Their [source evidence](assets/data/card_admissions/c21/README.md) preserves all four original gallery faces, including both Ornn printings. The preceding admission added Double Trouble, Fate Weaver, Trifarian Captain, Apprentice Smith, Raving Witness and Pakaa Protector, with private inspected draws and public Move-triggered reveals. Their [source evidence](assets/data/card_admissions/c20/README.md) preserves all six complete faces and separately records two printed-tag corrections. The preceding admission added Baited Hook, Dazzling Aurora, Reinforce and Wild Claw, with private deck selection, public reveals, precise cost reductions and linked Empower. Their [source evidence](assets/data/card_admissions/c19/README.md) keeps original faces and current errata separate. The preceding admission added Clocktower Guardian, with private Predict3 and an optional play of its banished top card. Its [source and rule record](assets/data/card_admissions/c18/README.md) separates the corrected Mind/Shurima facts from the preserved raw gallery values. The preceding batch added Burn Away, Portal Rescue, Temporal Breach, Thrill of the Hunt and Arcane Shift. Their [admission evidence](assets/data/card_admissions/c17/README.md) preserves the complete official faces, existing Burn Away corrections and Portal Rescue’s separate owner erratum. Linked replays retain the physical card, prescribed destination and base-cost waiver, with fresh unit identities and ordinary extra costs. The [Rengar and Ezreal source review](assets/data/card_admissions/c16/README.md) adds their two legend identities after checking all five official printings. Patched Porobot remains unavailable until its combined Unit/Gear type is fully supported. The [independent rules audit](docs/RULES_AUDIT.md) records reproduced fixes and remaining interaction work.
+The generated [card coverage report](docs/CARD_COVERAGE.md) is the source for
+current supported counts, missing identities and the catalog's review date.
+It distinguishes imported official text from playable cards. The [source
+review](docs/CATALOG_REVIEW.md) and [printing review](docs/VARIANT_REVIEW.md)
+preserve official facts, errata, artwork-confirmed corrections and unresolved
+differences. Unresolved gameplay facts or printing differences prevent admission;
+a source correction alone never registers a playable card.
+
+The [rules audit](docs/RULES_AUDIT.md) records reproduced fixes and remaining
+interaction questions. The supported pool includes the cards in both Irelia
+presets; their dated event registrations do not establish today's metagame
+ranking. Full Standard coverage and exhaustive interaction fidelity remain in
+progress. Historical card-admission evidence is retained under
+[`assets/data/card_admissions`](assets/data/card_admissions), and release checks
+are retained under [`docs/validation`](docs/validation).
 
 ## Automated opponents
 
@@ -326,20 +340,31 @@ When a seeded AI game exposes a rules bug, preserve the relevant legal actions
 as a replay. A rule regression should keep testing that interaction when the AI
 learns a different line; policy tests should assert the AI's decisions separately.
 
-The small Irelia decision benchmark pairs explicit legal solutions with opponent
-execution and Mote's Beginner/Advanced commentary. Run it without a graphics window:
+For Irelia development, one focused command runs the related rules, counter,
+opponent, companion and registered-match tests. It retains the exact test list,
+source identity, logs and decision measurements in a new output directory:
 
 ```sh
-RIFT_IRELIA_BENCHMARK_REPORT=/tmp/irelia-decisions.json cargo test --locked --bin local-rift practice_benchmark:: -- --nocapture
+python3 tools/check_irelia_practice.py --output /tmp/irelia-check-1
+# Also build the API and exercise complete dated matches at all three levels:
+python3 tools/check_irelia_practice.py --output /tmp/irelia-check-2 --api
 ```
 
-Its twelve authored positions run in both seats at all three difficulty levels.
-The report separates successes, known misses, decision times and required regression
-gates; a passing test does not mean every measured objective was achieved. It checks
-hidden-information independence and read-only, brief advice. The scripted opponent
-passes except in the separate response regression. These are development positions,
-not held-out matchup evidence, complete games, human learning tests or a strength
-rating. Timing is observational and has no machine-dependent pass threshold.
+Use a new directory for each run. The runner uses this checkout's `target/`
+directory even when `CARGO_TARGET_DIR` is set elsewhere, and rejects a result if
+sources change while it runs. It does not run the full regression suite or the
+installed UI checks; those remain release gates.
+
+The decision benchmark pairs explicit legal solutions with opponent execution
+and Mote's Beginner/Advanced commentary. Its twelve authored positions run in
+both seats at all three difficulty levels. `decisions.json` retains successes,
+known misses, decision times and required regression gates; a passing check does
+not mean every measured objective was achieved. It checks hidden-information
+independence and read-only, brief advice. The scripted opponent passes except in
+the separate response regression. These are development positions, not held-out
+matchup evidence, complete games, human learning tests or a strength rating.
+Timing is observational and has no machine-dependent pass threshold. The optional
+API campaign separately measures complete-match and dated-format stability.
 
 `python3 tools/check_release.py --plan plan.json --output /path/to/new-results`
 builds and verifies one committed revision. The JSON plan has a full `revision`

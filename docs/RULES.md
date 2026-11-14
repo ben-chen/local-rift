@@ -1,6 +1,6 @@
 # Implemented rules and limitations
 
-**Local Rift is an unofficial, incomplete Riftbound client. This document describes its current behavior, not the complete tabletop game.** Full official card text appears in hover previews and pinned inspectors. Bundled playable cards have executable printed-effect mappings; the current supported count is listed in the README. An official description in the catalog and a passing simulation are not proof of complete tabletop equivalence.
+**Local Rift is an unofficial, incomplete Riftbound client. This document describes its current behavior, not the complete tabletop game.** Full official card text appears in hover previews and pinned inspectors. Bundled playable cards have executable printed-effect mappings; the current supported counts are listed in the generated [coverage report](CARD_COVERAGE.md). An official description in the catalog and a passing simulation are not proof of complete tabletop equivalence.
 
 For physical play, use Riot's [Rules Hub](https://playriftbound.com/en-us/rules-hub/), current errata, and printed card text. The core timing reference used here is the [October 9, 2026 Core Rules](https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/5c7946f7c3b8c6e0faff85ab6dadc6d2e721ea94.pdf). [SOURCES.md](SOURCES.md) records the card and deck sources.
 
