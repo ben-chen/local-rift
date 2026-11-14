@@ -1026,7 +1026,8 @@ trigger dispatch is unchanged. Both seats' history resets each turn.
 The focused scenarios cover conditional no-ops, the first or second spell,
 countered and resolved prior spells, later responses, own-spell targets, Repeat,
 alternate origins, rejected/staged plays, API query purity, and AI information
-boundaries. Full installed acceptance remains pending.
+boundaries. Installed acceptance passed; see
+[the validation receipt](validation/irelia_sands.json).
 
 ### Rockfall Path play restriction (2026-11-14)
 

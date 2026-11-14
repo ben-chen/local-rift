@@ -1,6 +1,6 @@
 {
-  "status": "Local validation passed; frozen installed acceptance pending",
-  "reviewed_at": "2026-11-14T08:53:31.483719+00:00",
+  "status": "Local and installed acceptance passed",
+  "reviewed_at": "2026-11-14T09:17:34.420022+00:00",
   "base_revision": "b7040518ad0aa962e47dd7f8f949e837fe0fa6c3",
   "battlefield": {
     "id": 17,
@@ -585,8 +585,7 @@
     "Frozen release v1 failed four catalog checks because new battlefield 17 leaked into historical fixtures and live-count assertions were pinned to seventeen. Historical fixtures now retain their original seventeen fields; live registry tests check contiguous IDs and exact source mappings for every current field. No game/runtime changes were required."
   ],
   "remaining": [
-    "Frozen installed release checks, independent installed image review and publication",
-    "All currently legal cards, full Standard parity, expert AI and novice learning remain unproven"
+    "All currently legal cards, full Standard parity, expert AI strength and novice learning remain unproven"
   ],
   "release_v1_failure": {
     "report": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-rockfall-release-v1/status.json",
@@ -606,5 +605,47 @@
     "log": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-rockfall-catalog-regressions-v2.log",
     "sha256": "34e2a3ea115bc8222c2a51749c5e69e7a254a57a2e0767881767a212d44639ae",
     "full_frozen_release": "pending v2"
-  }
+  },
+  "installed_acceptance": {
+    "revision": "19f708810fcd643685b77510ace6579c6c7f20cc",
+    "report": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-rockfall-release-v2/status.json",
+    "report_sha256": "ea6538157b78adb3cdce8d4d449014182a9a1f13a4b7620ee8c1c66e77e44269",
+    "finished_at": "2026-11-14T09:16:13.896022+00:00",
+    "package": "/nix/store/6awbwygxgikhlv5df8mm1wq6g913vnf3-local-rift-0.1.0",
+    "source": "/nix/store/qws0h5s4ixlrbnlmjdyyy5lxwy3y3aqg-source",
+    "rust_tests": 1980,
+    "rust_seconds": 833.061,
+    "skipped": 0,
+    "source_tests": 324,
+    "source_seconds": 332.951,
+    "simulation_games": 1176,
+    "simulation_seconds": 150.25,
+    "ui_cases": 17,
+    "captures": 102,
+    "api_full_comparisons": 7,
+    "api_records": 45,
+    "independent_verification": "Re-read full baseline and installed JSON record sets for all seven API cases; verified every capture/log hash, plan hash, frozen revision, Rust/source summaries and simulation invariants."
+  },
+  "installed_visual_review": [
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-rockfall-release-v2/rockfall-normal/rift_rockfall_rules.png",
+      "sha256": "8120dd3f3bb13dca3ad8da68757cf730db51c32d2c45c686a8d3ff4b89b437e8",
+      "actually_viewed": true
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-rockfall-release-v2/rockfall-small/rift_rockfall_blocked.png",
+      "sha256": "4eef3a47e5f9c152bf159e57560222e2f238dd1cce957fd118a1bced3f4be018",
+      "actually_viewed": true
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-rockfall-release-v2/rockfall-small/rift_rockfall_advanced.png",
+      "sha256": "ae398595fddbc11a89fdddee4c9d3e995ef37a57c45fffdf3f5142c2290d2ecb",
+      "actually_viewed": true
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-rockfall-release-v2/rockfall-small/rift_rockfall_picker.png",
+      "sha256": "b56892d7891cc47b4fa7018ad2f8c8385f652082e820c56a5ca6c1c020ed2fa3",
+      "actually_viewed": true
+    }
+  ]
 }
