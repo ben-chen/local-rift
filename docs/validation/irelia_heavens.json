@@ -1,5 +1,5 @@
 {
-  "status": "Local validation passed; installed acceptance pending",
+  "status": "Local and installed acceptance passed; complete Standard coverage and expert strength remain unproven",
   "reviewed_at": "2026-11-14T09:11:38.321473+00:00",
   "base_revision": "19f708810fcd643685b77510ace6579c6c7f20cc",
   "card": {
@@ -10,7 +10,7 @@
   "rules": {
     "source": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/5c7946f7c3b8c6e0faff85ab6dadc6d2e721ea94.pdf",
     "sections": [
-      "814.1\u20132",
+      "814.1–2",
       "317.2.c",
       "359.3.e.7",
       "437",
@@ -632,8 +632,440 @@
     "Native v1 capture moved pointer off unit. v2 asserts real hover target and uses shared delayed-preview capture. An interim nested mutable borrow failed build v2; shared helper passes build v3."
   ],
   "limitations": [
-    "Installed acceptance pending.",
     "Seven sourced presets unchanged; complete-match Consult list is authored coverage, not a sourced meta list.",
     "493 legal identities mapped, 586 unimplemented in the October 24 snapshot. Full Standard parity, expert strength and novice learning remain unproven."
-  ]
+  ],
+  "installed": {
+    "status": "passed",
+    "stage": "complete",
+    "pid": 2061627,
+    "revision": "cce44d4ffcf411aa82a6447a0cba1f0e6a8d508b",
+    "plan_sha256": "9a8bbd0d76a10a211e788778df2187addedfba753775852cbd87205fd35bb3f9",
+    "runner_sha256": "5631bfd578f7217542a061aea2b67e50a38da93514524eb656e4924efb3f1910",
+    "started_at": "2026-11-14T09:11:59.806447+00:00",
+    "ui": [
+      {
+        "name": "core-normal",
+        "seconds": 17.028,
+        "captures": 4,
+        "games": 0,
+        "capture_sha256": {
+          "rift_smoke_mat_screenshot.png": "8a7e9b94e0aa2d3e9352ff15ab451d69fa16b339410b4724cc1fa1a100d1455a",
+          "rift_smoke_resources_screenshot.png": "da90fd7e7eef6e42d6c1adb11fb712122e65c8f7fc67a0ceab9b3989736d143c",
+          "rift_smoke_journal_screenshot.png": "15763b9a05dc1e0b0a607442a6ef1605dd316036c1bb5627c8bf4dcb739f6343",
+          "rift_smoke_opponent_resources_screenshot.png": "01f6c228ee0ed7bd3aa523e5a7c1e1a50fc1adb1f68123673e6fd35a14b93158"
+        },
+        "log_sha256": "0ad7d29b583da68ce334cc72492052b992e83a5842e770cd49fe8d5083ebecbf",
+        "host_library_path_removed": true
+      },
+      {
+        "name": "irelia-normal",
+        "seconds": 5.734,
+        "captures": 9,
+        "games": 0,
+        "capture_sha256": {
+          "rift_gust_protected_advanced.png": "871c732103ec97ae62c3a58c7186689f048c2617c20722c51db584d2afb2dad3",
+          "rift_gust_response_advanced.png": "ca90574adf1375d8fe00c634a734bf3b6bd1067a22cd845e424490c882e3b4d2",
+          "rift_jae_inspect.png": "210a530d75471b565040ec8746733c9c33443bb98544056eb4738556ab4c59f5",
+          "rift_jae_beginner.png": "8dd82620366e4dc76a6131b424545e046d718d61f82775e4e622332ddd1407ee",
+          "rift_jae_draw.png": "4e1d63ede2ab8bd60bc45e63c6e15806f53600b6d84c2836ed4d7d1333a1e806",
+          "rift_jae_trigger.png": "44fc1603cd6a09619012022a69c2c7528838ba31a0a4ba05980ab90e48c1eb85",
+          "rift_gust_response_beginner.png": "b4547d2944af209c25c5220aa1cc6eba6d4108093a6156470c3a6ef373e0895f",
+          "rift_jae_advanced.png": "a5dd9356e3f5f1551af211080f289d5cc4785cf6f793b38f77a0eec0eae07664",
+          "rift_gust_protected_beginner.png": "19012d27fbacf1104737a200be33c7c8842d2b0cd6276c91000598725dc25b02"
+        },
+        "log_sha256": "5ff5c1ed3b32d2a663ff9fcffa9e1cd16c7f1cd85324c4564dc426f1f8bbe726",
+        "host_library_path_removed": true
+      },
+      {
+        "name": "format-normal",
+        "seconds": 4.273,
+        "captures": 1,
+        "games": 0,
+        "capture_sha256": {
+          "rift_format_turn_effect.png": "d1fa3282daa09babf6d747bd1ee7f54aa37d66a6ca58fab8ecf22d8e4fd492fa"
+        },
+        "log_sha256": "b14cbbd11f96d17c40e1323d144152047249e946e633825461ea1cb1121aaf54",
+        "host_library_path_removed": true
+      },
+      {
+        "name": "core-small",
+        "seconds": 14.58,
+        "captures": 4,
+        "games": 0,
+        "capture_sha256": {
+          "rift_smoke_mat_screenshot.png": "b246261eb2e2da4d39ec60ffee7b8c19a199ae353b761205e781378d24d3eab8",
+          "rift_smoke_resources_screenshot.png": "e5f8c57a92109dcd04530057be9a27596ebd62b1f60834420d093e0a6691e0df",
+          "rift_smoke_journal_screenshot.png": "f175ff678354f86a485740a22292d6c07b3564e070437c2bc386fed19b5e5ee8",
+          "rift_smoke_opponent_resources_screenshot.png": "09819f3f57ed623796576bd36e7af8b37016638ebfb2db30b39127e372f6dc92"
+        },
+        "log_sha256": "0ad7d29b583da68ce334cc72492052b992e83a5842e770cd49fe8d5083ebecbf",
+        "host_library_path_removed": true
+      },
+      {
+        "name": "irelia-small",
+        "seconds": 5.435,
+        "captures": 9,
+        "games": 0,
+        "capture_sha256": {
+          "rift_gust_protected_advanced.png": "3d7b34e45150e2448bc13a62c64f5dbca8242b5df0196e0f7adc777ea01df186",
+          "rift_gust_response_advanced.png": "64ccd33ee9e0e22bdf87fecaccdd5de056c16225686feaa7ecc8282297095b8d",
+          "rift_jae_inspect.png": "dfd1cbc7b0bb434ad816df01698a55abbd2683d0b0cdf08aeb4404aab387e937",
+          "rift_jae_beginner.png": "b0757624266c957345b4eead57041381382b973ce9cf2fc7f9e9759943877bda",
+          "rift_jae_draw.png": "e6e3b71f13761306fa905b4b43ee171d061753db65491de9ae3435eb94385b47",
+          "rift_jae_trigger.png": "27669f4a77395d54e9dc66d15382897117e6b211b2f2e52ce03502564166ee71",
+          "rift_gust_response_beginner.png": "dfb693e08137d765783aa0fb284152099f9859b0c8488c9fcba0d87d5baed8a7",
+          "rift_jae_advanced.png": "92099ca36e48573f0b1fa4d757f184e7d783e6f64af21bc13b4d1d2f31db2a1b",
+          "rift_gust_protected_beginner.png": "2d43d63d95c46b8a4dfeedc58fece04e55f8fab20f6eb3c593a8b09514f8964f"
+        },
+        "log_sha256": "5ff5c1ed3b32d2a663ff9fcffa9e1cd16c7f1cd85324c4564dc426f1f8bbe726",
+        "host_library_path_removed": true
+      },
+      {
+        "name": "format-small",
+        "seconds": 4.274,
+        "captures": 1,
+        "games": 0,
+        "capture_sha256": {
+          "rift_format_turn_effect.png": "1648cf0393289bda4c39de3fad069d83dc41d505012f4d752663dd8b5e66058f"
+        },
+        "log_sha256": "b14cbbd11f96d17c40e1323d144152047249e946e633825461ea1cb1121aaf54",
+        "host_library_path_removed": true
+      },
+      {
+        "name": "series-strategic",
+        "seconds": 5.183,
+        "captures": 4,
+        "games": 2,
+        "capture_sha256": {
+          "rift_series_sideboard.png": "ff6ae3aec95f27b9ea7ad46cf774c3b7792fd42f975fdc6597ea1190be94f057",
+          "rift_series_lobby.png": "f3a16a94889a518d0b0bfe7ea9e28864ce6f47ee503c9206f2e101f2de9643d6",
+          "rift_series_complete.png": "e4c0678efaa8548e228ab56a2fcbad25ca0aec7fb8c5fda05e0a9d2c6f2812fd",
+          "rift_series_champion.png": "d1657896dfa1a8624718d9d109b62337515c4f9a6b24038e0d29a118197f8be2"
+        },
+        "log_sha256": "7d9880f2c69e9570c0d248f6420a29a229143bc6ccdbc2c742450c9a041a9756",
+        "host_library_path_removed": true
+      },
+      {
+        "name": "resources-normal",
+        "seconds": 4.526,
+        "captures": 9,
+        "games": 0,
+        "capture_sha256": {
+          "rift_keeper_trigger.png": "554b1501754a0dfd8d34ff208d110e8175021d9420aca203871c0a7d54873393",
+          "rift_meditation_cost.png": "cc661f24f69e96f96f6f61f141e9be0c5c56de3cbf5f40741604a2c2b7d39570",
+          "rift_keeper_inspect.png": "886bbe48f81f49354b234fae89fa54bc7ddda02aeca4b37aca292d929caed3e3",
+          "rift_keeper_cost.png": "2e98495e461dd13afbb013eb507109ac1de770071b48fd8e18c729efa6e94e9c",
+          "rift_life_cost.png": "edc3e3e1624dac28a120eb4ace62281cb4327d0de4c6ef8b23ef85b22cf42bd4",
+          "rift_life_paid.png": "0ae2d8f4e9b35e04732233e3e19720d0bc91f1e7cb819a8124ab19bc08e9fd66",
+          "rift_meditation_paid.png": "e62de066b3e7b85ab1415094ca3a3aae0b35e455af71a94b85766eb5df3c5f06",
+          "rift_meditation_draw.png": "7a182a99f90330f05c64990d7915f2da2552b43ecddd106d8f8582a025732306",
+          "rift_life_channel.png": "4e45ad41e318b26e7bb75df85c79328e25a44750f1d4c8b16e88156b8f5dda27"
+        },
+        "log_sha256": "5ff5c1ed3b32d2a663ff9fcffa9e1cd16c7f1cd85324c4564dc426f1f8bbe726",
+        "host_library_path_removed": true
+      },
+      {
+        "name": "resources-small",
+        "seconds": 4.373,
+        "captures": 9,
+        "games": 0,
+        "capture_sha256": {
+          "rift_keeper_trigger.png": "19b99a0fd5493a328928f51401e53b0018e3d42e7a40da38789f2021ba78908c",
+          "rift_meditation_cost.png": "9296860915eba8db4489566aaf758a3b763591d7241fb5ceca421e5aae5a2882",
+          "rift_keeper_inspect.png": "8a36a2c7f14577ff6fd3c8e7e3308f1cf3570fc2c2b713506f57efc7f2aae7a2",
+          "rift_keeper_cost.png": "19975eee277f5e9bb84fd35ca1c500493d17c077e21e275b39f8755b5282abaa",
+          "rift_life_cost.png": "e4c9fab23d9d77fc91e1da240904765fb354ef471afaeb4b401f27edaf04548a",
+          "rift_life_paid.png": "ccfed61362dfeee56f7eb9ed9a81ee1998cc3046efd91b07a7d4b8c546768d04",
+          "rift_meditation_paid.png": "68112c8fb646d200cd427b537abe4ef19f21ddb28d356a58a21d5611d0492dc1",
+          "rift_meditation_draw.png": "c406488fc3498f413b15e994ceb59651a953db467d34660d89dc5b0956dd9645",
+          "rift_life_channel.png": "1fe2a6f5ad283140c35027aaccbfe3345b0accb16683ccd4d85196e9ee7a8d0e"
+        },
+        "log_sha256": "5ff5c1ed3b32d2a663ff9fcffa9e1cd16c7f1cd85324c4564dc426f1f8bbe726",
+        "host_library_path_removed": true
+      },
+      {
+        "name": "wheel-normal",
+        "seconds": 4.379,
+        "captures": 6,
+        "games": 0,
+        "capture_sha256": {
+          "rift_wheel_cost_advanced.png": "6f00ab706b2eff11c52eb89a33d3e1d1ddba00e688db64ae7db0c7610bf3e485",
+          "rift_wheel_draw.png": "8b633c7bc012573513b69802dd7fb21e81044a563f0037f0718c18776a775be7",
+          "rift_wheel_cost_beginner.png": "dd990d5e8983abeedce11c5faca1787632180511150f3731cfc6fb84edb714ed",
+          "rift_wheel_declined.png": "9bb564222af63be8f6d5502d9065f9c4a0c62c3f92ff7134fe3d8eac5f8b7984",
+          "rift_wheel_paid.png": "2077177d7950feca9224916be9e63deed665449d6835f602ef216aaabb19dedc",
+          "rift_wheel_inspect.png": "567599d0b7a9100bb593220fd2a110202fa1f446bf4b4378e6622594549f012e"
+        },
+        "log_sha256": "5ff5c1ed3b32d2a663ff9fcffa9e1cd16c7f1cd85324c4564dc426f1f8bbe726",
+        "host_library_path_removed": true
+      },
+      {
+        "name": "wheel-small",
+        "seconds": 4.374,
+        "captures": 6,
+        "games": 0,
+        "capture_sha256": {
+          "rift_wheel_cost_advanced.png": "7b23277136a30e53456d96b32cc669c3b6db3751ae8bf35af486d43097c38d13",
+          "rift_wheel_draw.png": "f11ab666f40be1690fbefba7267fd77c9adc68a56748277cbe2665ed1b5326cf",
+          "rift_wheel_cost_beginner.png": "ee6c437124b1ecc66cce1000aac6b2a89b5180917dc4225a3d388d6e5e559a09",
+          "rift_wheel_declined.png": "572e6c14ac96a9be77fc623ff7377f9df00f01960da8b92f36068fd7fd5e205b",
+          "rift_wheel_paid.png": "dfa3a8189c65a7cc2e50f84c6c1c2aa0ae784a766e21f04ad9dd819238b58ec4",
+          "rift_wheel_inspect.png": "4dd1f0024b16dcb6d2491e38b975ac9b5a16b7a737b8737ebe4d0539c116a724"
+        },
+        "log_sha256": "5ff5c1ed3b32d2a663ff9fcffa9e1cd16c7f1cd85324c4564dc426f1f8bbe726",
+        "host_library_path_removed": true
+      },
+      {
+        "name": "entourage-normal",
+        "seconds": 4.727,
+        "captures": 8,
+        "games": 0,
+        "capture_sha256": {
+          "rift_entourage_response.png": "e4ffea6c72e24088348849a29c260d9745f5e488020fcb25ce24c5bca6037471",
+          "rift_entourage_ready.png": "db28e5b772592ab35f2b6dd1295def6e3fc1caaf05818eff7da4dd44e1707f86",
+          "rift_entourage_opponent.png": "8b737e064455ff0bf1ce02076a03e6e01198673ce57cc933cc401d8678d816cd",
+          "rift_entourage_inspect.png": "e910a07033a3bb5b31404b24298424eae0eee528c7995375a06d1fbc46ab4ed0",
+          "rift_entourage_target_advanced.png": "e1b61f7a561780e4a8a3c3627f995fb01f696402b301caa5eda59802e0bc65d0",
+          "rift_entourage_exhausted.png": "595096d9db2af8bb3dacd07af667a78b0a5b5b4df450180d097ad7f689072253",
+          "rift_entourage_resolution.png": "b331ee612bbef7f3c5e593809215fc8204e82a79a70a3a5d694afa219ae0afb8",
+          "rift_entourage_target_beginner.png": "952f0ae9d3030c089c6a4a98cc3f09eea0e027d971626cfd7e153c6a87ada8e0"
+        },
+        "log_sha256": "5ff5c1ed3b32d2a663ff9fcffa9e1cd16c7f1cd85324c4564dc426f1f8bbe726",
+        "host_library_path_removed": true
+      },
+      {
+        "name": "entourage-small",
+        "seconds": 4.274,
+        "captures": 8,
+        "games": 0,
+        "capture_sha256": {
+          "rift_entourage_response.png": "ee04b6ca92af11453404c2b0543e2d91f5fb87c38dc866fb7a6c4888cd6c7795",
+          "rift_entourage_ready.png": "fa1617f0dfb1bab4513ae1d9e8be1b5d9def22f6f3df2e762b9e5dc29959205b",
+          "rift_entourage_opponent.png": "8c898b9ddfdad8e0935c790f2414ddd4b07886faf0592ba6f41fa41a69d9c0ab",
+          "rift_entourage_inspect.png": "ab19b6c6317767693ee1fa0efb0a73e500d055bc84422e0ceb2b8d601720de1a",
+          "rift_entourage_target_advanced.png": "bce31474b6cf878ee3c5dceab8ffed6ad0a45641390238f25c368b5ed1830423",
+          "rift_entourage_exhausted.png": "602445d4d077dae05c2e334f7c892dc46d330f995a9aaf52b8d9b4ecf9249c61",
+          "rift_entourage_resolution.png": "f2b3d1d91b4b2d18950d8073a4b6879b3ea609d5f64970f5a4b5c7886bb4d406",
+          "rift_entourage_target_beginner.png": "e6fa4831d3ce513ea97c2e176a8c6225f4319659e50cf85e08948f55cc98f2ab"
+        },
+        "log_sha256": "5ff5c1ed3b32d2a663ff9fcffa9e1cd16c7f1cd85324c4564dc426f1f8bbe726",
+        "host_library_path_removed": true
+      },
+      {
+        "name": "sands-normal",
+        "seconds": 4.382,
+        "captures": 7,
+        "games": 0,
+        "capture_sha256": {
+          "rift_sands_no_effect.png": "6c785fc4d6626fc45a3d7a10b41b8d5b229db22e5e28a255e1822d1123ee5b19",
+          "rift_sands_advanced.png": "3bc87a78c5f93f98cdb12b1eb8ebe00f4f561f9d12742c37a159b717ab7dcd06",
+          "rift_sands_target.png": "e61327437095f09372fb61b4122ec00833cf666c5bad1297ab2c893f37784746",
+          "rift_sands_beginner.png": "d3eddbfb4d6f16b9c27882b02b1dbe6ae672b96fcf07342d3144a85aecf94f83",
+          "rift_sands_selected.png": "110f7e0a20754ad7fdb01ecb2b62cbe0f6c787e3ca0211077deed227391cf15d",
+          "rift_sands_inspect.png": "d2c3f1b8309f9a220f6c7729ce016548e579f2029f8857077eddc5bc3930fe5b",
+          "rift_sands_countered.png": "0d8e73996cc1ea9d3575e44caf2439af09d42d71221aff7b78c33d94436f8631"
+        },
+        "log_sha256": "5ff5c1ed3b32d2a663ff9fcffa9e1cd16c7f1cd85324c4564dc426f1f8bbe726",
+        "host_library_path_removed": true
+      },
+      {
+        "name": "sands-small",
+        "seconds": 4.274,
+        "captures": 7,
+        "games": 0,
+        "capture_sha256": {
+          "rift_sands_no_effect.png": "232f0b1062b3a8e67d191cfa39d819354b7d628c45bc99958ce6edce6c969eb1",
+          "rift_sands_advanced.png": "7e18f1dc1d28f8dda25d4de8f20ea28b6c50998e8e923e9ffe6e4b6d77c00c7d",
+          "rift_sands_target.png": "c1fb2822d21b57e98b21003212ffef33118579e66a391b5c16d46cc142374d79",
+          "rift_sands_beginner.png": "a3f893af449802a4aa0ce11369591bf55c0ff7c2320f6f0b217ccdfb4b70455a",
+          "rift_sands_selected.png": "5a94c6e8a00f8a6d238b94cc677a45a8f03d2d6cc563b17e5918f514d79cbdf0",
+          "rift_sands_inspect.png": "69df81c723ee0ff01c7b02152bcf0290813917a79e35abeb1dda6bb3ce20a1c7",
+          "rift_sands_countered.png": "c15e1a3f8d3f4a6c4cf22150323c99d668951f8152551ba4c9d107c21a649cc5"
+        },
+        "log_sha256": "5ff5c1ed3b32d2a663ff9fcffa9e1cd16c7f1cd85324c4564dc426f1f8bbe726",
+        "host_library_path_removed": true
+      },
+      {
+        "name": "rockfall-normal",
+        "seconds": 4.322,
+        "captures": 5,
+        "games": 0,
+        "capture_sha256": {
+          "rift_rockfall_blocked.png": "7575b37b02c1b0e24fda9b10350ae943185b630b2d6540112631f38038d07f00",
+          "rift_rockfall_beginner.png": "fc003b3ed456b339c668c375586127a87726258750590182e79dfa55a783e730",
+          "rift_rockfall_picker.png": "533eac61814f79ea3e7ca5d4363bc3c81629e892cb3c36325202d7afcc868167",
+          "rift_rockfall_advanced.png": "a29f03394449b827e4382ed9e60accc0a5697303e139de8ec4971645ec242ea8",
+          "rift_rockfall_rules.png": "963699b82ef51cbb2db10e4790a98de21f34bd4a187514776fbabaf610e2d67f"
+        },
+        "log_sha256": "3f61fd87ea894427d1484592fa5e41303143e58fd775741e07c8a3315cb80509",
+        "host_library_path_removed": true
+      },
+      {
+        "name": "rockfall-small",
+        "seconds": 4.174,
+        "captures": 5,
+        "games": 0,
+        "capture_sha256": {
+          "rift_rockfall_blocked.png": "63a218a6b09ca42fe95e98c4b4504440fc2c6b979f82ed54490f2d204d77e2f5",
+          "rift_rockfall_beginner.png": "6d97627612eac41b54e96af92f39534c987f713632b27a9104a764cacbbf6c0a",
+          "rift_rockfall_picker.png": "70cafdcd1e059c3393fdc64639753637590fd0a7b4cfb7ce0953e509478d359c",
+          "rift_rockfall_advanced.png": "3aba7bb6d127e5c9a36c788e4581421989b53739138c06c33a4f61fadf53bf6b",
+          "rift_rockfall_rules.png": "c9771ea24d353a7da1de948c153257170deeebeb866999d4c1bbfff73197a8dc"
+        },
+        "log_sha256": "3f61fd87ea894427d1484592fa5e41303143e58fd775741e07c8a3315cb80509",
+        "host_library_path_removed": true
+      },
+      {
+        "name": "heavens-normal",
+        "seconds": 4.273,
+        "captures": 6,
+        "games": 0,
+        "capture_sha256": {
+          "rift_heavens_inspect.png": "d31cd8d7ad01253dab02101278b6d3162a088e71e320a6cb83747af2094e17e4",
+          "rift_heavens_beginner.png": "7ae9af8f275e44c06d12bfeddc9ea8bd3977403d904324ac644e38e38b88f216",
+          "rift_heavens_predict.png": "8583c331684c5d4c507e752c65130e255ea48bde9a9fa30d13a39dfcaadff76d",
+          "rift_heavens_shield.png": "ce37ddb0fdf43eeede1e534948e11035dc1a308b010fd4ebbdeb3ab17ef880f3",
+          "rift_heavens_target.png": "9ee6b610d96136e5394a25e2547977dd2b8a81227d443261b502d0ef139ab8ff",
+          "rift_heavens_advanced.png": "0f9a6fd6921cde3155ae321eacbc0a84fdc75205656645b81aa011469ce887ee"
+        },
+        "log_sha256": "5ff5c1ed3b32d2a663ff9fcffa9e1cd16c7f1cd85324c4564dc426f1f8bbe726",
+        "host_library_path_removed": true
+      },
+      {
+        "name": "heavens-small",
+        "seconds": 4.122,
+        "captures": 6,
+        "games": 0,
+        "capture_sha256": {
+          "rift_heavens_inspect.png": "bcd79806ed091a4171a9b50ef392ac71d5f5caf3954824f5ffe1e560ba49e14c",
+          "rift_heavens_beginner.png": "3292b531d2edecc1456c0b6e0c5a883b799195ea75f470b66bf5f2500c8bc7d9",
+          "rift_heavens_predict.png": "cd677eb88be28286b684b8d39e001e36ff6bcb0610b7dfd208ab5141b6c4896c",
+          "rift_heavens_shield.png": "2721182038d3dc995f8e06bfa45ec5d534320953a7ba68145359703cfbe55352",
+          "rift_heavens_target.png": "9724b7dc6963d0f502bebedf9e8340ee870d53deddf30186f8f0f8d6b185817e",
+          "rift_heavens_advanced.png": "6524dcc75da0795c308c79e05dab08cfe8445ca3ecd6f6011268fe1b05001ac7"
+        },
+        "log_sha256": "5ff5c1ed3b32d2a663ff9fcffa9e1cd16c7f1cd85324c4564dc426f1f8bbe726",
+        "host_library_path_removed": true
+      }
+    ],
+    "api": [
+      {
+        "name": "wheel-api",
+        "seconds": 3.219,
+        "records": 6,
+        "records_key": "records",
+        "full_records_equal": true,
+        "baseline_sha256": "df658d7d9dc0a7fcd9ac002032f6352899e6c214d4f9f8a432fc3bc31f75a548",
+        "report_sha256": "a8cfd5de381b5ca5ec584ba02f143866f27ec06b6625fd6658b2312462951462"
+      },
+      {
+        "name": "resources-api",
+        "seconds": 2.669,
+        "records": 6,
+        "records_key": "records",
+        "full_records_equal": true,
+        "baseline_sha256": "51347156ffc15c6c4ab74da62e1610ed0e6df24f6c58e1eaa16b8c7fae5b1015",
+        "report_sha256": "b59477e0b955ee3712b980ec4873f0fbf31ec7d4ea132b0c33b98daf3783476a"
+      },
+      {
+        "name": "jae-api",
+        "seconds": 2.318,
+        "records": 6,
+        "records_key": "records",
+        "full_records_equal": true,
+        "baseline_sha256": "b2c8e8cb5cf678a9945a456e7cdb208190c409a1c3e62b08880ac09f779bdff4",
+        "report_sha256": "d18f528e976369302963f4a247740c180cc2afc9f44b9d4def9ac8d2dbd20f2a"
+      },
+      {
+        "name": "format-api",
+        "seconds": 10.933,
+        "records": 9,
+        "records_key": "records",
+        "full_records_equal": true,
+        "baseline_sha256": "8c7e7d839a577f0ce41c9f7e69d1634cdff7fd6331aed44970c364bcf958dd0c",
+        "report_sha256": "1df6d4d144f2e84a472e393f93591341073c759bd241af93359eee862ea250d8"
+      },
+      {
+        "name": "entourage-api",
+        "seconds": 2.869,
+        "records": 6,
+        "records_key": "records",
+        "full_records_equal": true,
+        "baseline_sha256": "45166f7dd0927cb8c72f8534f45f91b7f1027f46960a539841728fd6f7ff4032",
+        "report_sha256": "6fa4caea80a59963d0bf1084071eb6cf60f2deef0eb5e5eb9ecc90a2c9fc3522"
+      },
+      {
+        "name": "sands-api",
+        "seconds": 2.419,
+        "records": 6,
+        "records_key": "records",
+        "full_records_equal": true,
+        "baseline_sha256": "238247dc637175657c4f951ad988f97662e8c91733de581194c4828add42deba",
+        "report_sha256": "0c510dd56cbe8f08e3534199239dabe8b4c71fa381d5c1f2a6fbb2e48d97734b"
+      },
+      {
+        "name": "rockfall-api",
+        "seconds": 2.97,
+        "records": 6,
+        "records_key": "records",
+        "full_records_equal": true,
+        "baseline_sha256": "0283215c3367c2b2153ed75d2a7d6b98759caf39a479237429f8aa89b0b76bd1",
+        "report_sha256": "d201d884a99a7c6311cc9499899b228fa394c5a5ca46d34aca71fce62a226582"
+      },
+      {
+        "name": "heavens-api",
+        "seconds": 2.619,
+        "records": 6,
+        "records_key": "records",
+        "full_records_equal": true,
+        "baseline_sha256": "a1f15c1937a2039485735f879f24c6e64ebe1e0d041bdcd5d89ba1064cec6e54",
+        "report_sha256": "842a2af400daa71efa06ef56717963c3467fa07fbd1822d160f879083c57030d"
+      }
+    ],
+    "source_gc_root": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-heavens-release-v1/source",
+    "nix": {
+      "package": "/nix/store/sppwba5i8mqw4chn6dlaz3lawp0ghacg-local-rift-0.1.0",
+      "catalog": "/nix/store/4nimysj90ry1r0gynnd1zr7k59a1w0a6-local-rift-catalog-check",
+      "simulation": "/nix/store/5q39kc7g5d5r9cpbmi13xa4hwc147da3-local-rift-simulation-check",
+      "seconds": 1192.495,
+      "gc_root_prefix": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-heavens-release-v1/nix-result"
+    },
+    "source": "/nix/store/ia1jzzh77gydjy8mipa0fz41plnn7097-source",
+    "finished_at": "2026-11-14T09:34:15.600476+00:00",
+    "report": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-heavens-release-v1/status.json",
+    "report_sha256": "5440d3424f7224a8047126f29146d50130eda5e59f1250f30f60ab065f2cf603",
+    "independent_verification": {
+      "verified_at": "2026-11-14T09:35:40.337849+00:00",
+      "rust_tests": 1989,
+      "rust_skipped": 0,
+      "source_tests": 326,
+      "simulation_matches": 1176,
+      "ui_cases": 19,
+      "captures": 114,
+      "full_api_comparisons": 8,
+      "full_api_records": 51,
+      "scope": "Independently checked plan and runner hashes, all capture/log hashes, all eight full baseline/current record arrays and installed simulation output; reviewed four actual installed images."
+    },
+    "actual_images_viewed": [
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-heavens-release-v1/heavens-normal/rift_heavens_inspect.png",
+        "sha256": "d31cd8d7ad01253dab02101278b6d3162a088e71e320a6cb83747af2094e17e4"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-heavens-release-v1/heavens-small/rift_heavens_advanced.png",
+        "sha256": "6524dcc75da0795c308c79e05dab08cfe8445ca3ecd6f6011268fe1b05001ac7"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-heavens-release-v1/heavens-small/rift_heavens_predict.png",
+        "sha256": "cd677eb88be28286b684b8d39e001e36ff6bcb0610b7dfd208ab5141b6c4896c"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-heavens-release-v1/heavens-small/rift_heavens_shield.png",
+        "sha256": "2721182038d3dc995f8e06bfa45ec5d534320953a7ba68145359703cfbe55352"
+      }
+    ],
+    "visual_findings": "Complete rules text and art readable; Advanced commentary remains in the sidebar; private Predict choices accessible; small-window unit hover separates temporary Shield 2 from total Shield 3 and explains expiry.",
+    "post_freeze_changes": "a459064 adds only the defensive benchmark test and accepted Rockfall documentation; production implementation remains identical to cce44d4. This acceptance changes documentation only."
+  }
 }

@@ -1060,7 +1060,11 @@ lost targets, counters, Syndra-granted Repeat, Irelia's choice trigger and hidde
 information. Cloning during Predict and applying the same choice must preserve
 the complete debug state. Protocol scenarios start the correct seat through
 ResetOptions, check nonmutating validation, public Shield and private Predict,
-and reject the wrong seat without changing state. Broader acceptance is pending.
+and reject the wrong seat without changing state. Installed acceptance passed
+1,989 Rust tests, 326 source checks, 1,176 simulated matches, 114 interface
+captures and eight exact API comparisons. Four installed images were reviewed
+for readable rules, advice, Predict choices and temporary-versus-total Shield.
+See [the acceptance record](validation/irelia_heavens.json).
 
 The subsequent defensive benchmark establishes a real showdown through movement
 and independently checks Pass/Consult outcomes against simultaneous combat damage
