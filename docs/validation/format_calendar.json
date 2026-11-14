@@ -1,6 +1,6 @@
 {
-  "status": "Backend, dated AI matches and desktop format acceptance passed; integrated package release pending",
-  "reviewed_at": "2026-11-14T02:38:05.060664+00:00",
+  "status": "Combined immutable package, installed desktop and complete API acceptance passed; publication pending",
+  "reviewed_at": "2026-11-14T03:02:27.260136+00:00",
   "base_candidate": "aeb9944d6d02c7d048bc114fe98e9bcc94a0df3a",
   "scope": [
     "Explicit global Standard dates for deck and complete registration validation",
@@ -112,6 +112,78 @@
       "dated_api_actual_games": 23,
       "both_irelia_and_future_rengar_records_match_prior_baseline": true,
       "single_combined_record_set_for_installed_comparison": true
+    },
+    "installed_release": {
+      "revision": "d6219ca7749664c07548c056e7bd4975c2ab704a",
+      "status": "passed",
+      "status_sha256": "5c7079135932c1e9a7562c824245adadea627076bf5a477a1a268eac80bcc791",
+      "source": "/nix/store/4i63lz2mw7kplh0j4lhr4mg9l364imha-source",
+      "package": "/nix/store/jqcnfrp70mlbx0p9kj6nchgwfqgnldsn-local-rift-0.1.0",
+      "rust_tests": 1882,
+      "rust_skipped": 0,
+      "rust_seconds": 820.285,
+      "source_tests": 303,
+      "source_seconds": 322.603,
+      "doctests": "separate command passed; none defined",
+      "preset_simulations": 1176,
+      "nix_seconds": 1159.479,
+      "installed_ui_cases": 12,
+      "captures": 74,
+      "actual_registered_ui_games": 5,
+      "api": [
+        {
+          "name": "guards-api",
+          "seconds": 17.499,
+          "records": 84,
+          "records_key": "games",
+          "full_records_equal": true,
+          "baseline_sha256": "a93264a61b9577a65face118811c8518fc8b09604a07de150638a4ef4c0907b2",
+          "report_sha256": "01208a84aa2ed4d8d8ed280ce32b9fdf311f4ddb72a3dd259fe7c614ee9d0654"
+        },
+        {
+          "name": "registered-api",
+          "seconds": 26.611,
+          "records": 48,
+          "records_key": "matches",
+          "full_records_equal": true,
+          "baseline_sha256": "7371421495045d9d8df8e9ec548250666c63ec2eea5395768dcb45bd891f6f88",
+          "report_sha256": "59300d4c133086276c9374a535c43fb3c1dd86afcaebce947777bb2cb04e560a"
+        },
+        {
+          "name": "format-api",
+          "seconds": 9.584,
+          "records": 9,
+          "records_key": "records",
+          "full_records_equal": true,
+          "baseline_sha256": "1af692207f5e653fcc5ff03b127ec37b17e00383fdac9c2692af027e072ef3d4",
+          "report_sha256": "770bc96b50a00fed3cba388b36a6553e14f3b52705b990fa1f9f178ab53583e9"
+        }
+      ],
+      "visual_review": {
+        "revision": "d6219ca7749664c07548c056e7bd4975c2ab704a",
+        "reviewed": [
+          {
+            "image": "format-small/rift_format_dated_game.png",
+            "sha256": "d43ba49b7624da2f1a564fd88e9d3424bcaf5d17bd2ff00a51364e123dee698f",
+            "observation": "Fixed format date visible; accepted game has no stale rejection notice."
+          },
+          {
+            "image": "format-small/rift_format_turn_effect.png",
+            "sha256": "b4e7b638c83acdf74689820b6521eb9e895e28fed4a952d7e44bc6df227f5540",
+            "observation": "Format date and turn effect remain visible together. Decorative headline clips at the top at this size; controls remain available."
+          },
+          {
+            "image": "format-normal/rift_format_registration.png",
+            "sha256": "2a2db2c8e9713183e61f02931fe07cf4b1ab4938b03ec155ba12da3ff6a07a7e",
+            "observation": "Full sideboard and battlefield restrictions are readable for both players."
+          }
+        ],
+        "scope": "Three representative final installed captures inspected, not all 74."
+      },
+      "finished_at": "2026-11-14T03:01:42.985768+00:00",
+      "reproduce": "python3 tools/check_release.py --plan <pinned-release-plan.json> --output <new-evidence-directory> --xvfb <xvfb-run>",
+      "plan_sha256": "38d002db574eb4058b46c5d509196eef6d4b944a240bfbf00fa163d63df79215",
+      "runner_sha256": "5631bfd578f7217542a061aea2b67e50a38da93514524eb656e4924efb3f1910"
     }
   },
   "evidence_sha256": {
@@ -141,11 +213,13 @@
     "format-integration-build-v1.log": "447884768e9284c19111c27ff71e5288fafb41d7c0d53163ecafcb9cb5f4aba4",
     "format-integration-api-build-v1.log": "01eb3c5f3cf300262fc96a7470ab4bcd363932f0db2531e1522ab1782e2f2bd2",
     "format-integration-api-v1.json": "1af692207f5e653fcc5ff03b127ec37b17e00383fdac9c2692af027e072ef3d4",
-    "format-xeno-ui-v1/status.json": "8dcc7c27d37c8345d13a43899ccfa048eeb1e60407fba00d1274ae2353112c70"
+    "format-xeno-ui-v1/status.json": "8dcc7c27d37c8345d13a43899ccfa048eeb1e60407fba00d1274ae2353112c70",
+    "format-release-v1/status.json": "5c7079135932c1e9a7562c824245adadea627076bf5a477a1a268eac80bcc791",
+    "format-release-visual-review-v1.json": "65d63ae4f4c0780bc9406ba3a69f1f70895b8ac6f9f957aa935874e87c4a7121"
   },
   "remaining": [
-    "Final integrated immutable package, source and installed acceptance",
-    "Publish accepted changes and collect GitHub CI"
+    "Publish accepted changes and collect GitHub CI",
+    "Polish the clipped decorative headline in the small turn-effect layout; format and controls remain visible."
   ],
   "limitations": [
     "Desktop defaults to the local current date; omitted API date intentionally preserves the accepted catalog snapshot for existing bot clients.",
