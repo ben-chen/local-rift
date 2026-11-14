@@ -1,0 +1,133 @@
+{
+  "status": "Printed source reviewed; runtime not yet admitted.",
+  "reviewed_on": "2026-11-14",
+  "base_revision": "e39365272aaf04c6b466eaa7b6dc9deb84200a94",
+  "preserved_runtime_prefix": {
+    "card_count": 465,
+    "preset_count": 7,
+    "cards_sha256": "3be2a63cc161551b6ab5d5981c892ecfaafa12ebd23b0521c5439fe5ce12a1c5",
+    "presets_sha256": "e975739d803427e54928d6e6cd03d1ce51d7ad108f4e247b8a000acf037a5cdb"
+  },
+  "records": [
+    {
+      "official_id": "ven-107-166",
+      "raw_printing": {
+        "official_id": "ven-107-166",
+        "public_code": "VEN-107/166",
+        "name": "Decree of Discord",
+        "set": "VEN",
+        "collector_number": 107,
+        "types": [
+          "spell"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "spell"
+        ],
+        "accessibility_types": [
+          "spell"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "chaos"
+        ],
+        "energy": 1,
+        "power": 1,
+        "might": null,
+        "might_bonus": null,
+        "rules_html": "<p>Return any number of enemy Order (:rb_rune_order:) units with total Might 5 or less to their owners' hands.</p>",
+        "rules_text": "Return any number of enemy Order ([Order Power]) units with total Might 5 or less to their owners' hands.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [],
+        "rarity": "rare",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/b0e82842acddb99c47af6793dab48164caf498c2-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Spell: Decree of Discord. Return any number of enemy Order ([Y]) units with total Might 5 or less to their owners' hands.",
+        "illustrators": [
+          "Envar Studio"
+        ]
+      },
+      "raw_printing_sha256": "8de5354132d42e0565850ef48a9a5b30e81106caec57832fd66f2da60c723b2f",
+      "effective": {
+        "types": [
+          "spell"
+        ],
+        "super_types": [],
+        "domains": [
+          "chaos"
+        ],
+        "energy": 1,
+        "power": 1,
+        "might": null,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>Return any number of enemy Order (:rb_rune_order:) units with total Might 5 or less to their owners' hands.</p>",
+        "rules_text": "Return any number of enemy Order ([Order Power]) units with total Might 5 or less to their owners' hands.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "resolution_ids": [],
+      "original_image": {
+        "path": "assets/data/card_admissions/irelia_discord/ven-107-166.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/b0e82842acddb99c47af6793dab48164caf498c2-744x1039.png?accountingTag=RB",
+        "bytes": 929271,
+        "sha256": "a953676796f513d16a17ceccff9437cbe56051b119cadbdd5a8deb25bec7cd08",
+        "dimensions": [
+          744,
+          1039
+        ]
+      },
+      "visual_review": {
+        "actual_full_face_viewed": true,
+        "printed_facts": {
+          "types": [
+            "spell"
+          ],
+          "super_types": [],
+          "domains": [
+            "chaos"
+          ],
+          "energy": 1,
+          "power": 1,
+          "might": null,
+          "might_bonus": null,
+          "tags": []
+        },
+        "observations": [
+          "Printed face confirms Spell, 1 Energy and 1 Chaos Power, no keywords.",
+          "Return any number of enemy Order units, total Might 5 or less, to their owners' hands.",
+          "Targets need not share a location; total Might is a collective restriction."
+        ]
+      }
+    }
+  ],
+  "rules_review": {
+    "core_edition": "2026-10-09",
+    "core_url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/5c7946f7c3b8c6e0faff85ab6dadc6d2e721ea94.pdf",
+    "core_sha256": "94d41fee86f88b61c4157c0389c0595d990b98e5b42555c99d9f649ee64d1fec",
+    "sections": [
+      "355.11.a: collective restriction at finalization",
+      "355.11.b: controller chooses subset of original targets at resolution",
+      "355.11.b.1: subset is inclusion-maximal, not globally largest cardinality",
+      "355.13: zero targets permitted at finalization"
+    ],
+    "hub_verified_on": "2026-11-14",
+    "vendetta_errata_checked": true,
+    "named_in_vendetta_errata": false
+  },
+  "irelia_relevance": {
+    "source": "https://riftbound.org/meta/irelia-blade-dancer/2797-tapur-sezgin",
+    "observed": "Three copies in the sideboard of the Tapur Sezgin Irelia list attributed to Convergence IV, October 31, 2026.",
+    "limits": "Secondary listing; primary registration not verified. Card-priority evidence only, no new preset or meta prevalence claim.",
+    "html_sha256": "b74feda2be23cb3c8263db9dd7969439e4b7190332f6122331b10db86d0eb096"
+  },
+  "implementation_requirements": [
+    "Choose any number of distinct enemy Order units with combined current Might at most 5; zero legal.",
+    "Recheck controller, current domains, untargetability and identities at resolution.",
+    "If combined Might no longer fits, controller selects an inclusion-maximal legal subset of only original eligible targets. Zero-Might targets cannot be silently dropped.",
+    "Use an explicit subset action; do not enumerate all combinations or impose a cardinality cap.",
+    "Shared engine checks drive play queries, explicit payment, bot suggestions, resolution choices, API and readable native controls.",
+    "Verify actual opposing responses, both seats, no state changes on rejected choices, public observations, AI choices and complete games."
+  ]
+}
