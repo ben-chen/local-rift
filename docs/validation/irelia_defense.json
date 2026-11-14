@@ -1,0 +1,135 @@
+{
+  "status": "Defensive decision benchmark passed; no production-code changes",
+  "reviewed_at": "2026-11-14T09:19:33.893594+00:00",
+  "base_revision": "cce44d4ffcf411aa82a6447a0cba1f0e6a8d508b",
+  "test": "src/heavens_tests.rs::heavens_defensive_benchmark_matches_public_combat_outcomes",
+  "setup": "Both Irelia seats; exhausted legends, one Energy and Consult in hand, Stalwart Poro controlling a field. An opposing unit actually moves from base to create the combat. Its authored current Might ranges from 2 through 6.",
+  "oracle": "Poro defends at Might 3, or 5 after Consult. Explicit Pass and explicit Consult branches verify simultaneous damage and resulting control independently of the AI choice. All later choices and resolution use ordinary actions.",
+  "preferred_policy": "Conserve Consult when its Shield cannot improve this fight (attacker Might 2 or 6); cast to preserve Poro against Might 3/4 or trade against Might 5. This is a bounded combat policy, not a claim that future Predict value is globally solved.",
+  "decision_cases": 30,
+  "counterfactual_branches": 60,
+  "required_strategic_cases": 10,
+  "required_strategic_passed": 10,
+  "benchmark_summary": [
+    {
+      "difficulty": "Easy",
+      "cases": 10,
+      "preferred_decisions": 6,
+      "misses": [
+        {
+          "seat": 0,
+          "attacker_might": 2,
+          "action": {
+            "hand_index": 0,
+            "lane": null,
+            "target": null,
+            "type": "play_card"
+          }
+        },
+        {
+          "seat": 0,
+          "attacker_might": 6,
+          "action": {
+            "hand_index": 0,
+            "lane": null,
+            "target": null,
+            "type": "play_card"
+          }
+        },
+        {
+          "seat": 1,
+          "attacker_might": 2,
+          "action": {
+            "hand_index": 0,
+            "lane": null,
+            "target": null,
+            "type": "play_card"
+          }
+        },
+        {
+          "seat": 1,
+          "attacker_might": 6,
+          "action": {
+            "hand_index": 0,
+            "lane": null,
+            "target": null,
+            "type": "play_card"
+          }
+        }
+      ]
+    },
+    {
+      "difficulty": "Tactical",
+      "cases": 10,
+      "preferred_decisions": 6,
+      "misses": [
+        {
+          "seat": 0,
+          "attacker_might": 2,
+          "action": {
+            "hand_index": 0,
+            "lane": null,
+            "target": null,
+            "type": "play_card"
+          }
+        },
+        {
+          "seat": 0,
+          "attacker_might": 6,
+          "action": {
+            "hand_index": 0,
+            "lane": null,
+            "target": null,
+            "type": "play_card"
+          }
+        },
+        {
+          "seat": 1,
+          "attacker_might": 2,
+          "action": {
+            "hand_index": 0,
+            "lane": null,
+            "target": null,
+            "type": "play_card"
+          }
+        },
+        {
+          "seat": 1,
+          "attacker_might": 6,
+          "action": {
+            "hand_index": 0,
+            "lane": null,
+            "target": null,
+            "type": "play_card"
+          }
+        }
+      ]
+    },
+    {
+      "difficulty": "Strategic",
+      "cases": 10,
+      "preferred_decisions": 10,
+      "misses": []
+    }
+  ],
+  "validation": {
+    "benchmark": {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-defense-benchmark-v1.log",
+      "sha256": "db4d7ee838a7d1e58c204895a19733d8baff3d9dea6efad7c2bf753240e997f6"
+    },
+    "clippy_lib_tests": {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-defense-clippy-v1.log",
+      "sha256": "1ca178e299ade83fa5867c9c4c0916c46802c60b332873073bc0af5448aaf8f5"
+    },
+    "format": {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-defense-fmt-v1.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "testing_scope": "Only cfg(test) code and documentation changed. Ran the new benchmark, strict library/test Clippy and formatting. The parent Consult revision is independently undergoing full packaged acceptance; this test-only change does not justify another duplicate full release run.",
+  "limits": [
+    "Relaxed and Tactical each made four unnecessary casts; these are retained measurements, not silently counted as preferred decisions.",
+    "No AI scoring or rules changes were required by this audit.",
+    "Ten authored Strategic decisions do not prove tournament strength, matchup knowledge or full Standard parity."
+  ]
+}

@@ -1061,3 +1061,11 @@ information. Cloning during Predict and applying the same choice must preserve
 the complete debug state. Protocol scenarios start the correct seat through
 ResetOptions, check nonmutating validation, public Shield and private Predict,
 and reject the wrong seat without changing state. Broader acceptance is pending.
+
+The subsequent defensive benchmark establishes a real showdown through movement
+and independently checks Pass/Consult outcomes against simultaneous combat damage
+at Poro's 3/5 defensive Might. Its 30 decisions span both Irelia seats, all three
+AI levels and attacker Might 2–6. Strategic meets all ten preferred decisions;
+the lower levels' eight combined unnecessary casts remain recorded. The expected
+survival/control assertions test rules, while the resource-conservation preference
+is a bounded strategic judgment. See [the benchmark receipt](validation/irelia_defense.json).

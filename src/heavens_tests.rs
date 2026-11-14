@@ -321,3 +321,100 @@ fn heavens_ai_prefers_its_defender_and_ignores_opponents_private_cards() {
         }
     }
 }
+
+#[test]
+fn heavens_defensive_benchmark_matches_public_combat_outcomes() {
+    for actor in 0..2 {
+        for difficulty in [
+            Difficulty::Easy,
+            Difficulty::Tactical,
+            Difficulty::Strategic,
+        ] {
+            for attack_might in [2, 3, 4, 5, 6] {
+                let mut g = position(1 - actor, 0, 457008);
+                g.difficulty = difficulty;
+                let defender = target(&mut g, actor, 110, Some(0));
+                let attacker = target(&mut g, 1 - actor, 71, None);
+                g.unit_mut(attacker).unwrap().temporary_buff = attack_might - 5;
+                g.battlefield_owner[0] = Some(actor);
+                g.players[actor].hand = vec![HEAVENS];
+                g.players[actor].deck = vec![71; 3];
+                for p in &mut g.players {
+                    p.energy_pool = 1;
+                    p.energy = 1;
+                    p.power_pool = [0; 6];
+                }
+                let Target::Unit { unit_id, .. } = attacker else {
+                    unreachable!()
+                };
+                g.apply(Action::Move {
+                    unit_id,
+                    lane: Some(0),
+                })
+                .unwrap();
+                g.apply(Action::Pass).unwrap();
+                assert_eq!(g.priority(), actor);
+                let chosen = g.choose_ai_action().unwrap();
+                let run = |action: Action| {
+                    let mut next = g.clone();
+                    next.apply(action).unwrap();
+                    for _ in 0..50 {
+                        if !next.in_window() {
+                            break;
+                        }
+                        let action = if next.decision.is_some() {
+                            next.choose_ai_action().unwrap()
+                        } else {
+                            Action::Pass
+                        };
+                        next.apply(action).unwrap();
+                    }
+                    assert!(!next.in_window());
+                    (
+                        next.unit_ref(defender).is_some(),
+                        next.unit_ref(attacker).is_some(),
+                        next.battlefield_owner[0],
+                    )
+                };
+                let pass = run(Action::Pass);
+                let cast = run(Action::PlayCardWithTargets {
+                    hand_index: 0,
+                    lane: None,
+                    targets: vec![defender],
+                });
+                let actual = run(chosen.clone());
+                // Independent combat oracle: Poro defends at 3 Might, or 5 with
+                // Consult. Damage is simultaneous; surviving units retain control.
+                let expected_pass = match attack_might {
+                    2 => (true, false, Some(actor)),
+                    3 => (false, false, None),
+                    _ => (false, true, Some(1 - actor)),
+                };
+                let expected_cast = match attack_might {
+                    2..=4 => (true, false, Some(actor)),
+                    5 => (false, false, None),
+                    _ => (false, true, Some(1 - actor)),
+                };
+                assert_eq!(pass, expected_pass);
+                assert_eq!(cast, expected_cast);
+                let useful = matches!(attack_might, 3..=5);
+                let decision_correct = (chosen != Action::Pass) == useful
+                    && actual == if useful { expected_cast } else { expected_pass };
+                if difficulty == Difficulty::Strategic {
+                    assert!(
+                        decision_correct,
+                        "seat {actor}, attack {attack_might}: {chosen:?}"
+                    );
+                }
+                println!(
+                    "DEFENSE_BENCHMARK {}",
+                    serde_json::json!({
+                        "seat":actor,"difficulty":format!("{difficulty:?}"),"attack_might":attack_might,
+                        "action":crate::api::action_to_json(&chosen),"useful_cast":useful,
+                        "decision_correct":decision_correct,"pass":pass,"cast":cast,"actual":actual
+                    })
+                );
+            }
+        }
+    }
+}

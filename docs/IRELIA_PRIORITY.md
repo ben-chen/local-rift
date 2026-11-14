@@ -12,6 +12,14 @@ unchanged. Its [admission](../assets/data/card_admissions/irelia_heavens/admissi
 records the printed face and existing gallery type correction;
 [validation](validation/irelia_heavens.json) retains the checks and limitations.
 
+A separate [defensive decision benchmark](validation/irelia_defense.json) now
+creates actual combat from movement and compares Pass with an explicit Consult
+cast. Across both seats and five attacker strengths, Strategic makes all ten
+preferred combat decisions. Relaxed and Tactical each make six of ten, spending
+the spell unnecessarily against the weakest and strongest threats. These are
+measured decision outcomes, separate from complete-match acceptance; no AI
+scoring change or tournament-strength claim follows from this narrow audit.
+
 November 14: Crumbling Sands is available for custom sideboard practice.
 Its shared spell-finalization history distinguishes a spell being played from
 successfully resolving, including countered spells and actual replays. The
