@@ -1027,3 +1027,11 @@ The focused scenarios cover conditional no-ops, the first or second spell,
 countered and resolved prior spells, later responses, own-spell targets, Repeat,
 alternate origins, rejected/staged plays, API query purity, and AI information
 boundaries. Full installed acceptance remains pending.
+
+### Rockfall Path play restriction (2026-11-14)
+
+The official Vendetta FAQ explicitly classifies Rockfall Path as a restriction, which wins over permission to play a unit at that location (Core 054.2 and 369.3). A shared location check covers hand/champion plays, Ambush, Hidden unit plays, instructed replays and unit tokens. The token check uses the token's kind rather than its creator's card type. It runs when finalization reaches the token; a prohibited fixed-location token ceases without payment, entry or a fallback location. Hiding itself is not playing. Movement and Deploy gear are not unit plays, and conquest/hold scoring remains ordinary.
+
+Temporal Breach on a unit already at Rockfall banishes it. The instructed replay cannot finalize there or choose a different location; rejecting the impossible finalization restores the physical card to banishment. This follows the printed restriction and the FAQ's general failed-finalization treatment, rather than a Rockfall-specific Temporal Breach example. Thrill of the Hunt may use a different legal battlefield. The check is on play location, not final board entry, so it does not redefine entry replacement effects.
+
+Focused tests cover both seats, control states, public-action rollback, Hidden spells versus units, free/fixed token plays, movement/conquest, Deploy gear, fixed and optional destinations, and an added third physical battlefield through the API. These scenarios do not establish complete Standard parity.

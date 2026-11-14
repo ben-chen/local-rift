@@ -72,6 +72,9 @@ mod resource_card_tests;
 #[path = "riven_pool_tests.rs"]
 mod riven_pool_tests;
 #[cfg(test)]
+#[path = "rockfall_tests.rs"]
+mod rockfall_tests;
+#[cfg(test)]
 #[path = "siren_tests.rs"]
 mod siren_tests;
 #[cfg(test)]
@@ -2913,6 +2916,9 @@ impl Game {
             .as_ref()
             .ok_or("The pending token is missing.")?
             .card_id;
+        if !self.pending_token.as_ref().unwrap().gear {
+            self.validate_unit_play_location(lane)?;
+        }
         if let Some(result) = self.pay_active_play(player, id) {
             result?;
         }
@@ -4438,6 +4444,9 @@ impl Game {
         if lane >= self.battlefield_count() {
             return Err("Choose a battlefield.".into());
         }
+        if self.catalog[id].kind == CardKind::Unit {
+            self.validate_unit_play_location(Some(lane))?;
+        }
         Ok(targets)
     }
 
@@ -5035,6 +5044,16 @@ impl Game {
             }
             PendingTriggerEffect::Token(token) => {
                 self.priority_player = token.player;
+                if !token.gear
+                    && let Some(lane) = token.location
+                    && let Err(reason) = self.validate_unit_play_location(lane)
+                {
+                    // An impossible fixed-location play cannot ask for costs or
+                    // fall back to base. The token ceases to exist (Core185–186).
+                    self.restore_reserved_grants(token.id);
+                    self.push_log(format!("The token cannot be played: {reason}"));
+                    return Ok(());
+                }
                 let remaining=1+self.pending_triggers.iter().filter(|p|matches!(&p.effect,PendingTriggerEffect::Token(t)if t.player==token.player&&t.card_id==token.card_id)).count()as u8;
                 self.pending_token = Some(token.clone());
                 let options = self
@@ -6845,6 +6864,9 @@ impl Game {
     ) -> Result<(), String> {
         let card = self.catalog.get(id).ok_or("Unknown card.")?;
         let actor = self.priority();
+        if card.kind == CardKind::Unit {
+            self.validate_unit_play_location(lane)?;
+        }
         if !self.card_supported(id) {
             return Err(self.effect_description(id));
         }

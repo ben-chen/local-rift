@@ -1,0 +1,590 @@
+{
+  "status": "Local validation passed; frozen installed acceptance pending",
+  "reviewed_at": "2026-11-14T08:43:35.658430+00:00",
+  "base_revision": "b7040518ad0aa962e47dd7f8f949e837fe0fa6c3",
+  "battlefield": {
+    "id": 17,
+    "official_id": "sfd-216-221",
+    "name": "Rockfall Path"
+  },
+  "rules": {
+    "source": "https://playriftbound.com/en-us/news/rules-and-releases/vendetta-rules-faq-and-clarifications/",
+    "expected": "A prohibition on unit plays, including tokens and Hidden units; movement and gear unaffected. Competing permissions and ignored costs cannot override it. Impossible Temporal Breach replay restores the card to banishment."
+  },
+  "library": {
+    "passed": 1055,
+    "ignored": 0,
+    "seconds": 6.73,
+    "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-rockfall-library-v1.log",
+    "sha256": "b6a0b5a44eaab889f531a513688946da404ef78c721253fb60d850ba7d81defb"
+  },
+  "focused": {
+    "passed_with_library": 7,
+    "scope": [
+      "Both seats, all control states; hand, champion and Ambush rejection is atomic",
+      "Hiding remains legal; Hidden unit plays fail and Hidden spells work",
+      "Movement conquers; Deploy gear enters without controlling the field",
+      "Free-placement tokens exclude the field; fixed illegal tokens cease without entry",
+      "Temporal Breach cannot replay to Rockfall or fall back to base",
+      "Any-battlefield instructions preserve the other legal destination",
+      "API catalog, third physical field, validation, rejection and observations"
+    ]
+  },
+  "companion": {
+    "passed": 1,
+    "scope": "Both levels remain concise, independent of opponent private cards, and read only",
+    "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-rockfall-companion-v3.log",
+    "sha256": "90617a3b75087fcc775657603ce72d7ca1ba64e8ccabb7a6ddac36831b0a0bc3"
+  },
+  "source": {
+    "passed": 2,
+    "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-rockfall-source-v1.log",
+    "sha256": "8d99c2def2c4a93f28c03fbc372c76edc51423588e338c1d4414a7a6e699e7f8"
+  },
+  "quality": {
+    "strict_all_target_clippy": {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-rockfall-clippy-v3.log",
+      "sha256": "a269abbea4684f6376abeeede31c4c0ba7ac12b37263e9ddbf9d243e8a5cb657"
+    },
+    "format": {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-rockfall-fmt-v1.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "catalog": {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-rockfall-catalog-final-v1.log",
+      "sha256": "588e824b87db95dbc12b915e3c7b331243c3e5e32064fb24b441f4755fa0f091"
+    },
+    "binary_build": {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-rockfall-build-v3.log",
+      "sha256": "c709b2fcff93b903d8bf250f39640912b6a5c91161100985a943e65da4e81c7c"
+    }
+  },
+  "native": {
+    "status": "passed",
+    "pid": 2009469,
+    "binary_sha256": "3324d37428287c09ef226fc67fa41023a57e1c622de1809acab7e472e12dae3f",
+    "cases": [
+      {
+        "name": "normal",
+        "exit_code": 0,
+        "seconds": 5.082,
+        "captures": 5,
+        "games": 0,
+        "capture_sha256": {
+          "rift_rockfall_blocked.png": "79285cf23e62488ee66d4e90853c7cf92ce7ad9b3cef541ea1a43ee5fb12c41a",
+          "rift_rockfall_beginner.png": "4b9bec80e979e5531eb1ec027849f572eea7c64c31adc009268305f28545c34c",
+          "rift_rockfall_picker.png": "d09f9a3f42040cf8a15d7b25e3a85f5e751a30d63d7ece6f1963395fc2a04954",
+          "rift_rockfall_advanced.png": "b0a1f685b82a3857164cec865e3edb89eeb40f0857f7d0b846393823648c756d",
+          "rift_rockfall_rules.png": "a37e7fc0fc43dd0cb03c5d2394c1490884f0ccf9f549602a6c33c28a80d2dc80"
+        },
+        "log_sha256": "3f61fd87ea894427d1484592fa5e41303143e58fd775741e07c8a3315cb80509"
+      },
+      {
+        "name": "small",
+        "exit_code": 0,
+        "seconds": 4.784,
+        "captures": 5,
+        "games": 0,
+        "capture_sha256": {
+          "rift_rockfall_blocked.png": "303c287041dedbd1746e3be1ac827d63820289342498edeaa965eff04285cda7",
+          "rift_rockfall_beginner.png": "ff9640ec6e05ca708dd18b23d7167cea1f77aaf7492e0772a4751a696d894eac",
+          "rift_rockfall_picker.png": "7d0b9a23a9d939816b7e6ad09dadaf2adcb8873dd1fcbe6603db71332de9677f",
+          "rift_rockfall_advanced.png": "6afc08035f5b328bfd39ddda39ec87cfbe6900b728f5a66e56460d69fbcc10c8",
+          "rift_rockfall_rules.png": "94c3320d6b204c473da27dd9cb9efbfecd9de181d68e7606439cccd6ac13c649"
+        },
+        "log_sha256": "3f61fd87ea894427d1484592fa5e41303143e58fd775741e07c8a3315cb80509"
+      }
+    ]
+  },
+  "visual_review": [
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-rockfall-native-v1/normal/rift_rockfall_rules.png",
+      "sha256": "a37e7fc0fc43dd0cb03c5d2394c1490884f0ccf9f549602a6c33c28a80d2dc80"
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-rockfall-native-v1/small/rift_rockfall_blocked.png",
+      "sha256": "303c287041dedbd1746e3be1ac827d63820289342498edeaa965eff04285cda7"
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-rockfall-native-v1/small/rift_rockfall_advanced.png",
+      "sha256": "6afc08035f5b328bfd39ddda39ec87cfbe6900b728f5a66e56460d69fbcc10c8"
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-rockfall-native-v1/small/rift_rockfall_picker.png",
+      "sha256": "7d0b9a23a9d939816b7e6ad09dadaf2adcb8873dd1fcbe6603db71332de9677f"
+    }
+  ],
+  "visual_findings": "1440x900 rules inspector and 1152x720 rejection, Advanced Mote and setup picker are readable. The rejection preserves the hand and resources; actual clicks move the existing unit and select the final field.",
+  "api": {
+    "status": "passed",
+    "scope": "Complete authored Irelia matches with Rockfall; not a tournament-strength claim.",
+    "registration": {
+      "deck": {
+        "name": "Irelia / Rockfall coverage",
+        "legend": 0,
+        "chosen_champion": 0,
+        "cards": [
+          [
+            0,
+            1
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            3,
+            2
+          ],
+          [
+            4,
+            2
+          ],
+          [
+            5,
+            3
+          ],
+          [
+            6,
+            3
+          ],
+          [
+            7,
+            3
+          ],
+          [
+            8,
+            2
+          ],
+          [
+            9,
+            1
+          ],
+          [
+            10,
+            1
+          ],
+          [
+            11,
+            1
+          ],
+          [
+            12,
+            1
+          ],
+          [
+            13,
+            1
+          ],
+          [
+            14,
+            2
+          ],
+          [
+            15,
+            3
+          ],
+          [
+            16,
+            2
+          ],
+          [
+            17,
+            3
+          ],
+          [
+            18,
+            3
+          ],
+          [
+            19,
+            1
+          ],
+          [
+            20,
+            1
+          ],
+          [
+            21,
+            2
+          ]
+        ],
+        "runes": [
+          0,
+          6,
+          0,
+          0,
+          6,
+          0
+        ],
+        "battlefield": 17
+      },
+      "sideboard": [
+        [
+          369,
+          2
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          421,
+          1
+        ],
+        [
+          12,
+          1
+        ],
+        [
+          13,
+          1
+        ],
+        [
+          424,
+          2
+        ],
+        [
+          44,
+          1
+        ],
+        [
+          20,
+          1
+        ]
+      ],
+      "battlefields": [
+        17,
+        13,
+        14
+      ]
+    },
+    "format_date": "2026-11-14",
+    "records": [
+      {
+        "difficulty": "easy",
+        "irelia_seat": 0,
+        "result": {
+          "wins": [
+            0,
+            2
+          ],
+          "winner": 1,
+          "history": [
+            {
+              "battlefields": [
+                17,
+                11
+              ],
+              "first_player": 1,
+              "number": 1,
+              "scores": [
+                2,
+                8
+              ],
+              "winner": 1
+            },
+            {
+              "battlefields": [
+                13,
+                1
+              ],
+              "first_player": 1,
+              "number": 2,
+              "scores": [
+                0,
+                9
+              ],
+              "winner": 1
+            }
+          ],
+          "requests": 862,
+          "seed": 170100,
+          "difficulty": "easy"
+        },
+        "rockfall_games": [
+          0
+        ],
+        "arrivals_by_movement": 3,
+        "trace_sha256": "ab965ca32a200b8c29c8e0badc3c03d634d9d3202b4b182b5ecdb42c3e5cf7d1"
+      },
+      {
+        "difficulty": "easy",
+        "irelia_seat": 1,
+        "result": {
+          "wins": [
+            2,
+            0
+          ],
+          "winner": 0,
+          "history": [
+            {
+              "battlefields": [
+                11,
+                17
+              ],
+              "first_player": 0,
+              "number": 1,
+              "scores": [
+                9,
+                3
+              ],
+              "winner": 0
+            },
+            {
+              "battlefields": [
+                1,
+                13
+              ],
+              "first_player": 0,
+              "number": 2,
+              "scores": [
+                8,
+                5
+              ],
+              "winner": 0
+            }
+          ],
+          "requests": 1006,
+          "seed": 170101,
+          "difficulty": "easy"
+        },
+        "rockfall_games": [
+          0
+        ],
+        "arrivals_by_movement": 6,
+        "trace_sha256": "d07aac5c286d12cd48c2684f61f5199a092459a54961699869ab41724491437c"
+      },
+      {
+        "difficulty": "tactical",
+        "irelia_seat": 0,
+        "result": {
+          "wins": [
+            0,
+            2
+          ],
+          "winner": 1,
+          "history": [
+            {
+              "battlefields": [
+                17,
+                11
+              ],
+              "first_player": 1,
+              "number": 1,
+              "scores": [
+                2,
+                9
+              ],
+              "winner": 1
+            },
+            {
+              "battlefields": [
+                13,
+                1
+              ],
+              "first_player": 1,
+              "number": 2,
+              "scores": [
+                5,
+                8
+              ],
+              "winner": 1
+            }
+          ],
+          "requests": 811,
+          "seed": 170110,
+          "difficulty": "tactical"
+        },
+        "rockfall_games": [
+          0
+        ],
+        "arrivals_by_movement": 4,
+        "trace_sha256": "705627bf805ca15f1364cbab8d02ec4cf8fd377bff4c3637e9edeb97097c7011"
+      },
+      {
+        "difficulty": "tactical",
+        "irelia_seat": 1,
+        "result": {
+          "wins": [
+            2,
+            1
+          ],
+          "winner": 0,
+          "history": [
+            {
+              "battlefields": [
+                11,
+                17
+              ],
+              "first_player": 0,
+              "number": 1,
+              "scores": [
+                0,
+                8
+              ],
+              "winner": 1
+            },
+            {
+              "battlefields": [
+                1,
+                13
+              ],
+              "first_player": 0,
+              "number": 2,
+              "scores": [
+                8,
+                7
+              ],
+              "winner": 0
+            },
+            {
+              "battlefields": [
+                12,
+                14
+              ],
+              "first_player": 0,
+              "number": 3,
+              "scores": [
+                8,
+                5
+              ],
+              "winner": 0
+            }
+          ],
+          "requests": 1436,
+          "seed": 170111,
+          "difficulty": "tactical"
+        },
+        "rockfall_games": [
+          0
+        ],
+        "arrivals_by_movement": 1,
+        "trace_sha256": "64c38aef9ca02a0d9aefcf2a318598d50b0a30d96d09a6857d8a9ab96ada0f23"
+      },
+      {
+        "difficulty": "strategic",
+        "irelia_seat": 0,
+        "result": {
+          "wins": [
+            0,
+            2
+          ],
+          "winner": 1,
+          "history": [
+            {
+              "battlefields": [
+                17,
+                11
+              ],
+              "first_player": 1,
+              "number": 1,
+              "scores": [
+                5,
+                8
+              ],
+              "winner": 1
+            },
+            {
+              "battlefields": [
+                13,
+                1
+              ],
+              "first_player": 1,
+              "number": 2,
+              "scores": [
+                2,
+                8
+              ],
+              "winner": 1
+            }
+          ],
+          "requests": 1084,
+          "seed": 170120,
+          "difficulty": "strategic"
+        },
+        "rockfall_games": [
+          0
+        ],
+        "arrivals_by_movement": 6,
+        "trace_sha256": "5aff3dc357d0df09b6bf1a80316afb076229b7518511c52e6c84ff4d102e9824"
+      },
+      {
+        "difficulty": "strategic",
+        "irelia_seat": 1,
+        "result": {
+          "wins": [
+            2,
+            1
+          ],
+          "winner": 0,
+          "history": [
+            {
+              "battlefields": [
+                11,
+                17
+              ],
+              "first_player": 0,
+              "number": 1,
+              "scores": [
+                8,
+                6
+              ],
+              "winner": 0
+            },
+            {
+              "battlefields": [
+                1,
+                13
+              ],
+              "first_player": 0,
+              "number": 2,
+              "scores": [
+                3,
+                8
+              ],
+              "winner": 1
+            },
+            {
+              "battlefields": [
+                12,
+                14
+              ],
+              "first_player": 0,
+              "number": 3,
+              "scores": [
+                8,
+                0
+              ],
+              "winner": 0
+            }
+          ],
+          "requests": 1418,
+          "seed": 170121,
+          "difficulty": "strategic"
+        },
+        "rockfall_games": [
+          0
+        ],
+        "arrivals_by_movement": 2,
+        "trace_sha256": "42d7a0d9a2e1a90e5fbfab1e2cdca40a123c8c5045625997e83b3dd14ea3df1e"
+      }
+    ],
+    "binary_sha256": "16ece9c1f208eb2c024e25004e160dfad29e306f9f65e9a84d0b80e8fd122089"
+  },
+  "corrected_attempts": [
+    "Focused v1 found a missing no-trigger conquest arm for the new field; fixed the engine.",
+    "Replay fixtures must decline the optional Irelia trigger before passing; fixed both-seat scenarios.",
+    "The positive controlled-field fixture needed an actual friendly unit to retain control; fixed fixture rather than relaxing rules.",
+    "Native test compilation needed visible entry-point re-export and matches assertions for non-Debug Selection.",
+    "System image conversion used the installed Pillow interpreter after the default Python lacked Pillow."
+  ],
+  "remaining": [
+    "Frozen installed release checks, independent installed image review and publication",
+    "All currently legal cards, full Standard parity, expert AI and novice learning remain unproven"
+  ]
+}

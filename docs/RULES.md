@@ -45,6 +45,7 @@ Printed costs and all printed domains are retained. For a card with multiple dom
 | — | Targon's Peak | Conquering creates an end-of-turn ability to ready up to two runes. |
 | — | Shadow Temple | Holding Burns three cards from the top of the controller's main deck. |
 | — | Zaun Warrens | On conquest, discard one card, then draw one. |
+| — | Rockfall Path | Units, including tokens and Hidden units, cannot be played here. Movement, spells and gear remain possible. |
 
 Conquest triggers use the chain only when the battlefield scores for that player. Reconquering a field already scored that turn does not repeat those triggers. The final-point replacement draw still counts as scoring and does trigger them. Sunken Temple's optional payment finalizes its draw ability; drawing waits for responses. Seat of Power counts other controlled fields when its ability resolves. Void Gate uses Riot's corrected wording, so a spell targeting several locations only gains damage against units at Void Gate.
 

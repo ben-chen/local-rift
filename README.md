@@ -4,7 +4,7 @@ A native Rust client for practicing Riftbound against three levels of AI. It inc
 
 ![The Practice Grounds with card art and matching rune reserves](docs/preview.png)
 
-**This is an unofficial rules implementation under development, not yet identical to standard Riftbound.** The client models turns, resources, movement, scoring, showdowns, priority, and printed card, legend, equipment, and selected battlefield effects. Hover previews and inspectors show complete official text, followed by specific practice notes where needed. See [current practice scope](docs/STATUS.md) for a concise feature and acceptance summary. Coverage and remaining choice differences are recorded in [Implemented rules and limitations](docs/RULES.md); [Sources](docs/SOURCES.md) records the official references and errata. Seventeen battlefield choices are available, and simulated match results do not establish real deck strength.
+**This is an unofficial rules implementation under development, not yet identical to standard Riftbound.** The client models turns, resources, movement, scoring, showdowns, priority, and printed card, legend, equipment, and selected battlefield effects. Hover previews and inspectors show complete official text, followed by specific practice notes where needed. See [current practice scope](docs/STATUS.md) for a concise feature and acceptance summary. Coverage and remaining choice differences are recorded in [Implemented rules and limitations](docs/RULES.md); [Sources](docs/SOURCES.md) records the official references and errata. Eighteen battlefield choices are available, and simulated match results do not establish real deck strength.
 
 ## Run
 
@@ -283,7 +283,7 @@ The implementation uses **Rust + Macroquad**, with a pure Rust rules layer separ
 | `src/combat.rs` / `src/combat_ui.rs` | Resumable combat resolution, captured results, closed focus and visible progress |
 | `src/deck.rs` / `src/deck_editor.rs` | Constructed-deck validation, native editor, and separate saved lists |
 | `src/cards.rs` | Card facts, official text, and preset compositions |
-| `src/battlefields.rs` | Seventeen official battlefield choices, triggers, and cost or damage modifiers |
+| `src/battlefields.rs` | Eighteen official battlefield choices, triggers, and cost or damage modifiers |
 | `src/legends.rs` | Legend powers, optional trigger costs, and combat bonuses |
 | `src/hidden.rs` | Facedown slots, Hidden timing, target restrictions, and visibility |
 | `src/gear.rs` | Persistent gear, attachment abilities, resource generation, and death prevention |

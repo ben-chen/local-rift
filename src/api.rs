@@ -61,6 +61,9 @@ mod legend_readiness_tests;
 #[cfg(test)]
 mod resource_card_tests;
 #[cfg(test)]
+#[path = "api/rockfall_tests.rs"]
+mod rockfall_tests;
+#[cfg(test)]
 mod spell_choice_tests;
 #[cfg(test)]
 mod spirit_wheel_tests;

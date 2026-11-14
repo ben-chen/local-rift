@@ -180,3 +180,5 @@ The [resource-card validation](validation/irelia_resources.json) records both-se
 rules scenarios, native controls, companion advice and six complete API matches.
 The campaign uses an authored coverage list; the seven sourced presets remain
 unchanged. These additions do not claim new tournament-list provenance.
+
+Rockfall Path adds an Irelia battlefield option identified in the secondary Murcia list. Its shared play restriction covers ordinary and instructed unit plays, Hidden and tokens, while movement remains available. The [validation record](validation/irelia_rockfall.json) records 1,055 passing library tests, both-seat rules/API scenarios, both companion levels, ten native captures at two sizes and 14 complete games across all three AI levels. Four captures were visually reviewed. The six authored best-of-three series observed 22 distinct unit arrivals by movement; they do not establish optimal play. Frozen installed acceptance is pending. The seven sourced recipes remain unchanged.

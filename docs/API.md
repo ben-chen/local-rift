@@ -1079,3 +1079,5 @@ Champion Legend per player; future additional legends require physical identitie
 and are not covered by this representation. The
 [complete-match checker](../tools/check_entourage_api.py) records observed targeting
 and resolution separately at all three AI difficulties and both seats.
+
+Rockfall Path is battlefield ID 17. Its printed text is returned by `catalog`; setup and registered matches accept it wherever a legal battlefield can be selected. Unit plays to a physical lane containing this field are rejected without changing the revision or resources. This applies to Hidden units, tokens and instructed replays as well as ordinary plays. Legal actions and suggestions share the same restriction; movement and gear plays remain available. Temporal Breach can leave a `pending_play` with only the existing impossible-finalization acknowledgement (`choose`, `accept:false`), which restores the card to banishment.

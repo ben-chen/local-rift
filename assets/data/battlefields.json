@@ -155,6 +155,14 @@
       "official_html": "<p>When you conquer here, discard 1, then draw 1.</p>",
       "official_text": "When you conquer here, discard 1, then draw 1.",
       "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/458ee40086c77b43b98c2decbaf33a4aa2359bb9-1038x744.png?accountingTag=RB"
+    },
+    {
+      "id": 17,
+      "name": "Rockfall Path",
+      "source_id": "sfd-216-221",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_html": "<p>Units can't be played here.</p>",
+      "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/a1bde66bccf2786e7c0b9d44fcdcdaa6b59f0328-1039x744.png?accountingTag=RB"
     }
   ]
 }

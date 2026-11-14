@@ -1,4 +1,4 @@
-//! Seventeen source-reviewed battlefield choices; preset defaults remain IDs 0–3.
+//! Eighteen source-reviewed battlefield choices; preset defaults remain IDs 0–3.
 //!
 //! Gallery text and complete original faces are source-reviewed through 2026-10-26.
 //! Void Gate, Emperor's Dais, and Targon's Peak use operative official errata;
@@ -17,7 +17,9 @@ pub struct BattlefieldDef {
     pub source_url: &'static str,
 }
 
-pub const BATTLEFIELDS: [BattlefieldDef; 17] = [
+pub const ROCKFALL_PATH_ID: usize = 17;
+
+pub const BATTLEFIELDS: [BattlefieldDef; 18] = [
     BattlefieldDef {
         id: 0,
         name: "Sunken Temple",
@@ -137,6 +139,13 @@ pub const BATTLEFIELDS: [BattlefieldDef; 17] = [
         source_id: "ogn-298-298",
         source_url: "https://playriftbound.com/en-us/card-gallery/",
     },
+    BattlefieldDef {
+        id: ROCKFALL_PATH_ID,
+        name: "Rockfall Path",
+        official_text: "Units can't be played here.",
+        source_id: "sfd-216-221",
+        source_url: "https://playriftbound.com/en-us/card-gallery/",
+    },
 ];
 
 /// Token definitions occupy a separate ID range and cannot be chosen at setup.
@@ -201,6 +210,20 @@ impl BattlefieldAbility {
 }
 
 impl Game {
+    /// A play restriction, not a restriction on movement or replaced board entry.
+    /// Applies to unit tokens too, whose source card may itself be a spell.
+    pub(crate) fn validate_unit_play_location(&self, lane: Option<usize>) -> Result<(), String> {
+        if let Some(lane) = lane {
+            let field = self.battlefields.get(lane).ok_or("Choose a battlefield.")?;
+            if *field == ROCKFALL_PATH_ID {
+                return Err(
+                    "Units can't be played at Rockfall Path. Move a unit here instead.".into(),
+                );
+            }
+        }
+        Ok(())
+    }
+
     pub fn choose_battlefield(&mut self, player: usize, id: usize) -> Result<(), String> {
         if self.phase != Phase::Mulligan {
             return Err("Choose battlefields before the match begins.".into());
@@ -265,7 +288,7 @@ impl Game {
                 Vec::new(),
                 ChainAbility::Battlefield(BattlefieldAbility::ZaunWarrensLoot { lane }),
             ),
-            3 | 4 | 6..=10 | 12 | 13 | 15 | BARON_PIT_ID => {}
+            3 | 4 | 6..=10 | 12 | 13 | 15 | ROCKFALL_PATH_ID | BARON_PIT_ID => {}
             _ => unreachable!("validated battlefield selection"),
         }
 

@@ -6,7 +6,7 @@ Dated sections preserve the scope and remaining work at each admission checkpoin
 
 ## What the presets contain
 
-Each preset reproduces the published **40-card main-deck composition**, including the chosen champion. At setup, the chosen champion is removed from the shuffled deck into its own playable zone. The published rune split is also used at setup. Complete registered presets include their published sideboard and three battlefield choices; the deck library and match setup expose these separately from single-game field selection. Before a game, each player selects one of seventeen reviewed official fields. The original choices and later additions are recorded below. Each preset defaults to a field from its published list. Runtime support for legend and card abilities is identified separately from these source facts.
+Each preset reproduces the published **40-card main-deck composition**, including the chosen champion. At setup, the chosen champion is removed from the shuffled deck into its own playable zone. The published rune split is also used at setup. Complete registered presets include their published sideboard and three battlefield choices; the deck library and match setup expose these separately from single-game field selection. Before a game, each player selects one of eighteen reviewed official fields. The original choices and later additions are recorded below. Each preset defaults to a field from its published list. Runtime support for legend and card abilities is identified separately from these source facts.
 
 | Preset | Published pilot and result | Source |
 |---|---|---|
@@ -324,3 +324,5 @@ explicitly allows countering the first spell after an opponent has played a
 second, including when that second spell was countered. October 9 Core Rules
 420.4.a/b distinguish successful-resolution play triggers from finalization
 checks. The condition is evaluated on resolution, not used as a target filter.
+
+Rockfall Path appends battlefield ID 17 (`sfd-216-221`). Its [admission record](../assets/data/card_admissions/irelia_rockfall/admissions.json) pins the archived official printing, original face and runtime thumbnail; all were checked against the printed prohibition on unit plays. The [official Vendetta FAQ](https://playriftbound.com/en-us/news/rules-and-releases/vendetta-rules-faq-and-clarifications/) distinguishes this restriction from permissions and mandatory location instructions. The [Murcia Irelia list](https://riftwatch.gg/decks/murcia-4/) is secondary evidence for prioritizing this field, not a newly admitted preset or independently verified tournament result. Previous cards, fields and all seven presets are unchanged.

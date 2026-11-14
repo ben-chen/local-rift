@@ -358,6 +358,16 @@ fn advice(game: &Game, level: AdviceLevel) -> Vec<&'static str> {
     }
 }
 
+fn rockfall_advice(game: &Game, beginner: bool) -> Option<&'static str> {
+    game.battlefields
+        .contains(&local_rift::battlefields::ROCKFALL_PATH_ID)
+        .then_some(if beginner {
+            "Rockfall Path allows movement, but no unit plays, including tokens and Hidden units. Play units elsewhere, then move them here. Gear and spells still work."
+        } else {
+            "Rockfall Path needs reinforcement by movement. Ambush cannot bypass it; Temporal Breach banishes a unit here without replaying it, even if its cost is ignored."
+        })
+}
+
 fn checked_advice(game: &Game, level: AdviceLevel) -> Result<Vec<&'static str>, String> {
     game.validate_numeric_state()?;
     let beginner = level == AdviceLevel::Beginner;
@@ -389,6 +399,7 @@ fn checked_advice(game: &Game, level: AdviceLevel) -> Result<Vec<&'static str>, 
     }
 
     if let Some(mut window_tips) = response_window_advice(game, beginner)? {
+        window_tips.extend(rockfall_advice(game, beginner));
         if let Some(tip) = sands_advice(game, beginner) {
             window_tips.push(tip);
         }
@@ -416,6 +427,7 @@ fn checked_advice(game: &Game, level: AdviceLevel) -> Result<Vec<&'static str>, 
     }
 
     tips.extend(crate::combat_ui::card_advice(game, beginner)?);
+    tips.extend(rockfall_advice(game, beginner));
 
     // High stakes scoring and visible threats come before routine suggestions.
     let enemy_has_hold = game.battlefield_owner.contains(&Some(1));
@@ -2703,6 +2715,24 @@ mod tests {
             assert!(advice(&g, level).iter().all(|s| s.chars().count() <= 180));
             g.decision = None;
         }
+    }
+
+    #[test]
+    fn rockfall_advice_is_public_concise_and_does_not_change_the_position() {
+        let mut g = game();
+        g.start_match().unwrap();
+        g.battlefields[0] = local_rift::battlefields::ROCKFALL_PATH_ID;
+        let before = format!("{g:?}");
+        let mut hidden = g.clone();
+        hidden.players[1].hand = vec![381, 71];
+        hidden.players[1].deck.reverse();
+        for level in [AdviceLevel::Beginner, AdviceLevel::Advanced] {
+            let tips = advice(&g, level);
+            assert_eq!(tips, advice(&hidden, level));
+            assert!(tips.iter().any(|tip| tip.contains("Rockfall Path")));
+            assert!(tips.iter().all(|tip| tip.chars().count() <= 180));
+        }
+        assert_eq!(format!("{g:?}"), before);
     }
 
     #[test]

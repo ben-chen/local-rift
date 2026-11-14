@@ -145,7 +145,7 @@
     "standard_legal_by_kind_provisional": false,
     "unresolved_type_conflict_identities": 0,
     "implemented_legal_by_kind": {
-      "battlefield": 17,
+      "battlefield": 18,
       "gear": 79,
       "legend": 11,
       "rune": 6,
@@ -154,9 +154,9 @@
     },
     "implemented_main_cards": 457,
     "implemented_legends": 11,
-    "implemented_battlefields": 17,
-    "implemented_legal_identities": 491,
-    "unimplemented_legal_identities": 588,
+    "implemented_battlefields": 18,
+    "implemented_legal_identities": 492,
+    "unimplemented_legal_identities": 587,
     "errata_entries": 67,
     "identities_with_errata": 67,
     "source_quality_issues": 57,
@@ -30156,8 +30156,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_battlefield",
+        "runtime_id": 17,
+        "official_id": "sfd-216-221",
+        "playable_in_client": true
       }
     },
     {
