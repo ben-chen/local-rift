@@ -45,3 +45,8 @@ opposing responses, independently expected rules scenarios, opponent decisions
 outside the development benchmark, and beginner learning sessions. Expanding to
 all legal cards remains part of the goal; completing these priorities does not
 replace that scope.
+
+The [Strategic combat improvement](validation/strategic_combat.json) passed its
+separate installed acceptance: 2,018 Rust tests, 334 source checks, 1,176 simulated
+games, 23 UI cases and ten complete API comparisons (63 records). Its scoped
+Block decision benchmark improves to 26/26; this does not establish expert strength.
