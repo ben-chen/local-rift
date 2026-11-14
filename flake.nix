@@ -27,21 +27,30 @@
             pkgs.libGL
           ];
           graphicsPath = lib.makeLibraryPath graphicsLibraries;
+          runtimeFiles = lib.fileset.unions [
+            ./Cargo.toml
+            ./Cargo.lock
+            ./build.rs
+            ./src
+            ./tests
+            ./assets
+          ];
+          # Keep documentation and Python tooling out of the Rust build inputs.
+          # Catalog checks retain all runtime evidence and their generated report.
+          catalogSource = lib.fileset.toSource {
+            root = ./.;
+            fileset = lib.fileset.unions [
+              runtimeFiles
+              ./tools
+              ./docs/CARD_COVERAGE.md
+            ];
+          };
           package = pkgs.rustPlatform.buildRustPackage {
             pname = manifest.package.name;
             inherit (manifest.package) version;
             src = lib.fileset.toSource {
               root = ./.;
-              fileset = lib.fileset.unions [
-                ./Cargo.toml
-                ./Cargo.lock
-                ./build.rs
-                ./src
-                ./tests
-                ./assets
-                ./tools
-                ./docs
-              ];
+              fileset = runtimeFiles;
             };
             cargoLock.lockFile = ./Cargo.lock;
             nativeBuildInputs = lib.optional pkgs.stdenv.hostPlatform.isLinux pkgs.makeWrapper;
@@ -67,6 +76,7 @@
             inputsFrom = [ package ];
             packages = with pkgs; [
               cargo
+              cargo-nextest
               rustc
               rustfmt
               clippy
@@ -83,14 +93,22 @@
           simulation = pkgs.runCommand "local-rift-simulation-check" { } ''
             ${package}/bin/simulate --seeds 8 > "$out"
           '';
-          catalog = pkgs.runCommand "local-rift-catalog-check" { nativeBuildInputs = [ pkgs.python3 ]; } ''
-            cp -r ${package.src} source
-            chmod -R u+w source
-            cd source
-            python3 tools/import_catalog.py --check
-            python3 -m unittest discover -s tools -p 'test_*.py'
-            touch "$out"
-          '';
+          catalog =
+            pkgs.runCommand "local-rift-catalog-check"
+              {
+                nativeBuildInputs = [
+                  pkgs.python3
+                  pkgs.gitMinimal
+                ];
+              }
+              ''
+                cp -r ${catalogSource} source
+                chmod -R u+w source
+                cd source
+                python3 tools/import_catalog.py --check
+                python3 -m unittest discover -s tools -p 'test_*.py'
+                touch "$out"
+              '';
         }
       );
     in

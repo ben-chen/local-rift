@@ -3,38 +3,75 @@ name: Rust checks
 on:
   push:
   pull_request:
+  workflow_dispatch:
 
 permissions:
   contents: read
+
+# Superseded branch checks may stop; main acceptance runs to completion.
+concurrency:
+  group: rust-${{ github.workflow }}-${{ github.ref == 'refs/heads/main' && github.run_id || github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 jobs:
   check:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Check verification scope and changed documentation
+        id: scope
+        run: |
+          python3 -m unittest discover -s tools -p test_ci_scope.py
+          python3 tools/ci_scope.py
       - name: Install stable Rust and check tools
+        if: steps.scope.outputs.full_checks == 'true'
         run: |
           rustup toolchain install stable --profile minimal --component rustfmt --component clippy
           rustup default stable
+      - uses: Swatinem/rust-cache@v2
+        if: steps.scope.outputs.full_checks == 'true'
+      - uses: taiki-e/install-action@v2
+        if: steps.scope.outputs.full_checks == 'true'
+        with:
+          tool: nextest@0.9.146
       - name: Install Linux graphics development libraries
+        if: steps.scope.outputs.full_checks == 'true'
         run: |
           sudo apt-get update
           sudo apt-get install -y pkg-config libx11-dev libxi-dev libgl1-mesa-dev xvfb
       - name: Check formatting
+        if: steps.scope.outputs.full_checks == 'true'
         run: cargo fmt --all --check
       - name: Run tests
-        run: cargo test --locked
+        if: steps.scope.outputs.full_checks == 'true'
+        run: |
+          cargo nextest run --locked --all-targets --profile ci
+          cargo test --locked --doc
+      - name: Retain individual test results
+        if: always() && steps.scope.outputs.full_checks == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: rust-test-results
+          path: target/nextest/ci/junit.xml
+          if-no-files-found: ignore
       - name: Verify official card inventory offline
+        if: steps.scope.outputs.full_checks == 'true'
         run: |
           python3 tools/import_catalog.py --check
           python3 -m unittest discover -s tools -p 'test_*.py'
       - name: Run Clippy
+        if: steps.scope.outputs.full_checks == 'true'
         run: cargo clippy --locked --all-targets -- -D warnings
       - name: Exercise every matchup and starting side
+        if: steps.scope.outputs.full_checks == 'true'
         run: cargo run --locked --bin simulate -- --seeds 8
       - name: Build the client and bot tools
+        if: steps.scope.outputs.full_checks == 'true'
         run: cargo build --locked --release --bins
       - name: Run the example bot through the JSON protocol
+        if: steps.scope.outputs.full_checks == 'true'
         run: |
           python3 examples/random_bot.py --binary target/release/rift-api --seed 42
           python3 examples/random_bot.py --binary target/release/rift-api --seed 43 --first-player 1
@@ -44,6 +81,7 @@ jobs:
           python3 tools/check_hidden_blade_api.py target/release/rift-api "$RUNNER_TEMP/local-rift-hidden-blade.json"
           python3 tools/check_deathgrip_api.py target/release/rift-api "$RUNNER_TEMP/local-rift-deathgrip.json"
       - name: Exercise desktop controls at both window sizes
+        if: steps.scope.outputs.full_checks == 'true'
         env:
           LIBGL_ALWAYS_SOFTWARE: "1"
         run: |

@@ -42,7 +42,7 @@ The flake pins Nixpkgs and builds from `Cargo.lock`, including the embedded artw
 nix run                       # Build and launch the game
 nix run . -- --small           # Launch the smaller window
 nix build                     # Create result/bin/local-rift, simulate, and rift-api
-nix develop                   # Rust, Cargo, rustfmt, Clippy, rust-analyzer, and native libraries
+nix develop                   # Rust, Cargo, nextest, rustfmt, Clippy, rust-analyzer, native libraries
 ```
 
 Inside the development shell, use `cargo run --release` and `cargo test --locked` normally. The Linux package and shell supply the X11, input, keyboard, and OpenGL libraries that Miniquad loads at runtime. The packaged game does not depend on the host-library workaround in `run.sh`.
@@ -252,7 +252,7 @@ The implementation uses **Rust + Macroquad**, with a pure Rust rules layer separ
 | `src/deck.rs` / `src/deck_editor.rs` | Constructed-deck validation, native editor, and separate saved lists |
 | `src/cards.rs` | Card facts, official text, and preset compositions |
 | `src/battlefields.rs` | Seventeen official battlefield choices, triggers, and cost or damage modifiers |
-| `src/legends.rs` | Ten legend powers, optional trigger costs, and combat bonuses |
+| `src/legends.rs` | Legend powers, optional trigger costs, and combat bonuses |
 | `src/hidden.rs` | Facedown slots, Hidden timing, target restrictions, and visibility |
 | `src/gear.rs` | Persistent gear, attachment abilities, resource generation, and death prevention |
 | `src/deploy.rs` / `src/deploy_ui.rs` | Battlefield gear locations, Deploy rules, paid triggers and native controls |
@@ -284,7 +284,33 @@ cargo clippy --locked --all-targets -- -D warnings
 cargo run --locked --bin simulate
 ```
 
-The simulator runs **2,400 matches** by default: all 25 ordered deck pairings, all three AI levels, and 32 seeds. Starting players alternate across seeds, so each pairing and AI level includes 16 games from each starting position. It checks card/rune conservation, energy accounting, unit validity, and winner consistency after every action, and fails on an illegal action or stalled game. Example options:
+For a quicker full Rust run, `nix develop` includes nextest:
+
+```sh
+cargo nextest run --locked --all-targets --profile ci
+cargo test --locked --doc
+```
+
+The `ci` profile runs at most four tests concurrently, reports all failures, and
+does not retry failed tests. It retains a JUnit report in
+`target/nextest/ci/junit.xml`. This runs the full suite; the separate Cargo command
+keeps documentation tests covered. During implementation, use a focused test
+filter for the changed mechanic, then run full regression on the final candidate.
+
+GitHub checks cache Rust dependencies. Documentation-only changes validate changed
+JSON receipts and whitespace without rebuilding the game. The generated
+`docs/CARD_COVERAGE.md`, code, data, assets, tooling, unknown paths, and unavailable
+history all require full checks. Superseded branch checks can be cancelled; main
+checks run to completion. Manual workflow dispatch always runs the full checks.
+`python3 tools/ci_scope.py --base <commit>` shows the decision locally.
+
+Nix keeps Rust build inputs separate from Python catalog checks and documentation.
+Both checks remain in `nix flake check`; changing a source report or test tool no
+longer invalidates an otherwise unchanged Rust package.
+The [workflow validation](docs/validation/validation_workflow.json) records the
+local comparison, preserved checks, and outstanding GitHub verification.
+
+The simulator runs every ordered pairing of the currently included presets, all three AI levels, and 32 seeds by default. Starting players alternate across seeds, so each pairing and AI level includes 16 games from each starting position. It checks card/rune conservation, energy accounting, unit validity, and winner consistency after every action, and fails on an illegal action or stalled game. Example options:
 
 ```sh
 cargo run --bin simulate -- --seeds 128 --seed 1 --max-steps 5000

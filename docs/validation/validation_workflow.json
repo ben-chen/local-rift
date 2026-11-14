@@ -1,0 +1,102 @@
+{
+  "status": "Local validation passed; full GitHub suite pending",
+  "date": "2026-11-14T01:14:53.171136+00:00",
+  "scope": [
+    "Documentation-only CI path, with conservative full-check fallback",
+    "Rust dependency caching",
+    "Bounded nextest concurrency, no retries, JUnit report and separate doctests",
+    "Separate Rust and catalog Nix source inputs"
+  ],
+  "benchmark": {
+    "source_commit": "fcd35ed881ef5a3c2ab0617561536109908d69e6",
+    "prebuilt_same_source": true,
+    "test_threads_nextest": 4,
+    "runs": [
+      {
+        "runner": "cargo",
+        "command": [
+          "cargo",
+          "test",
+          "--locked",
+          "--lib",
+          "--test",
+          "conversion_matches",
+          "--test",
+          "c11_matches",
+          "--test",
+          "empowered_matches"
+        ],
+        "seconds": 280.358,
+        "exit_code": 0,
+        "log": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/validation-benchmark-cargo-v1.log"
+      },
+      {
+        "runner": "nextest",
+        "command": [
+          "cargo",
+          "nextest",
+          "run",
+          "--locked",
+          "--lib",
+          "--test",
+          "conversion_matches",
+          "--test",
+          "c11_matches",
+          "--test",
+          "empowered_matches",
+          "--test-threads",
+          "4",
+          "--no-fail-fast",
+          "--status-level",
+          "fail",
+          "--final-status-level",
+          "fail"
+        ],
+        "seconds": 118.468,
+        "exit_code": 0,
+        "log": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/validation-benchmark-nextest-v1.log"
+      }
+    ],
+    "test_count": 963,
+    "same_tests_passed_in_both_runs": true,
+    "nextest_version": "0.9.146",
+    "rust_version": "1.100.0",
+    "wall_time_reduction_percent": 57.7
+  },
+  "benchmark_limits": "One local prebuilt comparison of the same 960 library tests and three long match tests. Other source checks ran during the measurement. Not a prediction of total GitHub CI time.",
+  "checks": {
+    "ci_scope_tests": 5,
+    "historical_docs_commit_correctly_uses_fast_path": "331b222f06b78f8c1136294923cbbb26316b0ec6",
+    "historical_code_commit_correctly_requires_full_checks": "fcd35ed881ef5a3c2ab0617561536109908d69e6",
+    "actionlint": "passed",
+    "nix_flake_evaluation": "passed without building packages",
+    "nix_catalog_tests": 291,
+    "runtime_source_files_preserved_byte_for_byte": 1203,
+    "runtime_source_path": "/nix/store/r05c5mj2qdhnqs1gaw3119wfidlv6cwy-source",
+    "runtime_source_unchanged_after_README_edit": true,
+    "ci_profile_and_junit": {
+      "tests": 8,
+      "failures": 0,
+      "errors": 0,
+      "path": "target/nextest/ci/junit.xml"
+    }
+  },
+  "unchanged": [
+    "Rust gameplay and UI code",
+    "Card definitions and assets",
+    "All existing Rust tests and match matrices",
+    "Packaged cargo test gate and standalone simulation check"
+  ],
+  "evidence_sha256": {
+    "validation-benchmark-tests-v1.json": "3d8a838adeecf49a13673bedfaf5413fa8285defca929981eb596c70d42ada53",
+    "validation-benchmark-cargo-v1.log": "671ab18e1dd96801e08558f4c8db0984fc2d8211fe32d3b816a676e43fabef73",
+    "validation-benchmark-nextest-v1.log": "258a976478885deddc28f7d92f44b566b3e48cddb030e4c2eafd5ed592dd14de",
+    "validation-catalog-tests-v1.log": "5e7c72217183c157e50208f8d5b1a84ede8c0533fa3b522ecbd298377cca4435",
+    "validation-flake-eval-v1.log": "0e8bd08264597b7e7e8b88567a2eb94c85390652b0dd88fc51675e2e7a493254"
+  },
+  "remaining": [
+    "Collect the exact published commit GitHub run and its full nextest/JUnit results",
+    "Run a documentation-only follow-up through GitHub to confirm the fast path remotely",
+    "Continue shared source fixtures, reusable validation reporting, token UI acceptance and Standard rules/card coverage"
+  ]
+}
