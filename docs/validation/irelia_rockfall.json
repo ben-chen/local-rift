@@ -1,6 +1,6 @@
 {
   "status": "Local validation passed; frozen installed acceptance pending",
-  "reviewed_at": "2026-11-14T08:43:35.658430+00:00",
+  "reviewed_at": "2026-11-14T08:53:31.483719+00:00",
   "base_revision": "b7040518ad0aa962e47dd7f8f949e837fe0fa6c3",
   "battlefield": {
     "id": 17,
@@ -581,10 +581,30 @@
     "Replay fixtures must decline the optional Irelia trigger before passing; fixed both-seat scenarios.",
     "The positive controlled-field fixture needed an actual friendly unit to retain control; fixed fixture rather than relaxing rules.",
     "Native test compilation needed visible entry-point re-export and matches assertions for non-Debug Selection.",
-    "System image conversion used the installed Pillow interpreter after the default Python lacked Pillow."
+    "System image conversion used the installed Pillow interpreter after the default Python lacked Pillow.",
+    "Frozen release v1 failed four catalog checks because new battlefield 17 leaked into historical fixtures and live-count assertions were pinned to seventeen. Historical fixtures now retain their original seventeen fields; live registry tests check contiguous IDs and exact source mappings for every current field. No game/runtime changes were required."
   ],
   "remaining": [
     "Frozen installed release checks, independent installed image review and publication",
     "All currently legal cards, full Standard parity, expert AI and novice learning remain unproven"
-  ]
+  ],
+  "release_v1_failure": {
+    "report": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-rockfall-release-v1/status.json",
+    "sha256": "3ae8826fe3d693f295b2a37eea2542b962a1caf12a99002b47702025b71f0b48",
+    "revision": "9b70f2ee694e0700bfa4ecf2abd73210679708da",
+    "stage": "nix",
+    "failed_checks": [
+      "test_baron_source.BaronSourceTests.test_reviewed_baron_and_token_are_distinct_from_legal_starting_choices",
+      "test_c28_admissions.C28AdmissionTests.test_source_only_review_does_not_admit_any_of_the_ten_candidates",
+      "test_import_catalog.OfficialInventoryTests.test_battlefield_registry_preserves_sources_and_rejects_changed_facts",
+      "test_riven_admissions.RivenAdmissionTests.test_new_reviews_do_not_enable_cards_without_explicit_runtime_registration"
+    ]
+  },
+  "catalog_regressions_after_fix": {
+    "tests": 32,
+    "seconds": 28.7,
+    "log": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-rockfall-catalog-regressions-v2.log",
+    "sha256": "34e2a3ea115bc8222c2a51749c5e69e7a254a57a2e0767881767a212d44639ae",
+    "full_frozen_release": "pending v2"
+  }
 }

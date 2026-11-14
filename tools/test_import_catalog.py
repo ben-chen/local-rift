@@ -135,7 +135,7 @@ class OfficialInventoryTests(unittest.TestCase):
 
     def test_battlefield_registry_preserves_sources_and_rejects_changed_facts(self):
         fields = catalog.load_battlefield_manifest()
-        self.assertEqual([v["id"] for v in fields], list(range(17)))
+        self.assertEqual([v["id"] for v in fields], list(range(len(fields))))
         for field in fields:
             identity = next(c for c in self.snapshot["cards"] if c["identity"] == field["source_id"])
             self.assertEqual(identity["implementation"]["runtime_id"], field["id"])

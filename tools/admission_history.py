@@ -161,14 +161,22 @@ def pre_riven_legends():
 
 @contextmanager
 def pre_riven_runtime(runtime):
-    """Pair a historical card pool with its ten independently pinned legends."""
+    """Pair a historical card pool with its ten legends and seventeen fields.
+
+    C28's admission tests independently pin the original eleven fields and
+    verify the six additions against their source records. Later battlefield
+    admissions must not silently enlarge these historical coverage fixtures.
+    Older cohorts can still supply their explicit eleven-field override.
+    """
     if len(runtime['cards']) > 435:
         raise AssertionError('Use the current legend registry for post-Riven cards')
     legends = pre_riven_legends()
+    fields = catalog.load_battlefield_manifest()[:17]
     # A later preset cannot refer to a legend/champion absent from this fixture.
     # Preserve the exact earlier recipes; only omit the subsequently added list.
     runtime = {**runtime, 'decks': [d for d in runtime['decks']
                                    if d['legend_id'] != 'rad-149-167']}
     with patch.object(catalog, 'load_runtime_manifest', return_value=runtime), \
-            patch.object(catalog, 'load_legend_manifest', return_value=legends):
+            patch.object(catalog, 'load_legend_manifest', return_value=legends), \
+            patch.object(catalog, 'load_battlefield_manifest', return_value=fields):
         yield
