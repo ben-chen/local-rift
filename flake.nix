@@ -31,6 +31,7 @@
             ./Cargo.toml
             ./Cargo.lock
             ./build.rs
+            ./.config/nextest.toml
             ./src
             ./tests
             ./assets
@@ -59,6 +60,19 @@
             # Run the complete suite with assertions, matching `cargo test`.
             # Keep release optimization for the installed client and bot tools.
             checkType = "debug";
+            # The same bounded runner used in CI schedules independent match
+            # suites together; all tests remain enabled and retries stay off.
+            useNextest = true;
+            cargoTestFlags = [
+              "--locked"
+              "--all-targets"
+              "--profile"
+              "ci"
+            ];
+            # Nextest does not run Rust documentation examples.
+            postCheck = ''
+              cargo test --locked --offline --doc --target ${pkgs.stdenv.hostPlatform.rust.rustcTargetSpec}
+            '';
             postFixup = lib.optionalString pkgs.stdenv.hostPlatform.isLinux ''
               wrapProgram "$out/bin/local-rift" \
                 --prefix LD_LIBRARY_PATH : "${graphicsPath}"

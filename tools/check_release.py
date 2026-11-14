@@ -12,6 +12,7 @@ import json
 import os
 from pathlib import Path
 import re
+import shutil
 import subprocess
 import sys
 import time
@@ -19,6 +20,13 @@ import time
 
 def digest(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def require_executable(command):
+    resolved = shutil.which(command)
+    if resolved is None:
+        raise FileNotFoundError(f'Required release-check executable is unavailable: {command}')
+    return resolved
 
 
 def validate_plan(plan):
@@ -91,6 +99,11 @@ def main():
     args = parser.parse_args()
     plan = json.loads(args.plan.read_text())
     validate_plan(plan)
+    # Detect a missing display/build tool before spending time on the package.
+    args.xvfb = require_executable(args.xvfb)
+    nix = require_executable('nix')
+    nix_store = require_executable('nix-store')
+    require_executable('git')
     revision = plan['revision']
     output = args.output.resolve()
     output.mkdir(parents=True, exist_ok=False)
@@ -126,13 +139,29 @@ def main():
 
     save()
     try:
+        display = Path(args.xvfb).resolve()
+        if display.is_relative_to('/nix/store'):
+            display_store_path = Path(*display.parts[:4])
+            run([nix_store, '--add-root', str(output / 'display-tool'), '--indirect',
+                 '--realise', str(display_store_path)], output / 'display-root.log')
+        # Metadata may return a cached path that is no longer in the store.
+        # Archive explicitly materializes the source before registering its root.
         metadata = json.loads(subprocess.check_output(
-            ['nix', 'flake', 'metadata', '--json', uri], text=True,
+            [nix, 'flake', 'archive', '--json', uri], text=True,
         ))
         source = Path(metadata['path'])
+        # The filtered package inputs do not retain the complete flake source.
+        # Keep it alive for the later API scripts and UI working directory.
+        source_root = output / 'source'
+        run([nix_store, '--add-root', str(source_root), '--indirect', '--realise', str(source)],
+            output / 'source-root.log')
+        if source_root.resolve(strict=True) != source.resolve(strict=True):
+            raise RuntimeError('The source GC root does not retain the tested revision.')
+        report['source_gc_root'] = str(source_root)
+        save()
         checks = ['package', 'catalog', 'simulation']
         result, seconds = run(
-            ['nix', 'build', '--no-link', '--json', '--print-build-logs',
+            [nix, 'build', '--out-link', str(output / 'nix-result'), '--json', '--print-build-logs',
              '--cores', '2', '--max-jobs', '2']
             + [f'{uri}#checks.x86_64-linux.{check}' for check in checks],
             output / 'nix.log', capture=True,
@@ -145,7 +174,8 @@ def main():
         package, = [path for path in paths if path not in (catalog, simulation)]
         package = Path(package)
         report['nix'] = {'package': str(package), 'catalog': catalog,
-                         'simulation': simulation, 'seconds': seconds}
+                         'simulation': simulation, 'seconds': seconds,
+                         'gc_root_prefix': str(output / 'nix-result')}
         report['source'] = str(source)
         report['stage'] = 'installed_ui'
         save()
