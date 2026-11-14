@@ -76,6 +76,7 @@ fn every_runtime_card_maps_by_official_id_without_enabling_inventory_only_cards(
         })
         .collect();
     assert_eq!(mapped.len(), runtime.len());
+    assert_eq!(data["counts"]["implemented_main_cards"], runtime.len());
     for card in &runtime {
         let entry = mapped[&card.id];
         assert_eq!(entry["name"], card.name);
@@ -196,5 +197,9 @@ fn legality_counts_exclude_bans_and_auxiliary_game_pieces() {
     assert_eq!(
         data["counts"]["unimplemented_legal_identities"],
         unimplemented
+    );
+    assert_eq!(
+        data["counts"]["implemented_legal_identities"],
+        legal - unimplemented
     );
 }

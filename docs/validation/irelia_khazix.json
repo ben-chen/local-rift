@@ -1,5 +1,5 @@
 {
-  "status": "Focused rules, source, static, API matches and native UI acceptance passed; frozen full release acceptance pending",
+  "status": "Native/API checks passed; first immutable release failed four stale catalog assertions. Corrected global checks and expanded fast preflight pass; full acceptance of the corrected candidate remains pending.",
   "base_commit": "2fcc6e1d80b81f16b81179b8c9637371aceb226d",
   "reviewed_on": "2026-11-14",
   "runtime_id": 449,
@@ -81,7 +81,13 @@
     "irelia-khazix-native-v5/status.json": "4fcded69b4bb315cd97993eede77847007d11a70ff7034e180572d7dbdcfc111",
     "irelia-khazix-native-visual-review-v1.json": "c995d99ef8d9ed0dc2a1a4cd670b4f6046c00284054df52ff380f86a51e00d8c",
     "irelia-khazix-format-api-v1.json": "2a4d57147111da4971c423a0ed2c9a4afb330c288018706c4133a58867428fe0",
-    "irelia-khazix-clippy-v4.log": "a3041c7ff9312658473ef6a0a563e56cc2f2af676c0faa714b4f63de93b547b2"
+    "irelia-khazix-clippy-v4.log": "a3041c7ff9312658473ef6a0a563e56cc2f2af676c0faa714b4f63de93b547b2",
+    "irelia-khazix-release-v1/status.json": "9f90bf1d3dd3a91e38cee97192578963cd6bfa2e1cdb42555131eb5e28b21ad9",
+    "irelia-khazix-release-v1/nix.log": "7f1b841e31effa34594fcb9a45f016536b266aff34113fdfed3f245569320933",
+    "irelia-khazix-preflight-v1.log": "2ad14c82e70d82663f26b42c736f70cb9eb9e90e3fa581fb5d2463412881b56d",
+    "irelia-khazix-preflight-v2/status.json": "a160a6e9ad45c99c93d16a5b9c0b0381d8a6f0ae344694dceab190b67f1e8ece",
+    "irelia-khazix-preflight-v2/junit.xml": "093fe0f5d90a6971b80b15f633bb540fdc42175ba1d690401124b0b27976a712",
+    "irelia-khazix-preflight-clippy-v1.log": "7634e38a940e623a719a7751716afb596440cbeae74b1fd6c7f72ae58039d5d9"
   },
   "api": {
     "engine_source_commit": "1d3ab2a",
@@ -156,5 +162,61 @@
     "visually_reviewed_captures": 10,
     "visual_review_sha256": "c995d99ef8d9ed0dc2a1a4cd670b4f6046c00284054df52ff380f86a51e00d8c",
     "scope": "Actual hand/unit drag, atomic invalid base drop, Ambush payment, right-click inspector, scroll to full text, attack response and hover; authored positions with AI held."
+  },
+  "release_attempts": [
+    {
+      "status": "failed",
+      "stage": "nix",
+      "pid": 1715481,
+      "revision": "d09f3fe7f03c8dcd4c74c550fb6adfa206c2aba2",
+      "plan_sha256": "b3b05f074b0312de2d5f557e3406e88fe688aeb6e19e8b2e0e933c576f0966b5",
+      "runner_sha256": "5631bfd578f7217542a061aea2b67e50a38da93514524eb656e4924efb3f1910",
+      "started_at": "2026-11-14T05:08:20.266847+00:00",
+      "ui": [],
+      "api": [],
+      "source_gc_root": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-khazix-release-v1/source",
+      "error": "RuntimeError('nix.log: command exited 1')",
+      "finished_at": "2026-11-14T05:26:02.591608+00:00",
+      "rust_summary": {
+        "passed": 1900,
+        "failed": 4,
+        "skipped": 0,
+        "seconds": 880.475
+      }
+    }
+  ],
+  "catalog_followup": {
+    "failure": "Four assertions retained pre-KhaZix totals; assertions after each first failure were not reached.",
+    "repair": "Classify every runtime ID and reject the first out-of-range ID. Centralize aggregate count checks in catalog coverage. Compare each reviewed identity and all its printing members against the separate reviewed-source manifest, including one new KhaZix identity and two printings.",
+    "fast_check": {
+      "status": "passed",
+      "source": {
+        "revision": "d09f3fe7f03c8dcd4c74c550fb6adfa206c2aba2",
+        "tracked_diff_sha256": "115d77e28b9f504dc8d230e16e062061669460440f2eb95da7fd523018f2441d",
+        "untracked_sha256": {},
+        "dirty": true
+      },
+      "tests": {
+        "passed": 197,
+        "seconds": 15.122,
+        "suites": [
+          "local-rift",
+          "local-rift::bin/local-rift",
+          "local-rift::c4_play",
+          "local-rift::catalog_coverage",
+          "local-rift::catalog_review",
+          "local-rift::irelia_arito",
+          "local-rift::irelia_decisions",
+          "local-rift::registered_matches"
+        ]
+      },
+      "elapsed_seconds": 15.238,
+      "report": "irelia-khazix-preflight-v2/status.json",
+      "existing_decisions": "Known Easy/Tactical misses remain visible in the retained report; this correction changes neither opponent policy nor gameplay."
+    },
+    "python_runner_tests": 5,
+    "strict_clippy": "passed; 4.66 seconds",
+    "interrupted_attempt": "Preflight v1 compiled and started 197 tests, then exited 143. Its process handle was terminal and no child remained; no passing result was accepted. V2 uses a new output directory.",
+    "gameplay_changes": "None in this catalog/preflight correction."
   }
 }

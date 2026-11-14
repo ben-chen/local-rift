@@ -144,9 +144,6 @@ fn reviewed_dual_type_stays_unavailable_and_goatherd_uses_later_admission() {
         );
     }
     assert_eq!(data["counts"]["standard_legal_by_kind"]["gear+unit"], 1);
-    assert_eq!(data["counts"]["implemented_main_cards"], 449);
-    assert_eq!(data["counts"]["implemented_legal_identities"], 483);
-    assert_eq!(data["counts"]["unimplemented_legal_identities"], 596);
 }
 
 #[test]
@@ -290,13 +287,25 @@ fn source_review_never_admits_inventory_only_or_unresolved_identities() {
             );
         }
     }
-    assert_eq!(data["counts"]["implemented_legal_identities"], 483);
-    assert_eq!(data["counts"]["unimplemented_legal_identities"], 596);
 }
 
 #[test]
 fn completed_variant_reviews_cover_every_member_without_compatibility_exceptions() {
     let data = catalog();
+    // Check the exact independently reviewed identities and printing cohorts,
+    // rather than repeating a historical total whenever a card is admitted.
+    let manifest: Value =
+        serde_json::from_str(include_str!("../assets/data/catalog_identity_reviews.json")).unwrap();
+    let expected: BTreeMap<_, _> = manifest["reviews"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|review| (review["identity"].as_str().unwrap(), review))
+        .collect();
+    assert_eq!(
+        expected.len(),
+        manifest["reviews"].as_array().unwrap().len()
+    );
     let mut reviewed_identities = 0;
     let mut reviewed_printings = BTreeSet::new();
     let mut review_ids = BTreeSet::new();
@@ -310,6 +319,22 @@ fn completed_variant_reviews_cover_every_member_without_compatibility_exceptions
         let reviewed = review["reviewed_variant_fields"].as_array().unwrap();
         assert!(reviewed.iter().all(Value::is_string));
         if let Some(id) = review["identity_review_id"].as_str() {
+            let source = expected[card["identity"].as_str().unwrap()];
+            assert_eq!(source["status"], "complete");
+            assert_eq!(source["id"], id);
+            let members: BTreeSet<_> = source["members"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .map(|member| member["official_id"].as_str().unwrap())
+                .collect();
+            let actual: BTreeSet<_> = card["official_ids"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .map(|member| member.as_str().unwrap())
+                .collect();
+            assert_eq!(actual, members, "review must cover the entire identity");
             assert!(!id.is_empty());
             assert!(review_ids.insert(id), "duplicate whole-identity review");
             assert!(
@@ -333,11 +358,24 @@ fn completed_variant_reviews_cover_every_member_without_compatibility_exceptions
             assert_eq!(card["implementation"]["playable_in_client"], false);
         }
     }
-    assert_eq!(reviewed_identities, 33);
-    assert_eq!(reviewed_printings.len(), 99);
-    assert_eq!((unresolved_identities, unresolved_legal), (91, 90));
+    assert_eq!(reviewed_identities, expected.len());
+    assert_eq!(
+        data["counts"]["reviewed_variant_identities"],
+        reviewed_identities
+    );
+    assert_eq!(
+        data["counts"]["reviewed_variant_printings"],
+        reviewed_printings.len()
+    );
+    assert_eq!(
+        data["counts"]["unreviewed_variant_identities"],
+        unresolved_identities
+    );
+    assert_eq!(
+        unresolved_identities - unresolved_legal,
+        unresolved_auxiliary.len()
+    );
     assert_eq!(unresolved_auxiliary, vec!["Gold"]);
-    assert_eq!(data["counts"]["implemented_legal_identities"], 483);
 }
 
 #[test]

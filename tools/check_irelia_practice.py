@@ -17,12 +17,15 @@ import xml.etree.ElementTree as ET
 
 ROOT = Path(__file__).resolve().parents[1]
 TARGETS = ['--lib', '--bin', 'local-rift', '--test', 'irelia_decisions',
-           '--test', 'c4_play', '--test', 'irelia_arito', '--test', 'registered_matches']
-FILTER = ('test(/irelia|strategic|counter/) or test(/^companion::/) or '
+           '--test', 'c4_play', '--test', 'irelia_arito', '--test', 'registered_matches',
+           '--test', 'catalog_coverage', '--test', 'catalog_review']
+FILTER = ('test(/irelia|khazix|strategic|counter/) or test(/^companion::/) or '
           'test(/^practice_benchmark::/) or '
-          'binary(/^(irelia_decisions|c4_play|irelia_arito|registered_matches)$/)')
+          'test(=rules::tests::all_catalog_entries_have_official_classification) or '
+          'binary(/^(irelia_decisions|c4_play|irelia_arito|registered_matches|catalog_coverage|catalog_review)$/)')
 SUITES = {'local-rift', 'local-rift::bin/local-rift', 'local-rift::irelia_decisions',
-          'local-rift::c4_play', 'local-rift::irelia_arito', 'local-rift::registered_matches'}
+          'local-rift::c4_play', 'local-rift::irelia_arito', 'local-rift::registered_matches',
+          'local-rift::catalog_coverage', 'local-rift::catalog_review'}
 
 
 def source_identity():
@@ -47,7 +50,11 @@ def test_summary(path):
     required = {'practice_benchmark::measured_irelia_decisions_and_companion',
                 'practice_benchmark::waiting_for_irelia_reset_does_not_ignore_an_enemy_response',
                 'practice_benchmark::responses::measured_irelia_responses_against_recast_gust',
-                'practice_benchmark::responses::returning_gust_allows_a_second_real_response'}
+                'practice_benchmark::responses::returning_gust_allows_a_second_real_response',
+                'rules::tests::all_catalog_entries_have_official_classification',
+                'completed_variant_reviews_cover_every_member_without_compatibility_exceptions',
+                'reviewed_dual_type_stays_unavailable_and_goatherd_uses_later_admission',
+                'source_review_never_admits_inventory_only_or_unresolved_identities'}
     if suites != SUITES or not required <= names or not cases:
         raise ValueError('Focused test selection lost a required suite or benchmark.')
     if len(cases) != int(tree.get('tests', '0')) or any(
