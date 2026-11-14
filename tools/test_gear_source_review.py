@@ -7,6 +7,7 @@ from unittest.mock import patch
 
 import catalog_review as review
 import import_catalog as catalog
+from catalog_test_support import assert_review_inventory
 import admission_history as history
 
 
@@ -55,8 +56,7 @@ class GearSourceReviewTests(unittest.TestCase):
         c = self.snapshot['counts']
         self.assertEqual((c['implemented_main_cards'], c['implemented_legal_identities'],
                           c['unimplemented_legal_identities']), (362, 387, 692))
-        self.assertEqual((c['reviewed_field_resolutions'], c['field_reviewed_printings'],
-                          c['source_quality_issues'], c['resolved_source_issue_groups']), (142, 92, 57, 57))
+        assert_review_inventory(self, self.snapshot)
         self.assertFalse(self.proof['enables_runtime_support'])
 
     def test_compound_type_is_one_inventory_identity_with_both_types(self):

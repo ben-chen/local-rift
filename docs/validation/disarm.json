@@ -1,6 +1,6 @@
 {
   "status": "Local validation passed; immutable installed acceptance pending",
-  "reviewed_at": "2026-11-14T09:49:53.932529+00:00",
+  "reviewed_at": "2026-11-14T10:07:52.938983+00:00",
   "base_revision": "ed2a357",
   "cards": [
     {
@@ -870,7 +870,8 @@
   "corrections": [
     "Native review exposed missing temporary Might explanation; added amount and expiry without changing rules.",
     "Expiry fixture initially tried EndTurn inside a showdown; fixed it to pass normally before ending the turn.",
-    "Initial source-only review accidentally transcribed Siren raw Spell type; corrected to the actually viewed Unit face while preserving raw evidence."
+    "Initial source-only review accidentally transcribed Siren raw Spell type; corrected to the actually viewed Unit face while preserving raw evidence.",
+    "Historical source tests now compare exact review records rather than stale global totals; a fixture reference typo caught by the focused checks was corrected."
   ],
   "limitations": [
     "Immutable packaged acceptance pending; not published yet.",
@@ -878,5 +879,26 @@
     "Two easy/tactical API series had no Disarm triggers; separate focused cases exercise all AI levels and both seats.",
     "Sourced preset recipes are unchanged; these lists do not establish current meta strength.",
     "All legal-card coverage, complete Standard parity, novice learning and expert-strength AI remain unproven."
+  ],
+  "installed_attempts": [
+    {
+      "attempt": 1,
+      "status": "failed",
+      "revision": "f9c3bb986de5798127562e285b2395408a15f346",
+      "stage": "nix/catalog",
+      "report": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/disarm-release-v1/status.json",
+      "cause": "Four historical source tests fixed aggregate inventory totals and failed after two reviewed Disarm tag corrections.",
+      "repair": "Compare the complete current review records and evidence against the accepted manifest; retain historical runtime counts, raw hashes, own-card facts and variant pins.",
+      "focused_validation": [
+        {
+          "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/disarm-pipeline-v2.log",
+          "passed": 15
+        },
+        {
+          "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/disarm-source-regressions-v3.log",
+          "passed": 43
+        }
+      ]
+    }
   ]
 }

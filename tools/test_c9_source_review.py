@@ -7,6 +7,7 @@ from unittest.mock import patch
 
 import catalog_review as review
 import import_catalog as catalog
+from catalog_test_support import assert_review_inventory
 import admission_history as history
 
 
@@ -44,8 +45,7 @@ class ArtworkDiscoveryTests(unittest.TestCase):
         self.assertEqual((printing['effective']['domains'], printing['effective']['tags']),
                          (['fury'], ['Bilgewater']))
         self.assertEqual(printing['resolution_ids'], ['rad-003-167:domains', 'rad-003-167:tags'])
-        self.assertEqual((counts['reviewed_field_resolutions'], counts['field_reviewed_printings'],
-                          counts['resolved_source_issue_groups']), (142, 92, 57))
+        assert_review_inventory(self, result)
         old = result['source_quality_issues'][:37]
         self.assertEqual(hashlib.sha256(catalog.canonical_json(old).encode()).hexdigest(),
                          '923bd9fee267e4e4e2d46301ea30771438e6146d805ab3bb45f177095388afae')

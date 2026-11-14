@@ -10,6 +10,7 @@ import unittest
 from unittest.mock import patch
 
 import import_catalog as catalog
+from catalog_test_support import assert_review_inventory
 from test_import_catalog import edit_page
 
 
@@ -39,8 +40,7 @@ class CatalogPipelineTests(unittest.TestCase):
 
     def test_resolved_history_is_separate_from_remaining_variant_reviews(self):
         counts = self.snapshot['counts']
-        self.assertEqual((counts['reviewed_field_resolutions'], counts['resolved_source_issue_groups'],
-                          counts['unresolved_source_issue_groups']), (142, 57, 0))
+        assert_review_inventory(self, self.snapshot)
         self.assertEqual(counts['unresolved_gameplay_identities'], 0)
         self.assertEqual(counts['unreviewed_variant_identities'], 90)
         self.assertEqual(counts['unreviewed_variants_by_field'], {'tags': 33, 'rules_text': 79})
@@ -50,7 +50,6 @@ class CatalogPipelineTests(unittest.TestCase):
         self.assertTrue(all(r['status'] == 'resolved_by_review' for r in self.snapshot['source_issue_reviews']))
         self.assertEqual(counts['reviewed_variant_identities'], 34)
         self.assertEqual(counts['reviewed_variant_printings'], 101)
-        self.assertEqual(counts['field_reviewed_printings'], 92)
         for card in self.snapshot['cards']:
             if card['implementation']['playable_in_client']:
                 self.assertEqual(card['source_review']['unresolved_variant_fields'], [])

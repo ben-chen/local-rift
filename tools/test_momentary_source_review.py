@@ -7,6 +7,7 @@ from unittest.mock import patch
 
 import catalog_review as review
 import import_catalog as catalog
+from catalog_test_support import assert_review_inventory
 import admission_history as history
 
 
@@ -57,9 +58,7 @@ class MomentarySourceReviewTests(unittest.TestCase):
         counts = self.snapshot['counts']
         self.assertEqual((counts['implemented_main_cards'], counts['implemented_legal_identities'],
                           counts['unimplemented_legal_identities']), (349, 374, 705))
-        self.assertEqual((counts['reviewed_field_resolutions'], counts['field_reviewed_printings'],
-                          counts['source_quality_issues'], counts['resolved_source_issue_groups']),
-                         (142, 92, 57, 57))
+        assert_review_inventory(self, self.snapshot)
         self.assertFalse(self.proof['enables_runtime_support'])
         self.assertFalse(self.resolution(self.manifest)['enables_runtime_support'])
         self.assertNotIn(pid, {c['official_id'] for c in self.historical_runtime['cards']})
