@@ -1,6 +1,6 @@
 {
   "status": "Backend, dated AI matches and desktop format acceptance passed; integrated package release pending",
-  "reviewed_at": "2026-11-14T02:35:19.529866+00:00",
+  "reviewed_at": "2026-11-14T02:38:05.060664+00:00",
   "base_candidate": "aeb9944d6d02c7d048bc114fe98e9bcc94a0df3a",
   "scope": [
     "Explicit global Standard dates for deck and complete registration validation",
@@ -50,7 +50,7 @@
     "future_date_actual_games": 7,
     "future_fixture": "Rengar preset main; explicitly authored legal field registration and sideboard with Brynhir removed. No preset recipes changed.",
     "native": {
-      "source_commit": "f201437",
+      "source_commit": "f201437acbc726b6287823304016171ad28d74b0",
       "client_tests_passed": 146,
       "new_client_tests": 3,
       "final_clippy": "all targets, warnings denied",
@@ -92,6 +92,26 @@
         "An earlier UI runner exited 143 after three recorded passing cases. Its uncollected case was rerun successfully; final checks used a copied binary and isolated child processes. Cause was not established."
       ],
       "limits": "146 client tests preceded the final notification/caption-only adjustments. Final strict Clippy and seven UI cases cover those adjustments; the earlier normal core case is retained. Full integrated release checks remain pending."
+    },
+    "integration": {
+      "revision": "0b5e888e4613d16d79f3789a112658f97520326d",
+      "merged_release_support": "d23e26bf7f121afa34dadc368c411c951133a6a1",
+      "strict_clippy": "passed all targets",
+      "workflow_syntax": "passed",
+      "nix_formatting": "passed",
+      "release_runner_tests": 7,
+      "xeno_native_ui_runs": 2,
+      "xeno_actual_games": 4,
+      "xeno_difficulty": "tactical",
+      "xeno_captures": 8,
+      "xeno_visual_review": [
+        "Small lobby: complete registration and historical-format control readable",
+        "Small sideboarding: selected format and all controls readable"
+      ],
+      "dated_api_matches": 9,
+      "dated_api_actual_games": 23,
+      "both_irelia_and_future_rengar_records_match_prior_baseline": true,
+      "single_combined_record_set_for_installed_comparison": true
     }
   },
   "evidence_sha256": {
@@ -108,7 +128,7 @@
     "format-context-source-v2.log": "ce155d9697089f241dcde88726f33980547fde850204098b7080f77732dcf5f8",
     "format-context-api-build-v2.log": "302c5d0d6933e25f704c3654068ac9a71ede5001894805b9e83119bbf62d8d81",
     "format-context-series-v1.json": "7d94c18bfcc4690c24561edbe7c7240cbeb081bfba6fd76efe83575f4ae33132",
-    "tools/check_format_api.py": "31f2775093677620d95829abb3a783a9c16ad74be67f2f44819cb26d93026120",
+    "tools/check_format_api.py": "6c3f6457abc0e5dabd9ad55c289b55338a8218557dc47fad72945a6b7d2c6ecb",
     "format-native-checks-v2.json": "517d2078ac6ee28c8b610efdbefb30128dd828f243d2d8d5618e84ec0219f856",
     "format-native-client-v2.log": "9e2729b6040437b6a4c0d6e47603299533efe1098a15914f8f649c0fc150036d",
     "format-native-client-v2-junit.xml": "0197ed97c025b49d16dc7ed69b70a8007509e57d4b41a4144e3ffa0b66d01a30",
@@ -116,11 +136,15 @@
     "format-native-build-v3.log": "9dc185b69ac9d59b697589b402928cca4467d865602af98694eec6a9cf98b3c6",
     "format-native-source-v1.json": "041dae1a3b5f3f5992c6e6643895ef3666dfac01e9fa89ad2254841a66b62889",
     "format-native-ui-v1/status.json": "27db4f274e6a1e26605740ca5e47f09c7667335e820461a547e1ee256d073691",
-    "format-native-ui-v2/status.json": "9fb8dc6b3c4dc8c1f97d9aef089c6c2813ebc8124fa0f67616d26b405a8e4ddd"
+    "format-native-ui-v2/status.json": "9fb8dc6b3c4dc8c1f97d9aef089c6c2813ebc8124fa0f67616d26b405a8e4ddd",
+    "format-integration-clippy-v1.log": "b76caf3f803d98af381bcb884a6526d86a9f909aa5caf9a2fa6fa3cc2d3fd466",
+    "format-integration-build-v1.log": "447884768e9284c19111c27ff71e5288fafb41d7c0d53163ecafcb9cb5f4aba4",
+    "format-integration-api-build-v1.log": "01eb3c5f3cf300262fc96a7470ab4bcd363932f0db2531e1522ab1782e2f2bd2",
+    "format-integration-api-v1.json": "1af692207f5e653fcc5ff03b127ec37b17e00383fdac9c2692af027e072ef3d4",
+    "format-xeno-ui-v1/status.json": "8dcc7c27d37c8345d13a43899ccfa048eeb1e60407fba00d1274ae2353112c70"
   },
   "remaining": [
-    "Merge accepted release-runner, test-support and Xeno native-scenario changes",
-    "Final integrated client, source and immutable package acceptance",
+    "Final integrated immutable package, source and installed acceptance",
     "Publish accepted changes and collect GitHub CI"
   ],
   "limitations": [
