@@ -195,6 +195,7 @@ impl Game {
                 rules::PlayTargetKind::Gear => facts.kind == CardKind::Gear,
                 rules::PlayTargetKind::UnitOrGear => true,
                 rules::PlayTargetKind::Rune
+                | rules::PlayTargetKind::Legend
                 | rules::PlayTargetKind::Spell
                 | rules::PlayTargetKind::Battlefield => false,
             })

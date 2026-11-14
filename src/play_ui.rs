@@ -1268,6 +1268,9 @@ impl App {
             }
         } else if targets.is_empty() {
             match local_rift::rules::play_target_spec(view.card_id).kind {
+                Some(local_rift::rules::PlayTargetKind::Legend) => {
+                    "Choose a legend in the ability panel.".into()
+                }
                 Some(local_rift::rules::PlayTargetKind::Battlefield) => {
                     "Choose either battlefield on the mat, even if empty.".into()
                 }

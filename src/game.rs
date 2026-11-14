@@ -134,6 +134,8 @@ pub mod show_off;
 mod split_damage;
 use play::*;
 
+#[path = "legend_readiness.rs"]
+mod legend_readiness;
 #[path = "scalar_spells.rs"]
 mod scalar_spells;
 #[path = "strategic.rs"]
@@ -172,6 +174,7 @@ pub enum Phase {
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Target {
+    Legend { player: usize, legend_id: usize },
     Rune { player: usize, rune_id: u32 },
     Unit { player: usize, unit_id: u32 },
     Spell { chain_id: u32 },
@@ -181,6 +184,10 @@ pub enum Target {
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Action {
+    ResolveReadiness {
+        choice_id: u32,
+        ready: bool,
+    },
     ResolveBattlefieldTargets {
         choice_id: u32,
         targets: Vec<Target>,
@@ -611,6 +618,13 @@ pub enum RevealOutcome {
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Decision {
+    /// The target was finalized earlier; the ready/exhaust choice is made now.
+    LegendReadiness {
+        player: usize,
+        choice_id: u32,
+        card_id: CardId,
+        target: Target,
+    },
     /// Pay a non-resource trigger cost before the ability becomes respondable.
     TriggerObjectCost {
         player: usize,
@@ -966,6 +980,7 @@ impl Decision {
             | Self::TriggerMode { player, .. }
             | Self::TriggerTargets { player, .. }
             | Self::TriggerReturn { player, .. }
+            | Self::LegendReadiness { player, .. }
             | Self::LegendTargets { player }
             | Self::BattlefieldOrder { player, .. }
             | Self::TrashTarget { player, .. }
@@ -1979,6 +1994,7 @@ impl Game {
                     | Action::ResolveTriggerTrashPayment { .. }
                     | Action::ChooseTriggerTargets { .. }
                     | Action::ChooseTriggerMode { .. }
+                    | Action::ResolveReadiness { .. }
                     | Action::Choose { .. }
                     | Action::SelectCards { .. }
                     | Action::PlayFromTrash { .. }
@@ -2062,6 +2078,9 @@ impl Game {
                 self.resolve_trigger_payment(choice_id, pay)?
             }
             Action::ChooseTriggerTargets { targets } => self.choose_trigger_targets(targets)?,
+            Action::ResolveReadiness { choice_id, ready } => {
+                self.resolve_legend_readiness(choice_id, ready)?
+            }
             Action::ChooseTriggerMode { choice_id, mode } => {
                 self.choose_trigger_mode(choice_id, mode)?
             }
@@ -2916,6 +2935,9 @@ impl Game {
         if self.begin_trigger_return()? {
             return Ok(());
         }
+        if self.begin_legend_readiness()? {
+            return Ok(());
+        }
         let item = self.chain.last().expect("resolving chain");
         if let Some(ChainAbility::CardTrigger {
             rule_index,
@@ -3323,6 +3345,7 @@ impl Game {
     pub(crate) fn after_resolution(&mut self) -> Result<(), String> {
         if self.resolving_trigger_payment().is_some()
             || matches!(self.decision, Some(Decision::TriggerReturn { .. }))
+            || matches!(self.decision, Some(Decision::LegendReadiness { .. }))
         {
             return Ok(());
         }
@@ -3541,6 +3564,7 @@ impl Game {
         if matches!(
             decision,
             Decision::DrawLook { .. }
+                | Decision::LegendReadiness { .. }
                 | Decision::DeckLookPlay { .. }
                 | Decision::BattlefieldOrder { .. }
                 | Decision::PredictCards { .. }
@@ -3725,6 +3749,7 @@ impl Game {
             | Decision::LegendTargets { .. }
             | Decision::BattlefieldOrder { .. }
             | Decision::TriggerReturn { .. }
+            | Decision::LegendReadiness { .. }
             | Decision::TrashTarget { .. }
             | Decision::PendingPlay { .. }
             | Decision::TokenPlacement { .. }
@@ -6205,6 +6230,13 @@ impl Game {
                         }
                         actions
                     }
+                    Decision::LegendReadiness { choice_id, .. } => [true, false]
+                        .into_iter()
+                        .map(|ready| Action::ResolveReadiness {
+                            choice_id: *choice_id,
+                            ready,
+                        })
+                        .collect(),
                     Decision::TriggerPayment {
                         choice_id,
                         card_id,
@@ -7201,6 +7233,15 @@ impl Game {
                 return self.alpha_candidates(player, prior);
             }
             let targets: Vec<_> = match rules::play_target_spec(card_id).kind {
+                Some(rules::PlayTargetKind::Legend) => self
+                    .legend
+                    .iter()
+                    .enumerate()
+                    .map(|(player, legend)| Target::Legend {
+                        player,
+                        legend_id: legend.kind.id(),
+                    })
+                    .collect(),
                 Some(rules::PlayTargetKind::Rune) => vec![],
                 Some(rules::PlayTargetKind::Battlefield) => (0..self.battlefield_count())
                     .map(|lane| Target::Battlefield { lane })
@@ -9802,6 +9843,42 @@ impl Game {
                             .map(|(_, action)| action.clone())
                     }
                     Decision::TriggerReturn { .. } => Some(Action::Choose { accept: true }),
+                    Decision::LegendReadiness {
+                        player,
+                        choice_id,
+                        target: Target::Legend { player: owner, .. },
+                        ..
+                    } => Some(Action::ResolveReadiness {
+                        choice_id: *choice_id,
+                        ready: player == owner,
+                    }),
+                    Decision::TriggerTargets {
+                        player,
+                        card_id,
+                        rule_index,
+                        context,
+                    } if crate::trigger_rules::selected_rule(
+                        *card_id,
+                        *rule_index,
+                        context.mode,
+                    )
+                    .is_some_and(|r| {
+                        r.effects == [crate::trigger_rules::Effect::ChooseLegendReadiness]
+                    }) =>
+                    {
+                        actions
+                            .iter()
+                            .filter_map(|action| match action {
+                                Action::ChooseTriggerTargets { targets } => {
+                                    targets.first().map(|target| {
+                                        (self.legend_readiness_score(*player, *target), action)
+                                    })
+                                }
+                                _ => None,
+                            })
+                            .max_by_key(|(score, _)| *score)
+                            .map(|(_, action)| action.clone())
+                    }
                     Decision::TriggerTargets {
                         player,
                         card_id: 437,

@@ -57,6 +57,8 @@ mod guards_tests;
 #[cfg(test)]
 mod hidden_blade_tests;
 #[cfg(test)]
+mod legend_readiness_tests;
+#[cfg(test)]
 mod resource_card_tests;
 #[cfg(test)]
 mod spell_choice_tests;
@@ -1034,6 +1036,9 @@ fn chain_source_to_json(source: ChainSource) -> Value {
 
 pub fn target_to_json(target: &Target) -> Value {
     match target {
+        Target::Legend { player, legend_id } => {
+            json!({"type":"legend","player":player,"legend_id":legend_id})
+        }
         Target::Rune { player, rune_id } => {
             json!({"type":"rune","player":player,"rune_id":rune_id})
         }
@@ -1255,6 +1260,9 @@ fn action_json_at_depth(action: &Action, depth: usize) -> Value {
         Action::ChooseTriggerMode { choice_id, mode } => {
             json!({"type":"choose_trigger_mode","choice_id":choice_id,"mode":mode})
         }
+        Action::ResolveReadiness { choice_id, ready } => {
+            json!({"type":"resolve_readiness","choice_id":choice_id,"ready":ready})
+        }
         Action::ChooseDeathReplacement { unit_id, gear_id } => {
             json!({"type":"choose_death_replacement","unit_id":unit_id,"gear_id":gear_id})
         }
@@ -1420,6 +1428,13 @@ pub fn parse_ability_source(value: &Value) -> Result<AbilitySource, ApiError> {
 pub fn parse_target(value: &Value) -> Result<Target, ApiError> {
     let obj = object(value)?;
     match string(obj, "type")? {
+        "legend" => {
+            keys(obj, &["type", "player", "legend_id"])?;
+            Ok(Target::Legend {
+                player: player(obj)?,
+                legend_id: index(obj, "legend_id")?,
+            })
+        }
         "rune" => {
             keys(obj, &["type", "player", "rune_id"])?;
             Ok(Target::Rune {
@@ -1454,7 +1469,7 @@ pub fn parse_target(value: &Value) -> Result<Target, ApiError> {
             })
         }
         _ => Err(ApiError::invalid(
-            "Target type must be unit, gear, spell, battlefield, or rune.",
+            "Target type must be unit, gear, spell, battlefield, rune, or legend.",
         )),
     }
 }
@@ -1947,6 +1962,13 @@ fn parse_action_at_depth(value: &Value, depth: usize) -> Result<Action, ApiError
                 mode: index(o, "mode")?,
             }
         }
+        "resolve_readiness" => {
+            fields!("choice_id", "ready");
+            Action::ResolveReadiness {
+                choice_id: id32(o, "choice_id")?,
+                ready: boolean(o, "ready")?,
+            }
+        }
         "choose_death_replacement" => {
             fields!("unit_id", "gear_id");
             Action::ChooseDeathReplacement {
@@ -2300,6 +2322,17 @@ fn decision_to_json(game: &Game, decision: &Decision, viewer: usize) -> Result<V
                     "energy_at_most_live_source_might":r.relative_energy==crate::trigger_rules::RelativeEnergyConstraint::AtMostSourceMight})),
                 "candidates":game.trigger_target_candidates().map_err(ApiError::illegal)?.iter().map(target_to_json).collect::<Vec<_>>()})
         }
+        Decision::LegendReadiness {
+            choice_id,
+            card_id,
+            target,
+            ..
+        } => json!({
+            "type":"legend_readiness", "choice_id":choice_id, "card_id":card_id,
+            "target":target_to_json(target), "timing":"resolution", "optional":false,
+            "currently_ready":game.legend_target_ready(*target),
+            "options":[{"ready":true,"label":"Ready"},{"ready":false,"label":"Exhaust"}]
+        }),
         Decision::TriggerReturn {
             card_id,
             chain_id,

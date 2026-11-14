@@ -27,6 +27,109 @@ pub(super) fn trigger_payment_source(game: &Game, decision: &Decision) -> Option
 }
 
 impl App {
+    pub(super) fn legend_readiness_panel(&mut self, decision: &Decision) -> Result<bool, String> {
+        if let Decision::LegendReadiness {
+            choice_id, target, ..
+        } = decision
+        {
+            self.ui
+                .title("Ready or exhaust?", 1178.0, 366.0, 20.0, TEXT);
+            self.ui.wrapped_lines(
+                &target_label(&self.game, *target),
+                1178.0,
+                397.0,
+                212.0,
+                12.0,
+                GOLD,
+                3,
+            );
+            self.ui.wrapped_lines(
+                "Responses have finished. Choose the legend's state now.",
+                1178.0,
+                454.0,
+                212.0,
+                11.0,
+                MUTED,
+                3,
+            );
+            for (index, (ready, label)) in
+                [(true, "Ready the legend"), (false, "Exhaust the legend")]
+                    .into_iter()
+                    .enumerate()
+            {
+                if self.ui.button(
+                    Rect::new(1178.0, 510.0 + index as f32 * 39.0, 212.0, 32.0),
+                    label,
+                    index == 0,
+                    true,
+                ) {
+                    self.action(Action::ResolveReadiness {
+                        choice_id: *choice_id,
+                        ready,
+                    });
+                }
+            }
+            return Ok(true);
+        }
+        if !self
+            .game
+            .trigger_target_rule()
+            .is_some_and(|r| r.kind == local_rift::rules::PlayTargetKind::Legend)
+        {
+            return Ok(false);
+        }
+        if let Decision::TriggerTargets { card_id, .. } = decision {
+            self.ui.wrapped_lines(
+                self.game.catalog[*card_id].name,
+                1178.0,
+                258.0,
+                212.0,
+                14.0,
+                GOLD,
+                2,
+            );
+            self.ui.wrapped_lines(
+                "Play ability · choose its target before responses.",
+                1178.0,
+                302.0,
+                212.0,
+                11.0,
+                MUTED,
+                2,
+            );
+        }
+        self.ui.title("Choose a legend", 1178.0, 366.0, 20.0, TEXT);
+        self.ui.wrapped_lines("Choose now; your opponent may respond. Decide ready or exhaust when the ability resolves.", 1178.0, 399.0, 212.0, 11.0, MUTED, 4);
+        for owner in 0..2 {
+            let legend = self.game.legend_def(owner);
+            let target = Target::Legend {
+                player: owner,
+                legend_id: legend.id,
+            };
+            let label = format!(
+                "{} {} · {}",
+                if owner == 0 { "Your" } else { "AI's" },
+                legend.champion,
+                if self.game.legend[owner].ready {
+                    "READY"
+                } else {
+                    "EXHAUSTED"
+                }
+            );
+            if self.ui.button(
+                Rect::new(1178.0, 475.0 + owner as f32 * 43.0, 212.0, 35.0),
+                &label,
+                owner == 0,
+                self.game.valid_trigger_target(target, &[])?,
+            ) {
+                self.action(Action::ChooseTriggerTargets {
+                    targets: vec![target],
+                });
+            }
+        }
+        Ok(true)
+    }
+
     pub(super) fn trigger_payment_panel(&mut self) -> Result<(), String> {
         let Some(decision @ Decision::TriggerPayment { .. }) = self.game.trigger_payment_context()
         else {

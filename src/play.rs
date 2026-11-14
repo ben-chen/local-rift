@@ -1668,7 +1668,13 @@ impl Game {
                     })
             })
             .or(match self.decision {
-                Some(Decision::TriggerReturn { chain_id, .. }) => Some(ResolutionProgress {
+                Some(
+                    Decision::TriggerReturn { chain_id, .. }
+                    | Decision::LegendReadiness {
+                        choice_id: chain_id,
+                        ..
+                    },
+                ) => Some(ResolutionProgress {
                     chain_id,
                     execution: 0,
                     executions: 1,

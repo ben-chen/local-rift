@@ -102,6 +102,7 @@ impl Session {
 
 pub(super) fn target_kind(kind: PlayTargetKind) -> &'static str {
     match kind {
+        PlayTargetKind::Legend => "legend",
         PlayTargetKind::Rune => "rune",
         PlayTargetKind::Unit => "unit",
         PlayTargetKind::Gear => "gear",

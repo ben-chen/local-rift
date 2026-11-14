@@ -161,6 +161,8 @@ pub enum SourceDamageRecipients {
 }
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Effect {
+    /// A complete instruction, with its ready/exhaust choice on resolution.
+    ChooseLegendReadiness,
     /// One linked instruction: spend the live source's Buff on resolution.
     SpendSourceBuffTo(SourceBuffEffect),
     Banish(Operand),
@@ -380,6 +382,23 @@ pub fn trigger_rules(card_id: usize) -> &'static [TriggerRule] {
         )
     };
     match card_id {
+        455 => {
+            const {
+                &[rule(
+                    SelfPlayed,
+                    &[],
+                    false,
+                    TargetRule {
+                        kind: PlayTargetKind::Legend,
+                        min: 1,
+                        max: 1,
+                        allegiance: Allegiance::Any,
+                        ..TargetRule::NONE
+                    },
+                    &[ChooseLegendReadiness],
+                )]
+            }
+        }
         454 => {
             const {
                 &[TriggerRule {

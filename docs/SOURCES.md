@@ -300,3 +300,15 @@ hashes, and the preceding 454-card/seven-preset hashes. No erratum is present in
 the reviewed source bundle. The October 9 Core Rules 383.3.b/b.1 classify its
 initial optional cost as a base cost paid before responses; the admission
 records the rejected earlier resolution-payment assumption.
+
+## Royal Entourage
+
+The [Royal Entourage admission](../assets/data/card_admissions/irelia_entourage/admissions.json)
+preserves the complete official English face of `sfd-039-221`, original gallery
+record, image hashes, and preceding 455-card/seven-preset hashes. The printed Calm
+unit costs 3 Energy and 1 Power, has 4 Might and the Shurima tag. No erratum appears
+in the reviewed bundle. The official Rules Hub was rechecked November 14 and still
+links the October 9 Core Rules. Sections 355.3, 355.5 and 355.18 distinguish
+choosing the legend before responses from choosing ready/exhaust on resolution.
+Sections 415.1 and 416.1 allow readiness effects that leave the state unchanged;
+107.4 places Champion Legends in their own fixed zone.

@@ -2,6 +2,14 @@
 
 Updated November 12, 2026. Irelia cards take priority over the saved Azir draft.
 
+November 14: Royal Entourage passed local rules, native and complete-match API
+checks; immutable installed acceptance is pending. It can ready Irelia or exhaust an opposing legend, with
+target selection before responses and the ready/exhaust choice on resolution.
+It is an additional custom-practice card; the seven sourced recipes remain
+unchanged. The source and timing record is in its
+[admission](../assets/data/card_admissions/irelia_entourage/admissions.json), with
+[validation evidence](validation/irelia_entourage.json).
+
 The first checkpoint is the union of Xeno's second-place and TM2's fifth-place
 Irelia lists in Riot's [Los Angeles results](https://playriftbound.com/en-us/news/organizedplay/los-angeles-top-decks/).
 Both complete main decks, Irelia's legend/chosen champion, and all three of their

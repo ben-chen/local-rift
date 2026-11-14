@@ -1045,3 +1045,27 @@ Opponent observations expose hand counts, not drawn identities. Payment queries
 do not mutate state, and stale/wrong-seat requests or an unavailable source reject
 atomically. The [registered match checker](../tools/check_spirit_wheel_api.py)
 retains per-level/seat payment, draw and zero-use evidence.
+
+## Royal Entourage and legend targets
+
+Royal Entourage (455, `sfd-039-221`) finalizes one mandatory legend target before
+responses. A target is `{"type":"legend","player":0,"legend_id":0}`: the seat
+and current catalog legend identity must both match. `trigger_target_candidates`
+and the `trigger_targets` decision expose both players' available legends.
+
+At resolution, `legend_readiness` retains the trigger on the chain and reports
+`choice_id`, `card_id`, the fixed `target`, `currently_ready`, two `options`,
+`timing:"resolution"` and `optional:false`. Send
+`{"type":"resolve_readiness","choice_id":123,"ready":true}` to ready it,
+or `ready:false` to exhaust it. Use the returned choice ID, not this example.
+Either choice is legal even if it leaves readiness unchanged. Retargeting,
+passing, and other responses are unavailable during this resolving instruction.
+The opponent may use legal Reaction activations in the preceding response window;
+exhausting that legend afterward does not undo an already paid activation.
+
+The target and decision are public. Wrong-seat, stale-revision, stale-choice and
+malformed requests reject atomically. Current supported registrations have one
+Champion Legend per player; future additional legends require physical identities
+and are not covered by this representation. The
+[complete-match checker](../tools/check_entourage_api.py) records observed targeting
+and resolution separately at all three AI difficulties and both seats.

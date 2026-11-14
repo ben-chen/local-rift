@@ -2548,6 +2548,9 @@ impl App {
             self.trigger_payment_panel()?;
             return Ok(());
         }
+        if self.legend_readiness_panel(&decision)? {
+            return Ok(());
+        }
         if matches!(
             decision,
             Decision::TriggerTargets { .. } | Decision::LegendTargets { .. }
@@ -2969,6 +2972,7 @@ impl App {
             return Ok(());
         }
         let (title,body)=match &decision{
+            Decision::LegendReadiness { .. } => unreachable!(),
             Decision::TriggerReturn { target, .. } => ("Return this enemy?", format!("{} can return to its owner's hand. Responses have finished; you may return it or leave it on the board.", target_label(&self.game, *target))),
             Decision::TriggerObjectCost { context, .. } => ("Banish Prefect?", format!("Banish Prefect now. Then banish {} after responses. Decline to keep Prefect.", context.subject.map(|t| target_label(&self.game, t)).unwrap_or_else(|| "the played gear".into()))),
             Decision::TriggerMode { .. } | Decision::TriggerPayment { .. } | Decision::BattlefieldTargets { .. } | Decision::BattlefieldCost { .. } | Decision::BattlefieldPayment { .. } => unreachable!(),
@@ -3295,6 +3299,7 @@ impl App {
         let spec = play_target_spec(card_id);
         let count = self.current_targets().len();
         match spec.kind {
+            Some(PlayTargetKind::Legend) => "Choose either legend in the ability panel.".into(),
             Some(PlayTargetKind::Rune) => "Choose runes in either rune zone.".into(),
             Some(PlayTargetKind::Battlefield) => self
                 .current_targets()
@@ -8746,6 +8751,19 @@ fn chain_field_targets(item: &local_rift::game::ChainItem) -> Vec<usize> {
 
 fn target_label(game: &Game, target: Target) -> String {
     match target {
+        Target::Legend { player, legend_id } => game
+            .legend_target_ready(target)
+            .and_then(|ready| {
+                local_rift::legend_catalog::legend(legend_id).map(|legend| {
+                    format!(
+                        "{} {} · {}",
+                        if player == 0 { "Your" } else { "Opponent's" },
+                        legend.champion,
+                        if ready { "ready" } else { "exhausted" }
+                    )
+                })
+            })
+            .unwrap_or_else(|| "Unavailable legend".into()),
         Target::Rune { player, rune_id } => game
             .players
             .get(player)
@@ -10702,6 +10720,7 @@ async fn main() {
     let irelia_smoke = args.iter().any(|a| a == "--ui-smoke-irelia");
     let resources_smoke = args.iter().any(|a| a == "--ui-smoke-resources");
     let wheel_smoke = args.iter().any(|a| a == "--ui-smoke-wheel");
+    let entourage_smoke = args.iter().any(|a| a == "--ui-smoke-entourage");
     let riven_smoke = args.iter().any(|a| a == "--ui-smoke-riven");
     let unyielding_smoke = args.iter().any(|a| a == "--ui-smoke-unyielding");
     let repulse_smoke = args.iter().any(|a| a == "--ui-smoke-repulse");
@@ -10722,6 +10741,7 @@ async fn main() {
     let focused_field_smoke = args.iter().any(|a| a == "--ui-smoke-c28");
     let focused_source_damage_smoke = args.iter().any(|a| a == "--ui-smoke-c27");
     let smoke_test = format_smoke
+        || entourage_smoke
         || wheel_smoke
         || resources_smoke
         || series_smoke
@@ -10801,6 +10821,8 @@ async fn main() {
             smoke::run_resources_frame(&mut app, frames)
         } else if wheel_smoke {
             smoke::run_wheel_frame(&mut app, frames)
+        } else if entourage_smoke {
+            smoke::run_entourage_frame(&mut app, frames)
         } else if irelia_smoke {
             smoke::run_irelia_frame(&mut app, frames)
         } else if preset_smoke {

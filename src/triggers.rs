@@ -821,6 +821,21 @@ impl Game {
         Ok({
             let rule = metadata::selected_rule(card_id, index, context.mode)
                 .expect("validated trigger mode");
+            if rule.targets.kind == rules::PlayTargetKind::Legend {
+                // CR811.1.d.3: legends cannot be at a battlefield, so the
+                // explicit legend restriction bypasses Hidden's Here rule.
+                let Target::Legend { player, .. } = target else {
+                    return Ok(false);
+                };
+                return Ok(self.legend_target_ready(target).is_some()
+                    && match rule.targets.allegiance {
+                        Allegiance::Friendly => player == context.source.player,
+                        Allegiance::Enemy => player != context.source.player,
+                        Allegiance::None => false,
+                        Allegiance::Any => true,
+                        Allegiance::Mixed => (slot == 0) == (player == context.source.player),
+                    });
+            }
             if rule.targets.battlefield_first {
                 if slot == 0 {
                     let Target::Battlefield { lane } = target else {
@@ -1115,6 +1130,14 @@ impl Game {
             })
             .filter(|&target| self.board_target_matches_kind(target, kind))
             .collect();
+        if kind == rules::PlayTargetKind::Legend {
+            candidates.extend(self.legend.iter().enumerate().map(|(player, legend)| {
+                Target::Legend {
+                    player,
+                    legend_id: legend.kind.id(),
+                }
+            }));
+        }
         if self
             .trigger_target_rule()
             .is_some_and(|rule| rule.battlefield_first)
@@ -1555,7 +1578,8 @@ impl Game {
                         }
                     }
                 }
-                Effect::OptionalReturnAtCrowdedBattlefield { .. } => {
+                Effect::OptionalReturnAtCrowdedBattlefield { .. }
+                | Effect::ChooseLegendReadiness => {
                     unreachable!(
                         "optional return retains its chain item until its resolution choice finishes"
                     )

@@ -126,6 +126,7 @@ fn fingerprint(game: &Game) -> u64 {
         item.card_id.hash(&mut hash);
         item.lane.hash(&mut hash);
         match item.target {
+            Some(Target::Legend { player, legend_id }) => (6_u8, player, legend_id).hash(&mut hash),
             Some(Target::Unit { player, unit_id }) => (0_u8, player, unit_id).hash(&mut hash),
             Some(Target::Spell { chain_id }) => (1_u8, 0_usize, chain_id).hash(&mut hash),
             Some(Target::Gear { player, gear_id }) => (3_u8, player, gear_id).hash(&mut hash),
@@ -135,6 +136,7 @@ fn fingerprint(game: &Game) -> u64 {
         }
         for target in item.targets.iter().chain(&item.repeat_targets) {
             match target {
+                Target::Legend { player, legend_id } => (6_u8, *player, *legend_id).hash(&mut hash),
                 Target::Unit { player, unit_id } => (0_u8, *player, *unit_id).hash(&mut hash),
                 Target::Spell { chain_id } => (1_u8, 0_usize, *chain_id).hash(&mut hash),
                 Target::Gear { player, gear_id } => (3_u8, *player, *gear_id).hash(&mut hash),
@@ -1111,6 +1113,16 @@ fn response_window_advice(
             }
         }
         return Ok(Some(match decision {
+            Decision::LegendReadiness { .. } => vec![if beginner {
+                "Responses have finished. Choose ready or exhaust now. The legend you chose earlier stays the target."
+            } else {
+                "Ready your legend to reuse an exhaust cost, or exhaust the opponent's. An ability already paid for still resolves."
+            }],
+            Decision::TriggerTargets { card_id: 455, .. } => vec![if beginner {
+                "Royal Entourage chooses either player's legend now. Choose ready or exhaust after responses. Legends stay in their own zone, separate from units."
+            } else {
+                "Ready Irelia for another choose trigger. An opponent can use a legal Reaction activation before Entourage resolves; exhausting their legend later won't undo it."
+            }],
             Decision::TriggerReturn { .. } => vec![if beginner {
                 "Responses have finished. Bedeviling Stranger found at least four units there; return the chosen enemy or leave it. Returning is not killing."
             } else {
@@ -2004,6 +2016,59 @@ pub fn draw_mote(center: Vec2, scale: f32, time: f32, accent: Color) {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn entourage_advice_is_brief_private_and_distinguishes_choice_timing() {
+        use local_rift::game::Action;
+        let mut game = Game::new_for_agents(0, 1, 455004, Difficulty::Easy);
+        game.choose_starting_player(0).unwrap();
+        game.start_match().unwrap();
+        game.players[0].hand = vec![455];
+        game.players[0].set_rune_setup([0; 6], [0; 6]).unwrap();
+        game.players[0].energy_pool = 20;
+        game.players[0].energy = 20;
+        game.players[0].power_pool = [5; 6];
+        game.apply(Action::PlayCardWithTargets {
+            hand_index: 0,
+            lane: None,
+            targets: vec![],
+        })
+        .unwrap();
+        for resolution in [false, true] {
+            if resolution {
+                let target = Target::Legend {
+                    player: 0,
+                    legend_id: game.legend[0].kind.id(),
+                };
+                game.apply(Action::ChooseTriggerTargets {
+                    targets: vec![target],
+                })
+                .unwrap();
+                game.apply(Action::Pass).unwrap();
+                game.apply(Action::Pass).unwrap();
+            }
+            let mut hidden = game.clone();
+            hidden.players[1].hand = vec![11; 4];
+            hidden.players[1].deck.reverse();
+            let before = format!("{game:?}");
+            for level in [AdviceLevel::Beginner, AdviceLevel::Advanced] {
+                let tips = advice(&game, level);
+                assert_eq!(tips, advice(&hidden, level));
+                assert!(!tips.is_empty());
+                for tip in &tips {
+                    assert!(tip.chars().count() <= 180, "{tip}");
+                }
+                let expected = match (resolution, level) {
+                    (false, AdviceLevel::Beginner) => "after responses",
+                    (false, AdviceLevel::Advanced) => "Reaction",
+                    (true, AdviceLevel::Beginner) => "Responses have finished",
+                    (true, AdviceLevel::Advanced) => "already paid",
+                };
+                assert!(tips.iter().any(|tip| tip.contains(expected)), "{tips:?}");
+            }
+            assert_eq!(format!("{game:?}"), before);
+        }
+    }
     #[test]
     fn irelia_wheel_advice_explains_finalization_and_uses_only_visible_cards() {
         let mut game = Game::new_for_agents(0, 0, 454, Difficulty::Easy);

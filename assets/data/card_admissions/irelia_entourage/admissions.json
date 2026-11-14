@@ -1,0 +1,126 @@
+{
+  "status": "Local rules, protocol, source, complete-match and native checks passed; immutable installed acceptance pending",
+  "reviewed_on": "2026-11-14",
+  "preserved_runtime_prefix": {
+    "card_count": 455,
+    "preset_count": 7,
+    "cards_sha256": "1e57a24e8f0cc0bbe34fddf2b65774e0101c275a5544b37f4ffaaf24986fc2bd",
+    "presets_sha256": "e975739d803427e54928d6e6cd03d1ce51d7ad108f4e247b8a000acf037a5cdb"
+  },
+  "records": [
+    {
+      "runtime_id": 455,
+      "official_id": "sfd-039-221",
+      "raw_printing": {
+        "official_id": "sfd-039-221",
+        "public_code": "SFD-039/221",
+        "name": "Royal Entourage",
+        "set": "SFD",
+        "collector_number": 39,
+        "types": [
+          "unit"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "unit"
+        ],
+        "accessibility_types": [
+          "unit"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "calm"
+        ],
+        "energy": 3,
+        "power": 1,
+        "might": 4,
+        "might_bonus": null,
+        "rules_html": "<p>When you play me, ready or exhaust a legend.</p>",
+        "rules_text": "When you play me, ready or exhaust a legend.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [
+          "Shurima"
+        ],
+        "rarity": "common",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/a6f3ce580860fe80fdf1b41533ba89b5060e946a-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Unit: Royal Entourage. When you play me, ready or exhaust a legend.",
+        "illustrators": [
+          "Kudos Productions"
+        ]
+      },
+      "raw_printing_sha256": "5929b70abc3402adbc8d3203e78e1df91e9c4c40b60878adf79c412476c7fa11",
+      "effective": {
+        "types": [
+          "unit"
+        ],
+        "super_types": [],
+        "domains": [
+          "calm"
+        ],
+        "energy": 3,
+        "power": 1,
+        "might": 4,
+        "might_bonus": null,
+        "tags": [
+          "Shurima"
+        ],
+        "rules_html": "<p>When you play me, ready or exhaust a legend.</p>",
+        "rules_text": "When you play me, ready or exhaust a legend.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "errata": [],
+      "runtime_rules_text": "When you play me, ready or exhaust a legend.",
+      "original_image": {
+        "path": "assets/data/card_admissions/irelia_entourage/sfd-039-221.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/a6f3ce580860fe80fdf1b41533ba89b5060e946a-744x1039.png?accountingTag=RB",
+        "bytes": 775886,
+        "sha256": "3a0f34c93888b7de0936d8aeb8f5049407677fa3b62952396a0d24b36d582629",
+        "width": 744,
+        "height": 1039
+      },
+      "runtime_image": {
+        "path": "assets/art/card_455.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/a6f3ce580860fe80fdf1b41533ba89b5060e946a-744x1039.png?w=280&q=85&fm=png",
+        "bytes": 170210,
+        "sha256": "8120ee6fb917658767b9c4e631b46e3a15bdd56cea14e5fb0556c4fa978c8288",
+        "width": 280,
+        "height": 391
+      },
+      "visual_review": {
+        "actual_full_face_viewed": true,
+        "printed_energy": 3,
+        "printed_power": 1,
+        "printed_might": 4,
+        "printed_domains": [
+          "calm"
+        ],
+        "printed_types": [
+          "unit"
+        ],
+        "printed_tags": [
+          "Shurima"
+        ],
+        "printed_rules": "When you play me, ready or exhaust a legend.",
+        "uncertainties": []
+      }
+    }
+  ],
+  "timing_review": {
+    "core_edition": "2026-10-09",
+    "sections": [
+      "355.3",
+      "355.5",
+      "355.9.a.4",
+      "355.18",
+      "383.4.a",
+      "415.1",
+      "416.1",
+      "811.1.d.3"
+    ],
+    "finding": "Legend target is chosen when the play trigger finalizes. Ready or exhaust is a non-bulleted choice made on resolution. The target remains eligible even when the chosen instruction would not change its state. Legends are not located at battlefields, so explicit legend targeting uses Hidden\u2019s exception."
+  },
+  "preset_provenance": "Community Irelia list lead only; no tournament recipe modified or new verified preset claimed."
+}

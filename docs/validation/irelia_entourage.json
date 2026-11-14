@@ -1,0 +1,497 @@
+{
+  "status": "Local validation passed; immutable installed acceptance pending",
+  "reviewed_at": "2026-11-14T08:07:23.455619+00:00",
+  "base_revision": "60ca4f76cb7a276577111951e577a5298178aef0",
+  "card": {
+    "id": 455,
+    "name": "Royal Entourage",
+    "official_id": "sfd-039-221"
+  },
+  "rules": {
+    "hub": "https://playriftbound.com/en-us/rules-hub/",
+    "edition": "2026-10-09",
+    "sections": [
+      "107.4",
+      "355.3",
+      "355.5",
+      "355.18",
+      "415.1",
+      "416.1",
+      "811.1.d.3"
+    ],
+    "conclusion": "Legend target before responses; non-bulleted ready/exhaust choice on resolution. Unchanged readiness is legal as an effect. Champion legend identity remains fixed in its public zone."
+  },
+  "focused": {
+    "tests": 7,
+    "seconds": 0.06,
+    "log": {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-entourage-focused-v3.log",
+      "sha256": "371e71f6c7190e16bb0b22d259b02be697396e2165ab56c7dea05e5ea21ee4e1"
+    },
+    "scope": [
+      "Both seats, both legend targets, both initial and selected readiness states",
+      "Wrong targets, stale choices, illegal mid-resolution actions and wrong-seat API requests reject atomically",
+      "Opponent Reaction activation before resolution remains paid",
+      "Source unit returns through Retreat before its trigger resolves",
+      "AI legal choices at all levels, useful targets and hidden-information independence at higher levels",
+      "Public target metadata, resolution timing and read-only API queries"
+    ]
+  },
+  "library": {
+    "passed": 1038,
+    "skipped": 0,
+    "seconds": 8.793,
+    "log": {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-entourage-library-v1.log",
+      "sha256": "12c98bd8e55fdceb8b434df521ba477c2b636a46b0be16f6504bc51fcd2d1aa4"
+    },
+    "qualification": "Before the final missing-ready-field parser hardening; the affected focused tests passed again afterward. Full frozen release reruns all tests."
+  },
+  "companion": {
+    "passed": 1,
+    "log": {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-entourage-companion-v1.log",
+      "sha256": "62d66dda01d4fc2b39f0a51d2f8f41021a1bd5605457414bb06cbcc612ea0cba"
+    },
+    "scope": "Both advice levels, both choice stages, <=180 characters, public-information independence and no mutation."
+  },
+  "source": {
+    "tests": 2,
+    "log": {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-entourage-source-v1.log",
+      "sha256": "ea3aeb47f50759ff97ff24c0d3653818666df5e1aee957994811cfb83ed07234"
+    },
+    "catalog": {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-entourage-catalog-v1.log",
+      "sha256": "897dfe6288ac1b1d2a2b8feda795f404232e4cac6ae660cb46874634d764dd8d"
+    },
+    "preserved_presets": 7,
+    "preserved_cards": 455,
+    "full_card_face_viewed": true
+  },
+  "quality": {
+    "clippy": {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-entourage-clippy-v4.log",
+      "sha256": "6fa16a99ca9886c6e1beb4a311644ae2ae4eb8850491005a446669d5565fb032"
+    },
+    "format": "passed",
+    "diff": "passed",
+    "ci_scope_tests": 5
+  },
+  "native": {
+    "status": "passed",
+    "pid": 1949913,
+    "binary_sha256": "06dc68a573759f04cad4d50141a79027c872f2ee96c6269411214a8a11f0a044",
+    "cases": [
+      {
+        "name": "normal",
+        "exit_code": 0,
+        "seconds": 5.232,
+        "captures": 8,
+        "games": 0,
+        "capture_sha256": {
+          "rift_entourage_response.png": "f3a0601247a46ebfd2ede61aa42e3ef349ef9bf52609abd48bf6c46950908c89",
+          "rift_entourage_ready.png": "39c1ca81a9de8d9c820d25b3687d6de96a7f3c5363f9985ec39530f70f753500",
+          "rift_entourage_opponent.png": "0f3af40b3df87ceea6ef9ea579ee4bc2d7b00c0b887bbc918b4117df8ce10269",
+          "rift_entourage_inspect.png": "4390daa228d3943ef14c51aba8bd6c90f2b841585bd73a72640fda0e95f33408",
+          "rift_entourage_target_advanced.png": "58567b669822f1a359d3696d8088f290a455bcc64d2825e756b2deb7fb133c4b",
+          "rift_entourage_exhausted.png": "8e1d6ae3e6d8e65f50d02d3679d90524638756799355f1fc456e5f681b223ee6",
+          "rift_entourage_resolution.png": "4e25f0192d5b6794094bc3bbc914e75b0cd4b6ff15868f6d0d61e28ab8028314",
+          "rift_entourage_target_beginner.png": "05fa98a67d005d890cc0a1e358e546aec1eb44db4c48d7dadfb41544f949eaa4"
+        },
+        "log_sha256": "5ff5c1ed3b32d2a663ff9fcffa9e1cd16c7f1cd85324c4564dc426f1f8bbe726"
+      },
+      {
+        "name": "small",
+        "exit_code": 0,
+        "seconds": 4.58,
+        "captures": 8,
+        "games": 0,
+        "capture_sha256": {
+          "rift_entourage_response.png": "8f28a0bd6e41d20cb06df24181e46c80f0c871e30b50a58d9069a666ba24a0b7",
+          "rift_entourage_ready.png": "041cef2ecafbc6b9805a0c90fbf88b5090901db4c765a60f9cce206320885582",
+          "rift_entourage_opponent.png": "b5547e8de4f1a2f2cfbdf73a9e9850894ce909580842bdc58aa41481d46d72ea",
+          "rift_entourage_inspect.png": "92c0281511dd9d6a2f4533f165766af71e8fba3b61fc97827c7dc5c19aadd7bb",
+          "rift_entourage_target_advanced.png": "2ff59fa463ad1b3d733c7e165ab5a78e3080bd6741a056c7779e2bfe1cc9a450",
+          "rift_entourage_exhausted.png": "53849013793830de187372d65c5884ae4f5971cb85b5d37a8e6f95cc65ddcfc6",
+          "rift_entourage_resolution.png": "073f917f13054014927f08c4750231e197ed2e5a1aafb2b75bb22f65c8eeccb5",
+          "rift_entourage_target_beginner.png": "06f93aee188a1c3247a29cfdd7231a9b2ad2284e678e328e1e295f4f5584f5dd"
+        },
+        "log_sha256": "5ff5c1ed3b32d2a663ff9fcffa9e1cd16c7f1cd85324c4564dc426f1f8bbe726"
+      }
+    ]
+  },
+  "visual_review": {
+    "captures": {
+      "normal/rift_entourage_target_beginner.png": "05fa98a67d005d890cc0a1e358e546aec1eb44db4c48d7dadfb41544f949eaa4",
+      "small/rift_entourage_target_advanced.png": "2ff59fa463ad1b3d733c7e165ab5a78e3080bd6741a056c7779e2bfe1cc9a450",
+      "small/rift_entourage_resolution.png": "073f917f13054014927f08c4750231e197ed2e5a1aafb2b75bb22f65c8eeccb5",
+      "small/rift_entourage_exhausted.png": "53849013793830de187372d65c5884ae4f5971cb85b5d37a8e6f95cc65ddcfc6"
+    },
+    "findings": [
+      "The source card and target timing appear above two labeled legend choices.",
+      "Ready/exhaust choices identify the fixed target and current state.",
+      "Both advice levels fit separately from buttons at both sizes.",
+      "Actual clicks choose both owners and ready/exhaust, and passing reaches the opponent."
+    ],
+    "limits": [
+      "Developer inspection, not novice playtesting."
+    ]
+  },
+  "api": {
+    "evidence": {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-entourage-entourage-baseline-v2.json",
+      "sha256": "d5b5505d739b66097ab447f4323f3a0d3db4303757751150ec5d868ca4895b28"
+    },
+    "series": 6,
+    "games": 15,
+    "resolutions": 10,
+    "records": [
+      {
+        "difficulty": "easy",
+        "irelia_seat": 0,
+        "first_player": 1,
+        "result": {
+          "wins": [
+            1,
+            2
+          ],
+          "winner": 1,
+          "history": [
+            {
+              "battlefields": [
+                13,
+                11
+              ],
+              "first_player": 1,
+              "number": 1,
+              "scores": [
+                2,
+                8
+              ],
+              "winner": 1
+            },
+            {
+              "battlefields": [
+                0,
+                1
+              ],
+              "first_player": 1,
+              "number": 2,
+              "scores": [
+                8,
+                2
+              ],
+              "winner": 0
+            },
+            {
+              "battlefields": [
+                14,
+                12
+              ],
+              "first_player": 1,
+              "number": 3,
+              "scores": [
+                0,
+                8
+              ],
+              "winner": 1
+            }
+          ],
+          "requests": 980,
+          "seed": 455100,
+          "difficulty": "easy"
+        },
+        "finalized_targets": 1,
+        "resolved_choices": 1,
+        "target_owners": [
+          1
+        ],
+        "trace_sha256": "6a190e560667e7e3dc4a0b44f0a1ae2504885c5286ac377fa6d6597939c39558"
+      },
+      {
+        "difficulty": "easy",
+        "irelia_seat": 1,
+        "first_player": 0,
+        "result": {
+          "wins": [
+            2,
+            0
+          ],
+          "winner": 0,
+          "history": [
+            {
+              "battlefields": [
+                11,
+                13
+              ],
+              "first_player": 0,
+              "number": 1,
+              "scores": [
+                8,
+                2
+              ],
+              "winner": 0
+            },
+            {
+              "battlefields": [
+                1,
+                0
+              ],
+              "first_player": 0,
+              "number": 2,
+              "scores": [
+                8,
+                4
+              ],
+              "winner": 0
+            }
+          ],
+          "requests": 796,
+          "seed": 455101,
+          "difficulty": "easy"
+        },
+        "finalized_targets": 1,
+        "resolved_choices": 1,
+        "target_owners": [
+          0
+        ],
+        "trace_sha256": "d49ac49d5f90ae47b415ceb0eff448b420d6b1b2d3ddaaee441e009ccb563596"
+      },
+      {
+        "difficulty": "tactical",
+        "irelia_seat": 0,
+        "first_player": 1,
+        "result": {
+          "wins": [
+            0,
+            2
+          ],
+          "winner": 1,
+          "history": [
+            {
+              "battlefields": [
+                13,
+                11
+              ],
+              "first_player": 1,
+              "number": 1,
+              "scores": [
+                7,
+                8
+              ],
+              "winner": 1
+            },
+            {
+              "battlefields": [
+                0,
+                1
+              ],
+              "first_player": 1,
+              "number": 2,
+              "scores": [
+                3,
+                9
+              ],
+              "winner": 1
+            }
+          ],
+          "requests": 988,
+          "seed": 455110,
+          "difficulty": "tactical"
+        },
+        "finalized_targets": 2,
+        "resolved_choices": 2,
+        "target_owners": [
+          1
+        ],
+        "trace_sha256": "b51eca18a54a895248bb80dd2e6c5199877bf5b51a95e891f0b261904c042c3c"
+      },
+      {
+        "difficulty": "tactical",
+        "irelia_seat": 1,
+        "first_player": 0,
+        "result": {
+          "wins": [
+            2,
+            1
+          ],
+          "winner": 0,
+          "history": [
+            {
+              "battlefields": [
+                11,
+                13
+              ],
+              "first_player": 0,
+              "number": 1,
+              "scores": [
+                7,
+                8
+              ],
+              "winner": 1
+            },
+            {
+              "battlefields": [
+                1,
+                0
+              ],
+              "first_player": 0,
+              "number": 2,
+              "scores": [
+                8,
+                4
+              ],
+              "winner": 0
+            },
+            {
+              "battlefields": [
+                12,
+                14
+              ],
+              "first_player": 0,
+              "number": 3,
+              "scores": [
+                9,
+                2
+              ],
+              "winner": 0
+            }
+          ],
+          "requests": 1607,
+          "seed": 455111,
+          "difficulty": "tactical"
+        },
+        "finalized_targets": 4,
+        "resolved_choices": 4,
+        "target_owners": [
+          0
+        ],
+        "trace_sha256": "b4964551e5e944acee3fd72bb69cd49f6b7e854386db392753dcdeeee9d70b4e"
+      },
+      {
+        "difficulty": "strategic",
+        "irelia_seat": 0,
+        "first_player": 1,
+        "result": {
+          "wins": [
+            0,
+            2
+          ],
+          "winner": 1,
+          "history": [
+            {
+              "battlefields": [
+                13,
+                11
+              ],
+              "first_player": 1,
+              "number": 1,
+              "scores": [
+                3,
+                8
+              ],
+              "winner": 1
+            },
+            {
+              "battlefields": [
+                0,
+                1
+              ],
+              "first_player": 1,
+              "number": 2,
+              "scores": [
+                3,
+                9
+              ],
+              "winner": 1
+            }
+          ],
+          "requests": 901,
+          "seed": 455120,
+          "difficulty": "strategic"
+        },
+        "finalized_targets": 2,
+        "resolved_choices": 2,
+        "target_owners": [
+          1
+        ],
+        "trace_sha256": "68036c19c1c86aac252c316b25c28002a9fa30479a682da43290c37aad6b39bb"
+      },
+      {
+        "difficulty": "strategic",
+        "irelia_seat": 1,
+        "first_player": 0,
+        "result": {
+          "wins": [
+            2,
+            1
+          ],
+          "winner": 0,
+          "history": [
+            {
+              "battlefields": [
+                11,
+                13
+              ],
+              "first_player": 0,
+              "number": 1,
+              "scores": [
+                9,
+                2
+              ],
+              "winner": 0
+            },
+            {
+              "battlefields": [
+                1,
+                0
+              ],
+              "first_player": 0,
+              "number": 2,
+              "scores": [
+                5,
+                8
+              ],
+              "winner": 1
+            },
+            {
+              "battlefields": [
+                12,
+                14
+              ],
+              "first_player": 0,
+              "number": 3,
+              "scores": [
+                8,
+                1
+              ],
+              "winner": 0
+            }
+          ],
+          "requests": 1106,
+          "seed": 455121,
+          "difficulty": "strategic"
+        },
+        "finalized_targets": 0,
+        "resolved_choices": 0,
+        "target_owners": [],
+        "trace_sha256": "0d9aa0143e0ede2763d74b96a59b9b057d14694dbf6c8f17015f31eb03af108f"
+      }
+    ],
+    "limits": [
+      "Strategic seat 1 did not play Entourage in this seed; retained unchanged. Completed matches do not establish optimal play."
+    ]
+  },
+  "corrected_attempts": [
+    "Native v1 found an overlong Advanced Mote tip; shortened it and added a headless regression.",
+    "New companion fixture initially referenced the binary crate as the library; corrected imports and rune setup.",
+    "Strict checks rejected a redundant reference in the new source label; removed it.",
+    "API readiness now requires an explicit Boolean instead of treating an omitted value as exhaust."
+  ],
+  "remaining": [
+    "Frozen installed release acceptance and publication",
+    "Additional non-Champion legend instances need physical identities before those cards are admitted",
+    "Full legal card inventory, Standard parity, expert strategy and novice learning remain unproven"
+  ]
+}

@@ -6935,6 +6935,21 @@ pub fn cards() -> Vec<CardDef> {
             tags: &[],
             art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/d83d994e6dc7949eb783da16f4bbdb64342a8dfb-744x1039.png?w=280&q=85&fm=png",
         },
+        CardDef {
+            id: 455,
+            official_id: "sfd-039-221",
+            name: "Royal Entourage",
+            cost: 3,
+            power_cost: 1,
+            might: 4,
+            domain: Domain::Calm,
+            domains: &[Domain::Calm],
+            kind: CardKind::Unit,
+            official_text: "When you play me, ready or exhaust a legend.",
+            keywords: &[],
+            tags: &["Shurima"],
+            art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/a6f3ce580860fe80fdf1b41533ba89b5060e946a-744x1039.png?w=280&q=85&fm=png",
+        },
     ]
 }
 

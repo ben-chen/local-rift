@@ -52,6 +52,7 @@ pub enum AreaSelector {
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum PlayTargetKind {
+    Legend,
     Rune,
     UnitOrGear,
     Unit,
@@ -293,7 +294,7 @@ pub fn effect(id: usize) -> OfficialEffect {
         447 => Deathgrip,
         448 => Guards,
         449..=451 => None,
-        454 => None,
+        454 | 455 => None,
         452 => DrawWithOptionalCost { unpaid: 1, paid: 2 },
         453 => DrawThenChannel {
             draw: 1,
@@ -1146,6 +1147,7 @@ pub fn requirements(id: usize) -> &'static [Mechanic] {
         451 => &[Chain, OptionalCosts],
         452 | 453 => &[Chain, OptionalCosts, ChooseReadyTriggers],
         454 => &[Chain, OptionalCosts, ChooseReadyTriggers],
+        455 => &[Chain, ChooseReadyTriggers],
         447 => &[
             Chain,
             MultipleTargets,

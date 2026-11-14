@@ -6,6 +6,16 @@ The audit started from commit `167ad7e` and continued against the shared working
 
 ## Authoritative references
 
+The November 14 Royal Entourage review checks CR355.3/355.5/355.18: the card's
+non-bulleted either/or instruction is not a modal choice made before responses.
+The legend target finalizes first; readiness is chosen only while resolving the
+retained trigger. Focused engine and protocol tests exercise both seats and both
+targets, both starting states, no-op effects, stale/wrong-player rejection, an
+opposing Reaction activation, and the source unit returning to hand. The shared
+legend-target validator also respects CR811.1.d.3's exception for target types
+that cannot occupy a battlefield. Additional non-Champion legends remain outside
+the admitted card pool and need physical object identities before admission.
+
 - Riot's [Rules Hub](https://playriftbound.com/en-us/rules-hub/), checked on the review date, links the [October 9, 2026 Core Rules](https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/5c7946f7c3b8c6e0faff85ab6dadc6d2e721ea94.pdf).
 - The [Radiance rules update, effective October 16](https://playriftbound.com/en-us/news/announcements/core-rules-radiance-patch-notes-effective-october-16-2026/), supplies current clarifications about pending items and delayed effects.
 - Current card wording and previous errata provenance remain in [SOURCES.md](SOURCES.md) and `assets/data/decks.json`.
