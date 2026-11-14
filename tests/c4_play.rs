@@ -855,12 +855,94 @@ fn repeated_eclipse_finishes_both_predicts_before_death_replacement_choice() {
 }
 
 #[test]
-fn strategic_seed117_cleans_lethal_vex_after_pending_eclipse_predict() {
+fn seed117_replay_cleans_lethal_vex_after_pending_eclipse_predict() {
     let mut g = Game::new(0, 3, 117, Difficulty::Strategic);
     g.choose_starting_player(0).unwrap();
     g.start_match().unwrap();
-    for _ in 0..34 {
-        g.step_ai().unwrap();
+    // Preserve the public action sequence that exposed this cleanup bug at
+    // 07e7645. Recomputing 34 AI choices couples a rules regression to policy
+    // preferences: a changed policy may never enter the original position.
+    let replay = [
+        Action::EndTurn,
+        Action::PlayCard {
+            hand_index: 2,
+            lane: None,
+            target: None,
+        },
+        Action::Pass,
+        Action::Pass,
+        Action::EndTurn,
+        Action::PlayCard {
+            hand_index: 4,
+            lane: None,
+            target: None,
+        },
+        Action::EndTurn,
+        Action::Move {
+            unit_id: 1,
+            lane: Some(0),
+        },
+        Action::Pass,
+        Action::Pass,
+        Action::PlayChampion {
+            lane: None,
+            target: None,
+        },
+        Action::EndTurn,
+        Action::Move {
+            unit_id: 2,
+            lane: Some(0),
+        },
+        Action::Pass,
+        Action::Pass,
+        Action::AssignDamage {
+            assignments: vec![(1, 4)],
+        },
+        Action::AssignDamage {
+            assignments: vec![(2, 2)],
+        },
+        Action::Choose { accept: false },
+        Action::PlayChampion {
+            lane: None,
+            target: None,
+        },
+        Action::EndTurn,
+        Action::Move {
+            unit_id: 3,
+            lane: Some(1),
+        },
+        Action::PlayCard {
+            hand_index: 3,
+            lane: None,
+            target: None,
+        },
+        Action::Pass,
+        Action::WithPlayChoices {
+            action: Box::new(Action::PlayCard {
+                hand_index: 5,
+                lane: None,
+                target: None,
+            }),
+            choices: PlayChoices::default(),
+        },
+        Action::Choose { accept: false },
+        Action::Pass,
+        Action::ActivateLegend { target: None },
+        Action::Pass,
+        Action::Pass,
+        Action::Pass,
+        Action::Pass,
+        Action::PlayCard {
+            hand_index: 6,
+            lane: None,
+            target: None,
+        },
+        Action::Pass,
+        Action::Pass,
+    ];
+    for (step, action) in replay.into_iter().enumerate() {
+        g.apply(action)
+            .unwrap_or_else(|error| panic!("original seed 117 action {step}: {error}"));
     }
     assert!(matches!(
         g.decision,
@@ -871,7 +953,7 @@ fn strategic_seed117_cleans_lethal_vex_after_pending_eclipse_predict() {
     assert_eq!(vex.card_id, 20);
     assert_eq!(vex.damage, 4);
     assert_eq!(g.unit_might(vex).unwrap(), 2);
-    g.step_ai().unwrap();
+    g.apply(Action::Choose { accept: false }).unwrap();
     assert!(g.resolution_progress().is_none());
     assert!(!g.players[0].units.iter().any(|u| u.id == 2));
     assert!(g.players[0].discard.contains(&20));

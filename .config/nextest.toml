@@ -5,3 +5,9 @@ retries = 0
 
 [profile.ci.junit]
 path = "junit.xml"
+
+[[profile.ci.overrides]]
+# Rules and UI regressions should report before the long complete-game matrices.
+# This changes queue order only: every test still runs, with no retries.
+filter = 'not binary(/matches$/)'
+priority = 100

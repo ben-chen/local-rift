@@ -310,10 +310,21 @@ cargo test --locked --doc
 ```
 
 The `ci` profile runs at most four tests concurrently, reports all failures, and
-does not retry failed tests. It retains a JUnit report in
+does not retry failed tests. Tests outside the complete-match binaries run first,
+so focused rules failures surface before the long simulation matrices. This only
+changes scheduling; no tests are omitted. It retains a JUnit report in
 `target/nextest/ci/junit.xml`. This runs the full suite; the separate Cargo command
 keeps documentation tests covered. During implementation, use a focused test
 filter for the changed mechanic, then run full regression on the final candidate.
+
+Keep each checkout's default `target/` directory, or give each worktree its own
+`CARGO_TARGET_DIR`. Sharing project build outputs between old and new revisions
+caused an instrumented baseline library to be linked into newer tests during a
+local comparison. The package checks use separate immutable Nix builds.
+
+When a seeded AI game exposes a rules bug, preserve the relevant legal actions
+as a replay. A rule regression should keep testing that interaction when the AI
+learns a different line; policy tests should assert the AI's decisions separately.
 
 `python3 tools/check_release.py --plan plan.json --output /path/to/new-results`
 builds and verifies one committed revision. The JSON plan has a full `revision`
