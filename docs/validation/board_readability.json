@@ -66,5 +66,18 @@
   "rejected_attempts": [
     "First capture sequence rendered several snapshots in one frame, producing ghosted hover captures; v2 supersedes those images."
   ],
-  "artifact_directory": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/board-readability-native-v2"
+  "artifact_directory": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/board-readability-native-v2",
+  "installed_acceptance": {
+    "status": "passed",
+    "revision": "008d46b215a417a290c5415eed030ecc5dd2e38e",
+    "receipt": "irelia_choices.json#installed_acceptance",
+    "package": "/nix/store/bmhkahw7r7bs9y3v3vwymq2yk1dpz9ci-local-rift-0.1.0",
+    "captures_reviewed": [
+      "core-normal/rift_smoke_resources_screenshot.png",
+      "core-small/rift_smoke_resources_screenshot.png",
+      "core-small/rift_smoke_journal_screenshot.png",
+      "core-normal/rift_smoke_journal_screenshot.png",
+      "core-small/rift_smoke_opponent_resources_screenshot.png"
+    ]
+  }
 }
