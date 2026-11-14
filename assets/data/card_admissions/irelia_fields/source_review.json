@@ -1,0 +1,312 @@
+{
+  "status": "Source reviewed; no runtime support claimed for these three battlefields.",
+  "reviewed_on": "2026-11-14",
+  "base_revision": "00f7e00d33fe71f67cb93ed38c4433bf76c631a5",
+  "records": [
+    {
+      "official_id": "sfd-209-221",
+      "raw_printing": {
+        "official_id": "sfd-209-221",
+        "public_code": "SFD-209/221",
+        "name": "Forgotten Monument",
+        "set": "SFD",
+        "collector_number": 209,
+        "types": [
+          "battlefield"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "battlefield"
+        ],
+        "accessibility_types": [
+          "battlefield"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "colorless"
+        ],
+        "energy": null,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "rules_html": "<p>Players can't score here until their third turn.</p>",
+        "rules_text": "Players can't score here until their third turn.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [],
+        "rarity": "uncommon",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/b0c98558fccd68c9ac93cd5b3412c31c68b5ace9-1039x744.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Battlefield: Forgotten Monument. Players can't score here until their third turn.",
+        "illustrators": [
+          "Envar Studio"
+        ]
+      },
+      "raw_printing_sha256": "5bf121b593a87f71b7948a3399db08979b47b6f618d90c1680be1ca7be3f5ee2",
+      "effective": {
+        "types": [
+          "battlefield"
+        ],
+        "super_types": [],
+        "domains": [
+          "colorless"
+        ],
+        "energy": null,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>Players can't score here until their third turn.</p>",
+        "rules_text": "Players can't score here until their third turn.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "original_image": {
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/b0c98558fccd68c9ac93cd5b3412c31c68b5ace9-1039x744.png?accountingTag=RB",
+        "path": "assets/data/card_admissions/irelia_fields/sfd-209-221.png",
+        "sha256": "75381c1e3645fae84be31a7608f277e82be8f1618423ec8e7d72024258c890c6",
+        "bytes": 971028,
+        "dimensions": [
+          1039,
+          744
+        ]
+      },
+      "visual_review": {
+        "actual_full_face_viewed": true,
+        "reviewed_on": "2026-11-14",
+        "printed_facts": {
+          "types": [
+            "battlefield"
+          ],
+          "domains": [
+            "colorless"
+          ],
+          "rules_text": "Players can't score here until their third turn."
+        },
+        "notes": "Viewed the complete unmodified official landscape face, including name, type, text, set and collector number."
+      }
+    },
+    {
+      "official_id": "ogn-277-298",
+      "raw_printing": {
+        "official_id": "ogn-277-298",
+        "public_code": "OGN-277/298",
+        "name": "Back-Alley Bar",
+        "set": "OGN",
+        "collector_number": 277,
+        "types": [
+          "battlefield"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "battlefield"
+        ],
+        "accessibility_types": [
+          "battlefield"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "colorless"
+        ],
+        "energy": null,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "rules_html": "<p>When a unit moves from here, give it +1 :rb_might: this turn.</p>",
+        "rules_text": "When a unit moves from here, give it +1 Might this turn.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [],
+        "rarity": "uncommon",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/3e9f659a32e390b45bc87a01bdd6af4a8a3565f7-1038x744.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Battlefield: Back-Alley Bar. When a unit moves from here, give it +1 [S] this turn.",
+        "illustrators": [
+          "Kudos Productions"
+        ]
+      },
+      "raw_printing_sha256": "732110759a11e3249ca522a91b257ef2ad91337c93042dc52f5d31175522421e",
+      "effective": {
+        "types": [
+          "battlefield"
+        ],
+        "super_types": [],
+        "domains": [
+          "colorless"
+        ],
+        "energy": null,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>When a unit moves from here, give it +1 :rb_might: this turn.</p>",
+        "rules_text": "When a unit moves from here, give it +1 Might this turn.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "original_image": {
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/3e9f659a32e390b45bc87a01bdd6af4a8a3565f7-1038x744.png?accountingTag=RB",
+        "path": "assets/data/card_admissions/irelia_fields/ogn-277-298.png",
+        "sha256": "8a43cf63e3cbf2e1340f4fdedbc7e50c1e48e148768c99a194588b72862d5927",
+        "bytes": 956449,
+        "dimensions": [
+          1038,
+          744
+        ]
+      },
+      "visual_review": {
+        "actual_full_face_viewed": true,
+        "reviewed_on": "2026-11-14",
+        "printed_facts": {
+          "types": [
+            "battlefield"
+          ],
+          "domains": [
+            "colorless"
+          ],
+          "rules_text": "When a unit moves from here, give it +1 Might this turn."
+        },
+        "notes": "Viewed the complete unmodified official landscape face, including name, type, text, set and collector number."
+      }
+    },
+    {
+      "official_id": "ogn-291-298",
+      "raw_printing": {
+        "official_id": "ogn-291-298",
+        "public_code": "OGN-291/298",
+        "name": "The Candlelit Sanctum",
+        "set": "OGN",
+        "collector_number": 291,
+        "types": [
+          "battlefield"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "battlefield"
+        ],
+        "accessibility_types": [
+          "battlefield"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "colorless"
+        ],
+        "energy": null,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "rules_html": "<p>When you conquer here, look at the top two cards of your Main Deck. You may recycle one or both of them. Put those you don't back in any order.</p>",
+        "rules_text": "When you conquer here, look at the top two cards of your Main Deck. You may recycle one or both of them. Put those you don't back in any order.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [],
+        "rarity": "uncommon",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/f14fe78f2b7f3909eadb07bce24bd582e190653d-1038x744.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Battlefield: The Candlelit Sanctum. When you conquer here, look at the top two cards of your Main Deck. You may recycle one or both of them. Put those you don't back in any order.",
+        "illustrators": [
+          "Envar Studio"
+        ]
+      },
+      "raw_printing_sha256": "882896f77e7fefbbdee7b754a63a10acae860211210cf9154d89ce876746e142",
+      "effective": {
+        "types": [
+          "battlefield"
+        ],
+        "super_types": [],
+        "domains": [
+          "colorless"
+        ],
+        "energy": null,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>When you conquer here, look at the top two cards of your Main Deck. You may recycle one or both of them. Put those you don't back in any order.</p>",
+        "rules_text": "When you conquer here, look at the top two cards of your Main Deck. You may recycle one or both of them. Put those you don't back in any order.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "original_image": {
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/f14fe78f2b7f3909eadb07bce24bd582e190653d-1038x744.png?accountingTag=RB",
+        "path": "assets/data/card_admissions/irelia_fields/ogn-291-298.png",
+        "sha256": "3c1c10951e8dc9fc7c2a3ed960204c05163b1565148e1b5adaf901580fb940d0",
+        "bytes": 906232,
+        "dimensions": [
+          1038,
+          744
+        ]
+      },
+      "visual_review": {
+        "actual_full_face_viewed": true,
+        "reviewed_on": "2026-11-14",
+        "printed_facts": {
+          "types": [
+            "battlefield"
+          ],
+          "domains": [
+            "colorless"
+          ],
+          "rules_text": "When you conquer here, look at the top two cards of your Main Deck. You may recycle one or both of them. Put those you don't back in any order."
+        },
+        "notes": "Viewed the complete unmodified official landscape face, including name, type, text, set and collector number."
+      }
+    }
+  ],
+  "preserved_runtime_prefix": {
+    "card_count": 466,
+    "cards_sha256": "3c879c6d99aed58e1aa5ff73f9fe4fc20431005bdf0251ee5089b57264e1adfd",
+    "preset_count": 7,
+    "presets_sha256": "e975739d803427e54928d6e6cd03d1ce51d7ad108f4e247b8a000acf037a5cdb",
+    "battlefield_count": 18,
+    "battlefields_sha256": "847320fe0487ab84085db03e7fbc695a32e1839e947cfa354207a5ebc216743b"
+  },
+  "rules": {
+    "core_date": "2026-10-09",
+    "core_url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/5c7946f7c3b8c6e0faff85ab6dadc6d2e721ea94.pdf",
+    "core_sha256": "94d41fee86f88b61c4157c0389c0595d990b98e5b42555c99d9f649ee64d1fec",
+    "hub_verified_on": "2026-11-14",
+    "sections": [
+      "190.4: battlefield control and cleanup",
+      "190.6.a/b: controlled and uncontrolled battlefield ability controller",
+      "383.4.c.2.c/d.2.c: negated point gain does not itself suppress Conquer/Hold",
+      "470.1/470.3: Scoring is distinct from gaining points; score without a number refers to Scoring",
+      "471-473: Conquer/Hold scoring, once per battlefield per turn, and score triggers"
+    ]
+  },
+  "irelia_relevance": [
+    {
+      "source": "https://riftbound.org/meta/irelia-blade-dancer/2791-antonios-ampou-ntagie",
+      "cards": [
+        "Forgotten Monument"
+      ],
+      "evidence": "Registered deck lines attributed to Convergence IV, October 31, 2026.",
+      "html_sha256": "aafa9543665ab15dc87d3ae3dbfad09f4b8b987b3db2db74184fd3494d834d71"
+    },
+    {
+      "source": "https://riftbound.org/meta/irelia-blade-dancer/2797-tapur-sezgin",
+      "cards": [
+        "Back-Alley Bar",
+        "The Candlelit Sanctum"
+      ],
+      "evidence": "Registered deck lines attributed to Convergence IV, October 31, 2026.",
+      "html_sha256": "b74feda2be23cb3c8263db9dd7969439e4b7190332f6122331b10db86d0eb096"
+    }
+  ],
+  "implementation_requirements": [
+    "Forgotten Monument: use each player's turns_taken, including extra turns; permit scoring from the beginning of that player's third turn, independent of opponent turn count.",
+    "Prevent the Scoring process before the third turn: no point, no final-point replacement draw, no scored-this-turn marker, no Hold/Conquer occurrence or associated triggers. Control may still be established or maintained.",
+    "Keep point-gain replacement distinct: ordinary final-point replacement draws still count as scoring and keep their Conquer triggers.",
+    "Back-Alley Bar: each genuine unit Move from that field queues a respondable triggered ability, including tokens, groups and effect movement; playing, recalling, departure and no-op movement are distinct.",
+    "Snapshot the battlefield ability controller under CR190.6 when triggered; default an uncontrolled field to the turn player. Track the moved physical unit by identity, not a newly chosen target.",
+    "Apply +1 temporary Might only when the ability resolves. Preserve normal response ordering, repeated movement accumulation, departure identity changes, and end-of-turn expiry.",
+    "Candlelit Sanctum: a Conquer trigger creates a private look at up to two available top cards on resolution. The player can recycle zero, one, or both, and order all remaining cards; no burnout for merely looking at an empty deck.",
+    "Reuse the existing partition/order mechanics while showing look/recycle wording from the printed ability; do not silently teach it as a printed Predict keyword.",
+    "Use shared scoring eligibility and decision views for the native client, API, AI and Mote. Show new players why Monument cannot score yet and how many of their turns have begun.",
+    "Verify independently expected boundary, response, privacy, conservation, extra-turn, trigger and original-target cases, plus complete legal Irelia games in both seats at all levels."
+  ],
+  "limits": [
+    "Secondary deck listings are priority evidence; primary registrations are unverified and no sourced preset is changed.",
+    "The accepted inventory snapshot is dated October 24. Known format-date bans are separate; this source review does not claim current full Standard implementation."
+  ]
+}
