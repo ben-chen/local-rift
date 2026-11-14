@@ -72,6 +72,8 @@ mod test_support;
 
 #[cfg(test)]
 mod board_effects;
+#[cfg(test)]
+mod flurry_tests;
 
 pub const PROTOCOL_VERSION: u32 = 1;
 pub const MAX_REQUEST_BYTES: usize = 1_048_576;

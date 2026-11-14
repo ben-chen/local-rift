@@ -7055,6 +7055,21 @@ pub fn cards() -> Vec<CardDef> {
             tags: &["Fae", "Cat", "Bandle City", "Yuumi"],
             art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/588ddfeb01ab7b37110d8a7e656cf9f35530ce4e-744x1039.png?w=280&q=85&fm=png",
         },
+        CardDef {
+            id: 463,
+            official_id: "unl-044-219",
+            name: "Flurry of Feathers",
+            cost: 4,
+            power_cost: 2,
+            might: 0,
+            domain: Domain::Calm,
+            domains: &[Domain::Calm],
+            kind: CardKind::Spell,
+            official_text: "[Reaction]\nChoose one —\nCounter a spell.\nPlay four 1 Might Bird unit tokens with [Deflect]. (Opponents must pay [Any Power] to choose them with a spell or ability.)",
+            keywords: &["Reaction"],
+            tags: &[],
+            art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/77bd864b29f4975868e557e31a39b94d06a4ecb2-744x1039.png?w=280&q=85&fm=png",
+        },
     ]
 }
 

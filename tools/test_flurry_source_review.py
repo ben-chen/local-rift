@@ -1,4 +1,4 @@
-"""Flurry's full printed face and official data; no gameplay admission implied."""
+"""Flurry's full printed face and official data; runtime facts and preserved presets."""
 import json
 import struct
 import unittest
@@ -34,12 +34,24 @@ class FlurrySourceReview(unittest.TestCase):
         self.assertEqual((len(data), catalog.sha(data)), (image['bytes'], image['sha256']))
         self.assertEqual(struct.unpack('>II', data[16:24]), (744, 1039))
 
-    def test_source_review_does_not_admit_a_runtime_card_or_a_preset(self):
+    def test_runtime_uses_exact_reviewed_facts_and_preserves_earlier_cards_and_presets(self):
         identity = next(c for c in self.snapshot['cards'] if c['identity'] == 'unl-044-219')
         self.assertTrue(identity['standard_legal'])
         self.assertEqual(identity['errata'], [])
-        self.assertFalse(identity['implementation']['playable_in_client'])
-        self.assertNotIn('unl-044-219', {c['official_id'] for c in self.runtime['cards']})
+        self.assertTrue(identity['implementation']['playable_in_client'])
+        card = self.runtime['cards'][463]
+        self.assertEqual(card['official_id'], 'unl-044-219')
+        self.assertEqual((card['energy'], card['power'], card['might']), (4, 2, 0))
+        self.assertEqual(card['keywords'], ['Reaction'])
+        self.assertEqual(card['domains'], ['Calm'])
+        self.assertEqual(card['tags'], [])
+        effective = self.proof['records'][0]['effective']
+        self.assertEqual(card['official_text'], effective['rules_text'])
+        self.assertEqual(card['official_text_html'], effective['rules_html'])
+        image = self.proof['records'][0]['runtime_image']
+        data = (catalog.ROOT / image['path']).read_bytes()
+        self.assertEqual((len(data), catalog.sha(data)), (image['bytes'], image['sha256']))
+        self.assertEqual(struct.unpack('>II', data[16:24]), (280, 391))
         pin = self.proof['preserved_runtime_prefix']
         self.assertEqual((pin['card_count'], pin['preset_count']), (463, 7))
         for field, count, digest in [('cards', 'card_count', 'cards_sha256'),

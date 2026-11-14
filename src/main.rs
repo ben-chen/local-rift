@@ -10763,6 +10763,7 @@ async fn main() {
     let sands_smoke = args.iter().any(|a| a == "--ui-smoke-sands");
     let heavens_smoke = args.iter().any(|a| a == "--ui-smoke-heavens");
     let disarm_smoke = args.iter().any(|a| a == "--ui-smoke-disarm");
+    let flurry_smoke = args.iter().any(|a| a == "--ui-smoke-flurry");
     let turn_keywords_smoke = args.iter().any(|a| a == "--ui-smoke-turn-keywords");
     let rockfall_smoke = args.iter().any(|a| a == "--ui-smoke-rockfall");
     let riven_smoke = args.iter().any(|a| a == "--ui-smoke-riven");
@@ -10786,6 +10787,7 @@ async fn main() {
     let focused_source_damage_smoke = args.iter().any(|a| a == "--ui-smoke-c27");
     let smoke_test = format_smoke
         || turn_keywords_smoke
+        || flurry_smoke
         || disarm_smoke
         || heavens_smoke
         || rockfall_smoke
@@ -10878,6 +10880,8 @@ async fn main() {
             smoke::run_heavens_frame(&mut app, frames)
         } else if disarm_smoke {
             smoke::run_disarm_frame(&mut app, frames)
+        } else if flurry_smoke {
+            smoke::run_flurry_frame(&mut app, frames)
         } else if turn_keywords_smoke {
             smoke::run_turn_keywords_frame(&mut app, frames)
         } else if rockfall_smoke {

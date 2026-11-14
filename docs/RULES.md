@@ -117,6 +117,14 @@ Portable Portal can choose an already-ready unit here, including an enemy; Ready
 
 Command: Attack requires an explicit choice between moving one friendly Deploy gear to a battlefield and privately inspecting the top five cards of the Main Deck. For the move mode, choose the exact gear and then its destination. Attached Deploy gear remains a legal target, but cannot move separately from its bearer. The client requires a different destination; applying the Move definition to non-Unit gear is a documented interpretation in [the rules audit](RULES_AUDIT.md). For the draw mode, optionally reveal and draw one inspected Gear, then recycle the remainder. Each Repeat has its own mode and targets. The spell retains its ordinary Main timing.
 
+Flurry of Feathers is a Reaction with an explicit counter or Bird mode. It can
+counter either player's spell, but not an ability. The other mode plays four
+exhausted, domainless Bird tokens with 1 Might and Deflect; each has its own
+base/controlled-field placement choice after the creating spell finishes.
+Each Repeat selects a mode independently before responses. A lost counter
+target does not switch modes. Payment undo restores the earlier response
+priority and previous pass, including after generating resources for the play.
+
 ## Unit and gear activations
 
 A selected unit exposes **Abilities** alongside its movement controls. Choose the printed ability, select its targets, then confirm its costs. Gear uses the same controls for its printed activations. Each physical source is tracked separately, including two copies of the same card. Cancelling before confirmation spends nothing; committed costs are paid before opponents respond. Exact power-source choices apply to these costs too, including Deflect, and spell-only power cannot pay for them.

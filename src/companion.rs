@@ -402,6 +402,7 @@ fn checked_advice(game: &Game, level: AdviceLevel) -> Result<Vec<&'static str>, 
         window_tips.extend(rockfall_advice(game, beginner));
         window_tips.extend(heavens_advice(game, beginner));
         window_tips.extend(block_advice(game, beginner));
+        window_tips.extend(flurry_advice(game, beginner));
         if let Some(tip) = sands_advice(game, beginner) {
             window_tips.push(tip);
         }
@@ -432,6 +433,7 @@ fn checked_advice(game: &Game, level: AdviceLevel) -> Result<Vec<&'static str>, 
     tips.extend(rockfall_advice(game, beginner));
     tips.extend(heavens_advice(game, beginner));
     tips.extend(block_advice(game, beginner));
+    tips.extend(flurry_advice(game, beginner));
 
     // High stakes scoring and visible threats come before routine suggestions.
     let enemy_has_hold = game.battlefield_owner.contains(&Some(1));
@@ -1885,6 +1887,15 @@ fn sands_advice(game: &Game, beginner: bool) -> Option<&'static str> {
         })
 }
 
+fn flurry_advice(game: &Game, beginner: bool) -> Option<&'static str> {
+    (game.players[0].hand.contains(&463) || game.chain.iter().any(|item| item.card_id == 463))
+        .then_some(if beginner {
+            "Flurry chooses one mode before responses: counter a spell, or play four Birds. Each Bird normally enters exhausted at your base or a battlefield you control."
+        } else {
+            "Flurry's Birds develop several bodies. Save its counter mode for spells that swing control or threaten your scorer. Reserve 4 Energy and 2 Calm Power."
+        })
+}
+
 fn block_advice(game: &Game, beginner: bool) -> Option<&'static str> {
     (game.players[0].hand.contains(&461)
         || game.players[0].hidden.iter().any(|card| card.card_id == 461)
@@ -2824,6 +2835,24 @@ mod tests {
             }
             assert_eq!(format!("{g:?}"), before);
         }
+    }
+
+    #[test]
+    fn flurry_advice_teaches_modes_and_strategy_without_hidden_information() {
+        let mut g = game();
+        g.start_match().unwrap();
+        g.players[0].hand = vec![463];
+        let before = format!("{g:?}");
+        let mut hidden = g.clone();
+        hidden.players[1].hand = vec![463, 461];
+        hidden.players[1].deck.reverse();
+        for level in [AdviceLevel::Beginner, AdviceLevel::Advanced] {
+            let tips = advice(&g, level);
+            assert!(tips.iter().any(|tip| tip.contains("Flurry")));
+            assert!(tips.iter().all(|tip| tip.chars().count() <= 180));
+            assert_eq!(tips, advice(&hidden, level));
+        }
+        assert_eq!(format!("{g:?}"), before);
     }
 
     #[test]

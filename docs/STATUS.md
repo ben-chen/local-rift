@@ -50,3 +50,9 @@ The [Strategic combat improvement](validation/strategic_combat.json) passed its
 separate installed acceptance: 2,018 Rust tests, 334 source checks, 1,176 simulated
 games, 23 UI cases and ten complete API comparisons (63 records). Its scoped
 Block decision benchmark improves to 26/26; this does not establish expert strength.
+
+Flurry of Feathers is in local validation, with explicit modes shared with
+Command: Attack, separate Bird placement choices, and concise advice at both
+levels. A payment-undo regression found during that work also fixes response
+priority restoration for other cards. Its immutable installed acceptance is
+pending; see [Flurry validation](validation/irelia_flurry.json).

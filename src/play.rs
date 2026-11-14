@@ -832,7 +832,13 @@ impl Game {
                 .targets
                 .clone()
         };
-        let spec = if intent.id == 426 {
+        let spec = if intent.token {
+            rules::PlayTargetSpec {
+                kind: None,
+                maximum: 0,
+                required: 0,
+            }
+        } else if intent.id == 426 {
             rules::PlayTargetSpec {
                 kind: Some(if targets.is_empty() {
                     rules::PlayTargetKind::Unit
@@ -877,8 +883,8 @@ impl Game {
             }
         });
         let mut candidates = Vec::new();
-        if intent.id == 410 {
-            candidates = self.command_attack_candidates(self.priority(), mode, &targets);
+        if !intent.token && !rules::spell_modes(intent.id).is_empty() {
+            candidates = self.modal_target_candidates(self.priority(), intent.id, mode, &targets);
         } else if next_slot.is_some() {
             for target in self.card_target_candidates(self.priority(), intent.id, lane, &targets)? {
                 if !matches!(intent.origin,PlayOrigin::Hidden {lane} if !self.hidden_target_allowed_at(intent.id,lane,targets.len(),target))
@@ -898,6 +904,21 @@ impl Game {
             destination: rules::chooses_move_destination(intent.id)
                 .then(|| MoveDestination::from_lane(lane)),
         })
+    }
+
+    fn validate_execution_mode(
+        intent: &CardIntent,
+        mode: Option<usize>,
+        complete: bool,
+    ) -> Result<(), String> {
+        if intent.token {
+            if mode.is_some() {
+                return Err("Token plays do not select the creating spell's mode.".into());
+            }
+            Ok(())
+        } else {
+            Self::validate_play_mode(intent.id, mode, complete)
+        }
     }
 
     pub fn play_choices(&self, action: &Action) -> Result<PlayChoiceView, String> {
@@ -928,7 +949,7 @@ impl Game {
                 }),
             )
         {
-            Self::validate_play_mode(intent.id, mode, false)?;
+            Self::validate_execution_mode(&intent, mode, false)?;
             if intent.id == 426 {
                 self.validate_preparations_targets(
                     self.priority(),
@@ -938,8 +959,8 @@ impl Game {
                 )?;
                 continue;
             }
-            if intent.id == 410 {
-                self.validate_command_attack(self.priority(), mode, group, false)?;
+            if !intent.token && !rules::spell_modes(intent.id).is_empty() {
+                self.validate_modal_targets(self.priority(), intent.id, mode, group, false)?;
                 continue;
             }
             for (slot, &target) in group.iter().enumerate() {
@@ -989,7 +1010,11 @@ impl Game {
                     legend_id: self.legend_id(self.priority()),
                 }),
             show_off: self.show_off_options(action, intent.id),
-            modes: Self::play_modes(intent.id),
+            modes: if intent.token {
+                vec![]
+            } else {
+                Self::play_modes(intent.id)
+            },
             card_id: intent.id,
             origin: intent.origin,
             repeats,
@@ -1497,7 +1522,7 @@ impl Game {
             action,
             Action::PlayCard { .. } | Action::PlayChampion { .. } | Action::PlayFromTrash { .. }
         );
-        if automatic && intent.id != 410 {
+        if automatic && rules::spell_modes(intent.id).is_empty() {
             intent.targets =
                 probe.prepare_targets(probe.priority(), intent.id, intent.lane, &intent.targets)?;
         }
@@ -1519,12 +1544,18 @@ impl Game {
         let repeats = probe.repeat_options(&intent, &grants);
         let accel = probe.accelerate_option(&intent, &grants);
         let bonus = optional_card_cost(intent.id);
-        Self::validate_play_mode(intent.id, choices.mode, true)?;
-        if intent.id == 410 {
-            probe.validate_command_attack(probe.priority(), choices.mode, &intent.targets, true)?;
+        Self::validate_execution_mode(&intent, choices.mode, true)?;
+        if !intent.token && !rules::spell_modes(intent.id).is_empty() {
+            probe.validate_modal_targets(
+                probe.priority(),
+                intent.id,
+                choices.mode,
+                &intent.targets,
+                true,
+            )?;
         }
         for r in &choices.repeats {
-            Self::validate_play_mode(intent.id, r.choices.mode, true)?;
+            Self::validate_execution_mode(&intent, r.choices.mode, true)?;
             if intent.id == 426 {
                 probe.validate_preparations_targets(
                     probe.priority(),
@@ -1534,9 +1565,10 @@ impl Game {
                 )?;
                 continue;
             }
-            if intent.id == 410 {
-                probe.validate_command_attack(
+            if !intent.token && !rules::spell_modes(intent.id).is_empty() {
+                probe.validate_modal_targets(
                     probe.priority(),
+                    intent.id,
                     r.choices.mode,
                     &r.choices.targets,
                     true,
@@ -2077,7 +2109,7 @@ impl Game {
             item.lane = item.executions[frame.execution].destination_lane(item.lane);
             item.targets = item.executions[frame.execution].targets.clone();
             item.target = item.targets.first().copied();
-            let groups = if matches!(item.card_id, 410 | 426) {
+            let groups = if item.card_id == 426 || !rules::spell_modes(item.card_id).is_empty() {
                 vec![item.targets.clone()]
             } else {
                 self.resolution_groups(item.player, item.card_id, item.lane, &item.targets)?
@@ -2100,14 +2132,8 @@ impl Game {
                     card_id: item.card_id,
                 },
             });
-            if item.card_id == 410 {
-                match item.executions[frame.execution].mode {
-                    Some(0) => self.move_deploy_gear(item.player, &item.targets),
-                    Some(1) => {
-                        self.look_to_draw(item.player, item.card_id, DrawLookKind::CommandAttack)
-                    }
-                    _ => return Err("The finalized Command execution has no valid mode.".into()),
-                }
+            if !rules::spell_modes(item.card_id).is_empty() {
+                self.resolve_modal_execution(&item, item.executions[frame.execution].mode)?;
             } else if item.card_id == 426 {
                 self.resolve_preparations(item.player, &item.targets, !item.show_off.is_empty())?;
             } else if self.is_counter(item.card_id) {
@@ -2655,8 +2681,9 @@ impl Game {
                     }
                     continue;
                 }
-                if intent.id == 410 {
-                    result.extend(self.command_play_candidates(
+                if !intent.token && !rules::spell_modes(intent.id).is_empty() {
+                    result.extend(self.modal_play_candidates(
+                        intent.id,
                         &action,
                         false,
                         limit.saturating_sub(result.len()),
@@ -2857,8 +2884,13 @@ impl Game {
                     .collect::<Result<Vec<_>, _>>()?
                     .into_iter()
                     .sum()
-            } else if intent.id == 410 {
-                self.command_choice_score(self.priority(), intent.legacy.mode, &intent.targets)
+            } else if !intent.token && !rules::spell_modes(intent.id).is_empty() {
+                self.modal_choice_score(
+                    self.priority(),
+                    intent.id,
+                    intent.legacy.mode,
+                    &intent.targets,
+                )
             } else if matches!(rules::effect(intent.id), OfficialEffect::AreaDamage { .. }) {
                 let base = self.area_damage_score(self.priority(), intent.id, &intent.targets)?;
                 base + intent

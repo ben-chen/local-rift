@@ -1,0 +1,866 @@
+{
+  "status": "Local validation passed; immutable installed acceptance pending",
+  "reviewed_at": "2026-11-14T11:16:58.996481+00:00",
+  "source_review_commit": "c41eb27",
+  "cards": [
+    {
+      "id": 463,
+      "name": "Flurry of Feathers",
+      "official_id": "unl-044-219"
+    }
+  ],
+  "rules": {
+    "core_date": "2026-10-09",
+    "hub_verified_on": "2026-11-14",
+    "hub": "https://playriftbound.com/en-us/rules-hub/",
+    "pdf": {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/disarm-core-2026-10-09.pdf",
+      "sha256": "94d41fee86f88b61c4157c0389c0595d990b98e5b42555c99d9f649ee64d1fec"
+    },
+    "sections": [
+      "185.2.a: tokens follow ordinary play",
+      "187.7: Bird characteristics",
+      "354.3: finish parent before child finalization",
+      "355.2-3: individual unit destinations and spell modes",
+      "355.5-8: targets, costs and finalization"
+    ],
+    "unleashed_errata_rechecked": true,
+    "named_in_unleashed_errata": false
+  },
+  "implementation": [
+    "Typed modes shared with Command: Attack; mode-aware targets, canonical candidates, validation, finalized Repeat executions and AI scoring.",
+    "Counter either player's spell, not an ability; lost targets do not change modes.",
+    "Four individually placed, exhausted domainless Bird tokens with 1 Might, Bird tag, Deflect and official token artwork.",
+    "Instructed plays and payment suspension preserve explicit modes; tokens do not inherit creator modes, targets or costs.",
+    "Payment undo restores prior response priority and pass count; generic choice handling no longer runs cleanup again.",
+    "Native mode/target/placement controls and read-only, private-safe Beginner/Advanced companion tips."
+  ],
+  "focused": {
+    "flurry_engine_tests": 8,
+    "flurry_api_tests": 2,
+    "general_payment_regressions": 2,
+    "companion_tests": 1,
+    "library_tests": 1100,
+    "client_tests": 166,
+    "source_tests": 2,
+    "neighbor_source_tests": 4,
+    "strict_clippy": "passed",
+    "logs": [
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/flurry-focused-v5.log",
+        "sha256": "e6476f616d508827d0ac0c5a36a0f8b808aa78532b3984ea0f5c3105708f3ac3"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/flurry-library-v2.log",
+        "sha256": "aafc98df3b756fc28367852f5fba4b0c4874fc0a1bf86b5a086a8e0e70ad56b4"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/flurry-client-matches-v2.log",
+        "sha256": "effbc7f90fa2b4e714d9fd238075d52fd6a1f6cce2c8d378d6fdd29569a81e16"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/flurry-source-v3.log",
+        "sha256": "3cc83c5d45db0407cdf2875be6340ad1439194f1db3b06fcc928ee69d599a8bc"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/flurry-neighbor-source-v1.log",
+        "sha256": "cbf1c5f24dc56bb265caf9f084a87bbcb05c7fad70dcda200157927466a97fee"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/flurry-catalog-check-v1.log",
+        "sha256": "41cc8159405171d741819f02d4be3e276e42900ac7710294c2032de327834c74"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/flurry-clippy-v3.log",
+        "sha256": "c5cac6e0b884fde34411f969fe2e82838212fd27aecf5c91e9361bb7949c1d77"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/flurry-release-build-v3.log",
+        "sha256": "9f6ac671ef028a1f063b26598aa0cf845c046aeda3ed3e90982ca994d492df0e"
+      }
+    ]
+  },
+  "engine_games": {
+    "flurry_games": 24,
+    "flurry_mode_executions_counter_birds_by_seat": [
+      [
+        0,
+        12
+      ],
+      [
+        0,
+        6
+      ]
+    ],
+    "birds_observed_both_seats": true,
+    "command_neighbor_games": 240,
+    "command_modes_observed_both_seats": [
+      0,
+      1
+    ],
+    "conservation": "checked each step",
+    "limits": "Authored legal lists; the 24 Flurry games did not exercise counter mode."
+  },
+  "ai_decisions": {
+    "positions": 6,
+    "seats": [
+      0,
+      1
+    ],
+    "difficulty": [
+      "easy",
+      "tactical",
+      "strategic"
+    ],
+    "assertion": "All choose counter mode against a pending board wipe; actual Pass and Bird outcomes lose the board, counter preserves both units.",
+    "privacy": "Changing hidden opposing hand identities and future deck order leaves chosen action unchanged; planning preserves original state.",
+    "limits": "One forced decision family; no expert-strength or matchup-quality claim."
+  },
+  "native_ui": {
+    "flurry": {
+      "status": "passed",
+      "binary": "/home/benchen/.cache/local-rift-work/irelia-flurry/target/release/local-rift",
+      "binary_sha256": "84f7d9766aa995cc82bbcd4674bcc00482aa5d7d3ffed12ca56a4ee9d9c39430",
+      "cases": [
+        {
+          "name": "normal",
+          "seconds": 4.745,
+          "captures": 8,
+          "games": 0,
+          "capture_sha256": {
+            "rift_flurry_counter_target.png": "5fbe5c796be64247b6f55b3b02349ced4634745950fdc635a00f5ed79a766373",
+            "rift_flurry_placement.png": "0d21be523a18a61c601515fe3bc978dd2acb9645bca35913ea00c673e5155894",
+            "rift_flurry_beginner.png": "2599d091ea8a86564e7ba48a2552661c20a5a975815e7149d580774c6d5e81a1",
+            "rift_flurry_bird_mode.png": "28c0bd9c790795f09d2f7451debf3e9a2119dc257485875756e5156c001bf56f",
+            "rift_flurry_birds.png": "6bc31c5ac408b2534564b1964f7d9a980ea92876f631a0673d7ab68bf4d6332e",
+            "rift_flurry_modes.png": "250be469847e57616f7d95d92e6e28c51adebdddf9602dff233d0c34d8e3f03a",
+            "rift_flurry_inspect.png": "fe4fe4ac141329057714593844a79bc830d3acb549adffe2e70bdea532bc226a",
+            "rift_flurry_advanced.png": "9b34448fbc2fd0bc19c34e14f799ce7045e0ec975d6fcfe90b1cccd139ee87f6"
+          },
+          "log_sha256": "5ff5c1ed3b32d2a663ff9fcffa9e1cd16c7f1cd85324c4564dc426f1f8bbe726"
+        },
+        {
+          "name": "small",
+          "seconds": 4.429,
+          "captures": 8,
+          "games": 0,
+          "capture_sha256": {
+            "rift_flurry_counter_target.png": "fac251810b5de6a7ab63111371840ef7f449e32da9c6a53e3072f237ad419c12",
+            "rift_flurry_placement.png": "c31c3f2d53039d3e473f0425c64a586360a41208bfc40fb54077a039913a0618",
+            "rift_flurry_beginner.png": "0f8d80bd5f16fbf0d90dc12e360275eeb1998f0929f71eb13eecb87139482b90",
+            "rift_flurry_bird_mode.png": "21823e9960b4a1c05c43a99e977a6c9c988f48e33f01d4aa8ec7e3450a9be826",
+            "rift_flurry_birds.png": "6721a75c9af92cdfc58556cd02450fbe42b5739816ab3508e0af28cf10a47bb3",
+            "rift_flurry_modes.png": "a5053f526a8807b38e80619465263ece30b984a3b5d784297fb19f74d5afde0e",
+            "rift_flurry_inspect.png": "4a7bf402665085183a385842bbf5bd7dade96d81a62af92fa490a04ad10ee476",
+            "rift_flurry_advanced.png": "ca61b4b9c4b0522eb366db881b1203734a1c95085cef8b0f0f7720446846ef3e"
+          },
+          "log_sha256": "5ff5c1ed3b32d2a663ff9fcffa9e1cd16c7f1cd85324c4564dc426f1f8bbe726"
+        }
+      ]
+    },
+    "command_neighbor": {
+      "status": "passed",
+      "binary": "/home/benchen/.cache/local-rift-work/irelia-flurry/target/release/local-rift",
+      "binary_sha256": "84f7d9766aa995cc82bbcd4674bcc00482aa5d7d3ffed12ca56a4ee9d9c39430",
+      "cases": [
+        {
+          "name": "normal",
+          "seconds": 5.784,
+          "captures": 27,
+          "games": 0,
+          "capture_sha256": {
+            "rift_smoke_c24_command_move_targets_screenshot.png": "b81648672a23b985f54ecf64b59ecfed46a3b384ea907a5aaf33be0004b8efc3",
+            "rift_smoke_c24_command_reveal_screenshot.png": "b217a1e3d1c900f096c2e9d02f4c2f824c45cbcdbf4368dd24f44aa7ad299b7f",
+            "rift_smoke_c24_portal_paid_response_screenshot.png": "c372dc5f3d8e9cf71bbb36566184e6b2beb716fc4ee41839c1804489437eab95",
+            "rift_smoke_c24_gear_full_rules_screenshot.png": "8d3667b92b96244f08df351e89dfd8eb8470786e9dc0beb65b536ba7d84de477",
+            "rift_smoke_c24_moved_gear_local_effect_screenshot.png": "b7376ed0dad8d8387842edb696253d9076d6e5e6599560d62fd3517dc0286c73",
+            "rift_smoke_c24_opponent_hold_screenshot.png": "0dac16b9bf2bbc2ae51cdff8feb272ace9dbf414ff0ae81fcc56213c1ddff514",
+            "rift_smoke_c24_trigger_payment_screenshot.png": "69fdcd763b84408ef119e5d7357deb329ac01d08b540b22d16726a30711ab4aa",
+            "rift_smoke_c24_gear_neutral_screenshot.png": "edbea83f08e5ff9dd6b3891b896ca1c49f4fc88eca218d3e4411a3d4378c77e4",
+            "rift_smoke_c24_command_private_look_screenshot.png": "e81cf1f7442c6e7b71021a76bf235c9e0bb3ca817c9672d291d130e18fe460e1",
+            "rift_smoke_c24_paid_trigger_response_screenshot.png": "9a5037cbc4b4d3fccf2d0769fe4ce7a5519b9abd036b6601beb1d4925e1ba849",
+            "rift_smoke_c24_command_draw_mode_screenshot.png": "dd21e3678b51bb08d9a81b079839adc08f9a3a06cfde29a83358f4749c9f170c",
+            "rift_smoke_c24_gear_inspector_screenshot.png": "758bb20dc0ea542c57a8b9bd203c932423c81e8d3a90d920a2a8eb8574a15fba",
+            "rift_smoke_c24_trigger_fixed_payment_screenshot.png": "41b6f69b087efb3742fc1787e5eea4bb69844405b32c9cc7fb36ef25f4c6ce0b",
+            "rift_smoke_c24_command_modes_screenshot.png": "02942077f1454ccbc4793cb85d445de2539c1de2aa07444bebcb1e3de0795d96",
+            "rift_smoke_c24_hold_gear_gone_screenshot.png": "0ead6061d13a5b7bc1af61d198ba9b6aaf9423408b0b5e681895ad9649d91d78",
+            "rift_smoke_c24_portal_exact_payment_screenshot.png": "9adaa3f14550029cdac62164747c09a11c2b725527db4c280a8a6960674e91a2",
+            "rift_smoke_c24_trigger_add_screenshot.png": "e4f75c94b880a2a6e681c6eded6f05490d29dbe4da008632913fbdfa3166fb10",
+            "rift_smoke_c24_attached_command_noop_screenshot.png": "6b19bf69f1bf6bd70db6a2be501b65cd590608a7dfc1110006d9d253c2cb0db7",
+            "rift_smoke_c24_portal_payment_screenshot.png": "8d768e37f6410b0454d7b5fd832b2863815838945edf6efa7ba13737f84d656a",
+            "rift_smoke_c24_trigger_token_screenshot.png": "bad0ab211f65505322bcbaab1322c79892e906de7c891cee5341c362e7783950",
+            "rift_smoke_c24_optional_payment_undone_screenshot.png": "1d2429293e76cbbbddf1fdc0f4c053843597cec644c3ef6894b9ed4001b47881",
+            "rift_smoke_c24_funded_optional_payment_screenshot.png": "d211ddfe7e525c97aaa06ab8484ea61cd117c11f63f138280af8242ed783aca7",
+            "rift_smoke_c24_attached_command_target_screenshot.png": "05d047110ded9cd6c7af59dd508cea9c217d74117ade7959ce69d8f6dd868781",
+            "rift_smoke_c24_portal_target_screenshot.png": "2b8cd052f90eca9886e5fed032e674fbeb52aa45aa66aa4d42ce9dd17dc45c96",
+            "rift_smoke_c24_enemy_field_drop_screenshot.png": "ea1cc7869125fad28bd67a719d5f118fabbc4d4eb3979a5f4282d3119de2dfd1",
+            "rift_smoke_c24_filtered_loadout_screenshot.png": "6262faf9180fbb4e8082cf98794861ed5c83dacfa1f3f5e475867b795f4556f0",
+            "rift_smoke_c24_dense_gear_screenshot.png": "a5b43f784cd6363a2b6e696f78e86ca854d1c601736fef3f9fd875be55607373"
+          },
+          "log_sha256": "bd1c4c5a8f9375c61f08d2a5d0f6c1dc0ea058a9764e75bd5a8d19041ce67f2a"
+        },
+        {
+          "name": "small",
+          "seconds": 5.28,
+          "captures": 27,
+          "games": 0,
+          "capture_sha256": {
+            "rift_smoke_c24_command_move_targets_screenshot.png": "f5c29b48c2c2eb747720915f4acbe389c4992a7792e5951bf2fda670d6932910",
+            "rift_smoke_c24_command_reveal_screenshot.png": "98e068497c24df1dafadaf2ca0227e9aa8a3d491154adaef79c3871288c14dd3",
+            "rift_smoke_c24_portal_paid_response_screenshot.png": "6fe48ed282f589090b597d86d49bb20c8bae1f2ee3d58032a9bc9f9f66892994",
+            "rift_smoke_c24_gear_full_rules_screenshot.png": "a71ea3be76bb5d2f3bba089ead2d3deb56beca4ba17b6013bd2717e5e2286b80",
+            "rift_smoke_c24_moved_gear_local_effect_screenshot.png": "f13daec69e248acb0c8004d479fc355c7b88cb7a66dbe99e01dc423df6b3cee2",
+            "rift_smoke_c24_opponent_hold_screenshot.png": "85df84b0f753b321406a70e9dd25bfb6d0d32d5fbf43fb02da35a18f3f98ac62",
+            "rift_smoke_c24_trigger_payment_screenshot.png": "94644fe98e00cfdb52ecc3d9f03e4ba5fb8a7efa69a9522fba1e6572d91dd09f",
+            "rift_smoke_c24_gear_neutral_screenshot.png": "a2d186ed92df6859e1d0dcc88d91d0faa0325996fa2bfe23a88392e100a783c8",
+            "rift_smoke_c24_command_private_look_screenshot.png": "9d7440d360f4a2a1f297bbdbc19341aaf338fb38dedc8ebc4222cbcce5353977",
+            "rift_smoke_c24_paid_trigger_response_screenshot.png": "a50e43ab92bd8dd1a1afcbecb243dcaca4764b413cc0708c0a56e9f0282c90a5",
+            "rift_smoke_c24_command_draw_mode_screenshot.png": "7f3b1fadb4e5dbcbf26d1380fb4441915f6911289e77de14879392da45bfc952",
+            "rift_smoke_c24_gear_inspector_screenshot.png": "edbd506e40781b69e22cb0a59f7bd8e54b4f6e4b36a7e26ca6043f22e89ff131",
+            "rift_smoke_c24_trigger_fixed_payment_screenshot.png": "bda2cb87f9afb11b3a878431c8678c9a70dd8c184a9897ac96c4bb6ea9aca696",
+            "rift_smoke_c24_command_modes_screenshot.png": "da38b989dbf39f64a8b576daeb3f05fee18521847845b4deff63412697be5314",
+            "rift_smoke_c24_hold_gear_gone_screenshot.png": "93b133420c708044d9e334a7f8edb46296f1255d1e1d6311d0cd8eaca1da2530",
+            "rift_smoke_c24_portal_exact_payment_screenshot.png": "791acef14e47fd40b0516936b40ca8bf122eb2d886cd83ad41932d12fcbecf0d",
+            "rift_smoke_c24_trigger_add_screenshot.png": "e25f7d11b1ef7b0c281dbc42ee78dc19a41c074ce896fd03d667fc35a1795d9f",
+            "rift_smoke_c24_attached_command_noop_screenshot.png": "6c74411ffb9d44bcfd92d59354dddfb3c81f165b1be31fffa92c78beaf27ee97",
+            "rift_smoke_c24_portal_payment_screenshot.png": "9dd386c7b6040b3921ef3bac5b07ae69fe24ab4c98670736c66d1bc3ba02f5c7",
+            "rift_smoke_c24_trigger_token_screenshot.png": "e4341effcb96c0ce424e6110b56b1969541b485c2875d0d20fee3ef821b7cf77",
+            "rift_smoke_c24_optional_payment_undone_screenshot.png": "c8e95b5ac9bbfd510050e8f929489200e44017c33318b787d32c7559b787aa40",
+            "rift_smoke_c24_funded_optional_payment_screenshot.png": "c5c6571d1de920db0a76c778e1839e39f49793e08537748c9c3db2244706fa21",
+            "rift_smoke_c24_attached_command_target_screenshot.png": "a74ea8bbc6237e50477c40973492c4e8b5e5a8d70a53ee119dd24ad4615523ad",
+            "rift_smoke_c24_portal_target_screenshot.png": "5e9e6e75ca92955b0d0e1b247fba0ce4918dfd4efe43a6b1b66ef72c13d335af",
+            "rift_smoke_c24_enemy_field_drop_screenshot.png": "bb6465ccdde48180828a433d9697db02cf115cf2642b9f6db7eae87be21e151b",
+            "rift_smoke_c24_filtered_loadout_screenshot.png": "caa1dd78c7c2a9b46cad8aef1c70acb837d833769ddfd38be2cdb8da43598d42",
+            "rift_smoke_c24_dense_gear_screenshot.png": "bf41fb0d98a73665b0b2e67cded096bccd6b00a91bbc0e9501aed4358e8aa3b1"
+          },
+          "log_sha256": "bd1c4c5a8f9375c61f08d2a5d0f6c1dc0ea058a9764e75bd5a8d19041ce67f2a"
+        }
+      ]
+    },
+    "cases": 4,
+    "captures": 70,
+    "actual_visual_reviews": [
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/flurry-native-v4/small/rift_flurry_inspect.png",
+        "sha256": "4a7bf402665085183a385842bbf5bd7dade96d81a62af92fa490a04ad10ee476",
+        "observation": "Full printed face and complete readable official text at small size."
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/flurry-native-v4/small/rift_flurry_counter_target.png",
+        "sha256": "fac251810b5de6a7ab63111371840ef7f449e32da9c6a53e3072f237ad419c12",
+        "observation": "Selected counter mode and chain target remain readable; no irrelevant gear selector."
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/flurry-native-v4/normal/rift_flurry_birds.png",
+        "sha256": "6bc31c5ac408b2534564b1964f7d9a980ea92876f631a0673d7ab68bf4d6332e",
+        "observation": "Four separate art-faced Birds split between base and field; hover explains Might, exhaustion and Deflect."
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/flurry-command-native-v2/normal/rift_smoke_c24_command_move_targets_screenshot.png",
+        "sha256": "b81648672a23b985f54ecf64b59ecfed46a3b384ea907a5aaf33be0004b8efc3",
+        "observation": "Command movement retains exact gear and destination targets and the gear-selection control."
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/flurry-command-native-v2/small/rift_smoke_c24_command_draw_mode_screenshot.png",
+        "sha256": "7f3b1fadb4e5dbcbf26d1380fb4441915f6911289e77de14879392da45bfc952",
+        "observation": "Command draw mode has no targets and no irrelevant gear-selection control."
+      }
+    ]
+  },
+  "api": {
+    "series": 6,
+    "actual_games": 16,
+    "flurry_casts": 13,
+    "counter_mode_selections": 0,
+    "bird_mode_selections": 13,
+    "birds_seen": 52,
+    "records": [
+      {
+        "difficulty": "easy",
+        "irelia_seat": 0,
+        "first_player": 1,
+        "result": {
+          "wins": [
+            1,
+            2
+          ],
+          "winner": 1,
+          "history": [
+            {
+              "battlefields": [
+                0,
+                0
+              ],
+              "first_player": 1,
+              "number": 1,
+              "scores": [
+                6,
+                8
+              ],
+              "winner": 1
+            },
+            {
+              "battlefields": [
+                3,
+                3
+              ],
+              "first_player": 1,
+              "number": 2,
+              "scores": [
+                9,
+                6
+              ],
+              "winner": 0
+            },
+            {
+              "battlefields": [
+                13,
+                13
+              ],
+              "first_player": 1,
+              "number": 3,
+              "scores": [
+                2,
+                8
+              ],
+              "winner": 1
+            }
+          ],
+          "requests": 1607,
+          "seed": 463100,
+          "difficulty": "easy"
+        },
+        "flurry_casts": 2,
+        "counter_mode_selections": 0,
+        "bird_mode_selections": 2,
+        "birds_seen": 8,
+        "trace_sha256": "31e00903197128cbad0fb3e0c16b9a7e52ae0993195dc3fadb5109885f08b29f"
+      },
+      {
+        "difficulty": "easy",
+        "irelia_seat": 1,
+        "first_player": 0,
+        "result": {
+          "wins": [
+            2,
+            0
+          ],
+          "winner": 0,
+          "history": [
+            {
+              "battlefields": [
+                0,
+                0
+              ],
+              "first_player": 0,
+              "number": 1,
+              "scores": [
+                8,
+                2
+              ],
+              "winner": 0
+            },
+            {
+              "battlefields": [
+                3,
+                3
+              ],
+              "first_player": 0,
+              "number": 2,
+              "scores": [
+                8,
+                4
+              ],
+              "winner": 0
+            }
+          ],
+          "requests": 646,
+          "seed": 463101,
+          "difficulty": "easy"
+        },
+        "flurry_casts": 1,
+        "counter_mode_selections": 0,
+        "bird_mode_selections": 1,
+        "birds_seen": 4,
+        "trace_sha256": "1447bc9c6a05f6d222a7a78e9b637f9589f4c6ed0c2a4362053e50788bcd92c6"
+      },
+      {
+        "difficulty": "tactical",
+        "irelia_seat": 0,
+        "first_player": 1,
+        "result": {
+          "wins": [
+            1,
+            2
+          ],
+          "winner": 1,
+          "history": [
+            {
+              "battlefields": [
+                0,
+                0
+              ],
+              "first_player": 1,
+              "number": 1,
+              "scores": [
+                8,
+                6
+              ],
+              "winner": 0
+            },
+            {
+              "battlefields": [
+                3,
+                3
+              ],
+              "first_player": 1,
+              "number": 2,
+              "scores": [
+                5,
+                8
+              ],
+              "winner": 1
+            },
+            {
+              "battlefields": [
+                13,
+                13
+              ],
+              "first_player": 1,
+              "number": 3,
+              "scores": [
+                5,
+                9
+              ],
+              "winner": 1
+            }
+          ],
+          "requests": 1436,
+          "seed": 463110,
+          "difficulty": "tactical"
+        },
+        "flurry_casts": 2,
+        "counter_mode_selections": 0,
+        "bird_mode_selections": 2,
+        "birds_seen": 8,
+        "trace_sha256": "8ffac7a045255f9641f36e6d9599eb8d66cfa93ff7919895ce105eaee50cd186"
+      },
+      {
+        "difficulty": "tactical",
+        "irelia_seat": 1,
+        "first_player": 0,
+        "result": {
+          "wins": [
+            2,
+            1
+          ],
+          "winner": 0,
+          "history": [
+            {
+              "battlefields": [
+                0,
+                0
+              ],
+              "first_player": 0,
+              "number": 1,
+              "scores": [
+                8,
+                4
+              ],
+              "winner": 0
+            },
+            {
+              "battlefields": [
+                3,
+                3
+              ],
+              "first_player": 0,
+              "number": 2,
+              "scores": [
+                7,
+                8
+              ],
+              "winner": 1
+            },
+            {
+              "battlefields": [
+                13,
+                13
+              ],
+              "first_player": 0,
+              "number": 3,
+              "scores": [
+                8,
+                3
+              ],
+              "winner": 0
+            }
+          ],
+          "requests": 1193,
+          "seed": 463111,
+          "difficulty": "tactical"
+        },
+        "flurry_casts": 3,
+        "counter_mode_selections": 0,
+        "bird_mode_selections": 3,
+        "birds_seen": 12,
+        "trace_sha256": "5ea691cb107fac82e56c76507a8424073a5c02969be32d278aea0e602fd99f0f"
+      },
+      {
+        "difficulty": "strategic",
+        "irelia_seat": 0,
+        "first_player": 1,
+        "result": {
+          "wins": [
+            1,
+            2
+          ],
+          "winner": 1,
+          "history": [
+            {
+              "battlefields": [
+                0,
+                0
+              ],
+              "first_player": 1,
+              "number": 1,
+              "scores": [
+                8,
+                6
+              ],
+              "winner": 0
+            },
+            {
+              "battlefields": [
+                3,
+                3
+              ],
+              "first_player": 1,
+              "number": 2,
+              "scores": [
+                6,
+                8
+              ],
+              "winner": 1
+            },
+            {
+              "battlefields": [
+                13,
+                13
+              ],
+              "first_player": 1,
+              "number": 3,
+              "scores": [
+                5,
+                8
+              ],
+              "winner": 1
+            }
+          ],
+          "requests": 1430,
+          "seed": 463120,
+          "difficulty": "strategic"
+        },
+        "flurry_casts": 3,
+        "counter_mode_selections": 0,
+        "bird_mode_selections": 3,
+        "birds_seen": 12,
+        "trace_sha256": "29cdb87b78ad5955f97c88b933fc25b311e9b49c7f19f88017187cf74369ae48"
+      },
+      {
+        "difficulty": "strategic",
+        "irelia_seat": 1,
+        "first_player": 0,
+        "result": {
+          "wins": [
+            2,
+            0
+          ],
+          "winner": 0,
+          "history": [
+            {
+              "battlefields": [
+                0,
+                0
+              ],
+              "first_player": 0,
+              "number": 1,
+              "scores": [
+                8,
+                6
+              ],
+              "winner": 0
+            },
+            {
+              "battlefields": [
+                3,
+                3
+              ],
+              "first_player": 0,
+              "number": 2,
+              "scores": [
+                8,
+                5
+              ],
+              "winner": 0
+            }
+          ],
+          "requests": 886,
+          "seed": 463121,
+          "difficulty": "strategic"
+        },
+        "flurry_casts": 2,
+        "counter_mode_selections": 0,
+        "bird_mode_selections": 2,
+        "birds_seen": 8,
+        "trace_sha256": "f1f4172939e8230fff543a3c492d67e03cffd4ff93a0e6a30363be9db9a60756"
+      }
+    ],
+    "report": {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/flurry-baselines-v2/flurry-api.json",
+      "sha256": "17f70ad7e1495078ae9d069ff9133eab239a6cc549f0a974f13c094c73fcbdc3"
+    }
+  },
+  "api_regression": {
+    "campaigns": 11,
+    "full_records": 69,
+    "all_records_equal_before_and_after_priority_fix": true,
+    "campaign_report": {
+      "status": "passed",
+      "binary_sha256": "2667d9da127c0e7e995049b461885fc25486224b5c7fc203efc4db20391482d2",
+      "cases": [
+        {
+          "name": "wheel-api",
+          "script": "check_spirit_wheel_api.py",
+          "records_key": "records",
+          "records": 6,
+          "baseline": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/flurry-baselines-v2/wheel-api.json",
+          "sha256": "33f1292064c5ad87354bebbe596d242b8a8e5c62cb2af1d8bfeb9adc8d208dd1",
+          "full_records_equal_to_v1": true,
+          "seconds": 3.371
+        },
+        {
+          "name": "resources-api",
+          "script": "check_resource_cards_api.py",
+          "records_key": "records",
+          "records": 6,
+          "baseline": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/flurry-baselines-v2/resources-api.json",
+          "sha256": "6e530d9b3994e6ee62f5287b83d393f4893db6f60cd30b16757ae4cbe1c77ea6",
+          "full_records_equal_to_v1": true,
+          "seconds": 3.434
+        },
+        {
+          "name": "jae-api",
+          "script": "check_spell_choice_api.py",
+          "records_key": "records",
+          "records": 6,
+          "baseline": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/flurry-baselines-v2/jae-api.json",
+          "sha256": "e5572aa55f44442fa3de55c94d4c1d4f48ff7e681ddb1c5150bb70fa0b53e3c9",
+          "full_records_equal_to_v1": true,
+          "seconds": 2.221
+        },
+        {
+          "name": "format-api",
+          "script": "check_format_api.py",
+          "records_key": "records",
+          "records": 9,
+          "baseline": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/flurry-baselines-v2/format-api.json",
+          "sha256": "3cc8071ed6ab860d0ca1c008d940d260a87d11dda3c34abb8907b7c1bcbb1f33",
+          "full_records_equal_to_v1": true,
+          "seconds": 10.593
+        },
+        {
+          "name": "entourage-api",
+          "script": "check_entourage_api.py",
+          "records_key": "records",
+          "records": 6,
+          "baseline": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/flurry-baselines-v2/entourage-api.json",
+          "sha256": "e0b9ba81818b8f7e3a259d7827325c7741ea8d0e9112e0362845eac61bba1f56",
+          "full_records_equal_to_v1": true,
+          "seconds": 2.87
+        },
+        {
+          "name": "sands-api",
+          "script": "check_sands_api.py",
+          "records_key": "records",
+          "records": 6,
+          "baseline": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/flurry-baselines-v2/sands-api.json",
+          "sha256": "086da10f3659706b6c9357b216b470d8a358c7feed026a12962f2ac23239c646",
+          "full_records_equal_to_v1": true,
+          "seconds": 2.319
+        },
+        {
+          "name": "rockfall-api",
+          "script": "check_rockfall_api.py",
+          "records_key": "records",
+          "records": 6,
+          "baseline": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/flurry-baselines-v2/rockfall-api.json",
+          "sha256": "c400d21ae854634d1b87c792dd2ab68634a0c5ea28d10ebe75cd1bd2e192fe47",
+          "full_records_equal_to_v1": true,
+          "seconds": 3.021
+        },
+        {
+          "name": "heavens-api",
+          "script": "check_heavens_api.py",
+          "records_key": "records",
+          "records": 6,
+          "baseline": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/flurry-baselines-v2/heavens-api.json",
+          "sha256": "c63881a4da46bb4ffc5a3bbde7644bc55007965ac15940973b02700a8e50c678",
+          "full_records_equal_to_v1": true,
+          "seconds": 2.619
+        },
+        {
+          "name": "disarm-api",
+          "script": "check_disarm_api.py",
+          "records_key": "records",
+          "records": 6,
+          "baseline": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/flurry-baselines-v2/disarm-api.json",
+          "sha256": "2ff49460b6fba29126cfddeedf592f6d1f838d1584077d857c78cea25be541b7",
+          "full_records_equal_to_v1": true,
+          "seconds": 2.519
+        },
+        {
+          "name": "turn-keywords-api",
+          "script": "check_turn_keywords_api.py",
+          "records_key": "records",
+          "records": 6,
+          "baseline": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/flurry-baselines-v2/turn-keywords-api.json",
+          "sha256": "900af01b7fb5fbff7c5a597491087da3bf1aed6d07cadbadc7ba5485311fb78e",
+          "full_records_equal_to_v1": true,
+          "seconds": 3.27
+        },
+        {
+          "name": "flurry-api",
+          "script": "check_flurry_api.py",
+          "records_key": "records",
+          "records": 6,
+          "baseline": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/flurry-baselines-v2/flurry-api.json",
+          "sha256": "17f70ad7e1495078ae9d069ff9133eab239a6cc549f0a974f13c094c73fcbdc3",
+          "full_records_equal_to_v1": true,
+          "seconds": 3.321
+        }
+      ]
+    },
+    "prior_runtime_comparison": {
+      "status": "passed",
+      "summary": {
+        "easy_identical": 18,
+        "tactical_identical": 18,
+        "strategic_identical": 13,
+        "strategic_changed": 5,
+        "format_identical": 9,
+        "flurry_debug_release_identical": 6
+      },
+      "changes": [
+        {
+          "campaign": "resources-api",
+          "index": 5,
+          "difficulty": "strategic",
+          "keys": [
+            "result",
+            "trace_sha256"
+          ]
+        },
+        {
+          "campaign": "jae-api",
+          "index": 4,
+          "difficulty": "strategic",
+          "keys": [
+            "draw_triggers_seen",
+            "jae_units_seen",
+            "observed_draw_resolutions",
+            "result",
+            "trace_sha256"
+          ]
+        },
+        {
+          "campaign": "jae-api",
+          "index": 5,
+          "difficulty": "strategic",
+          "keys": [
+            "draw_triggers_seen",
+            "jae_units_seen",
+            "observed_draw_resolutions",
+            "result",
+            "trace_sha256"
+          ]
+        },
+        {
+          "campaign": "heavens-api",
+          "index": 4,
+          "difficulty": "strategic",
+          "keys": [
+            "trace_sha256"
+          ]
+        },
+        {
+          "campaign": "disarm-api",
+          "index": 4,
+          "difficulty": "strategic",
+          "keys": [
+            "result",
+            "trace_sha256"
+          ]
+        }
+      ],
+      "limitations": [
+        "Five Strategic records differ from the preceding runtime; the supported public sampling pool now includes Flurry. This is not a causal benchmark or proof of improved strength.",
+        "All 9 format records, including their difficulty groups, are unchanged."
+      ]
+    }
+  },
+  "failed_attempts": [
+    {
+      "log": {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/flurry-command-regression-v1.log",
+        "sha256": "21c4f2d1e54b7b6a88828828a5fb0fd114ac2a6fd2a3252f67de0697108399ef"
+      },
+      "result": "Compile failure: new ChooseOne enum variant missing explicit resolution arm; fixed before test execution."
+    },
+    {
+      "log": {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/flurry-focused-v1.log",
+        "sha256": "96319fc7ce872540b92309543a05e310ccfdd440576a7af44078ded76e94c446"
+      },
+      "result": "Test fixture compile errors; corrected Action/Domain/Deflect types."
+    },
+    {
+      "log": {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/flurry-focused-v4.log",
+        "sha256": "39bb919d3d75802c4389bf0c9080d8735c09a5d965f9b7771bbe714d977cdb96"
+      },
+      "result": "10 passed, 1 failed: payment undo reset response priority and prior pass. Runtime continuation fixed; v5 and full library pass."
+    },
+    {
+      "report": {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/flurry-native-v1/report.json",
+        "sha256": "a053441b0735e0477dd67ffc456c4949a8131cfb3d415209882341f84b31915f"
+      },
+      "result": "Harness checked mode controls before redraw; synchronized with capture/redraw. Later visual review found and removed irrelevant gear selector for modes without gear targets."
+    },
+    {
+      "log": {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/flurry-clippy-v1.log",
+        "sha256": "a575803c0574cf17b343ed3af13250fde721179eb39a0a29768b47491eb19219"
+      },
+      "result": "Single-element loop in authored match setup; simplified, subsequent strict lint passed."
+    },
+    {
+      "receipt": {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/flurry-release-build-v1-status.json",
+        "sha256": "4ac65179be73caf58d03ebcacf16daa5776329fafae283bb1b80e28c0a6e75a6"
+      },
+      "result": "Release build terminated with exit 143; process absence confirmed before retry. Cause unknown; not a passing build or observation timeout."
+    }
+  ],
+  "installed": {
+    "status": "pending"
+  },
+  "limits": [
+    "Seven sourced presets unchanged. Historical Irelia deck listings establish relevance only, not a new valid registration or current meta prevalence.",
+    "Ordinary Flurry API and engine series only observed Bird mode; counter coverage comes from focused rules/API/AI scenarios.",
+    "Five prior Strategic API records changed when the supported public pool grew; 58 other prior records are unchanged. No causal or improved-strength claim.",
+    "No external engine code imported; shared effects, small authored scenarios and clone checks are design lessons.",
+    "Full Standard rules parity, all legal cards, expert opponent strength and novice learning outcomes remain unproven."
+  ]
+}

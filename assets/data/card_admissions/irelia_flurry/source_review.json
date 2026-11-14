@@ -1,5 +1,5 @@
 {
-  "status": "Source review complete; runtime implementation pending. This record does not admit a playable card.",
+  "status": "Printed source reviewed; local runtime validation passed; immutable installed acceptance pending.",
   "reviewed_on": "2026-11-14",
   "base_revision": "30adaa39f42fb7686eb37b2e3a1816d74177fae8",
   "preserved_runtime_prefix": {
@@ -36,14 +36,14 @@
         "power": 2,
         "might": null,
         "might_bonus": null,
-        "rules_html": "<p>[Reaction]<br />Choose one —</p><ul><li>Counter a spell.</li><li>Play four 1 :rb_might: Bird unit tokens with [Deflect]. (Opponents must pay :rb_rune_rainbow: to choose them with a spell or ability.)</li></ul>",
-        "rules_text": "[Reaction]\nChoose one —\nCounter a spell.\nPlay four 1 Might Bird unit tokens with [Deflect]. (Opponents must pay [Any Power] to choose them with a spell or ability.)",
+        "rules_html": "<p>[Reaction]<br />Choose one \u2014</p><ul><li>Counter a spell.</li><li>Play four 1 :rb_might: Bird unit tokens with [Deflect]. (Opponents must pay :rb_rune_rainbow: to choose them with a spell or ability.)</li></ul>",
+        "rules_text": "[Reaction]\nChoose one \u2014\nCounter a spell.\nPlay four 1 Might Bird unit tokens with [Deflect]. (Opponents must pay [Any Power] to choose them with a spell or ability.)",
         "equipment_html": "",
         "equipment_text": "",
         "tags": [],
         "rarity": "uncommon",
         "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/77bd864b29f4975868e557e31a39b94d06a4ecb2-744x1039.png?accountingTag=RB",
-        "image_accessibility_text": "Riftbound Spell: Flurry of Feathers. [Reaction]\nChoose one —\n- Counter a spell.\n- Play four 1 [S] Bird unit tokens with [Deflect]. (Opponents must pay [A] to choose them with a spell or ability.)",
+        "image_accessibility_text": "Riftbound Spell: Flurry of Feathers. [Reaction]\nChoose one \u2014\n- Counter a spell.\n- Play four 1 [S] Bird unit tokens with [Deflect]. (Opponents must pay [A] to choose them with a spell or ability.)",
         "illustrators": [
           "Polar Engine Studio"
         ]
@@ -62,8 +62,8 @@
         "might": null,
         "might_bonus": null,
         "tags": [],
-        "rules_html": "<p>[Reaction]<br />Choose one —</p><ul><li>Counter a spell.</li><li>Play four 1 :rb_might: Bird unit tokens with [Deflect]. (Opponents must pay :rb_rune_rainbow: to choose them with a spell or ability.)</li></ul>",
-        "rules_text": "[Reaction]\nChoose one —\nCounter a spell.\nPlay four 1 Might Bird unit tokens with [Deflect]. (Opponents must pay [Any Power] to choose them with a spell or ability.)",
+        "rules_html": "<p>[Reaction]<br />Choose one \u2014</p><ul><li>Counter a spell.</li><li>Play four 1 :rb_might: Bird unit tokens with [Deflect]. (Opponents must pay :rb_rune_rainbow: to choose them with a spell or ability.)</li></ul>",
+        "rules_text": "[Reaction]\nChoose one \u2014\nCounter a spell.\nPlay four 1 Might Bird unit tokens with [Deflect]. (Opponents must pay [Any Power] to choose them with a spell or ability.)",
         "equipment_html": "",
         "equipment_text": ""
       },
@@ -100,6 +100,13 @@
           "The second plays four 1-Might Bird unit tokens with Deflect. No Here or Base-only restriction is printed.",
           "The printed Reaction reminder is expanded on the face; the official gallery text abbreviates it to the keyword."
         ]
+      },
+      "runtime_id": 463,
+      "runtime_image": {
+        "path": "assets/art/card_463.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/77bd864b29f4975868e557e31a39b94d06a4ecb2-744x1039.png?w=280&q=85&fm=png",
+        "bytes": 179501,
+        "sha256": "f35816de0bf724fb9f5a5dc1f172cb3915e5abb84e0b43b32644c4d93e113c4d"
       }
     }
   ],
@@ -115,7 +122,8 @@
     ],
     "unleashed_notes": "https://playriftbound.com/en-us/news/rules-and-releases/riftbound-core-rules-unleashed-patch-notes/",
     "unleashed_errata": "https://playriftbound.com/en-us/news/rules-and-releases/unleashed-errata-updates/",
-    "named_in_unleashed_errata": false
+    "named_in_unleashed_errata": false,
+    "hub_verified_on": "2026-11-14"
   },
   "irelia_relevance": {
     "source": "https://tcggather.com/riftbound/meta/deck/01KVN17MDZ2JFP5QPSC81T5Y11",

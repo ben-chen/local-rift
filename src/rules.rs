@@ -18,6 +18,28 @@ pub enum CounterKind {
     OtherOpponentSpell,
 }
 
+/// Play-time modes share finalization and execution; each Repeat chooses independently.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum ModeEffect {
+    MoveDeployGear,
+    InspectGear,
+    Counter(CounterKind),
+    Tokens { count: u8, might: u8 },
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct SpellMode {
+    pub label: &'static str,
+    pub effect: ModeEffect,
+}
+
+pub fn spell_modes(id: CardId) -> &'static [SpellMode] {
+    match effect(id) {
+        OfficialEffect::ChooseOne(modes) => modes,
+        _ => &[],
+    }
+}
+
 /// Amounts calculated when the instruction resolves, after responses.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum SpellMight {
@@ -71,6 +93,7 @@ pub struct PlayTargetSpec {
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum OfficialEffect {
+    ChooseOne(&'static [SpellMode]),
     Deathgrip,
     Guards,
     /// Choose a friendly battlefield unit, then a linked enemy chain item.
@@ -309,6 +332,26 @@ pub fn effect(id: usize) -> OfficialEffect {
             crate::turn_keywords::TurnKeyword::Tank,
         ]),
         462 => None,
+        410 => ChooseOne(&[
+            SpellMode {
+                label: "Move a friendly Deploy gear to a battlefield",
+                effect: ModeEffect::MoveDeployGear,
+            },
+            SpellMode {
+                label: "Inspect five cards and optionally draw a Gear",
+                effect: ModeEffect::InspectGear,
+            },
+        ]),
+        463 => ChooseOne(&[
+            SpellMode {
+                label: "Counter a spell",
+                effect: ModeEffect::Counter(CounterKind::Unconditional),
+            },
+            SpellMode {
+                label: "Play four 1 Might Bird tokens with Deflect",
+                effect: ModeEffect::Tokens { count: 4, might: 1 },
+            },
+        ]),
         452 => DrawWithOptionalCost { unpaid: 1, paid: 2 },
         453 => DrawThenChannel {
             draw: 1,
@@ -1170,6 +1213,7 @@ pub fn requirements(id: usize) -> &'static [Mechanic] {
         458..=460 => &[Chain, Disarm, NegativeMight, ChooseReadyTriggers],
         461 => &[Chain, Hidden, Shield, Tank, ChooseReadyTriggers],
         462 => &[Chain, Tank, ChooseReadyTriggers],
+        463 => &[Chain, Counterspell, Tokens, Deflect],
         447 => &[
             Chain,
             MultipleTargets,
@@ -2048,7 +2092,7 @@ pub enum TokenPlacement {
 
 pub fn token_placement(id: usize) -> TokenPlacement {
     match id {
-        48 | 87 | 138 | 187 | 220 | 235 | 249 | 355 | 356 => TokenPlacement::Default,
+        48 | 87 | 138 | 187 | 220 | 235 | 249 | 355 | 356 | 463 => TokenPlacement::Default,
         102 | 147 | 148 | 178 | 179 | 180 | 203 | 318 | 319 | 357 | 359 => TokenPlacement::Here,
         _ => TokenPlacement::Base,
     }
@@ -2102,10 +2146,14 @@ pub fn token_spec(id: usize) -> Option<TokenSpec> {
             tag: None,
             temporary: false,
         }),
-        34 | 148 | 150 | 187 | 249 => Some(TokenSpec {
+        34 | 148 | 150 | 187 | 249 | 463 => Some(TokenSpec {
             name: "Bird",
             might: 1,
-            count: if id == 249 { 2 } else { 1 },
+            count: match id {
+                249 => 2,
+                463 => 4,
+                _ => 1,
+            },
             is_gear: false,
             deflect: true,
             tag: Some("Bird"),

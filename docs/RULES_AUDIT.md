@@ -1118,6 +1118,46 @@ The native flow uses actual drag, target, confirm, pass and advice-level
 controls. Both sizes passed 16 captures; four updated images were reviewed.
 Mote's two levels remain concise, private-safe and read-only. Six complete
 API series observed eight finalized triggers and eight corresponding reductions.
-Installed acceptance is pending; [validation](validation/disarm.json) records
+Installed acceptance passed; [validation](validation/disarm.json) records
 the actual checks and remaining limits. No tournament-strength or complete
 Standard-conformance claim follows from these scoped checks.
+
+## Flurry of Feathers and modal finalization — November 14, 2026
+
+Rechecked the [official Rules Hub](https://playriftbound.com/en-us/rules-hub/),
+which still links the October 9 Core Rules, and the Unleashed errata. The
+reviewed full card face says Reaction, 4 Energy and 2 Calm Power, with one of
+two modes: counter a spell, or play four 1-Might Bird tokens with Deflect.
+No enemy-only or ability target permission is printed. The source record
+retains the original HTML, effective text, full image and runtime thumbnail.
+
+Core 355.3 chooses modes before finalization; 355.5 chooses their targets before
+responses. Flurry and Command: Attack now use shared typed mode definitions,
+validation, target queries and finalized executions. Repeat choices remain
+independent. A counter mode with a target that leaves the chain cannot become
+the Bird mode. The counter uses the existing spell-only eligibility check and
+ordinary response/chain resolution.
+
+Core 354.3 finishes the creating effect before pending token plays finalize.
+Each Bird then follows the ordinary unit-play process (185.2.a), including its
+own base or controlled-field destination (355.2.a). This permits splitting the
+four Birds across legal locations; no single shared destination is printed.
+Core 187.7 defines the token's 1 Might, domainless identity, Bird tag and Deflect.
+Tokens do not inherit their creator's costs, modes or targets. Tests clone during
+placement and require identical complete state after the same next action.
+
+An added payment-undo test exposed an existing response-window error: cancellation
+restored the saved position, then generic choice cleanup reset its priority and
+prior pass. Payment confirmation and undo now finish through their own existing
+continuations. Regressions cover both seats, both Flurry modes, ordinary
+counterspell undo/refusal, and equivalence of the two payment-confirmation APIs.
+Authored pending Clocktower positions verify both modes with waived Energy and
+the retained two Calm Power cost.
+
+Six forced AI positions compare actual Pass, Bird and counter outcomes against
+a pending board wipe, with both seats and all difficulty levels. All choose the
+counter while keeping hidden-information independence. Ordinary API series
+observed Bird mode but no counter selections; those series are not counted as
+counter-decision coverage. The release receipt records scoped evidence and
+pending installed checks in [Flurry validation](validation/irelia_flurry.json).
+These checks do not establish full Standard parity or expert opponent strength.

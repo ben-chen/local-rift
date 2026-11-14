@@ -694,6 +694,23 @@ Play Deploy gear with an explicit battlefield `lane` through the existing `play_
 
 `chain[].executions` retains each mode and ordered targets while the spell resolves, including across a private choice. A Repeat can select a different mode from the base execution. The spell remains one physical card, with one completed-play event, and no response window is introduced between its executions.
 
+Flurry of Feathers (card463, `unl-044-219`) uses the same mode interface:
+
+- `0`: counter one spell. The required target is `{type:"spell",chain_id:N}`;
+  either player's spell is eligible, but an ability is not. `target_candidates`
+  returns the eligible physical chain items. Losing the target after finalization
+  does not change the selected mode.
+- `1`: play four Bird tokens, with no chosen spell targets. After the parent
+  finishes resolving, each token uses the existing `place_token` decision and
+  ordinary base/controlled-battlefield restrictions. Each Bird enters exhausted
+  with 1 Might, the Bird tag, no domain, and Deflect. A token does not inherit its
+  creating spell's mode, targets, or printed resource cost.
+
+An incomplete preview may omit the mode, but finalization requires it. Both
+instructed plays and each Repeat retain their own explicit mode. Payment undo
+restores the prior response priority and pass count; `choose` with `accept:true`
+at a payment decision has the same continuation as `complete_payment`.
+
 Command's inspection uses the existing `draw_look` decision with `kind:"command_attack"`. Both viewers see the choice ID, source card, and actual count; only the controller sees `cards` and `eligible` occurrence indices. Duplicate card IDs remain distinct occurrences. `resolve_draw_look` with an eligible index selects that occurrence; explicit `index:null` declines and recycles all. The selected card is publicly revealed through the existing `revealed_card` acknowledgement. Only an actual successful Draw advances Draw history.
 
 Passive metadata adds `condition:"friendly_deploy_gear_here"` for the existential condition at a unit's battlefield, and `recipients:"friendly_units_here"` for friendly units at a source's live battlefield, including a gear source. Overloaded Traveler gets one bonus from the existence of a qualifying gear; separate Banner sources still contribute independently. Base is not a battlefield.

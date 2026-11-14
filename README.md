@@ -85,6 +85,10 @@ board is identified as departed in its inspector.
 
 Deploy gear has its own illustrated row at each battlefield. Click the field’s gear count to open those exact copies in Loadout; attached equipment remains visible beneath its bearer. Gear can occupy a battlefield without controlling or contesting it. Command: Attack offers separate Move and Gear-draw modes, and each Repeat keeps its own choices. Optional paid gear triggers show their source and targets before payment. **Undo payment** returns to that choice; **Decline** skips the optional trigger. Mote explains each step at your selected advice level.
 
+Flurry of Feathers uses the same mode controls: counter a spell, or play four
+Bird tokens. Choose its mode before responses; place each Bird at your base or
+a battlefield you control. Bird previews explain their Might and Deflect.
+
 A unit’s **Might** and **combat damage** are shown separately when they differ. Ezreal, Dashing keeps his Might for lethal damage and his printed ability while contributing zero combat damage. Orianna, Exquisite deals combat damage only while friendly gear shares her location; gear attached to another friendly unit there counts. Her inspector shows whether that requirement is met. Stun is shown as its own reason for contributing zero. Hover or pin the unit to read the complete explanation. Rengar, Pouncing’s destination controls retain an attacked battlefield while you remain its attacking player, even after your last unit leaves.
 
 Victory points climb the board’s outer edges: your teal track is on the left, and the opponent’s gold track is on the right. Filled steps show points earned; the diamond marks the current total. Both tracks share the same scale from zero to eight. The decorative scenery is clipped to the board so it stays clear of the companion and controls.

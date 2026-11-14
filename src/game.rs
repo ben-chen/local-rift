@@ -18,8 +18,13 @@ use std::collections::VecDeque;
 mod combat;
 #[path = "deploy.rs"]
 mod deploy;
+#[cfg(test)]
+#[path = "flurry_tests.rs"]
+mod flurry_tests;
 #[path = "irelia_ai.rs"]
 mod irelia_ai;
+#[path = "modal.rs"]
+mod modal;
 #[path = "spell_history.rs"]
 mod spell_history;
 pub use combat::{CombatResolution, CombatResult, CombatStep};
@@ -1998,6 +2003,14 @@ impl Game {
             self.ai_resource_witness = None;
             return Ok(());
         }
+        if let Action::Choose { accept } = action
+            && matches!(self.decision, Some(Decision::Payment { .. }))
+        {
+            // Payment confirmation owns its continuation; undo restores the
+            // exact earlier priority/pass boundary. A second cleanup would
+            // reopen that response window and hand priority to its initiator.
+            return self.choose(accept);
+        }
         if self.phase != Phase::Playing {
             return Err("Start a match before taking actions.".into());
         }
@@ -3855,13 +3868,17 @@ impl Game {
     }
 
     fn counter_target_valid(&self, actor: usize, card: CardId, chain_id: u32) -> bool {
+        let OfficialEffect::Counter(kind) = rules::effect(card) else {
+            return false;
+        };
+        self.counter_kind_target_valid(actor, kind, chain_id)
+    }
+
+    fn counter_kind_target_valid(&self, actor: usize, kind: CounterKind, chain_id: u32) -> bool {
         let Some(item) = self.chain.iter().find(|item| item.id == chain_id) else {
             return false;
         };
         let target = self.catalog[item.card_id];
-        let OfficialEffect::Counter(kind) = rules::effect(card) else {
-            return false;
-        };
         if item.ability.is_some() && kind != CounterKind::NotSoFast {
             return false;
         }
@@ -3897,23 +3914,29 @@ impl Game {
     }
 
     fn resolve_counter(&mut self, item: &ChainItem) {
+        if let OfficialEffect::Counter(kind) = rules::effect(item.card_id) {
+            self.resolve_counter_kind(item, kind);
+        }
+    }
+
+    fn resolve_counter_kind(&mut self, item: &ChainItem, kind: CounterKind) {
         let Some(Target::Spell { chain_id }) = item.target else {
             return;
         };
-        if !self.counter_target_valid(item.player, item.card_id, chain_id) {
+        if !self.counter_kind_target_valid(item.player, kind, chain_id) {
             self.push_log(format!(
                 "{} has no legal counter target.",
                 self.catalog[item.card_id].name
             ));
             // Abandon's Predict is independent of the counter instruction.
             // Mistargeting only negates the impossible instruction (359.3.e.5).
-            if rules::effect(item.card_id) == OfficialEffect::Counter(CounterKind::Abandon) {
+            if kind == CounterKind::Abandon {
                 self.predict(item.player);
             }
             return;
         }
-        match rules::effect(item.card_id) {
-            OfficialEffect::Counter(CounterKind::OtherOpponentSpell) => {
+        match kind {
+            CounterKind::OtherOpponentSpell => {
                 if self.opponent_played_other_spell(item.player, chain_id) {
                     self.counter_spell(chain_id, false);
                 } else {
@@ -3923,17 +3946,15 @@ impl Game {
                     ));
                 }
             }
-            OfficialEffect::Counter(CounterKind::Abandon) => {
+            CounterKind::Abandon => {
                 self.counter_spell(chain_id, true);
                 self.predict(item.player);
             }
-            OfficialEffect::Counter(
-                CounterKind::Defy
-                | CounterKind::NotSoFast
-                | CounterKind::Unconditional
-                | CounterKind::MinimumPower(_),
-            ) => self.counter_spell(chain_id, false),
-            OfficialEffect::Counter(CounterKind::HardBargain) => {
+            CounterKind::Defy
+            | CounterKind::NotSoFast
+            | CounterKind::Unconditional
+            | CounterKind::MinimumPower(_) => self.counter_spell(chain_id, false),
+            CounterKind::HardBargain => {
                 let target_player = self
                     .chain
                     .iter()
@@ -3952,7 +3973,6 @@ impl Game {
                     self.players[target_player].name
                 ));
             }
-            _ => {}
         }
     }
 
@@ -4867,6 +4887,30 @@ impl Game {
             .insert(index, card.card_id);
     }
 
+    fn queue_effect_tokens(
+        &mut self,
+        player: usize,
+        id: CardId,
+        count: u8,
+        might: u8,
+        lane: Option<usize>,
+    ) {
+        for _ in 0..count {
+            self.queue_token_play_with_entry(
+                player,
+                id,
+                might,
+                match rules::token_placement(id) {
+                    rules::TokenPlacement::Default => self.current_hidden_origin().map(Some),
+                    rules::TokenPlacement::Base => Some(None),
+                    rules::TokenPlacement::Here => Some(lane),
+                },
+                rules::token_is_gear(id),
+                matches!(id, 355 | 356),
+            );
+        }
+    }
+
     pub(crate) fn queue_token_play(
         &mut self,
         player: usize,
@@ -5599,8 +5643,9 @@ impl Game {
                     limit,
                 );
             }
-            if card_id == 410 {
-                return self.command_play_candidates(
+            if !rules::spell_modes(card_id).is_empty() {
+                return self.modal_play_candidates(
+                    card_id,
                     &Action::FinalizePendingPlay {
                         lane: None,
                         targets: vec![],
@@ -6996,13 +7041,13 @@ impl Game {
             self.validate_preparations_targets(actor, &targets, true, true)?;
             return Ok(targets);
         }
-        if id == 410 {
+        if !rules::spell_modes(id).is_empty() {
             let mode = self
                 .active_play
                 .as_ref()
                 .filter(|play| play.card_id == id)
                 .and_then(|play| play.choices.mode);
-            self.validate_command_attack(actor, mode, provided, true)?;
+            self.validate_modal_targets(actor, id, mode, provided, true)?;
             return Ok(provided.to_vec());
         }
         if id == 442 {
@@ -8095,6 +8140,9 @@ impl Game {
             valid.retain(|&target| self.target_location(target) == location);
         }
         match rules::effect(id) {
+            OfficialEffect::ChooseOne(_) => {
+                return Err("A modal spell must resolve its finalized execution.".into());
+            }
             OfficialEffect::BanishSmallOrGear { burn, .. } => {
                 if let Some(&target) = valid.first() {
                     match target {
@@ -8648,22 +8696,7 @@ impl Game {
             }
             OfficialEffect::Tokens { count, might }
             | OfficialEffect::TokensAndDraw { count, might, .. } => {
-                for _ in 0..count {
-                    self.queue_token_play_with_entry(
-                        player,
-                        id,
-                        might,
-                        match rules::token_placement(id) {
-                            rules::TokenPlacement::Default => {
-                                self.current_hidden_origin().map(Some)
-                            }
-                            rules::TokenPlacement::Base => Some(None),
-                            rules::TokenPlacement::Here => Some(lane),
-                        },
-                        rules::token_is_gear(id),
-                        matches!(id, 355 | 356),
-                    );
-                }
+                self.queue_effect_tokens(player, id, count, might, lane);
                 if let OfficialEffect::TokensAndDraw { draw, .. } = rules::effect(id) {
                     self.draw(player, draw)?;
                 }

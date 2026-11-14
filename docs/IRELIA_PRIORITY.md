@@ -2,6 +2,15 @@
 
 Updated November 14, 2026. Irelia cards take priority over the saved Azir draft.
 
+Flurry of Feathers is implemented locally as an additional Calm option; its
+immutable installed acceptance is pending. It shares explicit mode handling
+with Command: Attack: counter one spell or play four independently placed Bird
+tokens. Each Repeat keeps its selected mode. Native controls, official artwork,
+API choices, and both companion levels are covered by the
+[validation record](validation/irelia_flurry.json). Authored Irelia match lists
+exercise the card; the seven sourced presets are unchanged. Historical deck
+listings establish relevance, not current meta prevalence or a new legal preset.
+
 Block and Yuumi, Magical Cat are available as additional Calm options.
 They share temporary keyword grants with Consult the Heavens. Ten focused
 engine/API tests, 1,082 library tests, 24 complete engine games, six best-of-three

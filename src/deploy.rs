@@ -2,80 +2,6 @@
 use super::*;
 
 impl Game {
-    pub(super) fn play_modes(card_id: CardId) -> Vec<PlayModeOption> {
-        if card_id != 410 {
-            return Vec::new();
-        }
-        vec![
-            PlayModeOption {
-                index: 0,
-                label: "Move a friendly Deploy gear to a battlefield",
-                target_kinds: vec![
-                    rules::PlayTargetKind::Gear,
-                    rules::PlayTargetKind::Battlefield,
-                ],
-            },
-            PlayModeOption {
-                index: 1,
-                label: "Inspect five cards and optionally draw a Gear",
-                target_kinds: vec![],
-            },
-        ]
-    }
-
-    pub(super) fn validate_play_mode(
-        card_id: CardId,
-        mode: Option<usize>,
-        complete: bool,
-    ) -> Result<(), String> {
-        if card_id == 410 {
-            if mode.is_some_and(|m| m > 1) || (complete && mode.is_none()) {
-                return Err("Choose one of Command: Attack's two modes.".into());
-            }
-        } else if mode.is_some() {
-            return Err("This card has no mode selection.".into());
-        }
-        Ok(())
-    }
-
-    pub(super) fn execution_target_spec(
-        card_id: CardId,
-        mode: Option<usize>,
-        slot: usize,
-    ) -> rules::PlayTargetSpec {
-        if card_id == 442 {
-            return rules::PlayTargetSpec {
-                kind: Some(if slot == 0 {
-                    rules::PlayTargetKind::Unit
-                } else {
-                    rules::PlayTargetKind::Spell
-                }),
-                maximum: 2,
-                required: 2,
-            };
-        }
-        if card_id != 410 {
-            return rules::play_target_spec(card_id);
-        }
-        if mode == Some(0) {
-            rules::PlayTargetSpec {
-                kind: Some(if slot == 0 {
-                    rules::PlayTargetKind::Gear
-                } else {
-                    rules::PlayTargetKind::Battlefield
-                }),
-                maximum: 2,
-                required: 2,
-            }
-        } else {
-            rules::PlayTargetSpec {
-                kind: None,
-                maximum: 0,
-                required: 0,
-            }
-        }
-    }
-
     pub(super) fn command_attack_candidates(
         &self,
         actor: usize,
@@ -160,13 +86,14 @@ impl Game {
         executions
     }
 
-    pub(super) fn command_play_candidates(
+    pub(super) fn modal_play_candidates(
         &self,
+        card_id: CardId,
         action: &Action,
         prepare: bool,
         limit: usize,
     ) -> Result<Vec<Action>, String> {
-        let executions = self.command_execution_options(self.priority());
+        let executions = self.modal_execution_options(self.priority(), card_id);
         let mut result = Vec::new();
         let mut capacity = None;
         for execution in &executions {

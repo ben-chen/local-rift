@@ -749,3 +749,68 @@ fn c25_quoted_add_keeps_legacy_finalization_checkpoint_canonical() {
 fn c25_quoted_add_keeps_base_cost_trigger_checkpoint_canonical() {
     quoted_add_checkpoint(true);
 }
+
+fn counter_response(actor: usize) -> (Game, Action) {
+    let caster = 1 - actor;
+    let mut g = position(caster);
+    g.players[caster].hand = vec![78];
+    g.apply(Action::PlayCardWithTargets {
+        hand_index: 0,
+        lane: None,
+        targets: vec![],
+    })
+    .unwrap();
+    let chain_id = g.chain.last().unwrap().id;
+    g.apply(Action::Pass).unwrap();
+    assert_eq!(g.priority(), actor);
+    g.players[actor].hand = vec![86];
+    let counter = Action::PlayCardWithTargets {
+        hand_index: 0,
+        lane: None,
+        targets: vec![Target::Spell { chain_id }],
+    };
+    (g, counter)
+}
+
+#[test]
+fn payment_undo_in_response_window_preserves_priority_and_the_previous_pass() {
+    for actor in 0..2 {
+        for refuse in [false, true] {
+            let (mut g, counter) = counter_response(actor);
+            let before = format!("{g:?}");
+            begin(&mut g, counter);
+            add(&mut g);
+            g.apply(if refuse {
+                Action::RefusePayment
+            } else {
+                Action::Choose { accept: false }
+            })
+            .unwrap();
+            assert_eq!(format!("{g:?}"), before);
+            assert_eq!(g.priority(), actor);
+            g.apply(Action::Pass).unwrap();
+            assert!(g.chain.is_empty(), "the earlier pass still counts");
+            assert_eq!(g.players[1 - actor].hand.len(), 3);
+            assert_eq!(g.players[actor].hand, [86]);
+        }
+    }
+}
+
+#[test]
+fn payment_confirmation_alias_matches_complete_payment_during_responses() {
+    for actor in 0..2 {
+        let (mut g, counter) = counter_response(actor);
+        begin(&mut g, counter);
+        add(&mut g);
+        let mut explicit = g.clone();
+        g.apply(Action::Choose { accept: true }).unwrap();
+        explicit.apply(Action::CompletePayment).unwrap();
+        assert_eq!(format!("{g:?}"), format!("{explicit:?}"));
+        settle(&mut g);
+        assert!(g.chain.is_empty());
+        assert!(
+            g.players[1 - actor].hand.is_empty(),
+            "the draw spell was countered"
+        );
+    }
+}

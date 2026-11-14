@@ -1095,14 +1095,22 @@ impl App {
             if view.repeats.is_empty() {
                 self.ui
                     .text("This play has no Repeat costs.", 260.0, 746.0, 12.0, MUTED);
-                if !view.modes.is_empty()
-                    && self.ui.button(
-                        Rect::new(260.0, 791.0, 400.0, 32.0),
-                        "Choose a physical gear in Loadout",
-                        false,
-                        true,
-                    )
-                {
+                let selected_mode = if draft.execution == 0 {
+                    draft.choices.mode
+                } else {
+                    draft.choices.repeats[draft.execution - 1].choices.mode
+                };
+                if view.modes.iter().any(|mode| {
+                    Some(mode.index) == selected_mode
+                        && mode
+                            .target_kinds
+                            .contains(&local_rift::rules::PlayTargetKind::Gear)
+                }) && self.ui.button(
+                    Rect::new(260.0, 791.0, 400.0, 32.0),
+                    "Choose a physical gear in Loadout",
+                    false,
+                    true,
+                ) {
                     draft.open = false;
                     self.tray = Tray::Loadout;
                     self.gear_owner = 0;
