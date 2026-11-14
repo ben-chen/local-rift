@@ -133,7 +133,7 @@ Irelia recipes remain unchanged.
 Jae Medarda is an additional Calm/Chaos-compatible card for spell-choice
 practice. The shipped tournament recipes remain unchanged; the validation
 campaign uses an explicitly authored Irelia list. His separate draw trigger,
-card inspection and Beginner/Advanced advice have local coverage described in
+card inspection and Beginner/Advanced advice passed native and installed acceptance described in
 [the Jae validation record](validation/irelia_choices.json). This admission does
 not establish that he is a current tournament staple.
 
