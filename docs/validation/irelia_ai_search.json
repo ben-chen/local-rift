@@ -1,0 +1,1643 @@
+{
+  "status": "Local library, focused and complete-match API checks passed; immutable release acceptance pending",
+  "base_revision": "47aaafc41aabad9eb31d528a45f7f703b9416b9d",
+  "change": "Conservative Strategic candidate deduplication: empty PlayChoices wrappers around ordinary hand plays, and empty explicit target lists only for cards with no play targets. Original actions and legality checks remain authoritative.",
+  "evidence_before_change": {
+    "diagnostic": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-engine-ai-investigate-v1.log",
+    "finding": "The previous planner already played Wheel before Discipline with sufficient Energy; with only 3 Energy or a wasted En Garde buff it ended the turn. Equivalent targetless plays occupied three candidate slots.",
+    "replay": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-engine-ai-baseline-decisions-v1.json",
+    "replay_sha256": "dc9502b5d4459580d076f1d7f5e77ecf8a8984c37dfdb70b86a4025a6c4caa85",
+    "limitation": "The zero-use Strategic match is not evidence that playing Wheel was optimal. Most observed turns spent Energy developing units or scoring."
+  },
+  "focused": {
+    "tests_passed": 7,
+    "legal_card_seat_positions": 698,
+    "alternative_encodings_per_position": 3,
+    "seconds": 1.14,
+    "coverage": [
+      "Full engine-state and legality equivalence across the targetless card pool in authored positions",
+      "One search candidate per equivalent targetless play",
+      "Distinct optional costs and explicit zero versus nonzero targets preserved",
+      "Both-seat Wheel-before-Discipline sequence with enough Energy, including both draws",
+      "Insufficient Energy and no-payoff restraint",
+      "Immediate legal final-point conquest over setup",
+      "Decision invariance under hidden hand identities, future draw order and engine RNG"
+    ]
+  },
+  "library": {
+    "passed": 1029,
+    "skipped": 0,
+    "seconds": 9.936,
+    "runner": "cargo nextest run --locked --lib --profile ci"
+  },
+  "quality": {
+    "clippy": "cargo clippy --locked --all-targets -- -D warnings: passed",
+    "format": "cargo fmt --all --check: passed",
+    "diff_check": "git diff --check: passed"
+  },
+  "rules_review": {
+    "date": "2026-11-14",
+    "hub": "https://playriftbound.com/en-us/rules-hub/",
+    "core_edition": "2026-10-09",
+    "core_url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/5c7946f7c3b8c6e0faff85ab6dadc6d2e721ea94.pdf",
+    "sections": [
+      "383.3.a-b.1",
+      "473.1.b.1"
+    ],
+    "finding": "Initial optional trigger costs precede responses. Final-point conquest requires every battlefield scored that turn; the winning-move scenario includes this condition."
+  },
+  "corrected_test_setup": [
+    "v1 attempted a zero-target Battle Preparations; replaced with Flash, whose unit targets are actually optional.",
+    "v1 omitted prior scoring on the other battlefield; added that prerequisite to the authored winning-conquest position."
+  ],
+  "binary_sha256": "2cac2a3ba0c7329b94ebbc8884b1916f161c47a0fcc98c27e8831f05f34145c3",
+  "source_sha256": {
+    "src/strategic.rs": "682026ee938f568090211e58f54d031fb7916178d2d55c5d22ce6f80083d11b9",
+    "src/strategic/setup_tests.rs": "dcdf49713cda2261b6513ecdfc7abbf5bd70f34e2a449a02ddfa612cb9281e20"
+  },
+  "api": {
+    "wheel": {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-engine-ai-wheel-baseline-v1.json",
+      "sha256": "f1b4da244a7e8583d84bcc73985da25378a6f74a443de45e873f92aea376b77f",
+      "records": [
+        {
+          "difficulty": "easy",
+          "irelia_seat": 0,
+          "first_player": 1,
+          "result": {
+            "wins": [
+              1,
+              2
+            ],
+            "winner": 1,
+            "history": [
+              {
+                "battlefields": [
+                  13,
+                  11
+                ],
+                "first_player": 1,
+                "number": 1,
+                "scores": [
+                  1,
+                  8
+                ],
+                "winner": 1
+              },
+              {
+                "battlefields": [
+                  0,
+                  1
+                ],
+                "first_player": 1,
+                "number": 2,
+                "scores": [
+                  8,
+                  3
+                ],
+                "winner": 0
+              },
+              {
+                "battlefields": [
+                  14,
+                  12
+                ],
+                "first_player": 1,
+                "number": 3,
+                "scores": [
+                  5,
+                  8
+                ],
+                "winner": 1
+              }
+            ],
+            "requests": 1358,
+            "seed": 454100,
+            "difficulty": "easy"
+          },
+          "wheels_seen": 1,
+          "paid_triggers": 1,
+          "turns_with_wheel_in_hand": 9,
+          "observed_draw_resolutions": 1,
+          "trace_sha256": "24e3638f54de7d882eaede70b31698b090bfca15fb457e315bbf9cc50eed8fac"
+        },
+        {
+          "difficulty": "easy",
+          "irelia_seat": 1,
+          "first_player": 0,
+          "result": {
+            "wins": [
+              2,
+              1
+            ],
+            "winner": 0,
+            "history": [
+              {
+                "battlefields": [
+                  11,
+                  13
+                ],
+                "first_player": 0,
+                "number": 1,
+                "scores": [
+                  1,
+                  8
+                ],
+                "winner": 1
+              },
+              {
+                "battlefields": [
+                  1,
+                  0
+                ],
+                "first_player": 0,
+                "number": 2,
+                "scores": [
+                  8,
+                  6
+                ],
+                "winner": 0
+              },
+              {
+                "battlefields": [
+                  12,
+                  14
+                ],
+                "first_player": 0,
+                "number": 3,
+                "scores": [
+                  8,
+                  4
+                ],
+                "winner": 0
+              }
+            ],
+            "requests": 1184,
+            "seed": 454101,
+            "difficulty": "easy"
+          },
+          "wheels_seen": 3,
+          "paid_triggers": 2,
+          "turns_with_wheel_in_hand": 13,
+          "observed_draw_resolutions": 2,
+          "trace_sha256": "f8d32d27fd3eec670eb6e28f90e5b52b9ab5c463e7d422af95dd294b4c272f15"
+        },
+        {
+          "difficulty": "tactical",
+          "irelia_seat": 0,
+          "first_player": 1,
+          "result": {
+            "wins": [
+              0,
+              2
+            ],
+            "winner": 1,
+            "history": [
+              {
+                "battlefields": [
+                  13,
+                  11
+                ],
+                "first_player": 1,
+                "number": 1,
+                "scores": [
+                  1,
+                  9
+                ],
+                "winner": 1
+              },
+              {
+                "battlefields": [
+                  0,
+                  1
+                ],
+                "first_player": 1,
+                "number": 2,
+                "scores": [
+                  1,
+                  9
+                ],
+                "winner": 1
+              }
+            ],
+            "requests": 766,
+            "seed": 454110,
+            "difficulty": "tactical"
+          },
+          "wheels_seen": 0,
+          "paid_triggers": 0,
+          "turns_with_wheel_in_hand": 8,
+          "observed_draw_resolutions": 0,
+          "trace_sha256": "220ad7cf7b536d45cc75774737666a0a93838d915735e01d239376197c9939bf"
+        },
+        {
+          "difficulty": "tactical",
+          "irelia_seat": 1,
+          "first_player": 0,
+          "result": {
+            "wins": [
+              1,
+              2
+            ],
+            "winner": 1,
+            "history": [
+              {
+                "battlefields": [
+                  11,
+                  13
+                ],
+                "first_player": 0,
+                "number": 1,
+                "scores": [
+                  9,
+                  2
+                ],
+                "winner": 0
+              },
+              {
+                "battlefields": [
+                  1,
+                  0
+                ],
+                "first_player": 0,
+                "number": 2,
+                "scores": [
+                  7,
+                  8
+                ],
+                "winner": 1
+              },
+              {
+                "battlefields": [
+                  12,
+                  14
+                ],
+                "first_player": 0,
+                "number": 3,
+                "scores": [
+                  7,
+                  8
+                ],
+                "winner": 1
+              }
+            ],
+            "requests": 1469,
+            "seed": 454111,
+            "difficulty": "tactical"
+          },
+          "wheels_seen": 5,
+          "paid_triggers": 4,
+          "turns_with_wheel_in_hand": 22,
+          "observed_draw_resolutions": 4,
+          "trace_sha256": "f0c4c3747de389d69c1904da5b6ef46eb478c3a172428d0a02f8de0577ddc241"
+        },
+        {
+          "difficulty": "strategic",
+          "irelia_seat": 0,
+          "first_player": 1,
+          "result": {
+            "wins": [
+              0,
+              2
+            ],
+            "winner": 1,
+            "history": [
+              {
+                "battlefields": [
+                  13,
+                  11
+                ],
+                "first_player": 1,
+                "number": 1,
+                "scores": [
+                  7,
+                  8
+                ],
+                "winner": 1
+              },
+              {
+                "battlefields": [
+                  0,
+                  1
+                ],
+                "first_player": 1,
+                "number": 2,
+                "scores": [
+                  5,
+                  8
+                ],
+                "winner": 1
+              }
+            ],
+            "requests": 1192,
+            "seed": 454120,
+            "difficulty": "strategic"
+          },
+          "wheels_seen": 0,
+          "paid_triggers": 0,
+          "turns_with_wheel_in_hand": 10,
+          "observed_draw_resolutions": 0,
+          "trace_sha256": "ca3a77d84bb0fc199bf8f51ded06c1d5a3a793875d93f33ec29ca33db4eb3db1"
+        },
+        {
+          "difficulty": "strategic",
+          "irelia_seat": 1,
+          "first_player": 0,
+          "result": {
+            "wins": [
+              2,
+              0
+            ],
+            "winner": 0,
+            "history": [
+              {
+                "battlefields": [
+                  11,
+                  13
+                ],
+                "first_player": 0,
+                "number": 1,
+                "scores": [
+                  8,
+                  3
+                ],
+                "winner": 0
+              },
+              {
+                "battlefields": [
+                  1,
+                  0
+                ],
+                "first_player": 0,
+                "number": 2,
+                "scores": [
+                  8,
+                  2
+                ],
+                "winner": 0
+              }
+            ],
+            "requests": 877,
+            "seed": 454121,
+            "difficulty": "strategic"
+          },
+          "wheels_seen": 0,
+          "paid_triggers": 0,
+          "turns_with_wheel_in_hand": 0,
+          "observed_draw_resolutions": 0,
+          "trace_sha256": "de2221c15acdd233a8fba11559072b0537d168cc0ad2a6f3aab699f82c38aab0"
+        }
+      ],
+      "equal_to_previous_full_records": false
+    },
+    "resources": {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-engine-ai-resources-baseline-v1.json",
+      "sha256": "46acfb7f652ad5f30899eaa623f2c5e0f30c9e1872109ede55571b28bf4b43c0",
+      "records": [
+        {
+          "difficulty": "easy",
+          "irelia_seat": 0,
+          "first_player": 1,
+          "result": {
+            "wins": [
+              1,
+              2
+            ],
+            "winner": 1,
+            "history": [
+              {
+                "battlefields": [
+                  13,
+                  11
+                ],
+                "first_player": 1,
+                "number": 1,
+                "scores": [
+                  5,
+                  8
+                ],
+                "winner": 1
+              },
+              {
+                "battlefields": [
+                  0,
+                  1
+                ],
+                "first_player": 1,
+                "number": 2,
+                "scores": [
+                  8,
+                  3
+                ],
+                "winner": 0
+              },
+              {
+                "battlefields": [
+                  14,
+                  12
+                ],
+                "first_player": 1,
+                "number": 3,
+                "scores": [
+                  1,
+                  8
+                ],
+                "winner": 1
+              }
+            ],
+            "requests": 1289,
+            "seed": 451100,
+            "difficulty": "easy"
+          },
+          "cards": {
+            "451": {
+              "seen": 4,
+              "resolutions": 4
+            },
+            "452": {
+              "seen": 4,
+              "resolutions": 3
+            },
+            "453": {
+              "seen": 2,
+              "resolutions": 2
+            }
+          },
+          "paid_meditations_seen": 4,
+          "trace_sha256": "18b63433a9fde064b4a4cfb75c5bb45eaadffe15bfa17258044f9fd464b9fb67"
+        },
+        {
+          "difficulty": "easy",
+          "irelia_seat": 1,
+          "first_player": 0,
+          "result": {
+            "wins": [
+              2,
+              0
+            ],
+            "winner": 0,
+            "history": [
+              {
+                "battlefields": [
+                  11,
+                  13
+                ],
+                "first_player": 0,
+                "number": 1,
+                "scores": [
+                  8,
+                  2
+                ],
+                "winner": 0
+              },
+              {
+                "battlefields": [
+                  1,
+                  0
+                ],
+                "first_player": 0,
+                "number": 2,
+                "scores": [
+                  8,
+                  1
+                ],
+                "winner": 0
+              }
+            ],
+            "requests": 727,
+            "seed": 451101,
+            "difficulty": "easy"
+          },
+          "cards": {
+            "451": {
+              "seen": 1,
+              "resolutions": 1
+            },
+            "452": {
+              "seen": 0,
+              "resolutions": 0
+            },
+            "453": {
+              "seen": 1,
+              "resolutions": 1
+            }
+          },
+          "paid_meditations_seen": 0,
+          "trace_sha256": "64660e3678d87652bb8929dee1ed9ecea10b9dd24b6b783b4dbd9b450c96c7d8"
+        },
+        {
+          "difficulty": "tactical",
+          "irelia_seat": 0,
+          "first_player": 1,
+          "result": {
+            "wins": [
+              0,
+              2
+            ],
+            "winner": 1,
+            "history": [
+              {
+                "battlefields": [
+                  13,
+                  11
+                ],
+                "first_player": 1,
+                "number": 1,
+                "scores": [
+                  3,
+                  8
+                ],
+                "winner": 1
+              },
+              {
+                "battlefields": [
+                  0,
+                  1
+                ],
+                "first_player": 1,
+                "number": 2,
+                "scores": [
+                  6,
+                  8
+                ],
+                "winner": 1
+              }
+            ],
+            "requests": 1078,
+            "seed": 451110,
+            "difficulty": "tactical"
+          },
+          "cards": {
+            "451": {
+              "seen": 4,
+              "resolutions": 4
+            },
+            "452": {
+              "seen": 2,
+              "resolutions": 2
+            },
+            "453": {
+              "seen": 1,
+              "resolutions": 1
+            }
+          },
+          "paid_meditations_seen": 2,
+          "trace_sha256": "7361e039c51c9df9f5414a5e6fd3a9c052cf4e0b52a77f362ba83d4acd9156be"
+        },
+        {
+          "difficulty": "tactical",
+          "irelia_seat": 1,
+          "first_player": 0,
+          "result": {
+            "wins": [
+              2,
+              0
+            ],
+            "winner": 0,
+            "history": [
+              {
+                "battlefields": [
+                  11,
+                  13
+                ],
+                "first_player": 0,
+                "number": 1,
+                "scores": [
+                  8,
+                  4
+                ],
+                "winner": 0
+              },
+              {
+                "battlefields": [
+                  1,
+                  0
+                ],
+                "first_player": 0,
+                "number": 2,
+                "scores": [
+                  8,
+                  3
+                ],
+                "winner": 0
+              }
+            ],
+            "requests": 973,
+            "seed": 451111,
+            "difficulty": "tactical"
+          },
+          "cards": {
+            "451": {
+              "seen": 1,
+              "resolutions": 1
+            },
+            "452": {
+              "seen": 1,
+              "resolutions": 1
+            },
+            "453": {
+              "seen": 3,
+              "resolutions": 3
+            }
+          },
+          "paid_meditations_seen": 1,
+          "trace_sha256": "adc14ab9f4e59203b812250467cb5352a26d2ecb4697b16e1092ba815c91de57"
+        },
+        {
+          "difficulty": "strategic",
+          "irelia_seat": 0,
+          "first_player": 1,
+          "result": {
+            "wins": [
+              0,
+              2
+            ],
+            "winner": 1,
+            "history": [
+              {
+                "battlefields": [
+                  13,
+                  11
+                ],
+                "first_player": 1,
+                "number": 1,
+                "scores": [
+                  5,
+                  8
+                ],
+                "winner": 1
+              },
+              {
+                "battlefields": [
+                  0,
+                  1
+                ],
+                "first_player": 1,
+                "number": 2,
+                "scores": [
+                  2,
+                  9
+                ],
+                "winner": 1
+              }
+            ],
+            "requests": 928,
+            "seed": 451120,
+            "difficulty": "strategic"
+          },
+          "cards": {
+            "451": {
+              "seen": 1,
+              "resolutions": 0
+            },
+            "452": {
+              "seen": 0,
+              "resolutions": 0
+            },
+            "453": {
+              "seen": 1,
+              "resolutions": 1
+            }
+          },
+          "paid_meditations_seen": 0,
+          "trace_sha256": "46870a0980daa990a9b6e5ad9dcab69968fca75ce73b3197930416d8981193b4"
+        },
+        {
+          "difficulty": "strategic",
+          "irelia_seat": 1,
+          "first_player": 0,
+          "result": {
+            "wins": [
+              2,
+              1
+            ],
+            "winner": 0,
+            "history": [
+              {
+                "battlefields": [
+                  11,
+                  13
+                ],
+                "first_player": 0,
+                "number": 1,
+                "scores": [
+                  8,
+                  6
+                ],
+                "winner": 0
+              },
+              {
+                "battlefields": [
+                  1,
+                  0
+                ],
+                "first_player": 0,
+                "number": 2,
+                "scores": [
+                  2,
+                  8
+                ],
+                "winner": 1
+              },
+              {
+                "battlefields": [
+                  12,
+                  14
+                ],
+                "first_player": 0,
+                "number": 3,
+                "scores": [
+                  8,
+                  4
+                ],
+                "winner": 0
+              }
+            ],
+            "requests": 1349,
+            "seed": 451121,
+            "difficulty": "strategic"
+          },
+          "cards": {
+            "451": {
+              "seen": 1,
+              "resolutions": 1
+            },
+            "452": {
+              "seen": 4,
+              "resolutions": 3
+            },
+            "453": {
+              "seen": 1,
+              "resolutions": 1
+            }
+          },
+          "paid_meditations_seen": 3,
+          "trace_sha256": "81f364a5d08f5264069ca2bc3a6da18c5d2a946e871fa44299ad9eafcbb18f11"
+        }
+      ],
+      "equal_to_previous_full_records": false
+    },
+    "jae": {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-engine-ai-jae-baseline-v1.json",
+      "sha256": "f958d4daa7da28e3b55f1b93bdcb3a53f348ba78d29016e0ecf027a37f548efc",
+      "records": [
+        {
+          "difficulty": "easy",
+          "irelia_seat": 0,
+          "first_player": 1,
+          "result": {
+            "wins": [
+              2,
+              0
+            ],
+            "winner": 0,
+            "history": [
+              {
+                "battlefields": [
+                  13,
+                  11
+                ],
+                "first_player": 1,
+                "number": 1,
+                "scores": [
+                  8,
+                  2
+                ],
+                "winner": 0
+              },
+              {
+                "battlefields": [
+                  0,
+                  1
+                ],
+                "first_player": 1,
+                "number": 2,
+                "scores": [
+                  8,
+                  1
+                ],
+                "winner": 0
+              }
+            ],
+            "requests": 778,
+            "seed": 450100,
+            "difficulty": "easy"
+          },
+          "jae_units_seen": 1,
+          "draw_triggers_seen": 0,
+          "observed_draw_resolutions": 0,
+          "trace_sha256": "0f573bc6293950376a58d97cdb8f3c51ec874542d6366a86e4895da9ef8087db"
+        },
+        {
+          "difficulty": "easy",
+          "irelia_seat": 1,
+          "first_player": 0,
+          "result": {
+            "wins": [
+              2,
+              0
+            ],
+            "winner": 0,
+            "history": [
+              {
+                "battlefields": [
+                  11,
+                  13
+                ],
+                "first_player": 0,
+                "number": 1,
+                "scores": [
+                  8,
+                  4
+                ],
+                "winner": 0
+              },
+              {
+                "battlefields": [
+                  1,
+                  0
+                ],
+                "first_player": 0,
+                "number": 2,
+                "scores": [
+                  8,
+                  3
+                ],
+                "winner": 0
+              }
+            ],
+            "requests": 817,
+            "seed": 450101,
+            "difficulty": "easy"
+          },
+          "jae_units_seen": 2,
+          "draw_triggers_seen": 0,
+          "observed_draw_resolutions": 0,
+          "trace_sha256": "abad19ddbc23daf1a745ca69eedfef24dcb0086c496c783a86089c47c6501ed0"
+        },
+        {
+          "difficulty": "tactical",
+          "irelia_seat": 0,
+          "first_player": 1,
+          "result": {
+            "wins": [
+              0,
+              2
+            ],
+            "winner": 1,
+            "history": [
+              {
+                "battlefields": [
+                  13,
+                  11
+                ],
+                "first_player": 1,
+                "number": 1,
+                "scores": [
+                  1,
+                  9
+                ],
+                "winner": 1
+              },
+              {
+                "battlefields": [
+                  0,
+                  1
+                ],
+                "first_player": 1,
+                "number": 2,
+                "scores": [
+                  7,
+                  8
+                ],
+                "winner": 1
+              }
+            ],
+            "requests": 781,
+            "seed": 450110,
+            "difficulty": "tactical"
+          },
+          "jae_units_seen": 4,
+          "draw_triggers_seen": 2,
+          "observed_draw_resolutions": 2,
+          "trace_sha256": "9c4b8799d70cca91448109fd9e331f5cc31227f56b4ab535517c486c686e5f28"
+        },
+        {
+          "difficulty": "tactical",
+          "irelia_seat": 1,
+          "first_player": 0,
+          "result": {
+            "wins": [
+              2,
+              0
+            ],
+            "winner": 0,
+            "history": [
+              {
+                "battlefields": [
+                  11,
+                  13
+                ],
+                "first_player": 0,
+                "number": 1,
+                "scores": [
+                  8,
+                  2
+                ],
+                "winner": 0
+              },
+              {
+                "battlefields": [
+                  1,
+                  0
+                ],
+                "first_player": 0,
+                "number": 2,
+                "scores": [
+                  9,
+                  7
+                ],
+                "winner": 0
+              }
+            ],
+            "requests": 796,
+            "seed": 450111,
+            "difficulty": "tactical"
+          },
+          "jae_units_seen": 2,
+          "draw_triggers_seen": 1,
+          "observed_draw_resolutions": 1,
+          "trace_sha256": "26b0db05cb76f025cf43cf8698eab2c7ceeda799d02f15586825abd5766e8966"
+        },
+        {
+          "difficulty": "strategic",
+          "irelia_seat": 0,
+          "first_player": 1,
+          "result": {
+            "wins": [
+              0,
+              2
+            ],
+            "winner": 1,
+            "history": [
+              {
+                "battlefields": [
+                  13,
+                  11
+                ],
+                "first_player": 1,
+                "number": 1,
+                "scores": [
+                  4,
+                  8
+                ],
+                "winner": 1
+              },
+              {
+                "battlefields": [
+                  0,
+                  1
+                ],
+                "first_player": 1,
+                "number": 2,
+                "scores": [
+                  2,
+                  8
+                ],
+                "winner": 1
+              }
+            ],
+            "requests": 964,
+            "seed": 450120,
+            "difficulty": "strategic"
+          },
+          "jae_units_seen": 1,
+          "draw_triggers_seen": 4,
+          "observed_draw_resolutions": 4,
+          "trace_sha256": "0e2d8642a23dcc51d73acf872ec0624a2a3b5d91bcdbe3b0f8afa05f5f89638c"
+        },
+        {
+          "difficulty": "strategic",
+          "irelia_seat": 1,
+          "first_player": 0,
+          "result": {
+            "wins": [
+              2,
+              0
+            ],
+            "winner": 0,
+            "history": [
+              {
+                "battlefields": [
+                  11,
+                  13
+                ],
+                "first_player": 0,
+                "number": 1,
+                "scores": [
+                  9,
+                  3
+                ],
+                "winner": 0
+              },
+              {
+                "battlefields": [
+                  1,
+                  0
+                ],
+                "first_player": 0,
+                "number": 2,
+                "scores": [
+                  8,
+                  7
+                ],
+                "winner": 0
+              }
+            ],
+            "requests": 1120,
+            "seed": 450121,
+            "difficulty": "strategic"
+          },
+          "jae_units_seen": 3,
+          "draw_triggers_seen": 1,
+          "observed_draw_resolutions": 1,
+          "trace_sha256": "b377d6f0b1f3c87cc6fc94308018a801a977d2dd1efd58d9a6987006391c7631"
+        }
+      ],
+      "equal_to_previous_full_records": false
+    },
+    "format": {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-engine-ai-format-baseline-v1.json",
+      "sha256": "e9fa350e6d3bf5a00595d2055fe6b5da2748da63f1b03a6ba8a7a6acf6dde845",
+      "records": [
+        {
+          "format_date": null,
+          "result": {
+            "wins": [
+              2,
+              1
+            ],
+            "winner": 0,
+            "history": [
+              {
+                "battlefields": [
+                  13,
+                  13
+                ],
+                "first_player": 0,
+                "number": 1,
+                "scores": [
+                  8,
+                  6
+                ],
+                "winner": 0
+              },
+              {
+                "battlefields": [
+                  0,
+                  0
+                ],
+                "first_player": 1,
+                "number": 2,
+                "scores": [
+                  4,
+                  8
+                ],
+                "winner": 1
+              },
+              {
+                "battlefields": [
+                  14,
+                  14
+                ],
+                "first_player": 0,
+                "number": 3,
+                "scores": [
+                  8,
+                  5
+                ],
+                "winner": 0
+              }
+            ],
+            "requests": 2405,
+            "seed": 112200,
+            "difficulty": "easy"
+          },
+          "observations": 1596,
+          "phases": [
+            "battlefields",
+            "complete",
+            "game",
+            "play_order",
+            "sideboarding"
+          ],
+          "trace_sha256": "784fa66d731082f4459ae883955139f295b69179ffb3ff991d309c686aada872"
+        },
+        {
+          "format_date": "2026-11-22",
+          "result": {
+            "wins": [
+              2,
+              1
+            ],
+            "winner": 0,
+            "history": [
+              {
+                "battlefields": [
+                  13,
+                  13
+                ],
+                "first_player": 0,
+                "number": 1,
+                "scores": [
+                  8,
+                  6
+                ],
+                "winner": 0
+              },
+              {
+                "battlefields": [
+                  0,
+                  0
+                ],
+                "first_player": 1,
+                "number": 2,
+                "scores": [
+                  4,
+                  8
+                ],
+                "winner": 1
+              },
+              {
+                "battlefields": [
+                  14,
+                  14
+                ],
+                "first_player": 0,
+                "number": 3,
+                "scores": [
+                  8,
+                  5
+                ],
+                "winner": 0
+              }
+            ],
+            "requests": 2405,
+            "seed": 112200,
+            "difficulty": "easy"
+          },
+          "observations": 1596,
+          "phases": [
+            "battlefields",
+            "complete",
+            "game",
+            "play_order",
+            "sideboarding"
+          ],
+          "trace_sha256": "784fa66d731082f4459ae883955139f295b69179ffb3ff991d309c686aada872"
+        },
+        {
+          "format_date": null,
+          "result": {
+            "wins": [
+              1,
+              2
+            ],
+            "winner": 1,
+            "history": [
+              {
+                "battlefields": [
+                  13,
+                  13
+                ],
+                "first_player": 1,
+                "number": 1,
+                "scores": [
+                  4,
+                  8
+                ],
+                "winner": 1
+              },
+              {
+                "battlefields": [
+                  0,
+                  0
+                ],
+                "first_player": 0,
+                "number": 2,
+                "scores": [
+                  8,
+                  6
+                ],
+                "winner": 0
+              },
+              {
+                "battlefields": [
+                  14,
+                  14
+                ],
+                "first_player": 1,
+                "number": 3,
+                "scores": [
+                  7,
+                  8
+                ],
+                "winner": 1
+              }
+            ],
+            "requests": 1790,
+            "seed": 112201,
+            "difficulty": "tactical"
+          },
+          "observations": 1186,
+          "phases": [
+            "battlefields",
+            "complete",
+            "game",
+            "play_order",
+            "sideboarding"
+          ],
+          "trace_sha256": "4920d2efd6638ff4a585b1d016ccb0b4a457542bdbcc4966dd5e2d0a8b75f939"
+        },
+        {
+          "format_date": "2026-11-22",
+          "result": {
+            "wins": [
+              1,
+              2
+            ],
+            "winner": 1,
+            "history": [
+              {
+                "battlefields": [
+                  13,
+                  13
+                ],
+                "first_player": 1,
+                "number": 1,
+                "scores": [
+                  4,
+                  8
+                ],
+                "winner": 1
+              },
+              {
+                "battlefields": [
+                  0,
+                  0
+                ],
+                "first_player": 0,
+                "number": 2,
+                "scores": [
+                  8,
+                  6
+                ],
+                "winner": 0
+              },
+              {
+                "battlefields": [
+                  14,
+                  14
+                ],
+                "first_player": 1,
+                "number": 3,
+                "scores": [
+                  7,
+                  8
+                ],
+                "winner": 1
+              }
+            ],
+            "requests": 1790,
+            "seed": 112201,
+            "difficulty": "tactical"
+          },
+          "observations": 1186,
+          "phases": [
+            "battlefields",
+            "complete",
+            "game",
+            "play_order",
+            "sideboarding"
+          ],
+          "trace_sha256": "4920d2efd6638ff4a585b1d016ccb0b4a457542bdbcc4966dd5e2d0a8b75f939"
+        },
+        {
+          "format_date": null,
+          "result": {
+            "wins": [
+              1,
+              2
+            ],
+            "winner": 1,
+            "history": [
+              {
+                "battlefields": [
+                  13,
+                  13
+                ],
+                "first_player": 0,
+                "number": 1,
+                "scores": [
+                  8,
+                  6
+                ],
+                "winner": 0
+              },
+              {
+                "battlefields": [
+                  0,
+                  0
+                ],
+                "first_player": 1,
+                "number": 2,
+                "scores": [
+                  7,
+                  8
+                ],
+                "winner": 1
+              },
+              {
+                "battlefields": [
+                  14,
+                  14
+                ],
+                "first_player": 0,
+                "number": 3,
+                "scores": [
+                  6,
+                  8
+                ],
+                "winner": 1
+              }
+            ],
+            "requests": 2375,
+            "seed": 112202,
+            "difficulty": "strategic"
+          },
+          "observations": 1576,
+          "phases": [
+            "battlefields",
+            "complete",
+            "game",
+            "play_order",
+            "sideboarding"
+          ],
+          "trace_sha256": "af70ae6267d698cca80e6fd1d156282d7323a64f5a791145c9ba72f8189012da"
+        },
+        {
+          "format_date": "2026-11-22",
+          "result": {
+            "wins": [
+              1,
+              2
+            ],
+            "winner": 1,
+            "history": [
+              {
+                "battlefields": [
+                  13,
+                  13
+                ],
+                "first_player": 0,
+                "number": 1,
+                "scores": [
+                  8,
+                  6
+                ],
+                "winner": 0
+              },
+              {
+                "battlefields": [
+                  0,
+                  0
+                ],
+                "first_player": 1,
+                "number": 2,
+                "scores": [
+                  7,
+                  8
+                ],
+                "winner": 1
+              },
+              {
+                "battlefields": [
+                  14,
+                  14
+                ],
+                "first_player": 0,
+                "number": 3,
+                "scores": [
+                  6,
+                  8
+                ],
+                "winner": 1
+              }
+            ],
+            "requests": 2375,
+            "seed": 112202,
+            "difficulty": "strategic"
+          },
+          "observations": 1576,
+          "phases": [
+            "battlefields",
+            "complete",
+            "game",
+            "play_order",
+            "sideboarding"
+          ],
+          "trace_sha256": "af70ae6267d698cca80e6fd1d156282d7323a64f5a791145c9ba72f8189012da"
+        },
+        {
+          "format_date": "2026-11-23",
+          "result": {
+            "wins": [
+              0,
+              2
+            ],
+            "winner": 1,
+            "history": [
+              {
+                "battlefields": [
+                  0,
+                  0
+                ],
+                "first_player": 0,
+                "number": 1,
+                "scores": [
+                  6,
+                  8
+                ],
+                "winner": 1
+              },
+              {
+                "battlefields": [
+                  13,
+                  13
+                ],
+                "first_player": 0,
+                "number": 2,
+                "scores": [
+                  6,
+                  8
+                ],
+                "winner": 1
+              }
+            ],
+            "requests": 1081,
+            "seed": 112300,
+            "difficulty": "easy"
+          },
+          "observations": 716,
+          "phases": [
+            "battlefields",
+            "complete",
+            "game",
+            "play_order",
+            "sideboarding"
+          ],
+          "trace_sha256": "8ff2e026111806aa07327b3c6514fd1c28c93769f1927c3ee50dee0c07aaad5e"
+        },
+        {
+          "format_date": "2026-11-23",
+          "result": {
+            "wins": [
+              2,
+              0
+            ],
+            "winner": 0,
+            "history": [
+              {
+                "battlefields": [
+                  13,
+                  13
+                ],
+                "first_player": 1,
+                "number": 1,
+                "scores": [
+                  8,
+                  3
+                ],
+                "winner": 0
+              },
+              {
+                "battlefields": [
+                  14,
+                  14
+                ],
+                "first_player": 1,
+                "number": 2,
+                "scores": [
+                  8,
+                  2
+                ],
+                "winner": 0
+              }
+            ],
+            "requests": 877,
+            "seed": 112301,
+            "difficulty": "tactical"
+          },
+          "observations": 580,
+          "phases": [
+            "battlefields",
+            "complete",
+            "game",
+            "play_order",
+            "sideboarding"
+          ],
+          "trace_sha256": "672fdb98eaf301be5482922a19b3e6710533a1685862d7e04a6ba02d30ce2d8c"
+        },
+        {
+          "format_date": "2026-11-23",
+          "result": {
+            "wins": [
+              2,
+              1
+            ],
+            "winner": 0,
+            "history": [
+              {
+                "battlefields": [
+                  13,
+                  13
+                ],
+                "first_player": 0,
+                "number": 1,
+                "scores": [
+                  9,
+                  6
+                ],
+                "winner": 0
+              },
+              {
+                "battlefields": [
+                  14,
+                  14
+                ],
+                "first_player": 1,
+                "number": 2,
+                "scores": [
+                  5,
+                  8
+                ],
+                "winner": 1
+              },
+              {
+                "battlefields": [
+                  0,
+                  0
+                ],
+                "first_player": 0,
+                "number": 3,
+                "scores": [
+                  8,
+                  7
+                ],
+                "winner": 0
+              }
+            ],
+            "requests": 1889,
+            "seed": 112302,
+            "difficulty": "strategic"
+          },
+          "observations": 1252,
+          "phases": [
+            "battlefields",
+            "complete",
+            "game",
+            "play_order",
+            "sideboarding"
+          ],
+          "trace_sha256": "652e2cfe6529ab6c9ef807a341897c6ae38b12efef63b8429653f3f8a7fa1d0b"
+        }
+      ],
+      "equal_to_previous_full_records": false
+    }
+  },
+  "limits": [
+    "No new card-specific scoring weights.",
+    "No claim of expert strength, optimal play, or wall-clock speed improvement.",
+    "Focused positions are authored scenarios; complete match registrations remain legal and sourced presets unchanged.",
+    "Strategic Wheel zero-use match cases remain in the report.",
+    "Full immutable package, simulation and installed UI/API acceptance still required."
+  ],
+  "logs": {
+    "focused": {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-engine-ai-focused-v2.log",
+      "sha256": "7a5de2753c608fa4a52d93abf3f67f9d1e336438b65bf7ed27852577320751fa"
+    },
+    "library": {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-engine-ai-library-v1.log",
+      "sha256": "1abb1a446219d80c7ab04daec3ae92b9303d8775355dce9c95595ec9109217d5"
+    },
+    "clippy": {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-engine-ai-clippy-v1.log",
+      "sha256": "f9c311a1c5381bf9f2ca44b640088236d85f17bb441f307ea9abe630096024db"
+    },
+    "build": {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-engine-ai-build-v1.log",
+      "sha256": "dbe1d22c0928d96fa067d231fa30638129f7cf4172c6b2e796881380e88a57c4"
+    }
+  }
+}

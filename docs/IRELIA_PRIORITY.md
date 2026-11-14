@@ -143,6 +143,14 @@ and source-exhaustion cost is paid before responses. The seven sourced recipes
 remain unchanged. Its [validation](validation/irelia_wheel.json) distinguishes
 rules scenarios, authored matches and unproven strategic use.
 
+The [Strategic setup investigation](validation/irelia_ai_search.json) distinguishes
+an unused card from a demonstrated bad decision. Authored positions cover useful
+Wheel/Discipline sequencing, resource restraint, winning conquest and hidden
+information independence. Equivalent encodings of ordinary hand plays now share
+a search slot; optional costs and target choices stay distinct. This improves
+search diversity without changing card-specific scoring weights. Local checks
+pass; installed release acceptance remains pending.
+
 Clockwork Keeper, Meditation and Life from Stone extend the Calm card pool for
 Irelia-compatible custom practice. Keeper uses its official erratum: the optional
 Power is paid on play, and a separate trigger draws after responses. The spells

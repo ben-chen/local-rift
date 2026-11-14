@@ -10,6 +10,10 @@ const ROOT_LIMIT: usize = 48;
 const FOLLOWUP_LIMIT: usize = 10;
 const SETTLE_LIMIT: usize = 48;
 
+#[cfg(test)]
+#[path = "strategic/setup_tests.rs"]
+mod setup_tests;
+
 impl Game {
     /// Compare the public pending chain with/without global prevention. Stop at
     /// choices instead of inventing decisions, and never inspect real hidden cards.
@@ -374,11 +378,14 @@ impl Game {
             }
             candidates.extend(self.canonical_play_candidates(32)?);
             let mut unique = Vec::new();
+            let mut keys = Vec::new();
             for action in candidates {
                 if self.ai_avoids_empty_removal(&action)? {
                     continue;
                 }
-                if !unique.contains(&action) && self.clone().apply(action.clone()).is_ok() {
+                let key = self.strategic_action_key(&action);
+                if !keys.contains(&key) && self.clone().apply(action.clone()).is_ok() {
+                    keys.push(key);
                     unique.push(action);
                 }
             }
@@ -406,6 +413,40 @@ impl Game {
             unique.truncate(limit);
             unique
         })
+    }
+
+    /// Collapse only equivalent encodings of ordinary hand plays. Keep all
+    /// target, cost and mode choices distinct. In particular, an explicit empty
+    /// target list must not become an automatic choice for an optional target.
+    fn strategic_action_key(&self, action: &Action) -> Action {
+        match action {
+            Action::WithPlayChoices { action, choices }
+                if *choices == PlayChoices::default()
+                    && matches!(
+                        **action,
+                        Action::PlayCard { .. } | Action::PlayCardWithTargets { .. }
+                    ) =>
+            {
+                self.strategic_action_key(action)
+            }
+            Action::PlayCardWithTargets {
+                hand_index,
+                targets,
+                lane,
+            } if targets.is_empty()
+                && self.players[self.priority()]
+                    .hand
+                    .get(*hand_index)
+                    .is_some_and(|&id| rules::target_bounds(id) == (0, 0)) =>
+            {
+                Action::PlayCard {
+                    hand_index: *hand_index,
+                    lane: *lane,
+                    target: None,
+                }
+            }
+            _ => action.clone(),
+        }
     }
 
     fn strategic_settle(&mut self, starting_turn: u32) -> Result<(), String> {
