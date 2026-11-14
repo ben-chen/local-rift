@@ -59,16 +59,16 @@ pub(crate) fn run_frame(app: &mut App, frame: u32) -> bool {
         .map(|v| v.parse::<usize>().unwrap())
         .unwrap_or(5);
     assert!(
-        [1, 5].contains(&own_preset),
-        "This scenario supports Irelia or Master Yi"
+        [0, 1, 5].contains(&own_preset),
+        "This scenario supports Xeno Irelia, Arito Irelia or Master Yi"
     );
     let registration = local_rift::match_series::Registration::from_preset(own_preset).unwrap();
     let champion = registration.deck.chosen_champion;
     let fields = registration.battlefields;
-    let (swap_out, swap_in) = if own_preset == 1 {
-        (7, 443)
-    } else {
-        (432, 424)
+    let (swap_out, swap_in) = match own_preset {
+        0 => (21, 424), // Xeno: Hourglass to Ravenbloom Prefect.
+        1 => (7, 443),
+        _ => (432, 424),
     };
     let stage = STAGE.get();
     println!("Series UI frame {frame} stage {stage}");
