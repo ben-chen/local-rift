@@ -330,6 +330,9 @@ pub(super) fn total_label(plan: &CostPlanView) -> String {
             local_rift::play::ObjectCost::ExhaustUnit { .. } => {
                 parts.push("exhaust chosen unit".into())
             }
+            local_rift::play::ObjectCost::ExhaustGear { .. } => {
+                parts.push("exhaust source gear".into())
+            }
         }
     }
     format!("Pay {}", parts.join(" + "))

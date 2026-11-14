@@ -1029,3 +1029,19 @@ legacy effect ancestors still require causal tracking. A null origin or empty
 credit list must not be treated as evidence that the game rules forbid a source.
 See the rules audit's attribution follow-up before using this data to implement
 additional source-sensitive cards.
+
+## Spirit Wheel
+
+Spirit Wheel (`454`, `sfd-144-221`) observes friendly-unit choices by spells and
+abilities. Its optional `trigger_payment` decision has `timing:"finalization"`
+and `object_cost:{type:"exhaust_gear",player,gear_id,paid_before_responses:true,is_target:false}`.
+The `cost_plan` includes that same physical source in `object_costs`, separately
+from the 1 Energy obligation. `resolve_trigger_payment` with `pay:true` pays both
+costs before creating the respondable draw ability. A declined trigger spends
+neither; an already paid trigger does not refund costs if countered.
+
+The choosing spell remains on the chain while the Wheel's separate draw resolves.
+Opponent observations expose hand counts, not drawn identities. Payment queries
+do not mutate state, and stale/wrong-seat requests or an unavailable source reject
+atomically. The [registered match checker](../tools/check_spirit_wheel_api.py)
+retains per-level/seat payment, draw and zero-use evidence.

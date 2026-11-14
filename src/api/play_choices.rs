@@ -148,6 +148,8 @@ pub(super) fn plan_to_json(plan: &CostPlanView) -> Value {
                 .map(|cost| match cost {
                     crate::play::ObjectCost::ExhaustUnit { player, unit_id } =>
                         json!({"type":"exhaust_unit","player":player,"unit_id":unit_id}),
+                    crate::play::ObjectCost::ExhaustGear { player, gear_id } =>
+                        json!({"type":"exhaust_gear","player":player,"gear_id":gear_id}),
                 })
                 .collect::<Vec<_>>()
         );

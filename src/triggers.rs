@@ -56,6 +56,7 @@ pub(super) enum Occurrence {
     GearPlayed,
     SpellPlayed,
     ChosenBySpell,
+    Chosen,
     Ready,
     Exhausted,
     Buffed,
@@ -263,6 +264,9 @@ impl Game {
             Event::FriendlySpellPlayed => own && event.kind == Occurrence::SpellPlayed,
             Event::SelfChosenByFriendlySpell => {
                 own && same && event.kind == Occurrence::ChosenBySpell
+            }
+            Event::FriendlyUnitChosen => {
+                own && event.subject_player == source.player && event.kind == Occurrence::Chosen
             }
             Event::FriendlyCardPlayed => own && played_card,
             Event::FriendlyHiddenPlayed => own && played_card && event.hidden,
@@ -1211,6 +1215,27 @@ impl Game {
         })
     }
 
+    pub(crate) fn trigger_exhaustion_cost(
+        &self,
+        card_id: CardId,
+        rule_index: usize,
+        context: TriggerContext,
+    ) -> Result<Vec<crate::play::ObjectCost>, String> {
+        let rule = metadata::selected_rule(card_id, rule_index, context.mode)
+            .ok_or("Invalid trigger mode.")?;
+        if rule.object_cost != Some(metadata::TriggerObjectCost::ExhaustSourceGear) {
+            return Ok(vec![]);
+        }
+        let gear_id = context
+            .source
+            .gear_id
+            .ok_or("This cost requires its source gear.")?;
+        Ok(vec![crate::play::ObjectCost::ExhaustGear {
+            player: context.source.player,
+            gear_id,
+        }])
+    }
+
     pub(crate) fn resolve_trigger_payment(
         &mut self,
         choice_id: u32,
@@ -1274,8 +1299,14 @@ impl Game {
             .expect("validated trigger mode")
             .object_cost
             == Some(metadata::TriggerObjectCost::BanishFromAnyTrash);
+        let object_costs = self.trigger_exhaustion_cost(card_id, rule_index, context)?;
         if !pay {
-            if base_cost.energy == 0 && base_cost.power == 0 && deflect == 0 && !requires_trash {
+            if base_cost.energy == 0
+                && base_cost.power == 0
+                && deflect == 0
+                && !requires_trash
+                && object_costs.is_empty()
+            {
                 return Err("A zero resource cost cannot be declined.".into());
             }
             if self.finalization_payment_origin.is_some() {
@@ -1295,6 +1326,7 @@ impl Game {
         if requires_trash != trash.is_some() {
             return Err("This ability requires its explicit trash-cost choice.".into());
         }
+        self.check_object_costs(player, &object_costs)?;
         if let Some((owner, index)) = trash {
             self.players
                 .get(owner)
@@ -1308,6 +1340,7 @@ impl Game {
         } else {
             self.pay_action_cost(&Action::ResolveTriggerPayment { choice_id, pay })?;
         }
+        self.pay_object_costs(player, &object_costs)?;
         // Core406: final legality follows payment. The enclosing transaction
         // restores the entire attempted finalization if it cannot complete.
         for (slot, &target) in targets.iter().enumerate() {

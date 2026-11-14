@@ -34,6 +34,29 @@ pub(crate) fn ready_unit(game: &mut Game, owner: usize, card: CardId) -> u32 {
     id
 }
 
+/// Choose and decline an optional legend occurrence through ordinary actions.
+/// Exhausting a legend does not suppress its trigger; it can still be ordered.
+pub(crate) fn decline_legend_action(game: &Game) -> Option<Action> {
+    match &game.decision {
+        Some(Decision::OrderTriggers { options, .. }) => options.iter().find_map(|option| {
+            game.pending_triggers
+                .iter()
+                .any(|pending| {
+                    pending.option.id == option.id
+                        && matches!(
+                            pending.effect,
+                            PendingTriggerEffect::Choice(Decision::Legend { .. })
+                        )
+                })
+                .then_some(Action::OrderTrigger {
+                    trigger_id: option.id,
+                })
+        }),
+        Some(Decision::Legend { .. }) => Some(Action::Choose { accept: false }),
+        _ => None,
+    }
+}
+
 #[track_caller]
 pub(crate) fn reject_unchanged(game: &mut Game, action: Action) {
     let before = format!("{game:?}");

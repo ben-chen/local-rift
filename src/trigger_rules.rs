@@ -16,6 +16,7 @@ pub enum Event {
     OpponentGearPlayed,
     FriendlySpellPlayed,
     SelfChosenByFriendlySpell,
+    FriendlyUnitChosen,
     FriendlyCardPlayed,
     FriendlyHiddenPlayed,
     SelfReady,
@@ -252,6 +253,7 @@ pub struct TriggerBaseCost {
 pub enum TriggerObjectCost {
     BanishSource,
     BanishFromAnyTrash,
+    ExhaustSourceGear,
 }
 /// A triggered ability chooses its mode during finalization. A cost later in
 /// its instructions is still paid on resolution (Core 355.3, 383.3.b).
@@ -378,6 +380,19 @@ pub fn trigger_rules(card_id: usize) -> &'static [TriggerRule] {
         )
     };
     match card_id {
+        454 => {
+            const {
+                &[TriggerRule {
+                    base_cost: Some(TriggerBaseCost {
+                        energy: 1,
+                        power: 0,
+                        domain: None,
+                    }),
+                    object_cost: Some(TriggerObjectCost::ExhaustSourceGear),
+                    ..rule(FriendlyUnitChosen, &[], true, TargetRule::NONE, &[Draw(1)])
+                }]
+            }
+        }
         451 => {
             const {
                 &[rule(

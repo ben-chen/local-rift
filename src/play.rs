@@ -173,6 +173,7 @@ pub struct CostPlanView {
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum ObjectCost {
     ExhaustUnit { player: usize, unit_id: u32 },
+    ExhaustGear { player: usize, gear_id: u32 },
 }
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct PlayModeOption {
@@ -1393,21 +1394,8 @@ impl Game {
             return Some(Ok(()));
         }
         let costs = active.costs.clone();
-        for cost in &costs.object_costs {
-            let ObjectCost::ExhaustUnit {
-                player: owner,
-                unit_id,
-            } = cost;
-            if *owner != player
-                || !self.players[player]
-                    .units
-                    .iter()
-                    .any(|unit| unit.id == *unit_id && unit.ready)
-            {
-                return Some(Err(
-                    "The selected unit can no longer pay the exhaustion cost.".into(),
-                ));
-            }
+        if let Err(error) = self.check_object_costs(player, &costs.object_costs) {
+            return Some(Err(error));
         }
         if costs.energy > u32::from(self.payment_energy_available(player)) {
             return Some(Err("Not enough energy for the selected cost plan.".into()));
@@ -1428,12 +1416,68 @@ impl Game {
                 return Some(Err(e));
             }
         }
-        for cost in costs.object_costs {
-            let ObjectCost::ExhaustUnit { player, unit_id } = cost;
-            self.exhaust_unit(player, unit_id);
+        if let Err(error) = self.pay_object_costs(player, &costs.object_costs) {
+            return Some(Err(error));
         }
         self.active_play.as_mut().unwrap().paid = true;
         Some(Ok(()))
+    }
+
+    pub(crate) fn check_object_costs(
+        &self,
+        player: usize,
+        costs: &[ObjectCost],
+    ) -> Result<(), String> {
+        for cost in costs {
+            let ready = match *cost {
+                ObjectCost::ExhaustUnit {
+                    player: owner,
+                    unit_id,
+                } => {
+                    owner == player
+                        && self.players[player]
+                            .units
+                            .iter()
+                            .any(|unit| unit.id == unit_id && unit.ready)
+                }
+                ObjectCost::ExhaustGear {
+                    player: owner,
+                    gear_id,
+                } => {
+                    owner == player
+                        && self.players[player]
+                            .gear
+                            .iter()
+                            .any(|gear| gear.id == gear_id && gear.ready)
+                }
+            };
+            if !ready {
+                return Err("The selected object can no longer pay the exhaustion cost.".into());
+            }
+        }
+        Ok(())
+    }
+
+    pub(crate) fn pay_object_costs(
+        &mut self,
+        player: usize,
+        costs: &[ObjectCost],
+    ) -> Result<(), String> {
+        self.check_object_costs(player, costs)?;
+        for cost in costs {
+            match *cost {
+                ObjectCost::ExhaustUnit { player, unit_id } => self.exhaust_unit(player, unit_id),
+                ObjectCost::ExhaustGear { player, gear_id } => {
+                    self.players[player]
+                        .gear
+                        .iter_mut()
+                        .find(|gear| gear.id == gear_id)
+                        .unwrap()
+                        .ready = false;
+                }
+            }
+        }
+        Ok(())
     }
 
     pub(crate) fn apply_play_choices(
@@ -2180,6 +2224,9 @@ impl Game {
                 base_cost,
                 deflect,
                 resolving_chain_id,
+                card_id,
+                rule_index,
+                context,
                 ..
             }) = self.trigger_payment_context()
             else {
@@ -2211,7 +2258,11 @@ impl Game {
                     optional: false,
                 });
             }
-            return solve_cost_plan(components, vec![], selection, false, 0);
+            let mut plan = solve_cost_plan(components, vec![], selection, false, 0)?;
+            if resolving_chain_id.is_none() {
+                plan.object_costs = self.trigger_exhaustion_cost(card_id, rule_index, context)?;
+            }
+            return Ok(plan);
         }
         if let Action::ActivateLegend { target } = action {
             let player = self.priority();

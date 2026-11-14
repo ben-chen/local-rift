@@ -61,6 +61,8 @@ mod resource_card_tests;
 #[cfg(test)]
 mod spell_choice_tests;
 #[cfg(test)]
+mod spirit_wheel_tests;
+#[cfg(test)]
 mod test_support;
 
 #[cfg(test)]
@@ -2248,6 +2250,15 @@ fn decision_to_json(game: &Game, decision: &Decision, viewer: usize) -> Result<V
                     "is_target":false,"candidates":game.players.iter().enumerate().flat_map(|(owner,p)|
                         p.discard.iter().enumerate().map(move |(index,id)|json!({"player":owner,"trash_index":index,"card_id":id}))
                     ).collect::<Vec<_>>()});
+            }
+            if crate::trigger_rules::selected_rule(*card_id, *rule_index, context.mode).is_some_and(
+                |r| {
+                    r.object_cost
+                        == Some(crate::trigger_rules::TriggerObjectCost::ExhaustSourceGear)
+                },
+            ) {
+                value["object_cost"] = json!({"type":"exhaust_gear", "player":context.source.player,
+                    "gear_id":context.source.gear_id, "paid_before_responses":true, "is_target":false});
             }
             value
         }

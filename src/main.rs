@@ -10701,6 +10701,7 @@ async fn main() {
     let series_smoke = args.iter().any(|a| a == "--ui-smoke-series");
     let irelia_smoke = args.iter().any(|a| a == "--ui-smoke-irelia");
     let resources_smoke = args.iter().any(|a| a == "--ui-smoke-resources");
+    let wheel_smoke = args.iter().any(|a| a == "--ui-smoke-wheel");
     let riven_smoke = args.iter().any(|a| a == "--ui-smoke-riven");
     let unyielding_smoke = args.iter().any(|a| a == "--ui-smoke-unyielding");
     let repulse_smoke = args.iter().any(|a| a == "--ui-smoke-repulse");
@@ -10721,6 +10722,7 @@ async fn main() {
     let focused_field_smoke = args.iter().any(|a| a == "--ui-smoke-c28");
     let focused_source_damage_smoke = args.iter().any(|a| a == "--ui-smoke-c27");
     let smoke_test = format_smoke
+        || wheel_smoke
         || resources_smoke
         || series_smoke
         || tokens_smoke
@@ -10797,6 +10799,8 @@ async fn main() {
             smoke::run_riven_frame(&mut app, frames)
         } else if resources_smoke {
             smoke::run_resources_frame(&mut app, frames)
+        } else if wheel_smoke {
+            smoke::run_wheel_frame(&mut app, frames)
         } else if irelia_smoke {
             smoke::run_irelia_frame(&mut app, frames)
         } else if preset_smoke {

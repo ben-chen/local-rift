@@ -1233,6 +1233,11 @@ fn response_window_advice(
             } else {
                 "The target must stay at Edge of Night's original battlefield. A counter, removal of the gear, or moving the target away prevents the free attachment."
             }],
+            Decision::TriggerPayment { card_id: 454, .. } => vec![if beginner {
+                "Spirit Wheel costs 1 Energy and exhausting that gear now. The opponent can respond before you draw. This cost does not target a unit. Decline to keep it ready."
+            } else {
+                "Turn a useful friendly-unit choice into a card for 1 Energy. Each Wheel must be ready to pay. Reserve Energy for responses; a later counter does not refund this cost."
+            }],
             Decision::TriggerPayment { card_id: 448, .. } => vec![if beginner {
                 "Guards!' separate ability costs 1 Order Power. Paying puts Ready on the chain; opponents can respond before the created Soldier readies. Decline to keep your power."
             } else {
@@ -1788,6 +1793,13 @@ fn resource_card_advice(game: &Game, beginner: bool) -> Vec<&'static str> {
             "Life from Stone invests a unit's readiness in future resources. Its rune enters exhausted; protect your current battlefield plan before paying that cost."
         });
     }
+    if visible(454) || human.gear.iter().any(|gear| gear.card_id == 454) {
+        tips.push(if beginner {
+            "Spirit Wheel triggers when your spell or ability chooses a friendly unit. Pay 1 Energy and exhaust the Wheel before responses; draw when its ability resolves."
+        } else {
+            "Spirit Wheel rewards useful friendly-unit choices. Keep 1 Energy available; each ready Wheel can fund a draw. Paying with a unit as a cost does not trigger it."
+        });
+    }
     tips
 }
 
@@ -1992,6 +2004,27 @@ pub fn draw_mote(center: Vec2, scale: f32, time: f32, accent: Color) {
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn irelia_wheel_advice_explains_finalization_and_uses_only_visible_cards() {
+        let mut game = Game::new_for_agents(0, 0, 454, Difficulty::Easy);
+        game.start_match().unwrap();
+        game.players[0].hand = vec![454];
+        let before = format!("{game:?}");
+        let mut private = game.clone();
+        private.players[1].hand = vec![454, 8];
+        private.players[1].deck.reverse();
+        for beginner in [false, true] {
+            let tips = resource_card_advice(&game, beginner);
+            assert_eq!(tips.len(), 1);
+            assert!(tips[0].contains("Spirit Wheel"));
+            assert!(tips[0].chars().count() <= 180);
+            assert_eq!(tips, resource_card_advice(&private, beginner));
+        }
+        assert!(resource_card_advice(&game, true)[0].contains("before responses"));
+        assert_eq!(format!("{game:?}"), before);
+        private.players[0].hand.clear();
+        assert!(resource_card_advice(&private, true).is_empty());
+    }
     #[test]
     fn irelia_resources_advice_is_brief_read_only_and_uses_visible_cards() {
         let mut game = Game::new_for_agents(0, 0, 451, Difficulty::Easy);

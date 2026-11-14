@@ -291,3 +291,12 @@ its original printing and gallery HTML remain intact. The inspector labels the
 effective wording as rules text because it may differ from the printed image.
 The other two cards have no erratum in the reviewed source bundle. This is a
 custom-pool admission, not a new sourced meta deck.
+
+## Spirit Wheel
+
+The [Spirit Wheel admission](../assets/data/card_admissions/irelia_wheel/admissions.json)
+preserves its complete English face, gallery record, original and runtime image
+hashes, and the preceding 454-card/seven-preset hashes. No erratum is present in
+the reviewed source bundle. The October 9 Core Rules 383.3.b/b.1 classify its
+initial optional cost as a base cost paid before responses; the admission
+records the rejected earlier resolution-payment assumption.

@@ -6920,6 +6920,21 @@ pub fn cards() -> Vec<CardDef> {
             tags: &[],
             art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/6a849c0425f0fecb8d00e1b9494e975c4dbbba75-744x1039.png?w=280&q=85&fm=png",
         },
+        CardDef {
+            id: 454,
+            official_id: "sfd-144-221",
+            name: "Spirit Wheel",
+            cost: 2,
+            power_cost: 0,
+            might: 0,
+            domain: Domain::Chaos,
+            domains: &[Domain::Chaos],
+            kind: CardKind::Gear,
+            official_text: "When you choose a friendly unit, you may pay [1 Energy] and exhaust this to draw 1.",
+            keywords: &[],
+            tags: &[],
+            art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/d83d994e6dc7949eb783da16f4bbdb64342a8dfb-744x1039.png?w=280&q=85&fm=png",
+        },
     ]
 }
 

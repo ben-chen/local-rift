@@ -929,6 +929,30 @@ to the opponent. Complete dated matches supplement these scenarios; they are
 not an independent oracle for rules correctness or a measure of expert strength.
 [Validation and outstanding package checks](validation/irelia_choices.json).
 
+### Spirit Wheel: choosing events and source-exhaustion cost
+
+The November 14 review of [Core Rules 383.3.a–d](https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/5c7946f7c3b8c6e0faff85ab6dadc6d2e721ea94.pdf)
+corrected the initial design before implementation: the optional 1 Energy and
+source-exhaustion instruction is a base cost, paid while finalizing the trigger.
+Drawing happens after response priority. The generic friendly-unit choice event
+includes spells and abilities; Jae's spell-only event remains distinct. Selecting
+a unit to pay Meditation's cost is not a target choice (355.10.c).
+
+[Controlled scenarios](../src/spirit_wheel_tests.rs) cover both seats, optional
+decline, missing/exhausted/replaced sources, payment undo/refusal, Repeat and
+multiple physical Wheels, failed spell payment and countering the parent spell.
+The post-payment source-departure case authors that boundary directly; it does
+not claim Action-speed Factory Recall is a legal response. The first fixture
+incorrectly attempted that response and was rejected by the existing engine.
+Simultaneous Irelia occurrences are ordered and declined through public actions,
+not suppressed by exhausting the legend. A shared scenario helper supplies those
+actions to both engine and protocol tests.
+
+API previews preserve state and show the physical gear cost. Native controls
+exercise payment and decline with Mote visible. The match campaign records
+actual pre-response payments separately from draw resolutions, including zero-use
+cases. It does not establish expert strength. See [validation](validation/irelia_wheel.json).
+
 ### Resource-card costs and draw timing — November 14, 2026
 
 Reviewed Clockwork Keeper against the [Origins errata](https://playriftbound.com/en-us/news/rules-and-releases/riftbound-origins-card-errata/)

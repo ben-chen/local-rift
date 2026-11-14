@@ -367,6 +367,7 @@ Jae Medarda's spell-choice coverage also includes a dated Standard match campaig
 
 ```sh
 python3 tools/check_spell_choice_api.py target/release/rift-api /tmp/jae-matches.json
+python3 tools/check_spirit_wheel_api.py target/release/rift-api /tmp/wheel-matches.json
 ./target/release/local-rift --ui-smoke-irelia --small
 ```
 

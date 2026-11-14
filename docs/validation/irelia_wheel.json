@@ -1,0 +1,612 @@
+{
+  "status": "Local focused, catalog, native and complete-match checks passed; frozen installed acceptance pending",
+  "base_revision": "76da054ef4daae262bb818ed1ff52fd33331cb3b",
+  "card": {
+    "id": 454,
+    "name": "Spirit Wheel",
+    "official_id": "sfd-144-221"
+  },
+  "rules_review": {
+    "date": "2026-11-14",
+    "core_edition": "2026-10-09",
+    "sections": [
+      "383.3.a",
+      "383.3.b",
+      "383.3.b.1",
+      "383.3.d",
+      "355.10.c"
+    ],
+    "finding": "Optional 1 Energy and physical source exhaustion are paid at finalization before responses; Draw 1 resolves afterward."
+  },
+  "focused": {
+    "new_tests": 11,
+    "regression_selection": "test(/irelia_wheel|irelia_resources|irelia_choices|spell_choice|resource_card|gust|guards|payment|trigger|exhaust/)",
+    "regressions_passed": 266,
+    "outside_selection": 915,
+    "seconds": 0.662
+  },
+  "source_checks": {
+    "new_tests_passed": 3,
+    "catalog_regeneration_check": "passed",
+    "rust_catalog_tests_passed": 14,
+    "ci_scope_tests_passed": 5
+  },
+  "native": {
+    "status": "passed",
+    "pid": 1883880,
+    "binary_sha256": "6e0c90e04b639e6a763de334cd05147f2fb7139d9f383a710f760646fcf83aca",
+    "cases": [
+      {
+        "name": "normal",
+        "exit_code": 0,
+        "seconds": 4.83,
+        "captures": 6,
+        "games": 0,
+        "capture_sha256": {
+          "rift_wheel_cost_advanced.png": "6a3c22734185d8e494177d74e245a964864d2e431590e9ea86903c24b2b31809",
+          "rift_wheel_draw.png": "3777249356cac8c6b394afd2515e78fbbaa1472737abc84242a9913e9a305d5b",
+          "rift_wheel_cost_beginner.png": "00a3a0cce6594bf5025290878ff7e6685add1f36cf8965731af9e214061793a3",
+          "rift_wheel_declined.png": "2c61ec0fbd8104f1d3d4d179f16b88a16227fd29459ec77c759c91f921c6438a",
+          "rift_wheel_paid.png": "722ea7d1800cdf2c52538520a88f33704b25bb8ae882dfcb681fdc0aab0c3f50",
+          "rift_wheel_inspect.png": "b10e6db833a31415aaed093243d94d2cf129f71e52b439fcf518d0d6d0409452"
+        },
+        "log_sha256": "5ff5c1ed3b32d2a663ff9fcffa9e1cd16c7f1cd85324c4564dc426f1f8bbe726"
+      },
+      {
+        "name": "small",
+        "exit_code": 0,
+        "seconds": 4.503,
+        "captures": 6,
+        "games": 0,
+        "capture_sha256": {
+          "rift_wheel_cost_advanced.png": "5242126be2fb63940dd09ff5fc0374b640ed657b8b6c0be8173d2171ac10a4b9",
+          "rift_wheel_draw.png": "7ed7cde83478cda5cca884351729a54ecac9846ec742257d0682a9f76e2e0404",
+          "rift_wheel_cost_beginner.png": "5cfd34441dabbbf168fac0dec79b6d976447d1646b3bb82319eab27c62982e9b",
+          "rift_wheel_declined.png": "0d95efb220e90e368a6d34612a372153f06164e91638e77f03fb36a2bb358c36",
+          "rift_wheel_paid.png": "86b02faa75198300472784a1992fa3e0ed053a096590337d546e221b8489a2c7",
+          "rift_wheel_inspect.png": "bdc54771c08dee935302882ebb7a198620804fff574b6cee5732a78d54aaa71a"
+        },
+        "log_sha256": "5ff5c1ed3b32d2a663ff9fcffa9e1cd16c7f1cd85324c4564dc426f1f8bbe726"
+      }
+    ]
+  },
+  "visual_review": {
+    "method": "Selected v2 captures viewed at original resolution; v1 full-size inspector also reviewed.",
+    "captures": {
+      "small/rift_wheel_cost_advanced.png": "5242126be2fb63940dd09ff5fc0374b640ed657b8b6c0be8173d2171ac10a4b9",
+      "small/rift_wheel_paid.png": "86b02faa75198300472784a1992fa3e0ed053a096590337d546e221b8489a2c7",
+      "small/rift_wheel_draw.png": "7ed7cde83478cda5cca884351729a54ecac9846ec742257d0682a9f76e2e0404",
+      "small/rift_wheel_declined.png": "0d95efb220e90e368a6d34612a372153f06164e91638e77f03fb36a2bb358c36",
+      "small/rift_wheel_inspect.png": "bdc54771c08dee935302882ebb7a198620804fff574b6cee5732a78d54aaa71a",
+      "normal/rift_wheel_cost_beginner.png": "00a3a0cce6594bf5025290878ff7e6685add1f36cf8965731af9e214061793a3",
+      "small/rift_wheel_cost_beginner.png": "5cfd34441dabbbf168fac0dec79b6d976447d1646b3bb82319eab27c62982e9b"
+    },
+    "observations": [
+      "Full rules text fits the compact inspector.",
+      "Energy plus physical source-exhaustion cost fits with payment/decline controls at both sizes.",
+      "Loadout identifies the ready/exhausted Wheel before and after payment.",
+      "Both Mote levels fit without covering action controls; the actual pass click advances priority.",
+      "Drawing is separate from payment, while the choosing spell remains on the chain.",
+      "Declining preserves Energy and gear readiness."
+    ],
+    "limits": [
+      "Developer inspection, no novice learning study."
+    ]
+  },
+  "api_matches": {
+    "status": "passed",
+    "scope": "Exercise Spirit Wheel in complete registered Irelia matches at all AI levels.\n\nThe authored coverage list is not a tournament preset or a strength benchmark.\nTrack payment before responses separately from observed draw resolutions.",
+    "registration": {
+      "deck": {
+        "name": "Irelia / Spirit Wheel coverage",
+        "legend": 0,
+        "chosen_champion": 0,
+        "cards": [
+          [
+            0,
+            1
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            3,
+            2
+          ],
+          [
+            4,
+            2
+          ],
+          [
+            5,
+            3
+          ],
+          [
+            6,
+            3
+          ],
+          [
+            7,
+            3
+          ],
+          [
+            8,
+            2
+          ],
+          [
+            9,
+            1
+          ],
+          [
+            10,
+            1
+          ],
+          [
+            11,
+            1
+          ],
+          [
+            12,
+            1
+          ],
+          [
+            13,
+            1
+          ],
+          [
+            14,
+            2
+          ],
+          [
+            16,
+            2
+          ],
+          [
+            17,
+            3
+          ],
+          [
+            18,
+            3
+          ],
+          [
+            19,
+            1
+          ],
+          [
+            20,
+            1
+          ],
+          [
+            21,
+            2
+          ],
+          [
+            454,
+            3
+          ]
+        ],
+        "runes": [
+          0,
+          6,
+          0,
+          0,
+          6,
+          0
+        ],
+        "battlefield": 13
+      },
+      "sideboard": [
+        [
+          369,
+          2
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          421,
+          1
+        ],
+        [
+          12,
+          1
+        ],
+        [
+          13,
+          1
+        ],
+        [
+          424,
+          2
+        ],
+        [
+          44,
+          1
+        ],
+        [
+          20,
+          1
+        ]
+      ],
+      "battlefields": [
+        13,
+        0,
+        14
+      ]
+    },
+    "format_date": "2026-11-13",
+    "records": [
+      {
+        "difficulty": "easy",
+        "irelia_seat": 0,
+        "first_player": 1,
+        "result": {
+          "wins": [
+            1,
+            2
+          ],
+          "winner": 1,
+          "history": [
+            {
+              "battlefields": [
+                13,
+                11
+              ],
+              "first_player": 1,
+              "number": 1,
+              "scores": [
+                1,
+                8
+              ],
+              "winner": 1
+            },
+            {
+              "battlefields": [
+                0,
+                1
+              ],
+              "first_player": 1,
+              "number": 2,
+              "scores": [
+                8,
+                3
+              ],
+              "winner": 0
+            },
+            {
+              "battlefields": [
+                14,
+                12
+              ],
+              "first_player": 1,
+              "number": 3,
+              "scores": [
+                5,
+                8
+              ],
+              "winner": 1
+            }
+          ],
+          "requests": 1358,
+          "seed": 454100,
+          "difficulty": "easy"
+        },
+        "wheels_seen": 1,
+        "paid_triggers": 1,
+        "turns_with_wheel_in_hand": 9,
+        "observed_draw_resolutions": 1,
+        "trace_sha256": "24e3638f54de7d882eaede70b31698b090bfca15fb457e315bbf9cc50eed8fac"
+      },
+      {
+        "difficulty": "easy",
+        "irelia_seat": 1,
+        "first_player": 0,
+        "result": {
+          "wins": [
+            2,
+            1
+          ],
+          "winner": 0,
+          "history": [
+            {
+              "battlefields": [
+                11,
+                13
+              ],
+              "first_player": 0,
+              "number": 1,
+              "scores": [
+                1,
+                8
+              ],
+              "winner": 1
+            },
+            {
+              "battlefields": [
+                1,
+                0
+              ],
+              "first_player": 0,
+              "number": 2,
+              "scores": [
+                8,
+                6
+              ],
+              "winner": 0
+            },
+            {
+              "battlefields": [
+                12,
+                14
+              ],
+              "first_player": 0,
+              "number": 3,
+              "scores": [
+                8,
+                4
+              ],
+              "winner": 0
+            }
+          ],
+          "requests": 1184,
+          "seed": 454101,
+          "difficulty": "easy"
+        },
+        "wheels_seen": 3,
+        "paid_triggers": 2,
+        "turns_with_wheel_in_hand": 13,
+        "observed_draw_resolutions": 2,
+        "trace_sha256": "f8d32d27fd3eec670eb6e28f90e5b52b9ab5c463e7d422af95dd294b4c272f15"
+      },
+      {
+        "difficulty": "tactical",
+        "irelia_seat": 0,
+        "first_player": 1,
+        "result": {
+          "wins": [
+            0,
+            2
+          ],
+          "winner": 1,
+          "history": [
+            {
+              "battlefields": [
+                13,
+                11
+              ],
+              "first_player": 1,
+              "number": 1,
+              "scores": [
+                1,
+                9
+              ],
+              "winner": 1
+            },
+            {
+              "battlefields": [
+                0,
+                1
+              ],
+              "first_player": 1,
+              "number": 2,
+              "scores": [
+                1,
+                9
+              ],
+              "winner": 1
+            }
+          ],
+          "requests": 766,
+          "seed": 454110,
+          "difficulty": "tactical"
+        },
+        "wheels_seen": 0,
+        "paid_triggers": 0,
+        "turns_with_wheel_in_hand": 8,
+        "observed_draw_resolutions": 0,
+        "trace_sha256": "220ad7cf7b536d45cc75774737666a0a93838d915735e01d239376197c9939bf"
+      },
+      {
+        "difficulty": "tactical",
+        "irelia_seat": 1,
+        "first_player": 0,
+        "result": {
+          "wins": [
+            1,
+            2
+          ],
+          "winner": 1,
+          "history": [
+            {
+              "battlefields": [
+                11,
+                13
+              ],
+              "first_player": 0,
+              "number": 1,
+              "scores": [
+                9,
+                2
+              ],
+              "winner": 0
+            },
+            {
+              "battlefields": [
+                1,
+                0
+              ],
+              "first_player": 0,
+              "number": 2,
+              "scores": [
+                7,
+                8
+              ],
+              "winner": 1
+            },
+            {
+              "battlefields": [
+                12,
+                14
+              ],
+              "first_player": 0,
+              "number": 3,
+              "scores": [
+                7,
+                8
+              ],
+              "winner": 1
+            }
+          ],
+          "requests": 1469,
+          "seed": 454111,
+          "difficulty": "tactical"
+        },
+        "wheels_seen": 5,
+        "paid_triggers": 4,
+        "turns_with_wheel_in_hand": 22,
+        "observed_draw_resolutions": 4,
+        "trace_sha256": "f0c4c3747de389d69c1904da5b6ef46eb478c3a172428d0a02f8de0577ddc241"
+      },
+      {
+        "difficulty": "strategic",
+        "irelia_seat": 0,
+        "first_player": 1,
+        "result": {
+          "wins": [
+            0,
+            2
+          ],
+          "winner": 1,
+          "history": [
+            {
+              "battlefields": [
+                13,
+                11
+              ],
+              "first_player": 1,
+              "number": 1,
+              "scores": [
+                5,
+                9
+              ],
+              "winner": 1
+            },
+            {
+              "battlefields": [
+                0,
+                1
+              ],
+              "first_player": 1,
+              "number": 2,
+              "scores": [
+                5,
+                8
+              ],
+              "winner": 1
+            }
+          ],
+          "requests": 1057,
+          "seed": 454120,
+          "difficulty": "strategic"
+        },
+        "wheels_seen": 0,
+        "paid_triggers": 0,
+        "turns_with_wheel_in_hand": 10,
+        "observed_draw_resolutions": 0,
+        "trace_sha256": "fd32ba4e6bb4c3458258823b59e9ef810d12053160598d7e8475a65d080aaf9b"
+      },
+      {
+        "difficulty": "strategic",
+        "irelia_seat": 1,
+        "first_player": 0,
+        "result": {
+          "wins": [
+            2,
+            0
+          ],
+          "winner": 0,
+          "history": [
+            {
+              "battlefields": [
+                11,
+                13
+              ],
+              "first_player": 0,
+              "number": 1,
+              "scores": [
+                8,
+                3
+              ],
+              "winner": 0
+            },
+            {
+              "battlefields": [
+                1,
+                0
+              ],
+              "first_player": 0,
+              "number": 2,
+              "scores": [
+                8,
+                2
+              ],
+              "winner": 0
+            }
+          ],
+          "requests": 1012,
+          "seed": 454121,
+          "difficulty": "strategic"
+        },
+        "wheels_seen": 0,
+        "paid_triggers": 0,
+        "turns_with_wheel_in_hand": 0,
+        "observed_draw_resolutions": 0,
+        "trace_sha256": "1b8dc6b25fc3ee920ed9094f1fb8abdca3228d92e8e075a42b232448aacb50b6"
+      }
+    ],
+    "binary_sha256": "dd109a9c0509796c83a2131116b7f0c4b58f32589ea784c9eb24e7625ab386a1",
+    "runner_sha256": "78134014e367e6686e03e9658e4c3c2acd99c28afaae19e9601a02a11089d348"
+  },
+  "efficiency": [
+    "Shared non-target object-cost validation/payment supports both unit and gear exhaustion.",
+    "Shared fixture action helper orders/declines real legend occurrences in engine and API tests.",
+    "Existing registered-match runner and release-image verifier reused."
+  ],
+  "rejected_attempts": [
+    "Initial tests assumed an exhausted Irelia legend suppressed its occurrence. Corrected fixtures use normal trigger-order and decline actions.",
+    "Initial source-departure fixture attempted Action-speed Factory Recall as a chain response; engine correctly rejected it. Departure is now an explicitly authored boundary, with the parent-spell counter tested through legal public actions.",
+    "Earlier planning described resolution-time payment; official Core 383.3.b/.b.1 corrected that before implementation."
+  ],
+  "limits": [
+    "Authored Repeat grant tests repeated choices; they are not a full Syndra activation scenario.",
+    "Strategic seat 0 held Wheel across ten game-turn pairs without playing it; seat 1 never held one. Follow-up must evaluate decisions before attributing cause or claiming improvement.",
+    "Only seven draw resolutions in six authored matches/15 games; no expert-strength claim.",
+    "Seven sourced tournament recipes remain byte-for-byte unchanged."
+  ],
+  "final_checks": {
+    "format": "passed",
+    "diff_whitespace": "passed",
+    "clippy_all_targets_warnings_denied": "passed"
+  },
+  "evidence_sha256": {
+    "irelia-wheel-tests-v4.log": "de5612fb093f1bc01e1e1f55ffe5e77bb1d173446230683e1f795818d21867a3",
+    "irelia-wheel-regressions-v1.log": "9d29724a1e15462220bafca0f0212db4f7ef0be70d547f706add8a9b981a4eb7",
+    "irelia-wheel-sources-v2.log": "2e52012f9468b607037e71574e6e2a9d976d00fd2ee52eaa3de8e77939cf6f76",
+    "irelia-wheel-catalog-v1.log": "224af5bb57e7b4f058cbc661cc9fcf96ca07a07ec067417cbf6021b959e88c8f",
+    "irelia-wheel-clippy-v2.log": "ab50737956756ff9f6348cbc444d4230b570e664c7f88042ed62bcfa1efe95fb",
+    "irelia-wheel-ci-scope-v1.log": "f9ac9d11ca408a88041b7ef3abfad4d4836dfed259a75dd305e3314381f0199e"
+  },
+  "remaining": [
+    "Frozen revision Nix package/source/simulation checks.",
+    "Installed native controls and exact API comparisons.",
+    "Publication after acceptance.",
+    "Improve longer-horizon AI valuation and continue all Standard-legal card coverage."
+  ]
+}

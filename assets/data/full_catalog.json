@@ -146,17 +146,17 @@
     "unresolved_type_conflict_identities": 0,
     "implemented_legal_by_kind": {
       "battlefield": 17,
-      "gear": 78,
+      "gear": 79,
       "legend": 11,
       "rune": 6,
       "spell": 130,
       "unit": 246
     },
-    "implemented_main_cards": 454,
+    "implemented_main_cards": 455,
     "implemented_legends": 11,
     "implemented_battlefields": 17,
-    "implemented_legal_identities": 488,
-    "unimplemented_legal_identities": 591,
+    "implemented_legal_identities": 489,
+    "unimplemented_legal_identities": 590,
     "errata_entries": 67,
     "identities_with_errata": 67,
     "source_quality_issues": 57,
@@ -34388,8 +34388,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 454,
+        "official_id": "sfd-144-221",
+        "playable_in_client": true
       }
     },
     {

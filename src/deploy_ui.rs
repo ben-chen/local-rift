@@ -53,7 +53,7 @@ impl App {
         self.ui.title(
             if card_id == 448 {
                 "Ready the Soldier?"
-            } else if resolving {
+            } else if resolving || card_id == 454 {
                 "Pay to draw?"
             } else {
                 "Pay for this trigger?"
@@ -72,7 +72,7 @@ impl App {
             GOLD,
             2,
         );
-        let cost = format!(
+        let mut cost = format!(
             "{}{}",
             play_ui::value_label(base_cost),
             if deflect > 0 {
@@ -81,6 +81,15 @@ impl App {
                 String::new()
             }
         );
+        let exhausts_source =
+            local_rift::trigger_rules::selected_rule(card_id, rule_index, context.mode)
+                .is_some_and(|rule| {
+                    rule.object_cost
+                        == Some(local_rift::trigger_rules::TriggerObjectCost::ExhaustSourceGear)
+                });
+        if exhausts_source {
+            cost.push_str(" + exhaust this gear");
+        }
         self.ui
             .wrapped_lines(&cost, 1178.0, 425.0, 212.0, 11.0, TEXT, 2);
         self.ui.wrapped_lines(
@@ -95,6 +104,8 @@ impl App {
                     || "The created token is absent.".into(),
                     |target| format!("Ready the created {}", target_label(&self.game, target)),
                 )
+            } else if card_id == 454 {
+                "Draw 1 after responses.".into()
             } else if targets.is_empty() {
                 "No chosen targets.".into()
             } else {
@@ -123,6 +134,8 @@ impl App {
                 "Begin payment · use resources"
             } else if card_id == 448 {
                 "Pay · ready after responses"
+            } else if card_id == 454 {
+                "Pay · draw after responses"
             } else if resolving {
                 "Pay · draw 1"
             } else {

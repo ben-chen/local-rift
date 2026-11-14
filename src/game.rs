@@ -73,6 +73,9 @@ mod siren_tests;
 #[path = "source_damage_tests.rs"]
 mod source_damage_tests;
 #[cfg(test)]
+#[path = "spirit_wheel_tests.rs"]
+mod spirit_wheel_tests;
+#[cfg(test)]
 #[path = "game_test_support.rs"]
 pub(crate) mod test_support;
 #[cfg(test)]
@@ -3640,6 +3643,9 @@ impl Game {
                                 "Choose this ability's targets and trash cost explicitly.".into()
                             );
                         }
+                        Some(crate::trigger_rules::TriggerObjectCost::ExhaustSourceGear) => {
+                            return Err("Pay this trigger's Energy and gear cost through its payment choice.".into());
+                        }
                         None => return Err("This ability has no object cost.".into()),
                     }
                     self.queue_finalized_ability(
@@ -5237,6 +5243,13 @@ impl Game {
 
     fn trigger_chosen(&mut self, player: usize, targets: &[Target]) {
         for &target in targets {
+            if let Target::Unit { player: owner, .. } = target
+                && let Some(unit) = self.unit_ref(target).cloned()
+            {
+                let mut event = EventSnapshot::unit(Occurrence::Chosen, owner, unit);
+                event.player = player;
+                self.emit_event(event);
+            }
             if let Target::Unit {
                 player: owner,
                 unit_id,
