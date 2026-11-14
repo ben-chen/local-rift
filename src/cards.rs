@@ -7245,7 +7245,9 @@ mod tests {
     #[test]
     fn presets_are_complete_and_references_are_consistent() {
         let catalog = cards();
-        assert_eq!(catalog.len(), 450);
+        let manifest: serde_json::Value =
+            serde_json::from_str(include_str!("../assets/data/decks.json")).unwrap();
+        assert_eq!(catalog.len(), manifest["cards"].as_array().unwrap().len());
         for (index, card) in catalog.iter().enumerate() {
             assert_eq!(index, card.id);
             assert!(!card.official_id.is_empty());
