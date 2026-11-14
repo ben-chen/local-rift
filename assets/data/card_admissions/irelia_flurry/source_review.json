@@ -1,0 +1,135 @@
+{
+  "status": "Source review complete; runtime implementation pending. This record does not admit a playable card.",
+  "reviewed_on": "2026-11-14",
+  "base_revision": "30adaa39f42fb7686eb37b2e3a1816d74177fae8",
+  "preserved_runtime_prefix": {
+    "card_count": 463,
+    "preset_count": 7,
+    "cards_sha256": "579eac3567a56bd02181be6b3a329d57a9bddb3c48707f4c2fe40abef76260a6",
+    "presets_sha256": "e975739d803427e54928d6e6cd03d1ce51d7ad108f4e247b8a000acf037a5cdb"
+  },
+  "records": [
+    {
+      "official_id": "unl-044-219",
+      "raw_printing": {
+        "official_id": "unl-044-219",
+        "public_code": "UNL-044/219",
+        "name": "Flurry of Feathers",
+        "set": "UNL",
+        "collector_number": 44,
+        "types": [
+          "spell"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "spell"
+        ],
+        "accessibility_types": [
+          "spell"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "calm"
+        ],
+        "energy": 4,
+        "power": 2,
+        "might": null,
+        "might_bonus": null,
+        "rules_html": "<p>[Reaction]<br />Choose one —</p><ul><li>Counter a spell.</li><li>Play four 1 :rb_might: Bird unit tokens with [Deflect]. (Opponents must pay :rb_rune_rainbow: to choose them with a spell or ability.)</li></ul>",
+        "rules_text": "[Reaction]\nChoose one —\nCounter a spell.\nPlay four 1 Might Bird unit tokens with [Deflect]. (Opponents must pay [Any Power] to choose them with a spell or ability.)",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [],
+        "rarity": "uncommon",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/77bd864b29f4975868e557e31a39b94d06a4ecb2-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Spell: Flurry of Feathers. [Reaction]\nChoose one —\n- Counter a spell.\n- Play four 1 [S] Bird unit tokens with [Deflect]. (Opponents must pay [A] to choose them with a spell or ability.)",
+        "illustrators": [
+          "Polar Engine Studio"
+        ]
+      },
+      "raw_printing_sha256": "253425261d12bb196f416b7acd8ac0370baf4f91cabb91c998458ff27f2bfb0c",
+      "effective": {
+        "types": [
+          "spell"
+        ],
+        "super_types": [],
+        "domains": [
+          "calm"
+        ],
+        "energy": 4,
+        "power": 2,
+        "might": null,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>[Reaction]<br />Choose one —</p><ul><li>Counter a spell.</li><li>Play four 1 :rb_might: Bird unit tokens with [Deflect]. (Opponents must pay :rb_rune_rainbow: to choose them with a spell or ability.)</li></ul>",
+        "rules_text": "[Reaction]\nChoose one —\nCounter a spell.\nPlay four 1 Might Bird unit tokens with [Deflect]. (Opponents must pay [Any Power] to choose them with a spell or ability.)",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "resolution_ids": [],
+      "original_image": {
+        "path": "assets/data/card_admissions/irelia_flurry/unl-044-219.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/77bd864b29f4975868e557e31a39b94d06a4ecb2-744x1039.png?accountingTag=RB",
+        "bytes": 854180,
+        "sha256": "2b88ebfd573f4756589363fc5537344e069a7d9958276fcc10a8fe37039f2cc9",
+        "dimensions": [
+          744,
+          1039
+        ]
+      },
+      "visual_review": {
+        "actual_full_face_viewed": true,
+        "printed_facts": {
+          "types": [
+            "spell"
+          ],
+          "super_types": [],
+          "domains": [
+            "calm"
+          ],
+          "energy": 4,
+          "power": 2,
+          "might": null,
+          "might_bonus": null,
+          "tags": []
+        },
+        "observations": [
+          "Reaction; choose exactly one of two modes.",
+          "The first mode counters a spell; it is not limited to an enemy spell and does not say ability.",
+          "The second plays four 1-Might Bird unit tokens with Deflect. No Here or Base-only restriction is printed.",
+          "The printed Reaction reminder is expanded on the face; the official gallery text abbreviates it to the keyword."
+        ]
+      }
+    }
+  ],
+  "rules_review": {
+    "core_edition": "2026-10-09",
+    "core_url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/5c7946f7c3b8c6e0faff85ab6dadc6d2e721ea94.pdf",
+    "sections": [
+      "185.2.a",
+      "187.7",
+      "354.3",
+      "355.2-3",
+      "355.5-8"
+    ],
+    "unleashed_notes": "https://playriftbound.com/en-us/news/rules-and-releases/riftbound-core-rules-unleashed-patch-notes/",
+    "unleashed_errata": "https://playriftbound.com/en-us/news/rules-and-releases/unleashed-errata-updates/",
+    "named_in_unleashed_errata": false
+  },
+  "irelia_relevance": {
+    "source": "https://tcggather.com/riftbound/meta/deck/01KVN17MDZ2JFP5QPSC81T5Y11",
+    "observed": "Secondary S3 Shanghai City Challenge Irelia listing includes one Flurry of Feathers.",
+    "limits": "Historical relevance lead only. Page groups 48 cards under main deck and includes now-banned Stacked Deck; not used as a valid registration, exact tournament source, or evidence of current meta prevalence.",
+    "other_lead": "https://riftdecks.com/riftbound-metagame/deck-irelia-blade-dancer-131657",
+    "other_lead_status": "Search result mentions an older Irelia list; opening returned HTTP 403. Not independently verified."
+  },
+  "implementation_requirements": [
+    "Explicit mode selection during finalization, before responses; independently selected Repeat modes.",
+    "Counter mode requires one actual spell chain item; both owners allowed; abilities and stale targets rejected; missing target on resolution does not switch mode.",
+    "Token mode has no spell target; four independently placed Bird tokens use existing pending-token finalization, control restrictions, physical identity, Deflect and artwork.",
+    "Hand, instructed play and Repeat reuse canonical mode validation; rejected actions and payment undo preserve state.",
+    "UI mode buttons, previews and unobtrusive Beginner/Advanced explanations; API view and requests retain each chosen mode.",
+    "Independent rules cases, actual mixed-mode Repeat, AI choices, complete legal Irelia matches and installed checks."
+  ]
+}
