@@ -1,5 +1,5 @@
 {
-  "status": "Local library, focused and complete-match API checks passed; immutable release acceptance pending",
+  "status": "Passed local and immutable installed acceptance; complete Standard parity and expert strength remain unproven.",
   "base_revision": "47aaafc41aabad9eb31d528a45f7f703b9416b9d",
   "change": "Conservative Strategic candidate deduplication: empty PlayChoices wrappers around ordinary hand plays, and empty explicit target lists only for cards with no play targets. Original actions and legality checks remain authoritative.",
   "evidence_before_change": {
@@ -1639,5 +1639,266 @@
       "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-engine-ai-build-v1.log",
       "sha256": "dbe1d22c0928d96fa067d231fa30638129f7cf4172c6b2e796881380e88a57c4"
     }
+  },
+  "installed_acceptance": {
+    "reviewed_at": "2026-11-14T07:59:33.686650+00:00",
+    "tested_revision": "d76e3c189221a597dfb9119b3513489e00b3d0ae",
+    "status": "passed",
+    "finished_at": "2026-11-14T07:58:14.233329+00:00",
+    "status_path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-engine-ai-release-v1/status.json",
+    "status_sha256": "4222088c8d4b1d483e78ae27b7d0ea37febc8bc323b43452fec1bcdf404725ad",
+    "nix": {
+      "package": "/nix/store/pg1ganzzsynlpgfp5x3p0mkvyxbvhd4l-local-rift-0.1.0",
+      "catalog": "/nix/store/6v8rr89397lgcwki8h8h0qi8fg36y7pk-local-rift-catalog-check",
+      "simulation": "/nix/store/8xvg9dzg9ddzpnkj4md2z645zd4rmyqr-local-rift-simulation-check",
+      "seconds": 1206.621,
+      "gc_root_prefix": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-engine-ai-release-v1/nix-result"
+    },
+    "rust": {
+      "passed": 1951,
+      "skipped": 0,
+      "seconds": 849.758
+    },
+    "source_tests": {
+      "passed": 318,
+      "seconds": 342.642
+    },
+    "simulations": {
+      "completed": 1176,
+      "pairings": 49,
+      "levels": 3,
+      "seconds": 146.94
+    },
+    "ui": [
+      {
+        "name": "core-normal",
+        "seconds": 17.397,
+        "captures": 4,
+        "games": 0,
+        "capture_sha256": {
+          "rift_smoke_mat_screenshot.png": "32214fb176e3eeffdc79711390866af0d052d7f400f2d6a6329e2d70dcc5a413",
+          "rift_smoke_resources_screenshot.png": "2a6fbc0c47c9f84d0aa165218c318f140cdac60bfe87c927d17fb61d06ba5ebc",
+          "rift_smoke_journal_screenshot.png": "c5c8d149a44a8ba75c13251fe448e82ae6d0b2b7d25c1471feace4f161d447ec",
+          "rift_smoke_opponent_resources_screenshot.png": "3b3ede16a69f0dc91aac5483d6de5a4b67e9c87b4da296c88a51673bbd1a6d4f"
+        },
+        "log_sha256": "0ad7d29b583da68ce334cc72492052b992e83a5842e770cd49fe8d5083ebecbf",
+        "host_library_path_removed": true
+      },
+      {
+        "name": "irelia-normal",
+        "seconds": 5.785,
+        "captures": 9,
+        "games": 0,
+        "capture_sha256": {
+          "rift_gust_protected_advanced.png": "4d614188731baed9cc80aafafda8eb20fff467c31f3269420801922102afa3dc",
+          "rift_gust_response_advanced.png": "9bf6e86a74c2470d650f32caffb4766c01b6e256dc351a317cf7ef0fe5896dfc",
+          "rift_jae_inspect.png": "9ef19cd6a6420b171b6cfbcdfd76b344ee1c5e2f7966a133bbb5679c9b8c7934",
+          "rift_jae_beginner.png": "2eb9ef97dd29a18cbce773036216c009aaf8c46b9140c516a98c3bcd8788b414",
+          "rift_jae_draw.png": "332d881f1a205479fe60eaf1b069c8463f673601aba0fc043d4210a68fe39f13",
+          "rift_jae_trigger.png": "861973bbcefeffe4385fcf2c657acd9195db1908ff68d7098d15f8d99ab0c5e6",
+          "rift_gust_response_beginner.png": "0ad899dcd638fcc6c600ad990c8e3cdb5eb1a5175d5b21d68dcf0ac00853a92a",
+          "rift_jae_advanced.png": "b431d4281abb7321721e0eea69e82f6860bde952c1171784d02a13305789a92c",
+          "rift_gust_protected_beginner.png": "4e09005fe7f2b965ca0cd424892194ed454dd87526866d32480655d5db54353e"
+        },
+        "log_sha256": "5ff5c1ed3b32d2a663ff9fcffa9e1cd16c7f1cd85324c4564dc426f1f8bbe726",
+        "host_library_path_removed": true
+      },
+      {
+        "name": "format-normal",
+        "seconds": 4.374,
+        "captures": 1,
+        "games": 0,
+        "capture_sha256": {
+          "rift_format_turn_effect.png": "f58af9736540a9289d626d99d8f2d39fa4f160156dff2c7ebe1318a545401190"
+        },
+        "log_sha256": "b14cbbd11f96d17c40e1323d144152047249e946e633825461ea1cb1121aaf54",
+        "host_library_path_removed": true
+      },
+      {
+        "name": "core-small",
+        "seconds": 14.307,
+        "captures": 4,
+        "games": 0,
+        "capture_sha256": {
+          "rift_smoke_mat_screenshot.png": "bbf93519b032b9078cc7100fbf9a9e47970b48335aad9436f07cf2db6346faac",
+          "rift_smoke_resources_screenshot.png": "cd7338ba391f82664babe1ddeefdadadcb76280ec499105dad12526227d52d90",
+          "rift_smoke_journal_screenshot.png": "ea9aeb72c2f31b859c0ba76bc7422d35ceb8e2bdadbf8c69d3ea944108488a4c",
+          "rift_smoke_opponent_resources_screenshot.png": "d6a6648193db3eaaf2bec205fb313b19b0244a13a82912f6f135af39192d36df"
+        },
+        "log_sha256": "0ad7d29b583da68ce334cc72492052b992e83a5842e770cd49fe8d5083ebecbf",
+        "host_library_path_removed": true
+      },
+      {
+        "name": "irelia-small",
+        "seconds": 5.331,
+        "captures": 9,
+        "games": 0,
+        "capture_sha256": {
+          "rift_gust_protected_advanced.png": "412aee9194735a626c5640e18c2ddfff709a27aea2e43e1b5bef45a67544dc4f",
+          "rift_gust_response_advanced.png": "3cb88463e03822c7a7f1f3f8d36d85a0b0cec5fc1d9142dde0e974a68e984466",
+          "rift_jae_inspect.png": "448ae0cf3f0236477dfe16969d294ddf9ae9479291bb14848fea8a06e65eb6e9",
+          "rift_jae_beginner.png": "df366ab13330dad411b6a2b26a8d7058d6b5e22f2a895a164c144296d844ef10",
+          "rift_jae_draw.png": "7924191cd375ad1365e6b09e272b502131b892fcce0a8c33f23e8b57db206f71",
+          "rift_jae_trigger.png": "99f17e7cdfa924120978ad59ad65166d931edb2408a8f98afcb19ea407ef02e9",
+          "rift_gust_response_beginner.png": "766241cc5dc9c30cd1a1d893aaa7bb17e33bf20434092a27e8f71ec9d69dc30e",
+          "rift_jae_advanced.png": "578160f889072f3082e691e1f5dbe1557c02433989a9c3cc8721c74c1d5930ee",
+          "rift_gust_protected_beginner.png": "fde263e1c90b7b7a087e8eb35fc64f1bd2c7f42bef00b0b78a531b1c46081edf"
+        },
+        "log_sha256": "5ff5c1ed3b32d2a663ff9fcffa9e1cd16c7f1cd85324c4564dc426f1f8bbe726",
+        "host_library_path_removed": true
+      },
+      {
+        "name": "format-small",
+        "seconds": 4.224,
+        "captures": 1,
+        "games": 0,
+        "capture_sha256": {
+          "rift_format_turn_effect.png": "4ca12af3794dca7bb0e0e78d33098410a7d2810fde6a72ab015e26ffe9875283"
+        },
+        "log_sha256": "b14cbbd11f96d17c40e1323d144152047249e946e633825461ea1cb1121aaf54",
+        "host_library_path_removed": true
+      },
+      {
+        "name": "series-strategic",
+        "seconds": 5.176,
+        "captures": 4,
+        "games": 2,
+        "capture_sha256": {
+          "rift_series_sideboard.png": "d4a88950f25c1da24c307f400d379c5af5b6d6350a3b313e7dfecfb7d80cacf2",
+          "rift_series_lobby.png": "adb7eeb0524c11cb45f6f29d576e73909f493c197c5419561bc232e0bfabbefa",
+          "rift_series_complete.png": "5211dcfa1cdff304878853287b3d222aa2b2f9b4b5550b4a33f0372d2d7ab6a7",
+          "rift_series_champion.png": "8d1e261afcf0bdf95d31cdc3c4d4a9d59d75f09b171b091c1f65e7e5685e46e0"
+        },
+        "log_sha256": "7d9880f2c69e9570c0d248f6420a29a229143bc6ccdbc2c742450c9a041a9756",
+        "host_library_path_removed": true
+      },
+      {
+        "name": "resources-normal",
+        "seconds": 4.428,
+        "captures": 9,
+        "games": 0,
+        "capture_sha256": {
+          "rift_keeper_trigger.png": "2aea27fc941e76e5a4e16b758dcae8cff13370ecd9e6b5191e3467368144b71c",
+          "rift_meditation_cost.png": "71736cb6459131000c7c5c236475b09383d7e0333a68997860c0637bf12d2560",
+          "rift_keeper_inspect.png": "3dbdbe99734867eaf912a5847c1b7850b3aaea0c88b4e6b282df8f64f726169a",
+          "rift_keeper_cost.png": "7415403e7a8378d58308eacd4d6b3b422d389521369385c0cf32af00235ca0fe",
+          "rift_life_cost.png": "83d2d76192fd324d9999e6a638f17ff1f6e326635667f7b3db36915378356e7b",
+          "rift_life_paid.png": "07184fd3aa19fc486c0668ede0d05f8471339f9f510d18f5e78bf5fdf067433e",
+          "rift_meditation_paid.png": "d1c31b17de405850c42ff35c25c299bdad1290d01650d6a34e45512d31a35654",
+          "rift_meditation_draw.png": "7e10545000f4f65f5817509feb9454e077f87d5ab0efb6dc9098cbd2d96819f5",
+          "rift_life_channel.png": "a8848c4f61a19b12bdb6c059c9286a21db8221572ff5bd68905fd631c5dd7d97"
+        },
+        "log_sha256": "5ff5c1ed3b32d2a663ff9fcffa9e1cd16c7f1cd85324c4564dc426f1f8bbe726",
+        "host_library_path_removed": true
+      },
+      {
+        "name": "resources-small",
+        "seconds": 4.373,
+        "captures": 9,
+        "games": 0,
+        "capture_sha256": {
+          "rift_keeper_trigger.png": "d5d27d7f7441b345a1653cd9d09c31712c1a9c78ef68e56ce05ef88dc325785e",
+          "rift_meditation_cost.png": "adca37f1d73d96d9cbb6177058782dde997a4f8b7584ff58c262a274da26e55d",
+          "rift_keeper_inspect.png": "aea1f1d36f7a1073334dfa869df649a9da44f4f6be76bd212eb82177e61a3841",
+          "rift_keeper_cost.png": "62cd94f98a7233877200436b5244d33f85f7275a0eff5938f6091146e722d830",
+          "rift_life_cost.png": "a5875755797237a1c80020cd15f047d47e6a7cc5401913f6d39e448c08d7f233",
+          "rift_life_paid.png": "681006792898bd2fcbb1773f2650bbd222518cded353797c8083460f8ddc0d78",
+          "rift_meditation_paid.png": "9892b7fca3abe0b93a06351da33d4b106e1b0d104de9c70a2d79542abcfd7d02",
+          "rift_meditation_draw.png": "abb6498a211709d7cbb07396888f6ca9b08b0b3b4e21d8e31f175cbf5471e016",
+          "rift_life_channel.png": "2862f10815e59b74e6b938177fe430ddf7ab80f991b5b2a2b0899044f92f3d47"
+        },
+        "log_sha256": "5ff5c1ed3b32d2a663ff9fcffa9e1cd16c7f1cd85324c4564dc426f1f8bbe726",
+        "host_library_path_removed": true
+      },
+      {
+        "name": "wheel-normal",
+        "seconds": 4.273,
+        "captures": 6,
+        "games": 0,
+        "capture_sha256": {
+          "rift_wheel_cost_advanced.png": "0276918d17883d7c3279bcb8969117d6856100897e9bfb7f86beeda679578370",
+          "rift_wheel_draw.png": "34fabeaa7b2ac91d35b61a8689442c51e9f24972f9612eac6f65507c690eef3b",
+          "rift_wheel_cost_beginner.png": "ba3f857b91c097762105fac7d8ff0318c9c7611a085590ad1ae1f872567148ff",
+          "rift_wheel_declined.png": "e137072baf5b765f8ff6179a43b1c1eb8c8e8370c8c3cdb432280008f482af74",
+          "rift_wheel_paid.png": "6cd234fd1f0e582fa76265673a9acc462b3b6cd0b7fac630287dabb07af65c62",
+          "rift_wheel_inspect.png": "4e7399a5b865acf67fce4befb78d359633f8b8fec8689d8cbe6507bba75ba1db"
+        },
+        "log_sha256": "5ff5c1ed3b32d2a663ff9fcffa9e1cd16c7f1cd85324c4564dc426f1f8bbe726",
+        "host_library_path_removed": true
+      },
+      {
+        "name": "wheel-small",
+        "seconds": 4.224,
+        "captures": 6,
+        "games": 0,
+        "capture_sha256": {
+          "rift_wheel_cost_advanced.png": "4773f09c20f9b8f06c1ded439c25f5578316628ccfbe68ef02e7dbb08062eef5",
+          "rift_wheel_draw.png": "902e847c1ba0155daa554fc648210a03402448d86af21df49a2ad0548295e6ad",
+          "rift_wheel_cost_beginner.png": "1a603f5a3a5e3fa928217b71d5b954927757d0de3288f1d591ffa3e314110d0b",
+          "rift_wheel_declined.png": "2e056d06fdd634000208617a94a84146052134c2cad0817931627033a71698bd",
+          "rift_wheel_paid.png": "339b563a03a53ad9c587a45df26491115aeb820dba87dee59ce6fbf7364e7d9a",
+          "rift_wheel_inspect.png": "390731df63c5324b29c09803ba4de169638b823123258de60eace0b069760b30"
+        },
+        "log_sha256": "5ff5c1ed3b32d2a663ff9fcffa9e1cd16c7f1cd85324c4564dc426f1f8bbe726",
+        "host_library_path_removed": true
+      }
+    ],
+    "api": [
+      {
+        "name": "wheel-api",
+        "seconds": 2.869,
+        "records": 6,
+        "records_key": "records",
+        "full_records_equal": true,
+        "baseline_sha256": "f1b4da244a7e8583d84bcc73985da25378a6f74a443de45e873f92aea376b77f",
+        "report_sha256": "b7bedcf5603f2d758b6523910db02510170b6dab7016e9ac96ff9cac36ff1f5e"
+      },
+      {
+        "name": "resources-api",
+        "seconds": 2.87,
+        "records": 6,
+        "records_key": "records",
+        "full_records_equal": true,
+        "baseline_sha256": "46acfb7f652ad5f30899eaa623f2c5e0f30c9e1872109ede55571b28bf4b43c0",
+        "report_sha256": "6c6d50f7a15cb39affc9babed7a8169c9eae78d014cbb62b17795529520cb063"
+      },
+      {
+        "name": "jae-api",
+        "seconds": 2.269,
+        "records": 6,
+        "records_key": "records",
+        "full_records_equal": true,
+        "baseline_sha256": "f958d4daa7da28e3b55f1b93bdcb3a53f348ba78d29016e0ecf027a37f548efc",
+        "report_sha256": "2ec014d52adad317c451c68178548fb359ba97897882110a712a334add47a24e"
+      },
+      {
+        "name": "format-api",
+        "seconds": 10.082,
+        "records": 9,
+        "records_key": "records",
+        "full_records_equal": true,
+        "baseline_sha256": "e9fa350e6d3bf5a00595d2055fe6b5da2748da63f1b03a6ba8a7a6acf6dde845",
+        "report_sha256": "652954dd07d236f18745d92443641a0b7afe797bec24f64cd7594ac19fe7bd36"
+      }
+    ],
+    "runtime_diff_after_receipt_merge": "none"
+  },
+  "installed_visual_review": {
+    "method": "Viewed four installed captures at original resolution",
+    "captures": {
+      "core-normal/rift_smoke_mat_screenshot.png": "32214fb176e3eeffdc79711390866af0d052d7f400f2d6a6329e2d70dcc5a413",
+      "core-small/rift_smoke_resources_screenshot.png": "cd7338ba391f82664babe1ddeefdadadcb76280ec499105dad12526227d52d90",
+      "wheel-small/rift_wheel_cost_advanced.png": "4773f09c20f9b8f06c1ded439c25f5578316628ccfbe68ef02e7dbb08062eef5",
+      "series-strategic/rift_series_complete.png": "5211dcfa1cdff304878853287b3d222aa2b2f9b4b5550b4a33f0372d2d7ab6a7"
+    },
+    "findings": [
+      "Matching reserves, side score tracks, unit art and attached gear remain visible.",
+      "Resource explanation fits the small window.",
+      "Wheel cost and response timing remain readable beside Advanced Mote.",
+      "Completed best-of-three displays both game outcomes and setup control."
+    ],
+    "limits": [
+      "Selected developer inspection; no novice learning study or expert-strength validation."
+    ]
   }
 }

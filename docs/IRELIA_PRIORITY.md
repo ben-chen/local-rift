@@ -150,8 +150,10 @@ an unused card from a demonstrated bad decision. Authored positions cover useful
 Wheel/Discipline sequencing, resource restraint, winning conquest and hidden
 information independence. Equivalent encodings of ordinary hand plays now share
 a search slot; optional costs and target choices stay distinct. This improves
-search diversity without changing card-specific scoring weights. Local checks
-pass; installed release acceptance remains pending.
+search diversity without changing card-specific scoring weights. Local and
+installed release acceptance passed: 1,951 Rust tests, 318 source checks,
+1,176 simulated matches and the recorded client/API checks. This is regression
+evidence, not proof of expert opponent strength.
 
 Clockwork Keeper, Meditation and Life from Stone extend the Calm card pool for
 Irelia-compatible custom practice. Keeper uses its official erratum: the optional
