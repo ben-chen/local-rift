@@ -400,6 +400,7 @@ fn checked_advice(game: &Game, level: AdviceLevel) -> Result<Vec<&'static str>, 
 
     if let Some(mut window_tips) = response_window_advice(game, beginner)? {
         window_tips.extend(rockfall_advice(game, beginner));
+        window_tips.extend(heavens_advice(game, beginner));
         if let Some(tip) = sands_advice(game, beginner) {
             window_tips.push(tip);
         }
@@ -428,6 +429,7 @@ fn checked_advice(game: &Game, level: AdviceLevel) -> Result<Vec<&'static str>, 
 
     tips.extend(crate::combat_ui::card_advice(game, beginner)?);
     tips.extend(rockfall_advice(game, beginner));
+    tips.extend(heavens_advice(game, beginner));
 
     // High stakes scoring and visible threats come before routine suggestions.
     let enemy_has_hold = game.battlefield_owner.contains(&Some(1));
@@ -1864,6 +1866,15 @@ fn sands_advice(game: &Game, beginner: bool) -> Option<&'static str> {
         })
 }
 
+fn heavens_advice(game: &Game, beginner: bool) -> Option<&'static str> {
+    (game.players[0].hand.contains(&457) || game.chain.iter().any(|item| item.card_id == 457))
+        .then_some(if beginner {
+            "Consult the Heavens gives Shield 2 until this turn ends: +2 Might only while defending. Then Predict: privately keep or recycle your top card."
+        } else {
+            "Use Consult the Heavens before defensive damage is assigned. Shield stacks; Predict still happens if its target leaves, but neither effect happens if the spell is countered."
+        })
+}
+
 fn repulse_advice(game: &Game, beginner: bool) -> Option<&'static str> {
     (game.players[0].hand.contains(&442) || game.chain.iter().any(|item| item.player == 0 && item.card_id == 442 && item.ability.is_none())).then_some(if beginner {
         "Repulse chooses your battlefield unit, then an enemy spell or ability choosing it and no other friendly unit. Both choices must still work when Repulse resolves."
@@ -2780,6 +2791,39 @@ mod tests {
                 let tips = advice(&g, level);
                 assert_eq!(tips, advice(&hidden, level));
                 assert!(tips.iter().any(|tip| tip.contains("Sands")));
+                assert!(tips.iter().all(|tip| tip.chars().count() <= 180));
+            }
+            assert_eq!(format!("{g:?}"), before);
+        }
+    }
+
+    #[test]
+    fn heavens_advice_is_concise_private_safe_and_read_only_in_response_windows() {
+        let mut g = game();
+        g.start_match().unwrap();
+        g.players[0].hand = vec![457, 133];
+        g.players[1].hand = vec![3, 7];
+        g.players[1].deck = vec![71, 7, 8];
+        g.players[0].set_rune_setup([0; 6], [0; 6]).unwrap();
+        g.players[0].energy_pool = 20;
+        g.players[0].energy = 20;
+        for response in [false, true] {
+            if response {
+                g.apply(local_rift::game::Action::PlayCardWithTargets {
+                    hand_index: 1,
+                    lane: None,
+                    targets: vec![],
+                })
+                .unwrap();
+            }
+            let before = format!("{g:?}");
+            let mut hidden = g.clone();
+            hidden.players[1].hand = vec![457, 6];
+            hidden.players[1].deck.reverse();
+            for level in [AdviceLevel::Beginner, AdviceLevel::Advanced] {
+                let tips = advice(&g, level);
+                assert_eq!(tips, advice(&hidden, level));
+                assert!(tips.iter().any(|tip| tip.contains("Consult the Heavens")));
                 assert!(tips.iter().all(|tip| tip.chars().count() <= 180));
             }
             assert_eq!(format!("{g:?}"), before);

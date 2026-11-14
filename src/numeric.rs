@@ -138,6 +138,7 @@ impl Game {
         keywords.hunt = keywords.hunt.saturating_add(gear.hunt);
         keywords.assault = add_u64(keywords.assault, gear.assault, "assault")?;
         keywords.shield = add_u64(keywords.shield, gear.shield, "shield")?;
+        keywords.shield = add_u64(keywords.shield, self.turn_shield(unit.id)?, "shield")?;
         keywords.deflect = keywords.deflect.saturating_add(gear.deflect);
         keywords.tank |= gear.tank;
         keywords.backline |= gear.backline;
@@ -151,6 +152,16 @@ impl Game {
             keywords.assault = add_u64(keywords.assault, u64::from(*value), "assault")?;
         }
         Ok(keywords)
+    }
+
+    /// The temporary portion of Shield, also shown by the client and bot API.
+    pub fn turn_shield(&self, unit_id: u32) -> Result<u64, String> {
+        self.shield_grants
+            .iter()
+            .filter(|(id, _)| *id == unit_id)
+            .try_fold(0, |sum, (_, amount)| {
+                add_u64(sum, u64::from(*amount), "shield")
+            })
     }
 
     /// The default automatic ordering. A unit with both Tank and Backline may

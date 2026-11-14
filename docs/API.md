@@ -318,6 +318,15 @@ this turn, excluding the chosen spell's chain ID. That condition does not remove
 the play from legal actions. Tactical and Strategic policies can decline an
 unproductive cast without changing its legality.
 
+Consult the Heavens (457, `rad-025-167`) uses `play_card_targets` with one unit
+of either player, at base or a battlefield. On resolution, public unit views
+include optional `turn_shield: {amount: 2, amount_exact: "2", expires: "end_of_turn"}`
+for the total Shield granted to that physical unit this turn. Multiple grants
+sum here and in `keywords.shield`; `might` includes Shield only while defending.
+The field disappears after expiry or departure from the board. Predict uses the
+existing private decision and `choose` action. It still occurs if the target
+leaves before resolution; countering the spell prevents both instructions.
+
 Public `turn_effects` lists global temporary rules. Unyielding Spirit (card 441)
 adds `{type: "prevent_spell_and_ability_damage", source_card_id: 441,
 scope: "both_players", amount: "all", expires: "end_of_turn", expires_turn,

@@ -2,6 +2,16 @@
 
 Updated November 14, 2026. Irelia cards take priority over the saved Azir draft.
 
+Consult the Heavens is the next Calm card in development for custom Irelia
+practice. It grants Shield 2 for the turn and independently offers Predict.
+Local validation passed: 1,063 library tests, eight focused rules/API scenarios,
+both companion levels, six best-of-three series (12 games), and native controls
+at both sizes. The small-window hover shows the temporary grant separately from
+total Shield. Installed acceptance is pending. The seven sourced recipes are
+unchanged. Its [admission](../assets/data/card_admissions/irelia_heavens/admissions.json)
+records the printed face and existing gallery type correction;
+[validation](validation/irelia_heavens.json) retains the checks and limitations.
+
 November 14: Crumbling Sands is available for custom sideboard practice.
 Its shared spell-finalization history distinguishes a spell being played from
 successfully resolving, including countered spells and actual replays. The

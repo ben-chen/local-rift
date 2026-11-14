@@ -58,6 +58,7 @@ impl Game {
             .iter()
             .position(|u| u.id == unit_id)?;
         self.empowered_units.retain(|&id| id != unit_id);
+        self.shield_grants.retain(|(id, _)| *id != unit_id);
         self.granted_temporary_units.retain(|&id| id != unit_id);
         self.instructed_kills.retain(|&id| id != unit_id);
         self.gear_unit_left_board(player, unit_id);

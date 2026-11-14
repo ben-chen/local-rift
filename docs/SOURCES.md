@@ -326,3 +326,15 @@ second, including when that second spell was countered. October 9 Core Rules
 checks. The condition is evaluated on resolution, not used as a target filter.
 
 Rockfall Path appends battlefield ID 17 (`sfd-216-221`). Its [admission record](../assets/data/card_admissions/irelia_rockfall/admissions.json) pins the archived official printing, original face and runtime thumbnail; all were checked against the printed prohibition on unit plays. The [official Vendetta FAQ](https://playriftbound.com/en-us/news/rules-and-releases/vendetta-rules-faq-and-clarifications/) distinguishes this restriction from permissions and mandatory location instructions. The [Murcia Irelia list](https://riftwatch.gg/decks/murcia-4/) is secondary evidence for prioritizing this field, not a newly admitted preset or independently verified tournament result. Previous cards, fields and all seven presets are unchanged.
+
+## Consult the Heavens
+
+The [admission](../assets/data/card_admissions/irelia_heavens/admissions.json)
+preserves the official `rad-025-167` printing, reviewed effective facts, original
+face, thumbnail hashes and preceding 457-card/seven-preset hashes. The complete
+face confirms Spell rather than the raw structured Unit label. No erratum is
+present in the reviewed bundle. The [official Rules Hub](https://playriftbound.com/en-us/rules-hub/)
+was checked November 14 and still links the [October 9 Core Rules](https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/5c7946f7c3b8c6e0faff85ab6dadc6d2e721ea94.pdf).
+Sections 814, 317.2.c, 359.3.e.7 and 437 govern Shield, expiry, invalid targets
+and Predict respectively. The Radiance FAQ contains no named ruling for this
+card; expected interactions derive from the printed text and those general rules.

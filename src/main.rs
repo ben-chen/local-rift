@@ -9564,6 +9564,10 @@ fn live_unit_description(game: &Game, owner: usize, unit_id: u32) -> Option<Stri
     if unit.stunned {
         lines.push("Stunned: contributes no might to combat damage this turn; still needs lethal damage equal to its full might.".into());
     }
+    let turn_shield = game.turn_shield(unit_id).ok()?;
+    if turn_shield != 0 {
+        lines.push(format!("Shield +{turn_shield} this turn: included in total Shield below; expires at the end of this turn."));
+    }
     if game.unit_moved_this_turn(owner, unit_id) {
         lines.push("Moved this turn: this same unit changed locations through a Move. It can be chosen by an enemy Siren's Song; playing or recalling a unit does not count as moving.".into());
     }
@@ -10725,6 +10729,7 @@ async fn main() {
     let wheel_smoke = args.iter().any(|a| a == "--ui-smoke-wheel");
     let entourage_smoke = args.iter().any(|a| a == "--ui-smoke-entourage");
     let sands_smoke = args.iter().any(|a| a == "--ui-smoke-sands");
+    let heavens_smoke = args.iter().any(|a| a == "--ui-smoke-heavens");
     let rockfall_smoke = args.iter().any(|a| a == "--ui-smoke-rockfall");
     let riven_smoke = args.iter().any(|a| a == "--ui-smoke-riven");
     let unyielding_smoke = args.iter().any(|a| a == "--ui-smoke-unyielding");
@@ -10746,6 +10751,7 @@ async fn main() {
     let focused_field_smoke = args.iter().any(|a| a == "--ui-smoke-c28");
     let focused_source_damage_smoke = args.iter().any(|a| a == "--ui-smoke-c27");
     let smoke_test = format_smoke
+        || heavens_smoke
         || rockfall_smoke
         || sands_smoke
         || entourage_smoke
@@ -10832,6 +10838,8 @@ async fn main() {
             smoke::run_entourage_frame(&mut app, frames)
         } else if sands_smoke {
             smoke::run_sands_frame(&mut app, frames)
+        } else if heavens_smoke {
+            smoke::run_heavens_frame(&mut app, frames)
         } else if rockfall_smoke {
             smoke::run_rockfall_frame(&mut app, frames)
         } else if irelia_smoke {

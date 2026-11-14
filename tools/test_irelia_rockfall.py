@@ -37,7 +37,7 @@ class RockfallAdmission(unittest.TestCase):
     def test_existing_fields_cards_and_presets_remain_exact(self):
         pin = self.proof['preserved_runtime']
         runtime = catalog.load_runtime_manifest()
-        for key, data in [('cards', runtime['cards']), ('presets', runtime['decks']),
+        for key, data in [('cards', runtime['cards'][:457]), ('presets', runtime['decks'][:7]),
                           ('battlefields', catalog.load_battlefield_manifest()[:17])]:
             self.assertEqual(catalog.sha(review.canonical_bytes(data)), pin[key + '_sha256'])
 

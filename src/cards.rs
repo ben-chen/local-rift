@@ -6965,6 +6965,21 @@ pub fn cards() -> Vec<CardDef> {
             tags: &[],
             art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/0d7491bdb2e9d18f64a5b53a16623b26a7cac6a1-744x1039.png?w=280&q=85&fm=png",
         },
+        CardDef {
+            id: 457,
+            official_id: "rad-025-167",
+            name: "Consult the Heavens",
+            cost: 1,
+            power_cost: 0,
+            might: 0,
+            domain: Domain::Calm,
+            domains: &[Domain::Calm],
+            kind: CardKind::Spell,
+            official_text: "[Reaction] (Play any time, even before spells and abilities resolve.)\nGive a unit [Shield 2] this turn. (+2 Might while it's a defender.)\n[Predict]. (Look at the top card of your Main Deck. You may recycle it.)",
+            keywords: &["Reaction", "Shield 2", "Predict"],
+            tags: &[],
+            art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/120b20ee26d221cea31f510090cef037e74c023f-744x1039.png?w=280&q=85&fm=png",
+        },
     ]
 }
 

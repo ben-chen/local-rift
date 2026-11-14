@@ -4,8 +4,13 @@ use crate::game::Unit;
 use crate::gear::GearState;
 
 fn position() -> Session {
+    position_for_actor(0)
+}
+
+fn position_for_actor(actor: usize) -> Session {
     let mut session = Session::new(ResetOptions {
         decks: [3, 3],
+        first_player: actor,
         ..Default::default()
     })
     .unwrap();
@@ -71,6 +76,56 @@ fn play(id: usize, session: &mut Session) {
             targets: vec![],
         },
     );
+}
+
+#[test]
+fn heavens_public_grant_private_predict_and_atomic_protocol_choices() {
+    for actor in 0..2 {
+        let mut s = position_for_actor(actor);
+        s.game.players[actor].units.push(unit(45700, 110, None));
+        s.game.players[actor].hand = vec![457];
+        s.game.players[actor].deck = vec![71, 8, 7];
+        let action = Action::PlayCardWithTargets {
+            hand_index: 0,
+            lane: None,
+            targets: vec![Target::Unit {
+                player: actor,
+                unit_id: 45700,
+            }],
+        };
+        let before = [s.observe(0).unwrap(), s.observe(1).unwrap()];
+        let revision = s.revision();
+        let valid=s.handle(json!({"command":"validate","revision":revision,"player":actor,"action":action_to_json(&action)}));
+        assert_eq!(valid["ok"], true, "{valid}");
+        assert_eq!(s.revision(), revision);
+        assert_eq!([s.observe(0).unwrap(), s.observe(1).unwrap()], before);
+        apply(&mut s, action);
+        pass_until(&mut s, |s| s.game.decision.is_some());
+        let own = s.observe(actor).unwrap();
+        let opponent = s.observe(1 - actor).unwrap();
+        for view in [&own, &opponent] {
+            let u = &view["players"][actor]["units"][0];
+            assert_eq!(u["keywords"]["shield"], 3);
+            assert_eq!(u["might"], 2);
+            assert_eq!(
+                u["turn_shield"],
+                json!({"amount":2,"amount_exact":"2","expires":"end_of_turn"})
+            );
+        }
+        assert_eq!(own["decision"]["card_id"], 7);
+        assert!(opponent["decision"].get("card_id").is_none());
+        let revision = s.revision();
+        let rejected=s.handle(json!({"command":"apply","revision":revision,"player":1-actor,"action":{"type":"choose","accept":true}}));
+        assert_eq!(rejected["ok"], false);
+        assert_eq!(s.revision(), revision);
+        assert_eq!(s.observe(actor).unwrap(), own);
+        apply(&mut s, Action::Choose { accept: true });
+        apply(&mut s, Action::EndTurn);
+        let view = s.observe(actor).unwrap();
+        let u = &view["players"][actor]["units"][0];
+        assert_eq!(u["keywords"]["shield"], 1);
+        assert!(u.get("turn_shield").is_none());
+    }
 }
 
 fn pass_until(session: &mut Session, done: impl Fn(&Session) -> bool) {

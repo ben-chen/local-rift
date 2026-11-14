@@ -1,0 +1,639 @@
+{
+  "status": "Local validation passed; installed acceptance pending",
+  "reviewed_at": "2026-11-14T09:11:38.321473+00:00",
+  "base_revision": "19f708810fcd643685b77510ace6579c6c7f20cc",
+  "card": {
+    "id": 457,
+    "official_id": "rad-025-167",
+    "name": "Consult the Heavens"
+  },
+  "rules": {
+    "source": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/5c7946f7c3b8c6e0faff85ab6dadc6d2e721ea94.pdf",
+    "sections": [
+      "814.1\u20132",
+      "317.2.c",
+      "359.3.e.7",
+      "437",
+      "055"
+    ],
+    "scope": "Any unit gains additive Shield 2 this turn. Might applies only while defending. Independent private Predict survives target departure; counters prevent both. Grants follow physical units and expire after Ending triggers."
+  },
+  "focused": {
+    "passed": 8,
+    "scope": [
+      "Both seats, either target owner, defender/nondefender, 1 Energy/0 Power",
+      "Stacking, expiry, missing/legend/stale target rollback",
+      "Lost target and departure; counter; empty deck does not burn out",
+      "Actual Syndra Repeat and separate Predict decisions",
+      "Irelia trigger before responses, no extra choosing from Predict",
+      "All AI levels: friendly defender targeting and private-information independence",
+      "API public Shield/private Predict, pure validation and wrong-seat rollback",
+      "Complete cloned debug-state equality across suspended Predict"
+    ],
+    "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-heavens-focused-v4.log",
+    "sha256": "8d89624d5369493026cd4a77df51bcfee3ef5101771c77dfa1d85cc92faa654a"
+  },
+  "library": {
+    "passed": 1063,
+    "failed": 0,
+    "ignored": 0,
+    "seconds": 7.05,
+    "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-heavens-library-v1.log",
+    "sha256": "8f3c558c09f6f059a26b4d58d1a3ee446c223c819dac004478796a914ad98839"
+  },
+  "companion": {
+    "passed": 1,
+    "scope": "Both levels, normal and response windows, concise, read only, private safe",
+    "log": {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-heavens-focused-v4.log",
+      "sha256": "8d89624d5369493026cd4a77df51bcfee3ef5101771c77dfa1d85cc92faa654a"
+    }
+  },
+  "source": {
+    "focused_passed": 4,
+    "seconds": 2.341,
+    "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-heavens-source-v2.log",
+    "sha256": "a96632c8248832cdea3923ac4a7603709b474e8ac85e322732fa91bf8f4aa5a0"
+  },
+  "quality": {
+    "clippy_all_targets": {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-heavens-clippy-v2.log",
+      "sha256": "3b90b8e4d8b4a76123fe83b59456d822064f16da6f1edf68fa15c11a17a1340d"
+    },
+    "fmt": {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-heavens-fmt-v1.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "catalog": {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-heavens-catalog-final-v1.log",
+      "sha256": "66b9924125e60aafd21c95027d1197736040ec5db12b4a3007257c5ec142c9f7"
+    },
+    "build": {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-heavens-build-v3.log",
+      "sha256": "cec49c98970fc89e98c7ab2c7d2a9d745549c39f46625b060e78c4bd3e5d02f6"
+    }
+  },
+  "native": {
+    "status": "passed",
+    "pid": 2060914,
+    "binary_sha256": "6f4e199025a88958de57ea3aaac266f2b27e6735dc93fb2328a922ec1bef3c90",
+    "cases": [
+      {
+        "name": "normal",
+        "exit_code": 0,
+        "seconds": 4.826,
+        "captures": 6,
+        "games": 0,
+        "capture_sha256": {
+          "rift_heavens_inspect.png": "d63b6d01b2e6f48ff3577b74b166ebfd467e224741f863d66c58507aedd1ee1d",
+          "rift_heavens_beginner.png": "ca21f5cd92019ab4fd7b83c5a82962c52e07f79585218b08bd815804cdc3a56e",
+          "rift_heavens_predict.png": "ad856542e02806fc11c2f4d51762be4d8b3ce3138352be424e4b18a4ee15acdb",
+          "rift_heavens_shield.png": "fa8486947aca62f74051a7a965c90945377f488ee641c237f3ff98925a00aae9",
+          "rift_heavens_target.png": "a0fe0841293dc993ba31adf43a33f0eae564933f0ab280e4dab2eaf92b8043d6",
+          "rift_heavens_advanced.png": "a18c81afa2e723d5d2d3933d2df4d104c24cbf0fa3cd3ed86dc3439ce6edcde4"
+        },
+        "log_sha256": "5ff5c1ed3b32d2a663ff9fcffa9e1cd16c7f1cd85324c4564dc426f1f8bbe726"
+      },
+      {
+        "name": "small",
+        "exit_code": 0,
+        "seconds": 4.574,
+        "captures": 6,
+        "games": 0,
+        "capture_sha256": {
+          "rift_heavens_inspect.png": "acf4c55e57fe517904214e0b4640266b389bfb17f5e7ee919b2bb8c5575a8e86",
+          "rift_heavens_beginner.png": "0e79fb93825d5db9a2f3f5211a5119080c61f2f2abbdf8b01749f12300b28370",
+          "rift_heavens_predict.png": "2cba8200d56f93de750f35853989d0249dd93f9373bbd34e671192dbbaea77a2",
+          "rift_heavens_shield.png": "a7834d243cb1ad7043dd26aaf5463e96825b4b83ce1144184884e15da8f52688",
+          "rift_heavens_target.png": "a3da669f31b956bf83d0ebf4f67acfb01f6ea04bbb31c30a8bab0773833e54f1",
+          "rift_heavens_advanced.png": "76d1bf7ef239ab56108490ff6fe5ee76212314a8d306a741483a636f94f5682a"
+        },
+        "log_sha256": "5ff5c1ed3b32d2a663ff9fcffa9e1cd16c7f1cd85324c4564dc426f1f8bbe726"
+      }
+    ]
+  },
+  "actual_visual_reviews": [
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-heavens-native-v2/normal/rift_heavens_inspect.png",
+      "sha256": "d63b6d01b2e6f48ff3577b74b166ebfd467e224741f863d66c58507aedd1ee1d"
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-heavens-native-v2/small/rift_heavens_advanced.png",
+      "sha256": "76d1bf7ef239ab56108490ff6fe5ee76212314a8d306a741483a636f94f5682a"
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-heavens-native-v2/small/rift_heavens_predict.png",
+      "sha256": "2cba8200d56f93de750f35853989d0249dd93f9373bbd34e671192dbbaea77a2"
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-heavens-native-v2/small/rift_heavens_shield.png",
+      "sha256": "a7834d243cb1ad7043dd26aaf5463e96825b4b83ce1144184884e15da8f52688"
+    }
+  ],
+  "api": {
+    "status": "passed",
+    "scope": "Complete Irelia practice series with Consult; authored coverage, not a meta list.",
+    "registration": {
+      "deck": {
+        "name": "Irelia / Consult coverage",
+        "legend": 0,
+        "chosen_champion": 0,
+        "cards": [
+          [
+            0,
+            1
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            3,
+            2
+          ],
+          [
+            4,
+            2
+          ],
+          [
+            5,
+            3
+          ],
+          [
+            6,
+            3
+          ],
+          [
+            7,
+            3
+          ],
+          [
+            9,
+            1
+          ],
+          [
+            10,
+            1
+          ],
+          [
+            11,
+            1
+          ],
+          [
+            12,
+            1
+          ],
+          [
+            13,
+            1
+          ],
+          [
+            14,
+            2
+          ],
+          [
+            15,
+            3
+          ],
+          [
+            16,
+            2
+          ],
+          [
+            17,
+            3
+          ],
+          [
+            18,
+            3
+          ],
+          [
+            19,
+            1
+          ],
+          [
+            20,
+            1
+          ],
+          [
+            21,
+            2
+          ],
+          [
+            457,
+            2
+          ]
+        ],
+        "runes": [
+          0,
+          6,
+          0,
+          0,
+          6,
+          0
+        ],
+        "battlefield": 13
+      },
+      "sideboard": [
+        [
+          369,
+          2
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          421,
+          1
+        ],
+        [
+          12,
+          1
+        ],
+        [
+          13,
+          1
+        ],
+        [
+          424,
+          2
+        ],
+        [
+          44,
+          1
+        ],
+        [
+          20,
+          1
+        ]
+      ],
+      "battlefields": [
+        13,
+        0,
+        14
+      ]
+    },
+    "format_date": "2026-11-14",
+    "records": [
+      {
+        "difficulty": "easy",
+        "irelia_seat": 0,
+        "first_player": 1,
+        "result": {
+          "wins": [
+            0,
+            2
+          ],
+          "winner": 1,
+          "history": [
+            {
+              "battlefields": [
+                13,
+                11
+              ],
+              "first_player": 1,
+              "number": 1,
+              "scores": [
+                2,
+                9
+              ],
+              "winner": 1
+            },
+            {
+              "battlefields": [
+                0,
+                1
+              ],
+              "first_player": 1,
+              "number": 2,
+              "scores": [
+                7,
+                8
+              ],
+              "winner": 1
+            }
+          ],
+          "requests": 967,
+          "seed": 457100,
+          "difficulty": "easy"
+        },
+        "observed_plays": 1,
+        "observed_grants": 1,
+        "observed_predict_sources": 1,
+        "trace_sha256": "fc6ccd03ec8692daff364a0edf70c6d70154280d471bacc69fb3660a3c75bcd1"
+      },
+      {
+        "difficulty": "easy",
+        "irelia_seat": 1,
+        "first_player": 0,
+        "result": {
+          "wins": [
+            2,
+            0
+          ],
+          "winner": 0,
+          "history": [
+            {
+              "battlefields": [
+                11,
+                13
+              ],
+              "first_player": 0,
+              "number": 1,
+              "scores": [
+                9,
+                2
+              ],
+              "winner": 0
+            },
+            {
+              "battlefields": [
+                1,
+                0
+              ],
+              "first_player": 0,
+              "number": 2,
+              "scores": [
+                8,
+                3
+              ],
+              "winner": 0
+            }
+          ],
+          "requests": 874,
+          "seed": 457101,
+          "difficulty": "easy"
+        },
+        "observed_plays": 3,
+        "observed_grants": 2,
+        "observed_predict_sources": 2,
+        "trace_sha256": "3f5eff66616e80b6c7b59a8e22c0f7b80ac42f61558f3b69a08085b2267ab4ec"
+      },
+      {
+        "difficulty": "tactical",
+        "irelia_seat": 0,
+        "first_player": 1,
+        "result": {
+          "wins": [
+            0,
+            2
+          ],
+          "winner": 1,
+          "history": [
+            {
+              "battlefields": [
+                13,
+                11
+              ],
+              "first_player": 1,
+              "number": 1,
+              "scores": [
+                6,
+                8
+              ],
+              "winner": 1
+            },
+            {
+              "battlefields": [
+                0,
+                1
+              ],
+              "first_player": 1,
+              "number": 2,
+              "scores": [
+                4,
+                8
+              ],
+              "winner": 1
+            }
+          ],
+          "requests": 934,
+          "seed": 457110,
+          "difficulty": "tactical"
+        },
+        "observed_plays": 3,
+        "observed_grants": 3,
+        "observed_predict_sources": 3,
+        "trace_sha256": "b22be29f0d32b8265cfeafc5dce4e7196be736451fbdfb9613ff35e170f6f52e"
+      },
+      {
+        "difficulty": "tactical",
+        "irelia_seat": 1,
+        "first_player": 0,
+        "result": {
+          "wins": [
+            2,
+            0
+          ],
+          "winner": 0,
+          "history": [
+            {
+              "battlefields": [
+                11,
+                13
+              ],
+              "first_player": 0,
+              "number": 1,
+              "scores": [
+                8,
+                3
+              ],
+              "winner": 0
+            },
+            {
+              "battlefields": [
+                1,
+                0
+              ],
+              "first_player": 0,
+              "number": 2,
+              "scores": [
+                9,
+                2
+              ],
+              "winner": 0
+            }
+          ],
+          "requests": 820,
+          "seed": 457111,
+          "difficulty": "tactical"
+        },
+        "observed_plays": 1,
+        "observed_grants": 1,
+        "observed_predict_sources": 1,
+        "trace_sha256": "2cf8299e922bf33393623ee5dd01c42d7eddcd649902867ab3365bf885fcae48"
+      },
+      {
+        "difficulty": "strategic",
+        "irelia_seat": 0,
+        "first_player": 1,
+        "result": {
+          "wins": [
+            0,
+            2
+          ],
+          "winner": 1,
+          "history": [
+            {
+              "battlefields": [
+                13,
+                11
+              ],
+              "first_player": 1,
+              "number": 1,
+              "scores": [
+                6,
+                8
+              ],
+              "winner": 1
+            },
+            {
+              "battlefields": [
+                0,
+                1
+              ],
+              "first_player": 1,
+              "number": 2,
+              "scores": [
+                3,
+                9
+              ],
+              "winner": 1
+            }
+          ],
+          "requests": 961,
+          "seed": 457120,
+          "difficulty": "strategic"
+        },
+        "observed_plays": 0,
+        "observed_grants": 0,
+        "observed_predict_sources": 0,
+        "trace_sha256": "1a7626fc54021fb69d3979710a306fdce47ff95e1752bc1b3839a3af09dda302"
+      },
+      {
+        "difficulty": "strategic",
+        "irelia_seat": 1,
+        "first_player": 0,
+        "result": {
+          "wins": [
+            0,
+            2
+          ],
+          "winner": 1,
+          "history": [
+            {
+              "battlefields": [
+                11,
+                13
+              ],
+              "first_player": 0,
+              "number": 1,
+              "scores": [
+                6,
+                8
+              ],
+              "winner": 1
+            },
+            {
+              "battlefields": [
+                1,
+                0
+              ],
+              "first_player": 0,
+              "number": 2,
+              "scores": [
+                5,
+                9
+              ],
+              "winner": 1
+            }
+          ],
+          "requests": 1228,
+          "seed": 457121,
+          "difficulty": "strategic"
+        },
+        "observed_plays": 0,
+        "observed_grants": 0,
+        "observed_predict_sources": 0,
+        "trace_sha256": "00740b289b6a7882a73016c5f6b74451cbdfccf57d80b4951b0a9b9b86b0a2ad"
+      }
+    ],
+    "binary_sha256": "6dfdb492bc667a9e773e32db285a6d0d77101b24f266b184156ad70d7fb232f4",
+    "runner_sha256": "823c7b0cbda4d146e84e4e0b6cb8d8b6174d23600f325030dd3e696ec769f6c9"
+  },
+  "api_summary": {
+    "series": 6,
+    "games": 12,
+    "plays": 8,
+    "grants": 7,
+    "predicts": 7,
+    "limitation": "Strategic completed both series without casting Consult; focused authored positions cover its target preference and legality, not expert strength."
+  },
+  "api_baselines": [
+    {
+      "name": "wheel-api",
+      "baseline": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-heavens-wheel-api-baseline-v1.json",
+      "seconds": 5.73,
+      "records": 6,
+      "same_records_as_previous": false
+    },
+    {
+      "name": "resources-api",
+      "baseline": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-heavens-resources-api-baseline-v1.json",
+      "seconds": 4.889,
+      "records": 6,
+      "same_records_as_previous": false
+    },
+    {
+      "name": "jae-api",
+      "baseline": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-heavens-jae-api-baseline-v1.json",
+      "seconds": 3.928,
+      "records": 6,
+      "same_records_as_previous": false
+    },
+    {
+      "name": "format-api",
+      "baseline": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-heavens-format-api-baseline-v1.json",
+      "seconds": 16.693,
+      "records": 9,
+      "same_records_as_previous": true
+    },
+    {
+      "name": "entourage-api",
+      "baseline": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-heavens-entourage-api-baseline-v1.json",
+      "seconds": 5.63,
+      "records": 6,
+      "same_records_as_previous": true
+    },
+    {
+      "name": "sands-api",
+      "baseline": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-heavens-sands-api-baseline-v1.json",
+      "seconds": 4.28,
+      "records": 6,
+      "same_records_as_previous": false
+    },
+    {
+      "name": "rockfall-api",
+      "baseline": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-heavens-rockfall-api-baseline-v1.json",
+      "seconds": 4.489,
+      "records": 6,
+      "same_records_as_previous": false
+    }
+  ],
+  "baseline_changes": "Differences from prior records occur only in Strategic. Its public legal-card sampling now includes Consult (strategic.rs); changed choices are consistent with the expanded pool. All Easy/Tactical records and complete format/Entourage records remain identical. This explanation is an architectural inference; native/package comparisons use the new baselines.",
+  "corrections": [
+    "Focused v1 missing legend_id in fixture. v2 incorrectly used Ride the Wind for a Reaction return and expected Poro Might 1; corrected to Gust and printed Might 2.",
+    "Focused v3 API fixture changed active without priority; now uses ResetOptions.first_player. All eight scenarios pass v4.",
+    "Native v1 capture moved pointer off unit. v2 asserts real hover target and uses shared delayed-preview capture. An interim nested mutable borrow failed build v2; shared helper passes build v3."
+  ],
+  "limitations": [
+    "Installed acceptance pending.",
+    "Seven sourced presets unchanged; complete-match Consult list is authored coverage, not a sourced meta list.",
+    "493 legal identities mapped, 586 unimplemented in the October 24 snapshot. Full Standard parity, expert strength and novice learning remain unproven."
+  ]
+}

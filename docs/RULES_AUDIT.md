@@ -1026,7 +1026,8 @@ trigger dispatch is unchanged. Both seats' history resets each turn.
 The focused scenarios cover conditional no-ops, the first or second spell,
 countered and resolved prior spells, later responses, own-spell targets, Repeat,
 alternate origins, rejected/staged plays, API query purity, and AI information
-boundaries. Full installed acceptance remains pending.
+boundaries. Installed acceptance passed; see
+[the validation receipt](validation/irelia_sands.json).
 
 ### Rockfall Path play restriction (2026-11-14)
 
@@ -1035,3 +1036,28 @@ The official Vendetta FAQ explicitly classifies Rockfall Path as a restriction, 
 Temporal Breach on a unit already at Rockfall banishes it. The instructed replay cannot finalize there or choose a different location; rejecting the impossible finalization restores the physical card to banishment. This follows the printed restriction and the FAQ's general failed-finalization treatment, rather than a Rockfall-specific Temporal Breach example. Thrill of the Hunt may use a different legal battlefield. The check is on play location, not final board entry, so it does not redefine entry replacement effects.
 
 Focused tests cover both seats, control states, public-action rollback, Hidden spells versus units, free/fixed token plays, movement/conquest, Deploy gear, fixed and optional destinations, and an added third physical battlefield through the API. These scenarios do not establish complete Standard parity.
+
+### Consult the Heavens (2026-11-14)
+
+The complete official face identifies a Calm Reaction spell costing 1 Energy and
+no Power. The raw gallery labels it a Unit; the existing reviewed
+`rad-025-167:types` correction to Spell agrees with the face. No new source
+correction or card-specific FAQ ruling is inferred.
+
+Core 814.1–2 makes Shield additive and applies its Might only while the unit has
+the Defender designation. The grant follows the physical unit, lasts through
+Ending triggers, and expires with other turn effects at 317.2.c. Leaving the
+board removes the grant. Returning the same card creates a new unit instance.
+Core 359.3.e.7 and 055 allow the independent Predict instruction when the chosen
+unit has left; countering the spell prevents both instructions. Predict follows
+437: private keep/recycle, no draw and no Burnout for an empty deck. Each Repeat
+performs its own Shield and Predict instructions before the physical spell leaves
+the chain.
+
+Focused scenarios use shared authored-position helpers and ordinary actions.
+They vary seats, target ownership, combat designation, stacked grants, expiry,
+lost targets, counters, Syndra-granted Repeat, Irelia's choice trigger and hidden
+information. Cloning during Predict and applying the same choice must preserve
+the complete debug state. Protocol scenarios start the correct seat through
+ResetOptions, check nonmutating validation, public Shield and private Predict,
+and reject the wrong seat without changing state. Broader acceptance is pending.

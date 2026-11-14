@@ -1,0 +1,104 @@
+{
+  "status": "Local rules, source, API, companion and native checks passed; installed acceptance pending",
+  "reviewed_on": "2026-11-14",
+  "preserved_runtime_prefix": {
+    "card_count": 457,
+    "preset_count": 7,
+    "cards_sha256": "46d6266030912ab5810d5909606da52ce5ffe3f6afea6cd6aa3ddf1cd7bd6d48",
+    "presets_sha256": "e975739d803427e54928d6e6cd03d1ce51d7ad108f4e247b8a000acf037a5cdb"
+  },
+  "records": [
+    {
+      "runtime_id": 457,
+      "official_id": "rad-025-167",
+      "raw_printing": {
+        "official_id": "rad-025-167",
+        "public_code": "RAD-025/167",
+        "name": "Consult the Heavens",
+        "set": "RAD",
+        "collector_number": 25,
+        "types": [
+          "unit"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "unit"
+        ],
+        "accessibility_types": [
+          "spell"
+        ],
+        "type_labels_conflict": true,
+        "super_types": [],
+        "domains": [
+          "calm"
+        ],
+        "energy": 1,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "rules_html": "<p>[Reaction] (Play any time, even before spells and abilities resolve.)<br />Give a unit [Shield 2] this turn. (+2 :rb_might: while it's a defender.)<br />[Predict]. (Look at the top card of your Main Deck. You may recycle it.)</p>",
+        "rules_text": "[Reaction] (Play any time, even before spells and abilities resolve.)\nGive a unit [Shield 2] this turn. (+2 Might while it's a defender.)\n[Predict]. (Look at the top card of your Main Deck. You may recycle it.)",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [],
+        "rarity": "common",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/120b20ee26d221cea31f510090cef037e74c023f-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Spell: Consult the Heavens. [Reaction] (Play any time, even before spells and abilities resolve.)\nGive a unit [Shield 2] this turn. (+2 [S] while it's a defender.)\n[Predict]. (Look at the top card of your Main Deck. You may recycle it.)",
+        "illustrators": [
+          "Kudos Productions"
+        ]
+      },
+      "raw_printing_sha256": "f2239caf58eee48139b46bb80c03a3025c94dacc3422915e78bcc8e9f66420fe",
+      "effective": {
+        "types": [
+          "spell"
+        ],
+        "super_types": [],
+        "domains": [
+          "calm"
+        ],
+        "energy": 1,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>[Reaction] (Play any time, even before spells and abilities resolve.)<br />Give a unit [Shield 2] this turn. (+2 :rb_might: while it's a defender.)<br />[Predict]. (Look at the top card of your Main Deck. You may recycle it.)</p>",
+        "rules_text": "[Reaction] (Play any time, even before spells and abilities resolve.)\nGive a unit [Shield 2] this turn. (+2 Might while it's a defender.)\n[Predict]. (Look at the top card of your Main Deck. You may recycle it.)",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "resolution_ids": [
+        "rad-025-167:types"
+      ],
+      "errata": [],
+      "original_image": {
+        "path": "assets/data/card_admissions/irelia_heavens/rad-025-167.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/120b20ee26d221cea31f510090cef037e74c023f-744x1039.png?accountingTag=RB",
+        "bytes": 737426,
+        "sha256": "5388cbce32d7ddcf994b8293144740871d5f58225a22eaa0570727ffbceaf20d",
+        "width": 744,
+        "height": 1039
+      },
+      "runtime_image": {
+        "path": "assets/art/card_457.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/120b20ee26d221cea31f510090cef037e74c023f-744x1039.png?w=280&q=85&fm=png",
+        "bytes": 182322,
+        "sha256": "79ec7bc543a433cf6213bb146b34aad52066cd2f9b8f5d43223285f3e08b223c",
+        "width": 280,
+        "height": 391
+      },
+      "visual_review": {
+        "actual_full_face_viewed": true,
+        "printed_energy": 1,
+        "printed_power": 0,
+        "printed_types": [
+          "spell"
+        ],
+        "printed_domains": [
+          "calm"
+        ],
+        "finding": "Complete official face confirms Spell despite gallery structured Unit type. Reaction; give any unit Shield 2 this turn; independent Predict."
+      }
+    }
+  ]
+}

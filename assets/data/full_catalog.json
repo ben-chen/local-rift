@@ -149,14 +149,14 @@
       "gear": 79,
       "legend": 11,
       "rune": 6,
-      "spell": 131,
+      "spell": 132,
       "unit": 247
     },
-    "implemented_main_cards": 457,
+    "implemented_main_cards": 458,
     "implemented_legends": 11,
     "implemented_battlefields": 18,
-    "implemented_legal_identities": 492,
-    "unimplemented_legal_identities": 587,
+    "implemented_legal_identities": 493,
+    "unimplemented_legal_identities": 586,
     "errata_entries": 67,
     "identities_with_errata": 67,
     "source_quality_issues": 57,
@@ -196,9 +196,9 @@
     "Hunt": 1,
     "Legion": 3,
     "Mighty": 9,
-    "Predict": 5,
+    "Predict": 4,
     "Quick-Draw": 2,
-    "Reaction": 54,
+    "Reaction": 53,
     "Repeat": 10,
     "Shield": 10,
     "Show Off": 5,
@@ -6757,8 +6757,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 457,
+        "official_id": "rad-025-167",
+        "playable_in_client": true
       }
     },
     {

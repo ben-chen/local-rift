@@ -48,6 +48,9 @@ mod guards_tests;
 #[path = "gust_tests.rs"]
 mod gust_tests;
 #[cfg(test)]
+#[path = "heavens_tests.rs"]
+mod heavens_tests;
+#[cfg(test)]
 #[path = "hidden_blade_tests.rs"]
 mod hidden_blade_tests;
 #[cfg(test)]
@@ -1133,6 +1136,8 @@ pub struct Game {
     last_damage_ledger: Option<damage::DamageLedger>,
     /// Global Unyielding Spirit effect; expires after the ending triggers finish.
     pub spell_ability_damage_prevented: bool,
+    /// Summed Shield grants on physical units; all expire at Ending cleanup.
+    pub(crate) shield_grants: Vec<(u32, u8)>,
     alpha_kill_watches: Vec<split_damage::AlphaKillWatch>,
     /// Actual physical gear/bearer attachment transitions in this turn.
     pub(crate) gear_attachments_this_turn: Vec<(u32, u32)>,
@@ -1396,6 +1401,7 @@ impl Game {
             play_grants:Vec::new(),
             active_play:None,selected_cost_order:Vec::new(),reserved_play_grants:Vec::new(),payment_play_grants:Vec::new(),resolution_frame:None,predict_tail:None,damage_context:None,
             spell_ability_damage_prevented: false,
+            shield_grants: Vec::new(),
             alpha_kill_watches: Vec::new(),
             damage_ledger: None,
             last_damage_ledger: None,
@@ -7214,6 +7220,17 @@ impl Game {
                     owner == actor
                 };
                 let rank = if preferred { 1000 } else { 0 }
+                    + if matches!(effect, OfficialEffect::ShieldThenPredict { .. })
+                        && self.showdown.as_ref().is_some_and(|window| {
+                            window.combat
+                                && window.attacker != owner
+                                && unit.lane == Some(window.lane)
+                        })
+                    {
+                        200
+                    } else {
+                        0
+                    }
                     + if effect == OfficialEffect::ReadyAnother && !unit.ready {
                         200
                     } else {
@@ -8273,6 +8290,15 @@ impl Game {
                     }
                 }
             }
+            OfficialEffect::ShieldThenPredict { shield } => {
+                for target in valid {
+                    if let Target::Unit { unit_id, .. } = target {
+                        self.shield_grants.push((unit_id, shield));
+                    }
+                }
+                // Predict is independent of the targeted Shield instruction.
+                self.predict(player);
+            }
             OfficialEffect::AreaDamage { amount, selector } => {
                 self.deal_area_damage(player, amount, selector, &valid)?
             }
@@ -8803,6 +8829,7 @@ impl Game {
         }
         self.silenced = [false; 2];
         self.spell_ability_damage_prevented = false;
+        self.shield_grants.clear();
         self.gear_attachments_this_turn.clear();
         self.movement_locks.clear();
         self.immobile_units.clear();
@@ -9267,6 +9294,7 @@ impl Game {
         {
             self.gear_unit_left_board(player, choice.unit_id);
             self.empowered_units.retain(|&id| id != choice.unit_id);
+            self.shield_grants.retain(|(id, _)| *id != choice.unit_id);
             self.granted_temporary_units
                 .retain(|&id| id != choice.unit_id);
             let unit = self.players[player].units.remove(index);
@@ -9540,6 +9568,7 @@ impl Game {
                     *has_real_death = true;
                 }
                 self.empowered_units.retain(|&id| id != unit_id);
+                self.shield_grants.retain(|(id, _)| *id != unit_id);
                 self.granted_temporary_units.retain(|&id| id != unit_id);
                 self.instructed_kills.retain(|&id| id != unit_id);
                 self.gear_unit_left_board(player, unit_id);
@@ -10805,6 +10834,22 @@ impl Game {
                 }
                 OfficialEffect::GrantAssault(_) => {
                     if in_combat && self.showdown.as_ref().is_some_and(|w| w.attacker == actor) {
+                        80
+                    } else {
+                        0
+                    }
+                }
+                OfficialEffect::ShieldThenPredict { .. } => {
+                    if self.showdown.as_ref().is_some_and(|window| {
+                        window.combat
+                            && window.attacker != actor
+                            && targets.iter().any(|target| {
+                                matches!(target, Target::Unit { player, .. } if *player == actor)
+                                    && self
+                                        .unit_ref(*target)
+                                        .is_some_and(|unit| unit.lane == Some(window.lane))
+                            })
+                    }) {
                         80
                     } else {
                         0

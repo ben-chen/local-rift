@@ -164,6 +164,9 @@ pub enum OfficialEffect {
     /// Back Off draws independently, but only when its actual play origin was Hand.
     StunAndDrawFromHand,
     GrantAssault(u8),
+    ShieldThenPredict {
+        shield: u8,
+    },
     AreaDamage {
         amount: u8,
         selector: AreaSelector,
@@ -298,6 +301,7 @@ pub fn effect(id: usize) -> OfficialEffect {
         449..=451 => None,
         454 | 455 => None,
         456 => Counter(CounterKind::OtherOpponentSpell),
+        457 => ShieldThenPredict { shield: 2 },
         452 => DrawWithOptionalCost { unpaid: 1, paid: 2 },
         453 => DrawThenChannel {
             draw: 1,
@@ -733,7 +737,7 @@ pub fn chooses_move_destination(id: usize) -> bool {
 pub fn targeting(id: usize) -> Targeting {
     use Allegiance::*;
     let allegiance = match id {
-        290..=296 | 335 | 349 | 428 | 434 | 446 => Any,
+        290..=296 | 335 | 349 | 428 | 434 | 446 | 457 => Any,
         4 | 32 | 144 | 145 | 365 | 427 => Enemy,
         362 | 364 | 372 | 378 | 379 | 381 | 435 => Any,
         8 | 9 | 14 | 19 | 27 | 85 | 137 | 228 | 350 | 353 | 354 | 377 | 380 | 382 | 421 | 425
@@ -789,7 +793,8 @@ pub fn target_bounds(id: usize) -> (usize, usize) {
         | KillEnemyDomain { .. }
         | Stun
         | StunAndDrawFromHand
-        | GrantAssault(_) => (1, 1),
+        | GrantAssault(_)
+        | ShieldThenPredict { .. } => (1, 1),
         Damage { targets, .. } => (
             targets as usize,
             if matches!(id, 50 | 61) {
@@ -1152,6 +1157,7 @@ pub fn requirements(id: usize) -> &'static [Mechanic] {
         454 => &[Chain, OptionalCosts, ChooseReadyTriggers],
         455 => &[Chain, ChooseReadyTriggers],
         456 => &[Chain, Counterspell],
+        457 => &[Chain, Shield, Predict, ChooseReadyTriggers],
         447 => &[
             Chain,
             MultipleTargets,
@@ -1928,7 +1934,7 @@ pub enum Followup {
 
 pub fn followups(id: usize) -> &'static [Followup] {
     match id {
-        1 | 52 => &[Followup::Predict],
+        1 | 52 | 457 => &[Followup::Predict],
         19 => &[Followup::GrantEnemyChoiceProtectionForTurn],
         _ => &[],
     }
