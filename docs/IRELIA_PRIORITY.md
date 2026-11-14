@@ -2,8 +2,8 @@
 
 Updated November 14, 2026. Irelia cards take priority over the saved Azir draft.
 
-Flurry of Feathers is implemented locally as an additional Calm option; its
-immutable installed acceptance is pending. It shares explicit mode handling
+Flurry of Feathers is available as an additional Calm option and passed
+immutable installed acceptance. It shares explicit mode handling
 with Command: Attack: counter one spell or play four independently placed Bird
 tokens. Each Repeat keeps its selected mode. Native controls, official artwork,
 API choices, and both companion levels are covered by the

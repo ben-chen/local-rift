@@ -1,6 +1,6 @@
 {
-  "status": "Local validation passed; immutable installed acceptance pending",
-  "reviewed_at": "2026-11-14T11:16:58.996481+00:00",
+  "status": "Installed acceptance passed",
+  "reviewed_at": "2026-11-14T11:42:50.651969+00:00",
   "source_review_commit": "c41eb27",
   "cards": [
     {
@@ -854,7 +854,151 @@
     }
   ],
   "installed": {
-    "status": "pending"
+    "status": "passed",
+    "audited_at": "2026-11-14T11:42:28.532369+00:00",
+    "tested_revision": "35d1c8c5bde3ab8a4b377ee5d1e3f9cf2905d309",
+    "rust_tests": 2032,
+    "source_tests": 336,
+    "simulation_games": 1176,
+    "simulation_sha256": "7b91820448b65a6e57da650b96a1c388fc2c2b6a3012e7aabc05f9216bdcc504",
+    "ui_cases": 27,
+    "captures": 218,
+    "ui_actual_games": 2,
+    "api_campaigns": 11,
+    "api_records": 69,
+    "all_capture_and_log_hashes_verified": true,
+    "all_api_records_compared_in_full": true,
+    "installed_visually_reviewed": [
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/flurry-release-v1/flurry-small/rift_flurry_modes.png",
+        "sha256": "30afc2a8f00ad69dcb25c7ec9f87ffb414371ce1c41ab0f5f48220ffb9dd4cd9"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/flurry-release-v1/flurry-normal/rift_flurry_counter_target.png",
+        "sha256": "3730644a5b8d7c99503009f2b07057e4cba3f5457af1f4cbc99377a59d74a5eb"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/flurry-release-v1/flurry-small/rift_flurry_birds.png",
+        "sha256": "0474bad095749ec8235cf166010619bec183d3473c8b8e0b7723ac7762169a87"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/flurry-release-v1/command-small/rift_smoke_c24_command_modes_screenshot.png",
+        "sha256": "cfca1457a4e391d55d36490011a30372e8949de46217910fa224b37ff7d76bba"
+      }
+    ],
+    "package": "/nix/store/156f83rrzgcbqggkp732qrk7lv1ka23l-local-rift-0.1.0",
+    "status_sha256": "dc7acab315bec177b71cd005754bc9783d5b8e983136537e57fde5f2de3829da",
+    "nix_log_sha256": "b42dcc6608ecc7eec283edbc17d7c434a4653e6051e2556d9a54ea4ec3296b2a",
+    "receipt": {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/flurry-release-v1/status.json",
+      "sha256": "dc7acab315bec177b71cd005754bc9783d5b8e983136537e57fde5f2de3829da"
+    },
+    "plan": {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/flurry-release-plan-v1.json",
+      "sha256": "e5fb6683439856d3ab1e1b862439a3cf02ac7f5059a86df49889763b4f2b2d50"
+    },
+    "source_gc_root": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/flurry-release-v1/source",
+    "api_comparisons": [
+      {
+        "name": "wheel-api",
+        "seconds": 3.17,
+        "records": 6,
+        "records_key": "records",
+        "full_records_equal": true,
+        "baseline_sha256": "33f1292064c5ad87354bebbe596d242b8a8e5c62cb2af1d8bfeb9adc8d208dd1",
+        "report_sha256": "83ef06ebbf5e13a70918cfd62693dc73c8a732e9d9649e274be47cdb4cdffb7d"
+      },
+      {
+        "name": "resources-api",
+        "seconds": 2.72,
+        "records": 6,
+        "records_key": "records",
+        "full_records_equal": true,
+        "baseline_sha256": "6e530d9b3994e6ee62f5287b83d393f4893db6f60cd30b16757ae4cbe1c77ea6",
+        "report_sha256": "72774407345b5ca982db1f6237c3352526ce8f6a79fd1095ca09acbdc670630b"
+      },
+      {
+        "name": "jae-api",
+        "seconds": 2.168,
+        "records": 6,
+        "records_key": "records",
+        "full_records_equal": true,
+        "baseline_sha256": "e5572aa55f44442fa3de55c94d4c1d4f48ff7e681ddb1c5150bb70fa0b53e3c9",
+        "report_sha256": "799085c1863ebc6cf7e632f7927d8f071400c77a0818b654fea6d45037042fc4"
+      },
+      {
+        "name": "format-api",
+        "seconds": 9.981,
+        "records": 9,
+        "records_key": "records",
+        "full_records_equal": true,
+        "baseline_sha256": "3cc8071ed6ab860d0ca1c008d940d260a87d11dda3c34abb8907b7c1bcbb1f33",
+        "report_sha256": "7fcef64be458a0b85c65b9f12513fcf86e2a77b48dfcc0cfbee16ee2fc498c9e"
+      },
+      {
+        "name": "entourage-api",
+        "seconds": 2.919,
+        "records": 6,
+        "records_key": "records",
+        "full_records_equal": true,
+        "baseline_sha256": "e0b9ba81818b8f7e3a259d7827325c7741ea8d0e9112e0362845eac61bba1f56",
+        "report_sha256": "0c651dba4d83a04c9cdc934736f3b9e026d9cd8689fb9a860b1c974170645203"
+      },
+      {
+        "name": "sands-api",
+        "seconds": 2.319,
+        "records": 6,
+        "records_key": "records",
+        "full_records_equal": true,
+        "baseline_sha256": "086da10f3659706b6c9357b216b470d8a358c7feed026a12962f2ac23239c646",
+        "report_sha256": "b2b2035da70de57f09dec358dd35b7d331d028135485e4bec54d97f7f34d7189"
+      },
+      {
+        "name": "rockfall-api",
+        "seconds": 3.02,
+        "records": 6,
+        "records_key": "records",
+        "full_records_equal": true,
+        "baseline_sha256": "c400d21ae854634d1b87c792dd2ab68634a0c5ea28d10ebe75cd1bd2e192fe47",
+        "report_sha256": "f6dd7a4ce08f8e88becf42e179d6a938e207dafbe647d77539b08f5a6505db47"
+      },
+      {
+        "name": "heavens-api",
+        "seconds": 2.618,
+        "records": 6,
+        "records_key": "records",
+        "full_records_equal": true,
+        "baseline_sha256": "c63881a4da46bb4ffc5a3bbde7644bc55007965ac15940973b02700a8e50c678",
+        "report_sha256": "29a345659258ca476342e2a250edcb2f0973b77ca30bbb3ad4443d0f2b7b433c"
+      },
+      {
+        "name": "disarm-api",
+        "seconds": 2.618,
+        "records": 6,
+        "records_key": "records",
+        "full_records_equal": true,
+        "baseline_sha256": "2ff49460b6fba29126cfddeedf592f6d1f838d1584077d857c78cea25be541b7",
+        "report_sha256": "d4aa5feeb96f2eaa38b21c2c5ce2d1dede04b10c7fc7abcdec6970ef5951e4d8"
+      },
+      {
+        "name": "turn-keywords-api",
+        "seconds": 3.419,
+        "records": 6,
+        "records_key": "records",
+        "full_records_equal": true,
+        "baseline_sha256": "900af01b7fb5fbff7c5a597491087da3bf1aed6d07cadbadc7ba5485311fb78e",
+        "report_sha256": "bc2e2fe9e0b343ea2080d3bfb7645fdfeecd7516feb24807c8a0b4a4a2f618a6"
+      },
+      {
+        "name": "flurry-api",
+        "seconds": 3.721,
+        "records": 6,
+        "records_key": "records",
+        "full_records_equal": true,
+        "baseline_sha256": "17f70ad7e1495078ae9d069ff9133eab239a6cc549f0a974f13c094c73fcbdc3",
+        "report_sha256": "c97e7565b8e04026e54ca8db15b3a4ac09980b96bb03a4dc6328e631828b4a71"
+      }
+    ]
   },
   "limits": [
     "Seven sourced presets unchanged. Historical Irelia deck listings establish relevance only, not a new valid registration or current meta prevalence.",

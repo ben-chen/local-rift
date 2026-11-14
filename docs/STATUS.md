@@ -51,8 +51,10 @@ separate installed acceptance: 2,018 Rust tests, 334 source checks, 1,176 simula
 games, 23 UI cases and ten complete API comparisons (63 records). Its scoped
 Block decision benchmark improves to 26/26; this does not establish expert strength.
 
-Flurry of Feathers is in local validation, with explicit modes shared with
+Flurry of Feathers passed installed acceptance, with explicit modes shared with
 Command: Attack, separate Bird placement choices, and concise advice at both
 levels. A payment-undo regression found during that work also fixes response
-priority restoration for other cards. Its immutable installed acceptance is
-pending; see [Flurry validation](validation/irelia_flurry.json).
+priority restoration for other cards. The fixed candidate passed 2,032 Rust
+tests, 336 source checks, 1,176 simulated games, 27 installed UI cases with
+218 captures, and eleven complete API comparisons (69 records). Four installed
+captures were visually reviewed. See [Flurry validation](validation/irelia_flurry.json).

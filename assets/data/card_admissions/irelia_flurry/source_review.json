@@ -1,5 +1,5 @@
 {
-  "status": "Printed source reviewed; local runtime validation passed; immutable installed acceptance pending.",
+  "status": "Printed source reviewed; local and immutable installed acceptance passed.",
   "reviewed_on": "2026-11-14",
   "base_revision": "30adaa39f42fb7686eb37b2e3a1816d74177fae8",
   "preserved_runtime_prefix": {
@@ -139,5 +139,6 @@
     "Hand, instructed play and Repeat reuse canonical mode validation; rejected actions and payment undo preserve state.",
     "UI mode buttons, previews and unobtrusive Beginner/Advanced explanations; API view and requests retain each chosen mode.",
     "Independent rules cases, actual mixed-mode Repeat, AI choices, complete legal Irelia matches and installed checks."
-  ]
+  ],
+  "installed_tested_revision": "35d1c8c5bde3ab8a4b377ee5d1e3f9cf2905d309"
 }
