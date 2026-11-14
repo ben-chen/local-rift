@@ -1,11 +1,11 @@
 {
-  "status": "Integrated preflight, final benchmark and strict lint pass; native captures reviewed at both sizes. Immutable installed acceptance remains pending.",
+  "status": "Passed integrated regression, source checks, simulations, installed UI/API acceptance and scoped visual review.",
   "base_revision": "d09f3fe7f03c8dcd4c74c550fb6adfa206c2aba2",
   "reviewed_on": "2026-11-14",
   "behavior": "Mote explains Gust target rechecks, Abandon replay risk, public banish/recycle departures, and other Repeat targets. Commentary remains optional and read-only. Opponent policy and the rules engine are unchanged.",
   "rules_reference": {
     "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/5c7946f7c3b8c6e0faff85ab6dadc6d2e721ea94.pdf",
-    "target_rechecks": "359.3.e.2\u2013359.3.e.5",
+    "target_rechecks": "359.3.e.2–359.3.e.5",
     "final_conquest": "473.1.b"
   },
   "benchmarks": {
@@ -113,5 +113,57 @@
     "irelia-responses-coach-v4.log": "909a1af8b895b22aa8dd75a2cc8d0ca86d17e3b27138e52bcc261bbdfa47129a",
     "irelia-responses-coach-v4.json": "8b017491048cc225664bc7d61aad6b562eaa1326b0f223f1204c22026ff1f8b6",
     "irelia-responses-integrated-clippy-v2.log": "2810eb62b90ffa67b53585c7f24e84a026b7258baa7e1db65b428f50081a8053"
+  },
+  "installed_release": {
+    "status": "passed",
+    "revision": "c5644bea9ac1c7e952b9c8f15af9a6e0042baa86",
+    "started_at": "2026-11-14T05:37:21.108485+00:00",
+    "finished_at": "2026-11-14T05:59:44.102715+00:00",
+    "rust": {
+      "passed": 1908,
+      "skipped": 0,
+      "seconds": 902.853
+    },
+    "source": {
+      "passed": 310,
+      "seconds": 316.58
+    },
+    "simulation": {
+      "games": 1176,
+      "seconds": 159.01,
+      "checks": "Physical card/rune conservation, energy accounting, valid unique units and winner consistency after each action."
+    },
+    "installed_ui": {
+      "runs": 11,
+      "actual_series_games": 7,
+      "captures": 24,
+      "visual_review_method": "Reviewed the 18 Gust/Kha'Zix captures in three layout contact sheets, all eight Gust advice regions at enlarged scale, and ten original-resolution captures (four Gust/Kha'Zix examples, four match screens, two format screens). Includes the small Beginner Gust capture inspected during the audit.",
+      "remaining_readability_work": "Small resource labels and journal text still need a readability improvement."
+    },
+    "installed_api": [
+      {
+        "name": "khazix-api",
+        "records": 12,
+        "games": 30,
+        "full_records_equal": true
+      },
+      {
+        "name": "format-api",
+        "records": 9,
+        "games": 25,
+        "full_records_equal": true
+      }
+    ],
+    "package": "/nix/store/ys3cma1g43ibfc2634489v16s4j8rnpc-local-rift-0.1.0",
+    "evidence_directory": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-responses-release-v1",
+    "sha256": {
+      "status.json": "b764559d5637b09eed42130e88a59a008c7b4820408bbda98f31e138db190507",
+      "plan.json": "58ad89d5c1f7233c5f1e2ea2a585dff6c76031ca76e537512f7def208340e929",
+      "nix.log": "23ef4f3d175000de92b0d8bff3d96e4a675899652a9e0183aad2bfbe614f80b6",
+      "khazix-api.json": "4a5acb1ca86112fc10b0a5bb129397e92828fd8b8733e74f8a7efe3218ea9c4b",
+      "format-api.json": "4f226a49a05c9da68f03aab64473599c6683e44630ba037d4ca230d2aa3d09a3",
+      "visual-review.json": "3c164eefbbd6f18ce4008e4839012fb0c2dd6e7f2e00a8c659d8c02c36195527"
+    },
+    "scope": "Includes Kha'Zix, Gust commentary and benchmarks, catalog preflight fixes, and current-status documentation. Does not include the separate uncommitted Jae Medarda draft."
   }
 }

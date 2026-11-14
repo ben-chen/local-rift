@@ -1,5 +1,5 @@
 {
-  "status": "Native/API checks passed; first immutable release failed four stale catalog assertions. Corrected global checks and expanded fast preflight pass; full acceptance of the corrected candidate remains pending.",
+  "status": "Passed corrected full regression, catalog checks, simulations and installed UI/API acceptance; retained the initial stale-assertion failure.",
   "base_commit": "2fcc6e1d80b81f16b81179b8c9637371aceb226d",
   "reviewed_on": "2026-11-14",
   "runtime_id": 449,
@@ -57,10 +57,7 @@
     "The 181-test run retains the existing authored AI benchmark and its twelve known simpler-level misses.",
     "Full regression and installed package checks remain pending. Native UI and complete API matches provide scoped evidence, not general rules parity or strength."
   ],
-  "remaining": [
-    "Run frozen full regression/catalog/package acceptance.",
-    "Review installed captures and compare both API campaigns before publication."
-  ],
+  "remaining": [],
   "evidence_sha256": {
     "irelia-khazix-focused-v1/status.json": "759db89876aedfee73b033d0a0a8bbf21040f983db70cc2561f7342a7a2179aa",
     "irelia-khazix-focused-v1/junit.xml": "0000fef1232f346a199b9356b795525fbe295abff3b8f5ce1292cc4d0514e087",
@@ -218,5 +215,17 @@
     "strict_clippy": "passed; 4.66 seconds",
     "interrupted_attempt": "Preflight v1 compiled and started 197 tests, then exited 143. Its process handle was terminal and no child remained; no passing result was accepted. V2 uses a new output directory.",
     "gameplay_changes": "None in this catalog/preflight correction."
+  },
+  "installed_release": {
+    "status": "passed",
+    "revision": "c5644bea9ac1c7e952b9c8f15af9a6e0042baa86",
+    "receipt": "irelia_responses.json#installed_release",
+    "khazix_api": {
+      "name": "khazix-api",
+      "records": 12,
+      "games": 30,
+      "full_records_equal": true
+    },
+    "scope": "Five Kha'Zix capture states at each of two sizes; UI click assertions, artwork/scrolling review, and full installed API record comparison. Not exhaustive Standard parity."
   }
 }
