@@ -159,9 +159,9 @@
     "unimplemented_legal_identities": 586,
     "errata_entries": 67,
     "identities_with_errata": 67,
-    "source_quality_issues": 57,
-    "reviewed_field_resolutions": 142,
-    "resolved_source_issue_groups": 57,
+    "source_quality_issues": 59,
+    "reviewed_field_resolutions": 144,
+    "resolved_source_issue_groups": 59,
     "unresolved_source_issue_groups": 0,
     "unresolved_gameplay_identities": 0,
     "unreviewed_variant_identities": 90,
@@ -172,7 +172,7 @@
     "pinned_runtime_variant_identities": 0,
     "reviewed_variant_identities": 34,
     "reviewed_variant_printings": 101,
-    "field_reviewed_printings": 92
+    "field_reviewed_printings": 94
   },
   "unimplemented_by_observed_keyword": {
     "ADD": 1,
@@ -6156,8 +6156,10 @@
       "rules_text_status": "official_gallery_printing_text",
       "conflicting_fields": [],
       "source_review": {
-        "status": "no_detected_conflicts",
-        "resolution_ids": [],
+        "status": "reviewed_corrections",
+        "resolution_ids": [
+          "rad-055-167:tags"
+        ],
         "unresolved_gameplay_fields": [],
         "variant_diagnostics": [],
         "reviewed_variant_fields": [],
@@ -38175,8 +38177,10 @@
       "rules_text_status": "official_gallery_printing_text",
       "conflicting_fields": [],
       "source_review": {
-        "status": "no_detected_conflicts",
-        "resolution_ids": [],
+        "status": "reviewed_corrections",
+        "resolution_ids": [
+          "rad-054-167:tags"
+        ],
         "unresolved_gameplay_fields": [],
         "variant_diagnostics": [],
         "reviewed_variant_fields": [],
@@ -69054,13 +69058,18 @@
         "power": null,
         "might": 3,
         "might_bonus": null,
-        "tags": [],
+        "tags": [
+          "Bandle City",
+          "Yordle"
+        ],
         "rules_html": "<p>[Disarm] (When I attack, give an enemy unit here -1 :rb_might: this turn.)</p>",
         "rules_text": "[Disarm] (When I attack, give an enemy unit here -1 Might this turn.)",
         "equipment_html": "",
         "equipment_text": ""
       },
-      "resolution_ids": [],
+      "resolution_ids": [
+        "rad-054-167:tags"
+      ],
       "unresolved_gameplay_fields": []
     },
     {
@@ -69111,13 +69120,18 @@
         "power": null,
         "might": 2,
         "might_bonus": null,
-        "tags": [],
+        "tags": [
+          "Piltover",
+          "Mech"
+        ],
         "rules_html": "<p>Your Mechs have [Disarm]. (When each of us attacks, give an enemy unit there -1 :rb_might: this turn.)</p>",
         "rules_text": "Your Mechs have [Disarm]. (When each of us attacks, give an enemy unit there -1 Might this turn.)",
         "equipment_html": "",
         "equipment_text": ""
       },
-      "resolution_ids": [],
+      "resolution_ids": [
+        "rad-055-167:tags"
+      ],
       "unresolved_gameplay_fields": []
     },
     {
@@ -130474,6 +130488,42 @@
         }
       ],
       "detail": "The full original official face visibly prints Shadow Isles / Demon on its type/tag line. The gallery omits both tags. Preserve raw facts and correct only the effective tags; no runtime support is granted."
+    },
+    {
+      "kind": "official_artwork_field_mismatch",
+      "field": "tags",
+      "official_ids": [
+        "rad-054-167"
+      ],
+      "values": [
+        {
+          "official_id": "rad-054-167",
+          "raw_value": [],
+          "printed_value": [
+            "Bandle City",
+            "Yordle"
+          ]
+        }
+      ],
+      "detail": "The full original official face visibly prints Bandle City / Yordle on its type/tag line. The gallery omits both tags. Preserve raw facts and correct only the effective tags; no runtime support is granted."
+    },
+    {
+      "kind": "official_artwork_field_mismatch",
+      "field": "tags",
+      "official_ids": [
+        "rad-055-167"
+      ],
+      "values": [
+        {
+          "official_id": "rad-055-167",
+          "raw_value": [],
+          "printed_value": [
+            "Piltover",
+            "Mech"
+          ]
+        }
+      ],
+      "detail": "The full original official face visibly prints Piltover / Mech on its type/tag line. The gallery omits both tags. Preserve raw facts and correct only the effective tags; no runtime support is granted."
     }
   ],
   "source_issue_reviews": [
@@ -131882,6 +131932,62 @@
           }
         ],
         "detail": "The full original official face visibly prints Shadow Isles / Demon on its type/tag line. The gallery omits both tags. Preserve raw facts and correct only the effective tags; no runtime support is granted."
+      }
+    },
+    {
+      "review_issue_id": "rad-054-167-tags",
+      "official_ids": [
+        "rad-054-167"
+      ],
+      "resolution_ids": [
+        "rad-054-167:tags"
+      ],
+      "status": "resolved_by_review",
+      "raw_issue": {
+        "kind": "official_artwork_field_mismatch",
+        "field": "tags",
+        "official_ids": [
+          "rad-054-167"
+        ],
+        "values": [
+          {
+            "official_id": "rad-054-167",
+            "raw_value": [],
+            "printed_value": [
+              "Bandle City",
+              "Yordle"
+            ]
+          }
+        ],
+        "detail": "The full original official face visibly prints Bandle City / Yordle on its type/tag line. The gallery omits both tags. Preserve raw facts and correct only the effective tags; no runtime support is granted."
+      }
+    },
+    {
+      "review_issue_id": "rad-055-167-tags",
+      "official_ids": [
+        "rad-055-167"
+      ],
+      "resolution_ids": [
+        "rad-055-167:tags"
+      ],
+      "status": "resolved_by_review",
+      "raw_issue": {
+        "kind": "official_artwork_field_mismatch",
+        "field": "tags",
+        "official_ids": [
+          "rad-055-167"
+        ],
+        "values": [
+          {
+            "official_id": "rad-055-167",
+            "raw_value": [],
+            "printed_value": [
+              "Piltover",
+              "Mech"
+            ]
+          }
+        ],
+        "detail": "The full original official face visibly prints Piltover / Mech on its type/tag line. The gallery omits both tags. Preserve raw facts and correct only the effective tags; no runtime support is granted."
       }
     }
   ],
@@ -136687,6 +136793,68 @@
         }
       ],
       "enables_runtime_support": false
+    },
+    {
+      "id": "rad-054-167:tags",
+      "official_id": "rad-054-167",
+      "name": "Trinket Peddler",
+      "field": "tags",
+      "reviewed_on": "2026-11-14",
+      "basis": "confirmed_artwork",
+      "operation": "override",
+      "expected_raw_value": [],
+      "raw_source_field": "tags",
+      "expected_raw_source_value": [],
+      "effective_value": [
+        "Bandle City",
+        "Yordle"
+      ],
+      "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+      "expected_printing_sha256": "89961cc9a08e7ffa3fdb61a9a5fecea95a3117f856483cc0dcf69d03c799e8b4",
+      "printing_hash_encoding": "UTF-8 JSON sorted keys; ensure_ascii=false; separators=(',', ':')",
+      "reason": "The full original official face visibly prints Bandle City / Yordle on its type/tag line. The gallery omits both tags. Preserve raw facts and correct only the effective tags; no runtime support is granted.",
+      "evidence": [
+        {
+          "kind": "official_card_image",
+          "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/78106b7cea441b13d108e532adc5ce063f448165-744x1039.png?accountingTag=RB",
+          "local_path": "assets/data/catalog_evidence/images/rad-054-167.png",
+          "sha256": "75ecad5a4744dc9d74ebd02f9f0ab3440b22a17da8a9fb89246f38eb484993fc",
+          "bytes": 821406,
+          "location": "Printed type/tag line below the artwork"
+        }
+      ],
+      "enables_runtime_support": false
+    },
+    {
+      "id": "rad-055-167:tags",
+      "official_id": "rad-055-167",
+      "name": "Clanging Sentry",
+      "field": "tags",
+      "reviewed_on": "2026-11-14",
+      "basis": "confirmed_artwork",
+      "operation": "override",
+      "expected_raw_value": [],
+      "raw_source_field": "tags",
+      "expected_raw_source_value": [],
+      "effective_value": [
+        "Piltover",
+        "Mech"
+      ],
+      "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+      "expected_printing_sha256": "7d92ca2531cb7ef03f9f00accfe27aa85130a3e19f50a4271dd05defea5f1b1d",
+      "printing_hash_encoding": "UTF-8 JSON sorted keys; ensure_ascii=false; separators=(',', ':')",
+      "reason": "The full original official face visibly prints Piltover / Mech on its type/tag line. The gallery omits both tags. Preserve raw facts and correct only the effective tags; no runtime support is granted.",
+      "evidence": [
+        {
+          "kind": "official_card_image",
+          "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/5d4c22ef863e041887a00d34b2dae1f3ce658326-744x1039.png?accountingTag=RB",
+          "local_path": "assets/data/catalog_evidence/images/rad-055-167.png",
+          "sha256": "0e979f3dce7ede1cc60e480612b2f26ddca54e43f53b63c2edf8a189312b5602",
+          "bytes": 860494,
+          "location": "Printed type/tag line below the artwork"
+        }
+      ],
+      "enables_runtime_support": false
     }
   ],
   "review_evidence": {
@@ -136705,10 +136873,10 @@
         "uncompressed_bytes": 3986973
       }
     },
-    "reviewed_printings": 92,
-    "field_resolutions": 142,
-    "historical_issue_groups": 57,
-    "image_evidence": 92,
+    "reviewed_printings": 94,
+    "field_resolutions": 144,
+    "historical_issue_groups": 59,
+    "image_evidence": 94,
     "live_image_bytes_checked": false
   },
   "reviewed_identity_reviews": [

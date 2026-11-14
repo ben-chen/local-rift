@@ -1,0 +1,332 @@
+{
+  "status": "Source faces reviewed; runtime Disarm implementation pending",
+  "reviewed_on": "2026-11-14",
+  "planned_scope": "Shared Disarm mechanic: Trinket Peddler, Clanging Sentry, Siren of the Shallows",
+  "preserved_runtime_prefix": {
+    "card_count": 458,
+    "preset_count": 7,
+    "cards_sha256": "5319a3f6d9d67efe1f58859381e092305349153e3f32be85f8d9b84ae661646e",
+    "presets_sha256": "e975739d803427e54928d6e6cd03d1ce51d7ad108f4e247b8a000acf037a5cdb"
+  },
+  "rules_source": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/5c7946f7c3b8c6e0faff85ab6dadc6d2e721ea94.pdf",
+  "rules_sections": [
+    "831",
+    "355.5",
+    "355.8"
+  ],
+  "records": [
+    {
+      "official_id": "rad-054-167",
+      "raw_printing": {
+        "official_id": "rad-054-167",
+        "public_code": "RAD-054/167",
+        "name": "Trinket Peddler",
+        "set": "RAD",
+        "collector_number": 54,
+        "types": [
+          "unit"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "unit"
+        ],
+        "accessibility_types": [
+          "unit"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "mind"
+        ],
+        "energy": 3,
+        "power": null,
+        "might": 3,
+        "might_bonus": null,
+        "rules_html": "<p>[Disarm] (When I attack, give an enemy unit here -1 :rb_might: this turn.)</p>",
+        "rules_text": "[Disarm] (When I attack, give an enemy unit here -1 Might this turn.)",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [],
+        "rarity": "common",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/78106b7cea441b13d108e532adc5ce063f448165-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Unit: Trinket Peddler. [Disarm] (When I attack, give an enemy unit here -1 [S] this turn.)",
+        "illustrators": [
+          "Alessandro Poli"
+        ]
+      },
+      "raw_printing_sha256": "89961cc9a08e7ffa3fdb61a9a5fecea95a3117f856483cc0dcf69d03c799e8b4",
+      "effective_before_review": {
+        "types": [
+          "unit"
+        ],
+        "super_types": [],
+        "domains": [
+          "mind"
+        ],
+        "energy": 3,
+        "power": null,
+        "might": 3,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>[Disarm] (When I attack, give an enemy unit here -1 :rb_might: this turn.)</p>",
+        "rules_text": "[Disarm] (When I attack, give an enemy unit here -1 Might this turn.)",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "resolution_ids_before_review": [],
+      "original_image": {
+        "path": "assets/data/catalog_evidence/images/rad-054-167.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/78106b7cea441b13d108e532adc5ce063f448165-744x1039.png?accountingTag=RB",
+        "bytes": 821406,
+        "sha256": "75ecad5a4744dc9d74ebd02f9f0ab3440b22a17da8a9fb89246f38eb484993fc",
+        "dimensions": [
+          744,
+          1039
+        ]
+      },
+      "visual_review": {
+        "actual_full_face_viewed": true,
+        "reviewed_on": "2026-11-14",
+        "printed_facts": {
+          "types": [
+            "unit"
+          ],
+          "domains": [
+            "mind"
+          ],
+          "energy": 3,
+          "might": 3,
+          "rules_text": "[Disarm] (When I attack, give an enemy unit here -1 Might this turn.)",
+          "power": 0,
+          "tags": [
+            "Bandle City",
+            "Yordle"
+          ]
+        },
+        "observation": "Full original face inspected; tags transcribed directly from the printed type line."
+      }
+    },
+    {
+      "official_id": "rad-055-167",
+      "raw_printing": {
+        "official_id": "rad-055-167",
+        "public_code": "RAD-055/167",
+        "name": "Clanging Sentry",
+        "set": "RAD",
+        "collector_number": 55,
+        "types": [
+          "unit"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "unit"
+        ],
+        "accessibility_types": [
+          "unit"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "mind"
+        ],
+        "energy": 3,
+        "power": null,
+        "might": 2,
+        "might_bonus": null,
+        "rules_html": "<p>Your Mechs have [Disarm]. (When each of us attacks, give an enemy unit there -1 :rb_might: this turn.)</p>",
+        "rules_text": "Your Mechs have [Disarm]. (When each of us attacks, give an enemy unit there -1 Might this turn.)",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [],
+        "rarity": "uncommon",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/5d4c22ef863e041887a00d34b2dae1f3ce658326-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Unit: Clanging Sentry. Your Mechs have [Disarm]. (When each of us attacks, give an enemy unit there -1 [S] this turn.)",
+        "illustrators": [
+          "Kudos Productions"
+        ]
+      },
+      "raw_printing_sha256": "7d92ca2531cb7ef03f9f00accfe27aa85130a3e19f50a4271dd05defea5f1b1d",
+      "effective_before_review": {
+        "types": [
+          "unit"
+        ],
+        "super_types": [],
+        "domains": [
+          "mind"
+        ],
+        "energy": 3,
+        "power": null,
+        "might": 2,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>Your Mechs have [Disarm]. (When each of us attacks, give an enemy unit there -1 :rb_might: this turn.)</p>",
+        "rules_text": "Your Mechs have [Disarm]. (When each of us attacks, give an enemy unit there -1 Might this turn.)",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "resolution_ids_before_review": [],
+      "original_image": {
+        "path": "assets/data/catalog_evidence/images/rad-055-167.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/5d4c22ef863e041887a00d34b2dae1f3ce658326-744x1039.png?accountingTag=RB",
+        "bytes": 860494,
+        "sha256": "0e979f3dce7ede1cc60e480612b2f26ddca54e43f53b63c2edf8a189312b5602",
+        "dimensions": [
+          744,
+          1039
+        ]
+      },
+      "visual_review": {
+        "actual_full_face_viewed": true,
+        "reviewed_on": "2026-11-14",
+        "printed_facts": {
+          "types": [
+            "unit"
+          ],
+          "domains": [
+            "mind"
+          ],
+          "energy": 3,
+          "might": 2,
+          "rules_text": "Your Mechs have [Disarm]. (When each of us attacks, give an enemy unit there -1 Might this turn.)",
+          "power": 0,
+          "tags": [
+            "Piltover",
+            "Mech"
+          ]
+        },
+        "observation": "Full original face inspected; tags transcribed directly from the printed type line."
+      }
+    },
+    {
+      "official_id": "rad-097-167",
+      "raw_printing": {
+        "official_id": "rad-097-167",
+        "public_code": "RAD-097/167",
+        "name": "Siren of the Shallows",
+        "set": "RAD",
+        "collector_number": 97,
+        "types": [
+          "spell"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "spell"
+        ],
+        "accessibility_types": [
+          "unit"
+        ],
+        "type_labels_conflict": true,
+        "super_types": [],
+        "domains": [
+          "chaos"
+        ],
+        "energy": 2,
+        "power": null,
+        "might": 1,
+        "might_bonus": null,
+        "rules_html": "<p>[Disarm] (When I attack, give an enemy unit here -1 :rb_might: this turn.)<br />[Ganking] (I can move from battlefield to battlefield.)</p>",
+        "rules_text": "[Disarm] (When I attack, give an enemy unit here -1 Might this turn.)\n[Ganking] (I can move from battlefield to battlefield.)",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [],
+        "rarity": "common",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/e666029dcebc507cc80435eee17db435305d1361-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Unit: Siren of the Shallows. [Disarm] (When I attack, give an enemy unit here -1 [S] this turn.)\n[Ganking] (I can move from battlefield to battlefield.)",
+        "illustrators": [
+          "Wild Blue Studios"
+        ]
+      },
+      "raw_printing_sha256": "c2bd7c2086c4edabdfff63c09e4a7f13e460aa54bc18f0c6b2c7e4f94247aae4",
+      "effective_before_review": {
+        "types": [
+          "unit"
+        ],
+        "super_types": [],
+        "domains": [
+          "chaos"
+        ],
+        "energy": 2,
+        "power": null,
+        "might": 1,
+        "might_bonus": null,
+        "tags": [
+          "Bilgewater"
+        ],
+        "rules_html": "<p>[Disarm] (When I attack, give an enemy unit here -1 :rb_might: this turn.)<br />[Ganking] (I can move from battlefield to battlefield.)</p>",
+        "rules_text": "[Disarm] (When I attack, give an enemy unit here -1 Might this turn.)\n[Ganking] (I can move from battlefield to battlefield.)",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "resolution_ids_before_review": [
+        "rad-097-167:types",
+        "rad-097-167:tags"
+      ],
+      "original_image": {
+        "path": "assets/data/catalog_evidence/images/rad-097-167.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/e666029dcebc507cc80435eee17db435305d1361-744x1039.png?accountingTag=RB",
+        "bytes": 761081,
+        "sha256": "4099f32d5b278b21c49d6dfe037bffcd9c1647f9f1dc856513bced71c8af1b2f",
+        "dimensions": [
+          744,
+          1039
+        ]
+      },
+      "visual_review": {
+        "actual_full_face_viewed": true,
+        "reviewed_on": "2026-11-14",
+        "printed_facts": {
+          "types": [
+            "unit"
+          ],
+          "domains": [
+            "chaos"
+          ],
+          "energy": 2,
+          "might": 1,
+          "rules_text": "[Disarm] (When I attack, give an enemy unit here -1 Might this turn.)\n[Ganking] (I can move from battlefield to battlefield.)",
+          "power": 0,
+          "tags": [
+            "Bilgewater"
+          ]
+        },
+        "observation": "Full original face inspected: Unit / Bilgewater. Existing artwork corrections already repair the gallery Spell type and omitted tag."
+      }
+    }
+  ],
+  "preserved_source_prefix": {
+    "resolutions": {
+      "count": 142,
+      "sha256": "5cdd515d15e59955b918de597117f2c2c2e9e6ad9268fed417a2c0a01b1f2706"
+    },
+    "raw_printings": {
+      "count": 92,
+      "sha256": "50e808ddefc147802489dc1f8a9c7d875fa8b68b66a316cfa65ada38ecc464ea"
+    },
+    "historical_issues": {
+      "count": 57,
+      "sha256": "ca60cb9f9a58184360882dab34c2751bfdffca7521cdfa1a87510e627ce08ec6"
+    },
+    "images": {
+      "count": 92,
+      "sha256": "d73a341da7bf679121d6e9ed9645ca7fb7187df5b6151d46ba326105d4fb50e3"
+    }
+  },
+  "rules_audit": {
+    "official_rules_date": "2026-10-09",
+    "checked_on": "2026-11-14",
+    "errata_url": "https://playriftbound.com/en-us/news/announcements/radiance-errata-updates/",
+    "mechanics": [
+      "One Attack trigger per bearer, summing printed and granted Disarm values (831.1.d.1, 831.2).",
+      "Clanging Sentry grants Disarm to all friendly Mechs, including itself; two Sentries each have Disarm 2 (831.2 example).",
+      "Here follows the live source at resolution; source departure supplies no location (359.3.e.12, 359.3.f.1-2)."
+    ],
+    "open_question": "Confirm evaluation timing of the Disarm value and source-relative Here before admitting runtime support.",
+    "rules_pdf_sha256": "94d41fee86f88b61c4157c0389c0595d990b98e5b42555c99d9f649ee64d1fec"
+  },
+  "validation": {
+    "source_tests": 47,
+    "source_log": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/disarm-source-v2.log",
+    "source_log_sha256": "943ae7c9e396814c592dd2a7d092a9e5c620b1c9e5d9cb96bcbf7edd0bbd2d30",
+    "prior_attempt": "v1 correctly rejected the Siren review record copied from raw gallery type Spell; corrected the reviewed type to the actually printed Unit, preserving raw data."
+  }
+}

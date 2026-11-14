@@ -63,7 +63,7 @@
     }
   },
   "evidence_manifest_path": "assets/data/catalog_evidence/images.json",
-  "evidence_manifest_sha256": "36e0aded5345c1173edf545bf60bb30f67894835569191d267e39d1b3e7fa3d3",
+  "evidence_manifest_sha256": "ff92637c011abe8ba3dba15538737a2b0fbc1824315ed73f1ae5e263e46a0c1b",
   "evidence_checks": {
     "historical_c6_review": {
       "all8_archives_verified": true,
@@ -92,12 +92,12 @@
     "Live page checks fetch current gallery and legality pages but do not freshly download image evidence; the stored visual review remains dated."
   ],
   "stats": {
-    "historical_issue_groups": 57,
-    "reviewed_printings": 92,
-    "field_resolutions": 142,
-    "overrides": 115,
+    "historical_issue_groups": 59,
+    "reviewed_printings": 94,
+    "field_resolutions": 144,
+    "overrides": 117,
     "confirmations": 27,
-    "artwork_confirmed": 128,
+    "artwork_confirmed": 130,
     "rule_derived": 14,
     "c7_new_field_resolutions": 39,
     "c7_new_printings": 31,
@@ -119,7 +119,9 @@
     "innovator_new_field_resolutions": 1,
     "innovator_new_printings": 1,
     "riven_new_field_resolutions": 3,
-    "riven_new_printings": 3
+    "riven_new_printings": 3,
+    "disarm_new_field_resolutions": 2,
+    "disarm_new_printings": 2
   },
   "historical_issues": [
     {
@@ -1625,6 +1627,68 @@
       "runtime_support": "source_review_only",
       "discovery_basis": "confirmed_artwork",
       "discovered_on": "2026-11-12"
+    },
+    {
+      "review_issue_id": "rad-054-167-tags",
+      "raw_issue": {
+        "kind": "official_artwork_field_mismatch",
+        "field": "tags",
+        "official_ids": [
+          "rad-054-167"
+        ],
+        "values": [
+          {
+            "official_id": "rad-054-167",
+            "raw_value": [],
+            "printed_value": [
+              "Bandle City",
+              "Yordle"
+            ]
+          }
+        ],
+        "detail": "The full original official face visibly prints Bandle City / Yordle on its type/tag line. The gallery omits both tags. Preserve raw facts and correct only the effective tags; no runtime support is granted."
+      },
+      "printing_ids": [
+        "rad-054-167"
+      ],
+      "resolution_ids": [
+        "rad-054-167:tags"
+      ],
+      "proposed_status": "reviewed",
+      "runtime_support": "source_review_only",
+      "discovery_basis": "confirmed_artwork",
+      "discovered_on": "2026-11-14"
+    },
+    {
+      "review_issue_id": "rad-055-167-tags",
+      "raw_issue": {
+        "kind": "official_artwork_field_mismatch",
+        "field": "tags",
+        "official_ids": [
+          "rad-055-167"
+        ],
+        "values": [
+          {
+            "official_id": "rad-055-167",
+            "raw_value": [],
+            "printed_value": [
+              "Piltover",
+              "Mech"
+            ]
+          }
+        ],
+        "detail": "The full original official face visibly prints Piltover / Mech on its type/tag line. The gallery omits both tags. Preserve raw facts and correct only the effective tags; no runtime support is granted."
+      },
+      "printing_ids": [
+        "rad-055-167"
+      ],
+      "resolution_ids": [
+        "rad-055-167:tags"
+      ],
+      "proposed_status": "reviewed",
+      "runtime_support": "source_review_only",
+      "discovery_basis": "confirmed_artwork",
+      "discovered_on": "2026-11-14"
     }
   ],
   "raw_printings": [
@@ -5238,6 +5302,82 @@
       "energy": 2,
       "public_code": "RAD-107/167",
       "review_draft_sha256": "fca5e6800f86dee2044895a8e6633bf65d1b54a535d2bcda7ac977fe644bcbc1"
+    },
+    {
+      "official_id": "rad-054-167",
+      "public_code": "RAD-054/167",
+      "name": "Trinket Peddler",
+      "set": "RAD",
+      "collector_number": 54,
+      "types": [
+        "unit"
+      ],
+      "type_source": "cardType.type",
+      "structured_types": [
+        "unit"
+      ],
+      "accessibility_types": [
+        "unit"
+      ],
+      "type_labels_conflict": false,
+      "super_types": [],
+      "domains": [
+        "mind"
+      ],
+      "energy": 3,
+      "power": null,
+      "might": 3,
+      "might_bonus": null,
+      "rules_html": "<p>[Disarm] (When I attack, give an enemy unit here -1 :rb_might: this turn.)</p>",
+      "rules_text": "[Disarm] (When I attack, give an enemy unit here -1 Might this turn.)",
+      "equipment_html": "",
+      "equipment_text": "",
+      "tags": [],
+      "rarity": "common",
+      "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/78106b7cea441b13d108e532adc5ce063f448165-744x1039.png?accountingTag=RB",
+      "image_accessibility_text": "Riftbound Unit: Trinket Peddler. [Disarm] (When I attack, give an enemy unit here -1 [S] this turn.)",
+      "illustrators": [
+        "Alessandro Poli"
+      ],
+      "review_draft_sha256": "89961cc9a08e7ffa3fdb61a9a5fecea95a3117f856483cc0dcf69d03c799e8b4"
+    },
+    {
+      "official_id": "rad-055-167",
+      "public_code": "RAD-055/167",
+      "name": "Clanging Sentry",
+      "set": "RAD",
+      "collector_number": 55,
+      "types": [
+        "unit"
+      ],
+      "type_source": "cardType.type",
+      "structured_types": [
+        "unit"
+      ],
+      "accessibility_types": [
+        "unit"
+      ],
+      "type_labels_conflict": false,
+      "super_types": [],
+      "domains": [
+        "mind"
+      ],
+      "energy": 3,
+      "power": null,
+      "might": 2,
+      "might_bonus": null,
+      "rules_html": "<p>Your Mechs have [Disarm]. (When each of us attacks, give an enemy unit there -1 :rb_might: this turn.)</p>",
+      "rules_text": "Your Mechs have [Disarm]. (When each of us attacks, give an enemy unit there -1 Might this turn.)",
+      "equipment_html": "",
+      "equipment_text": "",
+      "tags": [],
+      "rarity": "uncommon",
+      "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/5d4c22ef863e041887a00d34b2dae1f3ce658326-744x1039.png?accountingTag=RB",
+      "image_accessibility_text": "Riftbound Unit: Clanging Sentry. Your Mechs have [Disarm]. (When each of us attacks, give an enemy unit there -1 [S] this turn.)",
+      "illustrators": [
+        "Kudos Productions"
+      ],
+      "review_draft_sha256": "7d92ca2531cb7ef03f9f00accfe27aa85130a3e19f50a4271dd05defea5f1b1d"
     }
   ],
   "resolutions": [
@@ -10038,6 +10178,68 @@
           "local_path": "assets/data/catalog_evidence/images/rad-107-167.png",
           "sha256": "5a0503ca0036983004020f6d9b15cf8392b7e23f479087f77b1be0fb5a862dca",
           "bytes": 746486,
+          "location": "Printed type/tag line below the artwork"
+        }
+      ],
+      "enables_runtime_support": false
+    },
+    {
+      "id": "rad-054-167:tags",
+      "official_id": "rad-054-167",
+      "name": "Trinket Peddler",
+      "field": "tags",
+      "reviewed_on": "2026-11-14",
+      "basis": "confirmed_artwork",
+      "operation": "override",
+      "expected_raw_value": [],
+      "raw_source_field": "tags",
+      "expected_raw_source_value": [],
+      "effective_value": [
+        "Bandle City",
+        "Yordle"
+      ],
+      "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+      "expected_printing_sha256": "89961cc9a08e7ffa3fdb61a9a5fecea95a3117f856483cc0dcf69d03c799e8b4",
+      "printing_hash_encoding": "UTF-8 JSON sorted keys; ensure_ascii=false; separators=(',', ':')",
+      "reason": "The full original official face visibly prints Bandle City / Yordle on its type/tag line. The gallery omits both tags. Preserve raw facts and correct only the effective tags; no runtime support is granted.",
+      "evidence": [
+        {
+          "kind": "official_card_image",
+          "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/78106b7cea441b13d108e532adc5ce063f448165-744x1039.png?accountingTag=RB",
+          "local_path": "assets/data/catalog_evidence/images/rad-054-167.png",
+          "sha256": "75ecad5a4744dc9d74ebd02f9f0ab3440b22a17da8a9fb89246f38eb484993fc",
+          "bytes": 821406,
+          "location": "Printed type/tag line below the artwork"
+        }
+      ],
+      "enables_runtime_support": false
+    },
+    {
+      "id": "rad-055-167:tags",
+      "official_id": "rad-055-167",
+      "name": "Clanging Sentry",
+      "field": "tags",
+      "reviewed_on": "2026-11-14",
+      "basis": "confirmed_artwork",
+      "operation": "override",
+      "expected_raw_value": [],
+      "raw_source_field": "tags",
+      "expected_raw_source_value": [],
+      "effective_value": [
+        "Piltover",
+        "Mech"
+      ],
+      "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+      "expected_printing_sha256": "7d92ca2531cb7ef03f9f00accfe27aa85130a3e19f50a4271dd05defea5f1b1d",
+      "printing_hash_encoding": "UTF-8 JSON sorted keys; ensure_ascii=false; separators=(',', ':')",
+      "reason": "The full original official face visibly prints Piltover / Mech on its type/tag line. The gallery omits both tags. Preserve raw facts and correct only the effective tags; no runtime support is granted.",
+      "evidence": [
+        {
+          "kind": "official_card_image",
+          "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/5d4c22ef863e041887a00d34b2dae1f3ce658326-744x1039.png?accountingTag=RB",
+          "local_path": "assets/data/catalog_evidence/images/rad-055-167.png",
+          "sha256": "0e979f3dce7ede1cc60e480612b2f26ddca54e43f53b63c2edf8a189312b5602",
+          "bytes": 860494,
           "location": "Printed type/tag line below the artwork"
         }
       ],
