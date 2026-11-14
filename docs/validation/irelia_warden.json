@@ -1,5 +1,5 @@
 {
-  "status": "Local validation passed; immutable installed acceptance pending",
+  "status": "Installed acceptance passed for the tested revision; full Standard parity remains unproven",
   "reviewed_at": "2026-11-14T11:41:19.769347+00:00",
   "source_review_commit": "a585c36",
   "base_revision": "35d1c8c5bde3ab8a4b377ee5d1e3f9cf2905d309",
@@ -223,10 +223,41 @@
     }
   ],
   "remaining": [
-    "Immutable Nix/source/simulation acceptance for this candidate.",
-    "Installed native checks and full API record equality against these candidate baselines.",
-    "Publication after acceptance; no current metagame prevalence or expert AI claim.",
     "Gear Ready prevention has a direct shared-effect check; this does not claim an end-to-end Ready-gear card interaction absent from the supported catalog.",
     "Full Standard card and interaction coverage, independent opponent evaluation, and human learning validation remain incomplete."
-  ]
+  ],
+  "installed_acceptance": {
+    "status": "passed",
+    "audited_at": "2026-11-14T12:08:24.620636+00:00",
+    "tested_revision": "e39365272aaf04c6b466eaa7b6dc9deb84200a94",
+    "source_files_verified": 1498,
+    "rust_tests": 2045,
+    "source_tests": 338,
+    "simulation_games": 1176,
+    "simulation_sha256": "4ff0a7466d14ce4061db5e9fd2d8919942b2d4b603db7ffafac15d7449a26059",
+    "ui_cases": 29,
+    "captures": 234,
+    "ui_actual_games": 2,
+    "api_campaigns": 12,
+    "api_records": 75,
+    "all_capture_and_log_hashes_verified": true,
+    "all_api_records_compared_in_full": true,
+    "installed_visually_reviewed": [
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/warden-release-v1/warden-small/rift_warden_gear.png",
+        "sha256": "e6a0e8c81fc3747c4a3f1c7ea75b56e225325a378ac1767669ef5c5a7c0a04a6"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/warden-release-v1/warden-normal/rift_warden_rules.png",
+        "sha256": "30eccd6326219973ce589991ea64aa84910f5b19695ff367bdcc5fae86379d46"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/warden-release-v1/warden-small/rift_warden_moved.png",
+        "sha256": "24306d1efdd079ba62aa17886f14b5441d55a48ee09327eb8d44214b594fa8f1"
+      }
+    ],
+    "package": "/nix/store/26zgqsnvr93nrcj2dzsjjaj9bqi00qb5-local-rift-0.1.0",
+    "status_sha256": "af5affa8d6202ccdd7bfb53dec6534ac7021c79eab3bff815c1bc38014041c56",
+    "nix_log_sha256": "9e1776eefb381794e12f7c8463b1196b93543d94418be066cad24bca3f7dbb0f"
+  }
 }

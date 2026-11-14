@@ -59,9 +59,9 @@ tests, 336 source checks, 1,176 simulated games, 27 installed UI cases with
 218 captures, and eleven complete API comparisons (69 records). Four installed
 captures were visually reviewed. See [Flurry validation](validation/irelia_flurry.json).
 
-Mageseeker Warden is implemented locally with live battlefield restrictions,
+Mageseeker Warden passed installed acceptance with live battlefield restrictions,
 unit and gear inspection notes, public API source information, and both Mote
-advice levels. Local checks passed: 1,110 library tests, 168 client tests, 24 complete engine
-games, 16 native captures and 12 API campaigns with 75 records. The Warden
-campaign completed six series and 15 actual games. Installed acceptance remains
-pending; see [Warden validation](validation/irelia_warden.json).
+advice levels. The fixed candidate passed 2,045 Rust tests, 338 source checks,
+1,176 simulated games, 29 installed UI cases (234 captures), and 12 API
+campaigns with 75 full records matching the local baselines. Three installed
+Warden captures were visually reviewed; see [Warden validation](validation/irelia_warden.json).
