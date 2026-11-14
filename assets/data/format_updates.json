@@ -1,0 +1,100 @@
+{
+  "schema_version": 1,
+  "scope": "global_standard_1v1",
+  "catalog_as_of": "2026-10-24",
+  "reviewed_on": "2026-11-13",
+  "updates": [
+    {
+      "announced_on": "2026-11-13",
+      "effective_on": "2026-11-23",
+      "source_url": "https://playriftbound.com/en-us/news/announcements/radiance-ban-list-updates-effective-november-23-2026/",
+      "archive": "assets/data/format_updates/2026-11-23.html.gz",
+      "archive_sha256": "b5447eb844f0806a2c30a99da52c24068f1b8edb9d69da6750e3600c159b9b78",
+      "content_sha256": "f956130f87432a61df3ce2bbe8fdf1dd214f0f8c3761641eaaa59a4771b2af92",
+      "regional_exceptions": "Korea and Traditional Chinese circuits defer these changes until their Radiance release; the article does not give exact regional effective dates. Do not apply the global date to those circuits.",
+      "banned": [
+        {
+          "identity": "rad-043-167",
+          "name": "Riven, Broken Blade",
+          "kind": "unit",
+          "official_ids": [
+            "rad-043-167",
+            "rad-043a-167"
+          ]
+        },
+        {
+          "identity": "ogn-077-298",
+          "name": "Zhonya's Hourglass",
+          "kind": "gear",
+          "official_ids": [
+            "ogn-077-298"
+          ]
+        },
+        {
+          "identity": "sfd-048-221",
+          "name": "Stellacorn Herder",
+          "kind": "unit",
+          "official_ids": [
+            "sfd-048-221"
+          ]
+        },
+        {
+          "identity": "ogn-194-298",
+          "name": "Nocturne, Horrifying",
+          "kind": "unit",
+          "official_ids": [
+            "ogn-194-298"
+          ]
+        },
+        {
+          "identity": "ogn-195-298",
+          "name": "Rhasa the Sunderer",
+          "kind": "unit",
+          "official_ids": [
+            "ogn-195-298"
+          ]
+        },
+        {
+          "identity": "ogn-026-298",
+          "name": "Brynhir Thundersong",
+          "kind": "unit",
+          "official_ids": [
+            "ogn-026-298"
+          ]
+        },
+        {
+          "identity": "ogn-160-298",
+          "name": "Dazzling Aurora",
+          "kind": "gear",
+          "official_ids": [
+            "ogn-160-298"
+          ]
+        },
+        {
+          "identity": "ogn-242-298",
+          "name": "Baited Hook",
+          "kind": "gear",
+          "official_ids": [
+            "ogn-242-298"
+          ]
+        },
+        {
+          "identity": "sfd-207-221",
+          "name": "Emperor's Dais",
+          "kind": "battlefield",
+          "official_ids": [
+            "sfd-207-221"
+          ]
+        },
+        {
+          "identity": "unl-215-219",
+          "name": "Star Spring",
+          "kind": "battlefield",
+          "official_ids": [
+            "unl-215-219"
+          ]
+        }
+      ]
+    }
+  ]
+}

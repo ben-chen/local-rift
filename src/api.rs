@@ -51,6 +51,8 @@ mod conditional_equipment_tests;
 #[cfg(test)]
 mod deathgrip_tests;
 #[cfg(test)]
+mod format_dates;
+#[cfg(test)]
 mod guards_tests;
 #[cfg(test)]
 mod hidden_blade_tests;
@@ -132,6 +134,7 @@ pub struct Session {
     game: Game,
     revision: u64,
     series: Option<series::SeriesRun>,
+    format_date: Option<String>,
 }
 
 impl fmt::Debug for Session {
@@ -155,6 +158,7 @@ impl Session {
             game: make_game(options)?,
             revision: 0,
             series: None,
+            format_date: None,
         })
     }
     pub fn revision(&self) -> u64 {
@@ -233,9 +237,32 @@ impl Session {
     }
 
     pub fn reset(&mut self, revision: u64, options: ResetOptions) -> Result<(), ApiError> {
+        self.reset_for_date(revision, options, None)
+    }
+    pub fn reset_for_date(
+        &mut self,
+        revision: u64,
+        options: ResetOptions,
+        format_date: Option<&str>,
+    ) -> Result<(), ApiError> {
         self.require_revision(revision)?;
+        if let Some(date) = format_date {
+            for player in 0..2 {
+                let mut deck = match &options.custom_decks[player] {
+                    Some(deck) => deck.clone(),
+                    None => {
+                        CustomDeck::from_preset(options.decks[player]).map_err(ApiError::invalid)?
+                    }
+                };
+                if let Some(fields) = options.battlefields {
+                    deck.battlefield = fields[player];
+                }
+                crate::legality::validate_deck_at(&deck, date).map_err(ApiError::invalid)?;
+            }
+        }
         let mut candidate = self.clone();
         candidate.series = None;
+        candidate.format_date = format_date.map(str::to_owned);
         candidate.commit(make_game(options)?)?;
         *self = candidate;
         Ok(())
@@ -395,16 +422,23 @@ impl Session {
         if let Some(run) = &self.series {
             summary["series"] = run.state.summary();
         }
+        self.add_format_view(&mut summary);
         summary
+    }
+
+    fn add_format_view(&self, view: &mut Value) {
+        if let Some(date) = &self.format_date {
+            view["format"] = json!({"scope":"global_standard_1v1","as_of":date});
+        }
     }
 
     pub fn observe(&self, viewer: usize) -> Result<Value, ApiError> {
         valid_player(viewer)?;
         if self.require_series_game().is_err() {
-            return Ok(
-                json!({"protocol":PROTOCOL_VERSION,"revision":self.revision,"viewer":viewer,"phase":"series",
-                "series":self.series.as_ref().expect("series phase").state.observe(viewer).map_err(ApiError::illegal)?}),
-            );
+            let mut view = json!({"protocol":PROTOCOL_VERSION,"revision":self.revision,"viewer":viewer,"phase":"series",
+                "series":self.series.as_ref().expect("series phase").state.observe(viewer).map_err(ApiError::illegal)?});
+            self.add_format_view(&mut view);
+            return Ok(view);
         }
         let game = &self.game;
         let can_refuse_payment = game.can_refuse_payment().map_err(ApiError::illegal)?;
@@ -587,6 +621,7 @@ impl Session {
         if let Some(run) = &self.series {
             view["series"] = run.state.observe(viewer).map_err(ApiError::illegal)?;
         }
+        self.add_format_view(&mut view);
         Ok(view)
     }
 
@@ -648,14 +683,21 @@ impl Session {
                 Ok(catalog())
             }
             "validate_deck" => {
-                keys(object, &["command", "id", "deck"])?;
+                keys(object, &["command", "id", "deck", "format_date"])?;
                 let deck = CustomDeck::from_json(
                     object
                         .get("deck")
                         .ok_or_else(|| ApiError::invalid("Provide a deck."))?,
                 )
                 .map_err(ApiError::invalid)?;
-                Ok(json!({"legal":true,"card_count":deck.card_count(),"deck":deck.to_json()}))
+                let mut result =
+                    json!({"legal":true,"card_count":deck.card_count(),"deck":deck.to_json()});
+                if let Some(date) = optional_string(object, "format_date")? {
+                    result["format"] = crate::legality::validate_deck_at(&deck, date)
+                        .map_err(ApiError::invalid)?
+                        .to_json();
+                }
+                Ok(result)
             }
             "observe" => {
                 keys(object, &["command", "id", "player"])?;
@@ -681,6 +723,7 @@ impl Session {
                         "first_player",
                         "battlefields",
                         "custom_decks",
+                        "format_date",
                     ],
                 )?;
                 let defaults = ResetOptions::default();
@@ -726,7 +769,11 @@ impl Session {
                         }
                     },
                 };
-                self.reset(unsigned(object, "revision")?, options)?;
+                self.reset_for_date(
+                    unsigned(object, "revision")?,
+                    options,
+                    optional_string(object, "format_date")?,
+                )?;
                 Ok(self.summary())
             }
             "mulligan" => {

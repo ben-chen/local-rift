@@ -7,6 +7,7 @@ pub mod deck;
 pub mod game;
 pub mod gear;
 pub mod hidden;
+pub mod legality;
 pub mod legend_catalog;
 pub mod legends;
 pub mod payment;

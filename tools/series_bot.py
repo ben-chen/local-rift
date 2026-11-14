@@ -23,7 +23,8 @@ def choose_field(view):
 
 
 def run_match(api, registrations, seed=1, difficulty='tactical', designated_player=0,
-              sideboard_policy=choose_sideboard, first_player=None, trace=None, setup_policies=None):
+              sideboard_policy=choose_sideboard, first_player=None, trace=None, setup_policies=None,
+              format_date=None):
     process = subprocess.Popen([str(api)], stdin=subprocess.PIPE, stdout=subprocess.PIPE,
                                text=True, bufsize=1)
     revision = 0
@@ -49,8 +50,9 @@ def run_match(api, registrations, seed=1, difficulty='tactical', designated_play
         return response['result']
 
     try:
+        format_options = {'format_date': format_date} if format_date is not None else {}
         request('series_begin', registrations=registrations, seed=seed,
-                difficulty=difficulty, designated_player=designated_player)
+                difficulty=difficulty, designated_player=designated_player, **format_options)
         for _ in range(12000):
             # Observations are requested separately; policies receive only their seat.
             views = [request('observe', player=p) for p in range(2)]
@@ -116,10 +118,12 @@ def main():
     parser.add_argument('--designated-player', type=int, choices=[0,1], default=0,
                         help='Seat selected by the agreed random method, or by playoff seeding.')
     parser.add_argument('--adaptive', action='store_true', help='Use the built-in scouting and match setup policy for both seats.')
+    parser.add_argument('--format-date', help='Validate the entire registration for an explicit global Standard date (YYYY-MM-DD).')
     args = parser.parse_args()
     registrations = json.loads(args.registrations.read_text()) if args.registrations else [{'preset':5},{'preset':5}]
     result = run_match(args.api.resolve(), registrations, args.seed, args.difficulty, args.designated_player,
-                       setup_policies=["adaptive", "adaptive"] if args.adaptive else None)
+                       setup_policies=["adaptive", "adaptive"] if args.adaptive else None,
+                       format_date=args.format_date)
     print(json.dumps(result, indent=2))
 
 

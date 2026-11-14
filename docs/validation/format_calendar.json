@@ -1,0 +1,65 @@
+{
+  "status": "Backend and source validation passed; native format selection and final release acceptance pending",
+  "reviewed_at": "2026-11-14T01:45:55.725325+00:00",
+  "base_candidate": "aeb9944d6d02c7d048bc114fe98e9bcc94a0df3a",
+  "scope": [
+    "Explicit global Standard dates for deck and complete registration validation",
+    "Date enforcement at API single-game and match creation",
+    "Public date retained through a match; invalid reset preserves the previous match",
+    "Known announced bans only; no changes to historical recipes or accepted catalog"
+  ],
+  "source": {
+    "manifest": "assets/data/format_updates.json",
+    "announcement_url": "https://playriftbound.com/en-us/news/announcements/radiance-ban-list-updates-effective-november-23-2026/",
+    "announced_on": "2026-11-13",
+    "effective_on": "2026-11-23",
+    "banned_cards": 8,
+    "banned_battlefields": 2,
+    "regional_exceptions_recorded": true
+  },
+  "checks": {
+    "new_rust_tests": 8,
+    "all_library_tests_passed": 978,
+    "focused_source_tests_passed": 3,
+    "offline_catalog": "passed; accepted catalog unchanged",
+    "formatting": "passed",
+    "clippy": "passed with warnings denied",
+    "paired_api_matches": 6,
+    "actual_api_games": 16,
+    "levels": [
+      "easy",
+      "tactical",
+      "strategic"
+    ],
+    "complete_traces_equal_after_exact_format_projection": true,
+    "trace_projection": [
+      "Remove format_date from initial request",
+      "Remove only the new public format field from result root"
+    ],
+    "both_irelia_presets": [
+      0,
+      5
+    ]
+  },
+  "evidence_sha256": {
+    "format-calendar-rust-v1.log": "1f4282f1516402220c0dd88f8d3df78b100c605006564a4c709270d5621ee490",
+    "format-calendar-api-v2.log": "0591ab23a57f0ff7982a76ee1b0fb5144d05f9fbf1e476e42dc8a4f212d1d886",
+    "format-calendar-library-v2.log": "d47bb49fad22d710446aab04e7ffdfe5a32e23071a612d53a0f0508a4b08b7bd",
+    "format-calendar-clippy-v2.log": "2413ab5a40a3db449ca4e8e5d65cb7c27b1583d49775cda552c3c88267bf3525",
+    "format-calendar-build-v2.log": "1d4bfa0f56667aee289aeea524154efe87f9d9da3936253ab50db82c1c6cbbb0",
+    "format-calendar-series-v1.json": "09a92412da275b4d5182a3133e322b32946ac23dd90140202fce1dd700880617",
+    "format-calendar-junit-v2.xml": "8f98b84c06d5a0baaa58cad052e11e6dc0e0fa197ad37ed066b5756f087dfaf1"
+  },
+  "remaining": [
+    "Native format choice and current-date selection",
+    "Propagate selected format to any AI card-pool assumptions",
+    "Final integrated client, source and package acceptance",
+    "Publish accepted changes and collect GitHub CI"
+  ],
+  "limitations": [
+    "No automatic current-format selection yet; omitted API date selects the accepted catalog snapshot",
+    "Future dates use known announcements and do not predict later changes",
+    "Global dates do not apply to the announced Korea or Traditional Chinese release exceptions",
+    "This does not add new cards or establish complete Standard rules parity"
+  ]
+}

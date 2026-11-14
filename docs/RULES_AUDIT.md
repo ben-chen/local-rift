@@ -876,3 +876,22 @@ or Gold copy, current state and token rules, rather than the creating card’s
 printed effects. An inspector stays explicit when its token has departed.
 Combined package acceptance is pending; this does not complete the Azir list or
 all Standard interactions.
+
+## Announced format changes — November 13, 2026
+
+A live Rules Hub review found the [November 23 ban announcement](https://playriftbound.com/en-us/news/announcements/radiance-ban-list-updates-effective-november-23-2026/).
+Its eight cards and two battlefields remain legal before their effective date.
+The archived article and exact printing cohorts are recorded in
+`assets/data/format_updates.json`; the original accepted catalog and tournament
+recipes remain unchanged. The announcement defers these changes in Korea and
+Traditional Chinese circuits until their Radiance release, without giving exact
+regional dates. The new date-specific checks therefore state their global scope.
+
+Both Irelia presets contain Stellacorn Herder; Xeno also contains Zhonya's
+Hourglass. The complete Rengar registration demonstrates why auditing only a
+main deck is insufficient: its affected sideboard card and registered
+battlefields must also be considered. Bot validation and match creation now
+account for main deck, sideboard and fields at an explicit date, preserving the
+old match when a new list is rejected. Native format selection and automatic
+current-date selection remain required before claiming automatic support for
+the new format.

@@ -47,6 +47,7 @@ impl Session {
             difficulty,
             scouting: std::array::from_fn(|_| Scouting::default()),
         });
+        self.format_date = None;
         self.revision = next;
         Ok(())
     }
@@ -206,10 +207,16 @@ impl Session {
                 }
             }
             "validate_registration" => {
-                keys(o, &["command", "id", "registration"])?;
+                keys(o, &["command", "id", "registration", "format_date"])?;
                 let r = Registration::from_json(required(o, "registration")?)
                     .map_err(ApiError::invalid)?;
-                return Ok(json!({"legal":true,"registration":r.to_json()}));
+                let mut result = json!({"legal":true,"registration":r.to_json()});
+                if let Some(date) = optional_string(o, "format_date")? {
+                    result["format"] = crate::legality::validate_registration_at(&r, date)
+                        .map_err(ApiError::invalid)?
+                        .to_json();
+                }
+                return Ok(result);
             }
             "series_begin" => {
                 keys(
@@ -222,6 +229,7 @@ impl Session {
                         "seed",
                         "difficulty",
                         "designated_player",
+                        "format_date",
                     ],
                 )?;
                 let regs = required(o, "registrations")?
@@ -239,13 +247,22 @@ impl Session {
                         ));
                     }
                 };
+                let registrations = [parse(&regs[0])?, parse(&regs[1])?];
+                let format_date = optional_string(o, "format_date")?;
+                if let Some(date) = format_date {
+                    for registration in &registrations {
+                        crate::legality::validate_registration_at(registration, date)
+                            .map_err(ApiError::invalid)?;
+                    }
+                }
                 self.begin_series(
                     unsigned(o, "revision")?,
-                    [parse(&regs[0])?, parse(&regs[1])?],
+                    registrations,
                     optional_unsigned(o, "seed")?.unwrap_or(1),
                     difficulty,
                     index(o, "designated_player")?,
                 )?;
+                self.format_date = format_date.map(str::to_owned);
             }
             "series_sideboard" => {
                 keys(

@@ -71,6 +71,34 @@ A custom list can replace either seat through `custom_decks:[deck_or_null,deck_o
 
 Deck validation requires at least 40 main-deck cards including the chosen champion, no more than three copies by full name, at most three Signature cards in total, matching champion tags, complete domain compatibility, exactly 12 legal runes, and an implemented legal battlefield. A `Unique` card is limited to one copy. Only implemented Standard-legal cards and legends can be selected. Zero-count rows should be omitted. Invalid decks are rejected before resetting the live match. Optional reset `battlefields` overrides the decks' selected fields. The API leaves both opening hands untouched for each agent's mulligan.
 
+`validate_deck` and `validate_registration` accept an optional `format_date` in
+`YYYY-MM-DD` form. This adds explicit date-specific checks against the accepted
+catalog and announced **global Standard/1v1** bans. Dates before the catalog's
+2026-10-24 boundary are rejected. For example:
+
+```json
+{"command":"validate_registration","registration":{"preset":5},"format_date":"2026-11-22"}
+{"command":"validate_registration","registration":{"preset":5},"format_date":"2026-11-23"}
+```
+
+The first succeeds and includes `result.format` with the review date, scope and
+upcoming restrictions affecting the list. The second rejects the registered
+Stellacorn Herder copies under the [announced November 23 bans](https://playriftbound.com/en-us/news/announcements/radiance-ban-list-updates-effective-november-23-2026/).
+Registration checks include the entire sideboard and all three battlefields.
+Both requests are read-only and preserve the session revision and game state.
+
+`reset` and `series_begin` also accept `format_date`. They reject a banned list
+before changing the session; single-game validation includes the actual
+`battlefields` overrides. The selected date is retained in response summaries
+and each player's observation as `format: {scope, as_of}` throughout the match.
+No card is substituted. A rejected reset preserves the previous match and date.
+
+Omitting the date selects the accepted catalog snapshot and preserves the older
+response shape. Native date selection and automatic current-format selection
+remain unfinished. The schedule describes known announcements, not a guarantee
+about later unannounced changes. Regional release exceptions are recorded in the
+source manifest and are not assigned the global effective date.
+
 Use observation `priority`, not `active`, to choose who acts. An opposing player can have priority while the active player owns the turn. Pending decisions can also transfer priority. `step_ai` works for either seat and processes one choice/action, not a whole turn.
 
 Repulse (card442) has ordered, dependent targets. Its `play_targets.ordered_slots`
