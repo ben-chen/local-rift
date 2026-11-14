@@ -340,6 +340,19 @@ When a seeded AI game exposes a rules bug, preserve the relevant legal actions
 as a replay. A rule regression should keep testing that interaction when the AI
 learns a different line; policy tests should assert the AI's decisions separately.
 
+The Kha'Zix practice check uses an authored legal Irelia registration in both
+seats, with both starting players and all three difficulty levels. It records
+actual Attack/Defend triggers and XP resolution separately from completed games:
+
+```sh
+python3 tools/check_irelia_khazix_api.py target/release/rift-api /tmp/khazix-matches.json
+./target/release/local-rift --ui-smoke-khazix --small
+```
+
+The native check exercises invalid and valid hand drops, unit dragging, full
+inspection, both advice levels and the resolved combat bonus. Like the other
+UI smoke modes, it uses controlled positions rather than replaying full games.
+
 For Irelia development, one focused command runs the related rules, counter,
 opponent, companion and registered-match tests. It retains the exact test list,
 source identity, logs and decision measurements in a new output directory:

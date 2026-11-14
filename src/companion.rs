@@ -393,6 +393,9 @@ fn checked_advice(game: &Game, level: AdviceLevel) -> Result<Vec<&'static str>, 
         if let Some(tip) = unyielding_advice(game, beginner) {
             window_tips.push(tip);
         }
+        if let Some(tip) = khazix_advice(game, beginner) {
+            window_tips.push(tip);
+        }
         window_tips.extend(crate::combat_ui::card_advice(game, beginner)?);
         if let Some(status) = game.combat_resolution() {
             window_tips.push(crate::combat_ui::advice(status, beginner));
@@ -557,17 +560,8 @@ fn checked_advice(game: &Game, level: AdviceLevel) -> Result<Vec<&'static str>, 
             "Hide Guards! to bring a Soldier into that battlefield during a response. Save 1 Order Power if you need its separate ready ability for a later move."
         });
     }
-    if human.hand.contains(&449)
-        || human
-            .units
-            .iter()
-            .any(|unit| !unit.token && unit.card_id == 449)
-    {
-        tips.push(if beginner {
-            "Kha'Zix checks for one enemy when attacking or defending: +2 Might this turn and 2 XP. Friendly allies can share the field. Ambush needs a friendly unit there."
-        } else {
-            "Isolate an enemy before Kha'Zix attacks or defends. Once triggered, a later enemy arrival won't cancel the +2 Might and XP; friendly support doesn't prevent it."
-        });
+    if let Some(tip) = khazix_advice(game, beginner) {
+        tips.push(tip);
     }
     if human.hand.contains(&447) {
         tips.push(if beginner {
@@ -1692,6 +1686,17 @@ fn response_window_advice(
     Ok(None)
 }
 
+fn khazix_advice(game: &Game, beginner: bool) -> Option<&'static str> {
+    let human = &game.players[0];
+    (human.hand.contains(&449)
+        || human.units.iter().any(|unit| !unit.token && unit.card_id == 449))
+        .then_some(if beginner {
+            "Kha'Zix checks for one enemy when attacking or defending: +2 Might this turn and 2 XP. Friendly allies can share the field. Ambush needs a friendly unit there."
+        } else {
+            "Isolate an enemy before Kha'Zix attacks or defends. Once triggered, a later enemy arrival won't cancel the +2 Might and XP; friendly support doesn't prevent it."
+        })
+}
+
 fn repulse_advice(game: &Game, beginner: bool) -> Option<&'static str> {
     (game.players[0].hand.contains(&442) || game.chain.iter().any(|item| item.player == 0 && item.card_id == 442 && item.ability.is_none())).then_some(if beginner {
         "Repulse chooses your battlefield unit, then an enemy spell or ability choosing it and no other friendly unit. Both choices must still work when Repulse resolves."
@@ -1871,6 +1876,53 @@ pub fn draw_mote(center: Vec2, scale: f32, time: f32, accent: Color) {
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn irelia_khazix_advice_remains_available_during_responses() {
+        use local_rift::game::{Action, Target};
+        let mut game = Game::new_for_agents(0, 1, 4491, Difficulty::Easy);
+        game.start_match().unwrap();
+        game.players[0].hand = vec![449, 7];
+        game.players[0].set_rune_setup([0; 6], [0; 6]).unwrap();
+        game.players[0].energy_pool = 12;
+        game.players[0].energy = 12;
+        game.players[0].units.push(Unit {
+            id: 44900,
+            card_id: 59,
+            lane: Some(0),
+            ready: true,
+            damage: 0,
+            buff: 0,
+            temporary_buff: 0,
+            token: false,
+            protected: false,
+            stunned: false,
+            banish_on_death: false,
+        });
+        game.apply(Action::PlayCardWithTargets {
+            hand_index: 1,
+            lane: None,
+            targets: vec![Target::Unit {
+                player: 0,
+                unit_id: 44900,
+            }],
+        })
+        .unwrap();
+        game.apply(Action::Choose { accept: false }).unwrap();
+        assert!(game.in_window());
+        assert_eq!(game.players[0].energy, 10);
+        let before = format!("{game:?}");
+        let mut private = game.clone();
+        private.players[1].hand = vec![449, 67];
+        private.players[1].deck.reverse();
+        for level in [AdviceLevel::Beginner, AdviceLevel::Advanced] {
+            let tips = advice(&game, level);
+            assert!(tips.iter().any(|tip| tip.contains("Kha'Zix")));
+            assert!(tips.iter().all(|tip| tip.chars().count() <= 180));
+            assert_eq!(tips, advice(&private, level));
+        }
+        assert_eq!(format!("{game:?}"), before);
+    }
+
     #[test]
     fn irelia_khazix_advice_explains_enemy_isolation_without_private_peeking() {
         let mut game = Game::new_for_agents(0, 0, 449, Difficulty::Easy);

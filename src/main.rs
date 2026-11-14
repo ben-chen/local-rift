@@ -10705,6 +10705,7 @@ async fn main() {
     let conditional_equipment_smoke = args.iter().any(|a| a == "--ui-smoke-conditional-equipment");
     let deathgrip_smoke = args.iter().any(|a| a == "--ui-smoke-deathgrip");
     let guards_smoke = args.iter().any(|a| a == "--ui-smoke-guards");
+    let khazix_smoke = args.iter().any(|a| a == "--ui-smoke-khazix");
     let tokens_smoke = args.iter().any(|a| a == "--ui-smoke-tokens");
     let hidden_blade_smoke = args.iter().any(|a| a == "--ui-smoke-hidden-blade");
     let blade_smoke = args.iter().any(|a| a == "--ui-smoke-blade");
@@ -10720,6 +10721,7 @@ async fn main() {
         || series_smoke
         || tokens_smoke
         || guards_smoke
+        || khazix_smoke
         || deathgrip_smoke
         || hidden_blade_smoke
         || conditional_equipment_smoke
@@ -10767,6 +10769,8 @@ async fn main() {
             smoke::run_tokens_frame(&mut app, frames)
         } else if guards_smoke {
             smoke::run_guards_frame(&mut app, frames)
+        } else if khazix_smoke {
+            smoke::run_khazix_frame(&mut app, frames)
         } else if deathgrip_smoke {
             smoke::run_deathgrip_frame(&mut app, frames)
         } else if hidden_blade_smoke {

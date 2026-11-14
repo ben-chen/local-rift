@@ -1,5 +1,5 @@
 {
-  "status": "Focused rules, source, static and complete API-match checks passed; native UI and full release acceptance pending",
+  "status": "Focused rules, source, static, API matches and native UI acceptance passed; frozen full release acceptance pending",
   "base_commit": "2fcc6e1d80b81f16b81179b8c9637371aceb226d",
   "reviewed_on": "2026-11-14",
   "runtime_id": 449,
@@ -15,16 +15,18 @@
     "focused_rust": 181,
     "focused_seconds": 19.376,
     "new_engine_test_families": 7,
-    "new_companion_test_families": 1,
+    "new_companion_test_families": 2,
     "additional_conformance_card_and_keyword_tests": 35,
     "additional_seconds": 0.053,
     "source_integration": 25,
     "additional_source_checks": 5,
-    "strict_all_target_clippy": "passed before the card-count test expectation changed; final 35-test run includes that changed assertion",
+    "strict_all_target_clippy": "passed on the final source, including the response-window correction and inspector scroll check",
     "clippy_seconds": 20.45,
     "catalog_regeneration": "passed",
     "formatting": "passed",
-    "diff_whitespace": "passed"
+    "diff_whitespace": "passed",
+    "response_window_companion_tests": 54,
+    "response_window_companion_seconds": 0.05
   },
   "source_review": {
     "original_faces": 2,
@@ -44,17 +46,20 @@
     "Red behavior run: one expected bonus test failed at 4 versus 6 Might; the nontrigger test passed.",
     "Historical/global review-count checks initially rejected the newly reviewed printing cohort. Global expectations now include the admission; the historical C28 check asserts admission leaves source-review counts unchanged instead of freezing unrelated future review counts.",
     "One source-check invocation used an obsolete class name. Four requested tests passed; the missing scope test passed after correcting the invocation.",
-    "The first API campaign required a trigger in every individual match and stopped at a completed Strategic match with no qualifying event. The final campaign retains that zero-use record and requires observed resolution per level/seat across both starters. This changes the coverage expectation, not game behavior."
+    "The first API campaign required a trigger in every individual match and stopped at a completed Strategic match with no qualifying event. The final campaign retains that zero-use record and requires observed resolution per level/seat across both starters. This changes the coverage expectation, not game behavior.",
+    "Native v1 exposed an unhandled optional Irelia setup choice; v2 exposed an incorrect Discipline cost expectation (2 Energy, leaving 10 of 12). Both fixtures were corrected without changing game rules.",
+    "Native v3 exposed missing KhaZix commentary in response-window routing. A focused regression reproduced it before the shared advice helper fixed both levels; all 54 companion tests then passed. Its parallel normal-window process also lost its X server, so subsequent display checks run sequentially.",
+    "Native v4 passed both sizes with eight captures. V5 adds a real inspector scroll and passes with ten reviewed captures."
   ],
   "limits": [
     "These are explicitly authored midgame positions, not proof of reachable complete-deck play.",
     "No new tournament preset or current-meta ranking claim. Existing seven preset recipes remain unchanged.",
     "The 181-test run retains the existing authored AI benchmark and its twelve known simpler-level misses.",
-    "Full regression and installed artwork/inspector checks remain pending; the completed API campaign is coverage evidence, not a strength evaluation."
+    "Full regression and installed package checks remain pending. Native UI and complete API matches provide scoped evidence, not general rules parity or strength."
   ],
   "remaining": [
-    "Inspect native artwork, full card text and both coaching levels.",
-    "Run frozen full regression/catalog/package acceptance before publication."
+    "Run frozen full regression/catalog/package acceptance.",
+    "Review installed captures and compare both API campaigns before publication."
   ],
   "evidence_sha256": {
     "irelia-khazix-focused-v1/status.json": "759db89876aedfee73b033d0a0a8bbf21040f983db70cc2561f7342a7a2179aa",
@@ -69,7 +74,14 @@
     "irelia-khazix-api-v1.json": "72b5d5304f17eb80df492a07bdb75343675a52faf994e44cd9a3177630cd12e7",
     "irelia-khazix-api-v2.json": "af3ab1f558612f2b651b9f9890a3448dc155ab025ee2922538bb3093617f5c9a",
     "irelia-khazix-api-v2.log": "5012c9a48a599f8ab47c5ad7f1784fa8e3d2c12f9360d8f0a753bd89cf0de2e9",
-    "irelia-khazix-api-build-v1.log": "d2d9005201ac4856589512ab7f3d1e8c18f27ef73edf312d182722b4e6720d44"
+    "irelia-khazix-api-build-v1.log": "d2d9005201ac4856589512ab7f3d1e8c18f27ef73edf312d182722b4e6720d44",
+    "irelia-khazix-response-red-v1.log": "806849b12108f7af7164c9aad708c9711c59594a36784292d4358f12bf89f921",
+    "irelia-khazix-response-green-v1.log": "4743eea52e47e876459df7ddc49936b68fcf42e091ab6daa499cc2e7033734b0",
+    "irelia-khazix-clippy-v3.log": "52e75fe57fafcbe51905da820118bce74e2b256b2723dbfd9092c55576364d27",
+    "irelia-khazix-native-v5/status.json": "4fcded69b4bb315cd97993eede77847007d11a70ff7034e180572d7dbdcfc111",
+    "irelia-khazix-native-visual-review-v1.json": "c995d99ef8d9ed0dc2a1a4cd670b4f6046c00284054df52ff380f86a51e00d8c",
+    "irelia-khazix-format-api-v1.json": "2a4d57147111da4971c423a0ed2c9a4afb330c288018706c4133a58867428fe0",
+    "irelia-khazix-clippy-v4.log": "a3041c7ff9312658473ef6a0a563e56cc2f2af676c0faa714b4f63de93b547b2"
   },
   "api": {
     "engine_source_commit": "1d3ab2a",
@@ -102,5 +114,47 @@
     "scope": "Authored legal Irelia registration replaces three Scuttle Crabs with three Kha'Zix; registered Master Yi opponent, historical format snapshot. Existing presets unchanged.",
     "resolution_observation": "A top Kha'Zix trigger disappears from the chain while its controller gains exactly two XP between successive public observations. Controlled rules tests establish conditional behavior separately.",
     "coverage_gate": "Every level/seat pair observes resolution across its two starting-player cases; the complete campaign observes both Attack and Defend. A game with no suitable lone enemy is retained as zero use."
+  },
+  "native_ui": {
+    "source_revision": "2688dbec8c514981de71aa162e7f50a40c56b305",
+    "binary_sha256": "b5a6293c0a1fc74b7fb7c8d80da43f7735979ff93a9b95a58c7582aeb724ed3d",
+    "tracked_diff_sha256": "544024f4b0f3241b3f947783aa9736b62e540256d3d011117eac486873827ef5",
+    "ui_source_sha256": "63267f4f22c843dfad73d10d2ca1f8978c677a70f4688fcb64cff83c80c467ce",
+    "cases": [
+      {
+        "name": "normal",
+        "exit_code": 0,
+        "seconds": 4.254,
+        "captures": 5,
+        "games": 0,
+        "capture_sha256": {
+          "rift_khazix_resolved.png": "b74d57e5d2199d2a17f3f7791ceedefd7a3dd87a61289651802751d4ef757498",
+          "rift_khazix_inspect.png": "8857d83cd4582a7dd04b242d86db035228f97f7ea1f5a33f23e247b206d19b8e",
+          "rift_khazix_ambush.png": "8723730146513626a2a8b209127ad50e5554aa23cc56f531aa9e2d25da245457",
+          "rift_khazix_rules.png": "2be41aaa8e41177ccf129080da772b073c31d1e823db066127e798c16f2df2f7",
+          "rift_khazix_trigger.png": "00c1fe2b027ebd07a69674f2fe6ea88de1e7ecf460200b075cd74a0241ca8a34"
+        },
+        "log_sha256": "5ff5c1ed3b32d2a663ff9fcffa9e1cd16c7f1cd85324c4564dc426f1f8bbe726"
+      },
+      {
+        "name": "small",
+        "exit_code": 0,
+        "seconds": 4.034,
+        "captures": 5,
+        "games": 0,
+        "capture_sha256": {
+          "rift_khazix_resolved.png": "28527b2e3744a6f6033e4655f3b3dce9a6ce718c01f3a54de9ac19682f29dd96",
+          "rift_khazix_inspect.png": "5e65e94ffc93684bbf370b890155f748c31df331d1ef56191684c4be11d08a7d",
+          "rift_khazix_ambush.png": "873e32a508b4a94e9bda7e122197893ea62300acb5e3a43432ce17d6ce607c6e",
+          "rift_khazix_rules.png": "3cca76fbc106b2016cc05e09452ab52daead7acc1e33d657b1cd0c3438e79572",
+          "rift_khazix_trigger.png": "3fa37af698dafe158e0ebd40f391e3bae222d3b852f46f6824f5a0bdccc2020c"
+        },
+        "log_sha256": "5ff5c1ed3b32d2a663ff9fcffa9e1cd16c7f1cd85324c4564dc426f1f8bbe726"
+      }
+    ],
+    "status": "passed",
+    "visually_reviewed_captures": 10,
+    "visual_review_sha256": "c995d99ef8d9ed0dc2a1a4cd670b4f6046c00284054df52ff380f86a51e00d8c",
+    "scope": "Actual hand/unit drag, atomic invalid base drop, Ambush payment, right-click inspector, scroll to full text, attack response and hover; authored positions with AI held."
   }
 }

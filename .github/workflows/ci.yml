@@ -82,6 +82,7 @@ jobs:
           python3 tools/check_deathgrip_api.py target/release/rift-api "$RUNNER_TEMP/local-rift-deathgrip.json"
           python3 tools/check_format_api.py target/release/rift-api "$RUNNER_TEMP/local-rift-formats.json"
           python3 tools/check_guards_api.py target/release/rift-api "$RUNNER_TEMP/local-rift-guards.json"
+          python3 tools/check_irelia_khazix_api.py target/release/rift-api "$RUNNER_TEMP/local-rift-khazix.json"
       - name: Exercise desktop controls at both window sizes
         if: steps.scope.outputs.full_checks == 'true'
         env:
@@ -115,6 +116,8 @@ jobs:
           XDG_DATA_HOME="$RUNNER_TEMP/local-rift-deathgrip-small" xvfb-run -a ./target/release/local-rift --ui-smoke-deathgrip --small
           XDG_DATA_HOME="$RUNNER_TEMP/local-rift-guards" xvfb-run -a ./target/release/local-rift --ui-smoke-guards
           XDG_DATA_HOME="$RUNNER_TEMP/local-rift-guards-small" xvfb-run -a ./target/release/local-rift --ui-smoke-guards --small
+          XDG_DATA_HOME="$RUNNER_TEMP/local-rift-khazix" xvfb-run -a ./target/release/local-rift --ui-smoke-khazix
+          XDG_DATA_HOME="$RUNNER_TEMP/local-rift-khazix-small" xvfb-run -a ./target/release/local-rift --ui-smoke-khazix --small
           XDG_DATA_HOME="$RUNNER_TEMP/local-rift-tokens" xvfb-run -a ./target/release/local-rift --ui-smoke-tokens
           XDG_DATA_HOME="$RUNNER_TEMP/local-rift-tokens-small" xvfb-run -a ./target/release/local-rift --ui-smoke-tokens --small
           RIFT_SERIES_PLAYER=1 RIFT_SERIES_OPPONENT=5 XDG_DATA_HOME="$RUNNER_TEMP/local-rift-yi-series" xvfb-run -a ./target/release/local-rift --ui-smoke-series

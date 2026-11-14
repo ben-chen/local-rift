@@ -320,7 +320,7 @@ The fifth preset is the sourced Los Angeles Rengar winning list. Copying that pr
 
 ## Remaining fidelity limits
 
-Eleven supported legends, seventeen battlefield choices, and 449 main-deck cards are mapped through seven presets and the custom deck editor. Alpha Strike, Brutalizer and Hand Hammer have completed their documented acceptance checks. Both Irelia preset recipes remain unchanged. Native match registrations cover Xeno Irelia, Arito Irelia, Master Yi, Kennen, Rengar and Sonecon Riven. The native app, shared engine and bot API support untimed best-of-three play and legal sideboarding. Timed tournament rounds, multiplayer and full card-set coverage remain unfinished. The Master Yi registration has completed native and packaged acceptance; see [its validation](validation/master_yi_registration.json). The presets are dated tournament lists, not a ranking of the current metagame.
+Eleven supported legends, seventeen battlefield choices, and 450 main-deck cards are mapped through seven presets and the custom deck editor. Alpha Strike, Brutalizer and Hand Hammer have completed their documented acceptance checks. Both Irelia preset recipes remain unchanged. Native match registrations cover Xeno Irelia, Arito Irelia, Master Yi, Kennen, Rengar and Sonecon Riven. The native app, shared engine and bot API support untimed best-of-three play and legal sideboarding. Timed tournament rounds, multiplayer and full card-set coverage remain unfinished. The Master Yi registration has completed native and packaged acceptance; see [its validation](validation/master_yi_registration.json). The presets are dated tournament lists, not a ranking of the current metagame.
 
 The desktop and bot API expose exact damage allocations and power-source payments. The default automatic payment remains available; energy can be prepared by exhausting chosen rune domains before a play. These controls share engine validation, but broader card and interaction coverage is still required.
 
@@ -610,3 +610,23 @@ excluded from starting selections and the constructed legal-card denominator.
 Controlled tests cover both seats, direct and suspended payment, rollback, plays
 from trash and banish, repeated copies, targeting, auras, movement, scoring and
 rematches. The exact Sonecon list has completed 84 single games and 12 registered engine matches (29 games), plus 12 bot API matches (29 games). The [release acceptance](validation/riven_stuttgart.json) records 1,743 Rust tests, 278 source checks, 1,176 Nix simulations and installed client/API validation. These cases are not a claim of complete Standard parity.
+
+## Kha'Zix, Mutating Horror
+
+Kha'Zix has Ambush: it can be played as a Reaction to a battlefield containing
+a friendly unit. Its normal play cost still applies. Dragging it to base during
+a response window is rejected without payment; base remains a normal open-turn
+play destination.
+
+At its first Attack or Defend designation in a combat, exactly one enemy at its
+field enables the printed trigger. Friendly company is allowed. The triggered
+ability gives Kha'Zix +2 Might this turn and its controller 2 XP after responses.
+The condition is not rechecked if another enemy arrives. If Kha'Zix has left, the
+independent XP instruction still resolves. A failed condition is not retried
+later in that combat; a new combat can produce another trigger.
+
+Hover or right-click the illustrated unit to inspect its complete official text
+and current Might. Mote explains the isolation condition and response timing at
+both advice levels. The [admission evidence](../assets/data/card_admissions/irelia_khazix/README.md)
+and [validation record](validation/irelia_khazix.json) distinguish controlled
+rules examples, complete API matches and native presentation checks.
