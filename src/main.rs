@@ -10,6 +10,8 @@ mod draw_look_ui;
 mod equipment_ui;
 mod field_ui;
 mod format_ui;
+#[cfg(test)]
+mod practice_benchmark;
 use format_ui::{FormatChoice, FormatPicker};
 mod gust_ui;
 mod play_ui;
