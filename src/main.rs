@@ -6540,25 +6540,6 @@ impl App {
             return;
         };
         let reserve = self.reserve(owner);
-        let r = if owner == 0 {
-            Rect::new(826.0, 350.0, 318.0, 212.0)
-        } else {
-            Rect::new(826.0, 182.0, 318.0, 212.0)
-        };
-        self.ui.rect(r, Color::new(0.035, 0.07, 0.085, 0.99));
-        self.ui.border(r, GOLD);
-        self.ui.bold(
-            if owner == 0 {
-                "YOUR RUNE RESERVE"
-            } else {
-                "OPPONENT'S RUNE RESERVE"
-            },
-            r.x + 14.0,
-            r.y + 23.0,
-            10.0,
-            GOLD,
-        );
-        self.ui.wrapped("Upright runes are ready. Sideways runes are exhausted. Empty sockets represent runes in the rune deck.",r.x+14.0,r.y+46.0,290.0,10.5,TEXT);
         let player = &self.game.players[owner];
         let domains = [
             Domain::Fury,
@@ -6568,7 +6549,7 @@ impl App {
             Domain::Chaos,
             Domain::Order,
         ];
-        let summary = domains
+        let ready = domains
             .into_iter()
             .filter_map(|domain| {
                 let i = domain_index(domain);
@@ -6583,21 +6564,7 @@ impl App {
             })
             .collect::<Vec<_>>()
             .join(" · ");
-        self.ui.text(&summary, r.x + 14.0, r.y + 102.0, 9.5, TEAL);
-        self.ui.wrapped("Click a rune to store energy or recycle for matching power. Exhausted runes can still recycle. Choose payment mode below the turn button.",r.x+14.0,r.y+123.0,290.0,10.0,MUTED);
-        self.ui.text(
-            &format!(
-                "{} in play · {} in deck · {} stored energy",
-                reserve.ready + reserve.exhausted,
-                reserve.in_deck,
-                reserve.stored_energy
-            ),
-            r.x + 14.0,
-            r.y + 176.0,
-            9.0,
-            GOLD,
-        );
-        let generated = domains
+        let power = domains
             .into_iter()
             .filter_map(|domain| {
                 let amount = player.power_pool[domain_index(domain)];
@@ -6605,23 +6572,51 @@ impl App {
             })
             .collect::<Vec<_>>()
             .join(" · ");
-        self.ui.ellipsis(
-            &format!(
-                "Generated: {} · Any {}",
-                if generated.is_empty() {
-                    "none"
-                } else {
-                    &generated
-                },
-                reserve.any_power
-            ),
-            r.x + 14.0,
-            r.y + 197.0,
-            290.0,
-            9.0,
-            TEAL,
+        let sections = [
+            ("Upright runes are ready. Sideways runes are exhausted. Empty spaces are runes in the deck.".to_owned(), 13.0, SECONDARY_TEXT),
+            ("Exhaust a ready rune for 1 Energy. Recycle a ready or exhausted rune for 1 matching Power; recycling does not also give Energy.".to_owned(), 14.0, TEXT),
+            (format!("{} Energy available: {} ready runes + {} stored Energy. {} runes in deck.",
+                player.energy, reserve.ready, player.energy_pool, reserve.in_deck), 13.0, GOLD),
+            (if ready.is_empty() { "No runes in play.".to_owned() } else { ready }, 13.0, SECONDARY_TEXT),
+            (format!("Stored Power: {} · Any {} · Spell-only {}",
+                if power.is_empty() { "none" } else { &power },
+                player.any_power, self.game.legend[owner].spell_power), 13.0, TEXT),
+            ("Unspent resources clear at each Main Phase start and turn end.".to_owned(), 13.0, SECONDARY_TEXT),
+        ];
+        // Fit the actual wrapped content at either supported window size.
+        let width = 372.0;
+        let height = 44.0
+            + sections
+                .iter()
+                .map(|(text, size, _)| {
+                    self.ui.text_lines(text, width, *size).len() as f32 * size * 1.5 + 8.0
+                })
+                .sum::<f32>();
+        let r = Rect::new(
+            728.0,
+            if owner == 0 { 562.0 - height } else { 182.0 },
+            400.0,
+            height,
         );
+        self.ui.rect(r, Color::new(0.035, 0.07, 0.085, 0.99));
+        self.ui.border(r, GOLD);
+        self.ui.bold(
+            if owner == 0 {
+                "YOUR RUNE RESERVE"
+            } else {
+                "OPPONENT'S RUNE RESERVE"
+            },
+            r.x + 14.0,
+            r.y + 24.0,
+            13.0,
+            GOLD,
+        );
+        let mut y = r.y + 48.0;
+        for (text, size, color) in sections {
+            y = self.ui.wrapped(&text, r.x + 14.0, y, width, size, color) + 8.0;
+        }
     }
+
     fn match_panel(&mut self) -> Result<(), String> {
         self.ui.rect(Rect::new(1158.0, 108.0, 252.0, 770.0), PANEL);
         self.ui.border(Rect::new(1158.0, 108.0, 252.0, 770.0), LINE);
@@ -6816,18 +6811,19 @@ impl App {
             self.show_journal = true;
             self.journal_page = 0;
         }
-        let entries: Vec<_> = self.game.log.iter().rev().take(4).collect();
+        let entries: Vec<_> = self.game.log.iter().rev().take(3).collect();
         for (i, line) in entries.iter().enumerate() {
-            let y = 691.0 + i as f32 * 34.0;
+            let y = 693.0 + i as f32 * 41.0;
             self.ui
                 .circle(vec2(1181.0, y - 4.0), 2.0, if i == 0 { TEAL } else { LINE });
-            self.ui.ellipsis(
+            self.ui.wrapped_lines(
                 line,
                 1192.0,
                 y,
                 197.0,
-                10.0,
-                if i == 0 { TEXT } else { MUTED },
+                15.0,
+                if i == 0 { TEXT } else { SECONDARY_TEXT },
+                2,
             );
         }
         let player = &self.game.players[0];
@@ -8585,7 +8581,7 @@ impl App {
         {
             let y = 215.0 + i as f32 * 59.0;
             self.ui.circle(vec2(345.0, y - 4.0), 2.5, TEAL);
-            self.ui.wrapped_lines(entry, 360.0, y, 825.0, 12.0, TEXT, 3);
+            self.ui.wrapped_lines(entry, 360.0, y, 825.0, 14.0, TEXT, 3);
         }
         if self.ui.button(
             Rect::new(340.0, 715.0, 140.0, 35.0),

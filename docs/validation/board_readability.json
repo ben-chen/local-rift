@@ -1,0 +1,70 @@
+{
+  "status": "passed",
+  "binary_sha256": "028bb28045b67bad8fc908d0175061bec6c2f1351d9175374909ca2a68552416",
+  "source_sha256": {
+    "src/main.rs": "3fa3dad84a33024ede1d6f62dc94b6a0f8f363a6afb2280b2581c2d085b55836",
+    "src/ui.rs": "9512eb96719f6654c86498fd40085bc988afc9950e9b4a2326dce86797ba0ca4",
+    "src/smoke.rs": "71db09df8d1390b40031882c9512c71a48442ceb176857fc6804c70866b17549"
+  },
+  "cases": [
+    {
+      "name": "normal",
+      "exit_code": 0,
+      "seconds": 27.146,
+      "captures": 4,
+      "games": 0,
+      "capture_sha256": {
+        "rift_smoke_mat_screenshot.png": "77ce4d49ed966adbcf8d99d07d5413621322a394b4be49b90479f9bf078eeaff",
+        "rift_smoke_resources_screenshot.png": "01949ae3a237280a7356c460c0744cf379f780a13c92122058ab038ff902b5b4",
+        "rift_smoke_journal_screenshot.png": "91d5a9a7ff90d817927a4eee3155ce52c13e5832ee7b3b1df9a9a72602036e27",
+        "rift_smoke_opponent_resources_screenshot.png": "77f39e045f17a1837a74b143861d692b97ff7ea318929d9deeb12d859738e020"
+      },
+      "log_sha256": "0ad7d29b583da68ce334cc72492052b992e83a5842e770cd49fe8d5083ebecbf"
+    },
+    {
+      "name": "small",
+      "exit_code": 0,
+      "seconds": 20.904,
+      "captures": 4,
+      "games": 0,
+      "capture_sha256": {
+        "rift_smoke_mat_screenshot.png": "0a7ca4aa5e9de7e2fc72d0545e227ceca0bfb1f2a7ec0ac2850067afab6078cc",
+        "rift_smoke_resources_screenshot.png": "9ec90877769366a4317fb85183c57303c21300d1ebbf623f4af236f04366d913",
+        "rift_smoke_journal_screenshot.png": "dc7fae09e3466f9b67ca12e2077c958ba4b9342134cdef7f0cd82b95e64024d2",
+        "rift_smoke_opponent_resources_screenshot.png": "2bf1a7f80ec5a034a00428710f7ceeb985038ab21668d8c13f1d489818ba2acb"
+      },
+      "log_sha256": "0ad7d29b583da68ce334cc72492052b992e83a5842e770cd49fe8d5083ebecbf"
+    }
+  ],
+  "base_revision": "31b8a7b8f0baded853181397572227983ab2e27f",
+  "scope": "Presentation of matching rune reserves, hover explanations and journal; no rules-engine changes.",
+  "binary_kind": "Cargo dev profile, optimized, Linux software GL; not an installed Nix package",
+  "visual_review": {
+    "method": "All eight v2 captures viewed at original resolution.",
+    "observations": [
+      "Both rune reserves use the same larger labels and resource layout.",
+      "Own and opposing resource hover text fits at 1440x900 and 1152x720 and leaves the action panel accessible.",
+      "Journal text and navigation fit at both sizes.",
+      "Board art, attached gear and victory tracks remain visible.",
+      "Multiple-render ghosting from the first capture attempt is absent after moving captures to separate frames."
+    ],
+    "limitations": [
+      "This is developer inspection, not novice usability testing.",
+      "Compact-window labels remain smaller than at the standard size."
+    ]
+  },
+  "focused_tests": {
+    "passed": 8,
+    "selection": "test(/^ui::/) or test(/rune_threshold_preview/)",
+    "log": "board-readability-focused-v1.log"
+  },
+  "final_checks": {
+    "format": "passed",
+    "diff_whitespace": "passed",
+    "clippy_all_targets_warnings_denied": "passed"
+  },
+  "rejected_attempts": [
+    "First capture sequence rendered several snapshots in one frame, producing ghosted hover captures; v2 supersedes those images."
+  ],
+  "artifact_directory": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/board-readability-native-v2"
+}

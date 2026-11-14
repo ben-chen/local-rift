@@ -64,9 +64,13 @@ fn click(app: &mut App, x: f32, y: f32) {
 }
 
 fn capture(app: &mut App, variable: &str) {
+    capture_at(app, variable, vec2(-100.0, -100.0));
+}
+
+fn capture_at(app: &mut App, variable: &str, pointer: Vec2) {
     app.companion.observe(&app.game);
     let input = app.ui.input_override;
-    app.ui.input_override = Some((vec2(-100.0, -100.0), false, false));
+    app.ui.input_override = Some((pointer, false, false));
     app.draw();
     if let Ok(path) = std::env::var(variable) {
         get_screen_data().export_png(&path);
@@ -1498,6 +1502,7 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
         64 => {
             assert!(app.show_journal, "match journal opens");
             assert_eq!(app.journal_page, 0);
+            capture(app, "RIFT_SMOKE_JOURNAL_SCREENSHOT");
             click(app, 550.0, 732.0);
         }
         65 => {
@@ -3872,8 +3877,14 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
         }
         290 => {
             assert!(app.field_inspect.is_none());
+            capture_at(app, "RIFT_SMOKE_RESOURCES_SCREENSHOT", vec2(650.0, 600.0));
         }
         291 => {
+            capture_at(
+                app,
+                "RIFT_SMOKE_OPPONENT_RESOURCES_SCREENSHOT",
+                vec2(650.0, 140.0),
+            );
             app.in_match = false;
             app.screen = Screen::Decks;
             app.browse_deck = 0;

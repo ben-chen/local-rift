@@ -7,6 +7,7 @@ pub const PANEL: Color = Color::new(0.049, 0.075, 0.090, 1.0);
 pub const LINE: Color = Color::new(0.12, 0.18, 0.20, 1.0);
 pub const TEXT: Color = Color::new(0.89, 0.91, 0.87, 1.0);
 pub const MUTED: Color = Color::new(0.44, 0.55, 0.56, 1.0);
+pub const SECONDARY_TEXT: Color = Color::new(0.65, 0.73, 0.73, 1.0);
 pub const GOLD: Color = Color::new(0.84, 0.69, 0.40, 1.0);
 pub const TEAL: Color = Color::new(0.38, 0.84, 0.73, 1.0);
 
@@ -476,13 +477,13 @@ impl Ui {
     pub fn rune_rail(&self, r: Rect, title: &str, reserve: &RuneReserve) {
         self.rect(r, Color::new(0.035, 0.065, 0.077, 0.98));
         self.border(r, LINE);
-        self.text(title, r.x + 12.0, r.y + 15.0, 10.0, GOLD);
+        self.text(title, r.x + 12.0, r.y + 15.0, 12.0, GOLD);
         self.text(
-            "UPRIGHT = READY     SIDEWAYS = EXHAUSTED",
+            "Upright: ready · Sideways: exhausted",
             r.x + 174.0,
             r.y + 11.0,
-            8.5,
-            TEXT,
+            11.0,
+            SECONDARY_TEXT,
         );
         self.bold(
             &u16::from(reserve.ready)
@@ -493,13 +494,13 @@ impl Ui {
             23.0,
             TEAL,
         );
-        self.text("energy available", r.x + 45.0, r.y + 41.0, 10.0, TEXT);
+        self.text("energy available", r.x + 45.0, r.y + 41.0, 12.0, TEXT);
         self.text(
             &format!("{} ready · {} exhausted", reserve.ready, reserve.exhausted),
             r.x + 12.0,
             r.y + 59.0,
-            8.5,
-            MUTED,
+            11.0,
+            SECONDARY_TEXT,
         );
         for (index, slot) in reserve.slots.iter().enumerate() {
             let center = vec2(r.x + 185.0 + index as f32 * 33.0, r.y + 34.0);
@@ -523,14 +524,14 @@ impl Ui {
             if let Some(slot) = slot {
                 self.text(
                     &slot.domain.name()[..2].to_uppercase(),
-                    center.x - 6.0,
+                    center.x - 8.0,
                     r.y + 59.0,
-                    7.5,
+                    11.0,
                     rgb(slot.domain.color()),
                 );
             }
         }
-        self.text("DECK", r.x + 580.0, r.y + 15.0, 9.0, MUTED);
+        self.text("DECK", r.x + 580.0, r.y + 15.0, 10.5, SECONDARY_TEXT);
         for n in (0..3).rev() {
             self.rect(
                 Rect::new(
@@ -558,26 +559,26 @@ impl Ui {
             12.0,
             GOLD,
         );
-        self.text("GENERATED RESOURCES", r.x + 620.0, r.y + 15.0, 9.0, GOLD);
+        self.text("STORED RESOURCES", r.x + 620.0, r.y + 15.0, 12.0, GOLD);
         self.text(
             &format!("Energy {}", reserve.stored_energy),
             r.x + 620.0,
             r.y + 34.0,
-            10.0,
+            13.0,
             TEXT,
         );
         self.text(
             &format!("Any {}", reserve.any_power),
             r.x + 704.0,
             r.y + 34.0,
-            10.0,
+            13.0,
             TEXT,
         );
         self.text(
             &format!("Spell-only {}", reserve.spell_power),
             r.x + 771.0,
             r.y + 34.0,
-            10.0,
+            13.0,
             TEXT,
         );
         for (index, domain) in RUNE_DOMAINS.into_iter().enumerate() {
@@ -592,8 +593,8 @@ impl Ui {
                 &format!("{}{}", &domain.name()[..2], count),
                 x + 6.0,
                 r.y + 55.0,
-                9.0,
-                if count > 0 { TEXT } else { MUTED },
+                12.0,
+                if count > 0 { TEXT } else { SECONDARY_TEXT },
             );
         }
     }
