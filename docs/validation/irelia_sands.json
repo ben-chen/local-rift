@@ -1,0 +1,130 @@
+{
+  "status": "local acceptance passed; immutable installed acceptance pending",
+  "reviewed_at": "2026-11-14T08:25:56.806421+00:00",
+  "runtime_card": 456,
+  "official_id": "ven-039-166",
+  "rules": [
+    "October 9 Core Rules 420.4.a/b",
+    "Official Vendetta FAQ, Crumbling Sands"
+  ],
+  "scope": "Spell finalization history shared by ordinary, Hidden, Flow and replay plays; resolution-time conditional counter; API, AI policy and unobtrusive Mote advice. Seven presets unchanged.",
+  "validation": {
+    "focused_tests": 10,
+    "library_tests": 1048,
+    "companion_tests": 1,
+    "source_tests": 2,
+    "ci_scope_tests": 5,
+    "logs": {
+      "focused": {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-sands-focused-v3.log",
+        "sha256": "0fbb720f64648476e0618c6b1fb5b77b3096f0880cceac5c8a876fb849887601"
+      },
+      "library": {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-sands-library-v1.log",
+        "sha256": "1243e796a6f3e6ef9a4fb80328f48c7d3f06726c812738f288f0f7fc8d2be260"
+      },
+      "companion": {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-sands-companion-v2.log",
+        "sha256": "7ceaacdffba9f416ba31ea5984435fd06555fce0d405869e448617e7b9bf3a3f"
+      },
+      "source": {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-sands-source-v1.log",
+        "sha256": "b37aa4f7e8bfc76c24429751f895b76749eceb924a0a123b22f7d82f1f6ff8f0"
+      },
+      "clippy": {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-sands-clippy-v3.log",
+        "sha256": "b307022c81c10145ff839bcd01bfaf845b2bc3468456292ba7c51be96da76fce"
+      },
+      "ci_scope": {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-sands-ci-scope-v1.log",
+        "sha256": "f5b0975bbc76eebbbbfbd9ff17140ccc843d8aa8dd46d365fb85c9b5f5446e84"
+      },
+      "build": {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-sands-build-v3.log",
+        "sha256": "c1e7a62ee5e43c4c05aa85c551f2106a02fa4a5e859aafa2829a418d8de74797"
+      }
+    }
+  },
+  "api": [
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-sands-matches-v1.json",
+      "sha256": "095d5454582ab3c372649517e5d6d5e43eebb03abce58f3ac08de58fe86d29a5",
+      "status": "passed",
+      "records": 6
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-sands-entourage-baseline-v1.json",
+      "sha256": "97d6af048179488aedac516c90fcd1a18046bedb02ec49a9f0e64677eec254b0",
+      "status": "passed",
+      "records": 6
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-sands-spirit_wheel-baseline-v1.json",
+      "sha256": "e033213230b0b8eed8831a4a884e0e3bb6f3ea94474241baebbd33d47c0abc29",
+      "status": "passed",
+      "records": 6
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-sands-resource_cards-baseline-v1.json",
+      "sha256": "68546a802fd062a30ff6963b62550e6dc7709fb47722fa793b7a2a0920553c6b",
+      "status": "passed",
+      "records": 6
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-sands-spell_choice-baseline-v1.json",
+      "sha256": "fb44efb9399f1218fd18a3459ace94aa4373cab7bad55239494c606ebc82a1f8",
+      "status": "passed",
+      "records": 6
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-sands-format-baseline-v1.json",
+      "sha256": "9e82cbf6904df65da9cb309be0d51895e430ee23f511e04ced0baa88112e8228",
+      "status": "passed",
+      "records": 9
+    }
+  ],
+  "sands_matches": {
+    "series": 6,
+    "games": 13,
+    "observed_counters": 4,
+    "qualification": "Zero-use records retained. These matches do not establish strategic strength."
+  },
+  "native": {
+    "evidence": {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-sands-native-v2/status.json",
+      "sha256": "011a7e49ead004a3883697b8f8c0a301fdf27fc6b524c6a3c0c6006af55ff397"
+    },
+    "cases": 2,
+    "captures": 14,
+    "actual_clicks": true,
+    "selected_visual_reviews": [
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-sands-native-v2/normal/rift_sands_inspect.png",
+        "sha256": "6238a477d4fbf2dd96b787d311dd1ff84dc52a0d0e7dfb484b90533fc14dcf34"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-sands-native-v2/small/rift_sands_advanced.png",
+        "sha256": "105cfebd9ca3e65b1a48881b81893f65b55fc82bcc42c16566587bab3567b25f"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-sands-native-v2/small/rift_sands_selected.png",
+        "sha256": "4942b455aff273077b8847b621c96cd0015f8e966753f75d9b9e79b93b2365f7"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-sands-native-v2/small/rift_sands_no_effect.png",
+        "sha256": "93cf1654d30d4ed3b60df5da020028d1f68b3373b6e852cf39e83ee8956d0133"
+      }
+    ]
+  },
+  "earlier_failures": [
+    "Focused v1 failed to compile because empty-array assertions needed element types.",
+    "Focused v2 found a hidden-card fixture without battlefield control and an overstrict expectation that Strategic always counter a draw. Fixture repaired; Tactical response and conditional pruning remain asserted, Strategic resource tradeoff is not forced.",
+    "Native v1 found Sands advice missing in response windows. Shared advice helper now serves normal and response views; companion regression and native v2 passed."
+  ],
+  "remaining": [
+    "Full immutable Nix/Rust/source/simulation release gate",
+    "Installed UI review and exact API comparisons",
+    "Publication after release acceptance",
+    "Broader goal: all legal cards, full Standard parity, novice learning and expert AI remain unproven"
+  ]
+}

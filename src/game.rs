@@ -20,6 +20,8 @@ mod combat;
 mod deploy;
 #[path = "irelia_ai.rs"]
 mod irelia_ai;
+#[path = "spell_history.rs"]
+mod spell_history;
 pub use combat::{CombatResolution, CombatResult, CombatStep};
 #[cfg(test)]
 #[path = "backoff_tests.rs"]
@@ -2481,6 +2483,7 @@ impl Game {
             }
             let chain_id = self.next_chain_id;
             self.next_chain_id += 1;
+            self.play_history.finalized_spells[player].push(chain_id);
             self.chain.push(ChainItem {
                 show_off: Vec::new(),
                 id: chain_id,
@@ -3840,7 +3843,10 @@ impl Game {
             return false;
         }
         match kind {
-            CounterKind::Abandon | CounterKind::HardBargain | CounterKind::Unconditional => true,
+            CounterKind::Abandon
+            | CounterKind::HardBargain
+            | CounterKind::Unconditional
+            | CounterKind::OtherOpponentSpell => true,
             CounterKind::Defy => target.cost <= 4 && target.power_cost <= 1,
             CounterKind::MinimumPower(minimum) => target.power_cost >= minimum,
             CounterKind::NotSoFast => {
@@ -3884,6 +3890,16 @@ impl Game {
             return;
         }
         match rules::effect(item.card_id) {
+            OfficialEffect::Counter(CounterKind::OtherOpponentSpell) => {
+                if self.opponent_played_other_spell(item.player, chain_id) {
+                    self.counter_spell(chain_id, false);
+                } else {
+                    self.push_log(format!(
+                        "{} resolves without countering: no opponent played another spell this turn.",
+                        self.catalog[item.card_id].name
+                    ));
+                }
+            }
             OfficialEffect::Counter(CounterKind::Abandon) => {
                 self.counter_spell(chain_id, true);
                 self.predict(item.player);
@@ -10536,6 +10552,9 @@ impl Game {
                     if self.chain.iter().any(|item| {
                         item.player != self.priority()
                             && self.counter_target_valid(self.priority(), id, item.id)
+                            && (rules::effect(id)
+                                != OfficialEffect::Counter(CounterKind::OtherOpponentSpell)
+                                || self.opponent_played_other_spell(self.priority(), item.id))
                     }) {
                         105
                     } else {

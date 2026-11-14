@@ -8927,6 +8927,9 @@ fn card_brief(game: &Game, id: usize) -> String {
         Counter(local_rift::rules::CounterKind::MinimumPower(minimum)) => {
             format!("Counter a spell with printed Power {minimum}+")
         }
+        Counter(local_rift::rules::CounterKind::OtherOpponentSpell) => {
+            "Counter if an opponent played another spell this turn".into()
+        }
         KillAllGear => "Kill all gear · including attached equipment".into(),
         KillEnemyDomain { domain } => format!("Kill an enemy {} unit or gear", domain.name()),
         TokensAndDraw { count, might, draw } => {
@@ -10721,6 +10724,7 @@ async fn main() {
     let resources_smoke = args.iter().any(|a| a == "--ui-smoke-resources");
     let wheel_smoke = args.iter().any(|a| a == "--ui-smoke-wheel");
     let entourage_smoke = args.iter().any(|a| a == "--ui-smoke-entourage");
+    let sands_smoke = args.iter().any(|a| a == "--ui-smoke-sands");
     let riven_smoke = args.iter().any(|a| a == "--ui-smoke-riven");
     let unyielding_smoke = args.iter().any(|a| a == "--ui-smoke-unyielding");
     let repulse_smoke = args.iter().any(|a| a == "--ui-smoke-repulse");
@@ -10741,6 +10745,7 @@ async fn main() {
     let focused_field_smoke = args.iter().any(|a| a == "--ui-smoke-c28");
     let focused_source_damage_smoke = args.iter().any(|a| a == "--ui-smoke-c27");
     let smoke_test = format_smoke
+        || sands_smoke
         || entourage_smoke
         || wheel_smoke
         || resources_smoke
@@ -10823,6 +10828,8 @@ async fn main() {
             smoke::run_wheel_frame(&mut app, frames)
         } else if entourage_smoke {
             smoke::run_entourage_frame(&mut app, frames)
+        } else if sands_smoke {
+            smoke::run_sands_frame(&mut app, frames)
         } else if irelia_smoke {
             smoke::run_irelia_frame(&mut app, frames)
         } else if preset_smoke {

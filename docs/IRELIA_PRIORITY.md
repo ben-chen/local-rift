@@ -2,6 +2,15 @@
 
 Updated November 12, 2026. Irelia cards take priority over the saved Azir draft.
 
+November 14, in development: Crumbling Sands is the next sideboard addition.
+Its shared spell-finalization history distinguishes a spell being played from
+successfully resolving, including countered spells and actual replays. The
+official Singapore Irelia list is historical and contains now-banned Stacked
+Deck; the October 8 community list is a relevance lead, not a new tournament
+preset. Local engine/API tests, six complete matches, source checks, companion advice
+and native controls at both sizes passed. See [validation](validation/irelia_sands.json).
+Immutable installed acceptance remains pending.
+
 November 14: Royal Entourage passed local rules, native and complete-match API
 checks; immutable installed acceptance is pending. It can ready Irelia or exhaust an opposing legend, with
 target selection before responses and the ready/exhaust choice on resolution.

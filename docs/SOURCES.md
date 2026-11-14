@@ -312,3 +312,15 @@ links the October 9 Core Rules. Sections 355.3, 355.5 and 355.18 distinguish
 choosing the legend before responses from choosing ready/exhaust on resolution.
 Sections 415.1 and 416.1 allow readiness effects that leave the state unchanged;
 107.4 places Champion Legends in their own fixed zone.
+
+## Crumbling Sands
+
+The [admission](../assets/data/card_admissions/irelia_sands/admissions.json)
+preserves the official `ven-039-166` face and gallery record, image hashes and
+preceding 456-card/seven-preset hashes. It is a Calm Reaction spell costing
+1 Energy and 1 Power, with no reviewed erratum. The
+[Vendetta FAQ](https://playriftbound.com/en-us/news/rules-and-releases/vendetta-rules-faq-and-clarifications/)
+explicitly allows countering the first spell after an opponent has played a
+second, including when that second spell was countered. October 9 Core Rules
+420.4.a/b distinguish successful-resolution play triggers from finalization
+checks. The condition is evaluated on resolution, not used as a target filter.

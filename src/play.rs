@@ -219,6 +219,9 @@ pub struct PlayGrant {
 }
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct PlayHistory {
+    /// Physical chain IDs, recorded for the player who finalized each spell.
+    /// CR420.4.b includes spells that are later countered; Repeat is not a play.
+    pub finalized_spells: [Vec<u32>; 2],
     /// Ezreal's qualifying-target progress, capped at its printed threshold 2.
     pub ezreal_progress: [u8; 2],
     pub non_token_gears: [u16; 2],
@@ -2802,7 +2805,9 @@ impl Game {
         let Ok(intent) = self.card_intent(action) else {
             return Ok(false);
         };
-        if intent.id != 434 {
+        if intent.id != 434
+            && rules::effect(intent.id) != OfficialEffect::Counter(CounterKind::OtherOpponentSpell)
+        {
             return Ok(false);
         }
         let value = if intent.targets.is_empty() {
@@ -2821,7 +2826,20 @@ impl Game {
             let extras = intent.legacy.repeats.len() as i128 * 5
                 + i128::from(intent.legacy.accelerate) * 15
                 + i128::from(intent.legacy.bonus) * 5;
-            let score = if intent.id == 426 {
+            let score = if rules::effect(intent.id)
+                == OfficialEffect::Counter(CounterKind::OtherOpponentSpell)
+            {
+                if intent.targets.iter().any(|target| {
+                    matches!(target, Target::Spell { chain_id }
+                        if self.chain.iter().any(|item| item.id == *chain_id
+                            && item.player != self.priority())
+                        && self.opponent_played_other_spell(self.priority(), *chain_id))
+                }) {
+                    105
+                } else {
+                    0
+                }
+            } else if intent.id == 426 {
                 self.preparations_score(&intent.targets, &intent.legacy.show_off)
             } else if let OfficialEffect::DisempowerThenKill { maximum } = rules::effect(intent.id)
             {

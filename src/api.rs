@@ -566,6 +566,7 @@ impl Session {
                 "source":chain_source_to_json(grant.source),"expires_turn":grant.expires_turn,
                 "kind":play_choices::grant_kind_to_json(grant.kind)})).collect::<Vec<_>>(),
             "play_history":{"non_token_gears":game.play_history.non_token_gears,
+                "finalized_spells":game.play_history.finalized_spells,
                 "gear_activations":game.play_history.gear_activations,
                 "units_or_gears_here":game.play_history.units_or_gears_here},
             "resolution_progress":game.resolution_progress().map(|progress|json!({"chain_id":progress.chain_id,
@@ -2663,6 +2664,59 @@ fn trigger_context_to_json(context: &TriggerContext) -> Value {
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn sands_api_exposes_public_spell_history_and_queries_do_not_finalize() {
+        let mut session = super::Session {
+            game: crate::game::test_support::position(1, 0, 456010),
+            revision: 0,
+            series: None,
+            format_date: None,
+        };
+        session.game.players[1].hand = vec![133];
+        session.game.players[0].hand = vec![456];
+        let draw = super::Action::PlayCardWithTargets {
+            hand_index: 0,
+            lane: None,
+            targets: vec![],
+        };
+        session.validate_action(1, 0, draw.clone()).unwrap();
+        assert!(
+            session
+                .game
+                .play_history
+                .finalized_spells
+                .iter()
+                .all(Vec::is_empty)
+        );
+        session.apply_action(1, 0, draw).unwrap();
+        let target = session.game.chain[0].id;
+        session.apply_action(1, 1, super::Action::Pass).unwrap();
+        let before = format!("{:?}", session.game);
+        let sands = super::Action::PlayCardWithTargets {
+            hand_index: 0,
+            lane: None,
+            targets: vec![super::Target::Spell { chain_id: target }],
+        };
+        session.validate_action(0, 2, sands.clone()).unwrap();
+        session.suggestions(0).unwrap();
+        for viewer in 0..2 {
+            let view = session.observe(viewer).unwrap();
+            assert_eq!(
+                view["play_history"]["finalized_spells"],
+                serde_json::json!([[], [target]])
+            );
+        }
+        assert_eq!(format!("{:?}", session.game), before);
+        session.apply_action(0, 2, sands).unwrap();
+        let counter = session.game.chain.last().unwrap().id;
+        for viewer in 0..2 {
+            assert_eq!(
+                session.observe(viewer).unwrap()["play_history"]["finalized_spells"],
+                serde_json::json!([[counter], [target]])
+            );
+        }
+    }
+
     use super::*;
     use crate::game::{Unit, domain_index};
     use crate::hidden::HiddenCard;

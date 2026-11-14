@@ -6950,6 +6950,21 @@ pub fn cards() -> Vec<CardDef> {
             tags: &["Shurima"],
             art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/a6f3ce580860fe80fdf1b41533ba89b5060e946a-744x1039.png?w=280&q=85&fm=png",
         },
+        CardDef {
+            id: 456,
+            official_id: "ven-039-166",
+            name: "Crumbling Sands",
+            cost: 1,
+            power_cost: 1,
+            might: 0,
+            domain: Domain::Calm,
+            domains: &[Domain::Calm],
+            kind: CardKind::Spell,
+            official_text: "[Reaction] (Play any time, even before spells and abilities resolve.)\nCounter a spell if an opponent has played another spell this turn.",
+            keywords: &["Reaction"],
+            tags: &[],
+            art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/0d7491bdb2e9d18f64a5b53a16623b26a7cac6a1-744x1039.png?w=280&q=85&fm=png",
+        },
     ]
 }
 

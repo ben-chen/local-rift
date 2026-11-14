@@ -308,6 +308,16 @@ One physical spell remains on the chain through every execution and any interven
 
 Public `play_grants` identify each delayed effect's controller, source, expiry turn, and typed effect. `play_history` exposes finalized non-token gear plays, gear activations, and per-player/per-lane unit-or-gear plays. These are shared public facts, identical in both observations. They are distinct from completed-play counters and from a live cost quote.
 
+`play_history.finalized_spells` contains two arrays of physical chain IDs, one
+for each player who finalized the spells this turn. Resolved or countered spells
+remain recorded. Repeat adds no new entry, while an actual replay does. Both
+arrays reset at the next turn. Queries and staged payments do not add entries.
+Crumbling Sands (456, `ven-039-166`) can choose any spell, including a friendly
+one. On resolution it counters only if an opponent finalized another spell
+this turn, excluding the chosen spell's chain ID. That condition does not remove
+the play from legal actions. Tactical and Strategic policies can decline an
+unproductive cast without changing its legality.
+
 Public `turn_effects` lists global temporary rules. Unyielding Spirit (card 441)
 adds `{type: "prevent_spell_and_ability_damage", source_card_id: 441,
 scope: "both_players", amount: "all", expires: "end_of_turn", expires_turn,

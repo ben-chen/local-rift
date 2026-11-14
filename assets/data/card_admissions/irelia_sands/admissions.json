@@ -1,0 +1,120 @@
+{
+  "status": "Local engine, API, source, companion and native validation passed; immutable installed acceptance pending",
+  "reviewed_on": "2026-11-14",
+  "preserved_runtime_prefix": {
+    "card_count": 456,
+    "preset_count": 7,
+    "cards_sha256": "0e373a6930173cdafa539ae2459f03bd855f60e44aa18f08907c555582095374",
+    "presets_sha256": "e975739d803427e54928d6e6cd03d1ce51d7ad108f4e247b8a000acf037a5cdb"
+  },
+  "records": [
+    {
+      "runtime_id": 456,
+      "official_id": "ven-039-166",
+      "raw_printing": {
+        "official_id": "ven-039-166",
+        "public_code": "VEN-039/166",
+        "name": "Crumbling Sands",
+        "set": "VEN",
+        "collector_number": 39,
+        "types": [
+          "spell"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "spell"
+        ],
+        "accessibility_types": [
+          "spell"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "calm"
+        ],
+        "energy": 1,
+        "power": 1,
+        "might": null,
+        "might_bonus": null,
+        "rules_html": "<p>[Reaction] (Play any time, even before spells and abilities resolve.)<br />Counter a spell if an opponent has played another spell this turn.</p>",
+        "rules_text": "[Reaction] (Play any time, even before spells and abilities resolve.)\nCounter a spell if an opponent has played another spell this turn.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [],
+        "rarity": "rare",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/0d7491bdb2e9d18f64a5b53a16623b26a7cac6a1-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Spell: Crumbling Sands. [Reaction] (Play any time, even before spells and abilities resolve.)\nCounter a spell if an opponent has played another spell this turn.",
+        "illustrators": [
+          "Kudos Productions"
+        ]
+      },
+      "raw_printing_sha256": "8bc20a4089a48ed424a159d493e30f59dd2b6c751d2f92909fadfd0c6ee71fa4",
+      "effective": {
+        "types": [
+          "spell"
+        ],
+        "super_types": [],
+        "domains": [
+          "calm"
+        ],
+        "energy": 1,
+        "power": 1,
+        "might": null,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>[Reaction] (Play any time, even before spells and abilities resolve.)<br />Counter a spell if an opponent has played another spell this turn.</p>",
+        "rules_text": "[Reaction] (Play any time, even before spells and abilities resolve.)\nCounter a spell if an opponent has played another spell this turn.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "errata": [],
+      "original_image": {
+        "path": "assets/data/card_admissions/irelia_sands/ven-039-166.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/0d7491bdb2e9d18f64a5b53a16623b26a7cac6a1-744x1039.png?accountingTag=RB",
+        "bytes": 914649,
+        "sha256": "5517272b06eaf0efb03928a04813c18e67fa48a2d7cbe087aef52414ec00513c",
+        "width": 744,
+        "height": 1039
+      },
+      "runtime_image": {
+        "path": "assets/art/card_456.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/0d7491bdb2e9d18f64a5b53a16623b26a7cac6a1-744x1039.png?w=280&q=85&fm=png",
+        "bytes": 205939,
+        "sha256": "cb6adc9459a42b846a994bb7095ec72a88e8129a1883ded5f1df5681e15a407f",
+        "width": 280,
+        "height": 391
+      },
+      "visual_review": {
+        "actual_full_face_viewed": true,
+        "printed_energy": 1,
+        "printed_power": 1,
+        "printed_might": null,
+        "printed_domains": [
+          "calm"
+        ],
+        "printed_types": [
+          "spell"
+        ],
+        "printed_keywords": [
+          "Reaction"
+        ],
+        "printed_rules": "Counter a spell if an opponent has played another spell this turn.",
+        "uncertainties": []
+      }
+    }
+  ],
+  "rules_review": {
+    "core_edition": "2026-10-09",
+    "sections": [
+      "420.4.a",
+      "420.4.b"
+    ],
+    "faq": "https://playriftbound.com/en-us/news/rules-and-releases/vendetta-rules-faq-and-clarifications/",
+    "finding": "Checks finalized spells, including a different countered spell; successful-resolution play triggers remain separate. Condition is checked on resolution."
+  },
+  "irelia_relevance": {
+    "historical_primary": "https://playriftbound.com/en-us/news/organizedplay/singapores-top-decks/",
+    "current_community_lead": "https://riftmana.com/decks/i-rail-ya-u8osva/",
+    "qualification": "Historical Singapore list includes now-banned Stacked Deck. October 8 community list supplies a later sideboard lead, not tournament performance or a new preset."
+  }
+}

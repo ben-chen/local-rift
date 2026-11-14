@@ -1,0 +1,51 @@
+"""Crumbling Sands facts are checked against the archived official gallery."""
+import json
+import struct
+import unittest
+import catalog_review as review
+import import_catalog as catalog
+
+
+class CrumblingSandsAdmission(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.proof = json.loads((catalog.ROOT / 'assets/data/card_admissions/irelia_sands/admissions.json').read_text())
+        origin, archives = catalog.read_archives()
+        cls.raw = next(p for p in catalog.project_gallery(archives['gallery'])[0] if p['official_id'] == 'ven-039-166')
+        cls.snapshot = catalog.make_catalog(origin, archives)
+        cls.runtime = catalog.load_runtime_manifest()
+
+    def test_printed_facts_images_and_legal_identity(self):
+        record, = self.proof['records']
+        self.assertEqual(record['raw_printing'], self.raw)
+        self.assertEqual(record['raw_printing_sha256'], review.printing_sha256(self.raw))
+        self.assertTrue(record['visual_review']['actual_full_face_viewed'])
+        card = self.runtime['cards'][456]
+        self.assertEqual((card['official_id'], card['name'], card['energy'], card['power'], card['might'], card['kind']),
+                         ('ven-039-166', 'Crumbling Sands', 1, 1, 0, 'Spell'))
+        self.assertEqual(card['domains'], ['Calm'])
+        self.assertEqual(card['tags'], [])
+        self.assertEqual(card['keywords'], ['Reaction'])
+        self.assertEqual(card['official_text_html'], self.raw['rules_html'])
+        self.assertEqual(card['official_text'], self.raw['rules_text'])
+        identity = next(c for c in self.snapshot['cards'] if c['identity'] == 'ven-039-166')
+        self.assertTrue(identity['standard_legal'])
+        self.assertTrue(identity['implementation']['playable_in_client'])
+        self.assertEqual(identity['errata'], [])
+        self.assertEqual(identity['source_review']['unresolved_gameplay_fields'], [])
+        for field, dimensions in [('original_image', (744, 1039)), ('runtime_image', (280, 391))]:
+            image = record[field]
+            data = (catalog.ROOT / image['path']).read_bytes()
+            self.assertEqual((len(data), catalog.sha(data)), (image['bytes'], image['sha256']))
+            self.assertEqual(data[:8], b'\x89PNG\r\n\x1a\n')
+            self.assertEqual(struct.unpack('>II', data[16:24]), dimensions)
+
+    def test_previous_cards_and_seven_presets_remain_exact(self):
+        pin = self.proof['preserved_runtime_prefix']
+        self.assertEqual((pin['card_count'], pin['preset_count']), (456, 7))
+        for field, count, digest in [('cards', 'card_count', 'cards_sha256'), ('decks', 'preset_count', 'presets_sha256')]:
+            self.assertEqual(catalog.sha(review.canonical_bytes(self.runtime[field][:pin[count]])), pin[digest])
+
+
+if __name__ == '__main__':
+    unittest.main()

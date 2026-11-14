@@ -14,6 +14,8 @@ pub enum CounterKind {
     HardBargain,
     Unconditional,
     MinimumPower(u8),
+    /// Resolution condition, not a restriction on choosing the spell.
+    OtherOpponentSpell,
 }
 
 /// Amounts calculated when the instruction resolves, after responses.
@@ -295,6 +297,7 @@ pub fn effect(id: usize) -> OfficialEffect {
         448 => Guards,
         449..=451 => None,
         454 | 455 => None,
+        456 => Counter(CounterKind::OtherOpponentSpell),
         452 => DrawWithOptionalCost { unpaid: 1, paid: 2 },
         453 => DrawThenChannel {
             draw: 1,
@@ -1148,6 +1151,7 @@ pub fn requirements(id: usize) -> &'static [Mechanic] {
         452 | 453 => &[Chain, OptionalCosts, ChooseReadyTriggers],
         454 => &[Chain, OptionalCosts, ChooseReadyTriggers],
         455 => &[Chain, ChooseReadyTriggers],
+        456 => &[Chain, Counterspell],
         447 => &[
             Chain,
             MultipleTargets,

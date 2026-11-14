@@ -389,6 +389,9 @@ fn checked_advice(game: &Game, level: AdviceLevel) -> Result<Vec<&'static str>, 
     }
 
     if let Some(mut window_tips) = response_window_advice(game, beginner)? {
+        if let Some(tip) = sands_advice(game, beginner) {
+            window_tips.push(tip);
+        }
         if let Some(tip) = gust_response_advice(game, beginner)? {
             window_tips.insert(0, tip);
         }
@@ -679,6 +682,9 @@ fn checked_advice(game: &Game, level: AdviceLevel) -> Result<Vec<&'static str>, 
         } else {
             "Reserve Hush for a high-Power spell. Discounts do not change printed Power, and Hush itself needs 1 energy plus 2 Calm power."
         });
+    }
+    if let Some(tip) = sands_advice(game, beginner) {
+        tips.push(tip);
     }
     let contested = (0..game.battlefield_count()).find(|&lane| game.contested(lane));
     if let Some(lane) = contested {
@@ -1837,6 +1843,15 @@ fn khazix_advice(game: &Game, beginner: bool) -> Option<&'static str> {
         })
 }
 
+fn sands_advice(game: &Game, beginner: bool) -> Option<&'static str> {
+    (game.players[0].hand.contains(&456) || game.chain.iter().any(|item| item.card_id == 456))
+        .then_some(if beginner {
+            "Crumbling Sands checks for another opponent spell this turn when it resolves. Even a countered spell counts; abilities do not."
+        } else {
+            "After an opponent plays another spell, Sands can counter their first one. Check the public spell history and save 1 Energy plus 1 Calm Power."
+        })
+}
+
 fn repulse_advice(game: &Game, beginner: bool) -> Option<&'static str> {
     (game.players[0].hand.contains(&442) || game.chain.iter().any(|item| item.player == 0 && item.card_id == 442 && item.ability.is_none())).then_some(if beginner {
         "Repulse chooses your battlefield unit, then an enemy spell or ability choosing it and no other friendly unit. Both choices must still work when Repulse resolves."
@@ -2687,6 +2702,57 @@ mod tests {
             });
             assert!(advice(&g, level).iter().all(|s| s.chars().count() <= 180));
             g.decision = None;
+        }
+    }
+
+    #[test]
+    fn sands_advice_is_concise_public_and_does_not_change_the_position() {
+        let mut g = game();
+        g.start_match().unwrap();
+        g.players[0].hand = vec![456];
+        let before = format!("{g:?}");
+        let mut hidden = g.clone();
+        hidden.players[1].hand = vec![456, 86];
+        hidden.players[1].deck.reverse();
+        for level in [AdviceLevel::Beginner, AdviceLevel::Advanced] {
+            let tips = advice(&g, level);
+            assert_eq!(tips, advice(&hidden, level));
+            assert!(tips.iter().any(|tip| tip.contains("Sands")));
+            assert!(tips.iter().all(|tip| tip.chars().count() <= 180));
+        }
+        assert_eq!(format!("{g:?}"), before);
+        g.players[0].hand.push(133);
+        g.players[0].set_rune_setup([0; 6], [0; 6]).unwrap();
+        g.players[0].energy_pool = 20;
+        g.players[0].energy = 20;
+        g.players[0].power_pool = [5; 6];
+        g.apply(local_rift::game::Action::PlayCardWithTargets {
+            hand_index: 1,
+            lane: None,
+            targets: vec![],
+        })
+        .unwrap();
+        let target = g.chain[0].id;
+        for pending in [false, true] {
+            if pending {
+                g.apply(local_rift::game::Action::PlayCardWithTargets {
+                    hand_index: 0,
+                    lane: None,
+                    targets: vec![Target::Spell { chain_id: target }],
+                })
+                .unwrap();
+            }
+            let before = format!("{g:?}");
+            let mut hidden = g.clone();
+            hidden.players[1].hand = vec![456, 86];
+            hidden.players[1].deck.reverse();
+            for level in [AdviceLevel::Beginner, AdviceLevel::Advanced] {
+                let tips = advice(&g, level);
+                assert_eq!(tips, advice(&hidden, level));
+                assert!(tips.iter().any(|tip| tip.contains("Sands")));
+                assert!(tips.iter().all(|tip| tip.chars().count() <= 180));
+            }
+            assert_eq!(format!("{g:?}"), before);
         }
     }
 

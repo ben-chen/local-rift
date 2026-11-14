@@ -1009,3 +1009,21 @@ responses, separate draws, physical readiness, no refunds, and no extra triggers
 A further both-seat scenario plays Meditation in response to an already-paid
 Irelia trigger on an initially ready Jae. These checks reuse the existing authored
 position helpers and use ordinary actions for subsequent transitions.
+
+## Crumbling Sands and spell history — November 14, 2026
+
+CR420.4.a/b and the official Vendetta FAQ distinguish successful play triggers
+from conditional checks of finalized spells. Crumbling Sands checks the latter
+when it resolves. Its target is any spell; an unmet condition does not make the
+target illegal. A different opponent spell qualifies even if countered or
+resolved earlier in the same turn. The target's physical chain ID is excluded,
+not every copy of its card. Choosing one's own spell remains legal.
+
+`PlayHistory::finalized_spells` records the original playing seat and unique
+chain ID at the shared finalization boundary. Repeat instructions do not record
+another play; playing from trash or facedown does. Existing successful-play
+trigger dispatch is unchanged. Both seats' history resets each turn.
+The focused scenarios cover conditional no-ops, the first or second spell,
+countered and resolved prior spells, later responses, own-spell targets, Repeat,
+alternate origins, rejected/staged plays, API query purity, and AI information
+boundaries. Full installed acceptance remains pending.
