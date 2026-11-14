@@ -874,8 +874,11 @@ Guards has passed its native and installed rules/API acceptance; this combined
 release adds token artwork and inspection. Token previews use the physical unit
 or Gold copy, current state and token rules, rather than the creating card’s
 printed effects. An inspector stays explicit when its token has departed.
-Combined package acceptance is pending; this does not complete the Azir list or
-all Standard interactions.
+Combined acceptance now passes 1,867 Rust tests, 300 source checks, 1,176 preset
+simulations, ten installed desktop cases and exact API-record comparisons for
+84 Guards games and 48 registered matches. The [combined record](validation/guards_tokens.json)
+pins the tested revision and six representative visual reviews. This does not
+complete the Azir list or all Standard interactions.
 
 ## Announced format changes — November 13, 2026
 
@@ -892,9 +895,9 @@ Hourglass. The complete Rengar registration demonstrates why auditing only a
 main deck is insufficient: its affected sideboard card and registered
 battlefields must also be considered. Bot validation and match creation now
 account for main deck, sideboard and fields at an explicit date, preserving the
-old match when a new list is rejected. Native format selection and automatic
-current-date selection remain required before claiming automatic support for
-the new format.
+old match when a new list is rejected. Native format selection and local-date
+selection are now implemented and checked as described below; integrated
+package acceptance remains outstanding.
 
 The selected date now also reaches the engine's public AI card pool. Hypothetical
 draws exclude the announced bans once effective, while pre-ban sampling remains
