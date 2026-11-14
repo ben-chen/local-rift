@@ -387,6 +387,9 @@ fn checked_advice(game: &Game, level: AdviceLevel) -> Result<Vec<&'static str>, 
     }
 
     if let Some(mut window_tips) = response_window_advice(game, beginner)? {
+        if let Some(tip) = gust_response_advice(game, beginner)? {
+            window_tips.insert(0, tip);
+        }
         if let Some(tip) = repulse_advice(game, beginner) {
             window_tips.push(tip);
         }
@@ -1684,6 +1687,62 @@ fn response_window_advice(
         return Ok(Some(tips));
     }
     Ok(None)
+}
+
+fn gust_response_advice(game: &Game, beginner: bool) -> Result<Option<&'static str>, String> {
+    if game.priority() != 0 || game.decision.is_some() {
+        return Ok(None);
+    }
+    let target = game.chain.iter().rev().find_map(|item| {
+        if item.player != 1 || item.card_id != 11 || item.ability.is_some() {
+            return None;
+        }
+        match item.targets.first().or(item.target.as_ref()) {
+            Some(Target::Unit { player: 0, unit_id }) => Some((item, *unit_id)),
+            _ => None,
+        }
+    });
+    let Some((gust, unit)) = target.and_then(|(item, id)| {
+        game.players[0]
+            .units
+            .iter()
+            .find(|unit| unit.id == id)
+            .map(|unit| (item, unit))
+    }) else {
+        return Ok(None);
+    };
+    let currently_invalid = unit.lane.is_none() || game.unit_might(unit)? > 3;
+    if currently_invalid && !beginner && (gust.executions.len() > 1 || gust.options.repeat) {
+        return Ok(Some(
+            "This unit is outside Gust's target restrictions, but Repeat can affect another target. Review every execution before spending resources or passing.",
+        ));
+    }
+    if !currently_invalid && !beginner {
+        if gust.banish_after {
+            return Ok(Some(
+                "Countering this Gust sends it to banishment. Abandon won't return it to hand; compare its cost with a Might boost above 3.",
+            ));
+        }
+        if gust.recycle_after {
+            return Ok(Some(
+                "Countering this Gust recycles it into their deck. Abandon won't put it in their hand; a Might boost above 3 can also protect its target.",
+            ));
+        }
+    }
+    Ok(Some(match (currently_invalid, beginner) {
+        (true, true) => {
+            "Right now, Gust can't affect this unit: it needs a battlefield unit with 3 Might or less. Players can still respond before it resolves."
+        }
+        (true, false) => {
+            "Gust currently has no legal target. Passing preserves your resources; check whether another response could make its target legal again."
+        }
+        (false, true) => {
+            "Gust checks its target again when it resolves. Raising this unit above 3 Might before then makes Gust leave it on the board."
+        }
+        (false, false) => {
+            "A Might boost above 3 can spoil Gust's target. Abandon returns Gust to hand: check their remaining Energy before choosing a counter."
+        }
+    }))
 }
 
 fn khazix_advice(game: &Game, beginner: bool) -> Option<&'static str> {

@@ -45,16 +45,18 @@ class PracticeChecks(unittest.TestCase):
     def test_junit_requires_each_suite_benchmarks_and_no_skips_or_failures(self):
         with tempfile.TemporaryDirectory() as folder:
             path = Path(folder) / 'junit.xml'
-            tree = ET.Element('testsuites', tests='8', skipped='0', failures='0', errors='0', time='1.5')
+            tree = ET.Element('testsuites', tests='10', skipped='0', failures='0', errors='0', time='1.5')
             suite = ET.SubElement(tree, 'testsuite')
             for name in sorted(checks.SUITES):
                 ET.SubElement(suite, 'testcase', name='fixture', classname=name)
             for name in ['measured_irelia_decisions_and_companion',
-                         'waiting_for_irelia_reset_does_not_ignore_an_enemy_response']:
+                         'waiting_for_irelia_reset_does_not_ignore_an_enemy_response',
+                         'responses::measured_irelia_responses_against_recast_gust',
+                         'responses::returning_gust_allows_a_second_real_response']:
                 ET.SubElement(suite, 'testcase', name='practice_benchmark::' + name,
                               classname='local-rift::bin/local-rift')
             ET.ElementTree(tree).write(path)
-            self.assertEqual(checks.test_summary(path)['passed'], 8)
+            self.assertEqual(checks.test_summary(path)['passed'], 10)
             for tag in ['failure', 'error', 'skipped']:
                 bad = copy.deepcopy(tree)
                 ET.SubElement(bad.find('.//testcase'), tag)

@@ -1,0 +1,84 @@
+{
+  "status": "Response benchmarks and initial native coaching checks pass; integrated preflight, final lint and immutable package acceptance remain pending.",
+  "base_revision": "d09f3fe7f03c8dcd4c74c550fb6adfa206c2aba2",
+  "reviewed_on": "2026-11-14",
+  "behavior": "Mote explains Gust target rechecks, Abandon replay risk, public banish/recycle departures, and other Repeat targets. Commentary remains optional and read-only. Opponent policy and the rules engine are unchanged.",
+  "rules_reference": {
+    "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/5c7946f7c3b8c6e0faff85ab6dadc6d2e721ea94.pdf",
+    "target_rechecks": "359.3.e.2\u2013359.3.e.5",
+    "final_conquest": "473.1.b"
+  },
+  "benchmarks": {
+    "positions": 4,
+    "cases": 24,
+    "required_outcomes": 16,
+    "results": {
+      "Easy": "4/8",
+      "Tactical": "4/8",
+      "Strategic": "8/8"
+    },
+    "known_misses": "The simpler levels win the partner-scoring and already-protected positions but spend unnecessary responses, in both seats. These misses are retained.",
+    "controls": [
+      "Explicit legal winning lines independent of AI policy.",
+      "Opponent actually recasts returned Gust when affordable; countering it in that position fails to win.",
+      "First decision and human-seat advice are checked against changed hidden information.",
+      "Six final benchmark tests include banish/recycle tips and real paid Repeat with separately resolved targets."
+    ]
+  },
+  "verification": {
+    "initial_focused": {
+      "passed": 184,
+      "seconds": 17.387,
+      "scope": "Predates the final replacement/Repeat hints and native extension."
+    },
+    "final_benchmark_tests": 6,
+    "earlier_companion_tests": 54,
+    "earlier_python_runner_tests": 5,
+    "earlier_strict_clippy": "Passed before the Repeat follow-up; final integrated lint pending."
+  },
+  "native": {
+    "status": "passed",
+    "binary_sha256": "fab2d887f9dd997d6a656aeb0702dee7c075a41413c3076296bb668717b14683",
+    "source_sha256": {
+      "src/companion.rs": "0471b16533255a4cf21dd37bbb5af225bdcdbd97b1a534cc55eb0a87e0c2c578",
+      "src/smoke/irelia.rs": "7890e8cb520dfa4655d645f7a91fe848343a8fa64ef7ce20f2f416e128b25dce",
+      "src/smoke/irelia_responses.rs": "183d32318feeddf6cea166558abb9c68e075a32caeefe7186413dce74e0c8a92"
+    },
+    "window_sizes": [
+      "1440x900",
+      "1152x720"
+    ],
+    "captures_reviewed": 8,
+    "observed": "All four tips fit in the sidebar at both sizes. Advice-level buttons and Pass priority remain unobstructed; card art, Might and resources remain visible.",
+    "behavioral_scope": "Actual Beginner/Advanced and Pass-priority clicks. The test advances En Garde using engine actions. Authored midgame fixtures, not complete legal-deck games.",
+    "revision_limit": "The screenshots precede the Repeat-specific hint, whose branch is not entered in these single-execution captures. Installed captures for the final combined revision are pending."
+  },
+  "failed_attempts": [
+    "Initial fixture expected no hand change after Gust returns Pyke; corrected expected returned card.",
+    "Fixture expected 4 Might for isolated Pyke after En Garde; printed 3 plus 2 is 5.",
+    "Fixture omitted the opponent priority pass after the buff; corrected real action sequence.",
+    "Expected red coaching test exposed missing Gust-specific response advice.",
+    "Expected red Repeat regression reproduced the false statement that Gust had no legal target when its second execution remained valid."
+  ],
+  "limits": [
+    "Authored development positions, not held-out strength evaluation or proof of learning outcomes.",
+    "No new AI difficulty or card coverage claim.",
+    "Full Standard parity remains unproven."
+  ],
+  "files_sha256": {
+    "src/companion.rs": "b83328320544043aad4ef2b156cd5c4c7ba45f5320a47c9cf4a187ffc3d61b4e",
+    "src/practice_benchmark.rs": "9775a3aaeffd12d639ad41606b5a192cda780d3da76fc49f488c77da677d7bc5",
+    "src/practice_responses.rs": "8c731e5f8990cc47ef19cedf27d1ffd5436d8edda42caafd32e19efd7a4ad154",
+    "src/smoke/irelia.rs": "7890e8cb520dfa4655d645f7a91fe848343a8fa64ef7ce20f2f416e128b25dce",
+    "src/smoke/irelia_responses.rs": "183d32318feeddf6cea166558abb9c68e075a32caeefe7186413dce74e0c8a92"
+  },
+  "evidence_sha256": {
+    "irelia-responses-focused-v1/status.json": "31eb37bccb4159bac55223646486ae8ba654b6d264b7edaba427045f288f8441",
+    "irelia-responses-coach-v3.json": "8b017491048cc225664bc7d61aad6b562eaa1326b0f223f1204c22026ff1f8b6",
+    "irelia-responses-coach-v3.log": "2e0ade272b50c2c4cf720cfdf4bf798f2b2473d62aed69ef9ad671450c179439",
+    "irelia-responses-companion-v1.log": "588c977fa6d6b65229d9b2f0d57def07875e472e4334de116ee53fc4a5dcefda",
+    "irelia-responses-repeat-red-v1.log": "d175ff7371f8110bb4851e2a69c0d37e32fcdb10e1298f5cb29a6bf41af2151d",
+    "irelia-responses-native-v1/status.json": "ed327f2a0e8ec7be330c47e0dde0f42b50cc9fedb805b84674e3218ce1f66f1f",
+    "irelia-responses-clippy-v1.log": "b8070b134de5286c5bd9deb1bb80c6a2abab05118f6140deffa3ef15680ee85e"
+  }
+}

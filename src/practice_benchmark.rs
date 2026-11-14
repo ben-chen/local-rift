@@ -9,6 +9,9 @@ use std::time::Instant;
 
 const RUNNER: u32 = 62001;
 
+#[path = "practice_responses.rs"]
+mod responses;
+
 #[derive(Clone, Copy, Debug)]
 enum Start {
     Reset,

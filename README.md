@@ -379,6 +379,14 @@ matchup evidence, complete games, human learning tests or a strength rating.
 Timing is observational and has no machine-dependent pass threshold. The optional
 API campaign separately measures complete-match and dated-format stability.
 
+The same focused run writes `responses.json` for four additional Irelia positions
+where the opponent can recast Gust after Abandon returns it. Each position has
+an independently specified legal winning line, both seats and all three levels.
+The report separates winning from winning without unnecessary spending, and
+retains misses. Mote explains Gust’s resolution-time Might check, the counter’s
+return-to-hand risk and when passing preserves resources. These are development
+scenarios; they do not rate general opponent strength.
+
 `python3 tools/check_release.py --plan plan.json --output /path/to/new-results`
 builds and verifies one committed revision. The JSON plan has a full `revision`
 SHA, `ui` cases (`name`, smoke-mode `args`, optional `captures` environment-variable

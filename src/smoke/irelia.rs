@@ -3,6 +3,8 @@ use super::*;
 use crate::Tray;
 use local_rift::game::ChainAbility;
 const PREFECT: u32 = 42400;
+#[path = "irelia_responses.rs"]
+mod responses;
 fn setup(app: &mut App) {
     expansion_fixture(app, 70);
     app.game = Game::new_for_agents(3, 3, 424424, Difficulty::Easy);
@@ -968,9 +970,8 @@ pub(crate) fn run_frame(app: &mut App, frame: u32) -> bool {
             assert!(app.game.players[0].hand.is_empty());
             assert_eq!(app.game.players[0].any_power, 1);
             capture(app, "RIFT_IRELIA_INNOVATOR_SKIPPED_KEEP_ADD");
-            return true;
         }
-        _ => {}
+        116.. => return responses::run_frame(app, frame - 116),
     }
     false
 }

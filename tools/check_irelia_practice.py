@@ -45,7 +45,9 @@ def test_summary(path):
     suites = {case.get('classname') for case in cases}
     names = {case.get('name') for case in cases}
     required = {'practice_benchmark::measured_irelia_decisions_and_companion',
-                'practice_benchmark::waiting_for_irelia_reset_does_not_ignore_an_enemy_response'}
+                'practice_benchmark::waiting_for_irelia_reset_does_not_ignore_an_enemy_response',
+                'practice_benchmark::responses::measured_irelia_responses_against_recast_gust',
+                'practice_benchmark::responses::returning_gust_allows_a_second_real_response'}
     if suites != SUITES or not required <= names or not cases:
         raise ValueError('Focused test selection lost a required suite or benchmark.')
     if len(cases) != int(tree.get('tests', '0')) or any(
@@ -92,7 +94,8 @@ def main():
               'api': 'pending' if args.api else 'not requested',
               'limits': 'Authored decision positions; no expert-strength or human-learning claim.'}
     env = {**os.environ, 'CARGO_TARGET_DIR': str(ROOT / 'target'),
-           'RIFT_IRELIA_BENCHMARK_REPORT': str(output / 'decisions.json')}
+           'RIFT_IRELIA_BENCHMARK_REPORT': str(output / 'decisions.json'),
+           'RIFT_IRELIA_RESPONSES_REPORT': str(output / 'responses.json')}
 
     def save():
         (output / 'status.json').write_text(json.dumps(report, indent=2) + '\n')
@@ -120,6 +123,7 @@ def main():
                                    '-E', FILTER, '--status-level', 'fail', '--final-status-level', 'fail'])
         report['tests'] = test_summary(output / 'junit.xml')
         report['decisions'] = decision_summary(json.loads((output / 'decisions.json').read_text()))
+        report['responses'] = decision_summary(json.loads((output / 'responses.json').read_text()))
         if args.api:
             run('api-build', ['cargo', 'build', '--locked', '--release', '--bin', 'rift-api'])
             run('api-matches', [sys.executable, str(ROOT / 'tools/check_format_api.py'),
@@ -138,7 +142,7 @@ def main():
         raise
     finally:
         save()
-    print(json.dumps({key: report[key] for key in ['status', 'tests', 'decisions', 'api']}, indent=2))
+    print(json.dumps({key: report[key] for key in ['status', 'tests', 'decisions', 'responses', 'api']}, indent=2))
 
 
 if __name__ == '__main__':
