@@ -937,7 +937,7 @@ surviving source departure or a countered spell. API checks independently assert
 that the draw resolves before the choosing spell and exposes only a hand count
 to the opponent. Complete dated matches supplement these scenarios; they are
 not an independent oracle for rules correctness or a measure of expert strength.
-[Validation and outstanding package checks](validation/irelia_choices.json).
+[Frozen-revision validation and installed acceptance](validation/irelia_choices.json).
 
 ### Spirit Wheel: choosing events and source-exhaustion cost
 

@@ -141,7 +141,7 @@ Irelia recipes remain unchanged.
 Jae Medarda is an additional Calm/Chaos-compatible card for spell-choice
 practice. The shipped tournament recipes remain unchanged; the validation
 campaign uses an explicitly authored Irelia list. His separate draw trigger,
-card inspection and Beginner/Advanced advice have local coverage described in
+card inspection and Beginner/Advanced advice passed native and installed acceptance described in
 [the Jae validation record](validation/irelia_choices.json). This admission does
 not establish that he is a current tournament staple.
 
@@ -149,15 +149,19 @@ Spirit Wheel adds another Calm/Chaos-compatible practice option. A friendly
 unit chosen by a spell or ability offers a separate draw trigger; its Energy
 and source-exhaustion cost is paid before responses. The seven sourced recipes
 remain unchanged. Its [validation](validation/irelia_wheel.json) distinguishes
-rules scenarios, authored matches and unproven strategic use.
+rules scenarios, authored matches and unproven strategic use. Its frozen installed
+release passed the full regression, source and simulation gates, both window
+sizes, best-of-three flow and four exact API replay comparisons.
 
 The [Strategic setup investigation](validation/irelia_ai_search.json) distinguishes
 an unused card from a demonstrated bad decision. Authored positions cover useful
 Wheel/Discipline sequencing, resource restraint, winning conquest and hidden
 information independence. Equivalent encodings of ordinary hand plays now share
 a search slot; optional costs and target choices stay distinct. This improves
-search diversity without changing card-specific scoring weights. Local checks
-pass; installed release acceptance remains pending.
+search diversity without changing card-specific scoring weights. Local and
+installed release acceptance passed: 1,951 Rust tests, 318 source checks,
+1,176 simulated matches and the recorded client/API checks. This is regression
+evidence, not proof of expert opponent strength.
 
 Clockwork Keeper, Meditation and Life from Stone extend the Calm card pool for
 Irelia-compatible custom practice. Keeper uses its official erratum: the optional

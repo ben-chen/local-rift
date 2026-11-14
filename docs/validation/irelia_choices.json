@@ -1,5 +1,5 @@
 {
-  "status": "Local checks passed; installed release acceptance pending",
+  "status": "Passed frozen-revision Nix, installed desktop and API acceptance",
   "base_revision": "2c0754de6342f0d87b2a623a550872da75397eb0",
   "card": {
     "runtime_id": 450,
@@ -153,13 +153,12 @@
   "rejected_attempts": [
     "Native test compilation needed equality assertions without a Debug requirement.",
     "The first protocol preview request omitted the required execution index.",
-    "Initial board crop hid Jae\u2019s face; final crop was inspected at both sizes."
+    "Initial board crop hid Jae\u2019s face; final crop was inspected at both sizes.",
+    "Release v1 was interrupted; original handle/PID were absent on revalidation. Its observation sidecar is preserved.",
+    "Release v2 exposed a stale hardcoded catalog size (450 versus 451); stopped after diagnosis. Commit 008d46b compares runtime size with the reviewed manifest. Release v3 passed."
   ],
   "remaining": [
-    "Full frozen revision regression and source checks.",
-    "Nix package and simulation checks.",
-    "Installed native controls and exact API record comparison.",
-    "Publication after acceptance."
+    "Further card interactions, novice learning and expert opponent strength remain outside this admission proof."
   ],
   "source_checks": {
     "tests": 41,
@@ -175,6 +174,207 @@
   },
   "runtime_sources_sha256": {
     "src/cards.rs": "bf5c4b9e97924974ee3cd4da88434f2ce2724880339efcddbf31b2024dfcd0b0",
+    "src/game.rs": "193be8c48693aaedac5df9ab85b396cc119e7f40bd5f5e4759df234b55fe8265",
+    "src/rules.rs": "6f7746303a532996dc8c9bc5c1ae54cb334e08d061a9ed370987647ae81510d6",
+    "src/triggers.rs": "a31c6e14cf528c98e10977f0a1f672f855747104b07debead6730c6d0aa398c5",
+    "src/trigger_rules.rs": "588f1ca85b4c9fa37f2d4a248a647e4717fd90e77f89c0ec95ab252af6965a1a",
+    "src/main.rs": "7eeeb9f96a1006224115aff7efe2bb4d4f2c80b0f30ad12cf5e0d296aa21518b",
+    "src/companion.rs": "f3d396005e443cc80fee2afc094a211f8aaec1c6ce15298cfd4729388db6630a",
+    "src/smoke/irelia_choices.rs": "88606bfa100da81baff106c60ad93ef5b8a8edd7c2857a3d29ada2553aa77851",
+    "src/smoke/irelia_responses.rs": "6627ea9d8f6110dd54e4afa394e6a5f43623d186ce142c2211492296a74cce4b"
+  },
+  "installed_acceptance": {
+    "status": "passed",
+    "stage": "complete",
+    "pid": 1831403,
+    "revision": "008d46b215a417a290c5415eed030ecc5dd2e38e",
+    "plan_sha256": "d9f412e69ba995250583059d83600fea6c443d1699aec75d9bdc3ade14aef42e",
+    "runner_sha256": "5631bfd578f7217542a061aea2b67e50a38da93514524eb656e4924efb3f1910",
+    "started_at": "2026-11-14T06:44:05.073222+00:00",
+    "ui": [
+      {
+        "name": "core-normal",
+        "seconds": 20.277,
+        "captures": 4,
+        "games": 0,
+        "capture_sha256": {
+          "rift_smoke_mat_screenshot.png": "0c4ee0b52121faa82f1d9b58f1e3be2e9bd50dc149da7640aaad0c350364dc58",
+          "rift_smoke_resources_screenshot.png": "d901808b645b124fe542fae88a868d52d74916ceb69ecb492495db1b5b0f9a43",
+          "rift_smoke_journal_screenshot.png": "51cd8c6383c438fe5425c0da44f10f3dd6fb89e6eea35b84fc97ac465cc90cfa",
+          "rift_smoke_opponent_resources_screenshot.png": "ae78331af76461a3ea34457d7856c750127a52611722a0432db263249f1a632e"
+        },
+        "log_sha256": "0ad7d29b583da68ce334cc72492052b992e83a5842e770cd49fe8d5083ebecbf",
+        "host_library_path_removed": true
+      },
+      {
+        "name": "irelia-normal",
+        "seconds": 6.559,
+        "captures": 9,
+        "games": 0,
+        "capture_sha256": {
+          "rift_gust_protected_advanced.png": "0343deb9357b1928d1e9113ffda3cccb0a2ae72f2d8bf1d346489f069c042aba",
+          "rift_gust_response_advanced.png": "6a9a3c03013abbd8ef309d8cc3372fca85662f91ee3693126c2ac21b4a50fe2b",
+          "rift_jae_inspect.png": "eaf367cfc9b808d9ebfd652aa9cfe16b89b02f5c4e50be509f20b9d746e25b44",
+          "rift_jae_beginner.png": "e23d9d75f58b3d6034e537f1e3cfe3dee0f7f9249a7dbd234374478c3fd8ac0a",
+          "rift_jae_draw.png": "df3924a112cab877d674aaf31ddd4741d6d5caf38528836d3023f7684cc82768",
+          "rift_jae_trigger.png": "6dec25f7f4b50f87d47e0ff756b869d95ad00aff936d67d2fd130c69d436f10d",
+          "rift_gust_response_beginner.png": "4f8bd02e080b9d0c4615372fd697e2988b4fb650a72a8e899ee41cfa73173d45",
+          "rift_jae_advanced.png": "6d2bba77be6ba5cb1f822825f279bdde7522fe48bc291931b7c310085ffbb9ee",
+          "rift_gust_protected_beginner.png": "2dff7e8e8a646b556c0e635c52944e136b21c78013081874727a6f7596ea2cc1"
+        },
+        "log_sha256": "5ff5c1ed3b32d2a663ff9fcffa9e1cd16c7f1cd85324c4564dc426f1f8bbe726",
+        "host_library_path_removed": true
+      },
+      {
+        "name": "format-normal",
+        "seconds": 4.586,
+        "captures": 1,
+        "games": 0,
+        "capture_sha256": {
+          "rift_format_turn_effect.png": "011e8daa63a7662e72ffe0aa45a0f146c0fd746b1c12cb6eae179e708459351d"
+        },
+        "log_sha256": "b14cbbd11f96d17c40e1323d144152047249e946e633825461ea1cb1121aaf54",
+        "host_library_path_removed": true
+      },
+      {
+        "name": "core-small",
+        "seconds": 17.305,
+        "captures": 4,
+        "games": 0,
+        "capture_sha256": {
+          "rift_smoke_mat_screenshot.png": "35e823509a8e89a744fdd30e2bd4ca4cfa69d3aecd1980d27848c187b2e1c66d",
+          "rift_smoke_resources_screenshot.png": "9c0048a6010af7c9f2f707c0d38e50a1150792a56ac943d0728cf30fb3bae6a4",
+          "rift_smoke_journal_screenshot.png": "24241d0aecadca8ef441dfd9b764380f8a3f93ca874898ca50a4eb432a43bfe4",
+          "rift_smoke_opponent_resources_screenshot.png": "c829fdee2d60777a1135570bbf017e52546c6ca84d0c5fb1e135b6c339cb8058"
+        },
+        "log_sha256": "0ad7d29b583da68ce334cc72492052b992e83a5842e770cd49fe8d5083ebecbf",
+        "host_library_path_removed": true
+      },
+      {
+        "name": "irelia-small",
+        "seconds": 6.084,
+        "captures": 9,
+        "games": 0,
+        "capture_sha256": {
+          "rift_gust_protected_advanced.png": "22a2f790fbb2c301dde0c411ebf744a6f1524d9a2223db9b2e2d808243442195",
+          "rift_gust_response_advanced.png": "52e65cca9ca1be513d4a0c74b9358b83ca25063ff418dbf9fc7be3885b01d0a3",
+          "rift_jae_inspect.png": "86977a2c416a76cdaf82869c6d5a71af1540f7882ca1610eb84ed5dc5a7c3cf6",
+          "rift_jae_beginner.png": "04cb0094f50ee074eef3311351163b1d8115633890a84174acdc901ac39658b1",
+          "rift_jae_draw.png": "530660e0d2c981f2cb5fe8b039a292cd25422a3d422b0f0cfa85eb1272af6623",
+          "rift_jae_trigger.png": "baffa031b6cd8520294cd6ebed66de5c2d5e80ca3924586876878defdebd95c2",
+          "rift_gust_response_beginner.png": "0471495761c19b556b4aad565b9ba1e3fe34b7d199a038d9bd7169a5454ebf4c",
+          "rift_jae_advanced.png": "afbaf9361d921885f839ca4e2bdc9ca81c8e2eeeded034d56c1761c5b092cbcc",
+          "rift_gust_protected_beginner.png": "577e328035ae1ee285224141f86fc4beccaecd60e648ed4cad3858dde55228dd"
+        },
+        "log_sha256": "5ff5c1ed3b32d2a663ff9fcffa9e1cd16c7f1cd85324c4564dc426f1f8bbe726",
+        "host_library_path_removed": true
+      },
+      {
+        "name": "format-small",
+        "seconds": 4.931,
+        "captures": 1,
+        "games": 0,
+        "capture_sha256": {
+          "rift_format_turn_effect.png": "f2059d458b111f11440b95332fd48b8c1f682845ca0cc5536d1109b5c008d579"
+        },
+        "log_sha256": "b14cbbd11f96d17c40e1323d144152047249e946e633825461ea1cb1121aaf54",
+        "host_library_path_removed": true
+      },
+      {
+        "name": "series-strategic",
+        "seconds": 6.235,
+        "captures": 4,
+        "games": 2,
+        "capture_sha256": {
+          "rift_series_sideboard.png": "a6d9dad55b98354bed273ed28d1c47ed35db0a8481f83a5af278d77f59eba162",
+          "rift_series_lobby.png": "a4a8329cdb5fe0dd5d255db9a923e7f738d43841a5df9a7d025a721859a8af36",
+          "rift_series_complete.png": "2af244e3c1adbff3064b09048d520a7d07e152486727f4bf63a28483a2382087",
+          "rift_series_champion.png": "804573dc69491cc348a424eec0018467f54a65c89e039e7399a5a9b792adde41"
+        },
+        "log_sha256": "7d9880f2c69e9570c0d248f6420a29a229143bc6ccdbc2c742450c9a041a9756",
+        "host_library_path_removed": true
+      }
+    ],
+    "api": [
+      {
+        "name": "jae-api",
+        "seconds": 3.872,
+        "records": 6,
+        "records_key": "records",
+        "full_records_equal": true,
+        "baseline_sha256": "f1f12b300889a9fdd98dc891475386d64d948ace69ebfc2e6ef9a1f93b41eded",
+        "report_sha256": "a44ed12a98bad61b46ec7d0f3409a9c90a862f6c3ad039971caff8e9f78410fd"
+      },
+      {
+        "name": "format-api",
+        "seconds": 15.547,
+        "records": 9,
+        "records_key": "records",
+        "full_records_equal": true,
+        "baseline_sha256": "0085dce4c5acd4a0ca7b552d82ac2d3a84153bfcec69f393d3c23aed817e6204",
+        "report_sha256": "0537d99acb6f472fa08d132fc4e328909e1bf1e3254344556ec3e2527319fc5d"
+      }
+    ],
+    "source_gc_root": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-choices-release-v3/source",
+    "nix": {
+      "package": "/nix/store/bmhkahw7r7bs9y3v3vwymq2yk1dpz9ci-local-rift-0.1.0",
+      "catalog": "/nix/store/cdd40d3nhha21hbw0km95pyjkaa6ja3g-local-rift-catalog-check",
+      "simulation": "/nix/store/4ds8l3jyp43k1rk3602x4bq2pfk5hwcv-local-rift-simulation-check",
+      "seconds": 1310.528,
+      "gc_root_prefix": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-choices-release-v3/nix-result"
+    },
+    "source": "/nix/store/mzjbbbkswwsl6lffixhg93w611qn68hg-source",
+    "finished_at": "2026-11-14T07:07:25.396000+00:00",
+    "report_sha256": "de032b92a13ae2ccf8e38917ed48cfdc35efc9fa22b5698a03135516c5ebef32",
+    "report_path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-choices-release-v3/status.json",
+    "nix_log_sha256": "c6ff12225b9614757884455537c4ac7e77925d39c2cbc0a029aee228048bee82",
+    "rust_tests": {
+      "passed": 1917,
+      "skipped": 0,
+      "seconds": 904.33
+    },
+    "source_tests": {
+      "passed": 312,
+      "seconds": 348.203
+    },
+    "simulation": {
+      "matches": 1176,
+      "pairings": 49,
+      "levels": 3,
+      "seeds_per_pairing_per_level": 8,
+      "invariants": "card/rune conservation, energy accounting, unique valid units, winner consistency after every action",
+      "report_sha256": "15ca33cc184af6d8e45ebba1edb7988b08e38f7a945684344f39c10a29aa2408"
+    },
+    "visual_review": {
+      "method": "Selected installed captures viewed at original resolution; remaining captures have behavioral assertions, not a claim of individual visual review.",
+      "captures": {
+        "core-normal/rift_smoke_resources_screenshot.png": "d901808b645b124fe542fae88a868d52d74916ceb69ecb492495db1b5b0f9a43",
+        "core-small/rift_smoke_resources_screenshot.png": "9c0048a6010af7c9f2f707c0d38e50a1150792a56ac943d0728cf30fb3bae6a4",
+        "irelia-normal/rift_jae_inspect.png": "eaf367cfc9b808d9ebfd652aa9cfe16b89b02f5c4e50be509f20b9d746e25b44",
+        "core-small/rift_smoke_journal_screenshot.png": "24241d0aecadca8ef441dfd9b764380f8a3f93ca874898ca50a4eb432a43bfe4",
+        "core-normal/rift_smoke_journal_screenshot.png": "51cd8c6383c438fe5425c0da44f10f3dd6fb89e6eea35b84fc97ac465cc90cfa",
+        "core-small/rift_smoke_opponent_resources_screenshot.png": "c829fdee2d60777a1135570bbf017e52546c6ca84d0c5fb1e135b6c339cb8058",
+        "irelia-small/rift_jae_inspect.png": "86977a2c416a76cdaf82869c6d5a71af1540f7882ca1610eb84ed5dc5a7c3cf6",
+        "irelia-small/rift_jae_beginner.png": "04cb0094f50ee074eef3311351163b1d8115633890a84174acdc901ac39658b1",
+        "irelia-small/rift_jae_advanced.png": "afbaf9361d921885f839ca4e2bdc9ca81c8e2eeeded034d56c1761c5b092cbcc",
+        "irelia-small/rift_jae_draw.png": "530660e0d2c981f2cb5fe8b039a292cd25422a3d422b0f0cfa85eb1272af6623",
+        "series-strategic/rift_series_complete.png": "2af244e3c1adbff3064b09048d520a7d07e152486727f4bf63a28483a2382087"
+      },
+      "observations": [
+        "Matching own/opponent upright and exhausted rune displays and hover explanations fit the compact window.",
+        "Journal text, navigation and return control fit both sizes.",
+        "Jae art, full rules text and both advice levels fit; advice leaves action controls unobstructed.",
+        "Resolved Jae draw is in hand while En Garde remains on chain.",
+        "Installed best-of-three completes two games and shows results and return-to-setup control."
+      ],
+      "limits": [
+        "Developer visual review, not a novice learning study."
+      ]
+    }
+  },
+  "runtime_sources_sha256_scope": "Earlier local validation source hashes; frozen accepted source hashes are recorded separately below.",
+  "accepted_sources_sha256": {
+    "src/cards.rs": "022d746052588c96e3f6d8758a50febcf7d89e8e42f36f898b09de3e96d2d817",
     "src/game.rs": "193be8c48693aaedac5df9ab85b396cc119e7f40bd5f5e4759df234b55fe8265",
     "src/rules.rs": "6f7746303a532996dc8c9bc5c1ae54cb334e08d061a9ed370987647ae81510d6",
     "src/triggers.rs": "a31c6e14cf528c98e10977f0a1f672f855747104b07debead6730c6d0aa398c5",
