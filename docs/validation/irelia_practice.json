@@ -1,0 +1,184 @@
+{
+  "status": "Focused integration and native API passed; immutable installed acceptance running",
+  "source_commit": "40a7813f6aa9a3a5d588afa42fe01553b6b8e57a",
+  "reviewed_at": "2026-11-14T04:28:40.018419+00:00",
+  "scope": [
+    "Twelve reproducible Irelia decision positions with an explicit legal solution, both seats and three AI levels",
+    "Wait for a lone friendly Irelia reset while continuing to consider an opposing response",
+    "Choose an exhausted unit that can reach the final unopposed scoring field, with actual spell and Ready payment validation",
+    "Beginner and Advanced commentary explains pending reset timing and updates when the opponent responds"
+  ],
+  "checks": {
+    "integration_tests": 173,
+    "intentionally_filtered_tests": 998,
+    "integration_seconds": 17.397,
+    "final_benchmark_tests": 2,
+    "final_benchmark_seconds": 0.245,
+    "strict_all_target_clippy": "passed",
+    "formatting": "passed",
+    "positions": 12,
+    "decision_cases": 72,
+    "required_decision_outcomes": 60,
+    "required_outcomes_passed": 60,
+    "measured_outcomes_missed": 12,
+    "opponent_response_cases": 4,
+    "companion_scope": "Both advice levels in the human seat, brief/read-only/private-safe; explicit pending-reset and enemy-response messages. No human learnability claim.",
+    "native_api": {
+      "records": 9,
+      "actual_games": 25,
+      "snapshot_date_pairs_equal": true,
+      "all_full_records_equal_to_previous_release": true,
+      "limits": "These nine match traces are unchanged. New winning-route decisions are demonstrated by the authored benchmark, not inferred from these complete-match records."
+    }
+  },
+  "benchmark_summary": [
+    {
+      "cases": 24,
+      "difficulty": "Easy",
+      "misses": [
+        {
+          "position": "skip-reset-without-followup",
+          "seat": 0
+        },
+        {
+          "position": "skip-reset-without-followup",
+          "seat": 1
+        },
+        {
+          "position": "move-ready-pyke-before-spending",
+          "seat": 0
+        },
+        {
+          "position": "move-ready-pyke-before-spending",
+          "seat": 1
+        },
+        {
+          "position": "move-ready-akali-before-spending",
+          "seat": 0
+        },
+        {
+          "position": "move-ready-akali-before-spending",
+          "seat": 1
+        }
+      ],
+      "step_ms_max": 0.140563,
+      "step_ms_p50": 0.018815,
+      "step_ms_p95": 0.112581,
+      "successes": 18
+    },
+    {
+      "cases": 24,
+      "difficulty": "Tactical",
+      "misses": [
+        {
+          "position": "skip-reset-without-followup",
+          "seat": 0
+        },
+        {
+          "position": "skip-reset-without-followup",
+          "seat": 1
+        },
+        {
+          "position": "move-ready-pyke-before-spending",
+          "seat": 0
+        },
+        {
+          "position": "move-ready-pyke-before-spending",
+          "seat": 1
+        },
+        {
+          "position": "move-ready-akali-before-spending",
+          "seat": 0
+        },
+        {
+          "position": "move-ready-akali-before-spending",
+          "seat": 1
+        }
+      ],
+      "step_ms_max": 0.139171,
+      "step_ms_p50": 0.018895000000000002,
+      "step_ms_p95": 0.11100800000000001,
+      "successes": 18
+    },
+    {
+      "cases": 24,
+      "difficulty": "Strategic",
+      "misses": [],
+      "step_ms_max": 35.956848,
+      "step_ms_p50": 0.459041,
+      "step_ms_p95": 2.403474,
+      "successes": 24
+    }
+  ],
+  "comparison": {
+    "original_benchmark_commit": "1503231",
+    "original_report": "irelia-practice-benchmark-v1.json",
+    "fixed_sequences": [
+      "reset-discipline-pyke",
+      "reset-discipline-fervent",
+      "reset-en-garde-akali",
+      "reset-en-garde-stellacorn"
+    ],
+    "result": "Each of these four sequences failed in both seats for Easy and Tactical before the policy changes, and now succeeds. Strategic already completed them.",
+    "oracle_correction": "Open-turn positions initially only required a win. Their final objective also requires preserving hand and resources. Do not compare the original overall percentage with the stricter final percentage.",
+    "fixture_correction": "The enemy-response regression now explicitly passes after the enemy plays Gust; the caster retains priority. The initial test stepped the enemy a second time and incorrectly labeled that as an ignored response. No engine rule was changed."
+  },
+  "limitations": [
+    "Authored midgames are not complete legal-deck replays or independent proof of general rules parity.",
+    "The scored sequences assume a passing opponent; this is a development benchmark, not held-out or human-strength validation.",
+    "Easy and Tactical still pay for the empty-hand reset in this benchmark and spend cards during a winning showdown. Their measured result is 18/24 each; Strategic is 24/24.",
+    "The heuristic follow-up handles positive Might spells from hand and at most twelve candidate payments; other ready engines retain existing policy.",
+    "Timing includes step execution and was measured with another release job active; there is no speedup or maximum-latency guarantee.",
+    "The broader 173-test run preceded an equivalent lint rewrite from own_score + 1 <= enemy_score to own_score < enemy_score; both final benchmark tests and strict Clippy passed afterward."
+  ],
+  "rules_review": {
+    "hub": "https://playriftbound.com/en-us/rules-hub/",
+    "core_date": "2026-10-09",
+    "core_archive": "assets/data/catalog_evidence/rules/94d41fee86f88b61c4157c0389c0595d990b98e5b42555c99d9f649ee64d1fec.pdf",
+    "rules": [
+      "416.1.b",
+      "416.1.c",
+      "473.1.b.1"
+    ],
+    "interpretation": "A redundant Ready adds no Ready event; the authored winning line scores the other battlefield before attempting the final conquest. No game legality changes are included."
+  },
+  "reproduce": "RIFT_IRELIA_BENCHMARK_REPORT=/tmp/irelia-decisions.json cargo test --locked --bin local-rift practice_benchmark:: -- --nocapture",
+  "evidence_sha256": {
+    "irelia-practice-benchmark-v1.json": "8f5c18fb4183b9f760226a0532de525db47e4bdc6bf320c83160199823a7f828",
+    "irelia-practice-benchmark-v3.json": "cafc3a5092879bac697c48586aec60d726bbafa72a9ce951c9d21309e0a8dd7c",
+    "irelia-practice-benchmark-v6.json": "b1c43bf6816b83c969d8b366181218f91a70b009c4c2031d0328ba03fa2f4f22",
+    "irelia-practice-integration-v5.log": "e69c7e6d93e3e3f05158e146b14846888e6f926569516919ba398087f324769d",
+    "irelia-practice-integration-v5-junit.xml": "e5bae841c6468503b058a20399bb6ede03137d7f1e258166a0d01baddaab2668",
+    "irelia-practice-final-v6.log": "4abc07a7c14a3230596dcc5e9977e3b619979b0eadd4c130d40cfae4dba6ccad",
+    "irelia-practice-clippy-v2.log": "50e0810ffd2de3513d70caee362a3a4a5824dff51f106e2b2ab28d3ef864984c",
+    "irelia-practice-api-v1.json": "54a63d8e68aa876d2927f9b4b77448b04034d54b004ae5082ad8c9eadbea543e",
+    "irelia-practice-api-v1.log": "599b9daff3abcaa96d4c20bbab518611b16ac6bd54afda0d9861686d86fa70a2"
+  },
+  "files_sha256": {
+    "src/irelia_ai.rs": "d3f4bd97126ad935bbc3f17128ec716460a37cdb22b92f2c5cea040874fc4a4c",
+    "src/game.rs": "48fc5cbfbcdcbbe949ef651ba66892f8bb5f5ddc9d19b8a2ca1dbfe5ad28cf39",
+    "src/companion.rs": "f1cc35ea054e05eb27cafe87f37422cc75cdb42ccb1179fb96c9f00c70b8cce8",
+    "src/practice_benchmark.rs": "9158a2f883eb9898d1e7312faac7f987e02bd390f2c16d80d588210f95e164b8",
+    "src/main.rs": "87698adf0e344ac6abd73244b8b3259192577a54762b56c1511c8d6271d9234c"
+  },
+  "remaining": [
+    "Inspect immutable full package, simulation and installed UI/API results",
+    "Review all six installed captures",
+    "Publish after acceptance; collect exact GitHub CI"
+  ],
+  "release_in_progress": {
+    "pid": 1676882,
+    "revision": "40a7813f6aa9a3a5d588afa42fe01553b6b8e57a",
+    "started_at": "2026-11-14T04:29:43.226700+00:00",
+    "plan": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-practice-release-plan-v1.json",
+    "status_file": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-practice-release-v1/status.json",
+    "plan_sha256": "5f1a45cca3d7265072f3242e311bd47816f52ccf380aef055bb38871d0da2ce2",
+    "expected_rust_tests": 1895,
+    "expected_source_tests": 303,
+    "expected_simulations": 1176,
+    "expected_ui_cases": 9,
+    "expected_captures": 6,
+    "minimum_actual_ui_games": 6,
+    "expected_api_records": 9
+  }
+}
