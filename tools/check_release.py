@@ -43,7 +43,7 @@ def validate_plan(plan):
             names.add(name)
             if group == 'ui':
                 argv = case.get('args', [])
-                if not argv or not re.fullmatch(r'--ui-smoke(?:-[a-z-]+)?', argv[0]) or argv[1:] not in ([], ['--small']):
+                if not argv or not re.fullmatch(r'--ui-smoke(?:-[a-z0-9-]+)?', argv[0]) or argv[1:] not in ([], ['--small']):
                     raise ValueError(f'{name}: expected a native UI smoke mode and optional --small.')
                 captures = case.get('captures', [])
                 if len(set(captures)) != len(captures) or any(not re.fullmatch(r'RIFT_[A-Z0-9_]+', key) for key in captures):

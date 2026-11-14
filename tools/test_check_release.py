@@ -53,7 +53,13 @@ class ReleaseChecks(unittest.TestCase):
                     validate_plan(plan)
 
     def test_requires_distinct_cases_and_real_smoke_modes(self):
+        # C24 is the shipped Deploy/Command control scenario, including small windows.
+        for args in [['--ui-smoke-c24'], ['--ui-smoke-c24', '--small']]:
+            plan = copy.deepcopy(self.plan)
+            plan['ui'][0]['args'] = args
+            validate_plan(plan)
         for change in [{'name': 'card-api'}, {'name': '../escape'}, {'args': ['--help']},
+                       {'args': ['--ui-smoke-c24', '--arbitrary-option']},
                        {'captures': ['RIFT_BOARD', 'RIFT_BOARD']},
                        {'env': {'LD_LIBRARY_PATH': '/host/libraries'}}]:
             with self.subTest(change=change):
