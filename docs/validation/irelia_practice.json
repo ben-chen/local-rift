@@ -1,5 +1,5 @@
 {
-  "status": "Focused integration and native API passed; immutable installed acceptance running",
+  "status": "Immutable package and installed UI/API acceptance passed; publication and GitHub CI pending",
   "source_commit": "40a7813f6aa9a3a5d588afa42fe01553b6b8e57a",
   "reviewed_at": "2026-11-14T04:28:40.018419+00:00",
   "scope": [
@@ -162,9 +162,7 @@
     "src/main.rs": "87698adf0e344ac6abd73244b8b3259192577a54762b56c1511c8d6271d9234c"
   },
   "remaining": [
-    "Inspect immutable full package, simulation and installed UI/API results",
-    "Review all six installed captures",
-    "Publish after acceptance; collect exact GitHub CI"
+    "Publication and exact GitHub CI result"
   ],
   "release_in_progress": {
     "pid": 1676882,
@@ -180,5 +178,138 @@
     "expected_captures": 6,
     "minimum_actual_ui_games": 6,
     "expected_api_records": 9
+  },
+  "release": {
+    "status": "passed",
+    "stage": "complete",
+    "pid": 1676882,
+    "revision": "40a7813f6aa9a3a5d588afa42fe01553b6b8e57a",
+    "plan_sha256": "5f1a45cca3d7265072f3242e311bd47816f52ccf380aef055bb38871d0da2ce2",
+    "runner_sha256": "5631bfd578f7217542a061aea2b67e50a38da93514524eb656e4924efb3f1910",
+    "started_at": "2026-11-14T04:29:43.318738+00:00",
+    "ui": [
+      {
+        "name": "core-normal",
+        "seconds": 17.71,
+        "captures": 0,
+        "games": 0,
+        "capture_sha256": {},
+        "log_sha256": "0ad7d29b583da68ce334cc72492052b992e83a5842e770cd49fe8d5083ebecbf",
+        "host_library_path_removed": true
+      },
+      {
+        "name": "core-small",
+        "seconds": 13.937,
+        "captures": 0,
+        "games": 0,
+        "capture_sha256": {},
+        "log_sha256": "0ad7d29b583da68ce334cc72492052b992e83a5842e770cd49fe8d5083ebecbf",
+        "host_library_path_removed": true
+      },
+      {
+        "name": "irelia-normal",
+        "seconds": 5.41,
+        "captures": 0,
+        "games": 0,
+        "capture_sha256": {},
+        "log_sha256": "5ff5c1ed3b32d2a663ff9fcffa9e1cd16c7f1cd85324c4564dc426f1f8bbe726",
+        "host_library_path_removed": true
+      },
+      {
+        "name": "irelia-small",
+        "seconds": 4.985,
+        "captures": 0,
+        "games": 0,
+        "capture_sha256": {},
+        "log_sha256": "5ff5c1ed3b32d2a663ff9fcffa9e1cd16c7f1cd85324c4564dc426f1f8bbe726",
+        "host_library_path_removed": true
+      },
+      {
+        "name": "series-normal",
+        "seconds": 4.884,
+        "captures": 0,
+        "games": 3,
+        "capture_sha256": {},
+        "log_sha256": "66b2bf5b0da1190cb528d909676e6b462c0df43df2992490bf439804f2f11109",
+        "host_library_path_removed": true
+      },
+      {
+        "name": "series-small",
+        "seconds": 4.63,
+        "captures": 4,
+        "games": 2,
+        "capture_sha256": {
+          "rift_series_sideboard.png": "54b2e073d0dd5c7ba223abe5c71aeeabbefe72fcc4614d1d7a896495448cb4f3",
+          "rift_series_lobby.png": "dc2c7cd2c79731ae3629be0bf99325d9af38d13902586431fa79b444061a2fb5",
+          "rift_series_complete.png": "8e6f32e74edba59cd69a041fb2c9c15ff1db558e389dc43ceb9062c0ef2ef4b0",
+          "rift_series_champion.png": "720437cb388b798ff0be2b90038e92946d8b74f4efc912f51de0ab12184806a5"
+        },
+        "log_sha256": "b0ea3ddf2b3a7d790ab7cf527c388fb7ca3db2769518e81f7d000f4e76f7e197",
+        "host_library_path_removed": true
+      },
+      {
+        "name": "series-strategic",
+        "seconds": 4.724,
+        "captures": 0,
+        "games": 2,
+        "capture_sha256": {},
+        "log_sha256": "7d9880f2c69e9570c0d248f6420a29a229143bc6ccdbc2c742450c9a041a9756",
+        "host_library_path_removed": true
+      },
+      {
+        "name": "format-normal",
+        "seconds": 4.333,
+        "captures": 1,
+        "games": 0,
+        "capture_sha256": {
+          "rift_format_turn_effect.png": "416215a35f088fdbd6dd0ab51bfba3b1f7a769d8193354a6864d5c7022925124"
+        },
+        "log_sha256": "b14cbbd11f96d17c40e1323d144152047249e946e633825461ea1cb1121aaf54",
+        "host_library_path_removed": true
+      },
+      {
+        "name": "format-small",
+        "seconds": 4.333,
+        "captures": 1,
+        "games": 0,
+        "capture_sha256": {
+          "rift_format_turn_effect.png": "128d40b571f8d428c9743a83066452b6ec1b73c2f3ec82d3cfccd2e6aabee16c"
+        },
+        "log_sha256": "b14cbbd11f96d17c40e1323d144152047249e946e633825461ea1cb1121aaf54",
+        "host_library_path_removed": true
+      }
+    ],
+    "api": [
+      {
+        "name": "irelia-practice-api",
+        "seconds": 9.43,
+        "records": 9,
+        "records_key": "records",
+        "full_records_equal": true,
+        "baseline_sha256": "54a63d8e68aa876d2927f9b4b77448b04034d54b004ae5082ad8c9eadbea543e",
+        "report_sha256": "f876481d33613924385b254c8137970b2bf0f7a6336893e3176b0d7a3e231da4"
+      }
+    ],
+    "source_gc_root": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-practice-release-v1/source",
+    "nix": {
+      "package": "/nix/store/lsfjf5m4pj0gxkclg77jqlhg234bxibf-local-rift-0.1.0",
+      "catalog": "/nix/store/0pg9c60rx2mr30jv8vhapd0ycdr94asa-local-rift-catalog-check",
+      "simulation": "/nix/store/j8vx8d44v68qv1181yzqj7b1aqrwfayf-local-rift-simulation-check",
+      "seconds": 1318.895,
+      "gc_root_prefix": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-practice-release-v1/nix-result"
+    },
+    "source": "/nix/store/rabidq8gkdh47ql4pi30hbw83x8hj2v5-source",
+    "finished_at": "2026-11-14T04:53:00.862313+00:00",
+    "rust_tests": 1895,
+    "rust_skipped": 0,
+    "rust_seconds": 972.361,
+    "source_tests": 303,
+    "source_seconds": 338.496,
+    "simulations": 1176,
+    "simulation_seconds": 148.98,
+    "actual_ui_games": 7,
+    "actual_api_games": 25,
+    "visually_reviewed_captures": 6,
+    "visual_review_sha256": "98d6a124fb07f7c13977093da23182e5a5d7918eeb8f58ed031e31b1dd97f57c"
   }
 }
