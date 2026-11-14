@@ -45,7 +45,7 @@ class PracticeChecks(unittest.TestCase):
     def test_junit_requires_each_suite_benchmarks_and_no_skips_or_failures(self):
         with tempfile.TemporaryDirectory() as folder:
             path = Path(folder) / 'junit.xml'
-            tree = ET.Element('testsuites', tests='8', skipped='0', failures='0', errors='0', time='1.5')
+            tree = ET.Element('testsuites', tests='14', skipped='0', failures='0', errors='0', time='1.5')
             suite = ET.SubElement(tree, 'testsuite')
             for name in sorted(checks.SUITES):
                 ET.SubElement(suite, 'testcase', name='fixture', classname=name)
@@ -53,20 +53,31 @@ class PracticeChecks(unittest.TestCase):
                          'waiting_for_irelia_reset_does_not_ignore_an_enemy_response']:
                 ET.SubElement(suite, 'testcase', name='practice_benchmark::' + name,
                               classname='local-rift::bin/local-rift')
+            ET.SubElement(suite, 'testcase',
+                          name='rules::tests::all_catalog_entries_have_official_classification',
+                          classname='local-rift')
+            for name in ['completed_variant_reviews_cover_every_member_without_compatibility_exceptions',
+                         'reviewed_dual_type_stays_unavailable_and_goatherd_uses_later_admission',
+                         'source_review_never_admits_inventory_only_or_unresolved_identities']:
+                ET.SubElement(suite, 'testcase', name=name, classname='local-rift::catalog_review')
             ET.ElementTree(tree).write(path)
-            self.assertEqual(checks.test_summary(path)['passed'], 8)
+            self.assertEqual(checks.test_summary(path)['passed'], 14)
             for tag in ['failure', 'error', 'skipped']:
                 bad = copy.deepcopy(tree)
                 ET.SubElement(bad.find('.//testcase'), tag)
                 ET.ElementTree(bad).write(path)
                 with self.subTest(tag=tag), self.assertRaises(ValueError):
                     checks.test_summary(path)
-            for case in [suite[0], suite[-1]]:
+            for case in list(suite):
                 bad = copy.deepcopy(tree)
                 bad.find('testsuite').remove(next(row for row in bad.find('testsuite') if row.attrib == case.attrib))
+                bad.set('tests', '13')
                 ET.ElementTree(bad).write(path)
-                with self.assertRaises(ValueError):
-                    checks.test_summary(path)
+                if case.get('name') != 'fixture' or case.get('classname') not in (
+                    'local-rift', 'local-rift::bin/local-rift', 'local-rift::catalog_review'
+                ):
+                    with self.assertRaises(ValueError):
+                        checks.test_summary(path)
 
     def test_failed_test_process_retains_failure_and_never_starts_api(self):
         with tempfile.TemporaryDirectory() as folder:

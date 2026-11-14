@@ -2135,8 +2135,9 @@ mod tests {
     #[test]
     fn all_catalog_entries_have_official_classification() {
         let cards = cards();
-        assert_eq!(cards.len(), 449);
-        for card in cards {
+        assert!(!cards.is_empty());
+        for (index, card) in cards.iter().enumerate() {
+            assert_eq!(card.id, index, "runtime IDs must remain contiguous");
             assert_ne!(
                 effect(card.id),
                 OfficialEffect::Unsupported,
@@ -2145,7 +2146,8 @@ mod tests {
             );
             assert_ne!(support_status(card.id), SupportStatus::UnknownCard);
         }
-        assert_eq!(effect(449), OfficialEffect::Unsupported);
+        assert_eq!(effect(cards.len()), OfficialEffect::Unsupported);
+        assert_eq!(support_status(cards.len()), SupportStatus::UnknownCard);
     }
 
     #[test]

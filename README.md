@@ -368,6 +368,10 @@ directory even when `CARGO_TARGET_DIR` is set elsewhere, and rejects a result if
 sources change while it runs. It does not run the full regression suite or the
 installed UI checks; those remain release gates.
 
+The focused selection also includes global card classification, catalog mapping
+and source-review checks. Run it before freezing a release candidate so an
+inconsistent card admission fails before the expensive complete-game matrices.
+
 The decision benchmark pairs explicit legal solutions with opponent execution
 and Mote's Beginner/Advanced commentary. Its twelve authored positions run in
 both seats at all three difficulty levels. `decisions.json` retains successes,
