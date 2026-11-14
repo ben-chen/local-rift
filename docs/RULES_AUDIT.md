@@ -975,3 +975,27 @@ private information and rejected requests; one companion scenario checks brief,
 read-only advice. Native controls and complete matches supplement these cases.
 The [validation record](validation/irelia_resources.json) states exact evidence
 and limitations; this is not a certification of complete Standard parity.
+
+## Irelia, Jae and Spirit Wheel interaction audit — November 14, 2026
+
+A static review of [Agni-RFB's Irelia implementation](https://github.com/abysl/agni-rfb/blob/bb508e6444134f19ef7bf375f2ab25f137c344e8/games/riftbound-turns/src/cards/irelia_blade_dancer.rs)
+identified an additional exhausted-unit condition. Local Rift preserves the
+printed trigger for a chosen friendly unit even when it is ready. The readying
+instruction is an effect, not a payment requirement. A legal Meditation response
+can exhaust that same unit as a cost before Irelia's ability resolves, making the
+pending ready effect useful. Choosing no extra target also avoids recursively
+triggering Irelia, Jae or Wheel from the ready effect itself.
+
+The expected behavior comes from the printed legend and Core 355.10.c,
+383.3.a–d and 416.1, reviewed against the October 9 edition linked by the live
+[rules hub](https://playriftbound.com/en-us/rules-hub/). The comparison inspected
+source; it did not execute Agni-RFB or establish broad parity with either engine.
+No external implementation or test code was copied.
+
+The scenario matrix in `src/irelia_trigger_audit_tests.rs` varies both seats,
+initial readiness, all six trigger orders, both optional cost decisions, and an
+actual opposing Defy targeting the original spell. It checks payment before
+responses, separate draws, physical readiness, no refunds, and no extra triggers.
+A further both-seat scenario plays Meditation in response to an already-paid
+Irelia trigger on an initially ready Jae. These checks reuse the existing authored
+position helpers and use ordinary actions for subsequent transitions.

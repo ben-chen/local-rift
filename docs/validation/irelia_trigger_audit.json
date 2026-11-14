@@ -1,0 +1,82 @@
+{
+  "status": "Passed: independent rules scenarios, complete library suite, strict all-target Clippy and formatting; release runtime unchanged by this test-only audit",
+  "base_revision": "d76e3c189221a597dfb9119b3513489e00b3d0ae",
+  "rules_review": {
+    "reviewed_on": "2026-11-14",
+    "hub": "https://playriftbound.com/en-us/rules-hub/",
+    "core_edition": "2026-10-09",
+    "core_url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/5c7946f7c3b8c6e0faff85ab6dadc6d2e721ea94.pdf",
+    "sections": [
+      "355.10.c",
+      "383.3.a-d",
+      "416.1"
+    ],
+    "printed_legend": "sfd-195-221"
+  },
+  "external_inspection": {
+    "repository": "https://github.com/abysl/agni-rfb",
+    "revision": "bb508e6444134f19ef7bf375f2ab25f137c344e8",
+    "files": [
+      "games/riftbound-turns/src/cards/irelia_blade_dancer.rs",
+      "games/riftbound-turns/src/cards/spirit_wheel.rs"
+    ],
+    "method": "Static source review only. No external engine built, run or used as an expected-result oracle; no external code copied.",
+    "difference": "The inspected Irelia script restricts its choose trigger to an already-exhausted unit. Printed text has no such condition. The local regression demonstrates an initially ready Jae exhausted by a later Meditation cost and readied by the paid Irelia trigger."
+  },
+  "focused": {
+    "tests_passed": 2,
+    "seconds": 0.12,
+    "matrix_cases": 192,
+    "response_cases": 2,
+    "dimensions": {
+      "seats": 2,
+      "initial_readiness": 2,
+      "orders": 6,
+      "irelia_payment_choices": 2,
+      "wheel_payment_choices": 2,
+      "opponent_counters_parent": 2
+    },
+    "assertions": [
+      "Controller determines finalized trigger order.",
+      "Optional costs happen before responses and are not refunded by a parent counter.",
+      "Jae and Wheel draw independently after resolution; Irelia only readies on resolution.",
+      "The referenced unit and cost objects are not chosen again.",
+      "Meditation exhaustion can occur after Irelia finalization and before readying.",
+      "Declines and impossible response timing preserve the expected state."
+    ]
+  },
+  "library": {
+    "passed": 1031,
+    "skipped": 0,
+    "seconds": 10.436
+  },
+  "checks": {
+    "strict_all_target_clippy": "passed in 18.88s",
+    "format": "passed",
+    "diff_whitespace": "passed"
+  },
+  "logs": {
+    "library": {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-trigger-audit-library-v1.log",
+      "sha256": "4c1d4f9be39aaaf0a234b61b6f4a2f1e16625bc72405032a8854e6538df9bb6e"
+    },
+    "clippy": {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-trigger-audit-clippy-v1.log",
+      "sha256": "ef1eba867e658ebba70db4f1cb91d91a2e325f49434b46c6f7f33a4c0211649c"
+    },
+    "focused": {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-trigger-audit-v1.log",
+      "sha256": "74f0667735a6fdc8981bf3342237c594f7cc9b2360b021ba10ac9e100190b8a5"
+    }
+  },
+  "source_sha256": {
+    "src/irelia_trigger_audit_tests.rs": "9562c31567ab11c490ac214877ab0220e34b7e02583cde972689a4c0924f192b"
+  },
+  "scope_limits": [
+    "Authored midgames, not independently adjudicated complete tournament matches.",
+    "Source comparison is not executed cross-engine parity.",
+    "No new runtime cards or AI-strength claims.",
+    "Royal Entourage source review is saved separately; its legend targeting and resolution choice remain unimplemented."
+  ],
+  "efficiency": "A small parameterized scenario suite covers 194 distinct cases using existing position and rejected-action helpers. Only test modules and documentation change; no additional packaging or UI campaign is needed for this audit."
+}
