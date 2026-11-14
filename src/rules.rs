@@ -167,6 +167,7 @@ pub enum OfficialEffect {
     ShieldThenPredict {
         shield: u8,
     },
+    GrantTurnKeywords(&'static [crate::turn_keywords::TurnKeyword]),
     AreaDamage {
         amount: u8,
         selector: AreaSelector,
@@ -303,6 +304,11 @@ pub fn effect(id: usize) -> OfficialEffect {
         456 => Counter(CounterKind::OtherOpponentSpell),
         457 => ShieldThenPredict { shield: 2 },
         458..=460 => None,
+        461 => GrantTurnKeywords(&[
+            crate::turn_keywords::TurnKeyword::Shield(3),
+            crate::turn_keywords::TurnKeyword::Tank,
+        ]),
+        462 => None,
         452 => DrawWithOptionalCost { unpaid: 1, paid: 2 },
         453 => DrawThenChannel {
             draw: 1,
@@ -738,7 +744,7 @@ pub fn chooses_move_destination(id: usize) -> bool {
 pub fn targeting(id: usize) -> Targeting {
     use Allegiance::*;
     let allegiance = match id {
-        290..=296 | 335 | 349 | 428 | 434 | 446 | 457 => Any,
+        290..=296 | 335 | 349 | 428 | 434 | 446 | 457 | 461 => Any,
         4 | 32 | 144 | 145 | 365 | 427 => Enemy,
         362 | 364 | 372 | 378 | 379 | 381 | 435 => Any,
         8 | 9 | 14 | 19 | 27 | 85 | 137 | 228 | 350 | 353 | 354 | 377 | 380 | 382 | 421 | 425
@@ -795,6 +801,7 @@ pub fn target_bounds(id: usize) -> (usize, usize) {
         | Stun
         | StunAndDrawFromHand
         | GrantAssault(_)
+        | GrantTurnKeywords(_)
         | ShieldThenPredict { .. } => (1, 1),
         Damage { targets, .. } => (
             targets as usize,
@@ -1161,6 +1168,8 @@ pub fn requirements(id: usize) -> &'static [Mechanic] {
         456 => &[Chain, Counterspell],
         457 => &[Chain, Shield, Predict, ChooseReadyTriggers],
         458..=460 => &[Chain, Disarm, NegativeMight, ChooseReadyTriggers],
+        461 => &[Chain, Hidden, Shield, Tank, ChooseReadyTriggers],
+        462 => &[Chain, Tank, ChooseReadyTriggers],
         447 => &[
             Chain,
             MultipleTargets,

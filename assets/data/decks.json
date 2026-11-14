@@ -12228,6 +12228,58 @@
       "equipment_effect_html": "",
       "equipment_effect": "",
       "might_bonus": null
+    },
+    {
+      "id": 461,
+      "official_id": "ogn-057-298",
+      "name": "Block",
+      "kind": "Spell",
+      "domains": [
+        "Calm"
+      ],
+      "energy": 2,
+      "power": 0,
+      "might": 0,
+      "keywords": [
+        "Hidden",
+        "Action",
+        "Shield 3",
+        "Tank"
+      ],
+      "tags": [],
+      "official_text": "[Hidden] (Hide now for [Any Power] to react with later for [0 Energy].)\n[Action] (Play on your turn or in showdowns.)\nGive a unit [Shield 3] and [Tank] this turn. (+3 Might while it's a defender. It must be assigned combat damage first.)",
+      "official_text_html": "<p>[Hidden] (Hide now for :rb_rune_rainbow: to react with later for :rb_energy_0:.)<br />[Action] (Play on your turn or in showdowns.)<br />Give a unit [Shield 3] and [Tank] this turn. (+3 :rb_might: while it's a defender. It must be assigned combat damage first.)</p>",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/36f7352e715fe073631ed85be41408c9a38ab865-744x1039.png?w=280&q=85&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null
+    },
+    {
+      "id": 462,
+      "official_id": "unl-056-219",
+      "name": "Yuumi, Magical Cat",
+      "kind": "Unit",
+      "domains": [
+        "Calm"
+      ],
+      "energy": 3,
+      "power": 1,
+      "might": 1,
+      "keywords": [],
+      "tags": [
+        "Fae",
+        "Cat",
+        "Bandle City",
+        "Yuumi"
+      ],
+      "official_text": "When I attack or defend, give one of your other units here +3 Might and [Tank] this turn. (It must be assigned combat damage first.)",
+      "official_text_html": "<p>When I attack or defend, give one of your other units here +3 :rb_might: and [Tank] this turn. (It must be assigned combat damage first.)</p>",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/588ddfeb01ab7b37110d8a7e656cf9f35530ce4e-744x1039.png?w=280&q=85&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null
     }
   ],
   "official_text_note": "Official card/legend rules text from the Riot Card Gallery, retrieved 2026-10-24 and corrected by cited errata. Resource icon tokens are expanded to readable bracketed names. Raw card and equipment HTML is preserved separately. Official text does not establish full implementation fidelity."

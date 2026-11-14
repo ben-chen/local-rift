@@ -6,6 +6,17 @@ The audit started from commit `167ad7e` and continued against the shared working
 
 ## Authoritative references
 
+The November 14 Block/Yuumi review uses the current October 9 Core Rules:
+Shield stacks and applies only while defending (814, including the printed
+Block/Stalwart Poro example); Tank is redundant and affects lethal combat-damage
+ordering (815); Tank with Backline permits either priority (467.2.c.8); Hidden
+restricts targets to its battlefield (811); Here follows the live source (359.3).
+Temporary keyword grants expire with turn cleanup and leave with their physical
+unit. Public-action tests cover those cases, Yuumi's attack and defend triggers,
+both seats, copied pending choices and all three AI levels. Complete-game and
+native/API evidence is scoped in [validation](validation/turn_keywords.json).
+This review does not establish all-card parity or expert-level AI strategy.
+
 The November 14 Royal Entourage review checks CR355.3/355.5/355.18: the card's
 non-bulleted either/or instruction is not a modal choice made before responses.
 The legend target finalizes first; readiness is chosen only while resolving the

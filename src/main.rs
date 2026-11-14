@@ -8978,6 +8978,18 @@ fn card_brief(game: &Game, id: usize) -> String {
             format!("Exhaust yours · deal {amount} to all field units")
         }
         GrantAssault(amount) => format!("Grant Assault {amount} this turn"),
+        GrantTurnKeywords(keywords) => format!(
+            "Grant {} this turn",
+            keywords
+                .iter()
+                .map(|keyword| match keyword {
+                    local_rift::turn_keywords::TurnKeyword::Shield(amount) =>
+                        format!("Shield {amount}"),
+                    local_rift::turn_keywords::TurnKeyword::Tank => "Tank".into(),
+                })
+                .collect::<Vec<_>>()
+                .join(" and ")
+        ),
         Kill {
             battlefield_only,
             max_might,
@@ -9578,6 +9590,9 @@ fn live_unit_description(game: &Game, owner: usize, unit_id: u32) -> Option<Stri
     let turn_shield = game.turn_shield(unit_id).ok()?;
     if turn_shield != 0 {
         lines.push(format!("Shield +{turn_shield} this turn: included in total Shield below; expires at the end of this turn."));
+    }
+    if game.turn_tank(unit_id) {
+        lines.push("Tank granted this turn: expires at the end of this turn; any printed or equipped Tank remains.".into());
     }
     if game.unit_moved_this_turn(owner, unit_id) {
         lines.push("Moved this turn: this same unit changed locations through a Move. It can be chosen by an enemy Siren's Song; playing or recalling a unit does not count as moving.".into());
@@ -10748,6 +10763,7 @@ async fn main() {
     let sands_smoke = args.iter().any(|a| a == "--ui-smoke-sands");
     let heavens_smoke = args.iter().any(|a| a == "--ui-smoke-heavens");
     let disarm_smoke = args.iter().any(|a| a == "--ui-smoke-disarm");
+    let turn_keywords_smoke = args.iter().any(|a| a == "--ui-smoke-turn-keywords");
     let rockfall_smoke = args.iter().any(|a| a == "--ui-smoke-rockfall");
     let riven_smoke = args.iter().any(|a| a == "--ui-smoke-riven");
     let unyielding_smoke = args.iter().any(|a| a == "--ui-smoke-unyielding");
@@ -10769,6 +10785,7 @@ async fn main() {
     let focused_field_smoke = args.iter().any(|a| a == "--ui-smoke-c28");
     let focused_source_damage_smoke = args.iter().any(|a| a == "--ui-smoke-c27");
     let smoke_test = format_smoke
+        || turn_keywords_smoke
         || disarm_smoke
         || heavens_smoke
         || rockfall_smoke
@@ -10861,6 +10878,8 @@ async fn main() {
             smoke::run_heavens_frame(&mut app, frames)
         } else if disarm_smoke {
             smoke::run_disarm_frame(&mut app, frames)
+        } else if turn_keywords_smoke {
+            smoke::run_turn_keywords_frame(&mut app, frames)
         } else if rockfall_smoke {
             smoke::run_rockfall_frame(&mut app, frames)
         } else if irelia_smoke {

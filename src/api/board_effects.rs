@@ -4,6 +4,49 @@ use crate::game::Unit;
 use crate::gear::GearState;
 
 #[test]
+fn turn_keywords_api_validates_without_mutation_and_exposes_public_expiry() {
+    for actor in 0..2 {
+        let mut s = position_for_actor(actor);
+        s.game.players[actor].units.push(unit(46100, 110, None));
+        s.game.players[actor].hand = vec![461];
+        let action = Action::PlayCardWithTargets {
+            hand_index: 0,
+            lane: None,
+            targets: vec![Target::Unit {
+                player: actor,
+                unit_id: 46100,
+            }],
+        };
+        let before = views(&s);
+        let revision = s.revision();
+        s.validate_action(actor, revision, action.clone()).unwrap();
+        assert_eq!(s.revision(), revision);
+        assert_eq!(views(&s), before);
+        apply(&mut s, action);
+        pass_until(&mut s, |s| s.game.chain.is_empty());
+        for view in views(&s) {
+            let unit = &view["players"][actor]["units"][0];
+            assert_eq!(unit["keywords"]["shield"], 4);
+            assert_eq!(unit["keywords"]["tank"], true);
+            assert_eq!(
+                unit["turn_shield"],
+                json!({"amount":3,"amount_exact":"3","expires":"end_of_turn"})
+            );
+            assert_eq!(unit["turn_tank"], json!({"expires":"end_of_turn"}));
+            assert_eq!(unit["might"], 2, "Shield is conditional on defending");
+        }
+        apply(&mut s, Action::EndTurn);
+        for view in views(&s) {
+            let unit = &view["players"][actor]["units"][0];
+            assert_eq!(unit["keywords"]["tank"], false);
+            assert_eq!(unit["keywords"]["shield"], 1);
+            assert!(unit.get("turn_tank").is_none());
+            assert!(unit.get("turn_shield").is_none());
+        }
+    }
+}
+
+#[test]
 fn disarm_api_exposes_the_bearer_and_captured_value_without_mutating_validation() {
     for actor in 0..2 {
         let mut s = position_for_actor(actor);

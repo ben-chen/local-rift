@@ -1,0 +1,526 @@
+{
+  "status": "Local rules, source, native and API validation passed; immutable installed acceptance pending",
+  "reviewed_at": "2026-11-14T10:16:08.462795+00:00",
+  "cards": [
+    {
+      "id": 461,
+      "name": "Block",
+      "official_id": "ogn-057-298"
+    },
+    {
+      "id": 462,
+      "name": "Yuumi, Magical Cat",
+      "official_id": "unl-056-219"
+    }
+  ],
+  "rules": {
+    "core_date": "2026-10-09",
+    "hub_verified_on": "2026-11-14",
+    "url": "https://playriftbound.com/en-us/rules-hub/",
+    "pdf_sha256": "94d41fee86f88b61c4157c0389c0595d990b98e5b42555c99d9f649ee64d1fec",
+    "sections": [
+      "814: summed Shield, defender designation and explicit Block/Poro example",
+      "815: Tank ordering and redundant instances",
+      "467.2.c.8: Tank with Backline may use either priority",
+      "811: Hidden timing, cost and local targets",
+      "359.3: source-relative Here",
+      "317.2.c: Ending cleanup"
+    ]
+  },
+  "implementation": [
+    "Shared physical-unit temporary Shield/Tank storage; Consult uses the same Shield grant path.",
+    "Block chooses any one unit; Action from hand, Reaction from an older controlled Hidden battlefield.",
+    "Yuumi triggers on attack and defend; exactly one other friendly unit Here gains +3 Might and Tank after responses.",
+    "Public API exposes temporary Tank and expiry; hover separates temporary grants from current totals.",
+    "Beginner and Advanced commentary does not alter game state or read opponent hidden identities."
+  ],
+  "focused": {
+    "rules_and_api_tests": 10,
+    "all_library_tests": 1082,
+    "companion_tests": 1,
+    "source_tests": 4,
+    "python_catalog_regressions": 37,
+    "rust_catalog_regressions": 20,
+    "strict_clippy": "passed",
+    "logs": [
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/turn-keywords-focused-v3.log",
+        "sha256": "524046ac91718793df6eb5d224d21324f49def8491d92b714aaf1d5de104c106"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/turn-keywords-library-v1.log",
+        "sha256": "e29a8f6655638a6b94e18834deba6bf086bf17579487b8e36b780e4f370a7643"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/turn-keywords-companion-v1.log",
+        "sha256": "a551fce88ae07fe78b799822cf8c584e987514eed5aa4f0073fcf455a7e62105"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/turn-keywords-matches-v1.log",
+        "sha256": "83d1e8d34e55faf2d44d7279f42f5aba2fa1ba83e8351ac15aa1190fba516ec6"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/turn-keywords-source-v1.log",
+        "sha256": "f4f89112bd809a8bd9a3e472def5bc9863f7b0d357f1ac9cb0a7944e3ab66211"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/turn-keywords-catalog-regressions-v1.log",
+        "sha256": "96410a8684ffad9c44c3550d016bf365f1edb26af554cb58da6ac948f3ec83b5"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/catalog-rust-inventory-v1.log",
+        "sha256": "4f5bfcce3db162f2bbabfeff951e4f23f6e72feec5886a91561e706967d7af52"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/turn-keywords-clippy-v1.log",
+        "sha256": "0483f2b1e85a7f7dc1b1d9cb01e238fe1f92c987b18699efc487d640d668ab10"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/turn-keywords-clippy-v2.log",
+        "sha256": "46814ac4e6a92ee92d45ed0beccef59cb557f28224f13f34f1f2910c1b58ad48"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/turn-keywords-client-tests-v1.log",
+        "sha256": "1e66892118ddb33d3ab593637bea6be8ec76a600c002eba714f26fce0fae2e00"
+      }
+    ],
+    "client_tests": 165
+  },
+  "engine_games": {
+    "completed": 24,
+    "coverage": "two opposing legends, both Irelia seats, both starting players, all three difficulties",
+    "block_casts_by_seat": [
+      8,
+      7
+    ],
+    "yuumi_triggers_by_seat": [
+      4,
+      4
+    ],
+    "physical_card_conservation": "checked at each action",
+    "log": {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/turn-keywords-matches-v1.log",
+      "sha256": "83d1e8d34e55faf2d44d7279f42f5aba2fa1ba83e8351ac15aa1190fba516ec6"
+    }
+  },
+  "api": {
+    "series": 6,
+    "games": 15,
+    "records": [
+      {
+        "difficulty": "easy",
+        "irelia_seat": 0,
+        "first_player": 1,
+        "result": {
+          "wins": [
+            2,
+            1
+          ],
+          "winner": 0,
+          "history": [
+            {
+              "battlefields": [
+                0,
+                0
+              ],
+              "first_player": 1,
+              "number": 1,
+              "scores": [
+                8,
+                6
+              ],
+              "winner": 0
+            },
+            {
+              "battlefields": [
+                3,
+                3
+              ],
+              "first_player": 1,
+              "number": 2,
+              "scores": [
+                6,
+                9
+              ],
+              "winner": 1
+            },
+            {
+              "battlefields": [
+                13,
+                13
+              ],
+              "first_player": 1,
+              "number": 3,
+              "scores": [
+                8,
+                4
+              ],
+              "winner": 0
+            }
+          ],
+          "requests": 1613,
+          "seed": 461100,
+          "difficulty": "easy"
+        },
+        "block_casts": 2,
+        "yuumi_triggers": 1,
+        "shield_grants": 2,
+        "tank_grants": 3,
+        "trace_sha256": "58f032b0e5569b32f8882d3bed1ec3cb50dc68307014145c8c10a22899e4ddbd"
+      },
+      {
+        "difficulty": "easy",
+        "irelia_seat": 1,
+        "first_player": 0,
+        "result": {
+          "wins": [
+            2,
+            0
+          ],
+          "winner": 0,
+          "history": [
+            {
+              "battlefields": [
+                0,
+                0
+              ],
+              "first_player": 0,
+              "number": 1,
+              "scores": [
+                8,
+                5
+              ],
+              "winner": 0
+            },
+            {
+              "battlefields": [
+                3,
+                3
+              ],
+              "first_player": 0,
+              "number": 2,
+              "scores": [
+                8,
+                4
+              ],
+              "winner": 0
+            }
+          ],
+          "requests": 805,
+          "seed": 461101,
+          "difficulty": "easy"
+        },
+        "block_casts": 3,
+        "yuumi_triggers": 0,
+        "shield_grants": 3,
+        "tank_grants": 3,
+        "trace_sha256": "553f174208af8c3b45449db7f3a57b51e73b41f9d953eb6ac4ce4ea12e0a2bc1"
+      },
+      {
+        "difficulty": "tactical",
+        "irelia_seat": 0,
+        "first_player": 1,
+        "result": {
+          "wins": [
+            0,
+            2
+          ],
+          "winner": 1,
+          "history": [
+            {
+              "battlefields": [
+                0,
+                0
+              ],
+              "first_player": 1,
+              "number": 1,
+              "scores": [
+                2,
+                9
+              ],
+              "winner": 1
+            },
+            {
+              "battlefields": [
+                3,
+                3
+              ],
+              "first_player": 1,
+              "number": 2,
+              "scores": [
+                3,
+                9
+              ],
+              "winner": 1
+            }
+          ],
+          "requests": 655,
+          "seed": 461110,
+          "difficulty": "tactical"
+        },
+        "block_casts": 2,
+        "yuumi_triggers": 0,
+        "shield_grants": 1,
+        "tank_grants": 1,
+        "trace_sha256": "5f4bfa4818db49962a3cf3a92360859c03d1e7e812360f68246b42ae2b85c93f"
+      },
+      {
+        "difficulty": "tactical",
+        "irelia_seat": 1,
+        "first_player": 0,
+        "result": {
+          "wins": [
+            2,
+            1
+          ],
+          "winner": 0,
+          "history": [
+            {
+              "battlefields": [
+                0,
+                0
+              ],
+              "first_player": 0,
+              "number": 1,
+              "scores": [
+                5,
+                9
+              ],
+              "winner": 1
+            },
+            {
+              "battlefields": [
+                3,
+                3
+              ],
+              "first_player": 0,
+              "number": 2,
+              "scores": [
+                8,
+                6
+              ],
+              "winner": 0
+            },
+            {
+              "battlefields": [
+                13,
+                13
+              ],
+              "first_player": 0,
+              "number": 3,
+              "scores": [
+                8,
+                2
+              ],
+              "winner": 0
+            }
+          ],
+          "requests": 1400,
+          "seed": 461111,
+          "difficulty": "tactical"
+        },
+        "block_casts": 1,
+        "yuumi_triggers": 3,
+        "shield_grants": 0,
+        "tank_grants": 2,
+        "trace_sha256": "8aea4ac96e35bc25f9c923d04ffd60c53d5d7fc0e08315ee2c2a46e3e0bbfee5"
+      },
+      {
+        "difficulty": "strategic",
+        "irelia_seat": 0,
+        "first_player": 1,
+        "result": {
+          "wins": [
+            0,
+            2
+          ],
+          "winner": 1,
+          "history": [
+            {
+              "battlefields": [
+                0,
+                0
+              ],
+              "first_player": 1,
+              "number": 1,
+              "scores": [
+                7,
+                8
+              ],
+              "winner": 1
+            },
+            {
+              "battlefields": [
+                3,
+                3
+              ],
+              "first_player": 1,
+              "number": 2,
+              "scores": [
+                3,
+                8
+              ],
+              "winner": 1
+            }
+          ],
+          "requests": 946,
+          "seed": 461120,
+          "difficulty": "strategic"
+        },
+        "block_casts": 2,
+        "yuumi_triggers": 0,
+        "shield_grants": 2,
+        "tank_grants": 2,
+        "trace_sha256": "8d23ca3de77b5779d785cb64522da4b22dbf4ff40cc871f5ecb93931406a4a4c"
+      },
+      {
+        "difficulty": "strategic",
+        "irelia_seat": 1,
+        "first_player": 0,
+        "result": {
+          "wins": [
+            2,
+            1
+          ],
+          "winner": 0,
+          "history": [
+            {
+              "battlefields": [
+                0,
+                0
+              ],
+              "first_player": 0,
+              "number": 1,
+              "scores": [
+                4,
+                9
+              ],
+              "winner": 1
+            },
+            {
+              "battlefields": [
+                3,
+                3
+              ],
+              "first_player": 0,
+              "number": 2,
+              "scores": [
+                8,
+                5
+              ],
+              "winner": 0
+            },
+            {
+              "battlefields": [
+                13,
+                13
+              ],
+              "first_player": 0,
+              "number": 3,
+              "scores": [
+                9,
+                6
+              ],
+              "winner": 0
+            }
+          ],
+          "requests": 1724,
+          "seed": 461121,
+          "difficulty": "strategic"
+        },
+        "block_casts": 4,
+        "yuumi_triggers": 0,
+        "shield_grants": 3,
+        "tank_grants": 3,
+        "trace_sha256": "49c533278ff4fa6f5383ae14268b4a43a50540542fe5bbdf645594ee8b3681f5"
+      }
+    ],
+    "report": {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/turn-keywords-api-v1.json",
+      "sha256": "69f42ccb3ca87a744f32b7d382df8bb6b706ac1231770a4e417bde16e5931bdc"
+    },
+    "note": "Four series, including both Strategic series, had no Yuumi trigger. Focused AI choice tests independently exercise the required trigger at every difficulty; match completion is not evidence of strategic mastery."
+  },
+  "native": {
+    "report": {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/turn-keywords-native-v1/report.json",
+      "sha256": "b85cf6cadd98070bb1d45c2c140ababb818ffec922649764e31654c414d6f77f"
+    },
+    "verification": {
+      "status": "passed",
+      "binary_sha256": "f86f78e552466beca4f9e5e96c64e69f58b6627db6f61491c63bbae7ee0d31b7",
+      "cases": [
+        {
+          "name": "normal",
+          "verification": {
+            "captures": 9,
+            "games": 0,
+            "capture_sha256": {
+              "rift_block_beginner.png": "467e2703fc113c1b472cd57cb1c6a6ce49daaf2c2d8ab6e859cc9c658a888468",
+              "rift_block_target.png": "d9e7dffc417eb3197c587ad6aeaa84e336805eb3618cf72c5c701e878f48a547",
+              "rift_block_inspect.png": "1ff04c02ece29c7cf7b09cd28defe2c6723db3e695949b1dcf0479272a84c764",
+              "rift_block_advanced.png": "c35034e7ae524dbbf5842ff9aa8212167d01e0b9595a0bb18cbefd886e70b5f9",
+              "rift_yuumi_advanced.png": "ee0842e1ba2af11fa11dbd9656f43d61d762faa0cf90f847419a12eace59fd46",
+              "rift_yuumi_beginner.png": "593a19079d95a3250dbb49b63496bf20b64171bae5d6ecd124ad380999fc9234",
+              "rift_yuumi_granted.png": "c852a79819df6f2a8d50f7fc4f4db5b4d27ae7e5292fb667c844318dbaf5f001",
+              "rift_yuumi_inspect.png": "fe4291af6f58e2dd54def96efebd7331a3a438f865c8f8ad21b0a1b74b5ea399",
+              "rift_block_granted.png": "254c0308f30cf3b29e1c21a22f54bc27feef348a7e274bb6139306a9879d68d9"
+            },
+            "log_sha256": "5ff5c1ed3b32d2a663ff9fcffa9e1cd16c7f1cd85324c4564dc426f1f8bbe726"
+          }
+        },
+        {
+          "name": "small",
+          "verification": {
+            "captures": 9,
+            "games": 0,
+            "capture_sha256": {
+              "rift_block_beginner.png": "c238df762210296945b4f34b078428a37f90340588a27472d1f80cb55840809f",
+              "rift_block_target.png": "1199cfe4d57ca26ef4a1cc5bf1de272971eb25fc5a986d2c4273eda8c9e58987",
+              "rift_block_inspect.png": "16d6d636c4e2e4287ed5e57eb24074b3385ef40a4f84daaaf827058aa8cf77cc",
+              "rift_block_advanced.png": "f1583580df78b891789e598e87ae9c24393e79ecaf5ad5d2a765d6afad35807f",
+              "rift_yuumi_advanced.png": "6e09a2b2320ca97f0700d4038bab77d369d4fd1edbf650554c095885d3885aad",
+              "rift_yuumi_beginner.png": "a6bdb3606920c04b718fb717cfe0638f1d5911a8aeea0ad647734290b9360a53",
+              "rift_yuumi_granted.png": "d8ddcc071c824fe44429b6f554b5d9dfaeb3fc9d30e3f5162ac6e00dd8b8445a",
+              "rift_yuumi_inspect.png": "c574ab013c6dbac6dba325f3e162a92a17fc1675edf0ec1bb976749677459333",
+              "rift_block_granted.png": "3ad91ea7fed80c5206175c872baae7aac6de4b32059cc96e0e171f521fd76d21"
+            },
+            "log_sha256": "5ff5c1ed3b32d2a663ff9fcffa9e1cd16c7f1cd85324c4564dc426f1f8bbe726"
+          }
+        }
+      ],
+      "harness_correction": "Normalized capture filenames after incorrect uppercase rename; normal UI was already complete. Small UI executed afterward."
+    },
+    "actual_images_viewed": [
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/turn-keywords-native-v1/normal/rift_block_granted.png",
+        "sha256": "254c0308f30cf3b29e1c21a22f54bc27feef348a7e274bb6139306a9879d68d9"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/turn-keywords-native-v1/normal/rift_yuumi_advanced.png",
+        "sha256": "ee0842e1ba2af11fa11dbd9656f43d61d762faa0cf90f847419a12eace59fd46"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/turn-keywords-native-v1/small/rift_block_inspect.png",
+        "sha256": "16d6d636c4e2e4287ed5e57eb24074b3385ef40a4f84daaaf827058aa8cf77cc"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/turn-keywords-native-v1/small/rift_yuumi_granted.png",
+        "sha256": "d8ddcc071c824fe44429b6f554b5d9dfaeb3fc9d30e3f5162ac6e00dd8b8445a"
+      }
+    ],
+    "visual_findings": "Full official card text visible in inspector; hover explains grant and expiry with scrolling for longer text; companion stays outside action controls; real drag, target confirmation and passing succeed."
+  },
+  "corrections": [
+    "Completed Block targeting metadata with Any allegiance before validation.",
+    "Hidden fixture needed controlled battlefield; Yuumi response fixture needed to finish optional legend ordering before casting. Fixed fixtures through normal actions.",
+    "Native harness incorrectly uppercased filenames after the successful normal run; preserved failure, normalized filenames and verified existing captures without rerunning; then ran small size.",
+    "Three historical Rust inventory assertions still used pre-Disarm totals. Replaced aggregate pins with complete-record/evidence comparisons; kept individual card/source checks."
+  ],
+  "limitations": [
+    "Not installed or published; full immutable acceptance and earlier API trace comparisons remain.",
+    "Brawl source domain corrected to Fury while raw Chaos metadata stays preserved; runtime unavailable.",
+    "Seven sourced presets unchanged; these added cards are eligible Irelia options, not established meta staples.",
+    "Full Standard parity, all legal cards, expert strength and novice learning outcomes remain unproven."
+  ]
+}

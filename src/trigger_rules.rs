@@ -188,6 +188,7 @@ pub enum Effect {
     },
     GiveTemporary(Operand),
     GrantAssault(u8),
+    GrantTurnKeywords(&'static [crate::turn_keywords::TurnKeyword]),
     AttachSourceGear,
     Xp(Amount),
     Draw(u8),
@@ -386,6 +387,27 @@ pub fn trigger_rules(card_id: usize) -> &'static [TriggerRule] {
         )
     };
     match card_id {
+        462 => {
+            const TARGET: TargetRule = TargetRule {
+                another: true,
+                here: true,
+                ..FRIENDLY
+            };
+            const EFFECTS: &[Effect] = &[
+                Might {
+                    who: Targets,
+                    amount: 3,
+                    minimum: 0,
+                },
+                GrantTurnKeywords(&[crate::turn_keywords::TurnKeyword::Tank]),
+            ];
+            const {
+                &[
+                    rule(SelfAttack, &[], false, TARGET, EFFECTS),
+                    rule(SelfDefend, &[], false, TARGET, EFFECTS),
+                ]
+            }
+        }
         455 => {
             const {
                 &[rule(

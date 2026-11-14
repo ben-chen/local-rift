@@ -93,6 +93,9 @@ mod spirit_wheel_tests;
 #[path = "game_test_support.rs"]
 pub(crate) mod test_support;
 #[cfg(test)]
+#[path = "turn_keyword_tests.rs"]
+mod turn_keyword_tests;
+#[cfg(test)]
 #[path = "unyielding_tests.rs"]
 mod unyielding_tests;
 
@@ -1140,8 +1143,8 @@ pub struct Game {
     last_damage_ledger: Option<damage::DamageLedger>,
     /// Global Unyielding Spirit effect; expires after the ending triggers finish.
     pub spell_ability_damage_prevented: bool,
-    /// Summed Shield grants on physical units; all expire at Ending cleanup.
-    pub(crate) shield_grants: Vec<(u32, u8)>,
+    /// Keyword grants on physical units; all expire at Ending cleanup.
+    pub(crate) turn_keyword_grants: Vec<(u32, crate::turn_keywords::TurnKeyword)>,
     alpha_kill_watches: Vec<split_damage::AlphaKillWatch>,
     /// Actual physical gear/bearer attachment transitions in this turn.
     pub(crate) gear_attachments_this_turn: Vec<(u32, u32)>,
@@ -1405,7 +1408,7 @@ impl Game {
             play_grants:Vec::new(),
             active_play:None,selected_cost_order:Vec::new(),reserved_play_grants:Vec::new(),payment_play_grants:Vec::new(),resolution_frame:None,predict_tail:None,damage_context:None,
             spell_ability_damage_prevented: false,
-            shield_grants: Vec::new(),
+            turn_keyword_grants: Vec::new(),
             alpha_kill_watches: Vec::new(),
             damage_ledger: None,
             last_damage_ledger: None,
@@ -7227,13 +7230,13 @@ impl Game {
                     owner == actor
                 };
                 let rank = if preferred { 1000 } else { 0 }
-                    + if matches!(effect, OfficialEffect::ShieldThenPredict { .. })
-                        && self.showdown.as_ref().is_some_and(|window| {
-                            window.combat
-                                && window.attacker != owner
-                                && unit.lane == Some(window.lane)
-                        })
-                    {
+                    + if matches!(
+                        effect,
+                        OfficialEffect::ShieldThenPredict { .. }
+                            | OfficialEffect::GrantTurnKeywords(_)
+                    ) && self.showdown.as_ref().is_some_and(|window| {
+                        window.combat && window.attacker != owner && unit.lane == Some(window.lane)
+                    }) {
                         200
                     } else {
                         0
@@ -8299,12 +8302,20 @@ impl Game {
             }
             OfficialEffect::ShieldThenPredict { shield } => {
                 for target in valid {
-                    if let Target::Unit { unit_id, .. } = target {
-                        self.shield_grants.push((unit_id, shield));
-                    }
+                    self.grant_turn_keyword(
+                        target,
+                        crate::turn_keywords::TurnKeyword::Shield(shield),
+                    );
                 }
                 // Predict is independent of the targeted Shield instruction.
                 self.predict(player);
+            }
+            OfficialEffect::GrantTurnKeywords(keywords) => {
+                for target in valid {
+                    for &keyword in keywords {
+                        self.grant_turn_keyword(target, keyword);
+                    }
+                }
             }
             OfficialEffect::AreaDamage { amount, selector } => {
                 self.deal_area_damage(player, amount, selector, &valid)?
@@ -8836,7 +8847,7 @@ impl Game {
         }
         self.silenced = [false; 2];
         self.spell_ability_damage_prevented = false;
-        self.shield_grants.clear();
+        self.turn_keyword_grants.clear();
         self.gear_attachments_this_turn.clear();
         self.movement_locks.clear();
         self.immobile_units.clear();
@@ -9301,7 +9312,8 @@ impl Game {
         {
             self.gear_unit_left_board(player, choice.unit_id);
             self.empowered_units.retain(|&id| id != choice.unit_id);
-            self.shield_grants.retain(|(id, _)| *id != choice.unit_id);
+            self.turn_keyword_grants
+                .retain(|(id, _)| *id != choice.unit_id);
             self.granted_temporary_units
                 .retain(|&id| id != choice.unit_id);
             let unit = self.players[player].units.remove(index);
@@ -9575,7 +9587,7 @@ impl Game {
                     *has_real_death = true;
                 }
                 self.empowered_units.retain(|&id| id != unit_id);
-                self.shield_grants.retain(|(id, _)| *id != unit_id);
+                self.turn_keyword_grants.retain(|(id, _)| *id != unit_id);
                 self.granted_temporary_units.retain(|&id| id != unit_id);
                 self.instructed_kills.retain(|&id| id != unit_id);
                 self.gear_unit_left_board(player, unit_id);
@@ -10841,7 +10853,7 @@ impl Game {
                         0
                     }
                 }
-                OfficialEffect::ShieldThenPredict { .. } => {
+                OfficialEffect::ShieldThenPredict { .. } | OfficialEffect::GrantTurnKeywords(_) => {
                     if self.showdown.as_ref().is_some_and(|window| {
                         window.combat
                             && window.attacker != actor

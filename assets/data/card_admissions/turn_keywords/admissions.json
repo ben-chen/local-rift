@@ -1,0 +1,339 @@
+{
+  "status": "Block and Yuumi local validation passed; installed acceptance pending. Brawl source-only correction.",
+  "reviewed_on": "2026-11-14",
+  "preserved_runtime_prefix": {
+    "card_count": 461,
+    "preset_count": 7,
+    "cards_sha256": "49db83cb30db3e6e75ebb2634c29d5b54bd1de247cceb8604987a8b05bf9dcdc",
+    "presets_sha256": "e975739d803427e54928d6e6cd03d1ce51d7ad108f4e247b8a000acf037a5cdb"
+  },
+  "preserved_source_prefix": {
+    "resolutions": {
+      "count": 144,
+      "sha256": "9aa31958ac544e950c2092b784c306e95e729d9f35bc6e7f5a353f0b1377777a"
+    },
+    "raw_printings": {
+      "count": 94,
+      "sha256": "2690ea20a45df5bdf8f9df53626ce97587c7a08c9bc0ea9c6a6296e7772fd715"
+    },
+    "historical_issues": {
+      "count": 59,
+      "sha256": "74218b64946e93ef5b9888768b69c1a91b6c593565fc4e84df6d525d5f469de2"
+    },
+    "images": {
+      "count": 94,
+      "sha256": "815e8f45b936982a6fe4196892e360f4fa01f8192547c2879ae92fd5fba329ad"
+    }
+  },
+  "records": [
+    {
+      "official_id": "ogn-057-298",
+      "raw_printing": {
+        "official_id": "ogn-057-298",
+        "public_code": "OGN-057/298",
+        "name": "Block",
+        "set": "OGN",
+        "collector_number": 57,
+        "types": [
+          "spell"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "spell"
+        ],
+        "accessibility_types": [
+          "spell"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "calm"
+        ],
+        "energy": 2,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "rules_html": "<p>[Hidden] (Hide now for :rb_rune_rainbow: to react with later for :rb_energy_0:.)<br />[Action] (Play on your turn or in showdowns.)<br />Give a unit [Shield 3] and [Tank] this turn. (+3 :rb_might: while it's a defender. It must be assigned combat damage first.)</p>",
+        "rules_text": "[Hidden] (Hide now for [Any Power] to react with later for [0 Energy].)\n[Action] (Play on your turn or in showdowns.)\nGive a unit [Shield 3] and [Tank] this turn. (+3 Might while it's a defender. It must be assigned combat damage first.)",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [],
+        "rarity": "uncommon",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/36f7352e715fe073631ed85be41408c9a38ab865-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Spell: Block. [Hidden] (Hide now for [A] to react with later for [0].)\n[Action] (Play on your turn or in showdowns.)\nGive a unit [Shield 3] and [Tank] this turn. (+3 [S] while it's a defender. It must be assigned combat damage first.)",
+        "illustrators": [
+          "Kudos Productions"
+        ]
+      },
+      "raw_printing_sha256": "a21de1a7fbaa3b3746a4e635b9548118620adc8694d8332775b48755a587fda1",
+      "effective": {
+        "types": [
+          "spell"
+        ],
+        "super_types": [],
+        "domains": [
+          "calm"
+        ],
+        "energy": 2,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>[Hidden] (Hide now for :rb_rune_rainbow: to react with later for :rb_energy_0:.)<br />[Action] (Play on your turn or in showdowns.)<br />Give a unit [Shield 3] and [Tank] this turn. (+3 :rb_might: while it's a defender. It must be assigned combat damage first.)</p>",
+        "rules_text": "[Hidden] (Hide now for [Any Power] to react with later for [0 Energy].)\n[Action] (Play on your turn or in showdowns.)\nGive a unit [Shield 3] and [Tank] this turn. (+3 Might while it's a defender. It must be assigned combat damage first.)",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "original_image": {
+        "path": "assets/data/card_admissions/turn_keywords/images/ogn-057-298.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/36f7352e715fe073631ed85be41408c9a38ab865-744x1039.png?accountingTag=RB",
+        "bytes": 773573,
+        "sha256": "d91713aeae60240e2c8d4fc7d471cf0e2956511736259b1047504026780334d1",
+        "dimensions": [
+          744,
+          1039
+        ]
+      },
+      "visual_review": {
+        "actual_full_face_viewed": true,
+        "printed_facts": {
+          "types": [
+            "spell"
+          ],
+          "super_types": [],
+          "domains": [
+            "calm"
+          ],
+          "energy": 2,
+          "power": null,
+          "might": null,
+          "tags": [],
+          "rules_text": "[Hidden] (Hide now for [Any Power] to react with later for [0 Energy].)\n[Action] (Play on your turn or in showdowns.)\nGive a unit [Shield 3] and [Tank] this turn. (+3 Might while it's a defender. It must be assigned combat damage first.)"
+        },
+        "observation": "Full original face inspected: printed type, domain, cost, Might if any, tags and full rules match."
+      },
+      "resolution_ids": [],
+      "runtime_id": 461,
+      "runtime_image": {
+        "path": "assets/art/card_461.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/36f7352e715fe073631ed85be41408c9a38ab865-744x1039.png?w=280&q=85&fm=png",
+        "bytes": 156614,
+        "sha256": "7a39a74603fab5c0c88fe57ebd62edaac0b467ca7084778b6f7ccd7b36c61e9a",
+        "dimensions": [
+          280,
+          391
+        ]
+      }
+    },
+    {
+      "official_id": "rad-004-167",
+      "raw_printing": {
+        "official_id": "rad-004-167",
+        "public_code": "RAD-004/167",
+        "name": "Brawl",
+        "set": "RAD",
+        "collector_number": 4,
+        "types": [
+          "spell"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "spell"
+        ],
+        "accessibility_types": [
+          "spell"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "chaos"
+        ],
+        "energy": 3,
+        "power": 1,
+        "might": null,
+        "might_bonus": null,
+        "rules_html": "<p>[Action] (Play on your turn or in showdowns.)<br />Give a unit [Assault] this turn equal to its Might. (+1 :rb_might: for each instance of Assault while it's an attacker.)</p>",
+        "rules_text": "[Action] (Play on your turn or in showdowns.)\nGive a unit [Assault] this turn equal to its Might. (+1 Might for each instance of Assault while it's an attacker.)",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [],
+        "rarity": "common",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/38fd13c7522bb47dcc5ce1596aeb6a638087ee09-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Spell: Brawl. [Action] (Play on your turn or in showdowns.)\nGive a unit [Assault] this turn equal to its Might. (+1 [S] for each instance of Assault while it's an attacker.)",
+        "illustrators": [
+          "Kudos Productions"
+        ]
+      },
+      "raw_printing_sha256": "3b8853b8111170120f3872ad8c9d570e5050e03c7baee6b34a5d801208c7f5a7",
+      "effective": {
+        "types": [
+          "spell"
+        ],
+        "super_types": [],
+        "domains": [
+          "fury"
+        ],
+        "energy": 3,
+        "power": 1,
+        "might": null,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>[Action] (Play on your turn or in showdowns.)<br />Give a unit [Assault] this turn equal to its Might. (+1 :rb_might: for each instance of Assault while it's an attacker.)</p>",
+        "rules_text": "[Action] (Play on your turn or in showdowns.)\nGive a unit [Assault] this turn equal to its Might. (+1 Might for each instance of Assault while it's an attacker.)",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "original_image": {
+        "path": "assets/data/catalog_evidence/images/rad-004-167.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/38fd13c7522bb47dcc5ce1596aeb6a638087ee09-744x1039.png?accountingTag=RB",
+        "bytes": 836999,
+        "sha256": "1404a259df9d7786bcf8f69180422ce07e627926b5148a6ca767ed46d880ecf2",
+        "dimensions": [
+          744,
+          1039
+        ]
+      },
+      "visual_review": {
+        "actual_full_face_viewed": true,
+        "printed_facts": {
+          "types": [
+            "spell"
+          ],
+          "super_types": [],
+          "domains": [
+            "fury"
+          ],
+          "energy": 3,
+          "power": 1,
+          "might": null,
+          "tags": [],
+          "rules_text": "[Action] (Play on your turn or in showdowns.)\nGive a unit [Assault] this turn equal to its Might. (+1 Might for each instance of Assault while it's an attacker.)"
+        },
+        "observation": "Full original face inspected. Brawl visibly has the red Fury frame and Fury power glyph, despite gallery Chaos metadata."
+      },
+      "resolution_ids": [
+        "rad-004-167:domains"
+      ]
+    },
+    {
+      "official_id": "unl-056-219",
+      "raw_printing": {
+        "official_id": "unl-056-219",
+        "public_code": "UNL-056/219",
+        "name": "Yuumi, Magical Cat",
+        "set": "UNL",
+        "collector_number": 56,
+        "types": [
+          "unit"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "unit"
+        ],
+        "accessibility_types": [
+          "unit"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [
+          "champion"
+        ],
+        "domains": [
+          "calm"
+        ],
+        "energy": 3,
+        "power": 1,
+        "might": 1,
+        "might_bonus": null,
+        "rules_html": "<p>When I attack or defend, give one of your other units here +3 :rb_might: and [Tank] this turn. (It must be assigned combat damage first.)</p>",
+        "rules_text": "When I attack or defend, give one of your other units here +3 Might and [Tank] this turn. (It must be assigned combat damage first.)",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [
+          "Fae",
+          "Cat",
+          "Bandle City",
+          "Yuumi"
+        ],
+        "rarity": "rare",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/588ddfeb01ab7b37110d8a7e656cf9f35530ce4e-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Unit: Yuumi, Magical Cat. When I attack or defend, give one of your other units here +3 [S] and [Tank] this turn. (It must be assigned combat damage first.)",
+        "illustrators": [
+          "Six More Vodka"
+        ]
+      },
+      "raw_printing_sha256": "3f2114c29a5046dcac4764f9d9515db7baea68966e3c1386eb8086d2984ee248",
+      "effective": {
+        "types": [
+          "unit"
+        ],
+        "super_types": [
+          "champion"
+        ],
+        "domains": [
+          "calm"
+        ],
+        "energy": 3,
+        "power": 1,
+        "might": 1,
+        "might_bonus": null,
+        "tags": [
+          "Fae",
+          "Cat",
+          "Bandle City",
+          "Yuumi"
+        ],
+        "rules_html": "<p>When I attack or defend, give one of your other units here +3 :rb_might: and [Tank] this turn. (It must be assigned combat damage first.)</p>",
+        "rules_text": "When I attack or defend, give one of your other units here +3 Might and [Tank] this turn. (It must be assigned combat damage first.)",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "original_image": {
+        "path": "assets/data/card_admissions/turn_keywords/images/unl-056-219.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/588ddfeb01ab7b37110d8a7e656cf9f35530ce4e-744x1039.png?accountingTag=RB",
+        "bytes": 927873,
+        "sha256": "b139462bc6d9e8d7214541aaaada2ea9550ace59114ac8b5e5c556d6db3231b9",
+        "dimensions": [
+          744,
+          1039
+        ]
+      },
+      "visual_review": {
+        "actual_full_face_viewed": true,
+        "printed_facts": {
+          "types": [
+            "unit"
+          ],
+          "super_types": [
+            "champion"
+          ],
+          "domains": [
+            "calm"
+          ],
+          "energy": 3,
+          "power": 1,
+          "might": 1,
+          "tags": [
+            "Fae",
+            "Cat",
+            "Bandle City",
+            "Yuumi"
+          ],
+          "rules_text": "When I attack or defend, give one of your other units here +3 Might and [Tank] this turn. (It must be assigned combat damage first.)"
+        },
+        "observation": "Full original face inspected: printed type, domain, cost, Might if any, tags and full rules match."
+      },
+      "resolution_ids": [],
+      "runtime_id": 462,
+      "runtime_image": {
+        "path": "assets/art/card_462.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/588ddfeb01ab7b37110d8a7e656cf9f35530ce4e-744x1039.png?w=280&q=85&fm=png",
+        "bytes": 217386,
+        "sha256": "90b4d995c3713f64d5c3490623741e9750bd3ee68814a4c2a331c3b6dd068690",
+        "dimensions": [
+          280,
+          391
+        ]
+      }
+    }
+  ]
+}

@@ -1668,6 +1668,13 @@ impl Game {
                         }
                     }
                 }
+                Effect::GrantTurnKeywords(keywords) => {
+                    for &target in &targets {
+                        for &keyword in keywords {
+                            self.grant_turn_keyword(target, keyword);
+                        }
+                    }
+                }
                 Effect::Banish(who) => {
                     for target in self.trigger_operands(context, who, &targets) {
                         match target {

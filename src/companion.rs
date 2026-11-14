@@ -401,6 +401,7 @@ fn checked_advice(game: &Game, level: AdviceLevel) -> Result<Vec<&'static str>, 
     if let Some(mut window_tips) = response_window_advice(game, beginner)? {
         window_tips.extend(rockfall_advice(game, beginner));
         window_tips.extend(heavens_advice(game, beginner));
+        window_tips.extend(block_advice(game, beginner));
         if let Some(tip) = sands_advice(game, beginner) {
             window_tips.push(tip);
         }
@@ -430,6 +431,7 @@ fn checked_advice(game: &Game, level: AdviceLevel) -> Result<Vec<&'static str>, 
     tips.extend(crate::combat_ui::card_advice(game, beginner)?);
     tips.extend(rockfall_advice(game, beginner));
     tips.extend(heavens_advice(game, beginner));
+    tips.extend(block_advice(game, beginner));
 
     // High stakes scoring and visible threats come before routine suggestions.
     let enemy_has_hold = game.battlefield_owner.contains(&Some(1));
@@ -1150,6 +1152,11 @@ fn response_window_advice(
                     "Choose the reduction that changes the combat trade. Stacked Disarm makes one stronger trigger. Moving the attacker or its target apart can make the ability miss."
                 }]
             }
+            Decision::TriggerTargets { card_id: 462, .. } => vec![if beginner {
+                "Yuumi chooses another friendly unit at her location. After responses it gains +3 Might and Tank for this turn. Tank makes it take combat damage before ordinary units."
+            } else {
+                "Yuumi can strengthen a scorer, but Tank also makes it absorb damage first. Choose a unit that can survive the trade; moving it away from Yuumi can make the ability miss."
+            }],
             Decision::TriggerTargets { card_id: 455, .. } => vec![if beginner {
                 "Royal Entourage chooses either player's legend now. Choose ready or exhaust after responses. Legends stay in their own zone, separate from units."
             } else {
@@ -1876,6 +1883,16 @@ fn sands_advice(game: &Game, beginner: bool) -> Option<&'static str> {
         } else {
             "After an opponent plays another spell, Sands can counter their first one. Check the public spell history and save 1 Energy plus 1 Calm Power."
         })
+}
+
+fn block_advice(game: &Game, beginner: bool) -> Option<&'static str> {
+    (game.players[0].hand.contains(&461)
+        || game.players[0].hidden.iter().any(|card| card.card_id == 461)
+        || game.chain.iter().any(|item| item.card_id == 461)).then_some(if beginner {
+        "Block gives Shield 3 and Tank this turn. Shield adds Might only while defending; Tank makes the unit take combat damage first. Hidden can react on a later turn."
+    } else {
+        "Use Block before damage assignment to change a trade. Tank can protect other units, but may expose your scorer. From Hidden, its target must be at that battlefield."
+    })
 }
 
 fn heavens_advice(game: &Game, beginner: bool) -> Option<&'static str> {
@@ -2803,6 +2820,48 @@ mod tests {
                 let tips = advice(&g, level);
                 assert_eq!(tips, advice(&hidden, level));
                 assert!(tips.iter().any(|tip| tip.contains("Sands")));
+                assert!(tips.iter().all(|tip| tip.chars().count() <= 180));
+            }
+            assert_eq!(format!("{g:?}"), before);
+        }
+    }
+
+    #[test]
+    fn turn_keywords_advice_is_concise_private_safe_and_read_only() {
+        let mut g = game();
+        g.start_match().unwrap();
+        g.players[0].hand = vec![461];
+        for yuumi in [false, true] {
+            if yuumi {
+                g.decision = Some(Decision::TriggerTargets {
+                    player: 0,
+                    card_id: 462,
+                    rule_index: 0,
+                    context: local_rift::game::TriggerContext {
+                        keyword: None,
+                        mode: None,
+                        source: local_rift::game::TriggerSource {
+                            player: 0,
+                            unit_id: Some(10),
+                            gear_id: None,
+                        },
+                        subject: None,
+                        movement: None,
+                        departure_location: None,
+                    },
+                });
+            }
+            let before = format!("{g:?}");
+            let mut hidden = g.clone();
+            hidden.players[1].hand = vec![461, 462];
+            hidden.players[1].deck.reverse();
+            for level in [AdviceLevel::Beginner, AdviceLevel::Advanced] {
+                let tips = advice(&g, level);
+                assert_eq!(tips, advice(&hidden, level));
+                assert!(
+                    tips.iter()
+                        .any(|tip| tip.contains(if yuumi { "Yuumi" } else { "Block" }))
+                );
                 assert!(tips.iter().all(|tip| tip.chars().count() <= 180));
             }
             assert_eq!(format!("{g:?}"), before);

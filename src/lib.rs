@@ -27,6 +27,7 @@ pub mod continuous;
 pub use game::empower;
 
 pub mod numeric;
+pub mod turn_keywords;
 pub use numeric::{DamageAmount, Might, SignedMight, UnitStats};
 
 pub use game::temporary;

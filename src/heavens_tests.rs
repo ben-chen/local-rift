@@ -128,7 +128,7 @@ fn heavens_expiration_removes_only_granted_shield_and_rejects_missing_or_wrong_t
         assert_eq!(shield(&g, unit), 5);
         g.apply(Action::EndTurn).unwrap();
         assert_eq!(shield(&g, unit), 1);
-        assert!(g.shield_grants.is_empty());
+        assert!(g.turn_keyword_grants.is_empty());
     }
 }
 
@@ -149,7 +149,7 @@ fn heavens_lost_target_still_predicts_and_departure_clears_the_physical_grant() 
             cast(&mut g, 11, unit);
             settle(&mut g);
             assert!(g.unit_ref(unit).is_none());
-            assert!(g.shield_grants.is_empty());
+            assert!(g.turn_keyword_grants.is_empty());
             if !granted_before_return {
                 assert!(matches!(g.decision,Some(Decision::Predict{player,..}) if player==actor));
                 g.apply(Action::Choose { accept: false }).unwrap();

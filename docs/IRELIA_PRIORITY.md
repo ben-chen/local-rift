@@ -2,6 +2,16 @@
 
 Updated November 14, 2026. Irelia cards take priority over the saved Azir draft.
 
+Block and Yuumi, Magical Cat are implemented locally as additional Calm options.
+They share temporary keyword grants with Consult the Heavens. Ten focused
+engine/API tests, 1,082 library tests, 24 complete engine games, six best-of-three
+API series (15 games), both companion levels and native controls at both window
+sizes passed. These are authored coverage lists, not evidence that either card
+is a current meta staple. Brawl's printed Fury identity was also corrected in
+the source catalog; it remains unimplemented and outside Irelia's identity.
+Installed acceptance and publication are pending; see
+[validation](validation/turn_keywords.json).
+
 Disarm is implemented locally for Siren of the Shallows, Trinket Peddler and
 Clanging Sentry. Irelia is **Calm/Chaos**: only Siren belongs in her card pool;
 the two Mind cards are exercised in opposing Kai'Sa and Ezreal lists. These are

@@ -491,6 +491,9 @@ impl Session {
                 if shield != 0 {
                     unit_view["turn_shield"] = json!({"amount":shield,"amount_exact":shield.to_string(),"expires":"end_of_turn"});
                 }
+                if game.turn_tank(unit.id) {
+                    unit_view["turn_tank"] = json!({"expires":"end_of_turn"});
+                }
                 if !unit.token && unit.card_id == 439 {
                     unit_view["trigger_modes_chosen_this_turn"] = json!((0..3).filter(|mode|
                         game.trigger_state.modes_used.contains(&(unit.id, 439, 0, *mode))).collect::<Vec<_>>());
