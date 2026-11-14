@@ -180,3 +180,11 @@ The [resource-card validation](validation/irelia_resources.json) records both-se
 rules scenarios, native controls, companion advice and six complete API matches.
 The campaign uses an authored coverage list; the seven sourced presets remain
 unchanged. These additions do not claim new tournament-list provenance.
+
+Royal Entourage adds explicit legend targeting followed by a ready-or-exhaust
+choice after responses. Its [validation record](validation/irelia_entourage.json)
+includes 1,961 passing Rust tests, 320 source checks, 1,176 simulated matches,
+78 installed-client captures and five exact native/package API comparisons.
+Four installed captures were visually reviewed, including the small-window
+choice and both companion levels. The seven sourced recipes remain unchanged;
+authored coverage matches do not establish tournament provenance or expert AI.
