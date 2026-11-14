@@ -1,4 +1,6 @@
 //! Consumer regressions for source reconciliation, without admitting new cards.
+#[path = "support/catalog_review.rs"]
+mod review_support;
 use local_rift::{
     cards,
     deck::{CustomDeck, eligible_cards, eligible_champions},
@@ -36,8 +38,7 @@ fn reviewed_facts_are_effective_while_original_evidence_stays_intact() {
         .collect();
     assert_eq!(manifest["status"], "reviewed");
     assert_eq!(manifest["printing_projection_version"], 1);
-    assert_eq!(manifest["resolutions"].as_array().unwrap().len(), 142);
-    assert_eq!(manifest["raw_printings"].as_array().unwrap().len(), 92);
+    review_support::assert_review_inventory(&data);
     for raw in manifest["raw_printings"].as_array().unwrap() {
         let id = raw["official_id"].as_str().unwrap();
         for (field, value) in raw.as_object().unwrap() {
@@ -74,7 +75,6 @@ fn reviewed_facts_are_effective_while_original_evidence_stays_intact() {
         .map(|issue| issue["raw_issue"].clone())
         .collect();
     assert_eq!(data["source_quality_issues"], json!(historical));
-    assert_eq!(historical.len(), 57);
 }
 
 #[test]

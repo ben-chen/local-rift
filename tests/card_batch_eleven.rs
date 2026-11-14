@@ -1,4 +1,6 @@
 //! C9 source and deck-construction checks; runtime effect tests live separately.
+#[path = "support/catalog_review.rs"]
+mod review_support;
 use local_rift::cards::{self, CardKind, Domain};
 use local_rift::deck::{CustomDeck, eligible_cards, eligible_champions};
 use local_rift::legend_catalog::legends;
@@ -182,9 +184,7 @@ fn tracker_uses_reviewed_fury_and_bilgewater_without_rewriting_raw_facts() {
         deck.cards.push((333, 1));
         assert_eq!(deck.validate().is_ok(), legal, "legend {}", legend.id);
     }
-    // The current issue history includes the later Reckless Innovator, Riven and Blitzcrank tag reviews.
-    assert_eq!(source["counts"]["source_quality_issues"], 57);
-    assert_eq!(source["counts"]["resolved_source_issue_groups"], 57);
+    review_support::assert_review_inventory(&source);
 }
 
 #[test]

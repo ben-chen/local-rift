@@ -1,4 +1,6 @@
 //! C5 source identities and authored deck boundaries; not interaction conformance.
+#[path = "support/catalog_review.rs"]
+mod review_support;
 use local_rift::cards::{self, CardKind, Domain};
 use local_rift::deck::{CustomDeck, eligible_cards, eligible_champions};
 use local_rift::legend_catalog::{legend, legends};
@@ -134,8 +136,7 @@ fn eighteen_appended_cards_preserve_clean_source_facts_and_art() {
                 .any(|t| t == "champion")
         );
     }
-    // Raw issue history includes the later Reckless Innovator, Riven and Blitzcrank tag reviews.
-    assert_eq!(source["counts"]["source_quality_issues"], 57);
+    review_support::assert_review_inventory(&source);
     assert_eq!(
         source["source_quality_issues"]
             .as_array()
