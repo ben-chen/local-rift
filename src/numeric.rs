@@ -81,6 +81,38 @@ impl Game {
         Some(present)
     }
 
+    /// Each instance has an eight-bit printed value. Summing a memory-bounded
+    /// collection in u128 is exact; conversion to narrower API/state fields is
+    /// checked at their boundaries.
+    pub(crate) fn disarm_value(&self, player: usize, unit: &Unit) -> u128 {
+        use crate::continuous::{PassiveEffect, PassiveKeyword};
+        let printed = if unit.token {
+            &[][..]
+        } else {
+            rules::static_abilities(unit.card_id)
+        };
+        let intrinsic: u128 = printed
+            .iter()
+            .filter_map(|ability| match ability {
+                StaticAbility::Disarm(n) => Some(u128::from(*n)),
+                _ => None,
+            })
+            .sum();
+        intrinsic
+            + self
+                .passive_matches(crate::empower::BoardObject::Unit {
+                    player,
+                    unit_id: unit.id,
+                })
+                .into_iter()
+                .filter(|grant| grant.active)
+                .filter_map(|grant| match grant.effect {
+                    PassiveEffect::Keyword(PassiveKeyword::Disarm(n)) => Some(u128::from(n)),
+                    _ => None,
+                })
+                .sum::<u128>()
+    }
+
     pub fn unit_keywords(&self, unit: &Unit) -> Result<UnitKeywords, String> {
         let mut keywords = UnitKeywords::default();
         let owner = self
@@ -88,6 +120,8 @@ impl Game {
             .iter()
             .position(|p| p.units.iter().any(|u| u.id == unit.id));
         if let Some(player) = owner {
+            keywords.disarm = u64::try_from(self.disarm_value(player, unit))
+                .map_err(|_| capacity("Disarm value"))?;
             keywords.vision = u64::try_from(
                 self.vision_instances(crate::empower::BoardObject::Unit {
                     player,

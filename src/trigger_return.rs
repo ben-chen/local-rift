@@ -1,7 +1,7 @@
 //! A later optional instruction retains its finalized trigger while resolving.
 //! Core383.3.a.3 separates this choice from optional trigger finalization.
 use super::*;
-use crate::trigger_rules::{self, Effect};
+use crate::trigger_rules::Effect;
 
 impl Game {
     pub(super) fn trigger_return_target_score(
@@ -40,7 +40,7 @@ impl Game {
         else {
             return None;
         };
-        let rule = trigger_rules::selected_rule(item.card_id, rule_index, context.mode)?;
+        let rule = context.rule(item.card_id, rule_index)?;
         // This descriptor is a complete instruction. A future sequence with
         // further instructions must retain an explicit continuation as well.
         let [Effect::OptionalReturnAtCrowdedBattlefield { minimum_units }] = rule.effects else {

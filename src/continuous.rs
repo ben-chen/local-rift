@@ -34,6 +34,7 @@ pub enum Recipients {
 }
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum PassiveKeyword {
+    Disarm(u8),
     Vision,
     Assault(u8),
     Shield(u8),
@@ -82,6 +83,15 @@ pub fn passive_rules(id: CardId) -> &'static [PassiveRule] {
     use PassiveEffect::*;
     use PassiveKeyword::*;
     match id {
+        459 => {
+            const {
+                &[PassiveRule {
+                    condition: SourceCondition::Always,
+                    recipients: Recipients::FriendlyUnitsWithTag("Mech"),
+                    effect: Keyword(Disarm(1)),
+                }]
+            }
+        }
         444 => {
             const {
                 &[PassiveRule {

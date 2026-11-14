@@ -1,5 +1,5 @@
 {
-  "status": "Source faces reviewed; runtime Disarm implementation pending",
+  "status": "Local rules, source, AI, API and native controls passed; installed acceptance pending",
   "reviewed_on": "2026-11-14",
   "planned_scope": "Shared Disarm mechanic: Trinket Peddler, Clanging Sentry, Siren of the Shallows",
   "preserved_runtime_prefix": {
@@ -104,6 +104,41 @@
           ]
         },
         "observation": "Full original face inspected; tags transcribed directly from the printed type line."
+      },
+      "runtime_id": 458,
+      "effective": {
+        "types": [
+          "unit"
+        ],
+        "super_types": [],
+        "domains": [
+          "mind"
+        ],
+        "energy": 3,
+        "power": null,
+        "might": 3,
+        "might_bonus": null,
+        "tags": [
+          "Bandle City",
+          "Yordle"
+        ],
+        "rules_html": "<p>[Disarm] (When I attack, give an enemy unit here -1 :rb_might: this turn.)</p>",
+        "rules_text": "[Disarm] (When I attack, give an enemy unit here -1 Might this turn.)",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "resolution_ids": [
+        "rad-054-167:tags"
+      ],
+      "runtime_image": {
+        "path": "assets/art/card_458.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/78106b7cea441b13d108e532adc5ce063f448165-744x1039.png?w=280&q=85&fm=png",
+        "bytes": 193819,
+        "sha256": "93ff508c2566a1f8773121c86580515e7a20151d1dd873a282fc99c05dc2fdad",
+        "dimensions": [
+          280,
+          391
+        ]
       }
     },
     {
@@ -195,6 +230,41 @@
           ]
         },
         "observation": "Full original face inspected; tags transcribed directly from the printed type line."
+      },
+      "runtime_id": 459,
+      "effective": {
+        "types": [
+          "unit"
+        ],
+        "super_types": [],
+        "domains": [
+          "mind"
+        ],
+        "energy": 3,
+        "power": null,
+        "might": 2,
+        "might_bonus": null,
+        "tags": [
+          "Piltover",
+          "Mech"
+        ],
+        "rules_html": "<p>Your Mechs have [Disarm]. (When each of us attacks, give an enemy unit there -1 :rb_might: this turn.)</p>",
+        "rules_text": "Your Mechs have [Disarm]. (When each of us attacks, give an enemy unit there -1 Might this turn.)",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "resolution_ids": [
+        "rad-055-167:tags"
+      ],
+      "runtime_image": {
+        "path": "assets/art/card_459.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/5d4c22ef863e041887a00d34b2dae1f3ce658326-744x1039.png?w=280&q=85&fm=png",
+        "bytes": 176177,
+        "sha256": "9ca206aa08f18632ca582da958962c3868835f251b26a8ad06f85c96a27b768d",
+        "dimensions": [
+          280,
+          391
+        ]
       }
     },
     {
@@ -290,6 +360,41 @@
           ]
         },
         "observation": "Full original face inspected: Unit / Bilgewater. Existing artwork corrections already repair the gallery Spell type and omitted tag."
+      },
+      "runtime_id": 460,
+      "effective": {
+        "types": [
+          "unit"
+        ],
+        "super_types": [],
+        "domains": [
+          "chaos"
+        ],
+        "energy": 2,
+        "power": null,
+        "might": 1,
+        "might_bonus": null,
+        "tags": [
+          "Bilgewater"
+        ],
+        "rules_html": "<p>[Disarm] (When I attack, give an enemy unit here -1 :rb_might: this turn.)<br />[Ganking] (I can move from battlefield to battlefield.)</p>",
+        "rules_text": "[Disarm] (When I attack, give an enemy unit here -1 Might this turn.)\n[Ganking] (I can move from battlefield to battlefield.)",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "resolution_ids": [
+        "rad-097-167:types",
+        "rad-097-167:tags"
+      ],
+      "runtime_image": {
+        "path": "assets/art/card_460.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/e666029dcebc507cc80435eee17db435305d1361-744x1039.png?w=280&q=85&fm=png",
+        "bytes": 173817,
+        "sha256": "4afc8f14383633bb060c4b1075e12e29378a474986aa7f2c44c3bced1e35a45c",
+        "dimensions": [
+          280,
+          391
+        ]
       }
     }
   ],
@@ -320,13 +425,19 @@
       "Clanging Sentry grants Disarm to all friendly Mechs, including itself; two Sentries each have Disarm 2 (831.2 example).",
       "Here follows the live source at resolution; source departure supplies no location (359.3.e.12, 359.3.f.1-2)."
     ],
-    "open_question": "Confirm evaluation timing of the Disarm value and source-relative Here before admitting runtime support.",
-    "rules_pdf_sha256": "94d41fee86f88b61c4157c0389c0595d990b98e5b42555c99d9f649ee64d1fec"
+    "rules_pdf_sha256": "94d41fee86f88b61c4157c0389c0595d990b98e5b42555c99d9f649ee64d1fec",
+    "interpretation": "Disarm X supplies the functional text of the single triggered ability under 831.1.c-d: sum the active instances when the attack triggers and retain that parameter. Here is a live source referent under 359.3.f.2. The general rules support this distinction; no named Disarm response-timing FAQ was found.",
+    "interpretation_status": "Audited against CR831.1.c-d, CR359.3.f and current Radiance patch notes; no named timing FAQ found.",
+    "patch_notes_url": "https://playriftbound.com/en-us/news/announcements/core-rules-radiance-patch-notes-effective-october-16-2026/",
+    "limits": [
+      "Authored source-departure, grant-loss, movement and counter scenarios; future control-transfer effects are not established by these tests."
+    ]
   },
   "validation": {
-    "source_tests": 47,
-    "source_log": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/disarm-source-v2.log",
-    "source_log_sha256": "943ae7c9e396814c592dd2a7d092a9e5c620b1c9e5d9cb96bcbf7edd0bbd2d30",
-    "prior_attempt": "v1 correctly rejected the Siren review record copied from raw gallery type Spell; corrected the reviewed type to the actually printed Unit, preserving raw data."
+    "source_tests": 48,
+    "source_log": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/disarm-source-v3.log",
+    "source_log_sha256": "8fdedf8800c10a5594a4c399b5e29dd2f8b2f64eb32566e4e2ae28df63bf42c0",
+    "prior_attempt": "v1 correctly rejected the Siren review record copied from raw gallery type Spell; corrected the reviewed type to the actually printed Unit, preserving raw data.",
+    "runtime_receipt": "docs/validation/disarm.json"
   }
 }

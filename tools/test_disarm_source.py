@@ -67,6 +67,21 @@ class DisarmSourceTests(unittest.TestCase):
             self.assertFalse(identity['implementation']['playable_in_client'])
             self.assertEqual(identity['source_review']['unresolved_gameplay_fields'], [])
 
+    def test_runtime_registry_and_thumbnails_match_reviewed_faces(self):
+        runtime = catalog.load_runtime_manifest()['cards']
+        for i, rec in enumerate(self.proof['records'], 458):
+            card = runtime[i]
+            self.assertEqual((card['id'], card['official_id'], card['kind']), (i, rec['official_id'], 'Unit'))
+            facts = rec['visual_review']['printed_facts']
+            for key in ['energy', 'power', 'might', 'tags']:
+                self.assertEqual(card[key], facts[key])
+            self.assertEqual(card['official_text'], rec['raw_printing']['rules_text'])
+            self.assertEqual(card['official_text_html'], rec['raw_printing']['rules_html'])
+            image = rec['runtime_image']
+            data = (catalog.ROOT / image['path']).read_bytes()
+            self.assertEqual((len(data), catalog.sha(data)), (image['bytes'], image['sha256']))
+            self.assertEqual(struct.unpack('>II', data[16:24]), (280, 391))
+
 
 if __name__ == '__main__':
     unittest.main()

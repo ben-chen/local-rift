@@ -3,6 +3,52 @@ use super::*;
 use crate::game::Unit;
 use crate::gear::GearState;
 
+#[test]
+fn disarm_api_exposes_the_bearer_and_captured_value_without_mutating_validation() {
+    for actor in 0..2 {
+        let mut s = position_for_actor(actor);
+        s.game.players[actor].units = vec![unit(10, 459, None), unit(11, 459, None)];
+        s.game.players[1 - actor].units = vec![unit(12, 110, Some(0))];
+        s.game.battlefield_owner[0] = Some(1 - actor);
+        apply(
+            &mut s,
+            Action::Move {
+                unit_id: 10,
+                lane: Some(0),
+            },
+        );
+        let before = s.observe(actor).unwrap();
+        assert_eq!(
+            before["players"][actor]["units"][0]["keywords"]["disarm"],
+            2
+        );
+        assert_eq!(before["decision"]["context"]["keyword"]["value_exact"], "2");
+        assert_eq!(before["decision"]["context"]["source"]["unit_id"], 10);
+        let action = Action::ChooseTriggerTargets {
+            targets: vec![Target::Unit {
+                player: 1 - actor,
+                unit_id: 12,
+            }],
+        };
+        assert!(
+            s.apply_action(1 - actor, s.revision(), action.clone())
+                .is_err()
+        );
+        s.validate_action(actor, s.revision(), action.clone())
+            .unwrap();
+        assert_eq!(s.observe(actor).unwrap(), before);
+        apply(&mut s, action);
+        let chain = s.observe(1 - actor).unwrap();
+        assert_eq!(
+            chain["chain"][0]["ability"]["context"]["keyword"]["value"],
+            2
+        );
+        apply(&mut s, Action::Pass);
+        apply(&mut s, Action::Pass);
+        assert_eq!(s.game.players[1 - actor].units[0].temporary_buff, -2);
+    }
+}
+
 fn position() -> Session {
     position_for_actor(0)
 }

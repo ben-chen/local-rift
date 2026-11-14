@@ -455,10 +455,14 @@ impl Session {
             let units: Vec<_> = state.units.iter().map(|unit| {
                 let stats = game.try_unit_stats(unit).map_err(ApiError::illegal)?;
                 let keywords = stats.keywords;
-                let keywords_json = json!({"vision":keywords.vision,"vision_exact":keywords.vision.to_string(),"assault":keywords.assault,"assault_exact":keywords.assault.to_string(),
+                let mut keywords_json = json!({"vision":keywords.vision,"vision_exact":keywords.vision.to_string(),"assault":keywords.assault,"assault_exact":keywords.assault.to_string(),
                     "shield":keywords.shield,"shield_exact":keywords.shield.to_string(),"tank":keywords.tank,"backline":keywords.backline,
                     "deflect":keywords.deflect,"ganking":keywords.ganking,"ambush":keywords.ambush,"hunt":keywords.hunt,
                     "accelerate":keywords.accelerate.map(|cost|json!({"energy":cost.energy,"power":cost.power,"domain":cost.domain.name()}))});
+                if keywords.disarm > 0 {
+                    keywords_json["disarm"] = json!(keywords.disarm);
+                    keywords_json["disarm_exact"] = json!(keywords.disarm.to_string());
+                }
                 let tags = if unit.token {
                     crate::rules::token_spec(unit.card_id).and_then(|spec|spec.tag).into_iter().collect::<Vec<_>>()
                 } else { game.catalog[unit.card_id].tags.to_vec() };
@@ -2270,23 +2274,17 @@ fn decision_to_json(game: &Game, decision: &Decision, viewer: usize) -> Result<V
                 "timing":if resolving_chain_id.is_some() { "resolution" } else { "finalization" },
                 "resolving_chain_id":resolving_chain_id,
                 "paid_before_responses":resolving_chain_id.is_none(),"deflect":deflect});
-            if crate::trigger_rules::selected_rule(*card_id, *rule_index, context.mode).is_some_and(
-                |r| {
-                    r.object_cost
-                        == Some(crate::trigger_rules::TriggerObjectCost::BanishFromAnyTrash)
-                },
-            ) {
+            if context.rule(*card_id, *rule_index).is_some_and(|r| {
+                r.object_cost == Some(crate::trigger_rules::TriggerObjectCost::BanishFromAnyTrash)
+            }) {
                 value["object_cost"] = json!({"type":"banish_from_any_trash","paid_before_responses":true,
                     "is_target":false,"candidates":game.players.iter().enumerate().flat_map(|(owner,p)|
                         p.discard.iter().enumerate().map(move |(index,id)|json!({"player":owner,"trash_index":index,"card_id":id}))
                     ).collect::<Vec<_>>()});
             }
-            if crate::trigger_rules::selected_rule(*card_id, *rule_index, context.mode).is_some_and(
-                |r| {
-                    r.object_cost
-                        == Some(crate::trigger_rules::TriggerObjectCost::ExhaustSourceGear)
-                },
-            ) {
+            if context.rule(*card_id, *rule_index).is_some_and(|r| {
+                r.object_cost == Some(crate::trigger_rules::TriggerObjectCost::ExhaustSourceGear)
+            }) {
                 value["object_cost"] = json!({"type":"exhaust_gear", "player":context.source.player,
                     "gear_id":context.source.gear_id, "paid_before_responses":true, "is_target":false});
             }
@@ -2663,6 +2661,9 @@ fn trigger_context_to_json(context: &TriggerContext) -> Value {
         "gear_id":context.source.gear_id},"subject":context.subject.as_ref().map(target_to_json),
         "movement":context.movement.map(|movement|json!({"origin":movement.origin,"destination":movement.destination})),
         "departure_location":context.departure_location.map(board_location_to_json)});
+    if let Some(crate::game::KeywordTrigger::Disarm { value: amount, .. }) = context.keyword {
+        value["keyword"] = json!({"type":"disarm", "value":u64::try_from(amount).ok(), "value_exact":amount.to_string()});
+    }
     if let Some(mode) = context.mode {
         value["mode"] = json!(mode);
     }
@@ -4645,6 +4646,7 @@ mod tests {
         session.game.players[0].units = vec![unit(100, None, 5), unit(101, None, 3)];
         session.game.players[1].units = vec![unit(102, None, 3)];
         let context = TriggerContext {
+            keyword: None,
             mode: None,
             departure_location: None,
             movement: None,
@@ -4726,6 +4728,7 @@ mod tests {
             card_id: 188,
             rule_index: 0,
             context: TriggerContext {
+                keyword: None,
                 mode: None,
                 departure_location: None,
                 movement: None,
@@ -4857,6 +4860,7 @@ mod tests {
                 card_id: 374,
                 rule_index: 0,
                 context: TriggerContext {
+                    keyword: None,
                     mode: None,
                     source: crate::game::TriggerSource {
                         player: 0,
@@ -4934,6 +4938,7 @@ mod tests {
                 card_id,
                 rule_index: 0,
                 context: TriggerContext {
+                    keyword: None,
                     mode: None,
                     departure_location: None,
                     movement: None,

@@ -161,6 +161,8 @@ pub enum SourceDamageRecipients {
 }
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Effect {
+    /// One targeted reduction using the summed keyword value captured at attack.
+    Disarm,
     /// A complete instruction, with its ready/exhaust choice on resolution.
     ChooseLegendReadiness,
     /// One linked instruction: spend the live source's Buff on resolution.
@@ -315,6 +317,8 @@ const fn rule(
         effects,
     }
 }
+
+pub const DISARM: TriggerRule = rule(Event::SelfAttack, &[], false, ENEMY_HERE, &[Effect::Disarm]);
 
 const fn equipment_rule(
     event: Event,

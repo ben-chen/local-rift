@@ -508,6 +508,17 @@ For each decision, `suggest` supplies legal convenience responses, while structu
 
 Generic card triggers retain a public `context` with `source:{player,unit_id,gear_id}` and an optional event `subject` target. Equipment granted abilities identify their bearer as the unit source. A finalized chain ability has `type:"card_trigger"`, its metadata `rule_index`, and the same context; chosen targets live in the chain item's ordered `targets` array. Target choices finish before response priority opens.
 
+Disarm uses that same target-choice and response protocol. Its context additionally
+contains `keyword:{type:"disarm",value:2,value_exact:"2"}` for a Disarm 2 trigger.
+The value sums the bearer's active instances when it attacks; the physical bearer
+is `context.source` and `chain.source`, including for a Mech token granted Disarm
+by Clanging Sentry. When `context.keyword` is present, it selects the keyword rule;
+`rule_index` is not an index into the bearer's printed card abilities. The target
+must still share the live source's location at resolution. Units with Disarm
+expose `keywords.disarm` and `keywords.disarm_exact`; live granting sources remain
+listed in `passive_contributions`. Deflect payment, rejected-action rollback,
+validation and AI submission use the ordinary shared action API.
+
 The catalog and observed units expose `tags`, including token tags. Gear observations include their `empowered` status. Player observations distinguish `cards_played_this_turn` (finalized cards, including later-countered spells), `cards_completed_this_turn` (completed card plays), and `cards_drawn_this_turn`. Token plays do not increment either card-play counter. `cards_drawn_this_turn` remains a JSON integer; the always-present `cards_drawn_this_turn_exact` is its canonical unsigned decimal string for clients whose number type cannot represent every 64-bit integer. A successful ordinary or specified-card Draw increments this history. Looking, recycling, burning, and unsuccessful terminal draws do not. A Draw beyond the 64-bit host capacity returns `engine_capacity` and restores the entire attempted command, including earlier instructions, choices and RNG; this limit is not a Riftbound rule.
 
 A unit’s `keywords.hunt` is its current total printed and granted Hunt amount. A Conquer/Hold event generates one ability for that bearer with `ability:{type:"hunt",source:{type:"unit",player,unit_id},amount,source_name}`. Its outer `source` is the same physical unit. The captured amount and name remain valid after equipment or the bearer leaves; a token’s name remains its actual token name. The older outer `card_id` is only a compatible art/reference field.

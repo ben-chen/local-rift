@@ -36,6 +36,9 @@ mod combat_card_tests;
 #[path = "deathgrip_tests.rs"]
 mod deathgrip_tests;
 #[cfg(test)]
+#[path = "disarm_tests.rs"]
+mod disarm_tests;
+#[cfg(test)]
 #[path = "dynamic_field_tests.rs"]
 mod dynamic_field_tests;
 #[cfg(test)]
@@ -157,7 +160,7 @@ mod trigger_return;
 #[path = "triggers.rs"]
 pub mod triggers;
 use triggers::{EventSnapshot, Occurrence};
-pub use triggers::{TriggerContext, TriggerSource, TriggerState};
+pub use triggers::{KeywordTrigger, TriggerContext, TriggerSource, TriggerState};
 
 #[path = "field_triggers.rs"]
 pub mod field_triggers;
@@ -1047,6 +1050,7 @@ pub struct Unit {
 /// Assault is the keyword's value; it increases Might only while attacking.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub struct UnitKeywords {
+    pub disarm: u64,
     pub vision: u64,
     pub hunt: u8,
     pub assault: u64,
@@ -1690,6 +1694,9 @@ impl Game {
             return format!("{source_name} · Hunt {amount}");
         }
         match &item.ability {
+            Some(ChainAbility::CardTrigger { context, .. }) if context.keyword.is_some() => {
+                context.keyword_label(&self.catalog[item.card_id]).unwrap()
+            }
             Some(ChainAbility::Vision { source_name, .. }) => format!("{source_name} · Vision"),
             Some(ChainAbility::Temporary { source_name, .. }) => {
                 format!("{source_name} · Temporary")
@@ -2958,7 +2965,8 @@ impl Game {
             rule_index,
             context,
         }) = item.ability
-            && crate::trigger_rules::selected_rule(item.card_id, rule_index, context.mode)
+            && context
+                .rule(item.card_id, rule_index)
                 .is_some_and(|rule| rule.resolution_cost.is_some())
             && paid != Some(item.id)
         {
@@ -3016,8 +3024,7 @@ impl Game {
             rule_index,
             context,
         }) = &item.ability
-            && let Some((discard, draw)) =
-                Self::trigger_loot(item.card_id, *rule_index, context.mode)
+            && let Some((discard, draw)) = Self::trigger_loot(item.card_id, *rule_index, *context)
             && self.pending_loot != Some(item.id)
         {
             self.pending_loot = Some(item.id);
@@ -3662,7 +3669,8 @@ impl Game {
                 context,
             } => {
                 if accept {
-                    match crate::trigger_rules::selected_rule(card_id, rule_index, context.mode)
+                    match context
+                        .rule(card_id, rule_index)
                         .expect("validated trigger mode")
                         .object_cost
                     {
@@ -4938,6 +4946,9 @@ impl Game {
         let id = self.next_chain_id;
         self.next_chain_id += 1;
         let label = match &choice {
+            Decision::TriggerTargets { context, .. } if context.keyword.is_some() => {
+                context.keyword_label(&self.catalog[card_id]).unwrap()
+            }
             Decision::BattlefieldTargets { source, .. }
             | Decision::BattlefieldCost { source, .. }
             | Decision::BattlefieldPayment { source, .. } => format!(
@@ -5027,19 +5038,17 @@ impl Game {
                         rule_index,
                         context,
                         ..
-                    } if crate::trigger_rules::selected_rule(card_id, rule_index, context.mode)
+                    } if context
+                        .rule(card_id, rule_index)
                         .expect("validated trigger mode")
                         .targets
                         .max
                         == 0
-                        && crate::trigger_rules::selected_rule(
-                            card_id,
-                            rule_index,
-                            context.mode,
-                        )
-                        .expect("validated trigger mode")
-                        .base_cost
-                        .is_some() =>
+                        && context
+                            .rule(card_id, rule_index)
+                            .expect("validated trigger mode")
+                            .base_cost
+                            .is_some() =>
                     {
                         self.trigger_payment_decision(card_id, rule_index, context, Vec::new())?
                     }
@@ -5200,6 +5209,9 @@ impl Game {
         let id = self.next_chain_id;
         self.next_chain_id += 1;
         let label = match &ability {
+            ChainAbility::CardTrigger { context, .. } if context.keyword.is_some() => {
+                context.keyword_label(&self.catalog[card_id]).unwrap()
+            }
             ChainAbility::Vision { source_name, .. } => format!("{source_name} · Vision"),
             ChainAbility::Temporary { source_name, .. } => format!("{source_name} · Temporary"),
             ChainAbility::Hunt {
@@ -6284,12 +6296,7 @@ impl Game {
                         rule_index,
                         context,
                         ..
-                    } if crate::trigger_rules::selected_rule(
-                        *card_id,
-                        *rule_index,
-                        context.mode,
-                    )
-                    .is_some_and(|r| {
+                    } if context.rule(*card_id, *rule_index).is_some_and(|r| {
                         r.object_cost
                             == Some(crate::trigger_rules::TriggerObjectCost::BanishFromAnyTrash)
                     }) =>
@@ -9924,12 +9931,7 @@ impl Game {
                         card_id,
                         rule_index,
                         context,
-                    } if crate::trigger_rules::selected_rule(
-                        *card_id,
-                        *rule_index,
-                        context.mode,
-                    )
-                    .is_some_and(|r| {
+                    } if context.rule(*card_id, *rule_index).is_some_and(|r| {
                         r.effects == [crate::trigger_rules::Effect::ChooseLegendReadiness]
                     }) =>
                     {

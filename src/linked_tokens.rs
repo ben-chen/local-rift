@@ -34,6 +34,7 @@ impl Game {
                 card_id: 448,
                 rule_index: 0,
                 context: TriggerContext {
+                    keyword: None,
                     source: triggers::TriggerSource {
                         player,
                         unit_id: None,

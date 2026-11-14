@@ -2556,15 +2556,19 @@ impl App {
             Decision::TriggerTargets { .. } | Decision::LegendTargets { .. }
         ) {
             let source_name = match decision {
-                Decision::TriggerTargets { card_id, .. } => self.game.catalog[card_id].name,
-                Decision::LegendTargets { player } => self.game.legend_def(player).name,
+                Decision::TriggerTargets {
+                    card_id, context, ..
+                } => context
+                    .keyword_label(&self.game.catalog[card_id])
+                    .unwrap_or_else(|| self.game.catalog[card_id].name.to_owned()),
+                Decision::LegendTargets { player } => self.game.legend_def(player).name.to_owned(),
                 _ => unreachable!(),
             };
             let (maximum, required) = self.game.trigger_target_bounds().unwrap();
             self.ui
                 .title("Choose ability targets", 1178.0, 366.0, 20.0, TEXT);
             self.ui
-                .ellipsis(source_name, 1178.0, 392.0, 212.0, 12.0, GOLD);
+                .ellipsis(&source_name, 1178.0, 392.0, 212.0, 12.0, GOLD);
             let instructions = if self
                 .game
                 .trigger_target_rule()
@@ -9329,6 +9333,7 @@ fn passive_description(
         ),
         PassiveEffect::Keyword(PassiveKeyword::Assault(amount)) => format!("Assault {amount}"),
         PassiveEffect::Keyword(PassiveKeyword::Shield(amount)) => format!("Shield {amount}"),
+        PassiveEffect::Keyword(PassiveKeyword::Disarm(amount)) => format!("Disarm {amount}"),
         PassiveEffect::Keyword(PassiveKeyword::Deflect(amount)) => format!("Deflect {amount}"),
         PassiveEffect::Keyword(PassiveKeyword::Ganking) => "Ganking".into(),
         PassiveEffect::Keyword(PassiveKeyword::Vision) => "Vision".into(),
@@ -9499,6 +9504,12 @@ fn live_unit_description(game: &Game, owner: usize, unit_id: u32) -> Option<Stri
     if game.buffed_units.contains(&unit_id) {
         lines.push("BUFFED · has a Buff counter. Its +1 might is included above; temporary might and Empowered are separate.".into());
     }
+    if unit.temporary_buff != 0 {
+        lines.push(format!(
+            "Might {:+} this turn: included above; expires at the end of this turn.",
+            unit.temporary_buff
+        ));
+    }
     if !unit.token && unit.card_id == 439 {
         let modes = ["Buff", "Stun", "Ready"];
         let used = modes
@@ -9583,6 +9594,12 @@ fn live_unit_description(game: &Game, owner: usize, unit_id: u32) -> Option<Stri
         lines.push(format!(
             "Assault {}: +{} might while attacking; already included above while this unit is attacking.",
             keywords.assault, keywords.assault
+        ));
+    }
+    if keywords.disarm > 0 {
+        lines.push(format!(
+            "Disarm {}: when this unit attacks, give one enemy unit here -{} Might this turn.",
+            keywords.disarm, keywords.disarm
         ));
     }
     if keywords.shield > 0 {
@@ -10730,6 +10747,7 @@ async fn main() {
     let entourage_smoke = args.iter().any(|a| a == "--ui-smoke-entourage");
     let sands_smoke = args.iter().any(|a| a == "--ui-smoke-sands");
     let heavens_smoke = args.iter().any(|a| a == "--ui-smoke-heavens");
+    let disarm_smoke = args.iter().any(|a| a == "--ui-smoke-disarm");
     let rockfall_smoke = args.iter().any(|a| a == "--ui-smoke-rockfall");
     let riven_smoke = args.iter().any(|a| a == "--ui-smoke-riven");
     let unyielding_smoke = args.iter().any(|a| a == "--ui-smoke-unyielding");
@@ -10751,6 +10769,7 @@ async fn main() {
     let focused_field_smoke = args.iter().any(|a| a == "--ui-smoke-c28");
     let focused_source_damage_smoke = args.iter().any(|a| a == "--ui-smoke-c27");
     let smoke_test = format_smoke
+        || disarm_smoke
         || heavens_smoke
         || rockfall_smoke
         || sands_smoke
@@ -10840,6 +10859,8 @@ async fn main() {
             smoke::run_sands_frame(&mut app, frames)
         } else if heavens_smoke {
             smoke::run_heavens_frame(&mut app, frames)
+        } else if disarm_smoke {
+            smoke::run_disarm_frame(&mut app, frames)
         } else if rockfall_smoke {
             smoke::run_rockfall_frame(&mut app, frames)
         } else if irelia_smoke {

@@ -184,12 +184,10 @@ impl App {
                 String::new()
             }
         );
-        let exhausts_source =
-            local_rift::trigger_rules::selected_rule(card_id, rule_index, context.mode)
-                .is_some_and(|rule| {
-                    rule.object_cost
-                        == Some(local_rift::trigger_rules::TriggerObjectCost::ExhaustSourceGear)
-                });
+        let exhausts_source = context.rule(card_id, rule_index).is_some_and(|rule| {
+            rule.object_cost
+                == Some(local_rift::trigger_rules::TriggerObjectCost::ExhaustSourceGear)
+        });
         if exhausts_source {
             cost.push_str(" + exhaust this gear");
         }

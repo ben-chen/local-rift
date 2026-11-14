@@ -12152,6 +12152,82 @@
       "equipment_effect_html": "",
       "equipment_effect": "",
       "might_bonus": null
+    },
+    {
+      "id": 458,
+      "official_id": "rad-054-167",
+      "name": "Trinket Peddler",
+      "kind": "Unit",
+      "domains": [
+        "Mind"
+      ],
+      "energy": 3,
+      "power": 0,
+      "might": 3,
+      "keywords": [
+        "Disarm"
+      ],
+      "tags": [
+        "Bandle City",
+        "Yordle"
+      ],
+      "official_text": "[Disarm] (When I attack, give an enemy unit here -1 Might this turn.)",
+      "official_text_html": "<p>[Disarm] (When I attack, give an enemy unit here -1 :rb_might: this turn.)</p>",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/78106b7cea441b13d108e532adc5ce063f448165-744x1039.png?w=280&q=85&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null
+    },
+    {
+      "id": 459,
+      "official_id": "rad-055-167",
+      "name": "Clanging Sentry",
+      "kind": "Unit",
+      "domains": [
+        "Mind"
+      ],
+      "energy": 3,
+      "power": 0,
+      "might": 2,
+      "keywords": [],
+      "tags": [
+        "Piltover",
+        "Mech"
+      ],
+      "official_text": "Your Mechs have [Disarm]. (When each of us attacks, give an enemy unit there -1 Might this turn.)",
+      "official_text_html": "<p>Your Mechs have [Disarm]. (When each of us attacks, give an enemy unit there -1 :rb_might: this turn.)</p>",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/5d4c22ef863e041887a00d34b2dae1f3ce658326-744x1039.png?w=280&q=85&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null
+    },
+    {
+      "id": 460,
+      "official_id": "rad-097-167",
+      "name": "Siren of the Shallows",
+      "kind": "Unit",
+      "domains": [
+        "Chaos"
+      ],
+      "energy": 2,
+      "power": 0,
+      "might": 1,
+      "keywords": [
+        "Disarm",
+        "Ganking"
+      ],
+      "tags": [
+        "Bilgewater"
+      ],
+      "official_text": "[Disarm] (When I attack, give an enemy unit here -1 Might this turn.)\n[Ganking] (I can move from battlefield to battlefield.)",
+      "official_text_html": "<p>[Disarm] (When I attack, give an enemy unit here -1 :rb_might: this turn.)<br />[Ganking] (I can move from battlefield to battlefield.)</p>",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/e666029dcebc507cc80435eee17db435305d1361-744x1039.png?w=280&q=85&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null
     }
   ],
   "official_text_note": "Official card/legend rules text from the Riot Card Gallery, retrieved 2026-10-24 and corrected by cited errata. Resource icon tokens are expanded to readable bracketed names. Raw card and equipment HTML is preserved separately. Official text does not establish full implementation fidelity."

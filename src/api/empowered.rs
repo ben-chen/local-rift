@@ -26,7 +26,9 @@ pub(super) fn contribution_to_json(contribution: &PassiveContribution) -> Value 
     match contribution.effect {
         PassiveEffect::Might(amount) => effect["amount_exact"] = json!(amount.to_string()),
         PassiveEffect::Keyword(
-            PassiveKeyword::Assault(amount) | PassiveKeyword::Shield(amount),
+            PassiveKeyword::Assault(amount)
+            | PassiveKeyword::Shield(amount)
+            | PassiveKeyword::Disarm(amount),
         ) => {
             effect["amount_exact"] = json!(amount.to_string());
         }
@@ -44,6 +46,9 @@ fn effect_to_json(effect: PassiveEffect) -> Value {
             json!({"type":"might_per_friendly_temporary_here","amount":amount})
         }
         PassiveEffect::Keyword(keyword) => match keyword {
+            PassiveKeyword::Disarm(amount) => {
+                json!({"type":"keyword","keyword":"disarm","amount":amount})
+            }
             PassiveKeyword::Assault(amount) => {
                 json!({"type":"keyword","keyword":"assault","amount":amount})
             }

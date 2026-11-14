@@ -1073,3 +1073,40 @@ AI levels and attacker Might 2–6. Strategic meets all ten preferred decisions;
 the lower levels' eight combined unnecessary casts remain recorded. The expected
 survival/control assertions test rules, while the resource-conservation preference
 is a bounded strategic judgment. See [the benchmark receipt](validation/irelia_defense.json).
+
+## Disarm — November 14, 2026
+
+Reviewed the current October 9 Core Rules (831, 355, 359, 383, 317.2.c),
+[Radiance patch notes](https://playriftbound.com/en-us/news/announcements/core-rules-radiance-patch-notes-effective-october-16-2026/)
+and Radiance errata. One attack occurrence creates one Disarm trigger with the
+sum of its active instances. Clanging Sentry grants the keyword to friendly
+Mechs, including itself and Mech tokens. Two Sentries each have Disarm 2.
+The three card faces were inspected directly. Missing gallery Mech and Yordle
+tags were corrected with image evidence; Siren's existing Unit/Bilgewater
+correction was preserved.
+
+The implementation interprets Disarm X as the parameter of the functional
+trigger text created at the attack occurrence (831.1.c–d), retained if a grant
+source subsequently leaves. This is a rules interpretation, not a named FAQ
+ruling. In contrast, "here" is a live source referent (359.3.f.2): moving the
+attacker away or removing it can cause the chosen target to become illegal.
+The ability belongs to the bearer, including a Mech token, and uses ordinary
+target finalization, Deflect payment, response priority and counter rules.
+Future control-changing cards must preserve the physical source independently
+of its owner; the present authored scenarios do not establish that interaction.
+
+Shared position fixtures cover both seats, summed grants, tokens, invalid
+choices with unchanged state, source/target departure, movement, counters,
+Deflect, untargetable units and complete clone equality. A four-Sentry scenario
+reduces a defender below zero, checks its reference Might is zero, then moves
+the attacker away and passes the showdown before ending the turn. The reduction
+expires normally. Its first test attempt correctly failed because the fixture
+tried to end the turn before passing the showdown; no engine rule was relaxed.
+
+The native flow uses actual drag, target, confirm, pass and advice-level
+controls. Both sizes passed 16 captures; four updated images were reviewed.
+Mote's two levels remain concise, private-safe and read-only. Six complete
+API series observed eight finalized triggers and eight corresponding reductions.
+Installed acceptance is pending; [validation](validation/disarm.json) records
+the actual checks and remaining limits. No tournament-strength or complete
+Standard-conformance claim follows from these scoped checks.

@@ -302,6 +302,7 @@ pub fn effect(id: usize) -> OfficialEffect {
         454 | 455 => None,
         456 => Counter(CounterKind::OtherOpponentSpell),
         457 => ShieldThenPredict { shield: 2 },
+        458..=460 => None,
         452 => DrawWithOptionalCost { unpaid: 1, paid: 2 },
         453 => DrawThenChannel {
             draw: 1,
@@ -1091,6 +1092,7 @@ pub fn triggers(id: usize) -> &'static [Trigger] {
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Mechanic {
+    Disarm,
     Deploy,
     Chain,
     Counterspell,
@@ -1158,6 +1160,7 @@ pub fn requirements(id: usize) -> &'static [Mechanic] {
         455 => &[Chain, ChooseReadyTriggers],
         456 => &[Chain, Counterspell],
         457 => &[Chain, Shield, Predict, ChooseReadyTriggers],
+        458..=460 => &[Chain, Disarm, NegativeMight, ChooseReadyTriggers],
         447 => &[
             Chain,
             MultipleTargets,
@@ -1634,6 +1637,7 @@ pub fn xp_energy_discount_tiers(id: CardId) -> &'static [XpDiscountTier] {
 /// operation. These must not be silently discarded for a "base-stats" unit.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum StaticAbility {
+    Disarm(u8),
     Vision,
     ControlsTagEnergyDiscount {
         tag: &'static str,
@@ -1705,6 +1709,8 @@ pub enum StaticAbility {
 pub fn static_abilities(id: usize) -> &'static [StaticAbility] {
     use StaticAbility::*;
     match id {
+        458 => &[Disarm(1)],
+        460 => &[Disarm(1), Ganking],
         436 => &[Tank],
         437 | 446 | 448 => &[Hidden],
         411 => &[Assault(2), MayPlayToAttackedBattlefield],

@@ -1138,6 +1138,18 @@ fn response_window_advice(
             } else {
                 "Ready your legend to reuse an exhaust cost, or exhaust the opponent's. An ability already paid for still resolves."
             }],
+            Decision::TriggerTargets { context, .. }
+                if matches!(
+                    context.keyword,
+                    Some(local_rift::game::KeywordTrigger::Disarm { .. })
+                ) =>
+            {
+                vec![if beginner {
+                    "Disarm triggers once when this unit attacks. Choose one highlighted enemy here; its Might drops for this turn after both players can respond. Deflect still costs Power."
+                } else {
+                    "Choose the reduction that changes the combat trade. Stacked Disarm makes one stronger trigger. Moving the attacker or its target apart can make the ability miss."
+                }]
+            }
             Decision::TriggerTargets { card_id: 455, .. } => vec![if beginner {
                 "Royal Entourage chooses either player's legend now. Choose ready or exhaust after responses. Legends stay in their own zone, separate from units."
             } else {
@@ -2831,6 +2843,43 @@ mod tests {
     }
 
     #[test]
+    fn disarm_advice_is_concise_private_safe_and_read_only() {
+        let mut g = game();
+        g.start_match().unwrap();
+        g.decision = Some(Decision::TriggerTargets {
+            player: 0,
+            card_id: 459,
+            rule_index: 0,
+            context: local_rift::game::TriggerContext {
+                keyword: Some(local_rift::game::KeywordTrigger::Disarm {
+                    value: 2,
+                    token: false,
+                }),
+                mode: None,
+                source: local_rift::game::TriggerSource {
+                    player: 0,
+                    unit_id: Some(10),
+                    gear_id: None,
+                },
+                subject: None,
+                movement: None,
+                departure_location: None,
+            },
+        });
+        let before = format!("{g:?}");
+        let mut hidden = g.clone();
+        hidden.players[1].hand = vec![458, 459];
+        hidden.players[1].deck.reverse();
+        for level in [AdviceLevel::Beginner, AdviceLevel::Advanced] {
+            let tips = advice(&g, level);
+            assert!(tips.iter().any(|tip| tip.contains("Disarm")));
+            assert!(tips.iter().all(|tip| tip.chars().count() <= 180));
+            assert_eq!(tips, advice(&hidden, level));
+        }
+        assert_eq!(format!("{g:?}"), before);
+    }
+
+    #[test]
     fn edge_coaching_teaches_hidden_attachment_without_opponent_private_information() {
         let mut g = game();
         g.start_match().unwrap();
@@ -2901,6 +2950,7 @@ mod tests {
             card_id: 429,
             rule_index: 0,
             context: TriggerContext {
+                keyword: None,
                 mode: None,
                 source: TriggerSource {
                     player: 0,
@@ -3957,6 +4007,7 @@ mod tests {
             card_id: 403,
             rule_index: 1,
             context: local_rift::game::TriggerContext {
+                keyword: None,
                 mode: None,
                 source: local_rift::game::TriggerSource {
                     player: 0,
@@ -4381,6 +4432,7 @@ mod tests {
                     card_id: 188,
                     rule_index: 0,
                     context: local_rift::game::TriggerContext {
+                        keyword: None,
                         mode: None,
                         departure_location: None,
                         movement: None,

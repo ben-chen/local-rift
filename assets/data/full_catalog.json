@@ -150,13 +150,13 @@
       "legend": 11,
       "rune": 6,
       "spell": 132,
-      "unit": 247
+      "unit": 250
     },
-    "implemented_main_cards": 458,
+    "implemented_main_cards": 461,
     "implemented_legends": 11,
     "implemented_battlefields": 18,
-    "implemented_legal_identities": 493,
-    "unimplemented_legal_identities": 586,
+    "implemented_legal_identities": 496,
+    "unimplemented_legal_identities": 583,
     "errata_entries": 67,
     "identities_with_errata": 67,
     "source_quality_issues": 59,
@@ -186,12 +186,12 @@
     "Deathknell": 10,
     "Deflect": 26,
     "Deploy": 14,
-    "Disarm": 6,
+    "Disarm": 3,
     "Empower": 13,
     "Empowered": 15,
     "Equip": 23,
     "Flow": 7,
-    "Ganking": 29,
+    "Ganking": 28,
     "Hidden": 26,
     "Hunt": 1,
     "Legion": 3,
@@ -6166,8 +6166,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 459,
+        "official_id": "rad-055-167",
+        "playable_in_client": true
       }
     },
     {
@@ -33229,8 +33231,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 460,
+        "official_id": "rad-097-167",
+        "playable_in_client": true
       }
     },
     {
@@ -38187,8 +38191,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 458,
+        "official_id": "rad-054-167",
+        "playable_in_client": true
       }
     },
     {

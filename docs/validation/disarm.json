@@ -1,0 +1,882 @@
+{
+  "status": "Local validation passed; immutable installed acceptance pending",
+  "reviewed_at": "2026-11-14T09:49:53.932529+00:00",
+  "base_revision": "ed2a357",
+  "cards": [
+    {
+      "id": 458,
+      "official_id": "rad-054-167",
+      "name": "Trinket Peddler"
+    },
+    {
+      "id": 459,
+      "official_id": "rad-055-167",
+      "name": "Clanging Sentry"
+    },
+    {
+      "id": 460,
+      "official_id": "rad-097-167",
+      "name": "Siren of the Shallows"
+    }
+  ],
+  "rules": {
+    "official_rules_date": "2026-10-09",
+    "checked_on": "2026-11-14",
+    "errata_url": "https://playriftbound.com/en-us/news/announcements/radiance-errata-updates/",
+    "mechanics": [
+      "One Attack trigger per bearer, summing printed and granted Disarm values (831.1.d.1, 831.2).",
+      "Clanging Sentry grants Disarm to all friendly Mechs, including itself; two Sentries each have Disarm 2 (831.2 example).",
+      "Here follows the live source at resolution; source departure supplies no location (359.3.e.12, 359.3.f.1-2)."
+    ],
+    "rules_pdf_sha256": "94d41fee86f88b61c4157c0389c0595d990b98e5b42555c99d9f649ee64d1fec",
+    "interpretation": "Disarm X supplies the functional text of the single triggered ability under 831.1.c-d: sum the active instances when the attack triggers and retain that parameter. Here is a live source referent under 359.3.f.2. The general rules support this distinction; no named Disarm response-timing FAQ was found.",
+    "interpretation_status": "Audited against CR831.1.c-d, CR359.3.f and current Radiance patch notes; no named timing FAQ found.",
+    "patch_notes_url": "https://playriftbound.com/en-us/news/announcements/core-rules-radiance-patch-notes-effective-october-16-2026/",
+    "limits": [
+      "Authored source-departure, grant-loss, movement and counter scenarios; future control-transfer effects are not established by these tests."
+    ]
+  },
+  "library_baseline": {
+    "passed": 1071,
+    "failed": 0,
+    "note": "Before the additional expiry test and final UI-only changes; engine runtime unchanged afterward. Full installed suite pending.",
+    "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/disarm-library-v1.log",
+    "sha256": "876ea98662ee98271a1d89b5e7f6edc5bcc261067b4db8f389b7ad1d966a7a27"
+  },
+  "focused": {
+    "engine_api_passed": 8,
+    "companion_passed": 1,
+    "scope": [
+      "Both seats, all three cards and granted token keyword",
+      "Summed one-trigger semantics and grant loss",
+      "Live Here, moved/removed source, lost targets, counter, Deflect and protection",
+      "Negative Might and expiry through actual showdown passes and EndTurn",
+      "Clone full-state equality, invalid-action rollback and private-safe advice"
+    ],
+    "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/disarm-focused-v6.log",
+    "sha256": "70598b6d190cbacf8d6c8fc5f98b3dbca01f30c12455560505a95649d1f316e5"
+  },
+  "client_tests": {
+    "passed": 164,
+    "failed": 0,
+    "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/disarm-client-tests-v1.log",
+    "sha256": "8a644a510bd74437ed9d77f7a546dcee1d43a88d76c181148827aa83cddbdc01"
+  },
+  "engine_matches": {
+    "games": 24,
+    "scope": "KaiSa/Ezreal homes against legal Irelia/Siren, both seats and starters, all difficulties, per-action physical conservation. Authored lists; no forced draws.",
+    "new_cards_seen_each_seat": [
+      458,
+      459,
+      460
+    ],
+    "distinct_disarm_triggers_each_seat": [
+      12,
+      14
+    ],
+    "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/disarm-matches-v2.log",
+    "sha256": "fa604724185a012a63b3ffad1eb83c30be2d1d34e36510cbfa6e441ca3b0e58b"
+  },
+  "source": {
+    "passed": 48,
+    "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/disarm-source-v3.log",
+    "sha256": "8fdedf8800c10a5594a4c399b5e29dd2f8b2f64eb32566e4e2ae28df63bf42c0"
+  },
+  "clippy": {
+    "status": "passed",
+    "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/disarm-clippy-v2.log",
+    "sha256": "426674aa41023c8a6d58b82cdcef97815573041aa40ac3be4494c511d3b06f6f"
+  },
+  "format": "cargo fmt --all --check passed",
+  "native": {
+    "binary_sha256": "0b3f455025cb0b269890146c196d84a8ac453d63a7fd39a425811d2ff3305f47",
+    "cases": [
+      {
+        "size": "normal",
+        "exit_code": 0,
+        "log_sha256": "5ff5c1ed3b32d2a663ff9fcffa9e1cd16c7f1cd85324c4564dc426f1f8bbe726",
+        "captures": [
+          {
+            "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/disarm-native-v2/normal/advanced.png",
+            "sha256": "22727389cf3d3db5dab3e58af5e3540054c1e1d5608364414d4fad52db35e9b2"
+          },
+          {
+            "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/disarm-native-v2/normal/beginner.png",
+            "sha256": "8c25231c42ef98da870031029b61be632f429e3fe8ec9d5d325ec5a3559dbcc5"
+          },
+          {
+            "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/disarm-native-v2/normal/ganking.png",
+            "sha256": "714ec0ecf2918af7b895e9da537ade813486b36b0b8b52f0007850abe3abdf3b"
+          },
+          {
+            "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/disarm-native-v2/normal/peddler.png",
+            "sha256": "32d1138400c3a58adc92f429b40ffcd56a03f88f6fdb6cc4b4f56d62fcde6b7f"
+          },
+          {
+            "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/disarm-native-v2/normal/reduced.png",
+            "sha256": "c7497eb6f79eef4581a1c505f5cdf8a343a0c7964b15e88ded8b369bb547f155"
+          },
+          {
+            "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/disarm-native-v2/normal/response.png",
+            "sha256": "6ed1194d9cb5858f64df19bd1e022a1c235dc73a1d295119ca98aa53d01cd836"
+          },
+          {
+            "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/disarm-native-v2/normal/sentry.png",
+            "sha256": "9d56b8bd0bcaa18e00a9a4bbc0ef0e7547a406208732bdfcc126ab58c79e5b07"
+          },
+          {
+            "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/disarm-native-v2/normal/siren.png",
+            "sha256": "0c99cd67bbabb66cc8abc6edb0511fb9665e5823b566522c4ce394b6ec94be1f"
+          }
+        ]
+      },
+      {
+        "size": "small",
+        "exit_code": 0,
+        "log_sha256": "5ff5c1ed3b32d2a663ff9fcffa9e1cd16c7f1cd85324c4564dc426f1f8bbe726",
+        "captures": [
+          {
+            "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/disarm-native-v2/small/advanced.png",
+            "sha256": "a2af9fa7ac0ab78a1fa4dfad27f8a05cd28e32c25976158f05f8f9c362519b14"
+          },
+          {
+            "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/disarm-native-v2/small/beginner.png",
+            "sha256": "884047f34e41a41ef22b73d6c8e2c95ed832e91929701c17ca8436ff0820df97"
+          },
+          {
+            "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/disarm-native-v2/small/ganking.png",
+            "sha256": "49e1700f0799259e4312ffc74e2b1f1f89c080205675f8876acc4aa68d0a7c1c"
+          },
+          {
+            "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/disarm-native-v2/small/peddler.png",
+            "sha256": "279578a35e1a2ccad6a8cbe3328ff280eab408d298a228a5785a2d1b8c8fbc9c"
+          },
+          {
+            "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/disarm-native-v2/small/reduced.png",
+            "sha256": "9d8245d33a3c7bab619632e8de3cff535fc9f0f2bc0731fbb727bb014328bcea"
+          },
+          {
+            "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/disarm-native-v2/small/response.png",
+            "sha256": "86cd38c34cc8c49760282e96c670d09eeec278dd575a533e955b98067d2ab720"
+          },
+          {
+            "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/disarm-native-v2/small/sentry.png",
+            "sha256": "b8e889af1716e77c77b23968917aaf5e2efa30845782a0058fb02e5f8e8465e9"
+          },
+          {
+            "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/disarm-native-v2/small/siren.png",
+            "sha256": "8a883d48d29d20b8deee4435f9600c8725a1db911953780ee5125e8a0e580442"
+          }
+        ]
+      }
+    ],
+    "captures": 16,
+    "actual_images_reviewed": [
+      "small/reduced.png",
+      "normal/advanced.png",
+      "small/peddler.png",
+      "small/ganking.png"
+    ],
+    "findings": "Temporary Might reduction and expiry are readable; full card text in inspector; Beginner/Advanced advice remains outside target and pass controls; actual Ganking drag opens Disarm choice. Long stacked-grant hover is scrollable."
+  },
+  "api": {
+    "series": 6,
+    "games": 12,
+    "observed_disarm_triggers": 8,
+    "observed_reductions": 8,
+    "report": {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/disarm-api-v1.json",
+      "sha256": "324b863b103e38381806d81c74aabf23effa10af81535490d2c8f2d3798251cc"
+    },
+    "records": [
+      {
+        "difficulty": "easy",
+        "irelia_seat": 0,
+        "first_player": 1,
+        "result": {
+          "wins": [
+            0,
+            2
+          ],
+          "winner": 1,
+          "history": [
+            {
+              "battlefields": [
+                0,
+                0
+              ],
+              "first_player": 1,
+              "number": 1,
+              "scores": [
+                4,
+                8
+              ],
+              "winner": 1
+            },
+            {
+              "battlefields": [
+                3,
+                3
+              ],
+              "first_player": 1,
+              "number": 2,
+              "scores": [
+                7,
+                9
+              ],
+              "winner": 1
+            }
+          ],
+          "requests": 889,
+          "seed": 458100,
+          "difficulty": "easy"
+        },
+        "cards_seen": [
+          [
+            0,
+            460
+          ],
+          [
+            1,
+            458
+          ]
+        ],
+        "disarm_triggers": 4,
+        "observed_reductions": 4,
+        "trace_sha256": "a132d9890bbb7f20e4ddbb16b49202651c400ad32f5a7fdb2cec880f1583433f"
+      },
+      {
+        "difficulty": "easy",
+        "irelia_seat": 1,
+        "first_player": 0,
+        "result": {
+          "wins": [
+            2,
+            0
+          ],
+          "winner": 0,
+          "history": [
+            {
+              "battlefields": [
+                0,
+                0
+              ],
+              "first_player": 0,
+              "number": 1,
+              "scores": [
+                9,
+                4
+              ],
+              "winner": 0
+            },
+            {
+              "battlefields": [
+                3,
+                3
+              ],
+              "first_player": 0,
+              "number": 2,
+              "scores": [
+                8,
+                4
+              ],
+              "winner": 0
+            }
+          ],
+          "requests": 931,
+          "seed": 458101,
+          "difficulty": "easy"
+        },
+        "cards_seen": [
+          [
+            0,
+            458
+          ],
+          [
+            0,
+            459
+          ],
+          [
+            1,
+            460
+          ]
+        ],
+        "disarm_triggers": 0,
+        "observed_reductions": 0,
+        "trace_sha256": "0592ec3467ec20c41cb88951a18f4adcdee7161dc42ddf6abce95749becbbae5"
+      },
+      {
+        "difficulty": "tactical",
+        "irelia_seat": 0,
+        "first_player": 1,
+        "result": {
+          "wins": [
+            0,
+            2
+          ],
+          "winner": 1,
+          "history": [
+            {
+              "battlefields": [
+                0,
+                0
+              ],
+              "first_player": 1,
+              "number": 1,
+              "scores": [
+                3,
+                8
+              ],
+              "winner": 1
+            },
+            {
+              "battlefields": [
+                3,
+                3
+              ],
+              "first_player": 1,
+              "number": 2,
+              "scores": [
+                6,
+                8
+              ],
+              "winner": 1
+            }
+          ],
+          "requests": 835,
+          "seed": 458110,
+          "difficulty": "tactical"
+        },
+        "cards_seen": [
+          [
+            0,
+            460
+          ]
+        ],
+        "disarm_triggers": 1,
+        "observed_reductions": 1,
+        "trace_sha256": "2ac16a37d726c6602137e8610dd5aa5153f059daab18d13d685c0e49f6567e26"
+      },
+      {
+        "difficulty": "tactical",
+        "irelia_seat": 1,
+        "first_player": 0,
+        "result": {
+          "wins": [
+            2,
+            0
+          ],
+          "winner": 0,
+          "history": [
+            {
+              "battlefields": [
+                0,
+                0
+              ],
+              "first_player": 0,
+              "number": 1,
+              "scores": [
+                8,
+                2
+              ],
+              "winner": 0
+            },
+            {
+              "battlefields": [
+                3,
+                3
+              ],
+              "first_player": 0,
+              "number": 2,
+              "scores": [
+                8,
+                5
+              ],
+              "winner": 0
+            }
+          ],
+          "requests": 787,
+          "seed": 458111,
+          "difficulty": "tactical"
+        },
+        "cards_seen": [
+          [
+            1,
+            460
+          ]
+        ],
+        "disarm_triggers": 0,
+        "observed_reductions": 0,
+        "trace_sha256": "54ac4ae7debbed703fecabdc9a124691433e4a5012266da85cd42cd97f39ec27"
+      },
+      {
+        "difficulty": "strategic",
+        "irelia_seat": 0,
+        "first_player": 1,
+        "result": {
+          "wins": [
+            0,
+            2
+          ],
+          "winner": 1,
+          "history": [
+            {
+              "battlefields": [
+                0,
+                0
+              ],
+              "first_player": 1,
+              "number": 1,
+              "scores": [
+                4,
+                9
+              ],
+              "winner": 1
+            },
+            {
+              "battlefields": [
+                3,
+                3
+              ],
+              "first_player": 1,
+              "number": 2,
+              "scores": [
+                6,
+                8
+              ],
+              "winner": 1
+            }
+          ],
+          "requests": 1003,
+          "seed": 458120,
+          "difficulty": "strategic"
+        },
+        "cards_seen": [
+          [
+            0,
+            460
+          ],
+          [
+            1,
+            458
+          ],
+          [
+            1,
+            459
+          ]
+        ],
+        "disarm_triggers": 2,
+        "observed_reductions": 2,
+        "trace_sha256": "f361df95e26031ac1503bd561a4397d2c2ac5aa5e02138f71ce03942ab698dbc"
+      },
+      {
+        "difficulty": "strategic",
+        "irelia_seat": 1,
+        "first_player": 0,
+        "result": {
+          "wins": [
+            2,
+            0
+          ],
+          "winner": 0,
+          "history": [
+            {
+              "battlefields": [
+                0,
+                0
+              ],
+              "first_player": 0,
+              "number": 1,
+              "scores": [
+                8,
+                7
+              ],
+              "winner": 0
+            },
+            {
+              "battlefields": [
+                3,
+                3
+              ],
+              "first_player": 0,
+              "number": 2,
+              "scores": [
+                9,
+                4
+              ],
+              "winner": 0
+            }
+          ],
+          "requests": 769,
+          "seed": 458121,
+          "difficulty": "strategic"
+        },
+        "cards_seen": [
+          [
+            0,
+            458
+          ],
+          [
+            0,
+            459
+          ],
+          [
+            1,
+            460
+          ]
+        ],
+        "disarm_triggers": 1,
+        "observed_reductions": 1,
+        "trace_sha256": "cb5ca74467ddb2603b9e9a10f82f4b93c7bc9438615e1f07007e867dd3784df6"
+      }
+    ],
+    "registrations": [
+      {
+        "deck": {
+          "battlefield": 0,
+          "cards": [
+            [
+              0,
+              1
+            ],
+            [
+              3,
+              1
+            ],
+            [
+              4,
+              2
+            ],
+            [
+              5,
+              3
+            ],
+            [
+              6,
+              3
+            ],
+            [
+              7,
+              3
+            ],
+            [
+              8,
+              2
+            ],
+            [
+              9,
+              1
+            ],
+            [
+              10,
+              1
+            ],
+            [
+              11,
+              1
+            ],
+            [
+              12,
+              1
+            ],
+            [
+              13,
+              1
+            ],
+            [
+              14,
+              2
+            ],
+            [
+              15,
+              3
+            ],
+            [
+              16,
+              2
+            ],
+            [
+              17,
+              3
+            ],
+            [
+              18,
+              3
+            ],
+            [
+              19,
+              1
+            ],
+            [
+              20,
+              1
+            ],
+            [
+              21,
+              2
+            ],
+            [
+              460,
+              3
+            ]
+          ],
+          "chosen_champion": 0,
+          "legend": 0,
+          "name": "Irelia / Disarm coverage",
+          "runes": [
+            0,
+            6,
+            0,
+            0,
+            6,
+            0
+          ]
+        },
+        "sideboard": [],
+        "battlefields": [
+          0,
+          3,
+          13
+        ]
+      },
+      {
+        "deck": {
+          "battlefield": 0,
+          "cards": [
+            [
+              49,
+              1
+            ],
+            [
+              53,
+              1
+            ],
+            [
+              54,
+              3
+            ],
+            [
+              55,
+              3
+            ],
+            [
+              56,
+              2
+            ],
+            [
+              57,
+              2
+            ],
+            [
+              58,
+              1
+            ],
+            [
+              59,
+              2
+            ],
+            [
+              60,
+              3
+            ],
+            [
+              61,
+              2
+            ],
+            [
+              62,
+              1
+            ],
+            [
+              63,
+              3
+            ],
+            [
+              64,
+              3
+            ],
+            [
+              65,
+              2
+            ],
+            [
+              66,
+              1
+            ],
+            [
+              67,
+              1
+            ],
+            [
+              68,
+              3
+            ],
+            [
+              458,
+              3
+            ],
+            [
+              459,
+              3
+            ]
+          ],
+          "chosen_champion": 49,
+          "legend": 3,
+          "name": "Kai'Sa / Disarm coverage",
+          "runes": [
+            7,
+            0,
+            5,
+            0,
+            0,
+            0
+          ]
+        },
+        "sideboard": [],
+        "battlefields": [
+          0,
+          3,
+          13
+        ]
+      }
+    ],
+    "format_date": "2026-11-14"
+  },
+  "previous_api_scenarios": {
+    "status": "passed",
+    "binary_sha256": "002a8dc06c163be8f392b72ca1a90e9303c3bce2e033029b4498c4742dd848b2",
+    "cases": [
+      {
+        "name": "resources-api",
+        "script": "check_resource_cards_api.py",
+        "baseline": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/disarm-api-baselines-v1/resources-api.json",
+        "records_key": "records",
+        "records": 6,
+        "changes_from_previous": [
+          {
+            "index": 4,
+            "difficulty": "strategic",
+            "changed_keys": [
+              "result",
+              "trace_sha256"
+            ]
+          }
+        ],
+        "sha256": "03067440c5017eb701b3390b1c359dc975df9da5d91d333307ffbb0a5c46bacf",
+        "seconds": 4.32
+      },
+      {
+        "name": "wheel-api",
+        "script": "check_spirit_wheel_api.py",
+        "baseline": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/disarm-api-baselines-v1/wheel-api.json",
+        "records_key": "records",
+        "records": 6,
+        "changes_from_previous": [
+          {
+            "index": 5,
+            "difficulty": "strategic",
+            "changed_keys": [
+              "result",
+              "trace_sha256"
+            ]
+          }
+        ],
+        "sha256": "aae634c4ab97fe8d20d62a9115101a936d15fe521fe3ed08da85cce4bfac09cc",
+        "seconds": 4.63
+      },
+      {
+        "name": "jae-api",
+        "script": "check_spell_choice_api.py",
+        "baseline": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/disarm-api-baselines-v1/jae-api.json",
+        "records_key": "records",
+        "records": 6,
+        "changes_from_previous": [
+          {
+            "index": 5,
+            "difficulty": "strategic",
+            "changed_keys": [
+              "result",
+              "observed_draw_resolutions",
+              "trace_sha256",
+              "jae_units_seen",
+              "draw_triggers_seen"
+            ]
+          }
+        ],
+        "sha256": "3655ac8069ab3463c37981b5a61f6e88026b97e7249650cd5ca8e8130b0b7244",
+        "seconds": 3.38
+      },
+      {
+        "name": "entourage-api",
+        "script": "check_entourage_api.py",
+        "baseline": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/disarm-api-baselines-v1/entourage-api.json",
+        "records_key": "records",
+        "records": 6,
+        "changes_from_previous": [],
+        "sha256": "e80c4a573babc332017d562c79252c0ac68d6acabe443e17ea9e004fafee0ebd",
+        "seconds": 4.03
+      },
+      {
+        "name": "sands-api",
+        "script": "check_sands_api.py",
+        "baseline": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/disarm-api-baselines-v1/sands-api.json",
+        "records_key": "records",
+        "records": 6,
+        "changes_from_previous": [
+          {
+            "index": 4,
+            "difficulty": "strategic",
+            "changed_keys": [
+              "result",
+              "trace_sha256"
+            ]
+          }
+        ],
+        "sha256": "96748932ea5125e0c77631d3a34ceeff8399f450985da1e758c86f238fb9b674",
+        "seconds": 3.38
+      },
+      {
+        "name": "format-api",
+        "script": "check_format_api.py",
+        "baseline": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/disarm-api-baselines-v1/format-api.json",
+        "records_key": "records",
+        "records": 9,
+        "changes_from_previous": [],
+        "sha256": "822e85323fddba18df5775c8170fa001087f3279d1125b5395780d137a961246",
+        "seconds": 14.22
+      },
+      {
+        "name": "rockfall-api",
+        "script": "check_rockfall_api.py",
+        "baseline": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/disarm-api-baselines-v1/rockfall-api.json",
+        "records_key": "records",
+        "records": 6,
+        "changes_from_previous": [],
+        "sha256": "146e0986549010840237a87a6e3dd344dd216af8eb8f470afc79f2f0944ed19c",
+        "seconds": 4.19
+      },
+      {
+        "name": "heavens-api",
+        "script": "check_heavens_api.py",
+        "baseline": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/disarm-api-baselines-v1/heavens-api.json",
+        "records_key": "records",
+        "records": 6,
+        "changes_from_previous": [],
+        "sha256": "a0bddb5afada6c5cb3cf93ff5bcd2288487ca7f42b7b530b6375f916d436b1e4",
+        "seconds": 3.37
+      }
+    ]
+  },
+  "corrections": [
+    "Native review exposed missing temporary Might explanation; added amount and expiry without changing rules.",
+    "Expiry fixture initially tried EndTurn inside a showdown; fixed it to pass normally before ending the turn.",
+    "Initial source-only review accidentally transcribed Siren raw Spell type; corrected to the actually viewed Unit face while preserving raw evidence."
+  ],
+  "limitations": [
+    "Immutable packaged acceptance pending; not published yet.",
+    "Irelia is Calm/Chaos; only Siren fits her identity. Mind cards are exercised in other decks.",
+    "Two easy/tactical API series had no Disarm triggers; separate focused cases exercise all AI levels and both seats.",
+    "Sourced preset recipes are unchanged; these lists do not establish current meta strength.",
+    "All legal-card coverage, complete Standard parity, novice learning and expert-strength AI remain unproven."
+  ]
+}

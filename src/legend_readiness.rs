@@ -2,7 +2,7 @@
 //! Targets finalize before responses; a non-bulleted either/or choice waits
 //! until resolution (CR355.3, 355.5 and 355.18).
 use super::*;
-use crate::trigger_rules::{self, Effect};
+use crate::trigger_rules::Effect;
 
 #[cfg(test)]
 #[path = "legend_readiness_tests.rs"]
@@ -44,7 +44,7 @@ impl Game {
         else {
             return None;
         };
-        let rule = trigger_rules::selected_rule(item.card_id, rule_index, context.mode)?;
+        let rule = context.rule(item.card_id, rule_index)?;
         // Do not silently discard a future sequence's remaining instructions.
         (rule.effects == [Effect::ChooseLegendReadiness]).then_some((rule_index, context))
     }

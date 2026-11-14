@@ -2,6 +2,15 @@
 
 Updated November 14, 2026. Irelia cards take priority over the saved Azir draft.
 
+Disarm is implemented locally for Siren of the Shallows, Trinket Peddler and
+Clanging Sentry. Irelia is **Calm/Chaos**: only Siren belongs in her card pool;
+the two Mind cards are exercised in opposing Kai'Sa and Ezreal lists. These are
+authored coverage lists, not new sourced meta presets. Shared keyword rules,
+eight engine/API scenarios, both advice levels, 24 complete engine matches,
+six best-of-three API series (12 games), and native drag/target controls at both
+sizes passed. Hover previews now explain temporary Might changes and their expiry.
+Installed acceptance is pending; see [validation](validation/disarm.json).
+
 Consult the Heavens is available as an additional Calm card for custom Irelia
 practice. It grants Shield 2 for the turn and independently offers Predict.
 Local validation passed: 1,063 library tests, eight focused rules/API scenarios,

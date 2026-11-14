@@ -87,6 +87,7 @@ jobs:
           python3 tools/check_resource_cards_api.py target/release/rift-api "$RUNNER_TEMP/local-rift-resource-cards.json"
           python3 tools/check_spirit_wheel_api.py target/release/rift-api "$RUNNER_TEMP/local-rift-spirit-wheel.json"
           python3 tools/check_entourage_api.py target/release/rift-api "$RUNNER_TEMP/local-rift-entourage.json"
+          python3 tools/check_disarm_api.py target/release/rift-api "$RUNNER_TEMP/local-rift-disarm.json"
       - name: Exercise desktop controls at both window sizes
         if: steps.scope.outputs.full_checks == 'true'
         env:
@@ -106,6 +107,8 @@ jobs:
           XDG_DATA_HOME="$RUNNER_TEMP/local-rift-wheel-small" xvfb-run -a ./target/release/local-rift --ui-smoke-wheel --small
           XDG_DATA_HOME="$RUNNER_TEMP/local-rift-entourage" xvfb-run -a ./target/release/local-rift --ui-smoke-entourage
           XDG_DATA_HOME="$RUNNER_TEMP/local-rift-entourage-small" xvfb-run -a ./target/release/local-rift --ui-smoke-entourage --small
+          XDG_DATA_HOME="$RUNNER_TEMP/local-rift-disarm" xvfb-run -a ./target/release/local-rift --ui-smoke-disarm
+          XDG_DATA_HOME="$RUNNER_TEMP/local-rift-disarm-small" xvfb-run -a ./target/release/local-rift --ui-smoke-disarm --small
           XDG_DATA_HOME="$RUNNER_TEMP/local-rift-riven" xvfb-run -a ./target/release/local-rift --ui-smoke-riven
           XDG_DATA_HOME="$RUNNER_TEMP/local-rift-riven-small" xvfb-run -a ./target/release/local-rift --ui-smoke-riven --small
           XDG_DATA_HOME="$RUNNER_TEMP/local-rift-blade" xvfb-run -a ./target/release/local-rift --ui-smoke-blade

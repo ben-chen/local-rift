@@ -20,11 +20,40 @@ pub struct MoveFacts {
 }
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct TriggerContext {
+    pub keyword: Option<KeywordTrigger>,
     pub mode: Option<usize>,
     pub source: TriggerSource,
     pub subject: Option<Target>,
     pub movement: Option<MoveFacts>,
     pub departure_location: Option<board_targets::BoardLocation>,
+}
+
+/// A keyword's functional text is captured when it triggers. Its bearer stays
+/// the source, including for granted abilities; Here is still evaluated live.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum KeywordTrigger {
+    Disarm { value: u128, token: bool },
+}
+
+impl TriggerContext {
+    pub fn keyword_label(self, card: &CardDef) -> Option<String> {
+        self.keyword.map(|keyword| match keyword {
+            KeywordTrigger::Disarm { value, token } => {
+                let name = if token {
+                    rules::token_spec(card.id).map_or(card.name, |spec| spec.name)
+                } else {
+                    card.name
+                };
+                format!("{name} · Disarm {value}")
+            }
+        })
+    }
+    pub fn rule(self, card_id: CardId, index: usize) -> Option<&'static TriggerRule> {
+        match self.keyword {
+            Some(KeywordTrigger::Disarm { .. }) => Some(&metadata::DISARM),
+            None => metadata::selected_rule(card_id, index, self.mode),
+        }
+    }
 }
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct TriggerState {
@@ -391,7 +420,9 @@ impl Game {
         })
     }
     fn queue_card_trigger(&mut self, card_id: CardId, rule_index: usize, context: TriggerContext) {
-        let rule = &metadata::trigger_rules(card_id)[rule_index];
+        let rule = context
+            .rule(card_id, rule_index)
+            .expect("registered trigger");
         if rule.conditions.contains(&Condition::FirstEachTurn) {
             if self
                 .trigger_state
@@ -503,6 +534,32 @@ impl Game {
         {
             self.legend_on_spell_completed(event.player, card_id);
         }
+        if event.kind == Occurrence::Attack
+            && let Some(unit) = &event.unit
+        {
+            let value = self.disarm_value(event.subject_player, unit);
+            if value > 0 {
+                self.queue_card_trigger(
+                    unit.card_id,
+                    0,
+                    TriggerContext {
+                        keyword: Some(KeywordTrigger::Disarm {
+                            value,
+                            token: unit.token,
+                        }),
+                        mode: None,
+                        source: TriggerSource {
+                            player: event.subject_player,
+                            unit_id: Some(unit.id),
+                            gear_id: None,
+                        },
+                        subject: None,
+                        movement: None,
+                        departure_location: None,
+                    },
+                );
+            }
+        }
         // Keep entry Vision at its bearer's ordinary source-traversal position.
         // Existing simultaneous observers retain their trigger IDs and option
         // order when an intrinsic SelfPlayed descriptor becomes typed Vision.
@@ -536,6 +593,7 @@ impl Game {
                     card_id,
                     rule_index,
                     TriggerContext {
+                        keyword: None,
                         mode: None,
                         source,
                         subject,
@@ -562,6 +620,7 @@ impl Game {
                         card_id,
                         index,
                         TriggerContext {
+                            keyword: None,
                             mode: None,
                             source,
                             movement: None,
@@ -599,6 +658,7 @@ impl Game {
                     card_id,
                     index,
                     TriggerContext {
+                        keyword: None,
                         mode: None,
                         source,
                         subject: Some(Target::Gear { player, gear_id }),
@@ -819,7 +879,8 @@ impl Game {
         choices: &[Target],
     ) -> Result<bool, String> {
         Ok({
-            let rule = metadata::selected_rule(card_id, index, context.mode)
+            let rule = context
+                .rule(card_id, index)
                 .expect("validated trigger mode");
             if rule.targets.kind == rules::PlayTargetKind::Legend {
                 // CR811.1.d.3: legends cannot be at a battlefield, so the
@@ -998,7 +1059,7 @@ impl Game {
         else {
             return None;
         };
-        Some(&metadata::selected_rule(*card_id, *rule_index, context.mode)?.targets)
+        Some(&context.rule(*card_id, *rule_index)?.targets)
     }
     fn trigger_here_location(
         &self,
@@ -1034,7 +1095,8 @@ impl Game {
         else {
             return None;
         };
-        let rule = metadata::selected_rule(*card_id, *rule_index, context.mode)
+        let rule = context
+            .rule(*card_id, *rule_index)
             .expect("validated trigger mode");
         Some((
             rule.targets.max as usize,
@@ -1072,7 +1134,8 @@ impl Game {
             else {
                 return Ok(false);
             };
-            let rule = metadata::selected_rule(*card_id, *rule_index, context.mode)
+            let rule = context
+                .rule(*card_id, *rule_index)
                 .expect("validated trigger mode");
             if prior.len() >= rule.targets.max as usize
                 || (rule.targets.distinct && prior.contains(&target))
@@ -1105,7 +1168,8 @@ impl Game {
                 context,
                 ..
             }) => {
-                metadata::selected_rule(*card_id, *rule_index, context.mode)
+                context
+                    .rule(*card_id, *rule_index)
                     .expect("validated trigger mode")
                     .targets
                     .kind
@@ -1200,7 +1264,8 @@ impl Game {
         targets: Vec<Target>,
         resolving_chain_id: Option<u32>,
     ) -> Result<Decision, String> {
-        let rule = metadata::selected_rule(card_id, rule_index, context.mode)
+        let rule = context
+            .rule(card_id, rule_index)
             .ok_or("Invalid trigger mode.")?;
         let cost = if resolving_chain_id.is_some() {
             rule.resolution_cost
@@ -1244,7 +1309,8 @@ impl Game {
         rule_index: usize,
         context: TriggerContext,
     ) -> Result<Vec<crate::play::ObjectCost>, String> {
-        let rule = metadata::selected_rule(card_id, rule_index, context.mode)
+        let rule = context
+            .rule(card_id, rule_index)
             .ok_or("Invalid trigger mode.")?;
         if rule.object_cost != Some(metadata::TriggerObjectCost::ExhaustSourceGear) {
             return Ok(vec![]);
@@ -1318,7 +1384,8 @@ impl Game {
             self.chain.pop();
             return self.after_resolution();
         }
-        let requires_trash = metadata::selected_rule(card_id, rule_index, context.mode)
+        let requires_trash = context
+            .rule(card_id, rule_index)
             .expect("validated trigger mode")
             .object_cost
             == Some(metadata::TriggerObjectCost::BanishFromAnyTrash);
@@ -1408,7 +1475,8 @@ impl Game {
         else {
             return Err("No triggered ability is choosing targets.".into());
         };
-        let rule = metadata::selected_rule(card_id, rule_index, context.mode)
+        let rule = context
+            .rule(card_id, rule_index)
             .expect("validated trigger mode");
         if rule.optional && targets.is_empty() {
             self.rollback_finalization_payment_add();
@@ -1487,9 +1555,10 @@ impl Game {
     pub(super) fn trigger_loot(
         card_id: CardId,
         index: usize,
-        mode: Option<usize>,
+        context: TriggerContext,
     ) -> Option<(u8, u8)> {
-        metadata::selected_rule(card_id, index, mode)?
+        context
+            .rule(card_id, index)?
             .effects
             .iter()
             .find_map(|effect| match effect {
@@ -1533,8 +1602,9 @@ impl Game {
         context: TriggerContext,
         targets: &[Target],
     ) -> Result<(), String> {
-        let rule =
-            metadata::selected_rule(card_id, index, context.mode).expect("validated trigger mode");
+        let rule = context
+            .rule(card_id, index)
+            .expect("validated trigger mode");
         let mut selected = Vec::new();
         for (slot, &target) in targets.iter().enumerate() {
             if self.trigger_rule_target_valid(card_id, index, context, target, slot, targets)? {
@@ -1709,6 +1779,16 @@ impl Game {
                 } => {
                     for target in self.trigger_operands(context, who, &targets) {
                         self.modify_might(target, i128::from(amount), minimum.into())?;
+                    }
+                }
+                Effect::Disarm => {
+                    let Some(KeywordTrigger::Disarm { value, .. }) = context.keyword else {
+                        return Err("Disarm trigger is missing its captured value.".into());
+                    };
+                    let amount = i128::try_from(value)
+                        .map_err(|_| crate::numeric::capacity("Disarm value"))?;
+                    for target in &targets {
+                        self.modify_might(*target, -amount, 0)?;
                     }
                 }
                 Effect::Ready(who) => {
