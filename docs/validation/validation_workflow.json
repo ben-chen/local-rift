@@ -1,5 +1,5 @@
 {
-  "status": "Local validation passed; full GitHub suite pending",
+  "status": "Local validation and exact published commit full GitHub suite passed; documentation-only remote confirmation pending",
   "date": "2026-11-14T01:14:53.171136+00:00",
   "scope": [
     "Documentation-only CI path, with conservative full-check fallback",
@@ -95,8 +95,31 @@
     "validation-flake-eval-v1.log": "0e8bd08264597b7e7e8b88567a2eb94c85390652b0dd88fc51675e2e7a493254"
   },
   "remaining": [
-    "Collect the exact published commit GitHub run and its full nextest/JUnit results",
     "Run a documentation-only follow-up through GitHub to confirm the fast path remotely",
     "Continue shared source fixtures, reusable validation reporting, token UI acceptance and Standard rules/card coverage"
-  ]
+  ],
+  "github": {
+    "commit": "3963c29ab4131b7cc2aa2186dc09f10102d26645",
+    "run_id": 43539469212,
+    "job_id": 132276368980,
+    "url": "https://github.com/ben-chen/local-rift/actions/runs/43539469212",
+    "conclusion": "success",
+    "rust_tests": 1852,
+    "rust_tests_skipped": 0,
+    "nextest_seconds": 861.341,
+    "source_tests": 291,
+    "preset_simulations": 1176,
+    "native_ui_runs": 28,
+    "native_series_actual_games": 5,
+    "doctests": "passed (no doctests defined)",
+    "full_job_log_sha256": "5e1f5cbf70666010141ecc690f08d8b65d0c4e6f9934da77f3e4be7f839c0509",
+    "junit_artifact": {
+      "id": 14092166661,
+      "name": "rust-test-results",
+      "bytes": 60022,
+      "digest": "sha256:90742d619a433dc93fc63b23da607158a3204d22dcbc6f9e93a115dddce5f387",
+      "expires_at": "2027-02-12T01:15:26Z",
+      "note": "Artifact retention verified; test count and pass result read from the immutable job log."
+    }
+  }
 }
