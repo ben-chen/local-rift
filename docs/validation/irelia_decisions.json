@@ -26,7 +26,26 @@
     "formatting": "passed",
     "api_matches": 9,
     "api_complete_records": 9,
-    "api_scope": "Six paired Irelia snapshot/pre-ban-date matches plus three authored future-legal Rengar matches"
+    "api_scope": "Six paired Irelia snapshot/pre-ban-date matches plus three authored future-legal Rengar matches",
+    "api_actual_games": 23,
+    "api_trace_scope": {
+      "old_revision": "d6219ca7749664c07548c056e7bd4975c2ab704a",
+      "new_revision": "51cb565fd29b791b64a87c0cbbf19b4eec564544",
+      "paired_snapshot_and_dated_traces_equal": true,
+      "old_to_new_records_equal": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        true,
+        true,
+        true
+      ],
+      "actual_games": 23,
+      "interpretation": "The six Irelia match traces changed with the new policy; all three authored Rengar records remain identical. This is not a claim of unchanged policy traces."
+    }
   },
   "regressions_observed": [
     "Baseline Easy/Tactical spend energy on an already-ready legend",
@@ -63,10 +82,21 @@
     "irelia-decisions-final-v1.log": "30e8c5dcc1a120e7214b37eaa8fad32e84f1ffbde2e1af7e63f593ac1606baf8",
     "irelia-decisions-final-v1-junit.xml": "a1d668fbc1422579523bd1f589d9d4b81e9ca5fe762a1804ff0405ac3c0adaf7",
     "irelia-decisions-clippy-v1.log": "128aed263eea2c87cce4f3d9cb5bf5ce5f181da35e04128c8d3cf9aebeef2ca2",
-    "irelia-decisions-api-v1.json": "b1acaca2e87969c4f8a6657bec903545af5eb8d82d25546d687aa8c46d35cfae"
+    "irelia-decisions-api-v1.json": "b1acaca2e87969c4f8a6657bec903545af5eb8d82d25546d687aa8c46d35cfae",
+    "irelia-decisions-api-comparison-v1.json": "87e213fc3b47c645ec6fdb81c56a37b399497c6427859993ec8c4c0010b9fce3"
   },
   "remaining": [
     "Immutable full package and installed UI/API acceptance",
     "Publication and exact GitHub CI result"
-  ]
+  ],
+  "release_in_progress": {
+    "revision": "51cb565fd29b791b64a87c0cbbf19b4eec564544",
+    "plan_sha256": "4ebcd933889b12b93a04f8f21d14859ec44b8c80228e8cb2f3d4d4c9ff0bf442",
+    "expected_rust_tests": 1889,
+    "expected_source_tests": 303,
+    "expected_preset_simulations": 1176,
+    "expected_ui_cases": 6,
+    "expected_captures": 4,
+    "expected_api_records": 9
+  }
 }
