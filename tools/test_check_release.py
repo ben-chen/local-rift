@@ -4,8 +4,9 @@ import json
 from pathlib import Path
 import tempfile
 import unittest
+from unittest.mock import patch
 
-from check_release import compare_records, validate_plan, verify_ui_output
+from check_release import compare_records, main, require_executable, validate_plan, verify_ui_output
 
 
 class ReleaseChecks(unittest.TestCase):
@@ -21,6 +22,27 @@ class ReleaseChecks(unittest.TestCase):
             'api': [{'name': 'card-api', 'script': 'check_guards_api.py',
                      'baseline': str(baseline), 'records_key': 'games'}],
         }
+
+    def test_missing_display_tool_fails_before_git_build_or_output_creation(self):
+        plan = self.folder / 'plan.json'
+        plan.write_text(json.dumps(self.plan))
+        output = self.folder / 'results'
+        with patch('sys.argv', ['check_release.py', '--plan', str(plan), '--output', str(output),
+                                '--xvfb', str(self.folder / 'missing-xvfb')]), \
+                patch('check_release.subprocess.check_output') as process:
+            with self.assertRaisesRegex(FileNotFoundError, 'missing-xvfb'):
+                main()
+            process.assert_not_called()
+        self.assertFalse(output.exists())
+
+    def test_executable_preflight_rejects_nonexecutable_files(self):
+        executable = self.folder / 'display-tool'
+        executable.write_text('#!/bin/sh\nexit 0\n')
+        executable.chmod(0o600)
+        with self.assertRaises(FileNotFoundError):
+            require_executable(str(executable))
+        executable.chmod(0o700)
+        self.assertEqual(require_executable(str(executable)), str(executable))
 
     def test_rejects_empty_or_unpinned_acceptance_before_building(self):
         validate_plan(self.plan)
