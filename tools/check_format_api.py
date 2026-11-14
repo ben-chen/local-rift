@@ -57,6 +57,9 @@ def main():
               'pairs': [], 'future': []}
 
     def save():
+        # One complete record set lets the installed-release runner compare all
+        # nine matches without executing this same matrix separately per group.
+        report['records'] = [run for pair in report['pairs'] for run in pair['runs']] + report['future']
         args.output.write_text(json.dumps(report, indent=2) + '\n')
 
     save()
