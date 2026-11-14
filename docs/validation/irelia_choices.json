@@ -1,0 +1,187 @@
+{
+  "status": "Local checks passed; installed release acceptance pending",
+  "base_revision": "2c0754de6342f0d87b2a623a550872da75397eb0",
+  "card": {
+    "runtime_id": 450,
+    "official_id": "sfd-142-221",
+    "name": "Jae Medarda"
+  },
+  "rules_review": {
+    "date": "2026-11-14",
+    "core_edition": "2026-10-09",
+    "sections": [
+      "355.5",
+      "355.7",
+      "383.1",
+      "383.2",
+      "820.2"
+    ],
+    "scope": "Friendly spell choices, Repeat, independent trigger timing, source departure, failed payment and Hidden origin."
+  },
+  "focused": {
+    "tests": 210,
+    "seconds": 15.169,
+    "report": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-choices-focused-v2/status.json",
+    "later_change": "Only the Jae board-art crop and documentation changed after this focused run; the final native run and strict Clippy cover the crop."
+  },
+  "api_scenarios": {
+    "tests": 15,
+    "passed": 15,
+    "log": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-choices-api-v3.log",
+    "scope": "Six Jae engine tests, two protocol tests, one companion test and six Alpha Strike regressions after sharing protocol helpers."
+  },
+  "native": {
+    "status": "passed",
+    "binary_sha256": "27939e32f8e71c245c8098bc7af69d866faa8d69661099fb9c253c646278aee1",
+    "cases": [
+      {
+        "name": "normal",
+        "exit_code": 0,
+        "seconds": 6.99,
+        "captures": 5,
+        "games": 0,
+        "capture_sha256": {
+          "rift_jae_inspect.png": "c42798749d715391a740bb502a171b7c00ca38aae83bf21a4e29f062c5aa9302",
+          "rift_jae_beginner.png": "6078d9371adb773f45d5452180dbb34eaea564bc284f399ca8f9c54d7b24eed3",
+          "rift_jae_draw.png": "a3139743685ce7920685cff14ef7d6c8654cbfa077482380b0de84ad92c92b06",
+          "rift_jae_trigger.png": "df15b99b40ea1605eb209d434fc9f4e1d1af8a065ef91f05f7bec1a5fc554398",
+          "rift_jae_advanced.png": "c7282768be0d52ab1256054da6ac60a8b206e3ba183869ba4ff6af4dc6c010c4"
+        },
+        "log_sha256": "5ff5c1ed3b32d2a663ff9fcffa9e1cd16c7f1cd85324c4564dc426f1f8bbe726"
+      },
+      {
+        "name": "small",
+        "exit_code": 0,
+        "seconds": 6.344,
+        "captures": 5,
+        "games": 0,
+        "capture_sha256": {
+          "rift_jae_inspect.png": "5afc4a0328f13981135ccbff952acd54b83dc41b1d88f1d3135077ab846ff1ae",
+          "rift_jae_beginner.png": "272d2f3cbe9a917fc8e82421384af04176cd89120061104b34de1c392e8033ed",
+          "rift_jae_draw.png": "26bdf348f3ec511bd15426818a833769580a4d1fd4538710890b40ad9958ac05",
+          "rift_jae_trigger.png": "b642a8790e64d88c762057a1f08c785e4f400ed4e1e0113e265684e00f305bac",
+          "rift_jae_advanced.png": "5a92f1995062baa4652bdec972709d4b58d466490425a9113a95374770af0018"
+        },
+        "log_sha256": "5ff5c1ed3b32d2a663ff9fcffa9e1cd16c7f1cd85324c4564dc426f1f8bbe726"
+      }
+    ]
+  },
+  "visual_review": {
+    "v1_original_resolution": [
+      "Both inspector sizes",
+      "Beginner and Advanced advice at both sizes",
+      "Trigger view at both sizes"
+    ],
+    "v2_original_resolution": [
+      "Trigger view at both sizes",
+      "Resolved draw view at both sizes"
+    ],
+    "findings": [
+      "Official card text and costs fit the inspector.",
+      "Both advice levels fit without covering action controls.",
+      "The board crop was moved upward to show Jae\u2019s face.",
+      "The draw appears in hand while En Garde still awaits resolution."
+    ],
+    "limitations": [
+      "No novice user study has been performed."
+    ]
+  },
+  "api_matches": {
+    "report": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-choices-matches-v2.json",
+    "format_date": "2026-11-13",
+    "matches": 6,
+    "games": 12,
+    "records": [
+      {
+        "difficulty": "easy",
+        "irelia_seat": 0,
+        "first_player": 1,
+        "jae_units_seen": 1,
+        "draw_triggers_seen": 0,
+        "observed_draw_resolutions": 0
+      },
+      {
+        "difficulty": "easy",
+        "irelia_seat": 1,
+        "first_player": 0,
+        "jae_units_seen": 2,
+        "draw_triggers_seen": 0,
+        "observed_draw_resolutions": 0
+      },
+      {
+        "difficulty": "tactical",
+        "irelia_seat": 0,
+        "first_player": 1,
+        "jae_units_seen": 4,
+        "draw_triggers_seen": 2,
+        "observed_draw_resolutions": 2
+      },
+      {
+        "difficulty": "tactical",
+        "irelia_seat": 1,
+        "first_player": 0,
+        "jae_units_seen": 2,
+        "draw_triggers_seen": 1,
+        "observed_draw_resolutions": 1
+      },
+      {
+        "difficulty": "strategic",
+        "irelia_seat": 0,
+        "first_player": 1,
+        "jae_units_seen": 1,
+        "draw_triggers_seen": 4,
+        "observed_draw_resolutions": 4
+      },
+      {
+        "difficulty": "strategic",
+        "irelia_seat": 1,
+        "first_player": 0,
+        "jae_units_seen": 3,
+        "draw_triggers_seen": 1,
+        "observed_draw_resolutions": 1
+      }
+    ],
+    "limitations": [
+      "Relaxed AI did not trigger Jae in these two matches.",
+      "The authored list and six seeds do not establish general opponent strength."
+    ]
+  },
+  "efficiency": [
+    "Shared protocol helpers used by Jae and Alpha Strike scenarios.",
+    "Inventory totals derive from reviewed manifests; fixed source snapshot counts and historical prefix hashes remain checked."
+  ],
+  "rejected_attempts": [
+    "Native test compilation needed equality assertions without a Debug requirement.",
+    "The first protocol preview request omitted the required execution index.",
+    "Initial board crop hid Jae\u2019s face; final crop was inspected at both sizes."
+  ],
+  "remaining": [
+    "Full frozen revision regression and source checks.",
+    "Nix package and simulation checks.",
+    "Installed native controls and exact API record comparison.",
+    "Publication after acceptance."
+  ],
+  "source_checks": {
+    "tests": 41,
+    "passed": 41,
+    "seconds": 45.279,
+    "catalog_regeneration_check": "passed",
+    "log": "irelia-choices-sources-v3.log"
+  },
+  "final_checks": {
+    "format": "passed",
+    "diff_whitespace": "passed",
+    "strict_clippy_all_targets": "passed"
+  },
+  "runtime_sources_sha256": {
+    "src/cards.rs": "bf5c4b9e97924974ee3cd4da88434f2ce2724880339efcddbf31b2024dfcd0b0",
+    "src/game.rs": "193be8c48693aaedac5df9ab85b396cc119e7f40bd5f5e4759df234b55fe8265",
+    "src/rules.rs": "6f7746303a532996dc8c9bc5c1ae54cb334e08d061a9ed370987647ae81510d6",
+    "src/triggers.rs": "a31c6e14cf528c98e10977f0a1f672f855747104b07debead6730c6d0aa398c5",
+    "src/trigger_rules.rs": "588f1ca85b4c9fa37f2d4a248a647e4717fd90e77f89c0ec95ab252af6965a1a",
+    "src/main.rs": "7eeeb9f96a1006224115aff7efe2bb4d4f2c80b0f30ad12cf5e0d296aa21518b",
+    "src/companion.rs": "f3d396005e443cc80fee2afc094a211f8aaec1c6ce15298cfd4729388db6630a",
+    "src/smoke/irelia_choices.rs": "88606bfa100da81baff106c60ad93ef5b8a8edd7c2857a3d29ada2553aa77851",
+    "src/smoke/irelia_responses.rs": "6627ea9d8f6110dd54e4afa394e6a5f43623d186ce142c2211492296a74cce4b"
+  }
+}

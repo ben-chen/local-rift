@@ -912,3 +912,19 @@ rematches and format propagation after sideboarding.
 The native setup now defaults to the player's local calendar date and displays the format-source review date. Its format panel checks each actual single-game list and selected field, or each complete match registration including sideboard and all three fields. Banned lists cannot start; historical snapshot practice remains an explicit option with the original recipes intact. The accepted date is held through every game of a registered match and reaches the same engine context and public AI belief pool as API-created games. Rejected starts retain the prior game and match controller.
 
 The [format record](validation/format_calendar.json) records the accepted immutable package: 1,882 Rust tests, 303 source checks, 1,176 simulations, 12 installed UI cases and complete API record comparisons. It retains the earlier native/backend evidence separately and identifies the three final installed captures visually reviewed. Native date checks include an authored future-legal Rengar registration; this does not create a tournament preset. Existing historical smoke scenarios explicitly select the catalog snapshot, while the format scenario checks local-today, historical and announced dates. The local clock is read only at the desktop boundary; API dates and engine replays remain explicit. Regional schedules and later unannounced changes remain outside the bundled global announcement.
+
+### Jae Medarda: spell choices and independent draw triggers
+
+The November 14 review rechecked October 9 Core Rules 355.5, 355.7,
+383.1–2 and 820.2 against the [current official document](https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/5c7946f7c3b8c6e0faff85ab6dadc6d2e721ea94.pdf). Jae’s reviewed face is preserved in
+`assets/data/card_admissions/irelia_choices/`. His draw triggers from his
+controller’s spell choosing him; friendly activated abilities and opposing
+spells do not qualify. Repeat makes additional choices before resolution.
+
+Authored scenarios cover both controllers, failed-payment rollback, Hidden
+origin, repeated choices of the same or different units, and an existing trigger
+surviving source departure or a countered spell. API checks independently assert
+that the draw resolves before the choosing spell and exposes only a hand count
+to the opponent. Complete dated matches supplement these scenarios; they are
+not an independent oracle for rules correctness or a measure of expert strength.
+[Validation and outstanding package checks](validation/irelia_choices.json).

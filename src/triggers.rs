@@ -55,6 +55,7 @@ pub(super) enum Occurrence {
     UnitPlayed,
     GearPlayed,
     SpellPlayed,
+    ChosenBySpell,
     Ready,
     Exhausted,
     Buffed,
@@ -260,6 +261,9 @@ impl Game {
             Event::FriendlyGearPlayed => own && event.kind == Occurrence::GearPlayed,
             Event::OpponentGearPlayed => !own && event.kind == Occurrence::GearPlayed,
             Event::FriendlySpellPlayed => own && event.kind == Occurrence::SpellPlayed,
+            Event::SelfChosenByFriendlySpell => {
+                own && same && event.kind == Occurrence::ChosenBySpell
+            }
             Event::FriendlyCardPlayed => own && played_card,
             Event::FriendlyHiddenPlayed => own && played_card && event.hidden,
             Event::SelfReady => same && event.kind == Occurrence::Ready,

@@ -5425,9 +5425,12 @@ impl App {
             );
             // Fill the thumbnail proportionally, staying inside the artwork.
             let scale = (bounds.w / art.w).min(bounds.h / art.h);
+            // Jae's face sits high in the illustration; centering this wide
+            // board thumbnail otherwise shows only his torso and raised arm.
+            let focus_y = if id == 450 { 0.15 } else { 0.5 };
             let crop = Rect::new(
                 bounds.x + (bounds.w - art.w * scale) / 2.0,
-                bounds.y + (bounds.h - art.h * scale) / 2.0,
+                bounds.y + (bounds.h - art.h * scale) * focus_y,
                 art.w * scale,
                 art.h * scale,
             );

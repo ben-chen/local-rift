@@ -15,6 +15,7 @@ pub enum Event {
     FriendlyGearPlayed,
     OpponentGearPlayed,
     FriendlySpellPlayed,
+    SelfChosenByFriendlySpell,
     FriendlyCardPlayed,
     FriendlyHiddenPlayed,
     SelfReady,
@@ -377,6 +378,17 @@ pub fn trigger_rules(card_id: usize) -> &'static [TriggerRule] {
         )
     };
     match card_id {
+        450 => {
+            const {
+                &[rule(
+                    SelfChosenByFriendlySpell,
+                    &[],
+                    false,
+                    TargetRule::NONE,
+                    &[Draw(1)],
+                )]
+            }
+        }
         449 => {
             const {
                 &[

@@ -83,6 +83,7 @@ jobs:
           python3 tools/check_format_api.py target/release/rift-api "$RUNNER_TEMP/local-rift-formats.json"
           python3 tools/check_guards_api.py target/release/rift-api "$RUNNER_TEMP/local-rift-guards.json"
           python3 tools/check_irelia_khazix_api.py target/release/rift-api "$RUNNER_TEMP/local-rift-khazix.json"
+          python3 tools/check_spell_choice_api.py target/release/rift-api "$RUNNER_TEMP/local-rift-spell-choices.json"
       - name: Exercise desktop controls at both window sizes
         if: steps.scope.outputs.full_checks == 'true'
         env:

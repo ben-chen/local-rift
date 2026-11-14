@@ -1,5 +1,7 @@
 //! Gust coaching layout, actual advice switches and an unobstructed priority button.
 use super::*;
+#[path = "irelia_choices.rs"]
+mod choices;
 
 const PYKE: u32 = 64000;
 
@@ -110,9 +112,8 @@ pub(super) fn run_frame(app: &mut App, frame: u32) -> bool {
             assert_eq!(app.game.players[0].hand, vec![1]);
             assert_eq!(app.game.players[0].energy, 1);
             assert_eq!(app.game.players[0].units[0].id, PYKE);
-            return true;
         }
-        _ => panic!("Gust coaching smoke exceeded its frames"),
+        6.. => return choices::run_frame(app, frame - 6),
     }
     false
 }

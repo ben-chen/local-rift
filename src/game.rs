@@ -52,6 +52,9 @@ mod hidden_blade_tests;
 #[path = "innovator_tests.rs"]
 mod innovator_tests;
 #[cfg(test)]
+#[path = "irelia_choices_tests.rs"]
+mod irelia_choices_tests;
+#[cfg(test)]
 #[path = "irelia_khazix_tests.rs"]
 mod irelia_khazix_tests;
 #[cfg(test)]
@@ -2534,11 +2537,11 @@ impl Game {
                 }
                 for r in &a.choices.repeats {
                     self.record_spell_or_unit_choices(player, &r.choices.targets);
-                    self.trigger_chosen(player, &r.choices.targets);
+                    self.trigger_spell_chosen(player, &r.choices.targets);
                 }
             }
             self.record_spell_or_unit_choices(player, &chosen_targets);
-            self.trigger_chosen(player, &chosen_targets);
+            self.trigger_spell_chosen(player, &chosen_targets);
         }
 
         Ok(())
@@ -4009,7 +4012,7 @@ impl Game {
         }
         if options.repeat {
             self.record_spell_or_unit_choices(player, &repeated);
-            self.trigger_chosen(player, &repeated);
+            self.trigger_spell_chosen(player, &repeated);
         }
         if hand_index.is_none()
             && let Some(ability) = self.legend_on_offhand_play(player)
@@ -5205,6 +5208,19 @@ impl Game {
         ));
     }
 
+    fn trigger_spell_chosen(&mut self, player: usize, targets: &[Target]) {
+        self.trigger_chosen(player, targets);
+        for &target in targets {
+            if let Target::Unit { player: owner, .. } = target
+                && let Some(unit) = self.unit_ref(target).cloned()
+            {
+                let mut event = EventSnapshot::unit(Occurrence::ChosenBySpell, owner, unit);
+                event.player = player;
+                self.emit_event(event);
+            }
+        }
+    }
+
     fn trigger_chosen(&mut self, player: usize, targets: &[Target]) {
         for &target in targets {
             if let Target::Unit {
@@ -5916,7 +5932,7 @@ impl Game {
             }
             if options.repeat {
                 self.record_spell_or_unit_choices(player, &repeated);
-                self.trigger_chosen(player, &repeated);
+                self.trigger_spell_chosen(player, &repeated);
             }
         } else {
             if options.accelerate

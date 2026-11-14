@@ -288,7 +288,7 @@ pub fn effect(id: usize) -> OfficialEffect {
         446 => KillAndDrawController { draw: 2 },
         447 => Deathgrip,
         448 => Guards,
-        449 => None,
+        449 | 450 => None,
         425 => ReadyAndPreventMovement { draw: 1 },
         426 => BattlePreparations,
         427 => MoveEnemy,
@@ -1132,6 +1132,7 @@ pub fn requirements(id: usize) -> &'static [Mechanic] {
         446 => &[Chain, Hidden, DeathTriggers, DeathReplacement],
         448 => &[Chain, Hidden, Tokens, OptionalCosts, ChooseReadyTriggers],
         449 => &[Chain, Ambush, Xp],
+        450 => &[Chain, ChooseReadyTriggers],
         447 => &[
             Chain,
             MultipleTargets,

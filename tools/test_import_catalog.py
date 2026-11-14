@@ -38,11 +38,17 @@ class OfficialInventoryTests(unittest.TestCase):
     def test_exact_published_scope_and_runtime_gap(self):
         counts = self.snapshot["counts"]
         self.assertEqual((counts["gallery_printings"], counts["unique_gallery_identities"], counts["standard_legal_identities"]), (1408, 1103, 1079))
-        self.assertEqual(counts["implemented_main_cards"], 450)
-        self.assertEqual(counts["implemented_legends"], 11)
-        self.assertEqual(counts["implemented_battlefields"], 17)
-        self.assertEqual(counts["implemented_legal_identities"], 484)
-        self.assertEqual(counts["unimplemented_legal_identities"], 595)
+        main = len(catalog.load_runtime_manifest()['cards'])
+        legends = len(catalog.load_legend_manifest())
+        fields = len(catalog.load_battlefield_manifest())
+        self.assertEqual(counts["implemented_main_cards"], main)
+        self.assertEqual(counts["implemented_legends"], legends)
+        self.assertEqual(counts["implemented_battlefields"], fields)
+        # Six separately checked rune identities; auxiliary field tokens are
+        # intentionally absent from this Standard deckbuilding inventory.
+        implemented = main + legends + fields + 6
+        self.assertEqual(counts["implemented_legal_identities"], implemented)
+        self.assertEqual(counts["unimplemented_legal_identities"], 1079 - implemented)
         for card in self.snapshot["cards"]:
             if card["implementation"]["status"] == "not_implemented":
                 self.assertFalse(card["implementation"]["playable_in_client"])

@@ -27,7 +27,6 @@ class BaronSourceTests(unittest.TestCase):
         self.assertTrue(pit["implementation"]["playable_in_client"])
         self.assertNotIn("unl-t01", {f["source_id"] for f in catalog.load_battlefield_manifest()})
         self.assertEqual(self.snapshot["counts"]["implemented_battlefields"], 17)
-        self.assertEqual(self.snapshot["counts"]["implemented_legal_identities"], 484)
 
     def test_auxiliary_registry_rejects_invented_text_and_normal_fields(self):
         fields = catalog.load_battlefield_token_manifest()

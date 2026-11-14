@@ -1,0 +1,120 @@
+{
+  "status": "Official face reviewed; focused rules, API and native checks passed; installed package acceptance pending",
+  "reviewed_on": "2026-11-14",
+  "preserved_runtime_prefix": {
+    "card_count": 450,
+    "preset_count": 7,
+    "cards_sha256": "dfb56fcab75f40cb459d4af91f72c794b04d606a6972ed0416722c1f129cd112",
+    "presets_sha256": "e975739d803427e54928d6e6cd03d1ce51d7ad108f4e247b8a000acf037a5cdb"
+  },
+  "core_sections": [
+    "355.5",
+    "355.7",
+    "383.1",
+    "820.2"
+  ],
+  "records": [
+    {
+      "runtime_id": 450,
+      "official_id": "sfd-142-221",
+      "printing_cohort": [
+        "sfd-142-221"
+      ],
+      "raw_printing": {
+        "official_id": "sfd-142-221",
+        "public_code": "SFD-142/221",
+        "name": "Jae Medarda",
+        "set": "SFD",
+        "collector_number": 142,
+        "types": [
+          "unit"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "unit"
+        ],
+        "accessibility_types": [
+          "unit"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "chaos"
+        ],
+        "energy": 5,
+        "power": 2,
+        "might": 5,
+        "might_bonus": null,
+        "rules_html": "<p>When you choose me with a spell, draw 1.</p>",
+        "rules_text": "When you choose me with a spell, draw 1.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [
+          "Noxus"
+        ],
+        "rarity": "rare",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/92eac6bb020a068d9c1668b59ecaaeab05112b3f-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Unit: Jae Medarda. When you choose me with a spell, draw 1.",
+        "illustrators": [
+          "Six More Vodka"
+        ]
+      },
+      "raw_printing_sha256": "936fedf83e8c38745204b4107c2ca9cf28f054a980198d3421aa5702abc9c9d7",
+      "effective": {
+        "types": [
+          "unit"
+        ],
+        "super_types": [],
+        "domains": [
+          "chaos"
+        ],
+        "energy": 5,
+        "power": 2,
+        "might": 5,
+        "might_bonus": null,
+        "tags": [
+          "Noxus"
+        ],
+        "rules_html": "<p>When you choose me with a spell, draw 1.</p>",
+        "rules_text": "When you choose me with a spell, draw 1.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "resolution_ids": [],
+      "errata": [],
+      "original_image": {
+        "path": "assets/data/card_admissions/irelia_choices/sfd-142-221.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/92eac6bb020a068d9c1668b59ecaaeab05112b3f-744x1039.png?accountingTag=RB",
+        "bytes": 747915,
+        "sha256": "f2d49adb322751ee7ab1b0e21a1787d872a147b52262a19f326fd59de7f7a24b",
+        "width": 744,
+        "height": 1039
+      },
+      "runtime_image": {
+        "path": "assets/art/card_450.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/92eac6bb020a068d9c1668b59ecaaeab05112b3f-744x1039.png?w=280&q=85&fm=png",
+        "bytes": 181008,
+        "sha256": "7ad7716c3bb492150bbefdcae0d0321bc00eb94ecd711b3e4834bb6fd2754fb6",
+        "width": 280,
+        "height": 391
+      },
+      "visual_review": {
+        "actual_full_face_viewed": true,
+        "printed_energy": 5,
+        "printed_power": 2,
+        "printed_might": 5,
+        "printed_domains": [
+          "chaos"
+        ],
+        "printed_types": [
+          "unit"
+        ],
+        "printed_tags": [
+          "Noxus"
+        ],
+        "printed_rules": "When you choose me with a spell, draw 1.",
+        "uncertainties": []
+      }
+    }
+  ]
+}

@@ -399,6 +399,9 @@ fn checked_advice(game: &Game, level: AdviceLevel) -> Result<Vec<&'static str>, 
         if let Some(tip) = khazix_advice(game, beginner) {
             window_tips.push(tip);
         }
+        if let Some(tip) = jae_advice(game, beginner) {
+            window_tips.push(tip);
+        }
         window_tips.extend(crate::combat_ui::card_advice(game, beginner)?);
         if let Some(status) = game.combat_resolution() {
             window_tips.push(crate::combat_ui::advice(status, beginner));
@@ -564,6 +567,9 @@ fn checked_advice(game: &Game, level: AdviceLevel) -> Result<Vec<&'static str>, 
         });
     }
     if let Some(tip) = khazix_advice(game, beginner) {
+        tips.push(tip);
+    }
+    if let Some(tip) = jae_advice(game, beginner) {
         tips.push(tip);
     }
     if human.hand.contains(&447) {
@@ -1745,6 +1751,17 @@ fn gust_response_advice(game: &Game, beginner: bool) -> Result<Option<&'static s
     }))
 }
 
+fn jae_advice(game: &Game, beginner: bool) -> Option<&'static str> {
+    let human = &game.players[0];
+    (human.hand.contains(&450)
+        || human.units.iter().any(|unit| !unit.token && unit.card_id == 450))
+        .then_some(if beginner {
+            "Jae draws when your spell chooses him. Choosing him with an ability or an opponent's spell doesn't trigger that draw. The draw uses its own chain ability."
+        } else {
+            "A spell that chooses Jae can replace itself, but the draw is a separate, respondable trigger. Repeats can create more than one draw trigger."
+        })
+}
+
 fn khazix_advice(game: &Game, beginner: bool) -> Option<&'static str> {
     let human = &game.players[0];
     (human.hand.contains(&449)
@@ -1935,6 +1952,37 @@ pub fn draw_mote(center: Vec2, scale: f32, time: f32, accent: Color) {
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn irelia_jae_advice_distinguishes_spell_choices_and_keeps_private_cards_private() {
+        let mut game = Game::new_for_agents(0, 0, 450, Difficulty::Easy);
+        game.start_match().unwrap();
+        game.players[0].hand = vec![450];
+        let before = format!("{game:?}");
+        let mut private = game.clone();
+        private.players[1].hand = vec![450, 8];
+        private.players[1].deck.reverse();
+        for level in [AdviceLevel::Beginner, AdviceLevel::Advanced] {
+            let tips = advice(&game, level);
+            let tip = tips.iter().find(|tip| tip.contains("Jae")).unwrap();
+            assert!(tip.chars().count() <= 180);
+            assert!(tip.contains(if level == AdviceLevel::Beginner {
+                "opponent's spell"
+            } else {
+                "Repeats"
+            }));
+            assert_eq!(tips, advice(&private, level));
+        }
+        assert_eq!(format!("{game:?}"), before);
+        private.players[0].hand.clear();
+        for level in [AdviceLevel::Beginner, AdviceLevel::Advanced] {
+            assert!(
+                advice(&private, level)
+                    .iter()
+                    .all(|tip| !tip.contains("Jae"))
+            );
+        }
+    }
+
     #[test]
     fn irelia_khazix_advice_remains_available_during_responses() {
         use local_rift::game::{Action, Target};

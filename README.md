@@ -363,6 +363,18 @@ python3 tools/check_irelia_practice.py --output /tmp/irelia-check-1
 python3 tools/check_irelia_practice.py --output /tmp/irelia-check-2 --api
 ```
 
+Jae Medarda's spell-choice coverage also includes a dated Standard match campaign:
+
+```sh
+python3 tools/check_spell_choice_api.py target/release/rift-api /tmp/jae-matches.json
+./target/release/local-rift --ui-smoke-irelia --small
+```
+
+The campaign uses an authored Irelia list at the pinned November 13, 2026 date,
+with both seats and all three difficulty levels. It records actual draw triggers
+and preserves zero-use cases. The native sequence plays and inspects Jae, switches
+advice levels, chooses him with a spell, and passes on his separate draw ability.
+
 Use a new directory for each run. The runner uses this checkout's `target/`
 directory even when `CARGO_TARGET_DIR` is set elsewhere, and rejects a result if
 sources change while it runs. It does not run the full regression suite or the

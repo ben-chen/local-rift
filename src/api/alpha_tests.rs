@@ -1,4 +1,5 @@
 //! Public protocol checks exercise the actual play and allocation commands.
+use super::test_support::{apply, request, views};
 use super::*;
 use crate::game::Unit;
 
@@ -113,17 +114,6 @@ fn play(targets: Vec<Target>) -> Action {
         targets,
     }
 }
-fn request(s: &mut Session, command: &str, action: Value) -> Value {
-    s.handle(json!({"command":command,"revision":s.revision(),"player":s.game.priority(),"action":action}))
-}
-fn apply(s: &mut Session, action: Action) {
-    let result = request(s, "apply", action_to_json(&action));
-    assert_eq!(result["ok"], true, "{result}");
-}
-fn views(s: &Session) -> [Value; 2] {
-    [s.observe(0).unwrap(), s.observe(1).unwrap()]
-}
-
 // A controlled grant isolates Repeat; all subsequent choices use the public
 // protocol. This fixture is not presented as a tournament-legal deck recipe.
 fn repeat_play(s: &mut Session, first: Vec<Target>, second: Vec<Target>) {

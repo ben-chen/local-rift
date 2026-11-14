@@ -6860,6 +6860,21 @@ pub fn cards() -> Vec<CardDef> {
             tags: &["Kha'Zix", "The Void"],
             art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/8306abc5ffce45add8c75c2e215162b2d1aed320-744x1039.png?w=280&q=85&fm=png",
         },
+        CardDef {
+            id: 450,
+            official_id: "sfd-142-221",
+            name: "Jae Medarda",
+            cost: 5,
+            power_cost: 2,
+            might: 5,
+            domain: Domain::Chaos,
+            domains: &[Domain::Chaos],
+            kind: CardKind::Unit,
+            official_text: "When you choose me with a spell, draw 1.",
+            keywords: &[],
+            tags: &["Noxus"],
+            art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/92eac6bb020a068d9c1668b59ecaaeab05112b3f-744x1039.png?w=280&q=85&fm=png",
+        },
     ]
 }
 
