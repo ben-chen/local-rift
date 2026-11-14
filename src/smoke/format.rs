@@ -111,6 +111,10 @@ pub(crate) fn run_frame(app: &mut App, frame: u32) -> bool {
             assert_eq!(app.game.format_date(), Some("2026-11-23"));
             capture(app, "RIFT_FORMAT_DATED_GAME");
             app.game.spell_ability_damage_prevented = true;
+        }
+        17 => {
+            // Capture this state on a new frame, as normal play renders it.
+            // A second draw/readback in frame 16 clipped the heading in PNGs.
             capture(app, "RIFT_FORMAT_TURN_EFFECT");
             app.game.spell_ability_damage_prevented = false;
             app.prefs.format = FormatChoice::Today;
@@ -120,7 +124,7 @@ pub(crate) fn run_frame(app: &mut App, frame: u32) -> bool {
                 Some(chrono::Local::now().date_naive().to_string().as_str())
             );
         }
-        17 => {
+        18 => {
             capture(app, "RIFT_FORMAT_TODAY");
             println!(
                 "Format UI: dated and historical starts, both seats, full registrations and rejected-reset preservation passed."
