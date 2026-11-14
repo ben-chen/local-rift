@@ -161,5 +161,180 @@
     "installed_api_full_records_equal": true,
     "limits": "Observed on this candidate with other local work running. The earlier cargo package took 2158.978 seconds at a different revision; these are not a controlled speed comparison. All checks retained.",
     "evidence_sha256": "4931a4bbf934f44287fabd2cbee0925b74a66847567d903248b96f253dcac0df"
+  },
+  "focused_irelia_practice": {
+    "source_commit": "2fcc6e1d80b81f16b81179b8c9637371aceb226d",
+    "status": "Local runner, optional API matches and immutable catalog check passed",
+    "command": "python3 tools/check_irelia_practice.py --output /path/to/new-results --api",
+    "rust_tests": {
+      "passed": 173,
+      "seconds": 20.632,
+      "suites": [
+        "local-rift",
+        "local-rift::bin/local-rift",
+        "local-rift::c4_play",
+        "local-rift::irelia_arito",
+        "local-rift::irelia_decisions",
+        "local-rift::registered_matches"
+      ]
+    },
+    "decision_outcomes": {
+      "positions": 12,
+      "cases": 72,
+      "required_passed": 60,
+      "levels": [
+        {
+          "difficulty": "Easy",
+          "successes": 18,
+          "cases": 24,
+          "misses": [
+            {
+              "position": "skip-reset-without-followup",
+              "seat": 0
+            },
+            {
+              "position": "skip-reset-without-followup",
+              "seat": 1
+            },
+            {
+              "position": "move-ready-pyke-before-spending",
+              "seat": 0
+            },
+            {
+              "position": "move-ready-pyke-before-spending",
+              "seat": 1
+            },
+            {
+              "position": "move-ready-akali-before-spending",
+              "seat": 0
+            },
+            {
+              "position": "move-ready-akali-before-spending",
+              "seat": 1
+            }
+          ]
+        },
+        {
+          "difficulty": "Tactical",
+          "successes": 18,
+          "cases": 24,
+          "misses": [
+            {
+              "position": "skip-reset-without-followup",
+              "seat": 0
+            },
+            {
+              "position": "skip-reset-without-followup",
+              "seat": 1
+            },
+            {
+              "position": "move-ready-pyke-before-spending",
+              "seat": 0
+            },
+            {
+              "position": "move-ready-pyke-before-spending",
+              "seat": 1
+            },
+            {
+              "position": "move-ready-akali-before-spending",
+              "seat": 0
+            },
+            {
+              "position": "move-ready-akali-before-spending",
+              "seat": 1
+            }
+          ]
+        },
+        {
+          "difficulty": "Strategic",
+          "successes": 24,
+          "cases": 24,
+          "misses": []
+        }
+      ]
+    },
+    "api": {
+      "matches": 9,
+      "games": 25,
+      "scope": "Paired Irelia snapshot/date matches and future-date Rengar registrations; stability, not strength."
+    },
+    "api_full_records_equal_to_irelia_release_baseline": true,
+    "source_tests": 308,
+    "source_test_seconds": 310.025,
+    "catalog_store": "/nix/store/08jpp93hz5zpbsz86kvhm8a0910g834a-local-rift-catalog-check",
+    "package_derivation": "/nix/store/bd907rsyncgsjr1dp8jzh9jgv792xi94-local-rift-0.1.0.drv",
+    "runtime_files_identical_to": "40a7813f6aa9a3a5d588afa42fe01553b6b8e57a",
+    "steps": [
+      {
+        "name": "rules-and-decisions",
+        "command": [
+          "cargo",
+          "nextest",
+          "run",
+          "--locked",
+          "--lib",
+          "--bin",
+          "local-rift",
+          "--test",
+          "irelia_decisions",
+          "--test",
+          "c4_play",
+          "--test",
+          "irelia_arito",
+          "--test",
+          "registered_matches",
+          "--config-file",
+          "/home/benchen/.cache/local-rift-work/riven-2026-11-12/practice-loop-v1/nextest.toml",
+          "--profile",
+          "ci",
+          "-E",
+          "test(/irelia|strategic|counter/) or test(/^companion::/) or test(/^practice_benchmark::/) or binary(/^(irelia_decisions|c4_play|irelia_arito|registered_matches)$/)",
+          "--status-level",
+          "fail",
+          "--final-status-level",
+          "fail"
+        ],
+        "exit_code": 0,
+        "seconds": 155.424
+      },
+      {
+        "name": "api-build",
+        "command": [
+          "cargo",
+          "build",
+          "--locked",
+          "--release",
+          "--bin",
+          "rift-api"
+        ],
+        "exit_code": 0,
+        "seconds": 42.273
+      },
+      {
+        "name": "api-matches",
+        "command": [
+          "/home/benchen/.nix-profile/bin/python3",
+          "/home/benchen/.cache/local-rift-work/validation-loop/tools/check_format_api.py",
+          "/home/benchen/.cache/local-rift-work/validation-loop/target/release/rift-api",
+          "/home/benchen/.cache/local-rift-work/riven-2026-11-12/practice-loop-v1/api.json"
+        ],
+        "exit_code": 0,
+        "seconds": 16.391
+      }
+    ],
+    "limits": [
+      "Focused 173-test selection excludes 998 tests in those binaries and does not select other test binaries.",
+      "The two benchmark tests exercise 72 decision cases; 60 required outcomes pass and 12 known heuristic misses are retained.",
+      "Complete API matches exercise stability; they do not independently establish rules parity or opponent strength.",
+      "The first run includes compilation in a fresh per-worktree target. No warm-run speedup claim is made.",
+      "Full regression and installed UI acceptance are supplied by the separate unchanged-runtime release candidate; this command does not perform those gates."
+    ],
+    "evidence_sha256": {
+      "practice-loop-v1/status.json": "6e59c1e7e1891b81da04777c76014b9ff84ad66add42969da758209bf58110c4",
+      "practice-loop-v1/junit.xml": "f89a761a05ec5ffff13e0f3c8e6d83ca873a27752918871a80df21a0b7354f09",
+      "practice-loop-v1/decisions.json": "028036f834ee91cee5d6db9f9ef4f85aba16fbb89fd3d9bca0d35abbc4d5121c",
+      "practice-loop-v1/api.json": "54a63d8e68aa876d2927f9b4b77448b04034d54b004ae5082ad8c9eadbea543e",
+      "practice-loop-catalog-tests-v1.log": "a9e249bd0b266a3bbb69894f553a1673e56278e98b4940f8ca5271bc8e0ce776"
+    }
   }
 }
