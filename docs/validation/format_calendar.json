@@ -1,6 +1,6 @@
 {
-  "status": "Backend, public AI pool and complete dated-match checks passed; native format selection and final release acceptance pending",
-  "reviewed_at": "2026-11-14T02:08:27.951431+00:00",
+  "status": "Backend, dated AI matches and desktop format acceptance passed; integrated package release pending",
+  "reviewed_at": "2026-11-14T02:35:19.529866+00:00",
   "base_candidate": "aeb9944d6d02c7d048bc114fe98e9bcc94a0df3a",
   "scope": [
     "Explicit global Standard dates for deck and complete registration validation",
@@ -8,7 +8,10 @@
     "Public date retained through a match; invalid reset preserves the previous match",
     "Known announced bans only; no changes to historical recipes or accepted catalog",
     "Validated engine format context survives rematches and later registered games",
-    "Strategic unknown-card sampling uses only the dated public legal pool; pre-ban traces are preserved"
+    "Strategic unknown-card sampling uses only the dated public legal pool; pre-ban traces are preserved",
+    "Native single-game and full-registration format controls with local-date default",
+    "Fixed native match date through sideboarding and later games; rejected starts preserve the old game",
+    "Historical snapshot practice and announced-date previews without substituting saved cards"
   ],
   "source": {
     "manifest": "assets/data/format_updates.json",
@@ -45,7 +48,51 @@
     "previous_irelia_complete_traces_preserved": true,
     "future_date_authored_matches": 3,
     "future_date_actual_games": 7,
-    "future_fixture": "Rengar preset main; explicitly authored legal field registration and sideboard with Brynhir removed. No preset recipes changed."
+    "future_fixture": "Rengar preset main; explicitly authored legal field registration and sideboard with Brynhir removed. No preset recipes changed.",
+    "native": {
+      "source_commit": "f201437",
+      "client_tests_passed": 146,
+      "new_client_tests": 3,
+      "final_clippy": "all targets, warnings denied",
+      "formatting": "passed",
+      "workflow_syntax": "actionlint passed",
+      "source_checks": 3,
+      "ui_final_binary_sha256": "0c5a06c933a20c0b37591873dbad32c8e6eeda93d6ba9910459b57ac1322ca0e",
+      "final_ui_cases": 7,
+      "earlier_core_normal_case_passed": true,
+      "captures": 14,
+      "registered_ui_actual_games": 6,
+      "registered_ui_presets": [
+        5,
+        1
+      ],
+      "window_sizes": [
+        "1440x900",
+        "1152x720"
+      ],
+      "covered": [
+        "Local calendar date at acceptance",
+        "Future-ban rejection in both seats",
+        "Full sideboard and battlefield registration validation",
+        "Historical single-game and full-match acceptance",
+        "Rejected reset preserves prior hand, log, format and match state",
+        "Fixed date across subsequent native games",
+        "Preference migration and persistence",
+        "Stale rejection notification cleared after accepted start",
+        "Format label remains visible alongside turn effect banner"
+      ],
+      "visual_review": [
+        "Final small dated game: readable format label and no stale rejection banner",
+        "Final small turn-effect layout: both format and effect remain visible",
+        "Final normal registration: full sideboard and battlefield restrictions readable",
+        "Earlier format screens reviewed at small size: upcoming bans, current bans, historical explanation and registration restrictions"
+      ],
+      "prior_failures": [
+        "The first added registration test omitted its replacement default battlefield; fixture corrected without weakening registration validation.",
+        "An earlier UI runner exited 143 after three recorded passing cases. Its uncollected case was rerun successfully; final checks used a copied binary and isolated child processes. Cause was not established."
+      ],
+      "limits": "146 client tests preceded the final notification/caption-only adjustments. Final strict Clippy and seven UI cases cover those adjustments; the earlier normal core case is retained. Full integrated release checks remain pending."
+    }
   },
   "evidence_sha256": {
     "format-calendar-rust-v1.log": "1f4282f1516402220c0dd88f8d3df78b100c605006564a4c709270d5621ee490",
@@ -61,15 +108,23 @@
     "format-context-source-v2.log": "ce155d9697089f241dcde88726f33980547fde850204098b7080f77732dcf5f8",
     "format-context-api-build-v2.log": "302c5d0d6933e25f704c3654068ac9a71ede5001894805b9e83119bbf62d8d81",
     "format-context-series-v1.json": "7d94c18bfcc4690c24561edbe7c7240cbeb081bfba6fd76efe83575f4ae33132",
-    "tools/check_format_api.py": "31f2775093677620d95829abb3a783a9c16ad74be67f2f44819cb26d93026120"
+    "tools/check_format_api.py": "31f2775093677620d95829abb3a783a9c16ad74be67f2f44819cb26d93026120",
+    "format-native-checks-v2.json": "517d2078ac6ee28c8b610efdbefb30128dd828f243d2d8d5618e84ec0219f856",
+    "format-native-client-v2.log": "9e2729b6040437b6a4c0d6e47603299533efe1098a15914f8f649c0fc150036d",
+    "format-native-client-v2-junit.xml": "0197ed97c025b49d16dc7ed69b70a8007509e57d4b41a4144e3ffa0b66d01a30",
+    "format-native-clippy-v3.log": "7cd2d2a986ccf91588ec679f3b303e55af239cb615a08e5e4f39ec0e6b6ed85b",
+    "format-native-build-v3.log": "9dc185b69ac9d59b697589b402928cca4467d865602af98694eec6a9cf98b3c6",
+    "format-native-source-v1.json": "041dae1a3b5f3f5992c6e6643895ef3666dfac01e9fa89ad2254841a66b62889",
+    "format-native-ui-v1/status.json": "27db4f274e6a1e26605740ca5e47f09c7667335e820461a547e1ee256d073691",
+    "format-native-ui-v2/status.json": "9fb8dc6b3c4dc8c1f97d9aef089c6c2813ebc8124fa0f67616d26b405a8e4ddd"
   },
   "remaining": [
-    "Native format choice and current-date selection",
-    "Final integrated client, source and package acceptance",
+    "Merge accepted release-runner, test-support and Xeno native-scenario changes",
+    "Final integrated client, source and immutable package acceptance",
     "Publish accepted changes and collect GitHub CI"
   ],
   "limitations": [
-    "No automatic current-format selection yet; omitted API date selects the accepted catalog snapshot",
+    "Desktop defaults to the local current date; omitted API date intentionally preserves the accepted catalog snapshot for existing bot clients.",
     "Future dates use known announcements and do not predict later changes",
     "Global dates do not apply to the announced Korea or Traditional Chinese release exceptions",
     "This does not add new cards or establish complete Standard rules parity"

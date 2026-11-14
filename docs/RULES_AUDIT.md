@@ -903,3 +903,9 @@ of a registered match. Direct engine setup validates both actual lists and field
 a later banned-field selection or a mid-game format change is rejected without
 mutation. Tests cover the effective-date boundary, private-information isolation,
 rematches and format propagation after sideboarding.
+
+### Desktop format selection and fixed match dates
+
+The native setup now defaults to the player's local calendar date and displays the format-source review date. Its format panel checks each actual single-game list and selected field, or each complete match registration including sideboard and all three fields. Banned lists cannot start; historical snapshot practice remains an explicit option with the original recipes intact. The accepted date is held through every game of a registered match and reaches the same engine context and public AI belief pool as API-created games. Rejected starts retain the prior game and match controller.
+
+The [format record](validation/format_calendar.json) separates the 146 passing native tests, final click/visual checks and previous backend/API evidence from the outstanding integrated package release. Native date checks include an authored future-legal Rengar registration; this does not create a tournament preset. Existing historical smoke scenarios explicitly select the catalog snapshot, while the format scenario checks local-today, historical and announced dates. The local clock is read only at the desktop boundary; API dates and engine replays remain explicit. Regional schedules and later unannounced changes remain outside the bundled global announcement.
