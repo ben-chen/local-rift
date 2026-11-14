@@ -42,6 +42,8 @@ mod temporary;
 #[cfg(test)]
 mod unyielding_tests;
 mod vision;
+#[cfg(test)]
+mod warden_tests;
 mod xp_costs;
 
 #[cfg(test)]
@@ -557,6 +559,18 @@ impl Session {
             observed["cards_drawn_this_turn_exact"] =
                 json!(game.trigger_state.draws[owner].to_string());
             observed["xp_gained_this_turn"] = json!(game.gained_xp_this_turn(owner));
+            let restrictions = game.restrictions_affecting(owner);
+            if !restrictions.is_empty() {
+                observed["board_restrictions"] = json!(restrictions.iter().map(|source| json!({
+                    "kind":match source.kind {
+                        crate::restrictions::RestrictionKind::UnitPlayBaseOnly => "unit_play_base_only",
+                        crate::restrictions::RestrictionKind::UnitGearReadyByEffect => "unit_gear_ready_by_effect",
+                    },
+                    "source":{"player":source.controller,"unit_id":source.unit_id,
+                        "card_id":source.card_id,"lane":source.lane},
+                    "duration":"while_source_at_battlefield"
+                })).collect::<Vec<_>>());
+            }
             Ok(observed)
         }).collect::<Result<Vec<_>,ApiError>>()?;
         let chain: Vec<_> = game.chain.iter().map(|item| { let mut value = json!({

@@ -659,3 +659,22 @@ paying the unit cost again; Meditation retains its paid or unpaid choice for all
 executions. The same choices are available to bots through `play_choices` and
 `exhaust_unit`. See [the validation record](validation/irelia_resources.json)
 for the tested interactions and outstanding release checks.
+
+## Mageseeker Warden restrictions
+
+Warden's restrictions are evaluated from the live board while it is at any
+battlefield, including a contested one. Exhausting it does not disable them.
+Opponents cannot play units to either battlefield, including Hidden units,
+champions, instructed replays, and unit tokens. A fixed battlefield instruction
+does not permit substituting base when the play is forbidden. Ordinary movement
+and gear plays remain legal subject to their other rules.
+
+Spells and abilities cannot ready the affected player's units or gear at any
+location. Other instructions still resolve: Hunker Down still draws and grants
+Immobile, for example. A player may pay for Irelia's optional ready ability even
+when it cannot ready the unit; the built-in AI declines that ineffective choice.
+An effect prevented from readying a unit does not generate its Ready occurrence.
+Normal Awakening and entering ready are unaffected. Removing or recalling the
+last opposing battlefield Warden before resolution permits a waiting Ready
+effect to work. Local focused tests cover these examples; full interaction
+parity and installed acceptance remain unproven.

@@ -9168,6 +9168,15 @@ fn live_gear_description(game: &Game, owner: usize, gear_id: u32) -> Option<Stri
         Ok(description) => lines.extend(description),
         Err(error) => return Some(format!("Cannot calculate this gear's Vision: {error}")),
     }
+    if !game
+        .ready_effect_restrictions(Target::Gear {
+            player: owner,
+            gear_id,
+        })
+        .is_empty()
+    {
+        lines.push("WARDEN · spells and abilities cannot ready this gear. Normal turn readying still works.".into());
+    }
     if !gear.token
         && let Some(rule) = local_rift::rules::equipment(gear.card_id)
     {
@@ -9522,6 +9531,22 @@ fn live_unit_description(game: &Game, owner: usize, unit_id: u32) -> Option<Stri
             unit.temporary_buff
         ));
     }
+    if !game
+        .ready_effect_restrictions(Target::Unit {
+            player: owner,
+            unit_id,
+        })
+        .is_empty()
+    {
+        lines.push("WARDEN · spells and abilities cannot ready this unit. It still readies normally at the start of your turn.".into());
+    }
+    if !unit.token && unit.card_id == 464 {
+        lines.push(if unit.lane.is_some() {
+            "WARDEN ACTIVE · opponents play units only to base; spells and abilities cannot ready their units or gear anywhere. Movement remains legal."
+        } else {
+            "WARDEN INACTIVE · move to a battlefield to restrict opposing unit plays and readying effects."
+        }.into());
+    }
     if !unit.token && unit.card_id == 439 {
         let modes = ["Buff", "Stun", "Ready"];
         let used = modes
@@ -9851,6 +9876,45 @@ mod live_preview_tests {
             temporary: false,
             token: false,
         }
+    }
+    #[test]
+    fn warden_inspectors_explain_live_restrictions_and_awakening() {
+        let mut game = Game::new(0, 0, 464, Difficulty::Easy);
+        game.players[0].units = vec![unit(46401, 0)];
+        game.players[1].units = vec![unit(46402, 464)];
+        game.players[0].gear = vec![attached(46403, 3, 46401)];
+        assert!(
+            live_unit_description(&game, 1, 46402)
+                .unwrap()
+                .contains("WARDEN INACTIVE")
+        );
+        assert!(
+            !live_unit_description(&game, 0, 46401)
+                .unwrap()
+                .contains("WARDEN")
+        );
+        game.players[1].units[0].lane = Some(0);
+        assert!(
+            live_unit_description(&game, 1, 46402)
+                .unwrap()
+                .contains("WARDEN ACTIVE")
+        );
+        assert!(
+            live_unit_description(&game, 0, 46401)
+                .unwrap()
+                .contains("start of your turn")
+        );
+        assert!(
+            live_gear_description(&game, 0, 46403)
+                .unwrap()
+                .contains("Normal turn readying")
+        );
+        game.players[1].units.clear();
+        assert!(
+            !live_gear_description(&game, 0, 46403)
+                .unwrap()
+                .contains("WARDEN")
+        );
     }
     #[test]
     fn vision_preview_tracks_printed_and_live_granted_instances() {
@@ -10764,6 +10828,7 @@ async fn main() {
     let heavens_smoke = args.iter().any(|a| a == "--ui-smoke-heavens");
     let disarm_smoke = args.iter().any(|a| a == "--ui-smoke-disarm");
     let flurry_smoke = args.iter().any(|a| a == "--ui-smoke-flurry");
+    let warden_smoke = args.iter().any(|a| a == "--ui-smoke-warden");
     let turn_keywords_smoke = args.iter().any(|a| a == "--ui-smoke-turn-keywords");
     let rockfall_smoke = args.iter().any(|a| a == "--ui-smoke-rockfall");
     let riven_smoke = args.iter().any(|a| a == "--ui-smoke-riven");
@@ -10786,6 +10851,7 @@ async fn main() {
     let focused_field_smoke = args.iter().any(|a| a == "--ui-smoke-c28");
     let focused_source_damage_smoke = args.iter().any(|a| a == "--ui-smoke-c27");
     let smoke_test = format_smoke
+        || warden_smoke
         || turn_keywords_smoke
         || flurry_smoke
         || disarm_smoke
@@ -10882,6 +10948,8 @@ async fn main() {
             smoke::run_disarm_frame(&mut app, frames)
         } else if flurry_smoke {
             smoke::run_flurry_frame(&mut app, frames)
+        } else if warden_smoke {
+            smoke::run_warden_frame(&mut app, frames)
         } else if turn_keywords_smoke {
             smoke::run_turn_keywords_frame(&mut app, frames)
         } else if rockfall_smoke {

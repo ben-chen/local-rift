@@ -1,5 +1,5 @@
 {
-  "status": "Printed source reviewed; runtime implementation pending.",
+  "status": "Local runtime validation passed; immutable installed acceptance pending.",
   "reviewed_on": "2026-11-14",
   "base_revision": "35d1c8c5bde3ab8a4b377ee5d1e3f9cf2905d309",
   "preserved_runtime_prefix": {
@@ -105,6 +105,17 @@
           "Both static restrictions operate while this unit is at any battlefield; they do not require control of its battlefield.",
           "Opponents can play units only to their base. This is not a movement prohibition.",
           "Spells and abilities cannot ready enemy units and gear; the text does not forbid normal Awakening or entering ready."
+        ]
+      },
+      "runtime_id": 464,
+      "runtime_image": {
+        "path": "assets/art/card_464.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/ae844b929f817cdf76fe40c7bf5d5fc02062bdac-744x1039.png?w=280&q=85&fm=png",
+        "bytes": 192643,
+        "sha256": "2a936734c7a16bb56946a2ae9b8eb091b309167b362f96e40dcc3e857581b0e6",
+        "dimensions": [
+          280,
+          391
         ]
       }
     }

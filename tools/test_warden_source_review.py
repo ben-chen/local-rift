@@ -8,6 +8,26 @@ import import_catalog as catalog
 
 
 class WardenSourceReview(unittest.TestCase):
+    def test_runtime_preserves_printed_facts_and_prior_recipes(self):
+        proof = json.loads((catalog.ROOT / 'assets/data/card_admissions/irelia_warden/source_review.json').read_text())
+        runtime = catalog.load_runtime_manifest()
+        card = runtime['cards'][464]
+        record, = proof['records']
+        self.assertEqual((card['official_id'], card['kind'], card['energy'], card['power'], card['might']),
+                         ('ogn-070-298', 'Unit', 6, 1, 5))
+        self.assertEqual((card['domains'], card['tags'], card['keywords']), (['Calm'], ['Demacia'], []))
+        self.assertEqual(card['official_text'], record['effective']['rules_text'])
+        self.assertEqual(card['official_text_html'], record['effective']['rules_html'])
+        image = record['runtime_image']
+        data = (catalog.ROOT / image['path']).read_bytes()
+        self.assertEqual(card['art_url'], image['url'])
+        self.assertEqual((len(data), catalog.sha(data)), (image['bytes'], image['sha256']))
+        self.assertEqual(struct.unpack('>II', data[16:24]), (280, 391))
+        pin = proof['preserved_runtime_prefix']
+        self.assertEqual((pin['card_count'], pin['preset_count']), (464, 7))
+        for key, count, digest in [('cards', 'card_count', 'cards_sha256'), ('decks', 'preset_count', 'presets_sha256')]:
+            self.assertEqual(catalog.sha(review.canonical_bytes(runtime[key][:pin[count]])), pin[digest])
+
     def test_complete_source_and_printed_restrictions(self):
         proof = json.loads((catalog.ROOT / 'assets/data/card_admissions/irelia_warden/source_review.json').read_text())
         record, = proof['records']

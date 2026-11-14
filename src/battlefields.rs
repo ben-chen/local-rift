@@ -212,8 +212,24 @@ impl BattlefieldAbility {
 impl Game {
     /// A play restriction, not a restriction on movement or replaced board entry.
     /// Applies to unit tokens too, whose source card may itself be a spell.
-    pub(crate) fn validate_unit_play_location(&self, lane: Option<usize>) -> Result<(), String> {
+    pub(crate) fn validate_unit_play_location(
+        &self,
+        player: usize,
+        lane: Option<usize>,
+    ) -> Result<(), String> {
         if let Some(lane) = lane {
+            if let Some(source) = self
+                .restrictions_affecting(player)
+                .into_iter()
+                .find(|source| {
+                    source.kind == crate::restrictions::RestrictionKind::UnitPlayBaseOnly
+                })
+            {
+                return Err(format!(
+                    "{} at a battlefield limits your unit plays to your base. Movement is still allowed.",
+                    self.catalog[source.card_id].name
+                ));
+            }
             let field = self.battlefields.get(lane).ok_or("Choose a battlefield.")?;
             if *field == ROCKFALL_PATH_ID {
                 return Err(

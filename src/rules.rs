@@ -316,6 +316,7 @@ pub struct Targeting {
 pub fn effect(id: usize) -> OfficialEffect {
     use OfficialEffect::*;
     match id {
+        464 => None,
         441 => PreventSpellAndAbilityDamage,
         442 => Repulse,
         443 => AlphaStrike,
@@ -1142,6 +1143,8 @@ pub fn triggers(id: usize) -> &'static [Trigger] {
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Mechanic {
+    PlayRestrictions,
+    ReadyPrevention,
     Disarm,
     Deploy,
     Chain,
@@ -1197,6 +1200,7 @@ pub enum Mechanic {
 pub fn requirements(id: usize) -> &'static [Mechanic] {
     use Mechanic::*;
     match id {
+        464 => &[PlayRestrictions, ReadyPrevention],
         441 => &[Chain, Protection],
         442 => &[Chain, Counterspell, MultipleTargets, ChooseReadyTriggers],
         444 | 445 => &[Gear, Equip, Chain, ChooseReadyTriggers],

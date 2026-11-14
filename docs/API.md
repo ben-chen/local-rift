@@ -101,11 +101,13 @@ use `Game::choose_format_date(Some("2026-11-23"))` before play and read
 battlefield choices must remain legal. Changing the date after play starts is
 rejected. `None` explicitly selects the accepted snapshot before play.
 
-Omitting the date selects the accepted catalog snapshot and preserves the older
-response shape. Native date selection and automatic current-format selection
-remain unfinished. The schedule describes known announcements, not a guarantee
-about later unannounced changes. Regional release exceptions are recorded in the
-source manifest and are not assigned the global effective date.
+Omitting the date in the API selects the accepted catalog snapshot and preserves
+the older response shape. The native client defaults to Standard for today's
+local calendar date, and offers a historical snapshot or a fixed date before play.
+The selected format stays fixed throughout a match. The schedule describes known
+announcements, not a guarantee about later unannounced changes. Regional release
+exceptions are recorded in the source manifest and are not assigned the global
+effective date.
 
 Use observation `priority`, not `active`, to choose who acts. An opposing player can have priority while the active player owns the turn. Pending decisions can also transfer priority. `step_ai` works for either seat and processes one choice/action, not a whole turn.
 
@@ -1118,3 +1120,20 @@ and are not covered by this representation. The
 and resolution separately at all three AI difficulties and both seats.
 
 Rockfall Path is battlefield ID 17. Its printed text is returned by `catalog`; setup and registered matches accept it wherever a legal battlefield can be selected. Unit plays to a physical lane containing this field are rejected without changing the revision or resources. This applies to Hidden units, tokens and instructed replays as well as ordinary plays. Legal actions and suggestions share the same restriction; movement and gear plays remain available. Temporal Breach can leave a `pending_play` with only the existing impossible-finalization acknowledgement (`choose`, `accept:false`), which restores the card to banishment.
+
+## Live battlefield restrictions
+
+When Mageseeker Warden (464, `ogn-070-298`) is at a battlefield, observations
+include `players[affected_player].board_restrictions`. Each entry has `kind`
+(`unit_play_base_only` or `unit_gear_ready_by_effect`),
+`source: {player,unit_id,card_id,lane}`, and
+`duration: "while_source_at_battlefield"`. Multiple physical sources are
+reported separately. The field is absent when no such restriction affects that
+player. Both observers receive these public facts.
+
+Use ordinary `validate`/`apply` for the actual action. A unit play to a forbidden
+battlefield fails without changing state or revision; movement is still allowed.
+A spell or ability with a Ready instruction can remain playable even if that
+instruction will do nothing. Restrictions are checked at resolution, so a
+response that removes Warden can change the outcome. This metadata does not
+replace action validation or expose either player's private cards.

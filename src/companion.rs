@@ -403,6 +403,7 @@ fn checked_advice(game: &Game, level: AdviceLevel) -> Result<Vec<&'static str>, 
         window_tips.extend(heavens_advice(game, beginner));
         window_tips.extend(block_advice(game, beginner));
         window_tips.extend(flurry_advice(game, beginner));
+        window_tips.extend(warden_advice(game, beginner));
         if let Some(tip) = sands_advice(game, beginner) {
             window_tips.push(tip);
         }
@@ -434,6 +435,7 @@ fn checked_advice(game: &Game, level: AdviceLevel) -> Result<Vec<&'static str>, 
     tips.extend(heavens_advice(game, beginner));
     tips.extend(block_advice(game, beginner));
     tips.extend(flurry_advice(game, beginner));
+    tips.extend(warden_advice(game, beginner));
 
     // High stakes scoring and visible threats come before routine suggestions.
     let enemy_has_hold = game.battlefield_owner.contains(&Some(1));
@@ -1887,6 +1889,29 @@ fn sands_advice(game: &Game, beginner: bool) -> Option<&'static str> {
         })
 }
 
+fn warden_advice(game: &Game, beginner: bool) -> Option<&'static str> {
+    if !game.restrictions_affecting(0).is_empty() {
+        Some(if beginner {
+            "Enemy Warden limits unit plays to base and blocks spells and abilities from readying your units or gear. Normal turn readying and movement still work."
+        } else {
+            "Remove or recall Warden before paying for a ready sequence. Its restriction reaches both fields and your base; it ends as soon as Warden leaves the battlefields."
+        })
+    } else if game.players[0].hand.contains(&464)
+        || game.players[0]
+            .units
+            .iter()
+            .any(|u| !u.token && u.card_id == 464)
+    {
+        Some(if beginner {
+            "Warden's restrictions start at a battlefield, even if it is contested. At base, Warden has no effect on opposing plays or readying."
+        } else {
+            "Move Warden to a battlefield to disrupt Irelia's ready sequences. Protect it from removal; opponents can still move units and enter base ready."
+        })
+    } else {
+        None
+    }
+}
+
 fn flurry_advice(game: &Game, beginner: bool) -> Option<&'static str> {
     (game.players[0].hand.contains(&463) || game.chain.iter().any(|item| item.card_id == 463))
         .then_some(if beginner {
@@ -2094,6 +2119,56 @@ pub fn draw_mote(center: Vec2, scale: f32, time: f32, accent: Color) {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn warden_advice_is_brief_read_only_and_ignores_private_opposing_cards() {
+        let mut game = Game::new_for_agents(0, 0, 464, Difficulty::Easy);
+        game.start_match().unwrap();
+        game.players[0].hand = vec![464];
+        let before = format!("{game:?}");
+        for beginner in [true, false] {
+            let tip = warden_advice(&game, beginner).unwrap();
+            assert!(tip.chars().count() <= 180);
+            let mut private = game.clone();
+            private.players[1].hand = vec![464, 9];
+            private.players[1].deck.reverse();
+            assert_eq!(warden_advice(&private, beginner), Some(tip));
+        }
+        assert_eq!(format!("{game:?}"), before);
+        game.players[0].hand.clear();
+        game.players[1].hand = vec![464];
+        assert!(warden_advice(&game, true).is_none());
+        game.players[1].units.push(local_rift::game::Unit {
+            id: 46401,
+            card_id: 464,
+            lane: Some(0),
+            ready: false,
+            damage: 0,
+            buff: 0,
+            temporary_buff: 0,
+            token: false,
+            protected: false,
+            stunned: false,
+            banish_on_death: false,
+        });
+        let before = format!("{game:?}");
+        for beginner in [true, false] {
+            let tip = warden_advice(&game, beginner).unwrap();
+            assert!(tip.chars().count() <= 180);
+            assert!(tip.contains(if beginner {
+                "Normal turn"
+            } else {
+                "Remove or recall"
+            }));
+            let mut private = game.clone();
+            private.players[1].hand.clear();
+            private.players[1].deck.reverse();
+            assert_eq!(warden_advice(&private, beginner), Some(tip));
+        }
+        assert_eq!(format!("{game:?}"), before);
+        game.players[1].units.last_mut().unwrap().lane = None;
+        assert!(warden_advice(&game, true).is_none());
+    }
 
     #[test]
     fn entourage_advice_is_brief_private_and_distinguishes_choice_timing() {

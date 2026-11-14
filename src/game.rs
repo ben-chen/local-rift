@@ -27,6 +27,9 @@ mod irelia_ai;
 mod modal;
 #[path = "spell_history.rs"]
 mod spell_history;
+#[cfg(test)]
+#[path = "warden_tests.rs"]
+mod warden_tests;
 pub use combat::{CombatResolution, CombatResult, CombatStep};
 #[cfg(test)]
 #[path = "backoff_tests.rs"]
@@ -2946,7 +2949,7 @@ impl Game {
             .ok_or("The pending token is missing.")?
             .card_id;
         if !self.pending_token.as_ref().unwrap().gear {
-            self.validate_unit_play_location(lane)?;
+            self.validate_unit_play_location(player, lane)?;
         }
         if let Some(result) = self.pay_active_play(player, id) {
             result?;
@@ -4482,7 +4485,7 @@ impl Game {
             return Err("Choose a battlefield.".into());
         }
         if self.catalog[id].kind == CardKind::Unit {
-            self.validate_unit_play_location(Some(lane))?;
+            self.validate_unit_play_location(player, Some(lane))?;
         }
         Ok(targets)
     }
@@ -5108,7 +5111,7 @@ impl Game {
                 self.priority_player = token.player;
                 if !token.gear
                     && let Some(lane) = token.location
-                    && let Err(reason) = self.validate_unit_play_location(lane)
+                    && let Err(reason) = self.validate_unit_play_location(token.player, lane)
                 {
                     // An impossible fixed-location play cannot ask for costs or
                     // fall back to base. The token ceases to exist (Core185–186).
@@ -6926,7 +6929,7 @@ impl Game {
         let card = self.catalog.get(id).ok_or("Unknown card.")?;
         let actor = self.priority();
         if card.kind == CardKind::Unit {
-            self.validate_unit_play_location(lane)?;
+            self.validate_unit_play_location(actor, lane)?;
         }
         if !self.card_supported(id) {
             return Err(self.effect_description(id));
@@ -8931,7 +8934,8 @@ impl Game {
         self.pending_start = Some(StartStage::Beginning);
         let ready_ids: Vec<_> = self.players[player].units.iter().map(|u| u.id).collect();
         for id in ready_ids {
-            self.ready_unit(player, id);
+            // Awakening is a turn action, not a spell or ability (CR416.3.a).
+            self.ready_unit_state_by(player, player, id);
         }
         // Awaken triggers finish before Beginning, Hold, Channel and Draw.
         self.after_resolution()?;
@@ -10346,7 +10350,13 @@ impl Game {
                                 player: *player,
                                 unit_id: *unit_id,
                             })
-                            .is_some_and(|unit| !unit.ready),
+                            .is_some_and(|unit| !unit.ready)
+                            && self
+                                .ready_effect_restrictions(Target::Unit {
+                                    player: *player,
+                                    unit_id: *unit_id,
+                                })
+                                .is_empty(),
                     }),
                     Decision::EmpowerPlayed { .. }
                     | Decision::OptionalPlay { .. }

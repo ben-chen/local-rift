@@ -7070,6 +7070,21 @@ pub fn cards() -> Vec<CardDef> {
             tags: &[],
             art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/77bd864b29f4975868e557e31a39b94d06a4ecb2-744x1039.png?w=280&q=85&fm=png",
         },
+        CardDef {
+            id: 464,
+            official_id: "ogn-070-298",
+            name: "Mageseeker Warden",
+            cost: 6,
+            power_cost: 1,
+            might: 5,
+            domain: Domain::Calm,
+            domains: &[Domain::Calm],
+            kind: CardKind::Unit,
+            official_text: "While I'm at a battlefield, opponents can only play units to their base.\nWhile I'm at a battlefield, spells and abilities can't ready enemy units and gear.",
+            keywords: &[],
+            tags: &["Demacia"],
+            art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/ae844b929f817cdf76fe40c7bf5d5fc02062bdac-744x1039.png?w=280&q=85&fm=png",
+        },
     ]
 }
 

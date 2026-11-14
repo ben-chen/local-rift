@@ -150,13 +150,13 @@
       "legend": 11,
       "rune": 6,
       "spell": 134,
-      "unit": 251
+      "unit": 252
     },
-    "implemented_main_cards": 464,
+    "implemented_main_cards": 465,
     "implemented_legends": 11,
     "implemented_battlefields": 18,
-    "implemented_legal_identities": 499,
-    "unimplemented_legal_identities": 580,
+    "implemented_legal_identities": 500,
+    "unimplemented_legal_identities": 579,
     "errata_entries": 67,
     "identities_with_errata": 67,
     "source_quality_issues": 60,
@@ -21681,8 +21681,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 464,
+        "official_id": "ogn-070-298",
+        "playable_in_client": true
       }
     },
     {

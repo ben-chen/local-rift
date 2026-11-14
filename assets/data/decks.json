@@ -12303,6 +12303,29 @@
       "equipment_effect_html": "",
       "equipment_effect": "",
       "might_bonus": null
+    },
+    {
+      "id": 464,
+      "official_id": "ogn-070-298",
+      "name": "Mageseeker Warden",
+      "kind": "Unit",
+      "domains": [
+        "Calm"
+      ],
+      "energy": 6,
+      "power": 1,
+      "might": 5,
+      "keywords": [],
+      "tags": [
+        "Demacia"
+      ],
+      "official_text": "While I'm at a battlefield, opponents can only play units to their base.\nWhile I'm at a battlefield, spells and abilities can't ready enemy units and gear.",
+      "official_text_html": "<p>While I'm at a battlefield, opponents can only play units to their base.<br />While I'm at a battlefield, spells and abilities can't ready enemy units and gear.</p>",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/ae844b929f817cdf76fe40c7bf5d5fc02062bdac-744x1039.png?w=280&q=85&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null
     }
   ],
   "official_text_note": "Official card/legend rules text from the Riot Card Gallery, retrieved 2026-10-24 and corrected by cited errata. Resource icon tokens are expanded to readable bracketed names. Raw card and equipment HTML is preserved separately. Official text does not establish full implementation fidelity."

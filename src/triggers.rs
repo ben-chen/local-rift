@@ -776,6 +776,22 @@ impl Game {
         }
     }
     pub(crate) fn ready_unit_by(&mut self, actor: usize, owner: usize, unit_id: u32) {
+        let target = Target::Unit {
+            player: owner,
+            unit_id,
+        };
+        if let Some(source) = self.ready_effect_restrictions(target).first() {
+            self.push_log(format!(
+                "{} prevents this unit from readying through a spell or ability.",
+                self.catalog[source.card_id].name
+            ));
+            return;
+        }
+        self.ready_unit_state_by(actor, owner, unit_id);
+    }
+
+    /// Mark the actual change and emit its occurrence, including Awakening.
+    pub(crate) fn ready_unit_state_by(&mut self, actor: usize, owner: usize, unit_id: u32) {
         let Some(unit) = self
             .unit_ref(Target::Unit {
                 player: owner,
@@ -809,6 +825,29 @@ impl Game {
         event.unit.as_mut().unwrap().ready = true;
         event.subject_player = owner;
         self.emit_event(event);
+    }
+
+    pub(crate) fn ready_object_by(&mut self, actor: usize, target: Target) {
+        match target {
+            Target::Unit { player, unit_id } => self.ready_unit_by(actor, player, unit_id),
+            Target::Gear { player, gear_id } => {
+                if let Some(source) = self.ready_effect_restrictions(target).first() {
+                    self.push_log(format!(
+                        "{} prevents this gear from readying through a spell or ability.",
+                        self.catalog[source.card_id].name
+                    ));
+                    return;
+                }
+                if let Some(gear) = self
+                    .players
+                    .get_mut(player)
+                    .and_then(|state| state.gear.iter_mut().find(|gear| gear.id == gear_id))
+                {
+                    gear.ready = true;
+                }
+            }
+            _ => {}
+        }
     }
     pub(crate) fn fight_units(&mut self, a: Target, b: Target) -> Result<(), String> {
         let Some((first, second)) = self.unit_ref(a).zip(self.unit_ref(b)) else {
@@ -1800,13 +1839,7 @@ impl Game {
                 }
                 Effect::Ready(who) => {
                     for target in self.trigger_operands(context, who, &targets) {
-                        if let Target::Unit {
-                            player: owner,
-                            unit_id,
-                        } = target
-                        {
-                            self.ready_unit_by(player, owner, unit_id);
-                        }
+                        self.ready_object_by(player, target);
                     }
                 }
                 Effect::Buff(who) => {

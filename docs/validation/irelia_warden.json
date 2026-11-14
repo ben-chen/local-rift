@@ -1,0 +1,232 @@
+{
+  "status": "Local validation passed; immutable installed acceptance pending",
+  "reviewed_at": "2026-11-14T11:41:19.769347+00:00",
+  "source_review_commit": "a585c36",
+  "base_revision": "35d1c8c5bde3ab8a4b377ee5d1e3f9cf2905d309",
+  "card": {
+    "id": 464,
+    "name": "Mageseeker Warden",
+    "official_id": "ogn-070-298"
+  },
+  "rules": {
+    "core_date": "2026-10-09",
+    "hub_verified_on": "2026-11-14",
+    "hub": "https://playriftbound.com/en-us/rules-hub/",
+    "pdf": {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/disarm-core-2026-10-09.pdf",
+      "sha256": "94d41fee86f88b61c4157c0389c0595d990b98e5b42555c99d9f649ee64d1fec"
+    },
+    "sections": [
+      "355.17.b: Warden overrides battlefield unit play permissions and requirements",
+      "416: Ready actions; normal Awakening remains separate"
+    ],
+    "source": {
+      "path": "/home/benchen/.cache/local-rift-work/irelia-warden/assets/data/card_admissions/irelia_warden/source_review.json",
+      "sha256": "8493a4b34474f4866deaa353a6fd4ba7034dc1e492e58ff2f9d74509b10ffc72"
+    }
+  },
+  "implementation": [
+    "Live restrictions derived from opposing non-token Wardens at any battlefield, regardless of readiness or field control.",
+    "Shared unit play validation includes hand, champion, Hidden, instructed replays and tokens. Fixed field plays do not redirect to base.",
+    "Shared effect-ready prevention for units and gear; normal Awakening and entering-ready replacements remain unaffected. Independent effect instructions still resolve.",
+    "Current source position is checked when effects resolve; removal or recall can change the result.",
+    "Native unit and gear inspectors, both nonblocking companion levels, and additive public board_restrictions API metadata.",
+    "All AI levels decline an ineffective Irelia optional Ready without private-card access."
+  ],
+  "focused": {
+    "engine_tests": 9,
+    "api_tests": 1,
+    "client_tests_total": 168,
+    "library_tests_total": 1110,
+    "source_tests": 2,
+    "strict_clippy": "passed",
+    "engine_complete_games": 24,
+    "logs": [
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/warden-library-v1.log",
+        "sha256": "fa91462226ea84a7ea8a0520dbecde49cbe77bb58f4cae3f80fa78a83e8763e5"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/warden-client-matches-v1.log",
+        "sha256": "e08107f543436ebd229fbb7f300da41ec99a061b1c5026c02b635db96f07645f"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/warden-client-v2.log",
+        "sha256": "2095b864346f4588dc1744f855e385543b446b2f28f3ec3a46c5190acbbfda2e"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/warden-source-v3.log",
+        "sha256": "89b4035b3694fd6acc6bec93ba65375c26668d63bc76460c7eac0d36b01f9980"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/warden-catalog-check-v1.log",
+        "sha256": "0b839a7387a0884d57129e468eb1d9a2aa928e67c51a529ff3922f001cfa0a1b"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/warden-clippy-v2.log",
+        "sha256": "2b07987b4ff1f8616b93cd1a6cbafecf2bb7cb408814078bce51d58b157dea7d"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/warden-build-v3.log",
+        "sha256": "f28e4653d1675866a98c11485f9c72ab1d44479a3418dfcceeb5789d30ee5d89"
+      }
+    ]
+  },
+  "native": {
+    "report": {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/warden-native-v3/report.json",
+      "sha256": "86152cf3059e68b9ee9a3b157457d4d365efcc93421e4c8aefc76f94e83c3de5"
+    },
+    "cases": 2,
+    "captures": 16,
+    "binary_sha256": "5cf52f2720ea8ca1640952a1a89e709b38fc42941b4733143f316dda8b919f0a",
+    "visually_reviewed": [
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/warden-native-v3/normal/rift_warden_rules.png",
+        "sha256": "65c55e3b03f01395afa03d7000c72b7b158fa09594e816abcb661131a5fd0919"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/warden-native-v3/small/rift_warden_gear.png",
+        "sha256": "e427f60f2aa2226ad449dc22209bba87f0647f3432524f39b88f8798e64574c5"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/warden-native-v3/small/rift_warden_moved.png",
+        "sha256": "47c426805558474a2a14f3dc5f78344d1fe82079e7a6b2435bfa8d4409c5fe04"
+      }
+    ]
+  },
+  "external_api": {
+    "report": {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/warden-baselines-v1/report.json",
+      "sha256": "4b2cfb8f203082a6972d23c8c4215b302544f3d1fb7444f124ad19b1765525d4"
+    },
+    "campaigns": 12,
+    "full_records": 75,
+    "binary_sha256": "a69fed95bd00dc3914a725d0159500b78e3617bb69dc23f131f31444de62c639",
+    "warden_series": 6,
+    "warden_actual_games": 15,
+    "warden_seen": 26,
+    "active_warden_instances": 16,
+    "prior_behavior_audit": {
+      "reviewed_at": "2026-11-14T11:40:44.273288+00:00",
+      "unchanged_prior_records": 61,
+      "changed_prior_records": [
+        {
+          "campaign": "entourage-api",
+          "index": 5,
+          "difficulty": "strategic",
+          "changed_fields": [
+            "result",
+            "trace_sha256"
+          ]
+        },
+        {
+          "campaign": "flurry-api",
+          "index": 5,
+          "difficulty": "strategic",
+          "changed_fields": [
+            "result",
+            "trace_sha256"
+          ]
+        },
+        {
+          "campaign": "format-api",
+          "index": 4,
+          "difficulty": "strategic",
+          "changed_fields": [
+            "result",
+            "observations",
+            "trace_sha256"
+          ]
+        },
+        {
+          "campaign": "format-api",
+          "index": 5,
+          "difficulty": "strategic",
+          "changed_fields": [
+            "result",
+            "observations",
+            "trace_sha256"
+          ]
+        },
+        {
+          "campaign": "heavens-api",
+          "index": 4,
+          "difficulty": "strategic",
+          "changed_fields": [
+            "trace_sha256"
+          ]
+        },
+        {
+          "campaign": "jae-api",
+          "index": 4,
+          "difficulty": "strategic",
+          "changed_fields": [
+            "result",
+            "jae_units_seen",
+            "draw_triggers_seen",
+            "observed_draw_resolutions",
+            "trace_sha256"
+          ]
+        },
+        {
+          "campaign": "jae-api",
+          "index": 5,
+          "difficulty": "strategic",
+          "changed_fields": [
+            "result",
+            "jae_units_seen",
+            "draw_triggers_seen",
+            "observed_draw_resolutions",
+            "trace_sha256"
+          ]
+        },
+        {
+          "campaign": "resources-api",
+          "index": 5,
+          "difficulty": "strategic",
+          "changed_fields": [
+            "result",
+            "paid_meditations_seen",
+            "trace_sha256"
+          ]
+        }
+      ],
+      "new_records": 6,
+      "interpretation": "All changed prior records use Strategic; Warden expands its public eligible belief pool. These are candidate behavioral baselines, not evidence of stronger play."
+    }
+  },
+  "failed_attempts": [
+    {
+      "artifact": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/warden-focused-v1.log",
+      "reason": "Test fixture integer sum type mismatch; corrected before execution."
+    },
+    {
+      "artifact": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/warden-focused-v2.log",
+      "reason": "Authored field control had no supporting unit and cleanup removed it; Fervent printed Might expectation was wrong. Both fixture expectations corrected."
+    },
+    {
+      "artifact": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/warden-focused-v3.log",
+      "reason": "Test used the wrong existing AI helper name; corrected."
+    },
+    {
+      "artifact": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/warden-focused-v4.log",
+      "reason": "Response fixtures did not decline optional Irelia triggers before passing; fixed using normal actions."
+    },
+    {
+      "artifact": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/warden-native-v1/report.json",
+      "reason": "Pointer remained inside the open scrollable card preview; test now leaves the preview before hovering another unit."
+    },
+    {
+      "artifact": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/warden-native-v2/report.json",
+      "reason": "Behavior assertions passed but visual review caught a unit ID incorrectly used in the gear fixture. Corrected to Seal of Focus, then reran both window sizes."
+    }
+  ],
+  "remaining": [
+    "Immutable Nix/source/simulation acceptance for this candidate.",
+    "Installed native checks and full API record equality against these candidate baselines.",
+    "Publication after acceptance; no current metagame prevalence or expert AI claim.",
+    "Gear Ready prevention has a direct shared-effect check; this does not claim an end-to-end Ready-gear card interaction absent from the supported catalog.",
+    "Full Standard card and interaction coverage, independent opponent evaluation, and human learning validation remain incomplete."
+  ]
+}

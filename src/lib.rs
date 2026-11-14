@@ -11,6 +11,7 @@ pub mod legality;
 pub mod legend_catalog;
 pub mod legends;
 pub mod payment;
+pub mod restrictions;
 pub mod rules;
 pub mod xp;
 
