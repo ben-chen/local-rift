@@ -1,5 +1,5 @@
 {
-  "status": "Focused rules, source and static checks passed; complete-game, API and installed UI acceptance pending",
+  "status": "Focused rules, source, static and complete API-match checks passed; native UI and full release acceptance pending",
   "base_commit": "2fcc6e1d80b81f16b81179b8c9637371aceb226d",
   "reviewed_on": "2026-11-14",
   "runtime_id": 449,
@@ -43,16 +43,16 @@
     "Initial test helper returned signed Might instead of the actual unsigned reference type; fixed before behavioral testing.",
     "Red behavior run: one expected bonus test failed at 4 versus 6 Might; the nontrigger test passed.",
     "Historical/global review-count checks initially rejected the newly reviewed printing cohort. Global expectations now include the admission; the historical C28 check asserts admission leaves source-review counts unchanged instead of freezing unrelated future review counts.",
-    "One source-check invocation used an obsolete class name. Four requested tests passed; the missing scope test passed after correcting the invocation."
+    "One source-check invocation used an obsolete class name. Four requested tests passed; the missing scope test passed after correcting the invocation.",
+    "The first API campaign required a trigger in every individual match and stopped at a completed Strategic match with no qualifying event. The final campaign retains that zero-use record and requires observed resolution per level/seat across both starters. This changes the coverage expectation, not game behavior."
   ],
   "limits": [
     "These are explicitly authored midgame positions, not proof of reachable complete-deck play.",
     "No new tournament preset or current-meta ranking claim. Existing seven preset recipes remain unchanged.",
     "The 181-test run retains the existing authored AI benchmark and its twelve known simpler-level misses.",
-    "Full regression, complete-game ability observation, API export/play and installed artwork/inspector checks remain pending."
+    "Full regression and installed artwork/inspector checks remain pending; the completed API campaign is coverage evidence, not a strength evaluation."
   ],
   "remaining": [
-    "Exercise a legal Irelia list containing Kha'Zix through complete games and the API; record actual trigger occurrence.",
     "Inspect native artwork, full card text and both coaching levels.",
     "Run frozen full regression/catalog/package acceptance before publication."
   ],
@@ -65,6 +65,42 @@
     "irelia-khazix-catalog-counts-v1.log": "5e9ad8d36cb51708d95dbd4b2410f4729d0ac43ea47c5a56c3aff930e5d56245",
     "irelia-khazix-catalog-counts-v2.log": "93d7599748a214cf91b0791f91179108c68d651c0f5f58c09760693a2cbd0b01",
     "irelia-khazix-clippy-v1.log": "d8d13dd5af9d3fe3afac30b14c9e5da28d07f1907c815ac916f536b8e7a7ce2d",
-    "irelia-khazix-red-v2.log": "aba73848daccf12586858cf05a3a8d32c8acb52747b356a1fa276435c5dd06ce"
+    "irelia-khazix-red-v2.log": "aba73848daccf12586858cf05a3a8d32c8acb52747b356a1fa276435c5dd06ce",
+    "irelia-khazix-api-v1.json": "72b5d5304f17eb80df492a07bdb75343675a52faf994e44cd9a3177630cd12e7",
+    "irelia-khazix-api-v2.json": "af3ab1f558612f2b651b9f9890a3448dc155ab025ee2922538bb3093617f5c9a",
+    "irelia-khazix-api-v2.log": "5012c9a48a599f8ab47c5ad7f1784fa8e3d2c12f9360d8f0a753bd89cf0de2e9",
+    "irelia-khazix-api-build-v1.log": "d2d9005201ac4856589512ab7f3d1e8c18f27ef73edf312d182722b4e6720d44"
+  },
+  "api": {
+    "engine_source_commit": "1d3ab2a",
+    "matches": 12,
+    "games": 30,
+    "difficulty_levels": [
+      "easy",
+      "tactical",
+      "strategic"
+    ],
+    "seats": [
+      0,
+      1
+    ],
+    "starting_players": [
+      0,
+      1
+    ],
+    "observed_units": 38,
+    "attack_triggers": 16,
+    "defend_triggers": 11,
+    "observed_xp_resolutions": 27,
+    "zero_trigger_cases": [
+      {
+        "difficulty": "strategic",
+        "irelia_seat": 1,
+        "first_player": 0
+      }
+    ],
+    "scope": "Authored legal Irelia registration replaces three Scuttle Crabs with three Kha'Zix; registered Master Yi opponent, historical format snapshot. Existing presets unchanged.",
+    "resolution_observation": "A top Kha'Zix trigger disappears from the chain while its controller gains exactly two XP between successive public observations. Controlled rules tests establish conditional behavior separately.",
+    "coverage_gate": "Every level/seat pair observes resolution across its two starting-player cases; the complete campaign observes both Attack and Defend. A game with no suitable lone enemy is retained as zero use."
   }
 }
