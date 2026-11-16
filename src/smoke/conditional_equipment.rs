@@ -73,8 +73,8 @@ fn might(app: &App) -> u64 {
     app.game.unit_might(&app.game.players[0].units[0]).unwrap()
 }
 pub(crate) fn run_frame(app: &mut App, frame: u32) -> bool {
-    if frame == 28 {
-        return true;
+    if frame >= 28 {
+        return foreign_equipment_frame(app, frame - 28);
     }
     app.next_ai = f64::INFINITY;
     app.ui.input_override = Some((vec2(-100.0, -100.0), false, false));
@@ -204,6 +204,99 @@ pub(crate) fn run_frame(app: &mut App, frame: u32) -> bool {
             capture_unit(app, BEARER, "RIFT_HAND_HAMMER_RESTORED");
         }
         10..=13 => {}
+        _ => unreachable!(),
+    }
+    false
+}
+
+// Initial control is authored here. Actual control-changing card play is
+// validated separately when those cards are admitted to the engine.
+fn foreign_equipment_frame(app: &mut App, frame: u32) -> bool {
+    if frame == 14 {
+        return true;
+    }
+    let controller = (frame / 7) as usize;
+    let gear_controller = 1 - controller;
+    app.next_ai = f64::INFINITY;
+    app.ui.input_override = Some((vec2(-100.0, -100.0), false, false));
+    app.ui.pointer_override = Some((false, false));
+    app.ui.wheel_override = Some(0.0);
+    match frame % 7 {
+        0 => {
+            setup(app, 444);
+            for player in &mut app.game.players {
+                player.units.clear();
+                player.gear.clear();
+                player.xp = 2;
+            }
+            app.game.players[controller].units = vec![public_unit(BEARER, 69, None)];
+            app.game.players[controller].xp = 3;
+            app.game.players[gear_controller].gear = [330, 3]
+                .into_iter()
+                .enumerate()
+                .map(|(i, card_id)| GearState {
+                    id: GEAR + i as u32 + 10,
+                    card_id,
+                    lane: None,
+                    attached_to: Some(BEARER),
+                    ready: true,
+                    temporary: false,
+                    token: false,
+                })
+                .collect();
+            app.tray = super::super::Tray::Hand;
+        }
+        1 => {
+            let r = unit_rect(app, BEARER);
+            click(app, r.x + r.w - 10.0, r.y + r.h - 9.0);
+        }
+        2 => {
+            assert_eq!(app.equipment_inspect, Some((controller, BEARER)));
+            capture(
+                app,
+                if controller == 0 {
+                    "RIFT_CONTROL_GEAR_LIST_OWN"
+                } else {
+                    "RIFT_CONTROL_GEAR_LIST_OPPONENT"
+                },
+            );
+            click(app, 700.0, 713.0);
+        }
+        3 => {
+            assert!(app.equipment_inspect.is_none());
+            let r = unit_rect(app, BEARER);
+            click(app, r.x + 20.0, r.y + r.h - 9.0);
+        }
+        4 => {
+            assert_eq!(app.inspect, Some(330));
+            assert_eq!(app.hover_object, Some((gear_controller, GEAR + 10)));
+            let text =
+                super::super::live_gear_description(&app.game, gear_controller, GEAR + 10).unwrap();
+            assert!(text.contains("ACTIVE · Soul Sword"));
+            assert!(text.contains("Level 3: 3+ XP (currently 3)"));
+            capture(
+                app,
+                if controller == 0 {
+                    "RIFT_CONTROL_GEAR_INSPECT_OWN"
+                } else {
+                    "RIFT_CONTROL_GEAR_INSPECT_OPPONENT"
+                },
+            );
+            click(app, 960.0, 704.0);
+        }
+        5 => {
+            assert!(app.inspect.is_none());
+            capture_unit(
+                app,
+                BEARER,
+                if controller == 0 {
+                    "RIFT_CONTROL_GEAR_UNIT_OWN"
+                } else {
+                    "RIFT_CONTROL_GEAR_UNIT_OPPONENT"
+                },
+            );
+        }
+        6 => {}
         _ => unreachable!(),
     }
     false

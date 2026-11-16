@@ -73,9 +73,10 @@ impl Game {
                 state.gear.iter().any(|gear| {
                     // An invalid dangling attachment has no location, rather
                     // than being mistaken for a gear at Base.
-                    gear.attached_to
-                        .is_none_or(|id| state.units.iter().any(|u| u.id == id))
-                        && self.gear_location(owner, gear.id) == unit.lane
+                    self.gear_board_location(owner, gear.id)
+                        == Some(crate::game::board_targets::BoardLocation::from_lane(
+                            owner, unit.lane,
+                        ))
                 })
             });
         Some(present)

@@ -1577,10 +1577,7 @@ impl App {
                     .iter()
                     .find(|unit| unit.id == *id)
                     .unwrap();
-                let equipped = self.game.players[owner]
-                    .gear
-                    .iter()
-                    .any(|gear| gear.attached_to == Some(*id));
+                let equipped = self.game.attached_gear(*id).next().is_some();
                 self.board_card(
                     if equipped {
                         Rect::new(card_rect.x, card_rect.y, card_rect.w, card_rect.h - 20.0)
@@ -5260,13 +5257,12 @@ impl App {
         Ok((hovered, control_clicked))
     }
     fn gear_badges(&mut self, r: Rect, owner: usize, unit_id: u32) -> bool {
-        let gears: Vec<_> = self.game.players[owner]
-            .gear
-            .iter()
-            .filter(|gear| gear.attached_to == Some(unit_id))
-            .cloned()
+        let gears: Vec<_> = self
+            .game
+            .attached_gear(unit_id)
+            .map(|(controller, gear)| (controller, gear.clone()))
             .collect();
-        let Some(gear) = gears.first() else {
+        let Some((gear_controller, gear)) = gears.first() else {
             return false;
         };
         let chip = Rect::new(r.x, r.y + r.h - 19.0, r.w, 19.0);
@@ -5296,19 +5292,16 @@ impl App {
         let hovered = self.ui.hover(chip);
         if hovered {
             self.hover_candidate = Some(if gears.len() > 1 && self.ui.hover(list) {
-                gears[1].card_id
+                gears[1].1.card_id
             } else {
                 gear.card_id
             });
             self.hover_token_candidate = None;
-            self.hover_object_candidate = Some((
-                owner,
-                if gears.len() > 1 && self.ui.hover(list) {
-                    gears[1].id
-                } else {
-                    gear.id
-                },
-            ));
+            self.hover_object_candidate = Some(if gears.len() > 1 && self.ui.hover(list) {
+                (gears[1].0, gears[1].1.id)
+            } else {
+                (*gear_controller, gear.id)
+            });
         }
         if self.ui.clicked(chip) || (hovered && self.ui.secondary_pressed()) {
             if gears.len() > 1 && self.ui.hover(list) {
@@ -5318,7 +5311,7 @@ impl App {
                 self.hover_rect = None;
             } else {
                 self.inspect = Some(gear.card_id);
-                self.hover_object = Some((owner, gear.id));
+                self.hover_object = Some((*gear_controller, gear.id));
             }
         }
         hovered
@@ -5336,11 +5329,10 @@ impl App {
             return;
         };
         let name = self.game.unit_name(unit);
-        let gears: Vec<_> = self.game.players[owner]
-            .gear
-            .iter()
-            .filter(|gear| gear.attached_to == Some(unit_id))
-            .cloned()
+        let gears: Vec<_> = self
+            .game
+            .attached_gear(unit_id)
+            .map(|(controller, gear)| (controller, gear.clone()))
             .collect();
         self.hover_card = None;
         self.hover_rect = None;
@@ -5366,7 +5358,9 @@ impl App {
         let max_scroll = gears.len().saturating_sub(3);
         self.equipment_scroll = self.equipment_scroll.min(max_scroll);
         self.ui.enabled = true;
-        for (slot, gear) in gears.iter().skip(self.equipment_scroll).take(3).enumerate() {
+        for (slot, (gear_controller, gear)) in
+            gears.iter().skip(self.equipment_scroll).take(3).enumerate()
+        {
             let y = 288.0 + slot as f32 * 118.0;
             self.ui.rect(Rect::new(420.0, y, 600.0, 110.0), BG);
             if let Some(tex) = self.art.get(gear.card_id).and_then(Option::as_ref) {
@@ -5391,7 +5385,7 @@ impl App {
                 true,
             ) {
                 self.inspect = Some(gear.card_id);
-                self.hover_object = Some((owner, gear.id));
+                self.hover_object = Some((*gear_controller, gear.id));
                 self.equipment_inspect = None;
             }
         }
@@ -9173,11 +9167,24 @@ fn gear_location_label(game: &Game, owner: usize, gear_id: u32) -> String {
         .get(owner)
         .and_then(|player| player.gear.iter().find(|gear| gear.id == gear_id))
         .is_some_and(|gear| gear.attached_to.is_some());
-    match (attached, game.gear_location(owner, gear_id)) {
-        (true, Some(lane)) => format!("ATTACHED · FIELD {}", lane + 1),
-        (true, None) => "ATTACHED · BASE".into(),
-        (false, Some(lane)) => format!("FIELD {} · GEAR", lane + 1),
-        (false, None) => "AT BASE".into(),
+    use local_rift::game::board_targets::BoardLocation;
+    match (attached, game.gear_board_location(owner, gear_id)) {
+        (true, Some(BoardLocation::Battlefield { lane })) => {
+            format!("ATTACHED · FIELD {}", lane + 1)
+        }
+        (true, Some(BoardLocation::Base { player })) if player != owner => {
+            format!(
+                "ATTACHED · {} BASE",
+                if player == 0 { "YOUR" } else { "OPPONENT" }
+            )
+        }
+        (true, Some(BoardLocation::Base { .. })) => "ATTACHED · BASE".into(),
+        (false, Some(BoardLocation::Battlefield { lane })) => format!("FIELD {} · GEAR", lane + 1),
+        (false, Some(BoardLocation::Base { player })) if player != owner => {
+            format!("IN {} BASE", if player == 0 { "YOUR" } else { "OPPONENT" })
+        }
+        (false, Some(BoardLocation::Base { .. })) => "AT BASE".into(),
+        (_, None) => "LOCATION UNAVAILABLE".into(),
     }
 }
 
@@ -9232,14 +9239,25 @@ fn live_gear_description(game: &Game, owner: usize, gear_id: u32) -> Option<Stri
             rule.might
         ));
     }
-    if let Some(unit) = gear
-        .attached_to
-        .and_then(|id| game.players[owner].units.iter().find(|unit| unit.id == id))
-    {
+    if let Some((bearer_controller, unit)) = gear.attached_to.and_then(|id| {
+        game.unit_controller(id).and_then(|controller| {
+            game.players[controller]
+                .units
+                .iter()
+                .find(|unit| unit.id == id)
+                .map(|unit| (controller, unit))
+        })
+    }) {
         lines.push(format!("Attached to {}. Its printed gear abilities are inactive while attached; its equipment effects apply to the bearer.", game.unit_name(unit)));
+        if bearer_controller != owner {
+            lines.push(format!(
+                "Control of this gear stays with {}. The unit's controller uses its granted abilities.",
+                if owner == 0 { "you" } else { "your opponent" }
+            ));
+        }
         let contributions =
             match game.passive_contributions(local_rift::empower::BoardObject::Unit {
-                player: owner,
+                player: bearer_controller,
                 unit_id: unit.id,
             }) {
                 Ok(contributions) => contributions,
@@ -9255,13 +9273,22 @@ fn live_gear_description(game: &Game, owner: usize, gear_id: u32) -> Option<Stri
             lines.push(passive_description(game, contribution));
         }
     } else {
-        lines.push(match game.gear_location(owner, gear_id) {
-            Some(lane) => format!(
+        use local_rift::game::board_targets::BoardLocation;
+        lines.push(match game.gear_board_location(owner, gear_id) {
+            Some(BoardLocation::Battlefield { lane }) => format!(
                 "Independent gear at battlefield {} · {}.",
                 lane + 1,
                 local_rift::battlefields::battlefield(game.battlefields[lane]).name
             ),
-            None => "Unattached in base.".into(),
+            Some(BoardLocation::Base { player }) => format!(
+                "Unattached in {} base.",
+                if player == 0 {
+                    "your"
+                } else {
+                    "your opponent's"
+                }
+            ),
+            None => "Location unavailable: the attached bearer is no longer on the board.".into(),
         });
         for (recipient_owner, player) in game.players.iter().enumerate() {
             for unit in &player.units {
@@ -9408,7 +9435,7 @@ fn passive_description(
     let requirement = local_rift::continuous::passive_rules(contribution.card_id)
         .get(contribution.rule_index)
         .map(|rule| {
-            let controller = &game.players[contribution.source.player()];
+            let controller = &game.players[contribution.controller];
             let condition = match rule.condition {
                 SourceCondition::AttackingWithAnother => {
                     " · while attacking with another unit".into()
@@ -9437,7 +9464,7 @@ fn passive_description(
                 ),
                 SourceCondition::ControllerGainedXpThisTurn => format!(
                     " · controller gained XP this turn: {} (current XP {}; the gain history resets each turn)",
-                    if game.gained_xp_this_turn(contribution.source.player()) { "yes" } else { "no" },
+                    if game.gained_xp_this_turn(contribution.controller) { "yes" } else { "no" },
                     controller.xp
                 ),
                 SourceCondition::Always => String::new(),
@@ -9744,14 +9771,20 @@ fn live_unit_description(game: &Game, owner: usize, unit_id: u32) -> Option<Stri
             }
         }
     }
-    let gear: Vec<_> = game.players[owner]
-        .gear
-        .iter()
-        .filter(|gear| gear.attached_to == Some(unit_id))
-        .collect();
+    let gear: Vec<_> = game.attached_gear(unit_id).collect();
     if !gear.is_empty() {
         lines.push("ATTACHED EQUIPMENT".into());
-        for attachment in gear {
+        for (controller, attachment) in gear {
+            if controller != owner {
+                lines.push(format!(
+                    "Equipment controlled by {}.",
+                    if controller == 0 {
+                        "you"
+                    } else {
+                        "your opponent"
+                    }
+                ));
+            }
             lines.push(format!(
                 "{}: {}",
                 game.gear_name(attachment),
@@ -10348,6 +10381,63 @@ mod live_preview_tests {
                 .unwrap()
                 .contains("4 current might")
         );
+    }
+    #[test]
+    fn opposing_equipment_inspectors_use_the_bearers_xp_and_actual_base() {
+        for controller in 0..2 {
+            let gear_controller = 1 - controller;
+            let mut game = Game::new(1, 3, 7, Difficulty::Easy);
+            for player in &mut game.players {
+                player.units.clear();
+                player.gear.clear();
+            }
+            game.players[controller].units = vec![unit(100, 110)];
+            game.players[gear_controller].gear = vec![attached(200, 330, 100)];
+            game.players[controller].xp = 3;
+            game.players[gear_controller].xp = 2;
+            for text in [
+                live_unit_description(&game, controller, 100).unwrap(),
+                live_gear_description(&game, gear_controller, 200).unwrap(),
+            ] {
+                assert!(text.contains("ACTIVE · Soul Sword"), "{text}");
+                assert!(text.contains("Level 3: 3+ XP (currently 3)"), "{text}");
+            }
+            let label = gear_location_label(&game, gear_controller, 200);
+            assert_eq!(
+                label,
+                if controller == 0 {
+                    "ATTACHED · YOUR BASE"
+                } else {
+                    "ATTACHED · OPPONENT BASE"
+                }
+            );
+            let unit_text = live_unit_description(&game, controller, 100).unwrap();
+            assert!(unit_text.contains("ATTACHED EQUIPMENT"));
+            assert!(unit_text.contains(if gear_controller == 0 {
+                "Equipment controlled by you."
+            } else {
+                "Equipment controlled by your opponent."
+            }));
+            game.players[controller].xp = 2;
+            game.players[gear_controller].xp = 3;
+            for text in [
+                live_unit_description(&game, controller, 100).unwrap(),
+                live_gear_description(&game, gear_controller, 200).unwrap(),
+            ] {
+                assert!(text.contains("INACTIVE · Soul Sword"), "{text}");
+                assert!(text.contains("Level 3: 3+ XP (currently 2)"), "{text}");
+            }
+            game.players[controller].units.clear();
+            assert_eq!(
+                gear_location_label(&game, gear_controller, 200),
+                "LOCATION UNAVAILABLE"
+            );
+            assert!(
+                live_gear_description(&game, gear_controller, 200)
+                    .unwrap()
+                    .contains("Location unavailable")
+            );
+        }
     }
     #[test]
     fn hunt_preview_sums_printed_and_attached_hunt_without_separate_trigger_claims() {

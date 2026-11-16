@@ -305,6 +305,7 @@ impl Game {
             return;
         }
         gear.lane = Some(*lane);
+        self.detached_gear_bases.remove(gear_id);
         let card_id = gear.card_id;
         self.push_log(format!(
             "{} moves to battlefield {}.",

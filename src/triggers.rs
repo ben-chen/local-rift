@@ -224,11 +224,19 @@ impl Game {
                         }
                         _ => continue,
                     };
+                    let controller = if let Some(unit_id) = unit_id {
+                        let Some(controller) = self.unit_controller(unit_id) else {
+                            continue;
+                        };
+                        controller
+                    } else {
+                        player
+                    };
                     sources.push(TriggerObserver::Rule(
                         gear.card_id,
                         index,
                         TriggerSource {
-                            player,
+                            player: controller,
                             unit_id,
                             gear_id: Some(gear.id),
                         },
@@ -238,19 +246,23 @@ impl Game {
         }
         sources
     }
-    fn source_target(source: TriggerSource) -> Option<Target> {
-        source.unit_id.map(|unit_id| Target::Unit {
-            player: source.player,
-            unit_id,
+    fn source_target(&self, source: TriggerSource) -> Option<Target> {
+        source.unit_id.and_then(|unit_id| {
+            Some(Target::Unit {
+                player: self.unit_controller(unit_id)?,
+                unit_id,
+            })
         })
     }
     fn source_location(&self, source: TriggerSource) -> Option<(Option<usize>, usize)> {
-        if let Some(target) = Self::source_target(source) {
-            return self.target_location(target);
+        if source.unit_id.is_some() {
+            return self
+                .source_target(source)
+                .and_then(|target| self.target_location(target));
         }
         source.gear_id.and_then(|gear_id| {
             self.target_location(Target::Gear {
-                player: source.player,
+                player: self.gear_controller(gear_id)?,
                 gear_id,
             })
         })
@@ -379,7 +391,8 @@ impl Game {
                             },
                         ))
             }),
-            Condition::OtherFriendlyHere(n) => Self::source_target(source)
+            Condition::OtherFriendlyHere(n) => self
+                .source_target(source)
                 .and_then(|t| self.unit_ref(t))
                 .is_some_and(|unit| {
                     self.players[source.player]
@@ -424,11 +437,11 @@ impl Game {
             .rule(card_id, rule_index)
             .expect("registered trigger");
         if rule.conditions.contains(&Condition::FirstEachTurn) {
-            if self
-                .trigger_state
-                .first_used
-                .contains(&(context.source, rule_index))
-            {
+            if self.trigger_state.first_used.iter().any(|(source, index)| {
+                *index == rule_index
+                    && source.unit_id == context.source.unit_id
+                    && source.gear_id == context.source.gear_id
+            }) {
                 return;
             }
             self.trigger_state
@@ -1010,10 +1023,10 @@ impl Game {
                 return Ok(false);
             }
             if rule.targets.relative_might == metadata::RelativeMightConstraint::LessThanSource {
-                let Some((unit, source)) = self
-                    .unit_ref(target)
-                    .zip(Self::source_target(context.source).and_then(|t| self.unit_ref(t)))
-                else {
+                let Some((unit, source)) = self.unit_ref(target).zip(
+                    self.source_target(context.source)
+                        .and_then(|t| self.unit_ref(t)),
+                ) else {
                     return Ok(false);
                 };
                 if self.unit_might(unit)? >= self.unit_might(source)? {
@@ -1022,8 +1035,9 @@ impl Game {
             }
             if rule.targets.relative_energy == metadata::RelativeEnergyConstraint::AtMostSourceMight
             {
-                let Some(source) =
-                    Self::source_target(context.source).and_then(|t| self.unit_ref(t))
+                let Some(source) = self
+                    .source_target(context.source)
+                    .and_then(|t| self.unit_ref(t))
                 else {
                     return Ok(false);
                 };
@@ -1612,7 +1626,7 @@ impl Game {
         targets: &[Target],
     ) -> Vec<Target> {
         match who {
-            Operand::Source => Self::source_target(context.source).into_iter().collect(),
+            Operand::Source => self.source_target(context.source).into_iter().collect(),
             Operand::Subject => context.subject.into_iter().collect(),
             Operand::Targets => targets.to_vec(),
             Operand::AllHere => {
@@ -1660,7 +1674,7 @@ impl Game {
                         continue;
                     }
                     let Some(source @ Target::Unit { unit_id, .. }) =
-                        Self::source_target(context.source)
+                        self.source_target(context.source)
                     else {
                         continue;
                     };
@@ -1683,7 +1697,7 @@ impl Game {
                             }
                         }
                         metadata::SourceBuffEffect::ReadySource => {
-                            self.ready_unit_by(player, context.source.player, unit_id);
+                            self.ready_object_by(player, source);
                         }
                     }
                 }
@@ -1742,7 +1756,7 @@ impl Game {
                     }
                 }
                 Effect::ReturnSourceUnit => {
-                    if let Some(target) = Self::source_target(context.source) {
+                    if let Some(target) = self.source_target(context.source) {
                         self.return_unit_to_hand(target);
                     }
                 }
@@ -1776,7 +1790,7 @@ impl Game {
                 }
                 Effect::DrawLook(kind) => self.look_to_draw(player, card_id, kind),
                 Effect::RevealMovedTop => {
-                    self.reveal_moved_top(player, card_id, Self::source_target(context.source))?
+                    self.reveal_moved_top(player, card_id, self.source_target(context.source))?
                 }
                 Effect::DazzlingAurora => self.reveal_aurora(player),
                 Effect::ClocktowerDeathknell => self.clocktower_deathknell(player),
@@ -1790,7 +1804,7 @@ impl Game {
                                 outcome,
                                 board_targets::GearKillResult::Resolved { killed: true, .. }
                             )
-                            && let Some(source) = Self::source_target(context.source)
+                            && let Some(source) = self.source_target(context.source)
                         {
                             self.buff_unit_by(player, source)?;
                         }
@@ -1851,7 +1865,8 @@ impl Game {
                     let (amount, recipients) = match *effect {
                         Effect::Damage(amount) => (u64::from(amount), targets.clone()),
                         Effect::SourceDamage { value, recipients } => {
-                            let Some(source) = Self::source_target(context.source)
+                            let Some(source) = self
+                                .source_target(context.source)
                                 .and_then(|target| self.unit_ref(target))
                             else {
                                 // CR359.3.e.12: source information is unavailable,
@@ -1918,7 +1933,7 @@ impl Game {
                 }
                 Effect::FightSource => {
                     if let (Some(source), Some(&target)) =
-                        (Self::source_target(context.source), targets.first())
+                        (self.source_target(context.source), targets.first())
                     {
                         self.fight_units(source, target)?;
                     }
@@ -1937,7 +1952,8 @@ impl Game {
                 }
                 Effect::KillTargets => self.kill_units(&targets)?,
                 Effect::DamageIfSourceEmpowered { base, empowered } => {
-                    let amount = if Self::source_target(context.source)
+                    let amount = if self
+                        .source_target(context.source)
                         .and_then(|t| self.unit_ref(t))
                         .is_some_and(|u| self.unit_empowered(u.id))
                     {

@@ -14,6 +14,9 @@ use crate::legends::{LegendAbility, LegendState, LegendTrigger};
 use crate::rules::{self, Allegiance, CounterKind, OfficialEffect, StaticAbility};
 use std::collections::VecDeque;
 
+#[cfg(test)]
+#[path = "control_gear_tests.rs"]
+mod control_gear_tests;
 #[path = "ownership.rs"]
 mod ownership;
 
@@ -1168,6 +1171,9 @@ pub struct Game {
     /// Control-changing effects must preserve the original owner here. Unit
     /// and gear IDs share one allocator; remove the entry on board departure.
     board_owner_overrides: std::collections::BTreeMap<u32, usize>,
+    /// Detachment can leave gear in its former bearer's opposing base until
+    /// cleanup Recalls it. Attached locations are derived from the bearer.
+    pub(crate) detached_gear_bases: std::collections::BTreeMap<u32, usize>,
     pub(crate) format_context: Option<std::sync::Arc<crate::legality::FormatContext>>,
     pub play_history: PlayHistory,
     pub play_grants: Vec<PlayGrant>,
@@ -1453,6 +1459,7 @@ impl Game {
             last_damage_ledger: None,
             gear_attachments_this_turn: Vec::new(),
             board_owner_overrides: std::collections::BTreeMap::new(),
+            detached_gear_bases: std::collections::BTreeMap::new(),
             format_context: None,
             catalog,
             presets,
@@ -9430,10 +9437,17 @@ impl Game {
                 if !dying {
                     continue;
                 }
-                for gear in &self.players[player].gear {
+                for (gear_controller, gear) in self
+                    .players
+                    .iter()
+                    .enumerate()
+                    .flat_map(|(p, state)| state.gear.iter().map(move |gear| (p, gear)))
+                {
                     if !gear.token
                         && ((gear.card_id == 10 && gear.attached_to == Some(unit.id))
-                            || (gear.card_id == 21 && gear.attached_to.is_none()))
+                            || (gear_controller == player
+                                && gear.card_id == 21
+                                && gear.attached_to.is_none()))
                     {
                         choices.push(DeathReplacement {
                             unit_id: unit.id,

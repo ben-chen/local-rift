@@ -56,6 +56,8 @@ pub struct PassiveRule {
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct PassiveContribution {
     pub source: BoardObject,
+    /// Controller of the ability; equipment effect text belongs to its bearer.
+    pub controller: usize,
     pub card_id: CardId,
     pub rule_index: usize,
     pub active: bool,
@@ -67,6 +69,7 @@ pub struct PassiveContribution {
 #[derive(Clone, Copy, Debug)]
 pub(crate) struct PassiveMatch {
     pub source: BoardObject,
+    pub controller: usize,
     pub card_id: CardId,
     pub rule_index: usize,
     pub active: bool,
@@ -475,9 +478,7 @@ impl Game {
                         continue;
                     }
                     let recipient = match rule.recipients {
-                        Recipients::AttachedBearer => {
-                            owner == player && attachment == Some(unit_id)
-                        }
+                        Recipients::AttachedBearer => attachment == Some(unit_id),
                         Recipients::FriendlyTokenUnits => {
                             owner == player
                                 && self.players[player]
@@ -510,6 +511,13 @@ impl Game {
                     if !recipient {
                         continue;
                     }
+                    // Effect-panel text is appended to the bearer. Keep the
+                    // gear as provenance, but evaluate "you" for the bearer.
+                    let rules_controller = if rule.recipients == Recipients::AttachedBearer {
+                        player
+                    } else {
+                        owner
+                    };
                     let source_active = match rule.condition {
                         SourceCondition::Always => true,
                         SourceCondition::BearerAttachmentThisTurn => match source {
@@ -519,10 +527,10 @@ impl Game {
                             _ => false,
                         },
                         SourceCondition::BearerExactlyOneOtherFriendlyUnitHere => attachment
-                            .and_then(|id| self.players[owner].units.iter().find(|u| u.id == id))
+                            .and_then(|id| self.players[player].units.iter().find(|u| u.id == id))
                             .and_then(|u| u.lane)
                             .is_some_and(|lane| {
-                                self.players[owner]
+                                self.players[player]
                                     .units
                                     .iter()
                                     .filter(|u| u.lane == Some(lane))
@@ -543,13 +551,13 @@ impl Game {
                             matches!(source, BoardObject::Unit { unit_id, .. } if self.buffed_units.contains(&unit_id))
                         }
                         SourceCondition::ControllerRunesAtLeast(count) => {
-                            self.players[owner].total_runes() >= count
+                            self.players[rules_controller].total_runes() >= count
                         }
                         SourceCondition::ControllerXpAtLeast(count) => {
-                            self.players[owner].xp >= u64::from(count)
+                            self.players[rules_controller].xp >= u64::from(count)
                         }
                         SourceCondition::ControllerGainedXpThisTurn => {
-                            self.gained_xp_this_turn(owner)
+                            self.gained_xp_this_turn(rules_controller)
                         }
                         SourceCondition::OtherFriendlyHere => match source {
                             BoardObject::Unit { unit_id, .. } => self.players[owner]
@@ -604,6 +612,7 @@ impl Game {
                             || self.object_empowered(target));
                     result.push(PassiveMatch {
                         source,
+                        controller: rules_controller,
                         card_id,
                         rule_index,
                         active,
@@ -669,6 +678,7 @@ impl Game {
                 };
                 Ok(PassiveContribution {
                     source: entry.source,
+                    controller: entry.controller,
                     card_id: entry.card_id,
                     rule_index: entry.rule_index,
                     active: entry.active,

@@ -133,14 +133,8 @@ impl Game {
             Target::Gear { player, gear_id } => {
                 let state = self.players.get(player)?;
                 let gear = state.gear.iter().find(|g| g.id == gear_id)?;
-                let lane = self.gear_location(player, gear_id);
-                (
-                    player,
-                    gear.card_id,
-                    gear.token,
-                    CardKind::Gear,
-                    BoardLocation::from_lane(player, lane),
-                )
+                let location = self.gear_board_location(player, gear_id)?;
+                (player, gear.card_id, gear.token, CardKind::Gear, location)
             }
             _ => return None,
         };

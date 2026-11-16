@@ -1,0 +1,146 @@
+{
+  "status": "Cross-controller equipment foundation passed local engine, client, lint and native checks; no control-changing card is admitted.",
+  "reviewed_at": "2026-11-16T23:43:23.138303+00:00",
+  "base_revision": "67a3c080aecbe2e14f741ec91db24a9032d7851c",
+  "source_review": "assets/data/card_admissions/irelia_control/source_review.json",
+  "rules": [
+    "Core 718.2: printed gear abilities are inactive while attached. An explicit permission can reattach gear; ordinary printed Equip is unavailable until detached.",
+    "Core 718.3 and 718.5: equipment text belongs to its bearer, while control of the physical gear remains independent.",
+    "Core 719.3 and 107.1.c.1: attached gear shares its bearer's actual location, including an opposing base.",
+    "Core 323.6: unattached permanents in an opposing base are recalled to their controller's base during cleanup.",
+    "Core 191.5.b: a pending ability retains its controller after the source changes control."
+  ],
+  "implementation": [
+    "Find attachments across both players; preserve the gear controller and return gear to its own owner when destroyed. Guardian Angel protects its bearer across controllers; opposing Zhonya's Hourglass does not.",
+    "Evaluate granted passives and triggers using the bearer's controller. Preserve the gear as provenance. Rust passive contributions expose the rules controller separately from the source.",
+    "Track actual base identity after detachment until cleanup. Full board-target locations distinguish the two bases; dangling attachments have no valid location.",
+    "Resolve generic stored trigger sources by persistent physical identity. Keep the pending ability controller and per-object once-per-turn history when control changes. This is not a complete stored-target audit.",
+    "Show foreign-controlled gear on unit badges and attachment lists, open the correct physical gear inspector, and display the bearer's XP for granted Level effects."
+  ],
+  "validation": {
+    "new_engine_tests": 10,
+    "library_tests": 1161,
+    "library_failed": 0,
+    "library_ignored": 0,
+    "client_tests": 172,
+    "new_client_tests": 1,
+    "clippy": "all targets, -D warnings, passed",
+    "source_tests": 1,
+    "card_source_subtests": 2,
+    "native_cases": 2,
+    "native_captures": 12,
+    "native_actual_games": 0,
+    "native_initial_state": "Authored foreign-controller attachment state; subsequent badge, list, inspector and close controls use actual native clicks.",
+    "native_report": {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/control-native-v1/report.json",
+      "sha256": "b8e29832671642fbe36c7eaf2a95ce4553594ad44d9ed185f8e9bc316cb24efb"
+    },
+    "visually_reviewed": [
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/control-native-v1/small/rift_control_gear_list_own.png",
+        "sha256": "12b386c730863b4497f1be280ffbd9e44c2e0f4d03aa3d217d0c257396483563"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/control-native-v1/small/rift_control_gear_inspect_own.png",
+        "sha256": "8cc956e1c3d1a0a654123ee06dcb1a3b74433add5334b582ef1c06b428cfd0bf"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/control-native-v1/normal/rift_control_gear_unit_opponent.png",
+        "sha256": "adeb85398d333c682e9369b613dc1869bd22d5026da216981d611be23b5cfac2"
+      }
+    ],
+    "visual_findings": "Viewed small-window attachment list and Soul Sword inspector plus normal-window opponent unit hover. Both equipment pieces are visible, the inspector identifies the gear controller, and the unit hover reports the bearer's 3 XP with the active Level bonus. Long content uses the existing scrollable inspector.",
+    "logs": [
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/control-gear-v1.log",
+        "sha256": "3eb060f37ae45a2d2a3bbb42310f76f524577e50649a6f6ca170054905daf668"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/control-library-v2.log",
+        "sha256": "ff604d52176b992e5bed86210534ac0bebf7cd99d6560d71beda2fe5b4fc0781"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/control-library-v3.log",
+        "sha256": "0a1a5de6c4af3e742c97030e794fb2b2dcec7bf1fb8ff2962e0f057efd590d67"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/control-client-v1.log",
+        "sha256": "c46460cc9043d53227ee603dced9cf6190e8ee3693d14f3347475bddccdfa56a"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/control-build-v1.log",
+        "sha256": "1141718db3950c1b546f94431929c6501f7bba59cf4703b025200ae630f85260"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/control-clippy-v2.log",
+        "sha256": "0d2ba810afe94b43e555c1522a3be89adeb9a86f07354318cbc7232d1f86d128"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/control-source-v2.log",
+        "sha256": "af77ac7821c19a050bf38cedc64946d04fea1a0138ef006b8886068ef55578c7"
+      }
+    ],
+    "tested_files": [
+      {
+        "path": "/home/benchen/.cache/local-rift-work/irelia-control/src/control_gear_tests.rs",
+        "sha256": "360dba94bf5a47e4c2c021d74d156c99c60b710f58cece8f9470a401988a1617"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/irelia-control/src/game.rs",
+        "sha256": "66c68a25a95ccc9384fb0b756055bc61115b1e95627c1d0a6ccc86d58466b8da"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/irelia-control/src/gear.rs",
+        "sha256": "b9bfb6d82a106d81b9743cee4a25757117f725eb68894df69163579ca5bd41a8"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/irelia-control/src/ownership.rs",
+        "sha256": "a167cbfa146582bec07bad364666c01f040c298223e06dd7a324ccdf75947ab8"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/irelia-control/src/continuous.rs",
+        "sha256": "9abf6f4d2c7f63696bc3903c9c822b6e6aa8475010025b65f0e32bc3a225cde0"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/irelia-control/src/triggers.rs",
+        "sha256": "1195c3f028a921c11efa5ba50528e5f9d345a72e7c80be1df4d2d41f477f312f"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/irelia-control/src/board_targets.rs",
+        "sha256": "cf2d37bf8a042981cfd1ff6db347301684deb7fddab8f7f05d3a4a86cd465f7e"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/irelia-control/src/numeric.rs",
+        "sha256": "4bae975b70a4bbf5667ced4788d20350db2b4413065cfbbe3fc7524dfe93facb"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/irelia-control/src/deploy.rs",
+        "sha256": "f744423f691bf9b1d7c276bf2903daa299f4284556522169965b387203580861"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/irelia-control/src/main.rs",
+        "sha256": "c7839c1028f437694d0c00573cba66beef5585545826f962be3ffc2fcab4138a"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/irelia-control/src/smoke/conditional_equipment.rs",
+        "sha256": "5292de81a091f67409394a5354d88605b2ff4856fd171cbf07d05ee707f87e20"
+      }
+    ]
+  },
+  "findings_corrected": [
+    "Review found that the live passive calculation used bearer XP but the inspector still described gear-controller XP. A both-seat regression now checks active/inactive Level text on both the unit and gear inspectors.",
+    "The source contract now distinguishes explicit reattachment permissions from the inactive printed Equip ability."
+  ],
+  "remaining_before_card_admission": [
+    "Actual control-transfer operation with contest/combat cleanup ordering and ownership preservation.",
+    "All stored target/reference paths, with live friendly/enemy revalidation and absolute-base instructed replay.",
+    "Possession and Conscription targeting, optional XP payment, rollback, AI and public observations.",
+    "Ownership-aware conservation checks and end-to-end card play, API and installed acceptance."
+  ],
+  "limits": [
+    "Foreign-control initial states are authored; these tests do not prove a playable control-changing action.",
+    "The JSON observation contract has not yet been extended to expose separate ownership and granted-ability controller.",
+    "No new preset or card is enabled. All-current-card coverage, full Standard parity, expert strength and human learning remain unproven.",
+    "The concurrently accepted entry release is a separate revision without these changes."
+  ]
+}

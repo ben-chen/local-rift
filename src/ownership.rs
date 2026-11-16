@@ -2,6 +2,20 @@
 use super::*;
 
 impl Game {
+    /// Physical board identity survives changes of control. This lookup is for
+    /// stored references; it does not bypass validation of submitted targets.
+    pub fn unit_controller(&self, unit_id: u32) -> Option<usize> {
+        self.players
+            .iter()
+            .position(|state| state.units.iter().any(|unit| unit.id == unit_id))
+    }
+
+    pub fn gear_controller(&self, gear_id: u32) -> Option<usize> {
+        self.players
+            .iter()
+            .position(|state| state.gear.iter().any(|gear| gear.id == gear_id))
+    }
+
     /// Ownership of a current unit or gear, independently of its controller.
     /// An invalid or departed board reference has no owner in this query.
     pub fn board_owner(&self, target: Target) -> Option<usize> {
@@ -30,6 +44,7 @@ impl Game {
     /// Called once when a physical board object departs, after any replacement
     /// that keeps it on the board has been handled. Tokens also clear the entry.
     pub(crate) fn departed_board_owner(&mut self, controller: usize, id: u32) -> usize {
+        self.detached_gear_bases.remove(&id);
         self.board_owner_overrides.remove(&id).unwrap_or(controller)
     }
 }

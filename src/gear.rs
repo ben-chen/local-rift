@@ -9,6 +9,7 @@
 #[cfg(test)]
 use crate::cards::Domain;
 use crate::cards::{CardId, CardKind};
+use crate::game::board_targets::BoardLocation;
 use crate::game::{
     Action, ChainAbility, Game, Phase, Target, TriggeredAbility, UnitKeywords, domain_index,
 };
@@ -102,6 +103,7 @@ impl Game {
             return false;
         }
         gear.attached_to = Some(unit_id);
+        self.detached_gear_bases.remove(&gear_id);
         let name = self.catalog[gear.card_id].name;
         self.gear_attachments_this_turn
             .retain(|(id, _)| *id != gear_id);
@@ -143,7 +145,22 @@ impl Game {
         }
     }
 
-    pub fn gear_location(&self, player: usize, gear_id: u32) -> Option<usize> {
+    /// A bearer can have a different controller from its equipment (CR718.5).
+    pub fn attached_gear(&self, unit_id: u32) -> impl Iterator<Item = (usize, &GearState)> {
+        self.players
+            .iter()
+            .enumerate()
+            .flat_map(move |(controller, state)| {
+                state
+                    .gear
+                    .iter()
+                    .filter(move |gear| gear.attached_to == Some(unit_id))
+                    .map(move |gear| (controller, gear))
+            })
+    }
+
+    /// Includes the actual base owner. Missing bearers have no location.
+    pub fn gear_board_location(&self, player: usize, gear_id: u32) -> Option<BoardLocation> {
         let gear = self
             .players
             .get(player)?
@@ -152,14 +169,26 @@ impl Game {
             .find(|g| g.id == gear_id)?;
         match gear.attached_to {
             Some(unit_id) => {
-                self.players[player]
+                let controller = self.unit_controller(unit_id)?;
+                let unit = self.players[controller]
                     .units
                     .iter()
-                    .find(|unit| unit.id == unit_id)?
-                    .lane
+                    .find(|unit| unit.id == unit_id)?;
+                Some(BoardLocation::from_lane(controller, unit.lane))
             }
-            None => gear.lane,
+            None => Some(BoardLocation::from_lane(
+                self.detached_gear_bases
+                    .get(&gear_id)
+                    .copied()
+                    .unwrap_or(player),
+                gear.lane,
+            )),
         }
+    }
+
+    pub fn gear_location(&self, player: usize, gear_id: u32) -> Option<usize> {
+        self.gear_board_location(player, gear_id)
+            .and_then(BoardLocation::battlefield)
     }
 
     /// Resolve playing an already paid-for gear. Gear normally enters ready
@@ -643,20 +672,20 @@ impl Game {
         {
             return false;
         }
-        let guardian = self.players[player]
-            .gear
-            .iter()
-            .find(|gear| !gear.token && gear.card_id == 10 && gear.attached_to == Some(unit_id));
+        let guardian = self
+            .attached_gear(unit_id)
+            .find(|(_, gear)| !gear.token && gear.card_id == 10);
         let hourglass = self.players[player]
             .gear
             .iter()
-            .find(|gear| !gear.token && gear.card_id == 21 && gear.attached_to.is_none());
-        let Some(gear) = guardian.or(hourglass) else {
+            .find(|gear| !gear.token && gear.card_id == 21 && gear.attached_to.is_none())
+            .map(|gear| (player, gear));
+        let Some((gear_controller, gear)) = guardian.or(hourglass) else {
             return false;
         };
         let gear_id = gear.id;
         let card_id = gear.card_id;
-        self.gear_destroy(player, gear_id);
+        self.gear_destroy(gear_controller, gear_id);
         // The official October 2025 erratum explicitly adds healing to Zhonya.
         self.recall_unit(player, unit_id, true, true);
         self.push_log(format!(
@@ -667,7 +696,10 @@ impl Game {
     }
 
     pub(crate) fn gear_replace_death(&mut self, player: usize, unit_id: u32, gear_id: u32) {
-        let Some(gear) = self.players[player]
+        let Some(gear_controller) = self.gear_controller(gear_id) else {
+            return;
+        };
+        let Some(gear) = self.players[gear_controller]
             .gear
             .iter()
             .find(|gear| gear.id == gear_id)
@@ -675,7 +707,7 @@ impl Game {
             return;
         };
         let card_id = gear.card_id;
-        self.gear_destroy(player, gear_id);
+        self.gear_destroy(gear_controller, gear_id);
         self.recall_unit(player, unit_id, true, true);
         self.push_log(format!(
             "{} prevents unit #{}'s death; it heals and recalls exhausted.",
@@ -686,16 +718,26 @@ impl Game {
     /// Called on every actual unit departure (death, banish, return to hand).
     /// A recall or move is not a departure and retains attachments.
     pub(crate) fn gear_unit_left_board(&mut self, player: usize, unit_id: u32) {
-        let lane = self.players[player]
+        let Some(unit) = self.players[player]
             .units
             .iter()
             .find(|unit| unit.id == unit_id)
-            .and_then(|unit| unit.lane);
-        for gear in &mut self.players[player].gear {
-            if gear.attached_to == Some(unit_id) {
-                gear.lane = lane;
-                gear.attached_to = None;
-                // Do not ready or exhaust a detached gear: its state persists.
+        else {
+            return;
+        };
+        let lane = unit.lane;
+        for (controller, state) in self.players.iter_mut().enumerate() {
+            for gear in &mut state.gear {
+                if gear.attached_to == Some(unit_id) {
+                    gear.lane = lane;
+                    gear.attached_to = None;
+                    if lane.is_none() && player != controller {
+                        self.detached_gear_bases.insert(gear.id, player);
+                    } else {
+                        self.detached_gear_bases.remove(&gear.id);
+                    }
+                    // Do not ready or exhaust a detached gear: its state persists.
+                }
             }
         }
     }
@@ -706,10 +748,12 @@ impl Game {
         for state in &mut self.players {
             for gear in &mut state.gear {
                 if gear.attached_to.is_none()
-                    && (gear.token
+                    && (self.detached_gear_bases.contains_key(&gear.id)
+                        || gear.token
                         || !rules::static_abilities(gear.card_id).contains(&StaticAbility::Deploy))
                 {
                     gear.lane = None;
+                    self.detached_gear_bases.remove(&gear.id);
                 }
             }
         }
@@ -772,11 +816,10 @@ impl Game {
     }
 
     pub(crate) fn gear_conquer_hold(&mut self, player: usize, unit_id: u32) {
-        let sources: Vec<_> = self.players[player]
-            .gear
-            .iter()
-            .filter(|gear| !gear.token && gear.card_id == 38 && gear.attached_to == Some(unit_id))
-            .map(|gear| gear.id)
+        let sources: Vec<_> = self
+            .attached_gear(unit_id)
+            .filter(|(_, gear)| !gear.token && gear.card_id == 38)
+            .map(|(_, gear)| gear.id)
             .collect();
         for gear_id in sources {
             self.queue_ability(
