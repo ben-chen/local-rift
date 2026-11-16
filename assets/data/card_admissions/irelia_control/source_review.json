@@ -1,0 +1,223 @@
+{
+  "status": "Official faces and current rules reviewed; control cards remain unavailable pending runtime implementation and acceptance.",
+  "reviewed_on": "2026-11-16",
+  "base_revision": "a4a7e445996fc899078473c38898622083379f3a",
+  "records": [
+    {
+      "official_id": "ogn-203-298",
+      "raw_printing": {
+        "official_id": "ogn-203-298",
+        "public_code": "OGN-203/298",
+        "name": "Possession",
+        "set": "OGN",
+        "collector_number": 203,
+        "types": [
+          "spell"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "spell"
+        ],
+        "accessibility_types": [
+          "spell"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "chaos"
+        ],
+        "energy": 8,
+        "power": 3,
+        "might": null,
+        "might_bonus": null,
+        "rules_html": "<p>[Action] (Play on your turn or in showdowns.)<br />Choose an enemy unit at a battlefield. Take control of it and recall it. (Send it to your base. This isn't a move.)</p>",
+        "rules_text": "[Action] (Play on your turn or in showdowns.)\nChoose an enemy unit at a battlefield. Take control of it and recall it. (Send it to your base. This isn't a move.)",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [],
+        "rarity": "epic",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/f26462174fd01407f25f7d49a70862d2b9af35cc-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Spell: Possession. [Action] (Play on your turn or in showdowns.)\nChoose an enemy unit at a battlefield. Take control of it and recall it. (Send it to your base. This isn't a move.)",
+        "illustrators": [
+          "League of Legends"
+        ]
+      },
+      "raw_printing_sha256": "d2049e8258767e3b40b835a42f25a2df63062a2bcc43cf9fc9b4a44526c2be0a",
+      "effective": {
+        "types": [
+          "spell"
+        ],
+        "super_types": [],
+        "domains": [
+          "chaos"
+        ],
+        "energy": 8,
+        "power": 3,
+        "might": null,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>[Action] (Play on your turn or in showdowns.)<br />Choose an enemy unit at a battlefield. Take control of it and recall it. (Send it to your base. This isn't a move.)</p>",
+        "rules_text": "[Action] (Play on your turn or in showdowns.)\nChoose an enemy unit at a battlefield. Take control of it and recall it. (Send it to your base. This isn't a move.)",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "original_image": {
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/f26462174fd01407f25f7d49a70862d2b9af35cc-744x1039.png?accountingTag=RB",
+        "path": "assets/data/card_admissions/irelia_control/ogn-203-298.png",
+        "sha256": "977ed4b5ec81cc5d7a6ff86886ac54ee1d19d88dc9519695d92b9d4c481932fb",
+        "bytes": 1010280,
+        "dimensions": [
+          744,
+          1039
+        ]
+      },
+      "visual_review": {
+        "actual_full_face_viewed": true,
+        "reviewed_on": "2026-11-16",
+        "printed_facts": {
+          "types": [
+            "spell"
+          ],
+          "super_types": [],
+          "domains": [
+            "chaos"
+          ],
+          "energy": 8,
+          "power": 3,
+          "might": null,
+          "tags": [],
+          "rules_text": "[Action] (Play on your turn or in showdowns.)\nChoose an enemy unit at a battlefield. Take control of it and recall it. (Send it to your base. This isn't a move.)"
+        },
+        "notes": "Viewed the complete unmodified official face, including cost, domain, card type, text and collector number."
+      }
+    },
+    {
+      "official_id": "unl-140-219",
+      "raw_printing": {
+        "official_id": "unl-140-219",
+        "public_code": "UNL-140/219",
+        "name": "Conscription",
+        "set": "UNL",
+        "collector_number": 140,
+        "types": [
+          "spell"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "spell"
+        ],
+        "accessibility_types": [
+          "spell"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "chaos"
+        ],
+        "energy": 5,
+        "power": 2,
+        "might": null,
+        "might_bonus": null,
+        "rules_html": "<p>You may spend 5 XP as an additional cost to play this.<br />Choose an enemy unit at a battlefield with 3 :rb_might: or less. If you paid the additional cost, choose any enemy unit at a battlefield instead. Take control of it, exhaust it, and recall it.</p>",
+        "rules_text": "You may spend 5 XP as an additional cost to play this.\nChoose an enemy unit at a battlefield with 3 Might or less. If you paid the additional cost, choose any enemy unit at a battlefield instead. Take control of it, exhaust it, and recall it.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [],
+        "rarity": "rare",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/1c05bff48666586a2b3552b5638deaf20d9006f7-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Spell: Conscription. You may spend 5 XP as an additional cost to play this.\nChoose an enemy unit at a battlefield with 3 [S] or less. If you paid the additional cost, choose any enemy unit at a battlefield instead. Take control of it, exhaust it, and recall it.",
+        "illustrators": [
+          "Kudos Productions"
+        ]
+      },
+      "raw_printing_sha256": "dcb3fd400efa398bf60837ef9ecd366461e92e3cc3f38768be487381bb5839ad",
+      "effective": {
+        "types": [
+          "spell"
+        ],
+        "super_types": [],
+        "domains": [
+          "chaos"
+        ],
+        "energy": 5,
+        "power": 2,
+        "might": null,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>You may spend 5 XP as an additional cost to play this.<br />Choose an enemy unit at a battlefield with 3 :rb_might: or less. If you paid the additional cost, choose any enemy unit at a battlefield instead. Take control of it, exhaust it, and recall it.</p>",
+        "rules_text": "You may spend 5 XP as an additional cost to play this.\nChoose an enemy unit at a battlefield with 3 Might or less. If you paid the additional cost, choose any enemy unit at a battlefield instead. Take control of it, exhaust it, and recall it.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "original_image": {
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/1c05bff48666586a2b3552b5638deaf20d9006f7-744x1039.png?accountingTag=RB",
+        "path": "assets/data/card_admissions/irelia_control/unl-140-219.png",
+        "sha256": "9eda421598264cbc8e666e0d69ef61ef0fb3309fbbb08907644ae5a9011f098b",
+        "bytes": 680592,
+        "dimensions": [
+          744,
+          1039
+        ]
+      },
+      "visual_review": {
+        "actual_full_face_viewed": true,
+        "reviewed_on": "2026-11-16",
+        "printed_facts": {
+          "types": [
+            "spell"
+          ],
+          "super_types": [],
+          "domains": [
+            "chaos"
+          ],
+          "energy": 5,
+          "power": 2,
+          "might": null,
+          "tags": [],
+          "rules_text": "You may spend 5 XP as an additional cost to play this.\nChoose an enemy unit at a battlefield with 3 Might or less. If you paid the additional cost, choose any enemy unit at a battlefield instead. Take control of it, exhaust it, and recall it."
+        },
+        "notes": "Viewed the complete unmodified official face, including cost, domain, card type, text and collector number."
+      }
+    }
+  ],
+  "preserved_runtime_prefix": {
+    "card_count": 468,
+    "cards_sha256": "ccf4063f466a252041f1c9fa771ef8c15fc521d84add12ad00cff58d37d64c7b",
+    "preset_count": 7,
+    "presets_sha256": "e975739d803427e54928d6e6cd03d1ce51d7ad108f4e247b8a000acf037a5cdb"
+  },
+  "rules_review": {
+    "hub": "https://playriftbound.com/en-us/rules-hub/",
+    "hub_checked_on": "2026-11-16",
+    "core_date": "2026-10-09",
+    "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/5c7946f7c3b8c6e0faff85ab6dadc6d2e721ea94.pdf",
+    "sha256": "94d41fee86f88b61c4157c0389c0595d990b98e5b42555c99d9f649ee64d1fec",
+    "sections": [
+      "056 and 127: owner and non-Board destination",
+      "107.1.c.1, 718.5.e-g and 719.3: attached gear can have a different controller and follows the bearer",
+      "190.3.a.2 and 323: control change, contested status and cleanup",
+      "191.5.b: pending abilities retain their controller",
+      "355 and 356: targets, optional additional costs and finalization",
+      "359.3: resolution and live target legality",
+      "Recall: base destination differs from Move"
+    ]
+  },
+  "implementation_contract": [
+    "Track ownership independently from the current controller. Return, Kill, Banish and Recycle use the owner for non-Board destinations; Recall uses the current controller's base.",
+    "Possession chooses an enemy unit at a battlefield. On resolution it changes control then Recalls that same physical object. It does not implicitly Ready, Exhaust, Heal, Play or Move it.",
+    "Conscription declares an optional 5 XP additional cost before payment. Without that choice its target must have at most 3 Might; paying widens the target requirement. Resolve control, Exhaust and Recall in printed order.",
+    "Recheck the appropriate live target requirements after responses. Losing the battlefield or enemy requirement can invalidate the target. A paid optional cost remains attached to the play across staged payment and rollback.",
+    "Attached gear keeps its controller and owner when its bearer changes control. It still contributes Might and effect text, follows the bearer even into the opposing base, and detaches normally on departure. Its controller can later Equip it to a legal friendly unit.",
+    "A pending ability retains its controller after its source changes control. Board references must retain physical identity across control changes, while live friendly/enemy and location requirements are rechecked.",
+    "Existing object statuses and applicable duration restrictions persist through control changes; leaving the board and replaying creates a new board object.",
+    "Record contested status for control changes at battlefields, then apply cleanup after the full resolving action. Conscription and Possession Recall before that cleanup; do not invent an intermediate combat.",
+    "Conservation checks must reconstruct each owner's cards across both controllers' board areas. Tokens disappear on leaving the board and are not physical deck cards.",
+    "Expose controller, owner and cross-controller attachments consistently in API observations, native inspection and coaching. Use public information only."
+  ],
+  "scope": [
+    "Adds source evidence for two additional Chaos practice options, not a claim of current Irelia metagame prevalence.",
+    "The current source catalog marks both cards Standard-legal; the November 23 announcement is already represented in format_updates.json and does not name these cards.",
+    "No runtime card or sourced preset is added by this review.",
+    "Spell control, temporary control, and gear control require further source-specific implementation; these are not certified by permanent unit control."
+  ]
+}
