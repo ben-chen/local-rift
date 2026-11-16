@@ -680,6 +680,7 @@ impl App {
     }
     fn extended_choices(&self, view: &PlayChoiceView) -> bool {
         local_rift::rules::chooses_move_destination(view.card_id)
+            || view.entry_ready.is_some()
             || !view.show_off.is_empty()
             || view.unit_cost.is_some()
             || !view.modes.is_empty()
@@ -745,6 +746,8 @@ impl App {
             choices,
             execution: 0,
             open: !view.show_off.is_empty()
+                || view.entry_ready.is_some()
+                || (view.card_id == 466 && view.bonus.is_some())
                 || view.unit_cost.is_some()
                 || !view.modes.is_empty()
                 || local_rift::rules::chooses_move_destination(view.card_id),
@@ -1025,7 +1028,9 @@ impl App {
                 }
             }
             self.ui.text(
-                if view.show_off.is_empty() {
+                if matches!(view.card_id, 466 | 467) {
+                    "OPTIONAL READY ENTRY"
+                } else if view.show_off.is_empty() {
                     "OPTIONAL REPEATS · select independently"
                 } else {
                     "OPTIONAL REPEATS"
@@ -1103,8 +1108,19 @@ impl App {
                 }
             }
             if view.repeats.is_empty() {
-                self.ui
-                    .text("This play has no Repeat costs.", 260.0, 746.0, 12.0, MUTED);
+                if matches!(view.card_id, 466 | 467) {
+                    self.ui.wrapped_lines(
+                        if view.card_id == 467 {
+                            "Enter ready for free, but this unit cannot move for the rest of this turn. Leave the option off to decline that restriction."
+                        } else {
+                            "You played a spell this turn. You may pay 1 Chaos Power to have Guardian enter ready. Leave the option off to save that Power."
+                        },
+                        260.0, 738.0, 400.0, 13.0, MUTED, 4,
+                    );
+                } else {
+                    self.ui
+                        .text("This play has no Repeat costs.", 260.0, 746.0, 12.0, MUTED);
+                }
                 let selected_mode = if draft.execution == 0 {
                     draft.choices.mode
                 } else {
@@ -1129,8 +1145,17 @@ impl App {
                 }
             }
         }
-        self.ui
-            .text("EDIT TARGETS FOR EACH EXECUTION", 695.0, 708.0, 10.0, GOLD);
+        self.ui.text(
+            if matches!(view.card_id, 466 | 467) {
+                "PLAY OPTIONS"
+            } else {
+                "EDIT TARGETS FOR EACH EXECUTION"
+            },
+            695.0,
+            708.0,
+            10.0,
+            GOLD,
+        );
         if self.ui.button(
             Rect::new(980.0, 690.0, 128.0, 22.0),
             "Review costs",
@@ -1150,52 +1175,55 @@ impl App {
         }
         let count = draft.choices.repeats.len() + 1;
         let first = (draft.execution / 3) * 3;
-        for execution in first..count.min(first + 3) {
-            let mut label = if execution == 0 {
-                "Original".into()
-            } else {
-                format!("Repeat {execution}")
-            };
-            if local_rift::rules::play_target_spec(view.card_id).kind
-                == Some(local_rift::rules::PlayTargetKind::Battlefield)
-            {
-                let targets = if execution == 0 {
-                    &self.targets
+        let entry_only = matches!(view.card_id, 466 | 467);
+        if !entry_only {
+            for execution in first..count.min(first + 3) {
+                let mut label = if execution == 0 {
+                    "Original".into()
                 } else {
-                    &draft.choices.repeats[execution - 1].choices.targets
+                    format!("Repeat {execution}")
                 };
-                label.push_str(&match targets.first() {
-                    Some(Target::Battlefield { lane }) => format!(" · F{}", lane + 1),
-                    _ => " · ?".into(),
-                });
+                if local_rift::rules::play_target_spec(view.card_id).kind
+                    == Some(local_rift::rules::PlayTargetKind::Battlefield)
+                {
+                    let targets = if execution == 0 {
+                        &self.targets
+                    } else {
+                        &draft.choices.repeats[execution - 1].choices.targets
+                    };
+                    label.push_str(&match targets.first() {
+                        Some(Target::Battlefield { lane }) => format!(" · F{}", lane + 1),
+                        _ => " · ?".into(),
+                    });
+                }
+                if self.ui.button(
+                    Rect::new(
+                        695.0 + (execution - first) as f32 * 104.0,
+                        719.0,
+                        98.0,
+                        27.0,
+                    ),
+                    &label,
+                    draft.execution == execution,
+                    true,
+                ) {
+                    draft.execution = execution;
+                }
+            }
+            if self
+                .ui
+                .button(Rect::new(1010.0, 719.0, 43.0, 27.0), "<", false, first > 0)
+            {
+                draft.execution = first - 1;
             }
             if self.ui.button(
-                Rect::new(
-                    695.0 + (execution - first) as f32 * 104.0,
-                    719.0,
-                    98.0,
-                    27.0,
-                ),
-                &label,
-                draft.execution == execution,
-                true,
+                Rect::new(1062.0, 719.0, 43.0, 27.0),
+                ">",
+                false,
+                first + 3 < count,
             ) {
-                draft.execution = execution;
+                draft.execution = first + 3;
             }
-        }
-        if self
-            .ui
-            .button(Rect::new(1010.0, 719.0, 43.0, 27.0), "<", false, first > 0)
-        {
-            draft.execution = first - 1;
-        }
-        if self.ui.button(
-            Rect::new(1062.0, 719.0, 43.0, 27.0),
-            ">",
-            false,
-            first + 3 < count,
-        ) {
-            draft.execution = first + 3;
         }
         let modal = !view.modes.is_empty();
         let movement = local_rift::rules::chooses_move_destination(view.card_id);
@@ -1257,7 +1285,15 @@ impl App {
         } else {
             &draft.choices.repeats[draft.execution - 1].choices.targets
         };
-        let hint = if matches!(view.card_id, 426 | 442 | 443) || movement {
+        let hint = if entry_only {
+            if draft.choices.entry_ready {
+                "Selected: enter ready; cannot move this turn.".into()
+            } else if draft.choices.bonus {
+                "Selected: pay the additional Chaos cost to enter ready.".into()
+            } else {
+                "Ready entry is optional. Select it below, or play without it.".into()
+            }
+        } else if matches!(view.card_id, 426 | 442 | 443) || movement {
             let action = Action::WithPlayChoices {
                 action: Box::new(strip_options(self.selected_play_action().unwrap())),
                 choices: draft.choices.clone(),
@@ -1378,6 +1414,20 @@ impl App {
             }
             x += 208.0;
         }
+        if let Some(label) = view.entry_ready {
+            if self.ui.button(
+                Rect::new(x, 836.0, 198.0, 29.0),
+                "Enter ready · no moving",
+                draft.choices.entry_ready,
+                true,
+            ) {
+                draft.choices.entry_ready = !draft.choices.entry_ready;
+            }
+            if self.ui.hover(Rect::new(x, 836.0, 198.0, 29.0)) {
+                self.ui.text(label, x, 881.0, 9.0, TEAL);
+            }
+            x += 208.0;
+        }
         if let Some(optional) = &view.bonus {
             if self.ui.button(
                 Rect::new(x, 836.0, 198.0, 29.0),
@@ -1418,6 +1468,7 @@ impl App {
             && !movement
             && view.accelerate.is_none()
             && view.bonus.is_none()
+            && view.entry_ready.is_none()
             && self.ui.button(
                 Rect::new(695.0, 836.0, 413.0, 29.0),
                 "Review cost reductions and order",

@@ -17,6 +17,8 @@ mod deathgrip;
 mod disarm;
 mod discord;
 mod entourage;
+mod entry;
+pub(super) use entry::run_frame as run_entry_frame;
 mod fields;
 mod flurry;
 pub(super) use fields::run_frame as run_fields_frame;

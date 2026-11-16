@@ -86,3 +86,12 @@ acceptance. The fixed candidate passed 2,070 Rust tests, 341 source checks,
 14 API campaigns with 99 full records matching local baselines. Four installed
 captures were visually reviewed, including private-choice concealment and
 small-window explanations. See [battlefield validation](validation/irelia_fields.json).
+
+Crescent Guardian and Entrenched Boar have separate optional entry choices,
+shared native/API behavior and both Mote advice levels. Local checks passed
+1,145 library tests, 171 client tests, 14 catalog integration tests, 342 source
+checks and 18 native captures at two sizes. Six authored series completed
+13 games across both seats and all three AI levels. The 14 prior API campaigns
+also passed, with nine changed Strategic records retained for review rather
+than claimed identical. Immutable installed acceptance remains pending; see
+[entry validation](validation/irelia_entry.json).

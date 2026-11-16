@@ -282,3 +282,17 @@ validation, and immutable installed acceptance passed. Their [source review](../
 and [validation record](validation/irelia_fields.json) preserve the source limits.
 The seven tournament presets are unchanged; the additional match registrations
 are authored coverage checks. This work does not replace the goal of all legal cards.
+
+## Optional ready entry
+
+Crescent Guardian and Entrenched Boar add two Calm/Chaos-eligible units with
+different entry decisions: Guardian's conditional additional Chaos cost and
+Boar's free option that prevents movement for the turn. Their complete official
+faces and effective facts were reviewed in [the admission record](../assets/data/card_admissions/irelia_entry/source_review.json).
+The API and native controls expose these choices separately from Accelerate;
+Mote explains them at both advice levels. [Validation](validation/irelia_entry.json)
+distinguishes exact rules scenarios from authored full-match coverage.
+
+These additions do not change the seven sourced tournament presets or establish
+that either card is currently prevalent in competitive Irelia lists. The broader
+goal remains all legal cards and verified end-to-end practice.

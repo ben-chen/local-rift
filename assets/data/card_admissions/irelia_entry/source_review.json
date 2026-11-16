@@ -1,5 +1,5 @@
 {
-  "status": "Printed source reviewed; runtime implementation and acceptance pending.",
+  "status": "Source review and local runtime, API, client and full-source checks passed; immutable installed acceptance pending.",
   "reviewed_on": "2026-11-16",
   "base_revision": "7fdbe2bbc220fea96589103f9990987bf3d1a6b0",
   "records": [
@@ -95,6 +95,17 @@
           "rules_text": "If you've played a spell this turn, you may pay [Chaos Power] as an additional cost to play me. If you do, I enter ready."
         },
         "notes": "Viewed the complete unmodified official face, including cost, Might, domain icon, unit type, region tag, name, rules and collector number."
+      },
+      "runtime_id": 466,
+      "runtime_image": {
+        "path": "assets/art/card_466.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/0ff22e9a517d029fd17cfbbbc93ca2f90c2c676c-744x1039.png?w=280&q=85&fm=png",
+        "sha256": "9c441ce8de6a04d8d0fed4a7807034e132045dddc81d18e8da3c4405bb96ed9f",
+        "bytes": 168280,
+        "dimensions": [
+          280,
+          391
+        ]
       }
     },
     {
@@ -183,6 +194,17 @@
           "rules_text": "You may have me enter ready. If you do, I can't move this turn."
         },
         "notes": "Viewed the complete unmodified official face, including cost, Might, domain icon, unit type, region tag, name, rules and collector number."
+      },
+      "runtime_id": 467,
+      "runtime_image": {
+        "path": "assets/art/card_467.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/8d8688f43e219f7f4b5f5fd17cff204dcebc3bdc-744x1039.png?w=280&q=85&fm=png",
+        "sha256": "12cca06757e281a6cefb8f41d178509e4600be6a3e70b0b6fd58df89c90f1146",
+        "bytes": 172392,
+        "dimensions": [
+          280,
+          391
+        ]
       }
     }
   ],

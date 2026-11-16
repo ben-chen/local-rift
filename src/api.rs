@@ -28,6 +28,8 @@ mod deploy;
 #[cfg(test)]
 mod discord_tests;
 mod empowered;
+#[cfg(test)]
+mod entry_tests;
 mod fields;
 mod numeric;
 mod play_choices;

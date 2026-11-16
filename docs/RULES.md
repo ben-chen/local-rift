@@ -720,3 +720,25 @@ instruction rather than teaching it as the Predict keyword.
 
 Local rules, API, complete-match, native and immutable installed checks passed
 for these additions. See [battlefield validation](validation/irelia_fields.json).
+
+## Crescent Guardian and Entrenched Boar
+
+Crescent Guardian offers its optional 1 Chaos Power additional cost only after
+its controller has finalized a spell during the current turn. A countered spell
+still qualifies (Core 420.4.b). Selecting that cost grants ready entry even if
+an applicable discount reduces the cost to zero. Declining saves the extra cost.
+
+Entrenched Boar instead has a free optional entry replacement. Accepting it
+makes that physical unit enter ready and prevents both standard and effect Moves
+for the rest of the turn. Readying it again does not remove the restriction.
+Corrective Recall, returning to hand and banishing are distinct from Move.
+Returning and replaying the card creates a new object with a fresh entry choice.
+Declining Boar's option leaves other ready-entry grants available without adding
+Boar's movement restriction. The restriction follows the physical object across
+a controller change; the current admitted card set has no control-transfer card.
+
+Entering ready is an initial-state replacement, not a Ready action (Core 370,
+416). Warden therefore does not prevent ready entry at base, although its
+separate restriction still prevents unit plays at battlefields. UI, instructed
+plays and bots use the same choices. See [entry validation](validation/irelia_entry.json)
+for the tested scope and pending release checks.

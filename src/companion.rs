@@ -437,6 +437,7 @@ fn checked_advice(game: &Game, level: AdviceLevel) -> Result<Vec<&'static str>, 
         window_tips.extend(flurry_advice(game, beginner));
         window_tips.extend(warden_advice(game, beginner));
         window_tips.extend(discord_advice(game, beginner));
+        window_tips.extend(entry_advice(game, beginner));
         if let Some(tip) = sands_advice(game, beginner) {
             window_tips.push(tip);
         }
@@ -471,6 +472,7 @@ fn checked_advice(game: &Game, level: AdviceLevel) -> Result<Vec<&'static str>, 
     tips.extend(flurry_advice(game, beginner));
     tips.extend(warden_advice(game, beginner));
     tips.extend(discord_advice(game, beginner));
+    tips.extend(entry_advice(game, beginner));
 
     // High stakes scoring and visible threats come before routine suggestions.
     let enemy_has_hold = game.battlefield_owner.contains(&Some(1));
@@ -1935,6 +1937,28 @@ fn sands_advice(game: &Game, beginner: bool) -> Option<&'static str> {
         })
 }
 
+fn entry_advice(game: &Game, beginner: bool) -> Option<&'static str> {
+    let available = |card| {
+        game.players[0].hand.contains(&card)
+            || matches!(game.decision, Some(Decision::PendingPlay { player: 0, card_id, .. }) if card_id == card)
+    };
+    if available(467) {
+        Some(if beginner {
+            "Boar may enter ready for free. Accepting means it cannot move this turn, even by a spell. Declining leaves other ready-entry effects available."
+        } else {
+            "Ready Boar can pay an exhaust cost immediately, but cannot move to claim a field this turn. Decline its option if another ready-entry effect enables the move you need."
+        })
+    } else if available(466) {
+        Some(if beginner {
+            "After you play a spell this turn, Guardian offers 1 Chaos Power to enter ready. A countered spell still counts. This is separate from Accelerate."
+        } else {
+            "Sequence a useful spell before Guardian to unlock ready entry. Compare an immediate move with keeping Chaos Power for a response; the extra payment is optional."
+        })
+    } else {
+        None
+    }
+}
+
 fn discord_advice(game: &Game, beginner: bool) -> Option<&'static str> {
     (game.players[0].hand.contains(&465) || game.chain.iter().any(|item| item.card_id == 465))
         .then_some(if beginner {
@@ -2225,6 +2249,28 @@ mod tests {
             assert_eq!(advice(&game, level), advice(&hidden, level));
         }
         assert_eq!(fingerprint(&game), fingerprint(&hidden));
+    }
+
+    #[test]
+    fn entry_advice_is_brief_read_only_and_private_at_both_levels() {
+        let mut game = Game::new_for_agents(0, 0, 467, Difficulty::Easy);
+        game.start_match().unwrap();
+        for card in [466, 467] {
+            game.players[0].hand = vec![card];
+            let before = format!("{game:?}");
+            for beginner in [false, true] {
+                let tip = entry_advice(&game, beginner).unwrap();
+                assert!(tip.chars().count() <= 180);
+                let mut private = game.clone();
+                private.players[1].hand = vec![466, 467];
+                private.players[1].deck.reverse();
+                assert_eq!(entry_advice(&private, beginner), Some(tip));
+            }
+            assert_eq!(format!("{game:?}"), before);
+        }
+        game.players[0].hand.clear();
+        game.players[1].hand = vec![466, 467];
+        assert!(entry_advice(&game, true).is_none());
     }
 
     #[test]

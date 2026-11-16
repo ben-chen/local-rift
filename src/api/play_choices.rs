@@ -102,6 +102,9 @@ pub(super) fn choices_to_json(choices: &PlayChoices) -> Value {
         "choices":execution_to_json(&repeat.choices)})).collect::<Vec<_>>(),
         "accelerate":choices.accelerate,"bonus":choices.bonus,
         "cost_order":choices.cost_order.iter().map(selection_to_json).collect::<Vec<_>>()});
+    if choices.entry_ready {
+        value["entry_ready"] = json!(true);
+    }
     // Preserve the existing wire shape for non-modal plays. A selected base
     // execution mode remains explicit and independent of Repeat selections.
     if !choices.show_off.is_empty() {
@@ -166,6 +169,10 @@ pub(super) fn view_to_json(view: &PlayChoiceView) -> Value {
         "accelerate":view.accelerate.as_ref().map(|option|json!({"label":option.label,"cost":cost_to_json(&option.cost)})),
         "bonus":view.bonus.as_ref().map(|option|json!({"label":option.label,"cost":cost_to_json(&option.cost)})),
         "costs":plan_to_json(&view.costs)});
+    if let Some(label) = view.entry_ready {
+        value["entry_ready"] =
+            json!({"label":label,"prevents_movement":true,"expires":"end_of_turn","is_cost":false});
+    }
     if let Some(source) = view.legend_entry_ready {
         value["legend_entry_ready"] = chain_source_to_json(source);
     }
@@ -263,6 +270,7 @@ pub(super) fn parse_choices(value: &Value) -> Result<PlayChoices, ApiError> {
             "repeats",
             "accelerate",
             "bonus",
+            "entry_ready",
             "cost_order",
             "mode",
             "show_off",
@@ -345,6 +353,7 @@ pub(super) fn parse_choices(value: &Value) -> Result<PlayChoices, ApiError> {
         repeats,
         accelerate: flag(obj, "accelerate")?,
         bonus: flag(obj, "bonus")?,
+        entry_ready: flag(obj, "entry_ready")?,
         cost_order,
     })
 }
@@ -412,6 +421,7 @@ mod tests {
                 ],
                 accelerate: false,
                 bonus: false,
+                entry_ready: false,
                 cost_order: vec![
                     CostSelection {
                         modifier_id: 6_000_000_009,

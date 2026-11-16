@@ -321,6 +321,7 @@ pub struct Targeting {
 pub fn effect(id: usize) -> OfficialEffect {
     use OfficialEffect::*;
     match id {
+        466 | 467 => None,
         465 => ReturnEnemyDomainGroup {
             domain: Domain::Order,
             maximum_total_might: 5,
@@ -1217,6 +1218,8 @@ pub enum Mechanic {
 pub fn requirements(id: usize) -> &'static [Mechanic] {
     use Mechanic::*;
     match id {
+        466 => &[OptionalCosts],
+        467 => &[PlayRestrictions],
         465 => &[Chain, MultipleTargets, Bounce],
         464 => &[PlayRestrictions, ReadyPrevention],
         441 => &[Chain, Protection],

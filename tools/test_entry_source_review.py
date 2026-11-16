@@ -46,6 +46,14 @@ class EntrySourceReview(unittest.TestCase):
                 self.assertEqual(image['url'], raw['image_url'])
                 self.assertEqual((len(data), catalog.sha(data)), (image['bytes'], image['sha256']))
                 self.assertEqual(struct.unpack('>II', data[16:24]), (744, 1039))
+                if 'runtime_id' in record:
+                    runtime = catalog.load_runtime_manifest()['cards'][record['runtime_id']]
+                    self.assertEqual((runtime['name'], runtime['official_id']), (name, ident))
+                    thumb = record['runtime_image']
+                    image_data = (catalog.ROOT / thumb['path']).read_bytes()
+                    self.assertEqual((len(image_data), catalog.sha(image_data)), (thumb['bytes'], thumb['sha256']))
+                    self.assertEqual(list(struct.unpack('>II', image_data[16:24])), thumb['dimensions'])
+                    self.assertEqual(thumb['url'].split('?')[0], image['url'].split('?')[0])
         runtime = catalog.load_runtime_manifest()
         pin = proof['preserved_runtime_prefix']
         for key, count, digest in [('cards', 'card_count', 'cards_sha256'),

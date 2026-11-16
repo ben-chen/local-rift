@@ -12347,6 +12347,52 @@
       "equipment_effect_html": "",
       "equipment_effect": "",
       "might_bonus": null
+    },
+    {
+      "id": 466,
+      "official_id": "unl-122-219",
+      "name": "Crescent Guardian",
+      "kind": "Unit",
+      "domains": [
+        "Chaos"
+      ],
+      "energy": 4,
+      "power": 0,
+      "might": 4,
+      "keywords": [],
+      "tags": [
+        "Mount Targon"
+      ],
+      "official_text": "If you've played a spell this turn, you may pay [Chaos Power] as an additional cost to play me. If you do, I enter ready.",
+      "official_text_html": "<p>If you've played a spell this turn, you may pay :rb_rune_chaos: as an additional cost to play me. If you do, I enter ready.</p>",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/0ff22e9a517d029fd17cfbbbc93ca2f90c2c676c-744x1039.png?w=280&q=85&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null
+    },
+    {
+      "id": 467,
+      "official_id": "rad-026-167",
+      "name": "Entrenched Boar",
+      "kind": "Unit",
+      "domains": [
+        "Calm"
+      ],
+      "energy": 2,
+      "power": 0,
+      "might": 2,
+      "keywords": [],
+      "tags": [
+        "Freljord"
+      ],
+      "official_text": "You may have me enter ready. If you do, I can't move this turn.",
+      "official_text_html": "<p>You may have me enter ready. If you do, I can't move this turn.</p>",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/8d8688f43e219f7f4b5f5fd17cff204dcebc3bdc-744x1039.png?w=280&q=85&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null
     }
   ],
   "official_text_note": "Official card/legend rules text from the Riot Card Gallery, retrieved 2026-10-24 and corrected by cited errata. Resource icon tokens are expanded to readable bracketed names. Raw card and equipment HTML is preserved separately. Official text does not establish full implementation fidelity."

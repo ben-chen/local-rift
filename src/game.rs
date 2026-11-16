@@ -14,6 +14,9 @@ use crate::legends::{LegendAbility, LegendState, LegendTrigger};
 use crate::rules::{self, Allegiance, CounterKind, OfficialEffect, StaticAbility};
 use std::collections::VecDeque;
 
+#[path = "entry.rs"]
+mod entry;
+
 #[cfg(test)]
 #[path = "discord_tests.rs"]
 mod discord_tests;
@@ -1850,7 +1853,9 @@ impl Game {
         self.movement_prevented(player, player, unit_id)
     }
     pub fn movement_prevented(&self, actor: usize, owner: usize, unit_id: u32) -> bool {
-        self.immobile_units.contains(&(owner, unit_id))
+        // An all-player movement restriction belongs to the physical object,
+        // even if its controller changes before the restriction expires.
+        self.immobile_units.iter().any(|(_, id)| *id == unit_id)
             || (actor == owner && self.movement_locks.contains(&(owner, unit_id)))
     }
     pub fn cards_played_this_turn(&self, player: usize) -> u16 {
@@ -5721,21 +5726,34 @@ impl Game {
                     groups.insert(0, preferred);
                 }
                 for targets in groups {
-                    for options in [
-                        PlayOptions::default(),
-                        PlayOptions {
-                            accelerate: true,
-                            ..Default::default()
-                        },
-                        PlayOptions {
-                            repeat: true,
-                            ..Default::default()
-                        },
-                        PlayOptions {
-                            bonus: true,
-                            ..Default::default()
-                        },
+                    for (options, entry_ready) in [
+                        (PlayOptions::default(), false),
+                        (
+                            PlayOptions {
+                                accelerate: true,
+                                ..Default::default()
+                            },
+                            false,
+                        ),
+                        (
+                            PlayOptions {
+                                repeat: true,
+                                ..Default::default()
+                            },
+                            false,
+                        ),
+                        (
+                            PlayOptions {
+                                bonus: true,
+                                ..Default::default()
+                            },
+                            false,
+                        ),
+                        (PlayOptions::default(), true),
                     ] {
+                        if entry_ready && self.entry_ready_option(card_id).is_none() {
+                            continue;
+                        }
                         let action = Action::FinalizePendingPlay {
                             lane,
                             repeat_targets: if options.repeat {
@@ -5747,6 +5765,17 @@ impl Game {
                             repeat: options.repeat,
                             accelerate: options.accelerate,
                             bonus: options.bonus,
+                        };
+                        let action = if entry_ready {
+                            Action::WithPlayChoices {
+                                action: Box::new(action),
+                                choices: PlayChoices {
+                                    entry_ready: true,
+                                    ..Default::default()
+                                },
+                            }
+                        } else {
+                            action
                         };
                         let result = if prepare {
                             self.clone().begin_payment(action.clone())
@@ -8919,6 +8948,7 @@ impl Game {
             stunned: false,
             banish_on_death: false,
         });
+        self.record_entry_restriction(player, card_id, token, id);
         id
     }
 

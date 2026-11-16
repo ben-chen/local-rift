@@ -1,0 +1,169 @@
+{
+  "status": "Local rules, API, client, full source, lint and native checks passed; immutable installed acceptance pending",
+  "reviewed_at": "2026-11-16T23:15:13.308152+00:00",
+  "source_review_commit": "e76a65bc0ec26b95a15ec4dc42b4d57430ebe0f4",
+  "base_revision": "23add95",
+  "cards": [
+    {
+      "id": 466,
+      "official_id": "unl-122-219",
+      "name": "Crescent Guardian"
+    },
+    {
+      "id": 467,
+      "official_id": "rad-026-167",
+      "name": "Entrenched Boar"
+    }
+  ],
+  "rules": {
+    "core_date": "2026-10-09",
+    "core_sha256": "94d41fee86f88b61c4157c0389c0595d990b98e5b42555c99d9f649ee64d1fec",
+    "sections": [
+      "356.2.b optional additional cost declaration; 356.4 discounts",
+      "358.3.a prohibitions negate the action, not choosing a card that instructs it",
+      "370 entry replacements",
+      "416 ready state and Ready action",
+      "420.4.b non-triggered checks reference finalization including countered spells"
+    ]
+  },
+  "implementation": [
+    "Guardian offers its additional Chaos cost only after its controller finalized a spell during this turn. Discounting the selected cost to zero preserves ready entry.",
+    "Boar has a separate free entry_ready choice; cost plans are unchanged. Acceptance attaches an all-player movement restriction to that physical unit until turn end.",
+    "Declining Boar leaves other entry-ready grants intact; a replay has a new object identity and fresh choice. Warden does not prevent entering ready.",
+    "Canonical hand plays and instructed pending plays expose the choices to automated opponents; JSON false remains absent, and invalid flags reject atomically.",
+    "Actual native selection opens a concise entry-choice panel with the consequence beside the control. The board and inspector show the accepted movement restriction.",
+    "Mote has brief Beginner and Advanced advice; privacy and read-only tests cover both cards.",
+    "Staged payment retains the selected entry replacement; refusal returns the card/resources and does not leak the choice into a later play."
+  ],
+  "local": {
+    "library_tests": 1145,
+    "client_tests": 171,
+    "catalog_integration_tests": 14,
+    "new_engine_tests": 11,
+    "new_api_tests": 2,
+    "new_companion_tests": 1,
+    "focused_entry_related_tests": 29,
+    "source_admission_tests": 1,
+    "strict_clippy": "passed all targets",
+    "logs": [
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/entry-focused-v2.log",
+        "sha256": "f071c7a6881f44fe8bbfe81516fa8d3934a87970ba42a62600d41ecb90d663e7"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/entry-library-client-v1.log",
+        "sha256": "231856b82b104dab442291c667a1a16a193bf19aac338d5e9be1f574566c999e"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/entry-client-catalog-v2.log",
+        "sha256": "d77eaee39e76b8cac62a22edb51f56387ccd64b311b9ddfc0056d4e5c81cc026"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/entry-source-v2.log",
+        "sha256": "ecf35c66c31eb1c67a24d4efd18153b46dad1c970f492b41f84ea2a1acc1a465"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/entry-clippy-v2.log",
+        "sha256": "1de3784d76985d9b3445315ceb72ead056d3d0f60477760db8928867ac00ef7e"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/entry-catalog-v1.log",
+        "sha256": "f4ffa13062e3844466b9343f76d6b6931823282d5d9a7bec12625ced822300ef"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/entry-library-v3.log",
+        "sha256": "13356344e254f4505cad0a85276d0ca2b5e5c7d2b6805673e859bb5d019c03bd"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/entry-sources-all-v2.log",
+        "sha256": "d00aaef73a259dd8bcdb068e229dad3a993f379788affa171346cfaa958add2d"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/entry-sources-all-v2-status.json",
+        "sha256": "710af17c02d9ae291166c42fde5ea5cb7dda34269a1f0b71aadb5e5627391fb3"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/entry-clippy-v3.log",
+        "sha256": "59a3da7e61ed5d8ca631a0dcc329a530e8040c4e4bea4a94d180b1c67d7267b3"
+      }
+    ],
+    "full_source_tests": 342
+  },
+  "native": {
+    "cases": 2,
+    "captures": 18,
+    "report": {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/entry-native-v4/report.json",
+      "sha256": "1616e720c9a96354307ce584cc5e3e79bbf62f67e5fd514e4f32df220d18b293"
+    },
+    "visually_reviewed": [
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/entry-native-v4/entry-small/rift_entry_boar_choice.png",
+        "sha256": "e8db2be83c1684d202331438fd2d98e43f1a42454a77a5622eae5d5e4d3c6d64"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/entry-native-v4/entry-normal/rift_entry_guardian_choice.png",
+        "sha256": "9ea3ee164633a608bc54d425d1c676be323ab5d515752ff0512b4e39c9682a24"
+      }
+    ],
+    "earlier_review": [
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/entry-native-v3/entry-small/rift_entry_boar_restricted.png",
+        "sha256": "3cf00a8c83e0ab5ebe3f2cf27b6ad8fa364b08f5b3410d6e1e1a667557fa15d4"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/entry-native-v3/entry-small/rift_entry_guardian_beginner.png",
+        "sha256": "b536c7804a28f3fbe93506a28d4c3cc49965aa6aa3d0d67bd6d75f9a63291199"
+      }
+    ],
+    "findings": "Current entry explanations and controls fit both reviewed windows. Earlier actual captures showed the movement badge/scrollable inspector and brief Mote coaching. v4 removes the generic execution/target language from entry-only panels."
+  },
+  "external_api": {
+    "series": 6,
+    "actual_games": 13,
+    "guardian_entries": 14,
+    "boar_entries": 17,
+    "restricted_boars_seen": 7,
+    "report": {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/entry-api-v1.json",
+      "sha256": "fcdd48e6954e3399de6df0dba94c411678066c086e71259e7debce36200ac9ab"
+    },
+    "previous_campaigns": {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/entry-baselines-v1/report.json",
+      "sha256": "61cc1570a994494d4e77069ea9263493e6aed194408e7200c26151a6bfc05ded"
+    },
+    "baseline_review": {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/entry-baseline-review-v1.json",
+      "sha256": "4f16db93b4c345aee3e1b1eddad57c8b9b04c5f5ae1e50e9da6529903b16d0c1"
+    }
+  },
+  "failed_attempts": [
+    {
+      "evidence": {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/entry-native-v1/entry-normal/run.log",
+        "sha256": "bdbcd8264a769df12b60ee11570291dc3f7f2168b7f4d5203484dc8e01921b59"
+      },
+      "finding": "Smoke asserted before the next rendered frame had synchronized its play draft. Inspection also showed the optional panel defaulted closed; made these two entry panels open upon selection."
+    },
+    {
+      "evidence": {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/entry-native-v2/entry-normal/run.log",
+        "sha256": "3fb680b501cf3a60965fe89737eaad803029e2d4513f22714fa3d88687f06125"
+      },
+      "finding": "The early assertion still preceded synchronization. Moved the render checkpoint before the assertion, matching existing native smoke timing. v3 passed; v4 additionally simplifies entry-only wording."
+    },
+    {
+      "evidence": {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/entry-sources-all-v1.log",
+        "sha256": "703f81369df70abc889fc26f1f141a1e096104fcbaaa6747ab1130516f373b8e"
+      },
+      "finding": "Command session terminated with exit 143 before a final unittest result; cause not established. Not a passing source suite. A separate tracked process reruns the complete suite in v2. The tracked v2 rerun completed successfully: 342 tests."
+    }
+  ],
+  "remaining": [
+    "Complete immutable installed release gates.",
+    "The 506 mapped legal identities belong to the accepted October 24 inventory, not proof of all current cards or complete interactions.",
+    "Presets are unchanged. Authored match registrations establish exercised integration, not meta prevalence, optimal strategy, expert strength or human learning outcomes.",
+    "Control transfer is tested as a synthetic object-identity invariant; no admitted card currently changes unit controller."
+  ]
+}

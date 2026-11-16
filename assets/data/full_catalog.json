@@ -150,13 +150,13 @@
       "legend": 11,
       "rune": 6,
       "spell": 135,
-      "unit": 252
+      "unit": 254
     },
-    "implemented_main_cards": 466,
+    "implemented_main_cards": 468,
     "implemented_legends": 11,
     "implemented_battlefields": 21,
-    "implemented_legal_identities": 504,
-    "unimplemented_legal_identities": 575,
+    "implemented_legal_identities": 506,
+    "unimplemented_legal_identities": 573,
     "errata_entries": 67,
     "identities_with_errata": 67,
     "source_quality_issues": 60,
@@ -7154,8 +7154,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 466,
+        "official_id": "unl-122-219",
+        "playable_in_client": true
       }
     },
     {
@@ -11235,8 +11237,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 467,
+        "official_id": "rad-026-167",
+        "playable_in_client": true
       }
     },
     {

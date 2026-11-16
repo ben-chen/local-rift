@@ -108,6 +108,8 @@ pub struct PlayChoices {
     pub repeats: Vec<RepeatSelection>, // ordered extra executions; each option at most once
     pub accelerate: bool,
     pub bonus: bool, // one reviewed optional card cost; labels below
+    /// Optional entry replacement, separate from additional costs.
+    pub entry_ready: bool,
     /// Physical unit exhausted as a cost, never a spell target.
     pub exhaust_unit: Option<u32>,
     pub cost_order: Vec<CostSelection>,
@@ -183,6 +185,7 @@ pub struct PlayModeOption {
 }
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct PlayChoiceView {
+    pub entry_ready: Option<&'static str>,
     /// A legend's ready-entry replacement established by this play location.
     pub legend_entry_ready: Option<ChainSource>,
     /// Newly added physical slot that replaces Baron's chosen entry location.
@@ -979,7 +982,7 @@ impl Game {
         let grants = self.intent_grants(&intent);
         let repeats = self.repeat_options(&intent, &grants);
         let accelerate = self.accelerate_option(&intent, &grants);
-        let bonus = optional_card_cost(intent.id);
+        let bonus = self.optional_card_cost(intent.id);
         let snapshot = self.play_cost_snapshot(action);
         let costs = snapshot.card_cost_plan(
             &intent,
@@ -990,6 +993,9 @@ impl Game {
             bonus.as_ref(),
         )?;
         Ok(PlayChoiceView {
+            entry_ready: (!intent.token)
+                .then(|| self.entry_ready_option(intent.id))
+                .flatten(),
             baron_pit_entry: if intent.id == 440 && !intent.token {
                 self.baron_entry_preview()
             } else {
@@ -1039,6 +1045,7 @@ impl Game {
                 || !choices.repeats.is_empty()
                 || choices.accelerate
                 || choices.bonus
+                || choices.entry_ready
             {
                 return Err("Card additional-cost choices do not apply to this ability.".into());
             }
@@ -1058,6 +1065,9 @@ impl Game {
         accelerate: Option<&OptionalCostOption>,
         bonus: Option<&OptionalCostOption>,
     ) -> Result<CostPlanView, String> {
+        if choices.entry_ready && (intent.token || self.entry_ready_option(intent.id).is_none()) {
+            return Err("This card has no optional ready-entry replacement.".into());
+        }
         let p = self.priority();
         let c = self.catalog[intent.id];
         let mut components = vec![CostComponent {
@@ -1543,7 +1553,7 @@ impl Game {
         let grants = probe.intent_grants(&intent);
         let repeats = probe.repeat_options(&intent, &grants);
         let accel = probe.accelerate_option(&intent, &grants);
-        let bonus = optional_card_cost(intent.id);
+        let bonus = probe.optional_card_cost(intent.id);
         Self::validate_execution_mode(&intent, choices.mode, true)?;
         if !intent.token && !rules::spell_modes(intent.id).is_empty() {
             probe.validate_modal_targets(
@@ -2009,10 +2019,11 @@ pub(crate) struct ResolutionFrame {
 
 impl Game {
     pub(crate) fn play_enters_ready(&self, player: usize, card_id: CardId, token: bool) -> bool {
-        self.players[player]
-            .units
-            .iter()
-            .any(|u| !u.token && u.card_id == 264)
+        self.selected_entry_ready(player, card_id, token)
+            || self.players[player]
+                .units
+                .iter()
+                .any(|u| !u.token && u.card_id == 264)
             || self.play_grants.iter().any(|g| {
                 g.player == player
                     && g.expires_turn == self.turn
@@ -2584,6 +2595,7 @@ impl Game {
             || !choices.repeats.is_empty()
             || choices.accelerate
             || choices.bonus
+            || choices.entry_ready
         {
             return Err("Card additional-cost choices do not apply to this ability.".into());
         }
@@ -2773,6 +2785,12 @@ impl Game {
                         ..Default::default()
                     });
                 }
+                if view.entry_ready.is_some() {
+                    choices.push(PlayChoices {
+                        entry_ready: true,
+                        ..Default::default()
+                    });
+                }
                 for r in view.repeats.iter().take(3) {
                     for selected in &repeat_choices {
                         choices.push(PlayChoices {
@@ -2947,55 +2965,65 @@ impl Game {
     }
 }
 
-fn optional_card_cost(card_id: CardId) -> Option<OptionalCostOption> {
-    match card_id {
-        29 => Some(OptionalCostOption {
-            label: "Rampage: +2 Might".into(),
-            cost: CostValue {
-                xp: 0,
-                energy: 0,
-                power: 1,
-                domains: vec![Domain::Body],
-            },
-        }),
-        431 => Some(OptionalCostOption {
-            label: "Gust Monk: banish from either trash for Assault 2".into(),
-            cost: CostValue {
-                energy: 1,
-                ..Default::default()
-            },
-        }),
-        420 => Some(OptionalCostOption {
-            label: "Pyke: ready and +2 Might when played".into(),
-            cost: CostValue {
-                xp: 0,
-                energy: 0,
-                power: 1,
-                domains: vec![Domain::Fury],
-            },
-        }),
-        261 => Some(OptionalCostOption {
-            label: "Nami: stun an enemy when played".into(),
-            cost: CostValue {
-                xp: 0,
-                energy: 0,
-                power: 1,
-                domains: vec![Domain::Calm],
-            },
-        }),
-        451 => Some(OptionalCostOption {
-            label: "Clockwork Keeper: draw 1 after entry".into(),
-            cost: CostValue {
-                power: 1,
-                domains: vec![Domain::Calm],
-                ..Default::default()
-            },
-        }),
-        452 => Some(OptionalCostOption {
-            label: "Meditation: exhaust a friendly unit to draw 2 instead".into(),
-            cost: CostValue::default(),
-        }),
-        _ => None,
+impl Game {
+    fn optional_card_cost(&self, card_id: CardId) -> Option<OptionalCostOption> {
+        match card_id {
+            466 if self.played_spell_this_turn(self.priority()) => Some(OptionalCostOption {
+                label: "1 Chaos · enter ready".into(),
+                cost: CostValue {
+                    power: 1,
+                    domains: vec![Domain::Chaos],
+                    ..Default::default()
+                },
+            }),
+            29 => Some(OptionalCostOption {
+                label: "Rampage: +2 Might".into(),
+                cost: CostValue {
+                    xp: 0,
+                    energy: 0,
+                    power: 1,
+                    domains: vec![Domain::Body],
+                },
+            }),
+            431 => Some(OptionalCostOption {
+                label: "Gust Monk: banish from either trash for Assault 2".into(),
+                cost: CostValue {
+                    energy: 1,
+                    ..Default::default()
+                },
+            }),
+            420 => Some(OptionalCostOption {
+                label: "Pyke: ready and +2 Might when played".into(),
+                cost: CostValue {
+                    xp: 0,
+                    energy: 0,
+                    power: 1,
+                    domains: vec![Domain::Fury],
+                },
+            }),
+            261 => Some(OptionalCostOption {
+                label: "Nami: stun an enemy when played".into(),
+                cost: CostValue {
+                    xp: 0,
+                    energy: 0,
+                    power: 1,
+                    domains: vec![Domain::Calm],
+                },
+            }),
+            451 => Some(OptionalCostOption {
+                label: "Clockwork Keeper: draw 1 after entry".into(),
+                cost: CostValue {
+                    power: 1,
+                    domains: vec![Domain::Calm],
+                    ..Default::default()
+                },
+            }),
+            452 => Some(OptionalCostOption {
+                label: "Meditation: exhaust a friendly unit to draw 2 instead".into(),
+                cost: CostValue::default(),
+            }),
+            _ => None,
+        }
     }
 }
 

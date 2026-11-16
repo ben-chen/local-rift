@@ -103,6 +103,11 @@ XP costs are shown separately from Energy and Power. Crowd Favorite and Enthrall
 
 When an effect lets you look through your deck, choose a highlighted card or **Recycle all**, then confirm. The tray identifies each physical copy and explains why other cards cannot be selected. Only you see your private look; Aurora’s reveals are public and can be paged through. Wild Claw offers its separate Empower after the chosen unit or gear enters, with time for responses.
 
+Crescent Guardian and Entrenched Boar open an entry-choice panel when selected.
+Guardian offers its additional Chaos payment after a spell; Boar offers free ready
+entry with a visible movement restriction for that turn. The panel explains the
+choice before you play, and Mote can explain the rule or its strategic tradeoff.
+
 Open **Trash → Banish** to inspect banished cards. The owner button switches between your cards and the opponent’s. Clicking a banished card opens its full text. Click **Banish** again to return to trash.
 
 Gear-targeting abilities open the Loadout, highlight legal equipment, and retain your chosen target when switching players. Printed Energy limits appear beside the confirmation controls; optional abilities have a separate decline button.
