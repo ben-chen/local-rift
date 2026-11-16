@@ -1,6 +1,6 @@
 {
-  "status": "Local rules, API, client, full source, lint and native checks passed; immutable installed acceptance pending",
-  "reviewed_at": "2026-11-16T23:15:13.308152+00:00",
+  "status": "Passed immutable installed acceptance for a4a7e44; all-current-card coverage, full Standard parity, expert strength and learning outcomes remain unproven.",
+  "reviewed_at": "2026-11-16T23:41:58.047295+00:00",
   "source_review_commit": "e76a65bc0ec26b95a15ec4dc42b4d57430ebe0f4",
   "base_revision": "23add95",
   "cards": [
@@ -161,9 +161,60 @@
     }
   ],
   "remaining": [
-    "Complete immutable installed release gates.",
     "The 506 mapped legal identities belong to the accepted October 24 inventory, not proof of all current cards or complete interactions.",
     "Presets are unchanged. Authored match registrations establish exercised integration, not meta prevalence, optimal strategy, expert strength or human learning outcomes.",
     "Control transfer is tested as a synthetic object-identity invariant; no admitted card currently changes unit controller."
-  ]
+  ],
+  "installed": {
+    "revision": "a4a7e445996fc899078473c38898622083379f3a",
+    "rust_tests": 2084,
+    "source_tests": 342,
+    "simulated_matches": 1176,
+    "ui_cases": 35,
+    "captures": 290,
+    "actual_ui_games": 2,
+    "api_campaigns": 15,
+    "records": 105,
+    "all_capture_and_log_hashes_verified": true,
+    "all_api_records_compared_in_full": true,
+    "source_entries_reverified": 1539,
+    "installed_visually_reviewed": [
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/entry-release-v1/entry-small/rift_entry_boar_choice.png",
+        "sha256": "c20d153f187d5c62ea7c355694b03cb140bf63ca4824af933367f3bb7fc6cc91"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/entry-release-v1/entry-normal/rift_entry_guardian_choice.png",
+        "sha256": "b14ae0f4e3d6c740ed3843f74f24513f3a7638560ff0d97cb4bf9267dec94fe2"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/entry-release-v1/entry-small/rift_entry_boar_restricted.png",
+        "sha256": "7250b8cb19b3e462e3e862d71af1755ed6f3d721327b3faace0eac2bbaf3e011"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/entry-release-v1/entry-small/rift_entry_guardian_beginner.png",
+        "sha256": "4d22fa67222b24a7c1ec28c3d65ae61dccb929b30c437061ace2bae45a068556"
+      }
+    ],
+    "visual_findings": "Viewed the actual installed captures: small-window Boar choice states the no-movement consequence next to the optional control; Guardian clearly states its spell prerequisite and Chaos cost; Boar carries a board restriction badge and scrollable explanation; beginner Mote explains finalized/countered spell history. These four captures do not certify every view.",
+    "package": "/nix/store/8q6pwhzdaa512xnlv5qzzbw2bfih6djj-local-rift-0.1.0",
+    "evidence": [
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/entry-release-plan-v1.json",
+        "sha256": "06e39368f0242d28f945dc561e8e904fc85eaec8d2714cb2e2b4ae69612fa087"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/entry-release-v1/status.json",
+        "sha256": "1a9cf5fc515157da06b3c07fa2243e36c44bec1c17962bf4425318f4e7dc021f"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/entry-installed-audit-v1.json",
+        "sha256": "e57d5d5ee8c9aadc90755e125a774d62fb14034b569b6c02e97fe44105d8344f"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/entry-source-audit-v1.json",
+        "sha256": "fd021879fbf9de2f998b90108c52822e6261b5e8b0eec84d99c0bbcf01eb12d8"
+      }
+    ]
+  }
 }

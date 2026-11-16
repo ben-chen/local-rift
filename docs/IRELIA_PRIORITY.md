@@ -291,7 +291,10 @@ Boar's free option that prevents movement for the turn. Their complete official
 faces and effective facts were reviewed in [the admission record](../assets/data/card_admissions/irelia_entry/source_review.json).
 The API and native controls expose these choices separately from Accelerate;
 Mote explains them at both advice levels. [Validation](validation/irelia_entry.json)
-distinguishes exact rules scenarios from authored full-match coverage.
+distinguishes exact rules scenarios from authored full-match coverage. Installed
+acceptance passed at the fixed revision a4a7e44: 2,084 Rust tests, 342 source
+checks, 1,176 simulations, 35 native cases and 15 API campaigns comparing
+105 complete records.
 
 These additions do not change the seven sourced tournament presets or establish
 that either card is currently prevalent in competitive Irelia lists. The broader

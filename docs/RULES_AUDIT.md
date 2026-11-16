@@ -1161,3 +1161,34 @@ observed Bird mode but no counter selections; those series are not counted as
 counter-decision coverage. The release receipt records scoped evidence and
 pending installed checks in [Flurry validation](validation/irelia_flurry.json).
 These checks do not establish full Standard parity or expert opponent strength.
+
+## Optional ready entry — November 16, 2026
+
+Crescent Guardian and Entrenched Boar were checked against their complete
+official faces and the October 9 Core Rules. Guardian offers an optional Chaos
+Power cost only after its controller finalized a spell this turn; a countered
+spell still counts (420.4.b). Declaring and paying an additional cost is distinct
+from Accelerate, and a discount to zero does not erase its benefit (356.2.b,
+356.4). An unfinished or cancelled play does not enter the spell history.
+
+Boar instead has a free optional entry replacement. Accepting it makes that
+physical unit enter ready and prevents either player from moving it for the
+rest of the turn. Recall remains a different action. A prohibited Move does
+not by itself prohibit choosing the unit with an effect (358.3.a). Entering
+ready is distinct from performing a Ready action (370, 416), including under
+Mageseeker Warden. Replaying a departed card creates a new object and choice.
+
+Shared play choices cover hand plays, instructed plays, payment continuation,
+refunds and AI candidates. Regressions exercise both seats, discounts,
+countered-spell history, movement restrictions, expiry, clone equality and
+replay. Native controls and both companion levels explain each option's cost
+and consequence. No sourced tournament preset changes with these additions.
+
+The fixed runtime revision a4a7e44 passed installed acceptance: 2,084 Rust tests,
+342 source checks, 1,176 simulated matches, 35 native cases with 290 captures
+and two actual games, and 15 API campaigns with 105 full records matching fresh
+local baselines. Every capture/log hash and the retained source's 1,539 tracked
+entries were verified; four actual installed captures were visually reviewed.
+[Entry validation](validation/irelia_entry.json) retains the evidence, earlier
+failed attempts, changed Strategic baselines and limits. These checks do not
+establish current meta prevalence, full Standard parity or expert strength.

@@ -1,5 +1,5 @@
 {
-  "status": "Source review and local runtime, API, client and full-source checks passed; immutable installed acceptance pending.",
+  "status": "Source review, local checks and immutable installed acceptance passed; see docs/validation/irelia_entry.json for scope and limits.",
   "reviewed_on": "2026-11-16",
   "base_revision": "7fdbe2bbc220fea96589103f9990987bf3d1a6b0",
   "records": [
