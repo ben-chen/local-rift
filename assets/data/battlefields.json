@@ -163,6 +163,33 @@
       "source_url": "https://playriftbound.com/en-us/card-gallery/",
       "official_html": "<p>Units can't be played here.</p>",
       "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/a1bde66bccf2786e7c0b9d44fcdcdaa6b59f0328-1039x744.png?accountingTag=RB"
+    },
+    {
+      "id": 18,
+      "name": "Forgotten Monument",
+      "source_id": "sfd-209-221",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_html": "<p>Players can't score here until their third turn.</p>",
+      "official_text": "Players can't score here until their third turn.",
+      "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/b0c98558fccd68c9ac93cd5b3412c31c68b5ace9-1039x744.png?accountingTag=RB"
+    },
+    {
+      "id": 19,
+      "name": "Back-Alley Bar",
+      "source_id": "ogn-277-298",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_html": "<p>When a unit moves from here, give it +1 :rb_might: this turn.</p>",
+      "official_text": "When a unit moves from here, give it +1 Might this turn.",
+      "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/3e9f659a32e390b45bc87a01bdd6af4a8a3565f7-1038x744.png?accountingTag=RB"
+    },
+    {
+      "id": 20,
+      "name": "The Candlelit Sanctum",
+      "source_id": "ogn-291-298",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_html": "<p>When you conquer here, look at the top two cards of your Main Deck. You may recycle one or both of them. Put those you don't back in any order.</p>",
+      "official_text": "When you conquer here, look at the top two cards of your Main Deck. You may recycle one or both of them. Put those you don't back in any order.",
+      "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/f14fe78f2b7f3909eadb07bce24bd582e190653d-1038x744.png?accountingTag=RB"
     }
   ]
 }

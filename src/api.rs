@@ -654,6 +654,7 @@ impl Session {
             view["series"] = run.state.observe(viewer).map_err(ApiError::illegal)?;
         }
         self.add_format_view(&mut view);
+        fields::add_scoring_view(game, &mut view);
         Ok(view)
     }
 
@@ -2516,12 +2517,19 @@ fn decision_to_json(game: &Game, decision: &Decision, viewer: usize) -> Result<V
             }
         }
         Decision::PredictCards {
-            choice_id, cards, ..
+            choice_id,
+            cards,
+            source,
+            ..
         } => {
             let mut view =
                 json!({"type":"predict_cards","choice_id":choice_id,"count":cards.len()});
             if player == viewer {
                 view["cards"] = json!(cards);
+            }
+            if let Some(source) = source {
+                view["purpose"] = json!("look_recycle");
+                view["source"] = chain_source_to_json(*source);
             }
             view
         }
@@ -2635,6 +2643,8 @@ fn ability_to_json(ability: &ChainAbility) -> Value {
             }
         },
         ChainAbility::Battlefield(ability) => match ability {
+            BattlefieldAbility::BackAlleyMight { lane, unit_id } => json!({
+                "type":"back_alley_might", "lane":lane, "unit_id":unit_id}),
             BattlefieldAbility::Grant { lane, kind } => json!({"type":"battlefield_grant",
                 "lane":lane,"kind":play_choices::grant_kind_to_json(*kind)}),
             _ => json!({"type":match ability {
@@ -2648,7 +2658,8 @@ fn ability_to_json(ability: &ChainAbility) -> Value {
                 BattlefieldAbility::TargonPeakReady{..}=>"targon_peak_ready",
                 BattlefieldAbility::ShadowTempleBurn{..}=>"shadow_temple_burn",
                 BattlefieldAbility::ZaunWarrensLoot{..}=>"zaun_warrens_loot",
-                BattlefieldAbility::Grant{..}=>unreachable!(),
+                BattlefieldAbility::SanctumArrange{..}=>"sanctum_arrange",
+                BattlefieldAbility::Grant{..}|BattlefieldAbility::BackAlleyMight{..}=>unreachable!(),
             },"lane":ability.lane()}),
         },
         ChainAbility::Triggered(ability) => match ability {

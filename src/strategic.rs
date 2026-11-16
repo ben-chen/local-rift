@@ -880,6 +880,7 @@ mod tests {
             player: 1,
             choice_id: 91,
             cards: vec![72, 73],
+            source: None,
         });
         first.queue_trigger_choice(
             1,
@@ -888,6 +889,7 @@ mod tests {
                 player: 1,
                 choice_id: 92,
                 cards: vec![72, 73],
+                source: None,
             },
         );
         let mut second = first.clone();
@@ -904,6 +906,7 @@ mod tests {
                 player: 1,
                 choice_id: 91,
                 cards: vec![52, 53],
+                source: None,
             },
         ]);
         for trigger in &mut second.pending_triggers {
@@ -934,6 +937,7 @@ mod tests {
             player: 0,
             choice_id: 91,
             cards: vec![72, 71],
+            source: None,
         });
         let belief = game.strategic_belief(0);
         assert_eq!(

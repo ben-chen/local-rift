@@ -1,4 +1,4 @@
-//! Eighteen source-reviewed battlefield choices; preset defaults remain IDs 0–3.
+//! Source-reviewed battlefield choices; preset defaults remain IDs 0–3.
 //!
 //! Gallery text and complete original faces are source-reviewed through 2026-10-26.
 //! Void Gate, Emperor's Dais, and Targon's Peak use operative official errata;
@@ -18,8 +18,11 @@ pub struct BattlefieldDef {
 }
 
 pub const ROCKFALL_PATH_ID: usize = 17;
+pub const FORGOTTEN_MONUMENT_ID: usize = 18;
+pub const BACK_ALLEY_BAR_ID: usize = 19;
+pub const CANDLELIT_SANCTUM_ID: usize = 20;
 
-pub const BATTLEFIELDS: [BattlefieldDef; 18] = [
+pub const BATTLEFIELDS: [BattlefieldDef; 21] = [
     BattlefieldDef {
         id: 0,
         name: "Sunken Temple",
@@ -146,6 +149,27 @@ pub const BATTLEFIELDS: [BattlefieldDef; 18] = [
         source_id: "sfd-216-221",
         source_url: "https://playriftbound.com/en-us/card-gallery/",
     },
+    BattlefieldDef {
+        id: FORGOTTEN_MONUMENT_ID,
+        name: "Forgotten Monument",
+        official_text: "Players can't score here until their third turn.",
+        source_id: "sfd-209-221",
+        source_url: "https://playriftbound.com/en-us/card-gallery/",
+    },
+    BattlefieldDef {
+        id: BACK_ALLEY_BAR_ID,
+        name: "Back-Alley Bar",
+        official_text: "When a unit moves from here, give it +1 Might this turn.",
+        source_id: "ogn-277-298",
+        source_url: "https://playriftbound.com/en-us/card-gallery/",
+    },
+    BattlefieldDef {
+        id: CANDLELIT_SANCTUM_ID,
+        name: "The Candlelit Sanctum",
+        official_text: "When you conquer here, look at the top two cards of your Main Deck. You may recycle one or both of them. Put those you don't back in any order.",
+        source_id: "ogn-291-298",
+        source_url: "https://playriftbound.com/en-us/card-gallery/",
+    },
 ];
 
 /// Token definitions occupy a separate ID range and cannot be chosen at setup.
@@ -178,6 +202,8 @@ pub fn default_battlefield(deck: usize) -> usize {
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum BattlefieldAbility {
+    BackAlleyMight { lane: usize, unit_id: u32 },
+    SanctumArrange { lane: usize },
     Dais { lane: usize },
     StarSpring { lane: usize },
     AbandonedHall { lane: usize },
@@ -194,7 +220,9 @@ pub enum BattlefieldAbility {
 impl BattlefieldAbility {
     pub fn lane(self) -> usize {
         match self {
-            Self::Dais { lane }
+            Self::BackAlleyMight { lane, .. }
+            | Self::SanctumArrange { lane }
+            | Self::Dais { lane }
             | Self::StarSpring { lane }
             | Self::AbandonedHall { lane }
             | Self::TargonPeakDelay { lane }
@@ -304,7 +332,22 @@ impl Game {
                 Vec::new(),
                 ChainAbility::Battlefield(BattlefieldAbility::ZaunWarrensLoot { lane }),
             ),
-            3 | 4 | 6..=10 | 12 | 13 | 15 | ROCKFALL_PATH_ID | BARON_PIT_ID => {}
+            CANDLELIT_SANCTUM_ID => self.queue_ability(
+                player,
+                0,
+                Vec::new(),
+                ChainAbility::Battlefield(BattlefieldAbility::SanctumArrange { lane }),
+            ),
+            3
+            | 4
+            | 6..=10
+            | 12
+            | 13
+            | 15
+            | ROCKFALL_PATH_ID
+            | FORGOTTEN_MONUMENT_ID
+            | BACK_ALLEY_BAR_ID
+            | BARON_PIT_ID => {}
             _ => unreachable!("validated battlefield selection"),
         }
 
@@ -448,6 +491,17 @@ impl Game {
             battlefield(self.battlefields[lane]).name
         ));
         match ability {
+            BattlefieldAbility::BackAlleyMight { unit_id, .. } => {
+                self.resolve_back_alley(unit_id)?
+            }
+            BattlefieldAbility::SanctumArrange { lane } => self.look_recycle_many(
+                player,
+                2,
+                Some(ChainSource::Battlefield {
+                    lane,
+                    battlefield_id: CANDLELIT_SANCTUM_ID,
+                }),
+            ),
             BattlefieldAbility::Dais { .. }
             | BattlefieldAbility::StarSpring { .. }
             | BattlefieldAbility::AbandonedHall { .. }

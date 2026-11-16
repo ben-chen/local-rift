@@ -17,6 +17,8 @@ use std::collections::VecDeque;
 #[cfg(test)]
 #[path = "discord_tests.rs"]
 mod discord_tests;
+#[path = "field_effects.rs"]
+mod field_effects;
 #[path = "target_groups.rs"]
 mod target_groups;
 
@@ -727,6 +729,8 @@ pub enum Decision {
         player: usize,
         choice_id: u32,
         cards: Vec<CardId>,
+        /// A non-keyword look/recycle instruction; None is the Predict action.
+        source: Option<ChainSource>,
     },
     TokenPlay {
         player: usize,
@@ -5272,6 +5276,8 @@ impl Game {
                     BattlefieldAbility::SeatDraw { .. }
                         | BattlefieldAbility::MinefieldBurn { .. }
                         | BattlefieldAbility::Grant { .. }
+                        | BattlefieldAbility::BackAlleyMight { .. }
+                        | BattlefieldAbility::SanctumArrange { .. }
                 )
         );
         if !triggered {
@@ -6143,6 +6149,15 @@ impl Game {
     }
 
     fn predict_many(&mut self, player: usize, count: u8) {
+        self.look_recycle_many(player, count, None);
+    }
+
+    pub(crate) fn look_recycle_many(
+        &mut self,
+        player: usize,
+        count: u8,
+        source: Option<ChainSource>,
+    ) {
         let cards: Vec<_> = self.players[player]
             .deck
             .iter()
@@ -6159,6 +6174,7 @@ impl Game {
             player,
             choice_id,
             cards,
+            source,
         });
     }
     fn resolve_predict_many(
@@ -6171,6 +6187,7 @@ impl Game {
             player,
             choice_id: expected,
             cards,
+            source,
         }) = self.decision.clone()
         else {
             return Err("No Predict choice is pending.".into());
@@ -6204,8 +6221,13 @@ impl Game {
         deck.extend(top_order.iter().rev().map(|i| cards[*i]));
         self.decision = None;
         self.push_log(format!(
-            "{} predicts {} cards and recycles {}.",
+            "{} {} {} cards and recycles {}.",
             self.players[player].name,
+            if source.is_some() {
+                "looks at"
+            } else {
+                "predicts"
+            },
             cards.len(),
             recycle.len()
         ));
@@ -7836,6 +7858,9 @@ impl Game {
         origin: Option<usize>,
         destination: Option<usize>,
     ) {
+        if origin != destination {
+            self.back_alley_move(origin, unit_id);
+        }
         if let Some(unit) = self.players[player]
             .units
             .iter()
@@ -9015,6 +9040,7 @@ impl Game {
                     if self.battlefield_owner[lane] == Some(player)
                         && self.lane_count(player, lane) > 0
                         && !self.contested(lane)
+                        && self.can_score_battlefield(player, lane)
                     {
                         self.score_battlefield(player, lane, true)?;
                         self.score_triggers(player, lane, true)?;
@@ -9776,7 +9802,7 @@ impl Game {
             return Ok(());
         }
         self.battlefield_owner[lane] = Some(player);
-        let scoring = !self.player_scored_this_turn[player][lane];
+        let scoring = self.can_score_battlefield(player, lane);
         self.score_battlefield(player, lane, false)?;
         if scoring && self.winner.is_none() {
             self.score_triggers(player, lane, false)?;
@@ -9793,7 +9819,7 @@ impl Game {
         lane: usize,
         holding: bool,
     ) -> Result<(), String> {
-        if self.player_scored_this_turn[player][lane] || self.winner.is_some() {
+        if !self.can_score_battlefield(player, lane) {
             return Ok(());
         }
         let all_other_scored = (0..self.battlefield_count())
@@ -10278,6 +10304,7 @@ impl Game {
                         player,
                         choice_id,
                         cards,
+                        ..
                     } => {
                         let mut keep: Vec<_> = (0..cards.len())
                             .filter(|&i| {

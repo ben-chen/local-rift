@@ -1,0 +1,131 @@
+{
+  "status": "Local validation passed; immutable installed acceptance pending; full Standard parity remains unproven",
+  "reviewed_at": "2026-11-16T22:34:36.184198+00:00",
+  "source_review_commit": "1083204d04ba2c6a77957da390f81cd09cfd930d",
+  "base_revision": "99b389a",
+  "battlefields": [
+    {
+      "id": 18,
+      "name": "Forgotten Monument",
+      "official_id": "sfd-209-221"
+    },
+    {
+      "id": 19,
+      "name": "Back-Alley Bar",
+      "official_id": "ogn-277-298"
+    },
+    {
+      "id": 20,
+      "name": "The Candlelit Sanctum",
+      "official_id": "ogn-291-298"
+    }
+  ],
+  "rules": {
+    "core_date": "2026-10-09",
+    "core_url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/5c7946f7c3b8c6e0faff85ab6dadc6d2e721ea94.pdf",
+    "core_sha256": "94d41fee86f88b61c4157c0389c0595d990b98e5b42555c99d9f649ee64d1fec",
+    "hub_verified_on": "2026-11-16",
+    "sections": [
+      "190.4: battlefield control and cleanup",
+      "190.6.a/b: controlled and uncontrolled battlefield ability controller",
+      "383.4.c.2.c/d.2.c: negated point gain does not itself suppress Conquer/Hold",
+      "470.1/470.3: Scoring is distinct from gaining points; score without a number refers to Scoring",
+      "471-473: Conquer/Hold scoring, once per battlefield per turn, and score triggers",
+      "448 and 457-458: Moves exclude zone changes and corrective Recalls"
+    ]
+  },
+  "implementation": [
+    "Forgotten Monument: use each player's turns_taken, including extra turns; permit scoring from the beginning of that player's third turn, independent of opponent turn count.",
+    "Prevent the Scoring process before the third turn: no point, no final-point replacement draw, no scored-this-turn marker, no Hold/Conquer occurrence or associated triggers. Control may still be established or maintained.",
+    "Keep point-gain replacement distinct: ordinary final-point replacement draws still count as scoring and keep their Conquer triggers.",
+    "Back-Alley Bar: each genuine unit Move from that field queues a respondable triggered ability, including tokens, groups and effect movement; playing, recalling, departure and no-op movement are distinct.",
+    "Snapshot the battlefield ability controller under CR190.6 when triggered; default an uncontrolled field to the turn player. Track the moved physical unit by identity, not a newly chosen target.",
+    "Apply +1 temporary Might only when the ability resolves. Preserve normal response ordering, repeated movement accumulation, departure identity changes, and end-of-turn expiry.",
+    "Candlelit Sanctum: a Conquer trigger creates a private look at up to two available top cards on resolution. The player can recycle zero, one, or both, and order all remaining cards; no burnout for merely looking at an empty deck.",
+    "Reuse the existing partition/order mechanics while showing look/recycle wording from the printed ability; do not silently teach it as a printed Predict keyword.",
+    "Use shared scoring eligibility and decision views for the native client, API, AI and Mote. Show new players why Monument cannot score yet and how many of their turns have begun."
+  ],
+  "focused": {
+    "library_tests": 1132,
+    "client_tests": 170,
+    "new_rules_tests": 11,
+    "new_api_tests": 3,
+    "source_tests": 1,
+    "strict_clippy": "passed",
+    "complete_series": 18,
+    "actual_games": 43,
+    "private_looks": 27,
+    "back_alley_triggers": 14,
+    "native_cases": 2,
+    "native_captures": 20,
+    "logs": [
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/fields-library-v1.log",
+        "sha256": "0d3ffeb658707f4bace37b7da6ff4011abbc8f5a7cc56dc2b0085824d7616a0c"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/fields-client-all-v1.log",
+        "sha256": "3f1de16fce86ea44e4408951b32e9a6407508bf94d7727455c6fbac834d21993"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/fields-source-v1.log",
+        "sha256": "de14cff92496eb17daa2cbda6666fa3296a66c8d82d9c80a0ab96b7773fc74d4"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/fields-clippy-v1.log",
+        "sha256": "13c763c1dd3e08962b3dcfd6d2e47a4659348c6b3881cf4ea3b3705b9caa0804"
+      }
+    ],
+    "native": {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/fields-native-v2/report.json",
+      "sha256": "a5373e08361f1db41a4b9cd13f741ca0d5cb8b53ebc46d6aad52b5b09f74edbf"
+    },
+    "api": {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/fields-api-v1.json",
+      "sha256": "7a3225d0d5f57ed110309e5e9de32473fad45fde91e4aded0c1110e9a8bee9d7"
+    },
+    "visually_reviewed": [
+      "fields-small/rift_fields_mat.png",
+      "fields-small/rift_fields_sanctum.png",
+      "fields-normal/rift_fields_look.png",
+      "fields-small/rift_fields_private.png"
+    ],
+    "api_baselines": {
+      "campaigns": 14,
+      "records": 99,
+      "all_full_records_equal": true,
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/fields-baselines-v1/report.json",
+      "sha256": "219573f45da95501b7ea04ca85157ecf272807bc49a00caa5ad1828703989a5e"
+    }
+  },
+  "failures_and_corrections": [
+    {
+      "evidence": {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/fields-core-v1.log",
+        "sha256": "4384287229bc8483369dfc686d247ce2dc61085cc3cd3c010b738145f99cb49a"
+      },
+      "finding": "Four new turn-advance fixtures used Pass outside a response window. Corrected them to EndTurn; the engine correctly rejected the invalid actions."
+    },
+    {
+      "evidence": {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/fields-client-v1.log",
+        "sha256": "111e0e18d8af0c4de8cf9222ad6c8f8ae47b4d1cd78fa2b2251dd35d95feedd8"
+      },
+      "finding": "One existing Predict fixture needed a comma when the additive source field was introduced. Corrected the fixture."
+    },
+    {
+      "evidence": {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/fields-native-v1/fields-normal/run.log",
+        "sha256": "ffe58047452b9054891c63cab6c4bb2ac6abf7371574ad515bbc145b156487a2"
+      },
+      "finding": "The smoke attempted a battlefield-to-battlefield Standard Move with a unit lacking Ganking. Changed the interaction to its legal Return to base control."
+    }
+  ],
+  "limitations": [
+    "The seven sourced tournament presets are unchanged. The three additional battlefield leads are from secondary Irelia listings whose primary registrations remain unverified.",
+    "The match campaign uses authored legal registrations and does not establish optimal decisions or tournament-strength AI.",
+    "504 mapped legal identities refers to the accepted October 24 inventory; it is not proof of complete current card or interaction coverage.",
+    "Full source-suite and immutable installed acceptance are pending. All 14 local API campaigns reproduced their prior complete records (81 existing records plus 18 field records).",
+    "Beginner learning outcomes and full Standard parity remain unproven."
+  ]
+}

@@ -1,5 +1,5 @@
 {
-  "status": "Source reviewed; no runtime support claimed for these three battlefields.",
+  "status": "Local rules, API, native and complete-match checks passed; immutable installed acceptance pending.",
   "reviewed_on": "2026-11-14",
   "base_revision": "00f7e00d33fe71f67cb93ed38c4433bf76c631a5",
   "records": [
@@ -84,7 +84,18 @@
           "rules_text": "Players can't score here until their third turn."
         },
         "notes": "Viewed the complete unmodified official landscape face, including name, type, text, set and collector number."
-      }
+      },
+      "runtime_image": {
+        "path": "assets/art/battlefield_18.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/b0c98558fccd68c9ac93cd5b3412c31c68b5ace9-1039x744.png?accountingTag=RB&w=360",
+        "sha256": "1ca860c5710cbcf33d47bedbceb9a0e43f7328558d197d1a9afbbb138ef8ad35",
+        "bytes": 160758,
+        "dimensions": [
+          360,
+          258
+        ]
+      },
+      "runtime_id": 18
     },
     {
       "official_id": "ogn-277-298",
@@ -167,7 +178,18 @@
           "rules_text": "When a unit moves from here, give it +1 Might this turn."
         },
         "notes": "Viewed the complete unmodified official landscape face, including name, type, text, set and collector number."
-      }
+      },
+      "runtime_image": {
+        "path": "assets/art/battlefield_19.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/3e9f659a32e390b45bc87a01bdd6af4a8a3565f7-1038x744.png?accountingTag=RB&w=360",
+        "sha256": "77585f358cfdb499df6b4d4a9a768ecc41580d72b29af992d3ef3cd0879e043b",
+        "bytes": 142164,
+        "dimensions": [
+          360,
+          258
+        ]
+      },
+      "runtime_id": 19
     },
     {
       "official_id": "ogn-291-298",
@@ -250,7 +272,18 @@
           "rules_text": "When you conquer here, look at the top two cards of your Main Deck. You may recycle one or both of them. Put those you don't back in any order."
         },
         "notes": "Viewed the complete unmodified official landscape face, including name, type, text, set and collector number."
-      }
+      },
+      "runtime_image": {
+        "path": "assets/art/battlefield_20.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/f14fe78f2b7f3909eadb07bce24bd582e190653d-1038x744.png?accountingTag=RB&w=360",
+        "sha256": "c365b1111f38dbfebb08c8ff58bcc52d46c01450474b2f03f1a6360374c00ecd",
+        "bytes": 133173,
+        "dimensions": [
+          360,
+          258
+        ]
+      },
+      "runtime_id": 20
     }
   ],
   "preserved_runtime_prefix": {
@@ -265,13 +298,14 @@
     "core_date": "2026-10-09",
     "core_url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/5c7946f7c3b8c6e0faff85ab6dadc6d2e721ea94.pdf",
     "core_sha256": "94d41fee86f88b61c4157c0389c0595d990b98e5b42555c99d9f649ee64d1fec",
-    "hub_verified_on": "2026-11-14",
+    "hub_verified_on": "2026-11-16",
     "sections": [
       "190.4: battlefield control and cleanup",
       "190.6.a/b: controlled and uncontrolled battlefield ability controller",
       "383.4.c.2.c/d.2.c: negated point gain does not itself suppress Conquer/Hold",
       "470.1/470.3: Scoring is distinct from gaining points; score without a number refers to Scoring",
-      "471-473: Conquer/Hold scoring, once per battlefield per turn, and score triggers"
+      "471-473: Conquer/Hold scoring, once per battlefield per turn, and score triggers",
+      "448 and 457-458: Moves exclude zone changes and corrective Recalls"
     ]
   },
   "irelia_relevance": [

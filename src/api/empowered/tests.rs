@@ -102,6 +102,7 @@ fn predict_view_hides_cards_and_order_from_the_other_seat() {
         player: 0,
         choice_id,
         cards: vec![11, 9],
+        source: None,
     });
     assert_eq!(first.observe(1).unwrap(), second.observe(1).unwrap());
     let own = first.observe(0).unwrap();

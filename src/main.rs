@@ -113,6 +113,19 @@ fn opponent_private_choice_copy(
     ))
 }
 fn own_predict_choice_copy(decision: Option<&Decision>) -> Option<(&'static str, &'static str)> {
+    if matches!(
+        decision,
+        Some(Decision::PredictCards {
+            player: 0,
+            source: Some(_),
+            ..
+        })
+    ) {
+        return Some((
+            "Finish your deck look.",
+            "Choose in the panel on the right. The current effect will finish before responses resume.",
+        ));
+    }
     matches!(
         decision,
         Some(Decision::Predict { player: 0, .. } | Decision::PredictCards { player: 0, .. })
@@ -4958,22 +4971,29 @@ impl App {
                 13.0,
                 if selected { GOLD } else { TEXT },
             );
-            self.ui.wrapped_lines(
-                field
-                    .official_text
-                    .lines()
-                    .find(|line| !line.starts_with('('))
-                    .unwrap_or(field.official_text)
-                    .split(" (")
-                    .next()
-                    .unwrap_or(field.official_text),
-                r.x + 12.0,
-                r.y + 38.0,
-                r.w - 24.0,
-                12.0,
-                TEXT,
-                2,
-            );
+            let mat_text =
+                if self.in_match && field_id == local_rift::battlefields::FORGOTTEN_MONUMENT_ID {
+                    format!(
+                        "{}\nTurns until scoring — you: {} · opponent: {}",
+                        field.official_text,
+                        self.game.battlefield_score_unlock(0, lane).unwrap_or(0),
+                        self.game.battlefield_score_unlock(1, lane).unwrap_or(0)
+                    )
+                } else if field_id == local_rift::battlefields::CANDLELIT_SANCTUM_ID {
+                    "Conquer: look at top 2. Recycle any; order the rest on top.".into()
+                } else {
+                    field
+                        .official_text
+                        .lines()
+                        .find(|line| !line.starts_with('('))
+                        .unwrap_or(field.official_text)
+                        .split(" (")
+                        .next()
+                        .unwrap_or(field.official_text)
+                        .into()
+                };
+            self.ui
+                .wrapped_lines(&mat_text, r.x + 12.0, r.y + 38.0, r.w - 24.0, 12.0, TEXT, 2);
             self.ui.line(
                 vec2(r.x + 9.0, r.y + 62.0),
                 vec2(r.x + r.w - 9.0, r.y + 62.0),
@@ -5060,17 +5080,19 @@ impl App {
             .iter()
             .filter(|trigger| trigger.source.battlefield_id == id)
             .count();
-        self.ui.text(
-            if waiting > 0 {
-                "A Peak ability is waiting for this turn's ending."
-            } else {
-                "Conquer and hold this location to score points."
-            },
-            r.x + 22.0,
-            r.y + 179.0,
-            11.0,
-            MUTED,
-        );
+        let explanation = if id == local_rift::battlefields::FORGOTTEN_MONUMENT_ID {
+            format!(
+                "Scoring unlocks on your own turn 3. Turns started: you {}, opponent {}.",
+                self.game.player_turns_started(0),
+                self.game.player_turns_started(1)
+            )
+        } else if waiting > 0 {
+            "A Peak ability is waiting for this turn's ending.".into()
+        } else {
+            "Conquer and hold this location to score points.".into()
+        };
+        self.ui
+            .text(&explanation, r.x + 22.0, r.y + 179.0, 11.0, MUTED);
         if pinned {
             self.ui.enabled = true;
             if self.ui.button(
@@ -9815,11 +9837,13 @@ mod live_preview_tests {
             player: 1,
             choice_id: 5,
             cards: vec![396, 397],
+            source: None,
         };
         let changed_hidden = Decision::PredictCards {
             player: 1,
             choice_id: 9,
             cards: vec![3, 69, 70, 71, 395],
+            source: None,
         };
         assert_eq!(
             opponent_private_choice_copy(Some(&hidden)),
@@ -9831,6 +9855,7 @@ mod live_preview_tests {
                 player: 0,
                 choice_id: 5,
                 cards: vec![396, 397],
+                source: None,
             }))
             .is_none()
         );
@@ -9861,7 +9886,8 @@ mod live_preview_tests {
             own_predict_choice_copy(Some(&Decision::PredictCards {
                 player: 0,
                 choice_id: 19,
-                cards: vec![69, 400]
+                cards: vec![69, 400],
+                source: None,
             })),
             expected
         );
@@ -10854,6 +10880,7 @@ async fn main() {
     let flurry_smoke = args.iter().any(|a| a == "--ui-smoke-flurry");
     let warden_smoke = args.iter().any(|a| a == "--ui-smoke-warden");
     let discord_smoke = args.iter().any(|a| a == "--ui-smoke-discord");
+    let fields_smoke = args.iter().any(|a| a == "--ui-smoke-fields");
     let turn_keywords_smoke = args.iter().any(|a| a == "--ui-smoke-turn-keywords");
     let rockfall_smoke = args.iter().any(|a| a == "--ui-smoke-rockfall");
     let riven_smoke = args.iter().any(|a| a == "--ui-smoke-riven");
@@ -10878,6 +10905,7 @@ async fn main() {
     let smoke_test = format_smoke
         || warden_smoke
         || discord_smoke
+        || fields_smoke
         || turn_keywords_smoke
         || flurry_smoke
         || disarm_smoke
@@ -10974,6 +11002,8 @@ async fn main() {
             smoke::run_disarm_frame(&mut app, frames)
         } else if flurry_smoke {
             smoke::run_flurry_frame(&mut app, frames)
+        } else if fields_smoke {
+            smoke::run_fields_frame(&mut app, frames)
         } else if discord_smoke {
             smoke::run_discord_frame(&mut app, frames)
         } else if warden_smoke {

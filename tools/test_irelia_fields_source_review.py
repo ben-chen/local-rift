@@ -45,9 +45,19 @@ class IreliaBattlefieldSourceReview(unittest.TestCase):
                 self.assertTrue(record['visual_review']['actual_full_face_viewed'])
                 for key, value in record['visual_review']['printed_facts'].items():
                     self.assertEqual(value, facts[key])
+                runtime_image = record['runtime_image']
+                thumbnail = (catalog.ROOT / runtime_image['path']).read_bytes()
+                self.assertEqual(catalog.sha(thumbnail), runtime_image['sha256'])
+                self.assertEqual(struct.unpack('>II', thumbnail[16:24]), (360, 258))
+                self.assertEqual(runtime_image['url'], raw['image_url'] + '&w=360')
+                self.assertEqual(runtime_image['path'], f"assets/art/battlefield_{record['runtime_id']}.png")
         runtime = catalog.load_runtime_manifest()
         runtime['battlefields'] = json.loads((catalog.ROOT / 'assets/data/battlefields.json').read_text())['battlefields']
         pin = proof['preserved_runtime_prefix']
+        for record in proof['records']:
+            field = runtime['battlefields'][record['runtime_id']]
+            self.assertEqual(field['source_id'], record['official_id'])
+            self.assertEqual(field['official_text'], record['effective']['rules_text'])
         for key, count, digest in [('cards', 'card_count', 'cards_sha256'),
                                    ('decks', 'preset_count', 'presets_sha256'),
                                    ('battlefields', 'battlefield_count', 'battlefields_sha256')]:

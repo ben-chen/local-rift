@@ -17,7 +17,9 @@ mod deathgrip;
 mod disarm;
 mod discord;
 mod entourage;
+mod fields;
 mod flurry;
+pub(super) use fields::run_frame as run_fields_frame;
 mod format;
 mod guards;
 mod heavens;
@@ -6247,6 +6249,7 @@ pub fn run_frame(app: &mut App, frame: u32) -> bool {
                 player: 0,
                 choice_id,
                 ref cards,
+                ..
             }) = app.game.decision
             else {
                 panic!("Apprentice must Predict after Empower");

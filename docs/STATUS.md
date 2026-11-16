@@ -66,6 +66,13 @@ advice levels. The fixed candidate passed 2,045 Rust tests, 338 source checks,
 campaigns with 75 full records matching the local baselines. Three installed
 Warden captures were visually reviewed; see [Warden validation](validation/irelia_warden.json).
 
+Forgotten Monument, Back-Alley Bar and The Candlelit Sanctum have local
+implementation and validation, including scoring unlock explanations and private
+deck-ordering controls. Local checks passed 1,132 library tests, 170 client tests,
+18 authored best-of-three series (43 actual games), and two native cases with
+20 captures. Four captures were visually reviewed. Immutable installed acceptance
+is pending; see [battlefield validation](validation/irelia_fields.json).
+
 Decree of Discord passed installed acceptance with explicit remaining-target
 choices when opposing responses break its collective Might limit. The fixed
 candidate passed 2,055 Rust tests, 340 source checks, 1,176 simulated games,

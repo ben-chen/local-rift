@@ -60,6 +60,7 @@ impl App {
             player: 0,
             choice_id,
             cards,
+            ..
         }) = &self.game.decision
         {
             if self
@@ -85,7 +86,20 @@ impl App {
         let Some(draft) = self.predict_draft.clone() else {
             return;
         };
-        self.ui.title("Predict", 1178.0, 366.0, 22.0, TEXT);
+        let look = matches!(
+            self.game.decision,
+            Some(Decision::PredictCards {
+                source: Some(_),
+                ..
+            })
+        );
+        self.ui.title(
+            if look { "Arrange top cards" } else { "Predict" },
+            1178.0,
+            366.0,
+            22.0,
+            TEXT,
+        );
         self.ui.wrapped_lines("Only you see these cards. Choose any to recycle to the bottom, then order the cards you keep on top. Nothing changes until you confirm.", 1178.0, 397.0, 209.0, 12.0, TEXT, 5);
         self.ui.text(
             &format!(
@@ -101,7 +115,11 @@ impl App {
         let action = draft.action();
         if self.ui.button(
             Rect::new(1178.0, 493.0, 212.0, 34.0),
-            "Confirm Predict",
+            if look {
+                "Confirm order"
+            } else {
+                "Confirm Predict"
+            },
             true,
             self.game.clone().apply(action.clone()).is_ok(),
         ) {

@@ -257,6 +257,23 @@ A `predict_cards` decision reports `player`, `choice_id`, and actual available `
 
 `top_order[0]` will be drawn next. The recycled subset goes to the bottom in randomized order; `recycle` does not select a bottom order. Identical card IDs still have distinct occurrence indices. Duplicate, missing, out-of-range, and stale choice IDs are rejected atomically. No opponent view contains private identities or chosen order. An empty deck creates no choice and causes no burnout. Legacy single-card `predict` and its Boolean `choose` action are unchanged.
 
+The Candlelit Sanctum uses this same ordering protocol with `purpose: "look_recycle"`
+and a public battlefield `source` (`type`, `lane`, `battlefield_id`). This is a
+look/recycle instruction, not the Predict keyword. Its controller alone receives
+the card identities. `resolve_predict` remains the action name for compatibility.
+Looking at an empty deck produces no choice and does not draw or burn out.
+
+When Forgotten Monument is present, `battlefield_scoring` lists its `lane`,
+`battlefield_id`, and both `players`. Each player entry gives `player`,
+`turns_started`, `turns_until_unlocked`, and `scoring_unlocked`. Unlocking only
+removes Monument's turn restriction; ordinary control, timing, and once-per-turn
+scoring requirements still apply. These are public facts.
+
+Back-Alley Bar's chain ability is `back_alley_might`, with `lane` and `unit_id`.
+The referenced unit is not a chosen target, so the chain item's `targets` is empty.
+Its canonical `source` identifies the battlefield. Sanctum's chain ability is
+`sanctum_arrange`, with `lane`, before its private choice starts on resolution.
+
 Move-based trigger `context.movement` records `origin` and `destination`; a null endpoint means base. A null movement object means this was not a Move event. These event facts survive source departure. Akali's target battlefield comes from the recorded event, while its Empowered damage and Ambessa's comparative Might use the source's live state. Validate the full proposed target action, including its slot and other selected targets.
 
 ## Repeat instances and cost choices

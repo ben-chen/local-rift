@@ -170,6 +170,7 @@ fn fingerprint(game: &Game) -> u64 {
             player,
             choice_id,
             cards,
+            ..
         }) => {
             (5_u8, *player, *choice_id, cards.len()).hash(&mut hash);
             if *player == 0 {
@@ -368,6 +369,36 @@ fn rockfall_advice(game: &Game, beginner: bool) -> Option<&'static str> {
         })
 }
 
+fn field_advice(game: &Game, beginner: bool) -> Vec<&'static str> {
+    use local_rift::battlefields::{BACK_ALLEY_BAR_ID, CANDLELIT_SANCTUM_ID};
+    let mut tips = Vec::new();
+    if (0..game.battlefield_count()).any(|lane| {
+        game.battlefield_score_unlock(0, lane)
+            .is_some_and(|left| left > 0)
+    }) {
+        tips.push(if beginner {
+            "Forgotten Monument can be controlled now, but you cannot score there until your own third turn. Before then it gives no Hold or Conquer triggers."
+        } else {
+            "Monument delays your scoring until your third turn. Compare securing it for that Hold with contesting a battlefield that can score immediately."
+        });
+    }
+    if game.battlefields.contains(&BACK_ALLEY_BAR_ID) {
+        tips.push(if beginner {
+            "Moving a unit out of Back-Alley Bar triggers +1 Might for this turn. The bonus arrives after responses; playing or returning a card to hand is different."
+        } else {
+            "A move out of Back-Alley Bar can improve a combat elsewhere. Account for the response window and expiry this turn before committing the unit."
+        });
+    }
+    if game.battlefields.contains(&CANDLELIT_SANCTUM_ID) {
+        tips.push(if beginner {
+            "Conquering Sanctum lets you privately look at up to two top cards, recycle any, and order the rest. Holding it does not trigger that ability."
+        } else {
+            "Sanctum improves upcoming draws when you conquer. Balance that selection against a safer Hold elsewhere; looking itself adds no cards to your hand."
+        });
+    }
+    tips
+}
+
 fn checked_advice(game: &Game, level: AdviceLevel) -> Result<Vec<&'static str>, String> {
     game.validate_numeric_state()?;
     let beginner = level == AdviceLevel::Beginner;
@@ -400,6 +431,7 @@ fn checked_advice(game: &Game, level: AdviceLevel) -> Result<Vec<&'static str>, 
 
     if let Some(mut window_tips) = response_window_advice(game, beginner)? {
         window_tips.extend(rockfall_advice(game, beginner));
+        window_tips.extend(field_advice(game, beginner));
         window_tips.extend(heavens_advice(game, beginner));
         window_tips.extend(block_advice(game, beginner));
         window_tips.extend(flurry_advice(game, beginner));
@@ -433,6 +465,7 @@ fn checked_advice(game: &Game, level: AdviceLevel) -> Result<Vec<&'static str>, 
 
     tips.extend(crate::combat_ui::card_advice(game, beginner)?);
     tips.extend(rockfall_advice(game, beginner));
+    tips.extend(field_advice(game, beginner));
     tips.extend(heavens_advice(game, beginner));
     tips.extend(block_advice(game, beginner));
     tips.extend(flurry_advice(game, beginner));
@@ -1243,6 +1276,13 @@ fn response_window_advice(
                 "Wild Claw offers to Empower the exact object it played. You may decline; accepting puts a separate ability on the chain for responses.",
                 "Check that object’s Empowered effects before accepting. This offer cannot be redirected to another copy of the same card.",
             ],
+            Decision::PredictCards {
+                source: Some(_), ..
+            } => vec![if beginner {
+                "Sanctum lets you look without drawing. Recycle zero, one or both cards; order the kept cards on top. Only you see them. Confirm to finish the ability."
+            } else {
+                "Order the next draws around your plan. Keep a useful response or threat; recycle cards that do not help. The opponent cannot see these choices."
+            }],
             Decision::PredictCards { .. } => {
                 if let Some(tail) = game.predict_continuation() {
                     vec![
@@ -2134,6 +2174,58 @@ pub fn draw_mote(center: Vec2, scale: f32, time: f32, accent: Color) {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn fields_advice_explains_both_levels_without_using_private_opponent_cards() {
+        use local_rift::battlefields::{
+            BACK_ALLEY_BAR_ID, CANDLELIT_SANCTUM_ID, FORGOTTEN_MONUMENT_ID,
+        };
+        let mut game = Game::new_for_agents(0, 0, 1820, Difficulty::Easy);
+        game.start_match().unwrap();
+        for field in [
+            FORGOTTEN_MONUMENT_ID,
+            BACK_ALLEY_BAR_ID,
+            CANDLELIT_SANCTUM_ID,
+        ] {
+            game.battlefields = vec![field, 3];
+            let before = format!("{game:?}");
+            for beginner in [false, true] {
+                let tips = field_advice(&game, beginner);
+                assert!(!tips.is_empty());
+                assert!(tips.iter().all(|tip| tip.chars().count() <= 180));
+                let mut hidden = game.clone();
+                hidden.players[1].hand = vec![465, 71];
+                hidden.players[1].deck.reverse();
+                assert_eq!(field_advice(&hidden, beginner), tips);
+            }
+            assert_eq!(before, format!("{game:?}"));
+        }
+        game.decision = Some(Decision::PredictCards {
+            player: 0,
+            choice_id: 123,
+            cards: vec![71, 70],
+            source: Some(local_rift::game::ChainSource::Battlefield {
+                lane: 0,
+                battlefield_id: CANDLELIT_SANCTUM_ID,
+            }),
+        });
+        for level in [AdviceLevel::Beginner, AdviceLevel::Advanced] {
+            let tips = advice(&game, level);
+            assert!(!tips[0].contains("Predict"));
+            assert!(tips[0].chars().count() <= 180);
+        }
+        if let Some(Decision::PredictCards { player, .. }) = &mut game.decision {
+            *player = 1;
+        }
+        let mut hidden = game.clone();
+        if let Some(Decision::PredictCards { cards, .. }) = &mut hidden.decision {
+            *cards = vec![96, 97];
+        }
+        for level in [AdviceLevel::Beginner, AdviceLevel::Advanced] {
+            assert_eq!(advice(&game, level), advice(&hidden, level));
+        }
+        assert_eq!(fingerprint(&game), fingerprint(&hidden));
+    }
 
     #[test]
     fn discord_advice_uses_only_visible_information_and_explains_both_levels() {
@@ -4082,12 +4174,14 @@ mod tests {
             player: 1,
             choice_id: 71,
             cards: vec![272, 273],
+            source: None,
         });
         let mut second = first.clone();
         second.decision = Some(Decision::PredictCards {
             player: 1,
             choice_id: 71,
             cards: vec![288, 279],
+            source: None,
         });
         assert_eq!(fingerprint(&first), fingerprint(&second));
         for level in [AdviceLevel::Beginner, AdviceLevel::Advanced] {
@@ -4097,6 +4191,7 @@ mod tests {
             player: 0,
             choice_id: 72,
             cards: vec![272, 273],
+            source: None,
         });
         assert!(advice(&second, AdviceLevel::Beginner)[0].contains("Predict"));
     }
@@ -4613,6 +4708,7 @@ mod tests {
                     player,
                     choice_id: 73,
                     cards: vec![272, 273],
+                    source: None,
                 },
                 Decision::Payment { player },
                 Decision::ResourceConversion {

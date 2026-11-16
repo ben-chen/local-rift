@@ -694,3 +694,29 @@ It rejects a selection if another original eligible target can still be added,
 including a zero-Might unit. A smaller-cardinality subset is allowed when no
 additional target fits. The same validation serves the bot API and native UI.
 Local and installed rules, API, AI decision and native interaction scenarios pass; see [Decree validation](validation/irelia_discord.json).
+
+## Forgotten Monument, Back-Alley Bar and The Candlelit Sanctum
+
+Forgotten Monument prohibits the Scoring process until the beginning of each
+player's own third turn, including extra turns. Control can still be established.
+Before unlocking there is no score marker, point, final-point replacement draw,
+or Conquer/Hold trigger. After unlocking, the ordinary final-point replacement
+draw still counts as scoring and produces Conquer triggers (Core 470–473).
+
+Each unit Move from Back-Alley Bar queues a respondable ability, including token,
+group and effect moves. Its controller is the battlefield's controller at the
+occurrence, or the turn player for an uncontrolled field (Core 190.6). The ability
+tracks that physical unit across control changes without choosing a target and
+gives +1 temporary Might on resolution. Returning and replaying a card creates
+a different object. Multiple moves can accumulate bonuses; they expire at turn
+end. Corrective Recalls and zone changes are not Moves (Core 448, 457–458).
+
+Sanctum triggers on Conquer, not Hold. After responses, its controller privately
+looks at up to two available top cards, recycles zero, one or both, and orders
+the rest on top. Recycled cards go to the bottom in random order. Looking does
+not draw, so an empty deck causes no burnout. The ordering choice must finish
+before responses resume. The shared controls say “Arrange top cards” for this
+instruction rather than teaching it as the Predict keyword.
+
+Local rules, API, complete-match and native checks passed for these additions;
+immutable installed acceptance is pending. See [battlefield validation](validation/irelia_fields.json).
