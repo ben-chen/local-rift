@@ -79,3 +79,10 @@ candidate passed 2,055 Rust tests, 340 source checks, 1,176 simulated games,
 31 installed UI cases (252 captures), and 13 API campaigns with 81 complete
 records matching the local baselines. Four installed Decree captures were
 visually reviewed; see [Decree validation](validation/irelia_discord.json).
+
+Forgotten Monument, Back-Alley Bar and The Candlelit Sanctum passed installed
+acceptance. The fixed candidate passed 2,070 Rust tests, 341 source checks,
+1,176 simulated matches, 33 installed interface cases (272 captures), and
+14 API campaigns with 99 full records matching local baselines. Four installed
+captures were visually reviewed, including private-choice concealment and
+small-window explanations. See [battlefield validation](validation/irelia_fields.json).

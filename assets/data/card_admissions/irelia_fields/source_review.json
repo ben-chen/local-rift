@@ -1,5 +1,5 @@
 {
-  "status": "Local rules, API, native and complete-match checks passed; immutable installed acceptance pending.",
+  "status": "Source review, local runtime validation and immutable installed acceptance passed; full Standard parity remains unproven",
   "reviewed_on": "2026-11-14",
   "base_revision": "00f7e00d33fe71f67cb93ed38c4433bf76c631a5",
   "records": [

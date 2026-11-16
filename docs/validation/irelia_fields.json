@@ -1,6 +1,6 @@
 {
-  "status": "Local validation passed; immutable installed acceptance pending; full Standard parity remains unproven",
-  "reviewed_at": "2026-11-16T22:34:36.184198+00:00",
+  "status": "Local and immutable installed acceptance passed; full Standard parity remains unproven",
+  "reviewed_at": "2026-11-16T23:01:08.726855+00:00",
   "source_review_commit": "1083204d04ba2c6a77957da390f81cd09cfd930d",
   "base_revision": "99b389a",
   "battlefields": [
@@ -125,7 +125,54 @@
     "The seven sourced tournament presets are unchanged. The three additional battlefield leads are from secondary Irelia listings whose primary registrations remain unverified.",
     "The match campaign uses authored legal registrations and does not establish optimal decisions or tournament-strength AI.",
     "504 mapped legal identities refers to the accepted October 24 inventory; it is not proof of complete current card or interaction coverage.",
-    "Full source-suite and immutable installed acceptance are pending. All 14 local API campaigns reproduced their prior complete records (81 existing records plus 18 field records).",
     "Beginner learning outcomes and full Standard parity remain unproven."
-  ]
+  ],
+  "installed_acceptance": {
+    "status": "passed",
+    "audited_at": "2026-11-16T23:01:08.726855+00:00",
+    "revision": "7fdbe2bbc220fea96589103f9990987bf3d1a6b0",
+    "rust_tests": 2070,
+    "source_tests": 341,
+    "simulated_matches": 1176,
+    "ui_cases": 33,
+    "captures": 272,
+    "actual_ui_games": 2,
+    "api_campaigns": 14,
+    "records": 99,
+    "all_capture_and_log_hashes_verified": true,
+    "all_api_records_compared_in_full": true,
+    "installed_visually_reviewed": [
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/fields-release-v1/fields-small/rift_fields_mat.png",
+        "sha256": "caf08d2c1eef01971a9a39bb138e002a8e71d453b4a9d1099115fa11dca5811b"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/fields-release-v1/fields-small/rift_fields_sanctum.png",
+        "sha256": "a560c06db3eaa868b94c33fff563ac7d0a2466fb147bcd259ae64b224175c23d"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/fields-release-v1/fields-normal/rift_fields_look.png",
+        "sha256": "bd9ee00b472174ddb8300f1a407a907b1aea2f4811d9087ace8f5cd781add2cc"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/fields-release-v1/fields-small/rift_fields_private.png",
+        "sha256": "1a29ccb3e537d268e1a59900bc9474a259bb6da63c5c5832a45e506a7f8d6400"
+      }
+    ],
+    "visual_findings": "Reviewed actual installed captures: Monument turn countdown and Mote fit at small size; Sanctum full rules fit; private look shows keep/recycle/order controls; opposing private cards remain concealed.",
+    "source_audit": {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/fields-source-audit-v1.json",
+      "sha256": "dda0335bb4e4f0f73fa59af109c8408abe43f25116820d3584aee04c847de8e9"
+    },
+    "package": "/nix/store/lwrpn9mqy6dvfd390c6mk90r91bpgd1x-local-rift-0.1.0",
+    "status_sha256": "010c93b1a939403e7616e86da430e173a4946ec972941829b58d02f12db4fcaf",
+    "nix_log_sha256": "6815b904d63317bdb297cfdcdb59d38537c1f65429704cff7f4ae140105fa9c7",
+    "simulation_sha256": "4d8ef7c87201c796f889ebd01fff96a485b1d82374bdc3772c3315720ebd4fdf",
+    "tested_revision": "7fdbe2bbc220fea96589103f9990987bf3d1a6b0",
+    "source_files_verified": 1526,
+    "evidence_report": {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/fields-installed-audit-v1.json",
+      "sha256": "610db27b126d56b30798ca984b4c237465677a71992d315365466d69103e739d"
+    }
+  }
 }

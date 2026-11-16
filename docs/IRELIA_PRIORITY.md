@@ -278,7 +278,7 @@ reviewed in [source_review.json](../assets/data/card_admissions/irelia_discord/s
 Its runtime and explicit subset controls passed local rules, AI, native and API
 checks and immutable installed acceptance. See [Decree validation](validation/irelia_discord.json).
 The three battlefields now have local rules, API, complete-match and native
-validation, with immutable installed acceptance pending. Their [source review](../assets/data/card_admissions/irelia_fields/source_review.json)
+validation, and immutable installed acceptance passed. Their [source review](../assets/data/card_admissions/irelia_fields/source_review.json)
 and [validation record](validation/irelia_fields.json) preserve the source limits.
 The seven tournament presets are unchanged; the additional match registrations
 are authored coverage checks. This work does not replace the goal of all legal cards.

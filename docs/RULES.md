@@ -718,5 +718,5 @@ not draw, so an empty deck causes no burnout. The ordering choice must finish
 before responses resume. The shared controls say “Arrange top cards” for this
 instruction rather than teaching it as the Predict keyword.
 
-Local rules, API, complete-match and native checks passed for these additions;
-immutable installed acceptance is pending. See [battlefield validation](validation/irelia_fields.json).
+Local rules, API, complete-match, native and immutable installed checks passed
+for these additions. See [battlefield validation](validation/irelia_fields.json).

@@ -287,7 +287,7 @@ The implementation uses **Rust + Macroquad**, with a pure Rust rules layer separ
 | `src/combat.rs` / `src/combat_ui.rs` | Resumable combat resolution, captured results, closed focus and visible progress |
 | `src/deck.rs` / `src/deck_editor.rs` | Constructed-deck validation, native editor, and separate saved lists |
 | `src/cards.rs` | Card facts, official text, and preset compositions |
-| `src/battlefields.rs` | Eighteen official battlefield choices, triggers, and cost or damage modifiers |
+| `src/battlefields.rs` | Twenty-one official battlefield choices, triggers, and cost or damage modifiers |
 | `src/legends.rs` | Legend powers, optional trigger costs, and combat bonuses |
 | `src/hidden.rs` | Facedown slots, Hidden timing, target restrictions, and visibility |
 | `src/gear.rs` | Persistent gear, attachment abilities, resource generation, and death prevention |
