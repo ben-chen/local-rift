@@ -693,5 +693,4 @@ the collective limit. The client asks for a subset of those original targets.
 It rejects a selection if another original eligible target can still be added,
 including a zero-Might unit. A smaller-cardinality subset is allowed when no
 additional target fits. The same validation serves the bot API and native UI.
-Local rules, API, AI decision and native interaction scenarios pass. Installed
-acceptance remains pending; see [Decree validation](validation/irelia_discord.json).
+Local and installed rules, API, AI decision and native interaction scenarios pass; see [Decree validation](validation/irelia_discord.json).

@@ -1,5 +1,5 @@
 {
-  "status": "Local runtime validation passed; immutable installed acceptance pending.",
+  "status": "Installed acceptance passed for runtime 00f7e00d33fe71f67cb93ed38c4433bf76c631a5; see docs/validation/irelia_discord.json.",
   "reviewed_on": "2026-11-14",
   "base_revision": "e39365272aaf04c6b466eaa7b6dc9deb84200a94",
   "preserved_runtime_prefix": {

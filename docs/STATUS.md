@@ -66,9 +66,9 @@ advice levels. The fixed candidate passed 2,045 Rust tests, 338 source checks,
 campaigns with 75 full records matching the local baselines. Three installed
 Warden captures were visually reviewed; see [Warden validation](validation/irelia_warden.json).
 
-Decree of Discord passed local validation with explicit remaining-target choices
-when opposing responses break its collective Might limit. Checks cover both
-seats and all three AI levels, 24 complete engine games, 18 native captures and
-13 API campaigns (81 records). Its six API series completed 14 games and observed
-13 Decrees, 11 with targets. Four captures were visually reviewed. Installed
-acceptance remains pending; see [Decree validation](validation/irelia_discord.json).
+Decree of Discord passed installed acceptance with explicit remaining-target
+choices when opposing responses break its collective Might limit. The fixed
+candidate passed 2,055 Rust tests, 340 source checks, 1,176 simulated games,
+31 installed UI cases (252 captures), and 13 API campaigns with 81 complete
+records matching the local baselines. Four installed Decree captures were
+visually reviewed; see [Decree validation](validation/irelia_discord.json).

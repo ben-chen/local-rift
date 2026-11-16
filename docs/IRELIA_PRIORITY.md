@@ -276,5 +276,5 @@ Their primary registrations remain unverified and no new tournament preset is
 admitted from them. Decree's original face and group-target rules have been
 reviewed in [source_review.json](../assets/data/card_admissions/irelia_discord/source_review.json).
 Its runtime and explicit subset controls passed local rules, AI, native and API
-checks; installed acceptance is pending. See [Decree validation](validation/irelia_discord.json). The three
+checks and immutable installed acceptance. See [Decree validation](validation/irelia_discord.json). The three
 battlefields remain queued; this list does not replace the goal of all legal cards.

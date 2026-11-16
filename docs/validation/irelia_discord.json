@@ -1,5 +1,5 @@
 {
-  "status": "Local validation passed; immutable installed acceptance pending",
+  "status": "Installed acceptance passed for the tested revision; full Standard parity remains unproven",
   "reviewed_at": "2026-11-14T12:14:17.779011+00:00",
   "source_review_commit": "b681901",
   "base_revision": "e39365272aaf04c6b466eaa7b6dc9deb84200a94",
@@ -211,10 +211,47 @@
     }
   ],
   "remaining": [
-    "Immutable full Rust/source/simulation and installed native/API acceptance for this candidate, then publication.",
     "Complete series prove playable legal match flow and actual Decree casts, not that the subset decision occurred naturally. That decision is separately forced and verified at every AI level in both seats.",
     "Three further Irelia battlefield leads remain: Forgotten Monument, Back-Alley Bar, The Candlelit Sanctum.",
     "The catalog is the accepted October 24 snapshot with explicit known format-date restrictions, not a certification that all currently legal cards are implemented.",
     "Full Standard rules and legal-card coverage, independently measured expert opponent strength, and human learning validation remain unproven."
-  ]
+  ],
+  "installed_acceptance": {
+    "status": "passed",
+    "audited_at": "2026-11-16T22:19:32.160970+00:00",
+    "tested_revision": "00f7e00d33fe71f67cb93ed38c4433bf76c631a5",
+    "source_files_verified": 1512,
+    "rust_tests": 2055,
+    "source_tests": 340,
+    "simulation_games": 1176,
+    "simulation_sha256": "37f7fa4cbf89536f3ea95ebe498ac95be3c4867e4f4e231f722dd8523315d83c",
+    "ui_cases": 31,
+    "captures": 252,
+    "ui_actual_games": 2,
+    "api_campaigns": 13,
+    "api_records": 81,
+    "all_capture_and_log_hashes_verified": true,
+    "all_api_records_compared_in_full": true,
+    "installed_visually_reviewed": [
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/discord-release-v1/discord-small/rift_discord_subset.png",
+        "sha256": "8d576cd504cf91a1c7ee55627b2fb67f65553aa10a97622ad49b9379d6729de2"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/discord-release-v1/discord-small/rift_discord_inspect.png",
+        "sha256": "570174f57c3f233f2b0f7f10d2dd04442ed2652857343f2a32c027010f4c4951"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/discord-release-v1/discord-normal/rift_discord_include_zero.png",
+        "sha256": "771b45d44b1792906dbdc0bf588576f1e9a391054533005b3eef0e6d23fac1ba"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/discord-release-v1/discord-small/rift_discord_three_might.png",
+        "sha256": "ca13254800b7c0a8f75ef6ac8ad2ba60cddc232389931bddd6edcd07f0d8fbab"
+      }
+    ],
+    "package": "/nix/store/sajyv7xrgc3cxcizcp98hcidn0174jrn-local-rift-0.1.0",
+    "status_sha256": "39e612ce03252f325954c9445b0a73ce3b819fb4013ccdd6947f9d4cdc4ac0e8",
+    "nix_log_sha256": "2a9fd590c0ab3e6f57e691233eb9a7f50095e665c9c9782f3daed4d3875d692d"
+  }
 }
