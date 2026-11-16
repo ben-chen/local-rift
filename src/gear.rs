@@ -730,10 +730,11 @@ impl Game {
             return false;
         };
         let gear = state.gear.remove(index);
+        let owner = self.departed_board_owner(player, gear_id);
         self.granted_temporary_gear.retain(|&id| id != gear_id);
         self.empowered_units.retain(|&id| id != gear_id);
         if !gear.token {
-            state.discard.push(gear.card_id);
+            self.players[owner].discard.push(gear.card_id);
         }
         true
     }

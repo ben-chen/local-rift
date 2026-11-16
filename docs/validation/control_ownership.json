@@ -1,0 +1,83 @@
+{
+  "status": "Ownership departure foundation passed local library and all-target lint checks; control-changing cards remain unavailable.",
+  "reviewed_at": "2026-11-16T23:28:04.612608+00:00",
+  "source_review_commit": "0ca82ce",
+  "base_revision": "a4a7e445996fc899078473c38898622083379f3a",
+  "source_review": "assets/data/card_admissions/irelia_control/source_review.json",
+  "implementation": [
+    "Track exceptional board-object ownership separately from the current controller; ordinary owned objects need no override. Units and gear share the physical ID allocator.",
+    "Return to hand, direct banishment, death, and banish-instead-of-death send physical cards to their owner's non-Board zone. Clear the departed physical object's ownership entry, including for vanished tokens.",
+    "Recall preserves ownership and object status. A replacement that keeps a unit on board retains its ownership. Death-trigger controller remains distinct from the owner receiving the card.",
+    "Expose a validated board_owner query for Rust callers. Invalid and departed unit/gear references return None."
+  ],
+  "validation": {
+    "new_rules_tests": 6,
+    "library_tests": 1151,
+    "library_failed": 0,
+    "library_ignored": 0,
+    "clippy": "all targets, -D warnings, passed",
+    "source_review_test": {
+      "command": "python3 -m unittest discover -s tools -p test_control_source_review.py -v",
+      "tests": 1,
+      "card_subtests": 2,
+      "status": "passed"
+    },
+    "logs": [
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/control-ownership-v1.log",
+        "sha256": "5da98a96bea4972d8635e64091e35ba6b4c92832412ba92d55e7e787b4d1c332"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/control-library-v1.log",
+        "sha256": "531d35acb5879eb6702af50ccdfc4cb919cd0e023e07ff69e3842b9e93805d52"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/control-clippy-v1.log",
+        "sha256": "8d6562f0988c68ef2e39dbbaed134e26bb149cea849f17e581fd279db0cabe72"
+      }
+    ],
+    "tested_runtime_files": [
+      {
+        "path": "/home/benchen/.cache/local-rift-work/irelia-control/src/game.rs",
+        "sha256": "1518d0ee8eed8993494442d2d5961f5e3aab22d489dfa643550d4184dcff5689"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/irelia-control/src/gear.rs",
+        "sha256": "d33291f71610d9a3af25ffe1aaf8acb91e024734e495e6aa05e6dfe40b64868c"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/irelia-control/src/board_returns.rs",
+        "sha256": "64cb95adf6ce3a5d9b778d2beebddbbf1f27a71675eab6153c75534d4748c229"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/irelia-control/src/ownership.rs",
+        "sha256": "9664e97a85b800fb96109219034bbfd06fa43f05243ea77c0e7798b55135b5e8"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/irelia-control/src/ownership_tests.rs",
+        "sha256": "c39b5a6a29043f189ca1757dad8f7bb492fb73fe3512a92c989bb43129a0bda0"
+      }
+    ]
+  },
+  "coverage": [
+    "Both original owners; real units and tokens; return, banish, kill and death replacement destinations.",
+    "Both original owners; real gear and Gold tokens; return, banish and kill destinations.",
+    "Recall, action rejection rollback, cloning and newly created board identities.",
+    "Deathknell still belongs to the former controller even though the card is placed in its owner's trash.",
+    "Guardian Angel replacement preserves a borrowed unit's owner, then returning it uses that owner.",
+    "Temporal Breach queues the exact banished occurrence for its original owner from a battlefield, preserving an unrelated banished card."
+  ],
+  "remaining_before_card_admission": [
+    "Implement the actual control-changing operation, target revalidation across controller changes, and pending source references that retain physical identity.",
+    "Preserve attached gear controllers and absolute locations, including attachment in an opposing base, detachment, re-equipping, replacement effects and granted abilities.",
+    "Preserve the absolute source base for same-location instructed replay; Option<lane> alone cannot distinguish the two bases after a control change.",
+    "Implement Possession and Conscription targeting, optional XP costs, atomic rollback and AI candidate choices.",
+    "Update ownership-aware conservation checks, JSON observations, board/inspector controls and both companion levels.",
+    "Run card-specific interaction, API, complete-game and native checks, then immutable installed acceptance."
+  ],
+  "limits": [
+    "No control-changing card or new preset is enabled by this checkpoint. The foreign-control fixtures explicitly arrange the initial state.",
+    "These are focused owner/destination guarantees, not full control-transfer, equipment or Standard conformance.",
+    "The concurrently running entry-release candidate is a separate immutable revision and contains none of this ownership work."
+  ]
+}

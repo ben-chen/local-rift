@@ -14,6 +14,9 @@ use crate::legends::{LegendAbility, LegendState, LegendTrigger};
 use crate::rules::{self, Allegiance, CounterKind, OfficialEffect, StaticAbility};
 use std::collections::VecDeque;
 
+#[path = "ownership.rs"]
+mod ownership;
+
 #[path = "entry.rs"]
 mod entry;
 
@@ -1068,7 +1071,7 @@ impl Decision {
 pub struct Unit {
     pub id: u32,
     pub card_id: CardId,
-    /// `None` is this unit's owner's base; `Some(slot)` is a physical battlefield slot.
+    /// `None` is this unit's controller's base; `Some(slot)` is a physical battlefield slot.
     pub lane: Option<usize>,
     pub ready: bool,
     pub damage: u64,
@@ -1161,6 +1164,10 @@ struct PendingCombat {
 #[derive(Clone, Debug)]
 pub struct Game {
     applying_action: bool,
+    /// Sparse ownership: absent means the current controller owns the object.
+    /// Control-changing effects must preserve the original owner here. Unit
+    /// and gear IDs share one allocator; remove the entry on board departure.
+    board_owner_overrides: std::collections::BTreeMap<u32, usize>,
     pub(crate) format_context: Option<std::sync::Arc<crate::legality::FormatContext>>,
     pub play_history: PlayHistory,
     pub play_grants: Vec<PlayGrant>,
@@ -1445,6 +1452,7 @@ impl Game {
             damage_ledger: None,
             last_damage_ledger: None,
             gear_attachments_this_turn: Vec::new(),
+            board_owner_overrides: std::collections::BTreeMap::new(),
             format_context: None,
             catalog,
             presets,
@@ -9466,12 +9474,13 @@ impl Game {
             self.granted_temporary_units
                 .retain(|&id| id != choice.unit_id);
             let unit = self.players[player].units.remove(index);
+            let owner = self.departed_board_owner(player, choice.unit_id);
             self.push_log(format!(
                 "{} is banished instead of dying.",
                 self.unit_name(&unit)
             ));
             if !unit.token {
-                self.players[player].banish.push(unit.card_id);
+                self.players[owner].banish.push(unit.card_id);
             }
         }
     }
@@ -9741,6 +9750,7 @@ impl Game {
                 self.instructed_kills.retain(|&id| id != unit_id);
                 self.gear_unit_left_board(player, unit_id);
                 let unit = self.players[player].units.remove(index);
+                let owner = self.departed_board_owner(player, unit_id);
                 self.push_log(format!(
                     "{} is {}.",
                     self.unit_name(&unit),
@@ -9752,9 +9762,9 @@ impl Game {
                 ));
                 if !unit.token {
                     if unit.banish_on_death {
-                        self.players[player].banish.push(unit.card_id);
+                        self.players[owner].banish.push(unit.card_id);
                     } else {
-                        self.players[player].discard.push(unit.card_id);
+                        self.players[owner].discard.push(unit.card_id);
                         deaths.push((player, unit.card_id, alone));
                     }
                 }

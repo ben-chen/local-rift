@@ -9,7 +9,6 @@ enum UnitDestination {
 
 impl Game {
     /// Returns the owner for a linked instruction, even when a token vanishes.
-    /// No admitted card transfers control; the stored seat is also the owner.
     pub(crate) fn return_unit_to_hand(&mut self, target: Target) -> Option<usize> {
         self.depart_unit_without_kill(target, UnitDestination::Hand)
     }
@@ -31,10 +30,11 @@ impl Game {
             return;
         };
         let gear = state.gear.remove(index);
+        let owner = self.departed_board_owner(player, gear_id);
         self.granted_temporary_gear.retain(|&id| id != gear_id);
         self.empowered_units.retain(|&id| id != gear_id);
         if !gear.token {
-            state.banish.push(gear.card_id);
+            self.players[owner].banish.push(gear.card_id);
         }
         self.push_log(if gear.token {
             "A gear token is banished and ceases to exist.".into()
@@ -63,6 +63,7 @@ impl Game {
         self.instructed_kills.retain(|&id| id != unit_id);
         self.gear_unit_left_board(player, unit_id);
         let unit = self.players[player].units.remove(index);
+        let owner = self.departed_board_owner(player, unit_id);
         self.push_log(format!(
             "{} {}.",
             self.unit_name(&unit),
@@ -73,11 +74,11 @@ impl Game {
         ));
         if !unit.token {
             match destination {
-                UnitDestination::Hand => self.players[player].hand.push(unit.card_id),
-                UnitDestination::Banish => self.players[player].banish.push(unit.card_id),
+                UnitDestination::Hand => self.players[owner].hand.push(unit.card_id),
+                UnitDestination::Banish => self.players[owner].banish.push(unit.card_id),
             }
         }
-        Some(player)
+        Some(owner)
     }
 
     /// A rescue heuristic uses only board state and the public chain. Returning
@@ -176,10 +177,11 @@ impl Game {
                         continue;
                     };
                     let gear = state.gear.remove(index);
+                    let owner = self.departed_board_owner(player, gear_id);
                     self.granted_temporary_gear.retain(|&id| id != gear_id);
                     self.empowered_units.retain(|&id| id != gear_id);
                     if !gear.token {
-                        state.hand.push(gear.card_id);
+                        self.players[owner].hand.push(gear.card_id);
                     }
                     self.push_log(if gear.token {
                         "A gear token leaves the board and ceases to exist.".into()
