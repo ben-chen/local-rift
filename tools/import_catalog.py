@@ -9,6 +9,7 @@ from __future__ import annotations
 import argparse
 from collections import Counter, defaultdict
 from concurrent.futures import ThreadPoolExecutor
+import copy
 from datetime import date
 import gzip
 import hashlib
@@ -334,6 +335,15 @@ def require_mapping_source_ready(review, variants, mapping):
 
 
 def make_catalog(manifest, data, *, review_manifest=None, identity_review_manifest=None):
+    # Field and identity evidence can reference the same archived gallery.
+    # Keep this reuse local to one audit; callers still verify every file, and
+    # each reviewer receives independent mutable records.
+    projections = {}
+    def project(raw):
+        if raw not in projections:
+            projections[raw] = project_gallery(raw)
+        return copy.deepcopy(projections[raw])
+
     require(manifest["released_sets_reviewed"] == RELEASED_SETS, "Reviewed set boundary differs from importer")
     raw_cards = gallery_cards(data["gallery"])
     raw_by_id = {c["id"]: c for c in raw_cards}
@@ -356,11 +366,11 @@ def make_catalog(manifest, data, *, review_manifest=None, identity_review_manife
                 numbered.append(int(match[2]))
         require(sorted(numbered) == list(range(1, total + 1)), f"Missing/duplicated numbered base cards for {set_id}")
         set_counts[set_id] = {"name": members[0]["set"]["value"]["label"], "numbered_base_slots": total, "numbered_base_slots_present": len(numbered), "gallery_printings": len(members)}
-    printings, quality = project_gallery(data["gallery"])
+    printings, quality = project(data["gallery"])
     for printing in printings:
         groups[normalize(printing["name"])].append(printing)
     raw_conflicts = raw_identity_conflicts(groups, quality)
-    reviewed = apply_reviews(printings, root=ROOT, project_gallery=lambda raw: project_gallery(raw)[0], plain=plain, manifest=review_manifest)
+    reviewed = apply_reviews(printings, root=ROOT, project_gallery=lambda raw: project(raw)[0], plain=plain, manifest=review_manifest)
     # Preserve the original parser issue objects and ordering. These additional
     # observations were discovered by reading a pinned official face, not by
     # inferring that syntactically valid feed metadata was correct.
@@ -391,7 +401,7 @@ def make_catalog(manifest, data, *, review_manifest=None, identity_review_manife
         return parse_errata(raw, keys[0])
     identities = apply_identity_reviews(
         {variants[0]["official_id"]: variants for variants in groups.values()},
-        root=ROOT, project_gallery=lambda raw: project_gallery(raw)[0], normalize=normalize,
+        root=ROOT, project_gallery=lambda raw: project(raw)[0], normalize=normalize,
         resolutions=reviewed["resolutions"], current_core_rules_url=legality["core_rules_url"],
         errata_by_identity={variants[0]["official_id"]: errata.get(key, []) for key, variants in groups.items()},
         parse_errata=parse_review_errata, manifest=identity_review_manifest,

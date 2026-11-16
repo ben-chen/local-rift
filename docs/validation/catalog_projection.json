@@ -1,0 +1,53 @@
+{
+  "status": "passed",
+  "reviewed_at": "2026-11-16T22:53:12.275909+00:00",
+  "change": "Reuse each exact gallery byte payload within one make_catalog invocation; return independent deep copies and retain all file/provenance validation. No cache survives the invocation.",
+  "baseline_revision": "e76a65bc0ec26b95a15ec4dc42b4d57430ebe0f4",
+  "benchmark": {
+    "method": "Four interleaved full make_catalog calls per revision, same source/runtime inputs; complete generated JSON compared byte-for-byte. File checks remain uncached.",
+    "seconds": {
+      "before": [
+        1.0224097930040443,
+        1.1086385449962108,
+        1.0446924200005014,
+        1.0580130969974562
+      ],
+      "after": [
+        0.9245296610024525,
+        0.9182367710018298,
+        0.9464184300013585,
+        0.9690815209978609
+      ]
+    },
+    "mean_generation_time_reduction_percent": 11.23,
+    "generated_json_byte_identical": true,
+    "generated_json_sha256": "7a6ed6476b4b8a39bcac7e91b46f788452e7a1c1d12098e0a0e9cdfea4f75578",
+    "generated_json_bytes": 4605110
+  },
+  "validation": {
+    "catalog_check": "passed; generated catalog and coverage report unchanged",
+    "full_source_tests": 342,
+    "full_source_seconds": 293.148,
+    "failed": 0,
+    "skipped": 0,
+    "logs": [
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/catalog-projection-check-v1.log",
+        "sha256": "e44c2820aba73724493468ac6c9c592618e47c65d214c95b5abbbdef4ce7ff25"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/catalog-projection-sources-v1.log",
+        "sha256": "f97bbdd40ee239590bd9a65ff79cc510474bfebf47964ce193c4ebdac086d75b"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/catalog-projection-benchmark-v1.json",
+        "sha256": "30394fa4a476921b9cc87992b8c97b60b63f4212de50e12460d41b350edefde2"
+      }
+    ]
+  },
+  "limitations": [
+    "The timing measurement covers catalog generation only, not total build or test duration.",
+    "The full test run occurred alongside the independent battlefield release; its elapsed time is not a controlled before/after performance comparison.",
+    "No Rust gameplay or UI code changed; this does not add playable cards or establish full Standard parity."
+  ]
+}
