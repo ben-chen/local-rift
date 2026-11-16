@@ -1,0 +1,224 @@
+{
+  "status": "Printed source reviewed; runtime implementation and acceptance pending.",
+  "reviewed_on": "2026-11-16",
+  "base_revision": "7fdbe2bbc220fea96589103f9990987bf3d1a6b0",
+  "records": [
+    {
+      "official_id": "unl-122-219",
+      "raw_printing": {
+        "official_id": "unl-122-219",
+        "public_code": "UNL-122/219",
+        "name": "Crescent Guardian",
+        "set": "UNL",
+        "collector_number": 122,
+        "types": [
+          "unit"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "unit"
+        ],
+        "accessibility_types": [
+          "unit"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "chaos"
+        ],
+        "energy": 4,
+        "power": null,
+        "might": 4,
+        "might_bonus": null,
+        "rules_html": "<p>If you've played a spell this turn, you may pay :rb_rune_chaos: as an additional cost to play me. If you do, I enter ready.</p>",
+        "rules_text": "If you've played a spell this turn, you may pay [Chaos Power] as an additional cost to play me. If you do, I enter ready.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [
+          "Mount Targon"
+        ],
+        "rarity": "common",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/0ff22e9a517d029fd17cfbbbc93ca2f90c2c676c-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Unit: Crescent Guardian. If you've played a spell this turn, you may pay [C] as an additional cost to play me. If you do, I enter ready.",
+        "illustrators": [
+          "Aron Elekes"
+        ]
+      },
+      "raw_printing_sha256": "4a988d8f78742028dd113b8c89589b636e36a9cfc704ac8eb4cbccd5788c4fda",
+      "effective": {
+        "types": [
+          "unit"
+        ],
+        "super_types": [],
+        "domains": [
+          "chaos"
+        ],
+        "energy": 4,
+        "power": null,
+        "might": 4,
+        "might_bonus": null,
+        "tags": [
+          "Mount Targon"
+        ],
+        "rules_html": "<p>If you've played a spell this turn, you may pay :rb_rune_chaos: as an additional cost to play me. If you do, I enter ready.</p>",
+        "rules_text": "If you've played a spell this turn, you may pay [Chaos Power] as an additional cost to play me. If you do, I enter ready.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "original_image": {
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/0ff22e9a517d029fd17cfbbbc93ca2f90c2c676c-744x1039.png?accountingTag=RB",
+        "path": "assets/data/card_admissions/irelia_entry/unl-122-219.png",
+        "sha256": "fa82a7295849eecb1d6489d87c2e8cba94aeada79d643c42203e6a2b7a887a64",
+        "bytes": 751952,
+        "dimensions": [
+          744,
+          1039
+        ]
+      },
+      "visual_review": {
+        "actual_full_face_viewed": true,
+        "reviewed_on": "2026-11-16",
+        "printed_facts": {
+          "types": [
+            "unit"
+          ],
+          "super_types": [],
+          "domains": [
+            "chaos"
+          ],
+          "energy": 4,
+          "power": null,
+          "might": 4,
+          "tags": [
+            "Mount Targon"
+          ],
+          "rules_text": "If you've played a spell this turn, you may pay [Chaos Power] as an additional cost to play me. If you do, I enter ready."
+        },
+        "notes": "Viewed the complete unmodified official face, including cost, Might, domain icon, unit type, region tag, name, rules and collector number."
+      }
+    },
+    {
+      "official_id": "rad-026-167",
+      "raw_printing": {
+        "official_id": "rad-026-167",
+        "public_code": "RAD-026/167",
+        "name": "Entrenched Boar",
+        "set": "RAD",
+        "collector_number": 26,
+        "types": [
+          "unit"
+        ],
+        "type_source": "cardImage.accessibilityText",
+        "structured_types": [],
+        "accessibility_types": [
+          "unit"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [],
+        "energy": 2,
+        "power": null,
+        "might": 2,
+        "might_bonus": null,
+        "rules_html": "<p>You may have me enter ready. If you do, I can't move this turn.</p>",
+        "rules_text": "You may have me enter ready. If you do, I can't move this turn.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [],
+        "rarity": "common",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/8d8688f43e219f7f4b5f5fd17cff204dcebc3bdc-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Unit: Entrenched Boar. You may have me enter ready. If you do, I can't move this turn.",
+        "illustrators": [
+          "Kudos Productions"
+        ]
+      },
+      "raw_printing_sha256": "eccaf2c9b0f537f1adb3a0604982152f780a553bb1763af040354c1b499f9c30",
+      "effective": {
+        "types": [
+          "unit"
+        ],
+        "super_types": [],
+        "domains": [
+          "calm"
+        ],
+        "energy": 2,
+        "power": null,
+        "might": 2,
+        "might_bonus": null,
+        "tags": [
+          "Freljord"
+        ],
+        "rules_html": "<p>You may have me enter ready. If you do, I can't move this turn.</p>",
+        "rules_text": "You may have me enter ready. If you do, I can't move this turn.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "original_image": {
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/8d8688f43e219f7f4b5f5fd17cff204dcebc3bdc-744x1039.png?accountingTag=RB",
+        "path": "assets/data/card_admissions/irelia_entry/rad-026-167.png",
+        "sha256": "be35638fd1cab8a31ef62deeeef04a4a1d997ce7571c3a4514c1ac6ddca419e9",
+        "bytes": 798136,
+        "dimensions": [
+          744,
+          1039
+        ]
+      },
+      "visual_review": {
+        "actual_full_face_viewed": true,
+        "reviewed_on": "2026-11-16",
+        "printed_facts": {
+          "types": [
+            "unit"
+          ],
+          "super_types": [],
+          "domains": [
+            "calm"
+          ],
+          "energy": 2,
+          "power": null,
+          "might": 2,
+          "tags": [
+            "Freljord"
+          ],
+          "rules_text": "You may have me enter ready. If you do, I can't move this turn."
+        },
+        "notes": "Viewed the complete unmodified official face, including cost, Might, domain icon, unit type, region tag, name, rules and collector number."
+      }
+    }
+  ],
+  "preserved_runtime_prefix": {
+    "card_count": 466,
+    "cards_sha256": "3c879c6d99aed58e1aa5ff73f9fe4fc20431005bdf0251ee5089b57264e1adfd",
+    "preset_count": 7,
+    "presets_sha256": "e975739d803427e54928d6e6cd03d1ce51d7ad108f4e247b8a000acf037a5cdb"
+  },
+  "rules_review": {
+    "core_date": "2026-10-09",
+    "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/5c7946f7c3b8c6e0faff85ab6dadc6d2e721ea94.pdf",
+    "sha256": "94d41fee86f88b61c4157c0389c0595d990b98e5b42555c99d9f649ee64d1fec",
+    "sections": [
+      "356.2.b and 356.4: optional additional costs and their discounts",
+      "359: finalization and entering the board",
+      "370: replacement effects, including entering ready",
+      "416: ready as a state versus a Ready action",
+      "358.3.a: prevented movement does not make a choosing spell illegal"
+    ]
+  },
+  "implementation_contract": [
+    "Crescent Guardian has a conditional optional additional cost, not the Accelerate keyword. Its controller must already have played a spell that turn. A spell need not resolve successfully to count. A paid extra Chaos Power changes its entry to ready.",
+    "Use the existing finalized spell-play history for the condition; choosing or starting payment alone must not count. Preserve cost selection and legality across previews, pending payment, free plays and rollback.",
+    "Discounts can reduce a declared optional additional cost to zero without removing its benefit. Do not grant Accelerate-specific metadata to Crescent Guardian.",
+    "Entrenched Boar offers an optional entry replacement, not an additional cost or a response-window trigger. Accepting makes that physical unit enter ready and unable to Move for the rest of that turn. Declining preserves other entry-ready effects without imposing this restriction.",
+    "The Boar restriction applies to standard and effect Moves, expires at turn end, and does not carry to a newly played physical object. Corrective Recall is distinct from Move. Effects choosing a movement-restricted unit may still be legal; negate only the prohibited Move.",
+    "Entering ready does not itself perform a Ready action. Expose accurate choice labels and restriction reasons to the native UI, API, AI and both companion levels."
+  ],
+  "scope": [
+    "Additional Calm/Chaos practice options; current Standard Irelia prevalence has not been established.",
+    "Entrenched Boar also appears in an October 14 Riven-versus-Irelia content-creator list; this is a relevance lead, not tournament provenance.",
+    "No sourced preset is changed or newly admitted by source review.",
+    "Source review does not register playable cards or establish full Standard parity."
+  ],
+  "relevance_leads": [
+    "https://anzid.gg/decks/riven-20261014/"
+  ]
+}
