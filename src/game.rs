@@ -21,11 +21,16 @@ mod control_gear_tests;
 #[path = "control_location_tests.rs"]
 mod control_location_tests;
 #[cfg(test)]
+#[path = "control_movement_tests.rs"]
+mod control_movement_tests;
+#[cfg(test)]
 #[path = "control_reference_tests.rs"]
 mod control_reference_tests;
 #[cfg(test)]
 #[path = "control_transfer_tests.rs"]
 mod control_transfer_tests;
+#[path = "movement.rs"]
+mod movement;
 #[path = "ownership.rs"]
 mod ownership;
 
@@ -2532,7 +2537,15 @@ impl Game {
             ));
         }
         for (id, origin) in moved_ids {
-            self.on_move(player, id, origin, lane);
+            self.on_move(
+                player,
+                id,
+                triggers::MoveFacts {
+                    actor: player,
+                    origin: board_targets::BoardLocation::from_lane(player, origin),
+                    destination: board_targets::BoardLocation::from_lane(player, lane),
+                },
+            );
         }
         self.trigger_batch += 1;
         for old in origins {
@@ -4365,14 +4378,18 @@ impl Game {
             }
             Decision::SwapUnit { player, unit_id } => {
                 if let Some(target) = target {
-                    let Some(source) = self.unit_ref(Target::Unit { player, unit_id }) else {
+                    let source_target =
+                        self.resolve_board_reference(Target::Unit { player, unit_id });
+                    let Some(_) = self.unit_ref(source_target) else {
                         self.decision = None;
                         self.after_resolution()?;
                         return Ok(());
                     };
-                    let source_lane = source.lane;
+                    let source_location = self.board_target_facts(source_target).unwrap().location;
                     if !matches!(target,Target::Unit{player:owner,..} if owner==player)
-                        || self.unit_ref(target).is_none_or(|u| u.lane == source_lane)
+                        || self
+                            .board_target_facts(target)
+                            .is_none_or(|facts| facts.location == source_location)
                     {
                         return Err("Choose a friendly unit at another location.".into());
                     }
@@ -4461,50 +4478,6 @@ impl Game {
             _ => return Err("This choice does not choose a board target.".into()),
         }
         self.after_resolution()?;
-        Ok(())
-    }
-
-    fn resolve_swap(&mut self, player: usize, unit_id: u32, target: Target) -> Result<(), String> {
-        let source = Target::Unit { player, unit_id };
-        let Some((a, b)) = self
-            .unit_ref(source)
-            .zip(self.unit_ref(target))
-            .map(|(a, b)| (a.lane, b.lane))
-        else {
-            return Ok(());
-        };
-        let Target::Unit {
-            player: owner,
-            unit_id: other,
-        } = target
-        else {
-            return Ok(());
-        };
-        if a == b || owner != player {
-            return Ok(());
-        }
-        // Each Move is independent; retain both original locations and defer
-        // control checks until both instructions have been attempted.
-        let mut moved = Vec::new();
-        for (object, id, from, to) in [(source, unit_id, a, b), (target, other, b, a)] {
-            if !self.movement_locked(player, id) {
-                self.unit_mut(object).unwrap().lane = to;
-                moved.push((id, from, to));
-            }
-        }
-        for &(id, from, to) in &moved {
-            self.on_move(player, id, from, to);
-        }
-        self.trigger_batch += 1;
-        for (_, _, to) in moved {
-            if let Some(lane) = to {
-                self.stage_entry(lane, player);
-            }
-        }
-        for lane in [a, b].into_iter().flatten() {
-            self.refresh_control(lane)?;
-        }
-
         Ok(())
     }
 
@@ -7900,97 +7873,6 @@ impl Game {
             crate::numeric::signed(i128::from(unit.temporary_buff) + delta, "temporary Might")?;
         self.unit_mut(target).unwrap().temporary_buff = result;
         Ok(())
-    }
-
-    pub(crate) fn move_effect(
-        &mut self,
-        actor: usize,
-        target: Target,
-        destination: Option<usize>,
-        ready: bool,
-    ) -> Result<(), String> {
-        let Target::Unit { player, unit_id } = target else {
-            return Ok(());
-        };
-        let Some(index) = self.players[player]
-            .units
-            .iter()
-            .position(|u| u.id == unit_id)
-        else {
-            return Ok(());
-        };
-        let old = self.players[player].units[index].lane;
-        if self.movement_prevented(actor, player, unit_id) {
-            if ready {
-                self.ready_unit_by(actor, player, unit_id);
-            }
-            return Ok(());
-        }
-        if old == destination {
-            return Ok(());
-        }
-        self.players[player].units[index].lane = destination;
-        self.on_move(player, unit_id, old, destination);
-        self.trigger_batch += 1;
-        if ready {
-            self.ready_unit_by(actor, player, unit_id);
-        }
-        if let Some(lane) = destination {
-            self.stage_entry(lane, player);
-        }
-        if let Some(old) = old {
-            self.refresh_control(old)?;
-        }
-
-        Ok(())
-    }
-
-    fn on_move(
-        &mut self,
-        player: usize,
-        unit_id: u32,
-        origin: Option<usize>,
-        destination: Option<usize>,
-    ) {
-        if origin != destination {
-            self.back_alley_move(origin, unit_id);
-        }
-        if let Some(unit) = self.players[player]
-            .units
-            .iter()
-            .find(|u| u.id == unit_id)
-            .cloned()
-        {
-            if origin != destination
-                && unit.lane == destination
-                && !self.moved_units.contains(&unit_id)
-            {
-                self.moved_units.push(unit_id);
-            }
-            let mut event = EventSnapshot::unit(Occurrence::Moved, player, unit);
-            event.origin = origin;
-            self.emit_event(event);
-        }
-        let Some(unit) = self.players[player].units.iter().find(|u| u.id == unit_id) else {
-            return;
-        };
-        if unit.token {
-            return;
-        }
-        let source = unit.card_id;
-        let ability = match source {
-            2 if destination.is_some() => Some(TriggeredAbility::Might { unit_id, amount: 2 }),
-            17 => Some(TriggeredAbility::Draw(1)),
-            43 => {
-                self.queue_trigger_choice(player, 43, Decision::BurnForMight { player, unit_id });
-                None
-            }
-            47 => Some(TriggeredAbility::Loot { count: 1, draw: 1 }),
-            _ => None,
-        };
-        if let Some(ability) = ability {
-            self.queue_ability(player, source, Vec::new(), ChainAbility::Triggered(ability));
-        }
     }
 
     fn bounce(&mut self, target: Target) {

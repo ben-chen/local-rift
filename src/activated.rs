@@ -238,7 +238,7 @@ pub fn activated_rules(card_id: CardId) -> &'static [ActivatedRule] {
                     exhaust: false,
                     requires_battlefield: true,
                     ..exhaust(
-                        "Move me to my base",
+                        "Move me to your base",
                         AbilityTargets::NONE,
                         AbilityEffect::MoveSourceToBase,
                     )
@@ -1391,8 +1391,20 @@ impl Game {
                 }
             }
             AbilityEffect::MoveSourceToBase => {
-                if let AbilitySource::Unit { player, unit_id } = source {
-                    self.move_effect(player, Target::Unit { player, unit_id }, None, false)?;
+                if let AbilitySource::Unit {
+                    player: controller,
+                    unit_id,
+                } = physical_source
+                {
+                    self.move_effect_at(
+                        player,
+                        Target::Unit {
+                            player: controller,
+                            unit_id,
+                        },
+                        crate::game::board_targets::BoardLocation::Base { player },
+                        false,
+                    )?;
                 }
             }
             AbilityEffect::MightIfSourceEmpowered { base, empowered } => {

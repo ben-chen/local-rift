@@ -1312,3 +1312,41 @@ play, at both advice levels, without changing game state or reading hidden card
 identities. Movement coaching also distinguishes Recall from Move restrictions.
 These checks do not establish full-card, full-game or installed acceptance of
 the unfinished control-card release.
+
+## Captured movement actors and locations — November 16, 2026
+
+Movement now has a shared implementation in `src/movement.rs`. Its event facts
+store the actor and absolute BoardLocations, so a base belongs to a specific
+player rather than implicitly following a later controller. This preserves
+trigger-condition information under 359.3.f.3 and distinguishes the actor
+performing a forced Move from the controller of the moved unit. Standard moves,
+Arcane Shift, metadata triggers and AI destination evaluation use those facts.
+API event contexts retain their old nullable lane fields and add the actor and
+absolute locations.
+
+Ezreal, Dashing's activated ability keeps its original ability controller but
+finds its source by physical ID. "Your base" refers to that ability controller;
+if control changes before resolution, 107.1.c and 449.2.c send the unit to its
+current controller's base by Recall instead. No Move event or movement history
+is created. This uses the current Core Rules' instead-Recall instruction, not
+the older Origins FAQ's wording about moving to the controller's base instead.
+
+Tideturner resolves from its live physical source, even after control changes
+before its target is selected or after the ability finalizes. The chosen unit
+must still be controlled by the original ability controller. Both original
+physical locations are retained while applying the two relocations; one
+prevented Move does not suppress the other. A forbidden base destination
+instead Recalls its unit, without converting that Recall into a Move.
+
+A player-specific prohibition stops that player's Move instruction before any
+destination replacement; it does not become a way to force a Recall. A separate
+Ready instruction still executes when movement is prevented or the unit is
+already at the destination (359.3.e.14). Control-card finalization, remaining
+captured continuations and assembled release acceptance are still outstanding.
+
+The [validation record](validation/control_movement.json) records 1,525 passing
+Rust tests, strict all-target lint, format/diff checks and the control source
+review. Existing Back Alley coverage caught a no-op control refresh regression;
+that test now passes without modification. The source and log hashes were
+verified against the final checked tree. This checkpoint does not enable the
+two control-taking spells or establish full Standard coverage.

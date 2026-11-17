@@ -239,7 +239,15 @@ impl Game {
             }
         }
         for &(id, from, to) in &moved {
-            self.on_move(player, id, from, to);
+            self.on_move(
+                player,
+                id,
+                triggers::MoveFacts {
+                    actor: player,
+                    origin: board_targets::BoardLocation::from_lane(player, from),
+                    destination: board_targets::BoardLocation::from_lane(player, to),
+                },
+            );
         }
         self.trigger_batch += 1;
         for &(_, from, to) in &moved {

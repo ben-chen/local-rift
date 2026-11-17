@@ -15,8 +15,9 @@ pub struct TriggerSource {
 }
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct MoveFacts {
-    pub origin: Option<usize>,
-    pub destination: Option<usize>,
+    pub actor: usize,
+    pub origin: board_targets::BoardLocation,
+    pub destination: board_targets::BoardLocation,
 }
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct TriggerContext {
@@ -114,7 +115,7 @@ pub(super) struct EventSnapshot {
     pub card_id: Option<CardId>,
     pub token: bool,
     pub hidden: bool,
-    pub origin: Option<usize>,
+    pub movement: Option<MoveFacts>,
     pub buffed: bool,
     pub optional_play_cost_paid: bool,
     pub battlefield: Option<usize>,
@@ -130,7 +131,7 @@ impl EventSnapshot {
             token: unit.token,
             unit: Some(unit),
             hidden: false,
-            origin: None,
+            movement: None,
             buffed: false,
             optional_play_cost_paid: false,
             battlefield: None,
@@ -152,7 +153,7 @@ impl EventSnapshot {
             card_id: None,
             token: false,
             hidden: false,
-            origin: None,
+            movement: None,
             buffed: false,
             optional_play_cost_paid: false,
             battlefield: None,
@@ -366,7 +367,9 @@ impl Game {
                 self.players[source.player].gear.len() >= usize::from(n)
             }
             Condition::Other => !same,
-            Condition::FromBattlefield => event.origin.is_some(),
+            Condition::FromBattlefield => event
+                .movement
+                .is_some_and(|m| m.origin.battlefield().is_some()),
             Condition::ToBattlefield => event.unit.as_ref().is_some_and(|u| u.lane.is_some()),
             Condition::PowerAtLeast(n) => event
                 .card_id
@@ -613,10 +616,7 @@ impl Game {
                         source,
                         subject,
                         departure_location: None,
-                        movement: (event.kind == Occurrence::Moved).then(|| MoveFacts {
-                            origin: event.origin,
-                            destination: event.unit.as_ref().and_then(|u| u.lane),
-                        }),
+                        movement: event.movement,
                     },
                 );
             }
@@ -1010,18 +1010,19 @@ impl Game {
                 .effects
                 .contains(&Effect::MoveTargetsToEventDestination)
             {
-                let Some(destination) = context.movement.and_then(|facts| facts.destination) else {
+                let Some(destination) = context.movement.map(|facts| facts.destination) else {
                     return Ok(false);
                 };
-                if lane == Some(destination) {
+                if facts.location == destination {
                     return Ok(false);
                 }
             }
             if rule.targets.event_locations
                 == metadata::EventLocationConstraint::MovedToOrFromBattlefield
-                && !context
-                    .movement
-                    .is_some_and(|m| lane.is_some() && (lane == m.origin || lane == m.destination))
+                && !context.movement.is_some_and(|m| {
+                    lane.is_some()
+                        && (lane == m.origin.battlefield() || lane == m.destination.battlefield())
+                })
             {
                 return Ok(false);
             }
@@ -1768,10 +1769,9 @@ impl Game {
                     }
                 }
                 Effect::MoveTargetsToEventDestination => {
-                    if let Some(destination) = context.movement.and_then(|facts| facts.destination)
-                    {
+                    if let Some(destination) = context.movement.map(|facts| facts.destination) {
                         for &target in &targets {
-                            self.move_effect(player, target, Some(destination), false)?;
+                            self.move_effect_at(player, target, destination, false)?;
                         }
                     }
                 }

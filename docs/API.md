@@ -315,6 +315,14 @@ target condition `moved_this_turn`, which is rechecked on resolution. Forced
 movement counts; entry, recall and prevented movement do not create history.
 A moved unit with Hunker Down remains eligible, but the new Move is prevented.
 
+A trigger's `context.movement` retains the player performing the Move as
+`actor`, plus absolute `origin_location` and `destination_location` objects:
+`{type:"base",player:P}` or `{type:"battlefield",lane:N}`. These describe the
+completed event even if its unit later changes controller, moves again or leaves
+play. The older nullable `origin` and `destination` battlefield indices remain
+available; use the absolute fields to distinguish the two bases. Recall does
+not create a movement event, including a Recall replacing an invalid destination.
+
 Back Off (428) uses the existing play and Hidden actions. The public chain's
 `play_origin` determines its independent draw: `hand` draws one per execution;
 `hidden`, `trash` and `banish` do not. This remains true for Repeat and for

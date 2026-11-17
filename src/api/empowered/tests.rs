@@ -244,12 +244,16 @@ fn movement_event_context_preserves_base_and_battlefield_without_source_liveness
             unit_id: 900,
         }),
         movement: Some(crate::game::triggers::MoveFacts {
-            origin: Some(1),
-            destination: None,
+            actor: 1,
+            origin: crate::game::board_targets::BoardLocation::Battlefield { lane: 1 },
+            destination: crate::game::board_targets::BoardLocation::Base { player: 0 },
         }),
     };
     let view = trigger_context_to_json(&context);
-    assert_eq!(view["movement"], json!({"origin":1,"destination":null}));
+    assert_eq!(
+        view["movement"],
+        json!({"origin":1,"destination":null,"actor":1,"origin_location":{"type":"battlefield","lane":1},"destination_location":{"type":"base","player":0}})
+    );
     assert_eq!(view["source"]["unit_id"], 900);
     assert_eq!(
         ability_to_json(&ChainAbility::Legend(LegendAbility::MatriarchEmpower)),

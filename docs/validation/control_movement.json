@@ -1,0 +1,175 @@
+{
+  "status": "Absolute movement and captured-source fixes passed local checks. Control-taking cards are not yet enabled.",
+  "reviewed_at": "2026-11-17T00:57:47.315200+00:00",
+  "base_revision": "43c1ba53e6ac8f90b2023cdf2a64cb49cc551770",
+  "rules": {
+    "hub": "https://playriftbound.com/en-us/rules-hub/",
+    "edition": "2026-10-09",
+    "pdf": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/5c7946f7c3b8c6e0faff85ab6dadc6d2e721ea94.pdf",
+    "sha256": "94d41fee86f88b61c4157c0389c0595d990b98e5b42555c99d9f649ee64d1fec",
+    "sections": [
+      "107.1.c",
+      "191.5.b",
+      "359.3.e.14",
+      "359.3.f.3",
+      "449.2.c",
+      "458"
+    ],
+    "clarifications": [
+      "https://playriftbound.com/en-us/news/rules-and-releases/riftbound-origins-faq/",
+      "https://playriftbound.com/en-us/news/rules-and-releases/vendetta-rules-faq-and-clarifications/",
+      "https://playriftbound.com/en-us/news/organizedplay/radiance-rules-faq-and-clarifications/"
+    ],
+    "interpretation": "An opposing base is not a valid unit destination under 107.1.c. Current 449.2.c replaces that attempted relocation with Recall. The older Origins FAQ instead described a Move to the controller's base; current Core wording is used."
+  },
+  "implementation": [
+    "Shared movement module separates actor, physical unit and absolute destination. Move event snapshots retain the actor and both BoardLocations.",
+    "Pending Ezreal activation finds its live physical source, while your base remains the original ability controller's base. A control change can therefore replace the attempted Move with Recall, preserving readiness and damage.",
+    "Tideturner can finish selecting targets and resolving after its source changes control. Its target still must belong to the ability controller; both original physical locations survive the two relocations.",
+    "A player-specific restriction prevents that actor's Move rather than forcing a Recall. Ready is independent of a prevented Move or unchanged location.",
+    "API contexts add actor/origin_location/destination_location while preserving nullable origin/destination lane fields. Faefolk AI and Arcane Shift consume the updated facts.",
+    "No-op moves leave battlefield control untouched; the existing Back Alley regression caught and verified the correction."
+  ],
+  "validation": {
+    "library_tests": 1189,
+    "client_tests": 175,
+    "api_binary_tests": 1,
+    "simulator_binary_tests": 1,
+    "affected_integration_tests": 159,
+    "total_rust_tests": 1525,
+    "failed": 0,
+    "ignored": 0,
+    "source_review_tests": 1,
+    "source_card_faces": 2,
+    "clippy": "all targets, -D warnings, passed",
+    "format": "cargo fmt --all --check and git diff --check passed",
+    "report": {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/control-movement-checks-v2.json",
+      "sha256": "2e92c72150b074874c4bcd458f62cc0ccc9985c01a553cec26475cb4b9271c33"
+    },
+    "steps": [
+      {
+        "name": "format",
+        "command": [
+          "cargo",
+          "fmt",
+          "--all",
+          "--check"
+        ],
+        "status": "passed",
+        "log": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/control-movement-format-v2.log",
+        "exit_code": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "diff",
+        "command": [
+          "git",
+          "diff",
+          "--check"
+        ],
+        "status": "passed",
+        "log": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/control-movement-diff-v2.log",
+        "exit_code": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "selected-tests",
+        "command": [
+          "cargo",
+          "test",
+          "--locked",
+          "--lib",
+          "--bins",
+          "--test",
+          "activated_abilities",
+          "--test",
+          "legend_foundation",
+          "--test",
+          "payments",
+          "--test",
+          "payment_plans",
+          "--test",
+          "numeric_runtime",
+          "--test",
+          "c16_legends",
+          "--test",
+          "control_transfer",
+          "--test",
+          "event_triggers",
+          "--test",
+          "staged_battlefields",
+          "--test",
+          "c9_runtime"
+        ],
+        "status": "passed",
+        "log": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/control-movement-selected-tests-v2.log",
+        "exit_code": 0,
+        "sha256": "76a2cb4caf42630a1bda778087e27a3d65b90ddc3fee63bc09cbf7deda64badf"
+      },
+      {
+        "name": "clippy",
+        "command": [
+          "cargo",
+          "clippy",
+          "--locked",
+          "--all-targets",
+          "--",
+          "-D",
+          "warnings"
+        ],
+        "status": "passed",
+        "log": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/control-movement-clippy-v2.log",
+        "exit_code": 0,
+        "sha256": "8327a4048580cf6b3730c48deb7e14408c6cfc1dee3a52ab1769192dd54dc2bc"
+      },
+      {
+        "name": "control-source",
+        "command": [
+          "python3",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "tools",
+          "-p",
+          "test_control_source_review.py",
+          "-v"
+        ],
+        "status": "passed",
+        "log": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/control-movement-control-source-v2.log",
+        "exit_code": 0,
+        "sha256": "8c182122c69fd8bec9da31badac530aceeb6751cbe4bbeb07b711a0014edf5ca"
+      }
+    ],
+    "scope": "Four new engine tests cover both players and sixteen Tideturner combinations, alongside existing engine/API/client and ten integration suites. No new native rendering campaign or assembled control-card acceptance is claimed."
+  },
+  "regression_evidence": [
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/control-movement-red-v1.log",
+      "result": "Both original Ezreal and Tideturner scenarios failed against the old runtime because the borrowed physical source remained at its battlefield.",
+      "sha256": "ed1a3b56d15d25e31c68fe1d119926d7687e2f5870e4dac4e68576c4994c4e0f"
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/control-movement-focused-v1.log",
+      "result": "Compile errors identified remaining Arcane Shift and Faefolk consumers of the former MoveFacts shape; both updated.",
+      "sha256": "10d22d2addaf8ca948b7fb47373b736edd97f3fb8525cd8933db9bc93d49ef56"
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/control-movement-focused-v2.log",
+      "result": "All four new movement scenarios passed.",
+      "sha256": "d6ce7cccdf5236d04b9087e9b67d09aef8e676201704b4e910bfa5e6305f922b"
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/control-movement-checks-v1.json",
+      "result": "1188 library tests passed; existing Back Alley no-op regression failed. Corrected control refresh to run only after a real location change.",
+      "sha256": "102d92c7ca2ed7c36696328e7ccf73a96b942ab59d259609938c5781d64990f3"
+    }
+  ],
+  "remaining": [
+    "Implement Possession and Conscription through real play actions, including target finalization, optional XP payment, ordered resolution and AI/UI/companion behavior.",
+    "Use those card scenarios to audit/fix remaining captured source, Hidden/Empower/payment/return continuations and live API references.",
+    "Complete game campaigns and immutable installed acceptance before publication.",
+    "All currently legal cards and expert-strength practice remain incomplete/unproven."
+  ]
+}

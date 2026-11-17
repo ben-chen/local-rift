@@ -40,7 +40,7 @@ impl Game {
         else {
             return Ok(None);
         };
-        let Some(lane) = context.movement.and_then(|m| m.destination) else {
+        let Some(lane) = context.movement.and_then(|m| m.destination.battlefield()) else {
             return Ok(None);
         };
         let enemy = 1 - player;

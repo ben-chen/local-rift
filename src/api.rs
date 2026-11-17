@@ -2727,7 +2727,9 @@ fn board_location_to_json(location: crate::game::board_targets::BoardLocation) -
 fn trigger_context_to_json(context: &TriggerContext) -> Value {
     let mut value = json!({"source":{"player":context.source.player,"unit_id":context.source.unit_id,
         "gear_id":context.source.gear_id},"subject":context.subject.as_ref().map(target_to_json),
-        "movement":context.movement.map(|movement|json!({"origin":movement.origin,"destination":movement.destination})),
+        "movement":context.movement.map(|movement|json!({"origin":movement.origin.battlefield(),"destination":movement.destination.battlefield(),
+            "actor":movement.actor,"origin_location":board_location_to_json(movement.origin),
+            "destination_location":board_location_to_json(movement.destination)})),
         "departure_location":context.departure_location.map(board_location_to_json)});
     if let Some(crate::game::KeywordTrigger::Disarm { value: amount, .. }) = context.keyword {
         value["keyword"] = json!({"type":"disarm", "value":u64::try_from(amount).ok(), "value_exact":amount.to_string()});
