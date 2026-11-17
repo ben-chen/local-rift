@@ -449,6 +449,23 @@ The report compares every result record with its prior baseline and preserves
 both reports. Review differences before using the generated baseline paths in
 an installed release plan; a changed AI trace alone is not a correctness verdict.
 
+Temptation, movement-group and resource-spell API campaigns share
+`tools/card_campaign.py`. Each small `check_*_api.py` definition names reviewed
+card identities, exact deck substitutions, seeds, sample counts and card-specific
+target checks. New related campaigns can reuse that runner while retaining their
+own independently expected rules scenarios. Both seats and all three difficulty
+levels remain required. Any exception to observed cast coverage needs an explicit
+reason; actual zero counts remain in the report.
+
+Campaign output paths must be new. A failed run preserves all completed records,
+the active seed and a `*.failed-trace.jsonl` transcript containing each request
+and response from the active or last completed series. Successful runs retain
+complete trace digests and remove the temporary transcript. Reports fingerprint
+the game binary, campaign definition and shared runners. Run the harness checks
+with `python3 -m unittest discover -s tools -p test_card_campaign.py`; after a
+runner change, compare full records with accepted baselines through
+`check_api_baselines.py` using the same unchanged game binary.
+
 `python3 tools/check_release.py --plan plan.json --output /path/to/new-results`
 builds and verifies one committed revision. The JSON plan has a full `revision`
 SHA, `ui` cases (`name`, smoke-mode `args`, optional `captures` environment-variable

@@ -1,0 +1,41 @@
+{
+  "status": "Passed focused harness checks and exact original/installed-binary comparisons.",
+  "reviewed_at": "2026-11-17T18:48:25.895394+00:00",
+  "scope": "Consolidates Temptation, movement-group and resource-spell API campaigns; retains definitions, exact card identity/deck checks, seeds, difficulty/seat coverage, target checks and existing cast-coverage exception. Adds failure transcripts and runner fingerprints.",
+  "runtime_unchanged_from": "f0aba8c4b1ab66dfcdd05d7eb148db545825213c",
+  "runtime_acceptance": "docs/validation/resource_spells.json",
+  "validation": [
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/card-campaign-focused-v2.log",
+      "sha256": "dbbaa8e3dad173a598f81175e6315fafb995680ec38c1476c40686d57a435d25",
+      "scope": "Nine focused tests passed: exact seeds/digests and cast deduplication; source/deck mismatch rejection; missing cast coverage; explicit exceptions with retained zero counts; invalid-target transcripts; interrupted-run preservation; existing-evidence refusal; binary-change rejection."
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/card-campaign-release-regressions-v1.log",
+      "sha256": "66ff1ddafee6d8d8c383398e252c008c1fa0efb4b5d1e71dd27ccaa2282d584e",
+      "scope": "All seven existing immutable-release runner regressions passed."
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/card-campaign-api-v1/report.json",
+      "sha256": "842b3915eead11441a088969e843bf9b7fb97ff71cf2fc8d1717fe82ae9b0bed",
+      "scope": "All three campaigns passed on the unchanged debug binary: 72 series / 180 games; every complete record including trace hash equals its preceding baseline."
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/card-campaign-installed-api-v1/report.json",
+      "sha256": "b3ed8458e2e110204fd4b3620d9a6087f019f3b8d8b7e51f3d9930307b316f49",
+      "scope": "All three campaigns passed on the installed resource-spell release binary: 72 series / 180 games; all complete records including trace hashes equal the same preceding baselines."
+    }
+  ],
+  "behavior": [
+    "Campaign output refuses to overwrite previous reports or trace evidence.",
+    "Failures retain completed records, active seed, and the active or last completed series as request/response JSONL. Passing runs remove the temporary transcript.",
+    "Reports fingerprint the game binary, small campaign definition, shared campaign runner and series runner.",
+    "Assertions remain active under Python optimization through explicit checks."
+  ],
+  "limitations": [
+    "The shared runner covers three campaigns; other existing scripts remain independent.",
+    "Matching old records verifies preserved test behavior, not independent Riftbound correctness.",
+    "The resource-spell runtime/package acceptance is inherited unchanged. No game code, cards, deck presets, Rust tests or build definitions changed in this tooling-only work.",
+    "A failed global coverage assertion retains the last completed series plus every completed result; it does not retain transcripts of all prior series."
+  ]
+}
