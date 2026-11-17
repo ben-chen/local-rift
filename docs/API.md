@@ -209,6 +209,7 @@ Each playable card's `play_targets` reports `{kind, maximum, required}`. `kind` 
 | `choose_battlefield` | `lane` | Choose which eligible staged battlefield opens next |
 | `choose_resolution_group` | `index` | Select a listed legal target group when a resolving spell requires that choice |
 | `choose_resolution_subset` | `targets: Target[]` | Choose an inclusion-maximal subset of the original eligible targets when their total Might exceeds the resolving spell's limit |
+| `choose_player_object` | `choice_id`, required `object: Target or null` | Answer the current non-targeting each-player instruction; use one supplied candidate, or explicit `null` only if optional |
 | `set_optional_discount` | `power` | Set how many friendly Ezreal discounts reduce power; remaining discounts reduce energy |
 | `place_token` | optional `lane` | Finalize the next token whose effect allows a destination choice at base or a battlefield you control |
 | `finalize_token_play` | optional `lane`, `accelerate` | Finalize a pending token, including an available Accelerate cost |
@@ -549,6 +550,7 @@ The viewer sees their own hand as card IDs. The opposing hand is `null` except w
 | `order_triggers` | `options:[{id,card_id,label}, ...]`; `order_trigger` |
 | `resolution_targets` | `card_id`, `groups` of target objects, zero-based `execution`, legacy `repeated`; select the desired group by its index with `choose_resolution_group` |
 | `resolution_subset` | `card_id`, original eligible `candidates`, `maximum_total_might`, zero-based `execution`, `requires_maximal_subset: true`; submit `choose_resolution_subset` |
+| `player_object` | `choice_id`, `card_id`, `kind`, `instruction`, `optional`, `is_target: false`, `remaining_players`, and current `candidates`; submit `choose_player_object` |
 | `token_placement` | `card_id`, `remaining`; use `place_token` separately for each remaining token |
 | `token_play` | `card_id`, `remaining`, `destination`; use `finalize_token_play`, optionally wrapped in `with_play_choices` and/or staged payment |
 
@@ -1254,3 +1256,23 @@ Finalize through the ordinary play/payment commands. Power, additional costs,
 play prohibitions and destination restrictions still apply. Returning a card
 with Guardian does not draw or play it. A departed trash target is invalid even
 if an identical card subsequently arrives at the same index.
+
+
+## Each-player choices during resolution
+
+Acceptable Losses (480) and Whirlwind (481) are cast with no targets. Their
+`player_object` decisions occur only when the spell resolves. Acceptable Losses
+starts with the turn player and requires each player with gear to kill one of
+their own gear. Whirlwind starts with the other player, then its controller;
+each may return any unit to its owner or decline. A player without eligible
+objects is skipped. Options are recalculated after each completed choice.
+
+Send the current `choice_id` and one unmodified object from `candidates`.
+The object uses the existing Target JSON shape solely as an object reference:
+`is_target` is false, so Deflect and Irelia's when-chosen trigger do not apply.
+The `object` field is required even when declining (`null`). Stale identifiers,
+wrong seats, absent objects, and a mandatory decline are rejected without
+changing the game or revision. No response action is allowed between the
+players' choices. Each Repeat has fresh identifiers. Triggered abilities wait
+until the parent spell finishes. Returned borrowed units go to their owner;
+their equipment remains in play detached.

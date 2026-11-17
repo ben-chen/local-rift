@@ -2925,6 +2925,9 @@ impl Game {
         let Ok(intent) = self.card_intent(action) else {
             return Ok(false);
         };
+        if let OfficialEffect::EachPlayer(rule) = rules::effect(intent.id) {
+            return Ok(self.player_objects_spell_score(self.priority(), rule)? <= 0);
+        }
         if matches!(rules::effect(intent.id), OfficialEffect::Trash(_)) {
             let automatic = matches!(action, Action::PlayCard { target: None, .. });
             return Ok(if automatic {

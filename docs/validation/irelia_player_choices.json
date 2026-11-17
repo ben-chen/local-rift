@@ -1,0 +1,203 @@
+{
+  "status": "Passed immutable installed acceptance.",
+  "reviewed_at": "2026-11-17T07:36:35.546679+00:00",
+  "base_revision": "d47498f2ff2353446fcc0e813c598d9b46309852",
+  "cards": [
+    {
+      "runtime_id": 480,
+      "official_id": "ogn-179-298",
+      "name": "Acceptable Losses"
+    },
+    {
+      "runtime_id": 481,
+      "official_id": "ogn-187-298",
+      "name": "Whirlwind"
+    }
+  ],
+  "source_review": {
+    "path": "assets/data/card_admissions/irelia_player_choices/source_review.json",
+    "sha256": "bf920cdf2801f38c717da220fb07972f96ae3abc10b4849be21a1c12b2249f7e"
+  },
+  "rules": {
+    "authority": "https://playriftbound.com/en-us/rules-hub/",
+    "core_version": "2026-10-09",
+    "references": [
+      "303.2.a",
+      "355.10.e"
+    ],
+    "external_comparison": "https://github.com/chorlick/alpharune/blob/ec90f0fed002aed374d06249fa95e83e3cfbd386/src/cards/spells/0187_whirlwind.cpp",
+    "external_limit": "Read-only comparison; no code copied or executed. Agrees on non-targeting choice flow, disagrees on cost; official face establishes effective Energy4."
+  },
+  "design": "One typed each-player instruction owns current candidates, optionality, sequential ordering, validation, AI scoring and action generation. API and native controls consume the same choices.",
+  "checks": [
+    {
+      "command": "cargo test --locked --lib --bins --test irelia_decisions --test strategic_api --test match_ai",
+      "passed_tests": 1466,
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/player-choices-regressions-v1.log",
+      "sha256": "75b4a23dc390e27b1e38daecc7864195f16cf3837cadc4d4ef98218a6da47e5d"
+    },
+    {
+      "command": "cargo test --locked --lib player_choices",
+      "passed_tests": 13,
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/player-choices-rules-api-v4.log",
+      "sha256": "13195c4580ac8a5adc5dfa91b0c96aa5ec5aa1ba4e78f794e97a04e59ace2cbe"
+    },
+    {
+      "command": "cargo test --locked --test player_choice_matches -- --nocapture",
+      "passed_tests": 1,
+      "complete_games": 48,
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/player-choices-matches-v2.log",
+      "sha256": "03c2b6048afa74e1739c26c0a1a633a0472a58117f65b0225c74ebe0a85411e9"
+    },
+    {
+      "command": "python3 -m unittest discover -s tools -p 'test_*.py'",
+      "passed_tests": 349,
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/player-choices-python-v2.log",
+      "sha256": "21f3e1be40b68be91832804c39a312b36f50647ff8ec005dc01c7c976254c030"
+    },
+    {
+      "command": "cargo clippy --locked --all-targets -- -D warnings",
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/player-choices-clippy-v4.log",
+      "sha256": "c2aea8fd7ae686c5bb2c81f398c3fe31045f2d2b7fdaf094ffa0378eb6a84add"
+    },
+    {
+      "command": "python3 tools/import_catalog.py --check",
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/player-choices-catalog-v3.log",
+      "sha256": "e9875ebb1e860ab729f9e265f3f5a70ddae016e3084430f34491e98e271c52f5"
+    }
+  ],
+  "check_scope_note": "Broad Rust run preceded the final token-vanishing scenario and test-loop formatting; the final 13 focused checks include that scenario, and all-target Clippy passed. Runtime/API binaries remained unchanged during baseline collection.",
+  "scenario_scope": [
+    "Mandatory own-gear choices, including equipped gear and tokens",
+    "Turn player first even when the other player casts Acceptable Losses in a showdown",
+    "Optional Whirlwind choices by either player; recalculated later candidates",
+    "Non-targeting protection, Irelia and Deflect behavior",
+    "Not So Fast ineligible; Defy counters before choices",
+    "Repeat uses fresh choice identifiers",
+    "Borrowed units return to owner; attached gear detaches",
+    "Tokens vanish instead of becoming physical cards",
+    "Gear Deathknell waits for the complete parent",
+    "Stale identifiers, wrong seats and mandatory declines rejected atomically",
+    "All AI levels cast favorable examples and finish choices"
+  ],
+  "unassisted_games": {
+    "games": 48,
+    "levels": [
+      "easy",
+      "tactical",
+      "strategic"
+    ],
+    "both_starting_seats": true,
+    "physical_conservation_each_action": true,
+    "coverage": "Each new spell cast and each-player decision observed in both seats at every difficulty across the matrix. Authored legal Irelia variants, not new tournament presets."
+  },
+  "native": {
+    "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/player-choices-native-v3/status.json",
+    "sha256": "4a83b774f5ab82f84a97243805d81ce9e6a4ed31de502deac82d488c021fc784",
+    "cases": [
+      {
+        "size": "normal",
+        "exit_code": 0,
+        "seconds": 5.48,
+        "captures": 15
+      },
+      {
+        "size": "small",
+        "exit_code": 0,
+        "seconds": 5.08,
+        "captures": 15
+      }
+    ],
+    "binary_sha256": "6038e98b4fd34d892825ecd6df1003477a14df6b3df77b4f5cb04cb653ff47f7",
+    "actual_viewed_captures": [
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/player-choices-native-v3/small/rift_player_whirlwind_selected.png",
+        "sha256": "adc3c554909bc0c659de27b52f26fdd26d137a33ea73d58be2567a2e2b76a81d",
+        "finding": "Controller badges, location, return destination and selected state distinguish identical units; confirm and decline remain available."
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/player-choices-native-v3/normal/rift_player_losses_advanced.png",
+        "sha256": "82f69a03a8796fe91397759aa76006f6e4f0d1dc324181dbbe84c9bf511cf52d",
+        "finding": "Attached gear shows its bearer, selection and advanced advice without blocking confirmation."
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/player-choices-native-v3/small/rift_player_object_inspect.png",
+        "sha256": "ff43ef9e04914e1628724819d35722c3d2a2f13ddfbf7585d12d5ae4f94be0aa",
+        "finding": "Pinned live unit inspection shows controller, evaluated Might and equipment with scrollable complete text."
+      }
+    ]
+  },
+  "api": {
+    "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/player-choices-api-baselines-v1/report.json",
+    "sha256": "8007d587c9599144b52c11b6e303c3cc10e91c32cc275ad357474ad5768872df",
+    "campaigns": 20,
+    "records": 159,
+    "all_prior_records_equal": true,
+    "new_series": 6,
+    "new_games": 14,
+    "new_assertion_scope": "Both cards cast and their choices observed for both seats at each AI level across two starting-player series.",
+    "binary_sha256": "0d511cd46821b6a9604563b68e056411bb5da20c5936b5c65d328da902b5e02f"
+  },
+  "retained_failures": [
+    {
+      "finding": "Advanced Whirlwind advice exceeded the 180-character UI limit; shortened text and replayed both sizes, preserving full strategic meaning.",
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/player-choices-native-v2/normal/run.log",
+      "sha256": "5b6a09639f98e4cb3aae5f5770ed84086cf154d0439ab1d4002d422c8956e3e7"
+    },
+    {
+      "finding": "Two unrelated source tests hardcoded 60 historical issues; the reviewed Whirlwind discrepancy makes 61. Replaced totals with exact complete evidence-manifest comparisons, retaining card-specific assertions.",
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/player-choices-python-v1.log",
+      "sha256": "eafc094f209846eaff655dddeface051d0d0374a3ad2617b9ff75a27aec5f7af"
+    }
+  ],
+  "installed_release": {
+    "status": "passed",
+    "runtime_revision": "0b7a38b5bdc5077ccc91eae20e8fe1ed6b06db5c",
+    "package": "/nix/store/mx5ac3x5vbigxh4djax25l2712lryx6c-local-rift-0.1.0",
+    "rust_tests": 2220,
+    "source_tests": 349,
+    "simulated_games": 1176,
+    "ui_cases": 45,
+    "captures": 488,
+    "api_campaigns": 20,
+    "records": 159,
+    "all_full_api_records_equal": true,
+    "report": {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/player-choices-release-v1/status.json",
+      "sha256": "ed2351155d54ca289307d2e1aadd2d2b65e3290738bc3a9e9ac42f222e6309da"
+    },
+    "nix_log": {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/player-choices-release-v1/nix.log",
+      "sha256": "d3fdbf4b0ecc5a2d7c9be7662a17f93c1d848f1b29290ccaab672b1ff357de0d"
+    },
+    "simulation": {
+      "path": "/nix/store/9kmpyyzs9j3h2q2vv0zmigfwa5ki77f6-local-rift-simulation-check",
+      "sha256": "7600fe860fa62653a3115b63689724fa42254a7068ca21868d5cf29ea15699c4"
+    },
+    "reviewed_at": "2026-11-17T08:07:22.168731+00:00",
+    "visually_reviewed": [
+      {
+        "finding": "Owner labels, optional decline and selected unit remain readable.",
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/player-choices-release-v1/player-choices-small/rift_player_whirlwind_selected.png",
+        "sha256": "a948710be863a45b009134c0a721af03e5eaa3fe482d94f5e95a41066c546404"
+      },
+      {
+        "finding": "Attached gear is clearly identified; advice and mandatory choice do not overlap.",
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/player-choices-release-v1/player-choices-normal/rift_player_losses_advanced.png",
+        "sha256": "5b44d0857adc90c96d6c3695f70e00eea7bf9b4823821b32c9a72f24d91ca87d"
+      },
+      {
+        "finding": "Live ownership, stats and attached equipment text are accessible in the scrolling inspector.",
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/player-choices-release-v1/player-choices-small/rift_player_object_inspect.png",
+        "sha256": "a7857763002d6490179254f090170edf6ca2f06fb57894bfad5287b93e10da6b"
+      }
+    ]
+  },
+  "remaining_goal": {
+    "mapped_legal_snapshot_identities": 521,
+    "unimplemented_legal_snapshot_identities": 558,
+    "full_rules_fidelity_proven": false,
+    "expert_strength_proven": false,
+    "specific_audit_gap": "Off-turn instructed Whirlwind needs an independently sourced timing/order scenario."
+  }
+}

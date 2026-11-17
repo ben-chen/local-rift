@@ -390,7 +390,7 @@ API series completing 62 games, and both native window sizes with 52 captures.
 All 18 earlier API campaigns were refreshed; Block/Yuumi now covers both initial
 play orders. Focused regressions also distinguish Irelia's board-unit choices
 from trash-card targets and verify Flash retains both automatically chosen
-units. Installed acceptance remains outstanding.
+units. Installed acceptance was outstanding at that checkpoint.
 
 
 The corrected recovery candidate 3c6861d now passes immutable installed
@@ -398,3 +398,26 @@ acceptance: 2,206 Rust tests, 346 source checks, 1,176 simulations, 43 UI cases
 and 19 exact API comparisons. The initial failed Irelia readiness assertion
 was preserved and the Strategic draw policy corrected; no assertion was
 weakened. See [validation](validation/irelia_trash_targets.json).
+
+
+Acceptable Losses and Whirlwind are implemented as IDs480–481,
+with immutable installed release acceptance passed at 0b7a38b. Both use a shared resolution
+choice that passes from one player to the other without opening a response
+window or treating the chosen objects as targets. The full
+Whirlwind face also reveals a gallery cost discrepancy: its printed Energy
+is 4, now recorded as the effective value while raw 3 remains preserved.
+See the [source review](../assets/data/card_admissions/irelia_player_choices/source_review.json).
+These additions are card-pool work, with no claim that they are current meta staples.
+
+The focused engine/API checks cover mandatory own-gear choices, optional returns
+of either player's units, changed candidates after the first return, wrong or
+stale requests, valid and invalid counters, Repeat, borrowed ownership,
+equipment detachment, deferred Deathknell triggers, and all three AI levels.
+An authored legal Irelia variant finishes 48 unassisted games with physical-card
+conservation; each spell is cast and its choices exercised in both seats at
+every level. Exact tournament presets remain unchanged.
+
+The fixed candidate passed 2,220 Rust tests, 349 source checks, 1,176 simulated
+games, 45 installed interface cases (488 captures), and 20 API campaigns with
+159 full records matching their local baselines. Three installed captures were
+visually reviewed. See [player-choice validation](validation/irelia_player_choices.json).

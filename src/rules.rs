@@ -94,6 +94,7 @@ pub struct PlayTargetSpec {
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum OfficialEffect {
+    EachPlayer(crate::game::player_choices::Rule),
     Trash(crate::trash::SpellRule),
     /// Change controller, optionally exhaust, then Recall without a Move event.
     /// Paying the declared optional cost removes the printed Might restriction.
@@ -345,6 +346,8 @@ pub fn effect(id: usize) -> OfficialEffect {
             maximum: 1,
             outcome: crate::trash::Outcome::Play(crate::game::InstructedPlayKind::TheHarrowing),
         }),
+        480 => EachPlayer(crate::game::player_choices::Rule::ACCEPTABLE_LOSSES),
+        481 => EachPlayer(crate::game::player_choices::Rule::WHIRLWIND),
         479 => Trash(crate::trash::SpellRule {
             kinds: &[CardKind::Unit],
             owner: Allegiance::Any,
@@ -1267,6 +1270,8 @@ pub fn requirements(id: usize) -> &'static [Mechanic] {
         476 => &[Chain, ChooseReadyTriggers, ConquerHoldTriggers],
         478 => &[Chain, TrashPlay, CostReduction],
         479 => &[Chain],
+        480 => &[Chain, Gear],
+        481 => &[Chain, Bounce],
         477 => &[
             Chain,
             ChooseReadyTriggers,

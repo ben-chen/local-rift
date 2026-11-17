@@ -345,9 +345,13 @@ class CommittedReviewIntegrationTests(unittest.TestCase):
         result = review.apply_reviews(printings, root=catalog.ROOT,
                                       project_gallery=lambda raw: catalog.project_gallery(raw)[0], plain=catalog.plain)
         self.assertEqual(printings, before)
-        self.assertEqual(len(result["resolutions"]), 145)
-        self.assertEqual(len(result["historical_issues"]), 60)
-        self.assertEqual(result["evidence_summary"]["reviewed_printings"], 95)
+        manifest = json.loads((catalog.ROOT / "assets/data/catalog_resolutions.json").read_text())
+        # Verify every accepted record, while allowing unrelated source reviews
+        # to append evidence without repeatedly changing historical test counts.
+        self.assertEqual(result["resolutions"], manifest["resolutions"])
+        self.assertEqual(result["historical_issues"], manifest["historical_issues"])
+        self.assertEqual(result["evidence_summary"]["reviewed_printings"],
+                         len({r["official_id"] for r in manifest["resolutions"]}))
         self.assertEqual(len(result["printings"]), 1408)
         self.assertFalse(any(p["unresolved_gameplay_fields"] for p in result["printings"]))
         by_id = {p["official_id"]: p for p in result["printings"]}

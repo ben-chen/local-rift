@@ -1,0 +1,248 @@
+{
+  "schema_version": 1,
+  "checked_at": "2026-11-17T05:51:36.472780+00:00",
+  "scope": "Source review and local runtime admission of two legal Chaos options (IDs480\u2013481); no new tournament preset or claim of current meta prevalence. Installed release acceptance remains pending.",
+  "records": [
+    {
+      "official_id": "ogn-179-298",
+      "name": "Acceptable Losses",
+      "raw_printing": {
+        "official_id": "ogn-179-298",
+        "public_code": "OGN-179/298",
+        "name": "Acceptable Losses",
+        "set": "OGN",
+        "collector_number": 179,
+        "types": [
+          "spell"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "spell"
+        ],
+        "accessibility_types": [
+          "spell"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "chaos"
+        ],
+        "energy": 1,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "rules_html": "<p>[Action] (Play on your turn or in showdowns.)<br />Each player kills one of their gear.</p>",
+        "rules_text": "[Action] (Play on your turn or in showdowns.)\nEach player kills one of their gear.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [],
+        "rarity": "uncommon",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/b2b470bab1ae511ab9de0b1ce576e2050532a081-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Spell: Acceptable Losses. [Action] (Play on your turn or in showdowns.)\nEach player kills one of their gear.",
+        "illustrators": [
+          "Kudos Productions"
+        ]
+      },
+      "raw_printing_sha256": "1ab1654af0dadf1e61982eefeaf99d6cb52807e2c8b5bc3caf702ad810a50646",
+      "effective": {
+        "types": [
+          "spell"
+        ],
+        "super_types": [],
+        "domains": [
+          "chaos"
+        ],
+        "energy": 1,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>[Action] (Play on your turn or in showdowns.)<br />Each player kills one of their gear.</p>",
+        "rules_text": "[Action] (Play on your turn or in showdowns.)\nEach player kills one of their gear.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "resolution_ids": [],
+      "errata": [],
+      "snapshot_standard_legal": true,
+      "original_image": {
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/b2b470bab1ae511ab9de0b1ce576e2050532a081-744x1039.png?accountingTag=RB",
+        "path": "assets/data/card_admissions/irelia_player_choices/ogn-179-298.png",
+        "sha256": "5ffe5233247d927b237b8763cbd19006857d5c23d99f0b9dbfec98b57a4497af",
+        "bytes": 789126,
+        "dimensions": [
+          744,
+          1039
+        ]
+      },
+      "visual_review": {
+        "actual_full_face_viewed": true,
+        "reviewed_at": "2026-11-17T05:51:36.472041+00:00",
+        "printed_cost_type_domain_tags_and_rules_checked": true,
+        "printed_facts": {
+          "types": [
+            "spell"
+          ],
+          "super_types": [],
+          "domains": [
+            "chaos"
+          ],
+          "energy": 1,
+          "power": null,
+          "might": null,
+          "might_bonus": null,
+          "tags": [],
+          "rules_html": "<p>[Action] (Play on your turn or in showdowns.)<br />Each player kills one of their gear.</p>",
+          "rules_text": "[Action] (Play on your turn or in showdowns.)\nEach player kills one of their gear.",
+          "equipment_html": "",
+          "equipment_text": ""
+        },
+        "notes": "Chaos Spell; one Energy, no Power cost; Action; each player kills one of their own gear. Full original face matches the effective fields."
+      },
+      "runtime_id": 480
+    },
+    {
+      "official_id": "ogn-187-298",
+      "name": "Whirlwind",
+      "raw_printing": {
+        "official_id": "ogn-187-298",
+        "public_code": "OGN-187/298",
+        "name": "Whirlwind",
+        "set": "OGN",
+        "collector_number": 187,
+        "types": [
+          "spell"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "spell"
+        ],
+        "accessibility_types": [
+          "spell"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "chaos"
+        ],
+        "energy": 3,
+        "power": 1,
+        "might": null,
+        "might_bonus": null,
+        "rules_html": "<p>Starting with the next player, each player may return a unit to its owner's hand.</p>",
+        "rules_text": "Starting with the next player, each player may return a unit to its owner's hand.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [],
+        "rarity": "uncommon",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/24f5e0a8811b5a0e0930c0f6476600e2a37a5f93-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Spell: Whirlwind. Starting with the next player, each player may return a unit to its owner's hand.",
+        "illustrators": [
+          "Polar Engine Studio"
+        ]
+      },
+      "raw_printing_sha256": "3f939e504784aac52bb4272fbb50b8582f766aecc01348c821c89e6330fc2526",
+      "effective": {
+        "types": [
+          "spell"
+        ],
+        "super_types": [],
+        "domains": [
+          "chaos"
+        ],
+        "energy": 4,
+        "power": 1,
+        "might": null,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>Starting with the next player, each player may return a unit to its owner's hand.</p>",
+        "rules_text": "Starting with the next player, each player may return a unit to its owner's hand.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "resolution_ids": [
+        "ogn-187-298:energy"
+      ],
+      "errata": [],
+      "snapshot_standard_legal": true,
+      "original_image": {
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/24f5e0a8811b5a0e0930c0f6476600e2a37a5f93-744x1039.png?accountingTag=RB",
+        "path": "assets/data/catalog_evidence/images/ogn-187-298.png",
+        "sha256": "cad6138bdf9b47127d1b7dfbbde275dbaff04611da8ae2e7853ed85f8dc3c0b6",
+        "bytes": 782853,
+        "dimensions": [
+          744,
+          1039
+        ]
+      },
+      "visual_review": {
+        "actual_full_face_viewed": true,
+        "reviewed_at": "2026-11-17T05:51:36.472767+00:00",
+        "printed_cost_type_domain_tags_and_rules_checked": true,
+        "printed_facts": {
+          "types": [
+            "spell"
+          ],
+          "super_types": [],
+          "domains": [
+            "chaos"
+          ],
+          "energy": 4,
+          "power": 1,
+          "might": null,
+          "might_bonus": null,
+          "tags": [],
+          "rules_html": "<p>Starting with the next player, each player may return a unit to its owner's hand.</p>",
+          "rules_text": "Starting with the next player, each player may return a unit to its owner's hand.",
+          "equipment_html": "",
+          "equipment_text": ""
+        },
+        "notes": "The matching full official Whirlwind face prints Energy 4 in its upper-left cost, with one Chaos Power. The gallery structured Energy field says 3. Preserve raw 3 and use reviewed effective 4. No linked current erratum changes this cost; this correction alone admits no playable card."
+      },
+      "runtime_id": 481
+    }
+  ],
+  "preserved_source_prefix": {
+    "resolutions": {
+      "count": 145,
+      "sha256": "a213c18fba2a98ad597a5bfb0d420ec08e8457fdc96ddb8944df562aafd3a6f9"
+    },
+    "raw_printings": {
+      "count": 95,
+      "sha256": "ac9ce7a394eb8056d6c653170cc2abb76279688ab6fe6738bd8dd5a9790a4b61"
+    },
+    "historical_issues": {
+      "count": 60,
+      "sha256": "aa2e563a3c4f9d89b150e7625566f2757076b41810eae295f437177ed006c527"
+    },
+    "images": {
+      "count": 95,
+      "sha256": "3bace19104213802238d248bf4fa2802e80628ba1498f91e87f5d6a9a861f56b"
+    }
+  },
+  "preserved_runtime_prefix": {
+    "cards": {
+      "count": 480,
+      "sha256": "c85181a2eb88c30a8ced036cf44f50fb38842d762aeae258fe3d5da9046b4d34"
+    },
+    "decks": {
+      "count": 7,
+      "sha256": "e975739d803427e54928d6e6cd03d1ce51d7ad108f4e247b8a000acf037a5cdb"
+    }
+  },
+  "rules_review": {
+    "authority": "https://playriftbound.com/en-us/rules-hub/",
+    "core_version": "2026-10-09",
+    "references": [
+      "303.2.a",
+      "355.10.e"
+    ],
+    "findings": [
+      "Each-player choices occur during resolution and do not target, including the caster\u2019s own choice. Deflect and when-chosen triggers do not apply.",
+      "Acceptable Losses requires each player with gear to pick their own gear; turn order begins with the turn player.",
+      "Whirlwind specifies starting with the next player. Each player may return any unit, not just their own, to its owner. Choices see earlier completed returns; declining remains legal."
+    ]
+  },
+  "implementation_status": "runtime_implemented_release_pending",
+  "status": "Local engine, API, AI and native implementation validated; complete installed acceptance pending."
+}

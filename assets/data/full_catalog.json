@@ -149,19 +149,19 @@
       "gear": 80,
       "legend": 11,
       "rune": 6,
-      "spell": 139,
+      "spell": 141,
       "unit": 261
     },
-    "implemented_main_cards": 480,
+    "implemented_main_cards": 482,
     "implemented_legends": 11,
     "implemented_battlefields": 22,
-    "implemented_legal_identities": 519,
-    "unimplemented_legal_identities": 560,
+    "implemented_legal_identities": 521,
+    "unimplemented_legal_identities": 558,
     "errata_entries": 67,
     "identities_with_errata": 67,
-    "source_quality_issues": 60,
-    "reviewed_field_resolutions": 145,
-    "resolved_source_issue_groups": 60,
+    "source_quality_issues": 61,
+    "reviewed_field_resolutions": 146,
+    "resolved_source_issue_groups": 61,
     "unresolved_source_issue_groups": 0,
     "unresolved_gameplay_identities": 0,
     "unreviewed_variant_identities": 90,
@@ -172,12 +172,12 @@
     "pinned_runtime_variant_identities": 0,
     "reviewed_variant_identities": 34,
     "reviewed_variant_printings": 101,
-    "field_reviewed_printings": 95
+    "field_reviewed_printings": 96
   },
   "unimplemented_by_observed_keyword": {
     "ADD": 1,
     "Accelerate": 16,
-    "Action": 54,
+    "Action": 53,
     "Add": 20,
     "Ambush": 8,
     "Assault": 13,
@@ -344,8 +344,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 480,
+        "official_id": "ogn-179-298",
+        "playable_in_client": true
       }
     },
     {
@@ -40786,16 +40788,20 @@
       "rules_text_status": "official_gallery_printing_text",
       "conflicting_fields": [],
       "source_review": {
-        "status": "no_detected_conflicts",
-        "resolution_ids": [],
+        "status": "reviewed_corrections",
+        "resolution_ids": [
+          "ogn-187-298:energy"
+        ],
         "unresolved_gameplay_fields": [],
         "variant_diagnostics": [],
         "reviewed_variant_fields": [],
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 481,
+        "official_id": "ogn-187-298",
+        "playable_in_client": true
       }
     },
     {
@@ -55017,7 +55023,7 @@
         "domains": [
           "chaos"
         ],
-        "energy": 3,
+        "energy": 4,
         "power": 1,
         "might": null,
         "might_bonus": null,
@@ -55027,7 +55033,9 @@
         "equipment_html": "",
         "equipment_text": ""
       },
-      "resolution_ids": [],
+      "resolution_ids": [
+        "ogn-187-298:energy"
+      ],
       "unresolved_gameplay_fields": []
     },
     {
@@ -130599,6 +130607,21 @@
         }
       ],
       "detail": "The full original official face has a red Fury frame and printed Fury power glyph. Raw gallery domains incorrectly say Chaos. Preserve raw evidence and correct effective domain to Fury; no runtime admission."
+    },
+    {
+      "kind": "official_artwork_field_mismatch",
+      "field": "energy",
+      "official_ids": [
+        "ogn-187-298"
+      ],
+      "values": [
+        {
+          "official_id": "ogn-187-298",
+          "raw_value": 3,
+          "printed_value": 4
+        }
+      ],
+      "detail": "The matching full official Whirlwind face prints Energy 4 in its upper-left cost, with one Chaos Power. The gallery structured Energy field says 3. Preserve raw 3 and use reviewed effective 4. No linked current erratum changes this cost; this correction alone admits no playable card."
     }
   ],
   "source_issue_reviews": [
@@ -132092,6 +132115,31 @@
           }
         ],
         "detail": "The full original official face has a red Fury frame and printed Fury power glyph. Raw gallery domains incorrectly say Chaos. Preserve raw evidence and correct effective domain to Fury; no runtime admission."
+      }
+    },
+    {
+      "review_issue_id": "ogn-187-298-energy",
+      "official_ids": [
+        "ogn-187-298"
+      ],
+      "resolution_ids": [
+        "ogn-187-298:energy"
+      ],
+      "status": "resolved_by_review",
+      "raw_issue": {
+        "kind": "official_artwork_field_mismatch",
+        "field": "energy",
+        "official_ids": [
+          "ogn-187-298"
+        ],
+        "values": [
+          {
+            "official_id": "ogn-187-298",
+            "raw_value": 3,
+            "printed_value": 4
+          }
+        ],
+        "detail": "The matching full official Whirlwind face prints Energy 4 in its upper-left cost, with one Chaos Power. The gallery structured Energy field says 3. Preserve raw 3 and use reviewed effective 4. No linked current erratum changes this cost; this correction alone admits no playable card."
       }
     }
   ],
@@ -136993,6 +137041,34 @@
         }
       ],
       "enables_runtime_support": false
+    },
+    {
+      "id": "ogn-187-298:energy",
+      "official_id": "ogn-187-298",
+      "name": "Whirlwind",
+      "field": "energy",
+      "reviewed_on": "2026-11-17",
+      "basis": "confirmed_artwork",
+      "operation": "override",
+      "expected_raw_value": 3,
+      "raw_source_field": "energy",
+      "expected_raw_source_value": 3,
+      "effective_value": 4,
+      "gallery_uncompressed_sha256": "97ee26fd9a7780b234c7744cf2008abdafd2566f51effdc6864bc096089d33b9",
+      "expected_printing_sha256": "3f939e504784aac52bb4272fbb50b8582f766aecc01348c821c89e6330fc2526",
+      "printing_hash_encoding": "UTF-8 JSON sorted keys; ensure_ascii=false; separators=(',', ':')",
+      "reason": "The matching full official Whirlwind face prints Energy 4 in its upper-left cost, with one Chaos Power. The gallery structured Energy field says 3. Preserve raw 3 and use reviewed effective 4. No linked current erratum changes this cost; this correction alone admits no playable card.",
+      "evidence": [
+        {
+          "kind": "official_card_image",
+          "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/24f5e0a8811b5a0e0930c0f6476600e2a37a5f93-744x1039.png?accountingTag=RB",
+          "local_path": "assets/data/catalog_evidence/images/ogn-187-298.png",
+          "sha256": "cad6138bdf9b47127d1b7dfbbde275dbaff04611da8ae2e7853ed85f8dc3c0b6",
+          "bytes": 782853,
+          "location": "Upper-left printed Energy cost 4 and single Chaos Power glyph"
+        }
+      ],
+      "enables_runtime_support": false
     }
   ],
   "review_evidence": {
@@ -137011,10 +137087,10 @@
         "uncompressed_bytes": 3986973
       }
     },
-    "reviewed_printings": 95,
-    "field_resolutions": 145,
-    "historical_issue_groups": 60,
-    "image_evidence": 95,
+    "reviewed_printings": 96,
+    "field_resolutions": 146,
+    "historical_issue_groups": 61,
+    "image_evidence": 96,
     "live_image_bytes_checked": false
   },
   "reviewed_identity_reviews": [

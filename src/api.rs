@@ -37,6 +37,8 @@ mod field_options_tests;
 mod fields;
 mod numeric;
 mod play_choices;
+#[cfg(test)]
+mod player_choices_tests;
 mod progression;
 #[cfg(test)]
 mod recovery_tests;
@@ -1137,6 +1139,9 @@ fn action_json_at_depth(action: &Action, depth: usize) -> Value {
             "payment":payment_to_json(payment)}),
         Action::PlaceToken { lane } => json!({"type":"place_token","lane":lane}),
         Action::ChooseBattlefield { lane } => json!({"type":"choose_battlefield","lane":lane}),
+        Action::ChoosePlayerObject { choice_id, object } => {
+            json!({"type":"choose_player_object","choice_id":choice_id,"object":object.as_ref().map(target_to_json)})
+        }
         Action::ChooseResolutionSubset { targets } => {
             json!({"type":"choose_resolution_subset","targets":targets.iter().map(target_to_json).collect::<Vec<_>>()})
         }
@@ -1660,6 +1665,18 @@ fn parse_action_at_depth(value: &Value, depth: usize) -> Result<Action, ApiError
             fields!("lane");
             Action::ChooseBattlefield {
                 lane: index(o, "lane")?,
+            }
+        }
+        "choose_player_object" => {
+            fields!("choice_id", "object");
+            let object = required(o, "object")?;
+            Action::ChoosePlayerObject {
+                choice_id: id32(o, "choice_id")?,
+                object: if object.is_null() {
+                    None
+                } else {
+                    Some(parse_target(object)?)
+                },
             }
         }
         "choose_resolution_subset" => {
@@ -2481,6 +2498,15 @@ fn decision_to_json(game: &Game, decision: &Decision, viewer: usize) -> Result<V
             "card_id":card_id,"remaining":remaining,"destination":match fixed_lane {
                 None=>json!({"mode":"choose"}),
                 Some(lane)=>fixed_destination_to_json(crate::game::board_targets::BoardLocation::from_lane(*player, *lane))}}),
+        Decision::PlayerObject {
+            choice_id,
+            card_id,
+            rule,
+            remaining,
+            ..
+        } => {
+            json!({"type":"player_object","choice_id":choice_id,"card_id":card_id,"kind":rule.kind.name(),"instruction":rule.kind.instruction(),"optional":rule.optional,"is_target":false,"remaining_players":remaining,"candidates":game.player_object_candidates().iter().map(target_to_json).collect::<Vec<_>>()})
+        }
         Decision::ResolutionSubset {
             card_id,
             candidates,

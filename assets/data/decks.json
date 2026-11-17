@@ -12669,6 +12669,50 @@
       "equipment_effect_html": "<p>1</p>",
       "equipment_effect": "1",
       "might_bonus": null
+    },
+    {
+      "id": 480,
+      "official_id": "ogn-179-298",
+      "name": "Acceptable Losses",
+      "kind": "Spell",
+      "domains": [
+        "Chaos"
+      ],
+      "energy": 1,
+      "power": 0,
+      "might": 0,
+      "keywords": [
+        "Action"
+      ],
+      "tags": [],
+      "official_text": "[Action] (Play on your turn or in showdowns.)\nEach player kills one of their gear.",
+      "official_text_html": "<p>[Action] (Play on your turn or in showdowns.)<br />Each player kills one of their gear.</p>",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/b2b470bab1ae511ab9de0b1ce576e2050532a081-744x1039.png?accountingTag=RB",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null
+    },
+    {
+      "id": 481,
+      "official_id": "ogn-187-298",
+      "name": "Whirlwind",
+      "kind": "Spell",
+      "domains": [
+        "Chaos"
+      ],
+      "energy": 4,
+      "power": 1,
+      "might": 0,
+      "keywords": [],
+      "tags": [],
+      "official_text": "Starting with the next player, each player may return a unit to its owner's hand.",
+      "official_text_html": "<p>Starting with the next player, each player may return a unit to its owner's hand.</p>",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/24f5e0a8811b5a0e0930c0f6476600e2a37a5f93-744x1039.png?accountingTag=RB",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null
     }
   ],
   "official_text_note": "Official card/legend rules text from the Riot Card Gallery, retrieved 2026-10-24 and corrected by cited errata. Resource icon tokens are expanded to readable bracketed names. Raw card and equipment HTML is preserved separately. Official text does not establish full implementation fidelity."

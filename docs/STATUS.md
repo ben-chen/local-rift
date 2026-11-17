@@ -112,3 +112,11 @@ interface cases (458 captures), and 19 API campaigns matching 153 complete
 local records. Three installed captures were visually reviewed. The initial
 failed candidate and the AI policy's conservative limits remain recorded in
 [trash recovery validation](validation/irelia_trash_targets.json).
+
+
+Acceptable Losses and Whirlwind passed immutable installed acceptance at
+0b7a38b: 2,220 Rust tests, 349 source checks, 1,176 simulations, 45 interface
+cases with 488 captures, and 20 API campaigns matching 159 complete records.
+Three fresh installed captures were visually reviewed. This verifies the
+recorded scenarios; full Standard parity and expert strength remain unproven.
+See [player-choice acceptance](validation/irelia_player_choices.json).

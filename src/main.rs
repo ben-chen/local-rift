@@ -15,6 +15,7 @@ mod practice_benchmark;
 use format_ui::{FormatChoice, FormatPicker};
 mod gust_ui;
 mod play_ui;
+mod player_choice_ui;
 mod predict_ui;
 mod preset_ui;
 mod series_ui;
@@ -1753,6 +1754,7 @@ impl App {
                                     Decision::TriggerTargets { .. }
                                         | Decision::LegendTargets { .. }
                                         | Decision::ResolutionSubset { .. }
+                                        | Decision::PlayerObject { .. }
                                 )
                             )
                         {
@@ -2513,6 +2515,7 @@ impl App {
             return Ok(());
         };
         match decision {
+            Decision::PlayerObject { .. } => return self.player_object_panel(),
             Decision::DrawLook { player: 0, .. } => {
                 self.draw_look_panel();
                 return Ok(());
@@ -3008,6 +3011,7 @@ impl App {
             Decision::TrashTarget{source_card_id,..} if local_rift::trash::returns_to_hand(*source_card_id)=>("Recover a card","Choose an eligible card in your trash. Opponents may respond before it returns to your hand; returning it does not play it.".into()),
             Decision::TrashTarget{..}=>("Choose a trash target","Choose an eligible card below before this ability enters the chain. Opponents may respond before the chosen card is played.".into()),
             Decision::OptionalPlay{card_id,..}=>("Use this triggered ability?",format!("{} offers a play from your trash. Accept and choose the ability's target, or decline now. Choose the card's own targets and costs after the ability resolves.",self.game.catalog[*card_id].name)),
+            Decision::PlayerObject { .. } => return self.player_object_panel(),
             Decision::ResolutionSubset { maximum, .. } => return self.subset_panel(*maximum),
             Decision::ResolutionTargets{..}=>("Choose the location", "Responses separated your targets. Choose which legal group below this spell should affect.".into()),
             Decision::OrderTriggers{..}=>("Order your triggers", "Choose which ability to put on the chain next. The last ability placed will resolve first. Pending triggers cannot be countered yet.".into()),
@@ -3208,6 +3212,18 @@ impl App {
         }
     }
     fn try_toggle_target(&mut self, target: Target) -> Result<(), String> {
+        if matches!(self.game.decision, Some(Decision::PlayerObject { .. })) {
+            if self.game.player_object_candidates().contains(&target) {
+                self.targets = if self.targets == [target] {
+                    Vec::new()
+                } else {
+                    vec![target]
+                };
+            } else {
+                self.notify_target_choice("Choose one of the eligible cards shown below.");
+            }
+            return Ok(());
+        }
         if matches!(self.game.decision, Some(Decision::ResolutionSubset { .. })) {
             return self.toggle_subset(target);
         }
@@ -3314,6 +3330,9 @@ impl App {
                 .is_some_and(|slot| slot.kind == local_rift::rules::PlayTargetKind::Battlefield)
     }
     fn card_target_candidate(&self, target: Target) -> Result<bool, String> {
+        if matches!(self.game.decision, Some(Decision::PlayerObject { .. })) {
+            return Ok(self.game.player_object_candidates().contains(&target));
+        }
         if matches!(self.game.decision, Some(Decision::ResolutionSubset { .. })) {
             return self.subset_candidate(target);
         }
@@ -3387,6 +3406,9 @@ impl App {
         }
     }
     fn targeting_selection(&self) -> bool {
+        if matches!(self.game.decision, Some(Decision::PlayerObject { .. })) {
+            return true;
+        }
         if matches!(self.game.decision, Some(Decision::ResolutionSubset { .. })) {
             return true;
         }
@@ -3585,6 +3607,7 @@ impl App {
                             Decision::TriggerTargets { .. }
                                 | Decision::LegendTargets { .. }
                                 | Decision::ResolutionSubset { .. }
+                                | Decision::PlayerObject { .. }
                         )
                     )
                 {
@@ -4128,6 +4151,10 @@ impl App {
         }
         if let Decision::SplitDamage { total, .. } = decision {
             self.combat_tray(usize::MAX, total)?;
+            return Ok(true);
+        }
+        if matches!(decision, Decision::PlayerObject { .. }) {
+            self.player_object_tray();
             return Ok(true);
         }
         if let Decision::ResolutionSubset { candidates, .. } = decision {
@@ -5289,6 +5316,7 @@ impl App {
                             Decision::TriggerTargets { .. }
                                 | Decision::LegendTargets { .. }
                                 | Decision::ResolutionSubset { .. }
+                                | Decision::PlayerObject { .. }
                         )
                     )
                 {
@@ -11095,6 +11123,7 @@ async fn main() {
     let control_smoke = args.iter().any(|a| a == "--ui-smoke-control");
     let recovery_smoke = args.iter().any(|a| a == "--ui-smoke-recovery");
     let trash_choices_smoke = args.iter().any(|a| a == "--ui-smoke-trash-choices");
+    let player_choices_smoke = args.iter().any(|a| a == "--ui-smoke-player-choices");
     let field_options_smoke = args.iter().any(|a| a == "--ui-smoke-field-options");
     let turn_keywords_smoke = args.iter().any(|a| a == "--ui-smoke-turn-keywords");
     let rockfall_smoke = args.iter().any(|a| a == "--ui-smoke-rockfall");
@@ -11126,6 +11155,7 @@ async fn main() {
         || field_options_smoke
         || recovery_smoke
         || trash_choices_smoke
+        || player_choices_smoke
         || turn_keywords_smoke
         || flurry_smoke
         || disarm_smoke
@@ -11232,6 +11262,8 @@ async fn main() {
             smoke::run_recovery_frame(&mut app, frames)
         } else if trash_choices_smoke {
             smoke::run_trash_choices_frame(&mut app, frames)
+        } else if player_choices_smoke {
+            smoke::run_player_choices_frame(&mut app, frames)
         } else if field_options_smoke {
             smoke::run_field_options_frame(&mut app, frames)
         } else if discord_smoke {

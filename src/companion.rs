@@ -1527,6 +1527,16 @@ fn response_window_advice(
                 "Place each unit token at your base or a battlefield you control. A unit at a field can help defend the next hold.",
                 "Choose each location separately. Reinforce the field that matters, or keep a unit at base for a later movement.",
             ],
+            Decision::PlayerObject { rule, .. } => match rule.kind {
+                local_rift::game::player_choices::Kind::KillOwnGear => vec![
+                    "Each player kills one of their own gear, starting with the turn player. Choose here while the spell resolves; neither player can respond between these choices.",
+                    "Keep the gear that supports your next point. Attached gear is eligible too; sacrificing gear does not kill its bearer. Deathknell abilities wait until the spell finishes.",
+                ],
+                local_rift::game::player_choices::Kind::ReturnAnyUnit => vec![
+                    "Each player may return any unit to its owner, with the spell controller choosing last. These choices are not targets: they do not trigger Irelia or charge Deflect.",
+                    "Reassess after the first return: remove a scorer, reuse an entry ability, or decline. Borrowed units return to their owner; equipment stays in play detached.",
+                ],
+            },
             Decision::ResolutionSubset { .. } => vec![
                 "The original targets now exceed the Might limit. Choose a legal subset, including every other original target that still fits. You cannot add a new target.",
                 "Choose the subset that removes the most important defenders or scorers. Fewer units can be correct if no additional original target fits beside them.",

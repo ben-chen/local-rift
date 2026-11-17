@@ -1538,3 +1538,41 @@ the winning turn, and independently verify that an actually drawn Ride the
 Wind can still be used to win. The earlier failed package and diagnostic root
 scores are retained outside the checkout. Release acceptance must be rerun
 on the corrected immutable revision and refreshed API results reviewed.
+
+
+## Acceptable Losses and Whirlwind: each-player instructions
+
+Local runtime IDs480–481 share a typed resolution instruction, candidate query,
+validation and AI policy. The UI and API read that same candidate list. This is
+local implementation evidence; immutable installed acceptance remains pending.
+The current Rules Hub still links the October 9, 2026 core rules. CR303.2.a
+orders otherwise simultaneous actions starting with the turn player;
+CR355.10.e explicitly exempts objects chosen by each player from targeting.
+
+Acceptable Losses is an Action costing 1 Energy, with no Power. Its controller
+need not be the turn player in a showdown; a dedicated scenario checks that
+the turn player still chooses first. All controlled gear is eligible, including
+attached gear; the bearer survives the gear being killed. Whirlwind uses its
+reviewed printed cost of 4 Energy and 1 Chaos Power and lets each player decline
+or return any unit, starting with the next player. In this two-player engine
+that order is the other player followed by the spell controller. Each choice
+sees the results of earlier choices. There is no priority window between them.
+
+The tests distinguish counter eligibility: Not So Fast cannot counter these
+untargeted spells; Defy can counter either and prevents every resolution choice.
+They also cover Repeat, non-targeting protection/Deflect/Irelia interactions,
+owner-correct borrowed returns, detached gear, and Deathknell waiting until the
+parent resolves. The source proof preserves raw Whirlwind Energy3 and records
+only effective Energy4; existing card IDs and tournament presets are unchanged.
+Exact card/interaction evidence does not establish complete Standard fidelity
+or expert-strength play. An off-turn instructed Whirlwind needs a separate
+source-backed timing/order scenario before that corner is claimed audited.
+
+
+A read-only comparison with [Alpharune's Whirlwind implementation at ec90f0f](https://github.com/chorlick/alpharune/blob/ec90f0fed002aed374d06249fa95e83e3cfbd386/src/cards/spells/0187_whirlwind.cpp)
+agrees on opponent-first resolution, optional choices, all board units and
+no targeting/Deflect. Its card definition still lists Energy3, disagreeing
+with the official full face reviewed here (Energy4). This comparison supports
+checking implementations against independent source evidence, not adopting
+another engine as the rules authority. No code was copied or executed, and it
+does not settle the separately noted off-turn instructed-play question.

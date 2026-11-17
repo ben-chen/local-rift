@@ -280,6 +280,10 @@ pub enum Target {
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Action {
+    ChoosePlayerObject {
+        choice_id: u32,
+        object: Option<Target>,
+    },
     ResolveReadiness {
         choice_id: u32,
         ready: bool,
@@ -721,6 +725,13 @@ pub enum RevealOutcome {
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Decision {
+    PlayerObject {
+        player: usize,
+        choice_id: u32,
+        card_id: CardId,
+        rule: player_choices::Rule,
+        remaining: Vec<usize>,
+    },
     /// The target was finalized earlier; the ready/exhaust choice is made now.
     LegendReadiness {
         player: usize,
@@ -1078,6 +1089,9 @@ pub enum CardSupport {
     Unsupported,
 }
 
+#[path = "player_choices.rs"]
+pub mod player_choices;
+
 impl Decision {
     pub fn player(&self) -> usize {
         match self {
@@ -1104,6 +1118,7 @@ impl Decision {
             | Self::TokenPlacement { player, .. }
             | Self::ResolutionTargets { player, .. }
             | Self::ResolutionSubset { player, .. }
+            | Self::PlayerObject { player, .. }
             | Self::OrderTriggers { player, .. }
             | Self::OnPlayTarget { player, .. }
             | Self::DeathReplacement { player, .. }
@@ -2150,6 +2165,7 @@ impl Game {
                     | Action::OrderTrigger { .. }
                     | Action::ChooseResolutionGroup { .. }
                     | Action::ChooseResolutionSubset { .. }
+                    | Action::ChoosePlayerObject { .. }
                     | Action::ChooseBattlefield { .. }
                     | Action::PlaceToken { .. }
                     | Action::FinalizeTokenPlay { .. }
@@ -2285,6 +2301,9 @@ impl Game {
             Action::PlaceToken { lane } => self.place_token(lane)?,
             Action::ChooseResolutionGroup { index } => self.choose_resolution_group(index)?,
             Action::ChooseResolutionSubset { targets } => self.choose_resolution_subset(targets)?,
+            Action::ChoosePlayerObject { choice_id, object } => {
+                self.choose_player_object(choice_id, object)?
+            }
             Action::ChooseBattlefield { lane } => self.choose_battlefield_order(lane)?,
             Action::SetOptionalDiscount { power } => {
                 let count = self.players[player]
@@ -3760,6 +3779,7 @@ impl Game {
                 | Decision::TokenPlay { .. }
                 | Decision::ResolutionTargets { .. }
                 | Decision::ResolutionSubset { .. }
+                | Decision::PlayerObject { .. }
                 | Decision::OrderTriggers { .. }
                 | Decision::OnPlayTarget { .. }
                 | Decision::RevivePlay { .. }
@@ -3945,6 +3965,7 @@ impl Game {
             | Decision::TokenPlay { .. }
             | Decision::ResolutionTargets { .. }
             | Decision::ResolutionSubset { .. }
+            | Decision::PlayerObject { .. }
             | Decision::OrderTriggers { .. }
             | Decision::OnPlayTarget { .. }
             | Decision::RevivePlay { .. }
@@ -6690,6 +6711,25 @@ impl Game {
                             )
                             .collect()
                     }
+                    Decision::PlayerObject {
+                        choice_id, rule, ..
+                    } => {
+                        let mut actions: Vec<_> = self
+                            .player_object_candidates()
+                            .into_iter()
+                            .map(|object| Action::ChoosePlayerObject {
+                                choice_id: *choice_id,
+                                object: Some(object),
+                            })
+                            .collect();
+                        if rule.optional {
+                            actions.push(Action::ChoosePlayerObject {
+                                choice_id: *choice_id,
+                                object: None,
+                            });
+                        }
+                        actions
+                    }
                     Decision::ResolutionSubset {
                         player,
                         candidates,
@@ -8402,6 +8442,7 @@ impl Game {
             valid.retain(|&target| self.target_location(target) == location);
         }
         match rules::effect(id) {
+            OfficialEffect::EachPlayer(rule) => self.begin_player_objects(player, id, rule)?,
             OfficialEffect::Trash(rule) => {
                 for target in valid {
                     if let Target::Trash { player: owner, .. } = target
@@ -10242,6 +10283,7 @@ impl Game {
                     return Ok(action);
                 }
                 let preferred = match decision {
+                    Decision::PlayerObject { .. } => self.player_object_ai_action()?,
                     Decision::TriggerMode {
                         player,
                         choice_id,
@@ -11043,6 +11085,7 @@ impl Game {
                         105
                     }
                 }
+                OfficialEffect::EachPlayer(rule) => self.player_objects_spell_score(actor, rule)?,
                 OfficialEffect::Trash(_) => targets
                     .iter()
                     .map(|&target| self.trash_target_score(actor, target))

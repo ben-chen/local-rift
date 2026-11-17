@@ -6,7 +6,7 @@ This is a source-data review, dated **October 26, 2026**. It adds no playable ca
 
 The first review covers every group in the catalog's original **37 source-quality issue records**, representing **38 official printings**. Matching official card images corroborate 13 missing-type fallbacks, resolve 23 structured/accessibility type contradictions, and show Might 5 on both printings of Kai'Sa, Rebel. The same images reveal additional domain, tag, and text defects on these records. This is a bounded review of those records, not a complete visual audit of the gallery or a count of every possible source error.
 
-The [resolution manifest](../assets/data/catalog_resolutions.json) now records **138 field resolutions across 88 printings: 111 effective changes and 27 confirmations**. The original 73 entries, 38 raw printings, and all 37 historical issue records remain unchanged. A subsequent variant review adds 25 tag observations, one paired Akali punctuation correction, and six paired Rune-placeholder corrections. Two subsequent artwork discoveries correct Bilgewater Tracker’s domain and tag; one further discovery corrects Momentary Companion’s missing tags. Two more observations correct Stalwart Goatherd’s missing Mount Targon tag and Patched Porobot’s incomplete type. Mournful Spirit’s omitted Shadow Isles tag is also corrected from its exact face. Clocktower Guardian’s domain and region are also corrected from its original face. Trifarian Captain’s missing Noxus/Trifarian tags and Raving Witness’s missing Freljord tag are now corrected from their exact faces. Five later Deploy-gear domain corrections and ten additional unprinted Device exclusions extend that preserved cohort. Armored Tusker’s missing Noxus tag is now corrected from its original face. Of the complete 138 entries, 124 are direct artwork observations; fourteen exclusions of an unprinted Device classification remain explicitly rule-derived. The separate [identity review](VARIANT_REVIEW.md) assesses whole printing groups without rewriting genuine printed text.
+At the C27 checkpoint, the [resolution manifest](../assets/data/catalog_resolutions.json) recorded **138 field resolutions across 88 printings: 111 effective changes and 27 confirmations**. The original 73 entries, 38 raw printings, and all 37 historical issue records remain unchanged. A subsequent variant review adds 25 tag observations, one paired Akali punctuation correction, and six paired Rune-placeholder corrections. Two subsequent artwork discoveries correct Bilgewater Tracker’s domain and tag; one further discovery corrects Momentary Companion’s missing tags. Two more observations correct Stalwart Goatherd’s missing Mount Targon tag and Patched Porobot’s incomplete type. Mournful Spirit’s omitted Shadow Isles tag is also corrected from its exact face. Clocktower Guardian’s domain and region are also corrected from its original face. Trifarian Captain’s missing Noxus/Trifarian tags and Raving Witness’s missing Freljord tag are now corrected from their exact faces. Five later Deploy-gear domain corrections and ten additional unprinted Device exclusions extend that preserved cohort. Armored Tusker’s missing Noxus tag is now corrected from its original face. Of the complete 138 entries, 124 are direct artwork observations; fourteen exclusions of an unprinted Device classification remain explicitly rule-derived. The separate [identity review](VARIANT_REVIEW.md) assesses whole printing groups without rewriting genuine printed text.
 
 | Field | Entries | Review |
 | --- | ---: | --- |
@@ -183,3 +183,32 @@ The October 26 review of **Armored Tusker**, `rad-078-167`, found **UNIT / NOXUS
 The [C28 record](../assets/data/card_admissions/c28/README.md) adds a separately evidenced Pyke, Dockside Butcher reminder review, preserving all original raw strings and the prior 29-review/90-image prefixes. That source-only step keeps 417 main cards, eleven battlefields and 444 mapped legal identities. Registering the four source-reviewed units and six source-reviewed battlefields then produces 421 main cards, seventeen battlefields and 454 mapped legal identities, with 625 unavailable. These registry counts do not prove executable support; engine, API and UI acceptance remain separate. All four existing presets remain unchanged in this source overlay.
 
 Emperor’s Dais and Targon’s Peak retain their original gallery text and original artwork separately from their operative official errata. Pyke’s additional Fury Power is not rewritten as a printed base Power cost. No field-resolution entry is added or changed by this cohort; the 138/88/53 source-review totals remain fixed.
+
+
+## Whirlwind cost review — November 17, 2026 UTC
+
+The exact official OGN-187/298 face prints **4 Energy and 1 Chaos Power**,
+while the gallery structured Energy value is 3. The source review preserves
+raw 3 and records effective 4, with the original printing projection, gallery
+archive and viewed image pinned. No linked current erratum changes the cost.
+The new resolution adds one field and one historical issue; all previous
+resolution, raw-printing and image entries remain unchanged prefixes. Current
+totals are generated in [Card coverage](CARD_COVERAGE.md).
+
+Acceptable Losses and Whirlwind have both had their complete original faces
+reviewed. The source-only checkpoint enabled neither card for play. Their later
+runtime admission uses IDs480–481 and the shared each-player resolution flow;
+installed release acceptance is still pending. Core 355.10.e makes
+their each-player choices during resolution non-targeting, including the
+caster's choice; Deflect and when-chosen triggers therefore do not apply.
+Acceptable Losses asks each player to kill their own gear, in turn order
+(303.2.a). Whirlwind explicitly starts with the next player and permits each
+player to decline or return any unit to its owner. Focused runtime tests check
+that ordering, changing legal options after an earlier return, ownership,
+response boundaries, counters, Repeat, and deferred triggered effects.
+
+The [review record](../assets/data/card_admissions/irelia_player_choices/source_review.json)
+and `tools/test_player_choices_source.py` pin the facts, images and prior
+cohorts. The generic review test now compares every applied record with the
+complete accepted manifest instead of a hardcoded record count. This retains
+full evidence checks while allowing unrelated reviewed corrections to append.
