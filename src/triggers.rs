@@ -459,7 +459,17 @@ impl Game {
                 .first_used
                 .push((context.source, rule_index));
         }
-        if !rule.modes.is_empty() {
+        if matches!(rule.effects, [Effect::ReturnTrashToHand { .. }]) {
+            self.queue_trigger_choice(
+                context.source.player,
+                card_id,
+                Decision::TrashTarget {
+                    player: context.source.player,
+                    source_card_id: card_id,
+                    gear_id: None,
+                },
+            );
+        } else if !rule.modes.is_empty() {
             self.queue_trigger_choice(
                 context.source.player,
                 card_id,
@@ -1706,6 +1716,11 @@ impl Game {
         let targets = selected;
         for effect in rule.effects {
             match *effect {
+                Effect::ReturnTrashToHand { .. } => {
+                    return Err(
+                        "A trash return must finalize its chosen card before resolution.".into(),
+                    );
+                }
                 Effect::SpendSourceBuffTo(effect) => {
                     // Core359.3.e.7 / 740.4.a: this is one linked instruction.
                     // If its only target is invalid, the cost is also ignored.

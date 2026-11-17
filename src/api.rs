@@ -38,6 +38,8 @@ mod fields;
 mod numeric;
 mod play_choices;
 mod progression;
+#[cfg(test)]
+mod recovery_tests;
 mod refusal;
 #[cfg(test)]
 mod riven_pool_tests;
@@ -2407,7 +2409,14 @@ fn decision_to_json(game: &Game, decision: &Decision, viewer: usize) -> Result<V
             source_card_id,
             gear_id,
             ..
-        } => json!({"type":"trash_target","source_card_id":source_card_id,"gear_id":gear_id}),
+        } => {
+            let rule = crate::trash::choice_rule(*source_card_id);
+            json!({"type":"trash_target","source_card_id":source_card_id,"gear_id":gear_id,
+                "outcome":if crate::trash::returns_to_hand(*source_card_id) {"return_to_hand"} else {"play"},
+                "card_kind":rule.map(|r|r.kind.name().to_lowercase()),
+                "max_energy":rule.and_then(|r|r.max_energy),
+                "max_power":rule.and_then(|r|r.max_power)})
+        }
         Decision::PendingPlay {
             pending_id,
             card_id,
@@ -2615,6 +2624,12 @@ fn ability_to_json(ability: &ChainAbility) -> Value {
         }
         ChainAbility::Disempower { player, object_id } => {
             json!({"type":"disempower","player":player,"object_id":object_id})
+        }
+        ChainAbility::ReturnChosen {
+            trash_index,
+            card_id,
+        } => {
+            json!({"type":"return_chosen","trash_index":if *trash_index==usize::MAX {None} else {Some(*trash_index)},"card_id":card_id})
         }
         ChainAbility::OptionalPlay { gear_id } => json!({"type":"optional_play","gear_id":gear_id}),
         ChainAbility::GrantFlowChosen {

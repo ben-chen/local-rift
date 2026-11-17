@@ -1,0 +1,221 @@
+{
+  "status": "Local rules, API, full-game and native checks passed; immutable installed acceptance outstanding.",
+  "reviewed_at": "2026-11-17T02:43:55.120815+00:00",
+  "base_revision": "5db98cf771fc124997b223696e1f9cfc87e2227c",
+  "cards": [
+    {
+      "runtime_id": 473,
+      "official_id": "ogn-174-298",
+      "name": "Sai Scout"
+    },
+    {
+      "runtime_id": 474,
+      "official_id": "ogn-165-298",
+      "name": "Cemetery Attendant"
+    },
+    {
+      "runtime_id": 475,
+      "official_id": "ogs-010-024",
+      "name": "Annie, Stubborn"
+    }
+  ],
+  "source_review": "assets/data/card_admissions/irelia_recovery/source_review.json",
+  "source_review_sha256": "959398a9300c253d6d7e60a812e0661a34cf78fbcb800e8102a358ac5643ffa1",
+  "checks": [
+    {
+      "command": "cargo test --lib --bins",
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/recovery-regressions-v1.log",
+      "sha256": "9effafdc63531567e28963d9ea34f829f2d62e31f8f4dd004f878221c04f7ded",
+      "passed_tests": 1414
+    },
+    {
+      "command": "cargo test --bin local-rift recovery_advice",
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/recovery-coach-v1.log",
+      "sha256": "726fbd61f6b632d21bb1b346bb19f92e83046fea6f58ab52a76b22a1f997c3d5",
+      "passed_tests": 1
+    },
+    {
+      "command": "cargo test --test recovery_matches -- --nocapture",
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/recovery-matches-v1.log",
+      "sha256": "56013a17edc7a63717a5b1e07bbf64c9af119358fcf2327f99949984094166ab",
+      "passed_tests": 1
+    },
+    {
+      "command": "python3 -m unittest discover -s tools -p 'test_*.py'",
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/recovery-python-v1.log",
+      "sha256": "451e21677dfe2cbfbb643c4702e77abcdcc94027b0c49823c932ce50c6da7b47",
+      "passed_tests": 345
+    },
+    {
+      "command": "python3 tools/import_catalog.py --check",
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/recovery-catalog-check-v1.log",
+      "sha256": "0125bf48c346dcdfecf8064c112870eb1e1c52ea2e700e5a724e28ac76a9d445",
+      "passed_tests": null
+    },
+    {
+      "command": "cargo clippy --all-targets -- -D warnings",
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/recovery-clippy-v4.log",
+      "sha256": "202b682a0ceb6e374d5e4580f7859a4362976ddb7781877cf29853a126718280",
+      "passed_tests": null
+    }
+  ],
+  "native": {
+    "report": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/recovery-native-v4/status.json",
+    "report_sha256": "a580af3dc5d6a1bb626bdfa241f571e7d8b605036caee0d1da95f881ea12393f",
+    "cases": [
+      {
+        "size": "normal",
+        "exit_code": 0,
+        "seconds": 6.23,
+        "captures": 20
+      },
+      {
+        "size": "small",
+        "exit_code": 0,
+        "seconds": 5.45,
+        "captures": 20
+      }
+    ],
+    "actual_viewed_captures": [
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/recovery-native-v2/small/rift_recovery_annie_inspect.png",
+        "sha256": "e05d5b8f2fbad1466da0354c2a2986e95473971250d9a05295b456eb8ef31b61",
+        "finding": "Complete Annie face and text."
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/recovery-native-v2/small/rift_recovery_vision_recycle_choice.png",
+        "sha256": "750d99485a34ab088aa84dcd8f757e3141622349685062c85f29fe0656c54e37",
+        "finding": "Vision choices and private card instruction."
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/recovery-native-v3/small/rift_recovery_unit_choice.png",
+        "sha256": "c4fa52042c3abab947e812b386f16bc62847a134721d7c6c2e7a352b59315367",
+        "finding": "Shortened heading fits; tray explicitly identifies trash."
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/recovery-native-v4/small/rift_recovery_attendant_inspect.png",
+        "sha256": "0121699eb2111e56f3e11e9646409b74450876c22c30f61fd7786fbdc135d8a0",
+        "finding": "Complete Cemetery Attendant face and text."
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/recovery-native-v4/small/rift_recovery_scout_inspect.png",
+        "sha256": "9623ffb13e0fc1095ccd45503c0698f59ebef275430449b16a942e7cb83eb78f",
+        "finding": "Complete Sai Scout face, Vision and open-field text."
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/recovery-native-v4/small/rift_recovery_no_eligible_target.png",
+        "sha256": "ff0e2772f1f9c6529a776e238e6c9c7fe60f5645f700e6a1d0558ebe70b800d9",
+        "finding": "Empty target state, Continue action and matching companion advice."
+      }
+    ]
+  },
+  "api": {
+    "report": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/recovery-api-v1.json",
+    "sha256": "c8d5e382702e52e26ff5c4589bc75bb8b86613f7a9d94e6fe7e51ae6612ca611",
+    "series": 6,
+    "games": 14,
+    "usage": [
+      {
+        "difficulty": "easy",
+        "irelia_seat": 0,
+        "card_entries": {
+          "473": 1,
+          "474": 1,
+          "475": 1
+        },
+        "recovery_targets": {
+          "474": 0,
+          "475": 0
+        }
+      },
+      {
+        "difficulty": "easy",
+        "irelia_seat": 1,
+        "card_entries": {
+          "473": 3,
+          "474": 5,
+          "475": 1
+        },
+        "recovery_targets": {
+          "474": 3,
+          "475": 1
+        }
+      },
+      {
+        "difficulty": "tactical",
+        "irelia_seat": 0,
+        "card_entries": {
+          "473": 3,
+          "474": 0,
+          "475": 1
+        },
+        "recovery_targets": {
+          "474": 0,
+          "475": 1
+        }
+      },
+      {
+        "difficulty": "tactical",
+        "irelia_seat": 1,
+        "card_entries": {
+          "473": 3,
+          "474": 4,
+          "475": 1
+        },
+        "recovery_targets": {
+          "474": 0,
+          "475": 1
+        }
+      },
+      {
+        "difficulty": "strategic",
+        "irelia_seat": 0,
+        "card_entries": {
+          "473": 3,
+          "474": 1,
+          "475": 2
+        },
+        "recovery_targets": {
+          "474": 1,
+          "475": 2
+        }
+      },
+      {
+        "difficulty": "strategic",
+        "irelia_seat": 1,
+        "card_entries": {
+          "473": 0,
+          "474": 1,
+          "475": 1
+        },
+        "recovery_targets": {
+          "474": 0,
+          "475": 1
+        }
+      }
+    ]
+  },
+  "baseline_refresh": {
+    "report": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/recovery-api-baselines-v1/status.json",
+    "sha256": "8bb83334c6ec8a09d499cb091c0951aeb406ed872c7d262d27ee6988bfa7920c",
+    "campaigns": 17,
+    "records": 117
+  },
+  "full_games": {
+    "unassisted": 48,
+    "configuration": "Legal authored Irelia variants, both starting players and all three AI levels; no injected opening state. Every card conserved after every action.",
+    "natural_usage": "Every card entered from both seats at every level. Both recovery sources finalized targets at every level and seat."
+  },
+  "limitations": [
+    "Additional legal Irelia options, not a claim of current meta prevalence; seven sourced deck recipes are unchanged.",
+    "Identity-removal and pending-card restoration unit cases directly exercise the shared zone-movement boundary; full payment and previous trash-play regressions are covered by the broader library run.",
+    "The generated October 24 snapshot maps 515 legal identities with 564 still unmapped; neither mapping nor these tests proves complete Standard conformity.",
+    "The final companion-only and native-layout adjustments have focused companion/native and strict lint checks; the earlier broad library/client run is separately identified above."
+  ],
+  "development_findings": [
+    "Fixed test-helper method and native module visibility before successful builds.",
+    "First native run reused simulated pointer clicks between frames; reset input each frame, then passed both window sizes.",
+    "Visual review found a clipped heading and a Hand label over trash choices; shortened the heading and named the trash chooser explicitly.",
+    "No-target companion advice now explains why the played unit remains and the recovery ability cannot enter the chain."
+  ]
+}

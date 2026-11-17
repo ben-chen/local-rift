@@ -12506,6 +12506,79 @@
       "equipment_effect_html": "",
       "equipment_effect": "",
       "might_bonus": null
+    },
+    {
+      "id": 473,
+      "official_id": "ogn-174-298",
+      "name": "Sai Scout",
+      "kind": "Unit",
+      "domains": [
+        "Chaos"
+      ],
+      "energy": 6,
+      "power": 0,
+      "might": 5,
+      "keywords": [
+        "Vision"
+      ],
+      "tags": [
+        "Shurima"
+      ],
+      "official_text": "[Vision] (When you play me, look at the top card of your Main Deck. You may recycle it.)\nYou may play me to an open battlefield.",
+      "official_text_html": "<p>[Vision] (When you play me, look at the top card of your Main Deck. You may recycle it.)<br />You may play me to an open battlefield.</p>",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/eab1fc8c95931519319c4c80681a261d75214c48-744x1039.png?w=280&q=85&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null
+    },
+    {
+      "id": 474,
+      "official_id": "ogn-165-298",
+      "name": "Cemetery Attendant",
+      "kind": "Unit",
+      "domains": [
+        "Chaos"
+      ],
+      "energy": 3,
+      "power": 1,
+      "might": 3,
+      "keywords": [],
+      "tags": [
+        "Dog",
+        "Shadow Isles"
+      ],
+      "official_text": "When you play me, return a unit from your trash to your hand.",
+      "official_text_html": "<p>When you play me, return a unit from your trash to your hand.</p>",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/6bbbe6923105c53fc6b2a44430db940e009609b6-744x1039.png?w=280&q=85&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null
+    },
+    {
+      "id": 475,
+      "official_id": "ogs-010-024",
+      "name": "Annie, Stubborn",
+      "kind": "Unit",
+      "domains": [
+        "Chaos"
+      ],
+      "energy": 4,
+      "power": 1,
+      "might": 3,
+      "keywords": [],
+      "tags": [
+        "Annie",
+        "Noxus"
+      ],
+      "official_text": "When you play me, return a spell from your trash to your hand.",
+      "official_text_html": "<p>When you play me, return a spell from your trash to your hand.</p>",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/44eb968cf0c54e75970588b69eef5c5f5ccc9b24-744x1039.png?w=280&q=85&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null
     }
   ],
   "official_text_note": "Official card/legend rules text from the Riot Card Gallery, retrieved 2026-10-24 and corrected by cited errata. Resource icon tokens are expanded to readable bracketed names. Raw card and equipment HTML is preserved separately. Official text does not establish full implementation fidelity."

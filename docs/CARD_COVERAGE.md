@@ -2,7 +2,7 @@
 
 Snapshot checked **2026-10-24**. The official gallery contains **1,408 printing records** grouped into **1,103 distinct full-name identities**. After excluding **12 auxiliary token/tracker identities** and **12 banned identities**, **1,079 identities are legal in Standard/1v1 Constructed**. The separate 2v2 list leaves **1,078**.
 
-**This client does not yet implement every legal card.** It currently maps **473 main-deck cards, 11 independently registered legends, 22 battlefields, and 6 rune resource types** (512 legal identities). **567 legal identities remain unimplemented and are not playable.** Importing this snapshot does not register cards with the engine. Full inventory coverage is not full rules support.
+**This client does not yet implement every legal card.** It currently maps **476 main-deck cards, 11 independently registered legends, 22 battlefields, and 6 rune resource types** (515 legal identities). **564 legal identities remain unimplemented and are not playable.** Importing this snapshot does not register cards with the engine. Full inventory coverage is not full rules support.
 
 ## Scope and authority
 
@@ -31,7 +31,7 @@ Numbered positions include token slots where the publisher numbers them within a
 | Legend | 58 | 11 | 47 |
 | Rune | 6 | 6 | 0 |
 | Spell | 268 | 137 | 131 |
-| Unit | 546 | 256 | 290 |
+| Unit | 546 | 259 | 287 |
 
 Each row is a disjoint complete type set. A reviewed Unit Gear has both types (Core 178) and is counted once in `gear+unit`, rather than once in each single-type row. Patched Porobot is the first explicitly reviewed dual-type correction; this is not a complete visual audit of every gallery type. No dual-type card is currently admitted to the engine.
 
@@ -608,6 +608,9 @@ Current pages are archived under `assets/data/catalog_sources/`; immutable revie
 | 470 | Sneaky Deckhand | `ogn-176-298` |
 | 471 | Ocean Drake | `ven-115-166` |
 | 472 | Resplendent Rostrum | `rad-046-167` |
+| 473 | Sai Scout | `ogn-174-298` |
+| 474 | Cemetery Attendant | `ogn-165-298` |
+| 475 | Annie, Stubborn | `ogs-010-024` |
 
 ## Implemented legend ID mapping
 

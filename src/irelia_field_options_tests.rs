@@ -40,7 +40,7 @@ fn targets(g: &mut Game, card: CardId) {
 #[test]
 fn open_field_permission_means_no_units_and_no_controller_in_both_seats() {
     for actor in 0..2 {
-        for card in [470, 471] {
+        for card in [470, 471, 473] {
             for holder in [None, Some(actor), Some(1 - actor)] {
                 for occupant in [None, Some(actor), Some(1 - actor)] {
                     let mut g = position(actor, 0, 470001);
@@ -73,7 +73,7 @@ fn open_field_permission_means_no_units_and_no_controller_in_both_seats() {
 #[test]
 fn open_field_permission_is_discoverable_but_does_not_override_prohibitions_or_timing() {
     for actor in 0..2 {
-        for card in [470, 471] {
+        for card in [470, 471, 473] {
             let mut g = position(actor, 0, 470003);
             g.players[actor].hand = vec![card];
             assert!(

@@ -332,3 +332,20 @@ simulated games, 39 native cases with 366 captures, and 17 API campaigns
 matching all 117 complete records. Four installed small-window captures were
 actually reviewed; see [validation](validation/irelia_field_options.json). The seven sourced recipes
 remain unchanged, and the broader all-legal-cards goal is open.
+
+
+Sai Scout, Cemetery Attendant and Annie, Stubborn now have locally validated
+implementations on the recovery branch. They are additional legal Irelia options,
+not newly claimed meta staples. Sai Scout reuses Vision and open-field rules;
+the other two share explicit public-trash targeting before responses. The UI,
+API and companion distinguish returning a card to hand from playing or drawing
+it. Trash choices clearly name their zone, and empty choices explain why no
+ability enters the chain.
+
+Local acceptance includes 1,414 broad Rust tests, one additional companion
+regression, 48 unassisted legal games with conservation, 345 source/tool checks,
+40 native captures at both sizes, and six API series completing 14 games.
+Seventeen prior API campaigns were also refreshed against this engine. Actual
+small-window captures were inspected and the observed heading/zone-label issues
+fixed. Immutable installed acceptance is outstanding; see
+[recovery validation](validation/irelia_recovery.json).

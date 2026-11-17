@@ -163,6 +163,10 @@ pub enum SourceDamageRecipients {
 }
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Effect {
+    /// Choose the public-zone target before this ability enters the chain.
+    ReturnTrashToHand {
+        kind: crate::cards::CardKind,
+    },
     /// One targeted reduction using the summed keyword value captured at attack.
     Disarm,
     /// A complete instruction, with its ready/exhaust choice on resolution.
@@ -389,6 +393,32 @@ pub fn trigger_rules(card_id: usize) -> &'static [TriggerRule] {
         )
     };
     match card_id {
+        474 => {
+            const {
+                &[rule(
+                    SelfPlayed,
+                    &[],
+                    false,
+                    TargetRule::NONE,
+                    &[ReturnTrashToHand {
+                        kind: crate::cards::CardKind::Unit,
+                    }],
+                )]
+            }
+        }
+        475 => {
+            const {
+                &[rule(
+                    SelfPlayed,
+                    &[],
+                    false,
+                    TargetRule::NONE,
+                    &[ReturnTrashToHand {
+                        kind: crate::cards::CardKind::Spell,
+                    }],
+                )]
+            }
+        }
         471 => {
             const {
                 &[rule(

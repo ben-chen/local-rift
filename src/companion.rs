@@ -1655,6 +1655,21 @@ fn response_window_advice(
                 "Last Rites lets you play a unit from your trash. Its normal costs still matter; choose an affordable unit or decline.",
                 "A recovered unit can reinforce your next point. Compare that plan with saving the resources for a response.",
             ],
+            Decision::TrashTarget {
+                player,
+                source_card_id,
+                ..
+            } if local_rift::trash::returns_to_hand(*source_card_id) => {
+                vec![if !(0..game.players[*player].discard.len())
+                    .any(|i| game.trash_target_valid(*player, *source_card_id, i))
+                {
+                    "There is no eligible card in your trash. Continue without a target: your unit stays in play, but its recovery ability cannot enter the chain."
+                } else if beginner {
+                    "Choose an eligible card in your trash. It returns to your hand after responses; this is not a Draw or a Play. You must pay normally to play it later."
+                } else {
+                    "Recover a card that fits your next scoring or response window. Account for its later cost; an opponent can remove this exact trash target before it returns."
+                }]
+            }
             Decision::TrashTarget { .. } => vec![
                 "Choose the card in your trash that this ability will play. The ability enters the chain with that target, so opponents can respond first.",
                 "Check the chosen card's targets and costs now. You will finalize its own choices after the parent ability finishes resolving.",
@@ -1995,6 +2010,20 @@ fn field_options_advice(game: &Game, beginner: bool) -> Vec<&'static str> {
             "Ocean Drake can enter an open field: no units and no controller. Its play trigger may return a non-Dragon, friendly or enemy, to that unit's owner's hand."
         } else {
             "Ocean Drake can claim an open field while returning a non-Dragon elsewhere. Compare removing an enemy with saving or replaying one of your own units."
+        });
+    }
+    if visible(473) {
+        tips.push(if beginner {
+            "Sai Scout may enter an open battlefield. Vision lets you privately look at your deck's top card and either keep it there or recycle it."
+        } else {
+            "Sai Scout can establish an open field while improving your next draw. Compare that pressure with keeping six Energy available for other plays."
+        });
+    }
+    if visible(474) || visible(475) {
+        tips.push(if beginner {
+            "Cemetery Attendant returns a unit from your trash; Annie returns a spell. Choose before responses. The card returns to hand and is not played for free."
+        } else {
+            "Recovery adds future options, not immediate board presence. Pick an affordable threat or response for the next scoring window; protect time to use it."
         });
     }
     if visible(470) {
@@ -2390,10 +2419,37 @@ mod tests {
     }
 
     #[test]
+    fn recovery_advice_explains_missing_targets_without_changing_the_game() {
+        for (source, eligible, wrong) in [(474, 96, 8), (475, 8, 96)] {
+            let mut game = Game::new_for_agents(0, 0, 475, Difficulty::Easy);
+            game.start_match().unwrap();
+            game.decision = Some(Decision::TrashTarget {
+                player: 0,
+                source_card_id: source,
+                gear_id: None,
+            });
+            for available in [false, true] {
+                game.players[0].discard = vec![if available { eligible } else { wrong }];
+                let before = format!("{game:?}");
+                for level in [AdviceLevel::Beginner, AdviceLevel::Advanced] {
+                    let tips = advice(&game, level);
+                    assert_eq!(
+                        tips.iter()
+                            .any(|tip| tip.contains("There is no eligible card")),
+                        !available
+                    );
+                    assert!(tips.iter().all(|tip| tip.chars().count() <= 180));
+                }
+                assert_eq!(format!("{game:?}"), before);
+            }
+        }
+    }
+
+    #[test]
     fn field_options_advice_is_brief_read_only_and_uses_visible_information() {
         let mut game = Game::new_for_agents(0, 0, 472, Difficulty::Easy);
         game.start_match().unwrap();
-        for card in [470, 471, 472] {
+        for card in [470, 471, 472, 473, 474, 475] {
             game.players[0].hand = vec![card];
             let before = format!("{game:?}");
             for beginner in [false, true] {

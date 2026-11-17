@@ -15,6 +15,7 @@ pub mod restrictions;
 pub mod rules;
 pub mod xp;
 
+pub mod trash;
 pub mod trigger_rules;
 
 pub mod payment_plan;

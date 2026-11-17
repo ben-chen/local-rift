@@ -1412,3 +1412,31 @@ by Strategic in the earlier 48-game sample, so its play/activation coverage
 includes separately identified legal openings and focused scenarios. See
 `validation/irelia_field_options.json`. This admits these four reviewed cards,
 not the entire currently legal Standard pool.
+
+
+## Irelia recovery options — local validation
+
+Sai Scout (OGN174), Cemetery Attendant (OGN165), and Annie, Stubborn (OGS010)
+use individually reviewed original faces. Core 355.5, 355.8–9 and 359.3.e.4
+require a public trash target to be selected before the ability becomes
+respondable and preserve the identity of that exact occurrence. Both recovery
+triggers share a typed return effect and existing trigger ordering. Returning
+the card is neither Draw nor Play. Without an eligible target, the unit stays
+in play but no invalid targeted ability is finalized.
+
+All trash-reference maintenance now uses a common accessor across removal,
+recycling, pending-card detachment/restoration and burnout. Focused scenarios
+cover both players, kind restrictions, duplicate choices, identical copies,
+source removal through an opposing Gust, and no-target states. Internal
+zone-boundary tests isolate copy identity and cancellation restoration; they
+are not represented as complete player-action payment scenarios. The broader
+regression run retains existing public payment and instructed-play coverage.
+Sai Scout reuses Vision and open-field placement; tests cover private keep/
+recycle, normal timing and location prohibitions.
+
+The API exposes the choice's outcome and eligibility metadata. Native controls
+select actual trash tiles, keep/recycle Vision, inspect all three faces, and
+continue when no target exists. Mote explains the same outcomes at both levels
+without changing game state. Local evidence, observed UI fixes, natural card
+usage in full games, and outstanding installed acceptance are recorded in
+`validation/irelia_recovery.json`. Complete Standard conformity remains unproven.

@@ -91,6 +91,7 @@ jobs:
           python3 tools/check_turn_keywords_api.py target/release/rift-api "$RUNNER_TEMP/local-rift-turn-keywords.json"
           python3 tools/check_flurry_api.py target/release/rift-api "$RUNNER_TEMP/local-rift-flurry.json"
           python3 tools/check_field_options_api.py target/release/rift-api "$RUNNER_TEMP/local-rift-field-options.json"
+          python3 tools/check_recovery_api.py target/release/rift-api "$RUNNER_TEMP/local-rift-recovery.json"
       - name: Exercise desktop controls at both window sizes
         if: steps.scope.outputs.full_checks == 'true'
         env:
@@ -148,3 +149,5 @@ jobs:
           XDG_DATA_HOME="$RUNNER_TEMP/local-rift-control-small" xvfb-run -a ./target/release/local-rift --ui-smoke-control --small
           XDG_DATA_HOME="$RUNNER_TEMP/local-rift-field-options" xvfb-run -a ./target/release/local-rift --ui-smoke-field-options
           XDG_DATA_HOME="$RUNNER_TEMP/local-rift-field-options-small" xvfb-run -a ./target/release/local-rift --ui-smoke-field-options --small
+          XDG_DATA_HOME="$RUNNER_TEMP/local-rift-recovery" xvfb-run -a ./target/release/local-rift --ui-smoke-recovery
+          XDG_DATA_HOME="$RUNNER_TEMP/local-rift-recovery-small" xvfb-run -a ./target/release/local-rift --ui-smoke-recovery --small

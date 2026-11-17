@@ -3005,6 +3005,7 @@ impl App {
             Decision::TriggerMode { .. } | Decision::TriggerPayment { .. } | Decision::BattlefieldTargets { .. } | Decision::BattlefieldCost { .. } | Decision::BattlefieldPayment { .. } => unreachable!(),
             Decision::BanishPlay{card_id,..}=>("Play from Banish",format!("Play {} now? Base energy is waived; power and extra costs still apply. Declining leaves it in Banish.",self.game.catalog[*card_id].name)),
             Decision::DrawLook{..}|Decision::RevealedCard{..}|Decision::DeckLookPlay{..}|Decision::RevealedDeck{..}|Decision::EmpowerPlayed{..}|Decision::PredictCards{..}|Decision::Payment{..}|Decision::ResourceConversion{..}|Decision::TriggerTargets{..}|Decision::LegendTargets{..}|Decision::CombatDamage{..}|Decision::SplitDamage{..}|Decision::TokenPlacement{..}|Decision::TokenPlay{..}|Decision::BattlefieldOrder{..}|Decision::RevivePlay{..}|Decision::PendingPlay{..}=>unreachable!(),
+            Decision::TrashTarget{source_card_id,..} if local_rift::trash::returns_to_hand(*source_card_id)=>("Recover a card","Choose an eligible card in your trash. Opponents may respond before it returns to your hand; returning it does not play it.".into()),
             Decision::TrashTarget{..}=>("Choose a trash target","Choose an eligible card below before this ability enters the chain. Opponents may respond before the chosen card is played.".into()),
             Decision::OptionalPlay{card_id,..}=>("Use this triggered ability?",format!("{} offers a play from your trash. Accept and choose the ability's target, or decline now. Choose the card's own targets and costs after the ability resolves.",self.game.catalog[*card_id].name)),
             Decision::ResolutionSubset { maximum, .. } => return self.subset_panel(*maximum),
@@ -7875,6 +7876,15 @@ impl App {
         Ok(())
     }
     fn hand(&mut self) -> Result<(), String> {
+        if matches!(
+            self.game.decision,
+            Some(Decision::TrashTarget { player: 0, .. })
+        ) {
+            self.ui
+                .bold("YOUR TRASH · CARD CHOICE", 245.0, 670.0, 12.0, GOLD);
+            self.choice_tray()?;
+            return Ok(());
+        }
         if self.deck_look_tray() {
             return Ok(());
         }
@@ -11016,6 +11026,7 @@ async fn main() {
     let fields_smoke = args.iter().any(|a| a == "--ui-smoke-fields");
     let entry_smoke = args.iter().any(|a| a == "--ui-smoke-entry");
     let control_smoke = args.iter().any(|a| a == "--ui-smoke-control");
+    let recovery_smoke = args.iter().any(|a| a == "--ui-smoke-recovery");
     let field_options_smoke = args.iter().any(|a| a == "--ui-smoke-field-options");
     let turn_keywords_smoke = args.iter().any(|a| a == "--ui-smoke-turn-keywords");
     let rockfall_smoke = args.iter().any(|a| a == "--ui-smoke-rockfall");
@@ -11045,6 +11056,7 @@ async fn main() {
         || entry_smoke
         || control_smoke
         || field_options_smoke
+        || recovery_smoke
         || turn_keywords_smoke
         || flurry_smoke
         || disarm_smoke
@@ -11147,6 +11159,8 @@ async fn main() {
             smoke::run_entry_frame(&mut app, frames)
         } else if control_smoke {
             smoke::run_control_frame(&mut app, frames)
+        } else if recovery_smoke {
+            smoke::run_recovery_frame(&mut app, frames)
         } else if field_options_smoke {
             smoke::run_field_options_frame(&mut app, frames)
         } else if discord_smoke {

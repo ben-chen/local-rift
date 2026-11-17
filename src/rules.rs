@@ -335,7 +335,7 @@ pub fn effect(id: usize) -> OfficialEffect {
             exhaust: true,
             maximum_might: Some(3),
         },
-        466 | 467 | 470..=472 => None,
+        466 | 467 | 470..=475 => None,
         465 => ReturnEnemyDomainGroup {
             domain: Domain::Order,
             maximum_total_might: 5,
@@ -1237,6 +1237,8 @@ pub fn requirements(id: usize) -> &'static [Mechanic] {
     match id {
         468 => &[Chain, Control, Recall],
         469 => &[Chain, Control, Recall, OptionalCosts, Xp],
+        473 => &[PlayRestrictions, Predict, Chain, ChooseReadyTriggers],
+        474 | 475 => &[Chain, ChooseReadyTriggers],
         470 => &[PlayRestrictions],
         471 => &[PlayRestrictions, Chain, Bounce, ChooseReadyTriggers],
         472 => &[
@@ -1817,6 +1819,7 @@ pub enum StaticAbility {
 pub fn static_abilities(id: usize) -> &'static [StaticAbility] {
     use StaticAbility::*;
     match id {
+        473 => &[MayPlayToOpenBattlefield, Vision],
         470 | 471 => &[MayPlayToOpenBattlefield],
         458 => &[Disarm(1)],
         460 => &[Disarm(1), Ganking],

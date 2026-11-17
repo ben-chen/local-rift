@@ -51,6 +51,16 @@
         "printed_cost_type_domain_stats_tags_and_rules_checked": true,
         "matches_effective_facts": true,
         "notes": "Full unmodified official face viewed. Sai Scout: 6 Energy, no Power, 5 Might, Chaos/Shurima, Vision and open-field permission. Cemetery Attendant: 3 Energy, 1 Chaos Power, 3 Might, Dog/Shadow Isles, mandatory unit recovery. Annie: 4 Energy, 1 Chaos Power, 3 Might, Champion/Annie/Noxus, mandatory spell recovery."
+      },
+      "runtime_id": 473,
+      "runtime_image": {
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/eab1fc8c95931519319c4c80681a261d75214c48-744x1039.png?w=280&q=85&fm=png",
+        "path": "assets/art/card_473.png",
+        "sha256": "3474fea681eddc03dea96e49e2f1453b56199b523d79142f8fbab230c5b02f44",
+        "dimensions": [
+          280,
+          391
+        ]
       }
     },
     {
@@ -102,6 +112,16 @@
         "printed_cost_type_domain_stats_tags_and_rules_checked": true,
         "matches_effective_facts": true,
         "notes": "Full unmodified official face viewed. Sai Scout: 6 Energy, no Power, 5 Might, Chaos/Shurima, Vision and open-field permission. Cemetery Attendant: 3 Energy, 1 Chaos Power, 3 Might, Dog/Shadow Isles, mandatory unit recovery. Annie: 4 Energy, 1 Chaos Power, 3 Might, Champion/Annie/Noxus, mandatory spell recovery."
+      },
+      "runtime_id": 474,
+      "runtime_image": {
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/6bbbe6923105c53fc6b2a44430db940e009609b6-744x1039.png?w=280&q=85&fm=png",
+        "path": "assets/art/card_474.png",
+        "sha256": "25fb1450c00cfc3c644550bdfcc75644d914a1aa413507360cb97cf7d9a1b494",
+        "dimensions": [
+          280,
+          391
+        ]
       }
     },
     {
@@ -155,6 +175,16 @@
         "printed_cost_type_domain_stats_tags_and_rules_checked": true,
         "matches_effective_facts": true,
         "notes": "Full unmodified official face viewed. Sai Scout: 6 Energy, no Power, 5 Might, Chaos/Shurima, Vision and open-field permission. Cemetery Attendant: 3 Energy, 1 Chaos Power, 3 Might, Dog/Shadow Isles, mandatory unit recovery. Annie: 4 Energy, 1 Chaos Power, 3 Might, Champion/Annie/Noxus, mandatory spell recovery."
+      },
+      "runtime_id": 475,
+      "runtime_image": {
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/44eb968cf0c54e75970588b69eef5c5f5ccc9b24-744x1039.png?w=280&q=85&fm=png",
+        "path": "assets/art/card_475.png",
+        "sha256": "3a44c9a4aa77011bb0efa696b7e2d029952c383abf131f09e86c059adb59b1d4",
+        "dimensions": [
+          280,
+          391
+        ]
       }
     }
   ],

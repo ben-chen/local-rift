@@ -15,6 +15,10 @@ use crate::rules::{self, Allegiance, CounterKind, OfficialEffect, StaticAbility}
 use std::collections::VecDeque;
 
 #[cfg(test)]
+#[path = "irelia_recovery_tests.rs"]
+mod irelia_recovery_tests;
+
+#[cfg(test)]
 #[path = "irelia_field_options_tests.rs"]
 mod irelia_field_options_tests;
 #[cfg(test)]
@@ -511,6 +515,10 @@ pub enum ChainAbility {
         trash_index: usize,
         card_id: CardId,
         kind: InstructedPlayKind,
+    },
+    ReturnChosen {
+        trash_index: usize,
+        card_id: CardId,
     },
     GrantFlowChosen {
         trash_index: usize,
@@ -3211,6 +3219,19 @@ impl Game {
                         self.queue_card_play(item.player, trash_index, kind);
                     }
                 }
+                ChainAbility::ReturnChosen {
+                    trash_index,
+                    card_id,
+                } => {
+                    if self.players[item.player].discard.get(trash_index) == Some(&card_id) {
+                        self.remove_from_trash(item.player, trash_index);
+                        self.players[item.player].hand.push(card_id);
+                        self.push_log(format!(
+                            "{} returns {} from trash to hand.",
+                            self.players[item.player].name, self.catalog[card_id].name
+                        ));
+                    }
+                }
                 ChainAbility::GrantFlowChosen {
                     trash_index,
                     card_id,
@@ -4665,11 +4686,10 @@ impl Game {
         self.update_pending_trash_cost(player, Some(index));
         for item in &mut self.chain {
             if item.player == player
-                && let Some(
-                    ChainAbility::ReviveChosen { trash_index, .. }
-                    | ChainAbility::PlayChosen { trash_index, .. }
-                    | ChainAbility::GrantFlowChosen { trash_index, .. },
-                ) = &mut item.ability
+                && let Some(trash_index) = item
+                    .ability
+                    .as_mut()
+                    .and_then(ChainAbility::trash_index_mut)
             {
                 if *trash_index == index {
                     *trash_index = usize::MAX;
@@ -4782,14 +4802,7 @@ impl Game {
                 if item.player != player {
                     return None;
                 }
-                let selected = match &item.ability {
-                    Some(
-                        ChainAbility::PlayChosen { trash_index, .. }
-                        | ChainAbility::ReviveChosen { trash_index, .. }
-                        | ChainAbility::GrantFlowChosen { trash_index, .. },
-                    ) => *trash_index,
-                    _ => return None,
-                };
+                let selected = item.ability.as_ref().and_then(ChainAbility::trash_index)?;
                 (selected == index).then_some(item.id)
             })
             .collect();
@@ -4828,14 +4841,7 @@ impl Game {
                 if item.player != player {
                     return None;
                 }
-                let selected = match &item.ability {
-                    Some(
-                        ChainAbility::PlayChosen { trash_index, .. }
-                        | ChainAbility::ReviveChosen { trash_index, .. }
-                        | ChainAbility::GrantFlowChosen { trash_index, .. },
-                    ) => *trash_index,
-                    _ => return None,
-                };
+                let selected = item.ability.as_ref().and_then(ChainAbility::trash_index)?;
                 (selected == trash_index).then_some(item.id)
             })
             .collect();
@@ -4905,11 +4911,10 @@ impl Game {
         let index = origin_index.min(self.players[card.player].discard.len());
         for item in &mut self.chain {
             if item.player == card.player
-                && let Some(
-                    ChainAbility::PlayChosen { trash_index, .. }
-                    | ChainAbility::ReviveChosen { trash_index, .. }
-                    | ChainAbility::GrantFlowChosen { trash_index, .. },
-                ) = &mut item.ability
+                && let Some(trash_index) = item
+                    .ability
+                    .as_mut()
+                    .and_then(ChainAbility::trash_index_mut)
             {
                 if origin_targets.contains(&item.id) {
                     *trash_index = index;
@@ -5509,13 +5514,7 @@ impl Game {
         else {
             return false;
         };
-        let card = self.catalog[id];
-        match source_card_id {
-            36 => card.kind == CardKind::Spell && card.cost <= 3,
-            38 => card.kind == CardKind::Unit,
-            45 => card.kind == CardKind::Unit && card.cost <= 3 && card.power_cost <= 1,
-            _ => false,
-        }
+        crate::trash::choice_rule(source_card_id).is_some_and(|rule| rule.allows(&self.catalog[id]))
     }
 
     fn select_cards(&mut self, indices: &[usize]) -> Result<(), String> {
@@ -5548,10 +5547,12 @@ impl Game {
                 }
                 self.decision = None;
                 if let Some(&trash_index) = indices.first() {
-                    self.queue_finalized_ability(
-                        player,
-                        source_card_id,
-                        Vec::new(),
+                    let ability = if crate::trash::returns_to_hand(source_card_id) {
+                        ChainAbility::ReturnChosen {
+                            trash_index,
+                            card_id: self.players[player].discard[trash_index],
+                        }
+                    } else {
                         ChainAbility::PlayChosen {
                             trash_index,
                             card_id: self.players[player].discard[trash_index],
@@ -5560,8 +5561,9 @@ impl Game {
                             } else {
                                 InstructedPlayKind::Fizz
                             },
-                        },
-                    );
+                        }
+                    };
+                    self.queue_finalized_ability(player, source_card_id, Vec::new(), ability);
                 }
             }
             Decision::GrantFlow { player } => {
@@ -9262,11 +9264,10 @@ impl Game {
                 self.temporary_flow[player].clear();
                 for item in &mut self.chain {
                     if item.player == player
-                        && let Some(
-                            ChainAbility::ReviveChosen { trash_index, .. }
-                            | ChainAbility::PlayChosen { trash_index, .. }
-                            | ChainAbility::GrantFlowChosen { trash_index, .. },
-                        ) = &mut item.ability
+                        && let Some(trash_index) = item
+                            .ability
+                            .as_mut()
+                            .and_then(ChainAbility::trash_index_mut)
                     {
                         *trash_index = usize::MAX;
                     }

@@ -517,7 +517,7 @@ The viewer sees their own hand as card IDs. The opposing hand is `null` except w
 | `reveal_hand` | `opponent`, revealed `cards`; acknowledge with `choose` |
 | `grant_flow` | `select_cards` indexes an eligible spell in your trash; an empty selection is legal only when no eligible spell exists |
 | `optional_play` | `card_id`, optional `gear_id`; accept or decline Fizz/Last Rites before its optional play ability enters the chain |
-| `trash_target` | `source_card_id`, optional `gear_id`; choose exactly one eligible trash index with `select_cards`, before the ability becomes respondable |
+| `trash_target` | `source_card_id`, optional `gear_id`, `outcome` (`play` or `return_to_hand`), `card_kind`, nullable `max_energy`/`max_power`; choose exactly one eligible trash index with `select_cards`, before the ability becomes respondable. With no eligible card, submit an empty selection. |
 | `revive_unit` | Choose Matriarch’s eligible trash unit with `play_from_trash` and no additional choices; its ability then enters the chain |
 | `pending_play` | `pending_id`, `card_id`, `kind` (`fizz`, `last_rites`, or `matriarch`); use `finalize_pending_play` for this fixed card. Fizz waives base energy, Matriarch waives the base cost and fixes base as destination, and Last Rites pays the full cost. Additional costs still apply. `choose:false` returns it to trash only if `can_decline_trash_play` confirms it cannot be played. |
 | `swap_unit` | `unit_id`; select another unit with `choose_target`, or decline |
@@ -561,7 +561,7 @@ Token plays created by a resolving effect wait until that effect finishes. `pend
 
 When a pending unit token can pay Accelerate, `token_play` exposes that additional choice before entry. Inspect `play_choices` for a `finalize_token_play` action to obtain its cost. Declining the optional cost still plays the required token. Gear tokens do not consume next-unit grants and do not acquire unit-only Accelerate.
 
-A `play_chosen` or `revive_chosen` chain ability identifies the previously selected trash card. Its `trash_index` becomes `null` if that card has left the trash before resolution. An `empower_object` ability exposes its selected `player`, `object_id`, and `lane`; `object_id:null` means that player's legend at base.
+A `play_chosen`, `revive_chosen`, or `return_chosen` chain ability identifies the previously selected trash card. Its `trash_index` becomes `null` if that card has left the trash before resolution. A `return_chosen` ability returns that exact card to hand after responses; it does not draw or play it. An `empower_object` ability exposes its selected `player`, `object_id`, and `lane`; `object_id:null` means that player's legend at base.
 
 Fizz and Last Rites ask whether to accept their optional play instruction before placing that ability on the chain. Once an accepted instruction resolves, its trash selection is required if a legal payable card exists. `required_trash_play` identifies that stage; `can_decline_trash_play` reports whether declining is currently legal. A bot should not assume that `choose:false` remains available after accepting the earlier optional play.
 
