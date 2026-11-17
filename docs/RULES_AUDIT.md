@@ -1732,3 +1732,32 @@ that changed choice, and an old/new trace comparison verified its exact scope.
 Focused tests cover real Siren, Discipline and Flash responses and both players.
 See [movement-group evidence](validation/movement_groups.json). This is scoped
 verification, not a declaration of complete Standard parity.
+
+
+### Resource choices — Ki Burst, The Waters’ Wage, Invert Timelines, Party Favors
+
+The four source faces and unmodified gallery facts are recorded in
+`assets/data/card_admissions/resource_choices/source_review.json`. No source
+conflict, erratum, or card-specific official FAQ was found during review.
+The October 9, 2026 Core Rules remain the referenced edition.
+
+- Ki Burst: mandatory ready-friendly exhaustion is a cost (415.4), separate
+  from choosing any unit for Stun. Losing or countering the effect does not
+  restore its cost. Reuse existing payment and target validation.
+- The Waters’ Wage: check the physical spell’s Hidden origin and current turn
+  player, including each repeated execution. Queue instructed Gold plays
+  until the parent finishes (354.3); preserve ready entry for the enhanced
+  case. Existing exhausted-Gold sources retain their entry behavior.
+- Invert Timelines: interpret the two printed instructions in order (359.3.e):
+  each player discards in turn order, then each draws four in turn order
+  (303.2.a, 423, 414). This is a core-rule interpretation, not a card-specific
+  ruling. The resolving spell is unavailable to its own Burn Out.
+- Party Favors: the opponent makes a mandatory, non-targeting choice during
+  resolution. Both players receive the selected action in turn order; an
+  empty rune deck does not disallow choosing Runes. Exhausted channels create
+  no immediate Energy. Repeated empty Burn Out can end the game immediately
+  (432.3) and stop later instructions.
+
+Focused scenarios and API validation are in progress. Full rules parity,
+complete Standard coverage, expert strength, and learning outcomes remain
+unproven; card admission alone does not establish those claims.

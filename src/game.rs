@@ -69,6 +69,8 @@ mod movement_group_tests;
 mod movement_resolution_tests;
 #[path = "ownership.rs"]
 mod ownership;
+#[path = "resource_spells.rs"]
+mod resource_spells;
 #[cfg(test)]
 #[path = "temptation_tests.rs"]
 mod temptation_tests;
@@ -745,6 +747,11 @@ pub enum RevealOutcome {
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Decision {
+    SharedResources {
+        player: usize,
+        controller: usize,
+        card_id: CardId,
+    },
     PlayerObject {
         player: usize,
         choice_id: u32,
@@ -1139,6 +1146,7 @@ impl Decision {
             | Self::ResolutionTargets { player, .. }
             | Self::ResolutionSubset { player, .. }
             | Self::PlayerObject { player, .. }
+            | Self::SharedResources { player, .. }
             | Self::OrderTriggers { player, .. }
             | Self::OnPlayTarget { player, .. }
             | Self::DeathReplacement { player, .. }
@@ -3993,6 +4001,9 @@ impl Game {
                 return Err("Choose a replacement effect.".into());
             }
             Decision::CombatDamage { .. } | Decision::SplitDamage { .. } => unreachable!(),
+            Decision::SharedResources { player, .. } => {
+                self.resolve_shared_resources(player, accept)?;
+            }
             Decision::RevealHand { .. } => {}
             Decision::Battlefield { player, lane } => {
                 self.resolve_battlefield_choice(player, lane, accept)?
@@ -5140,7 +5151,7 @@ impl Game {
             self.play_history.units_or_gears_here[token.player][l] += 1;
         }
         if token.gear {
-            self.gear_gold(token.player, true);
+            self.gear_gold(token.player, !token.entry_ready);
         } else {
             let entering = self.create_unit(token.player, token.card_id, true, token.might);
             self.players[token.player].units.last_mut().unwrap().lane = lane;
@@ -8490,6 +8501,15 @@ impl Game {
         }
         match rules::effect(id) {
             OfficialEffect::EachPlayer(rule) => self.begin_player_objects(player, id, rule)?,
+            OfficialEffect::EachPlayerDiscardThenDraw { draw } => {
+                self.each_player_discard_then_draw(draw)?;
+            }
+            OfficialEffect::SharedResources => self.enqueue_decision(Decision::SharedResources {
+                player: 1 - player,
+                controller: player,
+                card_id: id,
+            }),
+            OfficialEffect::GoldFromHiddenOwnTurn => self.play_conditional_gold(player, id),
             OfficialEffect::Trash(rule) => {
                 for target in valid {
                     if let Target::Trash { player: owner, .. } = target
@@ -10359,6 +10379,9 @@ impl Game {
                 }
                 let preferred = match decision {
                     Decision::PlayerObject { .. } => self.player_object_ai_action()?,
+                    Decision::SharedResources { player, .. } => Some(Action::Choose {
+                        accept: self.shared_resources_prefers_cards(*player),
+                    }),
                     Decision::TriggerMode {
                         player,
                         choice_id,

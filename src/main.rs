@@ -3011,6 +3011,7 @@ impl App {
             Decision::TrashTarget{source_card_id,..} if local_rift::trash::returns_to_hand(*source_card_id)=>("Recover a card","Choose an eligible card in your trash. Opponents may respond before it returns to your hand; returning it does not play it.".into()),
             Decision::TrashTarget{..}=>("Choose a trash target","Choose an eligible card below before this ability enters the chain. Opponents may respond before the chosen card is played.".into()),
             Decision::OptionalPlay{card_id,..}=>("Use this triggered ability?",format!("{} offers a play from your trash. Accept and choose the ability's target, or decline now. Choose the card's own targets and costs after the ability resolves.",self.game.catalog[*card_id].name)),
+            Decision::SharedResources { .. } => ("Party Favors", "Choose Cards: both players draw 1. Or Runes: both channel 1 rune exhausted. Neither option can be declined.".into()),
             Decision::PlayerObject { .. } => return self.player_object_panel(),
             Decision::ResolutionSubset { maximum, .. } => return self.subset_panel(*maximum),
             Decision::ResolutionTargets{..}=>("Choose the location", "Responses separated your targets. Choose which legal group below this spell should affect.".into()),
@@ -9014,7 +9015,15 @@ fn card_brief(game: &Game, id: usize) -> String {
     if id == 410 {
         return "Choose: move Deploy gear, or inspect five for Gear".into();
     }
+    if id == 491 {
+        return "Exhaust a friendly unit as cost · Stun any unit".into();
+    }
     match local_rift::rules::effect(id) {
+        GoldFromHiddenOwnTurn => "Gold exhausted · face down on your turn: 3 ready Gold".into(),
+        EachPlayerDiscardThenDraw { draw } => {
+            format!("Both discard their hands · then each draw {draw}")
+        }
+        SharedResources => "Opponent chooses · both draw 1 or channel 1 exhausted".into(),
         Repulse => "Friendly unit at a field · counter its linked enemy spell / ability".into(),
         AlphaStrike => {
             "Choose your unit and enemy battlefield units · divide its Might on resolution".into()
@@ -11120,6 +11129,7 @@ async fn main() {
     let binary_choices_smoke = args.iter().any(|a| a == "--ui-smoke-binary-choices");
     let tag_stun_smoke = args.iter().any(|a| a == "--ui-smoke-tag-stun");
     let twilight_smoke = args.iter().any(|a| a == "--ui-smoke-twilight");
+    let resource_spells_smoke = args.iter().any(|a| a == "--ui-smoke-resource-spells");
     let movement_groups_smoke = args.iter().any(|a| a == "--ui-smoke-movement-groups");
     let temptation_smoke = args.iter().any(|a| a == "--ui-smoke-temptation");
     let field_options_smoke = args.iter().any(|a| a == "--ui-smoke-field-options");
@@ -11158,6 +11168,7 @@ async fn main() {
         || binary_choices_smoke
         || tag_stun_smoke
         || twilight_smoke
+        || resource_spells_smoke
         || movement_groups_smoke
         || temptation_smoke
         || turn_keywords_smoke
@@ -11276,6 +11287,8 @@ async fn main() {
             smoke::run_tag_stun_frame(&mut app, frames)
         } else if twilight_smoke {
             smoke::run_twilight_frame(&mut app, frames)
+        } else if resource_spells_smoke {
+            smoke::run_resource_spells_frame(&mut app, frames)
         } else if movement_groups_smoke {
             smoke::run_movement_groups_frame(&mut app, frames)
         } else if temptation_smoke {

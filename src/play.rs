@@ -3175,7 +3175,7 @@ impl Game {
 fn unit_cost_optional(card_id: CardId) -> Option<bool> {
     match card_id {
         452 => Some(true),
-        453 => Some(false),
+        453 | 491 => Some(false),
         _ => None,
     }
 }

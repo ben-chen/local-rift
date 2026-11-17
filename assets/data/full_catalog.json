@@ -149,14 +149,14 @@
       "gear": 80,
       "legend": 11,
       "rune": 6,
-      "spell": 150,
+      "spell": 154,
       "unit": 261
     },
-    "implemented_main_cards": 491,
+    "implemented_main_cards": 495,
     "implemented_legends": 11,
     "implemented_battlefields": 22,
-    "implemented_legal_identities": 530,
-    "unimplemented_legal_identities": 549,
+    "implemented_legal_identities": 534,
+    "unimplemented_legal_identities": 545,
     "errata_entries": 67,
     "identities_with_errata": 67,
     "source_quality_issues": 61,
@@ -177,8 +177,8 @@
   "unimplemented_by_observed_keyword": {
     "ADD": 1,
     "Accelerate": 16,
-    "Action": 49,
-    "Add": 20,
+    "Action": 48,
+    "Add": 19,
     "Ambush": 8,
     "Assault": 13,
     "Backline": 2,
@@ -192,17 +192,17 @@
     "Equip": 23,
     "Flow": 6,
     "Ganking": 28,
-    "Hidden": 24,
+    "Hidden": 23,
     "Hunt": 1,
     "Legion": 3,
     "Mighty": 9,
     "Predict": 4,
     "Quick-Draw": 2,
-    "Reaction": 51,
+    "Reaction": 50,
     "Repeat": 7,
     "Shield": 10,
     "Show Off": 5,
-    "Stun": 13,
+    "Stun": 12,
     "Tank": 18,
     "Temporary": 9,
     "Unique": 3,
@@ -17328,8 +17328,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 493,
+        "official_id": "ogn-201-298",
+        "playable_in_client": true
       }
     },
     {
@@ -19720,8 +19722,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 491,
+        "official_id": "rad-028-167",
+        "playable_in_client": true
       }
     },
     {
@@ -25587,8 +25591,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 494,
+        "official_id": "ogn-071-298",
+        "playable_in_client": true
       }
     },
     {
@@ -37228,8 +37234,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 492,
+        "official_id": "rad-100-167",
+        "playable_in_client": true
       }
     },
     {

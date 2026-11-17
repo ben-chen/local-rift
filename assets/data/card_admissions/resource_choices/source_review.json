@@ -1,0 +1,447 @@
+{
+  "schema_version": 1,
+  "checked_at": "2026-11-17T11:01:48.589365+00:00",
+  "scope": "Ki Burst, The Waters’ Wage, Invert Timelines and Party Favors: Calm/Chaos resource and choice coverage; no preset or prevalence claim.",
+  "records": [
+    {
+      "official_id": "rad-028-167",
+      "name": "Ki Burst",
+      "raw_printing": {
+        "official_id": "rad-028-167",
+        "public_code": "RAD-028/167",
+        "name": "Ki Burst",
+        "set": "RAD",
+        "collector_number": 28,
+        "types": [
+          "spell"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "spell"
+        ],
+        "accessibility_types": [
+          "spell"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "calm"
+        ],
+        "energy": 1,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "rules_html": "<p>[Action] (Play on your turn or in showdowns.)<br />As an additional cost to play this, exhaust a friendly unit.<br />[Stun] a unit. (It doesn't deal combat damage this turn.)</p>",
+        "rules_text": "[Action] (Play on your turn or in showdowns.)\nAs an additional cost to play this, exhaust a friendly unit.\n[Stun] a unit. (It doesn't deal combat damage this turn.)",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [],
+        "rarity": "common",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/33af916b50007c01b33e78aef3dc99b757edc3f2-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Spell: Ki Burst. [Action] (Play on your turn or in showdowns.)\nAs an additional cost to play this, exhaust a friendly unit.\n[Stun] a unit. (It doesn't deal combat damage this turn.)",
+        "illustrators": []
+      },
+      "raw_printing_sha256": "ecea19b30a6097348ebf2c9258faac88383c229455c354eedb87513ff9cda542",
+      "effective": {
+        "types": [
+          "spell"
+        ],
+        "super_types": [],
+        "domains": [
+          "calm"
+        ],
+        "energy": 1,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>[Action] (Play on your turn or in showdowns.)<br />As an additional cost to play this, exhaust a friendly unit.<br />[Stun] a unit. (It doesn't deal combat damage this turn.)</p>",
+        "rules_text": "[Action] (Play on your turn or in showdowns.)\nAs an additional cost to play this, exhaust a friendly unit.\n[Stun] a unit. (It doesn't deal combat damage this turn.)",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "resolution_ids": [],
+      "errata": [],
+      "snapshot_standard_legal": true,
+      "original_image": {
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/33af916b50007c01b33e78aef3dc99b757edc3f2-744x1039.png?accountingTag=RB",
+        "path": "assets/data/card_admissions/resource_choices/rad-028-167.png",
+        "sha256": "4b46b0caecc19d1a738a8b8b6020bf61712ba08ea737889f644c233a7ce05510",
+        "bytes": 765047,
+        "dimensions": [
+          744,
+          1039
+        ]
+      },
+      "visual_review": {
+        "actual_full_face_viewed": true,
+        "reviewed_at": "2026-11-17T11:01:48.589365+00:00",
+        "printed_cost_type_domain_tags_and_rules_checked": true,
+        "printed_facts": {
+          "types": [
+            "spell"
+          ],
+          "super_types": [],
+          "domains": [
+            "calm"
+          ],
+          "energy": 1,
+          "power": null,
+          "might": null,
+          "might_bonus": null,
+          "tags": [],
+          "rules_html": "<p>[Action] (Play on your turn or in showdowns.)<br />As an additional cost to play this, exhaust a friendly unit.<br />[Stun] a unit. (It doesn't deal combat damage this turn.)</p>",
+          "rules_text": "[Action] (Play on your turn or in showdowns.)\nAs an additional cost to play this, exhaust a friendly unit.\n[Stun] a unit. (It doesn't deal combat damage this turn.)",
+          "equipment_html": "",
+          "equipment_text": ""
+        },
+        "notes": "Viewed original full face and compared complete rules and costs."
+      },
+      "runtime_id": 491
+    },
+    {
+      "official_id": "rad-100-167",
+      "name": "The Waters' Wage",
+      "raw_printing": {
+        "official_id": "rad-100-167",
+        "public_code": "RAD-100/167",
+        "name": "The Waters' Wage",
+        "set": "RAD",
+        "collector_number": 100,
+        "types": [
+          "spell"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "spell"
+        ],
+        "accessibility_types": [
+          "spell"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "chaos"
+        ],
+        "energy": 1,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "rules_html": "<p>[Hidden] (Hide now for :rb_rune_rainbow: to react with later for :rb_energy_0:.)<br />Play a Gold gear token exhausted. If it's your turn and you played this from face down, play three ready Gold gear tokens instead. (Gold tokens have &quot;[Reaction][&gt;] Kill this, :rb_exhaust:: [Add] :rb_rune_rainbow:.&quot;)</p>",
+        "rules_text": "[Hidden] (Hide now for [Any Power] to react with later for [0 Energy].)\nPlay a Gold gear token exhausted. If it's your turn and you played this from face down, play three ready Gold gear tokens instead. (Gold tokens have \"[Reaction][>] Kill this, [Exhaust]: [Add] [Any Power].\")",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [],
+        "rarity": "common",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/0552932562db1dd48f14c74779999a645d62cc0d-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Spell: The Waters' Wage. [Hidden] (Hide now for [A] to react with later for [0].)\nPlay a Gold gear token exhausted. If it's your turn and you played this from face down, play three ready Gold gear tokens instead. (Gold tokens have \"[Reaction][>] Kill this, [T]: [Add] [A].\")",
+        "illustrators": [
+          "Polar Engine Studio"
+        ]
+      },
+      "raw_printing_sha256": "ce41a66df6288ecd73222b5de3a7876e0826cd5d1565355ffd66c8cfe720093d",
+      "effective": {
+        "types": [
+          "spell"
+        ],
+        "super_types": [],
+        "domains": [
+          "chaos"
+        ],
+        "energy": 1,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>[Hidden] (Hide now for :rb_rune_rainbow: to react with later for :rb_energy_0:.)<br />Play a Gold gear token exhausted. If it's your turn and you played this from face down, play three ready Gold gear tokens instead. (Gold tokens have &quot;[Reaction][&gt;] Kill this, :rb_exhaust:: [Add] :rb_rune_rainbow:.&quot;)</p>",
+        "rules_text": "[Hidden] (Hide now for [Any Power] to react with later for [0 Energy].)\nPlay a Gold gear token exhausted. If it's your turn and you played this from face down, play three ready Gold gear tokens instead. (Gold tokens have \"[Reaction][>] Kill this, [Exhaust]: [Add] [Any Power].\")",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "resolution_ids": [],
+      "errata": [],
+      "snapshot_standard_legal": true,
+      "original_image": {
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/0552932562db1dd48f14c74779999a645d62cc0d-744x1039.png?accountingTag=RB",
+        "path": "assets/data/card_admissions/resource_choices/rad-100-167.png",
+        "sha256": "f32132e7144dbe0944767ad3131aa2bd013a5e28bc3840f6ceea1a0f551bcf60",
+        "bytes": 751210,
+        "dimensions": [
+          744,
+          1039
+        ]
+      },
+      "visual_review": {
+        "actual_full_face_viewed": true,
+        "reviewed_at": "2026-11-17T11:01:48.589365+00:00",
+        "printed_cost_type_domain_tags_and_rules_checked": true,
+        "printed_facts": {
+          "types": [
+            "spell"
+          ],
+          "super_types": [],
+          "domains": [
+            "chaos"
+          ],
+          "energy": 1,
+          "power": null,
+          "might": null,
+          "might_bonus": null,
+          "tags": [],
+          "rules_html": "<p>[Hidden] (Hide now for :rb_rune_rainbow: to react with later for :rb_energy_0:.)<br />Play a Gold gear token exhausted. If it's your turn and you played this from face down, play three ready Gold gear tokens instead. (Gold tokens have &quot;[Reaction][&gt;] Kill this, :rb_exhaust:: [Add] :rb_rune_rainbow:.&quot;)</p>",
+          "rules_text": "[Hidden] (Hide now for [Any Power] to react with later for [0 Energy].)\nPlay a Gold gear token exhausted. If it's your turn and you played this from face down, play three ready Gold gear tokens instead. (Gold tokens have \"[Reaction][>] Kill this, [Exhaust]: [Add] [Any Power].\")",
+          "equipment_html": "",
+          "equipment_text": ""
+        },
+        "notes": "Viewed original full face and compared complete rules and costs."
+      },
+      "runtime_id": 492
+    },
+    {
+      "official_id": "ogn-201-298",
+      "name": "Invert Timelines",
+      "raw_printing": {
+        "official_id": "ogn-201-298",
+        "public_code": "OGN-201/298",
+        "name": "Invert Timelines",
+        "set": "OGN",
+        "collector_number": 201,
+        "types": [
+          "spell"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "spell"
+        ],
+        "accessibility_types": [
+          "spell"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "chaos"
+        ],
+        "energy": 3,
+        "power": 1,
+        "might": null,
+        "might_bonus": null,
+        "rules_html": "<p>Each player discards their hand, then draws 4.</p>",
+        "rules_text": "Each player discards their hand, then draws 4.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [],
+        "rarity": "epic",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/b916326fdcf61af4630d953c7540a4aa97e6db01-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Spell: Invert Timelines. Each player discards their hand, then draws 4.",
+        "illustrators": [
+          "Kudos Productions"
+        ]
+      },
+      "raw_printing_sha256": "c279b2b7bb019b8f370ded135b7a7bc15b45a958225076ddb026ee865e6cd7bc",
+      "effective": {
+        "types": [
+          "spell"
+        ],
+        "super_types": [],
+        "domains": [
+          "chaos"
+        ],
+        "energy": 3,
+        "power": 1,
+        "might": null,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>Each player discards their hand, then draws 4.</p>",
+        "rules_text": "Each player discards their hand, then draws 4.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "resolution_ids": [],
+      "errata": [],
+      "snapshot_standard_legal": true,
+      "original_image": {
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/b916326fdcf61af4630d953c7540a4aa97e6db01-744x1039.png?accountingTag=RB",
+        "path": "assets/data/card_admissions/resource_choices/ogn-201-298.png",
+        "sha256": "410ebcdaddfd8009cfd589be8e57c29bc2fd2846f8c669fc78efe1d3fcd98bb1",
+        "bytes": 1027439,
+        "dimensions": [
+          744,
+          1039
+        ]
+      },
+      "visual_review": {
+        "actual_full_face_viewed": true,
+        "reviewed_at": "2026-11-17T11:01:48.589365+00:00",
+        "printed_cost_type_domain_tags_and_rules_checked": true,
+        "printed_facts": {
+          "types": [
+            "spell"
+          ],
+          "super_types": [],
+          "domains": [
+            "chaos"
+          ],
+          "energy": 3,
+          "power": 1,
+          "might": null,
+          "might_bonus": null,
+          "tags": [],
+          "rules_html": "<p>Each player discards their hand, then draws 4.</p>",
+          "rules_text": "Each player discards their hand, then draws 4.",
+          "equipment_html": "",
+          "equipment_text": ""
+        },
+        "notes": "Viewed original full face and compared complete rules and costs."
+      },
+      "runtime_id": 493
+    },
+    {
+      "official_id": "ogn-071-298",
+      "name": "Party Favors",
+      "raw_printing": {
+        "official_id": "ogn-071-298",
+        "public_code": "OGN-071/298",
+        "name": "Party Favors",
+        "set": "OGN",
+        "collector_number": 71,
+        "types": [
+          "spell"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "spell"
+        ],
+        "accessibility_types": [
+          "spell"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "calm"
+        ],
+        "energy": 3,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "rules_html": "<p>Each other player chooses Cards or Runes. For each player that chooses Cards, you and that player each draw 1. For each player that chooses Runes, you and that player each channel 1 rune exhausted.</p>",
+        "rules_text": "Each other player chooses Cards or Runes. For each player that chooses Cards, you and that player each draw 1. For each player that chooses Runes, you and that player each channel 1 rune exhausted.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [],
+        "rarity": "rare",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/fddcef3c55663c5d6856f6d039d19cacfd64abb5-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Spell: Party Favors. Each other player chooses Cards or Runes. For each player that chooses Cards, you and that player each draw 1. For each player that chooses Runes, you and that player each channel 1 rune exhausted.",
+        "illustrators": [
+          "Kudos Productions"
+        ]
+      },
+      "raw_printing_sha256": "1b42f35385dd0a9c2cbc290321e72c5335b8e774fd7014af4748f1bffea3deb9",
+      "effective": {
+        "types": [
+          "spell"
+        ],
+        "super_types": [],
+        "domains": [
+          "calm"
+        ],
+        "energy": 3,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>Each other player chooses Cards or Runes. For each player that chooses Cards, you and that player each draw 1. For each player that chooses Runes, you and that player each channel 1 rune exhausted.</p>",
+        "rules_text": "Each other player chooses Cards or Runes. For each player that chooses Cards, you and that player each draw 1. For each player that chooses Runes, you and that player each channel 1 rune exhausted.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "resolution_ids": [],
+      "errata": [],
+      "snapshot_standard_legal": true,
+      "original_image": {
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/fddcef3c55663c5d6856f6d039d19cacfd64abb5-744x1039.png?accountingTag=RB",
+        "path": "assets/data/card_admissions/resource_choices/ogn-071-298.png",
+        "sha256": "2cc7cbf797da80f2146f60ca310f50f7eff170ebbfaaddd8c3446043950ad3ce",
+        "bytes": 892041,
+        "dimensions": [
+          744,
+          1039
+        ]
+      },
+      "visual_review": {
+        "actual_full_face_viewed": true,
+        "reviewed_at": "2026-11-17T11:01:48.589365+00:00",
+        "printed_cost_type_domain_tags_and_rules_checked": true,
+        "printed_facts": {
+          "types": [
+            "spell"
+          ],
+          "super_types": [],
+          "domains": [
+            "calm"
+          ],
+          "energy": 3,
+          "power": null,
+          "might": null,
+          "might_bonus": null,
+          "tags": [],
+          "rules_html": "<p>Each other player chooses Cards or Runes. For each player that chooses Cards, you and that player each draw 1. For each player that chooses Runes, you and that player each channel 1 rune exhausted.</p>",
+          "rules_text": "Each other player chooses Cards or Runes. For each player that chooses Cards, you and that player each draw 1. For each player that chooses Runes, you and that player each channel 1 rune exhausted.",
+          "equipment_html": "",
+          "equipment_text": ""
+        },
+        "notes": "Viewed original full face and compared complete rules and costs."
+      },
+      "runtime_id": 494
+    }
+  ],
+  "preserved_source_prefix": {
+    "resolutions": {
+      "count": 146,
+      "sha256": "05c4cc26ed3131f59d236f2cc12ca7c41d03279709838b6cad4a41c22028c538"
+    },
+    "raw_printings": {
+      "count": 96,
+      "sha256": "9ebebf4fe84a457bcc85fa005e2042e30ffe057bb5fa77327b4b37bae959b157"
+    },
+    "historical_issues": {
+      "count": 61,
+      "sha256": "1c3293ba639eef549272f588b9a605ef6a8a82d6dce49eb37003706f629856e4"
+    },
+    "images": {
+      "count": 96,
+      "sha256": "d0787164df49a2029bb29ce8ddad423a899705729a766f5edf561e8de811d8f8"
+    }
+  },
+  "preserved_runtime_prefix": {
+    "cards": {
+      "count": 491,
+      "sha256": "ca920c1ae7ad4bc719be5560343a92e697a826aac15b74f3cecac59f2339c314"
+    },
+    "decks": {
+      "count": 7,
+      "sha256": "e975739d803427e54928d6e6cd03d1ce51d7ad108f4e247b8a000acf037a5cdb"
+    }
+  },
+  "rules_review": {
+    "authority": "https://playriftbound.com/en-us/rules-hub/",
+    "core_version": "2026-10-09",
+    "references": [
+      "303.1",
+      "303.2.a",
+      "355",
+      "359.3.e",
+      "414",
+      "415.4",
+      "432",
+      "Hidden"
+    ],
+    "findings": [
+      "Exhaustion as a cost requires a ready friendly unit and is paid before responses.",
+      "The Waters’ Wage uses three ready Gold only when played from facedown during its controller’s own turn.",
+      "Party Favors is chosen by the opponent during resolution; each participant receives their own draw or exhausted channel.",
+      "Invert Timelines completes the discard instruction for both players in turn order, then the draw instruction for both players in turn order (CR303.2.a/359.3.e/423/414); repeated empty Burn Out can end the game immediately (CR432.3). This ordering is a core-rule interpretation; no card-specific FAQ was found."
+    ],
+    "card_specific_faq_found": false
+  },
+  "implementation_status": "Local source, runtime, native and API validation passed; immutable installed acceptance pending. See docs/validation/resource_spells.json."
+}

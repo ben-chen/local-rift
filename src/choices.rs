@@ -35,6 +35,7 @@ impl Game {
             return Ok(None);
         };
         let (yes, no) = match decision {
+            Decision::SharedResources { .. } => ("Cards · each draw 1", "Runes · each channel 1"),
             Decision::RevealHand { .. } => ("Continue", "No · decline"),
             Decision::TriggerReturn { .. } => ("Return to hand", "Leave on board"),
             Decision::TriggerObjectCost { .. } => ("Banish Prefect · accept", "No · decline"),

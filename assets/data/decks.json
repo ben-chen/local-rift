@@ -12921,6 +12921,94 @@
       "equipment_effect_html": "",
       "equipment_effect": "",
       "might_bonus": null
+    },
+    {
+      "id": 491,
+      "official_id": "rad-028-167",
+      "name": "Ki Burst",
+      "kind": "Spell",
+      "domains": [
+        "Calm"
+      ],
+      "energy": 1,
+      "power": 0,
+      "might": 0,
+      "keywords": [
+        "Action"
+      ],
+      "tags": [],
+      "official_text": "[Action] (Play on your turn or in showdowns.)\nAs an additional cost to play this, exhaust a friendly unit.\n[Stun] a unit. (It doesn't deal combat damage this turn.)",
+      "official_text_html": "<p>[Action] (Play on your turn or in showdowns.)<br />As an additional cost to play this, exhaust a friendly unit.<br />[Stun] a unit. (It doesn't deal combat damage this turn.)</p>",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/33af916b50007c01b33e78aef3dc99b757edc3f2-744x1039.png?accountingTag=RB",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null
+    },
+    {
+      "id": 492,
+      "official_id": "rad-100-167",
+      "name": "The Waters' Wage",
+      "kind": "Spell",
+      "domains": [
+        "Chaos"
+      ],
+      "energy": 1,
+      "power": 0,
+      "might": 0,
+      "keywords": [
+        "Hidden"
+      ],
+      "tags": [],
+      "official_text": "[Hidden] (Hide now for [Any Power] to react with later for [0 Energy].)\nPlay a Gold gear token exhausted. If it's your turn and you played this from face down, play three ready Gold gear tokens instead. (Gold tokens have \"[Reaction][>] Kill this, [Exhaust]: [Add] [Any Power].\")",
+      "official_text_html": "<p>[Hidden] (Hide now for :rb_rune_rainbow: to react with later for :rb_energy_0:.)<br />Play a Gold gear token exhausted. If it's your turn and you played this from face down, play three ready Gold gear tokens instead. (Gold tokens have &quot;[Reaction][&gt;] Kill this, :rb_exhaust:: [Add] :rb_rune_rainbow:.&quot;)</p>",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/0552932562db1dd48f14c74779999a645d62cc0d-744x1039.png?accountingTag=RB",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null
+    },
+    {
+      "id": 493,
+      "official_id": "ogn-201-298",
+      "name": "Invert Timelines",
+      "kind": "Spell",
+      "domains": [
+        "Chaos"
+      ],
+      "energy": 3,
+      "power": 1,
+      "might": 0,
+      "keywords": [],
+      "tags": [],
+      "official_text": "Each player discards their hand, then draws 4.",
+      "official_text_html": "<p>Each player discards their hand, then draws 4.</p>",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/b916326fdcf61af4630d953c7540a4aa97e6db01-744x1039.png?accountingTag=RB",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null
+    },
+    {
+      "id": 494,
+      "official_id": "ogn-071-298",
+      "name": "Party Favors",
+      "kind": "Spell",
+      "domains": [
+        "Calm"
+      ],
+      "energy": 3,
+      "power": 0,
+      "might": 0,
+      "keywords": [],
+      "tags": [],
+      "official_text": "Each other player chooses Cards or Runes. For each player that chooses Cards, you and that player each draw 1. For each player that chooses Runes, you and that player each channel 1 rune exhausted.",
+      "official_text_html": "<p>Each other player chooses Cards or Runes. For each player that chooses Cards, you and that player each draw 1. For each player that chooses Runes, you and that player each channel 1 rune exhausted.</p>",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/fddcef3c55663c5d6856f6d039d19cacfd64abb5-744x1039.png?accountingTag=RB",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null
     }
   ],
   "official_text_note": "Official card/legend rules text from the Riot Card Gallery, retrieved 2026-10-24 and corrected by cited errata. Resource icon tokens are expanded to readable bracketed names. Raw card and equipment HTML is preserved separately. Official text does not establish full implementation fidelity."

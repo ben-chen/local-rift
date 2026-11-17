@@ -100,6 +100,7 @@ jobs:
           python3 tools/check_twilight_api.py target/release/rift-api "$RUNNER_TEMP/local-rift-twilight.json"
           python3 tools/check_temptation_api.py target/release/rift-api "$RUNNER_TEMP/local-rift-temptation.json"
           python3 tools/check_movement_groups_api.py target/release/rift-api "$RUNNER_TEMP/local-rift-movement-groups.json"
+          python3 tools/check_resource_spells_api.py target/release/rift-api "$RUNNER_TEMP/local-rift-resource-spells.json"
       - name: Exercise desktop controls at both window sizes
         if: steps.scope.outputs.full_checks == 'true'
         env:
@@ -175,3 +176,5 @@ jobs:
           XDG_DATA_HOME="$RUNNER_TEMP/local-rift-temptation-small" xvfb-run -a ./target/release/local-rift --ui-smoke-temptation --small
           XDG_DATA_HOME="$RUNNER_TEMP/local-rift-movement-groups" xvfb-run -a ./target/release/local-rift --ui-smoke-movement-groups
           XDG_DATA_HOME="$RUNNER_TEMP/local-rift-movement-groups-small" xvfb-run -a ./target/release/local-rift --ui-smoke-movement-groups --small
+          XDG_DATA_HOME="$RUNNER_TEMP/local-rift-resource-spells" xvfb-run -a ./target/release/local-rift --ui-smoke-resource-spells
+          XDG_DATA_HOME="$RUNNER_TEMP/local-rift-resource-spells-small" xvfb-run -a ./target/release/local-rift --ui-smoke-resource-spells --small

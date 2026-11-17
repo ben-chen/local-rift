@@ -49,6 +49,8 @@ mod progression;
 mod recovery_tests;
 mod refusal;
 #[cfg(test)]
+mod resource_spells_tests;
+#[cfg(test)]
 mod return_options_tests;
 #[cfg(test)]
 mod riven_pool_tests;
@@ -2214,6 +2216,14 @@ fn instructed_kind(kind: InstructedPlayKind) -> &'static str {
 fn decision_to_json(game: &Game, decision: &Decision, viewer: usize) -> Result<Value, ApiError> {
     let player = decision.player();
     let mut out = match decision {
+        Decision::SharedResources {
+            controller,
+            card_id,
+            ..
+        } => json!({
+            "type":"shared_resources", "controller":controller, "source_card_id":card_id,
+            "optional":false, "cards":{"draw":1}, "runes":{"channel":1,"exhausted":true}
+        }),
         Decision::BattlefieldTargets {
             choice_id,
             source,

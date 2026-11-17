@@ -106,6 +106,11 @@ pub struct PlayTargetSpec {
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum OfficialEffect {
     EachPlayer(crate::game::player_choices::Rule),
+    EachPlayerDiscardThenDraw {
+        draw: u8,
+    },
+    SharedResources,
+    GoldFromHiddenOwnTurn,
     Trash(crate::trash::SpellRule),
     /// Change controller, optionally exhaust, then Recall without a Move event.
     /// Paying the declared optional cost removes the printed Might restriction.
@@ -631,6 +636,10 @@ pub fn effect(id: usize) -> OfficialEffect {
             to_base: false,
         },
         490 => MoveEnemyToBaseThenDrawIfAlone,
+        491 => Stun,
+        492 => GoldFromHiddenOwnTurn,
+        493 => EachPlayerDiscardThenDraw { draw: 4 },
+        494 => SharedResources,
         15 | 57 => Draw(1),
         16 => BounceBoth,
         19 => ModifyMight {
@@ -904,7 +913,7 @@ pub fn chooses_move_destination(id: usize) -> bool {
 pub fn targeting(id: usize) -> Targeting {
     use Allegiance::*;
     let allegiance = match id {
-        290..=296 | 335 | 349 | 428 | 434 | 446 | 457 | 461 | 484 | 485 | 486 => Any,
+        290..=296 | 335 | 349 | 428 | 434 | 446 | 457 | 461 | 484 | 485 | 486 | 491 => Any,
         4 | 32 | 144 | 145 | 365 | 427 | 465 | 468 | 469 | 483 | 487 | 490 => Enemy,
         362 | 364 | 372 | 378 | 379 | 381 | 435 => Any,
         8 | 9 | 14 | 19 | 27 | 85 | 137 | 228 | 350 | 353 | 354 | 377 | 380 | 382 | 421 | 425
@@ -1370,6 +1379,9 @@ pub fn requirements(id: usize) -> &'static [Mechanic] {
         487 => &[Chain, Move],
         488 => &[Chain, Move, Hidden],
         489 | 490 => &[Chain, Move],
+        491 => &[Chain, Stun, OptionalCosts, ChooseReadyTriggers],
+        492 => &[Chain, Hidden, Gold, Tokens],
+        493 | 494 => &[Chain],
         477 => &[
             Chain,
             ChooseReadyTriggers,

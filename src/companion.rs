@@ -1216,6 +1216,11 @@ fn response_window_advice(
             }
         }
         return Ok(Some(match decision {
+            Decision::SharedResources { .. } => vec![if beginner {
+                "Choose Cards to draw 1 each, or Runes to channel 1 exhausted each. This is your choice even though your opponent played the spell. Neither option is a decline."
+            } else {
+                "Compare both hand sizes and rune reserves. Cards helps the player short on options; Runes helps future turns. Check whether drawing would cause a Burn Out."
+            }],
             Decision::LegendReadiness { .. } => vec![if beginner {
                 "Responses have finished. Choose ready or exhaust now. The legend you chose earlier stays the target."
             } else {
@@ -2115,6 +2120,34 @@ fn field_options_advice(game: &Game, beginner: bool) -> Vec<&'static str> {
             "Use Tricksy Tentacles before a showdown to remove holders or group enemies. Save room for likely Might boosts; responses can force you to keep only part of your chosen group."
         });
     }
+    if visible(491) {
+        tips.push(if beginner {
+            "Ki Burst costs 1 Energy and exhausting a ready friendly unit. Choose any unit to stun, including the unit paying the cost. Stun stops combat damage this turn."
+        } else {
+            "Ki Burst trades a ready ally for a stun. Exhaust a unit you do not need to move; a unit that is already exhausted cannot pay. A counter does not refund that cost."
+        });
+    }
+    if visible(492) {
+        tips.push(if beginner {
+            "The Waters’ Wage plays one exhausted Gold. From face down on your own turn, it instead plays three ready Gold. Gold can exhaust and kill itself for 1 Any Power."
+        } else {
+            "Hide The Waters’ Wage for a later turn to gain three ready Gold. Playing it face down on the opponent’s turn still gives only one exhausted Gold; plan the timing."
+        });
+    }
+    if visible(493) {
+        tips.push(if beginner {
+            "Invert Timelines makes both players discard their whole hands, then draw four. The spell is still on the chain during those draws and cannot be recycled by its own Burn Out."
+        } else {
+            "Invert Timelines refills a small hand but also replaces your opponent’s hand. Compare both hand sizes and deck counts before spending 3 Energy and 1 Chaos Power."
+        });
+    }
+    if visible(494) {
+        tips.push(if beginner {
+            "Party Favors lets your opponent choose: both players draw 1, or both channel 1 rune exhausted. The exhausted runes give no Energy now; they ready on each player’s turn."
+        } else {
+            "Your opponent controls Party Favors’ choice. Play it when either cards or future runes helps your plan; avoid relying on them choosing the resource you need most."
+        });
+    }
     if visible(490) {
         tips.push(if beginner {
             "Isolate moves an enemy from a battlefield to base. Then draw a card if exactly one unit remains there and it is an enemy. A friendly unit there stops the draw."
@@ -2574,7 +2607,8 @@ mod tests {
         let mut game = Game::new_for_agents(0, 0, 472, Difficulty::Easy);
         game.start_match().unwrap();
         for card in [
-            470, 471, 472, 473, 474, 475, 482, 483, 484, 485, 486, 487, 488, 489, 490,
+            470, 471, 472, 473, 474, 475, 482, 483, 484, 485, 486, 487, 488, 489, 490, 491, 492,
+            493, 494,
         ] {
             game.players[0].hand = vec![card];
             let before = format!("{game:?}");

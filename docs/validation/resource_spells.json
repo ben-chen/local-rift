@@ -1,0 +1,162 @@
+{
+  "status": "Local and immutable installed acceptance passed; publication prepared.",
+  "reviewed_at": "2026-11-17T18:46:43.809371+00:00",
+  "base_revision": "1c4b54d9303def4866bfad6ef5e06633872f4e15",
+  "cards": [
+    {
+      "runtime_id": 491,
+      "official_id": "rad-028-167",
+      "name": "Ki Burst"
+    },
+    {
+      "runtime_id": 492,
+      "official_id": "rad-100-167",
+      "name": "The Waters\u2019 Wage"
+    },
+    {
+      "runtime_id": 493,
+      "official_id": "ogn-201-298",
+      "name": "Invert Timelines"
+    },
+    {
+      "runtime_id": 494,
+      "official_id": "ogn-071-298",
+      "name": "Party Favors"
+    }
+  ],
+  "scope": "Mandatory exhaustion costs, conditional ready Gold, discard/draw instructions and opponent-owned shared resource choices; native/API controls and both companion levels.",
+  "source_review": "assets/data/card_admissions/resource_choices/source_review.json",
+  "rules": {
+    "edition": "2026-10-09",
+    "hub_rechecked": "2026-11-17",
+    "sections": [
+      "303.2.a",
+      "354.3",
+      "359.3.e",
+      "414",
+      "415.4",
+      "423",
+      "432"
+    ],
+    "basis": "Reviewed original full faces and current Core Rules. No card-specific FAQ found. Invert discards both hands before the draw instruction; simultaneous player instructions use Turn Order. This is a Core Rules interpretation, not a quoted card FAQ."
+  },
+  "limitations": [
+    "These add to the eligible pool; sourced tournament presets are unchanged and no prevalence claim is made.",
+    "The authored Irelia test list substitutes two copies of each new spell; it is not presented as a tournament registration.",
+    "The 48 engine-game sample had zero Strategic Party Favors casts. Explicit public-action choice scenarios cover every level, both seats, and lethal draw avoidance; the separate 36 API-series sample did observe one Strategic Party Favors cast per seat. These counts do not prove optimal strategy.",
+    "The generated snapshot maps 534 legal identities; 545 remain unimplemented. Full Standard parity, expert strength and beginner learning outcomes remain unproven."
+  ],
+  "installed_acceptance": {
+    "status": "passed",
+    "revision": "704d571adb1034e51b866b21de0676751528fdaa",
+    "report": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/resource-spells-release-v1/status.json",
+    "report_sha256": "99cf1590e82049b2498d13242c8a426b6bdd9f5a70982eab452114425886d0d8",
+    "finished_at": "2026-11-17T15:14:41.336370+00:00",
+    "source": "/nix/store/63cx3y5vacqhhg3zsqk8y8qdmrna19a4-source",
+    "nix": {
+      "package": "/nix/store/41dsl9r0ajzavqnxhvspdm6rmjx4vrzq-local-rift-0.1.0",
+      "catalog": "/nix/store/k8lmh1s3f6ldkl8c65v3nck66q5wxhys-local-rift-catalog-check",
+      "simulation": "/nix/store/zwrnpahadhcq6dnj60b39g1i76yh2kxx-local-rift-simulation-check",
+      "seconds": 1364.054,
+      "gc_root_prefix": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/resource-spells-release-v1/nix-result"
+    },
+    "rust_tests": 2294,
+    "source_tests": 367,
+    "simulated_games": 1176,
+    "native_cases": 59,
+    "captures": 634,
+    "api_campaigns": 27,
+    "full_api_records": 351,
+    "all_full_api_records_match": true,
+    "nix_log_sha256": "dd7d1f746fb63631c5a1898febddf78bccacc968834fa2aa3b6d1f24a92fa32f",
+    "simulation_sha256": "ae4ff09bd56996f3f0ba0602acaaf519b35421e5bc93649a812d54720331b5ea",
+    "visual_review": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/resource-spells-release-v1/visual-review.json",
+    "visual_review_sha256": "fb1f8b14eb1a537a8579a1d40cebf6080f38405080801131ebff72f0a844964b",
+    "fresh_images_viewed": 4
+  },
+  "validation": [
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/resource-spells-focused-v6.log",
+      "sha256": "7e7c990eda6d0837e0d2bfc4a11ecbf858b2362c6cf40ea3d69560c9cd1a5935",
+      "scope": "14 final focused engine/API scenarios passed: mandatory cost versus target, self-target, real counter preserving costs, actual Hidden timing and Gold readiness, both-hand discard/draw with Burn Out, both shared choices, Repeat fresh choice, depleted decks, wrong actor/stale/pass rollback, clone equivalence and private-information independence."
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/resource-spells-regressions-v2.log",
+      "sha256": "7b7b0f29dc8b364a85684cd18de44b4d02258caec52051219a9bb3db75d4161f",
+      "scope": "1512 broader Rust checks passed: 1332 library, 178 client, one API binary and one full-game integration test. The later additional Repeat scenario passed in focused v6; it is not included in this historical total. Integration completed 48 games with independent card/rune/energy accounting after every action."
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/resource-spells-source-v2.log",
+      "sha256": "582dcac4fd524202014e7eb8c0b886bdfeae2feb898dbdb36ab302cf4468bb50",
+      "scope": "Three focused source tests passed: raw/effective/full-face rules and costs, original artwork, legal runtime admission, source inventory and preserved previous runtime/preset prefixes."
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/resource-spells-catalog-check-v1.log",
+      "sha256": "84bb7457fdb4bb80aecfcc142e9346f9343b7edbb1ff17234f242b4c476c98a4",
+      "scope": "Generated catalog and coverage check passed."
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/resource-spells-clippy-v5.log",
+      "sha256": "df5d4a0c9457f34c5434139142c113b75fa39c1cb90c787459b8ede1e5c57772",
+      "scope": "Final all-target Clippy passed with warnings denied."
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/resource-spells-native-v3/report.json",
+      "sha256": "a774787aa8a4c8cc1980c7314fd211825f334e77cddb5124699e39c92456364b",
+      "scope": "Two native cases passed at normal and small sizes, 36 captures. Actual clicks exercise the opponent-owned Cards/Runes choice, both rewards, mandatory Ki cost and resulting Stun. All four full card inspectors and both advice levels are captured."
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/resource-spells-native-v3/visual-review.json",
+      "sha256": "3ecd08c813c58d3536e98c5bd6dd42a0ba769ada2b49d3e941d30c2dbb3f6482",
+      "scope": "Six fresh captures actually viewed, covering both sizes, complete official text, distinct cost and target, readable choice buttons and unobtrusive companion."
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/resource-spells-api-v1/report.json",
+      "sha256": "d5ca75903ae9e8d42aa682d50dd3b00112d8e856749e98f1c4be1a01e798b89a",
+      "scope": "27 API campaigns passed, 351 full records. All 315 preceding records match exactly; the new campaign contains 36 registered series (90 games), with all four cards used by both seats at every difficulty in this sample."
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/resource-spells-api-v1/resource-spells-api.json",
+      "sha256": "3a1f1559e2176bb711cfa4d152ffbfc54cda6dbf8800c52e958f879eb10f4f8d",
+      "scope": "Retains full registered-match results, per-seat/per-level cast counts and request/response trace hashes for the 36 new series."
+    }
+  ],
+  "attempts": [
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/resource-spells-focused-v1.log",
+      "sha256": "c85a0ace1da5ab0750a431fcccfc00f4d8d6901371fbad68a8217e193311b95e",
+      "scope": "Compile failure from unused channel_runes Result; fixed with error propagation."
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/resource-spells-focused-v2.log",
+      "sha256": "bbe30110e070bc1d2c9e085ce7f0af6a68e1646f3017cb8968a078a14a1b981a",
+      "scope": "Seven passed and one fixture failed by using Pass in neutral. Corrected fixture to use public EndTurn plus the ending response window; no rules change."
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/resource-spells-focused-v3.log",
+      "sha256": "5c35379ad7dd3bdbe4caf07ae60c5bfe448a5281f84312b3d27337a4c37f7a9c",
+      "scope": "API test imported PlayChoices from a private module; corrected import."
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/resource-spells-regressions-v1.log",
+      "sha256": "d7b25fc1850d9bc7e7180faf931c1522b29a9fa3bb647d219c7e67def280f46d",
+      "scope": "All 48 engine games completed, but the initial coverage assertion required Strategic Party Favors casts absent in that sample. Preserved actual counts; added explicit all-level opponent-choice and lethal-draw checks. No AI weights changed to force casts."
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/resource-spells-clippy-v2.log",
+      "sha256": "f200cbffe5e46413aaee976cffbca72bf71bfc8472746fc1507c41c07a8e9432",
+      "scope": "Two needless_range_loop warnings in tests. Switched to iterators with no assertion changes."
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/resource-spells-native-v1/report.json",
+      "sha256": "0feefe436399f31ef91f676a00c718e62cd1a4c5fa9a98f3538bf467e438c4f4",
+      "scope": "Fixture incorrectly assumed EndTurn immediately switches player; fixed by completing the response window."
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/resource-spells-native-v2/report.json",
+      "sha256": "0b5632f849eb2b630abfe857ed73f1e509bfa67e12b1728149177b052eec9609",
+      "scope": "Fixture expected nine runes after second player first turn; corrected to ten, accounting for the initial three-rune channel. No engine change."
+    }
+  ],
+  "next": "Continue expanding audited legal-card coverage, independently expected interactions and opponent/learning evaluation."
+}

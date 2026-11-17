@@ -212,3 +212,21 @@ recorded. See [movement validation](validation/movement_groups.json) and
 [Temptation validation](validation/temptation.json). This release maps 530 legal
 snapshot identities; 549 remain unimplemented. Full Standard parity, expert
 opponent strength and beginner learning outcomes remain unproven.
+
+Ki Burst, The Waters’ Wage, Invert Timelines and Party Favors passed local
+validation: 14 final focused scenarios, 1,512 broader Rust checks, three source
+checks, 48 full engine games, and both desktop sizes (36 captures, six viewed).
+All 315 previous API records match exactly; 36 new registered series completed
+90 games with every new card used by both seats at each difficulty. The separate
+48-game engine sample did not include Strategic Party Favors casts; explicit
+choice scenarios exercise all levels without forcing the bot to play it.
+Packaged acceptance passed as detailed below. See [resource spell validation](validation/resource_spells.json).
+The release maps 534 legal snapshot identities; 545 remain unimplemented. These
+checks do not establish full rules parity, expert strength or learning outcomes.
+
+The four resource spells passed immutable installed acceptance at `704d571`:
+2,294 Rust tests, 367 source checks, 1,176 simulated games, 59 desktop scenarios
+(634 captures), and 27 API campaigns with all 351 full records matching local
+baselines. Four fresh installed captures were reviewed at both window sizes.
+The [resource spell record](validation/resource_spells.json) retains the exact
+build, source and evidence hashes.

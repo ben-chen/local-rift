@@ -37,7 +37,7 @@ After generating resources, query again at the new revision.
 
 Supported decisions are `legend`, `battlefield`, `counter_tax`, `burn_for_might`,
 `predict`, `trigger_return`, `trigger_object_cost`, `banish_play`, `optional_play`,
-and `reveal_hand`. Other decision shapes return an error; use their typed
+`reveal_hand`, and `shared_resources`. Other decision shapes return an error; use their typed
 commands and candidate queries. Only the acting seat can query, including for
 private Predict choices. Stale revisions and extra request fields are rejected.
 This is one part of the choice API; `suggest` remains nonexhaustive.
@@ -46,7 +46,7 @@ This is one part of the choice API; `suggest` remains nonexhaustive.
 
 The initial session is in `mulligan` phase, with decks `[0,1]`, seed `1`, Tactical AI, and player `0` going first. `info` reports protocol version `1`; `catalog` reports separate preset, legend, card, domain, and battlefield IDs.
 
-The repository's `assets/data/full_catalog.json` is a separate inventory with schema version `2`; it is not the bot protocol or the playable `catalog` response. It preserves raw printing fields and adds reviewed `effective` facts, resolution references, and unresolved-field diagnostics. Deck validation uses those effective facts and rejects unresolved gameplay or variant fields, including conflicts on alternate printings. Source review alone never registers a playable card. Inventory-only identity `kind` preserves complete type sets as sorted `+`-joined strings, such as `gear+unit`; the corresponding printing’s `effective.types` retains both types. This does not add a playable bot-protocol card kind. Main-card IDs are append-only; the latest addition is 486 (Twilight Step). Existing IDs and sourced preset lists retain their identities, while eligible-card and chosen-champion lists expand with supported cards. Additive Temporary status, token identity, evaluated passive values and target queries retain protocol version `1`. See [the inventory review contract](CATALOG_REVIEW.md) for evidence and remaining variant-review limits.
+The repository's `assets/data/full_catalog.json` is a separate inventory with schema version `2`; it is not the bot protocol or the playable `catalog` response. It preserves raw printing fields and adds reviewed `effective` facts, resolution references, and unresolved-field diagnostics. Deck validation uses those effective facts and rejects unresolved gameplay or variant fields, including conflicts on alternate printings. Source review alone never registers a playable card. Inventory-only identity `kind` preserves complete type sets as sorted `+`-joined strings, such as `gear+unit`; the corresponding printing’s `effective.types` retains both types. This does not add a playable bot-protocol card kind. Main-card IDs are append-only; the latest addition is 494 (Party Favors). Existing IDs and sourced preset lists retain their identities, while eligible-card and chosen-champion lists expand with supported cards. Additive Temporary status, token identity, evaluated passive values and target queries retain protocol version `1`. See [the inventory review contract](CATALOG_REVIEW.md) for evidence and remaining variant-review limits.
 
 ```json
 {"id":"hello","command":"info"}
@@ -554,6 +554,7 @@ The viewer sees their own hand as card IDs. The opposing hand is `null` except w
 | `top_three` | Owner sees `cards`; `select_cards` indexes this list |
 | `sabotage` | `opponent`, revealed `cards`; `select_cards` indexes that hand |
 | `reveal_hand` | `opponent`, revealed `cards`; acknowledge with `choose` |
+| `shared_resources` | `controller`, `source_card_id`, `optional:false`, `cards`, `runes`; opponent chooses Cards (`accept:true`) or Runes (`accept:false`) |
 | `grant_flow` | `select_cards` indexes an eligible spell in your trash; an empty selection is legal only when no eligible spell exists |
 | `optional_play` | `card_id`, optional `gear_id`; accept or decline Fizz/Last Rites before its optional play ability enters the chain |
 | `trash_target` | `source_card_id`, optional `gear_id`, `outcome` (`play` or `return_to_hand`), `card_kinds`, `optional`, and nullable `max_energy`/`max_power`. The legacy `card_kind` is a string for a single allowed kind and null for a union. Choose one eligible trash index with `select_cards` before the ability becomes respondable. An empty selection declines an optional ability, or acknowledges that a mandatory ability has no eligible target. |
@@ -1374,3 +1375,31 @@ Isolate (490, `unl-124-219`) reports `condition.controller: enemy`,
 left at that battlefield and that unit is an enemy. A prevented Move still
 permits this linked check; a target that is no longer legal skips the linked draw.
 All three cards preserve exhaustion and damage, and none grants Ready.
+
+
+### Shared resource spells
+
+Ki Burst (491) uses the existing required `unit_cost` in `play_choices` and
+`exhaust_unit` in `with_play_choices`. The friendly cost unit is not a target;
+the Stun target can be any unit, including the cost unit. Exhaustion and Energy
+are paid before responses and are not refunded if the spell is countered.
+
+The Waters’ Wage (492) uses ordinary hand/Hidden actions. From hand, or from
+face down during the opponent’s turn, it plays one exhausted Gold. Only a
+face-down play during its controller’s turn plays three ready Gold. These
+queued token plays use the same Gold resource action and do not create trash
+cards when spent.
+
+Invert Timelines (493) discards both hands, then draws four for each player,
+using turn order and the existing Burn Out rules. The resolving spell remains
+on the chain during its instructions.
+
+Party Favors (494) yields a public `shared_resources` decision with `player`
+(the opponent choosing), `controller`, `source_card_id`, `optional:false`,
+`cards:{draw:1}`, and `runes:{channel:1,exhausted:true}`. The acting player uses
+`binary_choices` for the shared labels and legal actions: `choose` with
+`accept:true` selects Cards; `accept:false` selects Runes. False is not a
+decline. Both options remain legal if a deck is empty; the engine performs
+as much as possible, including Burn Out for draws. No response window opens
+between the choice and its instructions. Other-player or stale commands are
+rejected without changing the match.
