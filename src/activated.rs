@@ -93,6 +93,7 @@ enum AbilityEffect {
     SourceMightDamage,
     Tokens,
     Draw(u8),
+    DrawThenChannel { draw: u8, channel: u8 },
     Points(u8),
     AddEnergy(u8),
     Conversion(ConversionDirection),
@@ -229,6 +230,18 @@ const fn empower(
 /// Stable zero-based ability indices belong to each explicit source printing.
 pub fn activated_rules(card_id: CardId) -> &'static [ActivatedRule] {
     match card_id {
+        472 => {
+            const {
+                &[exhaust(
+                    "Draw 1 and channel an exhausted rune",
+                    AbilityTargets::NONE,
+                    AbilityEffect::DrawThenChannel {
+                        draw: 1,
+                        channel: 1,
+                    },
+                )]
+            }
+        }
         412 => {
             const {
                 &[ActivatedRule {
@@ -1192,14 +1205,7 @@ impl Game {
         if rule.exhaust {
             match source {
                 AbilitySource::Unit { unit_id, .. } => self.exhaust_unit(player, unit_id),
-                AbilitySource::Gear { gear_id, .. } => {
-                    self.players[player]
-                        .gear
-                        .iter_mut()
-                        .find(|g| g.id == gear_id)
-                        .unwrap()
-                        .ready = false
-                }
+                AbilitySource::Gear { gear_id, .. } => self.exhaust_gear(player, gear_id),
             }
         }
         if rule.kill_source
@@ -1438,6 +1444,10 @@ impl Game {
                 return Ok(());
             }
             AbilityEffect::Draw(count) => self.draw(player, count)?,
+            AbilityEffect::DrawThenChannel { draw, channel } => {
+                self.draw(player, draw)?;
+                self.channel_runes(player, channel, true)?;
+            }
             AbilityEffect::Points(count) => {
                 self.players[player].score = self.players[player].score.saturating_add(count)
             }
@@ -1663,6 +1673,7 @@ impl Game {
             }),
             AbilityEffect::Conversion(_) => None,
             AbilityEffect::PredictThen { .. } => Some(35),
+            AbilityEffect::DrawThenChannel { .. } => Some(40),
             AbilityEffect::Draw(_) => (self.players[player].hand.len() < 8 && (!self.players[player].deck.is_empty() || !self.players[player].discard.is_empty())).then_some(30),
             AbilityEffect::Buff | AbilityEffect::BuffOrMight(_) => unit.filter(|unit| {
                 !enemy_target && (matches!(rule.effect, AbilityEffect::BuffOrMight(_)) || !self.buffed_units.contains(&unit.id))

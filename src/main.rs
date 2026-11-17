@@ -2620,6 +2620,8 @@ impl App {
                     format!("Here: {place}")
                 } else if let Some(energy) = rule.max_energy {
                     format!("Printed Energy: {energy} or less")
+                } else if let Some(tag) = rule.excluded_tag {
+                    format!("Targets: non-{tag} units")
                 } else if rule.relative_energy
                     == local_rift::trigger_rules::RelativeEnergyConstraint::AtMostSourceMight
                 {

@@ -324,7 +324,13 @@ impl Game {
                             .any(|x| x.id == u.id)
                     })
             }
-            Event::SelfExhausted => same && event.kind == Occurrence::Exhausted,
+            Event::SelfExhausted => {
+                event.kind == Occurrence::Exhausted
+                    && (same
+                        || (source.unit_id.is_none()
+                            && event.gear_id.is_some()
+                            && event.gear_id == source.gear_id))
+            }
             Event::SelfBuffed => own && same && event.kind == Occurrence::Buffed,
             Event::SelfEmpowered => same && event.kind == Occurrence::Empowered,
             Event::SelfMoved => same && event.kind == Occurrence::Moved,
@@ -790,6 +796,24 @@ impl Game {
             self.emit_unit_event(Occurrence::Exhausted, player, unit_id);
         }
     }
+    pub(crate) fn exhaust_gear(&mut self, player: usize, gear_id: u32) {
+        let Some(gear) = self
+            .players
+            .get_mut(player)
+            .and_then(|state| state.gear.iter_mut().find(|gear| gear.id == gear_id))
+        else {
+            return;
+        };
+        if !gear.ready {
+            return;
+        }
+        gear.ready = false;
+        let mut event = EventSnapshot::simple(Occurrence::Exhausted, player);
+        event.gear_id = Some(gear_id);
+        event.card_id = Some(gear.card_id);
+        event.token = gear.token;
+        self.emit_event(event);
+    }
     pub(crate) fn ready_unit_by(&mut self, actor: usize, owner: usize, unit_id: u32) {
         let target = Target::Unit {
             player: owner,
@@ -1084,6 +1108,13 @@ impl Game {
                 .targets
                 .tag
                 .is_some_and(|tag| !self.board_target_has_tag(target, tag))
+            {
+                return Ok(false);
+            }
+            if rule
+                .targets
+                .excluded_tag
+                .is_some_and(|tag| self.board_target_has_tag(target, tag))
             {
                 return Ok(false);
             }

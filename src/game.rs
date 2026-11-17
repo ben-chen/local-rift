@@ -15,6 +15,9 @@ use crate::rules::{self, Allegiance, CounterKind, OfficialEffect, StaticAbility}
 use std::collections::VecDeque;
 
 #[cfg(test)]
+#[path = "irelia_field_options_tests.rs"]
+mod irelia_field_options_tests;
+#[cfg(test)]
 #[path = "sandswept_tests.rs"]
 mod sandswept_tests;
 
@@ -7105,6 +7108,10 @@ impl Game {
                         PlayDestination::Exact(_) | PlayDestination::AnyBattlefield
                     )
                 }) || self.battlefield_owner[lane] == Some(actor)
+                    || (abilities.contains(&StaticAbility::MayPlayToOpenBattlefield)
+                        && self.battlefield_owner[lane].is_none()
+                        && self.lane_count(0, lane) == 0
+                        && self.lane_count(1, lane) == 0)
                     || (ambush && self.lane_count(actor, lane) > 0)
                     || (enemy_field && self.lane_count(1 - actor, lane) > 0)
                     || (abilities.contains(&StaticAbility::MayPlayToAttackedBattlefield)
@@ -7114,7 +7121,13 @@ impl Game {
             if lane >= self.battlefield_count()
                 || (!movement_spell && !legal_unit_location && !deploy_gear)
             {
-                return Err("Deploy a unit at your base or a battlefield you control.".into());
+                return Err(
+                    if abilities.contains(&StaticAbility::MayPlayToOpenBattlefield) {
+                        "Choose your base, a battlefield you control, or an open battlefield (no units and no controller).".into()
+                    } else {
+                        "Deploy a unit at your base or a battlefield you control.".into()
+                    },
+                );
             }
         }
         if !self.can_afford(self.priority(), card)? {

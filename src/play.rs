@@ -1515,14 +1515,7 @@ impl Game {
         for cost in costs {
             match *cost {
                 ObjectCost::ExhaustUnit { player, unit_id } => self.exhaust_unit(player, unit_id),
-                ObjectCost::ExhaustGear { player, gear_id } => {
-                    self.players[player]
-                        .gear
-                        .iter_mut()
-                        .find(|gear| gear.id == gear_id)
-                        .unwrap()
-                        .ready = false;
-                }
+                ObjectCost::ExhaustGear { player, gear_id } => self.exhaust_gear(player, gear_id),
             }
         }
         Ok(())
@@ -2659,16 +2652,17 @@ impl Game {
             let intents: Vec<_> = intents
                 .into_iter()
                 .flat_map(|action| {
-                    if self
-                        .card_intent(&action)
-                        .ok()
-                        .is_some_and(|intent| rules::chooses_move_destination(intent.id))
-                    {
+                    if self.card_intent(&action).ok().is_some_and(|intent| {
+                        rules::chooses_move_destination(intent.id)
+                            || rules::static_abilities(intent.id)
+                                .contains(&StaticAbility::MayPlayToOpenBattlefield)
+                    }) {
                         self.board_locations()
                             .map(|destination| {
                                 let mut movement = action.clone();
                                 match &mut movement {
                                     Action::PlayCard { lane, .. }
+                                    | Action::PlayChampion { lane, .. }
                                     | Action::PlayFromTrash { lane, .. } => *lane = destination,
                                     _ => {}
                                 }
@@ -3026,7 +3020,14 @@ impl Game {
             } else {
                 self.ai_card_score(intent.id)?
             };
-            score + extras
+            let open_field = self.catalog[intent.id].kind == CardKind::Unit
+                && intent.lane.is_some_and(|lane| {
+                    lane < self.battlefield_count()
+                        && self.battlefield_owner[lane].is_none()
+                        && self.lane_count(0, lane) == 0
+                        && self.lane_count(1, lane) == 0
+                });
+            score + extras + if open_field { 20 } else { 0 }
         })
     }
 }

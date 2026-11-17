@@ -335,7 +335,7 @@ pub fn effect(id: usize) -> OfficialEffect {
             exhaust: true,
             maximum_might: Some(3),
         },
-        466 | 467 => None,
+        466 | 467 | 470..=472 => None,
         465 => ReturnEnemyDomainGroup {
             domain: Domain::Order,
             maximum_total_might: 5,
@@ -1237,6 +1237,15 @@ pub fn requirements(id: usize) -> &'static [Mechanic] {
     match id {
         468 => &[Chain, Control, Recall],
         469 => &[Chain, Control, Recall, OptionalCosts, Xp],
+        470 => &[PlayRestrictions],
+        471 => &[PlayRestrictions, Chain, Bounce, ChooseReadyTriggers],
+        472 => &[
+            Gear,
+            ActivatedAbilities,
+            Chain,
+            Channel,
+            ChooseReadyTriggers,
+        ],
         466 => &[OptionalCosts],
         467 => &[PlayRestrictions],
         465 => &[Chain, MultipleTargets, Bounce],
@@ -1770,6 +1779,8 @@ pub enum StaticAbility {
     MayDeployToEnemyBattlefield,
     /// Additional location permission while this unit's controller is the attacking player.
     MayPlayToAttackedBattlefield,
+    /// Core 170.11.c: an unoccupied and uncontrolled battlefield.
+    MayPlayToOpenBattlefield,
     /// Retain Might for every other purpose but do not deal combat damage.
     NoCombatDamage,
     /// Combat damage is prevented while no friendly gear shares this location.
@@ -1806,6 +1817,7 @@ pub enum StaticAbility {
 pub fn static_abilities(id: usize) -> &'static [StaticAbility] {
     use StaticAbility::*;
     match id {
+        470 | 471 => &[MayPlayToOpenBattlefield],
         458 => &[Disarm(1)],
         460 => &[Disarm(1), Ganking],
         436 => &[Tank],

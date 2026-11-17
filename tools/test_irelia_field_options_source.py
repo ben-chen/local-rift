@@ -53,6 +53,22 @@ class FieldOptionsSource(unittest.TestCase):
         data = (catalog.ROOT / thumb['path']).read_bytes()
         self.assertEqual(hashlib.sha256(data).hexdigest(), thumb['sha256'])
         self.assertEqual(struct.unpack('>II', data[16:24]), (360, 258))
+        for record in proof['records']:
+            if record['identity'] == 'ven-164-166':
+                continue
+            card = runtime['cards'][record['runtime_id']]
+            facts = record['effective']
+            self.assertEqual(card['official_id'], record['identity'])
+            self.assertEqual(card['official_text'], facts['rules_text'])
+            self.assertEqual(card['kind'].lower(), facts['types'][0])
+            self.assertEqual(card['tags'], facts['tags'])
+            self.assertEqual((card['energy'], card['power'], card['might']),
+                             tuple(facts[k] or 0 for k in ('energy', 'power', 'might')))
+            self.assertEqual([d.lower() for d in card['domains']], facts['domains'])
+            thumb = record['runtime_image']
+            data = (catalog.ROOT / thumb['path']).read_bytes()
+            self.assertEqual(hashlib.sha256(data).hexdigest(), thumb['sha256'])
+            self.assertEqual(struct.unpack('>II', data[16:24]), (280, 391))
 
 
 if __name__ == '__main__':

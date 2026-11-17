@@ -12437,6 +12437,75 @@
       "equipment_effect_html": "",
       "equipment_effect": "",
       "might_bonus": null
+    },
+    {
+      "id": 470,
+      "official_id": "ogn-176-298",
+      "name": "Sneaky Deckhand",
+      "kind": "Unit",
+      "domains": [
+        "Chaos"
+      ],
+      "energy": 3,
+      "power": 0,
+      "might": 2,
+      "keywords": [],
+      "tags": [
+        "Pirate",
+        "Bilgewater"
+      ],
+      "official_text": "You may play me to an open battlefield.",
+      "official_text_html": "<p>You may play me to an open battlefield.</p>",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/6f95b6aac293d8e477192281df47d8466da502bf-744x1039.png?w=280&q=85&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null
+    },
+    {
+      "id": 471,
+      "official_id": "ven-115-166",
+      "name": "Ocean Drake",
+      "kind": "Unit",
+      "domains": [
+        "Chaos"
+      ],
+      "energy": 8,
+      "power": 2,
+      "might": 7,
+      "keywords": [],
+      "tags": [
+        "Dragon",
+        "Ionia"
+      ],
+      "official_text": "You may play me to an open battlefield.\nWhen you play me, you may return a non-Dragon unit to its owner's hand.",
+      "official_text_html": "<p>You may play me to an open battlefield.<br />When you play me, you may return a non-Dragon unit to its owner's hand.</p>",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/bd93cc3c9165204cd3e830fc2022384bad7517be-744x1039.png?w=280&q=85&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null
+    },
+    {
+      "id": 472,
+      "official_id": "rad-046-167",
+      "name": "Resplendent Rostrum",
+      "kind": "Gear",
+      "domains": [
+        "Calm"
+      ],
+      "energy": 8,
+      "power": 1,
+      "might": 0,
+      "keywords": [],
+      "tags": [],
+      "official_text": "[Exhaust]: Draw 1 and channel 1 rune exhausted.\nWhen I become exhausted, give a friendly unit +3 Might this turn.",
+      "official_text_html": "<p>:rb_exhaust:: Draw 1 and channel 1 rune exhausted.<br />When I become exhausted, give a friendly unit +3 :rb_might: this turn.</p>",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/df1c12e65cc3c63c96fb6c96b2071795f37f30a6-744x1039.png?w=280&q=85&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null
     }
   ],
   "official_text_note": "Official card/legend rules text from the Riot Card Gallery, retrieved 2026-10-24 and corrected by cited errata. Resource icon tokens are expanded to readable bracketed names. Raw card and equipment HTML is preserved separately. Official text does not establish full implementation fidelity."

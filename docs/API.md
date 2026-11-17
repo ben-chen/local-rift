@@ -632,6 +632,24 @@ Passive contributions add `computed_might_exact:string|null`: the exact evaluate
 
 ### Gear interaction targets
 
+Trigger target metadata includes nullable `required_tag` and `excluded_tag`.
+Ocean Drake (471) reports `excluded_tag:"Dragon"`; its optional play trigger
+can return either player's non-Dragon unit, including one at base. Use the
+filtered `trigger_target_candidates` query before submitting the chosen target,
+or choose an empty list to decline. A returned unit goes to its original owner.
+
+Sneaky Deckhand (470) and Ocean Drake allow ordinary unit plays to an open
+battlefield: no units and no controller (gear alone does not occupy it).
+This permission does not provide Action/Reaction timing or override a play
+prohibition. The existing `lane` field selects that destination.
+
+Resplendent Rostrum (472) uses the ordinary `activate_ability` action with
+ability index 0 and no targets. Exhaustion is paid before responses, creating
+a separate mandatory friendly-unit Might trigger when a target exists. Its
+activated ability then draws one and channels one exhausted rune. The unit
+target belongs to the trigger, not to the activation. Both choices use normal
+revision checks and the same rules as the native client.
+
 `trigger_target_candidates` previews a pending `trigger_targets` or `legend_targets` choice. Omit `targets` or send `[]` to start; send the ordered prefix to query the next slot. It returns `targets`, `maximum`, `required`, `next_slot:{index,kind}` (null when full), filtered `candidates`, and `can_confirm`. Unlike the coarse candidate pool in an observation, this query checks allegiance, location, protection, previous slots and available Deflect resources. A valid prefix can still have no legal continuation; `can_confirm` checks the complete action on a clone. No costs are spent and no targets are committed. Invalid prefixes, stale revisions and the wrong actor are rejected without changing state. As with other queries, re-query after state changes.
 
 ```json

@@ -549,7 +549,7 @@ impl Game {
         let activations = self.play_history.gear_activations[player]
             .checked_add(1)
             .ok_or_else(|| crate::numeric::capacity("gear activations this turn"))?;
-        self.players[player].gear[index].ready = false;
+        self.exhaust_gear(player, gear_id);
         if is_gold {
             self.gear_destroy(player, gear_id);
         }

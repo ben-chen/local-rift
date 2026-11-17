@@ -32,6 +32,8 @@ mod discord_tests;
 mod empowered;
 #[cfg(test)]
 mod entry_tests;
+#[cfg(test)]
+mod field_options_tests;
 mod fields;
 mod numeric;
 mod play_choices;
@@ -2371,6 +2373,8 @@ fn decision_to_json(game: &Game, decision: &Decision, viewer: usize) -> Result<V
                     "allegiance":format!("{:?}",r.allegiance).to_lowercase(),
                     "battlefield":r.battlefield,
                     "maximum_printed_energy":r.max_energy,
+                    "required_tag":r.tag,
+                    "excluded_tag":r.excluded_tag,
                     "here_basis":if r.here { Some(match r.here_basis {
                         crate::trigger_rules::HereLocationBasis::LiveSource => "live_source",
                         crate::trigger_rules::HereLocationBasis::SourceDeparture => "source_departure",

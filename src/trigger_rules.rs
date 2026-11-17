@@ -107,6 +107,7 @@ pub struct TargetRule {
     pub max_might: Option<u8>,
     pub max_energy: Option<u8>,
     pub tag: Option<&'static str>,
+    pub excluded_tag: Option<&'static str>,
     pub distinct: bool,
     pub event_locations: EventLocationConstraint,
     pub relative_might: RelativeMightConstraint,
@@ -126,6 +127,7 @@ impl TargetRule {
         max_might: None,
         max_energy: None,
         tag: None,
+        excluded_tag: None,
         distinct: true,
         event_locations: EventLocationConstraint::None,
         relative_might: RelativeMightConstraint::None,
@@ -387,6 +389,35 @@ pub fn trigger_rules(card_id: usize) -> &'static [TriggerRule] {
         )
     };
     match card_id {
+        471 => {
+            const {
+                &[rule(
+                    SelfPlayed,
+                    &[],
+                    true,
+                    TargetRule {
+                        excluded_tag: Some("Dragon"),
+                        ..ANY
+                    },
+                    &[Bounce],
+                )]
+            }
+        }
+        472 => {
+            const {
+                &[rule(
+                    SelfExhausted,
+                    &[],
+                    false,
+                    FRIENDLY,
+                    &[Might {
+                        who: Targets,
+                        amount: 3,
+                        minimum: 0,
+                    }],
+                )]
+            }
+        }
         462 => {
             const TARGET: TargetRule = TargetRule {
                 another: true,

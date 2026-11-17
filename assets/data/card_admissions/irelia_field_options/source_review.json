@@ -1,5 +1,5 @@
 {
-  "status": "Official source review complete; Sandswept Tomb implementation underway; remaining three cards pending.",
+  "status": "Four reviewed cards implemented locally; focused and broad runtime checks passed; native/installed acceptance pending.",
   "checked_at": "2026-11-17T01:31:22.369917+00:00",
   "priority_evidence": "https://riftbound.org/meta/irelia-blade-dancer/cards",
   "records": [
@@ -102,6 +102,12 @@
         "printed_cost_type_domain_stats_tags_and_rules_checked": true,
         "matches_effective_facts": true,
         "notes": "Full unmodified official face inspected against the effective source facts."
+      },
+      "runtime_id": 471,
+      "runtime_image": {
+        "path": "assets/art/card_471.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/bd93cc3c9165204cd3e830fc2022384bad7517be-744x1039.png?w=280&q=85&fm=png",
+        "sha256": "7822929b41097b8f644c0f9881c9ee2aeec3add07532a2db4023ca7b24d190c7"
       }
     },
     {
@@ -150,6 +156,12 @@
         "printed_cost_type_domain_stats_tags_and_rules_checked": true,
         "matches_effective_facts": true,
         "notes": "Full unmodified official face inspected. Printed tags have the same set despite ordering. Rostrum is Gear, confirming the existing reviewed type correction."
+      },
+      "runtime_id": 472,
+      "runtime_image": {
+        "path": "assets/art/card_472.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/df1c12e65cc3c63c96fb6c96b2071795f37f30a6-744x1039.png?w=280&q=85&fm=png",
+        "sha256": "f96aa6cf856f8876b469eb81a7ada22d820d96a9a012eee0c83722f4888bf7d8"
       }
     },
     {
@@ -199,6 +211,12 @@
         "printed_cost_type_domain_stats_tags_and_rules_checked": true,
         "matches_effective_facts": true,
         "notes": "Full unmodified official face inspected against the effective source facts."
+      },
+      "runtime_id": 470,
+      "runtime_image": {
+        "path": "assets/art/card_470.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/6f95b6aac293d8e477192281df47d8466da502bf-744x1039.png?w=280&q=85&fm=png",
+        "sha256": "5b841db9168fda78951e0182cf1dd7d5d5b78d26460ecce1bbc8cfcf002d636e"
       }
     }
   ],

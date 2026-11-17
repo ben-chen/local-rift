@@ -309,3 +309,19 @@ checks, 1,176 simulations, 35 native cases and 15 API campaigns comparing
 These additions do not change the seven sourced tournament presets or establish
 that either card is currently prevalent in competitive Irelia lists. The broader
 goal remains all legal cards and verified end-to-end practice.
+
+## Further sampled Irelia options
+
+Sandswept Tomb, Sneaky Deckhand, Ocean Drake and Resplendent Rostrum are
+implemented on the field-options development branch. The source review covers
+all four official faces. The remaining three main-deck mappings use shared
+open-field permissions, excluded-tag targeting and gear-exhaustion events.
+The API and Mote use the same choices and public information.
+
+Local checks passed 1,399 library/client/tool tests and a 54-game integration
+scenario. Of those games, 48 were unassisted and six began with legally scripted
+quiet openings before AI play. Strategic AI did not play Rostrum in the
+unassisted sample; targeted scenarios separately verify its play and activation
+at all three levels. Native visual and immutable installed acceptance remain
+outstanding; see [validation](validation/irelia_field_options.json). The seven
+sourced recipes remain unchanged, and the broader all-legal-cards goal is open.

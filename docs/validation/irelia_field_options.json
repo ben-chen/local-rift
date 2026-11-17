@@ -1,7 +1,24 @@
 {
-  "status": "Local Sandswept Tomb checkpoint; native/API/full-match and installed acceptance outstanding. Three other reviewed priority cards remain unimplemented.",
-  "reviewed_at": "2026-11-17T01:42:20.867456+00:00",
-  "base_revision": "acd3e67a1073b07e7cfb9d85f10b250d6f096467",
+  "status": "Four priority cards implemented locally; rules/API/AI and complete-game checks passed; native and installed acceptance outstanding.",
+  "reviewed_at": "2026-11-17T02:03:45.416465+00:00",
+  "base_revision": "270942c0af2635b935dc9a644a346485152adb1a",
+  "cards": [
+    {
+      "runtime_id": 470,
+      "name": "Sneaky Deckhand",
+      "official_id": "ogn-176-298"
+    },
+    {
+      "runtime_id": 471,
+      "name": "Ocean Drake",
+      "official_id": "ven-115-166"
+    },
+    {
+      "runtime_id": 472,
+      "name": "Resplendent Rostrum",
+      "official_id": "rad-046-167"
+    }
+  ],
   "field": {
     "runtime_id": 21,
     "name": "Sandswept Tomb",
@@ -9,46 +26,76 @@
   },
   "source_review": "assets/data/card_admissions/irelia_field_options/source_review.json",
   "priority_comparison": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-meta-review-v1/report.json",
-  "rust_tests": 34,
-  "source_tests": 1,
-  "strict_clippy_all_targets": "passed",
+  "rules_hub_rechecked": "2026-11-16; current linked Core Rules edition remains 2026-10-09",
   "checks": [
     {
-      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/field-options-focused-v4.log",
-      "sha256": "101778dd7b7c73c52e4f2cb24f20b663c7eac4641c4e071fcd4e408ad0f1092b",
-      "rust_tests": 7
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/field-options-cards-v8.log",
+      "sha256": "e0122cca3365b55c2d33785baa810269b66b833c43a1b44a3982a59b803f9ff1",
+      "passed_rust_tests": 12
     },
     {
-      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/field-options-coach-v1.log",
-      "sha256": "3598c85d1079eae828dad0edd8d3df1412c469688622652955d2dbe6153a6e6c",
-      "rust_tests": 1
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/field-options-coach-v2.log",
+      "sha256": "9795ae4f4c4631ec34e53cbe40d0fb7f81898572749feaa477c5b2225f57cd85",
+      "passed_rust_tests": 1
     },
     {
-      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/field-options-battlefields-v1.log",
-      "sha256": "e0f43692a98f42825364b55ba675a25b7a811aaad3f6fceac7b2a97c3b2a922e",
-      "rust_tests": 8
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/field-options-matches-v3.log",
+      "sha256": "794604e1bdca6670436dc63282123ce7f27c23210f83ee109de3ea1871462b21",
+      "passed_rust_tests": 1
     },
     {
-      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/field-options-integrations-v1.log",
-      "sha256": "79b33092af6463a238c517fd4fd6182f5c084662cc315b3ddc65498e8c681dcb",
-      "rust_tests": 18
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/field-options-clippy-v2.log",
+      "sha256": "436e3a411d6c17c6de85bead03df3e27b47469f780553898a334f89a769af94b",
+      "passed_rust_tests": 0
     },
     {
-      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/field-options-source-v1.log",
-      "sha256": "2a60f7d502e71b1f5a868118d26663c5b278d62ab0bc69692c38321de486719e",
-      "rust_tests": 0
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/field-options-regressions-v1.log",
+      "sha256": "edcdb92772c2f0616f5708bfe37de3d5b9ca9af8a726655dc69cd4d6ddbdace9",
+      "passed_rust_tests": 1399
     },
     {
-      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/field-options-clippy-v1.log",
-      "sha256": "159f31dd234c34b8b87e30d7855753f0ee58c1e56008e8e112b50abb3d4809e4",
-      "rust_tests": 0
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/field-options-source-v2.log",
+      "sha256": "cdbe7cb79d9f5bae2e4304ddfde42d32e8bbb5d60642edcb821e157fb7f12879",
+      "passed_rust_tests": 0
     },
     {
-      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/field-options-catalog-check-v1.log",
-      "sha256": "f156eadec67ba9cf6427bd9321c61471d5887d6b0df8051364acd4a4129446ea",
-      "rust_tests": 0
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/field-options-catalog-check-v2.log",
+      "sha256": "35b03e93cbbafea0ca9c90df2cf83dbc73bba093dd4536fb5448f99ec8cf2eeb",
+      "passed_rust_tests": 0
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/field-options-integrations-v2.log",
+      "sha256": "18f13a5578e51a23756dccdc3ef5961f7b29ce8756fbe46948313808c4e787a4",
+      "passed_rust_tests": 18
     }
   ],
+  "nonduplicated_broad_rust_tests": 1418,
+  "focused_engine_api_tests": 12,
+  "source_tests": 1,
+  "strict_clippy_all_targets": "passed",
+  "campaign": {
+    "games": 54,
+    "unassisted_games": 48,
+    "scripted_legal_openings_then_ai": 6,
+    "difficulty_levels": 3,
+    "both_starting_seats": true,
+    "every_action_checks": "Independent physical card/rune conservation and numeric validation",
+    "rostrum_activations_by_level_and_seat": [
+      [
+        12,
+        13
+      ],
+      [
+        8,
+        10
+      ],
+      [
+        5,
+        4
+      ]
+    ],
+    "limitation": "Strategic AI played no Rostrum in the 48 unassisted games. Six targeted board scenarios prove every difficulty can play it and resolve its choices; six legally scripted quiet openings exercise it through full games. These are authored Irelia variants, not tournament registrations or strength evidence."
+  },
   "covered": [
     "One total Power reduction per qualifying field, no Energy reduction, either field controller and either player seat.",
     "Friendly versus enemy/base targets; untargeted effects; zero-Power costs.",
@@ -57,19 +104,74 @@
     "Response returns target to its original owner without recalculating paid cost.",
     "Irelia Ride the Wind is affordable and offered to the AI when the discount supplies its otherwise missing Power.",
     "Both companion levels are brief, read-only and independent of the opponent hidden hand.",
-    "Existing battlefield scoring and custom deck/catalog regressions."
+    "Existing battlefield scoring and custom deck/catalog regressions.",
+    "Open battlefield means unoccupied and uncontrolled; gear alone does not occupy. Ordinary base/owned-field permissions remain; Rockfall and Warden prohibitions and normal unit timing remain.",
+    "Open-field destinations are offered by shared AI candidates and receive a positional heuristic bonus.",
+    "Ocean Drake optional return, Dragon exclusion, friendly/enemy units, both seats and original ownership after control changes.",
+    "Rostrum pays exhaustion before responses, queues a separate friendly +3 Might trigger, draws and channels exhausted on resolution, and expires the Might grant at end of turn.",
+    "Repeated exhaustion without readying does not retrigger; object-cost exhaustion shares the event path.",
+    "Rostrum still draws with no friendly targets or remaining runes; removing its Might target in response does not cancel draw/channel.",
+    "JSON filtered trigger queries reject Dragon targets atomically, preserve read-only queries, and expose required/excluded tags.",
+    "Both companion levels remain read-only, concise and independent of hidden opponent cards."
   ],
   "findings": [
     "Compiler caught the new Energy reduction expression using u16 rather than the existing u64 type.",
     "Focused tests caught the omitted no-Conquer-trigger entry for the new field.",
-    "Initial authored tests used the wrong Power domain for Punch First and did not decline the optional Irelia trigger before responding; corrected through public choices."
+    "Initial authored tests used the wrong Power domain for Punch First and did not decline the optional Irelia trigger before responding; corrected through public choices.",
+    "Canonical AI generation initially omitted additional open-field destinations; fixed through a reusable static permission.",
+    "Authored test corrections: gear placement helper signature; normal EndTurn versus Pass; actor retains priority after finalization; optional Irelia choice precedes responses; Gust requires a battlefield target.",
+    "API observations intentionally expose a coarse candidate pool; corrected the scenario to query filtered ordered candidates through the documented API.",
+    "Short unassisted games did not exercise expensive Rostrum at every level. Preserved that evidence and added targeted AI and reachable public-action openings rather than forcing heuristic play."
   ],
   "outstanding": [
-    "Actual client target/cost/field inspection at both window sizes.",
-    "JSON API scenarios and complete matches using the battlefield.",
-    "Explicit reduction allocation, staged payment rollback, ability exclusions, Hidden and instructed-play interactions.",
-    "Implement Ocean Drake, Sneaky Deckhand and Resplendent Rostrum using their reviewed official facts.",
-    "Combined full regression and immutable installed acceptance before publication.",
-    "All currently legal cards and full goal audit."
-  ]
+    "Actual native deployment/target/cost/gear/field inspectors at both sizes.",
+    "Standalone JSONL full-series campaign for all four cards.",
+    "Explicit Sandswept reduction allocation, staged rollback, ability exclusions, Hidden and instructed-play interactions.",
+    "Immutable installed acceptance of the combined batch before publication.",
+    "All currently legal cards and full Standard, learning and expert-practice goal audit."
+  ],
+  "previous_sandswept_checkpoint": {
+    "revision": "0dd99cf851f64a22091cd2f989e0d33c1c9be172",
+    "checks": [
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/field-options-focused-v4.log",
+        "sha256": "101778dd7b7c73c52e4f2cb24f20b663c7eac4641c4e071fcd4e408ad0f1092b",
+        "rust_tests": 7
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/field-options-coach-v1.log",
+        "sha256": "3598c85d1079eae828dad0edd8d3df1412c469688622652955d2dbe6153a6e6c",
+        "rust_tests": 1
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/field-options-battlefields-v1.log",
+        "sha256": "e0f43692a98f42825364b55ba675a25b7a811aaad3f6fceac7b2a97c3b2a922e",
+        "rust_tests": 8
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/field-options-integrations-v1.log",
+        "sha256": "79b33092af6463a238c517fd4fd6182f5c084662cc315b3ddc65498e8c681dcb",
+        "rust_tests": 18
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/field-options-source-v1.log",
+        "sha256": "2a60f7d502e71b1f5a868118d26663c5b278d62ab0bc69692c38321de486719e",
+        "rust_tests": 0
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/field-options-clippy-v1.log",
+        "sha256": "159f31dd234c34b8b87e30d7855753f0ee58c1e56008e8e112b50abb3d4809e4",
+        "rust_tests": 0
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/field-options-catalog-check-v1.log",
+        "sha256": "f156eadec67ba9cf6427bd9321c61471d5887d6b0df8051364acd4a4129446ea",
+        "rust_tests": 0
+      }
+    ]
+  },
+  "publication": {
+    "accepted": false,
+    "public_main": "bce912208cef37fbf6a12ddd6c148c1e2b6609ac"
+  }
 }
