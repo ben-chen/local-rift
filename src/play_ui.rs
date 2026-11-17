@@ -343,6 +343,21 @@ pub(super) fn value_label(value: &CostValue) -> String {
         parts.join(" + ")
     }
 }
+pub(super) fn resource_total_label(plan: &CostPlanView) -> String {
+    let mut label = format!(
+        "{} energy · {} power",
+        plan.energy,
+        plan.power
+            .iter()
+            .map(|cost| u32::from(cost.amount))
+            .sum::<u32>()
+    );
+    if plan.xp > 0 {
+        label.push_str(&format!(" · {} XP", plan.xp));
+    }
+    label
+}
+
 pub(super) fn total_label(plan: &CostPlanView) -> String {
     let mut parts = Vec::new();
     if plan.energy > 0 || (plan.xp == 0 && plan.object_costs.is_empty()) {
@@ -1719,17 +1734,10 @@ impl App {
             );
         }
         self.ui.bold(
-            &format!(
-                "Pay {} energy + {} power",
-                plan.energy,
-                plan.power
-                    .iter()
-                    .map(|cost| u32::from(cost.amount))
-                    .sum::<u32>()
-            ),
+            &format!("Pay {}", resource_total_label(&plan)),
             325.0,
             670.0,
-            16.0,
+            14.0,
             TEAL,
         );
         self.ui.wrapped_lines("The total includes chosen optional costs and reductions. Matching power requirements still apply.",325.0,696.0,295.0,11.0,MUTED,2);

@@ -143,3 +143,5 @@ jobs:
           RIFT_SERIES_PLAYER=5 RIFT_SERIES_OPPONENT=1 XDG_DATA_HOME="$RUNNER_TEMP/local-rift-yi-series-small" xvfb-run -a ./target/release/local-rift --ui-smoke-series --small
           XDG_DATA_HOME="$RUNNER_TEMP/local-rift-formats" xvfb-run -a ./target/release/local-rift --ui-smoke-format
           XDG_DATA_HOME="$RUNNER_TEMP/local-rift-formats-small" xvfb-run -a ./target/release/local-rift --ui-smoke-format --small
+          XDG_DATA_HOME="$RUNNER_TEMP/local-rift-control" xvfb-run -a ./target/release/local-rift --ui-smoke-control
+          XDG_DATA_HOME="$RUNNER_TEMP/local-rift-control-small" xvfb-run -a ./target/release/local-rift --ui-smoke-control --small

@@ -13,6 +13,8 @@ use macroquad::prelude::*;
 mod ai;
 mod blade;
 mod conditional_equipment;
+mod control;
+pub(super) use control::run_frame as run_control_frame;
 mod deathgrip;
 mod disarm;
 mod discord;

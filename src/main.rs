@@ -7168,16 +7168,7 @@ impl App {
                         .transpose()?
                         .flatten();
                     let cost_text = plan
-                        .map(|plan| {
-                            format!(
-                                "TOTAL: {} energy · {} power",
-                                plan.energy,
-                                plan.power
-                                    .iter()
-                                    .map(|cost| u32::from(cost.amount))
-                                    .sum::<u32>()
-                            )
-                        })
+                        .map(|plan| format!("TOTAL: {}", play_ui::resource_total_label(&plan)))
                         .unwrap_or(cost_text);
                     let discounts = self.game.players[0]
                         .units
@@ -11022,6 +11013,7 @@ async fn main() {
     let discord_smoke = args.iter().any(|a| a == "--ui-smoke-discord");
     let fields_smoke = args.iter().any(|a| a == "--ui-smoke-fields");
     let entry_smoke = args.iter().any(|a| a == "--ui-smoke-entry");
+    let control_smoke = args.iter().any(|a| a == "--ui-smoke-control");
     let turn_keywords_smoke = args.iter().any(|a| a == "--ui-smoke-turn-keywords");
     let rockfall_smoke = args.iter().any(|a| a == "--ui-smoke-rockfall");
     let riven_smoke = args.iter().any(|a| a == "--ui-smoke-riven");
@@ -11048,6 +11040,7 @@ async fn main() {
         || discord_smoke
         || fields_smoke
         || entry_smoke
+        || control_smoke
         || turn_keywords_smoke
         || flurry_smoke
         || disarm_smoke
@@ -11148,6 +11141,8 @@ async fn main() {
             smoke::run_fields_frame(&mut app, frames)
         } else if entry_smoke {
             smoke::run_entry_frame(&mut app, frames)
+        } else if control_smoke {
+            smoke::run_control_frame(&mut app, frames)
         } else if discord_smoke {
             smoke::run_discord_frame(&mut app, frames)
         } else if warden_smoke {

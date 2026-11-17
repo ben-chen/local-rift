@@ -1,5 +1,5 @@
 {
-  "status": "Runtime implementation in progress; publication requires control-card acceptance.",
+  "status": "Runtime implementation and local native/full-game checks passed; publication requires installed control-card acceptance.",
   "reviewed_on": "2026-11-16",
   "base_revision": "a4a7e445996fc899078473c38898622083379f3a",
   "records": [
@@ -239,7 +239,7 @@
   "scope": [
     "Adds source evidence for two additional Chaos practice options, not a claim of current Irelia metagame prevalence.",
     "The current source catalog marks both cards Standard-legal; the November 23 announcement is already represented in format_updates.json and does not name these cards.",
-    "No runtime card or sourced preset is added by this review.",
+    "Possession and Conscription are implemented as runtime cards 468 and 469. Sourced presets remain unchanged; authored integration lists exercise both cards.",
     "Spell control, temporary control, and gear control require further source-specific implementation; these are not certified by permanent unit control."
   ]
 }
