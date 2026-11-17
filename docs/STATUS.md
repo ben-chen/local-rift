@@ -101,3 +101,14 @@ passed 2,148 Rust tests, 343 source checks, 1,176 simulations, 37 native cases
 installed captures were visually reviewed. Control-specific coverage includes
 24 authored engine games and six API series (17 games); the paid Conscription
 path is covered by focused scenarios. See [validation](validation/control_cards.json).
+
+
+Guardian of the Passage, Soulgorger, The Harrowing and Shadows of the Past
+passed installed acceptance at 3c6861d. The same candidate preserves all
+selected targets for automatic multi-target plays and fixes Strategic AI
+valuing a speculative draw above an available winning Irelia readiness line.
+It passed 2,206 Rust tests, 346 source checks, 1,176 simulations, 43 installed
+interface cases (458 captures), and 19 API campaigns matching 153 complete
+local records. Three installed captures were visually reviewed. The initial
+failed candidate and the AI policy's conservative limits remain recorded in
+[trash recovery validation](validation/irelia_trash_targets.json).

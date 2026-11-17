@@ -3,6 +3,8 @@
 //! Rollouts settle the current chain/combat assuming no further discretionary
 //! responses. Unknown draws are sampled from public legend legality, never from
 //! the real opponent's list, hand, facedown cards, or either deck's order.
+//! After a hypothetical draw, followups defer hand plays until the next real
+//! decision. A sampled card must not become a promised winning hand play.
 //! This is a practice opponent, not a claim of tournament-level strength.
 use super::*;
 
@@ -89,7 +91,7 @@ impl Game {
             let actor = self.priority();
             let belief = self.strategic_belief(actor);
             let mut choices: Vec<_> = belief
-                .strategic_candidates(ROOT_LIMIT)?
+                .strategic_candidates(ROOT_LIMIT, true)?
                 .into_iter()
                 .filter_map(|action| {
                     let mut result = belief.clone();
@@ -151,8 +153,15 @@ impl Game {
                         mobility_roots += 1;
                     }
                     let best = choice.0.max(
-                        state.strategic_followup_value(actor, belief.turn, followup_depth)?
-                            - action_penalty(&choice.1),
+                        state.strategic_followup_value(
+                            actor,
+                            belief.turn,
+                            followup_depth,
+                            // A hypothetical draw changes the hand's information
+                            // boundary. Replan all hand plays at the real next
+                            // decision; board and other known-zone plays remain.
+                            state.trigger_state.draws[actor] == belief.trigger_state.draws[actor],
+                        )? - action_penalty(&choice.1),
                     );
                     choice.0 = (choice.0 * 2 + best) / 3;
                 }
@@ -270,7 +279,7 @@ impl Game {
         state
     }
 
-    fn strategic_candidates(&self, limit: usize) -> Result<Vec<Action>, String> {
+    fn strategic_candidates(&self, limit: usize, hand_plays: bool) -> Result<Vec<Action>, String> {
         Ok({
             let actor = self.priority();
             let mut candidates = vec![self.choose_heuristic_action()?];
@@ -387,6 +396,9 @@ impl Game {
             let mut unique = Vec::new();
             let mut keys = Vec::new();
             for action in candidates {
+                if !hand_plays && uses_hand_card(&action) {
+                    continue;
+                }
                 if self.ai_avoids_empty_removal(&action)? {
                     continue;
                 }
@@ -408,7 +420,14 @@ impl Game {
                         Action::PlayCard { hand_index, .. }
                         | Action::PlayCardWithTargets { hand_index, .. }
                         | Action::PlayCardOptions { hand_index, .. } => {
-                            self.ai_card_score(self.players[actor].hand[*hand_index])?
+                            if matches!(
+                                rules::effect(self.players[actor].hand[*hand_index]),
+                                OfficialEffect::Trash(_)
+                            ) {
+                                self.canonical_action_score(&action)?
+                            } else {
+                                self.ai_card_score(self.players[actor].hand[*hand_index])?
+                            }
                         }
                         _ => 110,
                     };
@@ -514,6 +533,7 @@ impl Game {
         actor: usize,
         starting_turn: u32,
         depth: u8,
+        hand_plays: bool,
     ) -> Result<i128, String> {
         let current = self.strategic_value(actor)?;
         if depth == 0
@@ -526,7 +546,7 @@ impl Game {
             return Ok(current);
         }
         let mut best = current;
-        for next in self.strategic_candidates(FOLLOWUP_LIMIT)? {
+        for next in self.strategic_candidates(FOLLOWUP_LIMIT, hand_plays)? {
             let mut result = self.clone();
             if result.apply(next.clone()).is_err()
                 || result.strategic_settle(starting_turn).is_err()
@@ -536,9 +556,12 @@ impl Game {
             // Keep EndTurn at the same turn horizon as the other candidates.
             let value = if next == Action::EndTurn {
                 current
-            } else if let Ok(value) =
-                result.strategic_followup_value(actor, starting_turn, depth - 1)
-            {
+            } else if let Ok(value) = result.strategic_followup_value(
+                actor,
+                starting_turn,
+                depth - 1,
+                hand_plays && result.trigger_state.draws[actor] == self.trigger_state.draws[actor],
+            ) {
                 value
             } else {
                 continue;
@@ -663,6 +686,19 @@ fn scrub_queued_look(decision: &mut Decision, players: &[PlayerState; 2], catalo
             *cards = players[*opponent].hand.clone();
         }
         _ => {}
+    }
+}
+
+fn uses_hand_card(action: &Action) -> bool {
+    match action {
+        Action::PlayCard { .. }
+        | Action::PlayCardWithTargets { .. }
+        | Action::PlayCardOptions { .. }
+        | Action::Hide { .. } => true,
+        Action::WithPlayChoices { action, .. } | Action::BeginPayment { action } => {
+            uses_hand_card(action)
+        }
+        _ => false,
     }
 }
 

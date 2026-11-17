@@ -1,0 +1,218 @@
+{
+  "status": "Guardian of the Passage and Soulgorger passed local rules/API/game/native checks. Installed acceptance for this runtime and the two reviewed spells remain outstanding.",
+  "reviewed_at": "2026-11-17T03:15:56.664335+00:00",
+  "base_revision": "1099b87",
+  "cards": [
+    {
+      "runtime_id": 476,
+      "official_id": "sfd-035-221",
+      "name": "Guardian of the Passage"
+    },
+    {
+      "runtime_id": 477,
+      "official_id": "ogn-196-298",
+      "name": "Soulgorger"
+    }
+  ],
+  "source_only_not_playable": [
+    "ogn-198-298",
+    "ven-103-166"
+  ],
+  "source_review": "assets/data/card_admissions/irelia_trash_targets/source_review.json",
+  "source_review_sha256": "962e9a6ad8773924ca2f34f866203217080bb1dc435a2ea655b53d0f3d22c974",
+  "checks": [
+    {
+      "command": "cargo test --locked --lib --bins",
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/trash-choices-regressions-v1.log",
+      "sha256": "f0ce3776080cd1024d185a5b919c85c77689144a3fcdfb0c6e63399f027bb569",
+      "passed_tests": 1420
+    },
+    {
+      "command": "cargo test --locked --lib api::recovery_tests",
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/trash-choices-api-tests-v2.log",
+      "sha256": "872f227d00d05783f6373dfdf7475c316b5852ed349cf65f8dd8b96793a111ad",
+      "passed_tests": 3
+    },
+    {
+      "command": "cargo test --locked --test trash_choice_matches -- --nocapture",
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/trash-choices-matches-v2.log",
+      "sha256": "b670fbb146e08da85ad5cd3d54193fcfcf81ba30190bbe61291d2eb9275e1881",
+      "passed_tests": 1
+    },
+    {
+      "command": "python3 -m unittest discover -s tools -p 'test_*source.py'",
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/trash-choices-sources-v1.log",
+      "sha256": "9f3082a4f8b38a74e4f23f52335e55017b394ea137859d5c8c8ec86352a8f9a8",
+      "passed_tests": 13
+    },
+    {
+      "command": "python3 -m unittest discover -s tools -p test_trash_choice_source.py",
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/trash-choices-source-v2.log",
+      "sha256": "c4221cab7eee30535a8d39a0cd00024d55d7cba6209cb22c3988b26c1bb8f0f2",
+      "passed_tests": 1
+    },
+    {
+      "command": "python3 tools/import_catalog.py --check",
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/trash-choices-catalog-check-v1.log",
+      "sha256": "da45b51199c828df63bd5e3c8e72e2a4c3c306e5d5de2b400ad42e6785c2a0d9",
+      "passed_tests": null
+    },
+    {
+      "command": "cargo clippy --locked --all-targets -- -D warnings",
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/trash-choices-clippy-v3.log",
+      "sha256": "e981f96dd08477f398c46f427a86517341ce821cb80a6c5f004ada6d6f9155fa",
+      "passed_tests": null
+    }
+  ],
+  "native": {
+    "report": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/trash-choices-native-v5/status.json",
+    "report_sha256": "26dc9b95eaad0e471db58377859f04b1c53c7c7cae411c91ac5c527b00fcf7c6",
+    "cases": [
+      {
+        "size": "normal",
+        "exit_code": 0,
+        "seconds": 5.65,
+        "captures": 16
+      },
+      {
+        "size": "small",
+        "exit_code": 0,
+        "seconds": 5.14,
+        "captures": 16
+      }
+    ],
+    "binary_sha256": "08c940fbac948f8f963f4819c0eb1349c7b9cfe23eefd71bbf97cf11c73fa98c",
+    "actual_viewed_captures": [
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/trash-choices-native-v1/small/rift_trash_guardian_choices.png",
+        "sha256": "fdd8d54ce6a4682cb6c326f195f04841a45731c0a0dc919942cef80c8658ccba",
+        "finding": "Eligible unit and gear are shown together and optional skip is enabled."
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/trash-choices-native-v2/small/rift_trash_guardian_inspect.png",
+        "sha256": "72dcc48111c114c0e09b54c5078131a08f74fe6c6b1e352f9b2eb0d0279d3af1",
+        "finding": "Complete Guardian face and official text fit."
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/trash-choices-native-v2/small/rift_trash_soulgorger_inspect.png",
+        "sha256": "d014414cc89f7701c2e9df74a660be1433257b391484e8bf7619a98d48e5127d",
+        "finding": "Complete Soulgorger face and official text fit."
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/trash-choices-native-v5/small/rift_trash_soulgorger_cost.png",
+        "sha256": "5b71e070e110b03ef993214513721b87a57e9e22292507764627af3caee87db0",
+        "finding": "Actual total is 0 Energy and 1 Power. On chain tab identifies the pending card; resource tabs remain available."
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/trash-choices-native-v5/small/rift_trash_pending_loadout.png",
+        "sha256": "89dc234c867e1d68f7c535520cd3be2c509c005d250a63536dd1e441fa7f8187",
+        "finding": "The loadout remains accessible without abandoning pending play; controls return to the card and finish its payment."
+      }
+    ],
+    "payment_regression_report": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/trash-choices-payment-native-v1/status.json",
+    "payment_regression_scope": "Both sizes passed on v3 before the final tab-preservation correction; final v5 additionally exercises switching to Loadout and back during Soulgorger pending play."
+  },
+  "full_games": {
+    "count": 48,
+    "scope": "Unassisted legal Irelia variants, eight seeds for each starter/difficulty combination, every card conserved after each action. Both cards enter and finalize targets at every difficulty and seat.",
+    "entries": [
+      [
+        [
+          18,
+          8
+        ],
+        [
+          16,
+          5
+        ]
+      ],
+      [
+        [
+          14,
+          7
+        ],
+        [
+          16,
+          5
+        ]
+      ],
+      [
+        [
+          21,
+          12
+        ],
+        [
+          20,
+          12
+        ]
+      ]
+    ],
+    "finalized_targets": [
+      [
+        [
+          5,
+          3
+        ],
+        [
+          3,
+          3
+        ]
+      ],
+      [
+        [
+          8,
+          4
+        ],
+        [
+          6,
+          4
+        ]
+      ],
+      [
+        [
+          5,
+          12
+        ],
+        [
+          7,
+          11
+        ]
+      ]
+    ]
+  },
+  "api": {
+    "report": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/trash-choices-api-v2.json",
+    "report_sha256": "690cc82d38ce631e8ccaab1cccc2cd873904c576b7a754992108659eb77aa06b",
+    "campaigns": 6,
+    "completed_games": 16,
+    "binary_sha256": "4b040c7276c4ce775ec5a5b467df69a554c7c3394d09f619f2efbf353a39c90f",
+    "runner_sha256": "3f635e38d530b6922ac25f84f95836ac659e7c334300e0f12b3a0d053fe15b3c"
+  },
+  "limitations": [
+    "Catalog mappings are not evidence of complete Standard fidelity.",
+    "The Harrowing and Shadows of the Past need public-trash spell targets finalized before responses, including repeated executions and targets from both players.",
+    "These authored Irelia variants do not replace tournament-derived presets or establish current meta strength."
+  ],
+  "iteration_findings": [
+    {
+      "attempt": "tests-v1",
+      "finding": "New test fixtures referenced a nonexistent Domain.index and compared a private stage without PartialEq; corrected fixtures passed."
+    },
+    {
+      "attempt": "native-v1",
+      "finding": "Visual inspection found a pending card under Hand and a generic waiver note without the actual amount due."
+    },
+    {
+      "attempt": "native-v2/v3",
+      "finding": "Cost total corrected. Review then found that replacing all tabs with a pending header would hide resource access; changed to an On chain tab label while retaining the tabs."
+    },
+    {
+      "attempt": "build-v4/native-v4",
+      "finding": "Test-only Tray import/Debug compile errors prevented the new binary build. The shell continued with the old binary, whose missing new capture failed the count check. Not accepted; fixed assertions and enabled stop-on-error for subsequent build/check commands."
+    },
+    {
+      "attempt": "native-v5",
+      "finding": "Final native controls pass at both sizes with 16 captures each, including Loadout access during pending play."
+    }
+  ]
+}

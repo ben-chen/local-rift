@@ -32,6 +32,7 @@ pub(super) enum PendingOrigin {
         index: usize,
         flow: bool,
         target_chain_ids: Vec<u32>,
+        departure: crate::trash::Departure,
     },
     Banish {
         index: usize,
@@ -56,7 +57,9 @@ impl InstructedPlayKind {
         use BaseCostWaiver::{All, Energy, None};
         use PlayDestination::{AnyBattlefield, Base, Exact, Normal};
         let (cost, destination) = match self {
-            Self::Fizz | Self::ClocktowerGuardian => (Energy, Normal),
+            Self::Fizz | Self::ClocktowerGuardian | Self::Soulgorger | Self::TheHarrowing => {
+                (Energy, Normal)
+            }
             Self::LastRites | Self::Reinforce | Self::WildClaw => (None, Normal),
             Self::BaitedHook | Self::DazzlingAurora => (All, Normal),
             Self::Matriarch | Self::PortalRescue => (All, Base),

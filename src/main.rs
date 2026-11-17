@@ -3125,7 +3125,9 @@ impl App {
                 }
             } else if self.ui.button(
                 Rect::new(1178.0, 531.0, 212.0, 31.0),
-                if matches!(
+                if matches!(decision, Decision::TrashTarget { source_card_id, .. } if local_rift::trash::optional(source_card_id)) {
+                    "Skip optional choice"
+                } else if matches!(
                     decision,
                     Decision::Sabotage { .. }
                         | Decision::RecycleRevealedHand { .. }
@@ -3159,7 +3161,7 @@ impl App {
                         player,
                         source_card_id,
                         ..
-                    } => !(0..self.game.players[player].discard.len())
+                    } => local_rift::trash::optional(source_card_id) || !(0..self.game.players[player].discard.len())
                         .any(|index| self.game.trash_target_valid(player, source_card_id, index)),
                     _ => true,
                 },
@@ -3259,7 +3261,10 @@ impl App {
             return Ok(());
         }
         let chosen = self.current_targets();
-        if let Some(index) = chosen.iter().position(|existing| *existing == target) {
+        if let Some(index) = chosen
+            .iter()
+            .position(|existing| self.game.same_target(*existing, target))
+        {
             // Later slots can depend on earlier choices; undo them together.
             self.current_targets_mut().truncate(index);
             return Ok(());
@@ -3334,6 +3339,9 @@ impl App {
         let spec = play_target_spec(card_id);
         let count = self.current_targets().len();
         match spec.kind {
+            Some(PlayTargetKind::Trash) => {
+                format!("Choose cards in Trash · {count}/{}", spec.maximum)
+            }
             Some(PlayTargetKind::Legend) => "Choose either legend in the ability panel.".into(),
             Some(PlayTargetKind::Rune) => "Choose runes in either rune zone.".into(),
             Some(PlayTargetKind::Battlefield) => self
@@ -3927,7 +3935,9 @@ impl App {
             ) {
                 self.gear_owner = 1 - self.gear_owner;
                 self.hand_scroll = 0;
-                self.selection = None;
+                if !self.targeting_selection() {
+                    self.selection = None;
+                }
             }
             if self.ui.button(
                 Rect::new(884.0, 648.0, 92.0, 29.0),
@@ -3937,7 +3947,9 @@ impl App {
             ) {
                 self.banish_view = !self.banish_view;
                 self.hand_scroll = 0;
-                self.selection = None;
+                if !self.targeting_selection() {
+                    self.selection = None;
+                }
             }
             let owner = self.gear_owner;
             let cards = if self.banish_view {
@@ -3953,12 +3965,40 @@ impl App {
                 .take(6)
                 .enumerate()
             {
-                let chosen = !self.banish_view
-                    && (self.choices.contains(&index)
-                        || self.selection == Some(Selection::Trash(index)));
+                let trash_target = (!self.banish_view)
+                    .then(|| self.game.trash_target(owner, index))
+                    .flatten();
+                let target_chosen = trash_target.is_some_and(|target| {
+                    self.current_targets()
+                        .iter()
+                        .any(|&old| self.game.same_target(old, target))
+                });
+                let target_legal = if let Some(target) = trash_target {
+                    self.targeting_selection() && self.card_target_candidate(target)?
+                } else {
+                    false
+                };
+                let chosen = target_chosen
+                    || !self.banish_view
+                        && (self.choices.contains(&index)
+                            || self.selection == Some(Selection::Trash(index)));
                 let r = self.tile(*id, slot, self.game.catalog[*id].name, chosen);
+                if target_legal || target_chosen {
+                    self.ui.border(r, TEAL);
+                    self.ui.pill(
+                        r.x + 8.0,
+                        r.y + 37.0,
+                        if target_chosen { "CHOSEN" } else { "TARGET" },
+                        TEAL,
+                    );
+                }
                 if self.ui.clicked(r) {
-                    if owner == 1 || self.banish_view {
+                    if self.targeting_selection() && !self.banish_view {
+                        if let Some(target) = trash_target.filter(|_| target_legal || target_chosen)
+                        {
+                            self.toggle_target(target);
+                        }
+                    } else if owner == 1 || self.banish_view {
                         self.inspect_printed_card(*id);
                     } else if matches!(self.selection, Some(Selection::Gear(_))) {
                         if let Some(i) = self.choices.iter().position(|x| *x == index) {
@@ -4260,7 +4300,7 @@ impl App {
         } = decision
         {
             self.ui
-                .text("Finalize the chosen card", 780.0, 671.0, 9.0, GOLD);
+                .text("ON THE CHAIN · FINALIZE PLAY", 780.0, 671.0, 9.0, GOLD);
             let r = self.tile(card_id, 0, self.game.catalog[card_id].name, true);
             if self.ui.clicked(r) {
                 self.selection = Some(Selection::Pending(pending_id));
@@ -7162,9 +7202,8 @@ impl App {
                         format!("{} ENERGY · {} POWER", card.cost, card.power_cost)
                     };
                     let plan = self
-                        .play_draft
-                        .as_ref()
-                        .and_then(|_| self.selected_play_action())
+                        .selected_play_action()
+                        .filter(|_| self.play_draft.is_some() || pending.is_some())
                         .map(|action| {
                             optional_query(self.game.cost_plan(&self.canonical_action(action)))
                         })
@@ -7904,7 +7943,16 @@ impl App {
             {
                 if self.ui.button(
                     Rect::new(245.0 + i as f32 * 106.0, 648.0, 98.0, 29.0),
-                    label,
+                    if *tray == Tray::Hand
+                        && matches!(
+                            self.game.decision,
+                            Some(Decision::PendingPlay { player: 0, .. })
+                        )
+                    {
+                        "On chain"
+                    } else {
+                        label
+                    },
                     self.tray == *tray,
                     true,
                 ) {
@@ -7937,7 +7985,14 @@ impl App {
                                     .iter()
                                     .any(|target| matches!(target, Target::Gear { .. }))
                             });
+                    let selecting_trash_target =
+                        matches!(tray, Tray::Hand | Tray::Trash | Tray::Loadout | Tray::Board)
+                            && self.selected_card_id().is_some_and(|id| {
+                                local_rift::rules::play_target_spec(id).kind
+                                    == Some(local_rift::rules::PlayTargetKind::Trash)
+                            });
                     if !selecting_play_target
+                        && !selecting_trash_target
                         && (!matches!(self.selection, Some(Selection::Ability(..)))
                             && (*tray == Tray::Board
                                 || (*tray == Tray::Trash && self.gear_owner == 1)
@@ -8807,6 +8862,18 @@ fn chain_field_targets(item: &local_rift::game::ChainItem) -> Vec<usize> {
 
 fn target_label(game: &Game, target: Target) -> String {
     match target {
+        Target::Trash {
+            player, card_id, ..
+        } => format!(
+            "{} · {} trash{}",
+            game.catalog.get(card_id).map_or("Unknown card", |c| c.name),
+            if player == 0 { "your" } else { "opponent's" },
+            if game.trash_target_index(target).is_some() {
+                ""
+            } else {
+                " · departed"
+            }
+        ),
         Target::Legend { player, legend_id } => game
             .legend_target_ready(target)
             .and_then(|ready| {
@@ -11027,6 +11094,7 @@ async fn main() {
     let entry_smoke = args.iter().any(|a| a == "--ui-smoke-entry");
     let control_smoke = args.iter().any(|a| a == "--ui-smoke-control");
     let recovery_smoke = args.iter().any(|a| a == "--ui-smoke-recovery");
+    let trash_choices_smoke = args.iter().any(|a| a == "--ui-smoke-trash-choices");
     let field_options_smoke = args.iter().any(|a| a == "--ui-smoke-field-options");
     let turn_keywords_smoke = args.iter().any(|a| a == "--ui-smoke-turn-keywords");
     let rockfall_smoke = args.iter().any(|a| a == "--ui-smoke-rockfall");
@@ -11057,6 +11125,7 @@ async fn main() {
         || control_smoke
         || field_options_smoke
         || recovery_smoke
+        || trash_choices_smoke
         || turn_keywords_smoke
         || flurry_smoke
         || disarm_smoke
@@ -11161,6 +11230,8 @@ async fn main() {
             smoke::run_control_frame(&mut app, frames)
         } else if recovery_smoke {
             smoke::run_recovery_frame(&mut app, frames)
+        } else if trash_choices_smoke {
+            smoke::run_trash_choices_frame(&mut app, frames)
         } else if field_options_smoke {
             smoke::run_field_options_frame(&mut app, frames)
         } else if discord_smoke {

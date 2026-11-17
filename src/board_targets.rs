@@ -191,6 +191,7 @@ impl Game {
                 rules::PlayTargetKind::Rune
                 | rules::PlayTargetKind::Legend
                 | rules::PlayTargetKind::Spell
+                | rules::PlayTargetKind::Trash
                 | rules::PlayTargetKind::Battlefield => false,
             })
     }

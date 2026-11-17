@@ -1,0 +1,504 @@
+{
+  "status": "Passed immutable installed acceptance for four recovery cards, automatic multi-target preservation, and the corrected Strategic draw policy. Full Standard fidelity and expert strength remain unproven.",
+  "reviewed_at": "2026-11-17T07:29:41.420144+00:00",
+  "base_revision": "07d48cbe6ab3a0887ad193e9df815f17d7f9dffa",
+  "cards": [
+    {
+      "runtime_id": 476,
+      "official_id": "sfd-035-221",
+      "name": "Guardian of the Passage"
+    },
+    {
+      "runtime_id": 477,
+      "official_id": "ogn-196-298",
+      "name": "Soulgorger"
+    },
+    {
+      "runtime_id": 478,
+      "official_id": "ogn-198-298",
+      "name": "The Harrowing"
+    },
+    {
+      "runtime_id": 479,
+      "official_id": "ven-103-166",
+      "name": "Shadows of the Past"
+    }
+  ],
+  "source_review": "assets/data/card_admissions/irelia_trash_targets/source_review.json",
+  "source_review_sha256": "555e2881ddfbd53cab7f326d5f23a4df91897c2a8026c97ef318887df9affbcb",
+  "rules": {
+    "authority": "https://playriftbound.com/en-us/rules-hub/",
+    "core_version": "2026-10-09",
+    "references": [
+      "141.1.b",
+      "354.3",
+      "355.8\u2013355.10.a.1",
+      "355.9.a.1",
+      "359.3.e.4",
+      "359.3.e.5",
+      "445.2.a"
+    ]
+  },
+  "design": "Shared typed trash rules and immutable physical-occurrence references serve spell finalization, responses, Repeat, API and native choices. Existing index adapters remain for older triggered abilities.",
+  "checks": [
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/trash-targets-regressions-v4.log",
+      "sha256": "3c915268a0fed4718e2c0ada23b077a3ed87e5ddc2e8e2747e7a1f411f298be8",
+      "command": "cargo test --locked --lib --bins",
+      "passed_tests": 1430
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/trash-targets-tests-v8.log",
+      "sha256": "7eb3b89793914219ca552ba93b9f3c82eef68cb2791910db002e2213e246ddee",
+      "command": "cargo test --locked --lib trash_target_tests",
+      "passed_tests": 11
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/trash-targets-matches-v6.log",
+      "sha256": "d63e75b6efb55cdc187dffac46a4f01b9e57b96015e242392e4265c7acf7bcde",
+      "command": "cargo test --locked --test trash_choice_matches -- --nocapture",
+      "passed_tests": 1
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/trash-targets-python-v1.log",
+      "sha256": "a267d2fd3ebecd95c995ff70fcae1369cee7bd1b9bbf77b961ee5f47f1b519ac",
+      "command": "python3 -m unittest discover -s tools -p 'test_*.py'",
+      "passed_tests": 346
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/trash-targets-sources-v2.log",
+      "sha256": "536e3fd6079606129a96ba1ab7925d9b2fb8754e746ce24dcc677a5ea0b0859d",
+      "command": "python3 -m unittest discover -s tools -p 'test_*source.py'",
+      "passed_tests": 13
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/trash-targets-clippy-v5.log",
+      "sha256": "88275cbd2f725ea88de27fc6d0d7a3267d1516f6ccd6b6e45459d3a44c6aeb5a",
+      "command": "cargo clippy --locked --all-targets -- -D warnings",
+      "passed_tests": null
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/trash-targets-catalog-check-v3.log",
+      "sha256": "5adb7a94d23de74cca4ca767292f50250279b3c68827cd6b0003a2b6e3e05d83",
+      "command": "python3 tools/import_catalog.py --check",
+      "passed_tests": null
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/trash-targets-irelia-regression-v2.log",
+      "sha256": "ff5fe2f499814c743352eb0d502fcb49cbf07d1ba8f1f00bbacc19274803ba39",
+      "command": "cargo test --locked --test irelia_decisions",
+      "passed_tests": 11
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/trash-targets-ai-regressions-v4.log",
+      "sha256": "826763e2f82897280350815223cc8538eada4f6fdb1fd62d48fbf88e83a12d59",
+      "command": "cargo test --locked --lib --bins --test irelia_decisions --test strategic_api --test match_ai",
+      "passed_tests": 1454
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/trash-targets-ai-clippy-v1.log",
+      "sha256": "d16e71d8938b165b47c8952623258eb9765e5a16a2d8bfe424518d9f3a4b0642",
+      "command": "cargo clippy --locked --all-targets -- -D warnings",
+      "passed_tests": null
+    }
+  ],
+  "check_scope_note": "Broad Rust and complete Python runs preceded the two final Irelia/Flash regressions and the expanded API campaign matrices. Final focused tests and Clippy passed; the immutable installed build will rerun the full suites. The corrected candidate adds two public-action decision regressions; 1,454 local Rust tests and all-target Clippy pass. The initial failed immutable build is retained.",
+  "unassisted_games": {
+    "games": 384,
+    "deck_families": [
+      "units",
+      "spells",
+      "combined",
+      "generated_power"
+    ],
+    "difficulties": [
+      "easy",
+      "tactical",
+      "strategic"
+    ],
+    "starting_seats": [
+      0,
+      1
+    ],
+    "seeds_per_family_start_level": 16,
+    "assertions": [
+      "Every game reaches a winner within the action bound",
+      "Card conservation and numeric invariants after every action",
+      "Each of four cards enters or is cast and has a finalized trash target at every difficulty/seat across the matrix"
+    ],
+    "limitation": "Strategic Shadows was cast only twice by seat 0 and once by seat 1. Coverage is not evidence of strong strategic play."
+  },
+  "native": {
+    "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/trash-targets-native-v2/status.json",
+    "sha256": "f110e6cfc2acd7997defdf7f18cb1d84e33c9e0c60122bf91ee137a270a25014",
+    "cases": [
+      {
+        "size": "normal",
+        "exit_code": 0,
+        "seconds": 6.51,
+        "captures": 26
+      },
+      {
+        "size": "small",
+        "exit_code": 0,
+        "seconds": 5.79,
+        "captures": 26
+      }
+    ],
+    "binary_sha256": "6c9190c0afa85e4c7e00fcc81bbab2d2251a3f51ea8dbc726b31787f69164a70",
+    "actual_viewed_captures": [
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/trash-targets-native-v2/small/rift_trash_harrowing_cost.png",
+        "sha256": "ba379b792f23fa796996fff0ad069a073c13e349f09be89a69d7c0aafbe60199",
+        "finding": "Pending Cemetery Attendant shows zero Energy and one Power due, with On chain card and accessible resource tabs."
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/trash-targets-native-v2/normal/rift_trash_shadows_two_targets.png",
+        "sha256": "e0a96b3b2fb971fa83b37294e0b8cd18376c28a68d706c06dadc685c3c4e1c35",
+        "finding": "Both trash owners appear in selected targets; enemy selected unit is marked CHOSEN, gear is ineligible. Final hint sentence is abbreviated, while both names and owners remain visible."
+      }
+    ]
+  },
+  "external_api": {
+    "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/trash-targets-api-v3.json",
+    "sha256": "dcf9134abcc4f62607999bfda233e6b5def7000343d99a483657f5aed6e6d453",
+    "series": 24,
+    "games": 62,
+    "binary_sha256": "5b19faeafb1e0abc710e07b6f245322e1ee25547cfbdeddf84559a0c63a9307b",
+    "assertion_scope": "Four legal authored deck families, three AI levels, both seats. Each card is used by each seat across the aggregate; each card has a finalized trash target somewhere in the matrix. This does not assert every card is used at every level/seat.",
+    "registrations": "Authored legal coverage variants, not new sourced meta presets."
+  },
+  "existing_api_campaigns": {
+    "campaigns": 18,
+    "records": 129,
+    "cases": [
+      {
+        "name": "wheel-api",
+        "script": "check_spirit_wheel_api.py",
+        "script_sha256": "78134014e367e6686e03e9658e4c3c2acd99c28afaae19e9601a02a11089d348",
+        "records_key": "records",
+        "records": 6,
+        "baseline": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/trash-targets-api-baselines-v1/wheel-api.json",
+        "sha256": "d07d8fc158099a33f47864a87b050f8dcfa78ae3b725e7672c099ce98dfcbd7e",
+        "full_records_equal_to_prior": false,
+        "seconds": 5.773,
+        "campaign_report": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/trash-targets-api-baselines-v1/report.json"
+      },
+      {
+        "name": "resources-api",
+        "script": "check_resource_cards_api.py",
+        "script_sha256": "f00c90975bf57686258cc1caab338d6c16c5f1b52e419af76c4275d31c87d0e0",
+        "records_key": "records",
+        "records": 6,
+        "baseline": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/trash-targets-api-baselines-v1/resources-api.json",
+        "sha256": "494ba53f66eff4f10768697a399c8d65b96b815f7cf26582863e6f92b90154c7",
+        "full_records_equal_to_prior": true,
+        "seconds": 4.12,
+        "campaign_report": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/trash-targets-api-baselines-v1/report.json"
+      },
+      {
+        "name": "jae-api",
+        "script": "check_spell_choice_api.py",
+        "script_sha256": "390b4bf08adfaa8b49090df2dd5e8083b26e20ae66554e6a44a1893b884ebad1",
+        "records_key": "records",
+        "records": 6,
+        "baseline": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/trash-targets-api-baselines-v1/jae-api.json",
+        "sha256": "86c686e0d3dd0d011dc232734270f4632d07a8c426f22706346c56fa00429cf4",
+        "full_records_equal_to_prior": false,
+        "seconds": 4.172,
+        "campaign_report": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/trash-targets-api-baselines-v1/report.json"
+      },
+      {
+        "name": "format-api",
+        "script": "check_format_api.py",
+        "script_sha256": "6c3f6457abc0e5dabd9ad55c289b55338a8218557dc47fad72945a6b7d2c6ecb",
+        "records_key": "records",
+        "records": 9,
+        "baseline": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/trash-targets-api-baselines-v1/format-api.json",
+        "sha256": "20fa0edf139f9de4c844e1d843866e494d397449c79e4efa7538e9c93be46055",
+        "full_records_equal_to_prior": false,
+        "seconds": 18.898,
+        "campaign_report": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/trash-targets-api-baselines-v1/report.json"
+      },
+      {
+        "name": "entourage-api",
+        "script": "check_entourage_api.py",
+        "script_sha256": "6da14b4471fb8895ba322682a15850a2e5819fd765c6041fc99bc9930ddc7fe6",
+        "records_key": "records",
+        "records": 6,
+        "baseline": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/trash-targets-api-baselines-v1/entourage-api.json",
+        "sha256": "c2287193e933245e6860b30572f3841f2328dcdb3b9da807476ba0957c5da7ee",
+        "full_records_equal_to_prior": false,
+        "seconds": 4.972,
+        "campaign_report": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/trash-targets-api-baselines-v1/report.json"
+      },
+      {
+        "name": "sands-api",
+        "script": "check_sands_api.py",
+        "script_sha256": "276b6bf9ffd6e165c7079d749ac720d525161fef945bf4012767ad3de562e4dc",
+        "records_key": "records",
+        "records": 6,
+        "baseline": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/trash-targets-api-baselines-v1/sands-api.json",
+        "sha256": "494e0712b80bfa6b8be7bb9d578c054ffbb4378c5724d7138dc2e56fefde1134",
+        "full_records_equal_to_prior": true,
+        "seconds": 4.123,
+        "campaign_report": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/trash-targets-api-baselines-v1/report.json"
+      },
+      {
+        "name": "rockfall-api",
+        "script": "check_rockfall_api.py",
+        "script_sha256": "307c2cda5c5af1c1403296c313d5200bfa81571bfcfc80f7e918c08a556bfa81",
+        "records_key": "records",
+        "records": 6,
+        "baseline": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/trash-targets-api-baselines-v1/rockfall-api.json",
+        "sha256": "2c0bcf9b75386d4d270b3feb5f55eb96ce83f0f3b3bf4780d28d5a8f126f626b",
+        "full_records_equal_to_prior": true,
+        "seconds": 5.324,
+        "campaign_report": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/trash-targets-api-baselines-v1/report.json"
+      },
+      {
+        "name": "heavens-api",
+        "script": "check_heavens_api.py",
+        "script_sha256": "823c7b0cbda4d146e84e4e0b6cb8d8b6174d23600f325030dd3e696ec769f6c9",
+        "records_key": "records",
+        "records": 6,
+        "baseline": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/trash-targets-api-baselines-v1/heavens-api.json",
+        "sha256": "350508f38d401ca586fe8cea76ccb362c15e50c8aaa32dee45c68861746d69fe",
+        "full_records_equal_to_prior": false,
+        "seconds": 4.416,
+        "campaign_report": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/trash-targets-api-baselines-v1/report.json"
+      },
+      {
+        "name": "disarm-api",
+        "script": "check_disarm_api.py",
+        "script_sha256": "cb442ced8fc988239b5c48db2d1d02697688313719639589121b677242e9dd21",
+        "records_key": "records",
+        "records": 6,
+        "baseline": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/trash-targets-api-baselines-v1/disarm-api.json",
+        "sha256": "ba6c0ee3cf439ccf60ea0a49b2a56d30a0ac1de51c7e3c0bb282a6707b20341f",
+        "full_records_equal_to_prior": false,
+        "seconds": 4.321,
+        "campaign_report": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/trash-targets-api-baselines-v1/report.json"
+      },
+      {
+        "name": "turn-keywords-api",
+        "script": "check_turn_keywords_api.py",
+        "script_sha256": "89669e0a2bdddcfd2c8358b1513aae60dbeb14cd57d2a1a9e7fecc76770fb006",
+        "records_key": "records",
+        "records": 12,
+        "baseline": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/trash-targets-api-baselines-v2/turn-keywords-api.json",
+        "sha256": "1abaaa72644fcc465193d9a648a09cd96c7b1ddbf4543fb1bb1aa7521996d2a2",
+        "full_records_equal_to_prior": false,
+        "seconds": 10.483,
+        "campaign_report": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/trash-targets-api-baselines-v2/report.json"
+      },
+      {
+        "name": "flurry-api",
+        "script": "check_flurry_api.py",
+        "script_sha256": "1181bb73038a9892eab1ef38cafcf76af9bba6a80166255284808303178454cd",
+        "records_key": "records",
+        "records": 6,
+        "baseline": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/trash-targets-api-baselines-v2/flurry-api.json",
+        "sha256": "672b2d52847305d5572ed9c534ce723af7dca8fbf1038716199961526859ef24",
+        "full_records_equal_to_prior": false,
+        "seconds": 5.726,
+        "campaign_report": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/trash-targets-api-baselines-v2/report.json"
+      },
+      {
+        "name": "warden-api",
+        "script": "check_warden_api.py",
+        "script_sha256": "7fef277157dd6423c98302a768ab2b7560c2822b1f5a66fb569234eb9b48723e",
+        "records_key": "records",
+        "records": 6,
+        "baseline": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/trash-targets-api-baselines-v2/warden-api.json",
+        "sha256": "a529bad114cf118ab3fd51d989fb5d9fb7f44f815e10c7de3c4ca4bb7957be63",
+        "full_records_equal_to_prior": false,
+        "seconds": 4.972,
+        "campaign_report": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/trash-targets-api-baselines-v2/report.json"
+      },
+      {
+        "name": "discord-api",
+        "script": "check_discord_api.py",
+        "script_sha256": "8d68a5625c34045a3dd09f32e83cce5fd279453366a7675909486ecf97c6f550",
+        "records_key": "records",
+        "records": 6,
+        "baseline": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/trash-targets-api-baselines-v2/discord-api.json",
+        "sha256": "7a824bfd516844f2f7511b803a7b8e143bea6186b931de2106d4a2256a0d0476",
+        "full_records_equal_to_prior": false,
+        "seconds": 5.972,
+        "campaign_report": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/trash-targets-api-baselines-v2/report.json"
+      },
+      {
+        "name": "fields-api",
+        "script": "check_fields_api.py",
+        "script_sha256": "e78fec484a7f4889430b871907eb7eae7226d27c92c1a52923ad561d86cb20ea",
+        "records_key": "records",
+        "records": 18,
+        "baseline": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/trash-targets-api-baselines-v2/fields-api.json",
+        "sha256": "485d1254bb472ee9afcd356de41e69afb105a96768877900acb2cc01ffd729b1",
+        "full_records_equal_to_prior": false,
+        "seconds": 14.632,
+        "campaign_report": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/trash-targets-api-baselines-v2/report.json"
+      },
+      {
+        "name": "entry-api",
+        "script": "check_entry_api.py",
+        "script_sha256": "158de1c474196d901c5f75402554e71a2b92ff430b86f1c287aa0d12c8d33a1b",
+        "records_key": "records",
+        "records": 6,
+        "baseline": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/trash-targets-api-baselines-v2/entry-api.json",
+        "sha256": "4eecf0b8e53e4cb82bd402fd7f144144274ba5c836d2c84d690460b817b6415c",
+        "full_records_equal_to_prior": false,
+        "seconds": 3.569,
+        "campaign_report": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/trash-targets-api-baselines-v2/report.json"
+      },
+      {
+        "name": "control-api",
+        "script": "check_control_api.py",
+        "script_sha256": "e14e54120f7386460d80408c3b99d66578aa8f1ff8dac83783c6cb648219996b",
+        "records_key": "records",
+        "records": 6,
+        "baseline": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/trash-targets-api-baselines-v2/control-api.json",
+        "sha256": "d7cdb1554f1eda2c62d655a33b770b2764305ab3b248e8ba45a63b01850b4f1c",
+        "full_records_equal_to_prior": true,
+        "seconds": 8.38,
+        "campaign_report": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/trash-targets-api-baselines-v2/report.json"
+      },
+      {
+        "name": "field-options-api",
+        "script": "check_field_options_api.py",
+        "script_sha256": "0fdc497c1801fd4014a8775476a908e22a551fab03f1ba248dc157549d06a25e",
+        "records_key": "records",
+        "records": 6,
+        "baseline": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/trash-targets-api-baselines-v2/field-options-api.json",
+        "sha256": "623ce90989cf3eeec3b8c6cd8cf445780397958e0f310d63f7e3fb20c533c650",
+        "full_records_equal_to_prior": true,
+        "seconds": 6.125,
+        "campaign_report": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/trash-targets-api-baselines-v2/report.json"
+      },
+      {
+        "name": "recovery-api",
+        "script": "check_recovery_api.py",
+        "script_sha256": "776baec14a8f4a153811fb527db371c5b296273f7f52db88015ad0cf0b4e7d3d",
+        "records_key": "records",
+        "records": 6,
+        "baseline": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/trash-targets-api-baselines-v2/recovery-api.json",
+        "sha256": "4628d335639a9ca9629d6d24fa7ffe338b3b2c86f41b86c609c31e47e0f6e77d",
+        "full_records_equal_to_prior": false,
+        "seconds": 6.726,
+        "campaign_report": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/trash-targets-api-baselines-v2/report.json"
+      }
+    ],
+    "changes_review": "Changed match traces and some outcomes follow the shared automatic multi-target correction; source presets were preserved. A prior-versus-candidate replay isolates Flash gaining its missing second target and associated Irelia/Spirit Wheel choices. Turn-keyword coverage now runs both initial play orders, preserving its per-seat use assertions.",
+    "causal_replay": {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/trash-targets-wheel-divergence.json",
+      "sha256": "ff79cd6a7ceeceaa8f7f3fbef5bb9261dbbcacb727f60b86ccc6ac9cb8c4c50e",
+      "seed": 454111,
+      "difficulty": "tactical",
+      "irelia_seat": 1,
+      "first_player": 0,
+      "first_difference": "Observation 758: Flash chain item 55 has two selected units instead of one; trigger-order options grow from two to four."
+    }
+  },
+  "retained_failures": [
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/trash-targets-api-v2.json",
+      "sha256": "8186f1a3affd6ba553c794742c8347cd52df819259635cf892446536bf566d3f",
+      "finding": "Six original series finished but seat 0 never used Shadows; retained failure and expanded to four purposeful deck families with the same seeds and assertions."
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/trash-targets-api-baselines-v1/turn-keywords-api.json",
+      "sha256": "20c0aa3ca8a54766f69285f81caa7b0a052ec82c080ef997bd0badecc8d644e3",
+      "finding": "Original six series finished but seat 1 had no Yuumi trigger. Same fixed seeds now cover both play orders; twelve-series campaign passed unchanged per-seat assertions."
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/trash-targets-tests-v7.log",
+      "sha256": "44c563882fa8f55f1009adb9ea38782273cb3541aaaa0676845d9704c2cc3413",
+      "finding": "New Flash regression counted the internal pending list, excluding an already surfaced single legend choice. Corrected to assert the public decision and actual movement."
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/trash-targets-matches-v5.log",
+      "sha256": "1ec852ff0349d2c010dd77bdb713b4d61ae916c981d10e1bd99b83e5f8eda2c9",
+      "finding": "Smaller matrix completed games but did not exercise Strategic Shadows in both seats; the fixed 384-game matrix preserves the coverage assertion."
+    },
+    {
+      "kind": "initial_immutable_candidate",
+      "details": {
+        "status": "first_candidate_failed",
+        "revision": "606e5d10a800b89ca59ae2a0cb2c1ea8a60c87df",
+        "rust_tests": 2204,
+        "passed": 2203,
+        "failed_test": "irelia_decisions::all_levels_pay_to_ready_an_exhausted_unit_for_the_winning_route",
+        "terminal_observation": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/trash-targets-release-v1/terminal-observation.json",
+        "corrected_acceptance": "pending; API refresh running"
+      }
+    }
+  ],
+  "installed_release": {
+    "status": "passed",
+    "revision": "3c6861d7ce935d1c238cdfd14b2f8bb81f30faae",
+    "report": {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/trash-targets-release-v2/status.json",
+      "sha256": "7ea4abec0bac672bdfa57ea55d68b31a5cb684ba14dea6c101affcc59c6608ac"
+    },
+    "plan": {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/trash-targets-release-plan-v2.json",
+      "sha256": "8c3295b53d8e50d9a60c55c24c531dac903713b3bbfa4eb0cf48b8c179edcc95"
+    },
+    "nix_prebuild_log": {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/trash-targets-ai-nix-v1/nix.log",
+      "sha256": "b7b5ffd686150f19b610491569b03762bc28a68f8a46295ea59848844f117a68"
+    },
+    "rust_tests": 2206,
+    "source_tests": 346,
+    "simulation_games": 1176,
+    "ui_cases": 43,
+    "captures": 458,
+    "api_campaigns": 19,
+    "api_records": 153,
+    "all_api_records_equal": true,
+    "package": "/nix/store/lbfa0crxyvqp53vwbrsmhnx7vc5jqbm3-local-rift-0.1.0",
+    "simulation_output": {
+      "path": "/nix/store/l536jsvfa6260ckimzhxfj3xkzxs7713-local-rift-simulation-check",
+      "sha256": "746c7ca8499033de4472a89e07470a3474c786c8a0f16b77ec44718f37c8d32b"
+    },
+    "api_baseline_report": {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/trash-targets-ai-api-v1/report.json",
+      "sha256": "6adec8ea6e83943533eff6c193720d02487e329baea20a3c7c69f35a702f3cc0"
+    },
+    "api_change_review": {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/trash-targets-ai-api-comparison-v1.json",
+      "sha256": "68324af82a396935156403ce26ce9d2611ab6667ccdf0ec4aac49fddae1291da"
+    },
+    "actual_viewed_captures": [
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/trash-targets-release-v2/trash-choices-normal/rift_trash_harrowing_cost.png",
+        "sha256": "9c18e11be6d18ea6b343023dc63ace3514920f17bc6148875b11720bcac2f233",
+        "finding": "Pending card shows zero Energy and one Power, with the On chain tray and resource controls available."
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/trash-targets-release-v2/trash-choices-small/rift_trash_shadows_two_targets.png",
+        "sha256": "f36719ce6f49313811f66e565c5ae7fb0e320ca0d7be560ec658d6cb2a73d004",
+        "finding": "Selections retain names and trash owners across both players; the opponent unit is marked chosen and gear remains ineligible."
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/trash-targets-release-v2/trash-choices-small/rift_trash_guardian_inspect.png",
+        "sha256": "7f1ac5746121f43cd62e735ed9cd4f6d23d0782aeb93430f7593b45995e8f162",
+        "finding": "Full official card face, name, cost and complete rules text are readable in the small inspector."
+      }
+    ]
+  },
+  "remaining_goal": {
+    "mapped_legal_snapshot_identities": 519,
+    "unimplemented_legal_snapshot_identities": 560,
+    "full_rules_fidelity_proven": false,
+    "expert_ai_strength_proven": false
+  },
+  "strategic_draw_fix": {
+    "cause": "One sampled Discipline draw became Ride the Wind, making a speculative win score above the known-board Irelia readiness route. Expanding the playable pool changed that sample.",
+    "policy": "After a hypothetical Draw, defer followup hand plays/hiding until the next actual decision; board, champion and other known-zone actions remain.",
+    "limits": "This also conservatively defers known cards already in hand after such a draw. It is not a probability-weighted search or a general proof of expert strength.",
+    "new_cases": "Both seats, three different unseen deck identities, actual turn completion; drawn Ride the Wind remains usable at the next real decision.",
+    "retained_diagnostic": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/trash-targets-irelia-diagnostic-v1.log"
+  }
+}

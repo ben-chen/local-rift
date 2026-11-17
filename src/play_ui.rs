@@ -558,6 +558,9 @@ pub(super) fn target_view_hint(game: &Game, view: &PlayTargetView) -> String {
         local_rift::rules::PlayTargetKind::Spell if view.card_id == 442 => {
             "an enemy spell or ability choosing that unit and no other friendly unit"
         }
+        local_rift::rules::PlayTargetKind::Trash => {
+            "highlighted unit cards in Trash; switch owners to view either pile"
+        }
         local_rift::rules::PlayTargetKind::Rune => {
             "up to two different runes in either rune zone (optional)"
         }
@@ -1382,6 +1385,9 @@ impl App {
             }
         } else if targets.is_empty() {
             match local_rift::rules::play_target_spec(view.card_id).kind {
+                Some(local_rift::rules::PlayTargetKind::Trash) => {
+                    "Choose highlighted cards in Trash.".into()
+                }
                 Some(local_rift::rules::PlayTargetKind::Legend) => {
                     "Choose a legend in the ability panel.".into()
                 }

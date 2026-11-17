@@ -165,7 +165,11 @@ pub enum SourceDamageRecipients {
 pub enum Effect {
     /// Choose the public-zone target before this ability enters the chain.
     ReturnTrashToHand {
-        kind: crate::cards::CardKind,
+        kinds: &'static [crate::cards::CardKind],
+    },
+    PlayTrash {
+        kinds: &'static [crate::cards::CardKind],
+        instruction: crate::game::InstructedPlayKind,
     },
     /// One targeted reduction using the summed keyword value captured at attack.
     Disarm,
@@ -393,6 +397,33 @@ pub fn trigger_rules(card_id: usize) -> &'static [TriggerRule] {
         )
     };
     match card_id {
+        476 => {
+            const {
+                &[rule(
+                    SelfHold,
+                    &[],
+                    true,
+                    TargetRule::NONE,
+                    &[ReturnTrashToHand {
+                        kinds: &[crate::cards::CardKind::Unit, crate::cards::CardKind::Gear],
+                    }],
+                )]
+            }
+        }
+        477 => {
+            const {
+                &[rule(
+                    SelfPlayed,
+                    &[],
+                    true,
+                    TargetRule::NONE,
+                    &[PlayTrash {
+                        kinds: &[crate::cards::CardKind::Unit],
+                        instruction: crate::game::InstructedPlayKind::Soulgorger,
+                    }],
+                )]
+            }
+        }
         474 => {
             const {
                 &[rule(
@@ -401,7 +432,7 @@ pub fn trigger_rules(card_id: usize) -> &'static [TriggerRule] {
                     false,
                     TargetRule::NONE,
                     &[ReturnTrashToHand {
-                        kind: crate::cards::CardKind::Unit,
+                        kinds: &[crate::cards::CardKind::Unit],
                     }],
                 )]
             }
@@ -414,7 +445,7 @@ pub fn trigger_rules(card_id: usize) -> &'static [TriggerRule] {
                     false,
                     TargetRule::NONE,
                     &[ReturnTrashToHand {
-                        kind: crate::cards::CardKind::Spell,
+                        kinds: &[crate::cards::CardKind::Spell],
                     }],
                 )]
             }

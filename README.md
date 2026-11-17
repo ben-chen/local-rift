@@ -71,7 +71,7 @@ Outputs are provided for x86-64 and ARM64 Linux, plus Apple Silicon macOS. Linux
 
 Choose **Historical snapshot** to practice the original dated tournament lists under the bundled October 24 catalog, or use the announced-date button to preview scheduled restrictions. The panel checks both players, names banned cards and battlefields, and warns about upcoming restrictions. Best-of-three checks include the complete sideboard and all registered fields. Rejected starts preserve an existing match; no cards are silently substituted. The format remains visible during play and between games. For repeatable launches, `--format today`, `--format snapshot`, or `--format YYYY-MM-DD` selects the format at launch. Existing native smoke scenarios explicitly use historical practice; `--ui-smoke-format` exercises the date controls and rejection paths.
 
-Relaxed uses straightforward plays. Tactical weighs combat and resources. Strategic compares bounded sequences of possible plays and their public board outcomes, including alternative combat damage assignments that respect Tank and Backline. Its combat forecasts also consider which units the opponent can defeat. It samples unknown draws from cards legal for the public legend identity; it cannot read the opponent’s hidden hand, deck list, facedown identities, or future deck order. Its short search assumes no further discretionary responses while resolving a candidate, so it remains a practice opponent rather than a tournament-strength benchmark.
+Relaxed uses straightforward plays. Tactical weighs combat and resources. Strategic compares bounded sequences of possible plays and their public board outcomes, including alternative combat damage assignments that respect Tank and Backline. Its combat forecasts also consider which units the opponent can defeat. It samples unknown draws from cards legal for the public legend identity; it cannot read the opponent’s hidden hand, deck list, facedown identities, or future deck order. After a hypothetical draw, its short search defers further hand plays until the draw actually occurs; it can still plan movement and other available board actions. It assumes no further discretionary responses while resolving a candidate, so it remains a practice opponent rather than a tournament-strength benchmark.
 
 The opponent thinks in the background. You can inspect cards, open Learn to play or Settings, and choose a new match while a calculation is running. A completed move waits while an inspection or menu pauses play. Starting a new match discards any result from the old one. If a calculation fails, the match stays unchanged and an explicit **Retry opponent** control lets you try again.
 
@@ -109,6 +109,8 @@ entry with a visible movement restriction for that turn. The panel explains the
 choice before you play, and Mote can explain the rule or its strategic tradeoff.
 
 Open **Trash → Banish** to inspect banished cards. The owner button switches between your cards and the opponent’s. Clicking a banished card opens its full text. Click **Banish** again to return to trash.
+
+For **The Harrowing** or **Shadows of the Past**, select the spell, open **Trash**, and click the highlighted eligible cards. The owner button lets Shadows choose from either player's trash without losing your selection. Click a chosen card again to remove it. Shadows can return zero, one, or two units; each returns to its owner's hand. The Harrowing plays a unit after responses, waiving its base Energy cost while preserving Power and additional costs. The **On chain** tray and cost panel guide that pending play. Guardian of the Passage and Soulgorger also offer their optional trash choices when their abilities trigger.
 
 Gear-targeting abilities open the Loadout, highlight legal equipment, and retain your chosen target when switching players. Printed Energy limits appear beside the confirmation controls; optional abilities have a separate decline button.
 
@@ -339,6 +341,13 @@ changes scheduling; no tests are omitted. It retains a JUnit report in
 `target/nextest/ci/junit.xml`. This runs the full suite; the separate Cargo command
 keeps documentation tests covered. During implementation, use a focused test
 filter for the changed mechanic, then run full regression on the final candidate.
+
+Changes to automatic plays, AI scoring, or the playable card pool should also
+run `cargo test --locked --test irelia_decisions` during iteration. New cards
+change the planner's hypothetical draws even when their own effects are not
+used in that scenario. For the broader existing Irelia iteration checks, use
+`python3 tools/check_irelia_practice.py --help`. A large match-completion batch
+does not replace these exact decision assertions.
 
 Keep each checkout's default `target/` directory, or give each worktree its own
 `CARGO_TARGET_DIR`. Sharing project build outputs between old and new revisions

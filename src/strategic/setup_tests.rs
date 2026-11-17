@@ -134,7 +134,7 @@ fn equivalent_targetless_play_encodings_have_identical_engine_results() {
                     "card {card}, actor {actor}"
                 );
             }
-            let candidates = game.strategic_candidates(ROOT_LIMIT).unwrap();
+            let candidates = game.strategic_candidates(ROOT_LIMIT, true).unwrap();
             let mut seen = 0;
             for action in candidates {
                 let mut after = game.clone();

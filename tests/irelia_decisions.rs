@@ -348,6 +348,72 @@ fn all_levels_pay_to_ready_an_exhausted_unit_for_the_winning_route() {
 }
 
 #[test]
+fn strategic_takes_the_public_winning_route_independently_of_the_unseen_draw() {
+    for player in 0..2 {
+        for unknown_card in [1, 7, 14] {
+            let mut game = unit_ready_choice(player, 0, false, Difficulty::Strategic);
+            // Discipline's upcoming draw is not information the planner has.
+            // Ride the Wind would offer a different win if it were actually drawn.
+            game.players[player].deck.fill(unknown_card);
+            let runes = game.players[player].total_runes();
+            game.step_ai().unwrap();
+            assert_eq!(game.players[player].total_runes(), runes - 1);
+            let turn = game.turn;
+            for _ in 0..48 {
+                if game.winner.is_some() || game.turn != turn {
+                    break;
+                }
+                if game.priority() == player {
+                    assert!(game.step_ai().unwrap());
+                } else {
+                    game.apply(Action::Pass).unwrap();
+                }
+            }
+            assert_eq!(
+                game.winner,
+                Some(player),
+                "{player}/{unknown_card}: {:?}",
+                game.log
+            );
+            assert_eq!(game.turn, turn);
+        }
+    }
+}
+
+#[test]
+fn strategic_can_use_the_new_card_after_the_actual_draw() {
+    for player in 0..2 {
+        let mut game = unit_ready_choice(player, 0, false, Difficulty::Strategic);
+        game.players[player].deck.fill(14); // Ride the Wind.
+        game.apply(Action::Choose { accept: false }).unwrap();
+        resolve(&mut game);
+        assert_eq!(game.players[player].hand, vec![14]);
+        assert!(
+            !game.players[player]
+                .units
+                .iter()
+                .find(|u| u.id == 51002)
+                .unwrap()
+                .ready
+        );
+        let turn = game.turn;
+        for _ in 0..48 {
+            if game.winner.is_some() || game.turn != turn {
+                break;
+            }
+            if game.priority() == player {
+                assert!(game.step_ai().unwrap());
+            } else {
+                game.apply(Action::Pass).unwrap();
+            }
+        }
+        assert_eq!(game.winner, Some(player), "{player}: {:?}", game.log);
+        assert_eq!(game.turn, turn);
+        assert!(game.players[player].discard.contains(&14));
+    }
+}
+
+#[test]
 fn human_redundant_ready_is_legal_but_does_not_repeat_fervents_bonus() {
     for player in 0..2 {
         let mut accepted = unit_ready_choice(player, 0, true, Difficulty::Tactical);

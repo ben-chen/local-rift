@@ -459,7 +459,10 @@ impl Game {
                 .first_used
                 .push((context.source, rule_index));
         }
-        if matches!(rule.effects, [Effect::ReturnTrashToHand { .. }]) {
+        if matches!(
+            rule.effects,
+            [Effect::ReturnTrashToHand { .. } | Effect::PlayTrash { .. }]
+        ) {
             self.queue_trigger_choice(
                 context.source.player,
                 card_id,
@@ -1716,9 +1719,9 @@ impl Game {
         let targets = selected;
         for effect in rule.effects {
             match *effect {
-                Effect::ReturnTrashToHand { .. } => {
+                Effect::ReturnTrashToHand { .. } | Effect::PlayTrash { .. } => {
                     return Err(
-                        "A trash return must finalize its chosen card before resolution.".into(),
+                        "A trash ability must finalize its chosen card before resolution.".into(),
                     );
                 }
                 Effect::SpendSourceBuffTo(effect) => {

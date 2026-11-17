@@ -149,14 +149,14 @@
       "gear": 80,
       "legend": 11,
       "rune": 6,
-      "spell": 137,
-      "unit": 259
+      "spell": 139,
+      "unit": 261
     },
-    "implemented_main_cards": 476,
+    "implemented_main_cards": 480,
     "implemented_legends": 11,
     "implemented_battlefields": 22,
-    "implemented_legal_identities": 515,
-    "unimplemented_legal_identities": 564,
+    "implemented_legal_identities": 519,
+    "unimplemented_legal_identities": 560,
     "errata_entries": 67,
     "identities_with_errata": 67,
     "source_quality_issues": 60,
@@ -14867,8 +14867,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 476,
+        "official_id": "sfd-035-221",
+        "playable_in_client": true
       }
     },
     {
@@ -32463,8 +32465,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 479,
+        "official_id": "ven-103-166",
+        "playable_in_client": true
       }
     },
     {
@@ -34197,8 +34201,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 477,
+        "official_id": "ogn-196-298",
+        "playable_in_client": true
       }
     },
     {
@@ -37033,8 +37039,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 478,
+        "official_id": "ogn-198-298",
+        "playable_in_client": true
       }
     },
     {

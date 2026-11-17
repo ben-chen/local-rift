@@ -1444,3 +1444,97 @@ usage in full games, and installed acceptance are recorded in
 two actual games), and 18 API campaigns whose 123 complete records matched
 the local baselines. Four installed small-window images were actually viewed.
 Complete Standard conformity remains unproven.
+
+
+## Optional trash recovery and instructed play — local validation
+
+Guardian of the Passage (SFD035) holds before Channel/Draw and optionally
+returns one unit or gear from its controller's trash to hand. Soulgorger
+(OGN196) optionally targets a unit in its controller's trash and instructs its
+play with base Energy waived. Both select the public-zone target before the
+ability enters the chain (Core 355.8–355.10.a.1). Departed targets do not
+become valid when an identical card arrives (359.3.e.4). Soulgorger moves the
+child onto the chain, finishes the parent, and then finalizes the child's
+location and payment (354.3). Power and additional costs remain payable.
+
+Focused public-action scenarios cover both seats, hold timing, optional
+decline, type restrictions, response boundaries, Power refusal/restoration,
+Accelerate's additional cost, and the child's own on-play trigger. One
+explicit internal zone-boundary scenario isolates departed-copy identity.
+Shared metadata drives API choices and native eligibility; the final native
+checks preserve Loadout access during pending play. The inspected cost panel
+shows the amount due, and the card is labeled On chain instead of Hand.
+
+Local evidence and iteration failures are retained in
+`validation/irelia_trash_choices.json`. The next checkpoint below adds The
+Harrowing and Shadows of the Past. Complete Standard conformity and expert
+opponent strength remain unproven.
+
+
+## Public-trash spell targets — local validation
+
+The Harrowing (OGN198) requires one unit in its controller's trash. Shadows of
+the Past (VEN103) permits zero to two units from either trash, returning each
+to its owner's hand. Both choose targets during spell finalization, before
+responses (355.8–355.10.a.1). Reviewed full faces confirm the printed types,
+costs and instructions; the archive's extraneous Equipment field for Shadows
+is retained as source evidence and does not grant a spell an Equip ability.
+
+References record a position and history revision instead of treating a current
+trash index or definition ID as physical identity. Central removal, exact
+failed-play restoration, and burnout update that history. Thus immutable target
+copies in the chain, Repeat executions and pending payments follow the same
+occurrence. A later identical arrival cannot revive a departed target
+(359.3.e.4); unaffected targets still resolve (359.3.e.5). Restoration reverses
+the specific pending departure, including when other trash cards burned out.
+Normal arrivals append; future code must use these central boundaries for
+removal, insertion and clearing. Existing trigger-index adapters remain for
+older trash abilities.
+
+The Harrowing moves its selected card to the pending chain, finishes the parent,
+then finalizes the child (354.3). Its base Energy waiver preserves Power and
+additional costs. Positive-cost refusal restores that exact origin (445.2.a).
+Returning a card to hand neither draws nor plays it. Public-action tests include
+a real Reaction that burns out one targeted trash while the other target still
+returns. Separate internal-boundary fixtures isolate exact-copy removal and
+restoration; these are not represented as complete public gameplay sequences.
+Choosing a unit card in trash does not trigger Irelia's friendly-unit choice
+ability: unqualified units refer to the Board (141.1.b, 355.9.a.1). The regression
+keeps Irelia ready, checks both spells and both seats, and includes a positive
+control that does trigger her when an actual board unit is chosen.
+
+AI candidate scoring previously gave an explicit empty recovery the value of
+an automatically chosen useful set. It now scores actual targets, counts a
+repeated occurrence once, and prunes unhelpful choices only from AI selection.
+The older automatic hand/champion play path also reduced a validated multi-target
+set to its first target before execution; retaining the requested prefix fixes
+that mismatch. Explicit zero-target Shadows remains legal for players and API
+clients. See `validation/irelia_trash_targets.json` for the exact checks and
+remaining acceptance work; no expert-strength claim follows from completion
+of simulated games.
+
+
+### Strategic followups after a hypothetical draw
+
+The installed test of revision `606e5d1` found one failed Irelia decision
+among 2,204 Rust tests. With player 1's exhausted Irelia, Fervent and the
+last scoring route open, Strategic declined the legend's Power payment.
+Its hypothetical Discipline draw was Ride the Wind. Both simulated branches
+then reached a win, so saving the rune made the speculative branch score
+slightly higher. That sampled identity was not observable information.
+
+Followup search now defers hand plays and hiding after a hypothetical Draw;
+board actions, champion plays, and other known-zone actions remain available.
+The policy resets at each actual decision, when the real hand is observed.
+This is deliberately conservative: it also defers followup use of cards already
+in hand after such a draw, and does not implement probability-weighted search
+across future observations. Game legality, player choices, draw execution and
+hidden-information filtering are unchanged. This is an AI improvement, not a
+new claim of complete rules fidelity or expert strength.
+
+The existing Irelia payment assertions remain intact. Two new public-action
+scenarios verify both seats across different unseen deck identities, complete
+the winning turn, and independently verify that an actually drawn Ride the
+Wind can still be used to win. The earlier failed package and diagnostic root
+scores are retained outside the checkout. Release acceptance must be rerun
+on the corrected immutable revision and refreshed API results reviewed.

@@ -1,7 +1,7 @@
 //! Actual inspection, deployment, public trash selection and private Vision controls.
 use super::*;
 
-fn setup(app: &mut App, card: usize) {
+pub(super) fn setup(app: &mut App, card: usize) {
     expansion_fixture(app, card);
     app.game = Game::new_for_agents(0, 0, 475475, Difficulty::Easy);
     app.game.choose_starting_player(0).unwrap();
@@ -68,7 +68,7 @@ fn advance(app: &mut App) {
     panic!("recovery scenario did not settle");
 }
 
-fn advice(app: &mut App, text: &str) {
+pub(super) fn advice(app: &mut App, text: &str) {
     app.companion.observe(&app.game);
     for _ in 0..100 {
         if app.companion.message().contains(text) {

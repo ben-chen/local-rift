@@ -1,0 +1,268 @@
+{
+  "checked_at": "2026-11-17T02:50:56.157776+00:00",
+  "scope": "Additional legal Calm/Chaos cards: shared public-trash targeting, optional triggers and instructed plays. Not a claim that these are current Irelia meta staples.",
+  "records": [
+    {
+      "identity": "sfd-035-221",
+      "name": "Guardian of the Passage",
+      "effective": {
+        "types": [
+          "unit"
+        ],
+        "super_types": [],
+        "domains": [
+          "calm"
+        ],
+        "energy": 6,
+        "power": null,
+        "might": 6,
+        "might_bonus": null,
+        "tags": [
+          "Spirit",
+          "Shadow Isles"
+        ],
+        "rules_html": "<p>When I hold, you may return a unit or gear from your trash to your hand.</p>",
+        "rules_text": "When I hold, you may return a unit or gear from your trash to your hand.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "source_review": {
+        "status": "no_detected_conflicts",
+        "resolution_ids": [],
+        "unresolved_gameplay_fields": [],
+        "variant_diagnostics": [],
+        "reviewed_variant_fields": [],
+        "unresolved_variant_fields": []
+      },
+      "errata": [],
+      "snapshot_standard_legal": true,
+      "original_image": {
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/f6b932aa510c92d014422d31e27b1505e54abe20-744x1039.png?accountingTag=RB",
+        "path": "assets/data/card_admissions/irelia_trash_targets/sfd-035-221.png",
+        "sha256": "26d2d60cacce5bd5e4191298349efa566dce32007f8808e445938185eacd63dd",
+        "dimensions": [
+          744,
+          1039
+        ]
+      },
+      "actual_full_face_viewed": true,
+      "visual_review": {
+        "reviewed_at": "2026-11-17T02:58:07.791440+00:00",
+        "printed_cost_type_domain_stats_tags_and_rules_checked": true,
+        "matches_printed_gameplay_facts": true,
+        "notes": "Printed Calm unit; 6 Energy, no Power cost, 6 Might; Shadow Isles/Spirit. Optional unit-or-gear recovery on holding."
+      },
+      "runtime_id": 476,
+      "runtime_image": {
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/f6b932aa510c92d014422d31e27b1505e54abe20-744x1039.png?w=280&q=85&fm=png",
+        "path": "assets/art/card_476.png",
+        "sha256": "d300775729c098d917e101e50db745715e6cacdd90dee41f5a3147d36428151c",
+        "dimensions": [
+          280,
+          391
+        ]
+      }
+    },
+    {
+      "identity": "ogn-196-298",
+      "name": "Soulgorger",
+      "effective": {
+        "types": [
+          "unit"
+        ],
+        "super_types": [],
+        "domains": [
+          "chaos"
+        ],
+        "energy": 8,
+        "power": 2,
+        "might": 5,
+        "might_bonus": null,
+        "tags": [
+          "Spirit",
+          "Shadow Isles"
+        ],
+        "rules_html": "<p>When you play me, you may play a unit from your trash, ignoring its Energy cost. (You must still pay its Power cost.)</p>",
+        "rules_text": "When you play me, you may play a unit from your trash, ignoring its Energy cost. (You must still pay its Power cost.)",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "source_review": {
+        "status": "no_detected_conflicts",
+        "resolution_ids": [],
+        "unresolved_gameplay_fields": [],
+        "variant_diagnostics": [],
+        "reviewed_variant_fields": [],
+        "unresolved_variant_fields": []
+      },
+      "errata": [],
+      "snapshot_standard_legal": true,
+      "original_image": {
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/439c4fa7c8c47cba41df8bce3fe3c8068d297382-744x1039.png?accountingTag=RB",
+        "path": "assets/data/card_admissions/irelia_trash_targets/ogn-196-298.png",
+        "sha256": "e81e5b679c2b7dacdb55f232a65150dd497da91ad6bb8996c56a96afb40aad04",
+        "dimensions": [
+          744,
+          1039
+        ]
+      },
+      "actual_full_face_viewed": true,
+      "visual_review": {
+        "reviewed_at": "2026-11-17T02:58:07.791440+00:00",
+        "printed_cost_type_domain_stats_tags_and_rules_checked": true,
+        "matches_printed_gameplay_facts": true,
+        "notes": "Printed Chaos unit; 8 Energy, 2 Power, 5 Might; Shadow Isles/Spirit. Optional unit play from own trash on play; only Energy cost waived."
+      },
+      "runtime_id": 477,
+      "runtime_image": {
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/439c4fa7c8c47cba41df8bce3fe3c8068d297382-744x1039.png?w=280&q=85&fm=png",
+        "path": "assets/art/card_477.png",
+        "sha256": "59792691b663896a68e00e0f1ec1c8d34d791d9bdb1d14a10273efb7c0253f8d",
+        "dimensions": [
+          280,
+          391
+        ]
+      }
+    },
+    {
+      "identity": "ogn-198-298",
+      "name": "The Harrowing",
+      "effective": {
+        "types": [
+          "spell"
+        ],
+        "super_types": [],
+        "domains": [
+          "chaos"
+        ],
+        "energy": 6,
+        "power": 2,
+        "might": null,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>Play a unit from your trash, ignoring its Energy cost. (You must still pay its Power cost.)</p>",
+        "rules_text": "Play a unit from your trash, ignoring its Energy cost. (You must still pay its Power cost.)",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "source_review": {
+        "status": "no_detected_conflicts",
+        "resolution_ids": [],
+        "unresolved_gameplay_fields": [],
+        "variant_diagnostics": [],
+        "reviewed_variant_fields": [],
+        "unresolved_variant_fields": []
+      },
+      "errata": [],
+      "snapshot_standard_legal": true,
+      "original_image": {
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/6914034f56dd50ab37df26e3541c997479bb5a6d-744x1039.png?accountingTag=RB",
+        "path": "assets/data/card_admissions/irelia_trash_targets/ogn-198-298.png",
+        "sha256": "a45ac49d48958e93164407b6f4d6e52844bf3cb3dff9111c88c1add7a6df7c9f",
+        "dimensions": [
+          744,
+          1039
+        ]
+      },
+      "actual_full_face_viewed": true,
+      "visual_review": {
+        "reviewed_at": "2026-11-17T02:58:07.791440+00:00",
+        "printed_cost_type_domain_stats_tags_and_rules_checked": true,
+        "matches_printed_gameplay_facts": true,
+        "notes": "Printed Chaos spell; 6 Energy, 2 Power. Unit play from own trash; only Energy cost waived."
+      },
+      "runtime_id": 478,
+      "runtime_image": {
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/6914034f56dd50ab37df26e3541c997479bb5a6d-744x1039.png?w=280&q=85&fm=png",
+        "path": "assets/art/card_478.png",
+        "sha256": "28027fb833f7fa7bbcd818e13f2e2c35e031faef1f58f6276ebc734c1cbff104",
+        "dimensions": [
+          280,
+          391
+        ]
+      }
+    },
+    {
+      "identity": "ven-103-166",
+      "name": "Shadows of the Past",
+      "effective": {
+        "types": [
+          "spell"
+        ],
+        "super_types": [],
+        "domains": [
+          "chaos"
+        ],
+        "energy": 3,
+        "power": 1,
+        "might": null,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>Return up to 2 units from trashes to their owners' hands.</p>",
+        "rules_text": "Return up to 2 units from trashes to their owners' hands.",
+        "equipment_html": "<p>1</p>",
+        "equipment_text": "1"
+      },
+      "source_review": {
+        "status": "no_detected_conflicts",
+        "resolution_ids": [],
+        "unresolved_gameplay_fields": [],
+        "variant_diagnostics": [],
+        "reviewed_variant_fields": [],
+        "unresolved_variant_fields": []
+      },
+      "errata": [],
+      "snapshot_standard_legal": true,
+      "original_image": {
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/25e2130938a893833fcb8e29287adbd230c3b67f-744x1039.png?accountingTag=RB",
+        "path": "assets/data/card_admissions/irelia_trash_targets/ven-103-166.png",
+        "sha256": "2d2e3ef40e23e237e27190e5cf3efdc764f675cfa0559ffaae57058eeaa3878f",
+        "dimensions": [
+          744,
+          1039
+        ]
+      },
+      "actual_full_face_viewed": true,
+      "visual_review": {
+        "reviewed_at": "2026-11-17T02:58:07.791440+00:00",
+        "printed_cost_type_domain_stats_tags_and_rules_checked": true,
+        "matches_printed_gameplay_facts": true,
+        "notes": "Printed Chaos spell; 3 Energy, 1 Power. Up to two units from trashes return to their owners' hands. No Equipment ability or additional printed 1: archive equipment_text=1 is extraneous metadata for this spell and must not become gameplay text or an equipment ability."
+      },
+      "runtime_id": 479,
+      "runtime_image": {
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/25e2130938a893833fcb8e29287adbd230c3b67f-744x1039.png?w=280&q=85&fm=png",
+        "path": "assets/art/card_479.png",
+        "sha256": "55211113e0f0625bdade95fe61d9e43bd5fd5c24130ab09a8db62b090c45e51a",
+        "dimensions": [
+          280,
+          391
+        ]
+      }
+    }
+  ],
+  "preserved_runtime_prefix": {
+    "main_cards": {
+      "count": 476,
+      "sha256": "fdd72a124b15fc0a429c231bc666f04d40ae2e8963bf59559dc592ef74eda0c9"
+    },
+    "presets": {
+      "count": 7,
+      "sha256": "e975739d803427e54928d6e6cd03d1ce51d7ad108f4e247b8a000acf037a5cdb"
+    }
+  },
+  "status": "All four original faces reviewed and mapped to local runtime implementations. Validation and release acceptance are recorded separately; mapping is not proof of full game fidelity.",
+  "rules_review": {
+    "checked_at": "2026-11-17T05:30:05.454058+00:00",
+    "hub": "https://playriftbound.com/en-us/rules-hub/",
+    "core_date": "2026-10-09",
+    "core_url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/5c7946f7c3b8c6e0faff85ab6dadc6d2e721ea94.pdf",
+    "core_sha256": "94d41fee86f88b61c4157c0389c0595d990b98e5b42555c99d9f649ee64d1fec",
+    "sections": [
+      "354.3",
+      "355.8-355.10.a.1",
+      "359.3.e.4-359.3.e.5",
+      "445.2.a"
+    ]
+  }
+}

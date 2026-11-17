@@ -126,6 +126,11 @@ fn fingerprint(game: &Game) -> u64 {
         item.card_id.hash(&mut hash);
         item.lane.hash(&mut hash);
         match item.target {
+            Some(Target::Trash {
+                player,
+                card_id,
+                reference,
+            }) => (7_u8, player, card_id, reference.index, reference.revision).hash(&mut hash),
             Some(Target::Legend { player, legend_id }) => (6_u8, player, legend_id).hash(&mut hash),
             Some(Target::Unit { player, unit_id }) => (0_u8, player, unit_id).hash(&mut hash),
             Some(Target::Spell { chain_id }) => (1_u8, 0_usize, chain_id).hash(&mut hash),
@@ -136,6 +141,11 @@ fn fingerprint(game: &Game) -> u64 {
         }
         for target in item.targets.iter().chain(&item.repeat_targets) {
             match target {
+                Target::Trash {
+                    player,
+                    card_id,
+                    reference,
+                } => (7_u8, *player, *card_id, reference.index, reference.revision).hash(&mut hash),
                 Target::Legend { player, legend_id } => (6_u8, *player, *legend_id).hash(&mut hash),
                 Target::Unit { player, unit_id } => (0_u8, *player, *unit_id).hash(&mut hash),
                 Target::Spell { chain_id } => (1_u8, 0_usize, *chain_id).hash(&mut hash),
@@ -1664,18 +1674,31 @@ fn response_window_advice(
                     .any(|i| game.trash_target_valid(*player, *source_card_id, i))
                 {
                     "There is no eligible card in your trash. Continue without a target: your unit stays in play, but its recovery ability cannot enter the chain."
+                } else if local_rift::trash::optional(*source_card_id) && beginner {
+                    "You may return a unit or gear from your trash to your hand, or skip. Choose before responses; returning it is not a Draw or a Play."
                 } else if beginner {
                     "Choose an eligible card in your trash. It returns to your hand after responses; this is not a Draw or a Play. You must pay normally to play it later."
                 } else {
                     "Recover a card that fits your next scoring or response window. Account for its later cost; an opponent can remove this exact trash target before it returns."
                 }]
             }
+            Decision::TrashTarget {
+                source_card_id: 477,
+                ..
+            } => vec![
+                "Soulgorger may play a unit from your trash, or you may skip. Choose before responses. Only the unit's base Energy cost is waived; Power and additional costs still apply.",
+                "Check remaining Power before choosing. The unit's destination and payment are finalized after Soulgorger's ability finishes resolving.",
+            ],
             Decision::TrashTarget { .. } => vec![
                 "Choose the card in your trash that this ability will play. The ability enters the chain with that target, so opponents can respond first.",
                 "Check the chosen card's targets and costs now. You will finalize its own choices after the parent ability finishes resolving.",
             ],
             Decision::PendingPlay { kind, .. } => vec![
                 match kind {
+                    local_rift::game::InstructedPlayKind::Soulgorger
+                    | local_rift::game::InstructedPlayKind::TheHarrowing => {
+                        "Finalize the chosen unit. Its base Energy cost is waived, but Power and additional costs still apply. Choose a normally legal destination."
+                    }
                     local_rift::game::InstructedPlayKind::BaitedHook
                     | local_rift::game::InstructedPlayKind::DazzlingAurora => {
                         "Finalize the chosen unit. Its base cost is waived; additional costs still apply. Choose its destination and optional costs before finishing."
@@ -2017,6 +2040,34 @@ fn field_options_advice(game: &Game, beginner: bool) -> Vec<&'static str> {
             "Sai Scout may enter an open battlefield. Vision lets you privately look at your deck's top card and either keep it there or recycle it."
         } else {
             "Sai Scout can establish an open field while improving your next draw. Compare that pressure with keeping six Energy available for other plays."
+        });
+    }
+    if visible(476) {
+        tips.push(if beginner {
+            "When Guardian of the Passage holds, you may return a unit or gear from your trash to your hand. This does not draw or play the card."
+        } else {
+            "Guardian rewards holding a battlefield with another card to use later. Plan which unit or gear you can afford after it returns to hand."
+        });
+    }
+    if visible(478) {
+        tips.push(if beginner {
+            "The Harrowing chooses a unit in your trash before responses. When it resolves, play that unit with its base Energy waived; Power and additional costs still apply."
+        } else {
+            "Budget Power for both The Harrowing and the recovered unit. An opponent can remove your chosen card from trash before the spell resolves."
+        });
+    }
+    if visible(479) {
+        tips.push(if beginner {
+            "Shadows of the Past can return zero, one, or two units from either trash. Each goes to its owner's hand; returning a card does not draw or play it."
+        } else {
+            "Usually recover your own affordable threats. Returning an opponent's unit gives them another option; choose it only when that helps your plan."
+        });
+    }
+    if visible(477) {
+        tips.push(if beginner {
+            "Soulgorger may play a unit from your trash when you play it. You ignore that unit's base Energy cost, but still pay Power and any additional costs."
+        } else {
+            "Reserve enough Power for Soulgorger and the recovered unit. The opponent can respond to the targeted ability before the unit moves onto the chain."
         });
     }
     if visible(474) || visible(475) {
@@ -4497,6 +4548,7 @@ mod tests {
             DazzlingAurora,
             Reinforce,
             WildClaw,
+            Soulgorger,
         ] {
             g.decision = Some(Decision::PendingPlay {
                 player: 0,

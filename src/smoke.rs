@@ -31,6 +31,8 @@ mod guards;
 mod heavens;
 mod khazix;
 mod recovery;
+mod trash_choices;
+pub(super) use trash_choices::run_frame as run_trash_choices_frame;
 mod resources;
 pub(super) use recovery::run_frame as run_recovery_frame;
 mod rockfall;

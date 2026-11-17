@@ -12579,6 +12579,96 @@
       "equipment_effect_html": "",
       "equipment_effect": "",
       "might_bonus": null
+    },
+    {
+      "id": 476,
+      "official_id": "sfd-035-221",
+      "name": "Guardian of the Passage",
+      "kind": "Unit",
+      "domains": [
+        "Calm"
+      ],
+      "energy": 6,
+      "power": 0,
+      "might": 6,
+      "keywords": [],
+      "tags": [
+        "Spirit",
+        "Shadow Isles"
+      ],
+      "official_text": "When I hold, you may return a unit or gear from your trash to your hand.",
+      "official_text_html": "<p>When I hold, you may return a unit or gear from your trash to your hand.</p>",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/f6b932aa510c92d014422d31e27b1505e54abe20-744x1039.png?w=280&q=85&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null
+    },
+    {
+      "id": 477,
+      "official_id": "ogn-196-298",
+      "name": "Soulgorger",
+      "kind": "Unit",
+      "domains": [
+        "Chaos"
+      ],
+      "energy": 8,
+      "power": 2,
+      "might": 5,
+      "keywords": [],
+      "tags": [
+        "Spirit",
+        "Shadow Isles"
+      ],
+      "official_text": "When you play me, you may play a unit from your trash, ignoring its Energy cost. (You must still pay its Power cost.)",
+      "official_text_html": "<p>When you play me, you may play a unit from your trash, ignoring its Energy cost. (You must still pay its Power cost.)</p>",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/439c4fa7c8c47cba41df8bce3fe3c8068d297382-744x1039.png?w=280&q=85&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null
+    },
+    {
+      "id": 478,
+      "official_id": "ogn-198-298",
+      "name": "The Harrowing",
+      "kind": "Spell",
+      "domains": [
+        "Chaos"
+      ],
+      "energy": 6,
+      "power": 2,
+      "might": 0,
+      "keywords": [],
+      "tags": [],
+      "official_text": "Play a unit from your trash, ignoring its Energy cost. (You must still pay its Power cost.)",
+      "official_text_html": "<p>Play a unit from your trash, ignoring its Energy cost. (You must still pay its Power cost.)</p>",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/6914034f56dd50ab37df26e3541c997479bb5a6d-744x1039.png?w=280&q=85&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null
+    },
+    {
+      "id": 479,
+      "official_id": "ven-103-166",
+      "name": "Shadows of the Past",
+      "kind": "Spell",
+      "domains": [
+        "Chaos"
+      ],
+      "energy": 3,
+      "power": 1,
+      "might": 0,
+      "keywords": [],
+      "tags": [],
+      "official_text": "Return up to 2 units from trashes to their owners' hands.",
+      "official_text_html": "<p>Return up to 2 units from trashes to their owners' hands.</p>",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/25e2130938a893833fcb8e29287adbd230c3b67f-744x1039.png?w=280&q=85&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "equipment_effect_html": "<p>1</p>",
+      "equipment_effect": "1",
+      "might_bonus": null
     }
   ],
   "official_text_note": "Official card/legend rules text from the Riot Card Gallery, retrieved 2026-10-24 and corrected by cited errata. Resource icon tokens are expanded to readable bracketed names. Raw card and equipment HTML is preserved separately. Official text does not establish full implementation fidelity."

@@ -352,3 +352,49 @@ tests, 345 source checks, 1,176 simulated games, 41 native cases with 406
 captures, and 18 API campaigns matching all 123 complete baseline records.
 Four installed small-window images were actually inspected. See
 [recovery validation](validation/irelia_recovery.json).
+
+
+Guardian of the Passage and Soulgorger are locally implemented as further
+Calm/Chaos options. Shared trash-choice metadata now supports a unit-or-gear
+union, optional decline, and the exact instructed-play cost waiver. Guardian
+recovers on holding; Soulgorger preserves Power and additional costs. Mote,
+the API and native controls expose those distinctions. Pending cards use an
+On chain tab and an actual cost total while preserving access to resource tabs.
+
+Local evidence includes 1,420 library/client/tool tests, focused source and
+API regressions, 48 unassisted games covering both cards at every level/seat,
+six API series (16 games), and 32 final native captures across both sizes.
+Installed acceptance is outstanding. This was the two-card local checkpoint;
+The Harrowing and Shadows of the Past are added by the subsequent spell-target
+checkpoint below. See [trash-choice validation](validation/irelia_trash_choices.json).
+
+
+The Harrowing (478) and Shadows of the Past (479) now use shared public-trash
+spell targets. Immutable references retain the selected physical occurrence
+through removals, Repeat choices, and refused-payment restoration. The Harrowing
+instructs a unit play after responses and waives only its base Energy. Shadows
+returns zero to two units from either trash to their owners' hands. Trash tabs
+and owner switches retain the spell draft, highlight eligible cards, and show
+chosen targets; Mote explains the rules and practical tradeoffs.
+
+The AI scores the actual selected trash targets. An automatic-play bug that
+reduced multiple selected targets to the first one is corrected. Authored
+scenarios cover both seats, response burnout, independently selected Repeats,
+Power and Accelerate costs, on-play triggers, duplicate reference aliases,
+private hands, and API tokens. Broader local results and remaining release work
+are recorded in [trash-target validation](validation/irelia_trash_targets.json).
+These are legal Calm/Chaos options, not a claim of current metagame prevalence.
+
+This checkpoint passed 384 unassisted games with card conservation, 24 external
+API series completing 62 games, and both native window sizes with 52 captures.
+All 18 earlier API campaigns were refreshed; Block/Yuumi now covers both initial
+play orders. Focused regressions also distinguish Irelia's board-unit choices
+from trash-card targets and verify Flash retains both automatically chosen
+units. Installed acceptance remains outstanding.
+
+
+The corrected recovery candidate 3c6861d now passes immutable installed
+acceptance: 2,206 Rust tests, 346 source checks, 1,176 simulations, 43 UI cases
+and 19 exact API comparisons. The initial failed Irelia readiness assertion
+was preserved and the Strategic draw policy corrected; no assertion was
+weakened. See [validation](validation/irelia_trash_targets.json).

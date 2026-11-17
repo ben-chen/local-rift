@@ -15,6 +15,14 @@ use crate::rules::{self, Allegiance, CounterKind, OfficialEffect, StaticAbility}
 use std::collections::VecDeque;
 
 #[cfg(test)]
+#[path = "trash_target_tests.rs"]
+mod trash_target_tests;
+
+#[cfg(test)]
+#[path = "trash_choice_tests.rs"]
+mod trash_choice_tests;
+
+#[cfg(test)]
 #[path = "irelia_recovery_tests.rs"]
 mod irelia_recovery_tests;
 
@@ -241,12 +249,33 @@ pub enum Phase {
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Target {
-    Legend { player: usize, legend_id: usize },
-    Rune { player: usize, rune_id: u32 },
-    Unit { player: usize, unit_id: u32 },
-    Spell { chain_id: u32 },
-    Gear { player: usize, gear_id: u32 },
-    Battlefield { lane: usize },
+    Trash {
+        player: usize,
+        card_id: CardId,
+        reference: crate::trash::Reference,
+    },
+    Legend {
+        player: usize,
+        legend_id: usize,
+    },
+    Rune {
+        player: usize,
+        rune_id: u32,
+    },
+    Unit {
+        player: usize,
+        unit_id: u32,
+    },
+    Spell {
+        chain_id: u32,
+    },
+    Gear {
+        player: usize,
+        gear_id: u32,
+    },
+    Battlefield {
+        lane: usize,
+    },
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -986,6 +1015,8 @@ enum PendingTriggerEffect {
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum InstructedPlayKind {
+    TheHarrowing,
+    Soulgorger,
     BaitedHook,
     DazzlingAurora,
     Reinforce,
@@ -1200,6 +1231,7 @@ struct PendingCombat {
 #[derive(Clone, Debug)]
 pub struct Game {
     applying_action: bool,
+    pub(crate) trash_history: crate::trash::History,
     /// Sparse ownership: absent means the current controller owns the object.
     /// Control-changing effects must preserve the original owner here. Unit
     /// and gear IDs share one allocator; remove the entry on board departure.
@@ -1491,6 +1523,7 @@ impl Game {
             damage_ledger: None,
             last_damage_ledger: None,
             gear_attachments_this_turn: Vec::new(),
+            trash_history: crate::trash::History::default(),
             board_owner_overrides: std::collections::BTreeMap::new(),
             detached_gear_bases: std::collections::BTreeMap::new(),
             format_context: None,
@@ -2295,12 +2328,14 @@ impl Game {
                     .hand
                     .get(hand_index)
                     .ok_or("That card is no longer in your hand.")?;
-                let resolved = self.validate_play(id, lane, target)?;
+                self.validate_play(id, lane, target)?;
+                // Preserve the requested prefix: validation returns one legacy
+                // target, but an automatic play may have selected several.
                 let targets = self.prepare_targets(
                     player,
                     id,
                     lane,
-                    &resolved.into_iter().collect::<Vec<_>>(),
+                    &target.into_iter().collect::<Vec<_>>(),
                 )?;
                 self.validate_play_cost(player, id, &targets)?;
                 self.spend_play_cost(player, id, &targets)?;
@@ -2327,12 +2362,14 @@ impl Game {
                 let id = self.players[player]
                     .champion
                     .ok_or("Your chosen champion has already been played.")?;
-                let resolved = self.validate_play(id, lane, target)?;
+                self.validate_play(id, lane, target)?;
+                // Preserve the requested prefix: validation returns one legacy
+                // target, but an automatic play may have selected several.
                 let targets = self.prepare_targets(
                     player,
                     id,
                     lane,
-                    &resolved.into_iter().collect::<Vec<_>>(),
+                    &target.into_iter().collect::<Vec<_>>(),
                 )?;
                 self.validate_play_cost(player, id, &targets)?;
                 self.spend_play_cost(player, id, &targets)?;
@@ -4683,6 +4720,15 @@ impl Game {
     }
 
     fn remove_from_trash(&mut self, player: usize, index: usize) -> CardId {
+        self.detach_from_trash(player, index).0
+    }
+
+    fn detach_from_trash(
+        &mut self,
+        player: usize,
+        index: usize,
+    ) -> (CardId, crate::trash::Departure) {
+        let departure = self.trash_history.remove(player, index);
         self.update_pending_trash_cost(player, Some(index));
         for item in &mut self.chain {
             if item.player == player
@@ -4704,7 +4750,7 @@ impl Game {
                 *i -= 1;
             }
         }
-        self.players[player].discard.remove(index)
+        (self.players[player].discard.remove(index), departure)
     }
 
     pub(crate) fn recycle_cards(&mut self, player: usize, indices: &[usize]) {
@@ -4806,7 +4852,7 @@ impl Game {
                 (selected == index).then_some(item.id)
             })
             .collect();
-        let card_id = self.remove_from_trash(player, index);
+        let (card_id, departure) = self.detach_from_trash(player, index);
         let id = self.next_chain_id;
         self.next_chain_id += 1;
         Ok(PendingCard {
@@ -4819,6 +4865,7 @@ impl Game {
                 index,
                 flow: origin_flow,
                 target_chain_ids: origin_targets,
+                departure,
             },
         })
     }
@@ -4845,7 +4892,7 @@ impl Game {
                 (selected == trash_index).then_some(item.id)
             })
             .collect();
-        let card_id = self.remove_from_trash(player, trash_index);
+        let (card_id, departure) = self.detach_from_trash(player, trash_index);
         let id = self.next_chain_id;
         self.next_chain_id += 1;
         self.queue_pending_card(PendingCard {
@@ -4858,6 +4905,7 @@ impl Game {
                 index: trash_index,
                 flow: origin_flow,
                 target_chain_ids: origin_targets,
+                departure,
             },
         });
     }
@@ -4896,7 +4944,7 @@ impl Game {
     }
 
     fn restore_failed_card(&mut self, card: PendingCard) {
-        let (origin_index, origin_flow, origin_targets) = match card.origin {
+        let (origin_index, origin_flow, origin_targets, departure) = match card.origin {
             PendingOrigin::Banish { index } => {
                 let zone = &mut self.players[card.player].banish;
                 zone.insert(index.min(zone.len()), card.card_id);
@@ -4906,7 +4954,8 @@ impl Game {
                 index,
                 flow,
                 target_chain_ids,
-            } => (index, flow, target_chain_ids),
+                departure,
+            } => (index, flow, target_chain_ids, departure),
         };
         let index = origin_index.min(self.players[card.player].discard.len());
         for item in &mut self.chain {
@@ -4931,6 +4980,7 @@ impl Game {
         if origin_flow {
             self.temporary_flow[card.player].push(index);
         }
+        self.trash_history.restore(card.player, index, departure);
         self.players[card.player]
             .discard
             .insert(index, card.card_id);
@@ -5531,11 +5581,14 @@ impl Game {
             Decision::TrashTarget {
                 player,
                 source_card_id,
-                gear_id,
+                ..
             } => {
+                let rule = crate::trash::choice_rule(source_card_id)
+                    .ok_or("The trash choice has no registered rule.")?;
                 let available = (0..self.players[player].discard.len())
                     .any(|i| self.trash_target_valid(player, source_card_id, i));
-                if (available && indices.len() != 1)
+                if indices.len() > 1
+                    || (available && !rule.optional && indices.len() != 1)
                     || (!available && !indices.is_empty())
                     || indices
                         .first()
@@ -5547,21 +5600,16 @@ impl Game {
                 }
                 self.decision = None;
                 if let Some(&trash_index) = indices.first() {
-                    let ability = if crate::trash::returns_to_hand(source_card_id) {
-                        ChainAbility::ReturnChosen {
+                    let ability = match rule.outcome {
+                        crate::trash::Outcome::ReturnToHand => ChainAbility::ReturnChosen {
                             trash_index,
                             card_id: self.players[player].discard[trash_index],
-                        }
-                    } else {
-                        ChainAbility::PlayChosen {
+                        },
+                        crate::trash::Outcome::Play(kind) => ChainAbility::PlayChosen {
                             trash_index,
                             card_id: self.players[player].discard[trash_index],
-                            kind: if gear_id.is_some() {
-                                InstructedPlayKind::LastRites
-                            } else {
-                                InstructedPlayKind::Fizz
-                            },
-                        }
+                            kind,
+                        },
                     };
                     self.queue_finalized_ability(player, source_card_id, Vec::new(), ability);
                 }
@@ -6517,7 +6565,7 @@ impl Game {
                             .filter(|&i| self.trash_target_valid(*player, *source_card_id, i))
                             .map(|i| Action::SelectCards { indices: vec![i] })
                             .collect();
-                        if choices.is_empty() {
+                        if choices.is_empty() || crate::trash::optional(*source_card_id) {
                             choices.push(Action::SelectCards {
                                 indices: Vec::new(),
                             });
@@ -7329,8 +7377,12 @@ impl Game {
                     "This target does not meet the card's printed targeting restrictions.".into(),
                 );
             }
-            if rules::targeting(id).distinct && targets.contains(&target) {
-                return Err("Choose different units for this card.".into());
+            if rules::targeting(id).distinct
+                && targets
+                    .iter()
+                    .any(|&earlier| self.same_target(earlier, target))
+            {
+                return Err("Choose different objects for this card.".into());
             }
             if rules::targeting(id).same_location
                 && targets.first().is_some_and(|&first| {
@@ -7363,6 +7415,13 @@ impl Game {
             for target in
                 self.card_target_candidates_with_bonus(actor, id, lane, &targets, bonus)?
             {
+                if let Target::Trash { .. } = target {
+                    let value = self.trash_target_score(actor, target);
+                    if value > 0 || targets.len() < required {
+                        candidates.push((value, target));
+                    }
+                    continue;
+                }
                 if let Target::Battlefield { lane } = target {
                     let value = self.area_damage_score(actor, id, &[target])?;
                     candidates.push((value * 100 - lane as i128, target));
@@ -7538,6 +7597,15 @@ impl Game {
                 return self.alpha_candidates(player, prior);
             }
             let targets: Vec<_> = match rules::play_target_spec(card_id).kind {
+                Some(rules::PlayTargetKind::Trash) => self
+                    .players
+                    .iter()
+                    .enumerate()
+                    .flat_map(|(owner, state)| {
+                        (0..state.discard.len())
+                            .filter_map(move |index| self.trash_target(owner, index))
+                    })
+                    .collect(),
                 Some(rules::PlayTargetKind::Legend) => self
                     .legend
                     .iter()
@@ -7689,7 +7757,10 @@ impl Game {
                     prior.len(),
                     bonus,
                 )?
-                && (!rules::targeting(card_id).distinct || !prior.contains(&target))
+                && (!rules::targeting(card_id).distinct
+                    || !prior
+                        .iter()
+                        .any(|&earlier| self.same_target(earlier, target)))
                 && (!rules::targeting(card_id).different_locations
                     || prior
                         .iter()
@@ -7786,6 +7857,9 @@ impl Game {
                 return Ok(self.alpha_slot_valid(actor, target, slot));
             }
             match rules::effect(id) {
+                OfficialEffect::Trash(rule) => {
+                    return Ok(self.trash_spell_target_valid(actor, rule, target));
+                }
                 OfficialEffect::BanishSmallOrGear { maximum, .. } => {
                     let eligible = match target {
                         Target::Gear { .. } => true,
@@ -8328,6 +8402,27 @@ impl Game {
             valid.retain(|&target| self.target_location(target) == location);
         }
         match rules::effect(id) {
+            OfficialEffect::Trash(rule) => {
+                for target in valid {
+                    if let Target::Trash { player: owner, .. } = target
+                        && let Some(index) = self.trash_target_index(target)
+                    {
+                        match rule.outcome {
+                            crate::trash::Outcome::Play(kind) => {
+                                self.queue_card_play(owner, index, kind)
+                            }
+                            crate::trash::Outcome::ReturnToHand => {
+                                let card = self.remove_from_trash(owner, index);
+                                self.players[owner].hand.push(card);
+                                self.push_log(format!(
+                                    "{} returns {} from trash to hand.",
+                                    self.players[owner].name, self.catalog[card].name
+                                ));
+                            }
+                        }
+                    }
+                }
+            }
             OfficialEffect::TakeControlAndRecall { exhaust, .. } => {
                 if let Some(&target) = valid.first()
                     && let Some(Target::Unit {
@@ -9273,6 +9368,7 @@ impl Game {
                     }
                 }
                 self.update_pending_trash_cost(player, None);
+                self.trash_history.clear(player);
                 self.players[player].deck = std::mem::take(&mut self.players[player].discard);
                 self.rng.shuffle(&mut self.players[player].deck);
                 self.players[1 - player].score += 1;
@@ -10947,6 +11043,10 @@ impl Game {
                         105
                     }
                 }
+                OfficialEffect::Trash(_) => targets
+                    .iter()
+                    .map(|&target| self.trash_target_score(actor, target))
+                    .sum(),
                 OfficialEffect::PreventSpellAndAbilityDamage => self.damage_prevention_score()?,
                 OfficialEffect::AlphaStrike => self.alpha_ai_score(actor, &targets)?,
                 OfficialEffect::ArcaneShift => {

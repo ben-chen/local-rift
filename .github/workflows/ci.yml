@@ -92,6 +92,7 @@ jobs:
           python3 tools/check_flurry_api.py target/release/rift-api "$RUNNER_TEMP/local-rift-flurry.json"
           python3 tools/check_field_options_api.py target/release/rift-api "$RUNNER_TEMP/local-rift-field-options.json"
           python3 tools/check_recovery_api.py target/release/rift-api "$RUNNER_TEMP/local-rift-recovery.json"
+          python3 tools/check_trash_choices_api.py target/release/rift-api "$RUNNER_TEMP/local-rift-trash-choices.json"
       - name: Exercise desktop controls at both window sizes
         if: steps.scope.outputs.full_checks == 'true'
         env:
@@ -151,3 +152,5 @@ jobs:
           XDG_DATA_HOME="$RUNNER_TEMP/local-rift-field-options-small" xvfb-run -a ./target/release/local-rift --ui-smoke-field-options --small
           XDG_DATA_HOME="$RUNNER_TEMP/local-rift-recovery" xvfb-run -a ./target/release/local-rift --ui-smoke-recovery
           XDG_DATA_HOME="$RUNNER_TEMP/local-rift-recovery-small" xvfb-run -a ./target/release/local-rift --ui-smoke-recovery --small
+          XDG_DATA_HOME="$RUNNER_TEMP/local-rift-trash-choices" xvfb-run -a ./target/release/local-rift --ui-smoke-trash-choices
+          XDG_DATA_HOME="$RUNNER_TEMP/local-rift-trash-choices-small" xvfb-run -a ./target/release/local-rift --ui-smoke-trash-choices --small

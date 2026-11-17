@@ -3,6 +3,7 @@
 import argparse
 import copy
 import hashlib
+import itertools
 import json
 from pathlib import Path
 import subprocess
@@ -54,7 +55,9 @@ def main():
     save()
     try:
         for level_index, level in enumerate(['easy', 'tactical', 'strategic']):
-            for seat in range(2):
+            # Cover each seat both on the play and on the draw. A single series
+            # may finish before Yuumi's attack occurs, especially after AI fixes.
+            for seat, play_first in itertools.product(range(2), [False, True]):
                 block, yuumi, shield, tank = set(), set(), set(), set()
                 digest = hashlib.sha256()
 
@@ -85,17 +88,18 @@ def main():
                             yuumi.add((game, item['player'], item['id']))
 
                 seats = registrations if seat == 0 else registrations[::-1]
+                first_player = seat if play_first else 1-seat
                 outcome = run_match(binary, seats, 461100 + 10 * level_index + seat,
-                                    level, seat, first_player=1-seat, trace=trace,
+                                    level, seat, first_player=first_player, trace=trace,
                                     format_date=report['format_date'])
                 assert max(outcome['wins']) == 2 and len(outcome['history']) >= 2
                 report['records'].append({'difficulty': level, 'irelia_seat': seat,
-                                          'first_player': 1-seat, 'result': outcome,
+                                          'first_player': first_player, 'result': outcome,
                                           'block_casts': len(block), 'yuumi_triggers': len(yuumi),
                                           'shield_grants': len(shield), 'tank_grants': len(tank),
                                           'trace_sha256': digest.hexdigest()})
                 save()
-                print(f'Completed {level}, Irelia seat {seat}: Block {len(block)}, Yuumi {len(yuumi)}, granted Tank {len(tank)}', flush=True)
+                print(f'Completed {level}, Irelia seat {seat}, first {first_player}: Block {len(block)}, Yuumi {len(yuumi)}, granted Tank {len(tank)}', flush=True)
         for seat in range(2):
             rows = [row for row in report['records'] if row['irelia_seat'] == seat]
             for field in ['block_casts', 'yuumi_triggers', 'shield_grants', 'tank_grants']:

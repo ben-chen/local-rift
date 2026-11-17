@@ -1083,6 +1083,13 @@ fn chain_source_to_json(source: ChainSource) -> Value {
 
 pub fn target_to_json(target: &Target) -> Value {
     match target {
+        Target::Trash {
+            player,
+            card_id,
+            reference,
+        } => {
+            json!({"type":"trash", "player":player, "card_id":card_id, "reference":{"index":reference.index,"revision":reference.revision}})
+        }
         Target::Legend { player, legend_id } => {
             json!({"type":"legend","player":player,"legend_id":legend_id})
         }
@@ -1478,6 +1485,21 @@ pub fn parse_ability_source(value: &Value) -> Result<AbilitySource, ApiError> {
 pub fn parse_target(value: &Value) -> Result<Target, ApiError> {
     let obj = object(value)?;
     match string(obj, "type")? {
+        "trash" => {
+            keys(obj, &["type", "player", "card_id", "reference"])?;
+            let reference = object(obj.get("reference").ok_or_else(|| {
+                ApiError::invalid("Trash targets need their immutable reference.")
+            })?)?;
+            keys(reference, &["index", "revision"])?;
+            Ok(Target::Trash {
+                player: player(obj)?,
+                card_id: index(obj, "card_id")?,
+                reference: crate::trash::Reference {
+                    index: index(reference, "index")?,
+                    revision: index(reference, "revision")?,
+                },
+            })
+        }
         "legend" => {
             keys(obj, &["type", "player", "legend_id"])?;
             Ok(Target::Legend {
@@ -1519,7 +1541,7 @@ pub fn parse_target(value: &Value) -> Result<Target, ApiError> {
             })
         }
         _ => Err(ApiError::invalid(
-            "Target type must be unit, gear, spell, battlefield, rune, or legend.",
+            "Target type must be unit, gear, spell, battlefield, rune, legend, or trash.",
         )),
     }
 }
@@ -2109,7 +2131,12 @@ fn fixed_destination_to_json(location: crate::game::board_targets::BoardLocation
 
 fn pending_instruction_to_json(card: &crate::game::PendingCard, value: &mut Value) {
     use crate::game::{BaseCostWaiver, PlayDestination};
-    if card.play_origin() == crate::game::play::PlayOrigin::Banish {
+    if card.play_origin() == crate::game::play::PlayOrigin::Banish
+        || matches!(
+            card.kind,
+            InstructedPlayKind::Soulgorger | InstructedPlayKind::TheHarrowing
+        )
+    {
         value["origin"] = play_choices::origin_to_json(card.play_origin());
         value["instruction"] = json!({
             "base_cost_waiver": match card.instruction.cost { BaseCostWaiver::None=>"none", BaseCostWaiver::Energy=>"energy", BaseCostWaiver::All=>"all" },
@@ -2138,6 +2165,8 @@ fn instructed_kind(kind: InstructedPlayKind) -> &'static str {
         InstructedPlayKind::Reinforce => "reinforce",
         InstructedPlayKind::WildClaw => "wild_claw",
         InstructedPlayKind::ClocktowerGuardian => "clocktower_guardian",
+        InstructedPlayKind::Soulgorger => "soulgorger",
+        InstructedPlayKind::TheHarrowing => "the_harrowing",
         InstructedPlayKind::Fizz => "fizz",
         InstructedPlayKind::LastRites => "last_rites",
         InstructedPlayKind::Matriarch => "matriarch",
@@ -2413,7 +2442,9 @@ fn decision_to_json(game: &Game, decision: &Decision, viewer: usize) -> Result<V
             let rule = crate::trash::choice_rule(*source_card_id);
             json!({"type":"trash_target","source_card_id":source_card_id,"gear_id":gear_id,
                 "outcome":if crate::trash::returns_to_hand(*source_card_id) {"return_to_hand"} else {"play"},
-                "card_kind":rule.map(|r|r.kind.name().to_lowercase()),
+                "card_kind":rule.and_then(|r|(r.kinds.len()==1).then(||r.kinds[0].name().to_lowercase())),
+                "card_kinds":rule.map(|r|r.kinds.iter().map(|k|k.name().to_lowercase()).collect::<Vec<_>>()),
+                "optional":rule.is_some_and(|r|r.optional),
                 "max_energy":rule.and_then(|r|r.max_energy),
                 "max_power":rule.and_then(|r|r.max_power)})
         }

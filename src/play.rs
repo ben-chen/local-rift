@@ -2925,6 +2925,14 @@ impl Game {
         let Ok(intent) = self.card_intent(action) else {
             return Ok(false);
         };
+        if matches!(rules::effect(intent.id), OfficialEffect::Trash(_)) {
+            let automatic = matches!(action, Action::PlayCard { target: None, .. });
+            return Ok(if automatic {
+                self.ai_card_score(intent.id)?
+            } else {
+                self.canonical_action_score(action)?
+            } <= 0);
+        }
         if intent.id != 434
             && rules::effect(intent.id) != OfficialEffect::Counter(CounterKind::OtherOpponentSpell)
         {
@@ -2946,7 +2954,31 @@ impl Game {
             let extras = intent.legacy.repeats.len() as i128 * 5
                 + i128::from(intent.legacy.accelerate) * 15
                 + i128::from(intent.legacy.bonus) * 5;
-            let score = if matches!(
+            let score = if matches!(rules::effect(intent.id), OfficialEffect::Trash(_)) {
+                let automatic = matches!(action, Action::PlayCard { target: None, .. });
+                let targets = if automatic {
+                    self.prepare_targets(self.priority(), intent.id, intent.lane, &[])?
+                } else {
+                    intent.targets.clone()
+                };
+                let mut seen = Vec::new();
+                let mut value = 0;
+                for target in targets.iter().chain(
+                    intent
+                        .legacy
+                        .repeats
+                        .iter()
+                        .flat_map(|r| &r.choices.targets),
+                ) {
+                    if !seen.iter().any(|&old| self.same_target(old, *target)) {
+                        value += self.trash_target_score(self.priority(), *target);
+                        seen.push(*target);
+                    }
+                }
+                // Repeating on a departed occurrence adds no recovery value.
+                // Empty optional choices remain legal for humans and API clients.
+                return Ok(value);
+            } else if matches!(
                 rules::effect(intent.id),
                 OfficialEffect::TakeControlAndRecall { .. }
             ) {

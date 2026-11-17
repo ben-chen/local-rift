@@ -4,7 +4,7 @@
 //! every described operation. The engine must gate unsupported requirements.
 //! An unavailable official operation must never be replaced by an invented effect.
 
-use crate::cards::{CardId, Domain};
+use crate::cards::{CardId, CardKind, Domain};
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum CounterKind {
@@ -76,6 +76,7 @@ pub enum AreaSelector {
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum PlayTargetKind {
+    Trash,
     Legend,
     Rune,
     UnitOrGear,
@@ -93,6 +94,7 @@ pub struct PlayTargetSpec {
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum OfficialEffect {
+    Trash(crate::trash::SpellRule),
     /// Change controller, optionally exhaust, then Recall without a Move event.
     /// Paying the declared optional cost removes the printed Might restriction.
     TakeControlAndRecall {
@@ -335,7 +337,21 @@ pub fn effect(id: usize) -> OfficialEffect {
             exhaust: true,
             maximum_might: Some(3),
         },
-        466 | 467 | 470..=475 => None,
+        466 | 467 | 470..=477 => None,
+        478 => Trash(crate::trash::SpellRule {
+            kinds: &[CardKind::Unit],
+            owner: Allegiance::Friendly,
+            minimum: 1,
+            maximum: 1,
+            outcome: crate::trash::Outcome::Play(crate::game::InstructedPlayKind::TheHarrowing),
+        }),
+        479 => Trash(crate::trash::SpellRule {
+            kinds: &[CardKind::Unit],
+            owner: Allegiance::Any,
+            minimum: 0,
+            maximum: 2,
+            outcome: crate::trash::Outcome::ReturnToHand,
+        }),
         465 => ReturnEnemyDomainGroup {
             domain: Domain::Order,
             maximum_total_might: 5,
@@ -831,17 +847,22 @@ pub fn targeting(id: usize) -> Targeting {
             } => Some(maximum_total_might),
             _ => Option::None,
         },
-        allegiance,
+        allegiance: if let OfficialEffect::Trash(rule) = effect(id) {
+            rule.owner
+        } else {
+            allegiance
+        },
         moved_this_turn: id == 427,
         threatened_by_domain: if id == 421 {
             Some(Domain::Fury)
         } else {
             Option::None
         },
-        distinct: matches!(
-            id,
-            5 | 9 | 16 | 44 | 50 | 61 | 82 | 83 | 85 | 137 | 217 | 218 | 354 | 447 | 465
-        ),
+        distinct: matches!(effect(id), OfficialEffect::Trash(_))
+            || matches!(
+                id,
+                5 | 9 | 16 | 44 | 50 | 61 | 82 | 83 | 85 | 137 | 217 | 218 | 354 | 447 | 465
+            ),
         same_location: matches!(id, 44 | 50),
         different_locations: id == 354,
         temporary: if id == 353 { Some(false) } else { Option::None },
@@ -852,6 +873,9 @@ pub fn targeting(id: usize) -> Targeting {
 /// Location/allegiance restrictions remain in `targeting` and engine validation.
 pub fn target_bounds(id: usize) -> (usize, usize) {
     use OfficialEffect::*;
+    if let Trash(rule) = effect(id) {
+        return (rule.maximum, rule.minimum);
+    }
     if matches!(id, 85 | 137 | 354) {
         return (2, 2);
     }
@@ -917,6 +941,7 @@ pub fn play_target_spec(id: CardId) -> PlayTargetSpec {
             (None, 0, 0)
         } else {
             match effect(id) {
+                OfficialEffect::Trash(rule) => (Some(Trash), rule.maximum, rule.minimum),
                 OfficialEffect::Repulse => (Some(Unit), 2, 2),
                 OfficialEffect::AlphaStrike => (Some(Unit), usize::MAX, 2),
                 OfficialEffect::KillGear { .. } | OfficialEffect::ReturnGear => (Some(Gear), 1, 1),
@@ -1239,6 +1264,16 @@ pub fn requirements(id: usize) -> &'static [Mechanic] {
         469 => &[Chain, Control, Recall, OptionalCosts, Xp],
         473 => &[PlayRestrictions, Predict, Chain, ChooseReadyTriggers],
         474 | 475 => &[Chain, ChooseReadyTriggers],
+        476 => &[Chain, ChooseReadyTriggers, ConquerHoldTriggers],
+        478 => &[Chain, TrashPlay, CostReduction],
+        479 => &[Chain],
+        477 => &[
+            Chain,
+            ChooseReadyTriggers,
+            TrashPlay,
+            CostReduction,
+            OptionalCosts,
+        ],
         470 => &[PlayRestrictions],
         471 => &[PlayRestrictions, Chain, Bounce, ChooseReadyTriggers],
         472 => &[

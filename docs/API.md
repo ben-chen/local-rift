@@ -23,7 +23,7 @@ Replace `choose_action(view, suggestions, rng)` in that example with your policy
 
 The initial session is in `mulligan` phase, with decks `[0,1]`, seed `1`, Tactical AI, and player `0` going first. `info` reports protocol version `1`; `catalog` reports separate preset, legend, card, domain, and battlefield IDs.
 
-The repository's `assets/data/full_catalog.json` is a separate inventory with schema version `2`; it is not the bot protocol or the playable `catalog` response. It preserves raw printing fields and adds reviewed `effective` facts, resolution references, and unresolved-field diagnostics. Deck validation uses those effective facts and rejects unresolved gameplay or variant fields, including conflicts on alternate printings. Source review alone never registers a playable card. Inventory-only identity `kind` preserves complete type sets as sorted `+`-joined strings, such as `gear+unit`; the corresponding printing’s `effective.types` retains both types. This does not add a playable bot-protocol card kind. Main-card IDs are append-only; the latest additions are 435–440. Existing IDs and sourced preset lists retain their identities, while eligible-card and chosen-champion lists expand with supported cards. Additive Temporary status, token identity, evaluated passive values and target queries retain protocol version `1`. See [the inventory review contract](CATALOG_REVIEW.md) for evidence and remaining variant-review limits.
+The repository's `assets/data/full_catalog.json` is a separate inventory with schema version `2`; it is not the bot protocol or the playable `catalog` response. It preserves raw printing fields and adds reviewed `effective` facts, resolution references, and unresolved-field diagnostics. Deck validation uses those effective facts and rejects unresolved gameplay or variant fields, including conflicts on alternate printings. Source review alone never registers a playable card. Inventory-only identity `kind` preserves complete type sets as sorted `+`-joined strings, such as `gear+unit`; the corresponding printing’s `effective.types` retains both types. This does not add a playable bot-protocol card kind. Main-card IDs are append-only; the latest additions are 476–479. Existing IDs and sourced preset lists retain their identities, while eligible-card and chosen-champion lists expand with supported cards. Additive Temporary status, token identity, evaluated passive values and target queries retain protocol version `1`. See [the inventory review contract](CATALOG_REVIEW.md) for evidence and remaining variant-review limits.
 
 ```json
 {"id":"hello","command":"info"}
@@ -137,11 +137,25 @@ Targets have exactly one of these forms:
 {"type":"gear","player":0,"gear_id":12}
 {"type":"spell","chain_id":5}
 {"type":"battlefield","lane":1}
+{"type":"trash","player":0,"card_id":470,"reference":{"index":2,"revision":5}}
 ```
+
+A trash target identifies one card occurrence in a public trash. Obtain the complete
+object from `target_candidates` and submit it unchanged. `reference.index` is the
+position when that token was created; it is **not** necessarily the current trash
+index. `reference.revision` belongs to the engine's trash history, independently
+of the API session revision. Removing earlier cards does not change the selected
+occurrence. Leaving trash invalidates the target even if an identical card later
+arrives. Reversing an unfinished payment restores its exact detached occurrence.
+Each Repeat execution retains its own target tokens. The Harrowing (478) requires
+one unit in your trash; Shadows of the Past (479) accepts zero to two distinct
+units from either trash. Each returned card goes to its owner's hand. Targets
+are public while responses are available; the resulting hands retain ordinary
+visibility filtering.
 
 A battlefield target identifies a zero-based physical slot in the current observation's `battlefields` array, independently of its controller or catalog definition. Games start with slots `0` and `1`; an effect adding a battlefield appends another slot. Two slots using the same battlefield card are distinct targets. It has no `player` or `battlefield_id` field, and cannot select a base. A spell's battlefield target belongs in `targets`; the action's outer `lane` keeps its existing deployment/movement meaning and is not an alias. A well-formed index for a nonexistent slot is an `illegal_action`; malformed indices are an `invalid_request`. Rejected actions preserve the state and revision.
 
-Each playable card's `play_targets` reports `{kind, maximum, required}`. `kind` is `unit`, `gear`, `unit_or_gear`, `spell`, `battlefield`, or `null`. This describes choices made while playing that card; delayed on-play triggers retain their own later decisions. It does not replace card-specific allegiance, location, timing, or payment validation. Firestorm requires exactly one battlefield target, including an empty field. Flurry of Blades and Avalanche have no targets; the units they damage are not individually chosen and do not add Deflect costs. Use `validate` for the complete action.
+Each playable card's `play_targets` reports `{kind, maximum, required}`. `kind` is `unit`, `gear`, `unit_or_gear`, `spell`, `battlefield`, `legend`, `rune`, `trash`, or `null`. This describes choices made while playing that card; delayed on-play triggers retain their own later decisions. It does not replace card-specific allegiance, location, timing, or payment validation. Firestorm requires exactly one battlefield target, including an empty field. Flurry of Blades and Avalanche have no targets; the units they damage are not individually chosen and do not add Deflect costs. Use `validate` for the complete action.
 
 ```json
 {"type":"play_card_targets","hand_index":0,"targets":[{"type":"battlefield","lane":1}]}
@@ -517,7 +531,7 @@ The viewer sees their own hand as card IDs. The opposing hand is `null` except w
 | `reveal_hand` | `opponent`, revealed `cards`; acknowledge with `choose` |
 | `grant_flow` | `select_cards` indexes an eligible spell in your trash; an empty selection is legal only when no eligible spell exists |
 | `optional_play` | `card_id`, optional `gear_id`; accept or decline Fizz/Last Rites before its optional play ability enters the chain |
-| `trash_target` | `source_card_id`, optional `gear_id`, `outcome` (`play` or `return_to_hand`), `card_kind`, nullable `max_energy`/`max_power`; choose exactly one eligible trash index with `select_cards`, before the ability becomes respondable. With no eligible card, submit an empty selection. |
+| `trash_target` | `source_card_id`, optional `gear_id`, `outcome` (`play` or `return_to_hand`), `card_kinds`, `optional`, and nullable `max_energy`/`max_power`. The legacy `card_kind` is a string for a single allowed kind and null for a union. Choose one eligible trash index with `select_cards` before the ability becomes respondable. An empty selection declines an optional ability, or acknowledges that a mandatory ability has no eligible target. |
 | `revive_unit` | Choose Matriarch’s eligible trash unit with `play_from_trash` and no additional choices; its ability then enters the chain |
 | `pending_play` | `pending_id`, `card_id`, `kind` (`fizz`, `last_rites`, or `matriarch`); use `finalize_pending_play` for this fixed card. Fizz waives base energy, Matriarch waives the base cost and fixes base as destination, and Last Rites pays the full cost. Additional costs still apply. `choose:false` returns it to trash only if `can_decline_trash_play` confirms it cannot be played. |
 | `swap_unit` | `unit_id`; select another unit with `choose_target`, or decline |
@@ -1228,3 +1242,15 @@ unpaid limit is 3 live Might, and both forms require an enemy at a battlefield.
 Catalog targeting metadata describes that conditional restriction. The cost is
 paid once before responses, and resolution rechecks targets using the retained
 choice. No special API control-transfer command bypasses card play.
+
+Guardian of the Passage (476) and Soulgorger (477) use `trash_target` with
+`optional:true`. Guardian permits `card_kinds:["unit","gear"]` and returns
+the chosen card to hand after responses. Soulgorger permits `["unit"]`; its
+respondable `play_chosen` ability moves that physical card onto the chain.
+After the parent finishes, the child exposes `pending_play` with
+`kind:"soulgorger"`, `origin:{type:"trash"}` and
+`instruction:{base_cost_waiver:"energy",destination:{mode:"normal"}}`.
+Finalize through the ordinary play/payment commands. Power, additional costs,
+play prohibitions and destination restrictions still apply. Returning a card
+with Guardian does not draw or play it. A departed trash target is invalid even
+if an identical card subsequently arrives at the same index.
