@@ -889,7 +889,13 @@ impl Game {
         if !intent.token && !rules::spell_modes(intent.id).is_empty() {
             candidates = self.modal_target_candidates(self.priority(), intent.id, mode, &targets);
         } else if next_slot.is_some() {
-            for target in self.card_target_candidates(self.priority(), intent.id, lane, &targets)? {
+            for target in self.card_target_candidates_with_bonus(
+                self.priority(),
+                intent.id,
+                lane,
+                &targets,
+                intent.legacy.bonus,
+            )? {
                 if !matches!(intent.origin,PlayOrigin::Hidden {lane} if !self.hidden_target_allowed_at(intent.id,lane,targets.len(),target))
                 {
                     candidates.push(target);
@@ -967,12 +973,13 @@ impl Game {
                 continue;
             }
             for (slot, &target) in group.iter().enumerate() {
-                if !self.valid_card_target(
+                if !self.valid_card_target_with_bonus(
                     self.priority(),
                     intent.id,
                     lane,
                     target,
                     &group[..slot],
+                    intent.legacy.bonus,
                 )? || matches!(intent.origin, PlayOrigin::Hidden { lane } if !self.hidden_target_allowed_at(intent.id, lane, slot, target))
                 {
                     return Err("A supplied target does not meet this play's restrictions.".into());
@@ -1446,6 +1453,9 @@ impl Game {
         } else {
             self.catalog[id].domains
         };
+        if let Err(error) = self.spend_xp(player, costs.xp) {
+            return Some(Err(error));
+        }
         self.pay_energy_preferring(player, costs.energy as u16, preferred);
         for cost in &costs.power {
             if let Err(e) =
@@ -1528,16 +1538,22 @@ impl Game {
         }
         let mut probe = self.clone();
         let mut intent = probe.card_intent(&action)?;
+        let wrapped = explicit.is_some();
+        let choices = explicit.unwrap_or_else(|| intent.legacy.clone());
         let automatic = matches!(
             action,
             Action::PlayCard { .. } | Action::PlayChampion { .. } | Action::PlayFromTrash { .. }
         );
         if automatic && rules::spell_modes(intent.id).is_empty() {
-            intent.targets =
-                probe.prepare_targets(probe.priority(), intent.id, intent.lane, &intent.targets)?;
+            intent.targets = probe.prepare_targets_mode_with_bonus(
+                probe.priority(),
+                intent.id,
+                intent.lane,
+                &intent.targets,
+                true,
+                choices.bonus,
+            )?;
         }
-        let wrapped = explicit.is_some();
-        let choices = explicit.unwrap_or_else(|| intent.legacy.clone());
         if wrapped && !intent.legacy.repeats.is_empty() {
             return Err("Do not combine legacy Repeat with independent Repeat selections.".into());
         }
@@ -1563,43 +1579,6 @@ impl Game {
                 &intent.targets,
                 true,
             )?;
-        }
-        for r in &choices.repeats {
-            Self::validate_execution_mode(&intent, r.choices.mode, true)?;
-            if intent.id == 426 {
-                probe.validate_preparations_targets(
-                    probe.priority(),
-                    &r.choices.targets,
-                    !shown.is_empty(),
-                    true,
-                )?;
-                continue;
-            }
-            if !intent.token && !rules::spell_modes(intent.id).is_empty() {
-                probe.validate_modal_targets(
-                    probe.priority(),
-                    intent.id,
-                    r.choices.mode,
-                    &r.choices.targets,
-                    true,
-                )?;
-                continue;
-            }
-            probe.prepare_targets_explicit(
-                probe.priority(),
-                intent.id,
-                r.choices.destination_lane(intent.lane),
-                &r.choices.targets,
-            )?;
-            if let PlayOrigin::Hidden { lane } = intent.origin
-                && r.choices
-                    .targets
-                    .iter()
-                    .enumerate()
-                    .any(|(slot, &t)| !probe.hidden_target_allowed_at(intent.id, lane, slot, t))
-            {
-                return Err("Hidden Repeat targets must be at the hidden battlefield.".into());
-            }
         }
         let entry_lane = if intent.id == 440 && !intent.token {
             probe.finalize_baron_entry()?
@@ -1651,6 +1630,43 @@ impl Game {
             grants,
             paid: false,
         });
+        for r in &choices.repeats {
+            Self::validate_execution_mode(&intent, r.choices.mode, true)?;
+            if intent.id == 426 {
+                probe.validate_preparations_targets(
+                    probe.priority(),
+                    &r.choices.targets,
+                    !probe.active_play.as_ref().unwrap().show_off.is_empty(),
+                    true,
+                )?;
+                continue;
+            }
+            if !intent.token && !rules::spell_modes(intent.id).is_empty() {
+                probe.validate_modal_targets(
+                    probe.priority(),
+                    intent.id,
+                    r.choices.mode,
+                    &r.choices.targets,
+                    true,
+                )?;
+                continue;
+            }
+            probe.prepare_targets_explicit(
+                probe.priority(),
+                intent.id,
+                r.choices.destination_lane(intent.lane),
+                &r.choices.targets,
+            )?;
+            if let PlayOrigin::Hidden { lane } = intent.origin
+                && r.choices
+                    .targets
+                    .iter()
+                    .enumerate()
+                    .any(|(slot, &t)| !probe.hidden_target_allowed_at(intent.id, lane, slot, t))
+            {
+                return Err("Hidden Repeat targets must be at the hidden battlefield.".into());
+            }
+        }
         let inner = without_legacy_options(action);
         probe.apply(inner)?;
         if intent.id == 426 {
@@ -2685,6 +2701,68 @@ impl Game {
             let mut result = Vec::new();
             for action in intents {
                 let intent = self.card_intent(&action)?;
+                if matches!(
+                    rules::effect(intent.id),
+                    OfficialEffect::TakeControlAndRecall { .. }
+                ) {
+                    let Ok(view) = self.play_choices(&action) else {
+                        continue;
+                    };
+                    for bonus in [false, true] {
+                        if bonus && view.bonus.is_none() {
+                            continue;
+                        }
+                        let targets = self.card_target_candidates_with_bonus(
+                            p,
+                            intent.id,
+                            intent.lane,
+                            &[],
+                            bonus,
+                        )?;
+                        for &target in &targets {
+                            let mut targeted = action.clone();
+                            match &mut targeted {
+                                Action::PlayCard { target: slot, .. }
+                                | Action::PlayFromTrash { target: slot, .. } => {
+                                    *slot = Some(target)
+                                }
+                                _ => continue,
+                            }
+                            let mut choices = vec![PlayChoices {
+                                bonus,
+                                ..Default::default()
+                            }];
+                            for repeat in view.repeats.iter().take(3) {
+                                for &other in targets.iter().filter(|&&other| other != target) {
+                                    choices.push(PlayChoices {
+                                        bonus,
+                                        repeats: vec![RepeatSelection {
+                                            option_id: repeat.id,
+                                            choices: ExecutionChoices {
+                                                targets: vec![other],
+                                                ..Default::default()
+                                            },
+                                        }],
+                                        ..Default::default()
+                                    });
+                                }
+                            }
+                            for choice in choices {
+                                let candidate = Action::WithPlayChoices {
+                                    action: Box::new(targeted.clone()),
+                                    choices: choice,
+                                };
+                                if self.clone().apply(candidate.clone()).is_ok() {
+                                    result.push(candidate);
+                                    if result.len() >= limit {
+                                        return Ok(result);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    continue;
+                }
                 if intent.id == 426 {
                     result.extend(self.preparations_play_candidates(
                         &action,
@@ -2874,7 +2952,30 @@ impl Game {
             let extras = intent.legacy.repeats.len() as i128 * 5
                 + i128::from(intent.legacy.accelerate) * 15
                 + i128::from(intent.legacy.bonus) * 5;
-            let score = if rules::effect(intent.id)
+            let score = if matches!(
+                rules::effect(intent.id),
+                OfficialEffect::TakeControlAndRecall { .. }
+            ) {
+                let mut seen = Vec::new();
+                let mut value = 0;
+                for &target in intent.targets.iter().chain(
+                    intent
+                        .legacy
+                        .repeats
+                        .iter()
+                        .flat_map(|r| &r.choices.targets),
+                ) {
+                    if !seen.contains(&target)
+                        && let Some(unit) = self.unit_ref(target)
+                    {
+                        value += self.return_target_score(self.priority(), target)?.max(0)
+                            + i128::from(self.unit_might(unit)?) * 8;
+                        seen.push(target);
+                    }
+                }
+                // The extra payment is useful for a larger target, not by itself.
+                value - i128::from(intent.legacy.bonus) * 15
+            } else if rules::effect(intent.id)
                 == OfficialEffect::Counter(CounterKind::OtherOpponentSpell)
             {
                 if intent.targets.iter().any(|target| {
@@ -2968,6 +3069,13 @@ impl Game {
 impl Game {
     fn optional_card_cost(&self, card_id: CardId) -> Option<OptionalCostOption> {
         match card_id {
+            469 => Some(OptionalCostOption {
+                label: "5 XP · choose any enemy unit at a battlefield".into(),
+                cost: CostValue {
+                    xp: 5,
+                    ..Default::default()
+                },
+            }),
             466 if self.played_spell_this_turn(self.priority()) => Some(OptionalCostOption {
                 label: "1 Chaos · enter ready".into(),
                 cost: CostValue {

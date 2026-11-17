@@ -116,6 +116,16 @@ pub(super) fn play_targets_to_json(card_id: crate::cards::CardId) -> Value {
     let spec = play_target_spec(card_id);
     let mut value =
         json!({"kind":spec.kind.map(target_kind),"maximum":spec.maximum,"required":spec.required});
+    if let crate::rules::OfficialEffect::TakeControlAndRecall { maximum_might, .. } =
+        crate::rules::effect(card_id)
+    {
+        value["condition"] = json!({
+            "controller":"enemy", "location":"battlefield",
+            "maximum_might":maximum_might,
+            "optional_cost_removes_might_limit":maximum_might.is_some(),
+            "rechecked_on_resolution":true
+        });
+    }
     if crate::rules::targeting(card_id).moved_this_turn {
         value["condition"] =
             json!({"type":"moved_this_turn","controller":"enemy","rechecked_on_resolution":true});

@@ -1192,3 +1192,21 @@ cardinality. A zero-Might candidate cannot be omitted. `validate` checks a draft
 without advancing the revision; invalid submissions preserve the whole game.
 The bot suggestion list samples legal subsets without enumerating the powerset;
 the explicit action accepts every legal subset.
+
+
+## Control-taking cards and ownership
+
+Board-unit and gear observations include `controller` and `owner` player
+indices. The containing player area remains the controller's area. A control
+change preserves physical IDs and original ownership; attached gear can keep
+its controller while its bearer changes sides. Both seats see these public
+facts. These fields do not reveal private zones.
+
+Possession and Conscription use normal card actions and unit targets.
+Conscription's `with_play_choices` wrapper selects `choices.bonus: true` for its
+optional 5 XP payment. The cost view reports XP separately. `target_candidates`
+uses the selected payment for both original and repeated executions; the
+unpaid limit is 3 live Might, and both forms require an enemy at a battlefield.
+Catalog targeting metadata describes that conditional restriction. The cost is
+paid once before responses, and resolution rechecks targets using the retained
+choice. No special API control-transfer command bypasses card play.

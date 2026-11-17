@@ -12393,6 +12393,50 @@
       "equipment_effect_html": "",
       "equipment_effect": "",
       "might_bonus": null
+    },
+    {
+      "id": 468,
+      "official_id": "ogn-203-298",
+      "name": "Possession",
+      "kind": "Spell",
+      "domains": [
+        "Chaos"
+      ],
+      "energy": 8,
+      "power": 3,
+      "might": 0,
+      "keywords": [
+        "Action"
+      ],
+      "tags": [],
+      "official_text": "[Action] (Play on your turn or in showdowns.)\nChoose an enemy unit at a battlefield. Take control of it and recall it. (Send it to your base. This isn't a move.)",
+      "official_text_html": "<p>[Action] (Play on your turn or in showdowns.)<br />Choose an enemy unit at a battlefield. Take control of it and recall it. (Send it to your base. This isn't a move.)</p>",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/f26462174fd01407f25f7d49a70862d2b9af35cc-744x1039.png?w=280&q=85&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null
+    },
+    {
+      "id": 469,
+      "official_id": "unl-140-219",
+      "name": "Conscription",
+      "kind": "Spell",
+      "domains": [
+        "Chaos"
+      ],
+      "energy": 5,
+      "power": 2,
+      "might": 0,
+      "keywords": [],
+      "tags": [],
+      "official_text": "You may spend 5 XP as an additional cost to play this.\nChoose an enemy unit at a battlefield with 3 Might or less. If you paid the additional cost, choose any enemy unit at a battlefield instead. Take control of it, exhaust it, and recall it.",
+      "official_text_html": "<p>You may spend 5 XP as an additional cost to play this.<br />Choose an enemy unit at a battlefield with 3 :rb_might: or less. If you paid the additional cost, choose any enemy unit at a battlefield instead. Take control of it, exhaust it, and recall it.</p>",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/1c05bff48666586a2b3552b5638deaf20d9006f7-744x1039.png?w=280&q=85&fm=png",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null
     }
   ],
   "official_text_note": "Official card/legend rules text from the Riot Card Gallery, retrieved 2026-10-24 and corrected by cited errata. Resource icon tokens are expanded to readable bracketed names. Raw card and equipment HTML is preserved separately. Official text does not establish full implementation fidelity."

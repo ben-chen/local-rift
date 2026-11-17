@@ -48,6 +48,17 @@ class ControlSourceReview(unittest.TestCase):
                 self.assertEqual(data[:8], b'\x89PNG\r\n\x1a\n')
                 self.assertEqual(list(struct.unpack('>II', data[16:24])), image['dimensions'])
                 self.assertEqual(image['dimensions'], [744, 1039])
+                if 'runtime_id' in record:
+                    runtime = catalog.load_runtime_manifest()['cards'][record['runtime_id']]
+                    self.assertEqual((runtime['name'], runtime['official_id']), (name, ident))
+                    self.assertEqual((runtime['energy'], runtime['power'], runtime['official_text']),
+                                     (energy, power, text))
+                    thumb = record['runtime_image']
+                    data = (catalog.ROOT / thumb['path']).read_bytes()
+                    self.assertEqual((len(data), catalog.sha(data)), (thumb['bytes'], thumb['sha256']))
+                    self.assertEqual(list(struct.unpack('>II', data[16:24])), thumb['dimensions'])
+                    self.assertEqual(thumb['url'], runtime['art_url'])
+                    self.assertEqual(thumb['url'].split('?')[0], image['url'].split('?')[0])
         runtime = catalog.load_runtime_manifest()
         pin = proof['preserved_runtime_prefix']
         for key, count, digest in [('cards', 'card_count', 'cards_sha256'),

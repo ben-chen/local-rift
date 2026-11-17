@@ -1,0 +1,78 @@
+{
+  "status": "local checks passed; native/full-game/installed acceptance outstanding",
+  "reviewed_on": "2026-11-16",
+  "base_revision": "785a0378b4b530546bc58b393cbfabfff6773200",
+  "cards": [
+    {
+      "id": 468,
+      "name": "Possession",
+      "official_id": "ogn-203-298"
+    },
+    {
+      "id": 469,
+      "name": "Conscription",
+      "official_id": "unl-140-219"
+    }
+  ],
+  "runtime_cards": 470,
+  "preserved_runtime_prefix": 468,
+  "presets_changed": false,
+  "rules": {
+    "hub": "https://playriftbound.com/en-us/rules-hub/",
+    "core_edition": "2026-10-09",
+    "hub_rechecked_on": "2026-11-16",
+    "source_review": "assets/data/card_admissions/irelia_control/source_review.json"
+  },
+  "checks": {
+    "report": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/control-cards-checks-v1.json",
+    "sha256": "088ff856b89652687ba08d357dd8ff81f5ed4b26cfd300089c90e2382b0720dc",
+    "rust_tests": 1552,
+    "library_tests": 1201,
+    "client_tests": 176,
+    "api_binary_tests": 1,
+    "simulator_binary_tests": 1,
+    "integration_tests": 173,
+    "control_card_engine_api_tests": 12,
+    "source_tests": 1,
+    "catalog_check": "passed",
+    "strict_all_target_clippy": "passed",
+    "format_and_diff": "passed",
+    "runtime_and_log_hashes_rechecked": true
+  },
+  "covered": [
+    "Both player seats; physical identity, original ownership, attached gear, damage, readiness and status",
+    "Recall does not Move or produce equipment Move tokens; cleanup follows ordered instructions",
+    "Normal versus Action versus Reaction timing",
+    "Optional XP target widening, insufficient-XP rejection, live Might response, and countered/departed targets",
+    "Repeat with independent targets and one XP payment",
+    "Staged payment cancellation/completion and exact Power payment",
+    "JSON choices, target previews, apply/Pass revisions, and owner/controller observations for both seats",
+    "AI can select paid-only large targets and conserves XP for otherwise identical small targets",
+    "Both companion advice levels remain brief, read-only and independent of the opponent hidden hand"
+  ],
+  "failed_attempts": [
+    {
+      "log": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/control-cards-focused-v1.log",
+      "finding": "Scenarios exposed missing card XP deduction and bonus-insensitive target preview; initial Crumbling Sands counter fixture was invalid without another opponent spell."
+    },
+    {
+      "log": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/control-cards-focused-v2.log",
+      "finding": "API test attempted private unit construction; replaced with the shared authored-position helper."
+    },
+    {
+      "log": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/control-cards-focused-v3.log",
+      "finding": "API observations omitted original ownership; added owner and controller for public board units and gear."
+    }
+  ],
+  "outstanding": [
+    "Visually inspect the new native controls, target editing and ownership explanation at both sizes",
+    "Complete-game campaigns containing these cards, across both seats and all difficulties",
+    "Use reachable card sequences to audit any pending-source/choice interactions exposed by those campaigns",
+    "Immutable installed artifact acceptance before publishing the control branch",
+    "Full currently legal Standard card coverage and complete goal audit"
+  ],
+  "publication": {
+    "accepted": false,
+    "public_main_unchanged": "8fb77ead66add1ba1e10b8e808b36c52ab25eb67"
+  }
+}

@@ -93,6 +93,12 @@ pub struct PlayTargetSpec {
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum OfficialEffect {
+    /// Change controller, optionally exhaust, then Recall without a Move event.
+    /// Paying the declared optional cost removes the printed Might restriction.
+    TakeControlAndRecall {
+        exhaust: bool,
+        maximum_might: Option<u8>,
+    },
     ReturnEnemyDomainGroup {
         domain: Domain,
         maximum_total_might: u64,
@@ -321,6 +327,14 @@ pub struct Targeting {
 pub fn effect(id: usize) -> OfficialEffect {
     use OfficialEffect::*;
     match id {
+        468 => TakeControlAndRecall {
+            exhaust: false,
+            maximum_might: Option::None,
+        },
+        469 => TakeControlAndRecall {
+            exhaust: true,
+            maximum_might: Some(3),
+        },
         466 | 467 => None,
         465 => ReturnEnemyDomainGroup {
             domain: Domain::Order,
@@ -799,7 +813,7 @@ pub fn targeting(id: usize) -> Targeting {
     use Allegiance::*;
     let allegiance = match id {
         290..=296 | 335 | 349 | 428 | 434 | 446 | 457 | 461 => Any,
-        4 | 32 | 144 | 145 | 365 | 427 | 465 => Enemy,
+        4 | 32 | 144 | 145 | 365 | 427 | 465 | 468 | 469 => Enemy,
         362 | 364 | 372 | 378 | 379 | 381 | 435 => Any,
         8 | 9 | 14 | 19 | 27 | 85 | 137 | 228 | 350 | 353 | 354 | 377 | 380 | 382 | 421 | 425
         | 447 => Friendly,
@@ -850,6 +864,7 @@ pub fn target_bounds(id: usize) -> (usize, usize) {
             selector: AreaSelector::EnemyAtTargetBattlefield,
             ..
         }
+        | TakeControlAndRecall { .. }
         | Kill { .. }
         | KillAndDrawController { .. }
         | DisempowerThenKill { .. }
@@ -1171,6 +1186,8 @@ pub enum Mechanic {
     OptionalCosts,
     MultipleTargets,
     Move,
+    Control,
+    Recall,
     Bounce,
     NegativeMight,
     Gear,
@@ -1218,6 +1235,8 @@ pub enum Mechanic {
 pub fn requirements(id: usize) -> &'static [Mechanic] {
     use Mechanic::*;
     match id {
+        468 => &[Chain, Control, Recall],
+        469 => &[Chain, Control, Recall, OptionalCosts, Xp],
         466 => &[OptionalCosts],
         467 => &[PlayRestrictions],
         465 => &[Chain, MultipleTargets, Bounce],

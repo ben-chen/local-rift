@@ -438,6 +438,7 @@ fn checked_advice(game: &Game, level: AdviceLevel) -> Result<Vec<&'static str>, 
         window_tips.extend(warden_advice(game, beginner));
         window_tips.extend(discord_advice(game, beginner));
         window_tips.extend(entry_advice(game, beginner));
+        window_tips.extend(control_card_advice(game, beginner));
         window_tips.extend(movement_restriction_advice(game, beginner));
         if let Some(tip) = sands_advice(game, beginner) {
             window_tips.push(tip);
@@ -474,6 +475,7 @@ fn checked_advice(game: &Game, level: AdviceLevel) -> Result<Vec<&'static str>, 
     tips.extend(warden_advice(game, beginner));
     tips.extend(discord_advice(game, beginner));
     tips.extend(entry_advice(game, beginner));
+    tips.extend(control_card_advice(game, beginner));
     tips.extend(movement_restriction_advice(game, beginner));
 
     // High stakes scoring and visible threats come before routine suggestions.
@@ -1956,6 +1958,29 @@ fn sands_advice(game: &Game, beginner: bool) -> Option<&'static str> {
         })
 }
 
+fn control_card_advice(game: &Game, beginner: bool) -> Option<&'static str> {
+    let visible = |card| {
+        game.players[0].hand.contains(&card)
+            || game.chain.iter().any(|item| item.card_id == card)
+            || matches!(game.decision, Some(Decision::PendingPlay { player: 0, card_id, .. }) if card_id == card)
+    };
+    if visible(469) {
+        Some(if beginner {
+            "Conscription takes an enemy at a battlefield, exhausts it, then recalls it to your base. Pay 5 XP before responses to choose a unit above 3 Might."
+        } else {
+            "Save XP when a small target is enough, but allow for Might-boosting responses. Taking a unit preserves its damage and gear; the gear's controller does not change."
+        })
+    } else if visible(468) {
+        Some(if beginner {
+            "Possession takes an enemy at a battlefield and recalls it to your base. It keeps its readiness, damage and gear. Recall is not a move."
+        } else {
+            "A ready unit taken by Possession can move later in the turn. Compare the field it clears and the unit you gain with the 8 Energy and 3 Chaos Power cost."
+        })
+    } else {
+        None
+    }
+}
+
 fn entry_advice(game: &Game, beginner: bool) -> Option<&'static str> {
     let available = |card| {
         game.players[0].hand.contains(&card)
@@ -2290,6 +2315,28 @@ mod tests {
         game.players[0].hand.clear();
         game.players[1].hand = vec![466, 467];
         assert!(entry_advice(&game, true).is_none());
+    }
+
+    #[test]
+    fn control_card_advice_is_brief_read_only_and_does_not_read_enemy_hand() {
+        let mut game = Game::new_for_agents(0, 0, 469, Difficulty::Easy);
+        game.start_match().unwrap();
+        for card in [468, 469] {
+            game.players[0].hand = vec![card];
+            let before = format!("{game:?}");
+            for beginner in [false, true] {
+                let tip = control_card_advice(&game, beginner).unwrap();
+                assert!(tip.chars().count() <= 180);
+                let mut private = game.clone();
+                private.players[1].hand = vec![468, 469];
+                private.players[1].deck.reverse();
+                assert_eq!(control_card_advice(&private, beginner), Some(tip));
+            }
+            assert_eq!(format!("{game:?}"), before);
+        }
+        game.players[0].hand.clear();
+        game.players[1].hand = vec![468, 469];
+        assert!(control_card_advice(&game, true).is_none());
     }
 
     #[test]

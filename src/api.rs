@@ -23,6 +23,8 @@ use std::panic::{AssertUnwindSafe, catch_unwind};
 
 mod combat;
 mod combat_contribution;
+#[cfg(test)]
+mod control_card_tests;
 mod damage_attribution;
 mod deploy;
 #[cfg(test)]
@@ -476,6 +478,7 @@ impl Session {
                 } else { game.catalog[unit.card_id].tags.to_vec() };
                 let mut unit_view = json!({
                 "id":unit.id, "card_id":unit.card_id, "name":game.unit_name(unit), "token":unit.token,
+                "controller":owner, "owner":game.board_owner(Target::Unit { player:owner, unit_id:unit.id }),
                 "tags":tags,
                 "lane":unit.lane, "ready":unit.ready, "might":stats.might, "might_exact":stats.might.to_string(),
                 "signed_might":stats.signed_might,"signed_might_exact":stats.signed_might.to_string(),
@@ -513,6 +516,7 @@ impl Session {
             }).collect::<Result<Vec<_>,ApiError>>()?;
             let gear: Vec<_> = state.gear.iter().map(|gear| Ok(json!({
                 "id":gear.id, "card_id":gear.card_id, "name":game.gear_name(gear), "token":gear.token,
+                "controller":owner, "owner":game.board_owner(Target::Gear { player:owner, gear_id:gear.id }),
                 "attached_to":gear.attached_to, "lane":game.gear_location(owner,gear.id),
                 "attached_this_turn":game.gear_attachment_status(owner,gear.id).is_some_and(|s|s.attached_this_turn),
                 "ready":gear.ready, "temporary":gear.temporary,"empowered":game.unit_empowered(gear.id),

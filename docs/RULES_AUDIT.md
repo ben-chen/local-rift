@@ -1350,3 +1350,39 @@ review. Existing Back Alley coverage caught a no-op control refresh regression;
 that test now passes without modification. The source and log hashes were
 verified against the final checked tree. This checkpoint does not enable the
 two control-taking spells or establish full Standard coverage.
+
+
+## November 16: Possession and Conscription player-action integration
+
+The control branch now maps reviewed Possession (OGN203) and Conscription
+(UNL140) to runtime IDs 468 and 469. This is a local implementation checkpoint,
+not installed-release acceptance or a claim of full Standard support.
+The current rules hub still links the October 9 Core Rules used by the
+preceding control/movement audit. Printed faces, text, costs and image hashes
+remain in `assets/data/card_admissions/irelia_control/source_review.json`.
+
+Both spells choose an enemy unit at a battlefield before responses. Possession
+has Action timing and preserves readiness. Conscription has normal timing,
+restricts its unpaid target to live Might 3 or less, and exhausts the taken unit.
+Its optional 5 XP is part of the declared cost, paid once even with Repeat and
+retained after a counter or mistarget. Preview, ordinary play, staged payment,
+exact power payment, and repeated executions share that choice. Target Might
+is rechecked on resolution using the original payment declaration.
+
+The resolving instruction changes control, optionally exhausts, then Recalls
+before cleanup. It preserves the physical ID, original owner, damage, status,
+and attached gear. Gear keeps its own controller. Recall does not generate a
+Move event or clear a movement restriction. Taking the unit and immediately
+recalling it does not itself score a battlefield point.
+
+Real player-action scenarios exposed and corrected missing XP deduction in
+card payment (ability XP payments already existed), conditional target checks
+that ignored selected costs, and missing owner/controller API fields. The
+counter scenario uses Wind Wall: Crumbling Sands would require another
+opponent spell and was an incorrect initial test fixture. API resolution is
+also driven through JSON actions and revision checks.
+
+Local validation is recorded in `validation/control_cards.json`. Native visual
+checks, complete-game campaigns, and immutable installed acceptance remain
+outstanding. The generated catalog reflects this development branch's mappings;
+it is not evidence that every mapped card or the whole Standard pool conforms.

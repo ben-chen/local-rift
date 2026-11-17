@@ -785,7 +785,7 @@ impl App {
             execution: 0,
             open: !view.show_off.is_empty()
                 || view.entry_ready.is_some()
-                || (view.card_id == 466 && view.bonus.is_some())
+                || (matches!(view.card_id, 466 | 469) && view.bonus.is_some())
                 || view.unit_cost.is_some()
                 || !view.modes.is_empty()
                 || local_rift::rules::chooses_move_destination(view.card_id),
@@ -1068,6 +1068,8 @@ impl App {
             self.ui.text(
                 if matches!(view.card_id, 466 | 467) {
                     "OPTIONAL READY ENTRY"
+                } else if view.card_id == 469 {
+                    "OPTIONAL XP PAYMENT · choose before targeting"
                 } else if view.show_off.is_empty() {
                     "OPTIONAL REPEATS · select independently"
                 } else {
@@ -1146,7 +1148,12 @@ impl App {
                 }
             }
             if view.repeats.is_empty() {
-                if matches!(view.card_id, 466 | 467) {
+                if view.card_id == 469 {
+                    self.ui.wrapped_lines(
+                        "Choose an enemy at a battlefield with 3 Might or less. Pay 5 XP to remove the Might limit. This payment applies to every Repeat and stays paid if the spell is countered.",
+                        260.0, 738.0, 400.0, 13.0, MUTED, 4,
+                    );
+                } else if matches!(view.card_id, 466 | 467) {
                     self.ui.wrapped_lines(
                         if view.card_id == 467 {
                             "Enter ready for free, but this unit cannot move for the rest of this turn. Leave the option off to decline that restriction."
@@ -1475,6 +1482,8 @@ impl App {
                     "Extra 1 Energy · Assault 2"
                 } else if view.card_id == 451 {
                     "1 Calm · draw 1 on play"
+                } else if view.card_id == 469 {
+                    "5 XP · any Might"
                 } else if view.unit_cost.is_some() {
                     "Exhaust a unit · draw 2"
                 } else {
@@ -1485,6 +1494,18 @@ impl App {
             ) {
                 draft.choices.cost_order.clear();
                 draft.choices.bonus = !draft.choices.bonus;
+                if view.card_id == 469 && !draft.choices.bonus {
+                    let allowed =
+                        self.game
+                            .card_target_candidates(self.game.priority(), 469, None, &[])?;
+                    self.targets.retain(|target| allowed.contains(target));
+                    for repeat in &mut draft.choices.repeats {
+                        repeat
+                            .choices
+                            .targets
+                            .retain(|target| allowed.contains(target));
+                    }
+                }
                 if view.unit_cost.is_some() {
                     if !draft.choices.bonus {
                         draft.choices.exhaust_unit = None;

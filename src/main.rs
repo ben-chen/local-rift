@@ -9576,6 +9576,18 @@ fn live_unit_description(game: &Game, owner: usize, unit_id: u32) -> Option<Stri
             "Not Empowered.".into()
         },
     ];
+    if let Some(original) = game.board_owner(Target::Unit {
+        player: owner,
+        unit_id,
+    }) && original != owner
+        && !unit.token
+    {
+        lines.insert(1, if original == 0 {
+            "CONTROL CHANGED · you still own this card. Leaving the board uses your hand, trash or banishment."
+        } else {
+            "CONTROL CHANGED · your opponent still owns this card. Leaving the board uses their hand, trash or banishment."
+        }.into());
+    }
     match game.unit_combat_contribution(unit) {
         Ok(contribution) => lines.extend(combat_ui::unit_description(contribution)),
         Err(error) => {
@@ -9893,6 +9905,12 @@ mod live_preview_tests {
                     && !text.contains("Its controller cannot move")
             );
             assert!(text.contains("Stunned:"));
+            assert!(text.contains("CONTROL CHANGED"));
+            assert!(text.contains(if original == 0 {
+                "you still own"
+            } else {
+                "opponent still owns"
+            }));
         }
     }
 

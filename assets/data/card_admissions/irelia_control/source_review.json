@@ -1,5 +1,5 @@
 {
-  "status": "Official faces and current rules reviewed; control cards remain unavailable pending runtime implementation and acceptance.",
+  "status": "Runtime implementation in progress; publication requires control-card acceptance.",
   "reviewed_on": "2026-11-16",
   "base_revision": "a4a7e445996fc899078473c38898622083379f3a",
   "records": [
@@ -89,6 +89,17 @@
           "rules_text": "[Action] (Play on your turn or in showdowns.)\nChoose an enemy unit at a battlefield. Take control of it and recall it. (Send it to your base. This isn't a move.)"
         },
         "notes": "Viewed the complete unmodified official face, including cost, domain, card type, text and collector number."
+      },
+      "runtime_id": 468,
+      "runtime_image": {
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/f26462174fd01407f25f7d49a70862d2b9af35cc-744x1039.png?w=280&q=85&fm=png",
+        "path": "assets/art/card_468.png",
+        "bytes": 231106,
+        "sha256": "49a47b6518dd1844475f4cae766f2795b489704f00affae3147ecb5fdc6f2043",
+        "dimensions": [
+          280,
+          391
+        ]
       }
     },
     {
@@ -177,6 +188,17 @@
           "rules_text": "You may spend 5 XP as an additional cost to play this.\nChoose an enemy unit at a battlefield with 3 Might or less. If you paid the additional cost, choose any enemy unit at a battlefield instead. Take control of it, exhaust it, and recall it."
         },
         "notes": "Viewed the complete unmodified official face, including cost, domain, card type, text and collector number."
+      },
+      "runtime_id": 469,
+      "runtime_image": {
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/1c05bff48666586a2b3552b5638deaf20d9006f7-744x1039.png?w=280&q=85&fm=png",
+        "path": "assets/art/card_469.png",
+        "bytes": 160750,
+        "sha256": "7083c4bd00d66a85987fbd1f9bbdf1f31840dac9d450a845327ad205146caef9",
+        "dimensions": [
+          280,
+          391
+        ]
       }
     }
   ],

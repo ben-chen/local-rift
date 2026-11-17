@@ -15,6 +15,9 @@ use crate::rules::{self, Allegiance, CounterKind, OfficialEffect, StaticAbility}
 use std::collections::VecDeque;
 
 #[cfg(test)]
+#[path = "control_card_tests.rs"]
+mod control_card_tests;
+#[cfg(test)]
 #[path = "control_gear_tests.rs"]
 mod control_gear_tests;
 #[cfg(test)]
@@ -7147,6 +7150,26 @@ impl Game {
         provided: &[Target],
         automatic: bool,
     ) -> Result<Vec<Target>, String> {
+        self.prepare_targets_mode_with_bonus(
+            actor,
+            id,
+            lane,
+            provided,
+            automatic,
+            self.targeting_bonus(actor, id),
+        )
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    fn prepare_targets_mode_with_bonus(
+        &self,
+        actor: usize,
+        id: CardId,
+        lane: Option<usize>,
+        provided: &[Target],
+        automatic: bool,
+        bonus: bool,
+    ) -> Result<Vec<Target>, String> {
         if id == 426 {
             let mut targets = provided.to_vec();
             if targets.is_empty()
@@ -7275,7 +7298,14 @@ impl Game {
         }
         let mut targets = Vec::new();
         for &target in provided {
-            if !self.official_target_valid(actor, id, lane, target, targets.len())? {
+            if !self.official_target_valid_with_bonus(
+                actor,
+                id,
+                lane,
+                target,
+                targets.len(),
+                bonus,
+            )? {
                 return Err(
                     "This target does not meet the card's printed targeting restrictions.".into(),
                 );
@@ -7311,7 +7341,9 @@ impl Game {
         };
         while targets.len() < desired {
             let mut candidates = Vec::new();
-            for target in self.card_target_candidates(actor, id, lane, &targets)? {
+            for target in
+                self.card_target_candidates_with_bonus(actor, id, lane, &targets, bonus)?
+            {
                 if let Target::Battlefield { lane } = target {
                     let value = self.area_damage_score(actor, id, &[target])?;
                     candidates.push((value * 100 - lane as i128, target));
@@ -7453,6 +7485,23 @@ impl Game {
         lane: Option<usize>,
         prior: &[Target],
     ) -> Result<Vec<Target>, String> {
+        self.card_target_candidates_with_bonus(
+            player,
+            card_id,
+            lane,
+            prior,
+            self.targeting_bonus(player, card_id),
+        )
+    }
+
+    fn card_target_candidates_with_bonus(
+        &self,
+        player: usize,
+        card_id: CardId,
+        lane: Option<usize>,
+        prior: &[Target],
+        bonus: bool,
+    ) -> Result<Vec<Target>, String> {
         Ok({
             if player >= self.players.len()
                 || card_id >= self.catalog.len()
@@ -7531,7 +7580,7 @@ impl Game {
             };
             let mut valid = Vec::new();
             for t in targets {
-                if self.valid_card_target(player, card_id, lane, t, prior)? {
+                if self.valid_card_target_with_bonus(player, card_id, lane, t, prior, bonus)? {
                     valid.push(t);
                 }
             }
@@ -7546,6 +7595,26 @@ impl Game {
         lane: Option<usize>,
         target: Target,
         prior: &[Target],
+    ) -> Result<bool, String> {
+        self.valid_card_target_with_bonus(
+            player,
+            card_id,
+            lane,
+            target,
+            prior,
+            self.targeting_bonus(player, card_id),
+        )
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    fn valid_card_target_with_bonus(
+        &self,
+        player: usize,
+        card_id: CardId,
+        lane: Option<usize>,
+        target: Target,
+        prior: &[Target],
+        bonus: bool,
     ) -> Result<bool, String> {
         Ok({
             if card_id >= self.catalog.len()
@@ -7573,14 +7642,15 @@ impl Game {
                 return Ok(self.alpha_candidates(player, prior)?.contains(&target));
             }
             for (i, &earlier) in prior.iter().enumerate() {
-                if !self.target_append_valid(player, card_id, lane, earlier, &prior[..i])? {
+                if !self.target_append_valid(player, card_id, lane, earlier, &prior[..i], bonus)? {
                     return Ok(false);
                 }
             }
-            self.target_append_valid(player, card_id, lane, target, prior)?
+            self.target_append_valid(player, card_id, lane, target, prior, bonus)?
         })
     }
 
+    #[allow(clippy::too_many_arguments)]
     fn target_append_valid(
         &self,
         player: usize,
@@ -7588,10 +7658,18 @@ impl Game {
         lane: Option<usize>,
         target: Target,
         prior: &[Target],
+        bonus: bool,
     ) -> Result<bool, String> {
         Ok({
             self.target_group_fits(card_id, &[prior, &[target]].concat())?
-                && self.official_target_valid(player, card_id, lane, target, prior.len())?
+                && self.official_target_valid_with_bonus(
+                    player,
+                    card_id,
+                    lane,
+                    target,
+                    prior.len(),
+                    bonus,
+                )?
                 && (!rules::targeting(card_id).distinct || !prior.contains(&target))
                 && (!rules::targeting(card_id).different_locations
                     || prior
@@ -7633,6 +7711,32 @@ impl Game {
         destination: Option<usize>,
         target: Target,
         slot: usize,
+    ) -> Result<bool, String> {
+        self.official_target_valid_with_bonus(
+            actor,
+            id,
+            destination,
+            target,
+            slot,
+            self.targeting_bonus(actor, id),
+        )
+    }
+
+    fn targeting_bonus(&self, actor: usize, id: CardId) -> bool {
+        self.active_play
+            .as_ref()
+            .is_some_and(|play| play.player == actor && play.card_id == id && play.choices.bonus)
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    fn official_target_valid_with_bonus(
+        &self,
+        actor: usize,
+        id: CardId,
+        destination: Option<usize>,
+        target: Target,
+        slot: usize,
+        bonus: bool,
     ) -> Result<bool, String> {
         Ok({
             if actor >= self.players.len()
@@ -7753,6 +7857,14 @@ impl Game {
                 return Ok(false);
             }
             match rules::effect(id) {
+                OfficialEffect::TakeControlAndRecall { maximum_might, .. } => {
+                    unit.lane.is_some()
+                        && (bonus
+                            || match maximum_might {
+                                None => true,
+                                Some(maximum) => self.unit_might(unit)? <= u64::from(maximum),
+                            })
+                }
                 OfficialEffect::BanishSmallOrReturn { .. } => unit.lane.is_some(),
                 OfficialEffect::ArcaneShift => slot == 0 || unit.lane.is_some(),
                 OfficialEffect::GiveTemporary => unit.lane.is_some(),
@@ -8180,8 +8292,14 @@ impl Game {
         }
         let mut valid = Vec::new();
         for (slot, &target) in targets.iter().enumerate() {
-            if self.official_target_valid(player, id, lane, target, slot)?
-                && self.current_hidden_slot_valid(id, slot, target)
+            if self.official_target_valid_with_bonus(
+                player,
+                id,
+                lane,
+                target,
+                slot,
+                options.bonus,
+            )? && self.current_hidden_slot_valid(id, slot, target)
             {
                 valid.push(target);
             }
@@ -8191,6 +8309,19 @@ impl Game {
             valid.retain(|&target| self.target_location(target) == location);
         }
         match rules::effect(id) {
+            OfficialEffect::TakeControlAndRecall { exhaust, .. } => {
+                if let Some(&target) = valid.first()
+                    && let Some(Target::Unit {
+                        player: controller,
+                        unit_id,
+                    }) = self.take_control_of_battlefield_unit(player, target)
+                {
+                    if exhaust {
+                        self.exhaust_unit(controller, unit_id);
+                    }
+                    self.recall_unit(controller, unit_id, false, false);
+                }
+            }
             OfficialEffect::ChooseOne(_) => {
                 return Err("A modal spell must resolve its finalized execution.".into());
             }
@@ -10782,6 +10913,11 @@ impl Game {
                 .prepare_targets(actor, id, None, &[])
                 .unwrap_or_default();
             match rules::effect(id) {
+                OfficialEffect::TakeControlAndRecall { .. } => {
+                    targets.first().map_or(Ok::<_, String>(0), |&target| {
+                        Ok(self.return_target_score(actor, target)?.max(0) + 60)
+                    })?
+                }
                 OfficialEffect::BanishReplay(_) => targets
                     .first()
                     .map_or(Ok(0), |&t| self.replay_target_score(actor, t))?

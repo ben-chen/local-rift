@@ -1,6 +1,16 @@
 # Irelia implementation priority
 
-Updated November 14, 2026. Irelia cards take priority over the saved Azir draft.
+Updated November 16, 2026. Irelia cards take priority over the saved Azir draft.
+
+Possession and Conscription now have local runtime implementations on the
+control branch. They are not yet an accepted public release. Both use ordinary
+target finalization, response windows and resolution; Conscription's optional
+5 XP payment is declared once and applies to each separately targeted Repeat.
+The current work also covers card-payment XP accounting, ownership in API
+observations, native payment controls, and both companion advice levels.
+The seven sourced deck recipes remain unchanged. Native visual acceptance,
+complete-game campaigns and installed release checks remain required before
+publishing this card addition; see the control-card section of RULES_AUDIT.md.
 
 Flurry of Feathers is available as an additional Calm option and passed
 immutable installed acceptance. It shares explicit mode handling
