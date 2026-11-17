@@ -1,6 +1,6 @@
 {
-  "status": "Four priority cards implemented locally; rules/API/AI and complete-game checks passed; native and installed acceptance outstanding.",
-  "reviewed_at": "2026-11-17T02:03:45.416465+00:00",
+  "status": "Four priority cards passed local rules, API, full-game and native acceptance; immutable installed acceptance outstanding.",
+  "reviewed_at": "2026-11-17T02:16:50.003350+00:00",
   "base_revision": "270942c0af2635b935dc9a644a346485152adb1a",
   "cards": [
     {
@@ -67,6 +67,41 @@
       "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/field-options-integrations-v2.log",
       "sha256": "18f13a5578e51a23756dccdc3ef5961f7b29ce8756fbe46948313808c4e787a4",
       "passed_rust_tests": 18
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/field-options-tomb-v2.log",
+      "sha256": "738f6fd87c28e36afe86a4a631a6c829f15ff3637521244aca71bd57813b5459",
+      "passed_rust_tests": 12
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/field-options-coach-v3.log",
+      "sha256": "5394d86447c23d5f6846cb0587eda144bfbf94e3ba7609d36ce691cde35d47d3",
+      "passed_rust_tests": 1
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/field-options-clippy-v3.log",
+      "sha256": "d3e4d99ee99472d3f496564d567dd5aafd2910d2dbd17bfcb0424db42c3e9c61",
+      "passed_rust_tests": 0
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/field-options-catalog-check-v3.log",
+      "sha256": "35b03e93cbbafea0ca9c90df2cf83dbc73bba093dd4536fb5448f99ec8cf2eeb",
+      "passed_rust_tests": 0
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/field-options-source-v4.log",
+      "sha256": "d6b7ff4ff34765bfb1552c11d65b8624fa1fccde4cf216206f9dbaf6aa0f3e90",
+      "passed_rust_tests": 0
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/field-options-api-v1.json",
+      "sha256": "0c5e665c7f360c9b43057c466a962146d53eed46c34c3224846f50e7396214e2",
+      "passed_rust_tests": 0
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/field-options-native-v4/status.json",
+      "sha256": "8e770c9d10a4bf6697c47722703b75be24504dc838140fa61d32c2f8f25af004",
+      "passed_rust_tests": 0
     }
   ],
   "nonduplicated_broad_rust_tests": 1418,
@@ -112,7 +147,12 @@
     "Repeated exhaustion without readying does not retrigger; object-cost exhaustion shares the event path.",
     "Rostrum still draws with no friendly targets or remaining runes; removing its Might target in response does not cancel draw/channel.",
     "JSON filtered trigger queries reject Dragon targets atomically, preserve read-only queries, and expose required/excluded tags.",
-    "Both companion levels remain read-only, concise and independent of hidden opponent cards."
+    "Both companion levels remain read-only, concise and independent of hidden opponent cards.",
+    "Explicit allocation of Tomb Power reduction to either original or Repeat component; excess allocations rejected without mutation.",
+    "Staged Tomb payment keeps the reduced obligation; undo restores the recycled rune and all original state.",
+    "Baited Hook activated-ability costs do not receive a spell-only Tomb discount.",
+    "Hidden Switcheroo ignores its base cost; Tomb reduces the additional Deflect payment when it also chooses a friendly unit here.",
+    "Instructed Clocktower spell play ignores printed Energy while Tomb independently reduces Power."
   ],
   "findings": [
     "Compiler caught the new Energy reduction expression using u16 rather than the existing u64 type.",
@@ -121,12 +161,11 @@
     "Canonical AI generation initially omitted additional open-field destinations; fixed through a reusable static permission.",
     "Authored test corrections: gear placement helper signature; normal EndTurn versus Pass; actor retains priority after finalization; optional Irelia choice precedes responses; Gust requires a battlefield target.",
     "API observations intentionally expose a coarse candidate pool; corrected the scenario to query filtered ordered candidates through the documented API.",
-    "Short unassisted games did not exercise expensive Rostrum at every level. Preserved that evidence and added targeted AI and reachable public-action openings rather than forcing heuristic play."
+    "Short unassisted games did not exercise expensive Rostrum at every level. Preserved that evidence and added targeted AI and reachable public-action openings rather than forcing heuristic play.",
+    "Native validation exposed visible Ocean Drake suppressing all Deckhand tips. Changed this advice family to supply all relevant tips while retaining hidden-information and non-interruption guarantees.",
+    "Native fixture corrections: shared CostPlanView type and private gear setup boundary; account for two Calm runes exhausted paying Rostrum; open play choices before clicking cost review."
   ],
   "outstanding": [
-    "Actual native deployment/target/cost/gear/field inspectors at both sizes.",
-    "Standalone JSONL full-series campaign for all four cards.",
-    "Explicit Sandswept reduction allocation, staged rollback, ability exclusions, Hidden and instructed-play interactions.",
     "Immutable installed acceptance of the combined batch before publication.",
     "All currently legal cards and full Standard, learning and expert-practice goal audit."
   ],
@@ -173,5 +212,133 @@
   "publication": {
     "accepted": false,
     "public_main": "bce912208cef37fbf6a12ddd6c148c1e2b6609ac"
+  },
+  "native": {
+    "status": "passed",
+    "root": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/field-options-native-v4",
+    "sizes": [
+      [
+        1440,
+        900
+      ],
+      [
+        1152,
+        720
+      ]
+    ],
+    "cases": 2,
+    "captures": 48,
+    "script": "src/smoke/field_options.rs",
+    "coverage": [
+      "Actual open-field click and drag deployment, including a gear-only field and a disabled enemy-controlled destination.",
+      "Ocean Drake rejects Dragon selections, accepts a non-Dragon and offers a working decline control.",
+      "Rostrum pays its exhaust cost, offers a separate friendly target, draws and adds an exhausted rune.",
+      "Sandswept target changes update total Power cost, with cost-review controls and full official field text.",
+      "Full inspectors for all three main-deck cards; both Mote advice levels for all four cards."
+    ]
+  },
+  "visual_review": [
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/field-options-native-v4/small/rift_field_options_drake_targets.png",
+      "finding": "Reviewed actual small-window capture: relevant text, artwork, target choice, resource state or cost total is legible and contained."
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/field-options-native-v4/small/rift_field_options_tomb_cost_review.png",
+      "finding": "Reviewed actual small-window capture: relevant text, artwork, target choice, resource state or cost total is legible and contained."
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/field-options-native-v4/small/rift_field_options_rostrum_resolved.png",
+      "finding": "Reviewed actual small-window capture: relevant text, artwork, target choice, resource state or cost total is legible and contained."
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/field-options-native-v4/small/rift_field_options_open_field_drag.png",
+      "finding": "Reviewed actual small-window capture: relevant text, artwork, target choice, resource state or cost total is legible and contained."
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/field-options-native-v4/small/rift_field_options_drake_inspect.png",
+      "finding": "Reviewed actual small-window capture: relevant text, artwork, target choice, resource state or cost total is legible and contained."
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/field-options-native-v4/small/rift_field_options_rostrum_inspect.png",
+      "finding": "Reviewed actual small-window capture: relevant text, artwork, target choice, resource state or cost total is legible and contained."
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/field-options-native-v4/small/rift_field_options_tomb_inspect.png",
+      "finding": "Reviewed actual small-window capture: relevant text, artwork, target choice, resource state or cost total is legible and contained."
+    }
+  ],
+  "standalone_api": {
+    "status": "passed",
+    "series": 6,
+    "games": 15,
+    "records": [
+      {
+        "difficulty": "easy",
+        "irelia_seat": 0,
+        "card_entries": {
+          "470": 0,
+          "471": 2,
+          "472": 1
+        },
+        "rostrum_activations": 2,
+        "games_with_tomb": 1
+      },
+      {
+        "difficulty": "easy",
+        "irelia_seat": 1,
+        "card_entries": {
+          "470": 2,
+          "471": 1,
+          "472": 1
+        },
+        "rostrum_activations": 2,
+        "games_with_tomb": 1
+      },
+      {
+        "difficulty": "tactical",
+        "irelia_seat": 0,
+        "card_entries": {
+          "470": 3,
+          "471": 2,
+          "472": 0
+        },
+        "rostrum_activations": 0,
+        "games_with_tomb": 1
+      },
+      {
+        "difficulty": "tactical",
+        "irelia_seat": 1,
+        "card_entries": {
+          "470": 2,
+          "471": 2,
+          "472": 0
+        },
+        "rostrum_activations": 0,
+        "games_with_tomb": 1
+      },
+      {
+        "difficulty": "strategic",
+        "irelia_seat": 0,
+        "card_entries": {
+          "470": 2,
+          "471": 3,
+          "472": 0
+        },
+        "rostrum_activations": 0,
+        "games_with_tomb": 1
+      },
+      {
+        "difficulty": "strategic",
+        "irelia_seat": 1,
+        "card_entries": {
+          "470": 3,
+          "471": 3,
+          "472": 1
+        },
+        "rostrum_activations": 1,
+        "games_with_tomb": 1
+      }
+    ],
+    "limitation": "Authored lists, not new meta registrations. Rostrum was not played in either Tactical series or the Strategic seat-0 series. Independent targeted tests and legal scripted full games cover its behavior at every level."
   }
 }

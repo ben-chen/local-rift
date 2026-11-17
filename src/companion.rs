@@ -1967,7 +1967,7 @@ fn sands_advice(game: &Game, beginner: bool) -> Option<&'static str> {
         })
 }
 
-fn field_options_advice(game: &Game, beginner: bool) -> Option<&'static str> {
+fn field_options_advice(game: &Game, beginner: bool) -> Vec<&'static str> {
     let visible = |card| {
         game.players[0].hand.contains(&card)
             || game.chain.iter().any(|item| item.card_id == card)
@@ -1982,27 +1982,29 @@ fn field_options_advice(game: &Game, beginner: bool) -> Option<&'static str> {
                         .any(|gear| !gear.token && gear.card_id == card)
             })
     };
+    let mut tips = Vec::new();
     if visible(472) {
-        Some(if beginner {
+        tips.push(if beginner {
             "Exhausting Rostrum triggers +3 Might for a friendly unit this turn. Its separate ability draws 1 and channels an exhausted rune after responses."
         } else {
             "Rostrum turns readiness into cards, future resources and a temporary Might boost. The new rune cannot supply Energy yet; plan which unit benefits this turn."
-        })
-    } else if visible(471) {
-        Some(if beginner {
+        });
+    }
+    if visible(471) {
+        tips.push(if beginner {
             "Ocean Drake can enter an open field: no units and no controller. Its play trigger may return a non-Dragon, friendly or enemy, to that unit's owner's hand."
         } else {
             "Ocean Drake can claim an open field while returning a non-Dragon elsewhere. Compare removing an enemy with saving or replaying one of your own units."
-        })
-    } else if visible(470) {
-        Some(if beginner {
+        });
+    }
+    if visible(470) {
+        tips.push(if beginner {
             "Sneaky Deckhand can enter an open field: no units and no controller. It enters exhausted and still needs normal unit timing; this permission is not Ambush."
         } else {
             "Deckhand can establish field control without a move. It enters exhausted, so consider whether you can defend that field and which resources remain for responses."
-        })
-    } else {
-        None
+        });
     }
+    tips
 }
 
 fn control_card_advice(game: &Game, beginner: bool) -> Option<&'static str> {
@@ -2395,18 +2397,28 @@ mod tests {
             game.players[0].hand = vec![card];
             let before = format!("{game:?}");
             for beginner in [false, true] {
-                let tip = field_options_advice(&game, beginner).unwrap();
-                assert!(tip.chars().count() <= 180);
+                let tips = field_options_advice(&game, beginner);
+                assert_eq!(tips.len(), 1);
+                assert!(tips.iter().all(|tip| tip.chars().count() <= 180));
                 let mut private = game.clone();
                 private.players[1].hand = vec![470, 471, 472];
                 private.players[1].deck.reverse();
-                assert_eq!(field_options_advice(&private, beginner), Some(tip));
+                assert_eq!(field_options_advice(&private, beginner), tips);
             }
             assert_eq!(format!("{game:?}"), before);
         }
         game.players[0].hand.clear();
         game.players[1].hand = vec![470, 471, 472];
-        assert!(field_options_advice(&game, true).is_none());
+        assert!(field_options_advice(&game, true).is_empty());
+        // A visible expensive card must not suppress the other relevant tips.
+        game.players[0].hand = vec![470, 471, 472];
+        for beginner in [false, true] {
+            let tips = field_options_advice(&game, beginner);
+            assert_eq!(tips.len(), 3);
+            for name in ["Deckhand", "Ocean Drake", "Rostrum"] {
+                assert!(tips.iter().any(|tip| tip.contains(name)));
+            }
+        }
     }
 
     #[test]

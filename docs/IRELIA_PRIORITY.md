@@ -322,6 +322,11 @@ Local checks passed 1,399 library/client/tool tests and a 54-game integration
 scenario. Of those games, 48 were unassisted and six began with legally scripted
 quiet openings before AI play. Strategic AI did not play Rostrum in the
 unassisted sample; targeted scenarios separately verify its play and activation
-at all three levels. Native visual and immutable installed acceptance remain
-outstanding; see [validation](validation/irelia_field_options.json). The seven
-sourced recipes remain unchanged, and the broader all-legal-cards goal is open.
+at all three levels. Subsequent local acceptance adds five Sandswept interaction
+scenarios, 48 native captures across both sizes, and six API series completing
+15 games. Actual controls cover open-field click/drag deployment, non-Dragon
+selection, Rostrum exhaustion and its separate trigger, and target-aware cost
+review. Mote now retains every relevant field-option tip when several cards
+are visible. Immutable installed acceptance remains outstanding; see
+[validation](validation/irelia_field_options.json). The seven sourced recipes
+remain unchanged, and the broader all-legal-cards goal is open.

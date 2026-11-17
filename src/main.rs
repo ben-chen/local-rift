@@ -11016,6 +11016,7 @@ async fn main() {
     let fields_smoke = args.iter().any(|a| a == "--ui-smoke-fields");
     let entry_smoke = args.iter().any(|a| a == "--ui-smoke-entry");
     let control_smoke = args.iter().any(|a| a == "--ui-smoke-control");
+    let field_options_smoke = args.iter().any(|a| a == "--ui-smoke-field-options");
     let turn_keywords_smoke = args.iter().any(|a| a == "--ui-smoke-turn-keywords");
     let rockfall_smoke = args.iter().any(|a| a == "--ui-smoke-rockfall");
     let riven_smoke = args.iter().any(|a| a == "--ui-smoke-riven");
@@ -11043,6 +11044,7 @@ async fn main() {
         || fields_smoke
         || entry_smoke
         || control_smoke
+        || field_options_smoke
         || turn_keywords_smoke
         || flurry_smoke
         || disarm_smoke
@@ -11145,6 +11147,8 @@ async fn main() {
             smoke::run_entry_frame(&mut app, frames)
         } else if control_smoke {
             smoke::run_control_frame(&mut app, frames)
+        } else if field_options_smoke {
+            smoke::run_field_options_frame(&mut app, frames)
         } else if discord_smoke {
             smoke::run_discord_frame(&mut app, frames)
         } else if warden_smoke {

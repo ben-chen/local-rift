@@ -226,3 +226,199 @@ fn a_friendly_target_chosen_only_for_repeat_still_reduces_the_total() {
         assert_eq!(g.unit_might(g.unit_ref(target).unwrap()).unwrap(), 7);
     }
 }
+
+#[test]
+fn tomb_reduction_can_be_allocated_to_either_repeat_cost_but_not_twice() {
+    for component in 0..2 {
+        let mut g = position(0, 0, 164009);
+        g.battlefields[0] = SANDSWEPT_TOMB_ID;
+        g.players[0].hand = vec![28];
+        let target = unit(&mut g, 0, Some(0));
+        g.grant_play(
+            0,
+            ChainSource::Card { card_id: 133 },
+            PlayGrantKind::RepeatNextSpell,
+        );
+        let original = play(vec![target]);
+        let option_id = g.play_choices(&original).unwrap().repeats[0].id;
+        let mut choices = PlayChoices {
+            repeats: vec![play::RepeatSelection {
+                option_id,
+                choices: play::ExecutionChoices {
+                    targets: vec![target],
+                    ..Default::default()
+                },
+            }],
+            ..Default::default()
+        };
+        let action = |choices| Action::WithPlayChoices {
+            action: Box::new(original.clone()),
+            choices,
+        };
+        let plan = g.cost_plan(&action(choices.clone())).unwrap();
+        assert_eq!(plan.components.len(), 2);
+        assert!(plan.components.iter().all(|c| c.cost.power == 2));
+        assert_eq!(plan.modifiers.len(), 1);
+        choices.cost_order = vec![play::CostSelection {
+            modifier_id: plan.modifiers[0].id,
+            use_power: false,
+            power_allocations: vec![play::PowerReduction {
+                component_id: plan.components[component].id,
+                amount: 1,
+            }],
+        }];
+        let explicit = action(choices.clone());
+        assert_eq!(power(&g, &explicit), 3);
+        let applied = g.cost_plan(&explicit).unwrap().applied_order;
+        assert_eq!(applied, choices.cost_order);
+        choices.cost_order[0].power_allocations[0].amount = 2;
+        test_support::reject_unchanged(&mut g, action(choices));
+        g.apply(explicit).unwrap();
+        settle_unopposed_chain(&mut g);
+        assert_eq!(g.players[0].energy, 18);
+        assert_eq!(g.players[0].power_pool[domain_index(Domain::Body)], 2);
+        assert_eq!(g.unit_might(g.unit_ref(target).unwrap()).unwrap(), 12);
+    }
+}
+
+#[test]
+fn tomb_staged_payment_freezes_the_discount_and_undo_restores_recycled_runes() {
+    for actor in 0..2 {
+        let mut g = position(actor, 0, 164010);
+        g.battlefields[0] = SANDSWEPT_TOMB_ID;
+        g.players[actor].hand = vec![28];
+        g.players[actor].power_pool = [0; 6];
+        g.players[actor]
+            .set_rune_setup([0, 0, 0, 1, 0, 0], [0; 6])
+            .unwrap();
+        g.players[actor].energy = 21;
+        let target = unit(&mut g, actor, Some(0));
+        let before = format!("{g:?}");
+        for cancel in [true, false] {
+            g.apply(Action::BeginPayment {
+                action: Box::new(play(vec![target])),
+            })
+            .unwrap();
+            let plan = g.payment_plan_view(actor).unwrap();
+            assert_eq!(plan.energy, 1);
+            assert_eq!(
+                plan.power.iter().map(|p| u32::from(p.amount)).sum::<u32>(),
+                1
+            );
+            assert!(g.players[actor].hand.is_empty());
+            g.apply(Action::ActivateRune {
+                domain: Domain::Body,
+                recycle: true,
+            })
+            .unwrap();
+            assert_eq!(g.players[actor].total_runes(), 0);
+            if cancel {
+                g.apply(Action::Choose { accept: false }).unwrap();
+                assert_eq!(format!("{g:?}"), before);
+            } else {
+                g.apply(Action::CompletePayment).unwrap();
+                settle_unopposed_chain(&mut g);
+                assert_eq!(g.players[actor].power_pool, [0; 6]);
+                assert_eq!(g.players[actor].energy, 19);
+                assert_eq!(g.unit_might(g.unit_ref(target).unwrap()).unwrap(), 7);
+            }
+        }
+    }
+}
+
+#[test]
+fn tomb_does_not_reduce_an_activated_ability_choosing_a_friendly_unit() {
+    for actor in 0..2 {
+        let mut g = position(actor, 0, 164011);
+        g.battlefields[0] = SANDSWEPT_TOMB_ID;
+        let target = unit(&mut g, actor, Some(0));
+        g.gear_play(actor, 385, None).unwrap(); // Baited Hook: 1 Energy + 1 Order Power.
+        let gear_id = g.players[actor].gear[0].id;
+        let action = Action::ActivateAbility {
+            source: crate::activated::AbilitySource::Gear {
+                player: actor,
+                gear_id,
+            },
+            ability_index: 0,
+            targets: vec![target],
+        };
+        let plan = g.cost_plan(&action).unwrap();
+        assert_eq!((plan.energy, power(&g, &action)), (1, 1));
+        assert!(plan.modifiers.is_empty());
+        g.apply(action).unwrap();
+        assert_eq!(g.players[actor].energy, 19);
+        assert_eq!(g.players[actor].power_pool[domain_index(Domain::Order)], 4);
+        assert!(!g.players[actor].gear[0].ready);
+    }
+}
+
+#[test]
+fn tomb_reduces_hidden_spells_additional_deflect_after_the_base_cost_is_ignored() {
+    for actor in 0..2 {
+        let mut g = position(actor, 0, 164012);
+        g.battlefields[0] = SANDSWEPT_TOMB_ID;
+        g.battlefield_owner[0] = Some(actor);
+        let friendly = unit(&mut g, actor, Some(0));
+        let id = ready_unit(&mut g, 1 - actor, 20); // Vex has Deflect 1.
+        let enemy = Target::Unit {
+            player: 1 - actor,
+            unit_id: id,
+        };
+        g.unit_mut(enemy).unwrap().lane = Some(0);
+        g.players[actor].hidden.push(crate::hidden::HiddenCard {
+            id: 164012,
+            card_id: 44,
+            lane: 0,
+            hidden_turn: g.turn.saturating_sub(1),
+            revealed: false,
+        });
+        g.players[actor].hand = vec![7];
+        g.apply(play(vec![friendly])).unwrap();
+        while let Some(action) = test_support::decline_legend_action(&g) {
+            g.apply(action).unwrap();
+        }
+        g.players[actor].power_pool = [0; 6];
+        let energy = g.players[actor].energy;
+        let action = Action::PlayHidden {
+            hidden_id: 164012,
+            targets: vec![friendly, enemy],
+        };
+        let plan = g.cost_plan(&action).unwrap();
+        assert_eq!((plan.energy, power(&g, &action)), (0, 0));
+        g.apply(action).unwrap();
+        assert!(g.chain.last().unwrap().from_hidden);
+        assert_eq!(g.players[actor].energy, energy);
+        assert_eq!(g.players[actor].power_pool, [0; 6]);
+        settle_unopposed_chain(&mut g);
+    }
+}
+
+#[test]
+fn tomb_instructed_spell_play_reduces_power_while_instruction_ignores_energy() {
+    for actor in 0..2 {
+        let mut g = position(actor, 0, 164013);
+        g.battlefields[0] = SANDSWEPT_TOMB_ID;
+        let target = unit(&mut g, actor, Some(0));
+        g.players[actor].banish = vec![28];
+        g.queue_banish_play(actor, 0, InstructedPlayKind::ClocktowerGuardian, None);
+        g.after_resolution().unwrap();
+        let action = Action::FinalizePendingPlay {
+            lane: None,
+            targets: vec![target],
+            repeat_targets: vec![],
+            repeat: false,
+            accelerate: false,
+            bonus: false,
+        };
+        assert_eq!(
+            (g.cost_plan(&action).unwrap().energy, power(&g, &action)),
+            (0, 1)
+        );
+        g.apply(action).unwrap();
+        assert_eq!(g.players[actor].energy, 20);
+        assert_eq!(g.players[actor].power_pool[domain_index(Domain::Body)], 4);
+        settle_unopposed_chain(&mut g);
+        assert_eq!(g.unit_might(g.unit_ref(target).unwrap()).unwrap(), 7);
+        assert!(g.pending_cards().is_empty());
+    }
+}
