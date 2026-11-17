@@ -1,0 +1,142 @@
+{
+  "status": "Passed immutable installed acceptance; this document-only acceptance checkpoint is ready for publication.",
+  "reviewed_at": "2026-11-17T10:10:59.269362+00:00",
+  "base_revision": "e74c69d1635a787484b3b60aa3ae116003678aba",
+  "problem": "Ride the Wind skipped Ready if a response had already moved its otherwise legal friendly-unit target to the finalized destination. The previous helper-level test did not exercise the spell resolver.",
+  "change": "Separate declaration-only destination legality from live target legality during resolution. Explicit, automatic and preview target paths share the declaration check; the existing movement primitive retains independent Ready.",
+  "rules": {
+    "hub": "https://playriftbound.com/en-us/rules-hub/",
+    "edition": "2026-10-09",
+    "pdf": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/5c7946f7c3b8c6e0faff85ab6dadc6d2e721ea94.pdf",
+    "pdf_sha256": "94d41fee86f88b61c4157c0389c0595d990b98e5b42555c99d9f649ee64d1fec",
+    "text_sha256": "a9c2a461603711d4147106e253cdf98b1dc24b1f30c3ae67675688310309ec8c",
+    "sections": [
+      "355.4",
+      "359.3.e.2",
+      "359.3.e.6",
+      "359.3.e.14"
+    ],
+    "hub_rechecked": "2026-11-17"
+  },
+  "focused_validation": [
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/movement-resolution-green-v2.log",
+      "sha256": "b1778a2500f001c4fffc4ce39823a668212df28fb19b930f8b6ff04af74913bd",
+      "scope": "5 passed, 0 failed; both seats. Ride the Wind with real Flash and opposing Siren's Song responses, declaration rejection for four movement spells, prevented movement, Gust target removal, JSON API read-only queries and rejected-action rollback."
+    }
+  ],
+  "attempts": [
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/movement-resolution-red-v1.log",
+      "sha256": "0e5cb5bb89ab90e6c3e1c24b2138f94765e8e82221ca426c85e803bdc52fc438",
+      "scope": "Expected pre-fix failure at Ready after Flash; confirms the scenario exposes the runtime defect."
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/movement-resolution-green-v1.log",
+      "sha256": "af658797d95990a2b553e10c17051d66dbb7f87f43f532df1890109444580352",
+      "scope": "Three scenarios passed. The fourth failed because its Gust fixture chose 5-Might Playful Phantom. Corrected fixture to 1-Might Watchful Sentry; no relaxation of Gust legality."
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/movement-resolution-clippy-v1.log",
+      "sha256": "e079798dc222108a1a62784fda27b17abf8e830e9c3af17942094b7f55f5471b",
+      "scope": "Lint rejected default construction followed by field reassignment in the new API test. Used a struct initializer; runtime code unchanged. Focused scenarios and all-target lint rerun passed."
+    }
+  ],
+  "installed_acceptance": {
+    "status": "passed",
+    "revision": "d5882db930bb90accb072b269b99d808c5d3eda5",
+    "report": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/movement-resolution-release-v1/status.json",
+    "report_sha256": "74e1030a76c58dbe8cfdf28d7aa1f04400f6b28a5d494f20652088486e5df211",
+    "finished_at": "2026-11-17T10:10:31.620673+00:00",
+    "nix": {
+      "package": "/nix/store/r2yp25f7f7ylcf8n4x2alr3p5jba40bq-local-rift-0.1.0",
+      "catalog": "/nix/store/m7wj9q54bah3klc21ghg323ns5hr41nb-local-rift-catalog-check",
+      "simulation": "/nix/store/ji04k9082hnnqgihs171sbx5id5vd9n6-local-rift-simulation-check",
+      "seconds": 1420.166,
+      "gc_root_prefix": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/movement-resolution-release-v1/nix-result"
+    },
+    "source": "/nix/store/bwp9r44i996vn9h87gyxckq9c2jzx1yi-source",
+    "rust_tests": 2254,
+    "source_tests": 355,
+    "simulated_games": 1176,
+    "native_cases": 51,
+    "captures": 542,
+    "api_campaigns": 23,
+    "full_api_records": 267,
+    "all_full_api_records_match": true,
+    "nix_log_sha256": "a31b86b12ba8485fa1a744069bcaa37cd462cdd0203f2160e86bb10373dbf401",
+    "simulation_sha256": "966a293d60867bb824be7af09c5049040017a0e8265cecb15f65973b5abf3b23"
+  },
+  "remaining": [
+    "Twilight Step is a separately committed candidate with local validation; its installed acceptance has not started. Temptation is a separate draft.",
+    "This released pool still leaves 554 legal snapshot identities unimplemented. Complete Standard interaction parity, expert opponent strength and novice learning remain unproven."
+  ],
+  "regression_validation": [
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/movement-resolution-regressions-v1.log",
+      "sha256": "e3a2bf7eedd9f65ca3fe314ba74fb885d912ccad142c764492ca461b1fd88f29",
+      "scope": "1526 passing Rust tests: all library and binary tests plus conformance, repeated plays/Flow, Irelia decisions, Siren's Song, control transfer, event audit and rules audit integrations."
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/movement-resolution-green-v3.log",
+      "sha256": "88f5514fc436b8cb6de114ac096ff74f2d94bbc66637f612bc5efeeae2a09c1c",
+      "scope": "All five focused scenarios passed on the final test fixture after a lint-only initialization correction."
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/movement-resolution-clippy-v2.log",
+      "sha256": "b8ca6b2615277c26bba4f6d895364585bcc91c68307c9dde1bb45f6fb7b43b3b",
+      "scope": "All-target Clippy passed with warnings denied."
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/movement-resolution-build-v1.log",
+      "sha256": "3df0ddd1eac663dce109060ba547acb49909a75f53d4b5a2b4b3042fe1c615ae",
+      "scope": "All native binaries built successfully."
+    }
+  ],
+  "source_hashes": {
+    "src/movement.rs": "1f5d451204ce44c72a0f5bc596d35c7fbda698c19e8c23f6bb3213d2b4356b0f",
+    "src/game.rs": "6b1e64603bbeb032bd8c58b18f10ab46a43a068716bfdc7e0f808702df151e3b",
+    "src/movement_resolution_tests.rs": "361e8138782299625520abd94aff485f335611e2ecaf6391f231dabfc3780c76",
+    "src/api.rs": "f3b921ebe1e32a571893894601bf1c054782fe12b243cc83fa9496dfef3fdb20",
+    "src/api/movement_resolution_tests.rs": "4a35d681881f5c214c822f30ced26ba0771b3eca6c81b9e01519940e1929259a"
+  },
+  "native_validation": {
+    "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/movement-resolution-native-v1/report.json",
+    "sha256": "f59629745874ad2535918c1214ae8b4370d9419cfd0a8f0fa2e384d09f8330ee",
+    "cases": 4,
+    "captures": 26,
+    "scope": "Existing core and Irelia click suites, normal/small sizes. These cover target/response controls; the new Ride the Wind interaction is asserted in engine/API scenarios."
+  },
+  "visual_review": [
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/movement-resolution-native-v1/irelia-normal/rift_gust_response_beginner.png",
+      "sha256": "bfaf2ce6c34a4aacea2b1ca2970a5dc5b17b547f9145aecfd46518afd3313a53",
+      "scope": "Actually viewed: legible response and priority controls, full short Beginner advice outside the play area, distinct card artwork."
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/movement-resolution-native-v1/irelia-small/rift_gust_protected_advanced.png",
+      "sha256": "a10925f4c9e616c6b42e298709622e35820d93649b64becd9d7fb42e9b1f6ff4",
+      "scope": "Actually viewed: small-window target state and Pass control remain visible; Advanced commentary stays within its panel and does not cover actions."
+    }
+  ],
+  "api_validation": {
+    "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/movement-resolution-api-v1/report.json",
+    "sha256": "85625cfa01ddc26e0eb3fb53a63565ce6829df88f5eb9310a1ec762b07a09403",
+    "campaigns": 23,
+    "records": 267,
+    "all_records_equal_to_prior": true,
+    "scope": "Complete existing native API campaign records match the previous baselines. Compatibility evidence; the new movement interaction has separate authored engine/API assertions."
+  },
+  "installed_visual_review": [
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/movement-resolution-release-v1/irelia-normal/rift_gust_response_beginner.png",
+      "sha256": "5e99f256e1de1c5dd35a7570b1575a22f9271d9a8e89353f829b0fa6963b6d6d",
+      "scope": "Actually viewed: normal-window response chain, priority controls and Beginner advice are readable and separate from actions."
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/movement-resolution-release-v1/irelia-small/rift_gust_protected_advanced.png",
+      "sha256": "86c29a53290a627b684534f33dbee358974ad7d3e17a0f2cfbf6373424d1da93",
+      "scope": "Actually viewed: small-window live target state, Advanced advice and pass control remain legible and accessible."
+    }
+  ]
+}

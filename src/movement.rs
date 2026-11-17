@@ -5,6 +5,27 @@ use board_targets::BoardLocation;
 use triggers::MoveFacts;
 
 impl Game {
+    /// Core 355.4: choose a different valid location while finalizing the play.
+    /// This is not a unit targeting restriction at resolution (359.3.e.2).
+    /// A response can make the Move impossible without invalidating the unit
+    /// for a later instruction such as Ride the Wind's Ready (359.3.e.14).
+    pub(super) fn move_destination_valid_at_finalization(
+        &self,
+        card: CardId,
+        destination: Option<usize>,
+        target: Target,
+    ) -> bool {
+        let destination = match rules::effect(card) {
+            OfficialEffect::MoveFriendlyToBase { .. } => None,
+            OfficialEffect::MoveEnemy | OfficialEffect::MoveFriendlyAndReady => destination,
+            _ => return true,
+        };
+        self.unit_ref(target).is_some_and(|unit| {
+            unit.lane != destination
+                && destination.is_none_or(|lane| lane < self.battlefield_count())
+        })
+    }
+
     /// Existing relative callers mean the target's base, never the actor's.
     pub(crate) fn move_effect(
         &mut self,

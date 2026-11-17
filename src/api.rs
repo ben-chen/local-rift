@@ -36,6 +36,8 @@ mod entry_tests;
 #[cfg(test)]
 mod field_options_tests;
 mod fields;
+#[cfg(test)]
+mod movement_resolution_tests;
 mod numeric;
 mod play_choices;
 #[cfg(test)]

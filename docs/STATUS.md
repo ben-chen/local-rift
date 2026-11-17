@@ -151,3 +151,13 @@ passed 2,249 Rust tests, 355 source checks, 1,176 simulations, 51 interface case
 fresh installed captures were visually reviewed. This covers ten binary question
 shapes, not every decision or a complete legal-action API. See
 [shared-choice acceptance](validation/binary_choices.json).
+
+
+The movement correction separates destination checks when a spell is played
+from target checks when it resolves. Ride the Wind now readies a legal friendly
+unit even if Flash or an opposing Siren's Song has already moved it to the chosen
+destination. Same-location declarations remain illegal. Its fixed installed
+candidate passed 2,254 Rust tests, 355 source checks, 1,176 simulations,
+51 native cases (542 captures), and 23 API campaigns matching all 267 records.
+Two fresh installed captures were visually reviewed. See
+[movement validation](validation/movement_resolution.json).

@@ -1344,6 +1344,11 @@ Ready instruction still executes when movement is prevented or the unit is
 already at the destination (359.3.e.14). Control-card finalization, remaining
 captured continuations and assembled release acceptance are still outstanding.
 
+That unchanged-location check exercised the movement primitive. A November 17
+cast-and-response regression subsequently found that spell resolution rejected
+the unit before reaching that primitive. See the correction below; the earlier
+helper-level result did not establish this complete interaction.
+
 The [validation record](validation/control_movement.json) records 1,525 passing
 Rust tests, strict all-target lint, format/diff checks and the control source
 review. Existing Back Alley coverage caught a no-op control refresh regression;
@@ -1635,3 +1640,28 @@ Morbid Return/Existential Dread scenarios now reuse a neutral combat fixture
 with unchanged outcomes. These checks do not prove full Standard parity.
 Broader matches, native controls and installed acceptance are tracked in
 [validation](validation/irelia_tag_stun.json).
+
+## Movement destination checks at finalization and resolution — November 17, 2026
+
+Ride the Wind incorrectly skipped its Ready instruction when a response moved
+its friendly target to the already chosen destination. The target was still a
+friendly unit; the Move could no longer happen. Core 355.4 defines the initial
+destination choice, while 359.3.e.2, .6 and .14 distinguish an illegal target
+from an impossible movement instruction and preserve the later Ready.
+
+The declaration check now lives in the shared movement module. Explicit plays,
+automatic target selection, native target previews and bot target queries still
+require a different valid destination. Resolution rechecks the card's unit
+restrictions without applying that declaration-only location comparison again.
+This covers Ride the Wind, Flash, Charm and Siren's Song through their existing
+movement effects; no new cards or movement permissions are introduced.
+
+The new scenarios cast Ride the Wind and react with Flash to reach base, or
+with an opposing Siren's Song to reach the selected battlefield. Both players'
+seats are exercised. Separate scenarios retain same-location declaration
+rejection, prevented movement with Ready, and removal of the target by Gust.
+The JSON API scenario checks read-only previews, rejected-action rollback and
+resolution through ordinary API actions. The pre-fix Flash scenario failed at
+the missing Ready assertion. See [validation](validation/movement_resolution.json)
+for results and release status. This is a correction to a specific interaction,
+not a certification of complete movement or Standard rules parity.

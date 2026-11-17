@@ -61,6 +61,9 @@ mod control_reference_tests;
 mod control_transfer_tests;
 #[path = "movement.rs"]
 mod movement;
+#[cfg(test)]
+#[path = "movement_resolution_tests.rs"]
+mod movement_resolution_tests;
 #[path = "ownership.rs"]
 mod ownership;
 
@@ -7413,6 +7416,9 @@ impl Game {
         }
         let mut targets = Vec::new();
         for &target in provided {
+            if !self.move_destination_valid_at_finalization(id, lane, target) {
+                return Err("Choose a different valid destination for this Move.".into());
+            }
             if !self.official_target_valid_with_bonus(
                 actor,
                 id,
@@ -7798,6 +7804,7 @@ impl Game {
     ) -> Result<bool, String> {
         Ok({
             self.target_group_fits(card_id, &[prior, &[target]].concat())?
+                && self.move_destination_valid_at_finalization(card_id, lane, target)
                 && self.official_target_valid_with_bonus(
                     player,
                     card_id,
@@ -8049,11 +8056,6 @@ impl Game {
                             None => true,
                             Some(limit) => self.unit_might(unit)? <= u64::from(limit),
                         }
-                }
-                OfficialEffect::MoveFriendlyToBase { .. } => unit.lane.is_some(),
-                OfficialEffect::MoveEnemy | OfficialEffect::MoveFriendlyAndReady => {
-                    unit.lane != destination
-                        && destination.is_none_or(|l| l < self.battlefield_count())
                 }
                 OfficialEffect::SwapMight => unit.lane.is_some(),
                 OfficialEffect::ReadyAnother => true,
