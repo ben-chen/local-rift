@@ -347,5 +347,8 @@ regression, 48 unassisted legal games with conservation, 345 source/tool checks,
 40 native captures at both sizes, and six API series completing 14 games.
 Seventeen prior API campaigns were also refreshed against this engine. Actual
 small-window captures were inspected and the observed heading/zone-label issues
-fixed. Immutable installed acceptance is outstanding; see
+fixed. Immutable installed acceptance at bd232f5 now also passed: 2,186 Rust
+tests, 345 source checks, 1,176 simulated games, 41 native cases with 406
+captures, and 18 API campaigns matching all 123 complete baseline records.
+Four installed small-window images were actually inspected. See
 [recovery validation](validation/irelia_recovery.json).

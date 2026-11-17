@@ -1438,5 +1438,9 @@ The API exposes the choice's outcome and eligibility metadata. Native controls
 select actual trash tiles, keep/recycle Vision, inspect all three faces, and
 continue when no target exists. Mote explains the same outcomes at both levels
 without changing game state. Local evidence, observed UI fixes, natural card
-usage in full games, and outstanding installed acceptance are recorded in
-`validation/irelia_recovery.json`. Complete Standard conformity remains unproven.
+usage in full games, and installed acceptance are recorded in
+`validation/irelia_recovery.json`. Immutable bd232f5 passed 2,186 Rust tests,
+345 source checks, 1,176 simulated games, 41 native cases (406 captures and
+two actual games), and 18 API campaigns whose 123 complete records matched
+the local baselines. Four installed small-window images were actually viewed.
+Complete Standard conformity remains unproven.

@@ -1,5 +1,5 @@
 {
-  "status": "Local rules, API, full-game and native checks passed; immutable installed acceptance outstanding.",
+  "status": "Local and immutable installed acceptance passed for the three reviewed recovery cards; full Standard conformity remains unproven.",
   "reviewed_at": "2026-11-17T02:43:55.120815+00:00",
   "base_revision": "5db98cf771fc124997b223696e1f9cfc87e2227c",
   "cards": [
@@ -217,5 +217,56 @@
     "First native run reused simulated pointer clicks between frames; reset input each frame, then passed both window sizes.",
     "Visual review found a clipped heading and a Hand label over trash choices; shortened the heading and named the trash chooser explicitly.",
     "No-target companion advice now explains why the played unit remains and the recovery ability cannot enter the chain."
-  ]
+  ],
+  "installed_acceptance": {
+    "runtime_revision": "bd232f53e30b29a23fc30f143ea59458a5ab2257",
+    "finished_at": "2026-11-17T03:12:27.804235+00:00",
+    "report": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/recovery-release-v2/status.json",
+    "report_sha256": "1be22ddb7fd39d141f90b8672559096fd1ad3755ae5c9cb399460283628d1730",
+    "plan": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/recovery-release-plan-v1.json",
+    "plan_sha256": "68ec468a12734a2ee41611e848d3e5475ad31c8f5aa6c209be508e7520914702",
+    "nix": {
+      "package": "/nix/store/2nijg5agy75dlwjf2n287yiqz7dg476z-local-rift-0.1.0",
+      "catalog": "/nix/store/hm0f2iz0pcq97mcic1vfk9kffn8k9zbn-local-rift-catalog-check",
+      "simulation": "/nix/store/rhyp1vc9akxrfg7z6n3cc2x2lx0wylvk-local-rift-simulation-check",
+      "seconds": 1254.911,
+      "gc_root_prefix": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/recovery-release-v2/nix-result"
+    },
+    "rust_tests": 2186,
+    "source_tests": 345,
+    "simulated_games": 1176,
+    "simulation_scope": "49 preset pairings, three difficulties, alternating starters; conservation, resources, unit identity and winner consistency checked after every action.",
+    "ui_cases": 41,
+    "ui_captures": 406,
+    "native_completed_games": 2,
+    "api_campaigns": 18,
+    "full_api_records": 123,
+    "all_full_api_records_equal": true,
+    "actual_viewed_captures": [
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/recovery-release-v2/recovery-small/rift_recovery_unit_choice.png",
+        "sha256": "5d4b188ed3277ec43965c0760b1fa0c9f3d5e02f16ce8a0636736d6d53fb4f3b",
+        "finding": "Recovery heading, labeled trash tray, eligible art cards and response explanation are readable at the small size."
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/recovery-release-v2/recovery-small/rift_recovery_annie_inspect.png",
+        "sha256": "fc1340eadbcc15f32067639d4de5af9aa08e1aedcb59324f4cfdf20b243aed31",
+        "finding": "Full Annie face and complete rules text fit in the inspector."
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/recovery-release-v2/recovery-small/rift_recovery_vision_recycle_choice.png",
+        "sha256": "b4814f9e1bb2fbc38656e9c4f168736db22561dd11b78630f7ad5a2f58e8054f",
+        "finding": "Sai Scout Vision offers separate recycle/keep controls and identifies the private top card for its controller."
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/recovery-release-v2/recovery-small/rift_recovery_no_eligible_target.png",
+        "sha256": "a987376b9a9020c7b95273f33683234cddec5a7b9fd10c42700e95292db7bb08",
+        "finding": "Empty trash tray, enabled Continue and companion explanation agree that no ability is finalized."
+      }
+    ],
+    "interrupted_attempt": {
+      "report": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/recovery-release-v1/interruption.json",
+      "reason": "The original runner exited on SIGTERM; its terminal state was confirmed before the separately recorded v2 run. No verification failure was inferred from the interruption."
+    }
+  }
 }
