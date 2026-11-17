@@ -131,6 +131,16 @@ pub(super) fn play_targets_to_json(card_id: crate::cards::CardId) -> Value {
         value["condition"] =
             json!({"type":"moved_this_turn","controller":"enemy","rechecked_on_resolution":true});
     }
+    if crate::rules::targeting(card_id).attacking_only {
+        let controller = match crate::rules::targeting(card_id).allegiance {
+            crate::rules::Allegiance::Enemy => "enemy",
+            crate::rules::Allegiance::Friendly => "friendly",
+            _ => "any",
+        };
+        value["condition"] = json!({
+            "type":"attacking", "controller":controller, "rechecked_on_resolution":true
+        });
+    }
     if card_id == 426 {
         value["conditional_slots"] = json!({"after":"show_off","instance":0,"kind":"rune",
             "maximum":2,"required":0,"controller":"any","after_required_unit":true});

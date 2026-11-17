@@ -43,6 +43,10 @@ pub fn spell_modes(id: CardId) -> &'static [SpellMode] {
 /// Amounts calculated when the instruction resolves, after responses.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum SpellMight {
+    DistinctFriendlyTags {
+        tags: &'static [&'static str],
+        per_tag: i8,
+    },
     Empowered {
         base: i8,
         empowered: i8,
@@ -199,6 +203,8 @@ pub enum OfficialEffect {
     Stun,
     /// Back Off draws independently, but only when its actual play origin was Hand.
     StunAndDrawFromHand,
+    /// Inspect the live Stunned state separately for every execution.
+    StunOrReturn,
     GrantAssault(u8),
     ShieldThenPredict {
         shield: u8,
@@ -318,6 +324,7 @@ pub struct Targeting {
     /// or be chosen by an enemy spell of this domain still on the chain.
     pub threatened_by_domain: Option<Domain>,
     pub moved_this_turn: bool,
+    pub attacking_only: bool,
     /// If true, multi-target choices must name different units.
     pub distinct: bool,
     pub same_location: bool,
@@ -348,6 +355,19 @@ pub fn effect(id: usize) -> OfficialEffect {
         }),
         480 => EachPlayer(crate::game::player_choices::Rule::ACCEPTABLE_LOSSES),
         481 => EachPlayer(crate::game::player_choices::Rule::WHIRLWIND),
+        482 => Trash(crate::trash::SpellRule {
+            kinds: &[CardKind::Unit],
+            owner: Allegiance::Friendly,
+            minimum: 1,
+            maximum: 1,
+            outcome: crate::trash::Outcome::ReturnToHand,
+        }),
+        483 => StunOrReturn,
+        484 => Stun,
+        485 => ContextualMight(SpellMight::DistinctFriendlyTags {
+            tags: &["Bird", "Cat", "Dog", "Poro"],
+            per_tag: 1,
+        }),
         479 => Trash(crate::trash::SpellRule {
             kinds: &[CardKind::Unit],
             owner: Allegiance::Any,
@@ -831,8 +851,8 @@ pub fn chooses_move_destination(id: usize) -> bool {
 pub fn targeting(id: usize) -> Targeting {
     use Allegiance::*;
     let allegiance = match id {
-        290..=296 | 335 | 349 | 428 | 434 | 446 | 457 | 461 => Any,
-        4 | 32 | 144 | 145 | 365 | 427 | 465 | 468 | 469 => Enemy,
+        290..=296 | 335 | 349 | 428 | 434 | 446 | 457 | 461 | 484 | 485 => Any,
+        4 | 32 | 144 | 145 | 365 | 427 | 465 | 468 | 469 | 483 => Enemy,
         362 | 364 | 372 | 378 | 379 | 381 | 435 => Any,
         8 | 9 | 14 | 19 | 27 | 85 | 137 | 228 | 350 | 353 | 354 | 377 | 380 | 382 | 421 | 425
         | 447 => Friendly,
@@ -856,6 +876,7 @@ pub fn targeting(id: usize) -> Targeting {
             allegiance
         },
         moved_this_turn: id == 427,
+        attacking_only: matches!(id, 483 | 484),
         threatened_by_domain: if id == 421 {
             Some(Domain::Fury)
         } else {
@@ -904,6 +925,7 @@ pub fn target_bounds(id: usize) -> (usize, usize) {
         | KillEnemyDomain { .. }
         | Stun
         | StunAndDrawFromHand
+        | StunOrReturn
         | GrantAssault(_)
         | GrantTurnKeywords(_)
         | ShieldThenPredict { .. } => (1, 1),
@@ -1272,6 +1294,10 @@ pub fn requirements(id: usize) -> &'static [Mechanic] {
         479 => &[Chain],
         480 => &[Chain, Gear],
         481 => &[Chain, Bounce],
+        482 => &[Chain],
+        483 => &[Chain, Stun, Bounce],
+        484 => &[Chain, Stun],
+        485 => &[Chain],
         477 => &[
             Chain,
             ChooseReadyTriggers,
@@ -2168,7 +2194,7 @@ pub fn repeat_cost(id: usize) -> Option<RepeatCost> {
             power: 0,
             domain: None,
         }),
-        37 | 133 | 135 | 136 | 137 | 216 | 220 | 389 => Some(RepeatCost {
+        37 | 133 | 135 | 136 | 137 | 216 | 220 | 389 | 483 | 484 => Some(RepeatCost {
             energy: 2,
             power: 0,
             domain: None,

@@ -1,0 +1,190 @@
+{
+  "status": "Passed combined four-card immutable installed acceptance; full goal remains unfinished.",
+  "reviewed_at": "2026-11-17T09:05:15.378884+00:00",
+  "base_revision": "f382b2a997d01b1c93fed4f4c9a5ec0ffd122a77",
+  "cards": [
+    {
+      "runtime_id": 484,
+      "official_id": "sfd-040-221",
+      "name": "Thwonk!"
+    },
+    {
+      "runtime_id": 485,
+      "official_id": "unl-046-219",
+      "name": "Friendship"
+    }
+  ],
+  "source_review": "assets/data/card_admissions/irelia_tag_stun/source_review.json",
+  "design": "Thwonk! composes existing Stun and Repeat with shared attacker validation; UI/API allegiance comes from the rule. Friendship adds a reusable distinct-friendly-tag scalar. New and prior scenarios share a neutral combat setup. No external engine code copied.",
+  "checks": [
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/tag-stun-focused-v4.log",
+      "sha256": "55f3042b1469adfafff4fa405eeba10881ce871a40ff358019a36e86a091a21c",
+      "scope": "8 focused engine/API scenarios"
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/tag-stun-prior-targets-v1.log",
+      "sha256": "e14f4dfa0814cffd686e577bce86e1f315ac7a7ec75fd65d500ee59b1712b01e",
+      "scope": "12 earlier Morbid Return/Existential Dread scenarios after shared fixture extraction"
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/tag-stun-regressions-v1.log",
+      "sha256": "7fb8ee49115680458309a4a099115103f88d7f9904f6c87f9fe105b257d22be3",
+      "scope": "1285 library, 178 client, 1 API binary, 1 simulation binary test: 1465 total"
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/tag-stun-client-v2.log",
+      "sha256": "261e524060c965eb8407ff313f3abdf6318408dcd30ac1796d18ce4953bd0462",
+      "scope": "178 client tests after first brief/advice changes"
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/tag-stun-clippy-v2.log",
+      "sha256": "2bbf242b9938b8264d2fb7399701bba0f31daac4f7c497c38328ed6adf9ffab1",
+      "scope": "Final all-targets Clippy with warnings denied"
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/tag-stun-python-v1.log",
+      "sha256": "c0d34cbc2adc5ed7395b2d2742d5dcf51cb90a1f0e4788400ff92a54e85deee1",
+      "scope": "355 source/tool checks"
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/tag-stun-catalog-v3.log",
+      "sha256": "f3d85862d3f4bd3028cdcea116d7d9d47486fc67ef0f4021a1b578c1a5e51da9",
+      "scope": "Complete catalog regeneration checked"
+    }
+  ],
+  "check_scope_note": "Broad Rust checks precede the final brief text changes. Final native captures and all-target lint cover those display edits; the core and API are unchanged. Immutable installed acceptance remains required. The later combined installed gate above validates the complete frozen runtime revision, including final display changes.",
+  "scenario_scope": [
+    "Either seat may choose a friendly or enemy attacker; defenders and base units rejected",
+    "Repeat costs two additional Energy, accepts same or independent targets, and repeated Stun never returns a unit",
+    "Action timing enforced; real Star-Crossed responses remove eligibility",
+    "Friendship counts distinct live Bird/Cat/Dog/Poro tags across controller board, at resolution",
+    "Duplicate, zero/four tags, opposing/private zones, factory token tags and end-of-turn expiry",
+    "Reaction response removing last Bird reduces final bonus; giving Might is not Buff",
+    "Read-only candidate/cost queries and atomic rejection; old enemy-attacker descriptor unchanged"
+  ],
+  "unassisted_games": {
+    "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/tag-stun-matches-v2.log",
+    "sha256": "17b9acc8fea1016cdc48c914214df6dd91a4338f91a4b22a657a461f3aacd331",
+    "games": 48,
+    "both_cards_cast_at_each_level_and_seat": true,
+    "physical_conservation_after_every_action": true
+  },
+  "api": {
+    "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/tag-stun-api-v1.json",
+    "sha256": "7f313cfacbb434034296f6af8b0ec7cbab47382d6bdabe62c8212092db1f3a64",
+    "series": 48,
+    "games": 116,
+    "all_levels_and_seats_exercised": true,
+    "prior_campaign_comparison": {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/tag-stun-api-baselines-v1/report.json",
+      "sha256": "01190bf1ea1b03e5ab9fe32d2380a3f018506dff61ad3d8256b4a187c408d2c2",
+      "campaigns": 21,
+      "records": 207,
+      "all_records_identical": true
+    }
+  },
+  "native": {
+    "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/tag-stun-native-v3/report.json",
+    "sha256": "276d1d6887ee0a2d9fa2b1816f77462cbf39259b331deb5e92359aa5c4d6d3c0",
+    "binary_sha256": "7e95f17e62df1d5bbd1ba8c3ae18965bb06281abdf5a6f05dc20d110ed04f009",
+    "cases": 2,
+    "captures": 20,
+    "visually_reviewed": [
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/tag-stun-native-v3/tag-stun-small/rift_tag_thwonk_repeat.png",
+        "sha256": "cea13b8ed102a6ec5eb85297d53baae420e888f57b007a4e319e70ba83e7dc19",
+        "finding": "Friendly attacker, independent Repeat selection and total 4 Energy visible without overlapping commentary."
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/tag-stun-native-v3/tag-stun-small/rift_tag_friendship_inspect.png",
+        "sha256": "1ad5a41464e109360e81b1e42204e382d5583ad865110c5f0748cdcd0f50f116",
+        "finding": "Complete original face and full official rules text are readable."
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/tag-stun-native-v3/tag-stun-normal/rift_tag_friendship_advanced.png",
+        "sha256": "d7a6ba7d4e2e60c3be21fa04d5bb80498d88db5a21fbe19bfe74aa3c5a9b5442",
+        "finding": "Concise Might summary no longer truncates; Advanced commentary remains unobtrusive."
+      }
+    ]
+  },
+  "retained_failures": [
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/tag-stun-focused-v1.log",
+      "sha256": "f247af34ed643d9b37c53e6dcdcaf3b599e06e0d7504ae3b91cf8b28e42338d8",
+      "finding": "Test referenced nonexistent buffed field; corrected assertion to permanent buff value."
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/tag-stun-focused-v2.log",
+      "sha256": "eff41cb1d0b546a3b7a7088c377a2186cafee1f42e9c1fc9fc726d1ee5ccfee9",
+      "finding": "Fixtures used an incorrect API field and omitted optional Irelia choices before responses; corrected public requests, preserving outcomes."
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/tag-stun-focused-v3.log",
+      "sha256": "ee886292f74c88af258ed9ca0d5572a89e0d490027c4e19e7c0d9658a911b62f",
+      "finding": "API settling also needs to decline the optional legend choice; now uses shared helper through normal API apply."
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/tag-stun-matches-v1.log",
+      "sha256": "2bcddcc12bb800e705a73095caafbaa112798f5bae515bbf8ac73aa9579d8574",
+      "finding": "Authored deck mistakenly included Mind-domain Gustwalker; validation rejected it. Replaced with legal Chaos Cemetery Attendant; all match assertions retained."
+    }
+  ],
+  "visual_iterations": "First screenshot review found generic Friendship brief; second found its longer replacement truncated. Final concise brief is readable, with complete text in inspector.",
+  "release_plan": "One combined immutable candidate covers return options and tag/stun; all prior UI/API cases retained.",
+  "full_goal_remaining": {
+    "snapshot_mapped_legal_identities": 525,
+    "snapshot_unimplemented_legal_identities": 554,
+    "full_standard_parity_proven": false,
+    "expert_strength_proven": false,
+    "human_learning_outcomes_proven": false,
+    "unresolved_separate_rule_audit": "Off-turn instructed Whirlwind order remains unproven; current official rules checked again without a decisive clarification."
+  },
+  "installed_release": {
+    "status": "passed",
+    "runtime_revision": "f9eade5089fac8b37f58a8f806eab69c0a38a262",
+    "package": "/nix/store/wcsbgw4n6mkfxa1j00y1k34isc7w5l4h-local-rift-0.1.0",
+    "rust_tests": 2242,
+    "source_tests": 355,
+    "simulated_games": 1176,
+    "ui_cases": 49,
+    "captures": 534,
+    "api_campaigns": 22,
+    "records": 255,
+    "all_full_api_records_equal": true,
+    "report": {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/tag-stun-release-v1/status.json",
+      "sha256": "f1b6d8584b359409aa4458386f4fcd773e3fefdec2fbb6cb7e0539549b558737"
+    },
+    "nix_log": {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/tag-stun-release-v1/nix.log",
+      "sha256": "2d0bc045d7467f56b765c2ae5db188648884bbe067638a8414bece12853b0f68"
+    },
+    "simulation": {
+      "path": "/nix/store/fjr6k6ymbx8j042sd8p5cy07y8sfiad9-local-rift-simulation-check",
+      "sha256": "047b6491cad8d10552d6fad1f95bc93b2261ed4884ed8260f8aa47dfe0abe72c"
+    },
+    "reviewed_at": "2026-11-17T09:03:52.556885+00:00",
+    "visual_review_report": {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/tag-stun-release-v1/visual-review.json",
+      "sha256": "69dc1b1d9e4b6a620cf227e3eb76e0fd69e88266f5eaa22f69b3fc7177371d45"
+    },
+    "visually_reviewed": [
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/tag-stun-release-v1/tag-stun-small/rift_tag_thwonk_repeat.png",
+        "sha256": "42daf03d86d27339e94be440d35977b3ae915b3cc0d51b0c470381e59c36c06a",
+        "finding": "Friendly attacking-unit selection and total Repeat cost of 4 Energy and 0 Power are visible."
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/tag-stun-release-v1/tag-stun-small/rift_tag_friendship_inspect.png",
+        "sha256": "4237bf39ec04aa271fdf1ee4e09d31ae3398b0aefdf2e534d902480b1110fe71",
+        "finding": "Original face and full official text fit the inspector at the small size."
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/tag-stun-release-v1/tag-stun-normal/rift_tag_friendship_advanced.png",
+        "sha256": "bc03ab97e50951e4d6cff48df83b3fb2e2a501960ae69b789f3e094fccceaa6d",
+        "finding": "Distinct-tag summary is not truncated; Advanced advice remains outside action controls."
+      }
+    ]
+  }
+}

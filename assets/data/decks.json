@@ -12713,6 +12713,102 @@
       "equipment_effect_html": "",
       "equipment_effect": "",
       "might_bonus": null
+    },
+    {
+      "id": 482,
+      "official_id": "ogn-170-298",
+      "name": "Morbid Return",
+      "kind": "Spell",
+      "domains": [
+        "Chaos"
+      ],
+      "energy": 2,
+      "power": 0,
+      "might": 0,
+      "keywords": [
+        "Action"
+      ],
+      "tags": [],
+      "official_text": "[Action] (Play on your turn or in showdowns.)\nReturn a unit from your trash to your hand.",
+      "official_text_html": "<p>[Action] (Play on your turn or in showdowns.)<br />Return a unit from your trash to your hand.</p>",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/33b5ca4e580b94f2056bd884a4a35e8c630920a2-744x1039.png?accountingTag=RB",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null
+    },
+    {
+      "id": 483,
+      "official_id": "unl-134-219",
+      "name": "Existential Dread",
+      "kind": "Spell",
+      "domains": [
+        "Chaos"
+      ],
+      "energy": 1,
+      "power": 1,
+      "might": 0,
+      "keywords": [
+        "Action",
+        "Repeat",
+        "Stun"
+      ],
+      "tags": [],
+      "official_text": "[Action] (Play on your turn or in showdowns.)\n[Repeat] [2 Energy] (You may pay the additional cost to repeat this spell's effect.)\n[Stun] an attacking enemy unit. If it's already stunned, return it to its owner's hand instead. (A stunned unit doesn't deal combat damage this turn.)",
+      "official_text_html": "<p>[Action] (Play on your turn or in showdowns.)<br />[Repeat] :rb_energy_2: (You may pay the additional cost to repeat this spell's effect.)<br />[Stun] an attacking enemy unit. If it's already stunned, return it to its owner's hand instead. (A stunned unit doesn't deal combat damage this turn.)</p>",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/0a197ec3bf96e10307859e2a152c1742288b2b09-744x1039.png?accountingTag=RB",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null
+    },
+    {
+      "id": 484,
+      "official_id": "sfd-040-221",
+      "name": "Thwonk!",
+      "kind": "Spell",
+      "domains": [
+        "Calm"
+      ],
+      "energy": 2,
+      "power": 0,
+      "might": 0,
+      "keywords": [
+        "Action",
+        "Repeat",
+        "Stun"
+      ],
+      "tags": [],
+      "official_text": "[Action] (Play on your turn or in showdowns.)\n[Repeat] [2 Energy] (You may pay the additional cost to repeat this spell's effect.)\nStun an attacking unit. (It doesn't deal combat damage this turn.)",
+      "official_text_html": "<p>[Action] (Play on your turn or in showdowns.)<br />[Repeat] :rb_energy_2: (You may pay the additional cost to repeat this spell's effect.)<br />Stun an attacking unit. (It doesn't deal combat damage this turn.)</p>",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/c414fdba5e47db294b8364a07f1258bc3e204c51-744x1039.png?accountingTag=RB",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null
+    },
+    {
+      "id": 485,
+      "official_id": "unl-046-219",
+      "name": "Friendship",
+      "kind": "Spell",
+      "domains": [
+        "Calm"
+      ],
+      "energy": 1,
+      "power": 0,
+      "might": 0,
+      "keywords": [
+        "Reaction"
+      ],
+      "tags": [],
+      "official_text": "[Reaction] (Play any time, even before spells and abilities resolve.)\nChoose a unit. Give it +1 Might this turn for each of the following tags among your units — Bird, Cat, Dog, and Poro.",
+      "official_text_html": "<p>[Reaction] (Play any time, even before spells and abilities resolve.)<br />Choose a unit. Give it +1 :rb_might: this turn for each of the following tags among your units — Bird, Cat, Dog, and Poro.</p>",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/4a1a08ec8c23a2663babd2fc683481888347407a-744x1039.png?accountingTag=RB",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null
     }
   ],
   "official_text_note": "Official card/legend rules text from the Riot Card Gallery, retrieved 2026-10-24 and corrected by cited errata. Resource icon tokens are expanded to readable bracketed names. Raw card and equipment HTML is preserved separately. Official text does not establish full implementation fidelity."

@@ -15,6 +15,14 @@ use crate::rules::{self, Allegiance, CounterKind, OfficialEffect, StaticAbility}
 use std::collections::VecDeque;
 
 #[cfg(test)]
+#[path = "tag_stun_tests.rs"]
+mod tag_stun_tests;
+
+#[cfg(test)]
+#[path = "return_options_tests.rs"]
+pub(crate) mod return_options_tests;
+
+#[cfg(test)]
 #[path = "trash_target_tests.rs"]
 mod trash_target_tests;
 
@@ -7540,6 +7548,7 @@ impl Game {
                         | OfficialEffect::DisempowerThenKill { .. }
                         | OfficialEffect::Stun
                         | OfficialEffect::StunAndDrawFromHand
+                        | OfficialEffect::StunOrReturn
                 ) || matches!(effect, OfficialEffect::ModifyMight { amount, .. } if amount < 0)
                     || matches!(effect, OfficialEffect::ContextualMight(rules::SpellMight::OwnExhausted { per_unit }) if per_unit < 0)
                     || (effect == OfficialEffect::DualMight && targets.len() == 1);
@@ -7973,6 +7982,15 @@ impl Game {
                 return Ok(false);
             }
             if rules::targeting(id).moved_this_turn && !self.unit_moved_this_turn(player, unit_id) {
+                return Ok(false);
+            }
+            // CR323.2: combat participants share their controller's current
+            // designation; moving away or changing sides removes Attacker.
+            if rules::targeting(id).attacking_only
+                && !self.showdown.as_ref().is_some_and(|window| {
+                    window.combat && window.attacker == player && unit.lane == Some(window.lane)
+                })
+            {
                 return Ok(false);
             }
             if !self.can_choose_unit(actor, target) {
@@ -8661,6 +8679,15 @@ impl Game {
                         && self.unit_might(unit)? <= u64::from(maximum)
                     {
                         self.kill_unit(target)?;
+                    }
+                }
+            }
+            OfficialEffect::StunOrReturn => {
+                for target in valid {
+                    if self.unit_ref(target).is_some_and(|unit| unit.stunned) {
+                        let _ = self.return_unit_to_hand(target);
+                    } else if let Some(unit) = self.unit_mut(target) {
+                        unit.stunned = true;
                     }
                 }
             }
@@ -11259,6 +11286,19 @@ impl Game {
                     .max()
                     .unwrap_or(0)
                     .max(0),
+                OfficialEffect::StunOrReturn => targets
+                    .iter()
+                    .map(|&target| {
+                        if self.unit_ref(target).is_some_and(|unit| unit.stunned) {
+                            self.return_target_score(actor, target)
+                        } else {
+                            Ok(80)
+                        }
+                    })
+                    .collect::<Result<Vec<_>, String>>()?
+                    .into_iter()
+                    .max()
+                    .unwrap_or(0),
                 OfficialEffect::Stun | OfficialEffect::StunAndDrawFromHand => {
                     if in_combat
                         && targets.iter().any(|t| {
@@ -11341,6 +11381,10 @@ impl Game {
                         0
                     }
                 }
+                OfficialEffect::ContextualMight(rules::SpellMight::DistinctFriendlyTags {
+                    tags,
+                    ..
+                }) if self.friendly_tag_count(actor, tags) == 0 => 0,
                 OfficialEffect::ContextualMight(rules::SpellMight::OwnExhausted { .. })
                     if self.players[actor].units.iter().all(|unit| unit.ready) =>
                 {

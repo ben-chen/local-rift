@@ -558,8 +558,27 @@ pub(super) fn target_view_hint(game: &Game, view: &PlayTargetView) -> String {
         local_rift::rules::PlayTargetKind::Spell if view.card_id == 442 => {
             "an enemy spell or ability choosing that unit and no other friendly unit"
         }
+        local_rift::rules::PlayTargetKind::Trash
+            if local_rift::rules::targeting(view.card_id).allegiance
+                == local_rift::rules::Allegiance::Friendly =>
+        {
+            "highlighted unit cards in your Trash"
+        }
         local_rift::rules::PlayTargetKind::Trash => {
             "highlighted unit cards in Trash; switch owners to view either pile"
+        }
+        local_rift::rules::PlayTargetKind::Unit
+            if local_rift::rules::targeting(view.card_id).attacking_only =>
+        {
+            match local_rift::rules::targeting(view.card_id).allegiance {
+                local_rift::rules::Allegiance::Enemy => {
+                    "an attacking enemy unit at the current combat battlefield"
+                }
+                local_rift::rules::Allegiance::Friendly => {
+                    "an attacking friendly unit at the current combat battlefield"
+                }
+                _ => "an attacking unit at the current combat battlefield",
+            }
         }
         local_rift::rules::PlayTargetKind::Rune => {
             "up to two different runes in either rune zone (optional)"

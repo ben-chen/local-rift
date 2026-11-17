@@ -23,7 +23,7 @@ Replace `choose_action(view, suggestions, rng)` in that example with your policy
 
 The initial session is in `mulligan` phase, with decks `[0,1]`, seed `1`, Tactical AI, and player `0` going first. `info` reports protocol version `1`; `catalog` reports separate preset, legend, card, domain, and battlefield IDs.
 
-The repository's `assets/data/full_catalog.json` is a separate inventory with schema version `2`; it is not the bot protocol or the playable `catalog` response. It preserves raw printing fields and adds reviewed `effective` facts, resolution references, and unresolved-field diagnostics. Deck validation uses those effective facts and rejects unresolved gameplay or variant fields, including conflicts on alternate printings. Source review alone never registers a playable card. Inventory-only identity `kind` preserves complete type sets as sorted `+`-joined strings, such as `gear+unit`; the corresponding printing’s `effective.types` retains both types. This does not add a playable bot-protocol card kind. Main-card IDs are append-only; the latest additions are 476–479. Existing IDs and sourced preset lists retain their identities, while eligible-card and chosen-champion lists expand with supported cards. Additive Temporary status, token identity, evaluated passive values and target queries retain protocol version `1`. See [the inventory review contract](CATALOG_REVIEW.md) for evidence and remaining variant-review limits.
+The repository's `assets/data/full_catalog.json` is a separate inventory with schema version `2`; it is not the bot protocol or the playable `catalog` response. It preserves raw printing fields and adds reviewed `effective` facts, resolution references, and unresolved-field diagnostics. Deck validation uses those effective facts and rejects unresolved gameplay or variant fields, including conflicts on alternate printings. Source review alone never registers a playable card. Inventory-only identity `kind` preserves complete type sets as sorted `+`-joined strings, such as `gear+unit`; the corresponding printing’s `effective.types` retains both types. This does not add a playable bot-protocol card kind. Main-card IDs are append-only; the latest additions are 482–483. Existing IDs and sourced preset lists retain their identities, while eligible-card and chosen-champion lists expand with supported cards. Additive Temporary status, token identity, evaluated passive values and target queries retain protocol version `1`. See [the inventory review contract](CATALOG_REVIEW.md) for evidence and remaining variant-review limits.
 
 ```json
 {"id":"hello","command":"info"}
@@ -1276,3 +1276,24 @@ changing the game or revision. No response action is allowed between the
 players' choices. Each Repeat has fresh identifiers. Triggered abilities wait
 until the parent spell finishes. Returned borrowed units go to their owner;
 their equipment remains in play detached.
+
+
+Morbid Return (482) uses a required single `trash` target: a unit card in the
+caster's own trash. Its immutable occurrence reference is chosen before
+responses. Returning it is neither a Draw nor an instructed Play.
+
+Existential Dread (483) requires an enemy attacker. Its target descriptor
+includes `condition:{"type":"attacking","controller":"enemy","rechecked_on_resolution":true}`.
+`target_candidates` and validation share that restriction. The existing
+`play_choices` interface exposes its optional 2-Energy Repeat and each
+execution's independent target. The Stunned state is checked when each
+execution resolves: an unstunned attacker is Stunned; an already-Stunned
+attacker returns to its owner's hand. Moving away in response makes it an
+invalid target. Neither spell gains Reaction timing from being an Action.
+
+
+Thwonk! (484) reuses the normal single-unit target and independent Repeat
+choices. Its target condition is `attacking` with `controller:"any"`; Existential
+Dread (483) remains `controller:"enemy"`. Both recheck the current combat on
+resolution. Friendship (485) allows either player's unit and counts the caster's
+distinct Bird/Cat/Dog/Poro tags when its Might instruction resolves.

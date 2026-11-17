@@ -149,14 +149,14 @@
       "gear": 80,
       "legend": 11,
       "rune": 6,
-      "spell": 141,
+      "spell": 145,
       "unit": 261
     },
-    "implemented_main_cards": 482,
+    "implemented_main_cards": 486,
     "implemented_legends": 11,
     "implemented_battlefields": 22,
-    "implemented_legal_identities": 521,
-    "unimplemented_legal_identities": 558,
+    "implemented_legal_identities": 525,
+    "unimplemented_legal_identities": 554,
     "errata_entries": 67,
     "identities_with_errata": 67,
     "source_quality_issues": 61,
@@ -177,7 +177,7 @@
   "unimplemented_by_observed_keyword": {
     "ADD": 1,
     "Accelerate": 16,
-    "Action": 53,
+    "Action": 50,
     "Add": 20,
     "Ambush": 8,
     "Assault": 13,
@@ -198,11 +198,11 @@
     "Mighty": 9,
     "Predict": 4,
     "Quick-Draw": 2,
-    "Reaction": 52,
-    "Repeat": 10,
+    "Reaction": 51,
+    "Repeat": 8,
     "Shield": 10,
     "Show Off": 5,
-    "Stun": 14,
+    "Stun": 13,
     "Tank": 18,
     "Temporary": 9,
     "Unique": 3,
@@ -11608,8 +11608,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 483,
+        "official_id": "unl-134-219",
+        "playable_in_client": true
       }
     },
     {
@@ -13484,8 +13486,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 485,
+        "official_id": "unl-046-219",
+        "playable_in_client": true
       }
     },
     {
@@ -23376,8 +23380,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 482,
+        "official_id": "ogn-170-298",
+        "playable_in_client": true
       }
     },
     {
@@ -37436,8 +37442,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 484,
+        "official_id": "sfd-040-221",
+        "playable_in_client": true
       }
     },
     {

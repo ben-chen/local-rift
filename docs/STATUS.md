@@ -120,3 +120,16 @@ cases with 488 captures, and 20 API campaigns matching 159 complete records.
 Three fresh installed captures were visually reviewed. This verifies the
 recorded scenarios; full Standard parity and expert strength remain unproven.
 See [player-choice acceptance](validation/irelia_player_choices.json).
+
+
+Morbid Return, Existential Dread, Thwonk! and Friendship passed combined
+immutable installed acceptance at f9eade5. The candidate passed 2,242 Rust tests,
+355 source checks, 1,176 simulated games, 49 installed interface cases with
+534 captures, and 22 API campaigns matching all 255 complete local records.
+Six fresh installed captures were visually reviewed across both card batches.
+Repeat displays its full resource total, attacker targeting distinguishes the
+two Stun spells, and Friendship counts distinct live animal tags at resolution.
+Both Mote levels and full card inspection are available. These results verify
+the recorded scenarios; full Standard parity and expert strength remain unproven.
+See [return-option acceptance](validation/irelia_return_options.json) and
+[tag/stun acceptance](validation/irelia_tag_stun.json).

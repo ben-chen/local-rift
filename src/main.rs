@@ -7231,7 +7231,13 @@ impl App {
                     };
                     let plan = self
                         .selected_play_action()
-                        .filter(|_| self.play_draft.is_some() || pending.is_some())
+                        .filter(|_| {
+                            self.play_draft.is_some()
+                                || pending.is_some()
+                                || self.options.repeat
+                                || self.options.accelerate
+                                || self.options.bonus
+                        })
                         .map(|action| {
                             optional_query(self.game.cost_plan(&self.canonical_action(action)))
                         })
@@ -9103,6 +9109,14 @@ fn card_brief(game: &Game, id: usize) -> String {
             below,
             at_least,
         }) => format!("{below:+} might · Level {minimum_xp}: {at_least:+} instead"),
+        ContextualMight(local_rift::rules::SpellMight::DistinctFriendlyTags {
+            per_tag, ..
+        }) => {
+            format!("{per_tag:+} Might per distinct tag")
+        }
+        Stun if local_rift::rules::targeting(id).attacking_only => {
+            "Stun an attacking unit this turn".into()
+        }
         Stun => "Stun a unit this turn".into(),
         StunAndDrawFromHand => "Stun · draw 1 if played from hand".into(),
         KillAllUnits => "Kill all units · both players, everywhere".into(),
@@ -11124,6 +11138,8 @@ async fn main() {
     let recovery_smoke = args.iter().any(|a| a == "--ui-smoke-recovery");
     let trash_choices_smoke = args.iter().any(|a| a == "--ui-smoke-trash-choices");
     let player_choices_smoke = args.iter().any(|a| a == "--ui-smoke-player-choices");
+    let return_options_smoke = args.iter().any(|a| a == "--ui-smoke-return-options");
+    let tag_stun_smoke = args.iter().any(|a| a == "--ui-smoke-tag-stun");
     let field_options_smoke = args.iter().any(|a| a == "--ui-smoke-field-options");
     let turn_keywords_smoke = args.iter().any(|a| a == "--ui-smoke-turn-keywords");
     let rockfall_smoke = args.iter().any(|a| a == "--ui-smoke-rockfall");
@@ -11156,6 +11172,8 @@ async fn main() {
         || recovery_smoke
         || trash_choices_smoke
         || player_choices_smoke
+        || return_options_smoke
+        || tag_stun_smoke
         || turn_keywords_smoke
         || flurry_smoke
         || disarm_smoke
@@ -11264,6 +11282,10 @@ async fn main() {
             smoke::run_trash_choices_frame(&mut app, frames)
         } else if player_choices_smoke {
             smoke::run_player_choices_frame(&mut app, frames)
+        } else if return_options_smoke {
+            smoke::run_return_options_frame(&mut app, frames)
+        } else if tag_stun_smoke {
+            smoke::run_tag_stun_frame(&mut app, frames)
         } else if field_options_smoke {
             smoke::run_field_options_frame(&mut app, frames)
         } else if discord_smoke {

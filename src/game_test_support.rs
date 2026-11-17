@@ -34,6 +34,28 @@ pub(crate) fn ready_unit(game: &mut Game, owner: usize, card: CardId) -> u32 {
     id
 }
 
+/// Authored combat position with one vanilla unit on each side. The attacking
+/// turn player has initial focus; callers pass normally to give the defender
+/// a turn. Card-specific hands and effects belong in the scenario itself.
+pub(crate) fn combat_position(attacker: usize, seed: u64) -> (Game, Target, Target) {
+    let mut game = position(attacker, 0, seed);
+    let mut unit = |owner| {
+        let unit_id = ready_unit(&mut game, owner, 71);
+        let target = Target::Unit {
+            player: owner,
+            unit_id,
+        };
+        game.unit_mut(target).unwrap().lane = Some(0);
+        target
+    };
+    let first = unit(attacker);
+    let second = unit(1 - attacker);
+    game.battlefield_owner[0] = Some(1 - attacker);
+    game.open_showdown(0, attacker).unwrap();
+    assert_eq!(game.priority(), attacker);
+    (game, first, second)
+}
+
 /// Authored state boundary, not a control-taking game action. Callers arrange
 /// the destination/contest state explicitly; only identity and owner persist.
 pub(crate) fn transfer_control_for_fixture(game: &mut Game, id: u32) -> Target {

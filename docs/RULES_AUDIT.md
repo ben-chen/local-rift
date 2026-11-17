@@ -1576,3 +1576,62 @@ with the official full face reviewed here (Energy4). This comparison supports
 checking implementations against independent source evidence, not adopting
 another engine as the rules authority. No code was copied or executed, and it
 does not settle the separately noted off-turn instructed-play question.
+
+
+## Morbid Return and Existential Dread
+
+Full official faces for OGN-170 and UNL-134 were inspected, including printed
+costs, domains, type and complete effect text. Their archived effective fields
+agree with the faces; neither needs a new field correction. The current
+[Rules Hub](https://playriftbound.com/en-us/rules-hub/) still links the October 9,
+2026 core rules. The Origins and Unleashed errata pages contain no entries for
+these cards. Source evidence is retained in
+[the admission record](../assets/data/card_admissions/irelia_return_options/source_review.json).
+
+Morbid Return reuses the physical-trash-target path. It needs exactly one unit
+card in its controller's trash; it neither draws nor plays the recovered card.
+Existential Dread adds a shared attacker restriction under CR323.2. A unit
+must remain controlled by the attacking enemy and at the combat battlefield.
+Every execution checks its live Stunned state under CR424.1 and performs either
+Stun or return, never both in one execution. Repeat's two Energy is an additional
+cost; its targets are declared independently before responses under CR820.2.
+The first execution can therefore Stun an attacker and the Repeat return it.
+
+Authored tests use ordinary play/pass actions after setup. They cover both seats,
+wrong locations/sides, Action speed, a Flash response removing the attacker
+designation, a Hidden Back Off response adding Stunned, duplicate trash cards
+across burnout, repeated and separate targets, exact costs, borrowed ownership,
+equipment detachment and disappearing tokens. API checks include read-only
+previews, stale/wrong-player rejection, independent Repeat validation and hidden
+hand observations. These cases do not establish complete rules parity.
+
+
+## Thwonk! and Friendship: shared targeting and contextual Might
+
+The official full faces of SFD-040 and UNL-046 were viewed and compared with
+raw and effective archived fields. The Rules Hub still links the October 9,
+2026 core rules. Neither checked Spiritforged nor Unleashed errata page changes
+these cards. Exact face hashes, facts and preserved catalog prefixes are in
+[the source review](../assets/data/card_admissions/irelia_tag_stun/source_review.json).
+
+Thwonk! costs 2 Energy, has Action and Repeat for 2 more Energy, and stuns an
+attacking unit. It permits either player's attacker, unlike Existential Dread's
+enemy-only restriction. Both cards share the same current-combat predicate
+(CR323.2); UI hints and API descriptors now read its separate allegiance rule.
+The existing Stun executor and independent Repeat targets are reused (CR424.1,
+820). Already Stunned units remain in play when Thwonk! resolves again.
+
+Friendship costs 1 Energy, has Reaction, and chooses any unit. Its temporary
+Might uses a reusable distinct-tag scalar: Bird, Cat, Dog and Poro among the
+controller's live units, counted at resolution after responses. Duplicate units
+with the same tag do not multiply it. Opponents and off-board cards do not
+contribute; token identity does not inherit a factory card's tags (CR133.8,
+143.1). Giving Might is separate from Buff, and the gain ends this turn.
+
+Small scenarios cover both seats, friendly and enemy targets, independent
+Repeat payments, live responses, zero/four/duplicate tag counts, temporary
+expiry, read-only API queries and invalid-request atomicity. The existing
+Morbid Return/Existential Dread scenarios now reuse a neutral combat fixture
+with unchanged outcomes. These checks do not prove full Standard parity.
+Broader matches, native controls and installed acceptance are tracked in
+[validation](validation/irelia_tag_stun.json).

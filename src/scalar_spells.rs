@@ -5,6 +5,21 @@ use super::{Game, Target};
 use crate::rules::{OfficialEffect, SpellDamage, SpellMight};
 
 impl Game {
+    /// Count distinct named tags among the controller's live units. Token
+    /// identities use their own tags, never the factory card's printed tags.
+    pub(crate) fn friendly_tag_count(&self, player: usize, tags: &[&str]) -> usize {
+        tags.iter()
+            .enumerate()
+            .filter(|(index, tag)| {
+                !tags[..*index].contains(tag)
+                    && self.players[player]
+                        .units
+                        .iter()
+                        .any(|unit| self.unit_has_tag(unit, tag))
+            })
+            .count()
+    }
+
     /// Read current combat and physical spells on the chain. A token's factory
     /// card supplies neither its domains nor a spell/ability identity. Repeat
     /// executions are separate choices of the same spell.
@@ -98,6 +113,9 @@ impl Game {
             OfficialEffect::ContextualMight(condition) => {
                 for &target in valid {
                     let amount = match condition {
+                        SpellMight::DistinctFriendlyTags { tags, per_tag } => {
+                            scaled_count(self.friendly_tag_count(player, tags), per_tag)?
+                        }
                         SpellMight::ControllerXp {
                             minimum_xp,
                             below,

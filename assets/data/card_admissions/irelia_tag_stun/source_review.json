@@ -1,0 +1,252 @@
+{
+  "schema_version": 1,
+  "checked_at": "2026-11-17T08:16:21.592375+00:00",
+  "scope": "Reviewed legal Calm options for Irelia-compatible practice; no claim of tournament prevalence. Local implementation validated; combined installed acceptance pending.",
+  "records": [
+    {
+      "official_id": "sfd-040-221",
+      "name": "Thwonk!",
+      "raw_printing": {
+        "official_id": "sfd-040-221",
+        "public_code": "SFD-040/221",
+        "name": "Thwonk!",
+        "set": "SFD",
+        "collector_number": 40,
+        "types": [
+          "spell"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "spell"
+        ],
+        "accessibility_types": [
+          "spell"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "calm"
+        ],
+        "energy": 2,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "rules_html": "<p>[Action] (Play on your turn or in showdowns.)<br />[Repeat] :rb_energy_2: (You may pay the additional cost to repeat this spell's effect.)<br />Stun an attacking unit. (It doesn't deal combat damage this turn.)</p>",
+        "rules_text": "[Action] (Play on your turn or in showdowns.)\n[Repeat] [2 Energy] (You may pay the additional cost to repeat this spell's effect.)\nStun an attacking unit. (It doesn't deal combat damage this turn.)",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [],
+        "rarity": "common",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/c414fdba5e47db294b8364a07f1258bc3e204c51-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Spell: Thwonk!. [Action] (Play on your turn or in showdowns.)\n[Repeat] [2] (You may pay the additional cost to repeat this spell's effect.)\nStun an attacking unit. (It doesn't deal combat damage this turn.)",
+        "illustrators": [
+          "Kudos Productions"
+        ]
+      },
+      "raw_printing_sha256": "a8ab978f80eab30fbbea43ee69a2215f3cb2928e6b4aa20268fb419a18d42134",
+      "effective": {
+        "types": [
+          "spell"
+        ],
+        "super_types": [],
+        "domains": [
+          "calm"
+        ],
+        "energy": 2,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>[Action] (Play on your turn or in showdowns.)<br />[Repeat] :rb_energy_2: (You may pay the additional cost to repeat this spell's effect.)<br />Stun an attacking unit. (It doesn't deal combat damage this turn.)</p>",
+        "rules_text": "[Action] (Play on your turn or in showdowns.)\n[Repeat] [2 Energy] (You may pay the additional cost to repeat this spell's effect.)\nStun an attacking unit. (It doesn't deal combat damage this turn.)",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "resolution_ids": [],
+      "errata": [],
+      "snapshot_standard_legal": true,
+      "original_image": {
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/c414fdba5e47db294b8364a07f1258bc3e204c51-744x1039.png?accountingTag=RB",
+        "path": "assets/data/card_admissions/irelia_tag_stun/sfd-040-221.png",
+        "sha256": "69d2260869c85152bc11d4188d80f09405b91ca74c4ea12d27746ab7fede0639",
+        "bytes": 844774,
+        "dimensions": [
+          744,
+          1039
+        ]
+      },
+      "visual_review": {
+        "actual_full_face_viewed": true,
+        "reviewed_at": "2026-11-17T08:16:21.592375+00:00",
+        "printed_cost_type_domain_tags_and_rules_checked": true,
+        "printed_facts": {
+          "types": [
+            "spell"
+          ],
+          "super_types": [],
+          "domains": [
+            "calm"
+          ],
+          "energy": 2,
+          "power": null,
+          "might": null,
+          "might_bonus": null,
+          "tags": [],
+          "rules_html": "<p>[Action] (Play on your turn or in showdowns.)<br />[Repeat] :rb_energy_2: (You may pay the additional cost to repeat this spell's effect.)<br />Stun an attacking unit. (It doesn't deal combat damage this turn.)</p>",
+          "rules_text": "[Action] (Play on your turn or in showdowns.)\n[Repeat] [2 Energy] (You may pay the additional cost to repeat this spell's effect.)\nStun an attacking unit. (It doesn't deal combat damage this turn.)",
+          "equipment_html": "",
+          "equipment_text": ""
+        },
+        "notes": "Full face: Calm Spell, 2 Energy, no Power; Action and Repeat 2; Stun an attacking unit without an enemy restriction."
+      },
+      "runtime_id": 484
+    },
+    {
+      "official_id": "unl-046-219",
+      "name": "Friendship",
+      "raw_printing": {
+        "official_id": "unl-046-219",
+        "public_code": "UNL-046/219",
+        "name": "Friendship",
+        "set": "UNL",
+        "collector_number": 46,
+        "types": [
+          "spell"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "spell"
+        ],
+        "accessibility_types": [
+          "spell"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "calm"
+        ],
+        "energy": 1,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "rules_html": "<p>[Reaction] (Play any time, even before spells and abilities resolve.)<br />Choose a unit. Give it +1 :rb_might: this turn for each of the following tags among your units — Bird, Cat, Dog, and Poro.</p>",
+        "rules_text": "[Reaction] (Play any time, even before spells and abilities resolve.)\nChoose a unit. Give it +1 Might this turn for each of the following tags among your units — Bird, Cat, Dog, and Poro.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [],
+        "rarity": "uncommon",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/4a1a08ec8c23a2663babd2fc683481888347407a-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Spell: Friendship. [Reaction] (Play any time, even before spells and abilities resolve.)\nChoose a unit. Give it +1 [S] this turn for each of the following tags among your units — Bird, Cat, Dog, and Poro.",
+        "illustrators": [
+          "Kudos Productions"
+        ]
+      },
+      "raw_printing_sha256": "2cec08b4c9bae35dc5a5e3b4828aa5f3a4bf1bf31d571114ab879e0295c21ade",
+      "effective": {
+        "types": [
+          "spell"
+        ],
+        "super_types": [],
+        "domains": [
+          "calm"
+        ],
+        "energy": 1,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>[Reaction] (Play any time, even before spells and abilities resolve.)<br />Choose a unit. Give it +1 :rb_might: this turn for each of the following tags among your units — Bird, Cat, Dog, and Poro.</p>",
+        "rules_text": "[Reaction] (Play any time, even before spells and abilities resolve.)\nChoose a unit. Give it +1 Might this turn for each of the following tags among your units — Bird, Cat, Dog, and Poro.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "resolution_ids": [],
+      "errata": [],
+      "snapshot_standard_legal": true,
+      "original_image": {
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/4a1a08ec8c23a2663babd2fc683481888347407a-744x1039.png?accountingTag=RB",
+        "path": "assets/data/card_admissions/irelia_tag_stun/unl-046-219.png",
+        "sha256": "e08e85e6d27ae387b8eb382def84da88cfaf9ef16248c87ab3b8be234ab8a82d",
+        "bytes": 789826,
+        "dimensions": [
+          744,
+          1039
+        ]
+      },
+      "visual_review": {
+        "actual_full_face_viewed": true,
+        "reviewed_at": "2026-11-17T08:16:21.592375+00:00",
+        "printed_cost_type_domain_tags_and_rules_checked": true,
+        "printed_facts": {
+          "types": [
+            "spell"
+          ],
+          "super_types": [],
+          "domains": [
+            "calm"
+          ],
+          "energy": 1,
+          "power": null,
+          "might": null,
+          "might_bonus": null,
+          "tags": [],
+          "rules_html": "<p>[Reaction] (Play any time, even before spells and abilities resolve.)<br />Choose a unit. Give it +1 :rb_might: this turn for each of the following tags among your units — Bird, Cat, Dog, and Poro.</p>",
+          "rules_text": "[Reaction] (Play any time, even before spells and abilities resolve.)\nChoose a unit. Give it +1 Might this turn for each of the following tags among your units — Bird, Cat, Dog, and Poro.",
+          "equipment_html": "",
+          "equipment_text": ""
+        },
+        "notes": "Full face: Calm Spell, 1 Energy, no Power; Reaction; choose any unit; +1 Might this turn for each distinct Bird, Cat, Dog, Poro tag among your units."
+      },
+      "runtime_id": 485
+    }
+  ],
+  "preserved_source_prefix": {
+    "resolutions": {
+      "count": 146,
+      "sha256": "05c4cc26ed3131f59d236f2cc12ca7c41d03279709838b6cad4a41c22028c538"
+    },
+    "raw_printings": {
+      "count": 96,
+      "sha256": "9ebebf4fe84a457bcc85fa005e2042e30ffe057bb5fa77327b4b37bae959b157"
+    },
+    "historical_issues": {
+      "count": 61,
+      "sha256": "1c3293ba639eef549272f588b9a605ef6a8a82d6dce49eb37003706f629856e4"
+    },
+    "images": {
+      "count": 96,
+      "sha256": "d0787164df49a2029bb29ce8ddad423a899705729a766f5edf561e8de811d8f8"
+    }
+  },
+  "preserved_runtime_prefix": {
+    "cards": {
+      "count": 484,
+      "sha256": "05823a79ebfed3d1bb78bb621d5c9f975b01df82197b7de66c26bff770069470"
+    },
+    "decks": {
+      "count": 7,
+      "sha256": "e975739d803427e54928d6e6cd03d1ce51d7ad108f4e247b8a000acf037a5cdb"
+    }
+  },
+  "rules_review": {
+    "authority": "https://playriftbound.com/en-us/rules-hub/",
+    "core_version": "2026-10-09",
+    "references": [
+      "133.8",
+      "143.1",
+      "323.2",
+      "355.9",
+      "424.1",
+      "820.1–3"
+    ],
+    "errata_pages_checked": [
+      "https://playriftbound.com/en-us/news/rules-and-releases/riftbound-spiritforged-errata/",
+      "https://playriftbound.com/en-us/news/rules-and-releases/unleashed-errata-updates/"
+    ],
+    "findings": [
+      "Thwonk! chooses an attacking unit of either player; it does not require an enemy. Repeat adds two Energy with independently declared targets. Stun neither exhausts nor deals damage.",
+      "Friendship gives a chosen unit temporary Might equal to the distinct named tags among the spell controller’s units on the board at resolution. Each tag counts at most once; opponents, hand/trash and token factory-card tags do not contribute."
+    ]
+  },
+  "implementation_status": "runtime_implemented_release_pending"
+}

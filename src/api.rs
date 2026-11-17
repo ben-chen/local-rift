@@ -44,11 +44,15 @@ mod progression;
 mod recovery_tests;
 mod refusal;
 #[cfg(test)]
+mod return_options_tests;
+#[cfg(test)]
 mod riven_pool_tests;
 mod runes;
 mod series;
 #[cfg(test)]
 mod series_sideboard_tests;
+#[cfg(test)]
+mod tag_stun_tests;
 mod targeting;
 mod temporary;
 #[cfg(test)]

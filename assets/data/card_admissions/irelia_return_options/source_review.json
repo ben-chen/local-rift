@@ -1,0 +1,252 @@
+{
+  "schema_version": 1,
+  "checked_at": "2026-11-17T07:47:20.211404+00:00",
+  "scope": "Reviewed legal Chaos options for Irelia practice; no claim of current tournament prevalence. Local runtime admission validated; installed acceptance pending.",
+  "records": [
+    {
+      "official_id": "ogn-170-298",
+      "name": "Morbid Return",
+      "raw_printing": {
+        "official_id": "ogn-170-298",
+        "public_code": "OGN-170/298",
+        "name": "Morbid Return",
+        "set": "OGN",
+        "collector_number": 170,
+        "types": [
+          "spell"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "spell"
+        ],
+        "accessibility_types": [
+          "spell"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "chaos"
+        ],
+        "energy": 2,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "rules_html": "<p>[Action] (Play on your turn or in showdowns.)<br />Return a unit from your trash to your hand.</p>",
+        "rules_text": "[Action] (Play on your turn or in showdowns.)\nReturn a unit from your trash to your hand.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [],
+        "rarity": "common",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/33b5ca4e580b94f2056bd884a4a35e8c630920a2-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Spell: Morbid Return. [Action] (Play on your turn or in showdowns.)\nReturn a unit from your trash to your hand.",
+        "illustrators": [
+          "Rafael Zanchetin"
+        ]
+      },
+      "raw_printing_sha256": "7c40a054ae2e0b5adfa6bf124392dcaf1204a57ba21bcfed278cedf59b9cae32",
+      "effective": {
+        "types": [
+          "spell"
+        ],
+        "super_types": [],
+        "domains": [
+          "chaos"
+        ],
+        "energy": 2,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>[Action] (Play on your turn or in showdowns.)<br />Return a unit from your trash to your hand.</p>",
+        "rules_text": "[Action] (Play on your turn or in showdowns.)\nReturn a unit from your trash to your hand.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "resolution_ids": [],
+      "errata": [],
+      "snapshot_standard_legal": true,
+      "original_image": {
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/33b5ca4e580b94f2056bd884a4a35e8c630920a2-744x1039.png?accountingTag=RB",
+        "path": "assets/data/card_admissions/irelia_return_options/ogn-170-298.png",
+        "sha256": "4b6dc4d71a27dd26008856cb9a24bcdc75b1b17c3b02c60908ceaa4fe0fa7f74",
+        "bytes": 781918,
+        "dimensions": [
+          744,
+          1039
+        ]
+      },
+      "visual_review": {
+        "actual_full_face_viewed": true,
+        "reviewed_at": "2026-11-17T07:47:20.211404+00:00",
+        "printed_cost_type_domain_tags_and_rules_checked": true,
+        "printed_facts": {
+          "types": [
+            "spell"
+          ],
+          "super_types": [],
+          "domains": [
+            "chaos"
+          ],
+          "energy": 2,
+          "power": null,
+          "might": null,
+          "might_bonus": null,
+          "tags": [],
+          "rules_html": "<p>[Action] (Play on your turn or in showdowns.)<br />Return a unit from your trash to your hand.</p>",
+          "rules_text": "[Action] (Play on your turn or in showdowns.)\nReturn a unit from your trash to your hand.",
+          "equipment_html": "",
+          "equipment_text": ""
+        },
+        "notes": "Full original card face agrees with the archived effective fields; no correction required."
+      },
+      "runtime_id": 482
+    },
+    {
+      "official_id": "unl-134-219",
+      "name": "Existential Dread",
+      "raw_printing": {
+        "official_id": "unl-134-219",
+        "public_code": "UNL-134/219",
+        "name": "Existential Dread",
+        "set": "UNL",
+        "collector_number": 134,
+        "types": [
+          "spell"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "spell"
+        ],
+        "accessibility_types": [
+          "spell"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "chaos"
+        ],
+        "energy": 1,
+        "power": 1,
+        "might": null,
+        "might_bonus": null,
+        "rules_html": "<p>[Action] (Play on your turn or in showdowns.)<br />[Repeat] :rb_energy_2: (You may pay the additional cost to repeat this spell's effect.)<br />[Stun] an attacking enemy unit. If it's already stunned, return it to its owner's hand instead. (A stunned unit doesn't deal combat damage this turn.)</p>",
+        "rules_text": "[Action] (Play on your turn or in showdowns.)\n[Repeat] [2 Energy] (You may pay the additional cost to repeat this spell's effect.)\n[Stun] an attacking enemy unit. If it's already stunned, return it to its owner's hand instead. (A stunned unit doesn't deal combat damage this turn.)",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [],
+        "rarity": "uncommon",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/0a197ec3bf96e10307859e2a152c1742288b2b09-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Spell: Existential Dread. [Action] (Play on your turn or in showdowns.)\n[Repeat] [2] (You may pay the additional cost to repeat this spell's effect.)\n[Stun] an attacking enemy unit. If it's already stunned, return it to its owner's hand instead. (A stunned unit doesn't deal combat damage this turn.)",
+        "illustrators": [
+          "Caravan Studio"
+        ]
+      },
+      "raw_printing_sha256": "4b8cea9a2ffe30d04b25e99a5a1c20ab2f389a8dc04972e929587114fa3b6d9b",
+      "effective": {
+        "types": [
+          "spell"
+        ],
+        "super_types": [],
+        "domains": [
+          "chaos"
+        ],
+        "energy": 1,
+        "power": 1,
+        "might": null,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>[Action] (Play on your turn or in showdowns.)<br />[Repeat] :rb_energy_2: (You may pay the additional cost to repeat this spell's effect.)<br />[Stun] an attacking enemy unit. If it's already stunned, return it to its owner's hand instead. (A stunned unit doesn't deal combat damage this turn.)</p>",
+        "rules_text": "[Action] (Play on your turn or in showdowns.)\n[Repeat] [2 Energy] (You may pay the additional cost to repeat this spell's effect.)\n[Stun] an attacking enemy unit. If it's already stunned, return it to its owner's hand instead. (A stunned unit doesn't deal combat damage this turn.)",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "resolution_ids": [],
+      "errata": [],
+      "snapshot_standard_legal": true,
+      "original_image": {
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/0a197ec3bf96e10307859e2a152c1742288b2b09-744x1039.png?accountingTag=RB",
+        "path": "assets/data/card_admissions/irelia_return_options/unl-134-219.png",
+        "sha256": "d3cdb29640cc51022bb610a1d560e46513dcd4e5948d78171df415d33d98de50",
+        "bytes": 683815,
+        "dimensions": [
+          744,
+          1039
+        ]
+      },
+      "visual_review": {
+        "actual_full_face_viewed": true,
+        "reviewed_at": "2026-11-17T07:47:20.211404+00:00",
+        "printed_cost_type_domain_tags_and_rules_checked": true,
+        "printed_facts": {
+          "types": [
+            "spell"
+          ],
+          "super_types": [],
+          "domains": [
+            "chaos"
+          ],
+          "energy": 1,
+          "power": 1,
+          "might": null,
+          "might_bonus": null,
+          "tags": [],
+          "rules_html": "<p>[Action] (Play on your turn or in showdowns.)<br />[Repeat] :rb_energy_2: (You may pay the additional cost to repeat this spell's effect.)<br />[Stun] an attacking enemy unit. If it's already stunned, return it to its owner's hand instead. (A stunned unit doesn't deal combat damage this turn.)</p>",
+          "rules_text": "[Action] (Play on your turn or in showdowns.)\n[Repeat] [2 Energy] (You may pay the additional cost to repeat this spell's effect.)\n[Stun] an attacking enemy unit. If it's already stunned, return it to its owner's hand instead. (A stunned unit doesn't deal combat damage this turn.)",
+          "equipment_html": "",
+          "equipment_text": ""
+        },
+        "notes": "Full original card face agrees with the archived effective fields; no correction required."
+      },
+      "runtime_id": 483
+    }
+  ],
+  "preserved_source_prefix": {
+    "resolutions": {
+      "count": 146,
+      "sha256": "05c4cc26ed3131f59d236f2cc12ca7c41d03279709838b6cad4a41c22028c538"
+    },
+    "raw_printings": {
+      "count": 96,
+      "sha256": "9ebebf4fe84a457bcc85fa005e2042e30ffe057bb5fa77327b4b37bae959b157"
+    },
+    "historical_issues": {
+      "count": 61,
+      "sha256": "1c3293ba639eef549272f588b9a605ef6a8a82d6dce49eb37003706f629856e4"
+    },
+    "images": {
+      "count": 96,
+      "sha256": "d0787164df49a2029bb29ce8ddad423a899705729a766f5edf561e8de811d8f8"
+    }
+  },
+  "preserved_runtime_prefix": {
+    "cards": {
+      "count": 482,
+      "sha256": "c79c3bd4ee8e23982be2d615ae8f0a5a9e9c9193db465914b4be473a5ce098f4"
+    },
+    "decks": {
+      "count": 7,
+      "sha256": "e975739d803427e54928d6e6cd03d1ce51d7ad108f4e247b8a000acf037a5cdb"
+    }
+  },
+  "rules_review": {
+    "authority": "https://playriftbound.com/en-us/rules-hub/",
+    "core_version": "2026-10-09",
+    "references": [
+      "141.1.b",
+      "323.2",
+      "355.9",
+      "359.3.e.14",
+      "424.1",
+      "820.1–3"
+    ],
+    "errata_pages_checked": [
+      "https://playriftbound.com/en-us/news/rules-and-releases/riftbound-origins-card-errata/",
+      "https://playriftbound.com/en-us/news/rules-and-releases/unleashed-errata-updates/"
+    ],
+    "findings": [
+      "Morbid Return chooses one unit card in its controller’s trash before responses; returning it to hand neither draws nor plays it.",
+      "Existential Dread requires an enemy unit with the Attacker designation, rechecked on resolution. Each execution checks the live Stunned state: already Stunned returns to owner; otherwise Stun. Repeat costs two Energy and has independently declared targets."
+    ]
+  },
+  "implementation_status": "runtime_implemented_release_pending"
+}

@@ -421,3 +421,18 @@ The fixed candidate passed 2,220 Rust tests, 349 source checks, 1,176 simulated
 games, 45 installed interface cases (488 captures), and 20 API campaigns with
 159 full records matching their local baselines. Three installed captures were
 visually reviewed. See [player-choice validation](validation/irelia_player_choices.json).
+
+
+Morbid Return, Existential Dread, Thwonk! and Friendship are implemented as
+IDs 482–485 and passed combined installed acceptance at f9eade5. The exact
+seven tournament presets remain unchanged. These are additional legal
+Calm/Chaos options, without a claim of current meta prevalence.
+
+The frozen candidate passed 2,242 Rust tests, 355 source checks, 1,176 simulated
+games, 49 installed interface cases (534 captures), and 22 API campaigns with
+255 exact records matching local baselines. Six installed captures were visually
+reviewed. Independent Repeat choices and full costs, live attacker restrictions,
+trash occurrences, tag counts, responses, full card inspection and both companion
+levels are covered by the recorded scenarios. Full rules parity remains unproven.
+See [return-option validation](validation/irelia_return_options.json) and
+[tag/stun validation](validation/irelia_tag_stun.json).

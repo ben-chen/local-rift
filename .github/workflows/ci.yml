@@ -94,6 +94,8 @@ jobs:
           python3 tools/check_recovery_api.py target/release/rift-api "$RUNNER_TEMP/local-rift-recovery.json"
           python3 tools/check_trash_choices_api.py target/release/rift-api "$RUNNER_TEMP/local-rift-trash-choices.json"
           python3 tools/check_player_choices_api.py target/release/rift-api "$RUNNER_TEMP/local-rift-player-choices.json"
+          python3 tools/check_return_options_api.py target/release/rift-api "$RUNNER_TEMP/local-rift-return-options.json"
+          python3 tools/check_tag_stun_api.py target/release/rift-api "$RUNNER_TEMP/local-rift-tag-stun.json"
       - name: Exercise desktop controls at both window sizes
         if: steps.scope.outputs.full_checks == 'true'
         env:
@@ -157,3 +159,7 @@ jobs:
           XDG_DATA_HOME="$RUNNER_TEMP/local-rift-trash-choices-small" xvfb-run -a ./target/release/local-rift --ui-smoke-trash-choices --small
           XDG_DATA_HOME="$RUNNER_TEMP/local-rift-player-choices" xvfb-run -a ./target/release/local-rift --ui-smoke-player-choices
           XDG_DATA_HOME="$RUNNER_TEMP/local-rift-player-choices-small" xvfb-run -a ./target/release/local-rift --ui-smoke-player-choices --small
+          XDG_DATA_HOME="$RUNNER_TEMP/local-rift-return-options" xvfb-run -a ./target/release/local-rift --ui-smoke-return-options
+          XDG_DATA_HOME="$RUNNER_TEMP/local-rift-return-options-small" xvfb-run -a ./target/release/local-rift --ui-smoke-return-options --small
+          XDG_DATA_HOME="$RUNNER_TEMP/local-rift-tag-stun" xvfb-run -a ./target/release/local-rift --ui-smoke-tag-stun
+          XDG_DATA_HOME="$RUNNER_TEMP/local-rift-tag-stun-small" xvfb-run -a ./target/release/local-rift --ui-smoke-tag-stun --small

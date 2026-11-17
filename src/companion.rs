@@ -2080,6 +2080,34 @@ fn field_options_advice(game: &Game, beginner: bool) -> Vec<&'static str> {
             "Reserve enough Power for Soulgorger and the recovered unit. The opponent can respond to the targeted ability before the unit moves onto the chain."
         });
     }
+    if visible(484) {
+        tips.push(if beginner {
+            "Thwonk! stuns an attacking unit, even your own. Stun prevents combat damage this turn without exhausting it. Repeat costs 2 extra Energy; choose each target."
+        } else {
+            "Use Thwonk! before combat damage. Repeat can stop two attackers. Stun doesn't stack; choosing your own attacker can trigger Irelia but still prevents its combat damage."
+        });
+    }
+    if visible(485) {
+        tips.push(if beginner {
+            "Friendship counts Bird, Cat, Dog and Poro among your units when it resolves. Each tag adds +1 Might this turn, counted once even if several units share it."
+        } else {
+            "Friendship can turn a close fight. Count your different animal tags across the board; a removal response can shrink the bonus before it resolves."
+        });
+    }
+    if visible(482) {
+        tips.push(if beginner {
+            "Morbid Return chooses one unit in your trash before responses and returns it to your hand. It does not draw or play that unit."
+        } else {
+            "Morbid Return recovers an option for later. Budget the recovered unit's cost too; returning it to hand does not help the current fight immediately."
+        });
+    }
+    if visible(483) {
+        tips.push(if beginner {
+            "Existential Dread chooses an enemy attacker. It stuns them, or returns them if already stunned. Pay 2 extra Energy to Repeat; each effect checks again."
+        } else {
+            "Repeat can stun then return the same attacker, or stun two attackers. Compare clearing a threat with preventing more combat damage; responses can change either plan."
+        });
+    }
     if visible(474) || visible(475) {
         tips.push(if beginner {
             "Cemetery Attendant returns a unit from your trash; Annie returns a spell. Choose before responses. The card returns to hand and is not played for free."
@@ -2510,7 +2538,7 @@ mod tests {
     fn field_options_advice_is_brief_read_only_and_uses_visible_information() {
         let mut game = Game::new_for_agents(0, 0, 472, Difficulty::Easy);
         game.start_match().unwrap();
-        for card in [470, 471, 472, 473, 474, 475] {
+        for card in [470, 471, 472, 473, 474, 475, 482, 483, 484, 485] {
             game.players[0].hand = vec![card];
             let before = format!("{game:?}");
             for beginner in [false, true] {

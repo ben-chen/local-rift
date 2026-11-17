@@ -1,0 +1,188 @@
+{
+  "status": "Passed combined four-card immutable installed acceptance; full goal remains unfinished.",
+  "reviewed_at": "2026-11-17T09:05:15.378477+00:00",
+  "base_revision": "0b7a38b5bdc5077ccc91eae20e8fe1ed6b06db5c",
+  "cards": [
+    {
+      "runtime_id": 482,
+      "official_id": "ogn-170-298",
+      "name": "Morbid Return"
+    },
+    {
+      "runtime_id": 483,
+      "official_id": "unl-134-219",
+      "name": "Existential Dread"
+    }
+  ],
+  "source_review": "assets/data/card_admissions/irelia_return_options/source_review.json",
+  "design": "Morbid Return reuses immutable trash occurrences. Existential Dread composes a shared attacker predicate with live Stunned-or-return resolution and existing Repeat choices. Native/API targets and costs use the engine. No external engine code was copied.",
+  "checks": [
+    {
+      "command": "cargo test --lib return_options_tests",
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/return-options-rules-api-v4.log",
+      "sha256": "3c37c9036a25f7aa16a9dedece704c0ab0a073cd6d819ea2ac27639579d0bb79",
+      "passed_tests": 12
+    },
+    {
+      "command": "cargo test --lib --bins --test return_option_matches",
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/return-options-regressions-v1.log",
+      "sha256": "b3d503445c6e5eed0f1ea74e5334615729f596901306c1acae7f38d6174f405c",
+      "passed_tests": 1458
+    },
+    {
+      "command": "cargo test --bin local-rift",
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/return-options-client-v2.log",
+      "sha256": "602175967c8fa9955b163e6ad5d97bf6897444a6cefff10a0230d8f8c830f057",
+      "passed_tests": 178
+    },
+    {
+      "command": "python3 -m unittest discover -s tools -p test_return_options_source.py -v",
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/return-options-source-v1.log",
+      "sha256": "823483b19b48d2638b2714aceca4a27457bdd8e4d91aea4eccd1b335a550d1d3",
+      "passed_tests": 3
+    },
+    {
+      "command": "cargo clippy --all-targets -- -D warnings",
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/return-options-clippy-v3.log",
+      "sha256": "dcf1fc17291246604176a47ab46623aa56459ea9876f8fed5bf57715957ce54c"
+    },
+    {
+      "command": "python3 tools/import_catalog.py --check",
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/return-options-catalog-v2.log",
+      "sha256": "4ca2faf44d04e7b540a55a9bb0920c0c261b7afc6b2590067b603b3174ac022b"
+    }
+  ],
+  "check_scope_note": "Broad Rust run precedes final native targeting hints and optional-cost total display. Client regressions cover the hints; final Clippy and native interaction checks cover the complete display change. Full immutable release remains required. The later combined installed gate above validates the complete frozen runtime revision, including final display changes.",
+  "scenario_scope": [
+    "Exactly one own-trash unit, wrong kinds/owners rejected",
+    "Returning neither Draws nor Plays; burnout does not retarget an identical occurrence",
+    "Current enemy attacker only, including the opposite seat",
+    "Stun preserves readiness; already Stunned returns",
+    "Repeat costs two additional Energy and can reuse or change targets",
+    "Flash removes attacker eligibility before resolution",
+    "A Hidden Back Off response changes the live Stunned branch",
+    "Owner preserved for borrowed units; gear detaches; tokens vanish",
+    "Action speed does not permit responses from hand",
+    "AI completes authored defense at all three levels and both seats",
+    "API previews read-only; stale/wrong-seat/invalid-Repeat requests rejected atomically; private hands hidden"
+  ],
+  "unassisted_games": {
+    "games": 48,
+    "both_cards_cast_at_each_level_and_seat": true,
+    "physical_cards_and_runes_conserved_after_every_action": true
+  },
+  "native": {
+    "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/return-options-native-v4/report.json",
+    "sha256": "7e4ad570777d45b2594db97aa101d83657f1711b76a63c79b2bfa6fc7bca8043",
+    "binary_sha256": "6bd965f41b9f5a79bbd5ab43e8b249d7ed1d83790277fbc7f03eab0a2a9c6d99",
+    "cases": 2,
+    "captures": 26,
+    "visually_reviewed": [
+      {
+        "finding": "Independent Repeat selection and full total of 3 Energy and 1 Power are visible; controls and Mote do not overlap.",
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/return-options-native-v4/return-options-small/rift_return_dread_repeat.png",
+        "sha256": "6561df93b8dfe9c4dbe24add96ad637669498476128984b561348c0b57d1be09"
+      },
+      {
+        "finding": "Complete card art and complete official text are readable within the inspector.",
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/return-options-native-v4/return-options-small/rift_return_dread_inspect.png",
+        "sha256": "f37ff3a812b85365a002494ba984db21030a4d0e0d4255fdfd2cb38f64329925"
+      },
+      {
+        "finding": "Own-trash targeting instruction and optional Advanced commentary are visible without blocking actions.",
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/return-options-native-v4/return-options-normal/rift_return_morbid_advanced.png",
+        "sha256": "bed4549a03052c704e3dc8760c35f31d53dec2457c6aa68aabffcdf57b4be466"
+      }
+    ]
+  },
+  "api": {
+    "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/return-options-api-v3.json",
+    "sha256": "0e4392f19e90c0071ea308b55c00e4b7733e88fbd1da9884a87337bb79fb1c1d",
+    "series": 48,
+    "games": 117,
+    "all_levels_and_seats_exercised": true,
+    "prior_campaign_comparison": {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/return-options-api-baselines-v1/report.json",
+      "sha256": "f0572145daccd04b0b9407ff863f5fe259433ce13fe22e7bb87da1bfc307f21f",
+      "campaigns": 20,
+      "records": 159,
+      "all_records_identical": true
+    }
+  },
+  "retained_failures": [
+    {
+      "finding": "Initial authored fixtures used incorrect priority sequencing. Corrected fixtures open showdowns normally and retain caster priority; all focused assertions then pass.",
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/return-options-rules-v2.log",
+      "sha256": "9b72cd4ac99b054ad6b9b8462c05a9d29d3ed724b54a57932d09363f96ee8d4c"
+    },
+    {
+      "finding": "Native fixture expected the extended choice tray for a single printed Repeat. Replayed the actual Repeat toggle and independent-target control; visual review then revealed and fixed the printed-only total display.",
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/return-options-native-v1/return-options-normal/run.log",
+      "sha256": "758ca8b7bf8bc12d9c6fe99043801cb68aee5d8dc28baafa905bd807f41fd231"
+    },
+    {
+      "finding": "Six and eighteen registered series completed but did not exercise Tactical Dread in seat 0. A retained trace had no enemy-combat opportunity while that seat held Dread. Expanded the fixed seed grid to eight samples per level/starter, preserving every coverage assertion; 48 series pass.",
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/return-options-api-v2.json",
+      "sha256": "9f5b88a229dca576730cb83b57cab39e67e2245cfd1c6989d32566a0601abcfc"
+    },
+    {
+      "finding": "First complete source-suite process terminated with exit 143 before a result; no pass claimed. Retried after terminal status with verbose output.",
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/return-options-python-v1.log",
+      "sha256": "8c804ff64428b929f21fcffe2d4cd18a94104b884714f27e7eae69fb9c95cd15"
+    }
+  ],
+  "complete_source_suite": {
+    "status": "passed",
+    "tests": 352,
+    "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/return-options-python-v2.log",
+    "sha256": "3055bf3410588a13c60b1349decf82322a765581a794e2a3786a9778f4ec70c1"
+  },
+  "installed_release": {
+    "status": "passed",
+    "runtime_revision": "f9eade5089fac8b37f58a8f806eab69c0a38a262",
+    "package": "/nix/store/wcsbgw4n6mkfxa1j00y1k34isc7w5l4h-local-rift-0.1.0",
+    "rust_tests": 2242,
+    "source_tests": 355,
+    "simulated_games": 1176,
+    "ui_cases": 49,
+    "captures": 534,
+    "api_campaigns": 22,
+    "records": 255,
+    "all_full_api_records_equal": true,
+    "report": {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/tag-stun-release-v1/status.json",
+      "sha256": "f1b6d8584b359409aa4458386f4fcd773e3fefdec2fbb6cb7e0539549b558737"
+    },
+    "nix_log": {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/tag-stun-release-v1/nix.log",
+      "sha256": "2d0bc045d7467f56b765c2ae5db188648884bbe067638a8414bece12853b0f68"
+    },
+    "simulation": {
+      "path": "/nix/store/fjr6k6ymbx8j042sd8p5cy07y8sfiad9-local-rift-simulation-check",
+      "sha256": "047b6491cad8d10552d6fad1f95bc93b2261ed4884ed8260f8aa47dfe0abe72c"
+    },
+    "reviewed_at": "2026-11-17T09:03:52.556885+00:00",
+    "visual_review_report": {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/tag-stun-release-v1/visual-review.json",
+      "sha256": "69dc1b1d9e4b6a620cf227e3eb76e0fd69e88266f5eaa22f69b3fc7177371d45"
+    },
+    "visually_reviewed": [
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/tag-stun-release-v1/return-options-small/rift_return_dread_repeat.png",
+        "sha256": "5d542d45e7dc048e002214c3aaa7d2018dac99e8fd682a14b630eac0ab918bb4",
+        "finding": "Repeated cost is visible as 3 Energy and 1 Power; independent target controls and companion do not overlap."
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/tag-stun-release-v1/return-options-small/rift_return_dread_inspect.png",
+        "sha256": "377a9a8938e76e07fa6cb9645f1cb1e8dd0cd226c3a0bbd39fdcc483fc54c8ee",
+        "finding": "Original face and full official text fit the inspector at the small size."
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/tag-stun-release-v1/return-options-normal/rift_return_morbid_advanced.png",
+        "sha256": "dc717d9f5f4afa31a0b7db7a0cafe8555aa340dbb69da6b29b3e75530ae2911e",
+        "finding": "Own-trash instruction and optional Advanced advice are visible without blocking actions."
+      }
+    ]
+  },
+  "remaining_goal": "Full Standard fidelity, expert AI and novice learning remain unproven. The legal snapshot still has 556 unimplemented identities; adding these cards does not complete the goal."
+}

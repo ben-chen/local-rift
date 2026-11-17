@@ -114,6 +114,11 @@ For **The Harrowing** or **Shadows of the Past**, select the spell, open **Trash
 
 **Acceptable Losses** and **Whirlwind** ask each player to choose while the spell resolves. Select an eligible illustrated card, then **Confirm choice**; Whirlwind also offers **Decline return**. The tray identifies each object's controller, location, equipment attachment and return destination. Right-click to inspect the live object. These choices are not targets, and neither player can respond between them. Mote explains the rule or strategic tradeoff at your selected advice level. These two cards have passed installed release acceptance.
 
+**Morbid Return** selects one highlighted unit in your trash. **Existential Dread** highlights enemy attackers; its Repeat control lets you choose the same attacker again or a different one. Optional-cost selections show the engine's full resource total. Both cards have Beginner and Advanced Mote commentary; both passed installed release acceptance.
+
+**Thwonk!** can choose either player’s attacking unit and Repeat for two extra Energy. **Friendship** gives temporary Might for distinct Bird, Cat, Dog and Poro tags among your units. Both have full inspection and Mote commentary; both passed installed release acceptance.
+
+
 Gear-targeting abilities open the Loadout, highlight legal equipment, and retain your chosen target when switching players. Printed Energy limits appear beside the confirmation controls; optional abilities have a separate decline button.
 
 Temporary units have a visible marker and a hover explanation of their expiry. Sprite previews show the token’s own identity. Petal Pixie shows its live bonus, and ordered target guidance explains which unit to choose next. Mixed unit/gear spells keep their draft when switching to Loadout.
