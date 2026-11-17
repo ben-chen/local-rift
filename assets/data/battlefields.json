@@ -190,6 +190,15 @@
       "official_html": "<p>When you conquer here, look at the top two cards of your Main Deck. You may recycle one or both of them. Put those you don't back in any order.</p>",
       "official_text": "When you conquer here, look at the top two cards of your Main Deck. You may recycle one or both of them. Put those you don't back in any order.",
       "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/f14fe78f2b7f3909eadb07bce24bd582e190653d-1038x744.png?accountingTag=RB"
+    },
+    {
+      "id": 21,
+      "name": "Sandswept Tomb",
+      "source_id": "ven-164-166",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "official_html": "<p>Each spell that chooses one or more units here that are friendly to it costs :rb_rune_rainbow: less.</p>",
+      "official_text": "Each spell that chooses one or more units here that are friendly to it costs [Any Power] less.",
+      "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/d77c607878d6815e02796f8bfa8a5696ad5f1a7d-1039x744.png?accountingTag=RB"
     }
   ]
 }

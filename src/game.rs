@@ -15,6 +15,10 @@ use crate::rules::{self, Allegiance, CounterKind, OfficialEffect, StaticAbility}
 use std::collections::VecDeque;
 
 #[cfg(test)]
+#[path = "sandswept_tests.rs"]
+mod sandswept_tests;
+
+#[cfg(test)]
 #[path = "control_card_tests.rs"]
 mod control_card_tests;
 #[cfg(test)]

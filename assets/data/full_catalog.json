@@ -145,7 +145,7 @@
     "standard_legal_by_kind_provisional": false,
     "unresolved_type_conflict_identities": 0,
     "implemented_legal_by_kind": {
-      "battlefield": 21,
+      "battlefield": 22,
       "gear": 79,
       "legend": 11,
       "rune": 6,
@@ -154,9 +154,9 @@
     },
     "implemented_main_cards": 470,
     "implemented_legends": 11,
-    "implemented_battlefields": 21,
-    "implemented_legal_identities": 508,
-    "unimplemented_legal_identities": 571,
+    "implemented_battlefields": 22,
+    "implemented_legal_identities": 509,
+    "unimplemented_legal_identities": 570,
     "errata_entries": 67,
     "identities_with_errata": 67,
     "source_quality_issues": 60,
@@ -31046,8 +31046,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_battlefield",
+        "runtime_id": 21,
+        "official_id": "ven-164-166",
+        "playable_in_client": true
       }
     },
     {

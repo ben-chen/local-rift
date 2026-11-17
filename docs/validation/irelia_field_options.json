@@ -1,0 +1,75 @@
+{
+  "status": "Local Sandswept Tomb checkpoint; native/API/full-match and installed acceptance outstanding. Three other reviewed priority cards remain unimplemented.",
+  "reviewed_at": "2026-11-17T01:42:20.867456+00:00",
+  "base_revision": "acd3e67a1073b07e7cfb9d85f10b250d6f096467",
+  "field": {
+    "runtime_id": 21,
+    "name": "Sandswept Tomb",
+    "official_id": "ven-164-166"
+  },
+  "source_review": "assets/data/card_admissions/irelia_field_options/source_review.json",
+  "priority_comparison": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/irelia-meta-review-v1/report.json",
+  "rust_tests": 34,
+  "source_tests": 1,
+  "strict_clippy_all_targets": "passed",
+  "checks": [
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/field-options-focused-v4.log",
+      "sha256": "101778dd7b7c73c52e4f2cb24f20b663c7eac4641c4e071fcd4e408ad0f1092b",
+      "rust_tests": 7
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/field-options-coach-v1.log",
+      "sha256": "3598c85d1079eae828dad0edd8d3df1412c469688622652955d2dbe6153a6e6c",
+      "rust_tests": 1
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/field-options-battlefields-v1.log",
+      "sha256": "e0f43692a98f42825364b55ba675a25b7a811aaad3f6fceac7b2a97c3b2a922e",
+      "rust_tests": 8
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/field-options-integrations-v1.log",
+      "sha256": "79b33092af6463a238c517fd4fd6182f5c084662cc315b3ddc65498e8c681dcb",
+      "rust_tests": 18
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/field-options-source-v1.log",
+      "sha256": "2a60f7d502e71b1f5a868118d26663c5b278d62ab0bc69692c38321de486719e",
+      "rust_tests": 0
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/field-options-clippy-v1.log",
+      "sha256": "159f31dd234c34b8b87e30d7855753f0ee58c1e56008e8e112b50abb3d4809e4",
+      "rust_tests": 0
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/field-options-catalog-check-v1.log",
+      "sha256": "f156eadec67ba9cf6427bd9321c61471d5887d6b0df8051364acd4a4129446ea",
+      "rust_tests": 0
+    }
+  ],
+  "covered": [
+    "One total Power reduction per qualifying field, no Energy reduction, either field controller and either player seat.",
+    "Friendly versus enemy/base targets; untargeted effects; zero-Power costs.",
+    "Independent Repeat targets, including a friendly target selected only for Repeat.",
+    "Current controller rather than original owner determines friendliness.",
+    "Response returns target to its original owner without recalculating paid cost.",
+    "Irelia Ride the Wind is affordable and offered to the AI when the discount supplies its otherwise missing Power.",
+    "Both companion levels are brief, read-only and independent of the opponent hidden hand.",
+    "Existing battlefield scoring and custom deck/catalog regressions."
+  ],
+  "findings": [
+    "Compiler caught the new Energy reduction expression using u16 rather than the existing u64 type.",
+    "Focused tests caught the omitted no-Conquer-trigger entry for the new field.",
+    "Initial authored tests used the wrong Power domain for Punch First and did not decline the optional Irelia trigger before responding; corrected through public choices."
+  ],
+  "outstanding": [
+    "Actual client target/cost/field inspection at both window sizes.",
+    "JSON API scenarios and complete matches using the battlefield.",
+    "Explicit reduction allocation, staged payment rollback, ability exclusions, Hidden and instructed-play interactions.",
+    "Implement Ocean Drake, Sneaky Deckhand and Resplendent Rostrum using their reviewed official facts.",
+    "Combined full regression and immutable installed acceptance before publication.",
+    "All currently legal cards and full goal audit."
+  ]
+}

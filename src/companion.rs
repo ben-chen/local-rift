@@ -370,7 +370,7 @@ fn rockfall_advice(game: &Game, beginner: bool) -> Option<&'static str> {
 }
 
 fn field_advice(game: &Game, beginner: bool) -> Vec<&'static str> {
-    use local_rift::battlefields::{BACK_ALLEY_BAR_ID, CANDLELIT_SANCTUM_ID};
+    use local_rift::battlefields::{BACK_ALLEY_BAR_ID, CANDLELIT_SANCTUM_ID, SANDSWEPT_TOMB_ID};
     let mut tips = Vec::new();
     if (0..game.battlefield_count()).any(|lane| {
         game.battlefield_score_unlock(0, lane)
@@ -394,6 +394,13 @@ fn field_advice(game: &Game, beginner: bool) -> Vec<&'static str> {
             "Conquering Sanctum lets you privately look at up to two top cards, recycle any, and order the rest. Holding it does not trigger that ability."
         } else {
             "Sanctum improves upcoming draws when you conquer. Balance that selection against a safer Hold elsewhere; looking itself adds no cards to your hand."
+        });
+    }
+    if game.battlefields.contains(&SANDSWEPT_TOMB_ID) {
+        tips.push(if beginner {
+            "Sandswept Tomb saves 1 Power when your spell chooses a friendly unit there. It does not save Energy. Either player can benefit, regardless of who controls the field."
+        } else {
+            "Keep a unit at Sandswept Tomb to make targeted spells cheaper. Several targets or Repeats at the same Tomb still save only 1 Power on that spell."
         });
     }
     tips
@@ -2246,7 +2253,7 @@ mod tests {
     #[test]
     fn fields_advice_explains_both_levels_without_using_private_opponent_cards() {
         use local_rift::battlefields::{
-            BACK_ALLEY_BAR_ID, CANDLELIT_SANCTUM_ID, FORGOTTEN_MONUMENT_ID,
+            BACK_ALLEY_BAR_ID, CANDLELIT_SANCTUM_ID, FORGOTTEN_MONUMENT_ID, SANDSWEPT_TOMB_ID,
         };
         let mut game = Game::new_for_agents(0, 0, 1820, Difficulty::Easy);
         game.start_match().unwrap();
@@ -2254,6 +2261,7 @@ mod tests {
             FORGOTTEN_MONUMENT_ID,
             BACK_ALLEY_BAR_ID,
             CANDLELIT_SANCTUM_ID,
+            SANDSWEPT_TOMB_ID,
         ] {
             game.battlefields = vec![field, 3];
             let before = format!("{game:?}");

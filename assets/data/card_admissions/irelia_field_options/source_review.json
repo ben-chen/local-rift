@@ -1,0 +1,254 @@
+{
+  "status": "Official source review complete; Sandswept Tomb implementation underway; remaining three cards pending.",
+  "checked_at": "2026-11-17T01:31:22.369917+00:00",
+  "priority_evidence": "https://riftbound.org/meta/irelia-blade-dancer/cards",
+  "records": [
+    {
+      "name": "Sandswept Tomb",
+      "identity": "ven-164-166",
+      "effective": {
+        "types": [
+          "battlefield"
+        ],
+        "super_types": [],
+        "domains": [
+          "colorless"
+        ],
+        "energy": null,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>Each spell that chooses one or more units here that are friendly to it costs :rb_rune_rainbow: less.</p>",
+        "rules_text": "Each spell that chooses one or more units here that are friendly to it costs [Any Power] less.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "source_review": {
+        "status": "no_detected_conflicts",
+        "resolution_ids": [],
+        "unresolved_gameplay_fields": [],
+        "variant_diagnostics": [],
+        "reviewed_variant_fields": [],
+        "unresolved_variant_fields": []
+      },
+      "original_image": {
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/d77c607878d6815e02796f8bfa8a5696ad5f1a7d-1039x744.png?accountingTag=RB",
+        "path": "assets/data/card_admissions/irelia_field_options/ven-164-166.png",
+        "sha256": "c2c25f0d804d7941bb1ab791934533038e1b3c8e1a8e643db1e6edfc6d3085ae",
+        "dimensions": [
+          1039,
+          744
+        ]
+      },
+      "actual_full_face_viewed": true,
+      "visual_review": {
+        "reviewed_at": "2026-11-17T01:33:02.390696+00:00",
+        "printed_cost_type_domain_stats_tags_and_rules_checked": true,
+        "matches_effective_facts": true,
+        "notes": "Full unmodified official face inspected against the effective source facts."
+      },
+      "runtime_id": 21,
+      "runtime_image": {
+        "path": "assets/art/battlefield_21.png",
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/d77c607878d6815e02796f8bfa8a5696ad5f1a7d-1039x744.png?accountingTag=RB&w=360",
+        "sha256": "152cb8c87010dc6793127cdd4f3d431b35c674c981dd7d1985ed80747b94affa"
+      }
+    },
+    {
+      "name": "Ocean Drake",
+      "identity": "ven-115-166",
+      "effective": {
+        "types": [
+          "unit"
+        ],
+        "super_types": [],
+        "domains": [
+          "chaos"
+        ],
+        "energy": 8,
+        "power": 2,
+        "might": 7,
+        "might_bonus": null,
+        "tags": [
+          "Dragon",
+          "Ionia"
+        ],
+        "rules_html": "<p>You may play me to an open battlefield.<br />When you play me, you may return a non-Dragon unit to its owner's hand.</p>",
+        "rules_text": "You may play me to an open battlefield.\nWhen you play me, you may return a non-Dragon unit to its owner's hand.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "source_review": {
+        "status": "no_detected_conflicts",
+        "resolution_ids": [],
+        "unresolved_gameplay_fields": [],
+        "variant_diagnostics": [],
+        "reviewed_variant_fields": [],
+        "unresolved_variant_fields": []
+      },
+      "original_image": {
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/bd93cc3c9165204cd3e830fc2022384bad7517be-744x1039.png?accountingTag=RB",
+        "path": "assets/data/card_admissions/irelia_field_options/ven-115-166.png",
+        "sha256": "47b2c3977fce7b6ca5d25657483e6fb4000d5b1e653e6716bd7cab18bf6312c3",
+        "dimensions": [
+          744,
+          1039
+        ]
+      },
+      "actual_full_face_viewed": true,
+      "visual_review": {
+        "reviewed_at": "2026-11-17T01:33:02.390709+00:00",
+        "printed_cost_type_domain_stats_tags_and_rules_checked": true,
+        "matches_effective_facts": true,
+        "notes": "Full unmodified official face inspected against the effective source facts."
+      }
+    },
+    {
+      "name": "Resplendent Rostrum",
+      "identity": "rad-046-167",
+      "effective": {
+        "types": [
+          "gear"
+        ],
+        "super_types": [],
+        "domains": [
+          "calm"
+        ],
+        "energy": 8,
+        "power": 1,
+        "might": null,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>:rb_exhaust:: Draw 1 and channel 1 rune exhausted.<br />When I become exhausted, give a friendly unit +3 :rb_might: this turn.</p>",
+        "rules_text": "[Exhaust]: Draw 1 and channel 1 rune exhausted.\nWhen I become exhausted, give a friendly unit +3 Might this turn.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "source_review": {
+        "status": "reviewed_corrections",
+        "resolution_ids": [
+          "rad-046-167:types"
+        ],
+        "unresolved_gameplay_fields": [],
+        "variant_diagnostics": [],
+        "reviewed_variant_fields": [],
+        "unresolved_variant_fields": []
+      },
+      "original_image": {
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/df1c12e65cc3c63c96fb6c96b2071795f37f30a6-744x1039.png?accountingTag=RB",
+        "path": "assets/data/card_admissions/irelia_field_options/rad-046-167.png",
+        "sha256": "d3967994b03f702815d2dd5b3b63f3e8b47ee5e882aea34a9a44fc6ae2bf307f",
+        "dimensions": [
+          744,
+          1039
+        ]
+      },
+      "actual_full_face_viewed": true,
+      "visual_review": {
+        "reviewed_at": "2026-11-17T01:33:02.390712+00:00",
+        "printed_cost_type_domain_stats_tags_and_rules_checked": true,
+        "matches_effective_facts": true,
+        "notes": "Full unmodified official face inspected. Printed tags have the same set despite ordering. Rostrum is Gear, confirming the existing reviewed type correction."
+      }
+    },
+    {
+      "name": "Sneaky Deckhand",
+      "identity": "ogn-176-298",
+      "effective": {
+        "types": [
+          "unit"
+        ],
+        "super_types": [],
+        "domains": [
+          "chaos"
+        ],
+        "energy": 3,
+        "power": null,
+        "might": 2,
+        "might_bonus": null,
+        "tags": [
+          "Pirate",
+          "Bilgewater"
+        ],
+        "rules_html": "<p>You may play me to an open battlefield.</p>",
+        "rules_text": "You may play me to an open battlefield.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "source_review": {
+        "status": "no_detected_conflicts",
+        "resolution_ids": [],
+        "unresolved_gameplay_fields": [],
+        "variant_diagnostics": [],
+        "reviewed_variant_fields": [],
+        "unresolved_variant_fields": []
+      },
+      "original_image": {
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/6f95b6aac293d8e477192281df47d8466da502bf-744x1039.png?accountingTag=RB",
+        "path": "assets/data/card_admissions/irelia_field_options/ogn-176-298.png",
+        "sha256": "f7f61b6b81c043a7891ace9a51df7e8b3936344afebc4d3b8289653889b8a343",
+        "dimensions": [
+          744,
+          1039
+        ]
+      },
+      "actual_full_face_viewed": true,
+      "visual_review": {
+        "reviewed_at": "2026-11-17T01:33:02.390714+00:00",
+        "printed_cost_type_domain_stats_tags_and_rules_checked": true,
+        "matches_effective_facts": true,
+        "notes": "Full unmodified official face inspected against the effective source facts."
+      }
+    }
+  ],
+  "scope": "Four missing identities from a dated secondary Irelia aggregate; no current prevalence or preset admission claim.",
+  "rules": {
+    "hub_rechecked_at": "2026-11-17T01:33:02.390716+00:00",
+    "hub": "https://playriftbound.com/en-us/rules-hub/",
+    "core_date": "2026-10-09",
+    "core_pdf_sha256": "94d41fee86f88b61c4157c0389c0595d990b98e5b42555c99d9f649ee64d1fec",
+    "sections": [
+      "170.11.c: open means unoccupied and uncontrolled",
+      "355: targets and choices before finalizing costs",
+      "356.4.c-d: component reductions before total reductions",
+      "356.4.f-g: optional costs and reduction values during finalization"
+    ]
+  },
+  "implementation_order": [
+    {
+      "cards": [
+        "Sandswept Tomb"
+      ],
+      "reason": "Most frequently represented of the four missing cards in this dated secondary aggregate. Add target-aware total Power reduction via existing CostContext.targets; one reduction per qualifying battlefield, independent of field controller. Verify Repeat targets, allocation, frozen finalization cost, Hidden/instructed play and ability exclusions."
+    },
+    {
+      "cards": [
+        "Sneaky Deckhand",
+        "Ocean Drake"
+      ],
+      "reason": "Share an explicit open-battlefield static permission; preserve base/controlled-field permissions, spell timing and overriding restrictions. Ocean Drake adds optional non-Dragon unit return with owner-aware destination and post-response legality."
+    },
+    {
+      "cards": [
+        "Resplendent Rostrum"
+      ],
+      "reason": "Use shared activated Draw/Channel and gear exhaustion events; separately queue the friendly +3 Might trigger, including exhaustion by other effects and no trigger on already-exhausted objects."
+    }
+  ],
+  "test_workflow": "Reuse existing authored-position helpers and public actions; independent expected rules assertions per mechanic, then one combined native/API/full-release batch. Do not create a new generic scripting language merely for these cards.",
+  "preserved_runtime_prefix": {
+    "main_cards": {
+      "count": 470,
+      "sha256": "0b4ebef64bbeecc3a419ce59ff06bd5602e237a2cfbf6bea5ad5562afa781c6c"
+    },
+    "presets": {
+      "count": 7,
+      "sha256": "e975739d803427e54928d6e6cd03d1ce51d7ad108f4e247b8a000acf037a5cdb"
+    },
+    "battlefields": {
+      "count": 21,
+      "sha256": "432585428f97efc3fbea3447219a894aa44c6e1a71e93e462204e640346d7e80"
+    }
+  }
+}

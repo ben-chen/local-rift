@@ -21,8 +21,9 @@ pub const ROCKFALL_PATH_ID: usize = 17;
 pub const FORGOTTEN_MONUMENT_ID: usize = 18;
 pub const BACK_ALLEY_BAR_ID: usize = 19;
 pub const CANDLELIT_SANCTUM_ID: usize = 20;
+pub const SANDSWEPT_TOMB_ID: usize = 21;
 
-pub const BATTLEFIELDS: [BattlefieldDef; 21] = [
+pub const BATTLEFIELDS: [BattlefieldDef; 22] = [
     BattlefieldDef {
         id: 0,
         name: "Sunken Temple",
@@ -168,6 +169,13 @@ pub const BATTLEFIELDS: [BattlefieldDef; 21] = [
         name: "The Candlelit Sanctum",
         official_text: "When you conquer here, look at the top two cards of your Main Deck. You may recycle one or both of them. Put those you don't back in any order.",
         source_id: "ogn-291-298",
+        source_url: "https://playriftbound.com/en-us/card-gallery/",
+    },
+    BattlefieldDef {
+        id: SANDSWEPT_TOMB_ID,
+        name: "Sandswept Tomb",
+        official_text: "Each spell that chooses one or more units here that are friendly to it costs [Any Power] less.",
+        source_id: "ven-164-166",
         source_url: "https://playriftbound.com/en-us/card-gallery/",
     },
 ];
@@ -347,6 +355,7 @@ impl Game {
             | ROCKFALL_PATH_ID
             | FORGOTTEN_MONUMENT_ID
             | BACK_ALLEY_BAR_ID
+            | SANDSWEPT_TOMB_ID
             | BARON_PIT_ID => {}
             _ => unreachable!("validated battlefield selection"),
         }
@@ -391,6 +400,15 @@ impl Game {
         for (lane, &id) in self.battlefields.iter().enumerate() {
             let controlled = self.battlefield_owner[lane] == Some(context.player);
             let applies = match id {
+                SANDSWEPT_TOMB_ID => context.card_kind == Some(CardKind::Spell)
+                    && context.ability_source.is_none()
+                    && !context.gear_activation
+                    && context.targets.iter().any(|target| {
+                        matches!(target, Target::Unit { player, .. } if *player == context.player)
+                            && self
+                                .unit_ref(*target)
+                                .is_some_and(|unit| unit.lane == Some(lane))
+                    }),
                 6 => {
                     controlled
                         && context.ability_source.is_none()
@@ -437,8 +455,8 @@ impl Game {
                         lane,
                         battlefield_id: id,
                     },
-                    energy: 1,
-                    power: u16::from(id == 9),
+                    energy: u64::from(id != SANDSWEPT_TOMB_ID),
+                    power: u16::from(id == 9 || id == SANDSWEPT_TOMB_ID),
                     minimum_energy: 0,
                     choose_energy_or_power: id == 9,
                     increase: false,

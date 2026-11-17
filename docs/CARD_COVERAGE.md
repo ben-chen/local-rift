@@ -2,7 +2,7 @@
 
 Snapshot checked **2026-10-24**. The official gallery contains **1,408 printing records** grouped into **1,103 distinct full-name identities**. After excluding **12 auxiliary token/tracker identities** and **12 banned identities**, **1,079 identities are legal in Standard/1v1 Constructed**. The separate 2v2 list leaves **1,078**.
 
-**This client does not yet implement every legal card.** It currently maps **470 main-deck cards, 11 independently registered legends, 21 battlefields, and 6 rune resource types** (508 legal identities). **571 legal identities remain unimplemented and are not playable.** Importing this snapshot does not register cards with the engine. Full inventory coverage is not full rules support.
+**This client does not yet implement every legal card.** It currently maps **470 main-deck cards, 11 independently registered legends, 22 battlefields, and 6 rune resource types** (509 legal identities). **570 legal identities remain unimplemented and are not playable.** Importing this snapshot does not register cards with the engine. Full inventory coverage is not full rules support.
 
 ## Scope and authority
 
@@ -25,7 +25,7 @@ Numbered positions include token slots where the publisher numbers them within a
 
 | Kind | Standard legal | Implemented mapping | Not implemented |
 | --- | ---: | ---: | ---: |
-| Battlefield | 69 | 21 | 48 |
+| Battlefield | 69 | 22 | 47 |
 | Gear | 131 | 79 | 52 |
 | Gear + Unit | 1 | 0 | 1 |
 | Legend | 58 | 11 | 47 |
