@@ -1,0 +1,180 @@
+{
+  "status": "Passed immutable installed acceptance; this document-only acceptance checkpoint is ready for publication.",
+  "reviewed_at": "2026-11-17T10:45:05.491105+00:00",
+  "base_revision": "d5882db930bb90accb072b269b99d808c5d3eda5",
+  "scope": "Twilight Step (ven-105-166, runtime 486), generic single-unit Move behavior, retained physical base destinations, bot metadata and unobtrusive companion advice.",
+  "source_review": "assets/data/card_admissions/twilight_step/source_review.json",
+  "rules": {
+    "edition": "2026-10-09",
+    "sections": [
+      "355.4",
+      "355.15",
+      "359.3.e.2",
+      "449.2.c",
+      "451.1",
+      "458",
+      "829"
+    ]
+  },
+  "limitations": [
+    "Control-change coverage uses an authored mid-chain boundary, not an invented Reaction on Possession.",
+    "The full-game registration replaces the two Charms in the existing Irelia deck; sourced tournament presets are unchanged.",
+    "Completed games and cast counts do not prove expert strategy or novice learning.",
+    "553 Standard snapshot identities remain unimplemented; all-card interaction parity is unproven."
+  ],
+  "installed_acceptance": {
+    "status": "passed",
+    "revision": "96d66029d4e4b9337449783cb2e35103124978f4",
+    "report": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/twilight-release-v1/status.json",
+    "report_sha256": "596da17d77ac87c2524d8f5620a5519c3d3f19758b2bfd28cd69826c5afe4e76",
+    "finished_at": "2026-11-17T10:44:08.352747+00:00",
+    "nix": {
+      "package": "/nix/store/52f4y8pj1ffh7q7l9xw4j4ywi84zrz1r-local-rift-0.1.0",
+      "catalog": "/nix/store/blmkm3y8h2g6rjnnyhlkpphf36j4z0bw-local-rift-catalog-check",
+      "simulation": "/nix/store/7s8r9fmpf5ivawlwndxr2q8qkkbggmcm-local-rift-simulation-check",
+      "seconds": 1429.945,
+      "gc_root_prefix": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/twilight-release-v1/nix-result"
+    },
+    "source": "/nix/store/3hg2328zaa5g5vyl4yg9dys6pldcwpqz-source",
+    "rust_tests": 2261,
+    "source_tests": 358,
+    "simulated_games": 1176,
+    "native_cases": 53,
+    "captures": 556,
+    "api_campaigns": 24,
+    "full_api_records": 279,
+    "all_full_api_records_match": true,
+    "nix_log_sha256": "b68e194f5a64a60c3daaf1649204ab40fb89145ff4001299260c5309708a1a54",
+    "simulation_sha256": "5ba81c764b00ccbbfd0ba53b10b354dadc4917198dda47f36bae234c6803c3e3"
+  },
+  "validation": [
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/twilight-focused-v5.log",
+      "sha256": "3fb5662042b229b0c8205572d0f2603daf2e9c0fd10ed4d615139a4edc29722f",
+      "scope": "Six final engine/API scenarios passed after the lint-only match simplification, covering both seats and evaluated Might, real Discipline response, Flow, timing, absolute base identity, read-only queries and rollback."
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/twilight-regressions-v1.log",
+      "sha256": "18e2193e0ab3d016961c2998fb0d66e494bb7bc7ac35cea19b499edfa24b787e",
+      "scope": "1,513 broader draft Rust regressions passed: all library/binary tests plus Irelia decisions, Siren, repeat/Flow and conformance. The new integration test then failed on a three-copy Charm fixture assertion; the sourced preset contains two. This log is not a fully passing run."
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/twilight-matches-v3.log",
+      "sha256": "0f14c9c1b035e771bdfc80fcfb5dea66c38e772f2e7ed7bac1ed09620bc14eaf",
+      "scope": "Final 48 authored legal Irelia mirror games passed, with physical-card accounting every action and Twilight casts by both seats at each AI level."
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/twilight-source-all-v1.log",
+      "sha256": "32beae70f7bc31f48a6dbd80e583c46d40a0683ca611ada0a57cbcd7617f339a",
+      "scope": "All 358 source/tool checks passed."
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/twilight-clippy-v6.log",
+      "sha256": "d151f79e48499430616ab831daf64caff8df04214c6b2925f86f38ac5363f65c",
+      "scope": "Final all-target Clippy passed with warnings denied."
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/twilight-build-v7.log",
+      "sha256": "5c7bbd2e7bce0fb862c21039a91a57ca4750dcb8c2c19201aa76956683295ca8",
+      "scope": "Final native client built; API binary was unchanged from the all-binary build."
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/twilight-native-v4/report.json",
+      "sha256": "32a51b74fa47ed33453bdd557bb1b62a07ff9721fc0e74bd0886210af376be6d",
+      "scope": "Two passing native cases, 14 captures. Hand selection, destination and target controls, Might rejection, independent readiness/damage, unavailable Flow during the opened showdown, human priority pass, opponent pass, conquest, legal Flow, costs and banishment. Both advice levels and normal/small windows."
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/twilight-native-v1/report.json",
+      "sha256": "07cfc004957298cca0aa65ff039facbeff127caf3ac41a6e0a589f9995df1405",
+      "scope": "The two existing Irelia native cases passed (18 captures), before the new scenario exposed its own missing render-frame wait. This report is overall failed, not a complete native pass."
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/twilight-api-v1/report.json",
+      "sha256": "9d38088c01fe70a5244a734399cd1c535241eb998c909ea9454dd3a8ad6465a4",
+      "scope": "24 API campaigns passed: all 267 records from the previous 23 campaigns match exactly; the new Twilight campaign adds 12 records."
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/twilight-api-v1/twilight-api.json",
+      "sha256": "f4eb86f630d0a4bdc81b46ea6a0713a590a93adb3388667d9ca5029dbe83feb5",
+      "scope": "12 registered best-of-three Irelia mirrors (33 games), all three levels and both starting players; actual Twilight casts observed for both seats at every level."
+    }
+  ],
+  "attempts": [
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/twilight-focused-v1.log",
+      "sha256": "4ab5e9513d7aa89382f45a50ca2da0a055c77166bb5000b5914a94f35ff23926",
+      "scope": "Initial compile failure: incorrect fixture integer width and enum None shadowing Option::None; corrected before validation."
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/twilight-clippy-v2.log",
+      "sha256": "d5b55a7667d1d9b8a744ae420380ec07acfc52dda0b9dc000033acada55fde77",
+      "scope": "Lint rejected a nested match; simplified without changing the target condition."
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/twilight-clippy-v3.log",
+      "sha256": "ffa4d4490aaaaf9edc0dcd6804a41fbafb407055f00165b38e7184a492a45480",
+      "scope": "Lint rejected a single-element fixture loop; replaced with direct row replacement."
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/twilight-native-v2/report.json",
+      "sha256": "8d06e5774bf0c817d1ce9d7a3f3770ae3bfbea0cdf54333d731972f2037bcc35",
+      "scope": "New scenario read Flow selection before the next rendering frame; added a frame for the ordinary UI update."
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/twilight-native-v3/report.json",
+      "sha256": "121d55a7a7f6433c2d74d4b2d20dd1e8f151a28de4a2b3e9e8c360f3d99ad084",
+      "scope": "The engine correctly rejected Flow during the first move's showdown. Extended the scenario to assert rejection and pass priority before replaying it; no timing rule was relaxed."
+    }
+  ],
+  "visual_review": [
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/twilight-native-v4/twilight-normal/rift_twilight_inspect.png",
+      "sha256": "c48452d5e026360db307136977f97262b02aeda93fcfbecae36b08fe2a7bf5d0",
+      "scope": "Actually viewed: full original card face and complete official text, including Flow cost and banishment, readable alongside the close control."
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/twilight-native-v4/twilight-small/rift_twilight_flow.png",
+      "sha256": "b73485dd8b2c096f47acd966331aa40db2176793a0f4b2452d08535fe0da074b",
+      "scope": "Actually viewed: legal Flow after showdown closure, visible 4-Energy/1-Power total, selected enemy target and destination controls at small size."
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/twilight-native-v4/twilight-small/rift_twilight_advanced.png",
+      "sha256": "2bb73bf5e2f9bc384aca8d4a5f834d72e1867300134712be1fc1470ab6aacfcf",
+      "scope": "Actually viewed: Advanced commentary explains pre-showdown positioning, Might responses and Flow budgeting without covering the board or play controls."
+    }
+  ],
+  "source_hashes": {
+    "src/rules.rs": "fd41e7eb2980ddb4be486fbb84ad8851240824421af17fa258de064bd03dd804",
+    "src/game.rs": "5818240a54d8795fa0859738a23af0e836101bc64b328225c88d737cdd6c455f",
+    "src/movement.rs": "a8718bd8caf2f9345a10a8590424054da4b642d9135e5486318ead574ce07f9e",
+    "src/play.rs": "f2e335c91f0d6912961c3fa14b0f0bb46649951a4dbe053c234cbe2fc8ccd113",
+    "src/cards.rs": "e1aaa20766159a7ba5aa76b2187ff77081b87c0a0def3773ea20f47b9b0fd443",
+    "src/api/targeting.rs": "b9b20840303f0eef517c3746136e70dc02a5341fdac4efb3c980656fd62a56fa",
+    "src/companion.rs": "619ce8b9869bdd7d8ff0626488b9d561f2f364a537b9c8dc8a54ccba3b67c627",
+    "src/main.rs": "36ffb357ebf24d9a9c2a91745315e4435030296b9edb3e71d5bcc3dcdb20b3c8",
+    "src/smoke/twilight.rs": "1279190ff4d905adac647a70c6b64a0ccad071a3c96a4454b58473aa33b7c884",
+    "src/twilight_tests.rs": "40f0779c7921885d4f39ee55122ef7d25bfaf37786a6341f5e05402c7b494375",
+    "src/api/twilight_tests.rs": "0d55a5ff2c2bcc430be02b868556e05d216fc0b3b79e692fb841b533bb76508e",
+    "tests/twilight_matches.rs": "acc994c4ab3e015758597654ec32871217ac293c00be6b8b9bc39e1d7be85275",
+    "tools/check_twilight_api.py": "35c53fc5e3fb691717eb6160d2cdd0601bbc1eb8e149f86f1961e01da085aaf0",
+    "tools/test_twilight_source.py": "bd2e049fd41fcab578f745685716a90ada86408e3c14b389d3c8726b904840ac",
+    "assets/data/card_admissions/twilight_step/source_review.json": "7ee41477c36981aa544741f430c73edb7b95fcd250b83d6b78785763e0395b6f"
+  },
+  "installed_visual_review": [
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/twilight-release-v1/twilight-normal/rift_twilight_inspect.png",
+      "sha256": "23325594a0f85019847c3eddf8f05c19852cea0ab488edb490a4cbf418f3ab66",
+      "scope": "Viewed installed capture: original card face and complete official text including Flow cost and banishment are readable."
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/twilight-release-v1/twilight-small/rift_twilight_flow.png",
+      "sha256": "aad6a05736888b35bc3301b368857b7f769a7533ec3f6da60197fe6e690b3160",
+      "scope": "Viewed installed small window: Flow total is 4 Energy and 1 Power; chosen target and all three destination controls are visible."
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/twilight-release-v1/twilight-small/rift_twilight_advanced.png",
+      "sha256": "8a4eb7f7a72780096102b81a965a914d32452669e770fc37f975f4649cc62754",
+      "scope": "Viewed installed small window: Advanced advice explains positioning, Might responses and Flow budgeting without covering action controls."
+    }
+  ]
+}

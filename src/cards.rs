@@ -7400,6 +7400,21 @@ pub fn cards() -> Vec<CardDef> {
             tags: &[],
             art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/4a1a08ec8c23a2663babd2fc683481888347407a-744x1039.png?accountingTag=RB",
         },
+        CardDef {
+            id: 486,
+            official_id: "ven-105-166",
+            name: "Twilight Step",
+            cost: 2,
+            power_cost: 1,
+            might: 0,
+            domain: Domain::Chaos,
+            domains: &[Domain::Chaos],
+            kind: CardKind::Spell,
+            official_text: "Move a unit with 3 Might or less.\n[Flow] [4 Energy][Chaos Power] (You may play this from your trash for its Flow cost. Then banish it.)",
+            keywords: &["Flow"],
+            tags: &[],
+            art_url: "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/1c5c10009a9fb2605df5db1ff12647a47ac07d98-744x1039.png?accountingTag=RB",
+        },
     ]
 }
 

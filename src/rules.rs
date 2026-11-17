@@ -232,8 +232,10 @@ pub enum OfficialEffect {
     MoveFriendlyToBase {
         up_to: u8,
     },
-    MoveEnemy,
-    MoveFriendlyAndReady,
+    MoveUnit {
+        maximum_might: Option<u8>,
+        ready: bool,
+    },
     /// Swap two units' might this turn; both must share a battlefield.
     SwapMight,
     /// Friendly and enemy units deal their might to each other. Optional +2
@@ -423,7 +425,10 @@ pub fn effect(id: usize) -> OfficialEffect {
         },
         425 => ReadyAndPreventMovement { draw: 1 },
         426 => BattlePreparations,
-        427 => MoveEnemy,
+        427 => MoveUnit {
+            maximum_might: Option::None,
+            ready: false,
+        },
         428 => StunAndDrawFromHand,
         429 => None,
         430 | 431 => None,
@@ -556,7 +561,10 @@ pub fn effect(id: usize) -> OfficialEffect {
         | 56 | 59 | 60 | 68 | 69 | 70 | 71 | 72 | 73 => None,
         1 => Counter(CounterKind::Abandon),
         3 | 10 | 38 | 58 => Equipment,
-        4 => MoveEnemy,
+        4 => MoveUnit {
+            maximum_might: Option::None,
+            ready: false,
+        },
         5 => DualMight,
         6 => Counter(CounterKind::Defy),
         7 => ModifyMight {
@@ -577,7 +585,14 @@ pub fn effect(id: usize) -> OfficialEffect {
             battlefield_only: true,
         },
         12 => Counter(CounterKind::NotSoFast),
-        14 => MoveFriendlyAndReady,
+        14 => MoveUnit {
+            maximum_might: Option::None,
+            ready: true,
+        },
+        486 => MoveUnit {
+            maximum_might: Some(3),
+            ready: false,
+        },
         15 | 57 => Draw(1),
         16 => BounceBoth,
         19 => ModifyMight {
@@ -842,16 +857,13 @@ pub fn effect(id: usize) -> OfficialEffect {
 
 /// These spells choose a unit's destination during play finalization.
 pub fn chooses_move_destination(id: usize) -> bool {
-    matches!(
-        effect(id),
-        OfficialEffect::MoveEnemy | OfficialEffect::MoveFriendlyAndReady
-    )
+    matches!(effect(id), OfficialEffect::MoveUnit { .. })
 }
 
 pub fn targeting(id: usize) -> Targeting {
     use Allegiance::*;
     let allegiance = match id {
-        290..=296 | 335 | 349 | 428 | 434 | 446 | 457 | 461 | 484 | 485 => Any,
+        290..=296 | 335 | 349 | 428 | 434 | 446 | 457 | 461 | 484 | 485 | 486 => Any,
         4 | 32 | 144 | 145 | 365 | 427 | 465 | 468 | 469 | 483 => Enemy,
         362 | 364 | 372 | 378 | 379 | 381 | 435 => Any,
         8 | 9 | 14 | 19 | 27 | 85 | 137 | 228 | 350 | 353 | 354 | 377 | 380 | 382 | 421 | 425
@@ -946,8 +958,7 @@ pub fn target_bounds(id: usize) -> (usize, usize) {
         | ContextualDamage(_)
         | DamageAndGold { .. }
         | Bounce { .. }
-        | MoveEnemy
-        | MoveFriendlyAndReady
+        | MoveUnit { .. }
         | ReadyAndPreventMovement { .. }
         | ReadyAnother
         | BuffAnother
@@ -1298,6 +1309,7 @@ pub fn requirements(id: usize) -> &'static [Mechanic] {
         483 => &[Chain, Stun, Bounce],
         484 => &[Chain, Stun],
         485 => &[Chain],
+        486 => &[Chain, Move, Flow],
         477 => &[
             Chain,
             ChooseReadyTriggers,
@@ -2136,6 +2148,11 @@ pub struct FlowCost {
 /// A card played using Flow is banished afterwards instead of going to trash.
 pub fn flow_cost(id: usize) -> Option<FlowCost> {
     match id {
+        486 => Some(FlowCost {
+            energy: 4,
+            any_power: 1,
+            colored: true,
+        }),
         434 => Some(FlowCost {
             energy: 4,
             any_power: 2,

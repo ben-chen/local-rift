@@ -149,14 +149,14 @@
       "gear": 80,
       "legend": 11,
       "rune": 6,
-      "spell": 145,
+      "spell": 146,
       "unit": 261
     },
-    "implemented_main_cards": 486,
+    "implemented_main_cards": 487,
     "implemented_legends": 11,
     "implemented_battlefields": 22,
-    "implemented_legal_identities": 525,
-    "unimplemented_legal_identities": 554,
+    "implemented_legal_identities": 526,
+    "unimplemented_legal_identities": 553,
     "errata_entries": 67,
     "identities_with_errata": 67,
     "source_quality_issues": 61,
@@ -190,7 +190,7 @@
     "Empower": 13,
     "Empowered": 15,
     "Equip": 23,
-    "Flow": 7,
+    "Flow": 6,
     "Ganking": 28,
     "Hidden": 25,
     "Hunt": 1,
@@ -38488,8 +38488,10 @@
         "unresolved_variant_fields": []
       },
       "implementation": {
-        "status": "not_implemented",
-        "playable_in_client": false
+        "status": "implemented_main_card",
+        "runtime_id": 486,
+        "official_id": "ven-105-166",
+        "playable_in_client": true
       }
     },
     {

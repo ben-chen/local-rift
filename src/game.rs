@@ -66,6 +66,9 @@ mod movement;
 mod movement_resolution_tests;
 #[path = "ownership.rs"]
 mod ownership;
+#[cfg(test)]
+#[path = "twilight_tests.rs"]
+mod twilight_tests;
 
 #[path = "entry.rs"]
 mod entry;
@@ -7197,10 +7200,7 @@ impl Game {
             return Err("Wait for a response window or your own main phase.".into());
         }
         if let Some(lane) = lane {
-            let movement_spell = matches!(
-                rules::effect(id),
-                OfficialEffect::MoveEnemy | OfficialEffect::MoveFriendlyAndReady
-            );
+            let movement_spell = matches!(rules::effect(id), OfficialEffect::MoveUnit { .. });
             let legal_unit_location = lane < self.battlefield_count()
                 && card.kind == CardKind::Unit
                 && (instruction.is_some_and(|i| {
@@ -7548,7 +7548,7 @@ impl Game {
                         | OfficialEffect::ContextualDamage(_)
                         | OfficialEffect::DamageAndGold { .. }
                         | OfficialEffect::Bounce { .. }
-                        | OfficialEffect::MoveEnemy
+                        | OfficialEffect::MoveUnit { ready: false, .. }
                         | OfficialEffect::Kill { .. }
                         | OfficialEffect::KillAndDrawController { .. }
                         | OfficialEffect::DisempowerThenKill { .. }
@@ -8015,6 +8015,10 @@ impl Game {
                 return Ok(false);
             }
             match rules::effect(id) {
+                OfficialEffect::MoveUnit {
+                    maximum_might: Some(maximum),
+                    ..
+                } => self.unit_might(unit)? <= u64::from(maximum),
                 OfficialEffect::TakeControlAndRecall { maximum_might, .. } => {
                     unit.lane.is_some()
                         && (bonus
@@ -9000,14 +9004,9 @@ impl Game {
                     self.move_effect(player, target, None, false)?;
                 }
             }
-            OfficialEffect::MoveEnemy => {
+            OfficialEffect::MoveUnit { ready, .. } => {
                 for target in valid {
-                    self.move_effect(player, target, lane, false)?;
-                }
-            }
-            OfficialEffect::MoveFriendlyAndReady => {
-                for target in valid {
-                    self.move_effect(player, target, lane, true)?;
+                    self.move_spell_target(player, target, lane, ready)?;
                 }
             }
             OfficialEffect::SwapMight => {
@@ -11415,14 +11414,14 @@ impl Game {
                         0
                     }
                 }
-                OfficialEffect::MoveEnemy => {
+                OfficialEffect::MoveUnit { ready: false, .. } => {
                     if in_combat {
                         95
                     } else {
                         0
                     }
                 }
-                OfficialEffect::MoveFriendlyAndReady => {
+                OfficialEffect::MoveUnit { ready: true, .. } => {
                     if in_combat {
                         30
                     } else {

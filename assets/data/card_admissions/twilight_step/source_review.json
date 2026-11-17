@@ -1,0 +1,155 @@
+{
+  "schema_version": 1,
+  "checked_at": "2026-11-17T09:34:38.045849+00:00",
+  "scope": "Additional legal Chaos option for Irelia-compatible custom practice. No tournament prevalence claim or sourced preset change.",
+  "records": [
+    {
+      "official_id": "ven-105-166",
+      "name": "Twilight Step",
+      "raw_printing": {
+        "official_id": "ven-105-166",
+        "public_code": "VEN-105/166",
+        "name": "Twilight Step",
+        "set": "VEN",
+        "collector_number": 105,
+        "types": [
+          "spell"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "spell"
+        ],
+        "accessibility_types": [
+          "spell"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "chaos"
+        ],
+        "energy": 2,
+        "power": 1,
+        "might": null,
+        "might_bonus": null,
+        "rules_html": "<p>Move a unit with 3 :rb_might: or less.<br />[Flow] :rb_energy_4::rb_rune_chaos: (You may play this from your trash for its Flow cost. Then banish it.)</p>",
+        "rules_text": "Move a unit with 3 Might or less.\n[Flow] [4 Energy][Chaos Power] (You may play this from your trash for its Flow cost. Then banish it.)",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [],
+        "rarity": "uncommon",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/1c5c10009a9fb2605df5db1ff12647a47ac07d98-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Spell: Twilight Step. Move a unit with 3 [S] or less.\n[Flow] [4][C] (You may play this from your trash for its Flow cost. Then banish it.)",
+        "illustrators": [
+          "Kudos Productions"
+        ]
+      },
+      "raw_printing_sha256": "83e634a868105132f30be4a993b132a6d8ac2d9395014cba98a38cabae1b6586",
+      "effective": {
+        "types": [
+          "spell"
+        ],
+        "super_types": [],
+        "domains": [
+          "chaos"
+        ],
+        "energy": 2,
+        "power": 1,
+        "might": null,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>Move a unit with 3 :rb_might: or less.<br />[Flow] :rb_energy_4::rb_rune_chaos: (You may play this from your trash for its Flow cost. Then banish it.)</p>",
+        "rules_text": "Move a unit with 3 Might or less.\n[Flow] [4 Energy][Chaos Power] (You may play this from your trash for its Flow cost. Then banish it.)",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "resolution_ids": [],
+      "errata": [],
+      "snapshot_standard_legal": true,
+      "original_image": {
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/1c5c10009a9fb2605df5db1ff12647a47ac07d98-744x1039.png?accountingTag=RB",
+        "path": "assets/data/card_admissions/twilight_step/ven-105-166.png",
+        "sha256": "f474db0cd73fa946d0870ffafde534addc61aa7831ffa66c74cd81287126962a",
+        "bytes": 713495,
+        "dimensions": [
+          744,
+          1039
+        ]
+      },
+      "visual_review": {
+        "actual_full_face_viewed": true,
+        "reviewed_at": "2026-11-17T09:34:38.045849+00:00",
+        "printed_cost_type_domain_tags_and_rules_checked": true,
+        "printed_facts": {
+          "types": [
+            "spell"
+          ],
+          "super_types": [],
+          "domains": [
+            "chaos"
+          ],
+          "energy": 2,
+          "power": 1,
+          "might": null,
+          "might_bonus": null,
+          "tags": [],
+          "rules_html": "<p>Move a unit with 3 :rb_might: or less.<br />[Flow] :rb_energy_4::rb_rune_chaos: (You may play this from your trash for its Flow cost. Then banish it.)</p>",
+          "rules_text": "Move a unit with 3 Might or less.\n[Flow] [4 Energy][Chaos Power] (You may play this from your trash for its Flow cost. Then banish it.)",
+          "equipment_html": "",
+          "equipment_text": ""
+        },
+        "notes": "Full face inspected: Chaos Spell, 2 Energy and 1 Chaos Power; either controller's unit with 3 Might or less. No Action/Reaction. Flow costs 4 Energy and 1 Chaos Power."
+      },
+      "runtime_id": 486
+    }
+  ],
+  "preserved_source_prefix": {
+    "resolutions": {
+      "count": 146,
+      "sha256": "05c4cc26ed3131f59d236f2cc12ca7c41d03279709838b6cad4a41c22028c538"
+    },
+    "raw_printings": {
+      "count": 96,
+      "sha256": "9ebebf4fe84a457bcc85fa005e2042e30ffe057bb5fa77327b4b37bae959b157"
+    },
+    "historical_issues": {
+      "count": 61,
+      "sha256": "1c3293ba639eef549272f588b9a605ef6a8a82d6dce49eb37003706f629856e4"
+    },
+    "images": {
+      "count": 96,
+      "sha256": "d0787164df49a2029bb29ce8ddad423a899705729a766f5edf561e8de811d8f8"
+    }
+  },
+  "preserved_runtime_prefix": {
+    "cards": {
+      "count": 486,
+      "sha256": "cf8aaa9dae8f74d746b28181a718c2dcda1cd8e15a500fae6d517e7c64f8258a"
+    },
+    "decks": {
+      "count": 7,
+      "sha256": "e975739d803427e54928d6e6cd03d1ce51d7ad108f4e247b8a000acf037a5cdb"
+    }
+  },
+  "rules_review": {
+    "authority": "https://playriftbound.com/en-us/rules-hub/",
+    "core_version": "2026-10-09",
+    "references": [
+      "355.4",
+      "355.15",
+      "359.3.e.2",
+      "449.2.c",
+      "451.1",
+      "458",
+      "829"
+    ],
+    "errata_pages_checked": [
+      "https://playriftbound.com/en-us/news/announcements/vendetta-errata-updates/"
+    ],
+    "findings": [
+      "The Might limit and ability to choose either controller are live target restrictions. Destination is declared before responses.",
+      "A selected base retains its physical player identity even if the unit later changes controller. An invalid foreign-base destination instead Recalls under449.2.c; Recall does not emit a Move event.",
+      "Flow changes zone and cost, not spell timing, and banishes the spell after resolution."
+    ]
+  },
+  "implementation_status": "runtime_local_validation_passed_installed_pending"
+}

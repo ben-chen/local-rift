@@ -46,7 +46,7 @@ This is one part of the choice API; `suggest` remains nonexhaustive.
 
 The initial session is in `mulligan` phase, with decks `[0,1]`, seed `1`, Tactical AI, and player `0` going first. `info` reports protocol version `1`; `catalog` reports separate preset, legend, card, domain, and battlefield IDs.
 
-The repository's `assets/data/full_catalog.json` is a separate inventory with schema version `2`; it is not the bot protocol or the playable `catalog` response. It preserves raw printing fields and adds reviewed `effective` facts, resolution references, and unresolved-field diagnostics. Deck validation uses those effective facts and rejects unresolved gameplay or variant fields, including conflicts on alternate printings. Source review alone never registers a playable card. Inventory-only identity `kind` preserves complete type sets as sorted `+`-joined strings, such as `gear+unit`; the corresponding printing’s `effective.types` retains both types. This does not add a playable bot-protocol card kind. Main-card IDs are append-only; the latest additions are 484–485. Existing IDs and sourced preset lists retain their identities, while eligible-card and chosen-champion lists expand with supported cards. Additive Temporary status, token identity, evaluated passive values and target queries retain protocol version `1`. See [the inventory review contract](CATALOG_REVIEW.md) for evidence and remaining variant-review limits.
+The repository's `assets/data/full_catalog.json` is a separate inventory with schema version `2`; it is not the bot protocol or the playable `catalog` response. It preserves raw printing fields and adds reviewed `effective` facts, resolution references, and unresolved-field diagnostics. Deck validation uses those effective facts and rejects unresolved gameplay or variant fields, including conflicts on alternate printings. Source review alone never registers a playable card. Inventory-only identity `kind` preserves complete type sets as sorted `+`-joined strings, such as `gear+unit`; the corresponding printing’s `effective.types` retains both types. This does not add a playable bot-protocol card kind. Main-card IDs are append-only; the latest addition is 486 (Twilight Step). Existing IDs and sourced preset lists retain their identities, while eligible-card and chosen-champion lists expand with supported cards. Additive Temporary status, token identity, evaluated passive values and target queries retain protocol version `1`. See [the inventory review contract](CATALOG_REVIEW.md) for evidence and remaining variant-review limits.
 
 ```json
 {"id":"hello","command":"info"}
@@ -1321,3 +1321,17 @@ choices. Its target condition is `attacking` with `controller:"any"`; Existentia
 Dread (483) remains `controller:"enemy"`. Both recheck the current combat on
 resolution. Friendship (485) allows either player's unit and counts the caster's
 distinct Bird/Cat/Dog/Poro tags when its Might instruction resolves.
+
+Twilight Step (486, `ven-105-166`) uses the existing Move destination and
+single-unit target choices. Its target metadata includes
+`condition:{type:"maximum_might",maximum_might:3,controller:"any",rechecked_on_resolution:true}`.
+The live `target_candidates` query applies current Might and the selected
+destination. Its ordinary cost is 2 Energy and 1 Chaos Power; printed Flow is
+4 Energy and 1 Chaos Power. Flow uses the normal trash-play actions and retains
+ordinary spell timing. It does not ready the moved unit and banishes after
+leaving the chain when played through Flow.
+
+Single-unit Move spells retain the chosen physical base from finalization,
+using the original execution target's controller. A later control change does
+not silently change that destination to the unit's new base. The engine applies
+the ordinary forbidden-destination Recall rule and movement prevention.

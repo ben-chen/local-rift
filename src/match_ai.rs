@@ -186,7 +186,7 @@ impl Evidence {
                                 | Effect::StunAndDrawFromHand
                                 | Effect::Bounce { .. }
                                 | Effect::BounceBoth
-                                | Effect::MoveEnemy
+                                | Effect::MoveUnit { ready: false, .. }
                                 | Effect::SwapMight
                                 | Effect::Fight { .. }
                                 | Effect::EmpoweredFight { .. }

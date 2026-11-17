@@ -59,6 +59,8 @@ mod tag_stun_tests;
 mod targeting;
 mod temporary;
 #[cfg(test)]
+mod twilight_tests;
+#[cfg(test)]
 mod unyielding_tests;
 mod vision;
 #[cfg(test)]

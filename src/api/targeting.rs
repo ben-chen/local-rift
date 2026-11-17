@@ -117,6 +117,21 @@ pub(super) fn play_targets_to_json(card_id: crate::cards::CardId) -> Value {
     let spec = play_target_spec(card_id);
     let mut value =
         json!({"kind":spec.kind.map(target_kind),"maximum":spec.maximum,"required":spec.required});
+    if let crate::rules::OfficialEffect::MoveUnit {
+        maximum_might: Some(maximum),
+        ..
+    } = crate::rules::effect(card_id)
+    {
+        let controller = match crate::rules::targeting(card_id).allegiance {
+            crate::rules::Allegiance::Friendly => "friendly",
+            crate::rules::Allegiance::Enemy => "enemy",
+            _ => "any",
+        };
+        value["condition"] = json!({
+            "type":"maximum_might", "maximum_might":maximum,
+            "controller":controller, "rechecked_on_resolution":true
+        });
+    }
     if let crate::rules::OfficialEffect::TakeControlAndRecall { maximum_might, .. } =
         crate::rules::effect(card_id)
     {

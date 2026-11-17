@@ -17,13 +17,55 @@ impl Game {
     ) -> bool {
         let destination = match rules::effect(card) {
             OfficialEffect::MoveFriendlyToBase { .. } => None,
-            OfficialEffect::MoveEnemy | OfficialEffect::MoveFriendlyAndReady => destination,
+            OfficialEffect::MoveUnit { .. } => destination,
             _ => return true,
         };
         self.unit_ref(target).is_some_and(|unit| {
             unit.lane != destination
                 && destination.is_none_or(|lane| lane < self.battlefield_count())
         })
+    }
+
+    /// A finalized single-unit Move keeps the base selected for its original
+    /// target. Execution targets retain that controller even when the live
+    /// target reference follows a later control change (Core 355.4 / 355.15).
+    pub(super) fn move_spell_target(
+        &mut self,
+        actor: usize,
+        target: Target,
+        lane: Option<usize>,
+        ready: bool,
+    ) -> Result<(), String> {
+        let Target::Unit { player, unit_id } = target else {
+            return Ok(());
+        };
+        let destination = if let Some(lane) = lane {
+            BoardLocation::Battlefield { lane }
+        } else {
+            let original_controller = if let Some(frame) = &self.resolution_frame {
+                self.chain
+                    .iter()
+                    .find(|item| item.id == frame.chain_id)
+                    .and_then(|item| item.executions.get(frame.execution))
+                    .and_then(|execution| {
+                        execution.targets.iter().find_map(|target| match target {
+                            Target::Unit {
+                                player,
+                                unit_id: original,
+                            } if *original == unit_id => Some(*player),
+                            _ => None,
+                        })
+                    })
+                    .ok_or("The finalized Move target is missing.")?
+            } else {
+                // Direct effect helpers have no finalized chain execution.
+                player
+            };
+            BoardLocation::Base {
+                player: original_controller,
+            }
+        };
+        self.move_effect_at(actor, target, destination, ready)
     }
 
     /// Existing relative callers mean the target's base, never the actor's.

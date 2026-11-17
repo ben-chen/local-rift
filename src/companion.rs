@@ -2094,6 +2094,13 @@ fn field_options_advice(game: &Game, beginner: bool) -> Vec<&'static str> {
             "Friendship can turn a close fight. Count your different animal tags across the board; a removal response can shrink the bonus before it resolves."
         });
     }
+    if visible(486) {
+        tips.push(if beginner {
+            "Twilight Step moves a unit with 3 Might or less without readying it. Choose the destination first. Flow costs 4 Energy and 1 Chaos Power, then banishes the spell."
+        } else {
+            "Use Twilight Step before a showdown to reposition an ally or remove a small holder. A Might boost can stop it; budget for Flow to use the spell again later."
+        });
+    }
     if visible(482) {
         tips.push(if beginner {
             "Morbid Return chooses one unit in your trash before responses and returns it to your hand. It does not draw or play that unit."
@@ -2538,7 +2545,7 @@ mod tests {
     fn field_options_advice_is_brief_read_only_and_uses_visible_information() {
         let mut game = Game::new_for_agents(0, 0, 472, Difficulty::Easy);
         game.start_match().unwrap();
-        for card in [470, 471, 472, 473, 474, 475, 482, 483, 484, 485] {
+        for card in [470, 471, 472, 473, 474, 475, 482, 483, 484, 485, 486] {
             game.players[0].hand = vec![card];
             let before = format!("{game:?}");
             for beginner in [false, true] {

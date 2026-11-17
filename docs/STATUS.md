@@ -161,3 +161,13 @@ candidate passed 2,254 Rust tests, 355 source checks, 1,176 simulations,
 51 native cases (542 captures), and 23 API campaigns matching all 267 records.
 Two fresh installed captures were visually reviewed. See
 [movement validation](validation/movement_resolution.json).
+
+Twilight Step passed immutable installed acceptance at 96d6602: 2,261 Rust
+tests, 358 source checks, 1,176 simulations, 53 interface cases (556 captures),
+and 24 API campaigns matching all 279 complete local records. Three installed
+captures were visually reviewed. Focused coverage includes live 3-Might targeting,
+ordinary timing, printed Flow, retained physical base destinations and both Mote
+levels. Its authored Irelia deck replaces two Charms; sourced presets are unchanged.
+[Twilight validation](validation/twilight_step.json) records the evidence.
+The snapshot maps 526 legal identities, with 553 still unimplemented; complete
+Standard parity and expert opponent strength remain unproven.

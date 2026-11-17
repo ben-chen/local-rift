@@ -1665,3 +1665,27 @@ resolution through ordinary API actions. The pre-fix Flash scenario failed at
 the missing Ready assertion. See [validation](validation/movement_resolution.json)
 for results and release status. This is a correction to a specific interaction,
 not a certification of complete movement or Standard rules parity.
+
+## November 17: Twilight Step and retained Move destinations
+
+Twilight Step (ven-105-166, runtime 486) uses its reviewed printed cost of
+2 Energy and 1 Chaos Power, targets one unit with current Might at most 3,
+and moves it without readying it. Its printed Flow costs 4 Energy and
+1 Chaos Power and banishes the spell after it leaves the chain. Flow does
+not grant Action or Reaction timing (Core 829).
+
+The generic single-unit Move effect now carries an optional Might limit and
+an independent Ready instruction. Destination selection remains a finalization
+choice (355.4, 355.15), while the unit's Might is checked again on resolution
+(359.3.e.2). A real Discipline response tests a target growing out of range.
+The original execution target also preserves which physical base was selected
+if control changes. A now-foreign base instead Recalls the unit, without a Move
+event; a prevented Move does neither (449.2.c, 451.1, 458).
+
+The control-change case uses an explicitly authored mid-chain boundary and
+the shared control primitive. It does not claim Possession can be played as a
+Reaction. Public Hand/Flow actions, cost and target queries, rejected-action
+rollback, both seats, and preserved exhaustion/damage are covered separately.
+The authored full-game registration replaces the preset's two Charms with two
+Twilight Steps; the sourced tournament presets remain unchanged. See
+[Twilight validation](validation/twilight_step.json) for acceptance status.

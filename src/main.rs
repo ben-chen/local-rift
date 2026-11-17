@@ -5731,7 +5731,7 @@ impl App {
                 let maximum = spec.maximum;
                 let field_target =
                     spec.kind == Some(local_rift::rules::PlayTargetKind::Battlefield);
-                let movement = matches!(effect, E::MoveEnemy | E::MoveFriendlyAndReady);
+                let movement = matches!(effect, E::MoveUnit { .. });
                 let mut targets = self.targets.clone();
                 match zone {
                     DropZone::Battlefield(lane) if field_target => {
@@ -9143,7 +9143,14 @@ fn card_brief(game: &Game, id: usize) -> String {
         DualMight => "+2 / -2 might".into(),
         Bounce { .. } | BounceBoth => "Return units to hand".into(),
         MoveFriendlyToBase { .. } => "Move units to base".into(),
-        MoveEnemy | MoveFriendlyAndReady => "Move a unit".into(),
+        MoveUnit {
+            maximum_might: Some(limit),
+            ..
+        } => format!("Move unit with {limit} Might or less"),
+        MoveUnit {
+            maximum_might: Option::None,
+            ..
+        } => "Move a unit".into(),
         Tokens { count, might } => format!("{count} × {might}-might tokens"),
         ExtraTurn => "Take an extra turn".into(),
         _ => {
@@ -11097,6 +11104,7 @@ async fn main() {
     let return_options_smoke = args.iter().any(|a| a == "--ui-smoke-return-options");
     let binary_choices_smoke = args.iter().any(|a| a == "--ui-smoke-binary-choices");
     let tag_stun_smoke = args.iter().any(|a| a == "--ui-smoke-tag-stun");
+    let twilight_smoke = args.iter().any(|a| a == "--ui-smoke-twilight");
     let field_options_smoke = args.iter().any(|a| a == "--ui-smoke-field-options");
     let turn_keywords_smoke = args.iter().any(|a| a == "--ui-smoke-turn-keywords");
     let rockfall_smoke = args.iter().any(|a| a == "--ui-smoke-rockfall");
@@ -11132,6 +11140,7 @@ async fn main() {
         || return_options_smoke
         || binary_choices_smoke
         || tag_stun_smoke
+        || twilight_smoke
         || turn_keywords_smoke
         || flurry_smoke
         || disarm_smoke
@@ -11246,6 +11255,8 @@ async fn main() {
             smoke::run_binary_choices_frame(&mut app, frames)
         } else if tag_stun_smoke {
             smoke::run_tag_stun_frame(&mut app, frames)
+        } else if twilight_smoke {
+            smoke::run_twilight_frame(&mut app, frames)
         } else if field_options_smoke {
             smoke::run_field_options_frame(&mut app, frames)
         } else if discord_smoke {

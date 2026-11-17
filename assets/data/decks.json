@@ -12809,6 +12809,29 @@
       "equipment_effect_html": "",
       "equipment_effect": "",
       "might_bonus": null
+    },
+    {
+      "id": 486,
+      "official_id": "ven-105-166",
+      "name": "Twilight Step",
+      "kind": "Spell",
+      "domains": [
+        "Chaos"
+      ],
+      "energy": 2,
+      "power": 1,
+      "might": 0,
+      "keywords": [
+        "Flow"
+      ],
+      "tags": [],
+      "official_text": "Move a unit with 3 Might or less.\n[Flow] [4 Energy][Chaos Power] (You may play this from your trash for its Flow cost. Then banish it.)",
+      "official_text_html": "<p>Move a unit with 3 :rb_might: or less.<br />[Flow] :rb_energy_4::rb_rune_chaos: (You may play this from your trash for its Flow cost. Then banish it.)</p>",
+      "art_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/1c5c10009a9fb2605df5db1ff12647a47ac07d98-744x1039.png?accountingTag=RB",
+      "source_url": "https://playriftbound.com/en-us/card-gallery/",
+      "equipment_effect_html": "",
+      "equipment_effect": "",
+      "might_bonus": null
     }
   ],
   "official_text_note": "Official card/legend rules text from the Riot Card Gallery, retrieved 2026-10-24 and corrected by cited errata. Resource icon tokens are expanded to readable bracketed names. Raw card and equipment HTML is preserved separately. Official text does not establish full implementation fidelity."

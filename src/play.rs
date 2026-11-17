@@ -36,7 +36,8 @@ pub struct PlayTargetView {
 }
 
 /// A Move destination is a finalization choice, not a target. `Base` means
-/// the moved unit's base, even when an opponent is casting the spell.
+/// the moved unit's base at finalization, even when an opponent casts the spell.
+/// A later control change does not change that chosen physical destination.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum MoveDestination {
     Base,
