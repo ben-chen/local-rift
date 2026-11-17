@@ -1,0 +1,132 @@
+{
+  "status": "Passed immutable installed acceptance; the native client and bot API share binary answer labels, availability and rejection reasons.",
+  "reviewed_at": "2026-11-17T09:38:57.503985+00:00",
+  "base_revision": "f9eade5089fac8b37f58a8f806eab69c0a38a262",
+  "problem": "Generic native yes/no buttons enabled unaffordable Irelia costs; bots had no matching answer-description query.",
+  "change": "The engine supplies labels, structured Choose actions, availability and rejection reasons for ten existing decision shapes. The native client and new revision-bound binary_choices API use that view. Existing rules, payment and response timing remain authoritative.",
+  "design_reference": {
+    "url": "https://github.com/abysl/agni-rfb/blob/main/wiki/architecture.md",
+    "lesson": "Present engine-owned choices to clients. No third-party engine code copied."
+  },
+  "contract": {
+    "scope": "Both boolean Choose answers only, not every payment-window action. Other decision shapes reject this query; suggestions remain nonexhaustive.",
+    "privacy": "Only the acting seat may query. Previews execute on disposable copies and retain live state/revision/RNG.",
+    "payment": "Existing quote_payment and explicit Power selection remain supported; resource abilities remain available."
+  },
+  "checks": [
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/binary-choices-regressions-v1.log",
+      "sha256": "a0566be7cf90dd7d62ec3928e5011ae1ffb449655c18dda43c195dd0f476cf82",
+      "scope": "1292 library +178 native client +1 API binary +1 simulation binary tests passed: 1472 total, including seven new concrete scenarios."
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/binary-choices-clippy-v1.log",
+      "sha256": "edd73433a4fbd530aa0c9a0b38dae9737460bfcdf52959f806a59f41bdac3539",
+      "scope": "All targets Clippy, warnings denied."
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/binary-choices-python-v1.log",
+      "sha256": "0c0ea04d1308cdf9703af7cd249ff42f017813dd003ccb678864a39d518f1c81",
+      "scope": "355 source/tool checks passed."
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/binary-choices-api-v1.json",
+      "sha256": "6c8c1a15941743b079ab63c66d2753b68ed724996e16a0a34b5ab2db5136f20e",
+      "scope": "12 complete preset-Irelia mirror games at three AI levels and both starting seats; first enabled binary answer chosen by the test policy, other actions by built-in AI. 237 questions, including 194 Irelia triggers. Not an AI-strength measurement."
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/binary-choices-native-v1/report.json",
+      "sha256": "7f840b6e6cd7a65eaf167a5138c6fcda9ca1b982ff61806a4e49f89de0a5eb99",
+      "scope": "Eight real native click suites: binary answers, Irelia, tag/stun, and full core suite at normal/small sizes. 54 captures; core suites retain all 1261 frames."
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/binary-choices-example-v2.json",
+      "sha256": "570d9737efeb3de340c442a85ebe5515640df4ad33b891b92f8de83a53a318d8",
+      "scope": "Example CLI completed seeds 1 and 2; seed 2 used the new binary-choice branch five times."
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/binary-choices-api-baselines-v1/report.json",
+      "sha256": "b4ed094742922087f917d9a6f6693b687461858ec42d69d0c4755f7619c08990",
+      "scope": "All 22 prior API campaigns passed; 255 exact records match the prior accepted/local baselines."
+    }
+  ],
+  "visual_review": [
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/binary-choices-native-v1/binary-choices-small/rift_binary_unavailable.png",
+      "sha256": "a1c7746917b207cceabf412eb6f906c62efb5a6bc5eddda23ae50ac6007f608d",
+      "scope": "Actually viewed:disabled Power payment, readable engine reason, decline accessible, companion unobscured."
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/binary-choices-native-v1/binary-choices-normal/rift_binary_payable.png",
+      "sha256": "fc74bd92dc8d0892433bf1f014ae44cab34efe6cdcd5349e76bd14502f8abe17",
+      "scope": "Actually viewed:enabled Pay 1 Power label and separate response explanation."
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/binary-choices-native-v1/binary-choices-small/rift_binary_conquer.png",
+      "sha256": "73660543dc535059236e6e30045146c69ab62096afa6a43870508d85dcce3a55",
+      "scope": "Actually viewed:distinct Energy cost, disabled while unaffordable, no overlap."
+    }
+  ],
+  "attempts": [
+    {
+      "report": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/binary-choices-focused-v1.log",
+      "result": "Compile failure:fixture called nonexistent Session.apply. Reused existing API test helper instead."
+    },
+    {
+      "report": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/binary-choices-focused-v2.log",
+      "result": "Six initial focused scenarios passed; later successful full regression includes the seventh explicit-payment/privacy scenario."
+    },
+    {
+      "report": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/binary-choices-example-v1.log",
+      "result": "Game completed but did not reach a binary question. Additional reproducible seed 2 exercised the example branch; no claim that first run covered it."
+    }
+  ],
+  "installed_acceptance": {
+    "status": "passed",
+    "revision": "e74c69d1635a787484b3b60aa3ae116003678aba",
+    "report": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/binary-choices-release-v1/status.json",
+    "report_sha256": "8884b0947406f1aba6f093d4cb5389dc0202920b3e961392d50ae3b59f5d0068",
+    "package": "/nix/store/0817qivj02d9am7vllg8b8b6k9r9l0dn-local-rift-0.1.0",
+    "source": "/nix/store/0prr9yf5awlyw1phrv72cwrdx5w0ma8p-source",
+    "nix_outputs": {
+      "package": "/nix/store/0817qivj02d9am7vllg8b8b6k9r9l0dn-local-rift-0.1.0",
+      "catalog": "/nix/store/9clinzc84z19050c12wr5dy8dxgqamfc-local-rift-catalog-check",
+      "simulation": "/nix/store/7hymc3j20yk5csfd64i3lrk53f1162dw-local-rift-simulation-check",
+      "seconds": 1412.149,
+      "gc_root_prefix": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/binary-choices-release-v1/nix-result"
+    },
+    "rust_tests": 2249,
+    "source_checks": 355,
+    "simulated_matches": 1176,
+    "ui_cases": 51,
+    "captures": 542,
+    "api_campaigns": 23,
+    "exact_api_records": 267,
+    "all_api_records_equal": true,
+    "visual_review": [
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/binary-choices-release-v1/binary-choices-small/rift_binary_unavailable.png",
+        "sha256": "533793f23a95f2b88f0e7245ab97a9eb161b84ce033938295da65f023cfd2aa5",
+        "scope": "Actually viewed: disabled Power answer and readable reason; decline and other controls accessible; companion separate."
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/binary-choices-release-v1/binary-choices-normal/rift_binary_payable.png",
+        "sha256": "eaca7b02f327e6b4385f11fbf454dde950a649defaaa8c0fb5c23d6ab61d7d83",
+        "scope": "Actually viewed: enabled Pay 1 Power answer, explicit ability response explanation, no overlap."
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/binary-choices-release-v1/binary-choices-small/rift_binary_conquer.png",
+        "sha256": "f1e4f54dfd01ee8c27ca70b98a0789113f107c11d9f5aedbd6e60038b54e46b2",
+        "scope": "Actually viewed: distinct Pay 1 Energy answer, disabled reason and decline visible."
+      }
+    ],
+    "finished_at": "2026-11-17T09:36:53.086026+00:00",
+    "scope": "Ten binary decision shapes. The exhaustive flag covers the two Choose answers only, not all possible actions. Rule parity and opponent strength remain unproven."
+  },
+  "full_goal_remaining": [
+    "554 legal snapshot identities remain unimplemented; this change adds no cards.",
+    "Complete typed choices across all decision shapes.",
+    "Full standard-rules interaction parity and open sequencing audits.",
+    "Expert opponent evaluation and beginner learning outcomes."
+  ]
+}

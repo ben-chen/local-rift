@@ -40,6 +40,13 @@ gates against a fixed release candidate. Keep build outputs isolated per worktre
 Commands and evidence collection are documented in
 [Development and verification](../README.md#development-and-verification).
 
+The native client and bot API share binary-answer labels and availability,
+including Irelia's distinct Power and Energy payments. Unavailable answers show
+the engine's reason, while legal decline and resource actions remain available.
+The [choice validation record](validation/binary_choices.json) separates local
+checks from pending installed acceptance. This does not complete the broader
+choice API or increase card coverage.
+
 The next acceptance priorities are complete Irelia match practice with active
 opposing responses, independently expected rules scenarios, opponent decisions
 outside the development benchmark, and beginner learning sessions. Expanding to
@@ -133,3 +140,14 @@ Both Mote levels and full card inspection are available. These results verify
 the recorded scenarios; full Standard parity and expert strength remain unproven.
 See [return-option acceptance](validation/irelia_return_options.json) and
 [tag/stun acceptance](validation/irelia_tag_stun.json).
+
+
+The shared binary-choice view passed immutable installed acceptance at e74c69d.
+The native client disables unavailable answers and explains why; the revision-bound
+`binary_choices` API exposes the same labels, actions and availability to bots.
+Explicit Power selection and response timing remain available. The candidate
+passed 2,249 Rust tests, 355 source checks, 1,176 simulations, 51 interface cases
+(542 captures), and 23 API campaigns matching all 267 complete records. Three
+fresh installed captures were visually reviewed. This covers ten binary question
+shapes, not every decision or a complete legal-action API. See
+[shared-choice acceptance](validation/binary_choices.json).

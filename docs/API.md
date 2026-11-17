@@ -19,11 +19,34 @@ Use `--custom-deck path/to/custom-you.json` or `--custom-opponent path/to/custom
 
 Replace `choose_action(view, suggestions, rng)` in that example with your policy. The function receives only its own filtered observation. Suggestions are useful starting candidates, **not an exhaustive list of legal actions**. A policy can construct and submit every action listed below, including different targets, optional costs, grouped movement, and custom combat assignments.
 
+## Binary questions
+
+For a pending yes/no question, `{"command":"binary_choices","player":0,"revision":12}`
+returns the same answer descriptions used by the native client. Each `options`
+entry contains a structured `action`, a readable `label`, `enabled`, and
+`unavailable_reason` (null when enabled). Submit an enabled action through
+`apply` with that revision. An Irelia trigger distinguishes **Pay 1 Power**
+from **Pay 1 Energy**, and an unaffordable answer includes the engine's reason.
+Calling this query never pays, resolves a trigger, advances priority, or draws.
+
+The response's `scope:"choose"` and `exhaustive:true` describe **both boolean
+answers only**. They do not enumerate resource abilities available during a
+payment window. Those remain available through the existing action protocol,
+and Power sources can be chosen with `quote_payment` / `with_power_payment`.
+After generating resources, query again at the new revision.
+
+Supported decisions are `legend`, `battlefield`, `counter_tax`, `burn_for_might`,
+`predict`, `trigger_return`, `trigger_object_cost`, `banish_play`, `optional_play`,
+and `reveal_hand`. Other decision shapes return an error; use their typed
+commands and candidate queries. Only the acting seat can query, including for
+private Predict choices. Stale revisions and extra request fields are rejected.
+This is one part of the choice API; `suggest` remains nonexhaustive.
+
 ## Requests, responses, and revisions
 
 The initial session is in `mulligan` phase, with decks `[0,1]`, seed `1`, Tactical AI, and player `0` going first. `info` reports protocol version `1`; `catalog` reports separate preset, legend, card, domain, and battlefield IDs.
 
-The repository's `assets/data/full_catalog.json` is a separate inventory with schema version `2`; it is not the bot protocol or the playable `catalog` response. It preserves raw printing fields and adds reviewed `effective` facts, resolution references, and unresolved-field diagnostics. Deck validation uses those effective facts and rejects unresolved gameplay or variant fields, including conflicts on alternate printings. Source review alone never registers a playable card. Inventory-only identity `kind` preserves complete type sets as sorted `+`-joined strings, such as `gear+unit`; the corresponding printing’s `effective.types` retains both types. This does not add a playable bot-protocol card kind. Main-card IDs are append-only; the latest additions are 482–483. Existing IDs and sourced preset lists retain their identities, while eligible-card and chosen-champion lists expand with supported cards. Additive Temporary status, token identity, evaluated passive values and target queries retain protocol version `1`. See [the inventory review contract](CATALOG_REVIEW.md) for evidence and remaining variant-review limits.
+The repository's `assets/data/full_catalog.json` is a separate inventory with schema version `2`; it is not the bot protocol or the playable `catalog` response. It preserves raw printing fields and adds reviewed `effective` facts, resolution references, and unresolved-field diagnostics. Deck validation uses those effective facts and rejects unresolved gameplay or variant fields, including conflicts on alternate printings. Source review alone never registers a playable card. Inventory-only identity `kind` preserves complete type sets as sorted `+`-joined strings, such as `gear+unit`; the corresponding printing’s `effective.types` retains both types. This does not add a playable bot-protocol card kind. Main-card IDs are append-only; the latest additions are 484–485. Existing IDs and sourced preset lists retain their identities, while eligible-card and chosen-champion lists expand with supported cards. Additive Temporary status, token identity, evaluated passive values and target queries retain protocol version `1`. See [the inventory review contract](CATALOG_REVIEW.md) for evidence and remaining variant-review limits.
 
 ```json
 {"id":"hello","command":"info"}
@@ -42,7 +65,7 @@ These are consecutive requests, not a single JSON array. An optional `id` is ech
 {"ok":false,"revision":4,"error":{"code":"stale_revision","message":"Expected revision 4, received 3."}}
 ```
 
-Every successful mutation increments the session revision by one. Reset also increments it; it never reuses an old revision. All mutation commands require the current revision. `observe`, `info`, `catalog`, `validate_deck`, `suggest`, `quote_payment`, `play_choices`, `cost_plan`, `target_candidates`, and successful `validate` leave it unchanged. Rejected requests leave both game state and revision unchanged. The facade validates on a cloned game and commits only on success, including when the core engine rejects an action after beginning its internal work.
+Every successful mutation increments the session revision by one. Reset also increments it; it never reuses an old revision. All mutation commands require the current revision. `observe`, `info`, `catalog`, `validate_deck`, `suggest`, `quote_payment`, `play_choices`, `cost_plan`, `target_candidates`, `binary_choices`, and successful `validate` leave it unchanged. Rejected requests leave both game state and revision unchanged. The facade validates on a cloned game and commits only on success, including when the core engine rejects an action after beginning its internal work.
 
 | Command | Fields besides `command` and optional `id` | Result |
 | --- | --- | --- |
@@ -57,6 +80,7 @@ Every successful mutation increments the session revision by one. Reset also inc
 | `quote_payment` | `revision`, `player`, exactly one of `action` or `action_id` | Suggested and available power sources, exact Power obligations; no mutation |
 | `play_choices` | `revision`, `player`, exactly one of `action` or `action_id` | Available Repeat instances, Accelerate/bonus costs, original zone, and typed cost plan |
 | `target_candidates` | `revision`, `player`, structured `action`, `execution` | Pure action-aware target view for the next unfilled slot; see below |
+| `binary_choices` | `revision`, `player` | Both `choose` answers to a supported binary decision, with labels, enabled states, and unavailable reasons; no mutation |
 | `trigger_target_candidates` | `revision`, `player`; optional ordered `targets` prefix | Pure next-slot choices for pending trigger/legend targets; includes `can_confirm` |
 | `cost_plan` | `revision`, `player`, exactly one of `action` or `action_id` | Cost components, modifiers, applied discount order, final Energy, typed Power and XP obligations |
 | `validate` | `revision`, `player`, exactly one of `action` or `action_id` | `{legal:true}`, or an error; no mutation |

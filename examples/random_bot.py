@@ -10,6 +10,11 @@ from pathlib import Path
 import random
 import subprocess
 
+BINARY_DECISIONS = {
+    "legend", "battlefield", "counter_tax", "burn_for_might", "predict",
+    "trigger_return", "trigger_object_cost", "banish_play", "optional_play", "reveal_hand",
+}
+
 
 def choose_action(view, suggestions, rng):
     """Replace this function with a policy receiving ONLY its own player view.
@@ -37,7 +42,7 @@ class Match:
         self.revision = 0
 
     def request(self, command, **fields):
-        if command in {"reset", "mulligan", "start", "apply", "validate", "quote_payment", "step_ai"}:
+        if command in {"reset", "mulligan", "start", "apply", "validate", "quote_payment", "step_ai", "binary_choices"}:
             fields["revision"] = self.revision
         request = {"command": command, **fields}
         self.process.stdin.write(json.dumps(request, separators=(",", ":")) + "\n")
@@ -83,6 +88,7 @@ def main():
 
     rng = random.Random(args.seed)
     match = Match(args.binary)
+    binary_questions = 0
     try:
         match.request("reset", seed=args.seed, decks=[args.deck, args.opponent],
                       difficulty=args.difficulty, first_player=args.first_player,
@@ -97,12 +103,18 @@ def main():
             if view["phase"] == "finished":
                 scores = [player["score"] for player in view["players"]]
                 print(json.dumps({"seed": args.seed, "winner": view["winner"],
-                                  "scores": scores, "actions": count, "turns": view["turn"]}))
+                                  "scores": scores, "actions": count, "turns": view["turn"],
+                                  "binary_questions": binary_questions}))
                 return
             if count == args.max_actions:
                 raise RuntimeError("Action limit reached before match completion")
             if view["priority"] == 0:
-                suggestions = match.request("suggest", player=0)["actions"]
+                if (view.get("decision") or {}).get("type") in BINARY_DECISIONS:
+                    choices = match.request("binary_choices", player=0)
+                    suggestions = [option for option in choices["options"] if option["enabled"]]
+                    binary_questions += 1
+                else:
+                    suggestions = match.request("suggest", player=0)["actions"]
                 action = choose_action(view, suggestions, rng)
                 match.request("apply", player=0, action=action)
             else:

@@ -21,6 +21,7 @@ use serde_json::{Map, Value, json};
 use std::fmt;
 use std::panic::{AssertUnwindSafe, catch_unwind};
 
+mod binary_choices;
 mod combat;
 mod combat_contribution;
 #[cfg(test)]
@@ -726,7 +727,7 @@ impl Session {
                 keys(object, &["command", "id"])?;
                 Ok(
                     json!({"protocol":PROTOCOL_VERSION,"name":"Local Rift","summary":self.summary(),
-                    "commands":["validate_registration","series_suggest","series_step_ai","series_begin","series_sideboard","series_battlefield","series_play_order","series_concede","series_draw","info","catalog","validate_deck","reset","observe","suggest","quote_payment","play_choices","cost_plan","target_candidates","trigger_target_candidates","validate","apply","mulligan","start","step_ai"],
+                    "commands":["binary_choices","validate_registration","series_suggest","series_step_ai","series_begin","series_sideboard","series_battlefield","series_play_order","series_concede","series_draw","info","catalog","validate_deck","reset","observe","suggest","quote_payment","play_choices","cost_plan","target_candidates","trigger_target_candidates","validate","apply","mulligan","start","step_ai"],
                     "suggestions_exhaustive":false,"max_request_bytes":MAX_REQUEST_BYTES}),
                 )
             }
@@ -846,6 +847,10 @@ impl Session {
                 keys(object, &["command", "id", "revision", "player"])?;
                 self.step_ai(player(object)?, unsigned(object, "revision")?)?;
                 Ok(self.summary())
+            }
+            "binary_choices" => {
+                keys(object, &["command", "id", "revision", "player"])?;
+                self.binary_choices(player(object)?, unsigned(object, "revision")?)
             }
             "trigger_target_candidates" => {
                 keys(object, &["command", "id", "revision", "player", "targets"])?;

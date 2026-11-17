@@ -3046,19 +3046,7 @@ impl App {
         ) {
             return Ok(());
         }
-        let simple = matches!(
-            decision,
-            Decision::RevealHand { .. }
-                | Decision::TriggerReturn { .. }
-                | Decision::TriggerObjectCost { .. }
-                | Decision::BanishPlay { .. }
-                | Decision::OptionalPlay { .. }
-                | Decision::Battlefield { .. }
-                | Decision::Predict { .. }
-                | Decision::CounterTax { .. }
-                | Decision::Legend { .. }
-                | Decision::BurnForMight { .. }
-        );
+        let binary_choices = self.game.binary_choices()?;
         if matches!(decision, Decision::EmpowerHere { .. })
             && self.ui.button(
                 Rect::new(1178.0, 488.0, 212.0, 34.0),
@@ -3069,51 +3057,19 @@ impl App {
         {
             self.action(Action::ChooseTarget { target: None });
         }
-        if simple {
-            if self.ui.button(
-                Rect::new(1178.0, 490.0, 212.0, 32.0),
-                if matches!(decision, Decision::RevealHand { .. }) {
-                    "Continue"
-                } else if matches!(decision, Decision::TriggerReturn { .. }) {
-                    "Return to hand"
-                } else if matches!(decision, Decision::TriggerObjectCost { .. }) {
-                    "Banish Prefect · accept"
-                } else if matches!(decision, Decision::OptionalPlay { .. }) {
-                    "Use this ability"
-                } else if matches!(decision, Decision::BanishPlay { .. }) {
-                    "Play this card"
-                } else if matches!(decision, Decision::Predict { .. }) {
-                    "Recycle to bottom"
-                } else {
-                    "Yes · pay the cost"
-                },
-                true,
-                !matches!(
-                    decision,
-                    Decision::BanishPlay { .. } | Decision::TriggerObjectCost { .. }
-                ) || self
-                    .game
-                    .clone()
-                    .apply(Action::Choose { accept: true })
-                    .is_ok(),
-            ) {
-                self.action(Action::Choose { accept: true });
+        if let Some(view) = binary_choices {
+            for (index, option) in view.options.iter().enumerate() {
+                if self.ui.button(
+                    Rect::new(1178.0, 490.0 + index as f32 * 41.0, 212.0, 32.0),
+                    option.label,
+                    index == 0,
+                    option.enabled(),
+                ) {
+                    self.action(option.action.clone());
+                }
             }
-            if self.ui.button(
-                Rect::new(1178.0, 531.0, 212.0, 31.0),
-                if matches!(decision, Decision::Predict { .. }) {
-                    "Keep on top"
-                } else if matches!(decision, Decision::TriggerReturn { .. }) {
-                    "Leave on board"
-                } else if matches!(decision, Decision::BanishPlay { .. }) {
-                    "Leave in Banish"
-                } else {
-                    "No · decline"
-                },
-                false,
-                true,
-            ) {
-                self.action(Action::Choose { accept: false });
+            if let Some(reason) = &view.options[0].unavailable_reason {
+                self.ui.wrapped(reason, 1178.0, 580.0, 212.0, 11.0, MUTED);
             }
         } else {
             if let Decision::Discard { count, .. } = decision {
@@ -11139,6 +11095,7 @@ async fn main() {
     let trash_choices_smoke = args.iter().any(|a| a == "--ui-smoke-trash-choices");
     let player_choices_smoke = args.iter().any(|a| a == "--ui-smoke-player-choices");
     let return_options_smoke = args.iter().any(|a| a == "--ui-smoke-return-options");
+    let binary_choices_smoke = args.iter().any(|a| a == "--ui-smoke-binary-choices");
     let tag_stun_smoke = args.iter().any(|a| a == "--ui-smoke-tag-stun");
     let field_options_smoke = args.iter().any(|a| a == "--ui-smoke-field-options");
     let turn_keywords_smoke = args.iter().any(|a| a == "--ui-smoke-turn-keywords");
@@ -11173,6 +11130,7 @@ async fn main() {
         || trash_choices_smoke
         || player_choices_smoke
         || return_options_smoke
+        || binary_choices_smoke
         || tag_stun_smoke
         || turn_keywords_smoke
         || flurry_smoke
@@ -11284,6 +11242,8 @@ async fn main() {
             smoke::run_player_choices_frame(&mut app, frames)
         } else if return_options_smoke {
             smoke::run_return_options_frame(&mut app, frames)
+        } else if binary_choices_smoke {
+            smoke::run_binary_choices_frame(&mut app, frames)
         } else if tag_stun_smoke {
             smoke::run_tag_stun_frame(&mut app, frames)
         } else if field_options_smoke {

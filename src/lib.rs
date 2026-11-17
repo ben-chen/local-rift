@@ -3,6 +3,7 @@ pub mod activated;
 pub mod api;
 pub mod battlefields;
 pub mod cards;
+pub mod choices;
 pub mod deck;
 pub mod game;
 pub mod gear;
