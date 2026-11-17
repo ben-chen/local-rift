@@ -1390,3 +1390,25 @@ The control-specific campaigns completed 24 authored engine games and six API
 series (17 games). Paid Conscription was not observed in the natural API sample;
 its XP choice and large target are covered by focused engine/API and native tests.
 The generated catalog is not evidence that the entire Standard pool conforms.
+
+
+## Irelia field options — installed acceptance
+
+Sandswept Tomb discounts one Power per qualifying battlefield for a spell
+choosing friendly units there; it does not discount Energy or an activated
+ability. Ordinary and repeated targets, Hidden costs, instructed plays and
+staged payment are covered by targeted scenarios. Sneaky Deckhand and Ocean
+Drake share open-field permission without overriding timing or prohibitions.
+Ocean Drake's optional target excludes Dragons at selection and resolution.
+Rostrum uses real gear-exhaustion events and a separate respondable friendly
+Might trigger; its activation draws and channels an exhausted rune.
+
+Immutable acceptance at c165f00 passed 2,174 Rust tests, 344 source checks,
+1,176 simulated games, 39 native cases with 366 captures and two actual games,
+and 17 API campaigns matching 117 complete local records. Four installed
+small-window captures were actually inspected. The new-card API campaigns
+completed six series and 15 games; expensive Rostrum was not naturally played
+by Strategic in the earlier 48-game sample, so its play/activation coverage
+includes separately identified legal openings and focused scenarios. See
+`validation/irelia_field_options.json`. This admits these four reviewed cards,
+not the entire currently legal Standard pool.

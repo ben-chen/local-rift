@@ -1,5 +1,5 @@
 {
-  "status": "Four priority cards passed local rules, API, full-game and native acceptance; immutable installed acceptance outstanding.",
+  "status": "Passed immutable installed acceptance for Sandswept Tomb, Sneaky Deckhand, Ocean Drake and Resplendent Rostrum; complete Standard conformity remains unproven.",
   "reviewed_at": "2026-11-17T02:16:50.003350+00:00",
   "base_revision": "270942c0af2635b935dc9a644a346485152adb1a",
   "cards": [
@@ -340,5 +340,56 @@
       }
     ],
     "limitation": "Authored lists, not new meta registrations. Rostrum was not played in either Tactical series or the Strategic seat-0 series. Independent targeted tests and legal scripted full games cover its behavior at every level."
+  },
+  "installed_acceptance": {
+    "reviewed_at": "2026-11-17T02:45:37.862841+00:00",
+    "revision": "c165f004edc59bc2b66425ccf9219c34c459e60f",
+    "status_report": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/field-options-release-v1/status.json",
+    "status_report_sha256": "1c0943d04028fc9b95644cacbcd2b29dbe5777c1286390b93c5028d02a4f0442",
+    "plan_sha256": "705b21b8365e3a29574b8dab60e25e69e2631c771976bc6b7c7d57e1edaadf29",
+    "runner_sha256": "0b7a96d119bae09845e284272b616bdfd6a11e4a8394c686e8869a317a5a1f4b",
+    "nix": {
+      "package": "/nix/store/87h6cqzk9rhl84zna7sg7aq6dxr2d74m-local-rift-0.1.0",
+      "catalog": "/nix/store/lp8n5c8dax93sfiz8fb1fhgdcw5mwaad-local-rift-catalog-check",
+      "simulation": "/nix/store/f2kfps7dfi6wi4nkfgkfhbmg10pshsz4-local-rift-simulation-check",
+      "seconds": 1280.301,
+      "gc_root_prefix": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/field-options-release-v1/nix-result"
+    },
+    "rust_tests": 2174,
+    "source_tool_tests": 344,
+    "simulation_games": 1176,
+    "simulation_report_sha256": "09f65eb7ae35371d9fa92ef5887feb79979a8325757a32a2972cf21b1de3a6ef",
+    "native_cases": 39,
+    "captures": 366,
+    "actual_native_games": 2,
+    "api_campaigns": 17,
+    "complete_matching_records": 117,
+    "host_library_path_removed": true,
+    "actual_viewed_captures": [
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/field-options-release-v1/field-options-small/rift_field_options_drake_targets.png",
+        "sha256": "470063f4a138ff33ebe282d650ad05228fe1fbb92b893f11fdf792f14a35ad0b",
+        "actual_viewed": true,
+        "finding": "Non-Dragon eligibility and optional decline are visible."
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/field-options-release-v1/field-options-small/rift_field_options_rostrum_resolved.png",
+        "sha256": "690184e7ec48a59ca94be8fd59a13bef18cffe1a540a91bad0acf9e454580f9b",
+        "actual_viewed": true,
+        "finding": "Exhausted gear, rune readiness and temporary +3 Might expiry are visible."
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/field-options-release-v1/field-options-small/rift_field_options_tomb_cost_review.png",
+        "sha256": "6ffb65de68c475bd00c25ee045ab62485cf37110dd63567a77eec2b0c08160cc",
+        "actual_viewed": true,
+        "finding": "One-Power discount and final Energy/Power payment are readable."
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/field-options-release-v1/field-options-small/rift_field_options_open_field_drag.png",
+        "sha256": "29f9891cd92372a03868112a555c49706445cc6a4291ea75a7aa8d9f4806c24f",
+        "actual_viewed": true,
+        "finding": "Dragged unit is on the field, with official text and exhausted state visible."
+      }
+    ]
   }
 }

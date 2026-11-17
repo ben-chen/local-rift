@@ -312,8 +312,8 @@ goal remains all legal cards and verified end-to-end practice.
 
 ## Further sampled Irelia options
 
-Sandswept Tomb, Sneaky Deckhand, Ocean Drake and Resplendent Rostrum are
-implemented on the field-options development branch. The source review covers
+Sandswept Tomb, Sneaky Deckhand, Ocean Drake and Resplendent Rostrum have
+passed immutable installed acceptance at c165f00. The source review covers
 all four official faces. The remaining three main-deck mappings use shared
 open-field permissions, excluded-tag targeting and gear-exhaustion events.
 The API and Mote use the same choices and public information.
@@ -327,6 +327,8 @@ scenarios, 48 native captures across both sizes, and six API series completing
 15 games. Actual controls cover open-field click/drag deployment, non-Dragon
 selection, Rostrum exhaustion and its separate trigger, and target-aware cost
 review. Mote now retains every relevant field-option tip when several cards
-are visible. Immutable installed acceptance remains outstanding; see
-[validation](validation/irelia_field_options.json). The seven sourced recipes
+are visible. Installed acceptance passed 2,174 Rust tests, 344 source checks, 1,176
+simulated games, 39 native cases with 366 captures, and 17 API campaigns
+matching all 117 complete records. Four installed small-window captures were
+actually reviewed; see [validation](validation/irelia_field_options.json). The seven sourced recipes
 remain unchanged, and the broader all-legal-cards goal is open.
