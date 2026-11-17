@@ -638,9 +638,8 @@ impl Game {
                 if !self.legend[player].ready {
                     return Err("Irelia's legend must be ready to pay this cost.".into());
                 }
-                if self.unit_ref(Target::Unit { player, unit_id }).is_none() {
-                    return Err("The chosen friendly unit has left the board.".into());
-                }
+                // The triggering choice is captured. "It" does not choose a
+                // new target or impose a new friendly/live-unit payment cost.
                 self.spend_power(player, None, 1)?;
                 self.legend[player].ready = false;
                 // “It” references the original choice. It is not chosen again.
@@ -682,13 +681,16 @@ impl Game {
     ) -> Result<(), String> {
         match ability {
             LegendAbility::IreliaReady { unit_id } => {
-                self.ready_unit(player, unit_id);
+                if let Some(controller) = self.unit_controller(unit_id) {
+                    self.ready_unit_by(player, controller, unit_id);
+                }
             }
             LegendAbility::IreliaRefresh => self.legend[player].ready = true,
             LegendAbility::KennenEmpower | LegendAbility::MatriarchEmpower => {
                 self.empower_by(player, crate::empower::BoardObject::Legend { player });
             }
             LegendAbility::MatriarchReady { target } => {
+                let target = self.resolve_board_reference(target);
                 if self.legend_target_valid(player, target)
                     && let Target::Unit {
                         player: owner,
@@ -699,6 +701,7 @@ impl Game {
                 }
             }
             LegendAbility::KennenAssault { target } => {
+                let target = self.resolve_board_reference(target);
                 if self.legend_target_valid(player, target)
                     && let Target::Unit { unit_id, .. } = target
                 {
@@ -707,6 +710,7 @@ impl Game {
             }
             LegendAbility::LuxDraw | LegendAbility::EzrealDraw => self.draw(player, 1)?,
             LegendAbility::RengarMight { target } => {
+                let target = self.resolve_board_reference(target);
                 if self.legend_target_valid(player, target) {
                     self.modify_might(target, 1, 0)?;
                 }

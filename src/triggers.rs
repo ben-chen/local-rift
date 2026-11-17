@@ -1627,7 +1627,11 @@ impl Game {
     ) -> Vec<Target> {
         match who {
             Operand::Source => self.source_target(context.source).into_iter().collect(),
-            Operand::Subject => context.subject.into_iter().collect(),
+            Operand::Subject => context
+                .subject
+                .map(|target| self.resolve_board_reference(target))
+                .into_iter()
+                .collect(),
             Operand::Targets => targets.to_vec(),
             Operand::AllHere => {
                 self.source_location(context.source)

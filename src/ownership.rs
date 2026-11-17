@@ -16,6 +16,73 @@ impl Game {
             .position(|state| state.gear.iter().any(|gear| gear.id == gear_id))
     }
 
+    /// Resolve a previously finalized board reference by physical identity.
+    /// New action submissions still validate their supplied controller normally.
+    /// Departed objects keep an invalid reference; a new copy cannot replace it.
+    pub(crate) fn resolve_board_reference(&self, target: Target) -> Target {
+        match target {
+            Target::Unit { player, unit_id } => Target::Unit {
+                player: self.unit_controller(unit_id).unwrap_or(player),
+                unit_id,
+            },
+            Target::Gear { player, gear_id } => Target::Gear {
+                player: self.gear_controller(gear_id).unwrap_or(player),
+                gear_id,
+            },
+            _ => target,
+        }
+    }
+
+    pub(crate) fn resolve_board_references(&self, targets: &[Target]) -> Vec<Target> {
+        targets
+            .iter()
+            .map(|&target| self.resolve_board_reference(target))
+            .collect()
+    }
+
+    /// The physical source can move between controllers while its ability keeps
+    /// the controller captured at finalization (CR191.5.b / 359.3.f.4).
+    pub(crate) fn resolve_ability_source(&self, source: AbilitySource) -> AbilitySource {
+        match source {
+            AbilitySource::Unit { player, unit_id } => AbilitySource::Unit {
+                player: self.unit_controller(unit_id).unwrap_or(player),
+                unit_id,
+            },
+            AbilitySource::Gear { player, gear_id } => AbilitySource::Gear {
+                player: self.gear_controller(gear_id).unwrap_or(player),
+                gear_id,
+            },
+        }
+    }
+
+    pub(super) fn refresh_resolving_targets(&mut self) {
+        let Some(item) = self.chain.last() else {
+            return;
+        };
+        let target = item.target.map(|t| self.resolve_board_reference(t));
+        let targets = self.resolve_board_references(&item.targets);
+        let repeats = self.resolve_board_references(&item.repeat_targets);
+        let mut ability = item.ability.clone();
+        match &mut ability {
+            Some(
+                ChainAbility::Equip { target, .. }
+                | ChainAbility::QuickDrawAttach { target, .. }
+                | ChainAbility::Swap { target, .. },
+            ) => *target = self.resolve_board_reference(*target),
+            Some(ChainAbility::EmpowerLinked {
+                target: Some(target),
+            }) => {
+                *target = self.resolve_board_reference(*target);
+            }
+            _ => {}
+        }
+        let item = self.chain.last_mut().unwrap();
+        item.target = target;
+        item.targets = targets;
+        item.repeat_targets = repeats;
+        item.ability = ability;
+    }
+
     /// Ownership of a current unit or gear, independently of its controller.
     /// An invalid or departed board reference has no owner in this query.
     pub fn board_owner(&self, target: Target) -> Option<usize> {

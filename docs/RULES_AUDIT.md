@@ -1192,3 +1192,48 @@ entries were verified; four actual installed captures were visually reviewed.
 [Entry validation](validation/irelia_entry.json) retains the evidence, earlier
 failed attempts, changed Strategic baselines and limits. These checks do not
 establish current meta prevalence, full Standard parity or expert strength.
+
+## Pending references and physical bases — November 16, 2026
+
+The live rules hub still links the October 9 Core Rules. A pending ability keeps
+its controller when its source changes control (191.5.b). References to that
+source follow the same physical object; friendly/enemy target restrictions are
+checked relative to the ability's controller on execution (359.3.f.4, including
+the printed Yasuo/control-change example). New action submissions still require
+the submitted controller and physical ID to be valid. A departed object cannot
+be replaced by a newly played copy with a different ID.
+
+Resolving spell executions and retained ability targets now recover their live
+board references before checking legality. Covered source effects include self
+Might, Buff, Empower, source-Might damage, Temporary, delayed Disempower, and Vex's
+pending stun. Wild Claw's linked Empower retains its original actor, including
+Ambessa's observer. Irelia's ready instruction refers to the originally chosen
+unit without choosing it again (355.10.c, 416.1). Its optional cost can still be
+paid if that referenced object subsequently leaves; the ready instruction then
+does nothing. Costs and triggers are not refunded or redirected to a new copy.
+
+Temporal Breach now stores the absolute location it must return a card to.
+Mandatory destinations cannot be substituted (355.17), and a permanent cannot
+be played into another controller's base (358.3). If a borrowed card's owner
+must return it to that opposing base, finalization is impossible and the card
+stays banished. Portal Rescue instead explicitly uses its owner's base. The
+JSON description identifies fixed bases with `base_player`; battlefield slots
+retain their existing shape.
+
+The new reference scenarios use actual card actions and authored control-change
+boundaries in both seats. They cover allegiance/protection rechecks, actor
+attribution, no rebinding to a replayed copy, costs, and clone equality. The
+ownership suite additionally compares the two replay instructions through real
+spells, invalid-destination rollback and mandatory-play cancellation. These are
+foundation tests; they do not exercise a control-taking card. Evidence and the
+failed regression attempts are retained in
+[control-reference validation](validation/control_references.json).
+
+Control-card admission still requires the actual transfer/contest/combat
+operation, physical-base handling for moves and Here/token instructions,
+remaining captured-source and payment/choice continuations, ownership-aware
+conservation, live API observations, and card-specific UI/AI/companion checks.
+In particular, Ezreal, Dashing says "your base": the pending ability's controller
+defines that base. Moving there and corrective Recall are different events
+(448.1, 323.6); replacing the instruction with movement to the new controller's
+base would lose that distinction. Possession and Conscription remain unavailable.

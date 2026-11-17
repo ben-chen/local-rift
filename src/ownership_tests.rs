@@ -214,3 +214,103 @@ fn banish_replay_uses_original_owner_and_exact_nonboard_occurrence() {
         assert!(g.board_owner_overrides.is_empty());
     }
 }
+
+#[test]
+fn borrowed_unit_replay_distinguishes_exact_opposing_base_from_owner_base() {
+    use crate::game::board_targets::BoardLocation;
+    use crate::game::test_support::decline_legend_action;
+    for owner in 0..2 {
+        for spell in [380, 381] {
+            let controller = 1 - owner;
+            let mut g = position(controller, 0, 468006);
+            let target = controlled_unit(&mut g, owner, 71, false);
+            g.players[owner].banish = vec![72];
+            g.players[controller].hand = vec![spell];
+            g.apply(Action::PlayCardWithTargets {
+                hand_index: 0,
+                lane: None,
+                targets: vec![target],
+            })
+            .unwrap();
+            for _ in 0..80 {
+                if matches!(g.decision, Some(Decision::PendingPlay { .. })) {
+                    break;
+                }
+                let action = if let Some(action) = decline_legend_action(&g) {
+                    action
+                } else if let Some(Decision::OrderTriggers { options, .. }) = &g.decision {
+                    Action::OrderTrigger {
+                        trigger_id: options[0].id,
+                    }
+                } else {
+                    assert!(g.decision.is_none(), "unexpected {:?}", g.decision);
+                    Action::Pass
+                };
+                g.apply(action).unwrap();
+            }
+            assert!(
+                matches!(g.decision, Some(Decision::PendingPlay { player, .. }) if player == owner)
+            );
+            assert_eq!(g.players[owner].banish, [72]);
+            assert!(g.players[controller].units.is_empty());
+            let finalize = |lane| Action::FinalizePendingPlay {
+                lane,
+                targets: vec![],
+                repeat_targets: vec![],
+                repeat: false,
+                accelerate: false,
+                bonus: false,
+            };
+            if spell == 381 {
+                assert_eq!(
+                    g.pending_cards()[0].instruction.destination,
+                    PlayDestination::Exact(BoardLocation::Base { player: controller })
+                );
+                for lane in [None, Some(0), Some(1)] {
+                    reject_unchanged(&mut g, finalize(lane));
+                }
+                assert!(g.can_decline_trash_play().unwrap());
+                assert!(
+                    g.legal_actions()
+                        .unwrap()
+                        .contains(&Action::Choose { accept: false })
+                );
+                let mut replay = g.clone();
+                let resources = (
+                    g.players[owner].energy,
+                    g.players[owner].power_pool,
+                    g.players[owner].xp,
+                );
+                g.apply(Action::Choose { accept: false }).unwrap();
+                replay.apply(Action::Choose { accept: false }).unwrap();
+                assert_eq!(format!("{g:?}"), format!("{replay:?}"));
+                assert_eq!(
+                    (
+                        g.players[owner].energy,
+                        g.players[owner].power_pool,
+                        g.players[owner].xp
+                    ),
+                    resources
+                );
+                assert_eq!(g.players[owner].banish, [72, 71]);
+                assert!(g.players[owner].units.is_empty());
+            } else {
+                assert_eq!(
+                    g.pending_cards()[0].instruction.destination,
+                    PlayDestination::Base
+                );
+                assert!(!g.can_decline_trash_play().unwrap());
+                g.apply(finalize(None)).unwrap();
+                let fresh = &g.players[owner].units[0];
+                assert_eq!((fresh.card_id, fresh.lane), (71, None));
+                assert_eq!(
+                    g.board_owner(Target::Unit {
+                        player: owner,
+                        unit_id: fresh.id
+                    }),
+                    Some(owner)
+                );
+            }
+        }
+    }
+}

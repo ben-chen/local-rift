@@ -151,9 +151,10 @@ impl Game {
     pub(super) fn resolve_temporary(&mut self, source: BoardObject) -> Result<(), String> {
         match source {
             BoardObject::Unit { player, unit_id } => {
-                self.kill_unit(Target::Unit { player, unit_id })?
+                self.kill_unit(self.resolve_board_reference(Target::Unit { player, unit_id }))?
             }
             BoardObject::Gear { player, gear_id } => {
+                let player = self.gear_controller(gear_id).unwrap_or(player);
                 if self.gear_destroy(player, gear_id) {
                     self.record_kill(Target::Gear { player, gear_id }, true);
                 }

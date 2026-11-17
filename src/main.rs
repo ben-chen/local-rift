@@ -2725,7 +2725,9 @@ impl App {
                     .iter()
                     .find(|c| c.id == pending_id)
                     .and_then(|c| match c.instruction.destination {
-                        local_rift::game::PlayDestination::Exact(lane) => lane,
+                        local_rift::game::PlayDestination::Exact(location) => {
+                            location.battlefield()
+                        }
                         local_rift::game::PlayDestination::AnyBattlefield => Some(0),
                         _ => None,
                     });

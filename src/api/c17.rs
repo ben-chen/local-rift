@@ -54,6 +54,18 @@ fn c17_wire_exposes_banish_origin_free_base_cost_and_prescribed_destination() {
     for (spell, owner, lane, destination) in [
         (380, 0, None, json!({"mode":"base"})),
         (381, 1, Some(1), json!({"mode":"fixed","lane":1})),
+        (
+            381,
+            0,
+            None,
+            json!({"mode":"fixed","lane":null,"base_player":0}),
+        ),
+        (
+            381,
+            1,
+            None,
+            json!({"mode":"fixed","lane":null,"base_player":1}),
+        ),
         (382, 0, None, json!({"mode":"any_battlefield"})),
     ] {
         let mut s = session();
@@ -77,7 +89,7 @@ fn c17_wire_exposes_banish_origin_free_base_cost_and_prescribed_destination() {
         assert_eq!(a["decision"]["instruction"]["base_cost_waiver"], "all");
         let dest = match spell {
             380 => None,
-            381 => Some(1),
+            381 => lane,
             _ => Some(0),
         };
         let action = json!({"type":"finalize_pending_play","lane":dest,"targets":[],"repeat_targets":[],"repeat":false,"accelerate":false,"bonus":false});

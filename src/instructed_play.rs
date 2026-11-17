@@ -1,5 +1,6 @@
 //! Limited plays share their origin, printed-cost waiver and prescribed location.
 //! Their parent resolves completely before child choices and payments (CR354.3).
+use super::board_targets::BoardLocation;
 use super::*;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -13,7 +14,7 @@ pub enum BaseCostWaiver {
 pub enum PlayDestination {
     Normal,
     Base,
-    Exact(Option<usize>),
+    Exact(BoardLocation),
     AnyBattlefield,
 }
 
@@ -51,7 +52,7 @@ impl PendingCard {
 }
 
 impl InstructedPlayKind {
-    pub(crate) fn instruction(self, previous_location: Option<usize>) -> PlayInstruction {
+    pub(crate) fn instruction(self, previous_location: Option<BoardLocation>) -> PlayInstruction {
         use BaseCostWaiver::{All, Energy, None};
         use PlayDestination::{AnyBattlefield, Base, Exact, Normal};
         let (cost, destination) = match self {
@@ -59,7 +60,10 @@ impl InstructedPlayKind {
             Self::LastRites | Self::Reinforce | Self::WildClaw => (None, Normal),
             Self::BaitedHook | Self::DazzlingAurora => (All, Normal),
             Self::Matriarch | Self::PortalRescue => (All, Base),
-            Self::TemporalBreach => (All, Exact(previous_location)),
+            Self::TemporalBreach => (
+                All,
+                Exact(previous_location.expect("Temporal Breach preserves its source location")),
+            ),
             Self::ThrillOfTheHunt => (All, AnyBattlefield),
             Self::ArcaneShift => (All, Normal),
         };
@@ -78,13 +82,14 @@ impl InstructedPlayKind {
 impl PlayInstruction {
     pub(crate) fn validate_destination(
         self,
+        player: usize,
         lane: Option<usize>,
         battlefield_count: usize,
     ) -> Result<(), String> {
         let allowed = match self.destination {
             PlayDestination::Normal => true,
             PlayDestination::Base => lane.is_none(),
-            PlayDestination::Exact(location) => lane == location,
+            PlayDestination::Exact(location) => location == BoardLocation::from_lane(player, lane),
             PlayDestination::AnyBattlefield => lane.is_some_and(|l| l < battlefield_count),
         };
         if allowed {
@@ -92,6 +97,9 @@ impl PlayInstruction {
         } else {
             Err(match self.destination {
                 PlayDestination::Base => "This instruction plays the unit at its owner's base.",
+                PlayDestination::Exact(BoardLocation::Base { player: base }) if base != player => {
+                    "This instruction requires the opposing base. A card cannot be played there; it remains banished."
+                }
                 PlayDestination::Exact(_) => "Play the unit at the location it was banished from.",
                 PlayDestination::AnyBattlefield => "This instruction requires a battlefield.",
                 PlayDestination::Normal => unreachable!(),
@@ -126,7 +134,7 @@ impl Game {
         player: usize,
         index: usize,
         kind: InstructedPlayKind,
-        previous_location: Option<usize>,
+        previous_location: Option<BoardLocation>,
     ) -> u32 {
         let card_id = self.players[player].banish.remove(index);
         let id = self.next_chain_id;
@@ -186,14 +194,14 @@ impl Game {
         let Some(unit) = self.unit_ref(target) else {
             return;
         };
-        let location = unit.lane;
+        let location = self.board_target_facts(target).expect("live unit").location;
         let token = unit.token;
         if let Some(owner) = self.banish_unit_directly(target) {
             // Tokens disappear upon leaving the board. Their creator's card is
             // never a substitute for the vanished object (CR108.4/420.3.c).
             if !token && !self.silenced[owner] {
                 let index = self.players[owner].banish.len() - 1;
-                self.queue_banish_play(owner, index, kind, location);
+                self.queue_banish_play(owner, index, kind, Some(location));
             }
         }
     }

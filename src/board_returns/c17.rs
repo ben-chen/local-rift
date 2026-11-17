@@ -154,7 +154,7 @@ fn c17_temporal_owner_and_exact_location_override_ordinary_deployment() {
             assert_eq!(g.priority(), owner);
             assert_eq!(
                 g.pending_cards()[0].instruction.destination,
-                PlayDestination::Exact(location)
+                PlayDestination::Exact(board_targets::BoardLocation::from_lane(owner, location))
             );
             let wrong = if location.is_none() { Some(0) } else { None };
             let before = format!("{g:?}");
@@ -176,7 +176,7 @@ fn c17_temporal_captures_resolution_location_and_hidden_rechecks_locality() {
     pending(&mut g);
     assert_eq!(
         g.pending_cards()[0].instruction.destination,
-        PlayDestination::Exact(Some(1))
+        PlayDestination::Exact(board_targets::BoardLocation::Battlefield { lane: 1 })
     );
     let mut g = position();
     let target = unit(&mut g, 1, 71, false, Some(0));

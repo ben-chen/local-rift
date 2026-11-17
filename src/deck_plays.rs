@@ -252,18 +252,18 @@ impl Game {
             }
         }
     }
-    pub(super) fn resolve_linked_empower(&mut self, target: Option<Target>) {
+    pub(super) fn resolve_linked_empower(&mut self, actor: usize, target: Option<Target>) {
         let Some(target) = target else {
             return;
         };
         match target {
             Target::Unit { player, unit_id } if self.unit_ref(target).is_some() => {
-                self.empower_by(player, empower::BoardObject::Unit { player, unit_id });
+                self.empower_by(actor, empower::BoardObject::Unit { player, unit_id });
             }
             Target::Gear { player, gear_id }
                 if self.players[player].gear.iter().any(|g| g.id == gear_id) =>
             {
-                self.empower_by(player, empower::BoardObject::Gear { player, gear_id });
+                self.empower_by(actor, empower::BoardObject::Gear { player, gear_id });
             }
             _ => {}
         }

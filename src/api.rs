@@ -2094,7 +2094,8 @@ fn pending_instruction_to_json(card: &crate::game::PendingCard, value: &mut Valu
             "destination": match card.instruction.destination {
                 PlayDestination::Normal=>json!({"mode":"normal"}),
                 PlayDestination::Base=>json!({"mode":"base"}),
-                PlayDestination::Exact(lane)=>json!({"mode":"fixed","lane":lane}),
+                PlayDestination::Exact(crate::game::board_targets::BoardLocation::Battlefield { lane })=>json!({"mode":"fixed","lane":lane}),
+                PlayDestination::Exact(crate::game::board_targets::BoardLocation::Base { player })=>json!({"mode":"fixed","lane":null,"base_player":player}),
                 PlayDestination::AnyBattlefield=>json!({"mode":"any_battlefield"}),
             }
         });

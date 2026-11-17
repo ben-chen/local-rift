@@ -17,6 +17,9 @@ use std::collections::VecDeque;
 #[cfg(test)]
 #[path = "control_gear_tests.rs"]
 mod control_gear_tests;
+#[cfg(test)]
+#[path = "control_reference_tests.rs"]
+mod control_reference_tests;
 #[path = "ownership.rs"]
 mod ownership;
 
@@ -3013,6 +3016,7 @@ impl Game {
     }
 
     fn resolve_top_chain_with_paid_trigger(&mut self, paid: Option<u32>) -> Result<(), String> {
+        self.refresh_resolving_targets();
         if self.resolution_frame.is_some() || self.chain.last().is_some_and(|i| i.ability.is_none())
         {
             return self.resolve_spell_executions();
@@ -3188,6 +3192,12 @@ impl Game {
                     }
                 }
                 ChainAbility::Disempower { player, object_id } => {
+                    let player = object_id
+                        .and_then(|id| {
+                            self.unit_controller(id)
+                                .or_else(|| self.gear_controller(id))
+                        })
+                        .unwrap_or(player);
                     let object = match object_id {
                         Some(id) if self.players[player].units.iter().any(|u| u.id == id) => {
                             crate::empower::BoardObject::Unit {
@@ -3228,7 +3238,9 @@ impl Game {
                         );
                     }
                 }
-                ChainAbility::EmpowerLinked { target } => self.resolve_linked_empower(target),
+                ChainAbility::EmpowerLinked { target } => {
+                    self.resolve_linked_empower(item.player, target)
+                }
                 ChainAbility::EmpowerObject {
                     player,
                     object_id,
@@ -3290,7 +3302,9 @@ impl Game {
                     self.resolve_battlefield_ability(item.player, ability, &item.targets)?
                 }
                 ChainAbility::Empower { unit_id } => {
-                    self.empower_now(item.player, Some(unit_id), None)
+                    if let Some(controller) = self.unit_controller(unit_id) {
+                        self.empower_object_legacy(item.player, controller, Some(unit_id), None);
+                    }
                 }
                 ChainAbility::Swap { unit_id, target } => {
                     self.resolve_swap(item.player, unit_id, target)?
@@ -4212,15 +4226,6 @@ impl Game {
         self.pay_action_cost(&Action::EmpowerUnit { unit_id, pay_power })?;
         self.queue_ability(player, id, Vec::new(), ChainAbility::Empower { unit_id });
         Ok(())
-    }
-
-    pub(crate) fn empower_now(
-        &mut self,
-        player: usize,
-        unit: Option<u32>,
-        temporary_controller: Option<usize>,
-    ) {
-        self.empower_object_legacy(player, player, unit, temporary_controller);
     }
 
     pub fn on_play_target_valid(
@@ -5451,6 +5456,7 @@ impl Game {
         }
     }
 
+    #[cfg(test)]
     pub(crate) fn ready_unit(&mut self, player: usize, unit_id: u32) {
         self.ready_unit_by(player, player, unit_id);
     }
@@ -5997,7 +6003,7 @@ impl Game {
             return Err("Choose Matriarch's unit now; its optional play costs are chosen when the ability resolves.".into());
         }
         if let Some(instruction) = instruction {
-            instruction.validate_destination(lane, self.battlefield_count())?;
+            instruction.validate_destination(player, lane, self.battlefield_count())?;
         }
         let flows = self.flow_costs(player, trash_index);
         if flow_source.is_some() && decision.is_some() {
@@ -8897,13 +8903,16 @@ impl Game {
                 ));
             }
             TriggeredAbility::Draw(count) => self.draw(player, count)?,
-            TriggeredAbility::Might { unit_id, amount } => {
-                self.modify_might(Target::Unit { player, unit_id }, i128::from(amount), 0)?
-            }
+            TriggeredAbility::Might { unit_id, amount } => self.modify_might(
+                self.resolve_board_reference(Target::Unit { player, unit_id }),
+                i128::from(amount),
+                0,
+            )?,
             TriggeredAbility::Stun {
                 player: owner,
                 unit_id,
             } => {
+                let owner = self.unit_controller(unit_id).unwrap_or(owner);
                 if let Some(unit) = self.unit_mut(Target::Unit {
                     player: owner,
                     unit_id,

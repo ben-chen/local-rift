@@ -190,7 +190,10 @@ fn rengar_respects_costs_closed_assignments_and_mandatory_destinations() {
         reject(&mut g, play.clone());
         g.players[actor].energy = energy;
         g.players[actor].energy_pool = energy;
-        for destination in [PlayDestination::Base, PlayDestination::Exact(Some(1))] {
+        for destination in [
+            PlayDestination::Base,
+            PlayDestination::Exact(board_targets::BoardLocation::Battlefield { lane: 1 }),
+        ] {
             let instruction = PlayInstruction {
                 energy_discount: 0,
                 cost: BaseCostWaiver::All,
@@ -198,7 +201,7 @@ fn rengar_respects_costs_closed_assignments_and_mandatory_destinations() {
             };
             assert!(
                 instruction
-                    .validate_destination(Some(0), g.battlefield_count())
+                    .validate_destination(actor, Some(0), g.battlefield_count())
                     .is_err()
             );
         }
@@ -222,7 +225,12 @@ fn rengar_instructed_play_does_not_replace_a_required_base_or_exact_destination(
             // Controlled pending-child boundary using the actual printed
             // instruction's destination; finalization below is public.
             g.players[actor].banish.push(411);
-            g.queue_banish_play(actor, 0, kind, Some(1));
+            g.queue_banish_play(
+                actor,
+                0,
+                kind,
+                Some(board_targets::BoardLocation::Battlefield { lane: 1 }),
+            );
             g.after_resolution().unwrap();
             assert!(matches!(
                 g.decision,

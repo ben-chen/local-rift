@@ -2118,7 +2118,7 @@ impl Game {
             }
             let mut item = self.chain[index].clone();
             item.lane = item.executions[frame.execution].destination_lane(item.lane);
-            item.targets = item.executions[frame.execution].targets.clone();
+            item.targets = self.resolve_board_references(&item.executions[frame.execution].targets);
             item.target = item.targets.first().copied();
             if self.begin_target_subset(&item, frame.execution)? {
                 return Ok(());

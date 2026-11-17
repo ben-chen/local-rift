@@ -1,0 +1,226 @@
+{
+  "status": "Pending-reference and absolute-replay-base foundation passed local checks. Control-taking cards remain unavailable.",
+  "reviewed_at": "2026-11-17T00:08:49.832241+00:00",
+  "base_revision": "0756c6eb1657be589f7cfe9bc0b8d0aba8805fa1",
+  "source_review_commit": "0ca82ce",
+  "rules": {
+    "hub": "https://playriftbound.com/en-us/rules-hub/",
+    "edition": "2026-10-09",
+    "pdf": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/5c7946f7c3b8c6e0faff85ab6dadc6d2e721ea94.pdf",
+    "sha256": "94d41fee86f88b61c4157c0389c0595d990b98e5b42555c99d9f649ee64d1fec",
+    "sections": [
+      "191.5.b",
+      "355.10.c",
+      "355.17",
+      "358.3",
+      "359.3.f.4",
+      "383.3.a-b",
+      "416.1",
+      "448.1",
+      "323.6"
+    ]
+  },
+  "implementation": [
+    "Resolve finalized unit and gear references by stable physical ID without relaxing the validation of newly submitted controllers or IDs. Replayed copies cannot replace departed objects.",
+    "Recheck spell, play-trigger and legend targets against current allegiance/protection while preserving the ability controller. Resolve each repeated spell execution independently.",
+    "Track activated self Buff/Empower and source Might, Irelia self Might and referential ready, Temporary, delayed Disempower, Vex stun, and Wild Claw linked Empower across controller changes. Preserve the actor for readiness, Buff and Empower observers.",
+    "Store a prescribed replay base as an absolute BoardLocation. Temporal Breach cannot return an owned card into an opposing controller base; impossible finalization leaves it banished. Portal Rescue follows its distinct owner-base instruction.",
+    "Expose the fixed-base owner as additive API destination.base_player and update native destination defaults for the typed location."
+  ],
+  "validation": {
+    "new_engine_test_functions": 11,
+    "library_tests": 1172,
+    "client_tests": 172,
+    "api_binary_tests": 1,
+    "affected_integration_tests": 91,
+    "total_rust_tests": 1436,
+    "failed": 0,
+    "ignored": 0,
+    "source_review_tests": 1,
+    "source_card_faces": 2,
+    "clippy": "all targets, -D warnings, passed",
+    "format": "cargo fmt --all --check and git diff --check passed",
+    "report": {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/control-reference-checks-v2.json",
+      "sha256": "7e3bf2eef9b889bb43dd7b669a15408b898ce15fd4863bb16e44482cef6801c8"
+    },
+    "steps": [
+      {
+        "name": "selected-tests",
+        "command": [
+          "cargo",
+          "test",
+          "--locked",
+          "--lib",
+          "--bins",
+          "--test",
+          "activated_abilities",
+          "--test",
+          "legend_foundation",
+          "--test",
+          "payments",
+          "--test",
+          "payment_plans",
+          "--test",
+          "numeric_runtime",
+          "--test",
+          "c16_legends"
+        ],
+        "status": "passed",
+        "log": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/control-references-selected-tests-v2.log",
+        "exit_code": 0,
+        "sha256": "cee77ee1b79f1ada25648d19fcaf2aa732296925dd3b11b38f66d748daf0ea0a"
+      },
+      {
+        "name": "clippy",
+        "command": [
+          "cargo",
+          "clippy",
+          "--locked",
+          "--all-targets",
+          "--",
+          "-D",
+          "warnings"
+        ],
+        "status": "passed",
+        "log": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/control-references-clippy-v2.log",
+        "exit_code": 0,
+        "sha256": "c9a8d132361c00f9c1e7aef7c6f1d0bc5e619a7946c21446e71626e4b07b2db5"
+      },
+      {
+        "name": "control-source",
+        "command": [
+          "python3",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "tools",
+          "-p",
+          "test_control_source_review.py",
+          "-v"
+        ],
+        "status": "passed",
+        "log": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/control-references-control-source-v2.log",
+        "exit_code": 0,
+        "sha256": "036a63b29446c15cadea98f0dd70cfab5cb494b39612474c4e023a6eea9cb0e4"
+      }
+    ],
+    "tested_changed_runtime_files": [
+      {
+        "path": "src/activated.rs",
+        "sha256": "65f3f376a9482c944465358ef0c9ab2a5cde8282311ad1bef2b7cff979fddf99"
+      },
+      {
+        "path": "src/api.rs",
+        "sha256": "82b94056acab52bd1eafb213d1f69e47eca568914986ed330abb847352672e2b"
+      },
+      {
+        "path": "src/api/c17.rs",
+        "sha256": "9e9fee567de7b67d3d87d0fdb541ad4861ed7eb98a44dbe735fd2b1d554c9739"
+      },
+      {
+        "path": "src/board_returns/c17.rs",
+        "sha256": "86f5b6a06075fbb2bdac1edb731724b0229603f2c94e453444d7f5783d611b0f"
+      },
+      {
+        "path": "src/combat_card_tests.rs",
+        "sha256": "9e3eda3a0b34b420a485fe1284571ff74cd0bb93ae9d7a13a41c2cac36e66396"
+      },
+      {
+        "path": "src/deck_plays.rs",
+        "sha256": "284f68d52dde44a00fac6cdecfa56cda6c7aca576acadc312f4902f7004b84d7"
+      },
+      {
+        "path": "src/game.rs",
+        "sha256": "630be2d1af0771c65af059d4d126c250abd950f2193c8aa710b80f437e51ff05"
+      },
+      {
+        "path": "src/instructed_play.rs",
+        "sha256": "5ecd0103081d736a3917329ad5dcbaba4f2f920879bba73bbf0d5ce2a9fb46d2"
+      },
+      {
+        "path": "src/legends.rs",
+        "sha256": "8331f543cf33d68b1fac9329e33bb522b3461e7608c480aa40f528fed4977c86"
+      },
+      {
+        "path": "src/main.rs",
+        "sha256": "128f49f033cec11dec416ef019efb30af8d065ff69232f0fa67271ce56e13ae8"
+      },
+      {
+        "path": "src/ownership.rs",
+        "sha256": "02361d00ca636e83988a388849f5f7b18c65dfc6fe9342a97de8b73b5fc5b455"
+      },
+      {
+        "path": "src/ownership_tests.rs",
+        "sha256": "f3d8031ef04fd45245104ad00d3f4d7321dfbaa325af4578a571891d14482422"
+      },
+      {
+        "path": "src/play.rs",
+        "sha256": "064bbe936de2a8cc9ae2e6394d3431a37bf1769ae72ad582d8f6261bd5c47dbe"
+      },
+      {
+        "path": "src/temporary.rs",
+        "sha256": "6940dfce836b5d3175e18768908341f21e46ba2a8a900d816307c09b18786a85"
+      },
+      {
+        "path": "src/triggers.rs",
+        "sha256": "bffbb141817cdbea0ef48763ec1110f16076cc7a3691a112db1afd2e506c0952"
+      },
+      {
+        "path": "src/control_reference_tests.rs",
+        "sha256": "654c03e2ce8e0fc3d3426a58786a8d6eb27b94315cc20086693257d5978c3e9e"
+      }
+    ]
+  },
+  "coverage": [
+    "Both seats: friendly-only, enemy-only and unrestricted finalized targets; current enemy protection; incorrect newly submitted controllers; departed versus newly created copies; clone equality.",
+    "Both seats: Irelia costs before/after authored source changes, a departed referenced unit, and no extra payment or protection after the original friendly spell mistargets.",
+    "Both seats: Crowd Favorite self Buff, Applied Researchers Empower, Caitlyn current-Might damage, legacy Empower, delayed Disempower, Vex stun, and actual Wild Claw parent/child/linked-ability actions with Ambessa actor attribution.",
+    "Both owners and both real replay spells: physical opposing base versus owner base, invalid destinations preserve state/resources, impossible-play acknowledgement preserves other banished cards, successful replay creates a fresh ID.",
+    "Existing API c17 cases now cover both physical fixed bases as well as unchanged battlefield destinations and invalid-destination rollback."
+  ],
+  "failure_history": {
+    "notes": [
+      "Initial Rex fixture incorrectly chose a permanent on-play target before entry. Corrected to the normal post-entry ChooseTarget action; retained Rex assertions.",
+      "The red-v3 regressions reproduced lost Irelia ready and activated self Buff after source controller changes.",
+      "The v4 fixture assumed opposing XP was zero and placed an unrelated Hunt source at a battlefield. Restricted placements to what each activation needs and compared against captured initial opposing XP.",
+      "The first broad all-target test run completed 1172 library, 172 client, one API binary and 23 activation integration tests, then entered a 726-game activation campaign. It was explicitly cancelled after identifying a test-only helper warning and overly broad feedback scope. The helper is now cfg(test). No completed campaign or all-target test pass is claimed.",
+      "The final selected suites, full all-target Clippy, source test and formatting passed after that cleanup."
+    ],
+    "artifacts": [
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/control-references-v1.log",
+        "sha256": "bc9b62469be5bdebfe48ca14e14ce420dad993bc9fa796d1529d69ce65bc9455"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/control-references-red-v3.log",
+        "sha256": "aab0225d6c3c8b7cad5f1e4e7c1cbc28850eac230cfae51acb0a23365eecfe7c"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/control-references-v4.log",
+        "sha256": "a0c565abba2640cedc3b26ecf7165a20c3576fec4fa4ef3a9455711b66ab23c2"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/control-references-v6.log",
+        "sha256": "7ef05226bcc20517276de6466e0411ce05b41784c149af5d157a1e42d8481966"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/control-reference-checks-v1.json",
+        "sha256": "c115f9f1467ddede80daa23c2f1962d0d3827a558122b49c8450e45c6697de3a"
+      }
+    ]
+  },
+  "remaining_before_card_admission": [
+    "Actual control-transfer operation, battlefield contest/combat sequencing, Possession targeting and Conscription optional XP costs.",
+    "Absolute bases for source-relative Here/token plays, Ezreal move-to-your-base and Tideturner swaps; preserve movement actor/location events and corrective Recall separately.",
+    "Audit remaining CardEffect entering sources, EmpowerObject/EmpowerHere, Hidden source restrictions, and pending target/payment/return continuations.",
+    "Preserve per-object movement/status state through transfer; update ownership-aware conservation and live API/chain observations.",
+    "Card-specific AI candidates, complete-game campaigns, native controls and both companion levels, followed by immutable installed acceptance before publication."
+  ],
+  "limits": [
+    "Control changes inside the new tests are authored boundaries, not an implemented control-taking action. No new card or preset is enabled.",
+    "This receipt proves only the listed local checks. It does not claim full Standard conformance, complete source-reference coverage, full matchup campaigns or installed/native acceptance of this revision.",
+    "Public main remains the separately accepted entry release; this foundation is on codex/irelia-control."
+  ]
+}

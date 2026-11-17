@@ -892,7 +892,9 @@ impl Game {
                 else {
                     return false;
                 };
-                if rule.targets.another && source == (AbilitySource::Gear { player, gear_id }) {
+                if rule.targets.another
+                    && matches!(source, AbilitySource::Gear { gear_id: source_id, .. } if source_id == gear_id)
+                {
                     return false;
                 }
                 (
@@ -1240,6 +1242,7 @@ impl Game {
             return Ok(());
         };
         let player = source.player();
+        let physical_source = self.resolve_ability_source(source);
         let valid: Vec<_> = targets
             .iter()
             .copied()
@@ -1271,7 +1274,7 @@ impl Game {
                 if let AbilitySource::Unit {
                     player: owner,
                     unit_id,
-                } = source
+                } = physical_source
                 {
                     self.buff_unit_by(
                         player,
@@ -1308,7 +1311,7 @@ impl Game {
             AbilityEffect::Damage(_) | AbilityEffect::SourceMightDamage => {
                 let amount = match rule.effect {
                     AbilityEffect::Damage(amount) => Some(u64::from(amount)),
-                    _ => match source {
+                    _ => match physical_source {
                         AbilitySource::Unit { player, unit_id } => self
                             .unit_ref(Target::Unit { player, unit_id })
                             .map(|u| self.unit_might(u))
@@ -1363,11 +1366,11 @@ impl Game {
                 }
             }
             AbilityEffect::EmpowerSource => {
-                let id = match source {
+                let id = match physical_source {
                     AbilitySource::Unit { unit_id, .. } => unit_id,
                     AbilitySource::Gear { gear_id, .. } => gear_id,
                 };
-                self.empower_now(player, Some(id), None);
+                self.empower_object_legacy(player, physical_source.player(), Some(id), None);
             }
             AbilityEffect::BuffOrMight(amount) => {
                 for target in valid {
@@ -1392,7 +1395,7 @@ impl Game {
                 }
             }
             AbilityEffect::MightIfSourceEmpowered { base, empowered } => {
-                let amount = if self.ability_source_empowered(source) {
+                let amount = if self.ability_source_empowered(physical_source) {
                     empowered
                 } else {
                     base
@@ -1429,7 +1432,7 @@ impl Game {
                 let amount = match rule.effect {
                     AbilityEffect::AddEnergy(amount) => amount,
                     AbilityEffect::AddEnergyIfSourceEmpowered { base, empowered } => {
-                        if self.ability_source_empowered(source) {
+                        if self.ability_source_empowered(physical_source) {
                             empowered
                         } else {
                             base
