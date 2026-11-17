@@ -2094,6 +2094,34 @@ fn field_options_advice(game: &Game, beginner: bool) -> Vec<&'static str> {
             "Friendship can turn a close fight. Count your different animal tags across the board; a removal response can shrink the bonus before it resolves."
         });
     }
+    if visible(487) {
+        tips.push(if beginner {
+            "Temptation moves an enemy beside another unit they control. Choose the destination first. It costs 2 Energy; Repeat adds 2. Play it on your turn outside a showdown."
+        } else {
+            "Use Temptation to pull a holder away or group enemies. Plan Repeat carefully: the first move can empty the second destination, causing Recall instead."
+        });
+    }
+    if visible(488) {
+        tips.push(if beginner {
+            "Emperor's Divide moves any number of your units from one battlefield to base. It does not ready them. From hand it is an Action; hiding it can let you react later."
+        } else {
+            "Use Emperor's Divide to save several units from a losing fight. You give up their battlefield presence; check whether retreating gifts a point or loses a future hold."
+        });
+    }
+    if visible(489) {
+        tips.push(if beginner {
+            "Tricksy Tentacles moves enemies totaling at most 8 Might to one destination. Choose it before targeting. If a response raises their Might, choose which legal targets remain."
+        } else {
+            "Use Tricksy Tentacles before a showdown to remove holders or group enemies. Save room for likely Might boosts; responses can force you to keep only part of your chosen group."
+        });
+    }
+    if visible(490) {
+        tips.push(if beginner {
+            "Isolate moves an enemy from a battlefield to base. Then draw a card if exactly one unit remains there and it is an enemy. A friendly unit there stops the draw."
+        } else {
+            "Isolate can break a defended field while replacing itself in your hand. Watch responses: if its target returns to base before resolution, the linked draw is lost too."
+        });
+    }
     if visible(486) {
         tips.push(if beginner {
             "Twilight Step moves a unit with 3 Might or less without readying it. Choose the destination first. Flow costs 4 Energy and 1 Chaos Power, then banishes the spell."
@@ -2545,7 +2573,9 @@ mod tests {
     fn field_options_advice_is_brief_read_only_and_uses_visible_information() {
         let mut game = Game::new_for_agents(0, 0, 472, Difficulty::Easy);
         game.start_match().unwrap();
-        for card in [470, 471, 472, 473, 474, 475, 482, 483, 484, 485, 486] {
+        for card in [
+            470, 471, 472, 473, 474, 475, 482, 483, 484, 485, 486, 487, 488, 489, 490,
+        ] {
             game.players[0].hand = vec![card];
             let before = format!("{game:?}");
             for beginner in [false, true] {

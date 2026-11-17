@@ -187,6 +187,11 @@ impl Evidence {
                                 | Effect::Bounce { .. }
                                 | Effect::BounceBoth
                                 | Effect::MoveUnit { ready: false, .. }
+                                | Effect::MoveGroup {
+                                    controller: crate::rules::Allegiance::Enemy,
+                                    ..
+                                }
+                                | Effect::MoveEnemyToBaseThenDrawIfAlone
                                 | Effect::SwapMight
                                 | Effect::Fight { .. }
                                 | Effect::EmpoweredFight { .. }

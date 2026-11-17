@@ -117,6 +117,36 @@ pub(super) fn play_targets_to_json(card_id: crate::cards::CardId) -> Value {
     let spec = play_target_spec(card_id);
     let mut value =
         json!({"kind":spec.kind.map(target_kind),"maximum":spec.maximum,"required":spec.required});
+    if let crate::rules::OfficialEffect::MoveGroup {
+        controller,
+        same_battlefield,
+        maximum_total_might,
+        to_base,
+    } = crate::rules::effect(card_id)
+    {
+        value["condition"] = json!({
+            "type":"move_group", "controller":match controller { crate::rules::Allegiance::Friendly=>"friendly", crate::rules::Allegiance::Enemy=>"enemy", _=>"any" },
+            "same_controller":true, "same_battlefield":same_battlefield,
+            "maximum_total_might":maximum_total_might, "destination":if to_base { "base" } else { "chosen_location" },
+            "rechecked_on_resolution":true, "invalid_group":"choose_maximal_legal_subset"
+        });
+    }
+    if matches!(
+        crate::rules::effect(card_id),
+        crate::rules::OfficialEffect::MoveEnemyToBaseThenDrawIfAlone
+    ) {
+        value["condition"] = json!({"controller":"enemy","location":"battlefield","destination":"base","rechecked_on_resolution":true});
+    }
+    if let crate::rules::OfficialEffect::MoveUnit {
+        destination: crate::rules::MoveDestinationRestriction::UnitWithSameController,
+        ..
+    } = crate::rules::effect(card_id)
+    {
+        value["destination_condition"] = json!({
+            "type":"unit_with_same_controller", "rechecked_on_resolution":true,
+            "invalid_destination":"recall"
+        });
+    }
     if let crate::rules::OfficialEffect::MoveUnit {
         maximum_might: Some(maximum),
         ..

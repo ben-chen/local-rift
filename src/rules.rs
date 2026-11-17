@@ -18,6 +18,13 @@ pub enum CounterKind {
     OtherOpponentSpell,
 }
 
+/// A Move's location restriction is distinct from its unit target restriction.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum MoveDestinationRestriction {
+    Any,
+    UnitWithSameController,
+}
+
 /// Play-time modes share finalization and execution; each Repeat chooses independently.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum ModeEffect {
@@ -235,7 +242,16 @@ pub enum OfficialEffect {
     MoveUnit {
         maximum_might: Option<u8>,
         ready: bool,
+        destination: MoveDestinationRestriction,
     },
+    /// One Move instruction affecting a freely chosen, possibly empty group.
+    MoveGroup {
+        controller: Allegiance,
+        same_battlefield: bool,
+        maximum_total_might: Option<u64>,
+        to_base: bool,
+    },
+    MoveEnemyToBaseThenDrawIfAlone,
     /// Swap two units' might this turn; both must share a battlefield.
     SwapMight,
     /// Friendly and enemy units deal their might to each other. Optional +2
@@ -428,6 +444,7 @@ pub fn effect(id: usize) -> OfficialEffect {
         427 => MoveUnit {
             maximum_might: Option::None,
             ready: false,
+            destination: MoveDestinationRestriction::Any,
         },
         428 => StunAndDrawFromHand,
         429 => None,
@@ -564,6 +581,7 @@ pub fn effect(id: usize) -> OfficialEffect {
         4 => MoveUnit {
             maximum_might: Option::None,
             ready: false,
+            destination: MoveDestinationRestriction::Any,
         },
         5 => DualMight,
         6 => Counter(CounterKind::Defy),
@@ -588,11 +606,31 @@ pub fn effect(id: usize) -> OfficialEffect {
         14 => MoveUnit {
             maximum_might: Option::None,
             ready: true,
+            destination: MoveDestinationRestriction::Any,
         },
         486 => MoveUnit {
             maximum_might: Some(3),
             ready: false,
+            destination: MoveDestinationRestriction::Any,
         },
+        487 => MoveUnit {
+            maximum_might: Option::None,
+            ready: false,
+            destination: MoveDestinationRestriction::UnitWithSameController,
+        },
+        488 => MoveGroup {
+            controller: Allegiance::Friendly,
+            same_battlefield: true,
+            maximum_total_might: Option::None,
+            to_base: true,
+        },
+        489 => MoveGroup {
+            controller: Allegiance::Enemy,
+            same_battlefield: false,
+            maximum_total_might: Some(8),
+            to_base: false,
+        },
+        490 => MoveEnemyToBaseThenDrawIfAlone,
         15 | 57 => Draw(1),
         16 => BounceBoth,
         19 => ModifyMight {
@@ -857,14 +895,17 @@ pub fn effect(id: usize) -> OfficialEffect {
 
 /// These spells choose a unit's destination during play finalization.
 pub fn chooses_move_destination(id: usize) -> bool {
-    matches!(effect(id), OfficialEffect::MoveUnit { .. })
+    matches!(
+        effect(id),
+        OfficialEffect::MoveUnit { .. } | OfficialEffect::MoveGroup { to_base: false, .. }
+    )
 }
 
 pub fn targeting(id: usize) -> Targeting {
     use Allegiance::*;
     let allegiance = match id {
         290..=296 | 335 | 349 | 428 | 434 | 446 | 457 | 461 | 484 | 485 | 486 => Any,
-        4 | 32 | 144 | 145 | 365 | 427 | 465 | 468 | 469 | 483 => Enemy,
+        4 | 32 | 144 | 145 | 365 | 427 | 465 | 468 | 469 | 483 | 487 | 490 => Enemy,
         362 | 364 | 372 | 378 | 379 | 381 | 435 => Any,
         8 | 9 | 14 | 19 | 27 | 85 | 137 | 228 | 350 | 353 | 354 | 377 | 380 | 382 | 421 | 425
         | 447 => Friendly,
@@ -880,10 +921,16 @@ pub fn targeting(id: usize) -> Targeting {
                 maximum_total_might,
                 ..
             } => Some(maximum_total_might),
+            OfficialEffect::MoveGroup {
+                maximum_total_might,
+                ..
+            } => maximum_total_might,
             _ => Option::None,
         },
         allegiance: if let OfficialEffect::Trash(rule) = effect(id) {
             rule.owner
+        } else if let OfficialEffect::MoveGroup { controller, .. } = effect(id) {
+            controller
         } else {
             allegiance
         },
@@ -894,12 +941,21 @@ pub fn targeting(id: usize) -> Targeting {
         } else {
             Option::None
         },
-        distinct: matches!(effect(id), OfficialEffect::Trash(_))
+        distinct: matches!(
+            effect(id),
+            OfficialEffect::Trash(_) | OfficialEffect::MoveGroup { .. }
+        ) || matches!(
+            id,
+            5 | 9 | 16 | 44 | 50 | 61 | 82 | 83 | 85 | 137 | 217 | 218 | 354 | 447 | 465
+        ),
+        same_location: matches!(id, 44 | 50)
             || matches!(
-                id,
-                5 | 9 | 16 | 44 | 50 | 61 | 82 | 83 | 85 | 137 | 217 | 218 | 354 | 447 | 465
+                effect(id),
+                OfficialEffect::MoveGroup {
+                    same_battlefield: true,
+                    ..
+                }
             ),
-        same_location: matches!(id, 44 | 50),
         different_locations: id == 354,
         temporary: if id == 353 { Some(false) } else { Option::None },
     }
@@ -916,7 +972,7 @@ pub fn target_bounds(id: usize) -> (usize, usize) {
         return (2, 2);
     }
     match effect(id) {
-        ReturnEnemyDomainGroup { .. } => (usize::MAX, 0),
+        ReturnEnemyDomainGroup { .. } | MoveGroup { .. } => (usize::MAX, 0),
         BattlePreparations => (3, 1),
         Repulse | Deathgrip => (2, 2),
         AlphaStrike => (usize::MAX, 2),
@@ -959,6 +1015,7 @@ pub fn target_bounds(id: usize) -> (usize, usize) {
         | DamageAndGold { .. }
         | Bounce { .. }
         | MoveUnit { .. }
+        | MoveEnemyToBaseThenDrawIfAlone
         | ReadyAndPreventMovement { .. }
         | ReadyAnother
         | BuffAnother
@@ -1310,6 +1367,9 @@ pub fn requirements(id: usize) -> &'static [Mechanic] {
         484 => &[Chain, Stun],
         485 => &[Chain],
         486 => &[Chain, Move, Flow],
+        487 => &[Chain, Move],
+        488 => &[Chain, Move, Hidden],
+        489 | 490 => &[Chain, Move],
         477 => &[
             Chain,
             ChooseReadyTriggers,
@@ -2211,7 +2271,7 @@ pub fn repeat_cost(id: usize) -> Option<RepeatCost> {
             power: 0,
             domain: None,
         }),
-        37 | 133 | 135 | 136 | 137 | 216 | 220 | 389 | 483 | 484 => Some(RepeatCost {
+        37 | 133 | 135 | 136 | 137 | 216 | 220 | 389 | 483 | 484 | 487 => Some(RepeatCost {
             energy: 2,
             power: 0,
             domain: None,

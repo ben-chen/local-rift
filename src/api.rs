@@ -37,6 +37,8 @@ mod entry_tests;
 mod field_options_tests;
 mod fields;
 #[cfg(test)]
+mod movement_group_tests;
+#[cfg(test)]
 mod movement_resolution_tests;
 mod numeric;
 mod play_choices;
@@ -58,6 +60,8 @@ mod series_sideboard_tests;
 mod tag_stun_tests;
 mod targeting;
 mod temporary;
+#[cfg(test)]
+mod temptation_tests;
 #[cfg(test)]
 mod twilight_tests;
 #[cfg(test)]

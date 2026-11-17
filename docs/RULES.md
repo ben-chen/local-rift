@@ -742,3 +742,30 @@ Entering ready is an initial-state replacement, not a Ready action (Core 370,
 separate restriction still prevents unit plays at battlefields. UI, instructed
 plays and bots use the same choices. See [entry validation](validation/irelia_entry.json)
 for the tested scope and pending release checks.
+
+
+## Emperor's Divide, Tricksy Tentacles and Isolate
+
+Emperor's Divide moves any number of chosen friendly units from a single
+battlefield to base for 2 Energy. Its printed Action and Hidden permissions use
+the existing timing and facedown-card rules. Tricksy Tentacles is an ordinary
+spell costing 4 Energy and 1 Calm Power; it moves any number of enemies with
+one controller and total current Might at most 8 to one chosen location.
+Group-target restrictions are checked again at resolution. When responses split
+the location group or break the Might budget, the controller chooses a legal
+maximal subset of the original targets (Core 355.11.b). The existing shared
+resolution-choice system handles this; no automatic group selection is imposed.
+
+A single group Move instruction, including Flash, relocates its units before
+publishing their simultaneous Move events (Core 370.1.a.2). Movement prevention
+is checked per unit. Readiness and damage are preserved; Recall remains distinct
+from Move. The original physical base destination is retained.
+
+Isolate costs 2 Energy and no Power with ordinary spell timing. It moves one
+enemy from a battlefield to base, then draws if an enemy is alone at that
+battlefield. Friendly units prevent that condition. The linked draw check still
+runs when movement is negated, but is ignored when the target is no longer legal
+(Core 359.3.e.14). These interpretations use the printed cards and current Core
+Rules; no card-specific FAQ for this batch was located. Sourced tournament lists
+are unchanged. See [movement group validation](validation/movement_groups.json)
+for the tested scope; full Standard parity remains unproven.

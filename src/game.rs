@@ -62,10 +62,16 @@ mod control_transfer_tests;
 #[path = "movement.rs"]
 mod movement;
 #[cfg(test)]
+#[path = "movement_group_tests.rs"]
+mod movement_group_tests;
+#[cfg(test)]
 #[path = "movement_resolution_tests.rs"]
 mod movement_resolution_tests;
 #[path = "ownership.rs"]
 mod ownership;
+#[cfg(test)]
+#[path = "temptation_tests.rs"]
+mod temptation_tests;
 #[cfg(test)]
 #[path = "twilight_tests.rs"]
 mod twilight_tests;
@@ -7200,7 +7206,7 @@ impl Game {
             return Err("Wait for a response window or your own main phase.".into());
         }
         if let Some(lane) = lane {
-            let movement_spell = matches!(rules::effect(id), OfficialEffect::MoveUnit { .. });
+            let movement_spell = rules::chooses_move_destination(id);
             let legal_unit_location = lane < self.battlefield_count()
                 && card.kind == CardKind::Unit
                 && (instruction.is_some_and(|i| {
@@ -7549,6 +7555,11 @@ impl Game {
                         | OfficialEffect::DamageAndGold { .. }
                         | OfficialEffect::Bounce { .. }
                         | OfficialEffect::MoveUnit { ready: false, .. }
+                        | OfficialEffect::MoveGroup {
+                            controller: Allegiance::Enemy,
+                            ..
+                        }
+                        | OfficialEffect::MoveEnemyToBaseThenDrawIfAlone
                         | OfficialEffect::Kill { .. }
                         | OfficialEffect::KillAndDrawController { .. }
                         | OfficialEffect::DisempowerThenKill { .. }
@@ -8019,6 +8030,18 @@ impl Game {
                     maximum_might: Some(maximum),
                     ..
                 } => self.unit_might(unit)? <= u64::from(maximum),
+                OfficialEffect::MoveGroup {
+                    same_battlefield,
+                    maximum_total_might,
+                    ..
+                } => {
+                    (!same_battlefield || unit.lane.is_some())
+                        && match maximum_total_might {
+                            Some(maximum) => self.unit_might(unit)? <= maximum,
+                            None => true,
+                        }
+                }
+                OfficialEffect::MoveEnemyToBaseThenDrawIfAlone => unit.lane.is_some(),
                 OfficialEffect::TakeControlAndRecall { maximum_might, .. } => {
                     unit.lane.is_some()
                         && (bonus
@@ -9000,13 +9023,37 @@ impl Game {
                 }
             }
             OfficialEffect::MoveFriendlyToBase { .. } => {
-                for target in valid {
-                    self.move_effect(player, target, None, false)?;
+                self.move_spell_group(player, &valid, None)?;
+            }
+            OfficialEffect::MoveGroup { to_base, .. } => {
+                if !self.target_group_fits(id, &valid)? {
+                    return Err("Choose a legal target subset before resolving this spell.".into());
+                }
+                self.move_spell_group(player, &valid, if to_base { None } else { lane })?;
+            }
+            OfficialEffect::MoveEnemyToBaseThenDrawIfAlone => {
+                if let Some(&target) = valid.first()
+                    && let Some(origin) = self.target_lane(target)
+                {
+                    self.move_spell_target(
+                        player,
+                        target,
+                        None,
+                        false,
+                        rules::MoveDestinationRestriction::Any,
+                    )?;
+                    if self.lane_count(player, origin) == 0
+                        && self.lane_count(1 - player, origin) == 1
+                    {
+                        self.draw(player, 1)?;
+                    }
                 }
             }
-            OfficialEffect::MoveUnit { ready, .. } => {
+            OfficialEffect::MoveUnit {
+                ready, destination, ..
+            } => {
                 for target in valid {
-                    self.move_spell_target(player, target, lane, ready)?;
+                    self.move_spell_target(player, target, lane, ready, destination)?;
                 }
             }
             OfficialEffect::SwapMight => {
@@ -11414,7 +11461,12 @@ impl Game {
                         0
                     }
                 }
-                OfficialEffect::MoveUnit { ready: false, .. } => {
+                OfficialEffect::MoveUnit { ready: false, .. }
+                | OfficialEffect::MoveGroup {
+                    controller: Allegiance::Enemy,
+                    ..
+                }
+                | OfficialEffect::MoveEnemyToBaseThenDrawIfAlone => {
                     if in_combat {
                         95
                     } else {
@@ -11428,7 +11480,7 @@ impl Game {
                         0
                     }
                 }
-                OfficialEffect::MoveFriendlyToBase { .. } => {
+                OfficialEffect::MoveFriendlyToBase { .. } | OfficialEffect::MoveGroup { .. } => {
                     if in_combat {
                         10
                     } else {

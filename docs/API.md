@@ -1335,3 +1335,42 @@ Single-unit Move spells retain the chosen physical base from finalization,
 using the original execution target's controller. A later control change does
 not silently change that destination to the unit's new base. The engine applies
 the ordinary forbidden-destination Recall rule and movement prevention.
+
+Temptation (487, `sfd-129-221`) costs 2 Energy and no Power, with an optional
+printed Repeat costing another 2 Energy. It uses the same destination and
+per-execution target controls. Each target must be an enemy unit; the chosen
+different location must contain a unit with that target's controller.
+Its `play_targets` metadata adds
+`destination_condition:{type:"unit_with_same_controller",rechecked_on_resolution:true,invalid_destination:"recall"}`.
+The destination is a fixed location choice, not another unit target. Unit tokens
+can satisfy the condition; plain gear cannot. `target_candidates` applies that
+condition to each execution's chosen destination without changing the match.
+
+The destination condition is checked again when each execution resolves. If a
+response removes the last matching unit there, the Move instead Recalls its
+target. The first execution can similarly invalidate a Repeat's destination.
+A prevented Move does nothing, and a target already at the destination is not
+recalled. Recall does not emit a Move event. Repeat grants no additional timing
+permission: Temptation remains an ordinary spell.
+
+
+Emperor's Divide (488, `sfd-043-221`) and Tricksy Tentacles (489, `unl-054-219`)
+use the existing `play_targets` action and target-candidate queries. Their
+`play_targets.condition.type` is `move_group`, with `controller`,
+`same_controller`, `same_battlefield`, `maximum_total_might`, and `destination`
+(`base` or `chosen_location`). Zero targets are legal. Emperor's Divide chooses
+friendly units from one battlefield; Tricksy chooses enemies totaling at most
+8 current Might, with one common destination selected before targeting.
+
+Responses can make the original group invalid. The existing `resolution_targets`
+and `resolution_subset` decisions let the spell's controller choose a remaining
+legal group. No new targets can be added; the chosen subset must include every
+other original target that still fits. Both the native client and API use these
+same constraints. A zero-Might target cannot be omitted from an otherwise legal
+Might-limited subset when it still fits.
+
+Isolate (490, `unl-124-219`) reports `condition.controller: enemy`,
+`condition.location: battlefield`, and a fixed base destination. It moves its enemy target, then draws if exactly one unit is
+left at that battlefield and that unit is an enemy. A prevented Move still
+permits this linked check; a target that is no longer legal skips the linked draw.
+All three cards preserve exhaustion and damage, and none grants Ready.

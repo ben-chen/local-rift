@@ -1689,3 +1689,46 @@ rollback, both seats, and preserved exhaustion/damage are covered separately.
 The authored full-game registration replaces the preset's two Charms with two
 Twilight Steps; the sourced tournament presets remain unchanged. See
 [Twilight validation](validation/twilight_step.json) for acceptance status.
+
+## November 17: Temptation and occupied Move destinations
+
+Temptation (sfd-129-221, runtime 487) costs 2 Energy with no Power and offers
+printed Repeat for 2 additional Energy. The original face and full official
+text were reviewed. It is an ordinary spell, not an Action or Reaction.
+
+The shared Move effect now has a destination restriction separate from the
+unit's targeting restriction. Each execution chooses one enemy and a different
+location containing a unit with that enemy's controller (Core 355.4, 355.10.b,
+355.15, 820.2). The other unit is not an additional target. Unit tokens qualify;
+plain gear does not. The Radiance clarification and Core 718.6 prohibit units
+from being attached, correcting an earlier source-research assumption.
+
+At resolution the engine rechecks the enemy target and the destination's current
+occupancy. If the latter has become invalid, it replaces the Move with Recall
+under 449.2.c and 451.1. Movement prevention and an already-reached destination
+take precedence; neither produces a Recall. Recall preserves damage/readiness
+and produces no Move history (458). This application of the general rules is
+an interpretation; no card-specific Temptation FAQ was found.
+
+Both-seat scenarios use an actual Flash response to remove the destination's
+last friendly unit, and a Repeat whose first execution empties the second
+destination. They check exact final locations, costs, readiness, damage, Move
+history and rejected-action rollback. Native checks select the printed Repeat,
+its separate target and location through ordinary controls. Full-game fixtures
+replace the two Charms in an Irelia training list; sourced tournament lists are
+unchanged. See [Temptation validation](validation/temptation.json).
+
+
+### 2026-11-17: simultaneous movement and remaining target choices
+
+Reviewed Emperor's Divide, Tricksy Tentacles and Isolate against original full
+card faces and the October 9 Core Rules, still linked by the official Rules Hub
+on November 17. Group legality uses existing controller-selected location and
+Might subsets (355.11.b). Isolate preserves the distinction between a negated
+Move and an ignored target for its linked draw (359.3.e.14). Group Move events
+are simultaneous (370.1.a.2); this also corrects Flash's previously automatic
+ordering of two Stellacorn Herder triggers. A real prior full-game replay exposed
+that changed choice, and an old/new trace comparison verified its exact scope.
+Focused tests cover real Siren, Discipline and Flash responses and both players.
+See [movement-group evidence](validation/movement_groups.json). This is scoped
+verification, not a declaration of complete Standard parity.

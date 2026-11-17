@@ -1,0 +1,355 @@
+{
+  "schema_version": 1,
+  "checked_at": "2026-11-17T10:33:58.955506+00:00",
+  "scope": "Three related movement cards for Calm/Chaos custom practice. No tournament-prevalence claim; sourced presets preserved.",
+  "records": [
+    {
+      "official_id": "sfd-043-221",
+      "name": "Emperor's Divide",
+      "raw_printing": {
+        "official_id": "sfd-043-221",
+        "public_code": "SFD-043/221",
+        "name": "Emperor's Divide",
+        "set": "SFD",
+        "collector_number": 43,
+        "types": [
+          "spell"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "spell"
+        ],
+        "accessibility_types": [
+          "spell"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "calm"
+        ],
+        "energy": 2,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "rules_html": "<p>[Hidden] (Hide now for :rb_rune_rainbow: to react with later for :rb_energy_0:.)<br />[Action] (Play on your turn or in showdowns.)<br />Move any number of friendly units at a battlefield to their base.</p>",
+        "rules_text": "[Hidden] (Hide now for [Any Power] to react with later for [0 Energy].)\n[Action] (Play on your turn or in showdowns.)\nMove any number of friendly units at a battlefield to their base.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [],
+        "rarity": "uncommon",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/80f367f06549d597c7b5a77be73eb647eab34f59-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Spell: Emperor's Divide. [Hidden] (Hide now for [A] to react with later for [0].)\n[Action] (Play on your turn or in showdowns.)\nMove any number of friendly units at a battlefield to their base.",
+        "illustrators": [
+          "Kudos Productions"
+        ]
+      },
+      "raw_printing_sha256": "decab85c3d2d4fe407901d49f4b60d121d5de8c5e8b73214b634c54dd90881e2",
+      "effective": {
+        "types": [
+          "spell"
+        ],
+        "super_types": [],
+        "domains": [
+          "calm"
+        ],
+        "energy": 2,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>[Hidden] (Hide now for :rb_rune_rainbow: to react with later for :rb_energy_0:.)<br />[Action] (Play on your turn or in showdowns.)<br />Move any number of friendly units at a battlefield to their base.</p>",
+        "rules_text": "[Hidden] (Hide now for [Any Power] to react with later for [0 Energy].)\n[Action] (Play on your turn or in showdowns.)\nMove any number of friendly units at a battlefield to their base.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "resolution_ids": [],
+      "errata": [],
+      "snapshot_standard_legal": true,
+      "original_image": {
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/80f367f06549d597c7b5a77be73eb647eab34f59-744x1039.png?accountingTag=RB",
+        "path": "assets/data/card_admissions/movement_groups/sfd-043-221.png",
+        "sha256": "4f2a9166cb7b356e4412dac260d01fae94d58ed4e778a30cff4c8e67c5442bc8",
+        "bytes": 785638,
+        "dimensions": [
+          744,
+          1039
+        ]
+      },
+      "visual_review": {
+        "actual_full_face_viewed": true,
+        "reviewed_at": "2026-11-17T10:27:06.850147+00:00",
+        "printed_cost_type_domain_tags_and_rules_checked": true,
+        "printed_facts": {
+          "types": [
+            "spell"
+          ],
+          "super_types": [],
+          "domains": [
+            "calm"
+          ],
+          "energy": 2,
+          "power": null,
+          "might": null,
+          "might_bonus": null,
+          "tags": [],
+          "rules_html": "<p>[Hidden] (Hide now for :rb_rune_rainbow: to react with later for :rb_energy_0:.)<br />[Action] (Play on your turn or in showdowns.)<br />Move any number of friendly units at a battlefield to their base.</p>",
+          "rules_text": "[Hidden] (Hide now for [Any Power] to react with later for [0 Energy].)\n[Action] (Play on your turn or in showdowns.)\nMove any number of friendly units at a battlefield to their base.",
+          "equipment_html": "",
+          "equipment_text": ""
+        },
+        "notes": "Viewed original full card face and compared printed cost, type, domain and complete rules text."
+      },
+      "runtime_id": 488
+    },
+    {
+      "official_id": "unl-054-219",
+      "name": "Tricksy Tentacles",
+      "raw_printing": {
+        "official_id": "unl-054-219",
+        "public_code": "UNL-054/219",
+        "name": "Tricksy Tentacles",
+        "set": "UNL",
+        "collector_number": 54,
+        "types": [
+          "spell"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "spell"
+        ],
+        "accessibility_types": [
+          "spell"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "calm"
+        ],
+        "energy": 4,
+        "power": 1,
+        "might": null,
+        "might_bonus": null,
+        "rules_html": "<p>Move any number of enemy units with the same controller and a total Might of 8 or less to a single location.</p>",
+        "rules_text": "Move any number of enemy units with the same controller and a total Might of 8 or less to a single location.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [],
+        "rarity": "rare",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/7e1e77df44c076599fa780f7fd01a4550f67af45-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Spell: Tricksy Tentacles. Move any number of enemy units with the same controller and a total Might of 8 or less to a single location.",
+        "illustrators": [
+          "Kudos Productions"
+        ]
+      },
+      "raw_printing_sha256": "0812898ec43bbeaa17b5c6833ecd32c3b2ea237ff91b595f4a2bda9398428b09",
+      "effective": {
+        "types": [
+          "spell"
+        ],
+        "super_types": [],
+        "domains": [
+          "calm"
+        ],
+        "energy": 4,
+        "power": 1,
+        "might": null,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>Move any number of enemy units with the same controller and a total Might of 8 or less to a single location.</p>",
+        "rules_text": "Move any number of enemy units with the same controller and a total Might of 8 or less to a single location.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "resolution_ids": [],
+      "errata": [],
+      "snapshot_standard_legal": true,
+      "original_image": {
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/7e1e77df44c076599fa780f7fd01a4550f67af45-744x1039.png?accountingTag=RB",
+        "path": "assets/data/card_admissions/movement_groups/unl-054-219.png",
+        "sha256": "c90a02144e6ab0727d214fe51bd393759ac7ea6bd1a89d63f41e51003d1721f8",
+        "bytes": 749218,
+        "dimensions": [
+          744,
+          1039
+        ]
+      },
+      "visual_review": {
+        "actual_full_face_viewed": true,
+        "reviewed_at": "2026-11-17T10:27:06.850163+00:00",
+        "printed_cost_type_domain_tags_and_rules_checked": true,
+        "printed_facts": {
+          "types": [
+            "spell"
+          ],
+          "super_types": [],
+          "domains": [
+            "calm"
+          ],
+          "energy": 4,
+          "power": 1,
+          "might": null,
+          "might_bonus": null,
+          "tags": [],
+          "rules_html": "<p>Move any number of enemy units with the same controller and a total Might of 8 or less to a single location.</p>",
+          "rules_text": "Move any number of enemy units with the same controller and a total Might of 8 or less to a single location.",
+          "equipment_html": "",
+          "equipment_text": ""
+        },
+        "notes": "Viewed original full card face and compared printed cost, type, domain and complete rules text."
+      },
+      "runtime_id": 489
+    },
+    {
+      "official_id": "unl-124-219",
+      "name": "Isolate",
+      "raw_printing": {
+        "official_id": "unl-124-219",
+        "public_code": "UNL-124/219",
+        "name": "Isolate",
+        "set": "UNL",
+        "collector_number": 124,
+        "types": [
+          "spell"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "spell"
+        ],
+        "accessibility_types": [
+          "spell"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "chaos"
+        ],
+        "energy": 2,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "rules_html": "<p>Move an enemy unit from a battlefield to its base. Then, if there's an enemy unit alone at that battlefield, draw 1.</p>",
+        "rules_text": "Move an enemy unit from a battlefield to its base. Then, if there's an enemy unit alone at that battlefield, draw 1.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [],
+        "rarity": "common",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/bde23f07e4869fa96b14fcab329e782894b1e1e3-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Spell: Isolate. Move an enemy unit from a battlefield to its base. Then, if there's an enemy unit alone at that battlefield, draw 1.",
+        "illustrators": [
+          "Kudos Productions"
+        ]
+      },
+      "raw_printing_sha256": "f5eb3342e9e03bcdcfcb31b8814ef51bc8fa8018c3a2e8ec48416bd84b9d5f29",
+      "effective": {
+        "types": [
+          "spell"
+        ],
+        "super_types": [],
+        "domains": [
+          "chaos"
+        ],
+        "energy": 2,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>Move an enemy unit from a battlefield to its base. Then, if there's an enemy unit alone at that battlefield, draw 1.</p>",
+        "rules_text": "Move an enemy unit from a battlefield to its base. Then, if there's an enemy unit alone at that battlefield, draw 1.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "resolution_ids": [],
+      "errata": [],
+      "snapshot_standard_legal": true,
+      "original_image": {
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/bde23f07e4869fa96b14fcab329e782894b1e1e3-744x1039.png?accountingTag=RB",
+        "path": "assets/data/card_admissions/movement_groups/unl-124-219.png",
+        "sha256": "08869e92c43e4fbcdb50e76fe5d3f2851acf1f7caa66fbb46baeffccbdc57f0b",
+        "bytes": 705711,
+        "dimensions": [
+          744,
+          1039
+        ]
+      },
+      "visual_review": {
+        "actual_full_face_viewed": true,
+        "reviewed_at": "2026-11-17T10:27:06.850166+00:00",
+        "printed_cost_type_domain_tags_and_rules_checked": true,
+        "printed_facts": {
+          "types": [
+            "spell"
+          ],
+          "super_types": [],
+          "domains": [
+            "chaos"
+          ],
+          "energy": 2,
+          "power": null,
+          "might": null,
+          "might_bonus": null,
+          "tags": [],
+          "rules_html": "<p>Move an enemy unit from a battlefield to its base. Then, if there's an enemy unit alone at that battlefield, draw 1.</p>",
+          "rules_text": "Move an enemy unit from a battlefield to its base. Then, if there's an enemy unit alone at that battlefield, draw 1.",
+          "equipment_html": "",
+          "equipment_text": ""
+        },
+        "notes": "Viewed original full card face and compared printed cost, type, domain and complete rules text."
+      },
+      "runtime_id": 490
+    }
+  ],
+  "preserved_source_prefix": {
+    "resolutions": {
+      "count": 146,
+      "sha256": "05c4cc26ed3131f59d236f2cc12ca7c41d03279709838b6cad4a41c22028c538"
+    },
+    "raw_printings": {
+      "count": 96,
+      "sha256": "9ebebf4fe84a457bcc85fa005e2042e30ffe057bb5fa77327b4b37bae959b157"
+    },
+    "historical_issues": {
+      "count": 61,
+      "sha256": "1c3293ba639eef549272f588b9a605ef6a8a82d6dce49eb37003706f629856e4"
+    },
+    "images": {
+      "count": 96,
+      "sha256": "d0787164df49a2029bb29ce8ddad423a899705729a766f5edf561e8de811d8f8"
+    }
+  },
+  "preserved_runtime_prefix": {
+    "cards": {
+      "count": 488,
+      "sha256": "55b6975787b641978191b967e82b276c42aa9e0ad9e31ac9e20958cf58c30ac1"
+    },
+    "decks": {
+      "count": 7,
+      "sha256": "e975739d803427e54928d6e6cd03d1ce51d7ad108f4e247b8a000acf037a5cdb"
+    }
+  },
+  "rules_review": {
+    "authority": "https://playriftbound.com/en-us/rules-hub/",
+    "core_version": "2026-10-09",
+    "references": [
+      "355.4",
+      "355.10.b",
+      "355.11.b",
+      "359.3.e.2",
+      "359.3.e.12",
+      "359.3.e.14",
+      "370.1.a.2",
+      "449.2.c",
+      "451.1",
+      "458"
+    ],
+    "findings": [
+      "Emperor's Divide chooses any number of friendly battlefield units at one location; Hidden and Action timings are distinct.",
+      "Tricksy Tentacles chooses an enemy group with one controller and total current Might at most 8; legal maximal subsets are chosen if responses break the collective budget.",
+      "Isolate links its conditional draw to the valid moved target's battlefield at resolution. A negated Move retains the linked check; a mistarget ignores it.",
+      "Move events resulting from one instruction form a simultaneous group; relocate every member before publishing its events.",
+      "Existing resolution_groups already provides location-group choices. An initial helper-only inspection incorrectly suggested automatic selection; full-path tracing corrected that suspicion."
+    ],
+    "hub_rechecked_at": "2026-11-17T10:52:12.504042+00:00",
+    "hub_current_core_version": "2026-10-09"
+  },
+  "implementation_status": "implemented_local_validation_passed_packaged_acceptance_pending"
+}

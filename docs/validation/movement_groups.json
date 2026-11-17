@@ -1,0 +1,196 @@
+{
+  "status": "Local and combined immutable installed acceptance passed; publication prepared.",
+  "reviewed_at": "2026-11-17T11:29:38.163363+00:00",
+  "base_revision": "0ddf50ba9c24ffaf4451a2de4586049073c61865",
+  "cards": [
+    {
+      "runtime_id": 488,
+      "official_id": "sfd-043-221",
+      "name": "Emperor\u2019s Divide"
+    },
+    {
+      "runtime_id": 489,
+      "official_id": "unl-054-219",
+      "name": "Tricksy Tentacles"
+    },
+    {
+      "runtime_id": 490,
+      "official_id": "unl-124-219",
+      "name": "Isolate"
+    }
+  ],
+  "scope": "Three related Calm/Chaos movement spells, simultaneous group Move events (also Flash), existing resolution-location and Might-subset decisions, API metadata, native controls and both companion levels.",
+  "source_review": "assets/data/card_admissions/movement_groups/source_review.json",
+  "rules": {
+    "hub": "https://playriftbound.com/en-us/rules-hub/",
+    "edition": "2026-10-09",
+    "hub_rechecked": "2026-11-17",
+    "sections": [
+      "355.4",
+      "355.10.b",
+      "355.11.b",
+      "359.3.e.2",
+      "359.3.e.12",
+      "359.3.e.14",
+      "370.1.a.2",
+      "449.2.c",
+      "451.1",
+      "458"
+    ],
+    "basis": "Printed full faces and Core Rules; no card-specific FAQ found. Location groups and maximal Might subsets reuse the existing resolver."
+  },
+  "limitations": [
+    "These are eligible-pool additions, not evidence of tournament prevalence. The seven sourced presets are unchanged.",
+    "The authored integration list replaces two copies each of Charm, Ride the Wind and Star-Crossed; it is not published as a meta preset.",
+    "Full Standard interaction parity, novice learning and expert opponent strength remain unproven.",
+    "The generated snapshot maps 530 legal identities; 549 remain unimplemented.",
+    "The attempted local full source suite was interrupted with terminal exit 143 and is not counted as passing. Focused source/catalog checks passed; the immutable release subsequently passed all 364 source checks."
+  ],
+  "installed_acceptance": {
+    "status": "passed",
+    "revision": "1c4b54d9303def4866bfad6ef5e06633872f4e15",
+    "report": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/movement-batch-release-v1/status.json",
+    "report_sha256": "4916f987a21559e8c3a5ae44bb34aa56ce1819b9fa4e101ebc42f0d0c07775fb",
+    "finished_at": "2026-11-17T11:27:37.949177+00:00",
+    "nix": {
+      "package": "/nix/store/lgavsd3pqwrlx3pm81116aljc7aqkp6p-local-rift-0.1.0",
+      "catalog": "/nix/store/rd41n0s5rjd1skdzqx6pi16c2zvgn3hn-local-rift-catalog-check",
+      "simulation": "/nix/store/30yk1gyfrh26qpj4h2xymkvbymp4f6dn-local-rift-simulation-check",
+      "seconds": 1287.133,
+      "gc_root_prefix": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/movement-batch-release-v1/nix-result"
+    },
+    "source": "/nix/store/7k4nzpjlwgrr3j3lma1zsrg7ipz7dwwn-source",
+    "rust_tests": 2279,
+    "source_tests": 364,
+    "simulated_games": 1176,
+    "native_cases": 57,
+    "captures": 598,
+    "api_campaigns": 26,
+    "full_api_records": 315,
+    "all_full_api_records_match": true,
+    "nix_log_sha256": "e519aabb908bd5cc233aace26683bd03863f4de31aa1c086b943631bf566caf2",
+    "simulation_sha256": "7d438e357845744d8b3d123b57abbcaa11ce9aac313a58b93bfc399276f4eefb",
+    "visual_review": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/movement-batch-release-v1/visual-review.json",
+    "visual_review_sha256": "af1b79e2fc813b72649de760425fc05579a673e9e4f782cd57d05b98e5aa2811",
+    "fresh_images_viewed": 4
+  },
+  "validation": [
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/movement-group-focused-v2.log",
+      "sha256": "a4be358f0ad26287d273cf87a31708d83daf1acfe0ff91a67670aafa0f0add3c",
+      "scope": "10 focused engine/API tests passed: both seats, unrestricted counts including zero, location-group reselection after real Siren, Might-subset reselection after real Discipline including zero-Might targets, independent movement locks, Isolate linked draw and Flash mistarget, Emperor Hidden Reaction, simultaneous Flash/Emperor Move trigger ordering, read-only queries and wrong-player rollback."
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/movement-group-regressions-v1.log",
+      "sha256": "e3f628a2bd7df3c5b6ff94984846eb2a8c70ba1eea936f7230c44cbb113c363f",
+      "scope": "1537 Rust tests passed: all library/client/API/simulation unit tests plus catalog coverage/review, conformance, Irelia decisions and complete Twilight, Temptation and movement-group games."
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/movement-group-matches-v1.log",
+      "sha256": "55d2720927477550788349fef607ff3f23df495a12c43aa151243c90aad938cb",
+      "scope": "48 legal authored Irelia mirrors completed with independent physical-card conservation after every action. All three spells were cast by both seats at every difficulty."
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/movement-group-source-v2.log",
+      "sha256": "c415ae1f720940553547632ddd2866d0afe85c2ade2dcb7afe1784aaf051da66",
+      "scope": "Three final source tests passed: full-face facts, raw/effective rules, costs and domains, art hashes, retained source inventory and unchanged preceding runtime/preset prefixes."
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/movement-group-catalog-check-v1.log",
+      "sha256": "f82c3068983f32a9e6236d90ef3635e98d4461ff61449dc163b0ebae64fdf30a",
+      "scope": "Generated catalog and coverage are current."
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/movement-group-clippy-v3.log",
+      "sha256": "c1faab26268dc833173a2b219bad595f5813c339d16f57c0eb4d2fb0f3120af3",
+      "scope": "All-target Clippy passed with warnings denied."
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/movement-group-native-v2/report.json",
+      "sha256": "777f3b6c5c580d41cf8b8cea438340e7eadd427062bcf2793d4ff7fe4458adfb",
+      "scope": "Two actual native control scenarios passed, normal/small, with 28 captures. Includes card inspectors, all three casts and costs, same-battlefield rejection, a real Discipline response, invalid subset rejection including zero Might, final movement/draw states, both companion levels."
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/movement-group-api-new-v2.json",
+      "sha256": "8168fd14aca2d11af3294bd0bb67838d552a12f95c2c5a7e3f0f4f75c4a30511",
+      "scope": "24 registered best-of-three matches (62 games) completed through JSONL with both seats using every new card at all three levels. Sixteen Relaxed series and four each Tactical/Strategic; complete request/response trace hashes retained."
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/movement-group-api-v1/report.json",
+      "sha256": "9b45fe0db87d1f5efeab8fffc5f1f1b600b1a0a42891b7d409456db6255584d5",
+      "scope": "26 API campaigns passed with 315 complete records. Of 291 prior records, 290 match exactly and one Twilight record has a reviewed Flash-trigger-order correction; all 24 new movement-group records exactly reproduce the first passing candidate run."
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/movement-group-twilight-difference-v1/review.json",
+      "sha256": "174e0fb980c2d38fdfaf94ddd11b02f450646f36daca7d604d2a6f37b6e631d0",
+      "scope": "Reproduced both old and new full trace hashes for Twilight record 7, seed 486311. The new simultaneous Flash/Herder trigger-order choice adds two observations and one action. All later request/responses match with that offset after excluding revision counters; winner, scores, match history and cast counts are unchanged."
+    }
+  ],
+  "attempts": [
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/movement-group-native-v1/report.json",
+      "sha256": "c2eff54906e1229fe1f150d94c1e67c4d41eca21089d7204c30998359c8fdec0",
+      "scope": "Fixture stopped at a pending trigger decision after an Emperor play; corrected its settling helper to handle existing legend and trigger-order choices. No rules or choice controls were relaxed."
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/movement-group-api-new-v1.json",
+      "sha256": "6cc947f360ebfd0859972c4aa51ea00aca2e4e2f4c9decf956f00701995b6f7b",
+      "scope": "All 12 initial series finished, but the required cast-coverage assertion failed for Relaxed seat 1. Expanded only Relaxed seeds from two to eight per starting side; kept all cast assertions."
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/movement-group-source-all-v1.log",
+      "sha256": "a546e26c7433eb5646f22935f343c9c8c4a5d8292a2d505ee17d78ad8d3ce738",
+      "scope": "Local full source suite ended with exit 143; process absence and terminal session were verified. No final summary was emitted. Preserved as incomplete evidence, not a pass; comprehensive source execution is deferred to the fixed packaged gate."
+    }
+  ],
+  "visual_review": [
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/movement-group-native-v2/movement-groups-normal/rift_emperor_inspect.png",
+      "sha256": "62c3c8c543bd69f1a8eff76c6680fd5f7049e06ec7c2f56eb6e637fd4ed6e5c7",
+      "scope": "Viewed: complete Hidden, Action and group Move text with original full card face."
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/movement-group-native-v2/movement-groups-normal/rift_tentacles_inspect.png",
+      "sha256": "324047d1f1207e1a04da558170d9ff39cf39be0074f4f30b27ebba5f9901b7a4",
+      "scope": "Viewed: full original art and uncut same-controller / 8-Might / single-location text."
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/movement-group-native-v2/movement-groups-small/rift_tentacles_subset.png",
+      "sha256": "07da16ff60f0e3e2c39ccaa770ffccac9d6b7742b9995e99cd642271a1ec3ba4",
+      "scope": "Viewed: remaining-target decision shows 5/8 Might, selected Phantom and zero-Might Poro, available confirm button and nonblocking Mote explanation."
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/movement-group-native-v2/movement-groups-small/rift_isolate_advanced.png",
+      "sha256": "63d31dcc5a0ef9c0a6aa723ffe94ee05f1a007ff2810f771c1e87d493d3f07c2",
+      "scope": "Viewed: Advanced advice explicitly describes a response returning the target to base; target, play and priority controls remain visible."
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/movement-group-native-v2/movement-groups-small/rift_isolate_inspect.png",
+      "sha256": "ba201470d7522c3eb7ec85286eebc9e1818e022ea099c70dba8f0f71d466084d",
+      "scope": "Viewed: original card and complete linked-draw text fit at the smaller size."
+    }
+  ],
+  "audit_correction": "A helper-only inspection initially suggested automatic location-group selection. Tracing resolve_spell_executions showed that the controller already chooses a legal location group; that behavior was reused without claiming it as a newly fixed bug.",
+  "source_hashes": {
+    "src/game.rs": "c90ea6f5c93454a1f5c265db846be2e6082aefd6b2a96c1c78d3d29772b0bae8",
+    "src/rules.rs": "44e288bd1373a887bb9ebbc22f840e2bdc5791315d3e9ae29b8008694badda2d",
+    "src/movement.rs": "58e6acbd862081d07528dfe745b15d7f945d54fba2ee5adfa3f7574d684216cb",
+    "src/main.rs": "0101af78c842c2001c1faa3fd019a950a83881159db837ac13c7ff4877b59287",
+    "src/api/targeting.rs": "12009044f41663a29a3bb564627f8d3385826d9923ba0ee9d36c1c1b241efc48",
+    "src/match_ai.rs": "3aec4c05abc9405f2d51f50ead2413b7515da2a5bfde851137b0a4fa79a61b59",
+    "src/companion.rs": "0be593b42de5b816af275df80f7d0ac6a2fadd4d8786222a2d0966f0bd052c9b",
+    "src/movement_group_tests.rs": "7a86bd863810ab9d7e7240a560aeb009759a943a683f03a82f43dfc5ae6df0d9",
+    "src/api/movement_group_tests.rs": "4c6877725b27c1f05fc0cc1fbca29078ef3d1c5b3179447353f707ad5e82d4c0",
+    "src/smoke/movement_groups.rs": "44c707cc3daaf717359702def9c194a7119c5b9e05a7ee9beaa70fa389576c70",
+    "tests/movement_group_matches.rs": "fb2b56b3b1a856fcb6db0add80b546d1f9b68df9de4d3deac80cf6aec4110a2d",
+    "tools/check_movement_groups_api.py": "1b2d005a8a25372da6752f1c6d0ac81488f9db0067dd6e11274de7966b89830e",
+    "tools/test_movement_group_source.py": "ff9286c030c650d28d28fd205fb578064031dd19fef58b4e42e1368841482d6e",
+    "assets/data/card_admissions/movement_groups/source_review.json": "6391024e9b3d7513bfb7e0015c45f51adfa0922d66656ae53c84a620a6299e60"
+  },
+  "reviewed_api_change": {
+    "report": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/movement-group-twilight-difference-v1/review.json",
+    "campaign": "twilight-api",
+    "record_index": 7,
+    "reason": "Controller chooses the order of simultaneous Flash-induced Stellacorn Herder triggers."
+  }
+}

@@ -1,0 +1,168 @@
+{
+  "status": "Local and combined immutable installed acceptance passed; publication prepared.",
+  "reviewed_at": "2026-11-17T11:29:38.163363+00:00",
+  "base_revision": "96d66029d4e4b9337449783cb2e35103124978f4",
+  "scope": "Temptation (sfd-129-221, runtime 487): reusable Move destination restriction, independently finalized Repeat executions, client/API support, and Beginner/Advanced Mote commentary.",
+  "source_review": "assets/data/card_admissions/temptation/source_review.json",
+  "rules": {
+    "edition": "2026-10-09",
+    "sections": [
+      "355.4",
+      "355.10.b",
+      "355.15",
+      "359.3.e.2",
+      "449.2.c",
+      "451.1",
+      "458",
+      "718.6",
+      "820.2"
+    ]
+  },
+  "limitations": [
+    "Destination-loss Recall applies the general rules; no card-specific official Temptation FAQ was located.",
+    "The integration deck replaces two Charms in an Irelia training list; sourced tournament presets are unchanged.",
+    "Native tests use authored board positions; API series and engine games separately cover complete matches.",
+    "552 Standard snapshot identities remain unimplemented. Full interaction parity, expert strength and novice learning are unproven."
+  ],
+  "installed_acceptance": {
+    "status": "passed",
+    "revision": "1c4b54d9303def4866bfad6ef5e06633872f4e15",
+    "report": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/movement-batch-release-v1/status.json",
+    "report_sha256": "4916f987a21559e8c3a5ae44bb34aa56ce1819b9fa4e101ebc42f0d0c07775fb",
+    "finished_at": "2026-11-17T11:27:37.949177+00:00",
+    "nix": {
+      "package": "/nix/store/lgavsd3pqwrlx3pm81116aljc7aqkp6p-local-rift-0.1.0",
+      "catalog": "/nix/store/rd41n0s5rjd1skdzqx6pi16c2zvgn3hn-local-rift-catalog-check",
+      "simulation": "/nix/store/30yk1gyfrh26qpj4h2xymkvbymp4f6dn-local-rift-simulation-check",
+      "seconds": 1287.133,
+      "gc_root_prefix": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/movement-batch-release-v1/nix-result"
+    },
+    "source": "/nix/store/7k4nzpjlwgrr3j3lma1zsrg7ipz7dwwn-source",
+    "rust_tests": 2279,
+    "source_tests": 364,
+    "simulated_games": 1176,
+    "native_cases": 57,
+    "captures": 598,
+    "api_campaigns": 26,
+    "full_api_records": 315,
+    "all_full_api_records_match": true,
+    "nix_log_sha256": "e519aabb908bd5cc233aace26683bd03863f4de31aa1c086b943631bf566caf2",
+    "simulation_sha256": "7d438e357845744d8b3d123b57abbcaa11ce9aac313a58b93bfc399276f4eefb",
+    "visual_review": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/movement-batch-release-v1/visual-review.json",
+    "visual_review_sha256": "af1b79e2fc813b72649de760425fc05579a673e9e4f782cd57d05b98e5aa2811",
+    "fresh_images_viewed": 4
+  },
+  "validation": [
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/temptation-focused-v2.log",
+      "sha256": "61fbe9d2a0da869ee3bba9334eac83e8db6aa4121cc1ce7dea6e02b78b082586",
+      "scope": "Six initial focused rules/API tests passed in both seats: destination occupancy and allegiance, real Flash response, movement prevention, independent Repeat destinations, token anchors, timing, read-only queries and rollback."
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/temptation-regressions-v2.log",
+      "sha256": "691c4eaa1b806b2b076d9e7aa35c89e455e5e32f4d652bb1ad8743f85b037100",
+      "scope": "Final 1,526 Rust tests passed: 1,309 library, 178 client, one API binary, one simulator, catalog coverage/review, conformance, 11 Irelia decision tests and two full-game tests. Includes explicit Repeat timing rejection and a verified zero-Might token anchor. The Temptation and Twilight tests each complete 48 games."
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/temptation-source-all-v1.log",
+      "sha256": "38bde4ad6964445ecd3f686ef11bbcbd5ad99e8d5de86f59570d5740e317b636",
+      "scope": "All 361 source/tool tests passed in 349.489 seconds."
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/temptation-source-v3.log",
+      "sha256": "12eba6673d980359c87160914aa46473dc7a95227f31ae9cfd71b38c3fdf75ed",
+      "scope": "Three admission tests passed after the final source-review status and current Rules Hub recheck."
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/temptation-catalog-check-v1.log",
+      "sha256": "c1793c8a1192ce45a884563b3a365bd87679c0c89689e4b67c60aa83caa58b88",
+      "scope": "Generated catalog and coverage document match reviewed sources and runtime mapping."
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/temptation-clippy-v3.log",
+      "sha256": "3bd9c295819cfce38f028db1a03dcc95c24f406202859187b51701b0777e9d2a",
+      "scope": "Final all-target Clippy passed with warnings denied."
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/temptation-build-v2.log",
+      "sha256": "18d5d470202a736d20806a8f5c184c54147e42a0a943f7d2196bfc69a74ad990",
+      "scope": "Native client and API binaries built successfully."
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/temptation-native-v1/report.json",
+      "sha256": "b37555f6c4dc935340fb0efb367ab66e489b21a554953c52454a7611f080df5d",
+      "scope": "Six native cases passed with 46 captures: Temptation, Twilight and Irelia at both window sizes. Temptation covers full inspection, illegal empty destination and friendly target rejection, printed Repeat, independent choices, 4-Energy/0-Power payment, first-execution invalidation, Recall versus Move history, and both advice levels."
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/temptation-api-combined-v1.json",
+      "sha256": "3dbc7bfe8dc1ab4fcb04836819d0263a153b138c48e9cd069e36413f5d0f7704",
+      "scope": "25 complete API campaigns accepted from one unchanged binary. Verified the completed prefix from the interrupted command and all remaining campaigns from the successful suffix. All 279 prior records match exactly."
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/temptation-api-v2-suffix/temptation-api.json",
+      "sha256": "b2442d266bad99f16e73a10eed7bbcefc67f11776044745a5b22b93097b7a9c7",
+      "scope": "12 registered Irelia best-of-three series completed 28 games across all levels and both starting players. Actual Temptation casts observed for both seats at every level; no tournament-strength claim."
+    }
+  ],
+  "attempts": [
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/temptation-focused-v1.log",
+      "sha256": "60c72254302587f07633ab069ca0143840d7584aa20ad350cbc27a2bc1b483da",
+      "scope": "Initial build interrupted by termination, observed exit 143; no test result. Confirmed no process remained before the successful rerun."
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/temptation-source-v1.log",
+      "sha256": "b341ff7d15b10117ba0b5b964aaf083636beda2eecedcf10869fa9a306a7d5c9",
+      "scope": "Initial source-test assertion expected numeric zero Power; raw official metadata correctly uses null for no printed Power. Corrected the test expectation, not the card cost."
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/temptation-regressions-v1.log",
+      "sha256": "34bb7028621a6513d698f4da823a65ff837bd8aea6b1acfbe7c89512b30550c1",
+      "scope": "Command selected nonexistent integration-test names; no tests ran. Corrected selection in v2."
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/temptation-api-v2-suffix-launch.json",
+      "sha256": "2b9e246b9c76ff2dff34250d934352ef4de76421178d1798cfc25dfa4c46bfbd",
+      "scope": "First API command ended with exit 143 after 13 complete campaigns. Verified their binary and record hashes; reran only unfinished campaigns. Raw interrupted report retained unchanged."
+    }
+  ],
+  "visual_review": {
+    "reviewed_at": "2026-11-17T10:23:42.801231+00:00",
+    "actual_images_viewed": true,
+    "captures": [
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/temptation-native-v1/temptation-normal/rift_temptation_inspect.png",
+        "sha256": "f6f359bcc203438e09ce9bb1920ff232549f453b3a9711356832c36d822176f3",
+        "observation": "Full original face and complete official text readable, including Repeat cost and destination wording."
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/temptation-native-v1/temptation-small/rift_temptation_repeat.png",
+        "sha256": "3be3531f7def869c00d1456a371452f72ff7e0f8c35df73189232c81d469ece7",
+        "observation": "Independent Original and Repeat controls, selected field 1 and enemy unit, total 4 Energy / 0 Power, unobstructed play button."
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/temptation-native-v1/temptation-small/rift_temptation_advanced.png",
+        "sha256": "b97c9b83ad336e6ef49e2cf502c17ac6305981e7b78a1a4eddb52626d76b0983",
+        "observation": "Advanced advice explains the first Move invalidating the Repeat destination; board, resource rows and play controls remain visible."
+      }
+    ]
+  },
+  "source_hashes": {
+    "src/rules.rs": "4090aa49ff4d07cb9981c3348027477eafd15f9e71ad19521a75ff33b6ff0970",
+    "src/game.rs": "f54817325685c38cdf01e195a0db2ce1da5b87926e4a7ba460a717f19c8be830",
+    "src/movement.rs": "d25954f7bf4806b24e240c8c319722cdb9f4e44b38482c25b643adb4233a7d3a",
+    "src/cards.rs": "006580e0b8f63a9b197d784101a4aaae78a73a97bced86a3c0cfdbbe4a26cde5",
+    "src/api/targeting.rs": "bbfc9a810ac96068180de53ceb20911c716750853baf5563a91f916d36cadc92",
+    "src/companion.rs": "d64ac479dd001201a795f49b2edf0b728b32d1c3505f12e32b0335b935f3e7c9",
+    "src/main.rs": "d55bf6c14f5ca75779d4492460be28019ac38ac17a3b7f494defa846fde343bb",
+    "src/smoke.rs": "1cc254e3e2c54fef56fc21da0d8123715b70501b9d75f26975f835039ebbb704",
+    "src/smoke/temptation.rs": "a30079041807b9171daebf79cbe78449b45293e1756d2ef6e7f4160c6e41b9f7",
+    "src/temptation_tests.rs": "2a6c3d57eecd1a4bb75f8cb0d10e48c891e21f0312eb4d09affd1a2c63cd1241",
+    "src/api/temptation_tests.rs": "47826865bb75b15e18126d2a87146e4dd95109b8c93d08603f04b828d9b4fae2",
+    "tests/temptation_matches.rs": "7450685cae07ff198a8f78e39f89f836e2e2303f00a8b801286ac50e429c4798",
+    "tools/check_temptation_api.py": "879045167341ddd497de4be6664b85439f67784be2dd9828c0c911f174f4cca6",
+    "tools/test_temptation_source.py": "2052ab8b79d8f788f97218a01b7fcd827fe7b0130fe35d490c62f2c8c3e31fc4",
+    "assets/data/card_admissions/temptation/source_review.json": "4ff11c2666f9c5997ca4b2fe73f2050509e95c07bb6c765e8957362d73c659fe",
+    ".github/workflows/ci.yml": "5e2bca2ec9cdca07a2a9ea89306339c29a1c399f97027e3c8b25bb444da59ce5"
+  }
+}

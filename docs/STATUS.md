@@ -171,3 +171,44 @@ levels. Its authored Irelia deck replaces two Charms; sourced presets are unchan
 [Twilight validation](validation/twilight_step.json) records the evidence.
 The snapshot maps 526 legal identities, with 553 still unimplemented; complete
 Standard parity and expert opponent strength remain unproven.
+
+Temptation passed local validation using the shared Move destination and Repeat
+controls. It checks destination occupancy independently from its enemy target,
+including a real Flash response and the first execution changing the Repeat's
+legal destination. The final local run passed 1,526 Rust tests, 361 source tests,
+six native cases (46 captures), and 25 API campaigns; all 279 prior API records
+match exactly. Its new 12 best-of-three series completed 28 games across all
+three levels and both starting players. Three fresh client captures were
+visually reviewed. Combined packaged acceptance passed as detailed below; see
+[Temptation validation](validation/temptation.json). The snapshot maps 527 legal
+identities, with 552 still unimplemented. Completed games do not establish full
+rules parity, expert strength or beginner learning outcomes.
+
+
+Emperor's Divide, Tricksy Tentacles and Isolate passed local validation: ten
+focused engine/API scenarios, 1,537 broader Rust tests, 48 full authored engine
+games, and both native window sizes (28 captures, five visually reviewed).
+Their new API campaign completed 24 registered series (62 games), with every
+new spell used by both seats at each difficulty. The complete API comparison
+covers 26 campaigns and 315 records: 290 prior records are unchanged, one has a
+reviewed correction, and 24 new records reproduce the first passing run.
+
+The correction gives the player the order choice when Flash simultaneously
+moves two Stellacorn Herders. Replaying both binaries confirmed that this adds
+one decision; later state and results match apart from revision counters. Group
+retreat and Might-limit choices reuse the existing shared resolution controls.
+Three focused source checks and the catalog check passed. An interrupted local
+full source run is retained as incomplete evidence; the fixed packaged gate subsequently passed the complete source suite.
+Combined installed acceptance with Temptation passed as detailed below. See [movement group validation](validation/movement_groups.json).
+The draft snapshot maps 530 legal identities, with 549 still unimplemented.
+
+Temptation, Emperor’s Divide, Tricksy Tentacles and Isolate passed combined
+installed acceptance at fixed revision `1c4b54d`: 2,279 Rust tests, 364 source
+checks, 1,176 simulated games, 57 desktop scenarios (598 captures), and 26 API
+campaigns with all 315 full records matching the accepted local baselines. Four
+fresh installed captures were visually reviewed across both window sizes. The
+source suite completed successfully; the earlier interrupted local run remains
+recorded. See [movement validation](validation/movement_groups.json) and
+[Temptation validation](validation/temptation.json). This release maps 530 legal
+snapshot identities; 549 remain unimplemented. Full Standard parity, expert
+opponent strength and beginner learning outcomes remain unproven.

@@ -98,6 +98,8 @@ jobs:
           python3 tools/check_binary_choices_api.py target/release/rift-api "$RUNNER_TEMP/local-rift-binary-choices.json"
           python3 tools/check_tag_stun_api.py target/release/rift-api "$RUNNER_TEMP/local-rift-tag-stun.json"
           python3 tools/check_twilight_api.py target/release/rift-api "$RUNNER_TEMP/local-rift-twilight.json"
+          python3 tools/check_temptation_api.py target/release/rift-api "$RUNNER_TEMP/local-rift-temptation.json"
+          python3 tools/check_movement_groups_api.py target/release/rift-api "$RUNNER_TEMP/local-rift-movement-groups.json"
       - name: Exercise desktop controls at both window sizes
         if: steps.scope.outputs.full_checks == 'true'
         env:
@@ -169,3 +171,7 @@ jobs:
           XDG_DATA_HOME="$RUNNER_TEMP/local-rift-tag-stun-small" xvfb-run -a ./target/release/local-rift --ui-smoke-tag-stun --small
           XDG_DATA_HOME="$RUNNER_TEMP/local-rift-twilight" xvfb-run -a ./target/release/local-rift --ui-smoke-twilight
           XDG_DATA_HOME="$RUNNER_TEMP/local-rift-twilight-small" xvfb-run -a ./target/release/local-rift --ui-smoke-twilight --small
+          XDG_DATA_HOME="$RUNNER_TEMP/local-rift-temptation" xvfb-run -a ./target/release/local-rift --ui-smoke-temptation
+          XDG_DATA_HOME="$RUNNER_TEMP/local-rift-temptation-small" xvfb-run -a ./target/release/local-rift --ui-smoke-temptation --small
+          XDG_DATA_HOME="$RUNNER_TEMP/local-rift-movement-groups" xvfb-run -a ./target/release/local-rift --ui-smoke-movement-groups
+          XDG_DATA_HOME="$RUNNER_TEMP/local-rift-movement-groups-small" xvfb-run -a ./target/release/local-rift --ui-smoke-movement-groups --small

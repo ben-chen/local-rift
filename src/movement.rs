@@ -1,6 +1,7 @@
 //! Move instructions retain their actor and absolute locations. Recall is a
 //! separate action and never emits a Move event (Core 449.2.c / 458).
 use super::*;
+use crate::rules::MoveDestinationRestriction;
 use board_targets::BoardLocation;
 use triggers::MoveFacts;
 
@@ -15,15 +16,48 @@ impl Game {
         destination: Option<usize>,
         target: Target,
     ) -> bool {
-        let destination = match rules::effect(card) {
-            OfficialEffect::MoveFriendlyToBase { .. } => None,
-            OfficialEffect::MoveUnit { .. } => destination,
+        let (destination, restriction) = match rules::effect(card) {
+            OfficialEffect::MoveFriendlyToBase { .. }
+            | OfficialEffect::MoveEnemyToBaseThenDrawIfAlone
+            | OfficialEffect::MoveGroup { to_base: true, .. } => {
+                (None, MoveDestinationRestriction::Any)
+            }
+            OfficialEffect::MoveGroup { to_base: false, .. } => {
+                (destination, MoveDestinationRestriction::Any)
+            }
+            OfficialEffect::MoveUnit {
+                destination: restriction,
+                ..
+            } => (destination, restriction),
             _ => return true,
+        };
+        let Target::Unit { player, .. } = target else {
+            return false;
         };
         self.unit_ref(target).is_some_and(|unit| {
             unit.lane != destination
                 && destination.is_none_or(|lane| lane < self.battlefield_count())
+                && self.move_destination_meets_restriction(
+                    restriction,
+                    player,
+                    BoardLocation::from_lane(player, destination),
+                )
         })
+    }
+
+    fn move_destination_meets_restriction(
+        &self,
+        restriction: MoveDestinationRestriction,
+        controller: usize,
+        destination: BoardLocation,
+    ) -> bool {
+        match restriction {
+            MoveDestinationRestriction::Any => true,
+            MoveDestinationRestriction::UnitWithSameController => self.players[controller]
+                .units
+                .iter()
+                .any(|unit| BoardLocation::from_lane(controller, unit.lane) == destination),
+        }
     }
 
     /// A finalized single-unit Move keeps the base selected for its original
@@ -35,11 +69,23 @@ impl Game {
         target: Target,
         lane: Option<usize>,
         ready: bool,
+        restriction: MoveDestinationRestriction,
     ) -> Result<(), String> {
-        let Target::Unit { player, unit_id } = target else {
+        let Some(destination) = self.spell_move_destination(target, lane)? else {
             return Ok(());
         };
-        let destination = if let Some(lane) = lane {
+        self.move_effect_at_restricted(actor, target, destination, ready, restriction)
+    }
+
+    fn spell_move_destination(
+        &self,
+        target: Target,
+        lane: Option<usize>,
+    ) -> Result<Option<BoardLocation>, String> {
+        let Target::Unit { player, unit_id } = target else {
+            return Ok(None);
+        };
+        Ok(Some(if let Some(lane) = lane {
             BoardLocation::Battlefield { lane }
         } else {
             let original_controller = if let Some(frame) = &self.resolution_frame {
@@ -64,8 +110,60 @@ impl Game {
             BoardLocation::Base {
                 player: original_controller,
             }
-        };
-        self.move_effect_at(actor, target, destination, ready)
+        }))
+    }
+
+    /// Core 370.1.a.2: events from one Move instruction are simultaneous.
+    /// Finish every relocation before observing any of the group's triggers.
+    pub(super) fn move_spell_group(
+        &mut self,
+        actor: usize,
+        targets: &[Target],
+        lane: Option<usize>,
+    ) -> Result<(), String> {
+        let mut requests = Vec::new();
+        for &target in targets {
+            if let Some(destination) = self.spell_move_destination(target, lane)? {
+                requests.push((target, destination));
+            }
+        }
+        let mut origins = Vec::new();
+        let mut moved = Vec::new();
+        for (target, destination) in requests {
+            if let Some(origin) = self
+                .board_target_facts(target)
+                .and_then(|f| f.location.battlefield())
+                && !origins.contains(&origin)
+            {
+                origins.push(origin);
+            }
+            let Target::Unit { player, unit_id } = target else {
+                continue;
+            };
+            if let Some(facts) = self.relocate_for_effect(
+                actor,
+                target,
+                destination,
+                MoveDestinationRestriction::Any,
+            )? {
+                moved.push((player, unit_id, facts));
+            }
+        }
+        for &(player, id, facts) in &moved {
+            self.on_move(player, id, facts);
+        }
+        if !moved.is_empty() {
+            self.trigger_batch += 1;
+        }
+        for (player, _, facts) in moved {
+            if let Some(lane) = facts.destination.battlefield() {
+                self.stage_entry(lane, player);
+            }
+        }
+        for lane in origins {
+            self.refresh_control(lane)?;
+        }
+        Ok(())
     }
 
     /// Existing relative callers mean the target's base, never the actor's.
@@ -94,13 +192,30 @@ impl Game {
         destination: BoardLocation,
         ready: bool,
     ) -> Result<(), String> {
+        self.move_effect_at_restricted(
+            actor,
+            target,
+            destination,
+            ready,
+            MoveDestinationRestriction::Any,
+        )
+    }
+
+    fn move_effect_at_restricted(
+        &mut self,
+        actor: usize,
+        target: Target,
+        destination: BoardLocation,
+        ready: bool,
+        restriction: MoveDestinationRestriction,
+    ) -> Result<(), String> {
         let Target::Unit { player, unit_id } = target else {
             return Ok(());
         };
         let Some(origin) = self.board_target_facts(target).map(|facts| facts.location) else {
             return Ok(());
         };
-        if let Some(movement) = self.relocate_for_effect(actor, target, destination)? {
+        if let Some(movement) = self.relocate_for_effect(actor, target, destination, restriction)? {
             self.on_move(player, unit_id, movement);
             self.trigger_batch += 1;
             if let Some(lane) = movement.destination.battlefield() {
@@ -129,6 +244,7 @@ impl Game {
         actor: usize,
         target: Target,
         destination: BoardLocation,
+        restriction: MoveDestinationRestriction,
     ) -> Result<Option<MoveFacts>, String> {
         let Target::Unit { player, unit_id } = target else {
             return Ok(None);
@@ -153,6 +269,13 @@ impl Game {
             return Ok(None);
         }
         if origin == destination {
+            return Ok(None);
+        }
+        // Core 451.1 defines source-specific destination restrictions. If a
+        // fixed destination becomes invalid, 449.2.c replaces the Move with
+        // Recall. A prevented Move or an already-arrived unit never gets here.
+        if !self.move_destination_meets_restriction(restriction, player, destination) {
+            self.recall_unit(player, unit_id, false, false);
             return Ok(None);
         }
         self.unit_mut(target).unwrap().lane = destination.battlefield();
@@ -205,7 +328,12 @@ impl Game {
             (source, source_controller, unit_id, b),
             (target, owner, other, a),
         ] {
-            if let Some(facts) = self.relocate_for_effect(actor, object, destination)? {
+            if let Some(facts) = self.relocate_for_effect(
+                actor,
+                object,
+                destination,
+                MoveDestinationRestriction::Any,
+            )? {
                 moved.push((controller, id, facts));
             }
         }

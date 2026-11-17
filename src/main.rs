@@ -5731,7 +5731,7 @@ impl App {
                 let maximum = spec.maximum;
                 let field_target =
                     spec.kind == Some(local_rift::rules::PlayTargetKind::Battlefield);
-                let movement = matches!(effect, E::MoveUnit { .. });
+                let movement = local_rift::rules::chooses_move_destination(*card_id);
                 let mut targets = self.targets.clone();
                 match zone {
                     DropZone::Battlefield(lane) if field_target => {
@@ -9143,6 +9143,21 @@ fn card_brief(game: &Game, id: usize) -> String {
         DualMight => "+2 / -2 might".into(),
         Bounce { .. } | BounceBoth => "Return units to hand".into(),
         MoveFriendlyToBase { .. } => "Move units to base".into(),
+        MoveGroup { to_base: true, .. } => {
+            "Move friendly units from one battlefield to base".into()
+        }
+        MoveGroup {
+            maximum_total_might: Some(maximum),
+            ..
+        } => format!("Move enemies totaling at most {maximum} Might"),
+        MoveGroup { .. } => "Move a group of units".into(),
+        MoveEnemyToBaseThenDrawIfAlone => {
+            "Move an enemy to base; draw if an enemy is left alone".into()
+        }
+        MoveUnit {
+            destination: local_rift::rules::MoveDestinationRestriction::UnitWithSameController,
+            ..
+        } => "Move beside another unit with the same controller".into(),
         MoveUnit {
             maximum_might: Some(limit),
             ..
@@ -11105,6 +11120,8 @@ async fn main() {
     let binary_choices_smoke = args.iter().any(|a| a == "--ui-smoke-binary-choices");
     let tag_stun_smoke = args.iter().any(|a| a == "--ui-smoke-tag-stun");
     let twilight_smoke = args.iter().any(|a| a == "--ui-smoke-twilight");
+    let movement_groups_smoke = args.iter().any(|a| a == "--ui-smoke-movement-groups");
+    let temptation_smoke = args.iter().any(|a| a == "--ui-smoke-temptation");
     let field_options_smoke = args.iter().any(|a| a == "--ui-smoke-field-options");
     let turn_keywords_smoke = args.iter().any(|a| a == "--ui-smoke-turn-keywords");
     let rockfall_smoke = args.iter().any(|a| a == "--ui-smoke-rockfall");
@@ -11141,6 +11158,8 @@ async fn main() {
         || binary_choices_smoke
         || tag_stun_smoke
         || twilight_smoke
+        || movement_groups_smoke
+        || temptation_smoke
         || turn_keywords_smoke
         || flurry_smoke
         || disarm_smoke
@@ -11257,6 +11276,10 @@ async fn main() {
             smoke::run_tag_stun_frame(&mut app, frames)
         } else if twilight_smoke {
             smoke::run_twilight_frame(&mut app, frames)
+        } else if movement_groups_smoke {
+            smoke::run_movement_groups_frame(&mut app, frames)
+        } else if temptation_smoke {
+            smoke::run_temptation_frame(&mut app, frames)
         } else if field_options_smoke {
             smoke::run_field_options_frame(&mut app, frames)
         } else if discord_smoke {

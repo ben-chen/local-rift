@@ -1,0 +1,161 @@
+{
+  "schema_version": 1,
+  "checked_at": "2026-11-17T10:05:18.873597+00:00",
+  "scope": "Additional legal Chaos option for Irelia-compatible custom practice. No tournament prevalence claim or sourced preset change.",
+  "records": [
+    {
+      "official_id": "sfd-129-221",
+      "name": "Temptation",
+      "raw_printing": {
+        "official_id": "sfd-129-221",
+        "public_code": "SFD-129/221",
+        "name": "Temptation",
+        "set": "SFD",
+        "collector_number": 129,
+        "types": [
+          "spell"
+        ],
+        "type_source": "cardType.type",
+        "structured_types": [
+          "spell"
+        ],
+        "accessibility_types": [
+          "spell"
+        ],
+        "type_labels_conflict": false,
+        "super_types": [],
+        "domains": [
+          "chaos"
+        ],
+        "energy": 2,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "rules_html": "<p>[Repeat] :rb_energy_2: (You may pay the additional cost to repeat this spell's effect.)<br />Move an enemy unit to a location where there's a unit with the same controller.</p>",
+        "rules_text": "[Repeat] [2 Energy] (You may pay the additional cost to repeat this spell's effect.)\nMove an enemy unit to a location where there's a unit with the same controller.",
+        "equipment_html": "",
+        "equipment_text": "",
+        "tags": [],
+        "rarity": "common",
+        "image_url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/4d5075a540ff5e4a2daec598cb6400fbb6570673-744x1039.png?accountingTag=RB",
+        "image_accessibility_text": "Riftbound Spell: Temptation. [Repeat] [2] (You may pay the additional cost to repeat this spell's effect.)\nMove an enemy unit to a location where there's a unit with the same controller.",
+        "illustrators": [
+          "Polar Engine Studio"
+        ]
+      },
+      "raw_printing_sha256": "30f515b2ec66c583c49b1d130307a53ff12a2b2589f8ee1cc96e5058cce400b6",
+      "effective": {
+        "types": [
+          "spell"
+        ],
+        "super_types": [],
+        "domains": [
+          "chaos"
+        ],
+        "energy": 2,
+        "power": null,
+        "might": null,
+        "might_bonus": null,
+        "tags": [],
+        "rules_html": "<p>[Repeat] :rb_energy_2: (You may pay the additional cost to repeat this spell's effect.)<br />Move an enemy unit to a location where there's a unit with the same controller.</p>",
+        "rules_text": "[Repeat] [2 Energy] (You may pay the additional cost to repeat this spell's effect.)\nMove an enemy unit to a location where there's a unit with the same controller.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "resolution_ids": [],
+      "errata": [],
+      "snapshot_standard_legal": true,
+      "original_image": {
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/4d5075a540ff5e4a2daec598cb6400fbb6570673-744x1039.png?accountingTag=RB",
+        "path": "assets/data/card_admissions/temptation/sfd-129-221.png",
+        "sha256": "49a5b1e3dfe0768d14a4cbbb5dca54303c65da4c095190f60411d315e6de8179",
+        "bytes": 830048,
+        "dimensions": [
+          744,
+          1039
+        ]
+      },
+      "visual_review": {
+        "actual_full_face_viewed": true,
+        "reviewed_at": "2026-11-17T10:05:18.873597+00:00",
+        "printed_cost_type_domain_tags_and_rules_checked": true,
+        "printed_facts": {
+          "types": [
+            "spell"
+          ],
+          "super_types": [],
+          "domains": [
+            "chaos"
+          ],
+          "energy": 2,
+          "power": null,
+          "might": null,
+          "might_bonus": null,
+          "tags": [],
+          "rules_html": "<p>[Repeat] :rb_energy_2: (You may pay the additional cost to repeat this spell's effect.)<br />Move an enemy unit to a location where there's a unit with the same controller.</p>",
+          "rules_text": "[Repeat] [2 Energy] (You may pay the additional cost to repeat this spell's effect.)\nMove an enemy unit to a location where there's a unit with the same controller.",
+          "equipment_html": "",
+          "equipment_text": ""
+        },
+        "notes": "Full original face viewed: Chaos Spell, 2 Energy, no Power; Repeat 2 Energy; move one enemy unit to a location with a unit sharing its controller. No Action or Reaction."
+      },
+      "runtime_id": 487
+    }
+  ],
+  "preserved_source_prefix": {
+    "resolutions": {
+      "count": 146,
+      "sha256": "05c4cc26ed3131f59d236f2cc12ca7c41d03279709838b6cad4a41c22028c538"
+    },
+    "raw_printings": {
+      "count": 96,
+      "sha256": "9ebebf4fe84a457bcc85fa005e2042e30ffe057bb5fa77327b4b37bae959b157"
+    },
+    "historical_issues": {
+      "count": 61,
+      "sha256": "1c3293ba639eef549272f588b9a605ef6a8a82d6dce49eb37003706f629856e4"
+    },
+    "images": {
+      "count": 96,
+      "sha256": "d0787164df49a2029bb29ce8ddad423a899705729a766f5edf561e8de811d8f8"
+    }
+  },
+  "preserved_runtime_prefix": {
+    "cards": {
+      "count": 487,
+      "sha256": "6cebb140b1bfe0acb57ce5ff790e65d9645f065a5fca56b36cb9c5745a6fbe20"
+    },
+    "decks": {
+      "count": 7,
+      "sha256": "e975739d803427e54928d6e6cd03d1ce51d7ad108f4e247b8a000acf037a5cdb"
+    }
+  },
+  "rules_review": {
+    "authority": "https://playriftbound.com/en-us/rules-hub/",
+    "core_version": "2026-10-09",
+    "references": [
+      "355.4",
+      "355.10.b",
+      "355.15",
+      "359.3.e.2",
+      "449.2.c",
+      "451.1",
+      "458",
+      "718.6",
+      "820.2"
+    ],
+    "official_clarifications": [
+      "https://playriftbound.com/en-us/news/announcements/core-rules-radiance-patch-notes-effective-october-16-2026/"
+    ],
+    "findings": [
+      "The enemy unit is the target; destination occupancy is a location restriction, not a second target. Destination is fixed at finalization.",
+      "Interpretation from 449.2.c and 451.1: a destination that loses all units sharing the target controller is invalid at resolution; if the target would move there, it instead Recalls. No card-specific Temptation FAQ was located.",
+      "A Move prevented by a movement restriction does not Recall. A target already at the destination is not becoming present there again.",
+      "The earlier research note about attached Unit anchors was wrong: Core 718.6 and the Radiance notes prohibit a unit remaining attached. Current unit objects and tokens count; plain gear does not.",
+      "Repeat keeps independent finalized targets and destinations; original execution can change destination legality for the Repeat."
+    ],
+    "hub_rechecked_at": "2026-11-17T10:24:12.411801+00:00",
+    "hub_recheck_result": "Rules Hub still links the October 9, 2026 Core Rules. Radiance patch notes confirm unit detachment and prohibition on attachment under 718.6."
+  },
+  "implementation_status": "runtime_local_validation_passed_installed_pending"
+}
