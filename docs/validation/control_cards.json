@@ -1,5 +1,5 @@
 {
-  "status": "local checks passed; native/full-game/installed acceptance outstanding",
+  "status": "Installed acceptance passed; reviewed screenshots; ready for publication.",
   "reviewed_on": "2026-11-16",
   "base_revision": "785a0378b4b530546bc58b393cbfabfff6773200",
   "cards": [
@@ -65,14 +65,56 @@
     }
   ],
   "outstanding": [
-    "Visually inspect the new native controls, target editing and ownership explanation at both sizes",
-    "Complete-game campaigns containing these cards, across both seats and all difficulties",
-    "Use reachable card sequences to audit any pending-source/choice interactions exposed by those campaigns",
-    "Immutable installed artifact acceptance before publishing the control branch",
-    "Full currently legal Standard card coverage and complete goal audit"
+    "All currently legal Standard card coverage and the full end-to-end learning and expert-practice goal audit."
   ],
   "publication": {
-    "accepted": false,
-    "public_main_unchanged": "8fb77ead66add1ba1e10b8e808b36c52ab25eb67"
-  }
+    "accepted": true,
+    "previous_public_main": "8fb77ead66add1ba1e10b8e808b36c52ab25eb67",
+    "note": "Publication preserves the accepted runtime tree; only this acceptance documentation follows the fixed tested revision."
+  },
+  "installed_acceptance": {
+    "revision": "acd3e67a1073b07e7cfb9d85f10b250d6f096467",
+    "report": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/control-release-v1/status.json",
+    "report_sha256": "aedd6ba3c4540a5bbbbdb834375b153645aadca7e5850d74b4da5ab0392aed50",
+    "plan_sha256": "686df1d17df8cbdc1f7e13d2e8eb8b2767f72a9365cce86446bba7c347c4ec6e",
+    "runner_sha256": "0b7a96d119bae09845e284272b616bdfd6a11e4a8394c686e8869a317a5a1f4b",
+    "package": "/nix/store/r8w276fnd36q2ylsrj8xc0x9wczmal88-local-rift-0.1.0",
+    "rust_tests": 2148,
+    "source_tests": 343,
+    "simulation_games": 1176,
+    "ui_cases": 37,
+    "captures": 318,
+    "actual_native_games": 2,
+    "api_campaigns": 16,
+    "identical_complete_api_records": 111,
+    "finished_at": "2026-11-17T01:55:44.312457+00:00"
+  },
+  "control_campaigns": {
+    "engine_games": 24,
+    "api_series": 6,
+    "api_games": 17,
+    "possession_plays": 4,
+    "conscription_plays": 14,
+    "paid_conscriptions": 0,
+    "distinct_taken_units": 16,
+    "qualification": "Authored legal Irelia substitutions, not modified tournament presets. Paid Conscription is covered by focused engine/API and native scenarios, not observed in this natural full-game sample."
+  },
+  "visual_review": [
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/control-release-v1/control-small/rift_control_xp_cost_review.png",
+      "sha256": "1fac46ca8a85c5b499d5e2a909420e62e1293b20b46685ea89356fd8dafb5f6b",
+      "actually_viewed": true
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/control-release-v1/control-normal/rift_control_conscription_taken.png",
+      "sha256": "0bbedaa03b942ab39811c4445a6681633aad3fa46f95e78c3909a20b5a92855e",
+      "actually_viewed": true
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/control-release-v1/control-small/rift_control_possession_inspect.png",
+      "sha256": "54c139c87b3dace76a29d13d8bdcf45d6f7ccaf6b594ff148ca3243dd4a0f65d",
+      "actually_viewed": true
+    }
+  ],
+  "visual_findings": "Small-window XP total and optional component are readable; taken unit shows original ownership, readiness, damage and attached enemy-controlled gear; Possession inspector shows complete official text."
 }

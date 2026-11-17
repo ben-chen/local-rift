@@ -91,3 +91,13 @@ than claimed identical. Installed acceptance of the fixed candidate passed
 cases (290 captures and two actual games), and 15 API campaigns with 105
 complete records matching fresh local baselines. Four installed captures were
 visually reviewed; see [entry validation](validation/irelia_entry.json).
+
+
+Possession and Conscription passed installed acceptance at acd3e67. Their
+controls include Conscription's optional 5 XP payment, full cost totals, and
+clear ownership and equipment information for taken units. The fixed candidate
+passed 2,148 Rust tests, 343 source checks, 1,176 simulations, 37 native cases
+(318 captures), and 16 API campaigns matching 111 full records. Three new
+installed captures were visually reviewed. Control-specific coverage includes
+24 authored engine games and six API series (17 games); the paid Conscription
+path is covered by focused scenarios. See [validation](validation/control_cards.json).

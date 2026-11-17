@@ -1382,7 +1382,11 @@ counter scenario uses Wind Wall: Crumbling Sands would require another
 opponent spell and was an incorrect initial test fixture. API resolution is
 also driven through JSON actions and revision checks.
 
-Local validation is recorded in `validation/control_cards.json`. Native visual
-checks, complete-game campaigns, and immutable installed acceptance remain
-outstanding. The generated catalog reflects this development branch's mappings;
-it is not evidence that every mapped card or the whole Standard pool conforms.
+Installed acceptance at acd3e67 is recorded in `validation/control_cards.json`:
+2,148 Rust tests, 343 source checks, 1,176 simulated matches, 37 native cases
+with 318 captures and two actual games, and 16 API campaigns matching 111
+complete baseline records. Three new installed captures were actually viewed.
+The control-specific campaigns completed 24 authored engine games and six API
+series (17 games). Paid Conscription was not observed in the natural API sample;
+its XP choice and large target are covered by focused engine/API and native tests.
+The generated catalog is not evidence that the entire Standard pool conforms.

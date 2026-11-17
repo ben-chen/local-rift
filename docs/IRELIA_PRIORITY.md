@@ -2,15 +2,15 @@
 
 Updated November 16, 2026. Irelia cards take priority over the saved Azir draft.
 
-Possession and Conscription now have local runtime implementations on the
-control branch. They are not yet an accepted public release. Both use ordinary
-target finalization, response windows and resolution; Conscription's optional
-5 XP payment is declared once and applies to each separately targeted Repeat.
-The current work also covers card-payment XP accounting, ownership in API
-observations, native payment controls, and both companion advice levels.
-The seven sourced deck recipes remain unchanged. Native visual acceptance,
-complete-game campaigns and installed release checks remain required before
-publishing this card addition; see the control-card section of RULES_AUDIT.md.
+Possession and Conscription passed immutable installed acceptance at acd3e67.
+Both use ordinary target finalization, response windows and resolution;
+Conscription's optional 5 XP payment applies to each separately targeted Repeat.
+The client shows the XP total, original unit ownership and attached gear control.
+Both companion levels explain the choices. The seven sourced recipes are unchanged.
+The accepted candidate passed 2,148 Rust tests, 343 source checks, 1,176 simulations,
+37 interface cases (318 captures), and 16 API campaigns with 111 matching records.
+See [control-card validation](validation/control_cards.json) for visual review,
+24 authored engine games and the limits of the six-series API sample.
 
 Flurry of Feathers is available as an additional Calm option and passed
 immutable installed acceptance. It shares explicit mode handling
