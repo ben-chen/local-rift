@@ -1,6 +1,6 @@
 //! Repeatable offline smoke checks for every preset and AI difficulty.
 use local_rift::cards::presets;
-use local_rift::game::{Difficulty, Game, Phase, VICTORY_SCORE};
+use local_rift::game::{Difficulty, Game, Phase, Target, VICTORY_SCORE};
 use std::collections::HashSet;
 use std::time::Instant;
 
@@ -98,6 +98,35 @@ fn check_invariants(game: &Game) -> Result<(), String> {
             .iter()
             .filter(|item| item.player == owner && item.ability.is_none())
             .count();
+        let cards_on_board: usize = game
+            .players
+            .iter()
+            .enumerate()
+            .map(|(controller, state)| {
+                state
+                    .units
+                    .iter()
+                    .filter(|unit| {
+                        !unit.token
+                            && game.board_owner(Target::Unit {
+                                player: controller,
+                                unit_id: unit.id,
+                            }) == Some(owner)
+                    })
+                    .count()
+                    + state
+                        .gear
+                        .iter()
+                        .filter(|gear| {
+                            !gear.token
+                                && game.board_owner(Target::Gear {
+                                    player: controller,
+                                    gear_id: gear.id,
+                                }) == Some(owner)
+                        })
+                        .count()
+            })
+            .sum();
         let cards_total = player.deck.len()
             + player.hand.len()
             + player.discard.len()
@@ -109,8 +138,7 @@ fn check_invariants(game: &Game) -> Result<(), String> {
                 .count()
             + player.hidden.len()
             + usize::from(player.champion.is_some())
-            + player.units.iter().filter(|unit| !unit.token).count()
-            + player.gear.iter().filter(|gear| !gear.token).count()
+            + cards_on_board
             + cards_in_chain
             + usize::from(
                 game.payment_plan_view(owner)
@@ -166,7 +194,7 @@ fn check_invariants(game: &Game) -> Result<(), String> {
             }
             if gear
                 .attached_to
-                .is_some_and(|id| !player.units.iter().any(|unit| unit.id == id))
+                .is_some_and(|id| game.unit_controller(id).is_none())
             {
                 return Err(format!(
                     "gear {} remains attached to a missing unit",
@@ -281,5 +309,33 @@ fn main() {
     if let Err(error) = outcome {
         eprintln!("FAIL: {error}");
         std::process::exit(1);
+    }
+}
+
+#[cfg(test)]
+#[path = "../../tests/support/control_position.rs"]
+mod control_position;
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn invariant_checks_accept_borrowed_objects_and_reject_a_lost_card() {
+        for preset in 0..presets().len() {
+            for owner in 0..2 {
+                let (mut game, _, source, _) = control_position::position(preset, owner);
+                check_invariants(&game).unwrap();
+                game.take_control_of_battlefield_unit(1 - owner, source)
+                    .unwrap();
+                check_invariants(&game).unwrap();
+                game.players[owner].deck.pop().unwrap();
+                assert!(
+                    check_invariants(&game)
+                        .unwrap_err()
+                        .contains("card conservation failed")
+                );
+            }
+        }
     }
 }

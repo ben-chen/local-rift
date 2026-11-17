@@ -39,3 +39,6 @@ pub mod runes;
 
 pub mod match_ai;
 pub mod match_series;
+// Shared action fixtures compile in the library, client and integration tests.
+#[cfg(test)]
+extern crate self as local_rift;

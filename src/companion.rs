@@ -438,6 +438,7 @@ fn checked_advice(game: &Game, level: AdviceLevel) -> Result<Vec<&'static str>, 
         window_tips.extend(warden_advice(game, beginner));
         window_tips.extend(discord_advice(game, beginner));
         window_tips.extend(entry_advice(game, beginner));
+        window_tips.extend(movement_restriction_advice(game, beginner));
         if let Some(tip) = sands_advice(game, beginner) {
             window_tips.push(tip);
         }
@@ -473,6 +474,7 @@ fn checked_advice(game: &Game, level: AdviceLevel) -> Result<Vec<&'static str>, 
     tips.extend(warden_advice(game, beginner));
     tips.extend(discord_advice(game, beginner));
     tips.extend(entry_advice(game, beginner));
+    tips.extend(movement_restriction_advice(game, beginner));
 
     // High stakes scoring and visible threats come before routine suggestions.
     let enemy_has_hold = game.battlefield_owner.contains(&Some(1));
@@ -713,17 +715,6 @@ fn checked_advice(game: &Game, level: AdviceLevel) -> Result<Vec<&'static str>, 
             "Hunker Down readies your unit and draws a card, but that unit cannot move this turn. An opponent's movement effect cannot move it either."
         } else {
             "Hunker Down can protect a defender from forced movement. It also stops your own movement this turn, so choose your battlefield before casting it."
-        });
-    }
-    if human
-        .units
-        .iter()
-        .any(|unit| game.movement_prevented(1, 0, unit.id))
-    {
-        tips.push(if beginner {
-            "A unit marked CANNOT MOVE stays where it is this turn, even if it is ready. It can still fight and use other legal abilities. The restriction ends with the turn."
-        } else {
-            "Your movement-locked unit can hold its position against forced Move effects. Return-to-hand and banish effects still work; don't treat it as complete protection."
         });
     }
     if human.hand.contains(&422) {
@@ -1148,6 +1139,34 @@ fn checked_advice(game: &Game, level: AdviceLevel) -> Result<Vec<&'static str>, 
     tips.push(archetype_tip(game));
     Ok(tips)
 }
+fn movement_restriction_advice(game: &Game, beginner: bool) -> Vec<&'static str> {
+    let human = &game.players[0];
+    let mut tips = Vec::new();
+    if human
+        .units
+        .iter()
+        .any(|unit| game.movement_locked(0, unit.id) && game.movement_prevented(1, 0, unit.id))
+    {
+        tips.push(if beginner {
+            "A unit marked CANNOT MOVE cannot be moved by either player this turn. Recall can still send it to base; it can still fight and use other legal abilities."
+        } else {
+            "A movement-locked unit resists forced Move effects. Recall, return-to-hand and banish still work; protect its position from those too."
+        });
+    }
+    if human
+        .units
+        .iter()
+        .any(|unit| !game.movement_locked(0, unit.id) && game.movement_prevented(1, 0, unit.id))
+    {
+        tips.push(if beginner {
+            "Vex's restriction still applies to the player who played this unit. After taking control, you may move it when otherwise legal. Stun still stops its combat damage."
+        } else {
+            "Taking control leaves Vex's movement restriction on the original player. You can reposition the unit, and that opponent cannot force a Move with their effects this turn."
+        });
+    }
+    tips
+}
+
 fn response_window_advice(
     game: &Game,
     beginner: bool,
@@ -2990,6 +3009,39 @@ mod tests {
 
     fn game() -> Game {
         Game::new(0, 1, 72, Difficulty::Easy)
+    }
+
+    #[test]
+    fn borrowed_vex_unit_advice_preserves_player_specific_movement() {
+        use local_rift::game::Action;
+
+        let (mut game, _) = crate::control_test_support::position(1);
+        game.players[1].hand = vec![71, 71];
+        assert!(game.showdown.is_some());
+        for response_window in [true, false] {
+            if !response_window {
+                for _ in 0..20 {
+                    if game.showdown.is_none() {
+                        break;
+                    }
+                    game.apply(Action::Pass).unwrap();
+                }
+                assert!(game.showdown.is_none());
+            }
+            for level in [AdviceLevel::Beginner, AdviceLevel::Advanced] {
+                let before = format!("{game:?}");
+                let tips = advice(&game, level);
+                assert!(tips.iter().any(|tip| tip.contains("Vex's")));
+                assert!(tips.iter().all(|tip| tip.chars().count() <= 180));
+                assert!(!tips.iter().any(|tip| tip.contains("marked CANNOT MOVE")
+                    || tip.contains("movement-locked unit")));
+                assert_eq!(format!("{game:?}"), before);
+                let mut other = game.clone();
+                other.players[1].hand = vec![425, 428];
+                other.players[1].deck.reverse();
+                assert_eq!(advice(&other, level), tips);
+            }
+        }
     }
 
     #[test]

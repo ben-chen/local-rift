@@ -9704,10 +9704,12 @@ fn live_unit_description(game: &Game, owner: usize, unit_id: u32) -> Option<Stri
     if game.unit_moved_this_turn(owner, unit_id) {
         lines.push("Moved this turn: this same unit changed locations through a Move. It can be chosen by an enemy Siren's Song; playing or recalling a unit does not count as moving.".into());
     }
-    if game.movement_prevented(1 - owner, owner, unit_id) {
+    if game.movement_locked(owner, unit_id) && game.movement_prevented(1 - owner, owner, unit_id) {
         lines.push("Cannot move this turn, including through either player's spells or abilities. Readying does not remove this restriction. Returning to hand or banishing is not movement.".into());
     } else if game.movement_locked(owner, unit_id) {
         lines.push("Its controller cannot move this unit this turn, including through spells or abilities. An opponent's movement effect can still move it.".into());
+    } else if game.movement_prevented(1 - owner, owner, unit_id) {
+        lines.push("Its opponent cannot move this unit this turn. Its controller can still move it when otherwise legal; changing control did not transfer the player-specific restriction.".into());
     }
     if unit.protected {
         lines.push("Protected from being chosen by enemy spells and abilities this turn.".into());
@@ -9869,9 +9871,30 @@ mod preference_tests {
 }
 
 #[cfg(test)]
+#[path = "../tests/support/vex_position.rs"]
+mod control_test_support;
+
+#[cfg(test)]
 mod live_preview_tests {
     use super::*;
     use local_rift::{game::Unit, gear::GearState};
+
+    #[test]
+    fn borrowed_vex_unit_description_names_only_the_restricted_player() {
+        for original in 0..2 {
+            let (game, target) = control_test_support::position(original);
+            let Target::Unit { player, unit_id } = target else {
+                unreachable!()
+            };
+            let text = live_unit_description(&game, player, unit_id).unwrap();
+            assert!(text.contains("Its opponent cannot move"));
+            assert!(
+                !text.contains("including through either player's")
+                    && !text.contains("Its controller cannot move")
+            );
+            assert!(text.contains("Stunned:"));
+        }
+    }
 
     #[test]
     fn private_choice_waiting_copy_is_owner_gated_and_hides_card_contents() {

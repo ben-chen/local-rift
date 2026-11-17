@@ -1,6 +1,37 @@
 use super::*;
 use crate::game::test_support::position;
 
+#[path = "../../tests/support/vex_position.rs"]
+mod control_test_support;
+
+#[test]
+fn player_specific_movement_restriction_does_not_follow_control() {
+    for original in 0..2 {
+        let mut s = Session::new(ResetOptions::default()).unwrap();
+        s.start(0).unwrap();
+        let (game, target) = control_test_support::position(original);
+        s.game = game;
+        let Target::Unit { player, unit_id } = target else {
+            unreachable!()
+        };
+        for viewer in 0..2 {
+            let view = s.observe(viewer).unwrap();
+            let unit = view["players"][player]["units"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .find(|unit| unit["id"] == unit_id)
+                .unwrap();
+            assert_eq!(unit["movement_locked"], false);
+            assert_eq!(
+                unit["movement_restriction"],
+                json!({"scope":"player","player":original,"expires":"end_of_turn"})
+            );
+            assert_eq!(unit["stunned"], true);
+        }
+    }
+}
+
 #[test]
 fn entry_api_describes_free_choice_and_exposes_accepted_restriction_to_both_players() {
     for actor in 0..2 {

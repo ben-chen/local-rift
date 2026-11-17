@@ -492,8 +492,11 @@ impl Session {
                 "vision_instances":vision::instances_to_json(game,crate::empower::BoardObject::Unit {player:owner,unit_id:unit.id})?,
                 "passive_contributions":game.passive_contributions(crate::empower::BoardObject::Unit {player:owner,unit_id:unit.id}).map_err(ApiError::illegal)?.iter().map(empowered::contribution_to_json).collect::<Vec<_>>()
             });
-                if game.movement_prevented(1-owner, owner, unit.id) {
-                    unit_view["movement_restriction"] = json!({"scope":"any_player","expires":"end_of_turn"});
+                let restricted: Vec<_> = (0..2).filter(|&actor| game.movement_prevented(actor, owner, unit.id)).collect();
+                match restricted.as_slice() {
+                    [player] => unit_view["movement_restriction"] = json!({"scope":"player","player":player,"expires":"end_of_turn"}),
+                    [_, _] => unit_view["movement_restriction"] = json!({"scope":"any_player","expires":"end_of_turn"}),
+                    _ => {}
                 }
                 let shield = game.turn_shield(unit.id).map_err(ApiError::illegal)?;
                 if shield != 0 {

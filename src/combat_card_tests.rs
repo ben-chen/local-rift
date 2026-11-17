@@ -660,7 +660,12 @@ fn ezreal_no_legal_first_designation_target_is_not_rechecked_later_in_combat() {
             let Target::Unit { unit_id, .. } = ez else {
                 unreachable!()
             };
-            assert!(g.trigger_state.combat_seen.contains(&unit_id));
+            assert!(
+                g.trigger_state
+                    .combat_seen
+                    .iter()
+                    .any(|seen| seen.contains(&unit_id))
+            );
         }
     }
 }

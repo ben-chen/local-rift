@@ -613,7 +613,12 @@ fn leaving_and_reentering_during_the_same_combat_does_not_recheck_attack_trigger
         cast(&mut g, 9, None, vec![target(attacker, id)]); // Flash to base.
         pass_pair(&mut g);
         assert_eq!(g.unit_ref(target(attacker, id)).unwrap().lane, None);
-        assert!(g.trigger_state.combat_seen.contains(&id));
+        assert!(
+            g.trigger_state
+                .combat_seen
+                .iter()
+                .any(|seen| seen.contains(&id))
+        );
         // The first spell passed focus to the opponent; its pass returns it.
         g.apply(Action::Pass).unwrap();
         assert_eq!(g.priority(), attacker);
@@ -624,7 +629,12 @@ fn leaving_and_reentering_during_the_same_combat_does_not_recheck_attack_trigger
             "Attack is checked only once per combat"
         );
         assert_eq!(g.unit_ref(target(attacker, id)).unwrap().lane, Some(0));
-        assert!(g.trigger_state.combat_seen.contains(&id));
+        assert!(
+            g.trigger_state
+                .combat_seen
+                .iter()
+                .any(|seen| seen.contains(&id))
+        );
     }
 }
 
@@ -764,7 +774,12 @@ fn attack_and_defend_condition_checks_remain_used_after_departure_in_both_seats(
             g.gear_play(player, 197, None).unwrap(); // Mask observes from Base.
             g.open_showdown(0, attacker).unwrap();
             assert!(g.chain.is_empty()); // not Alone on the only condition check
-            assert!(g.trigger_state.combat_seen.contains(&subject));
+            assert!(
+                g.trigger_state
+                    .combat_seen
+                    .iter()
+                    .any(|seen| seen.contains(&subject))
+            );
             g.move_effect(player, target(player, subject), None, false)
                 .unwrap();
             g.sync_combat_triggers();
@@ -828,7 +843,17 @@ fn defend_reentry_cannot_repeat_ahri_effect_but_a_new_object_can_trigger() {
             g.decision,
             Some(Decision::TriggerTargets { card_id: 168, .. })
         ));
-        assert!(g.trigger_state.combat_seen.contains(&source));
-        assert!(g.trigger_state.combat_seen.contains(&replayed));
+        assert!(
+            g.trigger_state
+                .combat_seen
+                .iter()
+                .any(|seen| seen.contains(&source))
+        );
+        assert!(
+            g.trigger_state
+                .combat_seen
+                .iter()
+                .any(|seen| seen.contains(&replayed))
+        );
     }
 }

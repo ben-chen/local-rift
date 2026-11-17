@@ -1267,3 +1267,48 @@ passing Rust tests, strict all-target lint, source review, and two native cases
 with ten captures. The two token-choice captures were visually inspected.
 These local checks do not establish complete Standard coverage or installed
 acceptance of the unfinished control-card release.
+
+## Control transfer and combat designation — November 16, 2026
+
+The engine now has a battlefield-unit control instruction. It preserves the
+physical object, original owner, damage, readiness, buffs, temporary effects,
+turn history, and attachments. Equipment keeps its own controller. Changing
+control stages Contested when appropriate (190.3.a.2), but neither plays nor
+Moves the unit and does not perform cleanup during the remaining instructions
+of a resolving effect (321). Recalling the transferred unit before cleanup can
+remove the staged contest without opening a showdown or awarding a point.
+
+An existing combat checks designations before lethal cleanup (323.2–4).
+Attack and Defend have separate first-occurrence histories (383.4.e/f): a unit
+that changes sides can defend for the first time after attacking. Returning to
+either already-seen designation does not retrigger it. If control and Recall
+finish before cleanup, the absent unit does not acquire the new designation.
+The same original physical owner receives a transferred unit's eventual Trash
+or Banish destination.
+
+Vex, Apathetic's "they" refers to the player who played the unit, captured by
+the trigger condition (359.3.f.3). It does not become the unit's new controller.
+The earlier pending-reference regression incorrectly asserted that the movement
+lock switched players; that assertion and implementation are corrected. Stun
+still affects the physical unit, while only the original player is prohibited
+from moving it. API and native descriptions distinguish a player-specific
+restriction from one applying to both players, and Mote explains that difference.
+
+Shared full-game conservation checks now count real board cards by original
+owner across both controller areas and accept equipment attached to either
+player's live unit. Independently constructed preset multisets still detect
+missing cards. These checks exercise engine operations and authored positions;
+they do not yet play Possession or Conscription through finalization.
+
+Remaining admission work includes the two spells' targets and additional costs,
+absolute movement/Recall semantics, remaining captured continuations, live API
+references, AI choices and complete-game/installed acceptance. Full Standard
+coverage and expert-strength practice remain unproven.
+
+The [local validation record](validation/control_transfer.json) records 1,454
+passing Rust tests, strict all-target lint, format/diff checks and source review.
+The companion regression exercises both an open response window and ordinary
+play, at both advice levels, without changing game state or reading hidden card
+identities. Movement coaching also distinguishes Recall from Move restrictions.
+These checks do not establish full-card, full-game or installed acceptance of
+the unfinished control-card release.

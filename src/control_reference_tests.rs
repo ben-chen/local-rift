@@ -365,7 +365,9 @@ fn vex_pending_stun_follows_the_played_unit() {
         let current = transfer(&mut g, id);
         finish_chain(&mut g);
         assert!(g.unit_ref(current).unwrap().stunned);
-        assert!(g.movement_locks.contains(&(1 - actor, id)));
+        assert!(g.movement_locks.contains(&(actor, id)));
+        assert!(g.movement_prevented(actor, 1 - actor, id));
+        assert!(!g.movement_prevented(1 - actor, 1 - actor, id));
     }
 }
 

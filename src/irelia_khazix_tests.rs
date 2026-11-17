@@ -241,7 +241,12 @@ fn irelia_khazix_failed_first_condition_cannot_trigger_later_in_the_same_combat(
             assert_eq!(game.lane_count(1 - owner, 0), 1);
             assert_eq!(might(&game, owner, id), 4);
             assert_eq!(game.players[owner].xp, xp);
-            assert!(game.trigger_state.combat_seen.contains(&id));
+            assert!(
+                game.trigger_state
+                    .combat_seen
+                    .iter()
+                    .any(|seen| seen.contains(&id))
+            );
         }
     }
 }

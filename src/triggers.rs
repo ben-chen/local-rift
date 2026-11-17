@@ -64,7 +64,9 @@ pub struct TriggerState {
     /// Physical source ID, printed card, trigger index, mode. Control changes
     /// do not reset choices; leaving and replaying creates a different ID.
     pub modes_used: Vec<(u32, CardId, usize, usize)>,
-    pub combat_seen: Vec<u32>,
+    /// First Attack and first Defend are separate checks (CR383.4.e/f).
+    /// Entries survive departure, reentry and control changes within a combat.
+    pub combat_seen: [Vec<u32>; 2],
     pub(crate) hidden_play: bool,
 }
 impl TriggerState {
@@ -906,10 +908,11 @@ impl Game {
         // permit another condition check within the same combat. Keep every
         // seen physical identity until combat ends, including failed conditions.
         for (player, unit) in entrants {
-            if self.trigger_state.combat_seen.contains(&unit.id) {
+            let seen = &mut self.trigger_state.combat_seen[usize::from(player != attacker)];
+            if seen.contains(&unit.id) {
                 continue;
             }
-            self.trigger_state.combat_seen.push(unit.id);
+            seen.push(unit.id);
             self.emit_event(EventSnapshot::unit(
                 if player == attacker {
                     Occurrence::Attack

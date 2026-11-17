@@ -23,6 +23,9 @@ mod control_location_tests;
 #[cfg(test)]
 #[path = "control_reference_tests.rs"]
 mod control_reference_tests;
+#[cfg(test)]
+#[path = "control_transfer_tests.rs"]
+mod control_transfer_tests;
 #[path = "ownership.rs"]
 mod ownership;
 
@@ -1266,7 +1269,7 @@ pub struct Game {
     pending_entries: Vec<(usize, usize)>,
     movement_locks: Vec<(usize, u32)>,
     /// Object restrictions stop movement by either player, unlike Vex's
-    /// controller-only restriction retained in movement_locks.
+    /// restriction on the original unit-playing player in movement_locks.
     immobile_units: Vec<(usize, u32)>,
     /// Physical identities that completed an actual Move during the current turn.
     moved_units: Vec<u32>,
@@ -1874,11 +1877,11 @@ impl Game {
     pub fn movement_locked(&self, player: usize, unit_id: u32) -> bool {
         self.movement_prevented(player, player, unit_id)
     }
-    pub fn movement_prevented(&self, actor: usize, owner: usize, unit_id: u32) -> bool {
+    pub fn movement_prevented(&self, actor: usize, _controller: usize, unit_id: u32) -> bool {
         // An all-player movement restriction belongs to the physical object,
         // even if its controller changes before the restriction expires.
         self.immobile_units.iter().any(|(_, id)| *id == unit_id)
-            || (actor == owner && self.movement_locks.contains(&(owner, unit_id)))
+            || self.movement_locks.contains(&(actor, unit_id))
     }
     pub fn cards_played_this_turn(&self, player: usize) -> u16 {
         self.cards_played[player]
@@ -2777,7 +2780,7 @@ impl Game {
 
     fn open_showdown(&mut self, lane: usize, attacker: usize) -> Result<(), String> {
         self.pending_entries.retain(|&(field, _)| field != lane);
-        self.trigger_state.combat_seen.clear();
+        self.trigger_state.combat_seen = Default::default();
         self.showdown = Some(Showdown {
             lane,
             attacker,
@@ -8957,17 +8960,19 @@ impl Game {
                 0,
             )?,
             TriggeredAbility::Stun {
-                player: owner,
+                player: restricted_player,
                 unit_id,
             } => {
-                let owner = self.unit_controller(unit_id).unwrap_or(owner);
+                let owner = self.unit_controller(unit_id).unwrap_or(restricted_player);
                 if let Some(unit) = self.unit_mut(Target::Unit {
                     player: owner,
                     unit_id,
                 }) {
                     unit.stunned = true;
-                    if !self.movement_locks.contains(&(owner, unit_id)) {
-                        self.movement_locks.push((owner, unit_id));
+                    // Vex's "they" is the player who played the unit, not its
+                    // current controller when this pending trigger resolves.
+                    if !self.movement_locks.contains(&(restricted_player, unit_id)) {
+                        self.movement_locks.push((restricted_player, unit_id));
                     }
                 }
             }

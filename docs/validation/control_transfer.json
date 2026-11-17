@@ -1,0 +1,178 @@
+{
+  "status": "Control-transfer foundation passed local checks; Possession and Conscription are not enabled.",
+  "reviewed_at": "2026-11-17T00:45:28.100693+00:00",
+  "base_revision": "9cb554e7e132e0b805dd15da4882b90dda8a7529",
+  "rules": {
+    "hub": "https://playriftbound.com/en-us/rules-hub/",
+    "edition": "2026-10-09",
+    "pdf": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/5c7946f7c3b8c6e0faff85ab6dadc6d2e721ea94.pdf",
+    "sha256": "94d41fee86f88b61c4157c0389c0595d990b98e5b42555c99d9f649ee64d1fec",
+    "sections": [
+      "190.3.a.2",
+      "321",
+      "323.2\u20134",
+      "359.3.f.3",
+      "383.4.e/f",
+      "458.3",
+      "718.5"
+    ]
+  },
+  "implementation": [
+    "A resolving battlefield-unit control instruction preserves physical identity, original owner, status and equipment; contest cleanup waits for the caller to finish the effect.",
+    "First Attack and first Defend histories are separate within each combat, including control changes and return to a previously seen designation.",
+    "Vex stuns the physical unit but prohibits movement by the player captured when the unit was played. Control changes do not transfer that player-specific restriction.",
+    "API and native previews distinguish current-controller, opponent-only and both-player movement restrictions. Companion advice shares the same rule in normal play and response windows and explains that Recall bypasses movement restrictions.",
+    "Shared real-action Vex fixtures serve API, preview and companion checks. Conservation fixtures preserve each preset deck multiset while transferring units and keeping opposing-controller equipment attached."
+  ],
+  "validation": {
+    "library_tests": 1185,
+    "client_tests": 175,
+    "api_binary_tests": 1,
+    "simulator_binary_tests": 1,
+    "affected_integration_tests": 92,
+    "total_rust_tests": 1454,
+    "failed": 0,
+    "ignored": 0,
+    "source_review_tests": 1,
+    "source_card_faces": 2,
+    "clippy": "all targets, -D warnings, passed",
+    "format": "cargo fmt --all --check and git diff --check passed",
+    "report": {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/control-transfer-checks-v5.json",
+      "sha256": "f8be71f5dd8e240b2a4af06ceaefbe3bf9ec127ad06d373fd2bed52748835853"
+    },
+    "steps": [
+      {
+        "name": "format",
+        "command": [
+          "cargo",
+          "fmt",
+          "--all",
+          "--check"
+        ],
+        "status": "passed",
+        "log": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/control-transfer-format-v5.log",
+        "exit_code": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "diff",
+        "command": [
+          "git",
+          "diff",
+          "--check"
+        ],
+        "status": "passed",
+        "log": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/control-transfer-diff-v5.log",
+        "exit_code": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "selected-tests",
+        "command": [
+          "cargo",
+          "test",
+          "--locked",
+          "--lib",
+          "--bins",
+          "--test",
+          "activated_abilities",
+          "--test",
+          "legend_foundation",
+          "--test",
+          "payments",
+          "--test",
+          "payment_plans",
+          "--test",
+          "numeric_runtime",
+          "--test",
+          "c16_legends",
+          "--test",
+          "control_transfer"
+        ],
+        "status": "passed",
+        "log": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/control-transfer-selected-tests-v5.log",
+        "exit_code": 0,
+        "sha256": "b3256329581af3e6d00ee7aefe509b5cb4bd1d0e69c9b642bffc29d16604bc8a"
+      },
+      {
+        "name": "clippy",
+        "command": [
+          "cargo",
+          "clippy",
+          "--locked",
+          "--all-targets",
+          "--",
+          "-D",
+          "warnings"
+        ],
+        "status": "passed",
+        "log": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/control-transfer-clippy-v5.log",
+        "exit_code": 0,
+        "sha256": "6e58a02f14c734a8c94dd951c7fff64e78ebe27e018d46a6440ce5c31318d4fb"
+      },
+      {
+        "name": "control-source",
+        "command": [
+          "python3",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "tools",
+          "-p",
+          "test_control_source_review.py",
+          "-v"
+        ],
+        "status": "passed",
+        "log": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/control-transfer-control-source-v5.log",
+        "exit_code": 0,
+        "sha256": "b2ad49cd9e8578d471a7d187cff9f14770417bf31ad5c6d0e8252888bdbd097f"
+      }
+    ],
+    "scope": "Operation and authored-action regressions, both player orientations, all seven preset conservation positions. No new rendered acceptance or complete-game campaign claimed for this checkpoint."
+  },
+  "regression_evidence": [
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/control-transfer-red-v1.log",
+      "result": "Before the combat history fix, first defense after control transfer failed; five other operation tests passed.",
+      "sha256": "7d57b438186a7d4dc92a97bd802fbe98365c5029a6ce63244543c66f412d9ef9"
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/control-transfer-checks-v1.json",
+      "result": "Compile failed on a private GearState import; corrected.",
+      "sha256": "e17b76c608667de1821cc1da8e4ca6c2a3ed51377875ab5522caf09349428f1c"
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/control-transfer-checks-v2.json",
+      "result": "Compile failed on the shared fixture library import; corrected.",
+      "sha256": "287bdc5a9d9a896cc9887c728b3642f6665ae536a3745543cee9272208848b6a"
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/control-transfer-checks-v3.json",
+      "result": "1185 library tests passed; companion response-window regression failed. Shared advice routing corrected without dropping that scenario.",
+      "sha256": "4cece90bf43a61fd934c73d8d1773773f1e55f23c2e8a183b543c25f76d6b4d7"
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/control-transfer-companion-focused-v1.log",
+      "result": "Expanded companion scenario initially lacked an Action import; corrected.",
+      "sha256": "2e3e5350a20e012991ac0c8b82adecb4bda2d45e9e543bc940e82e358435e189"
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/control-transfer-companion-focused-v2.log",
+      "result": "Companion advice passed at both levels, before and after the response window, read-only and insensitive to hidden card identities.",
+      "sha256": "aa793d0ecc84827f2c31bf565c352dfb4f7856425fedf8f149a4d7cb718abf7d"
+    },
+    {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/control-transfer-checks-v4.json",
+      "result": "All checks passed; superseded after clarification of Recall in companion copy.",
+      "sha256": "681b1d78b30e99385a8d68736faf2bfc3d796e52ca93dc896939a50cc7b000fb"
+    }
+  ],
+  "remaining": [
+    "Absolute Move destinations and movement actor/location events, including current 449.2.c instead-Recall semantics.",
+    "Remaining captured sources, Hidden/Empower/payment/return continuations and live API references.",
+    "Possession and Conscription target finalization, optional XP payment, ordered resolution, AI/UI/companion support, full-game and installed acceptance.",
+    "All currently legal card coverage and expert-level practice remain incomplete/unproven."
+  ]
+}

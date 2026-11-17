@@ -144,7 +144,7 @@ impl Game {
                 // a unit whose Might has fallen below damage from responses.
                 self.combat_resolution = None;
                 self.showdown = None;
-                self.trigger_state.combat_seen.clear();
+                self.trigger_state.combat_seen = Default::default();
                 self.priority_player = self.active;
                 self.push_log("Combat ends; combat designations expire.".into());
             }

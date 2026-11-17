@@ -829,7 +829,12 @@ Unit observations retain `movement_locked`, meaning the controller cannot move
 that physical unit this turn. Hunker Down also blocks movement by the opponent;
 these units additionally expose
 `"movement_restriction":{"scope":"any_player","expires":"end_of_turn"}` to
-both viewers. Other units omit this optional field. Ready and movement legality
+both viewers. A restriction on only one player instead exposes
+`{"scope":"player","player":P,"expires":"end_of_turn"}`. For Vex, `P` is the
+player who originally played the unit, even after control changes. The current
+controller can therefore have `movement_locked:false` while its opponent is
+still restricted. Units with no movement restriction omit the optional field.
+Ready and movement legality
 are separate. Movement spells can still choose restricted units; their Move
 instruction does nothing, while other independent instructions still resolve.
 Basic and grouped moves reject the locked unit without changing state or revision.

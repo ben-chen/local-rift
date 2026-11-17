@@ -2,6 +2,53 @@
 use super::*;
 
 impl Game {
+    /// Execute a control instruction for a unit already at a battlefield.
+    /// The caller validates the spell's targets and finishes its remaining
+    /// instructions before cleanup (CR321). This is not a player action.
+    /// Control neither plays nor Moves the object, and equipment stays owned
+    /// and controlled by its own player (CR190.3.a.2 / 718.5).
+    pub fn take_control_of_battlefield_unit(
+        &mut self,
+        controller: usize,
+        target: Target,
+    ) -> Option<Target> {
+        if controller >= self.players.len() {
+            return None;
+        }
+        let Target::Unit { player, unit_id } = target else {
+            return None;
+        };
+        let lane = self
+            .unit_ref(target)?
+            .lane
+            .filter(|&lane| lane < self.battlefield_count())?;
+        if controller == player {
+            return Some(target);
+        }
+        let owner = self.board_owner(target)?;
+        let index = self.players[player]
+            .units
+            .iter()
+            .position(|u| u.id == unit_id)?;
+        let unit = self.players[player].units.remove(index);
+        self.push_log(format!(
+            "{} takes control of {}.",
+            self.players[controller].name,
+            self.unit_name(&unit)
+        ));
+        self.players[controller].units.push(unit);
+        if controller == owner {
+            self.board_owner_overrides.remove(&unit_id);
+        } else {
+            self.board_owner_overrides.insert(unit_id, owner);
+        }
+        self.stage_entry(lane, controller);
+        Some(Target::Unit {
+            player: controller,
+            unit_id,
+        })
+    }
+
     /// Physical board identity survives changes of control. This lookup is for
     /// stored references; it does not bypass validation of submitted targets.
     pub fn unit_controller(&self, unit_id: u32) -> Option<usize> {

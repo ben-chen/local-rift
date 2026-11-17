@@ -2,7 +2,7 @@
 //! Keep these independent of engine validation: they reconstruct physical totals.
 use local_rift::cards::CardId;
 use local_rift::deck::CustomDeck;
-use local_rift::game::{Game, domain_index};
+use local_rift::game::{Game, Target, domain_index};
 use std::collections::{BTreeMap, BTreeSet};
 
 fn multiset(cards: impl IntoIterator<Item = CardId>) -> BTreeMap<CardId, usize> {
@@ -38,18 +38,34 @@ pub fn conserved(game: &Game, decks: &[CustomDeck; 2]) {
                         .flatten()
                 }))
                 .chain(
-                    player
-                        .units
+                    game.players
                         .iter()
-                        .filter(|unit| !unit.token)
-                        .map(|unit| unit.card_id),
+                        .enumerate()
+                        .flat_map(|(controller, state)| {
+                            state.units.iter().filter_map(move |unit| {
+                                (!unit.token
+                                    && game.board_owner(Target::Unit {
+                                        player: controller,
+                                        unit_id: unit.id,
+                                    }) == Some(owner))
+                                .then_some(unit.card_id)
+                            })
+                        }),
                 )
                 .chain(
-                    player
-                        .gear
+                    game.players
                         .iter()
-                        .filter(|gear| !gear.token)
-                        .map(|gear| gear.card_id),
+                        .enumerate()
+                        .flat_map(|(controller, state)| {
+                            state.gear.iter().filter_map(move |gear| {
+                                (!gear.token
+                                    && game.board_owner(Target::Gear {
+                                        player: controller,
+                                        gear_id: gear.id,
+                                    }) == Some(owner))
+                                .then_some(gear.card_id)
+                            })
+                        }),
                 )
                 .chain(player.hidden.iter().map(|card| card.card_id))
                 .chain(
@@ -97,7 +113,7 @@ pub fn conserved(game: &Game, decks: &[CustomDeck; 2]) {
             assert!(objects.insert(gear.id), "duplicate object ID {}", gear.id);
             assert!(
                 gear.attached_to
-                    .is_none_or(|id| player.units.iter().any(|unit| unit.id == id))
+                    .is_none_or(|id| game.unit_controller(id).is_some())
             );
         }
     }
