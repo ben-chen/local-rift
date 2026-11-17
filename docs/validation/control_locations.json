@@ -1,0 +1,279 @@
+{
+  "status": "Here token locations passed local checks; control-taking cards remain unavailable.",
+  "reviewed_at": "2026-11-17T00:25:59.188301+00:00",
+  "base_revision": "48bb27a6406478f7d5c44f3a97ab147aa4f62212",
+  "rules": {
+    "hub": "https://playriftbound.com/en-us/rules-hub/",
+    "edition": "2026-10-09",
+    "pdf": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/5c7946f7c3b8c6e0faff85ab6dadc6d2e721ea94.pdf",
+    "sha256": "94d41fee86f88b61c4157c0389c0595d990b98e5b42555c99d9f649ee64d1fec",
+    "sections": [
+      "182",
+      "184.2",
+      "185.2.a",
+      "186",
+      "354.3",
+      "355.17",
+      "358.3",
+      "359.3.f.2"
+    ]
+  },
+  "implementation": [
+    "Pending token plays store an absolute BoardLocation, independent of their controller. Existing relative callers are converted when the instruction is queued.",
+    "Legacy and metadata Here effects follow their live source by physical ID while retaining the original ability controller. Equipment-granted Here follows the bearer.",
+    "An opposing fixed base makes token finalization impossible. The token disappears, no replacement destination or cost is chosen, and reserved next-unit grants are restored.",
+    "Pending token API rows and token-play decisions share fixed destinations with additive base_player. Native descriptions name the physical base.",
+    "Share authored control-change and public unopposed-resolution fixture helpers with the pending-reference suite."
+  ],
+  "validation": {
+    "library_tests": 1178,
+    "client_tests": 173,
+    "api_binary_tests": 1,
+    "affected_integration_tests": 91,
+    "total_rust_tests": 1443,
+    "failed": 0,
+    "ignored": 0,
+    "source_review_tests": 1,
+    "source_card_faces": 2,
+    "clippy": "all targets, -D warnings, passed",
+    "format": "cargo fmt --all --check and git diff --check passed",
+    "report": {
+      "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/control-location-checks-v1.json",
+      "sha256": "e60d6b97135561df20d0b945cb0914fe96167a3ce8b8e33fe5ae0c9d8134ad9d"
+    },
+    "steps": [
+      {
+        "name": "selected-tests",
+        "command": [
+          "cargo",
+          "test",
+          "--locked",
+          "--lib",
+          "--bins",
+          "--test",
+          "activated_abilities",
+          "--test",
+          "legend_foundation",
+          "--test",
+          "payments",
+          "--test",
+          "payment_plans",
+          "--test",
+          "numeric_runtime",
+          "--test",
+          "c16_legends"
+        ],
+        "status": "passed",
+        "log": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/control-locations-selected-tests-v1.log",
+        "exit_code": 0,
+        "sha256": "ee70e5f0a6de2b448ef88a97f0626ba9dc75a82542d52b35078f312ee0f2aa69"
+      },
+      {
+        "name": "native-build",
+        "command": [
+          "cargo",
+          "build",
+          "--locked",
+          "--bin",
+          "local-rift"
+        ],
+        "status": "passed",
+        "log": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/control-locations-native-build-v1.log",
+        "exit_code": 0,
+        "sha256": "2ee6270c8b012569d386a6528c4f47740e7e28526d3dc4c882af64c7ca2d06b2"
+      },
+      {
+        "name": "clippy",
+        "command": [
+          "cargo",
+          "clippy",
+          "--locked",
+          "--all-targets",
+          "--",
+          "-D",
+          "warnings"
+        ],
+        "status": "passed",
+        "log": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/control-locations-clippy-v1.log",
+        "exit_code": 0,
+        "sha256": "99eb0bdd04c1e9f000baaf00b4f90ea87e7d175add5fdbb89011c4377d7becfd"
+      },
+      {
+        "name": "control-source",
+        "command": [
+          "python3",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "tools",
+          "-p",
+          "test_control_source_review.py",
+          "-v"
+        ],
+        "status": "passed",
+        "log": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/control-locations-control-source-v1.log",
+        "exit_code": 0,
+        "sha256": "90fdd4779e1cf40541a17c78db97b442274f7fca360389330c214150a6c1e301"
+      }
+    ],
+    "tested_changed_runtime_files": [
+      {
+        "path": "src/activated.rs",
+        "sha256": "738c299e76d817a2f32d47d55ccae4dc8d1d92316c23bebd504f5712df72fc47"
+      },
+      {
+        "path": "src/api.rs",
+        "sha256": "d2546a8aba85a08d74b4c60160c8425d00ad3bef87ef32d74c77e99392ac8dd0"
+      },
+      {
+        "path": "src/api/board_effects.rs",
+        "sha256": "24bd88f288b6a2e8eb399c7b8915deb276ad370925221613d896e08b77c37741"
+      },
+      {
+        "path": "src/api/c17.rs",
+        "sha256": "5a2dfef74316864c5937b0a5e949b8d18778460264a8f3911509f5a5535d8dfc"
+      },
+      {
+        "path": "src/board_returns/tests.rs",
+        "sha256": "69c368e4fcfc06c2a957b9a7cfaf65a2a02f10924c9c12b341e90fd99f5c1b3f"
+      },
+      {
+        "path": "src/board_targets.rs",
+        "sha256": "b47b8c3da289b69e1923e3861765b92777410b8c904141282389aed0a3a1a407"
+      },
+      {
+        "path": "src/board_targets/tests.rs",
+        "sha256": "2a09ef146f2f004adff7780d3f31996a65298b8d81b330f46250c9329cd81222"
+      },
+      {
+        "path": "src/control_location_tests.rs",
+        "sha256": "110c470057f5a1594fff24a95d1fb39d2e00eecb23a2a0bab034511f827ed45b"
+      },
+      {
+        "path": "src/control_reference_tests.rs",
+        "sha256": "efc50d2589548b433a8f7fb1091befbe1c7f6f8acf1c85bb59c6a3eb20650953"
+      },
+      {
+        "path": "src/game.rs",
+        "sha256": "e878503d02e31dfa38a9a541e8bdd94a16949a6b9e463090c92f0880f9e82085"
+      },
+      {
+        "path": "src/game_test_support.rs",
+        "sha256": "65bd439be35176481c5c698b0ef02375776bb3d1ebe8b5f6cb227da30176071e"
+      },
+      {
+        "path": "src/main.rs",
+        "sha256": "c053ca3ecd9105b192888fad8f78b1d24f5a9275be77c58ef15b6dcf9258d4ba"
+      },
+      {
+        "path": "src/modal.rs",
+        "sha256": "5f43ac46745d4eb85c2cb4d7bfb7d237b719513556b9bbb22a3e0696939a463c"
+      },
+      {
+        "path": "src/play_ui.rs",
+        "sha256": "9c4f91a37699b9e8e988c052a86f774be411cbea4e38d8cb6795c9f0a8938423"
+      },
+      {
+        "path": "src/temporary/tests.rs",
+        "sha256": "caf5965d8d80e7c1c244e59c57d9a52178e4959fdaa917ba300d492fa41c3a36"
+      },
+      {
+        "path": "src/triggers.rs",
+        "sha256": "8da17d2d76c3e65c4550303a9e70ff016cc3b1e79ab63066fa406fc6df52f4ca"
+      }
+    ],
+    "native": {
+      "report": {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/control-location-native-v1/report.json",
+        "sha256": "6768d829b7fbe90bca02ca4167fec1d6bbe164c240e3e9741cb4285835122e5c"
+      },
+      "plan": {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/control-location-native-plan-v1.json",
+        "sha256": "5ee97ee082445c92e4b3ab0f8e9418c7d2897be03dd0ed50c8937f6d8b441d65"
+      },
+      "binary_sha256": "9864201dd2cd906bc897221f9c27907bb602d4df7133c8cf812658d9432612b7",
+      "cases": [
+        {
+          "name": "core-normal",
+          "seconds": 28.653,
+          "captures": 5,
+          "games": 0,
+          "capture_sha256": {
+            "rift_smoke_mat_screenshot.png": "689f544afedc5e398c3617bd294605c47890fb8591702925d682ead52e13c6e5",
+            "rift_smoke_resources_screenshot.png": "558dd8c1d4a698f109ecabc3392e3fa0c443d104ca7e4cdd68bfdad15dcef50a",
+            "rift_smoke_c9_ready_token_screenshot.png": "c6ad1465d6a0aa6e4aa55315dd781d5c67f0cf4b83eced713d06ca21f0f32d97",
+            "rift_smoke_journal_screenshot.png": "a8986a1583c9204e14086078982026c81157d71c297bfdd007aad7b81a0bae42",
+            "rift_smoke_opponent_resources_screenshot.png": "00b23f9b1d7832287c635d7cb32efa6e3027cbc6721fce7f7f0322dfaa64d832"
+          },
+          "log_sha256": "0ad7d29b583da68ce334cc72492052b992e83a5842e770cd49fe8d5083ebecbf"
+        },
+        {
+          "name": "core-small",
+          "seconds": 22.438,
+          "captures": 5,
+          "games": 0,
+          "capture_sha256": {
+            "rift_smoke_mat_screenshot.png": "d16c47f8b2b97b316eb5b42b4933476fed5b39ed923a9aaa872e781623c58dad",
+            "rift_smoke_resources_screenshot.png": "fa7457b103d355fd0d0ae70a39a4b19be5606a51a0c4d5cf50b034aee1d1c71e",
+            "rift_smoke_c9_ready_token_screenshot.png": "56ecb6089236a92b601266205657f8859c72c9582fc0ba2838f95cd19a475c0e",
+            "rift_smoke_journal_screenshot.png": "91dca02266de23a6f219dbd10ed1f627921252ebcb3cccf694ddc6728461ac4c",
+            "rift_smoke_opponent_resources_screenshot.png": "1abf0740be33b7a531d730c2022af70cd0f0fc729dbdff7576d2af368ccf41aa"
+          },
+          "log_sha256": "0ad7d29b583da68ce334cc72492052b992e83a5842e770cd49fe8d5083ebecbf"
+        }
+      ],
+      "visually_reviewed": [
+        {
+          "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/control-location-native-v1/core-normal/rift_smoke_c9_ready_token_screenshot.png",
+          "sha256": "c6ad1465d6a0aa6e4aa55315dd781d5c67f0cf4b83eced713d06ca21f0f32d97"
+        },
+        {
+          "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/control-location-native-v1/core-small/rift_smoke_c9_ready_token_screenshot.png",
+          "sha256": "56ecb6089236a92b601266205657f8859c72c9582fc0ba2838f95cd19a475c0e"
+        }
+      ]
+    }
+  },
+  "coverage": [
+    "Both seats, six on-play token creators: source changes controller and is Recalled, remains at its original battlefield, relocates to the other battlefield, or leaves play. Check token controller, physical location, readiness, identity, resources, pending completion and clone equality.",
+    "Both seats: movement-triggered unit and equipment-granted token effects resolve after a bearer control change, at a different battlefield or opposing base, preserving the original ability actor.",
+    "An impossible fixed play preserves Energy, Power, XP and score and restores its next-unit ready grant; the following legal play consumes that same grant and enters ready.",
+    "Public pending destinations expose both physical bases to both viewers. Real Antagonistic Apparatus plays in both seats expose matching pending/decision destinations, reject a different battlefield without state or revision mutation, and finalize the ready token at base.",
+    "Native physical-base wording covers both token controllers and both bases. Existing core click flows pass at normal and small sizes, including optional token costs, disabled field choices, and finalization."
+  ],
+  "failure_history": {
+    "notes": [
+      "The initial red tests reproduced a metadata token incorrectly entering its original controller base and a legacy Here token disappearing after its source changed controller at a battlefield.",
+      "The first typed-location compile reported five old Option<Option<lane>> call sites and assertions. Migrated those callers without removing their checks.",
+      "The initial three location regressions then passed; the final suite adds movement/equipment, both-seat API actions and client wording coverage."
+    ],
+    "artifacts": [
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/control-locations-red-v1.log",
+        "sha256": "61d96884f03835749019807233374fecc2e5785b786d6881639c1641ff01b8fd"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/control-locations-v2.log",
+        "sha256": "0e916d4aa3750e8f382bb6b637e18778defcb098ac6ca22089779d7d6f56e306"
+      },
+      {
+        "path": "/home/benchen/.cache/local-rift-work/riven-2026-11-12/control-locations-v3.log",
+        "sha256": "cb5d55ddca78c2fc6c654817f003fee0a88597cb1a84f8de31bee3e304d97e99"
+      }
+    ]
+  },
+  "audit_correction": "The prior pending-reference audit overstated Ezreal movement into an opposing base before corrective Recall. Current Core449.2.c instead-Recall and destination restrictions must be applied; this checkpoint does not implement that movement behavior.",
+  "remaining_before_card_admission": [
+    "Actual control-transfer operation, battlefield contest/combat cleanup sequencing and ownership-aware conservation.",
+    "Absolute movement destinations and movement actor/location events, with correct Recall behavior for Ezreal and swaps.",
+    "Remaining captured source, Hidden, Empower and payment/return continuations; per-object movement restrictions and live API references.",
+    "Possession and Conscription targeting, optional XP costs and resolution, AI/UI/companion support and complete-game campaigns.",
+    "Immutable installed acceptance of the assembled control-card release before publication."
+  ],
+  "limits": [
+    "Controller changes in the new scenarios are authored state boundaries, not enabled control-taking card actions. No new card or preset is admitted.",
+    "This is local foundation evidence, not a complete Standard rules audit, all-card coverage proof, expert-AI evaluation, or installed release acceptance. Native cases use fixtures and do not complete actual games.",
+    "Public main remains the separately accepted entry release."
+  ]
+}

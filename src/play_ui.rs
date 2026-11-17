@@ -82,6 +82,33 @@ fn choose_destination(
 #[cfg(test)]
 mod mode_tests {
     #[test]
+    fn fixed_token_description_names_the_physical_base() {
+        use local_rift::game::{PendingToken, board_targets::BoardLocation};
+        let game = Game::new_for_agents(0, 0, 468303, Difficulty::Tactical);
+        for player in 0..2 {
+            for base in 0..2 {
+                let token = PendingToken {
+                    source: None,
+                    id: 1,
+                    player,
+                    card_id: 147,
+                    might: 1,
+                    gear: false,
+                    entry_ready: false,
+                    location: Some(BoardLocation::Base { player: base }),
+                };
+                let text = token_placement_description(&game, &token);
+                assert!(text.contains(if base == 0 {
+                    "Fixed at your base"
+                } else {
+                    "Fixed at opponent's base"
+                }));
+                assert_eq!(text.contains("cannot enter"), player != base);
+            }
+        }
+    }
+
+    #[test]
     fn dynamic_fields_location_choices_stay_above_turn_controls() {
         use super::*;
         let area = Rect::new(1178.0, 480.0, 212.0, 87.0);
@@ -256,11 +283,22 @@ pub(super) fn token_placement_description(
     let spec = local_rift::rules::token_spec(token.card_id);
     let name = spec.map_or("Unit", |spec| spec.name);
     let location = match token.location {
-        Some(Some(lane)) => format!(
+        Some(local_rift::game::board_targets::BoardLocation::Battlefield { lane }) => format!(
             "Fixed at {}",
             local_rift::battlefields::battlefield(game.battlefields[lane]).name
         ),
-        Some(None) => "Fixed at your base".into(),
+        Some(local_rift::game::board_targets::BoardLocation::Base { player }) => {
+            let base = if player == 0 {
+                "your base"
+            } else {
+                "opponent's base"
+            };
+            if player == token.player {
+                format!("Fixed at {base}")
+            } else {
+                format!("Fixed at {base}; this token cannot enter")
+            }
+        }
         None => "Choose base or a field you control".into(),
     };
     format!(

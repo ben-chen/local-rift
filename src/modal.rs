@@ -188,9 +188,16 @@ impl Game {
                 self.look_to_draw(item.player, item.card_id, DrawLookKind::CommandAttack)
             }
             ModeEffect::Counter(kind) => self.resolve_counter_kind(item, kind),
-            ModeEffect::Tokens { count, might } => {
-                self.queue_effect_tokens(item.player, item.card_id, count, might, item.lane)
-            }
+            ModeEffect::Tokens { count, might } => self.queue_effect_tokens(
+                item.player,
+                item.card_id,
+                count,
+                might,
+                Some(board_targets::BoardLocation::from_lane(
+                    item.player,
+                    item.lane,
+                )),
+            ),
         }
         Ok(())
     }

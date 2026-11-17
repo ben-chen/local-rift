@@ -75,7 +75,11 @@ fn drive(g: &mut Game, stop_at_targets: bool, stop_at_token: bool) {
             }
             Some(Decision::TokenPlay { .. } | Decision::TokenPlacement { .. }) => {
                 Action::PlaceToken {
-                    lane: g.current_pending_token().unwrap().location.flatten(),
+                    lane: g
+                        .current_pending_token()
+                        .unwrap()
+                        .location
+                        .and_then(|location| location.battlefield()),
                 }
             }
             Some(Decision::OrderTriggers { options, .. }) => Action::OrderTrigger {
@@ -484,7 +488,7 @@ fn production_surge_discount_uses_real_mech_tag_and_draw_precedes_pending_token(
     assert_eq!(g.players[0].hand.len(), 1);
     assert!(g.players[0].units.is_empty());
     let pending = g.current_pending_token().unwrap();
-    assert_eq!(pending.location, Some(None));
+    assert_eq!(pending.location, Some(BoardLocation::Base { player: 0 }));
     assert_eq!(pending.might, 3);
     assert!(!pending.entry_ready);
     drive(&mut g, false, false);

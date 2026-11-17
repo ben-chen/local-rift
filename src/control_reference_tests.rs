@@ -2,54 +2,10 @@
 //! Control changes are authored response-state boundaries. These tests do not
 //! exercise a control-taking card or the eventual transfer operation.
 use super::*;
-use crate::game::test_support::{decline_legend_action, position, reject_unchanged};
-
-fn transfer(g: &mut Game, id: u32) -> Target {
-    let old = g.unit_controller(id).unwrap();
-    let owner = g
-        .board_owner(Target::Unit {
-            player: old,
-            unit_id: id,
-        })
-        .unwrap();
-    let index = g.players[old]
-        .units
-        .iter()
-        .position(|u| u.id == id)
-        .unwrap();
-    let unit = g.players[old].units.remove(index);
-    let player = 1 - old;
-    g.players[player].units.push(unit);
-    if player == owner {
-        g.board_owner_overrides.remove(&id);
-    } else {
-        g.board_owner_overrides.insert(id, owner);
-    }
-    Target::Unit {
-        player,
-        unit_id: id,
-    }
-}
-
-fn finish_chain(g: &mut Game) {
-    for _ in 0..100 {
-        if g.chain.is_empty() && g.decision.is_none() {
-            return;
-        }
-        let action = if let Some(action) = decline_legend_action(g) {
-            action
-        } else if let Some(Decision::OrderTriggers { options, .. }) = &g.decision {
-            Action::OrderTrigger {
-                trigger_id: options[0].id,
-            }
-        } else {
-            assert!(g.decision.is_none(), "unexpected {:?}", g.decision);
-            Action::Pass
-        };
-        g.apply(action).unwrap();
-    }
-    panic!("chain did not finish");
-}
+use crate::game::test_support::{
+    position, reject_unchanged, settle_unopposed_chain as finish_chain,
+    transfer_control_for_fixture as transfer,
+};
 
 #[test]
 fn finalized_spells_and_play_triggers_recheck_current_target_allegiance() {

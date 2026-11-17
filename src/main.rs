@@ -2846,7 +2846,14 @@ impl App {
                         .and_then(|token| token.location)
                         .map_or_else(
                             || lane.is_none_or(|lane| self.game.battlefield_owner[lane] == Some(0)),
-                            |fixed| fixed == lane,
+                            |fixed| match fixed {
+                                local_rift::game::board_targets::BoardLocation::Base { player } => {
+                                    player == 0 && lane.is_none()
+                                }
+                                local_rift::game::board_targets::BoardLocation::Battlefield {
+                                    lane: fixed,
+                                } => lane == Some(fixed),
+                            },
                         ),
                 ) {
                     self.action(Action::PlaceToken { lane });

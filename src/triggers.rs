@@ -1988,16 +1988,18 @@ impl Game {
                     let owner = if opponent { 1 - player } else { player };
                     let location = match location {
                         rules::TokenPlacement::Default => None,
-                        rules::TokenPlacement::Base => Some(None),
+                        rules::TokenPlacement::Base => {
+                            Some(board_targets::BoardLocation::Base { player: owner })
+                        }
                         rules::TokenPlacement::Here => {
-                            let Some((lane, _)) = self.source_location(context.source) else {
+                            let Some((lane, base)) = self.source_location(context.source) else {
                                 continue;
                             };
-                            Some(lane)
+                            Some(board_targets::BoardLocation::from_lane(base, lane))
                         }
                     };
                     for _ in 0..count {
-                        self.queue_token_play_with_entry(
+                        self.queue_token_play_at(
                             owner,
                             card_id,
                             might,

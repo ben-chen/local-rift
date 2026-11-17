@@ -76,7 +76,11 @@ fn drive(g: &mut Game, stop_at_targets: bool, stop_at_token: bool) {
             }
             Some(Decision::TokenPlay { .. } | Decision::TokenPlacement { .. }) => {
                 Action::PlaceToken {
-                    lane: g.current_pending_token().unwrap().location.flatten(),
+                    lane: g
+                        .current_pending_token()
+                        .unwrap()
+                        .location
+                        .and_then(|location| location.battlefield()),
                 }
             }
             Some(Decision::OrderTriggers { options, .. }) => Action::OrderTrigger {

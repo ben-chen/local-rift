@@ -617,7 +617,7 @@ impl Session {
                 "source":token.source.map(chain_source_to_json),
                 "destination":match token.location {
                     None => json!({"mode":"choose"}),
-                    Some(lane) => json!({"mode":"fixed","lane":lane}),
+                    Some(location) => fixed_destination_to_json(location),
                 }
             })).collect::<Vec<_>>(),
             "showdown":game.showdown.as_ref().map(|w|json!({"lane":w.lane,"attacker":w.attacker,
@@ -2085,6 +2085,17 @@ fn legend_trigger(trigger: LegendTrigger) -> Value {
     }
 }
 
+fn fixed_destination_to_json(location: crate::game::board_targets::BoardLocation) -> Value {
+    match location {
+        crate::game::board_targets::BoardLocation::Battlefield { lane } => {
+            json!({"mode":"fixed","lane":lane})
+        }
+        crate::game::board_targets::BoardLocation::Base { player } => {
+            json!({"mode":"fixed","lane":null,"base_player":player})
+        }
+    }
+}
+
 fn pending_instruction_to_json(card: &crate::game::PendingCard, value: &mut Value) {
     use crate::game::{BaseCostWaiver, PlayDestination};
     if card.play_origin() == crate::game::play::PlayOrigin::Banish {
@@ -2094,8 +2105,7 @@ fn pending_instruction_to_json(card: &crate::game::PendingCard, value: &mut Valu
             "destination": match card.instruction.destination {
                 PlayDestination::Normal=>json!({"mode":"normal"}),
                 PlayDestination::Base=>json!({"mode":"base"}),
-                PlayDestination::Exact(crate::game::board_targets::BoardLocation::Battlefield { lane })=>json!({"mode":"fixed","lane":lane}),
-                PlayDestination::Exact(crate::game::board_targets::BoardLocation::Base { player })=>json!({"mode":"fixed","lane":null,"base_player":player}),
+                PlayDestination::Exact(location)=>fixed_destination_to_json(location),
                 PlayDestination::AnyBattlefield=>json!({"mode":"any_battlefield"}),
             }
         });
@@ -2410,6 +2420,7 @@ fn decision_to_json(game: &Game, decision: &Decision, viewer: usize) -> Result<V
         } => json!({"type":"token_placement","card_id":card_id,"remaining":remaining,
             "token_id":game.current_pending_token().map(|token|token.id)}),
         Decision::TokenPlay {
+            player,
             card_id,
             remaining,
             fixed_lane,
@@ -2417,7 +2428,8 @@ fn decision_to_json(game: &Game, decision: &Decision, viewer: usize) -> Result<V
         } => json!({"type":"token_play",
             "token_id":game.current_pending_token().map(|token|token.id),
             "card_id":card_id,"remaining":remaining,"destination":match fixed_lane {
-                None=>json!({"mode":"choose"}), Some(lane)=>json!({"mode":"fixed","lane":lane})}}),
+                None=>json!({"mode":"choose"}),
+                Some(lane)=>fixed_destination_to_json(crate::game::board_targets::BoardLocation::from_lane(*player, *lane))}}),
         Decision::ResolutionSubset {
             card_id,
             candidates,

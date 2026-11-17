@@ -436,7 +436,11 @@ fn token_entry_instruction_is_public_and_cannot_be_overridden_by_a_client() {
         for view in &before {
             let pending = &view["pending_token_plays"][0];
             assert_eq!(pending["entry_ready"], ready);
-            assert_eq!(pending["destination"], json!({"mode":"fixed","lane":null}));
+            assert_eq!(
+                pending["destination"],
+                json!({"mode":"fixed","lane":null,"base_player":0})
+            );
+            assert_eq!(view["decision"]["destination"], pending["destination"]);
         }
         for action in [
             json!({"type":"place_token","lane":null,"entry_ready":!ready}),

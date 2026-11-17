@@ -34,6 +34,57 @@ pub(crate) fn ready_unit(game: &mut Game, owner: usize, card: CardId) -> u32 {
     id
 }
 
+/// Authored state boundary, not a control-taking game action. Callers arrange
+/// the destination/contest state explicitly; only identity and owner persist.
+pub(crate) fn transfer_control_for_fixture(game: &mut Game, id: u32) -> Target {
+    let old = game.unit_controller(id).unwrap();
+    let owner = game
+        .board_owner(Target::Unit {
+            player: old,
+            unit_id: id,
+        })
+        .unwrap();
+    let index = game.players[old]
+        .units
+        .iter()
+        .position(|u| u.id == id)
+        .unwrap();
+    let unit = game.players[old].units.remove(index);
+    let player = 1 - old;
+    game.players[player].units.push(unit);
+    if player == owner {
+        game.board_owner_overrides.remove(&id);
+    } else {
+        game.board_owner_overrides.insert(id, owner);
+    }
+    Target::Unit {
+        player,
+        unit_id: id,
+    }
+}
+
+/// Resolve an unopposed chain through public actions. Tests must supply every
+/// non-ordering choice except optional legend occurrences explicitly declined.
+pub(crate) fn settle_unopposed_chain(game: &mut Game) {
+    for _ in 0..100 {
+        if game.chain.is_empty() && game.decision.is_none() {
+            return;
+        }
+        let action = if let Some(action) = decline_legend_action(game) {
+            action
+        } else if let Some(Decision::OrderTriggers { options, .. }) = &game.decision {
+            Action::OrderTrigger {
+                trigger_id: options[0].id,
+            }
+        } else {
+            assert!(game.decision.is_none(), "unexpected {:?}", game.decision);
+            Action::Pass
+        };
+        game.apply(action).unwrap();
+    }
+    panic!("chain did not finish");
+}
+
 /// Choose and decline an optional legend occurrence through ordinary actions.
 /// Exhausting a legend does not suppress its trigger; it can still be ordered.
 pub(crate) fn decline_legend_action(game: &Game) -> Option<Action> {

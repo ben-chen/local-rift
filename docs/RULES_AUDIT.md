@@ -1234,6 +1234,36 @@ operation, physical-base handling for moves and Here/token instructions,
 remaining captured-source and payment/choice continuations, ownership-aware
 conservation, live API observations, and card-specific UI/AI/companion checks.
 In particular, Ezreal, Dashing says "your base": the pending ability's controller
-defines that base. Moving there and corrective Recall are different events
-(448.1, 323.6); replacing the instruction with movement to the new controller's
-base would lose that distinction. Possession and Conscription remain unavailable.
+defines that base. Movement still requires a separate audit of valid destinations
+and the instead-Recall rule (449.2.c). It must not be assumed that a unit first
+Moves into an opposing base before cleanup; Recall is explicitly not a Move
+(448.1, 458). Possession and Conscription remain unavailable.
+
+## Here token destinations — November 16, 2026
+
+The rules hub still links the October 9 Core Rules. A token belongs to the
+controller of the effect creating it (182), while "here" checks the source's
+physical location when its instruction executes (359.3.f.2). The two players
+can differ after a source changes control. The resulting pending play retains
+that absolute base or battlefield (184.2, 354.3, 355.17). Finalization cannot
+place the token in an opposing base (358.3), redirect it to another base, or
+consume an optional cost. A reserved next-unit grant remains available after
+the impossible play is abandoned.
+
+Legacy on-play effects and metadata-driven triggers now share physical token
+destinations. The same type supports activated token effects and modal token
+instructions. API pending plays and token decisions name fixed bases with
+`base_player`; the native description names the same physical base. A departed
+Here source yields no destination and cannot be replaced by another copy.
+
+Tests use actual card plays and movement to create the abilities, then authored
+control-change boundaries to exercise resolution from both seats. These checks
+remain distinct from implementing a control-taking card. Movement destination
+and Recall semantics, the actual transfer operation, remaining continuations,
+and full control-card acceptance remain unfinished.
+
+[Token-location validation](validation/control_locations.json) records 1,443
+passing Rust tests, strict all-target lint, source review, and two native cases
+with ten captures. The two token-choice captures were visually inspected.
+These local checks do not establish complete Standard coverage or installed
+acceptance of the unfinished control-card release.

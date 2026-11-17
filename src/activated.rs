@@ -1335,33 +1335,34 @@ impl Game {
             }
             AbilityEffect::Tokens => {
                 if let Some(spec) = crate::rules::token_spec(card_id) {
-                    let destination = match crate::rules::token_placement(card_id) {
+                    use crate::game::board_targets::BoardLocation;
+                    let placement = crate::rules::token_placement(card_id);
+                    let destination = match placement {
                         crate::rules::TokenPlacement::Default => None,
-                        crate::rules::TokenPlacement::Base => Some(None),
+                        crate::rules::TokenPlacement::Base => Some(BoardLocation::Base { player }),
                         crate::rules::TokenPlacement::Here => {
-                            if self.ability_source_state(source).is_none() {
-                                return Ok(());
-                            }
-                            Some(match source {
+                            let target = match physical_source {
                                 AbilitySource::Unit { player, unit_id } => {
-                                    self.unit_ref(Target::Unit { player, unit_id })
-                                        .unwrap()
-                                        .lane
+                                    Target::Unit { player, unit_id }
                                 }
                                 AbilitySource::Gear { player, gear_id } => {
-                                    self.gear_location(player, gear_id)
+                                    Target::Gear { player, gear_id }
                                 }
-                            })
+                            };
+                            self.board_target_facts(target).map(|facts| facts.location)
                         }
                     };
-                    for _ in 0..spec.count {
-                        self.queue_token_play(
-                            player,
-                            card_id,
-                            spec.might,
-                            destination,
-                            spec.is_gear,
-                        );
+                    if placement != crate::rules::TokenPlacement::Here || destination.is_some() {
+                        for _ in 0..spec.count {
+                            self.queue_token_play_at(
+                                player,
+                                card_id,
+                                spec.might,
+                                destination,
+                                spec.is_gear,
+                                false,
+                            );
+                        }
                     }
                 }
             }

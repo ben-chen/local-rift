@@ -104,6 +104,32 @@ fn c17_wire_exposes_banish_origin_free_base_cost_and_prescribed_destination() {
         assert_eq!(s.game.players[owner].units[0].lane, dest);
     }
 }
+
+#[test]
+fn fixed_pending_token_bases_expose_absolute_destination_to_both_players() {
+    use crate::game::board_targets::BoardLocation;
+    for controller in 0..2 {
+        for base in 0..2 {
+            let mut s = session();
+            s.game.queue_token_play_at(
+                controller,
+                147,
+                1,
+                Some(BoardLocation::Base { player: base }),
+                false,
+                false,
+            );
+            let own = s.observe(controller).unwrap();
+            let other = s.observe(1 - controller).unwrap();
+            assert_eq!(own["pending_token_plays"], other["pending_token_plays"]);
+            assert_eq!(own["pending_token_plays"][0]["player"], controller);
+            assert_eq!(
+                own["pending_token_plays"][0]["destination"],
+                json!({"mode":"fixed", "lane":null, "base_player":base})
+            );
+        }
+    }
+}
 #[test]
 fn c17_wire_arcane_parent_finishes_and_hidden_opponent_hand_stays_private() {
     let mut s = session();
@@ -133,6 +159,58 @@ fn c17_wire_arcane_parent_finishes_and_hidden_opponent_hand_stays_private() {
         public["players"][0]["legend"]["targeting_progress"]["completed"],
         1
     );
+}
+
+#[test]
+fn token_choices_and_pending_instructions_agree_on_each_physical_base() {
+    for actor in 0..2 {
+        let mut s = session();
+        s.game = crate::game::test_support::position(actor, 0, 468305);
+        unit(&mut s, actor, 991, None);
+        s.game.players[actor].units[0].card_id = 265;
+        s.game.players[actor].hand = vec![319];
+        assert_eq!(
+            call(
+                &mut s,
+                "apply",
+                json!({"type":"play_card_targets","hand_index":0,"lane":null,"targets":[]})
+            )["ok"],
+            true
+        );
+        resolve(&mut s);
+        assert!(matches!(s.game.decision, Some(Decision::TokenPlay { .. })));
+        let own = s.observe(actor).unwrap();
+        let other = s.observe(1 - actor).unwrap();
+        let expected = json!({"mode":"fixed","lane":null,"base_player":actor});
+        assert_eq!(own["pending_token_plays"], other["pending_token_plays"]);
+        assert_eq!(own["pending_token_plays"][0]["destination"], expected);
+        assert_eq!(own["decision"]["destination"], expected);
+        let before = (s.revision(), format!("{:?}", s.game));
+        assert_eq!(
+            call(
+                &mut s,
+                "apply",
+                json!({"type":"finalize_token_play","lane":0,"accelerate":false})
+            )["ok"],
+            false
+        );
+        assert_eq!((s.revision(), format!("{:?}", s.game)), before);
+        assert_eq!(
+            call(
+                &mut s,
+                "apply",
+                json!({"type":"finalize_token_play","lane":null,"accelerate":false})
+            )["ok"],
+            true
+        );
+        assert!(
+            s.game.players[actor]
+                .units
+                .iter()
+                .any(|u| u.token && u.ready && u.lane.is_none())
+        );
+        assert!(s.game.pending_tokens().is_empty());
+    }
 }
 #[test]
 fn c17_signatures_are_legal_only_in_their_matching_legend_decks() {

@@ -18,6 +18,9 @@ use std::collections::VecDeque;
 #[path = "control_gear_tests.rs"]
 mod control_gear_tests;
 #[cfg(test)]
+#[path = "control_location_tests.rs"]
+mod control_location_tests;
+#[cfg(test)]
 #[path = "control_reference_tests.rs"]
 mod control_reference_tests;
 #[path = "ownership.rs"]
@@ -992,8 +995,9 @@ pub struct PendingToken {
     pub might: u8,
     pub gear: bool,
     pub entry_ready: bool,
-    /// None permits the normal location choice; Some(None) mandates base.
-    pub location: Option<Option<usize>>,
+    /// None permits normal placement. A fixed location names the physical base
+    /// or battlefield independently of the token's controller (CR355.17).
+    pub location: Option<board_targets::BoardLocation>,
 }
 #[derive(Clone, Debug)]
 struct PendingTrigger {
@@ -2982,7 +2986,7 @@ impl Game {
             return Err("No token placement is pending.".into());
         };
         let fixed = self.pending_token.as_ref().and_then(|t| t.location);
-        if fixed.is_some_and(|fixed| fixed != lane)
+        if fixed.is_some_and(|fixed| fixed != board_targets::BoardLocation::from_lane(player, lane))
             || (fixed.is_none()
                 && lane.is_some_and(|lane| {
                     lane >= self.battlefield_count() || self.battlefield_owner[lane] != Some(player)
@@ -3317,7 +3321,7 @@ impl Game {
                     // where its trigger happened (CR359.3.e.12 / 359.3.f.2).
                     let source = entering.and_then(|unit_id| {
                         self.unit_ref(Target::Unit {
-                            player: item.player,
+                            player: self.unit_controller(unit_id)?,
                             unit_id,
                         })
                     });
@@ -4947,18 +4951,27 @@ impl Game {
         id: CardId,
         count: u8,
         might: u8,
-        lane: Option<usize>,
+        here: Option<board_targets::BoardLocation>,
     ) {
+        use board_targets::BoardLocation;
+        let location = match rules::token_placement(id) {
+            rules::TokenPlacement::Default => self
+                .current_hidden_origin()
+                .map(|lane| BoardLocation::Battlefield { lane }),
+            rules::TokenPlacement::Base => Some(BoardLocation::Base { player }),
+            rules::TokenPlacement::Here => {
+                let Some(here) = here else {
+                    return;
+                };
+                Some(here)
+            }
+        };
         for _ in 0..count {
-            self.queue_token_play_with_entry(
+            self.queue_token_play_at(
                 player,
                 id,
                 might,
-                match rules::token_placement(id) {
-                    rules::TokenPlacement::Default => self.current_hidden_origin().map(Some),
-                    rules::TokenPlacement::Base => Some(None),
-                    rules::TokenPlacement::Here => Some(lane),
-                },
+                location,
                 rules::token_is_gear(id),
                 matches!(id, 355 | 356),
             );
@@ -4982,6 +4995,25 @@ impl Game {
         card_id: CardId,
         might: u8,
         location: Option<Option<usize>>,
+        gear: bool,
+        entry_ready: bool,
+    ) {
+        self.queue_token_play_at(
+            player,
+            card_id,
+            might,
+            location.map(|lane| board_targets::BoardLocation::from_lane(player, lane)),
+            gear,
+            entry_ready,
+        );
+    }
+
+    pub(crate) fn queue_token_play_at(
+        &mut self,
+        player: usize,
+        card_id: CardId,
+        might: u8,
+        location: Option<board_targets::BoardLocation>,
         gear: bool,
         entry_ready: bool,
     ) {
@@ -5160,10 +5192,18 @@ impl Game {
             }
             PendingTriggerEffect::Token(token) => {
                 self.priority_player = token.player;
-                if !token.gear
-                    && let Some(lane) = token.location
-                    && let Err(reason) = self.validate_unit_play_location(token.player, lane)
-                {
+                let invalid = match token.location {
+                    Some(board_targets::BoardLocation::Base { player })
+                        if player != token.player =>
+                    {
+                        Some("A token cannot be played into the opposing base.".to_owned())
+                    }
+                    Some(location) if !token.gear => self
+                        .validate_unit_play_location(token.player, location.battlefield())
+                        .err(),
+                    _ => None,
+                };
+                if let Some(reason) = invalid {
                     // An impossible fixed-location play cannot ask for costs or
                     // fall back to base. The token ceases to exist (Core185–186).
                     self.restore_reserved_grants(token.id);
@@ -5171,10 +5211,11 @@ impl Game {
                     return Ok(());
                 }
                 let remaining=1+self.pending_triggers.iter().filter(|p|matches!(&p.effect,PendingTriggerEffect::Token(t)if t.player==token.player&&t.card_id==token.card_id)).count()as u8;
+                let fixed_lane = token.location.map(|location| location.battlefield());
                 self.pending_token = Some(token.clone());
                 let options = self
                     .play_choices(&Action::PlaceToken {
-                        lane: token.location.flatten(),
+                        lane: fixed_lane.flatten(),
                     })
                     .ok();
                 if options.as_ref().is_some_and(|o| o.accelerate.is_some()) {
@@ -5182,9 +5223,9 @@ impl Game {
                         player: token.player,
                         card_id: token.card_id,
                         remaining,
-                        fixed_lane: token.location,
+                        fixed_lane,
                     });
-                } else if let Some(lane) = token.location {
+                } else if let Some(lane) = fixed_lane {
                     self.pending_token = None;
                     let grants = self
                         .reserved_play_grants
@@ -8830,7 +8871,14 @@ impl Game {
             }
             OfficialEffect::Tokens { count, might }
             | OfficialEffect::TokensAndDraw { count, might, .. } => {
-                self.queue_effect_tokens(player, id, count, might, lane);
+                let here = entering.and_then(|unit_id| {
+                    self.board_target_facts(Target::Unit {
+                        player: self.unit_controller(unit_id)?,
+                        unit_id,
+                    })
+                    .map(|facts| facts.location)
+                });
+                self.queue_effect_tokens(player, id, count, might, here);
                 if let OfficialEffect::TokensAndDraw { draw, .. } = rules::effect(id) {
                     self.draw(player, draw)?;
                 }

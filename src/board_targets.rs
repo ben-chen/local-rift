@@ -2,7 +2,7 @@
 //! Token factory cards are references, never the token's printed characteristics.
 use super::*;
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum BoardLocation {
     Base { player: usize },
     Battlefield { lane: usize },
