@@ -1,0 +1,195 @@
+{
+  "status": "All three official faces reviewed; runtime implementation and acceptance outstanding.",
+  "checked_at": "2026-11-17T02:19:43.873572+00:00",
+  "scope": "Additional legal Calm/Chaos options after the 60-entry sampled Irelia mapping audit. These cards are not claimed to be current meta staples.",
+  "records": [
+    {
+      "identity": "ogn-174-298",
+      "name": "Sai Scout",
+      "effective": {
+        "types": [
+          "unit"
+        ],
+        "super_types": [],
+        "domains": [
+          "chaos"
+        ],
+        "energy": 6,
+        "power": null,
+        "might": 5,
+        "might_bonus": null,
+        "tags": [
+          "Shurima"
+        ],
+        "rules_html": "<p>[Vision] (When you play me, look at the top card of your Main Deck. You may recycle it.)<br />You may play me to an open battlefield.</p>",
+        "rules_text": "[Vision] (When you play me, look at the top card of your Main Deck. You may recycle it.)\nYou may play me to an open battlefield.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "source_review": {
+        "status": "no_detected_conflicts",
+        "resolution_ids": [],
+        "unresolved_gameplay_fields": [],
+        "variant_diagnostics": [],
+        "reviewed_variant_fields": [],
+        "unresolved_variant_fields": []
+      },
+      "errata": [],
+      "snapshot_standard_legal": true,
+      "original_image": {
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/eab1fc8c95931519319c4c80681a261d75214c48-744x1039.png?accountingTag=RB",
+        "path": "assets/data/card_admissions/irelia_recovery/ogn-174-298.png",
+        "sha256": "a4bb64cfe4642bf7611d8f93fea7434c3f5f147835fdf833959020bc1657e454",
+        "dimensions": [
+          744,
+          1039
+        ]
+      },
+      "actual_full_face_viewed": true,
+      "visual_review": {
+        "reviewed_at": "2026-11-17T02:21:22.670278+00:00",
+        "printed_cost_type_domain_stats_tags_and_rules_checked": true,
+        "matches_effective_facts": true,
+        "notes": "Full unmodified official face viewed. Sai Scout: 6 Energy, no Power, 5 Might, Chaos/Shurima, Vision and open-field permission. Cemetery Attendant: 3 Energy, 1 Chaos Power, 3 Might, Dog/Shadow Isles, mandatory unit recovery. Annie: 4 Energy, 1 Chaos Power, 3 Might, Champion/Annie/Noxus, mandatory spell recovery."
+      }
+    },
+    {
+      "identity": "ogn-165-298",
+      "name": "Cemetery Attendant",
+      "effective": {
+        "types": [
+          "unit"
+        ],
+        "super_types": [],
+        "domains": [
+          "chaos"
+        ],
+        "energy": 3,
+        "power": 1,
+        "might": 3,
+        "might_bonus": null,
+        "tags": [
+          "Dog",
+          "Shadow Isles"
+        ],
+        "rules_html": "<p>When you play me, return a unit from your trash to your hand.</p>",
+        "rules_text": "When you play me, return a unit from your trash to your hand.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "source_review": {
+        "status": "no_detected_conflicts",
+        "resolution_ids": [],
+        "unresolved_gameplay_fields": [],
+        "variant_diagnostics": [],
+        "reviewed_variant_fields": [],
+        "unresolved_variant_fields": []
+      },
+      "errata": [],
+      "snapshot_standard_legal": true,
+      "original_image": {
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/6bbbe6923105c53fc6b2a44430db940e009609b6-744x1039.png?accountingTag=RB",
+        "path": "assets/data/card_admissions/irelia_recovery/ogn-165-298.png",
+        "sha256": "2a4e112622cbd3d08afa2737f265cc3caba390f5698243feffe57fcc66b2a28c",
+        "dimensions": [
+          744,
+          1039
+        ]
+      },
+      "actual_full_face_viewed": true,
+      "visual_review": {
+        "reviewed_at": "2026-11-17T02:21:22.670278+00:00",
+        "printed_cost_type_domain_stats_tags_and_rules_checked": true,
+        "matches_effective_facts": true,
+        "notes": "Full unmodified official face viewed. Sai Scout: 6 Energy, no Power, 5 Might, Chaos/Shurima, Vision and open-field permission. Cemetery Attendant: 3 Energy, 1 Chaos Power, 3 Might, Dog/Shadow Isles, mandatory unit recovery. Annie: 4 Energy, 1 Chaos Power, 3 Might, Champion/Annie/Noxus, mandatory spell recovery."
+      }
+    },
+    {
+      "identity": "ogs-010-024",
+      "name": "Annie, Stubborn",
+      "effective": {
+        "types": [
+          "unit"
+        ],
+        "super_types": [
+          "champion"
+        ],
+        "domains": [
+          "chaos"
+        ],
+        "energy": 4,
+        "power": 1,
+        "might": 3,
+        "might_bonus": null,
+        "tags": [
+          "Annie",
+          "Noxus"
+        ],
+        "rules_html": "<p>When you play me, return a spell from your trash to your hand.</p>",
+        "rules_text": "When you play me, return a spell from your trash to your hand.",
+        "equipment_html": "",
+        "equipment_text": ""
+      },
+      "source_review": {
+        "status": "no_detected_conflicts",
+        "resolution_ids": [],
+        "unresolved_gameplay_fields": [],
+        "variant_diagnostics": [],
+        "reviewed_variant_fields": [],
+        "unresolved_variant_fields": []
+      },
+      "errata": [],
+      "snapshot_standard_legal": true,
+      "original_image": {
+        "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/game_data_live/44eb968cf0c54e75970588b69eef5c5f5ccc9b24-744x1039.png?accountingTag=RB",
+        "path": "assets/data/card_admissions/irelia_recovery/ogs-010-024.png",
+        "sha256": "f4975e4e48c5f3a707a932806f508cd388f288d84167098eeff98294ca07fcc4",
+        "dimensions": [
+          744,
+          1039
+        ]
+      },
+      "actual_full_face_viewed": true,
+      "visual_review": {
+        "reviewed_at": "2026-11-17T02:21:22.670278+00:00",
+        "printed_cost_type_domain_stats_tags_and_rules_checked": true,
+        "matches_effective_facts": true,
+        "notes": "Full unmodified official face viewed. Sai Scout: 6 Energy, no Power, 5 Might, Chaos/Shurima, Vision and open-field permission. Cemetery Attendant: 3 Energy, 1 Chaos Power, 3 Might, Dog/Shadow Isles, mandatory unit recovery. Annie: 4 Energy, 1 Chaos Power, 3 Might, Champion/Annie/Noxus, mandatory spell recovery."
+      }
+    }
+  ],
+  "rules_review": {
+    "checked_at": "2026-11-17T02:21:22.670278+00:00",
+    "hub": "https://playriftbound.com/en-us/rules-hub/",
+    "edition": "2026-10-09",
+    "core_url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/5c7946f7c3b8c6e0faff85ab6dadc6d2e721ea94.pdf",
+    "sections": [
+      "170.11.c",
+      "355.5",
+      "355.9",
+      "359.3.e.4"
+    ],
+    "finding": "Returning a selected unit or spell from trash targets that public-zone card. The selection must finalize before responses. A different identical copy or a departed-and-returned copy cannot replace that target. Open battlefield permission requires both no units and no controller."
+  },
+  "preserved_runtime_prefix": {
+    "main_cards": {
+      "count": 473,
+      "sha256": "c9121bc2dc8845709c460bac2272106c5ba9a1b007ac5baf601f398a1c7949d1"
+    },
+    "presets": {
+      "count": 7,
+      "sha256": "e975739d803427e54928d6e6cd03d1ce51d7ad108f4e247b8a000acf037a5cdb"
+    }
+  },
+  "implementation_notes": {
+    "Sai Scout": "Reuse MayPlayToOpenBattlefield and printed Vision, including private Predict ordering after the play and inherited location prohibitions.",
+    "Cemetery Attendant and Annie": "Add a typed shared return-from-trash trigger. Reuse the existing public trash-selection controls and stable selected-copy tracking; adapt the copy-removal, pending-payment detach/restore, recycle, and burnout paths together.",
+    "required_scenarios": [
+      "Both players, multiple eligible copies, mandatory choice, wrong kind, empty trash.",
+      "Choices finalize before opposing responses; remove an earlier index, remove the target, remove and return an identical card, and source removal.",
+      "Payment cancellation of another action restores the original target identity; completing it invalidates that identity.",
+      "AI legal choices, serialized API, native trash-card selection and companion teaching; full match conservation."
+    ],
+    "scope": "Additional legal Irelia options; not a claim of current meta prevalence. Source review alone does not admit a card to playable coverage."
+  }
+}
